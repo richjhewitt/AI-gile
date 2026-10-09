@@ -14,6 +14,7 @@ AI-gile gives the project owner a live, at-a-glance view of every project. It al
 - **Bug and feature intake**: raise bugs and requests straight from the board. Agents pick them up in priority order.
 - **Team roster and decision log** for each project, so it's clear who is working on what and why decisions were made.
 - **Agent CLI** (`aigile.js`): compact output designed to be read by language models.
+- **Token usage**: totals per project and overall for the last 5 hours, today, 7 days and 30 days, split by model, read from the agents' local session logs.
 - **Session hooks**: agents are told about new comments automatically, at no token cost when there is nothing new.
 
 ## Requirements
@@ -85,6 +86,8 @@ Activity is marked as seen when it is reported. The board shows the owner which 
 | `AIGILE_DATA` | `./data` | Data directory |
 | `AIGILE_URL` | `http://localhost:4321` | Server used by the CLI |
 | `AIGILE_AS` | none | Default `--as` name for the CLI |
+| `AIGILE_USAGE_DIR` | none | Folder of agent session logs (JSONL, one subfolder per project) for token usage. Can also be set as `usageDir` in `aigile.local.json`, which is kept out of git |
+| `AIGILE_DEV` | off | Prompt open pages to refresh after each new build |
 
 ## Data
 

@@ -65,6 +65,7 @@
   .stale-card .heard { color: #c2410c; font-weight: 600; }
   .poke.hot { background: #f97316; color: #fff; border-color: #f97316; font-weight: 600; }
   .poke { margin-left: auto; padding: 0 8px; font-size: 12px; border-radius: 99px; }
+  .usage { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 16px; margin-bottom: 14px; font-size: 13px; }
   .seen { font-size: 12px; margin-left: 6px; color: var(--muted); }
   .card.is-blocked { border-left: 3px solid var(--danger); }
   .card .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
@@ -195,8 +196,8 @@ async function refresh(force) {
   try {
     if (state.route.view === 'home') {
       const q = state.showArchived ? '?all=1' : '';
-      [state.projects, state.inbox] = await Promise.all([api('GET', '/api/projects' + q), api('GET', '/api/inbox')]);
-      sig = JSON.stringify([state.route, state.projects, state.inbox]);
+      [state.projects, state.inbox, state.usage] = await Promise.all([api('GET', '/api/projects' + q), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false }))]);
+      sig = JSON.stringify([state.route, state.projects, state.inbox, state.usage]);
     } else {
       state.project = await api('GET', '/api/projects/' + state.route.slug);
       await loadDocs(state.route.slug);
@@ -248,6 +249,17 @@ function bar(counts, total) {
     counts[s] ? `<span title="${COLS[s]}: ${counts[s]}" style="width:${counts[s] / total * 100}%;background:${COL_COLORS[s]}"></span>` : '').join('') + '</div>';
 }
 
+// Token usage (this PC). Plan limits aren't in the logs, so these are plain totals for now.
+const fmtTok = n => n >= 1e9 ? (n / 1e9).toFixed(1) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'k' : String(n);
+const usageLine = u => `5h ${fmtTok(u.h5)} · today ${fmtTok(u.today)} · 7d ${fmtTok(u.d7)}`;
+function usageStrip(u) {
+  if (!u?.enabled) return '';
+  const total = Object.values(u.org.models7d).reduce((a, b) => a + b, 0) || 1;
+  const models = Object.entries(u.org.models7d).filter(([, n]) => n).sort((a, b) => b[1] - a[1]).map(([m, n]) => `${m} ${Math.round(n / total * 100)}%`).join(' · ');
+  return `<div class="usage"><b>⚡ Usage, all projects (this PC):</b> last 5h <b>${fmtTok(u.org.h5)}</b> · today <b>${fmtTok(u.org.today)}</b> · 7 days <b>${fmtTok(u.org.d7)}</b> · 30 days ${fmtTok(u.org.d30)}
+    <span class="muted">· 7-day mix: ${models}${u.other.d7 ? ` · not on the board: ${fmtTok(u.other.d7)} (7d)` : ''}</span></div>`;
+}
+
 function renderHome() {
   const inbox = state.inbox.length ? `<div class="inbox"><h3>Waiting on you (${state.inbox.length})</h3><ul>${state.inbox.map(c =>
     `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></div>` : '';
@@ -260,12 +272,13 @@ function renderHome() {
       <div class="counts"><b>${Math.round(p.progress * 100)}% done</b>${Object.entries(COLS).map(([k, v]) => `<span>${v} ${p.counts[k]}</span>`).join('')}</div>
       ${p.team.length ? `<div class="last">👥 ${p.team.map(m => esc(m.name)).join(', ')}</div>` : ''}
       ${p.inFlight.length ? `<div class="last">🛠 ${flightHtml(p.inFlight)}</div>` : ''}
+      ${state.usage?.enabled && state.usage.projects[p.slug] ? `<div class="last">⚡ ${usageLine(state.usage.projects[p.slug])}</div>` : ''}
       ${p.lastLog ? `<div class="last">📝 ${esc(p.lastLog.text)} · ${ago(p.lastLog.at)}</div>` : ''}
     </a>`;
   }).join('');
   return `<div class="toolbar"><button class="primary" onclick="newProject()">+ New project</button><span class="grow"></span>
       <label class="chk"><input type="checkbox" ${state.showArchived ? 'checked' : ''} onchange="toggleArchived(this.checked)"> Show archived</label></div>`
-    + inbox + `<div class="grid">${cards || '<p class="muted">No projects yet.</p>'}</div>`;
+    + usageStrip(state.usage) + inbox + `<div class="grid">${cards || '<p class="muted">No projects yet.</p>'}</div>`;
 }
 
 // "Pixel → AIG-5 (12m ago)". Quiet for 30+ minutes = stale (amber), so stalled agents stand out.

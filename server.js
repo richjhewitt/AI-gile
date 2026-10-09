@@ -5,6 +5,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+const { usage } = require('./usage');
 const PORT = Number(process.env.AIGILE_PORT) || 4321;
 const HOST = '127.0.0.1';
 const DATA = path.resolve(process.env.AIGILE_DATA || path.join(__dirname, 'data'));
@@ -41,6 +42,10 @@ function save(p) {
   const tmp = fileOf(p.slug) + '.tmp';
   fs.writeFileSync(tmp, JSON.stringify(p, null, 2));
   fs.renameSync(tmp, fileOf(p.slug));
+}
+// Machine-specific settings, kept out of git (*.local.json).
+function localSettings() {
+  try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'aigile.local.json'), 'utf8')); } catch { return {}; }
 }
 function listSlugs() {
   return fs.readdirSync(DATA).filter(f => f.endsWith('.json')).map(f => f.slice(0, -5));
@@ -110,6 +115,10 @@ function findCard(p, id) {
 // ---- routes ----------------------------------------------------------------
 // Each handler: (params, body, query) -> response JSON. Throw bad() for errors.
 const routes = [
+  // Token usage per project, read from the local session logs (folder set in aigile.local.json).
+  ['GET', /^\/api\/usage$/, () => usage(process.env.AIGILE_USAGE_DIR || localSettings().usageDir,
+    listSlugs().map(load).filter(Boolean).map(p => ({ slug: p.slug, path: p.path })))],
+
   ['GET', /^\/api\/meta$/, () => ({ statuses: STATUSES, types: TYPES, priorities: PRIORITIES, dev: DEV, build: build() })],
 
   ['GET', /^\/api\/projects$/, (_, __, q) =>
