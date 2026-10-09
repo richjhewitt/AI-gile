@@ -417,13 +417,18 @@ async function deleteCard() {
   } catch (err) { alert(err.message); }
 }
 
+// Once Rich has replied or given a verdict he's done with the card: close the panel, back to the board.
+function closeCard() {
+  state.editing = false;
+  $('modal').innerHTML = '';
+  location.hash = '#/p/' + slug();
+}
 async function sendReply() {
   const t = $('r-text').value.trim();
   if (!t) { setErr('r-err', 'Write something first'); return; }
   try {
     await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: 'Rich', text: t });
-    await rerender();
-    const r = $('r-text'); if (r) r.focus();
+    closeCard();
   } catch (err) { setErr('r-err', err); }
 }
 async function verdict(accept) {
@@ -431,7 +436,7 @@ async function verdict(accept) {
   if (!accept && !t) { setErr('v-err', 'Say what is wrong before sending it back'); $('v-text').focus(); return; }
   try {
     await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { accept, text: t });
-    await rerender();
+    closeCard();
   } catch (err) { setErr('v-err', err); }
 }
 
