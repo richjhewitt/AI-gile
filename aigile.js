@@ -326,6 +326,13 @@ const cmds = {
     }
     const waiting = u.forTeam.filter(f => !u.cards.some(c => c.id === f.id));
     if (waiting.length) o.push(`Still in "For the team" (seen before): ${waiting.map(f => f.id + ' ' + f.title).join('; ')}`);
+    // Pokes alone get the smallest possible message: one "oi" line per card.
+    const onlyPokes = u.cards.length && u.cards.every(c => c.items.every(i => i.kind === 'poke'));
+    if (onlyPokes && !flags.json) {
+      const msg = u.cards.map(c => `👉 Rich poked ${c.id}: reply one line (aigile comment ${u.project} ${c.id} "...").`).join('\n');
+      if (flags['stop-hook']) console.log(JSON.stringify({ decision: 'block', reason: msg })); else console.log(msg);
+      return;
+    }
     const news = u.cards.length > 0;
     if (hook && !news) return; // hooks only speak when there's something new (saves tokens)
     if (!news && !waiting.length) return console.log('Nothing new from Rich.');

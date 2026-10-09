@@ -211,7 +211,7 @@ const routes = [
   ['POST', /^\/api\/projects\/([^/]+)\/cards\/([^/]+)\/poke$/, ([slug, id]) => {
     const p = need(load(slug));
     const c = findCard(p, id);
-    c.comments.push({ author: 'Rich', text: '👉 Poke: any update? (one line is enough)', at: now(), poke: true });
+    c.comments.push({ author: 'Rich', text: '👉 any update?', at: now(), poke: true });
     c.updated = now();
     save(p);
     return c;

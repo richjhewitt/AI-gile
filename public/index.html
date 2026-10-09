@@ -60,6 +60,10 @@
   .column[data-status=team] { outline: 2px dashed #e11d74; outline-offset: -2px; }
   .flight { margin: 0 0 10px; font-size: 13px; }
   .stale { color: var(--warn); }
+  .heard { font-size: 12px; color: var(--muted); margin: -2px 0 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card.stale-card { border: 2px solid #f97316; background: color-mix(in srgb, #f97316 12%, var(--panel)); }
+  .stale-card .heard { color: #c2410c; font-weight: 600; }
+  .poke.hot { background: #f97316; color: #fff; border-color: #f97316; font-weight: 600; }
   .poke { margin-left: auto; padding: 0 8px; font-size: 12px; border-radius: 99px; }
   .seen { font-size: 12px; margin-left: 6px; color: var(--muted); }
   .card.is-blocked { border-left: 3px solid var(--danger); }
@@ -302,12 +306,21 @@ function metaHtml(c) {
       ${c.comments.length ? `<span class="pill">💬 ${c.comments.length}</span>` : ''}`;
 }
 
+// Last time the team said or did something on a card (Rich's own comments and pokes don't count).
+const STALE_MS = 30 * 60e3;
+function lastHeard(c) {
+  const m = [...c.comments].reverse().find(m => m.author.toLowerCase() !== 'rich');
+  return m ? { who: m.author, at: m.at, text: m.text } : { who: c.assignee || 'team', at: c.created, text: '' };
+}
 function cardHtml(c) {
-  const cls = ['card', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : ''].join(' ');
+  const live = ['doing', 'review'].includes(c.status), heard = live && lastHeard(c);
+  const stale = live && Date.now() - new Date(heard.at) > STALE_MS;
+  const cls = [stale ? 'stale-card' : '', 'card', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}" data-id="${c.id}" draggable="true" style="display:block">
     <div class="id">${esc(c.id)}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <div class="t">${esc(c.title)}</div>
-    <div class="meta">${metaHtml(c)}${['doing', 'review'].includes(c.status) ? `<button class="poke" title="Nudge the team: any update?" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">👉 Poke</button>` : ''}</div></a>`;
+    ${live ? `<div class="heard">💬 ${esc(heard.who)} ${ago(heard.at)}${heard.text ? ': ' + esc(heard.text.slice(0, 60).replace(/\n/g, ' ')) : ''}</div>` : ''}
+    <div class="meta">${metaHtml(c)}${live ? `<button class="poke${stale ? ' hot' : ''}" title="Nudge the team: any update?" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">👉 Poke</button>` : ''}</div></a>`;
 }
 async function poke(id) {
   try { await api('POST', `/api/projects/${slug()}/cards/${id}/poke`); refresh(true); } catch (e) { alert(e.message); }
