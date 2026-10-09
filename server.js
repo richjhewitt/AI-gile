@@ -19,6 +19,12 @@ const CARD_FIELDS = ['title', 'description', 'testSteps', 'type', 'priority', 's
 
 fs.mkdirSync(DATA, { recursive: true });
 
+// Development flag: open pages show a "new version, refresh" prompt after each build.
+// A build = a server restart or a change to the page, so the id is start time + page mtime.
+const DEV = /^(1|true|yes)$/i.test(process.env.AIGILE_DEV || '');
+const STARTED = Date.now();
+const build = () => STARTED + '-' + fs.statSync(path.join(PUBLIC, 'index.html')).mtimeMs;
+
 // ---- storage -------------------------------------------------------------
 const now = () => new Date().toISOString();
 const slugify = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -95,7 +101,7 @@ function findCard(p, id) {
 // ---- routes ----------------------------------------------------------------
 // Each handler: (params, body, query) -> response JSON. Throw bad() for errors.
 const routes = [
-  ['GET', /^\/api\/meta$/, () => ({ statuses: STATUSES, types: TYPES, priorities: PRIORITIES })],
+  ['GET', /^\/api\/meta$/, () => ({ statuses: STATUSES, types: TYPES, priorities: PRIORITIES, dev: DEV, build: build() })],
 
   ['GET', /^\/api\/projects$/, (_, __, q) =>
     listSlugs().map(load).filter(Boolean).filter(p => q.get('all') || !p.archived).map(summary)
