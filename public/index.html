@@ -58,6 +58,8 @@
   .card.needs-you { border-left: 3px solid var(--you); }
   .column[data-status=verify] { outline: 2px dashed var(--you); outline-offset: -2px; }
   .column[data-status=team] { outline: 2px dashed #e11d74; outline-offset: -2px; }
+  .flight { margin: 0 0 10px; font-size: 13px; }
+  .stale { color: var(--warn); }
   .seen { font-size: 12px; margin-left: 6px; color: var(--muted); }
   .card.is-blocked { border-left: 3px solid var(--danger); }
   .card .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
@@ -245,12 +247,18 @@ function renderHome() {
       ${bar(p.counts, active)}
       <div class="counts"><b>${Math.round(p.progress * 100)}% done</b>${Object.entries(COLS).map(([k, v]) => `<span>${v} ${p.counts[k]}</span>`).join('')}</div>
       ${p.team.length ? `<div class="last">👥 ${p.team.map(m => esc(m.name)).join(', ')}</div>` : ''}
+      ${p.inFlight.length ? `<div class="last">🛠 ${flightHtml(p.inFlight)}</div>` : ''}
       ${p.lastLog ? `<div class="last">📝 ${esc(p.lastLog.text)} · ${ago(p.lastLog.at)}</div>` : ''}
     </a>`;
   }).join('');
   return `<div class="toolbar"><button class="primary" onclick="newProject()">+ New project</button><span class="grow"></span>
       <label class="chk"><input type="checkbox" ${state.showArchived ? 'checked' : ''} onchange="toggleArchived(this.checked)"> Show archived</label></div>`
     + inbox + `<div class="grid">${cards || '<p class="muted">No projects yet.</p>'}</div>`;
+}
+
+// "Pixel → AIG-5 (12m ago)". Quiet for 30+ minutes = stale (amber), so stalled agents stand out.
+function flightHtml(list) {
+  return list.map(c => `<span class="${Date.now() - new Date(c.updated) > 30 * 60e3 ? 'stale' : ''}" title="${esc(c.title)}">${esc(c.assignee || 'unassigned')} → ${esc(c.id)} <span class="muted">(${ago(c.updated)})</span></span>`).join(' · ');
 }
 
 function renderBoard(p) {
@@ -265,6 +273,7 @@ function renderBoard(p) {
       <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'todo'})">🐞 Raise bug</button>
       <span class="grow"></span>
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
+    <div class="flight">🛠 <b>In flight:</b> ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || '<span class="muted">nothing right now</span>'}</div>
     ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? ` <code>${esc(p.path)}</code>` : ''}</p>` : ''}
     <div class="board">${cols}</div>
     <div class="side">

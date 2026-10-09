@@ -33,6 +33,10 @@ Status key: 🔄 working · 👀 in review · ✅ accepted · 🔁 sent back · 
 
 **3. Move cards as you go.** Pick a card, then `aigile move <proj> <id> doing` (and `assign` it to yourself if it has no assignee). Use `review` when someone on your team is reviewing it. Use `comment` for progress and findings that Rich or the next agent should see. Add cards for work you discover: `aigile add <proj> "title" --type bug --priority high --status todo --desc "..."`.
 
+**Leads launching agents:** record each one with `aigile start <proj> <id> --as <AgentName>` (assigns the card, moves it to `doing`, sets the roster task). That is what shows Rich the "In flight" line. When the agent finishes, hand over with `test`, or `move` it on.
+
+**Questions for Rich go on the board, not in chat:** `aigile ask <proj> <id> "question (with your assumption)" --as <name>`. If there's no card for it, `add` one first.
+
 **4. Hand features to Rich with `test`.** Don't move your own work to `done`; Rich does, by accepting it. When you have built and self-tested a feature:
 
 ```

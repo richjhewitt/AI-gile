@@ -43,6 +43,11 @@ function listSlugs() {
 // Rich's attention is needed if a team asked him something, or a feature is waiting for his test.
 const waitingOnRich = c => c.status === 'verify' || (c.needsYou && c.status !== 'done');
 
+// What agents are working on right now: cards in progress, newest activity first.
+const inFlight = p => p.cards.filter(c => c.status === 'doing')
+  .map(c => ({ id: c.id, title: c.title, assignee: c.assignee, updated: c.updated }))
+  .sort((a, b) => b.updated.localeCompare(a.updated));
+
 function summary(p) {
   const counts = Object.fromEntries(STATUSES.map(s => [s, 0]));
   for (const c of p.cards) counts[c.status] = (counts[c.status] || 0) + 1;
@@ -56,6 +61,7 @@ function summary(p) {
     toTest: counts.verify,
     blocked: p.cards.filter(c => c.blocked && c.status !== 'done').length,
     team: (p.team || []).filter(m => !/retired|idle/i.test(m.status || '')),
+    inFlight: inFlight(p),
     lastLog: (p.log || []).slice(-1)[0] || null,
   };
 }
@@ -179,7 +185,7 @@ const routes = [
     if (!b.accept && !text) throw bad('say what is wrong when sending a card back');
     if (b.accept) c.status = 'done'; else toTeam(c);
     c.needsYou = false;
-    c.comments.push({ author: 'Rich', text: (b.accept ? '✅ Accepted' : '🔁 Sent back') + (text ? ': ' + text : ''), at: now() });
+    c.comments.push({ author: 'Rich', text: (b.accept ? '✅ Accepted' : '🔁 Sent back') + (text ? ': ' + text : ''), at: now(), verdict: b.accept ? 'accept' : 'sendback' });
     c.updated = now();
     save(p);
     return c;
@@ -217,7 +223,8 @@ const routes = [
     const since = q.get('since') || p.teamSeenAt || '';
     const cards = [];
     for (const c of p.cards) {
-      const items = c.comments.filter(m => isRich(m.author) && m.at > since).map(m => ({ kind: 'comment', text: m.text, at: m.at }));
+      // A bare "Accepted" click needs no action, so it doesn't wake the team.
+      const items = c.comments.filter(m => isRich(m.author) && m.at > since && !(m.verdict === 'accept' && m.text === '✅ Accepted')).map(m => ({ kind: 'comment', text: m.text, at: m.at }));
       if (isRich(c.createdBy) && c.created > since) items.unshift({ kind: 'new card', text: c.description || '', at: c.created });
       if (items.length) cards.push({ id: c.id, title: c.title, status: c.status, prevStatus: c.prevStatus || '', type: c.type, priority: c.priority, items });
     }

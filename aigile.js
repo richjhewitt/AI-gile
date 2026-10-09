@@ -19,6 +19,7 @@ START OF SESSION
   projects                                all projects with counts
 
 WORKING
+  start <proj> <id> --as NAME             you (or an agent you launch) take a card: assign + doing + roster task
   move <proj> <id> <status>               status: ${STATUSES.join(' | ')}  ('done' only from 'team', after reading Rich's comment)
   assign <proj> <id> NAME
   comment <proj> <id> "text" --as NAME
@@ -217,6 +218,14 @@ const cmds = {
     }
     const c = await api('PATCH', C(slug, pos[1]), { status: pos[2] });
     out(flags, c, c => 'moved ' + line(c));
+  },
+
+  async start({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const name = who(flags);
+    const c = await api('PATCH', C(slug, pos[1]), { status: 'doing', assignee: name });
+    await api('POST', P(slug) + '/team', { name, task: c.id + ' ' + c.title, status: '🔄 working' });
+    out(flags, c, c => 'started ' + line(c));
   },
 
   async assign({ pos, flags }) {
