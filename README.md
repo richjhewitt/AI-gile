@@ -1,0 +1,123 @@
+# AI-gile
+
+A lightweight, local kanban board for coordinating work with AI development teams across several projects.
+
+AI-gile gives the project owner a live, at-a-glance view of every project. It also gives AI agents a simple command-line interface for picking up work, reporting progress and handing features back for acceptance. It has no dependencies, no build step and no database.
+
+## Features
+
+- **Portfolio view**: every project on one page, each with progress, column counts, its active team and a "Waiting on you" inbox.
+- **Live board**: the page refreshes every second, so you can watch cards move as agents work. Anything you are typing is never overwritten.
+- **Acceptance workflow**:
+  - Finished features land in **For you to test** with test steps. The owner accepts them (they move to Done) or sends them back.
+  - Any comment from the owner moves the card to **For the team**. The team reads it, then closes the card or reworks it.
+- **Bug and feature intake**: raise bugs and requests straight from the board. Agents pick them up in priority order.
+- **Team roster and decision log** for each project, so it's clear who is working on what and why decisions were made.
+- **Agent CLI** (`aigile.js`): compact output designed to be read by language models.
+- **Session hooks**: agents are told about new comments automatically, at no token cost when there is nothing new.
+
+## Requirements
+
+- Node.js 18 or later
+
+## Quick start
+
+```sh
+node server.js
+```
+
+Open <http://localhost:4321>.
+
+On Windows, `start-aigile.bat` starts the server if it isn't already running, then opens the board in your browser.
+
+The server only listens on `127.0.0.1`.
+
+## Workflow
+
+| Column | Meaning |
+|---|---|
+| Backlog | Ideas, not yet committed to |
+| To do | Committed, ready to be picked up |
+| In progress | Being worked on |
+| Review | Being reviewed within the team |
+| For you to test | Built and self-tested, waiting for the owner's acceptance |
+| For the team | The owner has commented: the team reads it and acts |
+| Done | Accepted, or closed once the team has read the comment |
+
+Rules:
+- Only the owner moves a feature to Done, by accepting it.
+- The team may close a card from **For the team** once it has read the owner's comment.
+- If the comment needs more work, the team reworks the card and hands it back for testing.
+
+## For AI dev teams
+
+Agents use the CLI from their own project folder:
+
+```sh
+node ../AI-gile/aigile.js help
+node ../AI-gile/aigile.js updates <project>   # what the owner said since you last looked
+node ../AI-gile/aigile.js next <project>      # what to work on, in priority order
+node ../AI-gile/aigile.js test <project> <id> "1. Open ... 2. Click ..." --as <name>
+```
+
+[AGENTS.md](AGENTS.md) covers:
+- the full workflow;
+- how `next` orders work;
+- the rules for agents;
+- a short snippet to paste into a project's agent notes.
+
+### Session hooks
+
+If your agent tool supports session hooks, run these commands so agents learn about new comments without polling:
+
+| When | Command | Behaviour |
+|---|---|---|
+| Session start and each prompt | `node aigile.js updates <project> --hook` | Prints new activity; silent if there is none |
+| Before the agent stops | `node aigile.js updates <project> --stop-hook` | Prints `{"decision":"block","reason":...}` once if there is unseen activity |
+
+Activity is marked as seen when it is reported. The board shows the owner which comments the team has seen.
+
+## Configuration
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `AIGILE_PORT` | `4321` | Server port |
+| `AIGILE_DATA` | `./data` | Data directory |
+| `AIGILE_URL` | `http://localhost:4321` | Server used by the CLI |
+| `AIGILE_AS` | none | Default `--as` name for the CLI |
+
+## Data
+
+- Each project is stored as one readable JSON file in `data/<slug>.json`.
+- Writes are atomic: the server writes a temporary file, then renames it.
+- The data directory is excluded from git, so back it up separately if you need history.
+
+## HTTP API
+
+All endpoints take and return JSON.
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/projects[?all=1]` | Project summaries (`all` includes archived projects) |
+| POST | `/api/projects` | Create a project: `{name, key?, path?, description?}` |
+| GET, PATCH | `/api/projects/:slug` | Read a project, or update `name`, `description`, `path`, `key` or `archived` |
+| POST | `/api/projects/:slug/cards` | Create a card |
+| PATCH, DELETE | `/api/projects/:slug/cards/:id` | Update or delete a card |
+| POST | `/api/projects/:slug/cards/:id/comments` | Add a comment: `{author, text, needsYou?}` |
+| POST | `/api/projects/:slug/cards/:id/verdict` | Accept or send back: `{accept, text}` |
+| POST | `/api/projects/:slug/team` | Add or update a team member: `{name, model?, role?, task?, status?}` |
+| POST | `/api/projects/:slug/log` | Add a log entry: `{author, text, kind: "log" \| "decision"}` |
+| GET | `/api/projects/:slug/updates[?mark=1]` | Owner activity since the team last looked |
+| GET | `/api/inbox` | Everything waiting on the owner, across all projects |
+| GET | `/api/meta` | Allowed statuses, types and priorities |
+
+## Project layout
+
+```
+server.js          HTTP server and API
+public/index.html  Web board (single file, no framework)
+aigile.js          CLI for agents
+AGENTS.md          Guide for AI dev teams
+start-aigile.bat   Windows launcher
+data/              Board data (not in git)
+```
