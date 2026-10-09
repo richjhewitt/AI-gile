@@ -71,6 +71,8 @@ aigile log <proj> "Sprint 3 pushed (abc1234), 120 tests green." --as YourName
 - just information or an answer → `aigile move <proj> <id> done`
 - needs work (e.g. sent back) → move to `doing`, fix it, then `aigile test` so it goes back to Rich for approval
 
+**8. Pokes.** A "👉 Poke" comment from Rich on a card in `doing` or `review` means "this looks stuck, any update?". Reply with one line (`comment`) and leave the card where it is.
+
 ## What `next` returns, and in what order
 
 Cards that are `blocked` or flagged NEEDS-RICH are skipped (they are listed at the bottom as waiting). The rest, in order:

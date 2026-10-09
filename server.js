@@ -206,6 +206,17 @@ const routes = [
     return c;
   }],
 
+  // Rich's poke: a one-line nudge on work that seems stuck. Wakes the team (it's a Rich comment)
+  // but, unlike a reply, leaves the card where it is.
+  ['POST', /^\/api\/projects\/([^/]+)\/cards\/([^/]+)\/poke$/, ([slug, id]) => {
+    const p = need(load(slug));
+    const c = findCard(p, id);
+    c.comments.push({ author: 'Rich', text: '👉 Poke: any update? (one line is enough)', at: now(), poke: true });
+    c.updated = now();
+    save(p);
+    return c;
+  }],
+
   // Team roster: upsert by name. { name, model?, role?, task?, status? }
   ['POST', /^\/api\/projects\/([^/]+)\/team$/, ([slug], b) => {
     const p = need(load(slug));
@@ -239,7 +250,7 @@ const routes = [
     const cards = [];
     for (const c of p.cards) {
       // A bare "Accepted" click needs no action, so it doesn't wake the team.
-      const items = c.comments.filter(m => isRich(m.author) && m.at > since && !(m.verdict === 'accept' && m.text === '✅ Accepted')).map(m => ({ kind: 'comment', text: m.text, at: m.at }));
+      const items = c.comments.filter(m => isRich(m.author) && m.at > since && !(m.verdict === 'accept' && m.text === '✅ Accepted')).map(m => ({ kind: m.poke ? 'poke' : 'comment', text: m.text, at: m.at }));
       if (isRich(c.createdBy) && c.created > since) items.unshift({ kind: 'new card', text: c.description || '', at: c.created });
       if (items.length) cards.push({ id: c.id, title: c.title, status: c.status, prevStatus: c.prevStatus || '', type: c.type, priority: c.priority, items });
     }

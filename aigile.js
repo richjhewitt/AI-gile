@@ -322,7 +322,7 @@ const cmds = {
     const o = [];
     for (const c of u.cards) {
       o.push(`${c.id} [${c.status}${c.prevStatus && c.status === 'team' ? ', was ' + c.prevStatus : ''}] ${c.type}/${c.priority}  ${c.title}`);
-      for (const it of c.items) o.push(`   ${it.kind === 'new card' ? 'Rich raised it' : 'Rich'} (${when(it.at)}): ${it.text.replace(/\n/g, '\n     ') || '(no description)'}`);
+      for (const it of c.items) o.push(`   ${it.kind === 'new card' ? 'Rich raised it' : it.kind === 'poke' ? 'Rich POKED (reply with a one-line status comment, leave the card where it is)' : 'Rich'} (${when(it.at)}): ${it.text.replace(/\n/g, '\n     ') || '(no description)'}`);
     }
     const waiting = u.forTeam.filter(f => !u.cards.some(c => c.id === f.id));
     if (waiting.length) o.push(`Still in "For the team" (seen before): ${waiting.map(f => f.id + ' ' + f.title).join('; ')}`);

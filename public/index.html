@@ -60,6 +60,7 @@
   .column[data-status=team] { outline: 2px dashed #e11d74; outline-offset: -2px; }
   .flight { margin: 0 0 10px; font-size: 13px; }
   .stale { color: var(--warn); }
+  .poke { margin-left: auto; padding: 0 8px; font-size: 12px; border-radius: 99px; }
   .seen { font-size: 12px; margin-left: 6px; color: var(--muted); }
   .card.is-blocked { border-left: 3px solid var(--danger); }
   .card .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
@@ -306,7 +307,10 @@ function cardHtml(c) {
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}" data-id="${c.id}" draggable="true" style="display:block">
     <div class="id">${esc(c.id)}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <div class="t">${esc(c.title)}</div>
-    <div class="meta">${metaHtml(c)}</div></a>`;
+    <div class="meta">${metaHtml(c)}${['doing', 'review'].includes(c.status) ? `<button class="poke" title="Nudge the team: any update?" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">👉 Poke</button>` : ''}</div></a>`;
+}
+async function poke(id) {
+  try { await api('POST', `/api/projects/${slug()}/cards/${id}/poke`); refresh(true); } catch (e) { alert(e.message); }
 }
 
 const opts = (list, cur, labels) => list.map(v => `<option value="${v}" ${v === cur ? 'selected' : ''}>${esc(labels ? labels[v] : v)}</option>`).join('');
