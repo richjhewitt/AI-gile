@@ -32,6 +32,7 @@ WORKING
 
 HOOKS (agent session hooks, see AGENTS.md)
   updates <proj> --hook                   SessionStart / UserPromptSubmit: prints news, silent if none
+  wait <proj> [--every SECONDS]           run in the BACKGROUND while idle: exits with Rich's news when he comments
   updates <proj> --stop-hook              Stop: blocks stopping once while there is unseen news
 
 TEAM AND LOG
@@ -306,6 +307,20 @@ const cmds = {
     const msg = [head, ...o, tail].join('\n');
     if (flags['stop-hook']) { if (news) console.log(JSON.stringify({ decision: 'block', reason: msg })); return; }
     console.log(msg);
+  },
+
+  // Idle sessions don't fire hooks. A lead runs this as a background command; it costs nothing while
+  // waiting and exits (waking the session) with Rich's news as soon as there is any.
+  async wait({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const every = Math.max(5, Number(flags.every) || 15) * 1000;
+    for (;;) {
+      try {
+        const u = await api('GET', P(slug) + '/updates');
+        if (u.cards.length) return cmds.updates({ pos, flags: {} });
+      } catch {} // board down: keep waiting
+      await new Promise(r => setTimeout(r, every));
+    }
   },
 
   async inbox({ flags }) {

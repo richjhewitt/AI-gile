@@ -35,6 +35,8 @@ Status key: 🔄 working · 👀 in review · ✅ accepted · 🔁 sent back · 
 
 **Leads launching agents:** record each one with `aigile start <proj> <id> --as <AgentName>` (assigns the card, moves it to `doing`, sets the roster task). That is what shows Rich the "In flight" line. When the agent finishes, hand over with `test`, or `move` it on.
 
+**Leads: stay reachable while idle.** Hooks only fire while a session is busy. When you finish a turn with nothing running, start `node "../AI-gile/aigile.js" wait <proj>` as a background command. It costs nothing while waiting and ends with Rich's comments as soon as he posts, which wakes you. Act on them, then start it again.
+
 **Questions for Rich go on the board, not in chat:** `aigile ask <proj> <id> "question (with your assumption)" --as <name>`. If there's no card for it, `add` one first.
 
 **4. Hand features to Rich with `test`.** Don't move your own work to `done`; Rich does, by accepting it. When you have built and self-tested a feature:
