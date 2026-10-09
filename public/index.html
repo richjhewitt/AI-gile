@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-gile</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗂️</text></svg>">
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #fff; --col: #eef0f3; --text: #1d2330; --muted: #677085; --line: #dde1e8;
+    --accent: #3b6cf6; --done: #1f9d61; --warn: #d97706; --danger: #dc2626; --you: #9333ea;
+    --shadow: 0 1px 2px rgba(20,30,50,.08);
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12151b; --panel: #1b2029; --col: #161a22; --text: #e6e9ef; --muted: #8b93a7; --line: #2a303c;
+      --accent: #6d93ff; --done: #34c77b; --warn: #f0a33a; --danger: #f06262; --you: #b57cff;
+      --shadow: 0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  a { color: inherit; text-decoration: none; }
+  header { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; z-index: 5; }
+  header h1 { font-size: 17px; margin: 0; }
+  header .crumb { color: var(--muted); }
+  header .spacer { flex: 1; }
+  .live { font-size: 12px; color: var(--muted); }
+  .live::before { content: "●"; color: var(--done); margin-right: 4px; }
+  .live.off::before { color: var(--danger); }
+  main { padding: 20px; }
+  .muted { color: var(--muted); }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; background: var(--col); color: var(--muted); white-space: nowrap; }
+  .pill.you { background: var(--you); color: #fff; }
+  .pill.blocked { background: var(--danger); color: #fff; }
+  .pill.urgent { color: var(--danger); } .pill.high { color: var(--warn); }
+
+  /* Portfolio */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .proj { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); display: block; }
+  .proj:hover { border-color: var(--accent); }
+  .proj h2 { font-size: 16px; margin: 0 0 2px; display: flex; gap: 8px; align-items: center; }
+  .bar { height: 8px; border-radius: 99px; background: var(--col); overflow: hidden; display: flex; margin: 10px 0 6px; }
+  .bar span { display: block; height: 100%; }
+  .counts { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+  .last { margin-top: 8px; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .inbox { background: var(--panel); border: 1px solid var(--you); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 18px; }
+  .inbox h3 { margin: 0 0 6px; font-size: 14px; color: var(--you); }
+  .inbox li { margin: 3px 0; }
+
+  /* Board */
+  .board { display: grid; grid-template-columns: repeat(7, minmax(180px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+  .column { background: var(--col); border-radius: var(--radius); padding: 10px; min-height: 120px; }
+  .column h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: flex; justify-content: space-between; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; box-shadow: var(--shadow); cursor: pointer; }
+  .card:hover { border-color: var(--accent); }
+  .card.needs-you { border-left: 3px solid var(--you); }
+  .column[data-status=verify] { outline: 2px dashed var(--you); outline-offset: -2px; }
+  .column[data-status=team] { outline: 2px dashed #e11d74; outline-offset: -2px; }
+  .seen { font-size: 12px; margin-left: 6px; color: var(--muted); }
+  .card.is-blocked { border-left: 3px solid var(--danger); }
+  .card .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
+  .card .t { margin: 2px 0 6px; font-weight: 500; }
+  .card .meta { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+  .side { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
+  .box h3 { margin: 0 0 8px; font-size: 14px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  td, th { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; }
+  .log { list-style: none; padding: 0; margin: 0; max-height: 320px; overflow: auto; font-size: 13px; }
+  .log li { padding: 5px 0; border-bottom: 1px solid var(--line); }
+  .log li.decision { border-left: 3px solid var(--warn); padding-left: 8px; }
+
+  /* Card detail panel */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: flex; justify-content: flex-end; z-index: 10; }
+  .panel { width: min(560px, 100%); height: 100%; overflow: auto; background: var(--panel); padding: 20px; }
+  .panel h2 { margin: 4px 0 8px; font-size: 18px; }
+  .desc { white-space: pre-wrap; background: var(--col); border-radius: 8px; padding: 10px; }
+  .comment { border-bottom: 1px solid var(--line); padding: 8px 0; }
+  .comment .who { font-weight: 600; } .comment .when { color: var(--muted); font-size: 12px; margin-left: 6px; }
+  .comment .body { white-space: pre-wrap; }
+  button { font: inherit; cursor: pointer; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--text); padding: 5px 10px; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.bug { background: var(--danger); border-color: var(--danger); color: #fff; font-weight: 600; }
+  button.good { background: var(--done); border-color: var(--done); color: #fff; font-weight: 600; }
+  button.warn { background: var(--warn); border-color: var(--warn); color: #fff; font-weight: 600; }
+  button.danger { color: var(--danger); }
+  button:disabled { opacity: .5; cursor: default; }
+  input, select, textarea { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  input[type=checkbox] { width: auto; }
+  textarea { resize: vertical; min-height: 70px; }
+  label.f { display: block; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
+  label.f > :not(span) { margin-top: 3px; font-size: 14px; }
+  label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 14px; color: var(--text); font-size: 13px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; } .row > * { flex: 1 1 120px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  .err { color: var(--danger); margin-top: 8px; font-size: 13px; }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .toolbar h2 { margin: 0 8px 0 0; font-size: 18px; }
+  .toolbar .grow { flex: 1; }
+  .colbtn { padding: 0 7px; line-height: 20px; font-size: 13px; }
+  .overlay.center { align-items: center; justify-content: center; padding: 12px; z-index: 20; }
+  .dialog { width: min(520px, 100%); max-height: 100%; overflow: auto; background: var(--panel); border-radius: var(--radius); padding: 18px; }
+  .dialog h2 { margin: 0 0 12px; font-size: 17px; }
+  .column.dragover { outline: 2px dashed var(--accent); outline-offset: -2px; background: color-mix(in srgb, var(--accent) 10%, var(--col)); }
+  .card.dragging { opacity: .4; }
+  .card[draggable=true] { -webkit-user-drag: element; }
+  .verdict { border: 2px solid var(--you); border-radius: var(--radius); padding: 12px; margin: 14px 0; }
+  .verdict h3 { margin: 0 0 6px; color: var(--you); }
+  .reply { margin-top: 12px; }
+  .proj.archived { opacity: .6; }
+  .live.paused::before { color: var(--warn); }
+  @media (max-width: 760px) {
+    .side { grid-template-columns: 1fr; } main { padding: 12px; }
+    header { padding: 10px 12px; flex-wrap: wrap; }
+    .board { grid-template-columns: repeat(7, 82vw); scroll-snap-type: x proximity; }
+    .column { scroll-snap-align: start; }
+    .panel { padding: 14px; }
+    input, select, textarea { font-size: 16px; }
+    button { padding: 8px 12px; }
+    .overlay.center { align-items: flex-end; padding: 0; }
+    .dialog { border-radius: var(--radius) var(--radius) 0 0; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1><a href="#/">🗂️ AI-gile</a></h1>
+  <span class="crumb" id="crumb"></span>
+  <span class="spacer"></span>
+  <span class="live" id="live">live</span>
+</header>
+<main id="app"></main>
+<div id="modal"></div>
+<div id="dialog"></div>
+
+<script>
+const COLS = { backlog: 'Backlog', todo: 'To do', doing: 'In progress', review: 'Review', verify: 'For you to test', team: 'For the team', done: 'Done' };
+const COL_COLORS = { team: '#e11d74', done: 'var(--done)', verify: 'var(--you)', review: '#0ea5a4', doing: 'var(--accent)', todo: 'var(--warn)' };
+const TYPES = ['feature', 'bug', 'task'];
+const PRIORITIES = ['low', 'normal', 'high', 'urgent'];
+const state = { route: null, projects: [], inbox: [], project: null, openCard: null, showArchived: false, editing: false, dragging: false, lastSig: null };
+try { state.showArchived = localStorage.getItem('aigile.showArchived') === '1'; } catch {}
+
+const api = async (method, url, body) => {
+  const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const ago = iso => {
+  const s = (Date.now() - new Date(iso)) / 1000;
+  if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago'; return Math.floor(s / 86400) + 'd ago';
+};
+const $ = id => document.getElementById(id);
+
+function parseRoute() {
+  const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
+  return m ? { view: 'project', slug: m[1], card: m[2] || null } : { view: 'home' };
+}
+
+// The 1s poll must never wipe out what Rich is typing or a drag in progress.
+// busy() = a dialog is open, a card is being edited, a drag is running, a field has focus,
+// or any field in the panel holds unsent text. While busy we skip re-rendering (data is re-fetched
+// each tick and renders as soon as Rich is done, because the signature differs).
+function busy() {
+  if (state.dragging || state.editing || $('dialog').firstChild) return true;
+  const a = document.activeElement;
+  if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && $('modal').contains(a)) return true;
+  return [...document.querySelectorAll('#modal textarea, #modal input[type=text]')].some(el => el.value !== el.defaultValue);
+}
+
+async function refresh(force) {
+  state.route = parseRoute();
+  let sig;
+  try {
+    if (state.route.view === 'home') {
+      const q = state.showArchived ? '?all=1' : '';
+      [state.projects, state.inbox] = await Promise.all([api('GET', '/api/projects' + q), api('GET', '/api/inbox')]);
+      sig = JSON.stringify([state.route, state.projects, state.inbox]);
+    } else {
+      state.project = await api('GET', '/api/projects/' + state.route.slug);
+      sig = JSON.stringify([state.route, state.project]);
+    }
+  } catch (e) {
+    $('live').className = 'live off';
+    $('live').textContent = 'offline: ' + e.message;
+    return;
+  }
+  if (!force && state.dragging) return;
+  if (!force && busy()) {
+    // Keep the board behind moving; only hold the panel/dialog Rich is using.
+    if (sig !== state.lastBoardSig) { state.lastBoardSig = sig; renderBoardOnly(); }
+    if (sig !== state.lastSig) { $('live').className = 'live paused'; $('live').textContent = 'live (your typing is safe)'; }
+    return;
+  }
+  $('live').className = 'live';
+  $('live').textContent = 'live';
+  if (!force && sig === state.lastSig) return;
+  state.lastSig = state.lastBoardSig = sig;
+  render();
+}
+
+function renderBoardOnly() {
+  const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
+  $('app').innerHTML = state.route.view === 'home' ? renderHome() : renderBoard(state.project);
+  const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
+}
+
+function render() {
+  const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
+  const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
+  if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
+  const p = state.project;
+  $('crumb').textContent = '/ ' + p.name;
+  $('app').innerHTML = renderBoard(p);
+  const card = state.route.card && p.cards.find(c => c.id === state.route.card);
+  if (!card) state.editing = false;
+  $('modal').innerHTML = card ? renderCard(p, card) : '';
+  const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
+  const pn = document.querySelector('#modal .panel'); if (pn) pn.scrollTop = keepScroll;
+}
+const rerender = () => refresh(true);
+
+function bar(counts, total) {
+  if (!total) return '<div class="bar"></div>';
+  return '<div class="bar">' + ['done', 'verify', 'review', 'doing', 'team', 'todo'].map(s =>
+    counts[s] ? `<span title="${COLS[s]}: ${counts[s]}" style="width:${counts[s] / total * 100}%;background:${COL_COLORS[s]}"></span>` : '').join('') + '</div>';
+}
+
+function renderHome() {
+  const inbox = state.inbox.length ? `<div class="inbox"><h3>Waiting on you (${state.inbox.length})</h3><ul>${state.inbox.map(c =>
+    `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></div>` : '';
+  const cards = state.projects.map(p => {
+    const active = p.total - p.counts.backlog;
+    return `<a class="proj ${p.archived ? 'archived' : ''}" href="#/p/${p.slug}">
+      <h2>${esc(p.name)} ${p.archived ? '<span class="pill">archived</span>' : ''} ${p.needsYou ? `<span class="pill you">${p.needsYou} for you</span>` : ''} ${p.blocked ? `<span class="pill blocked">${p.blocked} blocked</span>` : ''}</h2>
+      <div class="muted">${esc(p.description)}</div>
+      ${bar(p.counts, active)}
+      <div class="counts"><b>${Math.round(p.progress * 100)}% done</b>${Object.entries(COLS).map(([k, v]) => `<span>${v} ${p.counts[k]}</span>`).join('')}</div>
+      ${p.team.length ? `<div class="last">👥 ${p.team.map(m => esc(m.name)).join(', ')}</div>` : ''}
+      ${p.lastLog ? `<div class="last">📝 ${esc(p.lastLog.text)} · ${ago(p.lastLog.at)}</div>` : ''}
+    </a>`;
+  }).join('');
+  return `<div class="toolbar"><button class="primary" onclick="newProject()">+ New project</button><span class="grow"></span>
+      <label class="chk"><input type="checkbox" ${state.showArchived ? 'checked' : ''} onchange="toggleArchived(this.checked)"> Show archived</label></div>`
+    + inbox + `<div class="grid">${cards || '<p class="muted">No projects yet.</p>'}</div>`;
+}
+
+function renderBoard(p) {
+  const cols = Object.entries(COLS).map(([k, label]) => {
+    const cs = p.cards.filter(c => c.status === k).sort((a, b) => b.updated.localeCompare(a.updated));
+    return `<div class="column" data-status="${k}"><h3><span>${label}</span><span>${cs.length} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
+  }).join('');
+  const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
+  const log = (p.log || []).slice().reverse().slice(0, 50);
+  return `<div class="toolbar"><h2>${esc(p.name)}${p.archived ? ' <span class="pill">archived</span>' : ''}</h2>
+      <button class="primary" onclick="newCard()">+ New</button>
+      <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'todo'})">🐞 Raise bug</button>
+      <span class="grow"></span>
+      <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
+    ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? ` <code>${esc(p.path)}</code>` : ''}</p>` : ''}
+    <div class="board">${cols}</div>
+    <div class="side">
+      <div class="box"><h3>Team</h3>${team.length ? `<table><tr><th>Member</th><th>Role</th><th>Working on</th><th>Status</th></tr>${team.map(m =>
+        `<tr><td><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : '<p class="muted">No team members yet.</p>'}</div>
+      <div class="box"><h3>Log &amp; decisions</h3>${log.length ? `<ul class="log">${log.map(l =>
+        `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : '<p class="muted">Nothing logged yet.</p>'}</div>
+    </div>`;
+}
+
+function metaHtml(c) {
+  return `<span class="pill">${esc(c.type)}</span>
+      ${c.priority !== 'normal' ? `<span class="pill ${c.priority}">${esc(c.priority)}</span>` : ''}
+      ${c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
+      ${c.needsYou && c.status !== 'done' ? '<span class="pill you">needs you</span>' : ''}
+      ${c.blocked ? '<span class="pill blocked">blocked</span>' : ''}
+      ${c.comments.length ? `<span class="pill">💬 ${c.comments.length}</span>` : ''}`;
+}
+
+function cardHtml(c) {
+  const cls = ['card', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : ''].join(' ');
+  return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}" data-id="${c.id}" draggable="true" style="display:block">
+    <div class="id">${esc(c.id)}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    <div class="t">${esc(c.title)}</div>
+    <div class="meta">${metaHtml(c)}</div></a>`;
+}
+
+const opts = (list, cur, labels) => list.map(v => `<option value="${v}" ${v === cur ? 'selected' : ''}>${esc(labels ? labels[v] : v)}</option>`).join('');
+
+function cardFields(c, o = {}) {
+  return `<label class="f"><span>Title</span><input type="text" id="f-title" value="${esc(c.title)}" placeholder="${esc(o.titlePh || '')}" maxlength="200"></label>
+    <label class="f"><span>${esc(o.descLabel || 'Description')}</span><textarea id="f-description" rows="4" placeholder="${esc(o.descPh || '')}">${esc(c.description)}</textarea></label>
+    ${o.testSteps ? `<label class="f"><span>Test steps</span><textarea id="f-testSteps" rows="4">${esc(c.testSteps)}</textarea></label>` : ''}
+    <div class="row">
+      <label class="f"><span>Type</span><select id="f-type">${opts(TYPES, c.type)}</select></label>
+      <label class="f"><span>Priority</span><select id="f-priority">${opts(PRIORITIES, c.priority)}</select></label>
+      <label class="f"><span>Status</span><select id="f-status">${opts(Object.keys(COLS), c.status, COLS)}</select></label>
+    </div>
+    <div class="row">
+      <label class="f"><span>Assignee</span><input type="text" id="f-assignee" value="${esc(c.assignee)}"></label>
+      <label class="f"><span>Sprint</span><input type="text" id="f-sprint" value="${esc(c.sprint)}"></label>
+    </div>
+    ${o.flags ? `<div><label class="chk"><input type="checkbox" id="f-blocked" ${c.blocked ? 'checked' : ''}> Blocked</label>
+      <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> Needs you</label></div>` : ''}`;
+}
+function readFields(flags, testSteps) {
+  const o = { title: $('f-title').value.trim(), description: $('f-description').value, type: $('f-type').value, priority: $('f-priority').value,
+    status: $('f-status').value, assignee: $('f-assignee').value.trim(), sprint: $('f-sprint').value.trim() };
+  if (testSteps) o.testSteps = $('f-testSteps').value;
+  if (flags) { o.blocked = $('f-blocked').checked; o.needsYou = $('f-needsYou').checked; }
+  return o;
+}
+
+function renderCard(p, c) {
+  const close = `location.hash='#/p/${p.slug}'`;
+  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">✕ Close</button><span style="flex:1"></span>
+      ${state.editing ? '' : '<button onclick="editCard()">✏️ Edit</button> <button class="danger" onclick="deleteCard()">🗑 Delete</button>'}</div>`;
+  if (state.editing) {
+    return `<div class="overlay"><div class="panel">${head}
+      <div class="id muted" style="margin-top:12px">${esc(c.id)} · editing</div>
+      <form onsubmit="return saveCard(event)" style="margin-top:8px">${cardFields(c, { testSteps: true, flags: true })}
+        <div class="err" id="f-err"></div>
+        <div class="actions"><button class="primary" type="submit">Save</button><button type="button" onclick="cancelEdit()">Cancel</button>
+        <span style="flex:1"></span><button type="button" class="danger" onclick="deleteCard()">🗑 Delete</button></div></form>
+    </div></div>`;
+  }
+  const verdict = c.status === 'verify' ? `<div class="verdict"><h3>🧪 Your call</h3>
+      <div class="muted">Built and waiting for you to test${c.testSteps ? ' (steps below)' : ''}.</div>
+      <label class="f" style="margin-top:8px"><span>Comment (required to send back)</span><textarea id="v-text" rows="3" placeholder="What did you see? What's wrong?"></textarea></label>
+      <div class="err" id="v-err"></div>
+      <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button></div></div>` : '';
+  return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel">${head}
+    <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(COLS[c.status])}${c.status === 'team' && c.prevStatus ? ' (was ' + esc(COLS[c.prevStatus]) + ')' : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    <h2>${esc(c.title)}</h2>
+    <div class="meta">${metaHtml(c)}</div>
+    ${verdict}
+    ${c.description ? `<h3>Description</h3><div class="desc">${esc(c.description)}</div>` : ''}
+    ${c.testSteps ? `<h3>🧪 How to test</h3><div class="desc">${esc(c.testSteps)}</div>` : ''}
+    <h3>Conversation</h3>
+    ${c.comments.map(m => `<div class="comment"><span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${esc(m.text)}</div></div>`).join('') || '<p class="muted">No comments yet.</p>'}
+    <div class="reply"><textarea id="r-text" rows="3" placeholder="Reply as Rich: moves the card to For the team… (Ctrl+Enter to send)" onkeydown="if((event.ctrlKey||event.metaKey)&&event.key==='Enter') sendReply()"></textarea>
+      <div class="err" id="r-err"></div>
+      <div class="actions"><button class="primary" onclick="sendReply()">Send reply</button></div></div>
+  </div></div>`;
+}
+
+// ---- actions -------------------------------------------------------------------
+const slug = () => state.route.slug;
+const cardId = () => state.route.card;
+const curCard = () => state.project.cards.find(c => c.id === cardId());
+const setErr = (id, e) => { const el = $(id); if (el) el.textContent = e ? (e.message || e) : ''; };
+
+function openDialog(html) {
+  $('dialog').innerHTML = `<div class="overlay center"><div class="dialog">${html}</div></div>`;
+  const f = $('dialog').querySelector('input[type=text]'); if (f) f.focus();
+}
+function closeDialog() { $('dialog').innerHTML = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog').firstChild) closeDialog(); });
+
+function newCard(preset = {}) {
+  const bug = preset.type === 'bug';
+  const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: 'backlog', assignee: '', sprint: '', ...preset };
+  openDialog(`<h2>${bug ? '🐞 Raise bug' : 'New card'}</h2>
+    <form onsubmit="return createCard(event)">${cardFields(c, bug ? { titlePh: "What's broken?", descLabel: 'What happened / how to reproduce', descPh: 'Steps, what you expected, what you saw' } : { titlePh: 'What needs doing?' })}
+      <div class="err" id="d-err"></div>
+      <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${bug ? 'Raise bug' : 'Create card'}</button><button type="button" onclick="closeDialog()">Cancel</button></div></form>`);
+}
+async function createCard(e) {
+  e.preventDefault();
+  const body = readFields(false, false);
+  if (!body.title) { setErr('d-err', 'Give it a title'); return false; }
+  try {
+    const c = await api('POST', `/api/projects/${slug()}/cards`, { ...body, createdBy: 'Rich' });
+    closeDialog();
+    await rerender();
+  } catch (err) { setErr('d-err', err); }
+  return false;
+}
+
+function editCard() { state.editing = true; render(); const t = $('f-title'); if (t) t.focus(); }
+function cancelEdit() { state.editing = false; rerender(); }
+async function saveCard(e) {
+  e.preventDefault();
+  const c = curCard(), now = readFields(true, true), body = {};
+  if (!now.title) { setErr('f-err', 'Title cannot be empty'); return false; }
+  for (const k in now) if (now[k] !== c[k]) body[k] = now[k];
+  try {
+    if (Object.keys(body).length) await api('PATCH', `/api/projects/${slug()}/cards/${c.id}`, body);
+    state.editing = false;
+    await rerender();
+  } catch (err) { setErr('f-err', err); }
+  return false;
+}
+async function deleteCard() {
+  const c = curCard();
+  if (!confirm(`Delete ${c.id} "${c.title}"? This cannot be undone.`)) return;
+  try {
+    await api('DELETE', `/api/projects/${slug()}/cards/${c.id}`);
+    state.editing = false;
+    location.hash = '#/p/' + slug();
+  } catch (err) { alert(err.message); }
+}
+
+async function sendReply() {
+  const t = $('r-text').value.trim();
+  if (!t) { setErr('r-err', 'Write something first'); return; }
+  try {
+    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: 'Rich', text: t });
+    await rerender();
+    const r = $('r-text'); if (r) r.focus();
+  } catch (err) { setErr('r-err', err); }
+}
+async function verdict(accept) {
+  const t = $('v-text').value.trim();
+  if (!accept && !t) { setErr('v-err', 'Say what is wrong before sending it back'); $('v-text').focus(); return; }
+  try {
+    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { accept, text: t });
+    await rerender();
+  } catch (err) { setErr('v-err', err); }
+}
+
+// ---- projects ------------------------------------------------------------------
+function newProject() {
+  openDialog(`<h2>New project</h2>
+    <form onsubmit="return createProject(event)">
+      <label class="f"><span>Name</span><input type="text" id="p-name" oninput="suggestKey()" maxlength="80"></label>
+      <div class="row"><label class="f"><span>Key (card prefix, e.g. AIG)</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
+      <label class="f"><span>Folder path (optional)</span><input type="text" id="p-path" placeholder="C:\\Users\\rich\\Desktop\\..."></label>
+      <label class="f"><span>Description (optional)</span><textarea id="p-desc" rows="3"></textarea></label>
+      <div class="err" id="d-err"></div>
+      <div class="actions"><button class="primary" type="submit">Create project</button><button type="button" onclick="closeDialog()">Cancel</button></div></form>`);
+}
+function suggestKey() {
+  const k = $('p-key'); if (k.dataset.touched) return;
+  k.value = $('p-name').value.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase();
+}
+async function createProject(e) {
+  e.preventDefault();
+  const name = $('p-name').value.trim();
+  if (!name) { setErr('d-err', 'Give the project a name'); return false; }
+  try {
+    const p = await api('POST', '/api/projects', { name, key: $('p-key').value.trim(), path: $('p-path').value.trim(), description: $('p-desc').value.trim() });
+    closeDialog();
+    location.hash = '#/p/' + p.slug;
+  } catch (err) { setErr('d-err', err); }
+  return false;
+}
+async function setArchived(on) {
+  if (on && !confirm('Archive this project? It will be hidden from the home page (you can show archived projects there and unarchive).')) return;
+  try {
+    await api('PATCH', '/api/projects/' + slug(), { archived: on });
+    if (on) location.hash = '#/'; else await rerender();
+  } catch (err) { alert(err.message); }
+}
+function toggleArchived(on) {
+  state.showArchived = on;
+  try { localStorage.setItem('aigile.showArchived', on ? '1' : '0'); } catch {}
+  rerender();
+}
+
+// ---- drag and drop (native HTML5) ----------------------------------------------
+const app = $('app');
+app.addEventListener('dragstart', e => {
+  const el = e.target.closest?.('.card'); if (!el) return;
+  state.dragging = true;
+  e.dataTransfer.setData('text/plain', el.dataset.id);
+  e.dataTransfer.effectAllowed = 'move';
+  el.classList.add('dragging');
+});
+app.addEventListener('dragend', () => {
+  state.dragging = false;
+  document.querySelectorAll('.dragging, .dragover').forEach(x => x.classList.remove('dragging', 'dragover'));
+  refresh();
+});
+app.addEventListener('dragover', e => {
+  const col = e.target.closest?.('.column'); if (!col || !state.dragging) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.dragover').forEach(x => x !== col && x.classList.remove('dragover'));
+  col.classList.add('dragover');
+});
+app.addEventListener('drop', async e => {
+  const col = e.target.closest?.('.column'); if (!col || !state.dragging) return;
+  e.preventDefault();
+  const id = e.dataTransfer.getData('text/plain'), status = col.dataset.status;
+  state.dragging = false;
+  document.querySelectorAll('.dragging, .dragover').forEach(x => x.classList.remove('dragging', 'dragover'));
+  const c = state.project.cards.find(c => c.id === id);
+  if (!c || c.status === status) return;
+  c.status = status; c.updated = new Date().toISOString(); render();   // optimistic
+  try { await api('PATCH', `/api/projects/${slug()}/cards/${id}`, { status }); }
+  catch (err) { alert('Could not move card: ' + err.message); }
+  rerender();
+});
+
+window.addEventListener('hashchange', () => { state.editing = false; refresh(true); });
+refresh(true);
+setInterval(() => { if (!document.hidden) refresh(); }, 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+</script>
+</body>
+</html>

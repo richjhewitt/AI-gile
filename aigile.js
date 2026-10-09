@@ -1,0 +1,314 @@
+#!/usr/bin/env node
+// aigile: CLI for AI dev teams to use the AI-gile board. Zero dependencies, Node 18+.
+// Usage: node "<path>/aigile.js" help
+const BASE = (process.env.AIGILE_URL || 'http://localhost:4321').replace(/\/$/, '');
+const STATUSES = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'];
+const PRIO = { urgent: 0, high: 1, normal: 2, low: 3 };
+const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 'stop-hook', 'peek']);
+
+const HELP = `aigile: the AI-gile board CLI.  Project = slug, name or key (case-insensitive).
+Set AIGILE_URL to change the server (default http://localhost:4321). Set AIGILE_AS=NAME to skip --as.
+Text args can be "-" to read from stdin (handy for multi-line).
+
+START OF SESSION
+  updates <proj> [--peek]                 what Rich said/raised since you last looked (marks it seen)
+  inbox                                   everything waiting on Rich, all projects
+  next <proj>                             what to work on, in order (see AGENTS.md)
+  list <proj> [--status s] [--mine NAME] [--all]   cards (done hidden unless --status done or --all)
+  show <proj> <id>                        full card with the conversation
+  projects                                all projects with counts
+
+WORKING
+  move <proj> <id> <status>               status: ${STATUSES.join(' | ')}  ('done' only from 'team', after reading Rich's comment)
+  assign <proj> <id> NAME
+  comment <proj> <id> "text" --as NAME
+  ask <proj> <id> "question" --as NAME    comment + flags the card as needing Rich
+  test <proj> <id> "steps Rich can follow" --as NAME    -> moves to verify, sets testSteps, comments
+  block <proj> <id> ["why"] --as NAME     unblock <proj> <id>
+  edit <proj> <id> [--title --desc --type --priority --sprint --assignee --test-steps]
+  add <proj> "title" [--type feature|bug|task --priority low|normal|high|urgent --status s
+                      --desc D --sprint S --assignee NAME --needs-you --test-steps T]
+
+HOOKS (agent session hooks, see AGENTS.md)
+  updates <proj> --hook                   SessionStart / UserPromptSubmit: prints news, silent if none
+  updates <proj> --stop-hook              Stop: blocks stopping once while there is unseen news
+
+TEAM AND LOG
+  team <proj> NAME [--role R --model M --task T --status S]    upsert roster entry
+  log <proj> "text" [--decision] --as NAME
+
+PROJECTS
+  new-project <name> [--key K --path P --desc D]
+
+Global: --json prints raw JSON instead of the compact text.`;
+
+// ---- args ----
+function parse(argv) {
+  const pos = [], flags = {};
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a.startsWith('--') && a.length > 2) {
+      let [k, v] = a.slice(2).split(/=(.*)/s);
+      if (v === undefined) {
+        if (BOOL.has(k) || i + 1 >= argv.length || argv[i + 1].startsWith('--')) v = true; else v = argv[++i];
+      }
+      flags[k] = v;
+    } else pos.push(a);
+  }
+  return { pos, flags };
+}
+class CliError extends Error {}
+const die = m => { throw new CliError(m); };
+
+async function text(v, what) {
+  if (v === undefined || v === true || v === '') die(what + ' is required (see: aigile help)');
+  if (v === '-') { let s = ''; for await (const c of process.stdin) s += c; v = s.replace(/\s+$/, ''); }
+  return v;
+}
+
+// ---- http ----
+async function api(method, path, body) {
+  let res;
+  try {
+    res = await fetch(BASE + path, { method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
+  } catch {
+    die(`AI-gile isn't running: start it with node server.js in ${__dirname}  (tried ${BASE})`);
+  }
+  let data; const raw = await res.text();
+  try { data = JSON.parse(raw); } catch { data = { error: raw.slice(0, 200) }; }
+  if (!res.ok) die(data.error || ('HTTP ' + res.status));
+  return data;
+}
+
+async function project(ref) {
+  if (!ref) die('project is required (slug, name or key)');
+  const all = await api('GET', '/api/projects?all=1');
+  const r = ref.toLowerCase();
+  const p = all.find(p => p.slug === r) || all.find(p => p.name.toLowerCase() === r) || all.find(p => p.key.toLowerCase() === r);
+  if (!p) die(`unknown project "${ref}". Known: ${all.map(p => p.slug + ' (' + p.key + ')').join(', ') || 'none'}`);
+  return p.slug;
+}
+const P = slug => '/api/projects/' + slug;
+const C = (slug, id) => P(slug) + '/cards/' + encodeURIComponent(id);
+function who(flags) {
+  const a = flags.as || process.env.AIGILE_AS;
+  if (!a || a === true) die('--as NAME is required (or set AIGILE_AS)');
+  return String(a);
+}
+
+// ---- formatting ----
+const flagsOf = c => (c.blocked ? ' BLOCKED' : '') + (c.needsYou ? ' NEEDS-RICH' : '');
+const line = c => `${c.id} [${c.status}] ${c.type}/${c.priority}${c.assignee ? ' @' + c.assignee : ''}${c.sprint ? ' (' + c.sprint + ')' : ''}${flagsOf(c)}  ${c.title}`;
+const when = s => (s || '').replace('T', ' ').slice(0, 16);
+function full(c) {
+  const o = [line(c)];
+  if (c.description) o.push('', 'Description:', c.description);
+  if (c.testSteps) o.push('', 'Test steps:', c.testSteps);
+  o.push('', `Conversation (${c.comments.length}):`);
+  for (const m of c.comments) o.push(`  [${when(m.at)}] ${m.author}: ${m.text.replace(/\n/g, '\n    ')}`);
+  if (!c.comments.length) o.push('  (none)');
+  return o.join('\n');
+}
+const out = (flags, data, fmt) => console.log(flags.json ? JSON.stringify(data, null, 2) : fmt(data));
+
+// ---- next ----
+const lastComment = c => c.comments[c.comments.length - 1];
+const byPrio = (a, b) => (PRIO[a.priority] ?? 2) - (PRIO[b.priority] ?? 2) || a.created.localeCompare(b.created);
+function nextList(p) {
+  const live = p.cards.filter(c => !c.blocked && !(c.needsYou));
+  const fromRich = c => { const m = lastComment(c); return c.status === 'team' || (m && m.author.toLowerCase() === 'rich' && !['done', 'verify', 'backlog'].includes(c.status)); };
+  const tiers = [];
+  const sentBack = live.filter(fromRich).sort(byPrio);
+  tiers.push(["1. For the team: Rich commented (do first: just info -> move to done; needs work -> doing, fix, then test for his approval)", sentBack]);
+  const seen = new Set(sentBack.map(c => c.id));
+  const doing = live.filter(c => c.status === 'doing' && !seen.has(c.id)).sort(byPrio);
+  tiers.push(['2. Already in progress', doing]);
+  doing.forEach(c => seen.add(c.id));
+  const todo = live.filter(c => c.status === 'todo' && !seen.has(c.id));
+  const urgent = todo.filter(c => c.type === 'bug' || c.priority === 'urgent' || c.priority === 'high').sort((a, b) => ((b.type === 'bug') - (a.type === 'bug')) || byPrio(a, b));
+  tiers.push(['3. Bugs and urgent/high in todo', urgent]);
+  urgent.forEach(c => seen.add(c.id));
+  tiers.push(['4. Rest of todo, by priority', todo.filter(c => !seen.has(c.id)).sort(byPrio)]);
+  return tiers;
+}
+
+// ---- commands ----
+const cmds = {
+  async help() { console.log(HELP); },
+
+  async projects({ flags }) {
+    const ps = await api('GET', '/api/projects');
+    out(flags, ps, ps => ps.map(p => `${p.slug} (${p.key}) ${p.name}: ` + STATUSES.map(s => s + ' ' + p.counts[s]).join(', ') + ` | needs Rich ${p.needsYou}, blocked ${p.blocked}`).join('\n') || '(no projects)');
+  },
+
+  async 'new-project'({ pos, flags }) {
+    const name = pos[0]; if (!name) die('name is required');
+    const p = await api('POST', '/api/projects', { name, key: flags.key, path: flags.path, description: flags.desc });
+    out(flags, p, p => `created ${p.slug} (key ${p.key})`);
+  },
+
+  async list({ pos, flags }) {
+    const slug = await project(pos[0]);
+    if (flags.status && !STATUSES.includes(flags.status)) die('status must be one of ' + STATUSES.join(', '));
+    const p = await api('GET', P(slug));
+    let cs = p.cards;
+    if (flags.status) cs = cs.filter(c => c.status === flags.status);
+    else if (!flags.all) cs = cs.filter(c => c.status !== 'done');
+    if (flags.mine && flags.mine !== true) cs = cs.filter(c => (c.assignee || '').toLowerCase() === String(flags.mine).toLowerCase());
+    cs.sort((a, b) => STATUSES.indexOf(a.status) - STATUSES.indexOf(b.status) || byPrio(a, b));
+    out(flags, cs, cs => cs.map(line).join('\n') || '(no cards)');
+  },
+
+  async show({ pos, flags }) {
+    const slug = await project(pos[0]);
+    if (!pos[1]) die('card id is required');
+    const p = await api('GET', P(slug));
+    const c = p.cards.find(c => c.id.toLowerCase() === pos[1].toLowerCase());
+    if (!c) die(`card ${pos[1]} not found in ${slug}`);
+    out(flags, c, full);
+  },
+
+  async next({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const p = await api('GET', P(slug));
+    const tiers = nextList(p);
+    if (flags.json) return console.log(JSON.stringify(Object.fromEntries(tiers.map(([k, v]) => [k, v])), null, 2));
+    const o = []; let first = true;
+    for (const [title, cs] of tiers) {
+      if (!cs.length) continue;
+      o.push(title);
+      for (const c of cs) { o.push((first ? '  >> ' : '     ') + line(c)); first = false; }
+    }
+    const waiting = p.cards.filter(c => (c.blocked || c.needsYou || c.status === 'verify') && c.status !== 'done');
+    if (waiting.length) { o.push('Waiting (not yours to pick up)'); waiting.forEach(c => o.push('     ' + line(c) + (c.status === 'verify' ? '  (Rich testing)' : ''))); }
+    if (first) o.unshift('Nothing ready. Check backlog (aigile list ' + slug + ' --status backlog) or ask Rich.');
+    else o.push('', `Start: aigile move ${slug} <id> doing   |   details: aigile show ${slug} <id>`);
+    console.log(o.join('\n'));
+  },
+
+  async add({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const title = await text(pos[1], 'title');
+    const b = { title };
+    for (const [f, k] of [['type', 'type'], ['priority', 'priority'], ['status', 'status'], ['desc', 'description'], ['sprint', 'sprint'], ['assignee', 'assignee'], ['test-steps', 'testSteps']])
+      if (flags[f] !== undefined) b[k] = flags[f] === true ? '' : (f === 'desc' || f === 'test-steps') ? await text(flags[f], f) : flags[f];
+    if (flags['needs-you']) b.needsYou = true;
+    const c = await api('POST', P(slug) + '/cards', b);
+    out(flags, c, c => 'added ' + line(c));
+  },
+
+  async edit({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const b = {};
+    for (const [f, k] of [['title', 'title'], ['type', 'type'], ['priority', 'priority'], ['desc', 'description'], ['sprint', 'sprint'], ['assignee', 'assignee'], ['test-steps', 'testSteps']])
+      if (flags[f] !== undefined) b[k] = (f === 'desc' || f === 'test-steps') ? await text(flags[f], f) : flags[f];
+    if (!Object.keys(b).length) die('nothing to change; give at least one of --title --desc --type --priority --sprint --assignee --test-steps');
+    const c = await api('PATCH', C(slug, pos[1]), b);
+    out(flags, c, c => 'updated ' + line(c));
+  },
+
+  async move({ pos, flags }) {
+    const slug = await project(pos[0]);
+    if (!STATUSES.includes(pos[2])) die('status must be one of ' + STATUSES.join(', '));
+    if (pos[2] === 'done' && !process.env.AIGILE_ALLOW_DONE) {
+      // Teams may close a card once they've read Rich's comment on it ('For the team'); otherwise Rich accepts.
+      const card = (await api('GET', P(slug))).cards.find(c => c.id.toLowerCase() === String(pos[1]).toLowerCase());
+      if (card && card.status !== 'team') die("only Rich moves cards to done (he accepts them in 'verify'). Use: aigile test ...  (cards in 'team' you may move to done once you've read Rich's comment)");
+    }
+    const c = await api('PATCH', C(slug, pos[1]), { status: pos[2] });
+    out(flags, c, c => 'moved ' + line(c));
+  },
+
+  async assign({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const c = await api('PATCH', C(slug, pos[1]), { assignee: pos[2] === undefined ? die('NAME is required (use "" to unassign)') : pos[2] });
+    out(flags, c, c => 'assigned ' + line(c));
+  },
+
+  async comment({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const c = await api('POST', C(slug, pos[1]) + '/comments', { author: who(flags), text: await text(pos[2], 'comment text') });
+    out(flags, c, c => `commented on ${c.id} (${c.comments.length} comments)`);
+  },
+
+  async ask({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const c = await api('POST', C(slug, pos[1]) + '/comments', { author: who(flags), text: await text(pos[2], 'question'), needsYou: true });
+    out(flags, c, c => `asked Rich on ${c.id}; card now flagged NEEDS-RICH. Move on to other work (aigile next ${slug}).`);
+  },
+
+  async test({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const author = who(flags);
+    const steps = await text(pos[2], 'test steps');
+    await api('PATCH', C(slug, pos[1]), { status: 'verify', testSteps: steps, needsYou: false });
+    const c = await api('POST', C(slug, pos[1]) + '/comments', { author, text: 'Ready for you to test. Steps are on the card.', needsYou: false });
+    out(flags, c, c => 'handed to Rich: ' + line(c));
+  },
+
+  async block({ pos, flags }) {
+    const slug = await project(pos[0]);
+    let c = await api('PATCH', C(slug, pos[1]), { blocked: true });
+    if (pos[2]) c = await api('POST', C(slug, pos[1]) + '/comments', { author: who(flags), text: 'Blocked: ' + await text(pos[2], 'reason') });
+    out(flags, c, c => 'blocked ' + line(c));
+  },
+
+  async unblock({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const c = await api('PATCH', C(slug, pos[1]), { blocked: false });
+    out(flags, c, c => 'unblocked ' + line(c));
+  },
+
+  async team({ pos, flags }) {
+    const slug = await project(pos[0]);
+    if (!pos[1]) die('member NAME is required');
+    const b = { name: pos[1] };
+    for (const k of ['role', 'model', 'task', 'status']) if (flags[k] !== undefined) b[k] = flags[k] === true ? '' : flags[k];
+    const m = await api('POST', P(slug) + '/team', b);
+    out(flags, m, m => `team: ${m.name}${m.role ? ' | ' + m.role : ''}${m.model ? ' | ' + m.model : ''} | ${m.task || '-'} | ${m.status || '-'}`);
+  },
+
+  async log({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const e = await api('POST', P(slug) + '/log', { author: who(flags), text: await text(pos[1], 'log text'), kind: flags.decision ? 'decision' : 'log' });
+    out(flags, e, e => `logged ${e.kind}`);
+  },
+
+  async updates({ pos, flags }) {
+    const hook = flags.hook || flags['stop-hook'];
+    let u;
+    try {
+      const slug = await project(pos[0]);
+      u = await api('GET', P(slug) + '/updates' + (flags.peek ? '' : '?mark=1'));
+    } catch (e) { if (hook) return; throw e; } // hooks stay silent if the board is down
+    if (flags.json) return console.log(JSON.stringify(u, null, 2));
+    const o = [];
+    for (const c of u.cards) {
+      o.push(`${c.id} [${c.status}${c.prevStatus && c.status === 'team' ? ', was ' + c.prevStatus : ''}] ${c.type}/${c.priority}  ${c.title}`);
+      for (const it of c.items) o.push(`   ${it.kind === 'new card' ? 'Rich raised it' : 'Rich'} (${when(it.at)}): ${it.text.replace(/\n/g, '\n     ') || '(no description)'}`);
+    }
+    const waiting = u.forTeam.filter(f => !u.cards.some(c => c.id === f.id));
+    if (waiting.length) o.push(`Still in "For the team" (seen before): ${waiting.map(f => f.id + ' ' + f.title).join('; ')}`);
+    const news = u.cards.length > 0;
+    if (hook && !news) return; // hooks only speak when there's something new (saves tokens)
+    if (!news && !waiting.length) return console.log('Nothing new from Rich.');
+    const head = `📬 AI-gile board (${u.project}): ${news ? 'new from Rich since you last looked' : 'cards waiting on your team'}.`;
+    const tail = `Act on these now: read each with \`aigile show ${u.project} <id>\`, then: if it's just information, move it to done (\`aigile move ${u.project} <id> done\`); if it needs work (e.g. sent back), move it to doing, fix it and hand it back with \`aigile test\` for Rich's approval. They are marked seen.`;
+    const msg = [head, ...o, tail].join('\n');
+    if (flags['stop-hook']) { if (news) console.log(JSON.stringify({ decision: 'block', reason: msg })); return; }
+    console.log(msg);
+  },
+
+  async inbox({ flags }) {
+    const cs = await api('GET', '/api/inbox');
+    out(flags, cs, cs => cs.map(c => `${c.project}/${line(c)}` + (lastComment(c) ? `\n     last: ${lastComment(c).author}: ${lastComment(c).text.slice(0, 160).replace(/\n/g, ' ')}` : '')).join('\n') || 'Nothing waiting on Rich.');
+  },
+};
+
+(async () => {
+  const [cmd, ...rest] = process.argv.slice(2);
+  if (!cmd || cmd === 'help' || cmd === '--help' || cmd === '-h') return console.log(HELP);
+  const fn = cmds[cmd];
+  if (!fn) die(`unknown command "${cmd}". Try: aigile help`);
+  await fn(parse(rest));
+})().catch(e => { console.error('error: ' + (e instanceof CliError ? e.message : e.stack || e)); process.exitCode = 1; });
