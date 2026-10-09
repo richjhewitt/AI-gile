@@ -194,6 +194,7 @@ async function refresh(force) {
       sig = JSON.stringify([state.route, state.projects, state.inbox]);
     } else {
       state.project = await api('GET', '/api/projects/' + state.route.slug);
+      await loadDocs(state.route.slug);
       sig = JSON.stringify([state.route, state.project]);
     }
   } catch (e) {
@@ -334,8 +335,23 @@ function readFields(flags, testSteps) {
   return o;
 }
 
-// Escape, then make web links and this project's card ids (e.g. AIG-12) clickable.
+// The project's .md files, fetched once per project, so file names in cards can open them.
+async function loadDocs(s) {
+  if (state.docsFor === s) return;
+  state.docsFor = s;
+  try { state.docs = await api('GET', `/api/projects/${s}/docs`); } catch { state.docs = []; }
+}
+
+// Escape, then make web links, this project's card ids (e.g. AIG-12) and its .md files clickable.
 function linkify(text, p) {
+  const docs = state.docsFor === p.slug ? state.docs || [] : [];
+  const docIndex = name => { const n = name.toLowerCase(); return docs.findIndex(d => d.toLowerCase() === n || d.toLowerCase().split('/').pop() === n); };
+  return linkifyBase(text, p).replace(/(^|[\s(>"'`])((?:[\w.-]+\/)*[\w.-]+\.md)\b/gi, (m, pre, name) => {
+    const i = docIndex(name);
+    return i < 0 ? m : `${pre}<a href="#" onclick="showDoc(${i});return false" title="Open ${esc(docs[i])}">${name}</a>`;
+  });
+}
+function linkifyBase(text, p) {
   const key = String(p.key).replace(/[^A-Za-z0-9]/g, '');
   return esc(text)
     .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`)
