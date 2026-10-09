@@ -334,6 +334,14 @@ function readFields(flags, testSteps) {
   return o;
 }
 
+// Escape, then make web links and this project's card ids (e.g. AIG-12) clickable.
+function linkify(text, p) {
+  const key = String(p.key).replace(/[^A-Za-z0-9]/g, '');
+  return esc(text)
+    .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`)
+    .replace(new RegExp(`(^|[^\\w/#-])(${key}-\\d+)\\b`, 'gi'), (m, pre, id) => `${pre}<a href="#/p/${p.slug}/${id.toUpperCase()}">${id}</a>`);
+}
+
 function renderCard(p, c) {
   const close = `location.hash='#/p/${p.slug}'`;
   const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">✕ Close</button><span style="flex:1"></span>
@@ -357,10 +365,10 @@ function renderCard(p, c) {
     <h2>${esc(c.title)}</h2>
     <div class="meta">${metaHtml(c)}</div>
     ${verdict}
-    ${c.description ? `<h3>Description</h3><div class="desc">${esc(c.description)}</div>` : ''}
-    ${c.testSteps ? `<h3>🧪 How to test</h3><div class="desc">${esc(c.testSteps)}</div>` : ''}
+    ${c.description ? `<h3>Description</h3><div class="desc">${linkify(c.description, p)}</div>` : ''}
+    ${c.testSteps ? `<h3>🧪 How to test</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}
     <h3>Conversation</h3>
-    ${c.comments.map(m => `<div class="comment"><span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${esc(m.text)}</div></div>`).join('') || '<p class="muted">No comments yet.</p>'}
+    ${c.comments.map(m => `<div class="comment"><span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div></div>`).join('') || '<p class="muted">No comments yet.</p>'}
     <div class="reply"><textarea id="r-text" rows="3" placeholder="Reply as Rich: moves the card to For the team… (Enter to send, Shift+Enter for a new line)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
       <div class="err" id="r-err"></div>
       <div class="actions"><button class="primary" onclick="sendReply()">Send reply</button></div></div>
