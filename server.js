@@ -90,6 +90,15 @@ function toTeam(c) {
   c.prevStatus = c.status;
   c.status = 'team';
 }
+function docList(p) {
+  const out = [];
+  if (p.path) for (const sub of ['', 'docs']) {
+    let names;
+    try { names = fs.readdirSync(path.join(p.path, sub)); } catch { continue; }
+    for (const n of names.sort()) if (/\.md$/i.test(n)) out.push(sub ? sub + '/' + n : n);
+  }
+  return out;
+}
 function bad(msg, code = 400) { const e = new Error(msg); e.code = code; return e; }
 function need(p) { if (!p) throw bad('project not found', 404); return p; }
 function findCard(p, id) {
@@ -237,6 +246,14 @@ const routes = [
     const forTeam = p.cards.filter(c => c.status === 'team').map(c => ({ id: c.id, title: c.title, prevStatus: c.prevStatus || '' }));
     if (q.get('mark')) { p.teamSeenAt = now(); save(p); }
     return { project: p.slug, since, cards, forTeam };
+  }],
+
+  // Project docs: the .md files in the project's folder and its docs/ folder (read-only).
+  ['GET', /^\/api\/projects\/([^/]+)\/docs$/, ([slug]) => docList(need(load(slug)))],
+  ['GET', /^\/api\/projects\/([^/]+)\/docs\/(.+)$/, ([slug, name]) => {
+    const p = need(load(slug));
+    if (!docList(p).includes(name)) throw bad('doc not found', 404); // whitelist: no path tricks
+    return { name, text: fs.readFileSync(path.join(p.path, name), 'utf8') };
   }],
 
   // Everything waiting on Rich, across all projects.

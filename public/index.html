@@ -106,6 +106,11 @@
   .toolbar .grow { flex: 1; }
   .colbtn { padding: 0 7px; line-height: 20px; font-size: 13px; }
   .overlay.center { align-items: center; justify-content: center; padding: 12px; z-index: 20; }
+  .dialog.wide { width: min(900px, 100%); }
+  .md table { border-collapse: collapse; margin: 8px 0; } .md td, .md th { border: 1px solid var(--line); padding: 4px 8px; }
+  .md pre { background: var(--col); padding: 10px; border-radius: 8px; overflow: auto; } .md code { font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+  .md h1 { font-size: 20px; } .md h2 { font-size: 17px; margin-top: 18px; } .md h3 { font-size: 15px; }
+  .doclist button { display: block; width: 100%; text-align: left; margin: 4px 0; }
   .dialog { width: min(520px, 100%); max-height: 100%; overflow: auto; background: var(--panel); border-radius: var(--radius); padding: 18px; }
   .dialog h2 { margin: 0 0 12px; font-size: 17px; }
   .column.dragover { outline: 2px dashed var(--accent); outline-offset: -2px; background: color-mix(in srgb, var(--accent) 10%, var(--col)); }
@@ -271,6 +276,7 @@ function renderBoard(p) {
   const log = (p.log || []).slice().reverse().slice(0, 50);
   return `<div class="toolbar"><h2>${esc(p.name)}${p.archived ? ' <span class="pill">archived</span>' : ''}</h2>
       <button class="primary" onclick="newCard()">+ New</button>
+      <button onclick="openDocs()">📄 Docs</button>
       <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'todo'})">🐞 Raise bug</button>
       <span class="grow"></span>
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
@@ -367,11 +373,56 @@ const cardId = () => state.route.card;
 const curCard = () => state.project.cards.find(c => c.id === cardId());
 const setErr = (id, e) => { const el = $(id); if (el) el.textContent = e ? (e.message || e) : ''; };
 
-function openDialog(html) {
-  $('dialog').innerHTML = `<div class="overlay center"><div class="dialog">${html}</div></div>`;
+function openDialog(html, cls = '') {
+  $('dialog').innerHTML = `<div class="overlay center"><div class="dialog ${cls}">${html}</div></div>`;
   const f = $('dialog').querySelector('input[type=text]'); if (f) f.focus();
 }
 function closeDialog() { $('dialog').innerHTML = ''; }
+
+// ---- docs: read a project's .md files in the board -----------------------------
+async function openDocs() {
+  try {
+    state.docs = await api('GET', `/api/projects/${slug()}/docs`);
+    openDialog(`<h2>📄 Docs</h2>${state.docs.length ? `<div class="doclist">${state.docs.map((n, i) => `<button onclick="showDoc(${i})">${esc(n)}</button>`).join('')}</div>`
+      : `<p class="muted">No .md files found${state.project.path ? ' in ' + esc(state.project.path) : ': this project has no folder path set'}.</p>`}
+      <div class="actions"><button onclick="closeDialog()">Close</button></div>`);
+  } catch (e) { alert(e.message); }
+}
+async function showDoc(i) {
+  try {
+    const d = await api('GET', `/api/projects/${slug()}/docs/${encodeURIComponent(state.docs[i])}`);
+    openDialog(`<div class="actions" style="margin-top:0"><button onclick="openDocs()">← Docs</button><button onclick="closeDialog()">Close</button></div>
+      <div class="md">${md(d.text)}</div>`, 'wide');
+  } catch (e) { alert(e.message); }
+}
+// Small markdown renderer: headings, lists, tables, code blocks, links, bold/italic/code.
+function md(src) {
+  const lines = src.replace(/\r/g, '').split('\n'); let html = '', i = 0;
+  const inline = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, t, u) => /^https?:/.test(u) ? `<a href="${u}" target="_blank" rel="noopener">${t}</a>` : t);
+  const isList = l => /^\s*([-*]|\d+\.)\s+/.test(l), isRow = l => /^\s*\|/.test(l);
+  while (i < lines.length) {
+    const l = lines[i]; let m;
+    if (/^```/.test(l)) { const b = []; i++; while (i < lines.length && !/^```/.test(lines[i])) b.push(lines[i++]); i++; html += `<pre><code>${esc(b.join('\n'))}</code></pre>`; }
+    else if ((m = l.match(/^(#{1,6})\s+(.*)/))) { html += `<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`; i++; }
+    else if (isRow(l)) {
+      const rows = []; while (i < lines.length && isRow(lines[i])) rows.push(lines[i++]);
+      const cells = r => r.trim().replace(/^\||\|$/g, '').split(/(?<!\\)\|/).map(c => inline(c.trim().replace(/\\\|/g, '|')));
+      html += '<table>' + rows.filter(r => !/^\s*\|[\s:|-]+\|\s*$/.test(r)).map((r, k) => '<tr>' + cells(r).map(c => k ? `<td>${c}</td>` : `<th>${c}</th>`).join('') + '</tr>').join('') + '</table>';
+    }
+    else if (isList(l)) {
+      const ol = /^\s*\d+\./.test(l), items = []; while (i < lines.length && isList(lines[i])) items.push(lines[i++].replace(/^\s*([-*]|\d+\.)\s+/, ''));
+      html += `<${ol ? 'ol' : 'ul'}>${items.map(t => `<li>${inline(t)}</li>`).join('')}</${ol ? 'ol' : 'ul'}>`;
+    }
+    else if (/^---+\s*$/.test(l)) { html += '<hr>'; i++; }
+    else if (!l.trim()) i++;
+    else {
+      const p = [lines[i++]]; while (i < lines.length && lines[i].trim() && !/^(#{1,6}\s|```|---+\s*$)/.test(lines[i]) && !isRow(lines[i]) && !isList(lines[i])) p.push(lines[i++]);
+      html += `<p>${inline(p.join(' '))}</p>`;
+    }
+  }
+  return html;
+}
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog').firstChild) closeDialog(); });
 
 function newCard(preset = {}) {
