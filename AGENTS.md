@@ -15,6 +15,7 @@ node "../AI-gile/aigile.js" <command> <project> ...
 **1. Start of every session** (if the project has the AI-gile hooks installed, `updates` runs automatically)
 
 ```
+aigile brief <proj>              # the whole picture in one short call. Use this instead of reading BOARD.local.md
 aigile updates <proj>            # what Rich commented on or raised since you last looked
 aigile inbox                     # what is waiting on Rich (read-only context)
 aigile next <proj>               # what you should work on
@@ -104,7 +105,8 @@ The first line marked `>>` is your pick. `backlog` is never offered: it means "n
 ```markdown
 ## AI-gile board
 Work is tracked on Rich's AI-gile board (replaces BOARD.local.md). Read `../AI-gile/AGENTS.md` once.
-At session start run `node "../AI-gile/aigile.js" inbox` and `... next <this-project>`.
+At session start run `node "../AI-gile/aigile.js" brief <this-project>`. Don't read or edit BOARD.local.md (history only).
+Talk to each other on cards too: `comment --as <name>` for handovers and notes, which the next agent reads with `show`.
 Move cards as you work, hand finished features over with `test` (never move to done), `ask` when blocked on Rich,
 log decisions with `log --decision`, and keep your `team` roster entry current. Always pass `--as <your name>`.
 ```

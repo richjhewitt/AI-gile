@@ -11,6 +11,7 @@ Set AIGILE_URL to change the server (default http://localhost:4321). Set AIGILE_
 Text args can be "-" to read from stdin (handy for multi-line).
 
 START OF SESSION
+  brief <proj>                            the whole picture in one call: start every session with this
   updates <proj> [--peek]                 what Rich said/raised since you last looked (marks it seen)
   inbox                                   everything waiting on Rich, all projects
   next <proj>                             what to work on, in order (see AGENTS.md)
@@ -168,6 +169,32 @@ const cmds = {
     const c = p.cards.find(c => c.id.toLowerCase() === pos[1].toLowerCase());
     if (!c) die(`card ${pos[1]} not found in ${slug}`);
     out(flags, c, full);
+  },
+
+  // One compact digest replacing a read of BOARD.local.md: in flight, for the team, waiting on Rich,
+  // next up, active team, recent decisions and log. Kept short on purpose (token cost).
+  async brief({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const p = await api('GET', P(slug));
+    if (flags.json) return console.log(JSON.stringify(p, null, 2));
+    const by = s => p.cards.filter(c => c.status === s);
+    const short = c => `${c.id}${c.assignee ? ' @' + c.assignee : ''} ${c.title}`;
+    const sect = (title, items, n = 8) => items.length ? [title + ':', ...items.slice(0, n).map(x => '  ' + x), ...(items.length > n ? [`  (+${items.length - n} more)`] : [])] : [];
+    const o = [`${p.name} (${p.slug}): ` + STATUSES.map(s => `${s} ${by(s).length}`).join(' · ')];
+    o.push(...sect('For the team (Rich commented: do first)', by('team').map(c => short(c) + (lastComment(c) ? `  <- "${lastComment(c).text.slice(0, 100).replace(/\n/g, ' ')}"` : ''))));
+    o.push(...sect('In flight', by('doing').map(c => short(c) + ` (${when(c.updated)})`)));
+    o.push(...sect('In review', by('review').map(short)));
+    o.push(...sect('Waiting on Rich', p.cards.filter(c => c.status === 'verify' || (c.needsYou && c.status !== 'done')).map(c => short(c) + (c.status === 'verify' ? ' (testing)' : ' (question)'))));
+    o.push(...sect('Blocked', p.cards.filter(c => c.blocked && c.status !== 'done').map(short)));
+    const nxt = nextList(p).flatMap(([, cs]) => cs).filter(c => c.status === 'todo');
+    o.push(...sect('Next up (todo)', nxt.map(short), 5));
+    const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
+    if (team.length) o.push('Team: ' + team.map(m => `${m.name}${m.model ? ' (' + m.model + ')' : ''} ${m.status || ''}${m.task && !/idle/i.test(m.status || '') ? ': ' + m.task : ''}`).join(' | '));
+    const log = (p.log || []);
+    o.push(...sect('Recent decisions', log.filter(l => l.kind === 'decision').slice(-5).reverse().map(l => `${when(l.at).slice(5)} ${l.author}: ${l.text}`)));
+    o.push(...sect('Recent log', log.filter(l => l.kind !== 'decision').slice(-5).reverse().map(l => `${when(l.at).slice(5)} ${l.author}: ${l.text}`)));
+    o.push(`More: aigile show ${slug} <id> | aigile list ${slug} --status backlog`);
+    console.log(o.join('\n'));
   },
 
   async next({ pos, flags }) {
