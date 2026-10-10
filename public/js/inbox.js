@@ -65,7 +65,7 @@
   .ib-item.q.blk { border-color: var(--b-line); background: var(--b-tint); } .q.blk .ib-tag { color: var(--b-ink); }
   .q .ib-tag { color: var(--q-ink); } .t .ib-tag { color: var(--t-ink); }
   .ib-proj { font-weight: 700; color: #fff; background: var(--proj, var(--muted)); border-radius: 999px; padding: 1px 9px; font-size: 13px; }
-  .ib-item.q, .ib-item.t, .ib-item { border-left: 8px solid var(--proj, var(--line)); }
+  .ib-item.q, .ib-item.t, .ib-item.k, .ib-item { border-left: 8px solid var(--proj, var(--line)); }
   .ib-tab[style] { border-bottom: 3px solid var(--proj); }
   .ib-item.q.blk { border-left-color: var(--proj, var(--b-line)); }
   .ib-title { font-weight: 600; margin: 3px 0 2px; font-size: 15px; }
