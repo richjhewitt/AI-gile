@@ -681,6 +681,7 @@ def('mdlinks', 'Any .md path in card text opens in the board', async (s, ctx) =>
   await ok('backslashes', 'docs\\addons\\deep.md', 'docs/addons/deep.md');
   await ok('absolute with backslashes', abs.replace(/\//g, '\\'), 'docs/addons/deep.md');
   await ok('project folder prefix', 'Proj Folder/protocol/X.md', 'protocol/X.md');
+  await ok('half of a spaced folder name (AIG-85)', 'Folder\\protocol\\X.md', 'protocol/X.md');
   check('route: ../ escape refused', [400, 404].includes((await get('../outside.md')).status));
   check('route: absolute outside refused', [400, 404].includes((await get(path.join(root, 'outside.md'))).status));
   check('route: non-.md refused', (await get('notes.txt')).status === 400);
