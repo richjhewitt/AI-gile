@@ -24,6 +24,28 @@ async function ensureServer() {
 }
 
 let win = null;
+/* ---------- popped-out cards survive a restart (AIG-144) ---------- */
+// Open pop-outs (address and position) are kept in the app's own folder; closing one yourself forgets it.
+const POPS = () => path.join(app.getPath('userData'), 'popouts.json');
+const pops = new Map();   // window -> address
+let quitting = false;
+function savePops() {
+  const list = [...pops].filter(([w]) => !w.isDestroyed()).map(([w, url]) => ({ url, bounds: w.getBounds() }));
+  try { fs.writeFileSync(POPS(), JSON.stringify(list)); } catch {}
+}
+function trackPop(w, url) {
+  if (!url.includes('#/pop/')) return;
+  pops.set(w, url); savePops();
+  w.on('moved', savePops); w.on('resized', savePops);
+  w.on('closed', () => { pops.delete(w); if (!quitting) savePops(); });
+}
+function reopenPops() {
+  let list = []; try { list = JSON.parse(fs.readFileSync(POPS(), 'utf8')); } catch {}
+  for (const p of list) if (String(p.url).startsWith(BASE + '/#/pop/')) {
+    const w = new BrowserWindow({ ...chrome(), ...(p.bounds || { width: 560, height: 780 }), alwaysOnTop: true });
+    wire(w); trackPop(w, p.url); w.loadURL(p.url);
+  }
+}
 // No Windows title bar (AIG-128): just the window buttons, in the board's own colours, over the page's top bar.
 const bar = () => nativeTheme.shouldUseDarkColors ? { color: '#1b2029', symbolColor: '#e6e9ef', height: 36 } : { color: '#ffffff', symbolColor: '#1d2330', height: 36 };
 const chrome = () => ({ autoHideMenuBar: true, icon: ICON, titleBarStyle: 'hidden', titleBarOverlay: bar() });
@@ -37,10 +59,10 @@ function wire(w) {
     shell.openExternal(url); return { action: 'deny' };
   });
   w.webContents.on('will-navigate', (e, url) => {
-    if (url === 'aigile://restart') { e.preventDefault(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
-    // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).
+    if (url === 'aigile://restart') { e.preventDefault(); quitting = true; savePops(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
     // The page's theme pick (AIG-143): the window buttons and every window follow it.
     if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark'].includes(t)) nativeTheme.themeSource = t; return; }
+    // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).
     if (url === 'aigile://refocus') { e.preventDefault(); w.blur(); w.focus(); w.webContents.focus(); return; }
     if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); }
   });
@@ -49,13 +71,15 @@ function open(ok) {
   win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', backgroundColor: '#ffffff', ...chrome() });
   wire(win);
   // Popped-out cards (AIG-122) get the same handling as the main window.
-  win.webContents.on('did-create-window', child => wire(child));
-  if (ok) win.loadURL(BASE);
+  win.webContents.on('did-create-window', (child, d) => { wire(child); trackPop(child, d.url); });
+  if (ok) { win.loadURL(BASE); reopenPops(); }
   else win.loadURL('data:text/html,' + encodeURIComponent(`<body style="font:15px system-ui;padding:24px"><h2>AI-gile didn't start</h2><p>Couldn't reach ${BASE}. Run <code>start-aigile.bat</code> in ${ROOT.replace(/</g, '')} and reopen this window.</p></body>`));
   // Taskbar badge: the page puts what's waiting on Rich in its title, "(3) AI-gile"; then the icon gets a purple diamond.
   // It's the window icon, not an overlay: small taskbar buttons draw overlays as a dot, and a count is unreadable there.
   // A missing or broken icon file must never show an error box (AIG-81): keep the current icon instead.
   win.on('page-title-updated', (e, title) => { try { win.setIcon(/^\(\d+\)/.test(title) ? ICON_WAITING : ICON); } catch {} });
+  // Closing the main window closes the app, pop-outs too, and remembers them for next time.
+  win.on('close', () => { quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); });
   win.on('closed', () => { win = null; });
 }
 
