@@ -282,6 +282,8 @@ body.desktop #updateTop, body.desktop #updateTop button, body.desktop .overlay, 
 ::-webkit-scrollbar-thumb:hover { background-color: var(--muted); }
 ::-webkit-scrollbar-corner { background: transparent; }
 .theme-pick { padding: 4px 8px; border-radius: 99px; }
+.lang-pick { padding: 3px 6px; border-radius: 99px; font-size: 12px; max-width: 110px; }
+.lang-pick.setup-lang { font-size: 14px; max-width: none; border-radius: 6px; padding: 6px 8px; align-self: flex-start; }
 
 /* ---------- DMs with the team leads (AIG-137/138): rail on the left, chat panel next to it ---------- */
 body { padding-left: 60px; }

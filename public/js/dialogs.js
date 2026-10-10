@@ -12,15 +12,15 @@ function newCard(preset = {}) {
   // Rich's new cards go straight to the team (AIG-51); the + on a column still picks that column.
   const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: 'team', assignee: '', sprint: '', ...preset };
   Attach.clear('new:' + slug());
-  openDialog(`<h2>${bug ? '🐞 Raise bug' : 'New card'}</h2>
-    <form onsubmit="return createCard(event)">${cardFields(c, bug ? { titlePh: "What's broken?", descLabel: 'What happened / how to reproduce', descPh: 'Steps, what you expected, what you saw' } : { titlePh: 'What needs doing?' })}
+  openDialog(`<h2>${esc(bug ? t('board.raisebug') : t('dlg.newcard'))}</h2>
+    <form onsubmit="return createCard(event)">${cardFields(c, bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') })}
       <div class="err" id="d-err"></div>
-      <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${bug ? 'Raise bug' : 'Create card'}</button><button type="button" onclick="closeDialog()">Cancel</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');
+      <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${esc(bug ? t('dlg.raisebug') : t('dlg.createcard'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');
 }
 async function createCard(e) {
   e.preventDefault();
   const body = readFields(false, false);
-  if (!body.title) { setErr('d-err', 'Give it a title'); return false; }
+  if (!body.title) { setErr('d-err', t('dlg.err.title')); return false; }
   try {
     const attachments = await Attach.upload('new:' + slug(), slug());
     const c = await api('POST', `/api/projects/${slug()}/cards`, { ...body, createdBy: me(), attachments });
@@ -35,14 +35,14 @@ async function createCard(e) {
 // The folder is suggested from the name (next to AI-gile) and set up for the team on create (AIG-73).
 async function newProject() {
   try { state.home = state.home || (await api('GET', '/api/meta')).home; } catch {}
-  openDialog(`<h2>New project</h2>
+  openDialog(`<h2>${esc(t('dlg.newproject'))}</h2>
     <form onsubmit="return createProject(event)">
-      <label class="f"><span>Name</span><input type="text" id="p-name" oninput="suggestKey()" maxlength="80"></label>
-      <div class="row"><label class="f"><span>Key (card prefix, e.g. AIG)</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
-      <label class="f"><span>Folder (created if new, then set up for the team)</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="leave empty to connect one later"></label>
-      <label class="f"><span>Description (optional)</span><textarea id="p-desc" rows="3"></textarea></label>
+      <label class="f"><span>${esc(t('dlg.np.name'))}</span><input type="text" id="p-name" oninput="suggestKey()" maxlength="80"></label>
+      <div class="row"><label class="f"><span>${esc(t('dlg.np.key'))}</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
+      <label class="f"><span>${esc(t('dlg.np.folder'))}</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="${esc(t('dlg.np.folder.ph'))}"></label>
+      <label class="f"><span>${esc(t('dlg.np.desc'))}</span><textarea id="p-desc" rows="3"></textarea></label>
       <div class="err" id="d-err"></div><div id="p-done"></div>
-      <div class="actions" id="p-acts"><button class="primary" type="submit">Create project</button><button type="button" onclick="closeDialog()">Cancel</button></div></form>`);
+      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`);
 }
 function suggestKey() {
   const name = $('p-name').value, k = $('p-key'), f = $('p-path');
@@ -53,22 +53,22 @@ function suggestKey() {
 async function createProject(e) {
   e.preventDefault();
   const name = $('p-name').value.trim(), folder = $('p-path').value.trim();
-  if (!name) { setErr('d-err', 'Give the project a name'); return false; }
+  if (!name) { setErr('d-err', t('dlg.np.err.name')); return false; }
   let p;
   try {
     p = await api('POST', '/api/projects', { name, key: $('p-key').value.trim(), description: $('p-desc').value.trim() });
   } catch (err) { setErr('d-err', err); return false; }
   if (!folder) { closeDialog(); location.hash = '#/p/' + p.slug; return false; }
-  $('p-acts').innerHTML = `<button type="button" class="primary" onclick="closeDialog(); location.hash = '#/p/${p.slug}'">Open project</button>`;
+  $('p-acts').innerHTML = `<button type="button" class="primary" onclick="closeDialog(); location.hash = '#/p/${p.slug}'">${esc(t('dlg.np.open'))}</button>`;
   try {
     const r = await api('POST', `/api/projects/${p.slug}/connect`, { path: folder, create: true, wake: true });
     $('d-err').textContent = '';
-    $('p-done').innerHTML = `<ul>${['Created the project', ...r.done].map(d => `<li>✅ ${esc(d)}</li>`).join('')}</ul>`;
-  } catch (err) { setErr('d-err', 'Project created, but the folder was not set up: ' + err.message + ' (use 🔌 Connect folder on the board)'); }
+    $('p-done').innerHTML = `<ul>${[t('dlg.np.created'), ...r.done].map(d => `<li>✅ ${esc(d)}</li>`).join('')}</ul>`;
+  } catch (err) { setErr('d-err', t('dlg.np.err.folder', { msg: err.message })); }
   return false;
 }
 async function setArchived(on) {
-  if (on && !confirm('Archive this project? It will be hidden from the home page (you can show archived projects there and unarchive).')) return;
+  if (on && !confirm(t('dlg.archive.confirm'))) return;
   try {
     await api('PATCH', '/api/projects/' + slug(), { archived: on });
     if (on) location.hash = '#/'; else await rerender();
@@ -86,18 +86,18 @@ async function connectDialog() {
   const p = state.project;
   let suggest = p.path;
   if (!suggest) { try { const m = await api('GET', '/api/meta'); suggest = m.home + '\\' + p.name.replace(/[<>:"/\\|?*]/g, '').trim(); } catch { suggest = ''; } }
-  openDialog(`<h2>🔌 ${p.path ? 'Folder connected' : 'Connect a folder'}</h2>
-    <p class="muted">The team working in this folder will then use this board and your ways of working. It adds two local files there (notes, plus hooks and team permissions; git push still asks) that git won't see, and starts a git repo if there is none. Safe to run again.</p>
-    <label class="f"><span>Folder</span><input type="text" id="c-path" value="${esc(suggest)}"></label>
-    <label class="chk"><input type="checkbox" id="c-create" checked> Create the folder if it doesn't exist</label>
+  openDialog(`<h2>${esc(p.path ? t('dlg.conn.h.done') : t('dlg.conn.h'))}</h2>
+    <p class="muted">${esc(t('dlg.conn.intro'))}</p>
+    <label class="f"><span>${esc(t('dlg.folder'))}</span><input type="text" id="c-path" value="${esc(suggest)}"></label>
+    <label class="chk"><input type="checkbox" id="c-create" checked> ${esc(t('dlg.conn.create'))}</label>
     <div class="err" id="c-err"></div><div id="c-done"></div>
-    <div class="actions"><button class="primary" id="c-go" onclick="doConnect()">${p.path ? 'Reconnect' : 'Connect'}</button><button type="button" onclick="closeDialog()">Close</button></div>`);
+    <div class="actions"><button class="primary" id="c-go" onclick="doConnect()">${esc(p.path ? t('dlg.conn.reconnect') : t('dlg.conn.connect'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
 }
 async function doConnect() {
   try {
     const r = await api('POST', `/api/projects/${slug()}/connect`, { path: $('c-path').value, create: $('c-create').checked });
     $('c-err').textContent = '';
-    $('c-done').innerHTML = `<ul>${r.done.map(d => `<li>✅ ${esc(d)}</li>`).join('')}</ul><p><b>Next:</b> start a new session in that folder. It will read the board and your ways of working by itself.</p>`;
+    $('c-done').innerHTML = `<ul>${r.done.map(d => `<li>✅ ${esc(d)}</li>`).join('')}</ul><p>${t('dlg.conn.next.html')}</p>`;
     $('c-go').remove();
   } catch (e) { setErr('c-err', e); }
 }
@@ -105,10 +105,10 @@ async function doConnect() {
 /* ---------- find my projects (AIG-94) ---------- */
 // ---- find my projects: list the project folders in a folder (git, old sessions, README), tick, import ----
 async function findProjectsDialog(dir) {
-  openDialog(`<h2>🔎 Find my projects</h2><p class="muted">Looks through a folder for your projects. Nothing is changed until you click Add.</p>
-    <div class="row"><label class="f" style="flex:1"><span>Folder</span><input type="text" id="fp-dir" value="${esc(dir || state.home || '')}"></label>
-    <button style="align-self:flex-end" onclick="findProjectsDialog($('fp-dir').value)">Look</button></div>
-    <div id="fp-list" class="muted">Looking…</div><div class="err" id="fp-err"></div><div id="fp-done"></div>
+  openDialog(`<h2>${esc(t('dlg.find.h'))}</h2><p class="muted">${esc(t('dlg.find.intro'))}</p>
+    <div class="row"><label class="f" style="flex:1"><span>${esc(t('dlg.folder'))}</span><input type="text" id="fp-dir" value="${esc(dir || state.home || '')}"></label>
+    <button style="align-self:flex-end" onclick="findProjectsDialog($('fp-dir').value)">${esc(t('dlg.find.look'))}</button></div>
+    <div id="fp-list" class="muted">${esc(t('dlg.find.looking'))}</div><div class="err" id="fp-err"></div><div id="fp-done"></div>
     <div class="actions" id="fp-acts"></div>`, 'wide');
   try {
     if (!state.home) state.home = (await api('GET', '/api/meta')).home;
@@ -116,19 +116,19 @@ async function findProjectsDialog(dir) {
     state.found = await api('GET', '/api/discover' + (dir ? '?dir=' + encodeURIComponent(dir) : ''));
   } catch (e) { $('fp-list').textContent = ''; setErr('fp-err', e); return; }
   const key = n => n.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase() || 'PRJ';
-  const info = f => [f.git ? `${f.git.commits} commits${f.git.lastAt ? ', last ' + ago(f.git.lastAt) : ''}` : 'no git', f.sessions ? `${f.sessions.count} old sessions` : '',
-    f.known ? 'already on the board' : f.inside ? 'inside ' + f.inside : f.copy ? 'looks like a copy' : ''].filter(Boolean).join(' · ');
+  const info = f => [f.git ? t('dlg.find.commits', { n: f.git.commits }) + (f.git.lastAt ? t('dlg.find.last', { when: ago(f.git.lastAt) }) : '') : t('dlg.find.nogit'), f.sessions ? t('dlg.find.sessions', { n: f.sessions.count }) : '',
+    f.known ? t('dlg.find.known') : f.inside ? t('dlg.find.inside', { dir: f.inside }) : f.copy ? t('dlg.find.copy') : ''].filter(Boolean).join(' · ');
   $('fp-list').classList.remove('muted');
   $('fp-list').innerHTML = state.found.length ? state.found.map((f, i) => `<div class="fprow">
-    <input type="checkbox" data-i="${i}" ${f.suggested ? 'checked' : ''} ${f.known ? 'disabled' : ''} aria-label="Add ${esc(f.name)}">
-    <input type="text" class="fp-name" value="${esc(f.name)}" aria-label="Name"><input type="text" class="fp-key" value="${key(f.name)}" maxlength="6" aria-label="Key">
-    <span class="muted">${esc(info(f))}${f.readme ? ' · ' + esc(f.readme) : ''}</span></div>`).join('') : 'No folders found there.';
-  $('fp-acts').innerHTML = `<label class="chk"><input type="checkbox" id="fp-connect" checked> Set each folder up for its team (notes, hooks, permissions)</label>
-    <button class="primary" onclick="importFound()">Add ticked projects</button><button onclick="closeDialog()">Close</button>`;
+    <input type="checkbox" data-i="${i}" ${f.suggested ? 'checked' : ''} ${f.known ? 'disabled' : ''} aria-label="${esc(t('dlg.find.add', { name: f.name }))}">
+    <input type="text" class="fp-name" value="${esc(f.name)}" aria-label="${esc(t('dlg.find.name'))}"><input type="text" class="fp-key" value="${key(f.name)}" maxlength="6" aria-label="${esc(t('dlg.find.key'))}">
+    <span class="muted">${esc(info(f))}${f.readme ? ' · ' + esc(f.readme) : ''}</span></div>`).join('') : esc(t('dlg.find.none'));
+  $('fp-acts').innerHTML = `<label class="chk"><input type="checkbox" id="fp-connect" checked> ${esc(t('dlg.find.setup'))}</label>
+    <button class="primary" onclick="importFound()">${esc(t('dlg.find.import'))}</button><button onclick="closeDialog()">${esc(t('common.close'))}</button>`;
 }
 async function importFound() {
   const rows = [...document.querySelectorAll('.fprow')].filter(r => r.querySelector('input[type=checkbox]').checked);
-  if (!rows.length) { setErr('fp-err', 'Tick at least one project'); return; }
+  if (!rows.length) { setErr('fp-err', t('standup.pick.none')); return; }
   const done = [];
   for (const r of rows) {
     const f = state.found[+r.querySelector('input[type=checkbox]').dataset.i];
@@ -139,20 +139,21 @@ async function importFound() {
       done.push('✅ ' + p.name);
     } catch (e) { done.push('⚠️ ' + f.name + ': ' + e.message); }
   }
-  $('fp-done').innerHTML = `<ul>${done.map(d => `<li>${esc(d)}</li>`).join('')}</ul><p class="muted">Each team reads the board and its folder the first time you wake it.</p>`;
-  $('fp-acts').innerHTML = '<button class="primary" onclick="closeDialog(); rerender()">Done</button>';
+  $('fp-done').innerHTML = `<ul>${done.map(d => `<li>${esc(d)}</li>`).join('')}</ul><p class="muted">${esc(t('dlg.find.after'))}</p>`;
+  $('fp-acts').innerHTML = `<button class="primary" onclick="closeDialog(); rerender()">${esc(t('common.done'))}</button>`;
 }
 
 /* ---------- setup page (AIG-91) ---------- */
 // ---- setup: your name and where the agent lives on this computer, saved to aigile.local.json ----
 function renderSetup() {
   const s = state.setup;
-  return `<div class="setup"><h2>⚙️ Setup</h2>
-    <p class="muted">${s.needed ? 'Welcome! Fill these in once and the board is ready.' : 'Your settings on this computer. They stay on this computer (not in git).'}</p>
+  return `<div class="setup"><h2>${esc(t('setup.h'))}</h2>
+    <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
+    <label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('setup-lang')}<small class="muted">${esc(t('setup.lang.help'))}</small></label>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">
       ${s.fields.map(f => `<label class="f"><span>${esc(f.label)}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}"><small class="muted">${esc(f.help)}</small></label>`).join('')}
       <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
-      <div class="actions"><button class="primary" type="submit">Save</button></div></form></div>`;
+      <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button></div></form></div>`;
 }
 async function saveSetupPage(e) {
   e.preventDefault();
@@ -160,7 +161,7 @@ async function saveSetupPage(e) {
   try {
     state.setup = await api('POST', '/api/setup', body);
     $('setup-err').textContent = '';
-    $('setup-done').textContent = state.setup.needed ? 'Saved. Still needed: the agent program, notes file and settings file.' : '✅ Saved. The board is ready.';
+    $('setup-done').textContent = state.setup.needed ? t('setup.saved.more') : t('setup.saved');
   } catch (err) { setErr('setup-err', err); }
   return false;
 }
@@ -171,28 +172,28 @@ function happeningDialog() {
   const p = state.project, open = p.cards.filter(c => c.status !== 'done');
   const list = (cs, empty) => cs.length ? `<ul>${cs.map(c => `<li><a href="#/p/${p.slug}/${c.id}" onclick="closeDialog()">${esc(c.id)}</a> ${esc(c.title)}${c.assignee ? ` <span class="muted">@${esc(c.assignee)}</span>` : ''}</li>`).join('')}</ul>` : `<p class="muted">${empty}</p>`;
   const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
-  openDialog(`<h2>👀 What's happening in ${esc(p.name)}</h2>
+  openDialog(`<h2>${esc(t('happening.h', { name: p.name }))}</h2>
     <div class="last">${presenceHtml(p, false)}</div>
-    <h3>🛠 In progress</h3>${list(open.filter(c => c.status === 'doing'), 'Nothing in progress.')}
-    <h3>⛔ Blocked</h3>${list(open.filter(c => c.blocked), 'Nothing blocked.')}
-    <h3>🙋 Waiting on you</h3>${list(open.filter(forYou), 'Nothing waiting on you.')}
-    <h3>👥 Team</h3>${team.length ? `<ul>${team.map(m => `<li><b>${esc(m.name)}</b> ${esc(m.status || '')} <span class="muted">${esc(m.task || '')}</span></li>`).join('')}</ul>` : '<p class="muted">No team members yet.</p>'}
-    <h3>📝 Latest</h3>${(p.log || []).length ? `<ul>${p.log.slice(-5).reverse().map(l => `<li><b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : '<p class="muted">Nothing logged yet.</p>'}
-    <div class="actions"><button class="primary" onclick="askTeamDialog()">💬 Ask the team</button><button onclick="closeDialog()">Close</button></div>`, 'wide');
+    <h3>${esc(t('happening.doing'))}</h3>${list(open.filter(c => c.status === 'doing'), esc(t('happening.doing.none')))}
+    <h3>${esc(t('happening.blocked'))}</h3>${list(open.filter(c => c.blocked), esc(t('happening.blocked.none')))}
+    <h3>${esc(t('happening.waiting'))}</h3>${list(open.filter(forYou), esc(t('happening.waiting.none')))}
+    <h3>${esc(t('happening.team'))}</h3>${team.length ? `<ul>${team.map(m => `<li><b>${esc(m.name)}</b> ${esc(m.status || '')} <span class="muted">${esc(m.task || '')}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.team.none'))}</p>`}
+    <h3>${esc(t('happening.latest'))}</h3>${(p.log || []).length ? `<ul>${p.log.slice(-5).reverse().map(l => `<li><b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}
+    <div class="actions"><button class="primary" onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
 }
 // ---- ask the team: a quick question card; it wakes the team and their answer comes back to Messages ----
 function askTeamDialog() {
   Attach.clear('ask:' + slug());
-  openDialog(`<h2>💬 Ask the team</h2>
-    <form onsubmit="return sendAskTeam(event)"><label class="f"><span>Your question</span><textarea id="ask-text" rows="4" placeholder="e.g. Where are we with the login page?"></textarea></label>
+  openDialog(`<h2>${esc(t('board.ask'))}</h2>
+    <form onsubmit="return sendAskTeam(event)"><label class="f"><span>${esc(t('ask.q'))}</span><textarea id="ask-text" rows="4" placeholder="${esc(t('ask.ph'))}"></textarea></label>
     <div class="err" id="ask-err"></div>
-    <div class="actions"><button class="primary" type="submit">Send</button><button type="button" onclick="closeDialog()">Cancel</button>${Attach.boxHtml('ask:' + slug())}</div></form>`);
+    <div class="actions"><button class="primary" type="submit">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('ask:' + slug())}</div></form>`);
   $('ask-text').focus();
 }
 async function sendAskTeam(e) {
   e.preventDefault();
   const text = $('ask-text').value.trim();
-  if (!text) { setErr('ask-err', 'Type your question'); return false; }
+  if (!text) { setErr('ask-err', t('ask.err')); return false; }
   try {
     const attachments = await Attach.upload('ask:' + slug(), slug());
     const title = '💬 ' + text.split('\n')[0].slice(0, 80);
@@ -205,37 +206,37 @@ async function sendAskTeam(e) {
 
 /* ---------- board columns (AIG-116) ---------- */
 // ---- columns: rename, reorder, hide and colour this board's columns (display only: statuses never change) ----
-const KEY_COLS = { verify: 'everything waiting on you', team: 'your comments to the team' };
+const KEY_COLS = { verify: 'cols.key.verify', team: 'cols.key.team' };
 function columnsDialog() {
   state.colDraft = colsOf(state.project).map(c => ({ ...c }));
-  openDialog('<h2>⚙️ Columns</h2><div id="colRows"></div><div class="err" id="col-err"></div>' +
-    '<div class="actions"><button class="primary" onclick="saveColumns()">Save</button><button onclick="saveColumns(true)" title="Give every project these columns">Use for all projects</button>' +
-    '<button onclick="state.colDraft = colsOf({}); paintColRows()" title="Back to the standard columns">Reset</button><button type="button" onclick="closeDialog()">Cancel</button></div>', 'wide');
+  openDialog(`<h2>${esc(t('board.columns'))}</h2><div id="colRows"></div><div class="err" id="col-err"></div>` +
+    `<div class="actions"><button class="primary" onclick="saveColumns()">${esc(t('common.save'))}</button><button onclick="saveColumns(true)" title="${esc(t('cols.all.title'))}">${esc(t('cols.all'))}</button>` +
+    `<button onclick="state.colDraft = colsOf({}); paintColRows()" title="${esc(t('cols.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`, 'wide');
   paintColRows();
 }
 function paintColRows() {
   const d = state.colDraft;
-  $('colRows').innerHTML = '<p class="muted">Changes how this board looks. Teams still use the same statuses underneath.</p>' + d.map((c, i) => `<div class="colrow">
-    <span class="arrows"><button type="button" onclick="moveCol(${i}, -1)" ${i ? '' : 'disabled'} title="Move left">↑</button><button type="button" onclick="moveCol(${i}, 1)" ${i < d.length - 1 ? '' : 'disabled'} title="Move right">↓</button></span>
-    <input type="text" class="emoji" value="${esc(c.emoji)}" maxlength="8" placeholder="🙂" oninput="state.colDraft[${i}].emoji = this.value" aria-label="Emoji">
-    <input type="text" value="${esc(c.name)}" maxlength="40" oninput="state.colDraft[${i}].name = this.value" aria-label="Name">
-    <input type="color" value="${esc(c.color || '#888888')}" oninput="state.colDraft[${i}].color = this.value" aria-label="Colour">
-    <input type="number" class="wip" min="0" max="999" step="1" value="${c.wip || ''}" placeholder="limit" title="Most cards this column should hold (empty = no limit)" oninput="state.colDraft[${i}].wip = this.value" aria-label="Card limit">
-    ${c.key === 'verify' ? '<span class="steps"></span>' : `<input type="text" class="steps" value="${esc(c.steps.join(', '))}" placeholder="steps, e.g. Design, Build, QA" title="Split this column into your own steps (comma separated)" oninput="state.colDraft[${i}].steps = this.value.split(',').map(x => x.trim()).filter(Boolean)" aria-label="Steps">`}
-    <label class="chk"><input type="checkbox" ${c.hidden ? 'checked' : ''} onchange="hideCol(${i}, this)"> Hide</label>
+  $('colRows').innerHTML = `<p class="muted">${esc(t('cols.intro'))}</p>` + d.map((c, i) => `<div class="colrow">
+    <span class="arrows"><button type="button" onclick="moveCol(${i}, -1)" ${i ? '' : 'disabled'} title="${esc(t('cols.left'))}">↑</button><button type="button" onclick="moveCol(${i}, 1)" ${i < d.length - 1 ? '' : 'disabled'} title="${esc(t('cols.right'))}">↓</button></span>
+    <input type="text" class="emoji" value="${esc(c.emoji)}" maxlength="8" placeholder="🙂" oninput="state.colDraft[${i}].emoji = this.value" aria-label="${esc(t('cols.emoji'))}">
+    <input type="text" value="${esc(c.name)}" maxlength="40" oninput="state.colDraft[${i}].name = this.value" aria-label="${esc(t('dlg.find.name'))}">
+    <input type="color" value="${esc(c.color || '#888888')}" oninput="state.colDraft[${i}].color = this.value" aria-label="${esc(t('cols.colour'))}">
+    <input type="number" class="wip" min="0" max="999" step="1" value="${c.wip || ''}" placeholder="${esc(t('cols.limit.ph'))}" title="${esc(t('cols.limit.title'))}" oninput="state.colDraft[${i}].wip = this.value" aria-label="${esc(t('cols.limit.label'))}">
+    ${c.key === 'verify' ? '<span class="steps"></span>' : `<input type="text" class="steps" value="${esc(c.steps.join(', '))}" placeholder="${esc(t('cols.steps.ph'))}" title="${esc(t('cols.steps.title'))}" oninput="state.colDraft[${i}].steps = this.value.split(',').map(x => x.trim()).filter(Boolean)" aria-label="${esc(t('cols.steps.label'))}">`}
+    <label class="chk"><input type="checkbox" ${c.hidden ? 'checked' : ''} onchange="hideCol(${i}, this)"> ${esc(t('cols.hide'))}</label>
     <span class="muted">${esc(COLS[c.key])}</span></div>`).join('');
 }
 function moveCol(i, by) { const d = state.colDraft, [c] = d.splice(i, 1); d.splice(i + by, 0, c); paintColRows(); }
 function hideCol(i, box) {
   const c = state.colDraft[i];
-  if (box.checked && KEY_COLS[c.key] && !confirm(`Hide "${c.name}"? It holds ${KEY_COLS[c.key]}, so you could miss things.`)) { box.checked = false; return; }
+  if (box.checked && KEY_COLS[c.key] && !confirm(t('cols.hide.confirm', { name: c.name, what: t(KEY_COLS[c.key]) }))) { box.checked = false; return; }
   c.hidden = box.checked;
 }
 async function saveColumns(all) {
   const columns = state.colDraft.map(c => ({ status: c.key, name: c.name, emoji: c.emoji, color: c.color && c.color !== '#888888' ? c.color : '', hidden: c.hidden, wip: c.wip, steps: c.steps }));
   try {
     const slugs = all ? (await api('GET', '/api/projects?all=1')).map(x => x.slug) : [slug()];
-    if (all && !confirm(`Give all ${slugs.length} projects these columns?`)) return;
+    if (all && !confirm(t('cols.all.confirm', { n: slugs.length }))) return;
     for (const s of slugs) await api('PATCH', '/api/projects/' + s, { columns });
     closeDialog(); await rerender();
   } catch (e) { setErr('col-err', e); }
@@ -243,15 +244,15 @@ async function saveColumns(all) {
 
 /* ---------- card view (AIG-119) ---------- */
 // ---- cards: compact or roomy, and which details show on this board's cards ----
-const CARD_DETAILS = [['assignee', '👤 Assignee'], ['type', 'Type'], ['priority', 'Priority'], ['sprint', 'Sprint'], ['comments', '💬 Comment count'], ['age', '🕒 Age (time since last update)']];
+const CARD_DETAILS = ['assignee', 'type', 'priority', 'sprint', 'comments', 'age'];
 function cardViewDialog() {
   const v = cardViewOf(state.project);
-  openDialog('<h2>🃏 Cards</h2><p class="muted">What cards on this board show. Only this project.</p>' +
-    `<div class="row"><label class="chk"><input type="radio" name="cv-density" value="roomy" ${v.density === 'roomy' ? 'checked' : ''}> Roomy</label>
-    <label class="chk"><input type="radio" name="cv-density" value="compact" ${v.density === 'compact' ? 'checked' : ''}> Compact</label></div>` +
-    CARD_DETAILS.map(([k, label]) => `<label class="chk" style="display:block;margin:6px 0"><input type="checkbox" data-cv="${k}" ${v.show[k] ? 'checked' : ''}> ${label}</label>`).join('') +
-    '<div class="err" id="cv-err"></div><div class="actions"><button class="primary" onclick="saveCardView()">Save</button>' +
-    '<button onclick="saveCardView(null)" title="Back to how cards looked before">Reset</button><button type="button" onclick="closeDialog()">Cancel</button></div>');
+  openDialog(`<h2>${esc(t('board.cards'))}</h2><p class="muted">${esc(t('cv.intro'))}</p>` +
+    `<div class="row"><label class="chk"><input type="radio" name="cv-density" value="roomy" ${v.density === 'roomy' ? 'checked' : ''}> ${esc(t('cv.roomy'))}</label>
+    <label class="chk"><input type="radio" name="cv-density" value="compact" ${v.density === 'compact' ? 'checked' : ''}> ${esc(t('cv.compact'))}</label></div>` +
+    CARD_DETAILS.map(k => `<label class="chk" style="display:block;margin:6px 0"><input type="checkbox" data-cv="${k}" ${v.show[k] ? 'checked' : ''}> ${esc(t('cv.' + k))}</label>`).join('') +
+    `<div class="err" id="cv-err"></div><div class="actions"><button class="primary" onclick="saveCardView()">${esc(t('common.save'))}</button>` +
+    `<button onclick="saveCardView(null)" title="${esc(t('cv.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
 async function saveCardView(reset) {
   const show = {}; document.querySelectorAll('#dialog [data-cv]').forEach(b => { show[b.dataset.cv] = b.checked; });
@@ -263,13 +264,13 @@ async function saveCardView(reset) {
 // ---- look: the colour and emoji that mark this project in the inbox, tabs and home page ----
 function lookDialog() {
   const p = state.project;
-  openDialog(`<h2>🎨 Look</h2>
-    <p class="muted">Marks ${esc(p.name)} in your inbox, its tabs and the home page.</p>
-    <div class="row"><label class="f"><span>Emoji</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
-    <label class="f"><span>Colour</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
-    <label class="chk"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> 💬 Chatty lead: the odd nudge or light joke in your DMs <span class="muted">(uses a few more tokens)</span></label>
+  openDialog(`<h2>${esc(t('board.look'))}</h2>
+    <p class="muted">${esc(t('look.intro', { name: p.name }))}</p>
+    <div class="row"><label class="f"><span>${esc(t('cols.emoji'))}</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
+    <label class="f"><span>${esc(t('cols.colour'))}</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
+    <label class="chk"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> ${esc(t('look.chatty'))} <span class="muted">${esc(t('look.chatty.cost'))}</span></label>
     <div class="err" id="look-err"></div>
-    <div class="actions"><button class="primary" onclick="saveLook()">Save</button><button onclick="saveLook(true)" title="Pick the colour and emoji automatically again">Automatic</button><button type="button" onclick="closeDialog()">Cancel</button></div>`);
+    <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
 async function saveLook(auto) {
   try {
@@ -280,17 +281,17 @@ async function saveLook(auto) {
 
 /* ---------- team permissions ---------- */
 // ---- permissions: ticks for the common rule sets, plus the full lists as text (one rule per line) (AIG-74) ----
-const PERM_LISTS = [['allow', 'Allowed without asking'], ['ask', 'Ask first'], ['deny', 'Never']];
+const PERM_LISTS = [['allow', 'perm.allow'], ['ask', 'perm.ask'], ['deny', 'perm.deny']];
 async function permsDialog() {
   let r;
   try { r = await api('GET', `/api/projects/${slug()}/permissions`); } catch (e) { alert(e.message); return; }
   state.permPresets = r.presets;
-  openDialog(`<h2>🔐 Permissions</h2>
-    <p class="muted">What this project's team may do without asking you. Saved in <code>${esc(r.file)}</code>.</p>
+  openDialog(`<h2>${esc(t('board.perms'))}</h2>
+    <p class="muted">${t('perm.intro.html', { file: esc(r.file) })}</p>
     <div id="perm-ticks">${Object.entries(r.presets).map(([k, v]) => `<label class="chk"><input type="checkbox" data-k="${k}" onchange="permTick(this)"> ${esc(v.label)}</label>`).join('')}</div>
-    ${PERM_LISTS.map(([l, label]) => `<label class="f"><span>${label} (one rule per line)</span><textarea id="perm-${l}" rows="4" oninput="permSync()">${esc(r[l].join('\n'))}</textarea></label>`).join('')}
+    ${PERM_LISTS.map(([l, label]) => `<label class="f"><span>${esc(t('perm.rule', { label: t(label) }))}</span><textarea id="perm-${l}" rows="4" oninput="permSync()">${esc(r[l].join('\n'))}</textarea></label>`).join('')}
     <div class="err" id="perm-err"></div><div id="perm-done" class="muted"></div>
-    <div class="actions"><button class="primary" onclick="savePerms()">Save</button><button type="button" onclick="closeDialog()">Close</button></div>`);
+    <div class="actions"><button class="primary" onclick="savePerms()">${esc(t('common.save'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
   permSync();
 }
 const permLines = l => $('perm-' + l).value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
@@ -310,7 +311,7 @@ async function savePerms() {
   try {
     await api('PUT', `/api/projects/${slug()}/permissions`, Object.fromEntries(PERM_LISTS.map(([l]) => [l, permLines(l)])));
     $('perm-err').textContent = '';
-    $('perm-done').textContent = '✅ Saved. The team uses these from its next run.';
+    $('perm-done').textContent = t('perm.saved');
   } catch (e) { setErr('perm-err', e); }
 }
 
@@ -325,23 +326,23 @@ async function loadDocs(s) {
 async function openDocs() {
   try {
     state.docs = await api('GET', `/api/projects/${slug()}/docs`);
-    openDialog(`<h2>📄 Docs</h2>${state.docs.length ? `<div class="doclist">${state.docs.map((n, i) => `<button onclick="showDoc(${i})">${esc(n)}</button>`).join('')}</div>`
-      : `<p class="muted">No .md files found${state.project.path ? ' in ' + esc(state.project.path) : ': this project has no folder path set'}.</p>`}
-      <div class="actions"><button onclick="closeDialog()">Close</button></div>`);
+    openDialog(`<h2>${esc(t('board.docs'))}</h2>${state.docs.length ? `<div class="doclist">${state.docs.map((n, i) => `<button onclick="showDoc(${i})">${esc(n)}</button>`).join('')}</div>`
+      : `<p class="muted">${state.project.path ? esc(t('docs.none.in', { path: state.project.path })) : esc(t('docs.none.nopath'))}</p>`}
+      <div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
   } catch (e) { alert(e.message); }
 }
 // Open any .md file in the project folder (from a link in card text); title is its relative name.
 async function showDocPath(p, s) {
   try {
     const d = await api('GET', `/api/projects/${s || slug()}/file?path=${encodeURIComponent(p)}`);
-    openDialog(`<div class="actions" style="margin-top:0"><b class="doctitle">${esc(d.name)}</b><button onclick="closeDialog()">Close</button></div>
+    openDialog(`<div class="actions" style="margin-top:0"><b class="doctitle">${esc(d.name)}</b><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>
       <div class="md">${md(d.text)}</div>`, 'wide');
   } catch (e) { alert(e.message); }
 }
 async function showDoc(i) {
   try {
     const d = await api('GET', `/api/projects/${slug()}/docs/${encodeURIComponent(state.docs[i])}`);
-    openDialog(`<div class="actions" style="margin-top:0"><button onclick="openDocs()">← Docs</button><button onclick="closeDialog()">Close</button></div>
+    openDialog(`<div class="actions" style="margin-top:0"><button onclick="openDocs()">${esc(t('docs.back'))}</button><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>
       <div class="md">${md(d.text)}</div>`, 'wide');
   } catch (e) { alert(e.message); }
 }

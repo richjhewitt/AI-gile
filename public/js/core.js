@@ -2,9 +2,10 @@
 // The board's human (AIG-103): name from /api/meta, default Rich.
 const me = () => (typeof state !== 'undefined' && state.owner) || 'Rich';
 const isOwner = a => String(a || '').trim().toLowerCase() === me().toLowerCase();
-const COLS = { backlog: 'Backlog', todo: 'To do', doing: 'In progress', review: 'Team checking', verify: 'For you to test', team: 'For the team', done: 'Done' };
+// Getters, so the names follow the language chosen at start-up (AIG-124).
+const COLS = { get backlog() { return t('col.backlog'); }, get todo() { return t('col.todo'); }, get doing() { return t('col.doing'); }, get review() { return t('col.review'); }, get verify() { return t('col.verify'); }, get team() { return t('col.team'); }, get done() { return t('col.done'); } };
 // A project's columns (AIG-116): its saved order, names, emoji, colours and hidden flags over the defaults.
-const DEFAULT_NAMES = { verify: 'For you' };   // the For you column (AIG-106) shows more than tests
+const DEFAULT_NAMES = { get verify() { return t('col.verify.short'); } };   // the For you column (AIG-106) shows more than tests
 function colsOf(p) {
   const saved = (p && p.columns) || [], byStatus = Object.fromEntries(saved.map(c => [c.status, c]));
   const order = saved.length ? saved.map(c => c.status) : Object.keys(COLS);
@@ -32,10 +33,10 @@ const api = async (method, url, body) => {
   return j;
 };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const ago = iso => {
-  const s = (Date.now() - new Date(iso)) / 1000;
-  if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + 'm ago';
-  if (s < 86400) return Math.floor(s / 3600) + 'h ago'; return Math.floor(s / 86400) + 'd ago';
+const ago = (iso, bare) => {   // bare = without "ago", for "unanswered for 5m"
+  const s = (Date.now() - new Date(iso)) / 1000, b = bare ? '.bare' : '';
+  if (s < 60) return t('ago.now'); if (s < 3600) return t('ago' + b + '.m', { n: Math.floor(s / 60) });
+  if (s < 86400) return t('ago' + b + '.h', { n: Math.floor(s / 3600) }); return t('ago' + b + '.d', { n: Math.floor(s / 86400) });
 };
 const $ = id => document.getElementById(id);
 
@@ -92,18 +93,18 @@ async function refresh(force) {
     }
   } catch (e) {
     $('live').className = 'live off';
-    $('live').textContent = 'offline: ' + e.message;
+    $('live').textContent = t('live.offline', { msg: e.message });
     return;
   }
   if (!force && state.dragging) return;
   if (!force && busy()) {
     // Keep the board behind moving; only hold the panel/dialog Rich is using.
     if (sig !== state.lastBoardSig) { state.lastBoardSig = sig; renderBoardOnly(); }
-    if (sig !== state.lastSig) { $('live').className = 'live paused'; $('live').textContent = 'live (your typing is safe)'; }
+    if (sig !== state.lastSig) { $('live').className = 'live paused'; $('live').textContent = t('live.paused'); }
     return;
   }
   $('live').className = 'live';
-  $('live').textContent = 'live';
+  $('live').textContent = t('live.ok');
   if (!force && sig === state.lastSig) return;
   state.lastSig = state.lastBoardSig = sig;
   render();
@@ -123,16 +124,16 @@ function render() {
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
-  if (state.route.view === 'setup') { $('crumb').textContent = '/ Setup'; if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; return; }
-  if (state.route.view === 'standups') { $('crumb').textContent = '/ Stand-ups'; $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
-  if (state.route.view === 'usage') { $('crumb').textContent = '/ Usage'; $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'usage') { $('crumb').textContent = '/ ' + t('crumb.usage'); $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
   // A popped-out card (AIG-122): just the card, filling its own window; no header or board behind it.
   document.body.classList.toggle('pop', !!state.route.pop);
   if (state.route.pop) {
     const c = p.cards.find(x => x.id === state.route.card);
     $('app').innerHTML = '';
-    $('modal').innerHTML = c ? renderCard(p, c) : '<p class="muted" style="padding:16px">This card no longer exists.</p>';
+    $('modal').innerHTML = c ? renderCard(p, c) : `<p class="muted" style="padding:16px">${esc(t('card.gone'))}</p>`;
     const pp = document.querySelector('#modal .panel'); if (pp) pp.scrollTop = keepScroll;
     return;
   }

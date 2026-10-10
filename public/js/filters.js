@@ -24,17 +24,17 @@ function paintFilterBar() {
   const p = state.project, f = curFilter(p.slug);
   const uniq = key => [...new Set(p.cards.map(c => c[key]).filter(Boolean))].sort();
   const opt = (v, label, cur) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
-  const sel = (key, all, list) => `<select data-f="${key}">${opt('', all, f[key])}${list.map(v => opt(v, v, f[key])).join('')}</select>`;
+  const sel = (key, all, list) => `<select data-f="${key}">${opt('', all, f[key])}${list.map(v => opt(v, key === 'type' ? t('type.' + v) : v, f[key])).join('')}</select>`;
   const shown = p.cards.filter(c => matchesFilter(c, p.slug)).length, active = f.q || f.type || f.who || f.sprint;
-  const selects = sel('type', 'All types', ['feature', 'bug', 'task']) + sel('who', 'Anyone', uniq('assignee')) + sel('sprint', 'All sprints', uniq('sprint'));
+  const selects = sel('type', t('filter.types'), ['feature', 'bug', 'task']) + sel('who', t('filter.anyone'), uniq('assignee')) + sel('sprint', t('filter.sprints'), uniq('sprint'));
   if (bar.dataset.slug !== p.slug) {   // build once per project; afterwards only the selects and count update
     bar.dataset.slug = p.slug;
-    bar.innerHTML = `<div class="fbar"><input type="search" id="f-q" placeholder="🔍 Search cards…" value="${esc(f.q)}" oninput="setFilter('q', this.value)">
+    bar.innerHTML = `<div class="fbar"><input type="search" id="f-q" placeholder="${esc(t('filter.search'))}" value="${esc(f.q)}" oninput="setFilter('q', this.value)">
       <span id="f-sel">${selects}</span><span id="f-count" class="muted"></span></div>`;
     bar.querySelector('#f-sel').onchange = e => setFilter(e.target.dataset.f, e.target.value);
   } else if ($('f-sel').dataset.sig !== selects && !$('f-sel').contains(document.activeElement)) { $('f-sel').innerHTML = selects; }
   $('f-sel').dataset.sig = selects;
-  $('f-count').innerHTML = active ? `Showing <b>${shown}</b> of ${p.cards.length} · <a href="#" onclick="clearFilter();return false">clear</a>` : '';
+  $('f-count').innerHTML = active ? t('filter.count.html', { shown, n: p.cards.length }) : '';
 }
 function setFilter(key, v) { curFilter(state.project.slug)[key] = v; renderBoardOnly(); paintFilterBar(); }
 function clearFilter() { setLastView(state.project.slug, ''); state.filters[state.project.slug] = blankFilter(); $('filterbar').dataset.slug = ''; renderBoardOnly(); paintFilterBar(); }
@@ -57,7 +57,7 @@ async function saveViews(views) {
 }
 async function saveView() {
   const name = $('view-name').value.trim(), p = state.project, f = curFilter(p.slug);
-  if (!name) return setErr('view-err', new Error('Give the view a name'));
+  if (!name) return setErr('view-err', new Error(t('views.noname')));
   const views = (p.views || []).filter(v => v.name !== name).concat({ name, filters: { ...f } });   // same name = replace
   try { await saveViews(views); setLastView(p.slug, name); viewsDialog(); } catch (e) { setErr('view-err', e); }
 }
@@ -67,10 +67,10 @@ async function deleteView(i) {
 }
 function viewsDialog() {
   const p = state.project, vs = p.views || [], cur = lastView(p.slug);
-  openDialog(`<h2>👁 Views</h2><p class="muted">A view is a saved search and filters for this board.</p>
-    ${vs.length ? vs.map((v, i) => `<div class="viewrow"><button type="button" class="grow" onclick="applyView(${i})">${v.name === cur ? '✓ ' : ''}${esc(v.name)}</button><button type="button" class="colbtn" title="Delete this view" onclick="deleteView(${i})">✕</button></div>`).join('') : '<p class="muted">No saved views yet.</p>'}
-    <h3>Save the current filters</h3>
-    <div class="viewrow"><input type="text" id="view-name" maxlength="40" placeholder="e.g. My bugs" onkeydown="if(event.key==='Enter')saveView()"><button class="primary" type="button" onclick="saveView()" ${vs.length >= 20 ? 'disabled title="At most 20 views"' : ''}>Save view</button></div>
+  openDialog(`<h2>${esc(t('views.title'))}</h2><p class="muted">${esc(t('views.intro'))}</p>
+    ${vs.length ? vs.map((v, i) => `<div class="viewrow"><button type="button" class="grow" onclick="applyView(${i})">${v.name === cur ? '✓ ' : ''}${esc(v.name)}</button><button type="button" class="colbtn" title="${esc(t('views.delete'))}" onclick="deleteView(${i})">✕</button></div>`).join('') : `<p class="muted">${esc(t('views.none'))}</p>`}
+    <h3>${esc(t('views.save.h'))}</h3>
+    <div class="viewrow"><input type="text" id="view-name" maxlength="40" placeholder="${esc(t('views.placeholder'))}" onkeydown="if(event.key==='Enter')saveView()"><button class="primary" type="button" onclick="saveView()" ${vs.length >= 20 ? `disabled title="${esc(t('views.max'))}"` : ''}>${esc(t('views.save'))}</button></div>
     <div class="err" id="view-err"></div>
-    <div class="actions"><button type="button" onclick="closeDialog()">Close</button></div>`);
+    <div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
 }
