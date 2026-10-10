@@ -4,6 +4,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
+import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -955,6 +956,23 @@ def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, 
   check('Automatic brings the picks back', t.emoji === '🎵' && t.color === sum.color, t);
   noErrors(page);
 }, true);
+
+def('guard', 'only the board on this computer may use the API: host, origin and JSON checks (AIG-90)', async s => {
+  await mkProject(s, 'Alpha', 'ALP');
+  // Raw request so the Host and Origin headers can be set freely.
+  const raw = (method, p, headers, body) => new Promise(res => {
+    const r = http.request({ host: '127.0.0.1', port: PORT, method, path: p, headers }, x => { x.resume(); res(x.statusCode); });
+    r.on('error', () => res(0)); r.end(body);
+  });
+  const json = { 'Content-Type': 'application/json' }, card = JSON.stringify({ title: 'evil' });
+  check('wrong Host refused (DNS rebinding)', await raw('GET', '/api/projects', { Host: 'evil.example:' + PORT }) === 403);
+  check('localhost Host allowed', await raw('GET', '/api/projects', { Host: 'localhost:' + PORT }) === 200);
+  check('other site Origin refused', await raw('POST', '/api/projects/alpha/cards', { ...json, Origin: 'https://evil.example' }, card) === 403);
+  check('plain-text body refused (form/beacon trick)', await raw('POST', '/api/projects/alpha/cards', { 'Content-Type': 'text/plain' }, card) === 415);
+  check('board page Origin allowed', await raw('POST', '/api/projects/alpha/cards', { ...json, Origin: 'http://127.0.0.1:' + PORT }, card) === 200);
+  check('CLI style (JSON, no Origin) allowed', await raw('POST', '/api/projects/alpha/cards', json, card) === 200);
+  check('no evil card got in', (await s.ok('GET', '/api/projects/alpha')).cards.length === 2);
+});
 
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);

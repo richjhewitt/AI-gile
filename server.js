@@ -24,6 +24,20 @@ const routes = makeRoutes(() => ({ dev: DEV, build: build() }));
 /* ---------- http plumbing ---------- */
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json' };
 
+// Only this computer's own board, CLI and hooks may use the API (AIG-90). The server already listens on
+// 127.0.0.1, but a website open in the same browser could still send requests to it:
+// - Host must be localhost/127.0.0.1 (stops DNS rebinding: a site pointing its own name at this port)
+// - changes must come from the board's own page if a browser sends them (Origin), and as JSON, which a
+//   plain cross-site form or beacon can't send without a preflight that this server never allows.
+const LOCAL = new Set([`localhost:${PORT}`, `127.0.0.1:${PORT}`]);
+function guard(req) {
+  if (!LOCAL.has(String(req.headers.host || '').toLowerCase())) throw bad('wrong host', 403);
+  if (req.method === 'GET') return;
+  const origin = req.headers.origin;
+  if (origin && !LOCAL.has(origin.replace(/^http:\/\//, '').toLowerCase())) throw bad('requests from other sites are not allowed', 403);
+  if (!/^application\/json\b/i.test(req.headers['content-type'] || '')) throw bad('send JSON (Content-Type: application/json)', 415);
+}
+
 // Attachments show inline only for these types; anything else downloads.
 const ATTACH_MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.pdf': 'application/pdf', '.txt': 'text/plain; charset=utf-8', '.md': 'text/plain; charset=utf-8', '.log': 'text/plain; charset=utf-8' };
 
@@ -48,6 +62,7 @@ const server = http.createServer(async (req, res) => {
   const pathname = decodeURIComponent(url.pathname);
   try {
     if (pathname.startsWith('/api/')) {
+      guard(req);
       for (const [method, re, fn] of routes) {
         const m = pathname.match(re);
         if (m && method === req.method) {
