@@ -399,7 +399,7 @@ function renderBoard(p) {
   return `<div class="toolbar"><h2>${esc(p.name)}${p.archived ? ' <span class="pill">archived</span>' : ''}</h2>
       <button class="primary" onclick="newCard()">+ New</button>
       <button onclick="openDocs()">📄 Docs</button>
-      <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'todo'})">🐞 Raise bug</button>
+      <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'team'})">🐞 Raise bug</button>
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
@@ -671,7 +671,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog'
 
 function newCard(preset = {}) {
   const bug = preset.type === 'bug';
-  const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: 'backlog', assignee: '', sprint: '', ...preset };
+  // Rich's new cards go straight to the team (AIG-51); the + on a column still picks that column.
+  const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: 'team', assignee: '', sprint: '', ...preset };
   openDialog(`<h2>${bug ? '🐞 Raise bug' : 'New card'}</h2>
     <form onsubmit="return createCard(event)">${cardFields(c, bug ? { titlePh: "What's broken?", descLabel: 'What happened / how to reproduce', descPh: 'Steps, what you expected, what you saw' } : { titlePh: 'What needs doing?' })}
       <div class="err" id="d-err"></div>
