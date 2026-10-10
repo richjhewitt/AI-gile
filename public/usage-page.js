@@ -31,6 +31,9 @@ const uz = {
   .uz-big { font-size: 15px; }
   .uz-sub { color: var(--muted); font-size: 13px; }
   .uz-note { color: var(--muted); font-size: 12px; margin: 0 0 14px; }
+  .uz-setup { border: 2px solid var(--accent); }
+  .uz-setup h3 { margin: 0 0 8px; font-size: 17px; }
+  .uz-snip { background: var(--col); padding: 10px 12px; border-radius: 8px; overflow-x: auto; font-size: 13px; }
   .uz-empty { text-align: center; padding: 28px 16px; }
   .uz-empty b { display: block; font-size: 17px; margin-bottom: 4px; }
   .uz-bar-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; margin-bottom: 4px; }
@@ -106,11 +109,25 @@ function renderUsagePage() {
   const width = Math.max(260, Math.min(960, ($('app').clientWidth || 360) - 40 - 30));
   const noReading = !hist.length;
   const tiles = noReading
-    ? `<div class="uz-card uz-empty"><b>⏳ Waiting for the first reading</b><span class="muted">No plan reading yet. It appears once an agent session has run with the status line on.</span></div>`
+    ? uzSetup(limits.setup)
     : `<div class="uz-tiles">${uzTile('This session', '5-hour window', limits.latest, 'h5', hist)}${uzTile('This week', '7-day window', limits.latest, 'wk', hist)}</div>
-       <p class="uz-note">Colours: ✅ plenty = 50% or more left · ⚠️ getting low = 20 to 49% left · ⛔ nearly out = under 20% left.</p>`;
+       <p class="uz-note">Your plan has two limits: one per 5-hour session and one per week. There's no monthly limit. Colours: ✅ plenty = 50% or more left · ⚠️ getting low = 20 to 49% left · ⛔ nearly out = under 20% left.</p>`;
   return `<div class="uz"><h2>⚡ Usage</h2><p class="uz-explain">How much of your plan you have left, and which projects are using it.</p>
     ${tiles}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}</div>`;
+}
+
+// No plan reading yet: explain the two limits and show the one-time setup (file + lines come from the server's local settings).
+function uzSetup(setup) {
+  const lines = setup ? setup.snippet : '';
+  return `<div class="uz-card uz-setup">
+    <h3>📏 How much of your plan is left: not switched on yet</h3>
+    <p>Your plan has <b>two limits</b>: one per <b>5-hour session</b> and one per <b>week</b>. There's no monthly limit. Once switched on, two big gauges here show <b>% left</b> of each, and when it resets.</p>
+    ${setup ? `<p><b>One-time step:</b> open <code>${esc(setup.file)}</code> in Notepad, paste these lines on a new line just after the first <code>{</code>, and save.</p>
+    <pre class="uz-snip">${esc(lines)}</pre>
+    <button class="primary" onclick="navigator.clipboard.writeText(${esc(JSON.stringify(lines))}).then(() => this.textContent = '✅ Copied')">📋 Copy the lines</button>
+    <p class="muted">Or tell the lead in chat: <i>"yes, add the status line to my global settings"</i>.</p>
+    <p class="muted">The gauges fill in the next time any agent session runs.</p>` : '<p class="muted">Ask the lead to set this up.</p>'}
+  </div>`;
 }
 
 function uzStatus(left) {

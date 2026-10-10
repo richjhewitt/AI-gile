@@ -65,7 +65,10 @@ function limitsHistory(days) {
       .map(l => { try { return JSON.parse(l); } catch { return null; } })
       .filter(s => s && Date.parse(s.at) >= since);
   } catch {}
-  return { latest: history[history.length - 1] || null, history };
+  // Until readings arrive, say how to switch the feed on (file path from local settings, never in the repo).
+  const file = localSettings().globalSettingsFile;
+  const setup = file ? { file, snippet: '"statusLine": {\n  "type": "command",\n  "command": ' + JSON.stringify(`node "${__dirname.replace(/\\/g, '/')}/statusline.js"`) + '\n},' } : null;
+  return { latest: history[history.length - 1] || null, history, setup };
 }
 
 // ---- connecting a project folder (onboarding) ------------------------------------------------
