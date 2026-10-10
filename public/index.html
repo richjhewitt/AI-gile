@@ -288,7 +288,8 @@ function flightHtml(list) {
 
 function renderBoard(p) {
   const cols = Object.entries(COLS).map(([k, label]) => {
-    const cs = p.cards.filter(c => c.status === k).sort((a, b) => b.updated.localeCompare(a.updated));
+    // 'For you to test' is a queue: longest-waiting first, so 'Wait and see' sends a card to the back.
+    const cs = p.cards.filter(c => c.status === k).sort((a, b) => k === 'verify' ? a.updated.localeCompare(b.updated) : b.updated.localeCompare(a.updated));
     return `<div class="column" data-status="${k}"><h3><span>${label}</span><span>${cs.length} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
   }).join('');
   const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
@@ -405,7 +406,7 @@ function renderCard(p, c) {
       <div class="muted">Built and waiting for you to test${c.testSteps ? ' (steps below)' : ''}.</div>
       <label class="f" style="margin-top:8px"><span>Comment (required to send back)</span><textarea id="v-text" rows="3" placeholder="What did you see? What's wrong?"></textarea></label>
       <div class="err" id="v-err"></div>
-      <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button></div></div>` : '';
+      <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button><button onclick="waitAndSee()" title="Not sure yet: move it to the back of your queue">⏳ Wait and see</button></div></div>` : '';
   return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel">${head}
     <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(COLS[c.status])}${c.status === 'team' && c.prevStatus ? ' (was ' + esc(COLS[c.prevStatus]) + ')' : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2>
@@ -536,6 +537,9 @@ async function sendReply() {
     await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: 'Rich', text: t });
     closeCard();
   } catch (err) { setErr('r-err', err); }
+}
+async function waitAndSee() {
+  try { await api('PATCH', `/api/projects/${slug()}/cards/${cardId()}`, {}); closeCard(); } catch (err) { setErr('v-err', err); }
 }
 async function verdict(accept) {
   const t = $('v-text').value.trim();

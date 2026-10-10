@@ -281,7 +281,7 @@ const routes = [
     listSlugs().map(load).filter(p => p && !p.archived).flatMap(p =>
       p.cards.filter(waitingOnRich)
         .map(c => ({ project: p.slug, projectName: p.name, ...c })))
-      .sort((a, b) => b.updated.localeCompare(a.updated))],
+      .sort((a, b) => a.updated.localeCompare(b.updated))], // a queue: longest-waiting first
 ];
 
 // ---- http plumbing -----------------------------------------------------------
