@@ -8,17 +8,17 @@ const Attach = (() => {
   const isImg = a => /^image\//.test(a.type || '') || /\.(png|jpe?g|gif|webp)$/i.test(a.name || '');
   // Images show a thumbnail; clicking it opens a full-size preview, to check it's the right one (AIG-129).
   const urls = new WeakMap(), urlOf = f => { if (!urls.has(f)) urls.set(f, URL.createObjectURL(f)); return urls.get(f); };
-  const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="Click to preview">` : '📎'} ${esc(f.name)} <button type="button" data-att-del="${i}" title="Remove">✕</button></span>`).join('');
+  const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="${esc(t('attach.preview'))}">` : '📎'} ${esc(f.name)} <button type="button" data-att-del="${i}" title="${esc(t('attach.remove'))}">✕</button></span>`).join('');
   function preview(src) {
     const lb = document.createElement('div');
-    lb.className = 'att-lightbox'; lb.title = 'Click or press Escape to close';
+    lb.className = 'att-lightbox'; lb.title = t('attach.close');
     lb.innerHTML = `<img src="${src}" alt="">`;
     const close = () => { lb.remove(); document.removeEventListener('keydown', esc_, true); };
     const esc_ = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
     lb.onclick = close; document.addEventListener('keydown', esc_, true);
     document.body.appendChild(lb);
   }
-  const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="Attach a file, or paste a screenshot into the reply box">📎 Attach</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span></span>`;
+  const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="${esc(t('attach.title'))}">${esc(t('attach.btn'))}</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span></span>`;
   const paint = key => document.querySelectorAll('.att').forEach(b => { if (b.dataset.attKey === key) b.querySelector('.att-list').innerHTML = chips(key); });
   const add = (key, files) => { pending.set(key, [...list(key), ...files.filter(f => f.size)]); paint(key); };
   const stamp = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
@@ -49,7 +49,7 @@ const Attach = (() => {
   async function upload(key, slug) {
     const out = [];
     for (const f of list(key)) {
-      if (f.size > MAX) throw new Error(f.name + ' is over 10 MB');
+      if (f.size > MAX) throw new Error(t('attach.toobig', { name: f.name }));
       const data = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(f); });
       const a = await api('POST', `/api/projects/${slug}/attachments`, { name: f.name, type: f.type, data });
       out.push({ id: a.id, type: a.type });

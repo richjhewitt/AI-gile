@@ -111,11 +111,7 @@
   /* ---------- helpers ---------- */
   const el = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const ago = iso => {
-    const s = (Date.now() - new Date(iso)) / 1000;
-    if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + 'm ago';
-    if (s < 86400) return Math.floor(s / 3600) + 'h ago'; return Math.floor(s / 86400) + 'd ago';
-  };
+  // ago() and t() are the page's (js/core.js, js/i18n.js); they are only called after everything has loaded.
   const post = async (method, url, body) => {
     const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
     const j = await r.json().catch(() => ({}));
@@ -165,6 +161,7 @@
     return raw.filter(c => qs.includes(c));
   }
   function apply(list) {
+    if (typeof i18n === 'undefined' || !i18n.ready) { setTimeout(() => load().catch(() => {}), 100); return; }   // wait for the language file (AIG-124)
     raw = list;
     items = view();
     const qs = items.filter(c => !isTest(c));   // questions and tasks both alert (only those shown)
@@ -179,7 +176,7 @@
     paintTop();
     if (onInboxPage()) paintPage();
   }
-  function repaint() { items = view(); paintTop(); if (onInboxPage() && el('ib')) paintPage(); }
+  function repaint() { if (!loaded) return; items = view(); paintTop(); if (onInboxPage() && el('ib')) paintPage(); }
 
   /* ---------- top bar (AIG-32, AIG-34) ---------- */
   function slot() {
@@ -195,24 +192,24 @@
     return { q: items.filter(isQuestion).length, k: items.filter(isTask).length, t: items.filter(isTest).length };
   }
   function paintTop() {
-    const { q, k, t } = counts();
-    const label = (q ? `${q} question${q === 1 ? '' : 's'} waiting. ` : '') + (k ? `${k} task${k === 1 ? '' : 's'} to do. ` : '') + (t ? `${t} to test. ` : '') || 'Nothing waiting. ';
+    const { q, k, t: te } = counts();   // te: a local `t` would hide the t() text function
+    const label = (q ? t(q === 1 ? 'inbox.sum.q.one' : 'inbox.sum.q.many', { n: q }) : '') + (k ? t(k === 1 ? 'inbox.sum.k.one' : 'inbox.sum.k.many', { n: k }) : '') + (te ? t('inbox.sum.t', { n: te }) : '') || t('inbox.sum.none');
     let alertBtn = '';
     if (canNotify()) {
       const on = alertsOn(), blocked = Notification.permission === 'denied';
-      alertBtn = `<button class="ib-alerts ${on ? 'on' : ''}" id="ibAlerts" title="${blocked ? 'Notifications are blocked in your browser settings for this site' : on ? 'Click to turn alerts off' : 'Get a pop-up and a soft beep when a team asks a new question'}" ${blocked ? 'disabled' : ''}>${blocked ? '🔕 Alerts blocked' : on ? '🔔 Alerts on' : '🔕 Turn on alerts'}</button>`;
+      alertBtn = `<button class="ib-alerts ${on ? 'on' : ''}" id="ibAlerts" title="${esc(blocked ? t('inbox.alerts.blocked.title') : on ? t('inbox.alerts.off.title') : t('inbox.alerts.on.title'))}" ${blocked ? 'disabled' : ''}>${esc(blocked ? t('inbox.alerts.blocked') : on ? t('inbox.alerts.on') : t('inbox.alerts.turnon'))}</button>`;
     }
-    const html = `<a class="ib-btn ${onInboxPage() ? 'on' : ''}" href="#/inbox" aria-label="Inbox. ${esc(label)}" title="${esc(label)}">📥 Inbox
-        ${q ? `<span class="ib-badge q">❓ ${q} question${q === 1 ? '' : 's'}</span>` : ''}
-        ${k ? `<span class="ib-badge k">📋 ${k} to do</span>` : ''}
-        ${t ? `<span class="ib-badge t">🧪 ${t} to test</span>` : ''}</a>${alertBtn}`;
+    const html = `<a class="ib-btn ${onInboxPage() ? 'on' : ''}" href="#/inbox" aria-label="${esc(t('inbox.btn.aria', { label }))}" title="${esc(label)}">${esc(t('inbox.btn'))}
+        ${q ? `<span class="ib-badge q">${esc(t(q === 1 ? 'inbox.badge.q.one' : 'inbox.badge.q.many', { n: q }))}</span>` : ''}
+        ${k ? `<span class="ib-badge k">${esc(t('inbox.badge.k', { n: k }))}</span>` : ''}
+        ${te ? `<span class="ib-badge t">${esc(t('inbox.badge.t', { n: te }))}</span>` : ''}</a>${alertBtn}`;
     const s = slot();
     if (s.dataset.sig !== html) {
       s.dataset.sig = html; s.innerHTML = html;
       const b = el('ibAlerts'); if (b) b.onclick = toggleAlerts;
     }
     // Everything waiting on Rich; the desktop app turns this count into its taskbar badge (AIG-76).
-    const title = q + k + t ? `(${q + k + t}) ${baseTitle}` : baseTitle;
+    const title = q + k + te ? `(${q + k + te}) ${baseTitle}` : baseTitle;
     if (document.title !== title) document.title = title;
   }
 
@@ -239,7 +236,7 @@
     beep();
     const one = fresh.length === 1 ? fresh[0] : null;
     const a = one && lastAsk(one);
-    const n = new Notification(one ? `❓ ${a.author} has a question (${one.id})` : `❓ ${fresh.length} new questions for you`, {
+    const n = new Notification(one ? t('inbox.notify.one', { who: a.author, id: one.id }) : t('inbox.notify.many', { n: fresh.length }), {
       body: one ? `${one.projectName}: ${String(a.text).replace(/\s+/g, ' ').slice(0, 160)}` : fresh.map(c => c.id + ' ' + c.title).join('\n').slice(0, 200),
       tag: 'aigile-question-' + (one ? keyOf(one) : 'many'),
     });
@@ -266,43 +263,43 @@
   /* ---------- inbox page (AIG-33) ---------- */
   function qHtml(c) {
     const a = lastAsk(c);
-    return `<div class="ib-top"><span class="ib-tag">${c.blocked ? '⛔ Blocked' : '❓ Question'}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
-      <div class="ib-who"><b>${esc(a.author)}</b> ${c.blocked ? 'is blocked' : 'asked'} ${ago(a.at)}</div>
+      <div class="ib-who">${t(c.blocked ? 'inbox.q.isblocked.html' : 'inbox.q.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>
-      <textarea rows="2" placeholder="Type your answer. Enter sends, Shift+Enter adds a new line." aria-label="Your answer to ${esc(c.id)}"></textarea>
+      <textarea rows="2" placeholder="${esc(t('inbox.q.ph'))}" aria-label="${esc(t('inbox.q.aria', { id: c.id }))}"></textarea>
       <div class="ib-err"></div>
-      <div class="actions">${c.blocked ? '' : '<button class="good" data-act="go" title="Sends GO as your answer">👍 Go</button>'}<button class="primary" data-act="send">Send answer</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">Your answer goes to the team and clears this question.</span></div>`;
+      <div class="actions">${c.blocked ? '' : `<button class="good" data-act="go" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>`}<button class="primary" data-act="send">${esc(t('inbox.q.send'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.q.hint'))}</span></div>`;
   }
   function kHtml(c) {
     const a = lastAsk(c);
-    return `<div class="ib-top"><span class="ib-tag">📋 To do</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.k.tag'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
-      <div class="ib-who"><b>${esc(a.author)}</b> asked you ${ago(a.at)}</div>
+      <div class="ib-who">${t('inbox.k.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>
-      <textarea rows="1" placeholder="Optional note for the team. Enter marks it done." aria-label="Note for ${esc(c.id)}"></textarea>
+      <textarea rows="1" placeholder="${esc(t('inbox.k.ph'))}" aria-label="${esc(t('inbox.k.aria', { id: c.id }))}"></textarea>
       <div class="ib-err"></div>
-      <div class="actions"><button class="good" data-act="taskdone">✅ Done</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">Tells the team it's done.</span></div>`;
+      <div class="actions"><button class="good" data-act="taskdone">${esc(t('inbox.k.done'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.k.hint'))}</span></div>`;
   }
   function tHtml(c) {
-    return `<div class="ib-top"><span class="ib-tag">🧪 To test</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">waiting ${ago(c.updated).replace(' ago', '')}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
-      ${c.testSteps ? `<details class="ib-steps"><summary>How to test</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : '<div class="ib-hint">No test steps written.</div>'}
+      ${c.testSteps ? `<details class="ib-steps"><summary>${esc(t('inbox.t.how'))}</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : `<div class="ib-hint">${esc(t('inbox.t.nosteps'))}</div>`}
       <div class="ib-err"></div>
-      <div class="actions">${c.openUrl ? `<button class="primary" data-act="open" data-cmd="${esc(c.startCmd || '')}" title="${esc(c.openUrl)}">▶ Open it</button>` : ''}<button class="good" data-act="accept">✅ Accept</button><button data-act="wait" title="Not sure yet: hide it for an hour">⏳ Wait and see</button>
-      <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">Send back needs a reason: open the card</a></div>`;
+      <div class="actions">${c.openUrl ? `<button class="primary" data-act="open" data-cmd="${esc(c.startCmd || '')}" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button>` : ''}<button class="good" data-act="accept">${esc(t('card.accept'))}</button><button data-act="wait" title="${esc(t('inbox.t.wait.title'))}">${esc(t('card.wait'))}</button>
+      <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">${esc(t('inbox.t.sendback'))}</a></div>`;
   }
   const sigOf = c => !isTest(c) ?[c.title, c.blocked, lastAsk(c).at, lastAsk(c).text].join('|') : [c.title, c.updated, c.testSteps].join('|');
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">
-      <div class="ib-head"><h2>📥 Inbox</h2><span class="ib-hint">Everything waiting on you, across all projects.</span></div>
+      <div class="ib-head"><h2>${esc(t('inbox.h'))}</h2><span class="ib-hint">${esc(t('inbox.sub'))}</span></div>
       <div class="ib-tabs" id="ibTabs" role="tablist"></div>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <div id="ibEmpty"></div>
-      <section class="ib-sec q" id="ibQ"><h3>💬 Messages <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
-      <section class="ib-sec k" id="ibK"><h3>📋 Tasks for you <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">things only you can do</span></h3><div class="list"></div></section>
-      <section class="ib-sec t" id="ibT"><h3>🧪 To test <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">longest waiting first</span></h3><div class="list"></div></section>
+      <section class="ib-sec q" id="ibQ"><h3>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
+      <section class="ib-sec k" id="ibK"><h3>${esc(t('inbox.tasks'))} <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.tasks.sub'))}</span></h3><div class="list"></div></section>
+      <section class="ib-sec t" id="ibT"><h3>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span></h3><div class="list"></div></section>
     </div>`;
     el('ib').addEventListener('click', onClick);
     el('ib').addEventListener('keydown', onKey);
@@ -374,8 +371,8 @@
     tabOrder = orderedProjects.map(([p]) => p);
     const projectBtns = orderedProjects.map(([p, name]) => btn(p, name, items.filter(c => c.project === p))).join('');
     const html = allAtEnd
-      ? projectBtns + btn('all', 'All', items)  // "All" at the end when showing a project first
-      : btn('all', 'All', items) + projectBtns;  // "All" at the beginning otherwise
+      ? projectBtns + btn('all', t('inbox.all'), items)  // "All" at the end when showing a project first
+      : btn('all', t('inbox.all'), items) + projectBtns;  // "All" at the beginning otherwise
     const box = el('ibTabs');
     if (box.dataset.sig !== html) { box.dataset.sig = html; box.innerHTML = html; }
     box.hidden = orderedProjects.length < 2;
@@ -413,9 +410,9 @@
     syncList(el('ibT').querySelector('.list'), ts);
     el('ibQ').hidden = !qs.length; el('ibK').hidden = !ks.length; el('ibT').hidden = !ts.length;
     el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = ts.length;
-    el('ibMore').hidden = !hidden; el('ibMore').textContent = `${hidden} more waiting for the morning`;
+    el('ibMore').hidden = !hidden; el('ibMore').textContent = t('inbox.more', { n: hidden });
     if (hidden) el('ibQ').hidden = false;
-    el('ibEmpty').innerHTML = items.length || hidden ? '' : '<div class="ib-empty"><div class="big">Nothing waiting on you 🎉</div><p>When a team asks a question or a feature is ready to test, it shows up here.</p></div>';
+    el('ibEmpty').innerHTML = items.length || hidden ? '' : `<div class="ib-empty"><div class="big">${esc(t('inbox.empty.title'))}</div><p>${esc(t('inbox.empty.text'))}</p></div>`;
     if (flashKey) {
       const n = [...document.querySelectorAll('.ib-item')].find(x => x.dataset.key === flashKey);
       if (n) { n.scrollIntoView({ block: 'center' }); n.classList.add('flash'); const t = n.querySelector('textarea'); if (t) t.focus({ preventScroll: true }); flashKey = null; }
@@ -449,13 +446,13 @@
   async function send(n, fixed) {
     if (n.dataset.sending) return;
     const ta = n.querySelector('textarea'), text = fixed || ta.value.trim(), key = n.dataset.project + '/' + n.dataset.id;
-    if (!text && !Attach.has(key)) { n.querySelector('.ib-err').textContent = 'Write something first.'; return; }
+    if (!text && !Attach.has(key)) { n.querySelector('.ib-err').textContent = t('dms.empty'); return; }
     lock(n);
     try {
       const attachments = fixed ? [] : await Attach.upload(key, n.dataset.project);
       await post('POST', base(n) + '/comments', { author: me(), text, attachments });
       if (!fixed) Attach.clear(key);
-      done(n, `Sent to the team on ${n.dataset.id}.`);
+      done(n, t('inbox.toast.sent', { id: n.dataset.id }));
     }
     catch (e) { fail(n, e); }
   }
@@ -467,18 +464,18 @@
       const attachments = await Attach.upload(key, n.dataset.project);
       await post('POST', base(n) + '/taskdone', { text, attachments });
       Attach.clear(key);
-      done(n, `✅ ${n.dataset.id} done. The team has been told.`);
+      done(n, t('inbox.toast.done', { id: n.dataset.id }));
     }
     catch (e) { fail(n, e); }
   }
   async function accept(n) {
     lock(n);
-    try { await post('POST', base(n) + '/verdict', { accept: true }); done(n, `✅ ${n.dataset.id} accepted.`); }
+    try { await post('POST', base(n) + '/verdict', { accept: true }); done(n, t('inbox.toast.accepted', { id: n.dataset.id })); }
     catch (e) { fail(n, e); }
   }
   async function waitAndSee(n) {
     lock(n);
-    try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await load(); toast(`⏳ ${n.dataset.id} hidden for an hour.`); }
+    try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await load(); toast(t('inbox.toast.hidden', { id: n.dataset.id })); }
     catch (e) { fail(n, e); }
   }
 
@@ -486,10 +483,10 @@
   // Called from refresh() whenever the route is #/inbox. Takes over the page body.
   async function show(force) {
     try { await load(); } catch (e) {
-      el('live').className = 'live off'; el('live').textContent = 'offline: ' + e.message; return;
+      el('live').className = 'live off'; el('live').textContent = t('live.offline', { msg: e.message }); return;
     }
-    el('live').className = 'live'; el('live').textContent = 'live';
-    el('crumb').textContent = '/ Inbox';
+    el('live').className = 'live'; el('live').textContent = t('live.ok');
+    el('crumb').textContent = '/ ' + t('inbox.crumb');
     el('modal').innerHTML = '';
     if (typeof state !== 'undefined') state.lastSig = state.lastBoardSig = null;   // so other views redraw when Rich leaves
     if (force || !el('ib')) { if (!el('ib')) skeleton(); fromProject = (typeof state !== 'undefined' && state.lastProject) || null; selectPinned = true; }

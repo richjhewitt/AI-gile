@@ -7,8 +7,8 @@ function withCode(text, fmt, slug) {
   return String(text ?? '').split(/```[^\n]*\n?([\s\S]*?)```/g).map((part, i) => {
     if (i % 2) {
       const code = part.replace(/\n$/, ''), one = code.trim();
-      const open = isMdPath(one) ? `<button class="copy open" data-p="${esc(one)}" data-s="${esc(slug || '')}" onclick="showDocPath(this.dataset.p,this.dataset.s)">📄 Open</button>` : '';
-      return `<div class="codebox"><button class="copy" onclick="copyCode(this)">📋 Copy</button>${open}<pre><code>${esc(code)}</code></pre></div>`;
+      const open = isMdPath(one) ? `<button class="copy open" data-p="${esc(one)}" data-s="${esc(slug || '')}" onclick="showDocPath(this.dataset.p,this.dataset.s)">${esc(t('format.open'))}</button>` : '';
+      return `<div class="codebox"><button class="copy" onclick="copyCode(this)">${esc(t('format.copy'))}</button>${open}<pre><code>${esc(code)}</code></pre></div>`;
     }
     const links = [];   // inline code that is a .md path is set aside so fmt leaves it whole
     part = (i ? part.replace(/^\n/, '') : part).replace(/`([^`\n]+)`/g, (m, c) => isMdPath(c) ? `\u0000${links.push(c.trim()) - 1}\u0000` : m);
@@ -18,7 +18,7 @@ function withCode(text, fmt, slug) {
 }
 // A whole string that is one .md path (relative or absolute, / or \; spaces allowed).
 const isMdPath = s => /^\s*(?:[A-Za-z]:)?[^<>|?*\n`]*[^<>|?*\s\n`]\.md\s*$/i.test(s) && !/^\s*https?:/i.test(s);
-const mdLink = (html, p, slug) => `<a href="#" data-p="${p}" data-s="${esc(slug || '')}" onclick="showDocPath(this.dataset.p,this.dataset.s);return false" title="Open ${p}">${html}</a>`;
+const mdLink = (html, p, slug) => `<a href="#" data-p="${p}" data-s="${esc(slug || '')}" onclick="showDocPath(this.dataset.p,this.dataset.s);return false" title="${esc(t('format.openfile', { name: p }))}">${html}</a>`;
 // Links bare .md paths (no spaces) in escaped text.
 const mdLinks = (html, slug) => html.replace(/(^|[\s(>"'`])((?:[A-Za-z]:)?(?:[\w.-]+[\\/])*[\w.-]+\.md)\b/gi, (m, pre, name) => pre + mdLink(name, name, slug));
 // Runs of "- " lines become a spaced bullet list, so cards stay readable whoever wrote them.
@@ -28,7 +28,7 @@ function spaceBullets(html) {
 }
 function copyCode(btn) {
   navigator.clipboard.writeText(btn.parentNode.querySelector('pre').textContent)
-    .then(() => { btn.textContent = '✅ Copied'; setTimeout(() => { btn.textContent = '📋 Copy'; }, 1500); });
+    .then(() => { btn.textContent = t('format.copied'); setTimeout(() => { btn.textContent = t('format.copy'); }, 1500); });
 }
 function linkify(text, p) { return withCode(text, t => linkifyText(t, p), p.slug); }
 function linkifyText(text, p) { return mdLinks(linkifyBase(text, p), p.slug); }

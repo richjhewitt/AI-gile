@@ -1478,6 +1478,65 @@ def('theme', 'theme: follows the system, or System / Light / Dark picked in the 
   noErrors(page);
 }, true);
 
+def('i18n', 'languages: every language file has the same keys, the picker switches the file (stubbed copy), no raw keys or {{dev:}} markers on screen (AIG-124)', async (s, ctx) => {
+  const langDir = path.join(ROOT, 'public', 'lang');
+  const read = f => JSON.parse(fs.readFileSync(path.join(langDir, f), 'utf8'));
+  const en = read('en.json'), keysOf = o => Object.keys(o).sort().join('\n');
+  check('English has strings', Object.keys(en).length > 100, Object.keys(en).length);
+  check('nl.json has exactly the English keys', keysOf(read('nl.json')) === keysOf(en));
+  check('nl-BE.json has exactly the English keys', keysOf(read('nl-BE.json')) === keysOf(en));
+  check('dev words are marked in English', Object.values(en).some(v => /\{\{dev:\w+\}\}/.test(v)));
+
+  // Seed something on every page: a question, a test with steps, a stand-up answer.
+  await mkProject(s, 'Alpha', 'ALP'); await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });
+  const q = await mkCard(s, 'alpha', 'Export format');
+  s.cli(['ask', 'alpha', q.id, 'M3U or JSON? Assuming M3U', '--as', 'Lead']);
+  await mkCard(s, 'alpha', 'Build the thing', { status: 'verify', testSteps: '1. Open it\n2. Click the button' });
+  await mkCard(s, 'alpha', 'Raise me', { type: 'bug', priority: 'high' });
+
+  // A stubbed nl.json: one string changed, one key missing (so it must fall back to English).
+  const nl = { ...read('nl.json'), 'home.newproject': '+ NIEUW PROJECT' }; delete nl['home.find'];
+  const page = await ctx.newPage();
+  page.errors = [];
+  page.on('pageerror', e => page.errors.push('pageerror: ' + e.message));
+  await page.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
+  await page.route('**/lang/nl.json', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify(nl) }));
+  await page.goto(BASE + '/#/');
+  await page.waitForSelector('#app .toolbar');
+  check('starts in English', (await page.evaluate(() => document.documentElement.lang)) === 'en' && (await page.textContent('#app .toolbar .primary')).includes('New project'));
+  check('the header picker has three languages', (await page.locator('#langPick option').allTextContents()).join('|') === 'English|Nederlands|Vlaams');
+  const stray = () => page.evaluate(() => {
+    const re = /\b(?:card|inbox|home|board|dlg|setup|usage|standup|dms|pres|cols?|verdict|filter|views|lanes|fy|ago|live|theme|update|poke|night|quiet|crumb|attach|format|happening|ask|look|perm|docs|assignee|role|cv|lang|leave|projects|common)\.[a-z][\w.]*|\{\{dev:/;
+    const texts = [document.body.innerText, ...[...document.querySelectorAll('[title],[placeholder],[aria-label]')].map(e => [e.title, e.placeholder, e.getAttribute('aria-label')].join(' '))];
+    return texts.map(t => (t.match(re) || [])[0]).filter(Boolean);
+  });
+  // No raw key and no dev marker on the main pages (English).
+  for (const hash of ['#/', '#/p/alpha', '#/p/alpha/ALP-2', '#/inbox', '#/usage', '#/setup', '#/standups']) {
+    await page.goto(BASE + '/' + hash); await page.reload(); await page.waitForSelector('#app > *', { timeout: 8000 }); await sleep(400);
+    check('no raw keys or markers on ' + hash, (await stray()).length === 0, await stray());
+  }
+  await page.goto(BASE + '/#/p/alpha'); await page.reload(); await page.waitForSelector('.board');
+  await page.click('button:has-text("Raise bug")'); await page.waitForSelector('.dialog');
+  check('no raw keys in the bug dialog', (await stray()).length === 0, await stray());
+  await page.keyboard.press('Escape');
+
+  // Switching to Dutch loads nl.json (the stub), sets <html lang>, and falls back to English for the missing key.
+  await page.goto(BASE + '/#/'); await page.waitForSelector('#app .toolbar');
+  await page.selectOption('#langPick', 'nl');
+  await page.waitForFunction(() => document.documentElement.lang === 'nl', null, { timeout: 8000 });
+  await page.waitForSelector('#app .toolbar');
+  check('html lang is nl', (await page.evaluate(() => document.documentElement.lang)) === 'nl');
+  check('a string comes from nl.json', (await page.textContent('#app .toolbar .primary')).trim() === '+ NIEUW PROJECT', await page.textContent('#app .toolbar .primary'));
+  check('a missing key falls back to English', (await page.textContent('#app .toolbar')).includes('Find my projects'));
+  check('the choice is remembered', (await page.evaluate(() => localStorage.getItem('aigile.lang'))) === 'nl' && (await page.inputValue('#langPick')) === 'nl');
+  check('the Setup page has the picker too', await (async () => { await page.goto(BASE + '/#/setup'); await page.waitForSelector('#setupForm'); return (await page.inputValue('.setup .lang-pick')) === 'nl'; })());
+  await page.selectOption('#langPick', 'en');
+  await page.waitForFunction(() => document.documentElement.lang === 'en', null, { timeout: 8000 });
+  await page.waitForSelector('#setupForm');
+  check('back to English', (await page.evaluate(() => localStorage.getItem('aigile.lang'))) === 'en');
+  noErrors(page);
+}, true);
+
 def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, answer the open question or send a new message (AIG-137/138)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET');
   await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });

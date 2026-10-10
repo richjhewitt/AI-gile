@@ -2,46 +2,46 @@
 const opts = (list, cur, labels) => list.map(v => `<option value="${v}" ${v === cur ? 'selected' : ''}>${esc(labels ? labels[v] : v)}</option>`).join('');
 
 function cardFields(c, o = {}) {
-  return `<label class="f"><span>Title</span><input type="text" id="f-title" value="${esc(c.title)}" placeholder="${esc(o.titlePh || '')}" maxlength="200"></label>
-    <label class="f"><span>${esc(o.descLabel || 'Description')}</span><textarea id="f-description" rows="4" placeholder="${esc(o.descPh || '')}">${esc(c.description)}</textarea></label>
-    ${o.testSteps ? `<label class="f"><span>Test steps</span><textarea id="f-testSteps" rows="4">${esc(c.testSteps)}</textarea></label>` : ''}
+  return `<label class="f"><span>${esc(t('card.f.title'))}</span><input type="text" id="f-title" value="${esc(c.title)}" placeholder="${esc(o.titlePh || '')}" maxlength="200"></label>
+    <label class="f"><span>${esc(o.descLabel || t('card.f.description'))}</span><textarea id="f-description" rows="4" placeholder="${esc(o.descPh || '')}">${esc(c.description)}</textarea></label>
+    ${o.testSteps ? `<label class="f"><span>${esc(t('card.f.teststeps'))}</span><textarea id="f-testSteps" rows="4">${esc(c.testSteps)}</textarea></label>` : ''}
     <div class="row">
-      <label class="f"><span>Type</span><select id="f-type">${opts(TYPES, c.type)}</select></label>
-      <label class="f"><span>Priority</span><select id="f-priority">${opts(PRIORITIES, c.priority)}</select></label>
-      <label class="f"><span>Status</span><select id="f-status">${opts(Object.keys(COLS), c.status, Object.fromEntries(Object.keys(COLS).map(k => [k, colLabel(state.project, k)])))}</select></label>
+      <label class="f"><span>${esc(t('card.f.type'))}</span><select id="f-type">${opts(TYPES, c.type, Object.fromEntries(TYPES.map(k => [k, t('type.' + k)])))}</select></label>
+      <label class="f"><span>${esc(t('card.f.priority'))}</span><select id="f-priority">${opts(PRIORITIES, c.priority, Object.fromEntries(PRIORITIES.map(k => [k, t('priority.' + k)])))}</select></label>
+      <label class="f"><span>${esc(t('card.f.status'))}</span><select id="f-status">${opts(Object.keys(COLS), c.status, Object.fromEntries(Object.keys(COLS).map(k => [k, colLabel(state.project, k)])))}</select></label>
     </div>
     <div class="row">
-      <label class="f"><span>Assignee</span>${assigneeSelect(c.assignee || '')}</label>
-      <label class="f"><span>Sprint</span><input type="text" id="f-sprint" value="${esc(c.sprint)}"></label>
+      <label class="f"><span>${esc(t('card.f.assignee'))}</span>${assigneeSelect(c.assignee || '')}</label>
+      <label class="f"><span>${esc(t('card.f.sprint'))}</span><input type="text" id="f-sprint" value="${esc(c.sprint)}"></label>
     </div>
-    ${o.flags ? `<div><label class="chk"><input type="checkbox" id="f-blocked" ${c.blocked ? 'checked' : ''}> Blocked</label>
-      <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> Needs you</label></div>` : ''}`;
+    ${o.flags ? `<div><label class="chk"><input type="checkbox" id="f-blocked" ${c.blocked ? 'checked' : ''}> ${esc(t('card.f.blocked'))}</label>
+      <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> ${esc(t('card.f.needsyou'))}</label></div>` : ''}`;
 }
 // Who a card goes to: a role (the lead launches that kind of agent; the model is shown so the cost is
 // visible), a named team member, or Rich himself (a task for him). Agents swap a role for their name on start.
 const ROLES = [
-  ['Lead (Opus)', '🧠', 'planning, specs, tricky decisions'],
-  ['Reviewer (Opus)', '🔍', 'audits, code review, security'],
-  ['Frontend (Sonnet)', '🎨', 'pages, UI, styling'],
-  ['Backend (Sonnet)', '⚙️', 'servers, data, APIs'],
-  ['QA (Haiku)', '🧪', 'test runs, browser checks'],
-  ['Quick fix (Haiku)', '🔧', 'small, clear changes, cheapest'],
-  ['Docs (Haiku)', '📄', 'READMEs, guides'],
+  ['Lead (Opus)', '🧠', 'role.lead'],
+  ['Reviewer (Opus)', '🔍', 'role.reviewer'],
+  ['Frontend (Sonnet)', '🎨', 'role.frontend'],
+  ['Backend (Sonnet)', '⚙️', 'role.backend'],
+  ['QA (Haiku)', '🧪', 'role.qa'],
+  ['Quick fix (Haiku)', '🔧', 'role.quickfix'],
+  ['Docs (Haiku)', '📄', 'role.docs'],
 ];
 function assigneeSelect(cur) {
   const team = (state.project?.team || []).filter(m => !/retired/i.test(m.status || '') && m.name !== me()).map(m => m.name);
   const known = new Set(['', me(), ...ROLES.map(r => r[0]), ...team]);
   const o = (v, label) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
   return `<select id="f-assignee" onchange="onAssignee(this)">
-    ${o('', '— nobody yet —')}${cur && !known.has(cur) ? o(cur, '👤 ' + cur) : ''}
-    <optgroup label="Roles: the lead launches this kind of agent">${ROLES.map(([v, i, t]) => o(v, `${i} ${v}: ${t}`)).join('')}</optgroup>
-    ${team.length ? `<optgroup label="Team members">${team.map(n => o(n, '👤 ' + n)).join('')}</optgroup>` : ''}
-    <optgroup label="You">${o(me(), '🙋 ' + me() + ': a task for you')}</optgroup>
-    <option value="__other">✏️ Someone else…</option></select>`;
+    ${o('', t('assignee.nobody'))}${cur && !known.has(cur) ? o(cur, '👤 ' + cur) : ''}
+    <optgroup label="${esc(t('assignee.roles'))}">${ROLES.map(([v, i, d]) => o(v, `${i} ${v}: ${t(d)}`)).join('')}</optgroup>
+    ${team.length ? `<optgroup label="${esc(t('assignee.members'))}">${team.map(n => o(n, '👤 ' + n)).join('')}</optgroup>` : ''}
+    <optgroup label="${esc(t('assignee.you'))}">${o(me(), '🙋 ' + me() + t('assignee.you.task'))}</optgroup>
+    <option value="__other">${esc(t('assignee.other'))}</option></select>`;
 }
 function onAssignee(sel) {
   if (sel.value !== '__other') return;
-  const v = (prompt('Assign to who?') || '').trim();
+  const v = (prompt(t('assignee.prompt')) || '').trim();
   if (!v) { sel.value = ''; return; }
   sel.add(new Option('👤 ' + v, v, true, true), sel.options[1]);
 }
@@ -58,26 +58,26 @@ function readFields(flags, testSteps) {
 function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
-  const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="Open this card in its own window">⧉ Pop out</button>`;
-  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">✕ Close</button>${popBtn}<span style="flex:1"></span>
-      ${state.editing ? '' : '<button onclick="editCard()">✏️ Edit</button> <button class="danger" onclick="deleteCard()">🗑 Delete</button>'}</div>`;
+  const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
+  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}<span style="flex:1"></span>
+      ${state.editing ? '' : `<button onclick="editCard()">${esc(t('card.edit'))}</button> <button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button>`}</div>`;
   if (state.editing) {
     return `<div class="overlay"><div class="panel">${head}
-      <div class="id muted" style="margin-top:12px">${esc(c.id)} · editing</div>
+      <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(t('card.editing'))}</div>
       <form onsubmit="return saveCard(event)" style="margin-top:8px">${cardFields(c, { testSteps: true, flags: true })}
         <div class="err" id="f-err"></div>
-        <div class="actions"><button class="primary" type="submit">Save</button><button type="button" onclick="cancelEdit()">Cancel</button>
-        <span style="flex:1"></span><button type="button" class="danger" onclick="deleteCard()">🗑 Delete</button></div></form>
+        <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button><button type="button" onclick="cancelEdit()">${esc(t('common.cancel'))}</button>
+        <span style="flex:1"></span><button type="button" class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button></div></form>
     </div></div>`;
   }
-  const verdict = c.status === 'verify' ? `<div class="verdict"><h3>🧪 Your call</h3>
-      <div class="muted">Built and waiting for you to test${c.testSteps ? ' (steps below)' : ''}.</div>
-      <label class="f" style="margin-top:8px"><span>Comment (required to send back)</span><textarea id="v-text" rows="3" placeholder="What did you see? What's wrong?"></textarea></label>
+  const verdict = c.status === 'verify' ? `<div class="verdict"><h3>${esc(t('verdict.h'))}</h3>
+      <div class="muted">${esc(t('verdict.waiting'))}${c.testSteps ? esc(t('verdict.steps')) : ''}.</div>
+      <label class="f" style="margin-top:8px"><span>${esc(t('verdict.comment'))}</span><textarea id="v-text" rows="3" placeholder="${esc(t('verdict.placeholder'))}"></textarea></label>
       <div class="err" id="v-err"></div>
-      ${c.openUrl ? `<div class="actions" style="margin-top:0"><button class="primary" onclick="openIt('${p.slug}', '${c.id}', this)" title="${esc(c.openUrl)}">▶ Open it</button><span class="muted">${esc(c.openUrl)}</span></div>` : ''}
-      <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button><button onclick="waitAndSee()" title="Not sure yet: hide it from your inbox for an hour">⏳ Wait and see</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>` : '';
+      ${c.openUrl ? `<div class="actions" style="margin-top:0"><button class="primary" onclick="openIt('${p.slug}', '${c.id}', this)" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button><span class="muted">${esc(c.openUrl)}</span></div>` : ''}
+      <div class="actions"><button class="good" onclick="verdict(true)">${esc(t('card.accept'))}</button><button class="warn" onclick="verdict(false)">${esc(t('card.sendback'))}</button><button onclick="waitAndSee()" title="${esc(t('card.wait.title'))}">${esc(t('card.wait'))}</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>` : '';
   // Tabs: Reply (latest message on top, reply box right under it, older ones below), Details, Test.
-  const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">Latest</span>' : ''}<span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${isOwner(m.author) ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div>${Attach.shown(m, p.slug)}</div>`;
+  const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">' + esc(t('card.latest')) + '</span>' : ''}<span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${isOwner(m.author) ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">' + esc(t('card.seen')) + '</span>' : '<span class="seen">' + esc(t('card.notseen')) + '</span>') : ''}<div class="body">${linkify(m.text, p)}</div>${Attach.shown(m, p.slug)}</div>`;
   const newest = [...c.comments].reverse();
   const hasTest = c.status === 'verify' || c.testSteps;
   // The team's notes since your last word, shown on the Test tab next to Accept, so you never go looking (AIG-152).
@@ -87,23 +87,23 @@ function renderCard(p, c) {
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
   return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel">${head}
-    <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' (was ' + esc(colLabel(p, c.prevStatus)) + ')' : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2>
     <div class="meta">${metaHtml(c)}</div>
-    <div class="ctabs">${tabBtn('reply', `💬 Reply${c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''}`)}${tabBtn('details', '📄 Details')}${hasTest ? tabBtn('test', c.status === 'verify' ? '🧪 Test <span class="n hot">your call</span>' : '🧪 Test') : ''}</div>
+    <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
-      ${newest.length ? msg(newest[0], true) : '<p class="muted">No messages yet.</p>'}
-      <div class="reply"><textarea id="r-text" rows="3" placeholder="Reply as ${esc(me())}: moves the card to For the team… (Enter to send, Shift+Enter for a new line)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
+      ${newest.length ? msg(newest[0], true) : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}
+      <div class="reply"><textarea id="r-text" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
         <div class="err" id="r-err"></div>
-        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="Sends GO as your answer">👍 Go</button>` : ''}<button class="primary" onclick="sendReply()">Send reply</button>${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>
-      ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">Earlier (newest first)</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}
+        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>
+      ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">${esc(t('card.earlier'))}</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
-      ${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : '<p class="muted">No description.</p>'}${Attach.shown(c, p.slug)}
+      ${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${Attach.shown(c, p.slug)}
     </div>
     ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>${verdict}
-      ${notes.length ? `<h3>💬 From the team</h3>${notes.map(m => msg(m, false)).join('')}` : ''}
-      ${c.testSteps ? `<h3>🧪 How to test</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
+      ${notes.length ? `<h3>${esc(t('card.fromteam'))}</h3>${notes.map(m => msg(m, false)).join('')}` : ''}
+      ${c.testSteps ? `<h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
   </div></div>`;
 }
 // Switch card tab without re-rendering, so anything typed in another tab is kept.
@@ -114,12 +114,12 @@ function cardTab(k) {
 }
 
 /* ---------- card actions: edit, delete, reply, verdict ---------- */
-function editCard() { state.editing = true; render(); const t = $('f-title'); if (t) t.focus(); }
+function editCard() { state.editing = true; render(); const ti = $('f-title'); if (ti) ti.focus(); }
 function cancelEdit() { state.editing = false; rerender(); }
 async function saveCard(e) {
   e.preventDefault();
   const c = curCard(), now = readFields(true, true), body = {};
-  if (!now.title) { setErr('f-err', 'Title cannot be empty'); return false; }
+  if (!now.title) { setErr('f-err', t('card.err.title')); return false; }
   for (const k in now) if (now[k] !== c[k]) body[k] = now[k];
   try {
     if (Object.keys(body).length) await api('PATCH', `/api/projects/${slug()}/cards/${c.id}`, body);
@@ -130,7 +130,7 @@ async function saveCard(e) {
 }
 async function deleteCard() {
   const c = curCard();
-  if (!confirm(`Delete ${c.id} "${c.title}"? This cannot be undone.`)) return;
+  if (!confirm(t('card.delete.confirm', { id: c.id, title: c.title }))) return;
   try {
     await api('DELETE', `/api/projects/${slug()}/cards/${c.id}`);
     state.editing = false;
@@ -153,8 +153,8 @@ function closeCard() {
 // ▶ Open it (AIG-146): ask the board to start the app if needed (confirming the command), then open the page.
 async function openIt(s, id, btn) {
   const c = (state.project && state.project.cards.find(x => x.id === id)) || { startCmd: btn.dataset.cmd };
-  if (c.startCmd && !confirm('If the page is not running yet, this command will start it:\n\n' + c.startCmd + '\n\nOK?')) return;
-  const was = btn.textContent; btn.disabled = true; btn.textContent = '⏳ Starting…';
+  if (c.startCmd && !confirm(t('verdict.open.confirm', { cmd: c.startCmd }))) return;
+  const was = btn.textContent; btn.disabled = true; btn.textContent = t('verdict.open.starting');
   try { const r = await api('POST', `/api/projects/${s}/cards/${id}/open`); window.open(r.url, '_blank'); }
   catch (e) { alert(e.message); }
   btn.disabled = false; btn.textContent = was;
@@ -165,11 +165,11 @@ function doneWithCard(next) {
   if (next && !state.route.pop) { state.editing = false; location.hash = '#/p/' + slug() + '/' + next; } else closeCard();
 }
 async function sendReply(fixed) {
-  const next = nextForYou(), t = fixed || $('r-text').value.trim(), key = slug() + '/' + cardId();
-  if (!t && !Attach.has(key)) { setErr('r-err', 'Write something first'); return; }
+  const next = nextForYou(), txt = fixed || $('r-text').value.trim(), key = slug() + '/' + cardId();
+  if (!txt && !Attach.has(key)) { setErr('r-err', t('card.err.empty')); return; }
   try {
     const attachments = fixed ? [] : await Attach.upload(key, slug());
-    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: me(), text: t, attachments });
+    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: me(), text: txt, attachments });
     if (!fixed) Attach.clear(key);
     doneWithCard(next);
   } catch (err) { setErr('r-err', err); }
@@ -179,11 +179,11 @@ async function waitAndSee() {
   try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next); } catch (err) { setErr('v-err', err); }
 }
 async function verdict(accept) {
-  const next = nextForYou(), t = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';
-  if (!accept && !t && !Attach.has(key)) { setErr('v-err', 'Say what is wrong before sending it back'); $('v-text').focus(); return; }
+  const next = nextForYou(), txt = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';
+  if (!accept && !txt && !Attach.has(key)) { setErr('v-err', t('verdict.err')); $('v-text').focus(); return; }
   try {
     const attachments = await Attach.upload(key, slug());
-    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { accept, text: t, attachments });
+    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { accept, text: txt, attachments });
     Attach.clear(key);
     doneWithCard(next);
   } catch (err) { setErr('v-err', err); }

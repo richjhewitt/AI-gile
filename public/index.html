@@ -16,16 +16,17 @@
   <span id="inboxTop"></span>
   <span id="pokeTop"></span>
   <span id="nightTop"></span>
-  <a class="navlink" href="#/usage">⚡ Usage</a>
-  <a class="navlink" href="#/setup" title="Your name and where the agent lives on this computer">⚙️</a>
+  <a class="navlink" href="#/usage" data-i18n="nav.usage">⚡ Usage</a>
+  <a class="navlink" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer">⚙️</a>
   <button id="themeBtn" class="theme-pick" onclick="nextTheme()" title="Theme">🖥️</button>
-  <span class="live" id="live">live</span>
+  <select id="langPick" class="lang-pick" onchange="setLang(this.value)" data-i18n-title="lang.title" title="Language" aria-label="Language"><option value="en">English</option><option value="nl">Nederlands</option><option value="nl-BE">Vlaams</option></select>
+  <span class="live" id="live" data-i18n="live.ok">live</span>
 </header>
 <div id="filterbar"></div>
 <main id="app"></main>
 <div id="modal"></div>
 <div id="dialog"></div>
-<nav id="dmRail" aria-label="DMs with your team leads"></nav>
+<nav id="dmRail" data-i18n-label="dms.rail.label" aria-label="DMs with your team leads"></nav>
 <aside id="dmPanel" hidden></aside>
 <div id="updateTop"><span id="upUpdate"></span><span id="upRefresh"></span><span id="upRestart"></span></div>
 
@@ -33,6 +34,7 @@
 <script src="js/usage-page.js"></script>
 <script src="js/inbox.js"></script>
 <script src="js/core.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/format.js"></script>
 <script src="js/attach.js"></script>
 <script src="js/filters.js"></script>
