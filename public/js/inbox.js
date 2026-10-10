@@ -6,16 +6,18 @@
   'use strict';
 
   /* ---------- styles ---------- */
-  // Questions = strong red, tests = calm blue. Every use also carries an icon and a word.
+  // Questions = strong blue, tests = pale blue, blocked = red. Every use also carries an icon and a word.
   const css = `
   :root {
-    --q-bg: #c81e1e; --q-fg: #fff; --q-tint: #fdecec; --q-line: #c81e1e; --q-ink: #9b1212;
+    --q-bg: #2563eb; --q-fg: #fff; --q-tint: #eef3ff; --q-line: #2563eb; --q-ink: #1d4ed8;
+    --b-line: #c81e1e; --b-tint: #fdecec; --b-ink: #9b1212;
     --t-bg: #e4ecff; --t-fg: #1e40af; --t-tint: #f1f5ff; --t-line: #8fa8e8; --t-ink: #1e40af;
     --k-bg: #fff1d1; --k-fg: #7a4300; --k-tint: #fffaf0; --k-line: #e0a640; --k-ink: #7a4300;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --q-bg: #d62d2d; --q-fg: #fff; --q-tint: #2c1618; --q-line: #ef5350; --q-ink: #ff9b97;
+      --q-bg: #3b74f0; --q-fg: #fff; --q-tint: #162039; --q-line: #5b8cf5; --q-ink: #9dbbff;
+      --b-line: #ef5350; --b-tint: #2c1618; --b-ink: #ff9b97;
       --t-bg: #22305a; --t-fg: #bcd0ff; --t-tint: #181e2e; --t-line: #4a5f9a; --t-ink: #a9c1ff;
       --k-bg: #3d2e10; --k-fg: #ffd591; --k-tint: #221c10; --k-line: #a0762a; --k-ink: #ffcf7a;
     }
@@ -60,6 +62,7 @@
   @keyframes ibflash { 0% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 45%, transparent); } 100% { box-shadow: var(--shadow); } }
   .ib-top { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
   .ib-tag { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+  .ib-item.q.blk { border-color: var(--b-line); background: var(--b-tint); } .q.blk .ib-tag { color: var(--b-ink); }
   .q .ib-tag { color: var(--q-ink); } .t .ib-tag { color: var(--t-ink); }
   .ib-proj { font-weight: 700; }
   .ib-title { font-weight: 600; margin: 3px 0 2px; font-size: 15px; }
@@ -231,9 +234,9 @@
   /* ---------- inbox page (AIG-33) ---------- */
   function qHtml(c) {
     const a = lastAsk(c);
-    return `<div class="ib-top"><span class="ib-tag">❓ Question</span><span class="ib-proj">${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${c.blocked ? '⛔ Blocked' : '❓ Question'}</span><span class="ib-proj">${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
-      <div class="ib-who"><b>${esc(a.author)}</b> asked ${ago(a.at)}</div>
+      <div class="ib-who"><b>${esc(a.author)}</b> ${c.blocked ? 'is blocked' : 'asked'} ${ago(a.at)}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>
       <textarea rows="2" placeholder="Type your answer. Enter sends, Shift+Enter adds a new line." aria-label="Your answer to ${esc(c.id)}"></textarea>
       <div class="ib-err"></div>
@@ -257,7 +260,7 @@
       <div class="actions"><button class="good" data-act="accept">✅ Accept</button><button data-act="wait" title="Not sure yet: hide it for an hour">⏳ Wait and see</button>
       <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">Send back needs a reason: open the card</a></div>`;
   }
-  const sigOf = c => !isTest(c) ?[c.title, lastAsk(c).at, lastAsk(c).text].join('|') : [c.title, c.updated, c.testSteps].join('|');
+  const sigOf = c => !isTest(c) ?[c.title, c.blocked, lastAsk(c).at, lastAsk(c).text].join('|') : [c.title, c.updated, c.testSteps].join('|');
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">
@@ -287,7 +290,7 @@
       if (!n) {
         n = document.createElement('div');
         const kind = kindOf(c);
-        n.className = 'ib-item ' + kind;
+        n.className = 'ib-item ' + kind + (kind === 'q' && c.blocked ? ' blk' : '');
         n.dataset.key = k; n.dataset.sig = sig; n.dataset.project = c.project; n.dataset.id = c.id;
         n.innerHTML = kind === 'q' ? qHtml(c) : kind === 'k' ? kHtml(c) : tHtml(c);
       }

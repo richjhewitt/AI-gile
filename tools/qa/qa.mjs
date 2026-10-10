@@ -538,6 +538,22 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   noErrors(page);
 }, true);
 
+def('blocked', 'a blocked card shows in the inbox with the reason; his answer clears it', async (s, ctx) => {
+  await mkProject(s, 'Gamma', 'GAM');
+  await mkCard(s, 'gamma', 'Stuck card', { status: 'doing', assignee: 'Forge' });
+  await say(s, 'gamma', 'GAM-1', 'Forge', 'Blocked: need the API key');
+  await s.ok('PATCH', '/api/projects/gamma/cards/GAM-1', { blocked: true });
+  check('blocked card is in the inbox (api)', (await s.ok('GET', '/api/inbox')).some(c => c.id === 'GAM-1'));
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('.ib-item.blk', { timeout: 7000 }).catch(() => {});
+  const t = await page.textContent('.ib-item.blk').catch(() => '');
+  check('inbox shows it as Blocked with the reason', /Blocked/.test(t) && /need the API key/.test(t), t);
+  await say(s, 'gamma', 'GAM-1', 'Rich', 'key is in the vault');
+  check('Rich answering clears the block', (await s.ok('GET', '/api/projects/gamma')).cards[0].blocked === false);
+  check('and it leaves the inbox', !(await s.ok('GET', '/api/inbox')).some(c => c.id === 'GAM-1'));
+  noErrors(page);
+}, true);
+
 def('docs', 'Docs dialog lists .md files and opens one', async (s, ctx) => {
   const folder = tmp('docs');
   fs.mkdirSync(path.join(folder, 'docs'));

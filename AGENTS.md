@@ -58,7 +58,7 @@ This moves the card to `verify` ("For you to test"), stores the steps and adds a
 aigile ask <proj> <id> "Should exports include archived items? I'm assuming no." --as YourName
 ```
 
-This flags the card NEEDS-RICH and puts it in his inbox. Then move on to other work with `next`; don't stop the session for an answer. Always state your assumption in the question so a "fine" from Rich is enough. If something external stops a card (a missing key, a failing service), use `aigile block <proj> <id> "why" --as YourName`, and `unblock` when it clears.
+This flags the card NEEDS-RICH and puts it in his inbox. Then move on to other work with `next`; don't stop the session for an answer. Always state your assumption in the question so a "fine" from Rich is enough. If something external stops a card (a missing key, a failing service), use `aigile block <proj> <id> "why" --as YourName`, and `unblock` when it clears. Blocked cards also show in Rich's inbox, and his reply clears the block.
 
 **Questions vs tasks.** Use `ask` for a question Rich answers in words. Use `aigile task <proj> <id> "exactly what to do, step by step" --as YourName` for something only he can *do*, such as providing an API key, logging in somewhere, or running a command on a server. Tasks get their own "Tasks for you" list in his inbox. When he clicks Done, the card comes back to you through "For the team".
 
