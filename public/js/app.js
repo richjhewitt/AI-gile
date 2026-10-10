@@ -41,6 +41,7 @@ async function pokeAll(b) {
 /* ---------- going quiet: night theme ---------- */
 function setNight(since) {
   document.documentElement.toggleAttribute('data-night', !!since);
+  if (window.Inbox) Inbox.repaint();
   $('nightTop').innerHTML = since ? `<button class="navlink" onclick="backFromQuiet()" title="Night mode since ${esc(ago(since))}">☀️ I'm back</button>` : '';
 }
 async function goQuiet() {

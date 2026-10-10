@@ -565,6 +565,35 @@ def('quiet', 'Going quiet messages teams with work, wakes sleeping ones, night t
   noErrors(page);
 }, true);
 
+def('quietinbox', 'going quiet hides tests and tasks and caps questions at 3; I\'m back restores them', async (s, ctx) => {
+  await mkProject(s, 'Qi', 'QIX');
+  for (let i = 1; i <= 5; i++) {
+    await mkCard(s, 'qi', 'Ask ' + i, { status: 'doing', assignee: 'Forge' });
+    await say(s, 'qi', 'QIX-' + i, 'Forge', 'question ' + i, { needsYou: true });
+    await sleep(15);
+  }
+  await mkCard(s, 'qi', 'Qi task', { status: 'doing', assignee: 'Pixel' });
+  await s.ok('PATCH', '/api/projects/qi/cards/QIX-6', { assignee: 'Rich' });
+  await say(s, 'qi', 'QIX-6', 'Pixel', 'do this');
+  await mkCard(s, 'qi', 'Qi test', { status: 'verify', testSteps: 'try it' });
+  const page = await openPage(ctx, '#/inbox');
+  page.on('dialog', d => d.accept());
+  await page.waitForSelector('.ib-item');
+  check('awake: 5 questions, task and test show', (await page.locator('.ib-item.q').count()) === 5 && (await page.locator('.ib-item.k').count()) === 1 && (await page.locator('.ib-item.t').count()) === 1);
+  await s.ok('POST', '/api/quiet', { on: true });
+  await page.waitForSelector('html[data-night]', { state: 'attached', timeout: 10000 });
+  await page.waitForTimeout(500);
+  check('quiet: 3 newest questions, no task or test', (await page.locator('.ib-item.q').count()) === 3 && (await page.locator('.ib-item.k, .ib-item.t').count()) === 0);
+  check('quiet: newest question is shown, oldest is not', (await page.locator('.ib-item[data-id="QIX-5"]').count()) === 1 && (await page.locator('.ib-item[data-id="QIX-1"]').count()) === 0);
+  check('quiet: more waiting line', /2 more waiting for the morning/.test(await page.textContent('#ibMore')));
+  const top = await page.textContent('#inboxTop .ib-btn');
+  check('quiet: top bar hides tasks and tests', /3 questions/.test(top) && !/to do|to test/.test(top), top);
+  await page.click('text=☀️ I\'m back');
+  await page.waitForTimeout(500);
+  check('back: everything shows again', (await page.locator('.ib-item.q').count()) === 5 && (await page.locator('.ib-item.k').count()) === 1 && (await page.locator('.ib-item.t').count()) === 1 && await page.isHidden('#ibMore'));
+  noErrors(page);
+}, true);
+
 def('poke', 'asleep teams with work and stuck teams show as needing a poke', async (s, ctx) => {
   await mkProject(s, 'Sleepy', 'SLP', { path: tmp('sleepy') });
   await s.ok('POST', '/api/projects/sleepy/cards', { title: 'work', status: 'todo' });
