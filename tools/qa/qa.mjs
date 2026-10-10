@@ -245,7 +245,7 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('.column');
   const heads = await page.$$eval('.column h3 > span:first-child', els => els.map(e => e.textContent));
-  check('seven columns in order', JSON.stringify(heads) === JSON.stringify(['Backlog', 'To do', 'In progress', 'Review', 'For you', 'For the team', 'Done']), heads);
+  check('seven columns in order', JSON.stringify(heads) === JSON.stringify(['Backlog', 'To do', 'In progress', 'Team checking', 'For you', 'For the team', 'Done']), heads);
   check('cards render in their column', (await page.locator('.column[data-status=todo] .card').count()) === 1 && (await page.locator('.column[data-status=doing] .card').count()) === 1);
   await page.dragAndDrop('.card[data-id="ALP-1"]', '.column[data-status="review"]');
   await page.waitForTimeout(600);
