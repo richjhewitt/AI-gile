@@ -289,7 +289,7 @@
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       ${c.testSteps ? `<details class="ib-steps"><summary>How to test</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : '<div class="ib-hint">No test steps written.</div>'}
       <div class="ib-err"></div>
-      <div class="actions"><button class="good" data-act="accept">✅ Accept</button><button data-act="wait" title="Not sure yet: hide it for an hour">⏳ Wait and see</button>
+      <div class="actions">${c.openUrl ? `<button class="primary" data-act="open" data-cmd="${esc(c.startCmd || '')}" title="${esc(c.openUrl)}">▶ Open it</button>` : ''}<button class="good" data-act="accept">✅ Accept</button><button data-act="wait" title="Not sure yet: hide it for an hour">⏳ Wait and see</button>
       <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">Send back needs a reason: open the card</a></div>`;
   }
   const sigOf = c => !isTest(c) ?[c.title, c.blocked, lastAsk(c).at, lastAsk(c).text].join('|') : [c.title, c.updated, c.testSteps].join('|');
@@ -437,6 +437,7 @@
     if (tb) { tab = tb.dataset.tab; tabPref.set(tab); paintPage(); return; }
     const b = e.target.closest('button[data-act]'); if (!b) return;
     const n = b.closest('.ib-item'), act = b.dataset.act;
+    if (act === 'open') { openIt(n.dataset.project, n.dataset.id, b); return; }
     if (act === 'send') send(n); else if (act === 'go') send(n, 'GO'); else if (act === 'accept') accept(n); else if (act === 'wait') waitAndSee(n); else if (act === 'taskdone') taskDone(n);
   }
   const base = n => `/api/projects/${n.dataset.project}/cards/${n.dataset.id}`;

@@ -1671,6 +1671,28 @@ def('dms', 'private DMs: invite/accept, same safety code, encrypted send through
   }
 }, false, { AIGILE_DM_POLL_MS: '300' });
 
+def('openit', '▶ Open it: starts the app with the card\'s command if needed, waits, opens the page (AIG-146)', async (s, ctx) => {
+  const folder = tmp('openit'), port = PORT + 9;
+  await mkProject(s, 'Alpha', 'ALP', { path: folder });
+  const c = await mkCard(s, 'alpha', 'Settings page');
+  // A tiny app that answers on its port and quits by itself after 20s.
+  const start = `node -e "require('http').createServer((q,r)=>r.end('app here')).listen(${port}); setTimeout(()=>process.exit(),20000)"`;
+  const t = s.cli(['test', 'alpha', c.id, '1. look', '--as', 'Lead', '--open', `http://127.0.0.1:${port}/settings`, '--start', start]);
+  check('test --open stores the address and command', t.code === 0 && (await getCard(s, 'alpha', c.id)).openUrl === `http://127.0.0.1:${port}/settings`, t);
+  check('a bad address is refused', (await s.api('PATCH', `/api/projects/alpha/cards/${c.id}`, { openUrl: 'javascript:alert(1)' })).status === 400);
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.waitForSelector('button:has-text("Open it")');
+  let asked = '';
+  page.once('dialog', d => { asked = d.message(); d.accept(); });
+  const [opened] = await Promise.all([ctx.waitForEvent('page', { timeout: 30000 }), page.click('button:has-text("Open it")')]);
+  check('asks before running the start command', asked.includes('createServer'), asked);
+  await opened.waitForLoadState().catch(() => {});
+  check('opens the page once the app answers', opened.url() === `http://127.0.0.1:${port}/settings` && (await opened.textContent('body')).includes('app here'), opened.url());
+  await page.goto(BASE + '/#/inbox');
+  await page.waitForSelector(`.ib-item[data-id="${c.id}"] button[data-act="open"]`);
+  check('the inbox test item has the button too', true);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

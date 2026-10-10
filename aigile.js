@@ -33,6 +33,7 @@ WORKING
   ask <proj> <id> "question" --as NAME    comment + flags the card as needing ${OWNER}
   task <proj> <id> "what to do" --as NAME something only ${OWNER} can do (key, login, manual step): goes to their inbox
   test <proj> <id> "steps ${OWNER} can follow" --as NAME    -> moves to verify, sets testSteps, comments
+        [--open URL [--start "command"]]   adds a ▶ Open it button: starts the app if needed, opens the page
   block <proj> <id> ["why"] --as NAME     unblock <proj> <id>
   edit <proj> <id> [--title --desc --type --priority --sprint --assignee --test-steps]
   add <proj> "title" [--type feature|bug|task --priority low|normal|high|urgent --status s
@@ -305,7 +306,8 @@ const cmds = {
     const slug = await project(pos[0]);
     const author = who(flags);
     const steps = await text(pos[2], 'test steps');
-    await api('PATCH', C(slug, pos[1]), { status: 'verify', testSteps: steps, needsYou: false });
+    // --open URL [--start "command"]: the card gets a ▶ Open it button (AIG-146).
+    await api('PATCH', C(slug, pos[1]), { status: 'verify', testSteps: steps, needsYou: false, ...(flags.open ? { openUrl: flags.open, startCmd: flags.start || '' } : {}) });
     const c = await api('POST', C(slug, pos[1]) + '/comments', { author, text: 'Ready for you to test. Steps are on the card.', needsYou: false });
     out(flags, c, c => `handed to ${OWNER}: ` + line(c));
   },

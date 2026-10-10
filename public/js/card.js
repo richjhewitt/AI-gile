@@ -74,6 +74,7 @@ function renderCard(p, c) {
       <div class="muted">Built and waiting for you to test${c.testSteps ? ' (steps below)' : ''}.</div>
       <label class="f" style="margin-top:8px"><span>Comment (required to send back)</span><textarea id="v-text" rows="3" placeholder="What did you see? What's wrong?"></textarea></label>
       <div class="err" id="v-err"></div>
+      ${c.openUrl ? `<div class="actions" style="margin-top:0"><button class="primary" onclick="openIt('${p.slug}', '${c.id}', this)" title="${esc(c.openUrl)}">▶ Open it</button><span class="muted">${esc(c.openUrl)}</span></div>` : ''}
       <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button><button onclick="waitAndSee()" title="Not sure yet: hide it from your inbox for an hour">⏳ Wait and see</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>` : '';
   // Tabs: Reply (latest message on top, reply box right under it, older ones below), Details, Test.
   const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">Latest</span>' : ''}<span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div>${Attach.shown(m, p.slug)}</div>`;
@@ -145,6 +146,15 @@ function closeCard() {
   location.hash = '#/p/' + slug();
 }
 // fixed: a one-tap answer (👍 Go on a question, AIG-75) instead of the typed one.
+// ▶ Open it (AIG-146): ask the board to start the app if needed (confirming the command), then open the page.
+async function openIt(s, id, btn) {
+  const c = (state.project && state.project.cards.find(x => x.id === id)) || { startCmd: btn.dataset.cmd };
+  if (c.startCmd && !confirm('If the page is not running yet, this command will start it:\n\n' + c.startCmd + '\n\nOK?')) return;
+  const was = btn.textContent; btn.disabled = true; btn.textContent = '⏳ Starting…';
+  try { const r = await api('POST', `/api/projects/${s}/cards/${id}/open`); window.open(r.url, '_blank'); }
+  catch (e) { alert(e.message); }
+  btn.disabled = false; btn.textContent = was;
+}
 // After dealing with a For you card, open the next one in the queue instead of closing (AIG-141).
 function nextForYou() { const q = forYouQueue(state.project).map(c => c.id), i = q.indexOf(cardId()); return i < 0 ? null : q[i + 1] || q[i - 1] || null; }
 function doneWithCard(next) {

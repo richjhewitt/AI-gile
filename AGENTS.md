@@ -52,6 +52,8 @@ aigile test <proj> <id> "1. Open http://localhost:4321
 
 This moves the card to `verify` ("For you to test"), stores the steps and adds a comment. Write steps Rich can follow cold, in under a minute, with the expected result. He will either accept (done) or send it back with a reason (it returns to `doing` with his comment).
 
+If there is a page to look at, add `--open http://localhost:5173/the/page` (and `--start "npm run dev"` if the app has to be started first, run in the project folder). The card then gets a **▶ Open it** button: it starts the app if the page doesn't answer yet (Rich confirms the command), waits for it, and opens the page in his browser.
+
 **5. `ask` when you are blocked on Rich.**
 
 ```
