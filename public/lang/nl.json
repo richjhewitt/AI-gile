@@ -523,5 +523,7 @@
  "dms.count.one": "{n} message",
  "dms.count.many": "{n} messages",
  "dms.opencard": "Open the card",
- "dms.replyto": "Reply to:"
+ "dms.replyto": "Reply to:",
+ "inbox.later": "⏳ Later",
+ "inbox.later.title": "Hide it from your inbox for an hour (AIG-167)"
 }

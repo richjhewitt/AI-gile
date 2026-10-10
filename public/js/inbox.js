@@ -269,7 +269,7 @@
       <div class="ib-question">${linkify(a.text, c)}</div>
       <textarea rows="2" placeholder="${esc(t('inbox.q.ph'))}" aria-label="${esc(t('inbox.q.aria', { id: c.id }))}"></textarea>
       <div class="ib-err"></div>
-      <div class="actions">${c.blocked ? '' : `<button class="good" data-act="go" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>`}<button class="primary" data-act="send">${esc(t('inbox.q.send'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.q.hint'))}</span></div>`;
+      <div class="actions">${c.blocked ? '' : `<button class="good" data-act="go" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>`}<button class="primary" data-act="send">${esc(t('inbox.q.send'))}</button><button data-act="wait" title="${esc(t('inbox.later.title'))}">${esc(t('inbox.later'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.q.hint'))}</span></div>`;
   }
   function kHtml(c) {
     const a = lastAsk(c);

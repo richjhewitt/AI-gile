@@ -788,6 +788,11 @@ def('gobutton', '👍 Go answers a question in one tap, in the inbox and on the 
   await page.waitForSelector(`.ib-item[data-id="${q1.id}"] button[data-act="go"]`);
   check('title counts everything waiting (desktop badge)', (await page.title()) === '(3) AI-gile', await page.title());
   check('blocked card has no Go', (await page.locator(`.ib-item[data-id="${b.id}"] button[data-act="go"]`).count()) === 0);
+  // AIG-167: a blocked item can be put off for an hour.
+  await page.click(`.ib-item[data-id="${b.id}"] button[data-act="wait"]`);
+  await page.waitForSelector(`.ib-item[data-id="${b.id}"]`, { state: 'detached', timeout: 5000 }).catch(() => {});
+  const blk = await getCard(s, 'alpha', b.id), inb = await s.ok('GET', '/api/inbox');
+  check('Later hides a blocked item for now', (await page.locator(`.ib-item[data-id="${b.id}"]`).count()) === 0 && !inb.some(x => x.id === b.id), [blk.snoozedUntil, blk.blocked, inb.map(x => x.id)]);
   await page.click(`.ib-item[data-id="${q1.id}"] button[data-act="go"]`);
   await page.waitForSelector(`.ib-item[data-id="${q1.id}"]`, { state: 'detached', timeout: 4000 }).catch(() => {});
   let c = await getCard(s, 'alpha', q1.id);
