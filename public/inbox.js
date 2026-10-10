@@ -299,19 +299,43 @@
     set(t) { try { localStorage.setItem('aigile.inboxTab', t); } catch {} },
   };
   let tab = tabPref.get();
+  let fromProject = null, selectPinned = false;   // set when the inbox is opened from a project page
   function tabCounts(list) {
     const q = list.filter(isQuestion).length, k = list.filter(isTask).length, t = list.filter(isTest).length;
     return `${q ? `<span class="tq">❓${q}</span>` : ''}${k ? `<span class="tk">📋${k}</span>` : ''}${t ? `<span class="tt">🧪${t}</span>` : ''}`;
   }
+  function mostRecentMessageTime(projectSlug) {
+    const projectItems = items.filter(c => c.project === projectSlug);
+    let latest = null;
+    for (const item of projectItems) {
+      if (item.comments && item.comments.length > 0) {
+        for (const comment of item.comments) {
+          if (!latest || comment.at > latest) latest = comment.at;
+        }
+      }
+      if (!latest || item.updated > latest) latest = item.updated;
+    }
+    return latest || new Date(0).toISOString();
+  }
   function paintTabs() {
+    // Opened from a project page: that project first (selected once, on arrival) and All last, for the
+    // whole visit. Other projects are ordered by their most recent message, newest first.
     const projects = [...new Map(items.map(c => [c.project, c.projectName])).entries()]
-      .sort((a, b) => items.filter(c => c.project === b[0] && !isTest(c)).length - items.filter(c => c.project === a[0] && !isTest(c)).length || a[1].localeCompare(b[1]));
-    if (tab !== 'all' && !projects.some(([p]) => p === tab)) tab = 'all';   // that project's inbox emptied
+      .sort((a, b) => mostRecentMessageTime(b[0]).localeCompare(mostRecentMessageTime(a[0])));
+    const pinned = fromProject && projects.find(([p]) => p === fromProject);
+    if (pinned && selectPinned) tab = fromProject;
+    selectPinned = false;
+    const orderedProjects = pinned ? [pinned, ...projects.filter(([p]) => p !== fromProject)] : projects;
+    const allAtEnd = !!pinned;
+    if (tab !== 'all' && !orderedProjects.some(([p]) => p === tab)) tab = 'all';   // that project's inbox emptied
     const btn = (key, name, list) => `<button class="ib-tab ${tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${tab === key}">${esc(name)} <span class="n">${list.length}</span> ${tabCounts(list)}</button>`;
-    const html = btn('all', 'All', items) + projects.map(([p, name]) => btn(p, name, items.filter(c => c.project === p))).join('');
+    const projectBtns = orderedProjects.map(([p, name]) => btn(p, name, items.filter(c => c.project === p))).join('');
+    const html = allAtEnd
+      ? projectBtns + btn('all', 'All', items)  // "All" at the end when showing a project first
+      : btn('all', 'All', items) + projectBtns;  // "All" at the beginning otherwise
     const box = el('ibTabs');
     if (box.dataset.sig !== html) { box.dataset.sig = html; box.innerHTML = html; }
-    box.hidden = projects.length < 2;
+    box.hidden = orderedProjects.length < 2;
   }
 
   function paintPage() {
@@ -387,7 +411,7 @@
     el('crumb').textContent = '/ Inbox';
     el('modal').innerHTML = '';
     if (typeof state !== 'undefined') state.lastSig = state.lastBoardSig = null;   // so other views redraw when Rich leaves
-    if (force || !el('ib')) { if (!el('ib')) skeleton(); }
+    if (force || !el('ib')) { if (!el('ib')) skeleton(); fromProject = (typeof state !== 'undefined' && state.lastProject) || null; selectPinned = true; }
     paintTop(); paintPage();
   }
 
