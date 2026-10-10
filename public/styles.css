@@ -374,3 +374,6 @@ button.q-chip { cursor: pointer; } .q-chip.prio:not([class*="p-"]) { color: var(
 .ib-next[hidden] { display: none; }
 .ib-kinds { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0 10px; }
 .ib-kind { border-radius: 99px; padding: 3px 10px; } .ib-kind.on { background: var(--accent); color: #fff; }
+
+/* ---------- open in your editor (AIG-156) ---------- */
+.edit-btn { border: 0; background: none; padding: 0 3px; cursor: pointer; font-size: 0.9em; }

@@ -543,5 +543,6 @@
  "queue.mins": "{n} min",
  "queue.total": "{n} min in totaal",
  "queue.next": "Volgende:",
- "queue.all": "Alles"
+ "queue.all": "Alles",
+ "format.edit": "Openen in je editor"
 }

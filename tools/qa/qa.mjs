@@ -1854,6 +1854,30 @@ def('queue', 'your queue: holds up, your priority, kind, time; sorted, filtered,
   noErrors(page);
 }, true);
 
+def('editor', '📝 file paths in card text open in your editor (AIG-156)', async (s, ctx) => {
+  const dir = process.env.QA_EDITOR_DIR, target = path.join(dir, 'settings.json'), rec = path.join(dir, 'opened.txt');
+  fs.writeFileSync(target, '{}');
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Edit a file', { description: 'Open `' + target + '` and add a line\n\n```\n' + target + '\n```' });
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.click('[data-ctab="details"]');
+  await page.waitForSelector('[data-editor]');
+  check('a 📝 button after the path in code and in the code box', (await page.locator('[data-editor]').count()) === 2);
+  await page.locator('[data-editor]').first().click();
+  for (let i = 0; i < 20 && !fs.existsSync(rec); i++) await sleep(250);
+  check('it opens the file with your editor', fs.existsSync(rec) && fs.readFileSync(rec, 'utf8').includes('settings.json'));
+  check('a missing file is refused', (await s.api('POST', '/api/open-file', { path: path.join(dir, 'nope.txt') })).status === 404);
+  check('paths with shell characters are refused', (await s.api('POST', '/api/open-file', { path: dir + '/a%PATH%.txt' })).status === 400);
+  noErrors(page);
+}, true, (() => {
+  // A stand-in editor that just records which file it was asked to open.
+  const dir = tmp('editor'), script = path.join(dir, 'rec.js');
+  fs.writeFileSync(script, `require('fs').writeFileSync(${JSON.stringify(path.join(dir, 'opened.txt'))}, process.argv[2] || '')`);
+  fs.writeFileSync(path.join(dir, 'local.json'), JSON.stringify({ ...JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')), editor: `node "${script}"` }));
+  process.env.QA_EDITOR_DIR = dir;
+  return { AIGILE_LOCAL: path.join(dir, 'local.json') };
+})());
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }
