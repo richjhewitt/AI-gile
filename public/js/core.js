@@ -95,7 +95,8 @@ function render() {
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ Usage'; $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
-  $('crumb').textContent = '/ ' + p.name;
+  $('crumb').textContent = '/ ' + (p.emoji ? p.emoji + ' ' : '') + p.name;
+  $('crumb').style.color = p.color || '';
   $('app').innerHTML = renderBoard(p);
   const card = state.route.card && p.cards.find(c => c.id === state.route.card);
   if (!card) state.editing = false;

@@ -102,6 +102,24 @@ async function doConnect() {
   } catch (e) { setErr('c-err', e); }
 }
 
+/* ---------- project look (AIG-86) ---------- */
+// ---- look: the colour and emoji that mark this project in the inbox, tabs and home page ----
+function lookDialog() {
+  const p = state.project;
+  openDialog(`<h2>🎨 Look</h2>
+    <p class="muted">Marks ${esc(p.name)} in your inbox, its tabs and the home page.</p>
+    <div class="row"><label class="f"><span>Emoji</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
+    <label class="f"><span>Colour</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
+    <div class="err" id="look-err"></div>
+    <div class="actions"><button class="primary" onclick="saveLook()">Save</button><button onclick="saveLook(true)" title="Pick the colour and emoji automatically again">Automatic</button><button type="button" onclick="closeDialog()">Cancel</button></div>`);
+}
+async function saveLook(auto) {
+  try {
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value });
+    closeDialog(); await rerender();
+  } catch (e) { setErr('look-err', e); }
+}
+
 /* ---------- team permissions ---------- */
 // ---- permissions: ticks for the common rule sets, plus the full lists as text (one rule per line) (AIG-74) ----
 const PERM_LISTS = [['allow', 'Allowed without asking'], ['ask', 'Ask first'], ['deny', 'Never']];

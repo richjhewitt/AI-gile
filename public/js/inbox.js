@@ -64,7 +64,10 @@
   .ib-tag { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
   .ib-item.q.blk { border-color: var(--b-line); background: var(--b-tint); } .q.blk .ib-tag { color: var(--b-ink); }
   .q .ib-tag { color: var(--q-ink); } .t .ib-tag { color: var(--t-ink); }
-  .ib-proj { font-weight: 700; }
+  .ib-proj { font-weight: 700; color: #fff; background: var(--proj, var(--muted)); border-radius: 999px; padding: 1px 9px; font-size: 13px; }
+  .ib-item.q, .ib-item.t, .ib-item { border-left: 8px solid var(--proj, var(--line)); }
+  .ib-tab[style] { border-bottom: 3px solid var(--proj); }
+  .ib-item.q.blk { border-left-color: var(--proj, var(--b-line)); }
   .ib-title { font-weight: 600; margin: 3px 0 2px; font-size: 15px; }
   .ib-title a:hover { text-decoration: underline; }
   .ib-id { font-family: ui-monospace, Consolas, monospace; font-size: 12px; color: var(--muted); }
@@ -246,7 +249,7 @@
   /* ---------- inbox page (AIG-33) ---------- */
   function qHtml(c) {
     const a = lastAsk(c);
-    return `<div class="ib-top"><span class="ib-tag">${c.blocked ? '⛔ Blocked' : '❓ Question'}</span><span class="ib-proj">${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${c.blocked ? '⛔ Blocked' : '❓ Question'}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       <div class="ib-who"><b>${esc(a.author)}</b> ${c.blocked ? 'is blocked' : 'asked'} ${ago(a.at)}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>
@@ -256,7 +259,7 @@
   }
   function kHtml(c) {
     const a = lastAsk(c);
-    return `<div class="ib-top"><span class="ib-tag">📋 To do</span><span class="ib-proj">${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">📋 To do</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       <div class="ib-who"><b>${esc(a.author)}</b> asked you ${ago(a.at)}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>
@@ -265,7 +268,7 @@
       <div class="actions"><button class="good" data-act="taskdone">✅ Done</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">Tells the team it's done.</span></div>`;
   }
   function tHtml(c) {
-    return `<div class="ib-top"><span class="ib-tag">🧪 To test</span><span class="ib-proj">${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">waiting ${ago(c.updated).replace(' ago', '')}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">🧪 To test</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">waiting ${ago(c.updated).replace(' ago', '')}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       ${c.testSteps ? `<details class="ib-steps"><summary>How to test</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : '<div class="ib-hint">No test steps written.</div>'}
       <div class="ib-err"></div>
@@ -304,6 +307,7 @@
         const kind = kindOf(c);
         n.className = 'ib-item ' + kind + (kind === 'q' && c.blocked ? ' blk' : '');
         n.dataset.key = k; n.dataset.sig = sig; n.dataset.project = c.project; n.dataset.id = c.id;
+        if (c.projectColor) n.style.setProperty('--proj', c.projectColor);   // project stripe and badge (AIG-86)
         n.innerHTML = kind === 'q' ? qHtml(c) : kind === 'k' ? kHtml(c) : tHtml(c);
       }
       if (list.children[i] !== n) list.insertBefore(n, list.children[i] || null);
@@ -334,6 +338,7 @@
     }
     return latest || new Date(0).toISOString();
   }
+  let tabOrder = [];
   function paintTabs() {
     // Opened from a project page: that project first (selected once, on arrival) and All last, for the
     // whole visit. Other projects are ordered by their most recent message, newest first.
@@ -345,7 +350,10 @@
     const orderedProjects = pinned ? [pinned, ...projects.filter(([p]) => p !== fromProject)] : projects;
     const allAtEnd = !!pinned;
     if (tab !== 'all' && !orderedProjects.some(([p]) => p === tab)) tab = 'all';   // that project's inbox emptied
-    const btn = (key, name, list) => `<button class="ib-tab ${tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${tab === key}">${esc(name)} <span class="n">${list.length}</span> ${tabCounts(list)}</button>`;
+    const lookOf = p => items.find(c => c.project === p) || {};
+    const btn = (key, name, list) => { const l = key === 'all' ? {} : lookOf(key);
+      return `<button class="ib-tab ${tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${tab === key}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectEmoji ? esc(l.projectEmoji) + ' ' : ''}${esc(name)} <span class="n">${list.length}</span> ${tabCounts(list)}</button>`; };
+    tabOrder = orderedProjects.map(([p]) => p);
     const projectBtns = orderedProjects.map(([p, name]) => btn(p, name, items.filter(c => c.project === p))).join('');
     const html = allAtEnd
       ? projectBtns + btn('all', 'All', items)  // "All" at the end when showing a project first
@@ -358,7 +366,8 @@
   function paintPage() {
     if (!el('ib')) skeleton();
     paintTabs();
-    const shown = tab === 'all' ? items : items.filter(c => c.project === tab);
+    // All tab: items grouped by project, in tab order, each group still longest-waiting first (AIG-86).
+    const shown = tab === 'all' ? [...items].sort((a, b) => tabOrder.indexOf(a.project) - tabOrder.indexOf(b.project)) : items.filter(c => c.project === tab);
     const qs = shown.filter(isQuestion), ks = shown.filter(isTask), ts = shown.filter(isTest);
     syncList(el('ibQ').querySelector('.list'), qs);
     syncList(el('ibK').querySelector('.list'), ks);

@@ -917,6 +917,37 @@ def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; it ask
   check('reloads straight away with nothing unsent', true);
 }, true);
 
+def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, home, 🎨 Look dialog', async (s, ctx) => {
+  await mkProject(s, 'Tunio', 'TUN'); await mkProject(s, 'LocoRadio', 'LOC');
+  const a = await mkCard(s, 'tunio', 'Music q'), b = await mkCard(s, 'locoradio', 'Radio q');
+  s.cli(['ask', 'tunio', a.id, 'Go?', '--as', 'Lead']); s.cli(['ask', 'locoradio', b.id, 'Go?', '--as', 'Lead']);
+  const sum = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'tunio');
+  check('summary has an automatic colour and emoji', /^#[0-9a-f]{6}$/i.test(sum.color) && sum.emoji === '🎵', sum);
+  const ib = await s.ok('GET', '/api/inbox');
+  check('inbox items carry the look', ib.every(c => c.projectColor && c.projectEmoji));
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector(`.ib-item[data-id="${a.id}"]`);
+  check('badge shows emoji and name', (await page.textContent(`.ib-item[data-id="${a.id}"] .ib-proj`)).includes('🎵 Tunio'));
+  check('item has the project stripe', (await page.getAttribute(`.ib-item[data-id="${a.id}"]`, 'style')).includes(sum.color));
+  check('project tab shows the emoji', (await page.textContent('#ibTabs')).includes('📻 LocoRadio'));
+  await page.goto(BASE + '/#/');
+  await page.waitForSelector('a.proj');
+  check('home card shows the emoji', (await page.textContent('a.proj[href="#/p/tunio"] h2')).includes('🎵'));
+  await page.goto(BASE + '/#/p/tunio');
+  await page.click('button:has-text("Look")');
+  await page.fill('#look-emoji', '🎸');
+  await page.$eval('#look-color', el => { el.value = '#123456'; });
+  await page.click('#dialog button:has-text("Save")');
+  await sleep(500);
+  let t = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'tunio');
+  check('Look saves emoji and colour', t.emoji === '🎸' && t.color === '#123456', t);
+  check('bad colour refused', (await s.api('PATCH', '/api/projects/tunio', { color: 'red' })).status === 400);
+  await s.ok('PATCH', '/api/projects/tunio', { color: '', emoji: '' });
+  t = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'tunio');
+  check('Automatic brings the picks back', t.emoji === '🎵' && t.color === sum.color, t);
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

@@ -19,13 +19,13 @@ function usageStrip(u) {
 
 function renderHome() {
   const inbox = state.inbox.length ? `<div class="inbox"><h3>Waiting on you (${state.inbox.length})</h3><ul>${state.inbox.map(c =>
-    `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></div>` : '';
+    `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${esc(c.projectEmoji || '')} ${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></div>` : '';
   const cards = state.projects.map(p => {
     const active = p.total - p.counts.backlog;
     const at = p.attention;
-    return `<a class="proj ${p.archived ? 'archived' : ''} ${at ? 'poke' : ''}" href="#/p/${p.slug}">
+    return `<a class="proj ${p.archived ? 'archived' : ''} ${at ? 'poke' : ''}" href="#/p/${p.slug}" style="--proj:${esc(p.color)}">
       ${at ? `<div class="pokeline">${at.kind === 'asleep' ? '💤' : '⚠️'} <b>Needs a poke:</b> ${at.kind === 'asleep' ? esc(at.why) : 'your comment unanswered for ' + esc(ago(at.since).replace(/ ago$/, ''))}</div>` : ''}
-      <h2>${esc(p.name)} ${p.archived ? '<span class="pill">archived</span>' : ''} ${p.needsYou ? `<span class="pill you">${p.needsYou} for you</span>` : ''} ${p.blocked ? `<span class="pill blocked">${p.blocked} blocked</span>` : ''}</h2>
+      <h2>${esc(p.emoji)} ${esc(p.name)} ${p.archived ? '<span class="pill">archived</span>' : ''} ${p.needsYou ? `<span class="pill you">${p.needsYou} for you</span>` : ''} ${p.blocked ? `<span class="pill blocked">${p.blocked} blocked</span>` : ''}</h2>
       <div class="muted">${esc(p.description)}</div>
       ${bar(p.counts, active)}
       <div class="counts"><b>${Math.round(p.progress * 100)}% done</b>${Object.entries(COLS).map(([k, v]) => `<span>${v} ${p.counts[k]}</span>`).join('')}</div>
