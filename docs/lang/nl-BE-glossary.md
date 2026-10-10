@@ -45,6 +45,10 @@ The choices behind `public/lang/nl-BE.json`, for the reviewer. One translation p
 | resets | begint opnieuw | Avoids the English "reset". |
 | Setup | Instellingen | |
 | Reset (back to the standard) | Terugzetten | "Herstellen" reads as "repair". |
+| Inbox chips: Decide / Test / Server / Keys / Read | Beslissen / Testen / Server / Toegang / Lezen | "Keys and accounts" = Toegang: "sleutels" means nothing to a non-developer. |
+| Priority now / today / whenever | nu / vandaag / geen haast | |
+| holds up {n} / Next up | houdt {n} tegen / Aan de beurt | |
+| What changed (Test tab) | Wat er veranderd is | |
 | Archive / Unarchive | Archiveren / Terughalen | |
 | Accept / Send back | Goedkeuren / Terugsturen | |
 | Wait and see | Even afwachten | |
