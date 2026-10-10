@@ -68,6 +68,63 @@ function limitsHistory(days) {
   return { latest: history[history.length - 1] || null, history };
 }
 
+// ---- connecting a project folder (onboarding) ------------------------------------------------
+// Writes a marked board section into the folder's agent notes and merges the comment hooks into its
+// agent settings, then keeps both out of git via .git/info/exclude. The agent tool's file names are
+// machine-specific, so they come from aigile.local.json: "agent": { notesFile, settingsFile }.
+const MARK_START = '<!-- AI-gile:start -->', MARK_END = '<!-- AI-gile:end -->';
+function connectFolder(p, dir, create) {
+  const agent = localSettings().agent || {};
+  if (!agent.notesFile || !agent.settingsFile) throw bad('set "agent": { "notesFile", "settingsFile" } in aigile.local.json first');
+  dir = String(dir || '').trim().replace(/^["']|["']$/g, '');
+  if (!path.isAbsolute(dir)) throw bad('give the full folder path, e.g. C:\\Users\\rich\\Desktop\\My Project');
+  dir = path.resolve(dir);
+  const done = [];
+  if (!fs.existsSync(dir)) {
+    if (!create) throw bad('folder not found: ' + dir);
+    fs.mkdirSync(dir, { recursive: true }); done.push('Created the folder');
+  }
+  if (!fs.statSync(dir).isDirectory()) throw bad('not a folder: ' + dir);
+  const me = __dirname.replace(/\\/g, '/'), cli = `node "${me}/aigile.js"`;
+
+  // 1. Notes: one marked block, replaced on reconnect so it never duplicates.
+  const block = [MARK_START, '## AI-gile board',
+    `This project is tracked on Rich's AI-gile board at http://localhost:${PORT} (project \`${p.slug}\`).`,
+    `- **Ways of working:** read \`${me}/WAYS-OF-WORKING.md\` at the start of every session and follow it.`,
+    `- **Board commands:** read \`${me}/AGENTS.md\` once.`,
+    `- **Session start:** run \`${cli} brief ${p.slug}\`.`,
+    `- **When idle:** run \`${cli} wait ${p.slug}\` as a background command, so Rich's comments wake you.`,
+    MARK_END].join('\n');
+  const notes = path.join(dir, agent.notesFile);
+  let text = fs.existsSync(notes) ? fs.readFileSync(notes, 'utf8') : `# ${p.name}: local session notes (not committed)\n`;
+  const re = new RegExp(MARK_START + '[\\s\\S]*?' + MARK_END);
+  text = re.test(text) ? text.replace(re, block) : text.replace(/\s*$/, '\n\n') + block + '\n';
+  fs.writeFileSync(notes, text); done.push('Added the board and ways of working to ' + agent.notesFile);
+
+  // 2. Hooks: merged into existing settings; older AI-gile entries are replaced, others kept.
+  const sfile = path.join(dir, agent.settingsFile);
+  let s = {};
+  if (fs.existsSync(sfile)) { try { s = JSON.parse(fs.readFileSync(sfile, 'utf8')); } catch { throw bad(agent.settingsFile + ' exists but is not valid JSON; fix it first'); } }
+  s.hooks = s.hooks || {};
+  for (const [ev, flag] of [['SessionStart', '--hook'], ['UserPromptSubmit', '--hook'], ['Stop', '--stop-hook']]) {
+    s.hooks[ev] = (s.hooks[ev] || []).filter(h => !JSON.stringify(h).includes('aigile.js'))
+      .concat({ hooks: [{ type: 'command', command: `${cli} updates ${p.slug} ${flag}` }] });
+  }
+  fs.mkdirSync(path.dirname(sfile), { recursive: true });
+  fs.writeFileSync(sfile, JSON.stringify(s, null, 2) + '\n'); done.push('Added the comment hooks to ' + agent.settingsFile);
+
+  // 3. Keep both out of git with the local exclude file (the repo's own files are untouched).
+  const ex = path.join(dir, '.git', 'info', 'exclude');
+  if (fs.existsSync(path.dirname(ex))) {
+    const cur = fs.existsSync(ex) ? fs.readFileSync(ex, 'utf8') : '';
+    const add = [agent.notesFile, agent.settingsFile].filter(f => !cur.split(/\r?\n/).includes(f));
+    if (add.length) fs.appendFileSync(ex, (cur && !cur.endsWith('\n') ? '\n' : '') + add.join('\n') + '\n');
+    done.push('Kept both files out of git');
+  }
+  p.path = dir.replace(/\\/g, '/'); save(p); done.push('Linked the folder to ' + p.name);
+  return { path: p.path, done };
+}
+
 // Machine-specific settings, kept out of git (*.local.json).
 function localSettings() {
   try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'aigile.local.json'), 'utf8')); } catch { return {}; }
@@ -141,6 +198,9 @@ function findCard(p, id) {
 // ---- routes ----------------------------------------------------------------
 // Each handler: (params, body, query) -> response JSON. Throw bad() for errors.
 const routes = [
+  // Connect a project to a folder: { path, create? } (see connectFolder).
+  ['POST', /^\/api\/projects\/([^/]+)\/connect$/, ([slug], b) => connectFolder(need(load(slug)), b.path, !!b.create)],
+
   // Plan usage snapshots from statusline.js: % used + reset time for the 5-hour and 7-day windows.
   ['POST', /^\/api\/limits$/, (_, b) => recordLimits(b.rate_limits || {})],
   ['GET', /^\/api\/limits$/, (_, __, q) => limitsHistory(Number(q.get('days')) || 30)],
@@ -149,7 +209,7 @@ const routes = [
   ['GET', /^\/api\/usage$/, () => usage(process.env.AIGILE_USAGE_DIR || localSettings().usageDir,
     listSlugs().map(load).filter(Boolean).map(p => ({ slug: p.slug, path: p.path })))],
 
-  ['GET', /^\/api\/meta$/, () => ({ statuses: STATUSES, types: TYPES, priorities: PRIORITIES, dev: DEV, build: build() })],
+  ['GET', /^\/api\/meta$/, () => ({ statuses: STATUSES, types: TYPES, priorities: PRIORITIES, dev: DEV, build: build(), home: path.dirname(__dirname) })],
 
   ['GET', /^\/api\/projects$/, (_, __, q) =>
     listSlugs().map(load).filter(Boolean).filter(p => q.get('all') || !p.archived).map(summary)

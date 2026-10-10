@@ -317,6 +317,7 @@ function renderBoard(p) {
       <button onclick="openDocs()">📄 Docs</button>
       <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'todo'})">🐞 Raise bug</button>
       <span class="grow"></span>
+      <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
     <div class="flight">🛠 <b>In flight:</b> ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || '<span class="muted">nothing right now</span>'}</div>
     ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? ` <code>${esc(p.path)}</code>` : ''}</p>` : ''}
@@ -480,6 +481,27 @@ function openDialog(html, cls = '') {
   const f = $('dialog').querySelector('input[type=text]'); if (f) f.focus();
 }
 function closeDialog() { $('dialog').innerHTML = ''; }
+
+// ---- connect a folder: sets the project's folder up so its team uses the board and the ways of working ----
+async function connectDialog() {
+  const p = state.project;
+  let suggest = p.path;
+  if (!suggest) { try { const m = await api('GET', '/api/meta'); suggest = m.home + '\\' + p.name.replace(/[<>:"/\\|?*]/g, '').trim(); } catch { suggest = ''; } }
+  openDialog(`<h2>🔌 ${p.path ? 'Folder connected' : 'Connect a folder'}</h2>
+    <p class="muted">The team working in this folder will then use this board and your ways of working. It adds two local files there (notes and hooks) that git won't see. Safe to run again.</p>
+    <label class="f"><span>Folder</span><input type="text" id="c-path" value="${esc(suggest)}"></label>
+    <label class="chk"><input type="checkbox" id="c-create" checked> Create the folder if it doesn't exist</label>
+    <div class="err" id="c-err"></div><div id="c-done"></div>
+    <div class="actions"><button class="primary" id="c-go" onclick="doConnect()">${p.path ? 'Reconnect' : 'Connect'}</button><button type="button" onclick="closeDialog()">Close</button></div>`);
+}
+async function doConnect() {
+  try {
+    const r = await api('POST', `/api/projects/${slug()}/connect`, { path: $('c-path').value, create: $('c-create').checked });
+    $('c-err').textContent = '';
+    $('c-done').innerHTML = `<ul>${r.done.map(d => `<li>✅ ${esc(d)}</li>`).join('')}</ul><p><b>Next:</b> start a new session in that folder. It will read the board and your ways of working by itself.</p>`;
+    $('c-go').remove();
+  } catch (e) { setErr('c-err', e); }
+}
 
 // ---- docs: read a project's .md files in the board -----------------------------
 async function openDocs() {

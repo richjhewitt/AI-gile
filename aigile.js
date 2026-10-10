@@ -4,7 +4,7 @@
 const BASE = (process.env.AIGILE_URL || 'http://localhost:4321').replace(/\/$/, '');
 const STATUSES = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'];
 const PRIO = { urgent: 0, high: 1, normal: 2, low: 3 };
-const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 'stop-hook', 'peek']);
+const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 'stop-hook', 'peek', 'create']);
 
 const HELP = `aigile: the AI-gile board CLI.  Project = slug, name or key (case-insensitive).
 Set AIGILE_URL to change the server (default http://localhost:4321). Set AIGILE_AS=NAME to skip --as.
@@ -43,6 +43,7 @@ TEAM AND LOG
 
 PROJECTS
   new-project <name> [--key K --path P --desc D]
+  onboard <proj> <folder> [--create]      set a folder up for the board: notes + ways of working + comment hooks
 
 Global: --json prints raw JSON instead of the compact text.`;
 
@@ -150,6 +151,13 @@ const cmds = {
     const name = pos[0]; if (!name) die('name is required');
     const p = await api('POST', '/api/projects', { name, key: flags.key, path: flags.path, description: flags.desc });
     out(flags, p, p => `created ${p.slug} (key ${p.key})`);
+  },
+
+  async onboard({ pos, flags }) {
+    const slug = await project(pos[0]);
+    if (!pos[1]) die('folder path is required');
+    const r = await api('POST', P(slug) + '/connect', { path: pos[1], create: !!flags.create });
+    out(flags, r, r => `connected ${slug} -> ${r.path}\n` + r.done.map(d => '  - ' + d).join('\n') + '\nNext: start a new session in that folder.');
   },
 
   async list({ pos, flags }) {
