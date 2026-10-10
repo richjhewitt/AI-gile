@@ -1158,6 +1158,41 @@ def('cardview', '🃏 Cards: compact or roomy, and which details show on board c
   noErrors(page);
 }, true);
 
+def('wip', 'WIP limits per column: n / limit in the header, amber at the limit, red over it (AIG-118)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await mkCard(s, 'alpha', 'One', { status: 'doing' });
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.click('button:has-text("Columns")');
+  await page.waitForSelector('.colrow');
+  await page.locator('.colrow').nth(2).locator('input.wip').fill('2');   // In progress
+  await page.locator('.colrow').nth(4).locator('input.wip').fill('1');   // For you
+  await page.click('#dialog button:has-text("Save")');
+  await page.waitForFunction(() => !document.querySelector('#dialog .dialog'));
+  const doing = page.locator('.column[data-status="doing"]'), verify = page.locator('.column[data-status="verify"]');
+  await page.waitForSelector('.column[data-status="doing"] .wipn');
+  check('header shows n / limit', (await doing.locator('h3').textContent()).includes('1 / 2'));
+  check('under the limit: no colour', !/wip-/.test(await doing.getAttribute('class')));
+  await mkCard(s, 'alpha', 'Two', { status: 'doing' });
+  await page.waitForSelector('.column.wip-at[data-status="doing"]');
+  check('at the limit: amber', (await doing.locator('h3').textContent()).includes('2 / 2'));
+  await mkCard(s, 'alpha', 'Three', { status: 'doing' });
+  await page.waitForSelector('.column.wip-over[data-status="doing"]');
+  check('over the limit: red', (await doing.locator('h3').textContent()).includes('3 / 2'));
+  check('limit saved as a number', (await s.ok('GET', '/api/projects/alpha')).columns.find(c => c.status === 'doing').wip === 2);
+  await mkCard(s, 'alpha', 'Test me', { status: 'verify' });
+  await page.waitForSelector('.column.wip-at[data-status="verify"]');
+  check('For you column can have a limit', (await verify.locator('h3').textContent()).includes('1 / 1'));
+  const cols = (await s.ok('GET', '/api/projects/alpha')).columns;
+  for (const bad of [-1, 1000, 1.5, 'lots']) {
+    const r = await s.api('PATCH', '/api/projects/alpha', { columns: cols.map(c => c.status === 'doing' ? { ...c, wip: bad } : c) });
+    check('bad limit refused: ' + bad, r.status === 400);
+  }
+  await s.ok('PATCH', '/api/projects/alpha', { columns: cols.map(c => c.status === 'doing' ? { ...c, wip: 0 } : c) });
+  await page.waitForSelector('.column[data-status="doing"]:not(.wip-over)');
+  check('0 = no limit', !(await doing.locator('.wipn').count()));
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

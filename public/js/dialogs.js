@@ -141,6 +141,7 @@ function paintColRows() {
     <input type="text" class="emoji" value="${esc(c.emoji)}" maxlength="8" placeholder="🙂" oninput="state.colDraft[${i}].emoji = this.value" aria-label="Emoji">
     <input type="text" value="${esc(c.name)}" maxlength="40" oninput="state.colDraft[${i}].name = this.value" aria-label="Name">
     <input type="color" value="${esc(c.color || '#888888')}" oninput="state.colDraft[${i}].color = this.value" aria-label="Colour">
+    <input type="number" class="wip" min="0" max="999" step="1" value="${c.wip || ''}" placeholder="limit" title="Most cards this column should hold (empty = no limit)" oninput="state.colDraft[${i}].wip = this.value" aria-label="Card limit">
     <label class="chk"><input type="checkbox" ${c.hidden ? 'checked' : ''} onchange="hideCol(${i}, this)"> Hide</label>
     <span class="muted">${esc(COLS[c.key])}</span></div>`).join('');
 }
@@ -151,7 +152,7 @@ function hideCol(i, box) {
   c.hidden = box.checked;
 }
 async function saveColumns(all) {
-  const columns = state.colDraft.map(c => ({ status: c.key, name: c.name, emoji: c.emoji, color: c.color && c.color !== '#888888' ? c.color : '', hidden: c.hidden }));
+  const columns = state.colDraft.map(c => ({ status: c.key, name: c.name, emoji: c.emoji, color: c.color && c.color !== '#888888' ? c.color : '', hidden: c.hidden, wip: c.wip }));
   try {
     const slugs = all ? (await api('GET', '/api/projects?all=1')).map(x => x.slug) : [slug()];
     if (all && !confirm(`Give all ${slugs.length} projects these columns?`)) return;

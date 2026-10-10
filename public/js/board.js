@@ -43,9 +43,10 @@ function renderBoard(p) {
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
   const cols = colsOf(p).filter(c => !c.hidden).map(col => {
     const k = col.key, label = (col.emoji ? col.emoji + ' ' : '') + col.name, tint = col.color ? ` style="--colc:${esc(col.color)}"` : '';
-    if (k === 'verify') return forYouColumn(p, label, tint);
+    if (k === 'verify') return forYouColumn(p, label, tint, col.wip);
     const cs = p.cards.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => b.updated.localeCompare(a.updated));
-    return `<div class="column" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${cs.length} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
+    const all = p.cards.filter(c => c.status === k && !forYou(c)).length;
+    return `<div class="column ${wipClass(all, col.wip)}" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, col.wip)} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
   }).join('');
   const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
   const log = (p.log || []).slice().reverse().slice(0, 50);
@@ -71,6 +72,11 @@ function renderBoard(p) {
     </div>`;
 }
 
+/* ---------- WIP limits (AIG-118) ---------- */
+// The limit counts every card in the column, even ones a filter hides, so the header can't hide a full column.
+const wipClass = (n, limit) => { const w = wipState(n, limit); return w ? 'wip-' + w : ''; };
+const countHtml = (shown, all, limit) => limit ? `<span class="wipn" title="Limit ${limit}">${all} / ${limit}</span>` : String(shown);
+
 /* ---------- For you column (AIG-106) ---------- */
 // Everything waiting on the owner, whatever its status: tests, questions, tasks and blocks. Those cards show
 // here instead of in their own column (their status doesn't change). Chips pick which kind comes first.
@@ -83,13 +89,14 @@ function forYouFirst(k) {
   if (!state.forYouFirst) { try { state.forYouFirst = localStorage.getItem('aigile.forYouFirst'); } catch {} }
   return state.forYouFirst || 'q';
 }
-function forYouColumn(p, label = 'For you', tint = '') {
+function forYouColumn(p, label = 'For you', tint = '', wip = 0) {
   const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : 1 + KINDS.findIndex(([k]) => k === kindOf(c));
   // Within a kind, a queue: longest-waiting first, so 'Wait and see' sends a test to the back.
   const cs = p.cards.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || a.updated.localeCompare(b.updated));
   const n = k => cs.filter(c => kindOf(c) === k).length;
   const chips = KINDS.map(([k, label]) => `<button class="fy-chip ${k === first ? 'on' : ''}" data-first="${k}" title="Show these first" onclick="forYouFirst('${k}')">${label} ${n(k)}</button>`).join('');
-  return `<div class="column foryou" data-status="verify"${tint}><h3><span>${esc(label)}</span><span>${cs.length}</span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
+  const all = p.cards.filter(forYou).length;
+  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, wip)}</span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
 }
 
 // show = the project's card view choices (board cards only); the card panel passes nothing and shows all.
