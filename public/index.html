@@ -149,6 +149,7 @@
   <h1><a href="#/">🗂️ AI-gile</a></h1>
   <span class="crumb" id="crumb"></span>
   <span class="spacer"></span>
+  <span id="inboxTop"></span>
   <a class="navlink" href="#/usage">⚡ Usage</a>
   <span class="live" id="live">live</span>
 </header>
@@ -158,6 +159,7 @@
 <div id="update"></div>
 
 <script src="usage-page.js"></script>
+<script src="inbox.js"></script>
 <script>
 const COLS = { backlog: 'Backlog', todo: 'To do', doing: 'In progress', review: 'Review', verify: 'For you to test', team: 'For the team', done: 'Done' };
 const COL_COLORS = { team: '#e11d74', done: 'var(--done)', verify: 'var(--you)', review: '#0ea5a4', doing: 'var(--accent)', todo: 'var(--warn)' };
@@ -181,6 +183,7 @@ const ago = iso => {
 const $ = id => document.getElementById(id);
 
 function parseRoute() {
+  if (location.hash === '#/inbox') return { view: 'inbox' };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
   return m ? { view: 'project', slug: m[1], card: m[2] || null } : { view: 'home' };
@@ -199,6 +202,8 @@ function busy() {
 
 async function refresh(force) {
   state.route = parseRoute();
+  // The inbox page renders itself; forget the last render so leaving it always redraws.
+  if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; return Inbox.show(force); }
   let sig;
   try {
     if (state.route.view === 'home') {
