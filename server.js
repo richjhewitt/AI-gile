@@ -291,8 +291,11 @@ const routes = [
     c.comments.push({ author, text, at: now() });
     if ('needsYou' in b) c.needsYou = !!b.needsYou;
     else if (isRich(author)) c.needsYou = false;
-    // Rich replying hands the card to the team.
-    if (isRich(author)) toTeam(c);
+    // Rich replying hands the card to the team, including a task he'd been given (it leaves his inbox).
+    if (isRich(author)) {
+      toTeam(c);
+      if (isRich(c.assignee)) c.assignee = c.prevAssignee || '';
+    }
     c.updated = now();
     save(p);
     return c;
