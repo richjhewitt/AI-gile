@@ -29,29 +29,39 @@ async function createCard(e) {
 }
 
 /* ---------- new project, archive ---------- */
-function newProject() {
+// The folder is suggested from the name (next to AI-gile) and set up for the team on create (AIG-73).
+async function newProject() {
+  try { state.home = state.home || (await api('GET', '/api/meta')).home; } catch {}
   openDialog(`<h2>New project</h2>
     <form onsubmit="return createProject(event)">
       <label class="f"><span>Name</span><input type="text" id="p-name" oninput="suggestKey()" maxlength="80"></label>
       <div class="row"><label class="f"><span>Key (card prefix, e.g. AIG)</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
-      <label class="f"><span>Folder path (optional)</span><input type="text" id="p-path" placeholder="C:\\Users\\rich\\Desktop\\..."></label>
+      <label class="f"><span>Folder (created if new, then set up for the team)</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="leave empty to connect one later"></label>
       <label class="f"><span>Description (optional)</span><textarea id="p-desc" rows="3"></textarea></label>
-      <div class="err" id="d-err"></div>
-      <div class="actions"><button class="primary" type="submit">Create project</button><button type="button" onclick="closeDialog()">Cancel</button></div></form>`);
+      <div class="err" id="d-err"></div><div id="p-done"></div>
+      <div class="actions" id="p-acts"><button class="primary" type="submit">Create project</button><button type="button" onclick="closeDialog()">Cancel</button></div></form>`);
 }
 function suggestKey() {
-  const k = $('p-key'); if (k.dataset.touched) return;
-  k.value = $('p-name').value.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase();
+  const name = $('p-name').value, k = $('p-key'), f = $('p-path');
+  if (!k.dataset.touched) k.value = name.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase();
+  const clean = name.replace(/[<>:"/\\|?*]/g, '').trim();
+  if (!f.dataset.touched && state.home) f.value = clean ? state.home + '\\' + clean : '';
 }
 async function createProject(e) {
   e.preventDefault();
-  const name = $('p-name').value.trim();
+  const name = $('p-name').value.trim(), folder = $('p-path').value.trim();
   if (!name) { setErr('d-err', 'Give the project a name'); return false; }
+  let p;
   try {
-    const p = await api('POST', '/api/projects', { name, key: $('p-key').value.trim(), path: $('p-path').value.trim(), description: $('p-desc').value.trim() });
-    closeDialog();
-    location.hash = '#/p/' + p.slug;
-  } catch (err) { setErr('d-err', err); }
+    p = await api('POST', '/api/projects', { name, key: $('p-key').value.trim(), description: $('p-desc').value.trim() });
+  } catch (err) { setErr('d-err', err); return false; }
+  if (!folder) { closeDialog(); location.hash = '#/p/' + p.slug; return false; }
+  $('p-acts').innerHTML = `<button type="button" class="primary" onclick="closeDialog(); location.hash = '#/p/${p.slug}'">Open project</button>`;
+  try {
+    const r = await api('POST', `/api/projects/${p.slug}/connect`, { path: folder, create: true, wake: true });
+    $('d-err').textContent = '';
+    $('p-done').innerHTML = `<ul>${['Created the project', ...r.done].map(d => `<li>✅ ${esc(d)}</li>`).join('')}</ul>`;
+  } catch (err) { setErr('d-err', 'Project created, but the folder was not set up: ' + err.message + ' (use 🔌 Connect folder on the board)'); }
   return false;
 }
 async function setArchived(on) {
@@ -74,7 +84,7 @@ async function connectDialog() {
   let suggest = p.path;
   if (!suggest) { try { const m = await api('GET', '/api/meta'); suggest = m.home + '\\' + p.name.replace(/[<>:"/\\|?*]/g, '').trim(); } catch { suggest = ''; } }
   openDialog(`<h2>🔌 ${p.path ? 'Folder connected' : 'Connect a folder'}</h2>
-    <p class="muted">The team working in this folder will then use this board and your ways of working. It adds two local files there (notes and hooks) that git won't see. Safe to run again.</p>
+    <p class="muted">The team working in this folder will then use this board and your ways of working. It adds two local files there (notes, plus hooks and team permissions; git push still asks) that git won't see, and starts a git repo if there is none. Safe to run again.</p>
     <label class="f"><span>Folder</span><input type="text" id="c-path" value="${esc(suggest)}"></label>
     <label class="chk"><input type="checkbox" id="c-create" checked> Create the folder if it doesn't exist</label>
     <div class="err" id="c-err"></div><div id="c-done"></div>

@@ -232,6 +232,8 @@ def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
   const st = JSON.parse(fs.readFileSync(sfile, 'utf8'));
   check('settings merged, own keys kept', st.keep === 1 && JSON.stringify(st.hooks.Stop).includes('echo mine'));
   check('hooks added once each', ['SessionStart', 'UserPromptSubmit', 'Stop'].every(ev => st.hooks[ev].filter(h => JSON.stringify(h).includes('aigile.js')).length === 1), st.hooks);
+  check('team permissions added once, git push asks', st.permissions.allow.filter(x => x === 'Bash').length === 1 && st.permissions.ask.includes('Bash(git push:*)'), st.permissions);
+  check('new folder got a git repo', fs.existsSync(path.join(dir, '.git')));
   check('project linked to folder', (await s.ok('GET', '/api/projects/beta')).path === dir.replace(/\\/g, '/'));
 });
 
@@ -698,6 +700,30 @@ def('mdlinks', 'Any .md path in card text opens in the board', async (s, ctx) =>
   await page.waitForSelector('.md h1');
   check('inline code path opens the file', (await page.textContent('.md h1')) === 'Deep one');
   await page.keyboard.press('Escape');
+  noErrors(page);
+}, true);
+
+def('newproject', 'New project suggests a folder, sets it up and wakes the team fresh', async (s, ctx) => {
+  const folder = path.join(tmp('newproj'), 'Fresh One');
+  const page = await openPage(ctx, '#/');
+  await page.click('button:has-text("+ New project")');
+  await page.fill('#p-name', 'Fresh One');
+  check('folder suggested from the name', /[\\/]Fresh One$/.test(await page.inputValue('#p-path')), await page.inputValue('#p-path'));
+  await page.fill('#p-path', folder);
+  await page.click('#dialog button[type=submit]');
+  await page.waitForSelector('#p-done li', { timeout: 5000 }).catch(() => {});
+  const done = await page.textContent('#p-done').catch(() => '');
+  check('dialog lists every step', ['Created the project', 'Created the folder', 'permissions', 'git repo', 'Woke the team'].every(x => done.includes(x)), done);
+  const local = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')).agent || {}; } catch { return {}; } })();
+  const st = JSON.parse(fs.readFileSync(path.join(folder, local.settingsFile), 'utf8'));
+  check('settings have hooks and permissions', !!st.hooks.Stop && st.permissions.allow.includes('Bash') && st.permissions.ask.includes('Bash(git push:*)'), st);
+  check('folder has a git repo', fs.existsSync(path.join(folder, '.git')));
+  let out = '';
+  for (let i = 0; i < 40 && !out.includes('new project'); i++) { await sleep(250); try { out = fs.readFileSync(s.wakeOut, 'utf8'); } catch {} }
+  check('team woken fresh (no --continue)', /new project \(fresh-one\)/.test(out) && !/--continue/.test(out), out);
+  await page.click('#p-acts button');
+  await page.waitForFunction(() => location.hash === '#/p/fresh-one');
+  check('Open project goes to the board', true);
   noErrors(page);
 }, true);
 
