@@ -3,3 +3,6 @@ data/
 node_modules/
 *.local.json
 *.local.md
+
+# The owner's own ways of working: private, made from docs/starter on a new install (AIG-96)
+WAYS-OF-WORKING.md

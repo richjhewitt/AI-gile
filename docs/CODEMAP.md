@@ -63,4 +63,5 @@ All in `lib/routes.js` (patterns are the regexes there). The list with payloads 
 - `agent.command`: program background runs start (one `*` path segment allowed; `AIGILE_AGENT_COMMAND` overrides).
 - `agent.notesFile`, `agent.settingsFile`: file names `onboard` writes in a project folder.
 - `dmRelay`: default DM relay address (`AIGILE_RELAY` overrides; `POST /api/dms/settings` can set one too).
+- `WAYS-OF-WORKING.md` (repo root) is the owner's private rules for every team, git-ignored; a new install gets `docs/starter/WAYS-OF-WORKING.md` with the name filled in (`ensureWays` in lib/setup.js).
 - `owner`: the board's human, whose comments wake teams and who gets questions and tests (default Rich; `AIGILE_OWNER` overrides). Code calls this person `isRich()` / `me()`.
