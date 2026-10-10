@@ -129,12 +129,42 @@ All endpoints take and return JSON.
 | GET | `/api/projects/:slug/updates[?mark=1]` | Owner activity since the team last looked |
 | GET | `/api/inbox` | Everything waiting on the owner, across all projects |
 | GET | `/api/meta` | Allowed statuses, types and priorities |
+| GET | `/api/dms` | Private DMs: `{on, relay, mailbox, contacts, lastPoll}` |
+| POST | `/api/dms/settings` | `{on?, relay?}`: switch DMs on or off (off stops all relay traffic) and set the relay |
+| POST | `/api/dms/invites`, `/api/dms/accept` | Make an invite code `{name?}`; accept one `{code, name}` |
+| GET, PATCH, DELETE | `/api/dms/contacts[/:id]` | List people; rename, mark the safety code `checked`, `blocked`; remove |
+| GET, POST | `/api/dms/contacts/:id/messages` | Read the chat; send `{text}` |
+| GET | `/api/dms/contacts/:id/messages/:mid/raw` | The sealed envelope exactly as the relay saw it |
+
+## Private DMs and the relay
+
+People using AI-gile can message each other privately: end-to-end encrypted on each board, carried by a small relay that only sees scrambled data. The design is in [docs/DMS-DESIGN.md](docs/DMS-DESIGN.md).
+
+### Running the relay
+
+`relay/relay.js` is one file with no dependencies; copy it to a server with Node 18 or later and run:
+
+```sh
+RELAY_PORT=4500 node relay.js
+```
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `RELAY_PORT` | 4500 | Port to listen on |
+| `RELAY_HOST` | `0.0.0.0` | Address to listen on |
+| `RELAY_DATA` | `data/` next to `relay.js` | Where sealed envelopes wait (deleted when collected, or after 7 days) |
+| `RELAY_RATE` | 300 | Requests per minute per IP |
+| `RELAY_MAX_BYTES` | 2 GB | Total space for waiting envelopes |
+| `RELAY_TRUST_PROXY` | off | Behind a reverse proxy: take the client IP from `X-Forwarded-For` |
+
+Put it behind HTTPS (for example Caddy or nginx). Messages are already encrypted, but HTTPS also hides which mailboxes are talking. Then set the relay on each board (`POST /api/dms/settings {"on": true, "relay": "https://relay.example.com"}`, or `dmRelay` in `aigile.local.json`).
 
 ## Project layout
 
 ```
 server.js          HTTP plumbing and wiring
-lib/               Server logic: store, routes, onboard, presence, limits, usage
+lib/               Server logic: store, routes, onboard, presence, limits, usage, dm (private DMs)
+relay/relay.js     The standalone DM relay (run on a server)
 public/index.html  Web board shell (no framework)
 public/styles.css  Board styles
 public/js/         Page scripts (core, board, card, dialogs, filters, format, inbox, usage)

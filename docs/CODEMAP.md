@@ -5,7 +5,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 ## Run and test
 - Server: `node server.js` (or `start-aigile.bat`) -> http://localhost:4321. `AIGILE_PORT` and `AIGILE_DATA` change the port and data folder; `AIGILE_DEV=1` adds the "new version, refresh" prompt.
 - CLI: `node aigile.js help` (`AIGILE_URL` points it at another server; `AIGILE_AS` sets the author).
-- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `quietinbox`, `poke`, `blocked`, `docs`, `mdlinks`, `newproject`, `perms`, `gobutton`, `attach`, `refresh`, `look`, `guard`, `owner`, `setup`, `update`, `foryou`, `popout`, `columns`, `cardview`, `wip`, `lanes`, `quick`, `views`, `steps`, `fynext`, `theme`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
+- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `quietinbox`, `poke`, `blocked`, `docs`, `mdlinks`, `newproject`, `perms`, `gobutton`, `attach`, `refresh`, `look`, `guard`, `owner`, `setup`, `update`, `foryou`, `popout`, `columns`, `cardview`, `wip`, `lanes`, `quick`, `views`, `steps`, `fynext`, `theme`, `dms` (starts a relay on `QA_PORT`+3, a second board on `QA_PORT`+1 and a rate-limit relay on `QA_PORT`+2). The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
 
 ## Server
 | File | What |
@@ -17,6 +17,8 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `lib/presence.js` | Team presence (`heard`, `presenceOf`, `heardFromFolder`) and the background runner: `startTeam`/`nudge` (agent command run hidden in the project folder, log in `data/logs/<slug>.log`, one run per team), `restartTeam`, `logTail` |
 | `lib/quiet.js` | Going quiet: `setQuiet` (📣 card to every team with open work, starts sleeping ones, night mode file `data/quiet.state`), `quietSince` |
 | `lib/attachments.js` | Files attached to replies (AIG-77): `saveAttachment` (base64 upload, 10 MB), `attachmentsFor` (checks a comment's ids), `fileOf`; stored in `data/attachments/<slug>/` |
+| `lib/dm.js` | Private DMs (AIG-110, design in `docs/DMS-DESIGN.md`): `identity` (X25519 + Ed25519 keys and a random mailbox id in `data/keys/identity.json`), settings (`on`, `relay`), contacts, invites (`createInvite`/`acceptInvite`, the sealed hello), `safetyCode` (6 words), `seal`/`receive` (ephemeral X25519 + HKDF-SHA256 + AES-256-GCM, Ed25519 signature; failures kept as not verified), the outbox (`flush`), `poll` (signed collect + ack, every `AIGILE_DM_POLL_MS`, default 4s, only while on) |
+| `relay/relay.js` | The DM relay (AIG-112): standalone, zero deps, run on a server. Mailboxes of sealed envelopes in `RELAY_DATA/<box>/`; POST drops one, a signed GET collects, a signed POST `/ack` deletes; first signed collect claims a mailbox; replay guard (timestamp + nonce), 12 MB limit, per-IP rate limit, 7-day expiry |
 | `lib/limits.js` | `recordLimits` / `limitsHistory` for the plan usage log |
 | `lib/usage.js` | Token usage per project, read from the agents' local session logs |
 | `aigile.js` | The CLI: `HELP` text, arg parsing, `api()`, `nextList` (what to work on), then one function per command under "commands" |
@@ -43,12 +45,15 @@ Where everything lives, so you can go straight to the right place. Search for th
 ## Data
 - `data/<slug>.json`: one file per project (cards, comments, team, log, `teamSeenAt`); written atomically via a `.tmp` file. Git-ignored.
 - A project's `columns` (AIG-116/118): per status `{ status, name?, emoji?, color?, hidden?, wip? }` in board order; `wip` is the card limit (0/empty = none), checked 0..999 in the PATCH route, drawn by `renderBoard`.
+- `data/keys/identity.json`: this board's DM private keys and mailbox id (never leaves the computer).
+- `data/dms/`: `settings.json` (on, relay), `contacts.json`, `invites.json` (hashes of unused invite secrets), `outbox.json` (sealed envelopes not yet taken by a relay), and `<contact id>.json` per person: their messages, each with `raw`, the envelope as the relay saw it.
 - `data/limits.log`: one JSON line per plan usage change (or every 5 minutes).
 - `data/logs/<slug>.log`: what the team's background runs printed.
 - Presence ("heard from") and the running processes are in memory only.
 
 ## API routes
-All in `lib/routes.js` (patterns are the regexes there). The list with payloads is in the README's API table. Unknown `/api/*` paths return 404 JSON from `server.js`.
+All in `lib/routes.js` (patterns are the regexes there). The list with payloads is in the README's API table. Unknown `/api/*` paths return 404 JSON from `server.js`. A handler may return a promise (the DM routes talk to the relay).
+- DMs: `GET /api/dms` (on, relay, mailbox, contacts, lastPoll), `POST /api/dms/settings` `{on?, relay?}`, `POST /api/dms/poll`, `POST /api/dms/invites` `{name?}`, `POST /api/dms/accept` `{code, name}`, `GET /api/dms/contacts`, `PATCH`/`DELETE /api/dms/contacts/:id` (`{name?, checked?, blocked?}`), `GET`/`POST /api/dms/contacts/:id/messages` (`{text}`), `GET /api/dms/contacts/:id/messages/:mid/raw` (what the relay sees).
 
 ## Local-only settings
 `aigile.local.json` (git-ignored; values are machine-specific):
@@ -56,4 +61,5 @@ All in `lib/routes.js` (patterns are the regexes there). The list with payloads 
 - `globalSettingsFile`: the agent's global settings file, used to show how to switch the status line on.
 - `agent.command`: program background runs start (one `*` path segment allowed; `AIGILE_AGENT_COMMAND` overrides).
 - `agent.notesFile`, `agent.settingsFile`: file names `onboard` writes in a project folder.
+- `dmRelay`: default DM relay address (`AIGILE_RELAY` overrides; `POST /api/dms/settings` can set one too).
 - `owner`: the board's human, whose comments wake teams and who gets questions and tests (default Rich; `AIGILE_OWNER` overrides). Code calls this person `isRich()` / `me()`.
