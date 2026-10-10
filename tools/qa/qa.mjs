@@ -661,6 +661,46 @@ def('docs', 'Docs dialog lists .md files and opens one', async (s, ctx) => {
   noErrors(page);
 }, true);
 
+def('mdlinks', 'Any .md path in card text opens in the board', async (s, ctx) => {
+  const root = tmp('mdlinks'), folder = path.join(root, 'Proj Folder');
+  fs.mkdirSync(path.join(folder, 'protocol'), { recursive: true });
+  fs.mkdirSync(path.join(folder, 'docs', 'addons'), { recursive: true });
+  fs.writeFileSync(path.join(folder, 'protocol', 'X.md'), '# Protocol X\n');
+  fs.writeFileSync(path.join(folder, 'docs', 'addons', 'deep.md'), '# Deep one\n');
+  fs.writeFileSync(path.join(folder, 'notes.txt'), 'plain');
+  fs.writeFileSync(path.join(root, 'outside.md'), '# Outside\n');
+  await mkProject(s, 'Alpha', 'ALP', { path: folder });
+  const get = q => s.api('GET', '/api/projects/alpha/file?path=' + encodeURIComponent(q));
+  const abs = path.join(folder, 'docs', 'addons', 'deep.md');
+  const ok = async (label, q, name) => { const r = await get(q); check('route: ' + label, r.status === 200 && r.body.name === name && r.body.text.startsWith('#'), r.status + ' ' + JSON.stringify(r.body)); };
+  await ok('relative', 'protocol/X.md', 'protocol/X.md');
+  await ok('deeper', 'docs/addons/deep.md', 'docs/addons/deep.md');
+  await ok('absolute', abs, 'docs/addons/deep.md');
+  await ok('backslashes', 'docs\\addons\\deep.md', 'docs/addons/deep.md');
+  await ok('absolute with backslashes', abs.replace(/\//g, '\\'), 'docs/addons/deep.md');
+  await ok('project folder prefix', 'Proj Folder/protocol/X.md', 'protocol/X.md');
+  check('route: ../ escape refused', [400, 404].includes((await get('../outside.md')).status));
+  check('route: absolute outside refused', [400, 404].includes((await get(path.join(root, 'outside.md'))).status));
+  check('route: non-.md refused', (await get('notes.txt')).status === 400);
+  check('route: missing is 404', (await get('protocol/none.md')).status === 404);
+  const c = await mkCard(s, 'alpha', 'Links', { description: 'See protocol/X.md for the rules.\n\n```\n' + abs + '\n```\n\nAlso `' + abs + '`' });
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.waitForSelector('.desc a[data-p="protocol/X.md"]');
+  await page.click('.desc a[data-p="protocol/X.md"]');
+  await page.waitForSelector('.md h1');
+  check('bare path opens the file', (await page.textContent('.md h1')) === 'Protocol X' && (await page.textContent('#dialog .doctitle')) === 'protocol/X.md');
+  await page.keyboard.press('Escape');
+  await page.click('.codebox button.open');
+  await page.waitForSelector('.md h1');
+  check('code block Open button opens the file', (await page.textContent('.md h1')) === 'Deep one');
+  await page.keyboard.press('Escape');
+  await page.click('code a[data-p]');
+  await page.waitForSelector('.md h1');
+  check('inline code path opens the file', (await page.textContent('.md h1')) === 'Deep one');
+  await page.keyboard.press('Escape');
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }
