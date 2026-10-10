@@ -72,7 +72,7 @@ function renderCard(p, c) {
       <div class="muted">Built and waiting for you to test${c.testSteps ? ' (steps below)' : ''}.</div>
       <label class="f" style="margin-top:8px"><span>Comment (required to send back)</span><textarea id="v-text" rows="3" placeholder="What did you see? What's wrong?"></textarea></label>
       <div class="err" id="v-err"></div>
-      <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button><button onclick="waitAndSee()" title="Not sure yet: move it to the back of your queue">⏳ Wait and see</button></div></div>` : '';
+      <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button><button onclick="waitAndSee()" title="Not sure yet: hide it from your inbox for an hour">⏳ Wait and see</button></div></div>` : '';
   // Tabs: Reply (latest message on top, reply box right under it, older ones below), Details, Test.
   const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">Latest</span>' : ''}<span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div></div>`;
   const newest = [...c.comments].reverse();
@@ -146,7 +146,7 @@ async function sendReply() {
   } catch (err) { setErr('r-err', err); }
 }
 async function waitAndSee() {
-  try { await api('PATCH', `/api/projects/${slug()}/cards/${cardId()}`, {}); closeCard(); } catch (err) { setErr('v-err', err); }
+  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); closeCard(); } catch (err) { setErr('v-err', err); }
 }
 async function verdict(accept) {
   const t = $('v-text').value.trim();

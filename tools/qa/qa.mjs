@@ -114,6 +114,18 @@ def('api', 'projects/cards CRUD, comment/verdict/taskdone/poke, updates feed, in
   inbox = await s.ok('GET', '/api/inbox');
   check('inbox has verify', inbox.some(c => c.id === c5.id));
   check('inbox carries project info', inbox[0].project === 'alpha' && inbox[0].projectName === 'Alpha');
+  const sn = await s.ok('POST', `/api/projects/alpha/cards/${c5.id}/snooze`);
+  check('snooze sets snoozedUntil about an hour ahead', sn.snoozedUntil && Math.abs(new Date(sn.snoozedUntil) - Date.now() - 3600e3) < 60e3, sn.snoozedUntil);
+  inbox = await s.ok('GET', '/api/inbox');
+  check('snoozed card is left out of the inbox', !inbox.some(c => c.id === c5.id));
+  await s.ok('DELETE', `/api/projects/alpha/cards/${c5.id}/snooze`);
+  inbox = await s.ok('GET', '/api/inbox');
+  check('bring back clears it and the card is in the inbox again', inbox.some(c => c.id === c5.id) && !(await getCard(s, 'alpha', c5.id)).snoozedUntil);
+  await s.ok('POST', `/api/projects/alpha/cards/${c5.id}/snooze`);
+  await s.ok('POST', `/api/projects/alpha/cards/${c5.id}/verdict`, { accept: false, text: 'nope' });
+  check('a verdict clears the snooze', !(await getCard(s, 'alpha', c5.id)).snoozedUntil);
+  check('snooze outside verify is rejected', (await s.api('POST', `/api/projects/alpha/cards/${c5.id}/snooze`)).status === 400);
+  await s.ok('PATCH', `/api/projects/alpha/cards/${c5.id}`, { status: 'verify' });
   const td = await s.ok('POST', `/api/projects/alpha/cards/${c4.id}/taskdone`, { text: 'did it' });
   check('taskdone hands back and goes to team', td.status === 'team' && td.assignee === 'Pixel' && /Done: did it/.test(td.comments.at(-1).text), [td.status, td.assignee]);
   const c6 = await mkCard(s, 'alpha', 'Stuck', { status: 'doing' });
@@ -235,6 +247,13 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   await page.dragAndDrop('.card[data-id="ALP-1"]', '.column[data-status="review"]');
   await page.waitForTimeout(600);
   check('drag moves the card (server)', (await getCard(s, 'alpha', 'ALP-1')).status === 'review');
+  const sv = await mkCard(s, 'alpha', 'Snoozed one', { status: 'verify' });
+  await s.ok('POST', `/api/projects/alpha/cards/${sv.id}/snooze`);
+  await page.waitForTimeout(1500);
+  check('snoozed card shows back-at label and Bring back', /back at \d/.test(await page.textContent(`.card[data-id="${sv.id}"]`)) && (await page.locator(`.card[data-id="${sv.id}"] button:has-text("Bring back")`).count()) === 1);
+  await page.click(`.card[data-id="${sv.id}"] button:has-text("Bring back")`);
+  await page.waitForTimeout(1500);
+  check('Bring back clears the label', !(await getCard(s, 'alpha', sv.id)).snoozedUntil && !/back at/.test(await page.textContent(`.card[data-id="${sv.id}"]`)));
   check('drag moves the card (page)', (await page.locator('.column[data-status=review] .card[data-id="ALP-1"]').count()) === 1);
 
   await page.click('.toolbar button.primary');
@@ -567,6 +586,22 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   const proj = at => ({ cards: [{ status: 'team', createdBy: '', created: old, updated: old, comments: [{ author: 'Rich', text: 'x', at }] }] });
   check('online, comment unanswered 10+ min = stuck', attention(proj(old), { online: true })?.kind === 'stuck');
   check('online, fresh comment = fine', attention(proj(fresh), { online: true }) === null);
+  noErrors(page);
+}, true);
+
+def('blocked', 'a blocked card shows in the inbox with the reason; his answer clears it', async (s, ctx) => {
+  await mkProject(s, 'Gamma', 'GAM');
+  await mkCard(s, 'gamma', 'Stuck card', { status: 'doing', assignee: 'Forge' });
+  await say(s, 'gamma', 'GAM-1', 'Forge', 'Blocked: need the API key');
+  await s.ok('PATCH', '/api/projects/gamma/cards/GAM-1', { blocked: true });
+  check('blocked card is in the inbox (api)', (await s.ok('GET', '/api/inbox')).some(c => c.id === 'GAM-1'));
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('.ib-item.blk', { timeout: 7000 }).catch(() => {});
+  const t = await page.textContent('.ib-item.blk').catch(() => '');
+  check('inbox shows it as Blocked with the reason', /Blocked/.test(t) && /need the API key/.test(t), t);
+  await say(s, 'gamma', 'GAM-1', 'Rich', 'key is in the vault');
+  check('Rich answering clears the block', (await s.ok('GET', '/api/projects/gamma')).cards[0].blocked === false);
+  check('and it leaves the inbox', !(await s.ok('GET', '/api/inbox')).some(c => c.id === 'GAM-1'));
   noErrors(page);
 }, true);
 
