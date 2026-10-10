@@ -904,8 +904,15 @@ def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; it ask
   await page.click('#updateTop button');
   await sleep(300);
   check('asks before losing the reply, and stays when cancelled', /unsent reply/.test(asked) && (await page.inputValue('#r-text')) === 'half a sentence', asked);
+  // Desktop app: its Restart pill sits next to Refresh and also asks first (AIG-83).
+  await page.evaluate(() => window.showRestartApp());
+  check('Restart app pill next to Refresh', (await page.locator('#updateTop button').count()) === 2 && (await page.textContent('#upRestart')).includes('Restart app'));
+  page.once('dialog', d => { asked = d.message(); d.dismiss(); });
+  await page.click('#upRestart button');
+  await sleep(300);
+  check('Restart asks before losing the reply', /Restart anyway/.test(asked) && (await page.inputValue('#r-text')) === 'half a sentence', asked);
   await page.fill('#r-text', '');
-  await Promise.all([page.waitForEvent('load'), page.click('#updateTop button')]);
+  await Promise.all([page.waitForEvent('load'), page.click('#upRefresh button')]);
   check('reloads straight away with nothing unsent', true);
 }, true);
 

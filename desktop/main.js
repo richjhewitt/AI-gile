@@ -1,6 +1,7 @@
 // AI-gile desktop (AIG-76): the board in its own window. Starts the board server if it isn't running
 // (left running on quit, so teams keep their board), then shows http://localhost:<port>.
 const { app, BrowserWindow, shell } = require('electron');
+const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
@@ -27,7 +28,10 @@ function open(ok) {
   win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', icon: ICON, autoHideMenuBar: true, backgroundColor: '#ffffff' });
   // Board links to other sites open in the normal browser; the board's own (attachments) open in a new app window.
   win.webContents.setWindowOpenHandler(({ url }) => { if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { autoHideMenuBar: true, icon: ICON } }; shell.openExternal(url); return { action: 'deny' }; });
-  win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); } });
+  win.webContents.on('will-navigate', (e, url) => {
+    if (url === 'aigile://restart') { e.preventDefault(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
+    if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); }
+  });
   if (ok) win.loadURL(BASE);
   else win.loadURL('data:text/html,' + encodeURIComponent(`<body style="font:15px system-ui;padding:24px"><h2>AI-gile didn't start</h2><p>Couldn't reach ${BASE}. Run <code>start-aigile.bat</code> in ${ROOT.replace(/</g, '')} and reopen this window.</p></body>`));
   // Taskbar badge: the page puts what's waiting on Rich in its title, "(3) AI-gile"; then the icon gets a purple diamond.
@@ -36,6 +40,14 @@ function open(ok) {
   win.on('page-title-updated', (e, title) => { try { win.setIcon(/^\(\d+\)/.test(title) ? ICON_WAITING : ICON); } catch {} });
   win.on('closed', () => { win = null; });
 }
+
+// New build of the app itself (AIG-83): when any of its own files is newer than at start, the page shows a
+// 🔄 Restart app pill (asked again every few seconds, so it survives a page refresh).
+const OWN = () => fs.readdirSync(__dirname).filter(f => /\.(js|json|png|ico)$/.test(f)).map(f => fs.statSync(path.join(__dirname, f)).mtimeMs);
+const STARTED_FILES = Math.max(...OWN());
+setInterval(() => {
+  try { if (win && Math.max(...OWN()) > STARTED_FILES) win.webContents.executeJavaScript('window.showRestartApp && window.showRestartApp()').catch(() => {}); } catch {}
+}, 5000);
 
 // A separate profile (for testing next to the real app) gets its own single-instance lock.
 if (process.env.AIGILE_PROFILE) app.setPath('userData', process.env.AIGILE_PROFILE);

@@ -12,17 +12,22 @@ async function checkBuild() {
     setNight(m.quiet);
     pokeBadge(await api('GET', '/api/projects'));
     if (loadedBuild === null) { loadedBuild = m.build; return; }
-    if (m.dev && m.build !== loadedBuild && !$('updateTop').firstChild)
-      $('updateTop').innerHTML = `<button class="primary" onclick="refreshPage()" title="The board has been updated: refresh to get the latest version">🆕 Refresh</button>`;
+    if (m.dev && m.build !== loadedBuild && !$('upRefresh').firstChild)
+      $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="The board has been updated: refresh to get the latest version">🆕 Refresh</button>`;
   } catch {}
 }
 // Unsent text anywhere (a reply, an answer, a dialog) or pending attachments: ask before losing it.
-function refreshPage() {
+const okToLeave = what => {
   const unsent = [...document.querySelectorAll('textarea, input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
     || !!document.querySelector('.att-chip');
-  if (unsent && !confirm('You have an unsent reply. Refresh anyway and lose it?')) return;
-  location.reload();
-}
+  return !unsent || confirm(`You have an unsent reply. ${what} anyway and lose it?`);
+};
+function refreshPage() { if (okToLeave('Refresh')) location.reload(); }
+// Desktop app only (AIG-83): the app calls this when its own files changed; the pill asks the app to restart itself.
+window.showRestartApp = () => {
+  if (!$('upRestart').firstChild)
+    $('upRestart').innerHTML = `<button class="primary" onclick="if (okToLeave('Restart')) location.href = 'aigile://restart'" title="The desktop app has been updated: restart it to get the latest version">🔄 Restart app</button>`;
+};
 checkBuild();
 
 /* ---------- teams that need a poke: top-bar badge ---------- */
