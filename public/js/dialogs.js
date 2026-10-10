@@ -160,6 +160,24 @@ async function saveColumns(all) {
   } catch (e) { setErr('col-err', e); }
 }
 
+/* ---------- card view (AIG-119) ---------- */
+// ---- cards: compact or roomy, and which details show on this board's cards ----
+const CARD_DETAILS = [['assignee', '👤 Assignee'], ['type', 'Type'], ['priority', 'Priority'], ['sprint', 'Sprint'], ['comments', '💬 Comment count'], ['age', '🕒 Age (time since last update)']];
+function cardViewDialog() {
+  const v = cardViewOf(state.project);
+  openDialog('<h2>🃏 Cards</h2><p class="muted">What cards on this board show. Only this project.</p>' +
+    `<div class="row"><label class="chk"><input type="radio" name="cv-density" value="roomy" ${v.density === 'roomy' ? 'checked' : ''}> Roomy</label>
+    <label class="chk"><input type="radio" name="cv-density" value="compact" ${v.density === 'compact' ? 'checked' : ''}> Compact</label></div>` +
+    CARD_DETAILS.map(([k, label]) => `<label class="chk" style="display:block;margin:6px 0"><input type="checkbox" data-cv="${k}" ${v.show[k] ? 'checked' : ''}> ${label}</label>`).join('') +
+    '<div class="err" id="cv-err"></div><div class="actions"><button class="primary" onclick="saveCardView()">Save</button>' +
+    '<button onclick="saveCardView(null)" title="Back to how cards looked before">Reset</button><button type="button" onclick="closeDialog()">Cancel</button></div>');
+}
+async function saveCardView(reset) {
+  const show = {}; document.querySelectorAll('#dialog [data-cv]').forEach(b => { show[b.dataset.cv] = b.checked; });
+  const cardView = reset === null ? null : { density: document.querySelector('#dialog [name=cv-density]:checked').value, show };
+  try { await api('PATCH', '/api/projects/' + slug(), { cardView }); closeDialog(); await rerender(); } catch (e) { setErr('cv-err', e); }
+}
+
 /* ---------- project look (AIG-86) ---------- */
 // ---- look: the colour and emoji that mark this project in the inbox, tabs and home page ----
 function lookDialog() {

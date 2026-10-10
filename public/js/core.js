@@ -11,7 +11,13 @@ function colsOf(p) {
 }
 const colLabel = (p, k) => { const c = colsOf(p).find(x => x.key === k); return c ? (c.emoji ? c.emoji + ' ' : '') + c.name : COLS[k]; };
 const COL_COLORS = { team: '#e11d74', done: 'var(--done)', verify: 'var(--you)', review: '#0ea5a4', doing: 'var(--accent)', todo: 'var(--warn)' };
-const TYPES = ['feature', 'bug', 'task'];
+// What board cards show (AIG-119): the saved choice over today's look (age is new, so off by default).
+const CARD_SHOW = { assignee: true, type: true, priority: true, sprint: true, comments: true, age: false };
+function cardViewOf(p) {
+  const v = (p && p.cardView) || {};
+  return { density: v.density === 'compact' ? 'compact' : 'roomy', show: { ...CARD_SHOW, ...(v.show || {}) } };
+}
+const TYPES =['feature', 'bug', 'task'];
 const PRIORITIES = ['low', 'normal', 'high', 'urgent'];
 const state = { route: null, projects: [], inbox: [], project: null, openCard: null, showArchived: false, editing: false, dragging: false, lastSig: null };
 try { state.showArchived = localStorage.getItem('aigile.showArchived') === '1'; } catch {}
