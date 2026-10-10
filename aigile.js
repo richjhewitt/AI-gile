@@ -46,6 +46,7 @@ HOOKS (agent session hooks, see AGENTS.md)
 TEAM AND LOG
   team <proj> NAME [--role R --model M --task T --status S]    upsert roster entry
   log <proj> "text" [--decision] --as NAME
+  standup <proj> --done "..." --next "..." [--blockers "... | none"] --as NAME    answer a 📣 Stand-up card (AGENTS.md)
 
 PROJECTS
   new-project <name> [--key K --path P --desc D]
@@ -339,6 +340,15 @@ const cmds = {
     const slug = await project(pos[0]);
     const e = await api('POST', P(slug) + '/log', { author: who(flags), text: await text(pos[1], 'log text'), kind: flags.decision ? 'decision' : 'log' });
     out(flags, e, e => `logged ${e.kind}`);
+  },
+
+  // Stand-up answer (AIG-134): done / next / blockers go on the project's open 📣 Stand-up card; answering again replaces yours.
+  async standup({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const b = { author: who(flags), done: await text(flags.done, '--done'), next: await text(flags.next, '--next') };
+    if (flags.blockers !== undefined) b.blockers = flags.blockers === true ? 'none' : await text(flags.blockers, '--blockers');
+    const r = await api('POST', P(slug) + '/standup', b);
+    out(flags, r, r => `stand-up answered on ${r.card}` + (r.waiting.length ? `. Still to answer: ${r.waiting.join(', ')}` : '. Everyone has answered: the lead can move the card to done.'));
   },
 
   async updates({ pos, flags }) {

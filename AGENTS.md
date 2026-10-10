@@ -77,6 +77,17 @@ aigile log <proj> "Sprint 3 pushed (abc1234), 120 tests green." --as YourName
 
 **8. Pokes.** A "👉 any update?" poke from Rich on a card in `doing` or `review` means "this looks stuck, any update?". Reply with one line (`comment`) and leave the card where it is.
 
+**9. Stand-ups.** A **📣 Stand-up** card in For the team means Rich wants a short report from each of you. Every team member answers once, in your own name:
+
+```
+aigile standup <proj> --done "What I finished" --next "What I do next" --blockers "What stops me (or: none)" --as YourName
+```
+
+- Keep each part to a line or two; `--blockers` is optional and means `none` if left out
+- Your answer is stored on the card and shows in Rich's stand-up report; blockers are shown to him in red, so name the card id and what you need from him
+- Answering again replaces your earlier answer
+- When everyone on the roster has answered (the command tells you who is left), the lead moves the card to done
+
 ## What `next` returns, and in what order
 
 Cards that are `blocked` or flagged NEEDS-RICH are skipped (they are listed at the bottom as waiting). The rest, in order:
