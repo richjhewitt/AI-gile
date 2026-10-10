@@ -78,7 +78,10 @@
   .comment.latest { background: var(--col); border-radius: 8px; padding: 10px 12px; border: 0; }
   .tag-latest { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent); margin-right: 8px; }
   .pres { font-weight: 600; } .pres.on { color: var(--done); } .pres.off { color: var(--muted); } .pres.wake { color: var(--warn); }
-  .flight .primary { padding: 2px 10px; font-size: 13px; margin-left: 6px; }
+  #teamTop { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+  #teamTop .muted { display: none; }
+  #teamTop .primary { padding: 3px 10px; font-size: 13px; border-radius: 99px; }
+  #teamTop .pres { padding: 3px 10px; border-radius: 99px; background: var(--col); }
   .seen { font-size: 12px; margin-left: 6px; color: var(--muted); }
   .card.is-blocked { border-left: 3px solid var(--danger); }
   .card .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
@@ -160,6 +163,7 @@
   <h1><a href="#/">🗂️ AI-gile</a></h1>
   <span class="crumb" id="crumb"></span>
   <span class="spacer"></span>
+  <span id="teamTop"></span>
   <span id="inboxTop"></span>
   <a class="navlink" href="#/usage">⚡ Usage</a>
   <span class="live" id="live">live</span>
@@ -214,6 +218,7 @@ function busy() {
 async function refresh(force) {
   if (state.route && state.route.view === 'project') state.lastProject = state.route.slug; else if (state.route && state.route.view !== 'inbox') state.lastProject = null;
   state.route = parseRoute();
+  if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; }
   // The inbox page renders itself; forget the last render so leaving it always redraws.
   if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; return Inbox.show(force); }
   let sig;
@@ -333,6 +338,8 @@ async function wakeTeam(e) {
 }
 
 function renderBoard(p) {
+  // Team status lives in the top-right corner, next to the inbox (where Rich looks for notifications).
+  const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
   const cols = Object.entries(COLS).map(([k, label]) => {
     // 'For you to test' is a queue: longest-waiting first, so 'Wait and see' sends a card to the back.
     const cs = p.cards.filter(c => c.status === k).sort((a, b) => k === 'verify' ? a.updated.localeCompare(b.updated) : b.updated.localeCompare(a.updated));
@@ -347,7 +354,6 @@ function renderBoard(p) {
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
-    <div class="flight">${presenceHtml(p, true)}</div>
     <div class="flight">🛠 <b>In flight:</b> ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || '<span class="muted">nothing right now</span>'}</div>
     ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? ` <code>${esc(p.path)}</code>` : ''}</p>` : ''}
     <div class="board">${cols}</div>
