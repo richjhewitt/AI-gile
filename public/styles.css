@@ -230,3 +230,13 @@ body.pop .panel { max-width: none; max-height: none; width: 100%; min-height: 10
 .colrow input.emoji { flex: 0 0 56px; text-align: center; }
 .colrow .arrows button { padding: 2px 8px; }
 .colrow > .muted { flex: 0 0 110px; font-size: 12px; }
+
+/* ---------- desktop app without a title bar (AIG-128) ---------- */
+/* The window buttons sit top right over the page; the top bar (or a popped-out card's top row) drags the window. */
+body.desktop header { -webkit-app-region: drag; padding-right: 150px; min-height: 36px; }
+body.desktop header a, body.desktop header button, body.desktop header input, body.desktop header select,
+body.desktop header .ib-btn { -webkit-app-region: no-drag; }
+body.pop main { display: none; }
+body.pop .panel { padding: 10px 16px 16px; }
+body.desktop.pop .panel > .actions:first-child { -webkit-app-region: drag; padding-right: 140px; min-height: 32px; }
+body.desktop.pop .panel > .actions:first-child button { -webkit-app-region: no-drag; padding: 3px 10px; font-size: 13px; }

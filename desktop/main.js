@@ -1,6 +1,6 @@
 // AI-gile desktop (AIG-76): the board in its own window. Starts the board server if it isn't running
 // (left running on quit, so teams keep their board), then shows http://localhost:<port>.
-const { app, BrowserWindow, shell } = require('electron');
+const { app, BrowserWindow, shell, nativeTheme } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -24,12 +24,16 @@ async function ensureServer() {
 }
 
 let win = null;
+// No Windows title bar (AIG-128): just the window buttons, in the board's own colours, over the page's top bar.
+const bar = () => nativeTheme.shouldUseDarkColors ? { color: '#1b2029', symbolColor: '#e6e9ef', height: 36 } : { color: '#ffffff', symbolColor: '#1d2330', height: 36 };
+const chrome = () => ({ autoHideMenuBar: true, icon: ICON, titleBarStyle: 'hidden', titleBarOverlay: bar() });
+nativeTheme.on('updated', () => BrowserWindow.getAllWindows().forEach(w => { try { w.setTitleBarOverlay(bar()); } catch {} }));
 // Link and navigation rules for any of our windows (the main one and popped-out cards).
 function wire(w) {
   // Board links to other sites open in the normal browser; the board's own open in a new app window.
   // A popped-out card stays on top, so its steps stay visible while you work in another app (AIG-122).
   w.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { autoHideMenuBar: true, icon: ICON, alwaysOnTop: url.includes('#/pop/') } };
+    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop/') } };
     shell.openExternal(url); return { action: 'deny' };
   });
   w.webContents.on('will-navigate', (e, url) => {
@@ -40,7 +44,7 @@ function wire(w) {
   });
 }
 function open(ok) {
-  win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', icon: ICON, autoHideMenuBar: true, backgroundColor: '#ffffff' });
+  win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', backgroundColor: '#ffffff', ...chrome() });
   wire(win);
   // Popped-out cards (AIG-122) get the same handling as the main window.
   win.webContents.on('did-create-window', child => wire(child));
