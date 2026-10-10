@@ -7,7 +7,7 @@ function theme(set) {
   let th; try { th = set || localStorage.getItem('aigile.theme') || 'system'; if (set) localStorage.setItem('aigile.theme', set); } catch { th = set || 'system'; }
   if (th === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = th;
   if (/Electron/.test(navigator.userAgent)) location.href = 'aigile://theme/' + th;   // the app's window buttons follow too, also after a restart
-  const b = $('themeBtn'); if (b) { b.textContent = THEMES[th].split(' ')[0]; b.title = t('theme.title', { name: THEMES[th] }); }
+  const b = $('themeBtn'); if (b) { b.textContent = THEMES[th]; b.title = t('theme.title', { name: THEMES[th] }); }
   return th;
 }
 const nextTheme = () => { const k = Object.keys(THEMES), cur = theme(); theme(k[(k.indexOf(cur) + 1) % k.length]); };
