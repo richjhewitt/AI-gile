@@ -90,6 +90,11 @@
   .codebox pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
   .codebox .copy { position: absolute; top: 6px; right: 6px; font-size: 12px; padding: 3px 8px; }
   .desc code, .body code, .ib-question code { background: var(--col); padding: 1px 5px; border-radius: 4px; font-size: 0.92em; }
+  #filterbar { padding: 12px 20px 0; }
+  .fbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .fbar input[type=search] { flex: 1 1 220px; max-width: 360px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--text); font: inherit; }
+  #f-sel { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+  .fbar select { width: auto; min-width: 0; padding: 5px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--text); font: inherit; margin-right: 4px; }
   .seen { font-size: 12px; margin-left: 6px; color: var(--muted); }
   .card.is-blocked { border-left: 3px solid var(--danger); }
   .card .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
@@ -176,6 +181,7 @@
   <a class="navlink" href="#/usage">⚡ Usage</a>
   <span class="live" id="live">live</span>
 </header>
+<div id="filterbar"></div>
 <main id="app"></main>
 <div id="modal"></div>
 <div id="dialog"></div>
@@ -226,7 +232,7 @@ function busy() {
 async function refresh(force) {
   if (state.route && state.route.view === 'project') state.lastProject = state.route.slug; else if (state.route && state.route.view !== 'inbox') state.lastProject = null;
   state.route = parseRoute();
-  if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; }
+  if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; $('filterbar').innerHTML = ''; $('filterbar').dataset.slug = ''; }
   // The inbox page renders itself; forget the last render so leaving it always redraws.
   if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; return Inbox.show(force); }
   let sig;
@@ -263,6 +269,7 @@ async function refresh(force) {
 }
 
 function renderBoardOnly() {
+  queueMicrotask(paintFilterBar);
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'usage') return;
   $('app').innerHTML = state.route.view === 'home' ? renderHome() : renderBoard(state.project);
@@ -270,6 +277,7 @@ function renderBoardOnly() {
 }
 
 function render() {
+  queueMicrotask(paintFilterBar);
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
@@ -345,12 +353,45 @@ async function wakeTeam(e) {
   catch (err) { alert(err.message); b.disabled = false; b.textContent = '▶ Wake the team'; }
 }
 
+// ---- search / filter (AIG-16): purely in the browser, no extra server calls -----------------------
+// The bar lives outside #app so the 1s refresh never wipes what Rich is typing; typing only re-draws the board.
+state.filters = {};
+const curFilter = slug => state.filters[slug] || (state.filters[slug] = { q: '', type: '', who: '', sprint: '' });
+function matchesFilter(c, slug) {
+  const f = curFilter(slug);
+  if (f.type && c.type !== f.type) return false;
+  if (f.who && (c.assignee || '') !== f.who) return false;
+  if (f.sprint && (c.sprint || '') !== f.sprint) return false;
+  if (f.q) { const q = f.q.toLowerCase(); if (![c.id, c.title, c.description, c.assignee, c.sprint].some(x => String(x || '').toLowerCase().includes(q))) return false; }
+  return true;
+}
+function paintFilterBar() {
+  const bar = $('filterbar');
+  if (state.route.view !== 'project' || !state.project) { if (bar.innerHTML) { bar.innerHTML = ''; bar.dataset.slug = ''; } return; }
+  const p = state.project, f = curFilter(p.slug);
+  const uniq = key => [...new Set(p.cards.map(c => c[key]).filter(Boolean))].sort();
+  const opt = (v, label, cur) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
+  const sel = (key, all, list) => `<select data-f="${key}">${opt('', all, f[key])}${list.map(v => opt(v, v, f[key])).join('')}</select>`;
+  const shown = p.cards.filter(c => matchesFilter(c, p.slug)).length, active = f.q || f.type || f.who || f.sprint;
+  const selects = sel('type', 'All types', ['feature', 'bug', 'task']) + sel('who', 'Anyone', uniq('assignee')) + sel('sprint', 'All sprints', uniq('sprint'));
+  if (bar.dataset.slug !== p.slug) {   // build once per project; afterwards only the selects and count update
+    bar.dataset.slug = p.slug;
+    bar.innerHTML = `<div class="fbar"><input type="search" id="f-q" placeholder="🔍 Search cards…" value="${esc(f.q)}" oninput="setFilter('q', this.value)">
+      <span id="f-sel">${selects}</span><span id="f-count" class="muted"></span></div>`;
+    bar.querySelector('#f-sel').onchange = e => setFilter(e.target.dataset.f, e.target.value);
+  } else if ($('f-sel').dataset.sig !== selects && !$('f-sel').contains(document.activeElement)) { $('f-sel').innerHTML = selects; }
+  $('f-sel').dataset.sig = selects;
+  $('f-count').innerHTML = active ? `Showing <b>${shown}</b> of ${p.cards.length} · <a href="#" onclick="clearFilter();return false">clear</a>` : '';
+}
+function setFilter(key, v) { curFilter(state.project.slug)[key] = v; renderBoardOnly(); paintFilterBar(); }
+function clearFilter() { state.filters[state.project.slug] = null; $('filterbar').dataset.slug = ''; renderBoardOnly(); paintFilterBar(); }
+
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where Rich looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
   const cols = Object.entries(COLS).map(([k, label]) => {
     // 'For you to test' is a queue: longest-waiting first, so 'Wait and see' sends a card to the back.
-    const cs = p.cards.filter(c => c.status === k).sort((a, b) => k === 'verify' ? a.updated.localeCompare(b.updated) : b.updated.localeCompare(a.updated));
+    const cs = p.cards.filter(c => c.status === k && matchesFilter(c, p.slug)).sort((a, b) => k === 'verify' ? a.updated.localeCompare(b.updated) : b.updated.localeCompare(a.updated));
     return `<div class="column" data-status="${k}"><h3><span>${label}</span><span>${cs.length} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
   }).join('');
   const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
