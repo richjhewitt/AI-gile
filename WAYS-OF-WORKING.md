@@ -9,6 +9,14 @@ How Rich's AI dev teams work, in every project. Read this at the start of every 
 - Name things plainly: say "dnbloco.com", not "the holding page widget".
 - No legal caveats.
 
+## Writing on the board
+Every card description, test step, question and comment is **short bullet points, no faff**:
+- One idea per line, starting with `- `
+- Plain words; bold (`**like this**`) only the thing to click or look at
+- No paragraphs, no background stories, no "I have now..." preambles
+- Test steps: what to click, then what he should see
+- If it doesn't fit in about 5 bullets, split the card
+
 ## The board
 - Work is tracked on the AI-gile board (http://localhost:4321), not in markdown boards. See AGENTS.md for the commands.
 - Questions go on the board (`ask`), and so do things only Rich can do (`task`). In chat, just say "question on the board".

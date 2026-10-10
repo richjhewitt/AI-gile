@@ -108,6 +108,7 @@
   const keyOf = c => c.project + '/' + c.id;
   // Escape, then link web addresses and card ids (e.g. AIG-12) in the same project.
   const linkify = (text, c) => esc(text)
+    .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')
     .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, u => `<a href="${u}" target="_blank" rel="noopener" style="text-decoration:underline">${u}</a>`)
     .replace(/(^|[^\w/#-])([A-Z]{1,6}-\d+)\b/g, (m, pre, id) => `${pre}<a href="#/p/${c.project}/${id}" style="text-decoration:underline">${id}</a>`);
 

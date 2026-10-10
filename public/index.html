@@ -462,6 +462,7 @@ function linkify(text, p) {
 function linkifyBase(text, p) {
   const key = String(p.key).replace(/[^A-Za-z0-9]/g, '');
   return esc(text)
+    .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')   // **bold**, used in bullet-point cards
     .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`)
     .replace(new RegExp(`(^|[^\\w/#-])(${key}-\\d+)\\b`, 'gi'), (m, pre, id) => `${pre}<a href="#/p/${p.slug}/${id.toUpperCase()}">${id}</a>`);
 }

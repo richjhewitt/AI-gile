@@ -103,6 +103,7 @@ The first line marked `>>` is your pick. `backlog` is never offered: it means "n
 - Don't edit another team's board data, and don't delete cards. If a card is wrong, comment on it.
 - Only move a card to `done` from `team`, after reading Rich's comment. Features go to `verify` via `test`. If a bug fix needs no testing by Rich, put it in `review` with a comment saying what you checked.
 - Use your own name in `--as`, so Rich can tell the agents apart.
+- **Write cards, test steps and comments as short bullet points** (`- ` per line, **bold** only what to click or look at, no paragraphs). See WAYS-OF-WORKING.md.
 - Keep text short and concrete. Cards are read by Rich on a phone and by other agents with limited context.
 - For multi-line text pass `-` and pipe it in: `printf '...' | aigile comment <proj> <id> - --as Name`.
 
