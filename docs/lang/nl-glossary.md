@@ -18,10 +18,14 @@ Choices made for `public/lang/nl.json` (Netherlands Dutch, informal "je"). One t
 | blocked | geblokkeerd (a card); "zit vast" (a person) | "Geblokkeerd" is the standard status word; for a person "zit vast" reads naturally. |
 | blockers (stand-up) | blokkades | Common in Dutch agile teams. |
 | needs you | heeft jou nodig | Literal and warm. |
-| poke | duwtje (geven) | "Porren" sounds rude; "een duwtje" is friendly. |
+| poke | duwtje (geven); header pill: "Duwtje nodig: {n} teams" | "Porren" sounds rude; "een duwtje" is friendly. The pill leads with the action so it fits the top bar. |
 | wake (a team) | wekken | Literal; fits "team slaapt". |
 | accept / send back | goedkeuren / terugsturen | Standard approval words. |
-| your call | aan jou | Short; "jouw oordeel" sounded formal. |
+| your call | jij beslist | "Aan jou" alone reads as "to you" (an address, not a decision); "jouw oordeel" sounded formal. |
+| stuck (a team or person) | zit vast | "Loopt vast" means "is crashing / getting stuck", not "is waiting for help". |
+| attach | bijvoegen | A button is a verb; "bijlage" is the noun. |
+| find (my projects) | zoeken | "Vinden" as a button is a calque of "Find". |
+| all teams (stand-up all) | met alle teams | "Met iedereen" sounded like a meeting with every person. |
 | view (saved filters) | weergave | Standard UI word. |
 | lanes / swimlanes | rijen | "Zwembanen" is jargon; rows is what the user sees. |
 | inbox | inbox | Common in Dutch; "Postvak IN" is Outlook-specific. |
@@ -35,6 +39,7 @@ Choices made for `public/lang/nl.json` (Netherlands Dutch, informal "je"). One t
 | plan (subscription) | abonnement | "Plan" is not used this way in Dutch. |
 | window (5-hour / 7-day) | periode | "Venster" is a literal calque. |
 | reading (usage) | meting | Standard. |
+| Enter sends, Shift+Enter … | Enter verstuurt, Shift+Enter voor een nieuwe regel | One wording in every typing box. |
 | gauge | meter | Standard. |
 | folder / connect folder | map / map koppelen | Windows Dutch uses "map". |
 | permissions | rechten | Short; "machtigingen" is long and formal. |
