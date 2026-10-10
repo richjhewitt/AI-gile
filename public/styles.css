@@ -195,3 +195,9 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 1
 
 /* ---------- project look (AIG-86): colour edge on home page cards ---------- */
 .proj[style] { border-left: 6px solid var(--proj); }
+
+/* ---------- New card / Raise bug: room to write on big screens (AIG-89) ---------- */
+@media (min-width: 1100px) {
+  .dialog.newcard { width: min(960px, 92vw); }
+  .dialog.newcard #f-description { min-height: 42vh; }
+}

@@ -15,7 +15,7 @@ function newCard(preset = {}) {
   openDialog(`<h2>${bug ? '🐞 Raise bug' : 'New card'}</h2>
     <form onsubmit="return createCard(event)">${cardFields(c, bug ? { titlePh: "What's broken?", descLabel: 'What happened / how to reproduce', descPh: 'Steps, what you expected, what you saw' } : { titlePh: 'What needs doing?' })}
       <div class="err" id="d-err"></div>
-      <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${bug ? 'Raise bug' : 'Create card'}</button><button type="button" onclick="closeDialog()">Cancel</button>${Attach.boxHtml('new:' + slug())}</div></form>`);
+      <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${bug ? 'Raise bug' : 'Create card'}</button><button type="button" onclick="closeDialog()">Cancel</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');
 }
 async function createCard(e) {
   e.preventDefault();

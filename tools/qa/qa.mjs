@@ -861,6 +861,7 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
   await page.goto(BASE + '/#/p/alpha');
   await page.click('button:has-text("Raise bug")');
   await page.fill('#dialog input[type=text]', 'Broken thing');
+  check('Raise bug is roomy on a big screen (AIG-89)', await page.$eval('#dialog .dialog', d => d.offsetWidth >= 900) && await page.$eval('#f-description', d => d.offsetHeight >= 300));
   await page.evaluate(b64 => {
     const bytes = Uint8Array.from(atob(b64), ch => ch.charCodeAt(0)), dt = new DataTransfer();
     dt.items.add(new File([bytes], 'image.png', { type: 'image/png' }));
