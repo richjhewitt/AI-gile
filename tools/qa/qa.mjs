@@ -1353,6 +1353,35 @@ def('theme', 'theme: follows the system, or System / Light / Dark picked in the 
   noErrors(page);
 }, true);
 
+def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, answer the open question or send a new message (AIG-137/138)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET');
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });
+  const c = await mkCard(s, 'alpha', 'Export format');
+  s.cli(['ask', 'alpha', c.id, 'M3U or JSON? Assuming M3U', '--as', 'Lead']);
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('#dmRail [data-dm="alpha"] .dm-unread');
+  check('rail shows the lead with an unread count', (await page.textContent('#dmRail [data-dm="alpha"] .dm-unread')) === '1');
+  await page.click('#dmRail [data-dm="alpha"]');
+  await page.waitForSelector('#dmList .dm-msg');
+  check('their message on the left', /M3U or JSON/.test(await page.textContent('#dmList .dm-msg:not(.mine)')));
+  check('typing box replies to the open question', /Replying to/.test(await page.textContent('#dmTo')));
+  await page.fill('#dmText', 'JSON please');
+  await page.press('#dmText', 'Enter');
+  await page.waitForSelector('#dmList .dm-msg.mine');
+  const after = await getCard(s, 'alpha', c.id);
+  check('your reply lands on the card and clears the question', after.comments.at(-1).text === 'JSON please' && !after.needsYou && after.status === 'team', after.comments.at(-1));
+  await page.waitForFunction(() => /New message to/.test(document.getElementById('dmTo').textContent), null, { timeout: 5000 }).catch(() => {});
+  await page.fill('#dmText', 'Idea: dark mode for the player');
+  await page.press('#dmText', 'Enter');
+  await sleep(600);
+  const quick = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.quick);
+  check('with nothing open, a new message becomes a quick question for the team', quick && quick.title === '💬 Idea: dark mode for the player' && quick.status === 'team', quick);
+  s.cli(['comment', 'alpha', quick.id, 'Nice: made AIG-cards for it', '--as', 'Lead']);
+  await page.waitForFunction(() => /made AIG-cards/.test(document.getElementById('dmList').textContent), null, { timeout: 6000 }).catch(() => {});
+  check('the lead answer shows in the chat', /made AIG-cards/.test(await page.textContent('#dmList')));
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }
