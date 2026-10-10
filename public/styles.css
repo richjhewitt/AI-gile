@@ -377,3 +377,5 @@ button.q-chip { cursor: pointer; } .q-chip.prio:not([class*="p-"]) { color: var(
 
 /* ---------- open in your editor (AIG-156) ---------- */
 .edit-btn { border: 0; background: none; padding: 0 3px; cursor: pointer; font-size: 0.9em; }
+/* Focus on For you (AIG-141): the one column goes wide and sits in the middle. */
+.board.focus { grid-template-columns: minmax(0, 820px); justify-content: center; }

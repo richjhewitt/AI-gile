@@ -1462,6 +1462,8 @@ def('fynext', 'For you: focus on that column only; dealing with a card opens the
   await page.click('.column.foryou .fy-head');
   await page.waitForFunction(() => document.querySelectorAll('.board .column').length === 1);
   check('focus shows only For you', (await page.locator('.board .column').count()) === 1);
+  const fy = await page.evaluate(() => { const c = document.querySelector('.column.foryou').getBoundingClientRect(), b = document.querySelector('.board').getBoundingClientRect(); return { w: c.width, mid: Math.abs((c.left + c.right) / 2 - (b.left + b.right) / 2) }; });
+  check('the focused column is wide and central', fy.w > 500 && fy.mid < 20, JSON.stringify(fy));
   await page.click('.column.foryou .fy-head');
   await page.waitForFunction(() => document.querySelectorAll('.board .column').length > 1);
   check('click again shows all', (await page.locator('.board .column').count()) > 1);
