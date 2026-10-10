@@ -1231,6 +1231,24 @@ def('lanes', '≡ Lanes: group the board into rows by assignee, type, sprint or 
   noErrors(page);
 }, true);
 
+def('quick', '👀 What\'s happening? summarises the board; 💬 Ask the team sends a question whose answer lands in Messages (AIG-132)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await mkCard(s, 'alpha', 'Building the thing', { status: 'doing', assignee: 'Pixel' });
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.click('button:has-text("What\'s happening?")');
+  await page.waitForSelector('#dialog h2');
+  check('summary shows what is in progress', (await page.textContent('#dialog')).includes('Building the thing'));
+  await page.click('#dialog button:has-text("Ask the team")');
+  await page.fill('#ask-text', 'Where are we with the login page?');
+  await page.click('#dialog button[type=submit]');
+  await sleep(500);
+  const q = (await s.ok('GET', '/api/projects/alpha')).cards.find(c => c.quick);
+  check('question card goes to the team', q && q.status === 'team' && q.title === '💬 Where are we with the login page?', q);
+  s.cli(['comment', 'alpha', q.id, 'Nearly done, testing now', '--as', 'Lead']);
+  check('the answer lands in your Messages', (await getCard(s, 'alpha', q.id)).needsYou === true && (await s.ok('GET', '/api/inbox')).some(c => c.id === q.id));
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

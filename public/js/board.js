@@ -50,6 +50,8 @@ function renderBoard(p) {
       <button class="primary" onclick="newCard()">+ New</button>
       <button onclick="openDocs()">📄 Docs</button>
       <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'team'})">🐞 Raise bug</button>
+      <button onclick="happeningDialog()" title="A quick summary of where this project is at">👀 What's happening?</button>
+      <button onclick="askTeamDialog()" title="Send the team a quick question; the answer comes back to your Messages">💬 Ask the team</button>
       <select class="lanesel" title="Group the board into rows" onchange="setLanes(this.value)">${LANES.map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${l}</option>`).join('')}</select>
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>

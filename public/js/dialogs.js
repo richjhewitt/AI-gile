@@ -124,6 +124,44 @@ async function saveSetupPage(e) {
   return false;
 }
 
+/* ---------- what's happening and ask the team (AIG-132) ---------- */
+// ---- what's happening: a summary straight from the board (no agent needed, so it costs nothing) ----
+function happeningDialog() {
+  const p = state.project, open = p.cards.filter(c => c.status !== 'done');
+  const list = (cs, empty) => cs.length ? `<ul>${cs.map(c => `<li><a href="#/p/${p.slug}/${c.id}" onclick="closeDialog()">${esc(c.id)}</a> ${esc(c.title)}${c.assignee ? ` <span class="muted">@${esc(c.assignee)}</span>` : ''}</li>`).join('')}</ul>` : `<p class="muted">${empty}</p>`;
+  const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
+  openDialog(`<h2>👀 What's happening in ${esc(p.name)}</h2>
+    <div class="last">${presenceHtml(p, false)}</div>
+    <h3>🛠 In progress</h3>${list(open.filter(c => c.status === 'doing'), 'Nothing in progress.')}
+    <h3>⛔ Blocked</h3>${list(open.filter(c => c.blocked), 'Nothing blocked.')}
+    <h3>🙋 Waiting on you</h3>${list(open.filter(forYou), 'Nothing waiting on you.')}
+    <h3>👥 Team</h3>${team.length ? `<ul>${team.map(m => `<li><b>${esc(m.name)}</b> ${esc(m.status || '')} <span class="muted">${esc(m.task || '')}</span></li>`).join('')}</ul>` : '<p class="muted">No team members yet.</p>'}
+    <h3>📝 Latest</h3>${(p.log || []).length ? `<ul>${p.log.slice(-5).reverse().map(l => `<li><b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : '<p class="muted">Nothing logged yet.</p>'}
+    <div class="actions"><button class="primary" onclick="askTeamDialog()">💬 Ask the team</button><button onclick="closeDialog()">Close</button></div>`, 'wide');
+}
+// ---- ask the team: a quick question card; it wakes the team and their answer comes back to Messages ----
+function askTeamDialog() {
+  Attach.clear('ask:' + slug());
+  openDialog(`<h2>💬 Ask the team</h2>
+    <form onsubmit="return sendAskTeam(event)"><label class="f"><span>Your question</span><textarea id="ask-text" rows="4" placeholder="e.g. Where are we with the login page?"></textarea></label>
+    <div class="err" id="ask-err"></div>
+    <div class="actions"><button class="primary" type="submit">Send</button><button type="button" onclick="closeDialog()">Cancel</button>${Attach.boxHtml('ask:' + slug())}</div></form>`);
+  $('ask-text').focus();
+}
+async function sendAskTeam(e) {
+  e.preventDefault();
+  const text = $('ask-text').value.trim();
+  if (!text) { setErr('ask-err', 'Type your question'); return false; }
+  try {
+    const attachments = await Attach.upload('ask:' + slug(), slug());
+    const title = '💬 ' + text.split('\n')[0].slice(0, 80);
+    await api('POST', `/api/projects/${slug()}/cards`, { title, description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
+    Attach.clear('ask:' + slug());
+    closeDialog(); await rerender();
+  } catch (err) { setErr('ask-err', err); }
+  return false;
+}
+
 /* ---------- board columns (AIG-116) ---------- */
 // ---- columns: rename, reorder, hide and colour this board's columns (display only: statuses never change) ----
 const KEY_COLS = { verify: 'everything waiting on you', team: 'your comments to the team' };
