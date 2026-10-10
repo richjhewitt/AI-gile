@@ -11,10 +11,11 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const PORT = Number(process.env.QA_PORT) || 4390;
 const BASE = `http://127.0.0.1:${PORT}`;
-const CHROME = process.env.QA_CHROME || 'C:\\Users\\rich\\AppData\\Local\\ms-playwright\\chromium-1243\\chrome-win64\\chrome.exe';
-const PW_FALLBACK = 'C:\\Users\\rich\\AppData\\Local\\Temp\\claude\\c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile\\7395689e-a34e-48c0-a5c2-527d6e48ad70\\scratchpad\\pw\\node_modules\\playwright';
+// Machine-specific paths come from env (or a local install via npm i in tools/qa); none live in the repo.
+const CHROME = process.env.QA_CHROME || undefined;   // undefined = playwright's own bundled browser
+const PW_FALLBACK = process.env.QA_PLAYWRIGHT;   // path to a playwright package, if not installed here
 const require = createRequire(import.meta.url);
-const loadPw = () => { try { return require('playwright'); } catch { return require(PW_FALLBACK); } };
+const loadPw = () => { try { return require('playwright'); } catch (e) { if (PW_FALLBACK) return require(PW_FALLBACK); throw new Error('playwright not found: run npm i in tools/qa, or set QA_PLAYWRIGHT'); } };
 
 let failures = 0, area = '';
 const check = (name, ok, extra) => {
