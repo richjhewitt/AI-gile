@@ -105,6 +105,14 @@ async function openDocs() {
       <div class="actions"><button onclick="closeDialog()">Close</button></div>`);
   } catch (e) { alert(e.message); }
 }
+// Open any .md file in the project folder (from a link in card text); title is its relative name.
+async function showDocPath(p, s) {
+  try {
+    const d = await api('GET', `/api/projects/${s || slug()}/file?path=${encodeURIComponent(p)}`);
+    openDialog(`<div class="actions" style="margin-top:0"><b class="doctitle">${esc(d.name)}</b><button onclick="closeDialog()">Close</button></div>
+      <div class="md">${md(d.text)}</div>`, 'wide');
+  } catch (e) { alert(e.message); }
+}
 async function showDoc(i) {
   try {
     const d = await api('GET', `/api/projects/${slug()}/docs/${encodeURIComponent(state.docs[i])}`);
