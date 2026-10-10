@@ -70,6 +70,13 @@
   .poke.hot { background: #f97316; color: #fff; border-color: #f97316; font-weight: 600; }
   .poke { margin-left: auto; padding: 0 8px; font-size: 12px; border-radius: 99px; }
   .usage { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 16px; margin-bottom: 14px; font-size: 13px; }
+  .ctabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 14px 0 12px; overflow-x: auto; }
+  .ctab { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 8px 12px; font-weight: 600; color: var(--muted); flex: none; }
+  .ctab.on { color: var(--text); border-bottom-color: var(--accent); }
+  .ctab .n { font-size: 11px; background: var(--col); border-radius: 99px; padding: 1px 6px; margin-left: 4px; color: var(--muted); }
+  .ctab .n.hot { background: var(--you); color: #fff; }
+  .comment.latest { background: var(--col); border-radius: 8px; padding: 10px 12px; border: 0; }
+  .tag-latest { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent); margin-right: 8px; }
   .seen { font-size: 12px; margin-left: 6px; color: var(--muted); }
   .card.is-blocked { border-left: 3px solid var(--danger); }
   .card .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
@@ -457,19 +464,37 @@ function renderCard(p, c) {
       <label class="f" style="margin-top:8px"><span>Comment (required to send back)</span><textarea id="v-text" rows="3" placeholder="What did you see? What's wrong?"></textarea></label>
       <div class="err" id="v-err"></div>
       <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button><button onclick="waitAndSee()" title="Not sure yet: move it to the back of your queue">⏳ Wait and see</button></div></div>` : '';
+  // Tabs: Reply (latest message on top, reply box right under it, older ones below), Details, Test.
+  const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">Latest</span>' : ''}<span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div></div>`;
+  const newest = [...c.comments].reverse();
+  const hasTest = c.status === 'verify' || c.testSteps;
+  if (state.tabFor !== c.id) { state.tabFor = c.id; state.cardTab = c.status === 'verify' ? 'test' : c.comments.length ? 'reply' : 'details'; }
+  const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
+  const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
   return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel">${head}
     <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(COLS[c.status])}${c.status === 'team' && c.prevStatus ? ' (was ' + esc(COLS[c.prevStatus]) + ')' : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2>
     <div class="meta">${metaHtml(c)}</div>
-    ${verdict}
-    ${c.description ? `<h3>Description</h3><div class="desc">${linkify(c.description, p)}</div>` : ''}
-    ${c.testSteps ? `<h3>🧪 How to test</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}
-    <h3>Conversation</h3>
-    ${c.comments.map(m => `<div class="comment"><span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div></div>`).join('') || '<p class="muted">No comments yet.</p>'}
-    <div class="reply"><textarea id="r-text" rows="3" placeholder="Reply as Rich: moves the card to For the team… (Enter to send, Shift+Enter for a new line)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
-      <div class="err" id="r-err"></div>
-      <div class="actions"><button class="primary" onclick="sendReply()">Send reply</button></div></div>
+    <div class="ctabs">${tabBtn('reply', `💬 Reply${c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''}`)}${tabBtn('details', '📄 Details')}${hasTest ? tabBtn('test', c.status === 'verify' ? '🧪 Test <span class="n hot">your call</span>' : '🧪 Test') : ''}</div>
+    <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
+      ${newest.length ? msg(newest[0], true) : '<p class="muted">No messages yet.</p>'}
+      <div class="reply"><textarea id="r-text" rows="3" placeholder="Reply as Rich: moves the card to For the team… (Enter to send, Shift+Enter for a new line)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
+        <div class="err" id="r-err"></div>
+        <div class="actions"><button class="primary" onclick="sendReply()">Send reply</button></div></div>
+      ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">Earlier (newest first)</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}
+    </div>
+    <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
+      ${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : '<p class="muted">No description.</p>'}
+    </div>
+    ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>${verdict}
+      ${c.testSteps ? `<h3>🧪 How to test</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
   </div></div>`;
+}
+// Switch card tab without re-rendering, so anything typed in another tab is kept.
+function cardTab(k) {
+  state.cardTab = k;
+  document.querySelectorAll('#modal .ctab').forEach(b => b.classList.toggle('on', b.dataset.ctab === k));
+  document.querySelectorAll('#modal .cpane').forEach(d => { d.hidden = d.dataset.pane !== k; });
 }
 
 // ---- actions -------------------------------------------------------------------
