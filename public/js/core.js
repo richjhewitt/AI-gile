@@ -2,6 +2,14 @@
 // The board's human (AIG-103): name from /api/meta, default Rich.
 const me = () => (typeof state !== 'undefined' && state.owner) || 'Rich';
 const COLS = { backlog: 'Backlog', todo: 'To do', doing: 'In progress', review: 'Team checking', verify: 'For you to test', team: 'For the team', done: 'Done' };
+// A project's columns (AIG-116): its saved order, names, emoji, colours and hidden flags over the defaults.
+const DEFAULT_NAMES = { verify: 'For you' };   // the For you column (AIG-106) shows more than tests
+function colsOf(p) {
+  const saved = (p && p.columns) || [], byStatus = Object.fromEntries(saved.map(c => [c.status, c]));
+  const order = saved.length ? saved.map(c => c.status) : Object.keys(COLS);
+  return order.map(k => { const c = byStatus[k] || {}; return { key: k, name: c.name || DEFAULT_NAMES[k] || COLS[k], emoji: c.emoji || '', color: c.color || '', hidden: !!c.hidden }; });
+}
+const colLabel = (p, k) => { const c = colsOf(p).find(x => x.key === k); return c ? (c.emoji ? c.emoji + ' ' : '') + c.name : COLS[k]; };
 const COL_COLORS = { team: '#e11d74', done: 'var(--done)', verify: 'var(--you)', review: '#0ea5a4', doing: 'var(--accent)', todo: 'var(--warn)' };
 const TYPES = ['feature', 'bug', 'task'];
 const PRIORITIES = ['low', 'normal', 'high', 'urgent'];

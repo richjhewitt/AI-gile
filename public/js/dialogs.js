@@ -124,6 +124,42 @@ async function saveSetupPage(e) {
   return false;
 }
 
+/* ---------- board columns (AIG-116) ---------- */
+// ---- columns: rename, reorder, hide and colour this board's columns (display only: statuses never change) ----
+const KEY_COLS = { verify: 'everything waiting on you', team: 'your comments to the team' };
+function columnsDialog() {
+  state.colDraft = colsOf(state.project).map(c => ({ ...c }));
+  openDialog('<h2>⚙️ Columns</h2><div id="colRows"></div><div class="err" id="col-err"></div>' +
+    '<div class="actions"><button class="primary" onclick="saveColumns()">Save</button><button onclick="saveColumns(true)" title="Give every project these columns">Use for all projects</button>' +
+    '<button onclick="state.colDraft = colsOf({}); paintColRows()" title="Back to the standard columns">Reset</button><button type="button" onclick="closeDialog()">Cancel</button></div>', 'wide');
+  paintColRows();
+}
+function paintColRows() {
+  const d = state.colDraft;
+  $('colRows').innerHTML = '<p class="muted">Changes how this board looks. Teams still use the same statuses underneath.</p>' + d.map((c, i) => `<div class="colrow">
+    <span class="arrows"><button type="button" onclick="moveCol(${i}, -1)" ${i ? '' : 'disabled'} title="Move left">↑</button><button type="button" onclick="moveCol(${i}, 1)" ${i < d.length - 1 ? '' : 'disabled'} title="Move right">↓</button></span>
+    <input type="text" class="emoji" value="${esc(c.emoji)}" maxlength="8" placeholder="🙂" oninput="state.colDraft[${i}].emoji = this.value" aria-label="Emoji">
+    <input type="text" value="${esc(c.name)}" maxlength="40" oninput="state.colDraft[${i}].name = this.value" aria-label="Name">
+    <input type="color" value="${esc(c.color || '#888888')}" oninput="state.colDraft[${i}].color = this.value" aria-label="Colour">
+    <label class="chk"><input type="checkbox" ${c.hidden ? 'checked' : ''} onchange="hideCol(${i}, this)"> Hide</label>
+    <span class="muted">${esc(COLS[c.key])}</span></div>`).join('');
+}
+function moveCol(i, by) { const d = state.colDraft, [c] = d.splice(i, 1); d.splice(i + by, 0, c); paintColRows(); }
+function hideCol(i, box) {
+  const c = state.colDraft[i];
+  if (box.checked && KEY_COLS[c.key] && !confirm(`Hide "${c.name}"? It holds ${KEY_COLS[c.key]}, so you could miss things.`)) { box.checked = false; return; }
+  c.hidden = box.checked;
+}
+async function saveColumns(all) {
+  const columns = state.colDraft.map(c => ({ status: c.key, name: c.name, emoji: c.emoji, color: c.color && c.color !== '#888888' ? c.color : '', hidden: c.hidden }));
+  try {
+    const slugs = all ? (await api('GET', '/api/projects?all=1')).map(x => x.slug) : [slug()];
+    if (all && !confirm(`Give all ${slugs.length} projects these columns?`)) return;
+    for (const s of slugs) await api('PATCH', '/api/projects/' + s, { columns });
+    closeDialog(); await rerender();
+  } catch (e) { setErr('col-err', e); }
+}
+
 /* ---------- project look (AIG-86) ---------- */
 // ---- look: the colour and emoji that mark this project in the inbox, tabs and home page ----
 function lookDialog() {

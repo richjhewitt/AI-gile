@@ -1100,6 +1100,35 @@ def('popout', '⧉ Pop out opens a card on its own in a new window (AIG-122)', a
   noErrors(page);
 }, true);
 
+def('columns', '⚙️ Columns: rename, reorder, hide and colour a board\'s columns; statuses never change (AIG-116)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET');
+  const c = await mkCard(s, 'alpha', 'Plan it', { status: 'todo' });
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.click('button:has-text("Columns")');
+  await page.waitForSelector('.colrow');
+  const row = n => page.locator('.colrow').nth(n);
+  await row(1).locator('input[type=text]:not(.emoji)').fill('Next up');   // To do
+  await row(1).locator('input.emoji').fill('⏭️');
+  await row(1).locator('button[title="Move left"]').click();                 // before Backlog
+  await page.locator('.colrow').nth(1).locator('input[type=checkbox]').check(); // hide Backlog (now 2nd)
+  let asked = '';
+  page.once('dialog', d => { asked = d.message(); d.dismiss(); });
+  await page.locator('.colrow').nth(4).locator('input[type=checkbox]').click(); // For you: asks, cancelled
+  check('hiding For you asks first', /could miss things/.test(asked), asked);
+  check('cancel keeps it shown', !(await page.locator('.colrow').nth(4).locator('input[type=checkbox]').isChecked()));
+  await page.click('#dialog button:has-text("Save")');
+  await page.waitForFunction(() => !document.querySelector('#dialog .dialog'));
+  await page.waitForSelector('.column h3');
+  const heads = await page.$$eval('.column h3 span:first-child', els => els.map(e => e.textContent));
+  check('renamed, moved first, Backlog hidden', heads[0] === '⏭️ Next up' && !heads.includes('Backlog') && heads.length === 6, heads);
+  check('card still todo underneath', (await getCard(s, 'alpha', c.id)).status === 'todo');
+  check('other project untouched', !(await s.ok('GET', '/api/projects/beta')).columns);
+  check('bad columns refused', (await s.api('PATCH', '/api/projects/alpha', { columns: [{ status: 'todo' }] })).status === 400);
+  await s.ok('PATCH', '/api/projects/alpha', { columns: [] });
+  check('reset to default', !(await s.ok('GET', '/api/projects/alpha')).columns);
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

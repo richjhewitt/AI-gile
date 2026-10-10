@@ -218,3 +218,11 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 1
 body.pop header, body.pop #filterbar, body.pop #updateTop { display: none; }
 body.pop .overlay { position: static; background: none; padding: 0; display: block; }
 body.pop .panel { max-width: none; max-height: none; width: 100%; min-height: 100vh; border-radius: 0; margin: 0; box-shadow: none; }
+
+/* ---------- board columns (AIG-116) ---------- */
+.column[style] { border-top: 4px solid var(--colc); }
+.colrow { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.colrow input[type=text] { flex: 1; }
+.colrow input.emoji { flex: 0 0 56px; text-align: center; }
+.colrow .arrows button { padding: 2px 8px; }
+.colrow > .muted { flex: 0 0 110px; font-size: 12px; }

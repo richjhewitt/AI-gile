@@ -8,7 +8,7 @@ function cardFields(c, o = {}) {
     <div class="row">
       <label class="f"><span>Type</span><select id="f-type">${opts(TYPES, c.type)}</select></label>
       <label class="f"><span>Priority</span><select id="f-priority">${opts(PRIORITIES, c.priority)}</select></label>
-      <label class="f"><span>Status</span><select id="f-status">${opts(Object.keys(COLS), c.status, COLS)}</select></label>
+      <label class="f"><span>Status</span><select id="f-status">${opts(Object.keys(COLS), c.status, Object.fromEntries(Object.keys(COLS).map(k => [k, colLabel(state.project, k)])))}</select></label>
     </div>
     <div class="row">
       <label class="f"><span>Assignee</span>${assigneeSelect(c.assignee || '')}</label>
@@ -83,7 +83,7 @@ function renderCard(p, c) {
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
   return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel">${head}
-    <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(COLS[c.status])}${c.status === 'team' && c.prevStatus ? ' (was ' + esc(COLS[c.prevStatus]) + ')' : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' (was ' + esc(colLabel(p, c.prevStatus)) + ')' : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2>
     <div class="meta">${metaHtml(c)}</div>
     <div class="ctabs">${tabBtn('reply', `💬 Reply${c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''}`)}${tabBtn('details', '📄 Details')}${hasTest ? tabBtn('test', c.status === 'verify' ? '🧪 Test <span class="n hot">your call</span>' : '🧪 Test') : ''}</div>

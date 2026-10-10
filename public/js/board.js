@@ -41,10 +41,11 @@ async function agentLog(e, s = slug()) {
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where Rich looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
-  const cols = Object.entries(COLS).map(([k, label]) => {
-    if (k === 'verify') return forYouColumn(p);
+  const cols = colsOf(p).filter(c => !c.hidden).map(col => {
+    const k = col.key, label = (col.emoji ? col.emoji + ' ' : '') + col.name, tint = col.color ? ` style="--colc:${esc(col.color)}"` : '';
+    if (k === 'verify') return forYouColumn(p, label, tint);
     const cs = p.cards.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => b.updated.localeCompare(a.updated));
-    return `<div class="column" data-status="${k}"><h3><span>${label}</span><span>${cs.length} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
+    return `<div class="column" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${cs.length} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
   }).join('');
   const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
   const log = (p.log || []).slice().reverse().slice(0, 50);
@@ -55,6 +56,7 @@ function renderBoard(p) {
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>
       <button onclick="lookDialog()" title="This project's colour and emoji">🎨 Look</button>
+      <button onclick="columnsDialog()" title="Rename, reorder, hide and colour this board's columns">⚙️ Columns</button>
       ${p.path ? `<button onclick="permsDialog()" title="What this project's team may do without asking">🔐 Permissions</button>` : ''}
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
     <div class="flight">🛠 <b>In flight:</b> ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || '<span class="muted">nothing right now</span>'}</div>
@@ -80,13 +82,13 @@ function forYouFirst(k) {
   if (!state.forYouFirst) { try { state.forYouFirst = localStorage.getItem('aigile.forYouFirst'); } catch {} }
   return state.forYouFirst || 'q';
 }
-function forYouColumn(p) {
+function forYouColumn(p, label = 'For you', tint = '') {
   const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : 1 + KINDS.findIndex(([k]) => k === kindOf(c));
   // Within a kind, a queue: longest-waiting first, so 'Wait and see' sends a test to the back.
   const cs = p.cards.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || a.updated.localeCompare(b.updated));
   const n = k => cs.filter(c => kindOf(c) === k).length;
   const chips = KINDS.map(([k, label]) => `<button class="fy-chip ${k === first ? 'on' : ''}" data-first="${k}" title="Show these first" onclick="forYouFirst('${k}')">${label} ${n(k)}</button>`).join('');
-  return `<div class="column foryou" data-status="verify"><h3><span>For you</span><span>${cs.length}</span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
+  return `<div class="column foryou" data-status="verify"${tint}><h3><span>${esc(label)}</span><span>${cs.length}</span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
 }
 
 function metaHtml(c) {
