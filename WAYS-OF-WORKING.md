@@ -38,6 +38,19 @@ Every card description, test step, question and comment is **short bullet points
 - Review every agent's work yourself: read the diff and run the tests before calling it done.
 - Agents talk to each other on cards: handover notes as comments, which the next agent reads with `show`.
 
+## Saving tokens (from LocoRadio)
+- Every project keeps a **code map** (`docs/CODEMAP.md`): file → what, pointing at section markers, not line numbers
+- Big files carry `/* ---------- name ---------- */` section markers; grep a marker instead of reading the whole file
+- Split huge files so one change reads one small file
+- Every brief opens with "read docs/CODEMAP.md first, then only what you need", names the exact files and points at the spec section rather than re-explaining
+- Every brief ends with "report in at most N lines"
+- QA split by area: agents run one area while working, and the full suite once at the end
+- Fresh agent for a new area; resume for follow-ups; start fresh once an agent's context gets big (~150k)
+- One git worktree per parallel agent; commit with a pathspec
+- Quiet shell output (`| tail -3`, `-q`, `grep -c`); batch independent checks into one call; never dump full logs
+- The lead reviews with targeted greps of the diff and 1–2 screenshots, not by re-reading every file
+- Tests are date-proof and each agent uses its own port, so flaky reruns don't burn tokens
+
 ## Quality
 - Test like a user: real typing and clicking in a real browser, not just loading a URL.
 - In shell checks, use `set -o pipefail` (or check exit codes) so a failure can't hide behind a pipe.
