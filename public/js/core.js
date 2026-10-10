@@ -32,7 +32,8 @@ const COL_COLORS = { team: '#e11d74', done: 'var(--done)', verify: 'var(--you)',
 // What board cards show (AIG-119): the saved choice over today's look (age is new, so off by default).
 const CARD_SHOW = { assignee: true, type: true, priority: true, sprint: true, comments: true, age: false };
 function cardViewOf(p) {
-  const v = (p && p.cardView) || {};
+  // While the 🃏 Cards dialog is open its choices show straight away (AIG-119), over what is saved.
+  const v = (state.cvPreview && p && state.cvPreview.slug === p.slug ? state.cvPreview.view : p && p.cardView) || {};
   return { density: v.density === 'compact' ? 'compact' : 'roomy', show: { ...CARD_SHOW, ...(v.show || {}) } };
 }
 const TYPES =['feature', 'bug', 'task'];

@@ -3,7 +3,10 @@ function openDialog(html, cls = '') {
   $('dialog').innerHTML = `<div class="overlay center"><div class="dialog ${cls}">${html}</div></div>`;
   const f = $('dialog').querySelector('input[type=text]'); if (f) f.focus();
 }
-function closeDialog() { $('dialog').innerHTML = ''; }
+function closeDialog() {
+  $('dialog').innerHTML = '';
+  if (state.cvPreview) { state.cvPreview = null; renderBoardOnly(); }   // an unsaved card view preview goes away (AIG-119)
+}
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog').firstChild) closeDialog(); });
 
 /* ---------- new card ---------- */
@@ -247,17 +250,23 @@ async function saveColumns(all) {
 const CARD_DETAILS = ['assignee', 'type', 'priority', 'sprint', 'comments', 'age'];
 function cardViewDialog() {
   const v = cardViewOf(state.project);
-  openDialog(`<h2>${esc(t('board.cards'))}</h2><p class="muted">${esc(t('cv.intro'))}</p>` +
+  openDialog(`<div onchange="previewCardView()"><h2>${esc(t('board.cards'))}</h2><p class="muted">${esc(t('cv.intro'))}</p>` +
     `<div class="row"><label class="chk"><input type="radio" name="cv-density" value="roomy" ${v.density === 'roomy' ? 'checked' : ''}> ${esc(t('cv.roomy'))}</label>
     <label class="chk"><input type="radio" name="cv-density" value="compact" ${v.density === 'compact' ? 'checked' : ''}> ${esc(t('cv.compact'))}</label></div>` +
     CARD_DETAILS.map(k => `<label class="chk" style="display:block;margin:6px 0"><input type="checkbox" data-cv="${k}" ${v.show[k] ? 'checked' : ''}> ${esc(t('cv.' + k))}</label>`).join('') +
     `<div class="err" id="cv-err"></div><div class="actions"><button class="primary" onclick="saveCardView()">${esc(t('common.save'))}</button>` +
-    `<button onclick="saveCardView(null)" title="${esc(t('cv.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
+    `<button onclick="saveCardView(null)" title="${esc(t('cv.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></div>`);
+}
+// Show each change on the board as you make it; Save keeps it, Cancel or closing drops it (AIG-119).
+function previewCardView() {
+  const show = {}; document.querySelectorAll('#dialog [data-cv]').forEach(b => { show[b.dataset.cv] = b.checked; });
+  state.cvPreview = { slug: slug(), view: { density: document.querySelector('#dialog [name=cv-density]:checked').value, show } };
+  renderBoardOnly();
 }
 async function saveCardView(reset) {
   const show = {}; document.querySelectorAll('#dialog [data-cv]').forEach(b => { show[b.dataset.cv] = b.checked; });
   const cardView = reset === null ? null : { density: document.querySelector('#dialog [name=cv-density]:checked').value, show };
-  try { await api('PATCH', '/api/projects/' + slug(), { cardView }); closeDialog(); await rerender(); } catch (e) { setErr('cv-err', e); }
+  try { await api('PATCH', '/api/projects/' + slug(), { cardView }); state.cvPreview = null; closeDialog(); await rerender(); } catch (e) { setErr('cv-err', e); }
 }
 
 /* ---------- project look (AIG-86) ---------- */

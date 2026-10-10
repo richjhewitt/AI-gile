@@ -1162,6 +1162,15 @@ def('cardview', '🃏 Cards: compact or roomy, and which details show on board c
   check('default is roomy', !(await card.evaluate(e => e.classList.contains('compact'))));
   await page.click('button:has-text("Cards")');
   await page.waitForSelector('[data-cv]');
+  // The board shows each change straight away; Cancel puts it back (AIG-119).
+  await page.locator('[name=cv-density][value=compact]').check();
+  await sleep(1500);   // through a poll, which must not undo the preview
+  check('switching to compact shows at once, before Save', await card.evaluate(e => e.closest('.board').querySelector('.card').classList.contains('compact')));
+  await page.click('#dialog button:has-text("Cancel")');
+  await sleep(300);
+  check('Cancel puts it back', !(await page.locator('.card.compact').count()));
+  await page.click('button:has-text("Cards")');
+  await page.waitForSelector('[data-cv]');
   await page.locator('[data-cv=assignee]').uncheck();
   await page.locator('[data-cv=age]').check();
   await page.locator('[name=cv-density][value=compact]').check();
