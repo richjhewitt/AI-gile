@@ -1,30 +1,37 @@
 /* ---------- card text: code boxes, bullets, links ---------- */
 // Escape, then make web links, this project's card ids (e.g. AIG-12) and its .md files clickable.
-// Card text: ```fenced``` blocks become code boxes with a Copy button, `inline` becomes code,
-// everything else goes through fmt (escape + links). Also used by inbox.js.
-function withCode(text, fmt) {
-  return String(text ?? '').split(/```[^\n]*\n?([\s\S]*?)```/g).map((part, i) => i % 2
-    ? `<div class="codebox"><button class="copy" onclick="copyCode(this)">📋 Copy</button><pre><code>${esc(part.replace(/\n$/, ''))}</code></pre></div>`
-    : spaceBullets(fmt(i ? part.replace(/^\n/, '') : part).replace(/`([^`\n]+)`/g, '<code>$1</code>'))).join('');
+// Card text: ```fenced``` blocks become code boxes with a Copy button (plus Open when the block is one .md path),
+// `inline` becomes code (a lone .md path becomes a link), everything else goes through fmt (escape + links).
+// slug is the project the .md paths belong to. Also used by inbox.js.
+function withCode(text, fmt, slug) {
+  return String(text ?? '').split(/```[^\n]*\n?([\s\S]*?)```/g).map((part, i) => {
+    if (i % 2) {
+      const code = part.replace(/\n$/, ''), one = code.trim();
+      const open = isMdPath(one) ? `<button class="copy open" data-p="${esc(one)}" data-s="${esc(slug || '')}" onclick="showDocPath(this.dataset.p,this.dataset.s)">📄 Open</button>` : '';
+      return `<div class="codebox"><button class="copy" onclick="copyCode(this)">📋 Copy</button>${open}<pre><code>${esc(code)}</code></pre></div>`;
+    }
+    const links = [];   // inline code that is a .md path is set aside so fmt leaves it whole
+    part = (i ? part.replace(/^\n/, '') : part).replace(/`([^`\n]+)`/g, (m, c) => isMdPath(c) ? `\u0000${links.push(c.trim()) - 1}\u0000` : m);
+    return spaceBullets(fmt(part).replace(/`([^`\n]+)`/g, '<code>$1</code>')
+      .replace(/\u0000(\d+)\u0000/g, (m, n) => `<code>${mdLink(esc(links[n]), esc(links[n]), slug)}</code>`));
+  }).join('');
 }
+// A whole string that is one .md path (relative or absolute, / or \; spaces allowed).
+const isMdPath = s => /^\s*(?:[A-Za-z]:)?[^<>|?*\n`]*[^<>|?*\s\n`]\.md\s*$/i.test(s) && !/^\s*https?:/i.test(s);
+const mdLink = (html, p, slug) => `<a href="#" data-p="${p}" data-s="${esc(slug || '')}" onclick="showDocPath(this.dataset.p,this.dataset.s);return false" title="Open ${p}">${html}</a>`;
+// Links bare .md paths (no spaces) in escaped text.
+const mdLinks = (html, slug) => html.replace(/(^|[\s(>"'`])((?:[A-Za-z]:)?(?:[\w.-]+[\\/])*[\w.-]+\.md)\b/gi, (m, pre, name) => pre + mdLink(name, name, slug));
 // Runs of "- " lines become a spaced bullet list, so cards stay readable whoever wrote them.
 function spaceBullets(html) {
   return html.replace(/(^|\n)((?:[ \t]*[-•][ \t]+[^\n]*(?:\n[ \t]*\n?|$))+)/g, (m, pre, block) =>
     pre + '<ul class="bl">' + block.split('\n').filter(l => l.trim()).map(l => `<li>${l.replace(/^[ \t]*[-•][ \t]+/, '')}</li>`).join('') + '</ul>');
 }
 function copyCode(btn) {
-  navigator.clipboard.writeText(btn.nextElementSibling.textContent)
+  navigator.clipboard.writeText(btn.parentNode.querySelector('pre').textContent)
     .then(() => { btn.textContent = '✅ Copied'; setTimeout(() => { btn.textContent = '📋 Copy'; }, 1500); });
 }
-function linkify(text, p) { return withCode(text, t => linkifyText(t, p)); }
-function linkifyText(text, p) {
-  const docs = state.docsFor === p.slug ? state.docs || [] : [];
-  const docIndex = name => { const n = name.toLowerCase(); return docs.findIndex(d => d.toLowerCase() === n || d.toLowerCase().split('/').pop() === n); };
-  return linkifyBase(text, p).replace(/(^|[\s(>"'`])((?:[\w.-]+\/)*[\w.-]+\.md)\b/gi, (m, pre, name) => {
-    const i = docIndex(name);
-    return i < 0 ? m : `${pre}<a href="#" onclick="showDoc(${i});return false" title="Open ${esc(docs[i])}">${name}</a>`;
-  });
-}
+function linkify(text, p) { return withCode(text, t => linkifyText(t, p), p.slug); }
+function linkifyText(text, p) { return mdLinks(linkifyBase(text, p), p.slug); }
 function linkifyBase(text, p) {
   const key = String(p.key).replace(/[^A-Za-z0-9]/g, '');
   return esc(text)

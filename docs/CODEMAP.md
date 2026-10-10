@@ -5,14 +5,14 @@ Where everything lives, so you can go straight to the right place. Search for th
 ## Run and test
 - Server: `node server.js` (or `start-aigile.bat`) -> http://localhost:4321. `AIGILE_PORT` and `AIGILE_DATA` change the port and data folder; `AIGILE_DEV=1` adds the "new version, refresh" prompt.
 - CLI: `node aigile.js help` (`AIGILE_URL` points it at another server; `AIGILE_AS` sets the author).
-- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `quietinbox`, `poke`, `docs`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
+- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `quietinbox`, `poke`, `docs`, `mdlinks`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
 
 ## Server
 | File | What |
 |---|---|
 | `server.js` | Wiring and http plumbing: dev build id, route dispatch (`/api/*`), static files from `public/`, JSON errors |
 | `lib/store.js` | Config paths and port; `load`/`save` of `data/<slug>.json`; `localSettings`; `summary` (project card on the home page); `attention` (needs a poke: asleep with work, or stuck); card rules (`cleanCard`, `toTeam`, `findCard`, `docList`, `bad`/`need`) |
-| `lib/routes.js` | Every API route as `[method, regex, handler]`; see the markers: projects, cards, comments/verdicts/tasks/pokes, team/log/updates feed, docs and inbox |
+| `lib/routes.js` | Every API route as `[method, regex, handler]`; see the markers: projects, cards, comments/verdicts/tasks/pokes, team/log/updates feed, docs (incl. `/file`) and inbox |
 | `lib/onboard.js` | `connectFolder`: marked notes block, merged comment hooks, git exclude |
 | `lib/presence.js` | Team presence (`heard`, `presenceOf`, `heardFromFolder`) and the background runner: `startTeam`/`nudge` (agent command run hidden in the project folder, log in `data/logs/<slug>.log`, one run per team), `restartTeam`, `logTail` |
 | `lib/quiet.js` | Going quiet: `setQuiet` (📣 card to every team with open work, starts sleeping ones, night mode file `data/quiet.state`), `quietSince` |
@@ -29,7 +29,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `js/usage-page.js` | The `#/usage` page (charts are hand-written SVG) |
 | `js/inbox.js` | Top-bar inbox button, the `#/inbox` page, alerts; self-contained |
 | `js/core.js` | `state`, `api`, `esc`, `ago`, the router (`parseRoute`), `busy`/`refresh`/`render` (the 1s poll never wipes typing), `slug`/`curCard`/`setErr` |
-| `js/format.js` | Card text: `withCode`, `spaceBullets`, `linkify`; `md` (Docs renderer) |
+| `js/format.js` | Card text: `withCode`, `spaceBullets`, `linkify`, `.md` links (`mdLinks`, opened by `showDocPath` in dialogs.js); `md` (Docs renderer) |
 | `js/filters.js` | Search and filter bar |
 | `js/home.js` | Home page: `renderHome`, project bars, usage strip |
 | `js/board.js` | In flight and presence, `renderBoard`, `cardHtml`, `poke`, drag and drop |
