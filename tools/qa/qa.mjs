@@ -1129,6 +1129,35 @@ def('columns', '⚙️ Columns: rename, reorder, hide and colour a board\'s colu
   noErrors(page);
 }, true);
 
+def('cardview', '🃏 Cards: compact or roomy, and which details show on board cards (AIG-119)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET');
+  const c = await mkCard(s, 'alpha', 'Show me', { type: 'bug', priority: 'high', assignee: 'Tweak', sprint: 'S9' });
+  await say(s, 'alpha', c.id, 'Tweak', 'a comment');
+  const page = await openPage(ctx, '#/p/alpha');
+  const card = page.locator(`.card[data-id="${c.id}"]`);
+  await card.waitFor();
+  const txt = async () => (await card.textContent()).replace(/\s+/g, ' ');
+  let t = await txt();
+  check('defaults show today\'s details', /bug/.test(t) && /high/.test(t) && /Tweak/.test(t) && /S9/.test(t) && /💬 1/.test(t) && !/🕒/.test(t), t);
+  check('default is roomy', !(await card.evaluate(e => e.classList.contains('compact'))));
+  await page.click('button:has-text("Cards")');
+  await page.waitForSelector('[data-cv]');
+  await page.locator('[data-cv=assignee]').uncheck();
+  await page.locator('[data-cv=age]').check();
+  await page.locator('[name=cv-density][value=compact]').check();
+  await page.click('#dialog button:has-text("Save")');
+  await page.waitForFunction(() => !document.querySelector('#dialog .dialog'));
+  await page.waitForSelector(`.card.compact[data-id="${c.id}"]`);
+  t = await txt();
+  check('assignee hidden, age shown', !/Tweak/.test(t) && /🕒/.test(t) && /bug/.test(t) && /S9/.test(t), t);
+  check('saved on the project only', (await s.ok('GET', '/api/projects/alpha')).cardView.density === 'compact' && !(await s.ok('GET', '/api/projects/beta')).cardView);
+  for (const bad of [{ density: 'tiny' }, { show: { colour: true } }, { show: { age: 'yes' } }, 'compact'])
+    check('bad cardView refused: ' + JSON.stringify(bad), (await s.api('PATCH', '/api/projects/alpha', { cardView: bad })).status === 400);
+  await s.ok('PATCH', '/api/projects/alpha', { cardView: null });
+  check('reset to default', !(await s.ok('GET', '/api/projects/alpha')).cardView);
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

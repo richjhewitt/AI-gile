@@ -57,6 +57,7 @@ function renderBoard(p) {
       <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>
       <button onclick="lookDialog()" title="This project's colour and emoji">🎨 Look</button>
       <button onclick="columnsDialog()" title="Rename, reorder, hide and colour this board's columns">⚙️ Columns</button>
+      <button onclick="cardViewDialog()" title="Compact or roomy cards, and which details they show">🃏 Cards</button>
       ${p.path ? `<button onclick="permsDialog()" title="What this project's team may do without asking">🔐 Permissions</button>` : ''}
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
     <div class="flight">🛠 <b>In flight:</b> ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || '<span class="muted">nothing right now</span>'}</div>
@@ -91,14 +92,16 @@ function forYouColumn(p, label = 'For you', tint = '') {
   return `<div class="column foryou" data-status="verify"${tint}><h3><span>${esc(label)}</span><span>${cs.length}</span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
 }
 
-function metaHtml(c) {
-  return `<span class="pill">${esc(c.type)}</span>
-      ${c.priority !== 'normal' ? `<span class="pill ${c.priority}">${esc(c.priority)}</span>` : ''}
-      ${c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
+// show = the project's card view choices (board cards only); the card panel passes nothing and shows all.
+function metaHtml(c, show = CARD_SHOW) {
+  return `${show.type ? `<span class="pill">${esc(c.type)}</span>` : ''}
+      ${show.priority && c.priority !== 'normal' ? `<span class="pill ${c.priority}">${esc(c.priority)}</span>` : ''}
+      ${show.assignee && c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
       ${c.needsYou && c.status !== 'done' ? '<span class="pill you">needs you</span>' : ''}
       ${c.blocked ? '<span class="pill blocked">blocked</span>' : ''}
       ${snoozed(c) ? `<span class="pill snoozed">⏳ back at ${new Date(c.snoozedUntil).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span><button class="poke" onclick="event.preventDefault();event.stopPropagation();bringBack('${c.id}')">Bring back</button>` : ''}
-      ${c.comments.length ? `<span class="pill">💬 ${c.comments.length}</span>` : ''}`;
+      ${show.comments && c.comments.length ? `<span class="pill">💬 ${c.comments.length}</span>` : ''}
+      ${show.age ? `<span class="pill age" title="Last updated">🕒 ${ago(c.updated)}</span>` : ''}`;
 }
 
 // Last time the team said or did something on a card (Rich's own comments and pokes don't count).
@@ -110,12 +113,13 @@ function lastHeard(c) {
 function cardHtml(c) {
   const live = ['doing', 'review'].includes(c.status), heard = live && lastHeard(c);
   const stale = live && Date.now() - new Date(heard.at) > STALE_MS;
-  const cls = [stale ? 'stale-card' : '', 'card', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : ''].join(' ');
+  const view = cardViewOf(state.project);
+  const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}" data-id="${c.id}" draggable="true" style="display:block">
-    <div class="id">${esc(c.id)}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    <div class="id">${esc(c.id)}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <div class="t">${esc(c.title)}</div>
     ${live ? `<div class="heard">💬 ${esc(heard.who)} ${ago(heard.at)}${heard.text ? ': ' + esc(heard.text.slice(0, 60).replace(/\n/g, ' ')) : ''}</div>` : ''}
-    <div class="meta">${metaHtml(c)}${live ? `<button class="poke${stale ? ' hot' : ''}" title="Nudge the team: any update?" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">👉 Poke</button>` : ''}</div></a>`;
+    <div class="meta">${metaHtml(c, view.show)}${live ? `<button class="poke${stale ? ' hot' : ''}" title="Nudge the team: any update?" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">👉 Poke</button>` : ''}</div></a>`;
 }
 const snoozed = c => c.status === 'verify' && c.snoozedUntil && new Date(c.snoozedUntil) > Date.now();
 async function bringBack(id) {
