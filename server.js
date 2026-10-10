@@ -72,7 +72,7 @@ const server = http.createServer(async (req, res) => {
         if (m && method === req.method) {
           // Attachment uploads are base64 files up to 10 MB, so they get a bigger body limit.
           const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, pathname.endsWith('/attachments') ? 15e6 : 1e6) : {};
-          const out = fn(m.slice(1), body, url.searchParams);
+          const out = await fn(m.slice(1), body, url.searchParams);   // DM routes talk to the relay, so they may be async
           // A route can answer with a file instead of JSON: { __file: absolute path }.
           if (out && out.__file) {
             res.writeHead(200, { 'Content-Type': ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
@@ -95,3 +95,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => console.log(`AI-gile running at http://localhost:${PORT}`));
+// Private DMs: collect this board's relay mailbox every few seconds while DMs are on (lib/dm.js).
+require('./lib/dm').startDms();
