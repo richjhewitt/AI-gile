@@ -5,7 +5,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 ## Run and test
 - Server: `node server.js` (or `start-aigile.bat`) -> http://localhost:4321. `AIGILE_PORT` and `AIGILE_DATA` change the port and data folder; `AIGILE_DEV=1` adds the "new version, refresh" prompt.
 - CLI: `node aigile.js help` (`AIGILE_URL` points it at another server; `AIGILE_AS` sets the author).
-- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `docs`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
+- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `docs`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
 
 ## Server
 | File | What |
@@ -15,6 +15,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `lib/routes.js` | Every API route as `[method, regex, handler]`; see the markers: projects, cards, comments/verdicts/tasks/pokes, team/log/updates feed, docs and inbox |
 | `lib/onboard.js` | `connectFolder`: marked notes block, merged comment hooks, git exclude |
 | `lib/presence.js` | Team presence (`heard`, `presenceOf`, `heardFromFolder`) and `wakeTeam` (opens a terminal running the agent command) |
+| `lib/quiet.js` | Going quiet: `setQuiet` (📣 card to every team with open work, wakes sleeping ones, night mode file `data/quiet.state`), `quietSince` |
 | `lib/limits.js` | `recordLimits` / `limitsHistory` for the plan usage log |
 | `lib/usage.js` | Token usage per project, read from the agents' local session logs |
 | `aigile.js` | The CLI: `HELP` text, arg parsing, `api()`, `nextList` (what to work on), then one function per command under "commands" |
@@ -34,7 +35,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `js/board.js` | In flight and presence, `renderBoard`, `cardHtml`, `poke`, drag and drop |
 | `js/card.js` | `cardFields`, assignee select, `renderCard` (Reply/Details/Test tabs), edit/delete/reply/verdict |
 | `js/dialogs.js` | `openDialog`, New card, New project, Connect folder, Docs |
-| `js/app.js` | Start-up: hashchange, the 1s poll, the new-build prompt |
+| `js/app.js` | Start-up: hashchange, the 1s poll, the new-build prompt; going quiet (`goQuiet`, `setNight` night theme) |
 
 ## Data
 - `data/<slug>.json`: one file per project (cards, comments, team, log, `teamSeenAt`); written atomically via a `.tmp` file. Git-ignored.

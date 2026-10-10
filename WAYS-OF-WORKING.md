@@ -26,6 +26,13 @@ Every card description, test step, question and comment is **short bullet points
 - Log real decisions (`log --decision`), especially ones made while Rich is away.
 - When idle, keep `aigile wait <project>` running in the background so Rich's comments wake you.
 
+## When Rich goes quiet
+- A **📣 Going quiet** card in For the team means Rich is switching off for a few hours
+- Ask every question you have **now**, then stop waiting on him
+- Line up enough work for the next few hours; split big cards so each piece reaches a tested point
+- Decide small things yourselves and log them (`log --decision`)
+- Reply on the card with one line (what you'll be doing), then move it to done
+
 ## Deciding and building
 - **Propose, then wait for Rich's go.** Collect new requests, suggest a plan, and don't start building (or send agents) until he says go. If he asks for design suggestions, give options with your pick.
 - **Don't invent rules.** Only enforce what Rich asked for, plus technical sanity. If a limit seems wise, ask first.

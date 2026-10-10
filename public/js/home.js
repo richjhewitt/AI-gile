@@ -34,7 +34,8 @@ function renderHome() {
       ${p.lastLog ? `<div class="last">📝 ${esc(p.lastLog.text)} · ${ago(p.lastLog.at)}</div>` : ''}
     </a>`;
   }).join('');
-  return `<div class="toolbar"><button class="primary" onclick="newProject()">+ New project</button><span class="grow"></span>
+  return `<div class="toolbar"><button class="primary" onclick="newProject()">+ New project</button>
+      <button onclick="goQuiet()" title="Tell every working team you're switching off for a few hours">🌙 Going quiet</button><span class="grow"></span>
       <label class="chk"><input type="checkbox" ${state.showArchived ? 'checked' : ''} onchange="toggleArchived(this.checked)"> Show archived</label></div>`
     + usageStrip(state.usage) + inbox + `<div class="grid">${cards || '<p class="muted">No projects yet.</p>'}</div>`;
 }

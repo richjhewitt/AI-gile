@@ -473,6 +473,31 @@ def('presence', 'asleep -> /updates -> online; Wake runs the stub in the folder'
   noErrors(page);
 }, true);
 
+def('quiet', 'Going quiet messages teams with work, wakes sleeping ones, night theme on/off', async (s, ctx) => {
+  const folder = tmp('quiet');
+  await mkProject(s, 'Busy', 'BSY', { path: folder });
+  await s.ok('POST', '/api/projects/busy/cards', { title: 'work', status: 'todo' });
+  await mkProject(s, 'Idle', 'IDL');
+  const page = await openPage(ctx, '#/');
+  page.on('dialog', d => d.accept());
+  await page.click('text=🌙 Going quiet');
+  await page.waitForSelector('html[data-night]', { timeout: 4000 }).catch(() => {});
+  check('night theme on', await page.$('html[data-night]') !== null);
+  const busy = await s.ok('GET', '/api/projects/busy'), idle = await s.ok('GET', '/api/projects/idle');
+  const msg = busy.cards.find(c => c.title === '📣 Going quiet');
+  check('team with work gets the card in For the team', msg && msg.status === 'team' && msg.createdBy === 'Rich');
+  check('project with no work is left alone', !idle.cards.length);
+  check('message reaches the team via updates', (await s.ok('GET', '/api/projects/busy/updates')).cards.some(c => c.title === '📣 Going quiet'));
+  let out = '';
+  for (let i = 0; i < 40 && !out.includes('project busy'); i++) { await sleep(250); try { out = fs.readFileSync(s.wakeOut, 'utf8'); } catch {} }
+  check('sleeping team was woken', /project busy/.test(out), out);
+  check('meta reports quiet', !!(await s.ok('GET', '/api/meta')).quiet);
+  await page.click('text=☀️ I\'m back');
+  await page.waitForTimeout(300);
+  check('night theme off', await page.$('html[data-night]') === null && !(await s.ok('GET', '/api/meta')).quiet);
+  noErrors(page);
+}, true);
+
 def('docs', 'Docs dialog lists .md files and opens one', async (s, ctx) => {
   const folder = tmp('docs');
   fs.mkdirSync(path.join(folder, 'docs'));
