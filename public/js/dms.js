@@ -49,7 +49,7 @@ const Dms = (() => {
     const list = [...groups].sort((a, b) => a[1].at(-1).at.localeCompare(b[1].at(-1).at));
     if (!list.some(([id]) => id === fold)) fold = (target && groups.has(target) ? target : null) || (list.length ? list.at(-1)[0] : null);
     return list.map(([id, msgs]) => {
-      const c = thread.cards[id] || {}, last = msgs.at(-1), isOpen = id === fold;
+      const c = (thread.cards || {})[id] || {}, last = msgs.at(-1), isOpen = id === fold;
       const preview = String(last.text || '').replace(/^\s*[-*]\s+/gm, '').replace(/[*_`#>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 90);
       return `<div class="dm-fold ${isOpen ? 'open' : ''} ${c.waiting ? 'waiting' : ''}">
         <button class="dm-fold-h k-${esc(c.kind || 'other')}" data-fold="${esc(id)}" aria-expanded="${isOpen}">
