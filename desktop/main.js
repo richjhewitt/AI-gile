@@ -31,13 +31,17 @@ function open(ok) {
   if (ok) win.loadURL(BASE);
   else win.loadURL('data:text/html,' + encodeURIComponent(`<body style="font:15px system-ui;padding:24px"><h2>AI-gile didn't start</h2><p>Couldn't reach ${BASE}. Run <code>start-aigile.bat</code> in ${ROOT.replace(/</g, '')} and reopen this window.</p></body>`));
   // Taskbar badge: the page puts what's waiting on Rich in its title, "(3) AI-gile"; show it as a purple diamond.
+  // Small taskbar buttons don't draw overlays (just a dot), so the window icon itself also gets the diamond.
   win.on('page-title-updated', (e, title) => {
-    const n = Number((title.match(/^\((\d+)\)/) || [])[1]) || 0;
-    win.setOverlayIcon(n ? nativeImage.createFromPath(path.join(__dirname, 'badges', (n > 9 ? 'many' : n) + '.png')) : null, n ? `${n} waiting for you` : '');
+    const n = Number((title.match(/^\((\d+)\)/) || [])[1]) || 0, b = n > 9 ? 'many' : n;
+    win.setIcon(n ? path.join(__dirname, 'badges', `icon-${b}.png`) : ICON);
+    win.setOverlayIcon(n ? nativeImage.createFromPath(path.join(__dirname, 'badges', b + '.png')) : null, n ? `${n} waiting for you` : '');
   });
   win.on('closed', () => { win = null; });
 }
 
+// A separate profile (for testing next to the real app) gets its own single-instance lock.
+if (process.env.AIGILE_PROFILE) app.setPath('userData', process.env.AIGILE_PROFILE);
 // One window only: opening the app again brings the existing window forward.
 if (!app.requestSingleInstanceLock()) app.quit();
 else {
