@@ -1,10 +1,11 @@
 // AI-gile inbox: top-bar button, #/inbox page, and new-question alerts.
-// Self-contained (no dependencies). Loaded after the main script in index.html.
-// Needs from the page: state, $, api (all top-level in index.html), a <header> with #live.
+// Self-contained (no dependencies). Loaded before the main scripts in index.html.
+// Needs from the page: state, $, api (all top-level in js/core.js), a <header> with #live.
+/* ---------- module ---------- */
 (function () {
   'use strict';
 
-  // ---- styles ------------------------------------------------------------------
+  /* ---------- styles ---------- */
   // Questions = strong red, tests = calm blue. Every use also carries an icon and a word.
   const css = `
   :root {
@@ -84,7 +85,7 @@
   style.textContent = css;
   document.head.appendChild(style);
 
-  // ---- helpers -----------------------------------------------------------------
+  /* ---------- helpers ---------- */
   const el = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ago = iso => {
@@ -119,11 +120,11 @@
   const canNotify = () => typeof Notification !== 'undefined';
   const alertsOn = () => canNotify() && Notification.permission === 'granted' && pref.get();
 
-  // ---- state ---------------------------------------------------------------------
+  /* ---------- state ---------- */
   let items = [], loaded = false, inflight = null, seen = new Set(), flashKey = null;
   const baseTitle = document.title || 'AI-gile';
 
-  // ---- data ------------------------------------------------------------------------
+  /* ---------- data ---------- */
   function load() {
     if (inflight) return inflight;
     inflight = fetch('/api/inbox', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error(r.statusText)))
@@ -146,7 +147,7 @@
     if (onInboxPage()) paintPage();
   }
 
-  // ---- top bar (AIG-32, AIG-34) -------------------------------------------------------
+  /* ---------- top bar (AIG-32, AIG-34) ---------- */
   function slot() {
     let s = el('inboxTop');
     if (!s) {   // fallback if the page has no container
@@ -180,7 +181,7 @@
     if (document.title !== title) document.title = title;
   }
 
-  // ---- alerts (AIG-35) ---------------------------------------------------------------------
+  /* ---------- alerts (AIG-35) ---------- */
   let audio = null;
   function beep() {
     try {
@@ -227,7 +228,7 @@
     paintTop();
   }
 
-  // ---- inbox page (AIG-33) ----------------------------------------------------------------
+  /* ---------- inbox page (AIG-33) ---------- */
   function qHtml(c) {
     const a = lastAsk(c);
     return `<div class="ib-top"><span class="ib-tag">❓ Question</span><span class="ib-proj">${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
@@ -294,7 +295,7 @@
     });
   }
 
-  // ---- project tabs (AIG-37): All + one per project with something waiting; remembers the last tab --------
+  /* ---------- project tabs (AIG-37): All + one per project with something waiting; remembers the last tab ---------- */
   const tabPref = {
     get() { try { return localStorage.getItem('aigile.inboxTab') || 'all'; } catch { return 'all'; } },
     set(t) { try { localStorage.setItem('aigile.inboxTab', t); } catch {} },
@@ -402,7 +403,7 @@
     catch (e) { fail(n, e); }
   }
 
-  // ---- hooks used by index.html ------------------------------------------------------------
+  /* ---------- hooks used by js/core.js ---------- */
   // Called from refresh() whenever the route is #/inbox. Takes over the page body.
   async function show(force) {
     try { await load(); } catch (e) {

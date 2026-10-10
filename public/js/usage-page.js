@@ -1,8 +1,9 @@
 // Usage page (#/usage): how much plan is left, and which projects used the most.
-// Loaded by index.html. Uses its helpers: api, esc, ago, $, state, render, fmtTok.
+// Loaded by index.html (js/ folder). Uses its helpers: api, esc, ago, $, state, render, fmtTok.
 // Charts are hand-written SVG; colours come from CSS variables below (light + dark, checked with the
 // dataviz palette validator). Status colours always come with an icon and a label.
 
+/* ---------- state and styles ---------- */
 const uz = {
   data: null, fetchedAt: 0, range: '7', table: { line: false, bars: false },
   hover: {}, // chart id -> { n, show(i) } set while rendering
@@ -72,7 +73,7 @@ const uz = {
   document.head.appendChild(s);
 })();
 
-// ---- data ------------------------------------------------------------------
+/* ---------- data ---------- */
 async function loadUsagePage(force) {
   if (!force && uz.data && Date.now() - uz.fetchedAt < 15e3) return;
   const [usage, limits, projects] = await Promise.all([
@@ -101,7 +102,7 @@ const uzShort = n => { const f = (v, u) => (v >= 100 ? Math.round(v) : +v.toFixe
 const uzDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
 const uzDateLabel = s => uzDate(s).toLocaleDateString([], { month: 'short', day: 'numeric' });
 
-// ---- page ------------------------------------------------------------------
+/* ---------- page ---------- */
 function renderUsagePage() {
   if (!uz.data) return '<p class="muted">Loading…</p>';
   const { usage, limits } = uz.data;
@@ -159,7 +160,7 @@ function uzTile(title, sub, latest, key, hist) {
     <div class="uz-big">${resetTxt || 'reset time unknown'}</div><div class="uz-sub">${read}</div></div>`;
 }
 
-// ---- tooltip plumbing ------------------------------------------------------
+/* ---------- tooltip plumbing ---------- */
 // Each chart registers show(i) / hide; pointer and arrow keys both drive it.
 function uzTip(chart, html, x, y) {
   const tip = chart.querySelector('.uz-tip');
@@ -191,7 +192,7 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('focusout', e => { const c = e.target.closest?.('.uz-chart'); if (c) uzHide(c); });
 
-// ---- line chart: % of limit used ------------------------------------------
+/* ---------- line chart: % of limit used ---------- */
 const UZ_KEYS = [['h5', 'Session (5-hour)', 'var(--s1)'], ['wk', 'Week (7-day)', 'var(--s2)']];
 function uzLineCard(hist, W) {
   const hours = { 24: 24, 7: 168, 30: 720 }[uz.range] || 168, now = Date.now(), t0 = now - hours * 3600e3;
@@ -240,7 +241,7 @@ function uzLineCard(hist, W) {
     <button class="uz-toggle" onclick="uzToggle('line')">${uz.table.line ? 'Show chart' : 'Show as table'}</button></div>`;
 }
 
-// ---- stacked bars: which projects used the most ---------------------------
+/* ---------- stacked bars: which projects used the most ---------- */
 function uzProjects(u, projects, W) {
   const names = Object.fromEntries(projects.map(p => [p.slug, p.name]));
   // fixed colour per project (alphabetical order of slugs, so it never changes when others come and go)
