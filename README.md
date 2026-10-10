@@ -31,6 +31,16 @@ Open <http://localhost:4321>.
 
 On Windows, `start-aigile.bat` starts the server if it isn't already running, then opens the board in your browser.
 
+**Desktop app (optional, Electron):** the board in its own window with a taskbar icon. It starts the server if needed and leaves it running when closed.
+
+```sh
+cd desktop
+npm install
+npm run shortcut
+```
+
+`npm run shortcut` adds an AI-gile shortcut to the Desktop and Start menu. Don't run `npm start` from a VS Code terminal: VS Code sets `ELECTRON_RUN_AS_NODE`, so Electron starts as plain Node and quits.
+
 The server only listens on `127.0.0.1`.
 
 ## Workflow
