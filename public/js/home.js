@@ -37,7 +37,9 @@ function renderHome() {
     </a>`;
   }).join('');
   return `<div class="toolbar"><button class="primary" onclick="newProject()">+ New project</button>
-      <button onclick="goQuiet()" title="Tell every working team you're switching off for a few hours">🌙 Going quiet</button><span class="grow"></span>
+      <button onclick="goQuiet()" title="Tell every working team you're switching off for a few hours">🌙 Going quiet</button>
+      <button onclick="callStandup()" title="Ask every team for done / next / blockers">📣 Stand-up all</button>
+      <a class="navlink" href="#/standups" title="See what the teams said">📋 Stand-up report</a><span class="grow"></span>
       <label class="chk"><input type="checkbox" ${state.showArchived ? 'checked' : ''} onchange="toggleArchived(this.checked)"> Show archived</label></div>`
     + usageStrip(state.usage) + inbox + `<div class="grid">${cards || '<p class="muted">No projects yet.</p>'}</div>`;
 }
