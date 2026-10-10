@@ -51,11 +51,8 @@ Where everything lives, so you can go straight to the right place. Search for th
 - The language is `localStorage` `aigile.lang` (default `en`). `loadLang()` fetches the files and `app.js` renders only after it (`i18n.ready`); polls and timers wait for it. The picker (header `#langPick`, Setup page) calls `setLang`, which reloads. Static text in `index.html` uses `data-i18n`, `data-i18n-title`, `data-i18n-label`.
 - Add a string: put the key in `en.json` (and the same key in `nl.json` and `nl-BE.json`), call `t()` where the text is. Do not build a sentence from pieces; give the translator one string with placeholders. Do not name a local variable `t` in a function that calls `t()`. Lists that held text at load time are getters or functions now (`COLS`, `THEMES`, `lanesList()`), so they follow the language.
 - Dev words: wrap a developer word in the English file as `{{dev:commit}}` (also `{{dev:Backlog}}`, `{{dev:test}}`, `{{dev:sprint}}`, `{{dev:bug}}`). For now `t()` renders the marker as the word itself; a later card will show the English word in brackets for Dutch and Flemish and add tooltips, finding the markers with `/\{\{dev:([^}]+)\}\}/`.
-<<<<<<< HEAD
 - Dutch word choices (card = kaart, board = bord, ...): `docs/lang/nl-glossary.md`; follow it when adding Dutch strings.
-=======
 - Flemish (`nl-BE.json`) word choices are in `docs/lang/nl-BE-glossary.md`.
->>>>>>> worktree-agent-ad4245d0c8c7241c9
 - Not translated: server and CLI text (`lib/`, `aigile.js`, API error messages), the Setup field labels and help (they come from the server), data users and teams typed, card ids, project names.
 
 ## Data
