@@ -67,7 +67,9 @@ function limitsHistory(days) {
   } catch {}
   // Until readings arrive, say how to switch the feed on (file path from local settings, never in the repo).
   const file = localSettings().globalSettingsFile;
-  const setup = file ? { file, snippet: '"statusLine": {\n  "type": "command",\n  "command": ' + JSON.stringify(`node "${__dirname.replace(/\\/g, '/')}/statusline.js"`) + '\n},' } : null;
+  let installed = false;
+  try { installed = /"statusLine"[\s\S]*?statusline\.js/.test(fs.readFileSync(file, 'utf8')); } catch {}
+  const setup = file ? { file, installed, snippet:'"statusLine": {\n  "type": "command",\n  "command": ' + JSON.stringify(`node "${__dirname.replace(/\\/g, '/')}/statusline.js"`) + '\n},' } : null;
   return { latest: history[history.length - 1] || null, history, setup };
 }
 

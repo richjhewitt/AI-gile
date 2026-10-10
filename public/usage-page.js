@@ -119,6 +119,11 @@ function renderUsagePage() {
 // No plan reading yet: explain the two limits and show the one-time setup (file + lines come from the server's local settings).
 function uzSetup(setup) {
   const lines = setup ? setup.snippet : '';
+  if (setup && setup.installed) return `<div class="uz-card uz-setup">
+    <h3>✅ Switched on: waiting for the first reading</h3>
+    <p>Your plan has <b>two limits</b>: one per <b>5-hour session</b> and one per <b>week</b>. There's no monthly limit. The two big "% left" gauges appear here as soon as the first reading arrives.</p>
+    <p><b>To get it:</b> start a <b>new</b> session (sessions that were already open don't pick it up). If nothing shows within a minute, start one in a terminal instead (type the usual command in any project folder), because the VS Code panel may not send readings.</p>
+  </div>`;
   return `<div class="uz-card uz-setup">
     <h3>📏 How much of your plan is left: not switched on yet</h3>
     <p>Your plan has <b>two limits</b>: one per <b>5-hour session</b> and one per <b>week</b>. There's no monthly limit. Once switched on, two big gauges here show <b>% left</b> of each, and when it resets.</p>
