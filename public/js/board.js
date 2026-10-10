@@ -41,19 +41,16 @@ async function agentLog(e, s = slug()) {
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where Rich looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
-  const cols = colsOf(p).filter(c => !c.hidden).map(col => {
-    const k = col.key, label = (col.emoji ? col.emoji + ' ' : '') + col.name, tint = col.color ? ` style="--colc:${esc(col.color)}"` : '';
-    if (k === 'verify') return forYouColumn(p, label, tint, col.wip);
-    const cs = p.cards.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => b.updated.localeCompare(a.updated));
-    const all = p.cards.filter(c => c.status === k && !forYou(c)).length;
-    return `<div class="column ${wipClass(all, col.wip)}" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, col.wip)} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
-  }).join('');
+  const by = lanesBy(p.slug);
+  const board = by ? lanesOf(p, by).map(([name, pool]) => `<div class="lane"><h4 class="lane-h">${esc(name)} <span class="muted">${pool.length}</span></h4><div class="board">${columnsHtml(p, pool)}</div></div>`).join('') || '<p class="muted">No cards match.</p>'
+    : `<div class="board">${columnsHtml(p, p.cards)}</div>`;
   const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
   const log = (p.log || []).slice().reverse().slice(0, 50);
   return `<div class="toolbar"><h2>${esc(p.name)}${p.archived ? ' <span class="pill">archived</span>' : ''}</h2>
       <button class="primary" onclick="newCard()">+ New</button>
       <button onclick="openDocs()">📄 Docs</button>
       <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'team'})">🐞 Raise bug</button>
+      <select class="lanesel" title="Group the board into rows" onchange="setLanes(this.value)">${LANES.map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${l}</option>`).join('')}</select>
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>
       <button onclick="lookDialog()" title="This project's colour and emoji">🎨 Look</button>
@@ -63,7 +60,7 @@ function renderBoard(p) {
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
     <div class="flight">🛠 <b>In flight:</b> ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || '<span class="muted">nothing right now</span>'}</div>
     ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? ` <code>${esc(p.path)}</code>` : ''}</p>` : ''}
-    <div class="board">${cols}</div>
+    ${board}
     <div class="side">
       <div class="box"><h3>Team</h3>${team.length ? `<table><tr><th>Member</th><th>Role</th><th>Working on</th><th>Status</th></tr>${team.map(m =>
         `<tr><td><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : '<p class="muted">No team members yet.</p>'}</div>
@@ -77,6 +74,42 @@ function renderBoard(p) {
 const wipClass = (n, limit) => { const w = wipState(n, limit); return w ? 'wip-' + w : ''; };
 const countHtml = (shown, all, limit) => limit ? `<span class="wipn" title="Limit ${limit}">${all} / ${limit}</span>` : String(shown);
 
+/* ---------- swimlanes (AIG-120) ---------- */
+// Optional rows grouping the board by assignee, type, sprint or priority. Browser-only, remembered per project.
+const LANES = [['', '≡ Lanes: off'], ['assignee', '≡ By assignee'], ['type', '≡ By type'], ['sprint', '≡ By sprint'], ['priority', '≡ By priority']];
+const LANE_NONE = { assignee: 'No assignee', sprint: 'No sprint' };
+function lanesBy(slug) {
+  state.lanes = state.lanes || {};
+  if (!(slug in state.lanes)) { try { state.lanes[slug] = localStorage.getItem('aigile.lanes.' + slug) || ''; } catch { state.lanes[slug] = ''; } }
+  return state.lanes[slug];
+}
+function setLanes(by) {
+  const s = state.project.slug; state.lanes[s] = by;
+  try { by ? localStorage.setItem('aigile.lanes.' + s, by) : localStorage.removeItem('aigile.lanes.' + s); } catch {}
+  refresh(true);
+}
+// [[lane name, its cards]] for the cards passing the filter; empty lanes are left out.
+function lanesOf(p, by) {
+  const groups = new Map();
+  for (const c of p.cards.filter(c => matchesFilter(c, p.slug))) {
+    const k = String(c[by] || '').trim();
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(c);
+  }
+  const rank = k => by === 'priority' ? -PRIORITIES.indexOf(k) : 0;   // urgent first
+  return [...groups].sort(([a], [b]) => (!a) - (!b) || rank(a) - rank(b) || a.localeCompare(b)).map(([k, cs]) => [k || LANE_NONE[by] || 'None', cs]);
+}
+// The columns for a set of cards: the whole board, or one lane of it.
+function columnsHtml(p, pool) {
+  return colsOf(p).filter(c => !c.hidden).map(col => {
+    const k = col.key, label = (col.emoji ? col.emoji + ' ' : '') + col.name, tint = col.color ? ` style="--colc:${esc(col.color)}"` : '';
+    if (k === 'verify') return forYouColumn(p, label, tint, pool, col.wip);
+    const cs = pool.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => b.updated.localeCompare(a.updated));
+    const all = p.cards.filter(c => c.status === k && !forYou(c)).length;   // the limit counts the whole column (AIG-118)
+    return `<div class="column ${wipClass(all, col.wip)}" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, col.wip)} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
+  }).join('');
+}
+
 /* ---------- For you column (AIG-106) ---------- */
 // Everything waiting on the owner, whatever its status: tests, questions, tasks and blocks. Those cards show
 // here instead of in their own column (their status doesn't change). Chips pick which kind comes first.
@@ -89,10 +122,10 @@ function forYouFirst(k) {
   if (!state.forYouFirst) { try { state.forYouFirst = localStorage.getItem('aigile.forYouFirst'); } catch {} }
   return state.forYouFirst || 'q';
 }
-function forYouColumn(p, label = 'For you', tint = '', wip = 0) {
+function forYouColumn(p, label = 'For you', tint = '', pool = p.cards, wip = 0) {
   const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : 1 + KINDS.findIndex(([k]) => k === kindOf(c));
   // Within a kind, a queue: longest-waiting first, so 'Wait and see' sends a test to the back.
-  const cs = p.cards.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || a.updated.localeCompare(b.updated));
+  const cs = pool.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || a.updated.localeCompare(b.updated));
   const n = k => cs.filter(c => kindOf(c) === k).length;
   const chips = KINDS.map(([k, label]) => `<button class="fy-chip ${k === first ? 'on' : ''}" data-first="${k}" title="Show these first" onclick="forYouFirst('${k}')">${label} ${n(k)}</button>`).join('');
   const all = p.cards.filter(forYou).length;

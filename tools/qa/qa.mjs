@@ -1193,6 +1193,34 @@ def('wip', 'WIP limits per column: n / limit in the header, amber at the limit, 
   noErrors(page);
 }, true);
 
+def('lanes', '≡ Lanes: group the board into rows by assignee, type, sprint or priority; remembered per project (AIG-120)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Ann one', { status: 'todo', assignee: 'Ann' });
+  const b = await mkCard(s, 'alpha', 'Bob one', { status: 'todo', assignee: 'Bob', type: 'bug' });
+  await mkCard(s, 'alpha', 'Nobody', { status: 'backlog' });
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('.column .card');
+  check('default has no lanes', (await page.locator('.lane').count()) === 0);
+  await page.selectOption('.lanesel', 'assignee');
+  await page.waitForSelector('.lane');
+  const heads = await page.$$eval('.lane-h', els => els.map(e => e.firstChild.textContent.trim()));
+  check('one lane per assignee, unassigned last', JSON.stringify(heads) === JSON.stringify(['Ann', 'Bob', 'No assignee']), heads);
+  const lane = n => page.locator(`.lane:has(.lane-h:has-text("${n}"))`);
+  check('Ann lane holds only her card', (await lane('Ann').locator('.card').count()) === 1 && (await lane('Ann').locator(`.card[data-id="${a.id}"]`).count()) === 1);
+  await lane('Ann').locator(`.card[data-id="${a.id}"]`).dragTo(lane('Ann').locator('.column[data-status="doing"]'));
+  await sleep(500);
+  check('drag inside a lane changes status', (await getCard(s, 'alpha', a.id)).status === 'doing');
+  check('other lane card untouched', (await getCard(s, 'alpha', b.id)).status === 'todo');
+  await page.reload(); await page.waitForSelector('.lane');
+  check('choice survives a reload', (await page.locator('.lanesel').inputValue()) === 'assignee' && (await page.locator('.lane').count()) === 3);
+  await page.selectOption('.lanesel', 'type');
+  await page.waitForFunction(() => document.querySelectorAll('.lane').length === 2);
+  await page.selectOption('.lanesel', '');
+  await page.waitForFunction(() => !document.querySelector('.lane'));
+  check('off goes back to one board', (await page.locator('.board').count()) === 1);
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

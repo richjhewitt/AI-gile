@@ -56,6 +56,8 @@ main { padding: 20px; }
 
 /* ---------- Board ---------- */
 .board { display: grid; grid-template-columns: repeat(7, minmax(180px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+.lane { margin-bottom: 14px; }
+.lane-h { margin: 0 0 6px; font-size: 14px; }
 .column { background: var(--col); border-radius: var(--radius); padding: 10px; min-height: 120px; }
 .column h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: flex; justify-content: space-between; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; box-shadow: var(--shadow); cursor: pointer; }
