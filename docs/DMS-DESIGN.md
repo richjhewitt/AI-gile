@@ -26,5 +26,12 @@ Messages between people using AI-gile (you and your friends), shown in **💬 Me
 - Group chats, the same account on two computers, and message history recovery if a computer is lost.
 - A full "ratchet" (as in Signal) that also protects old messages if a key is stolen later. Version 1 protects each message with its own key; the ratchet can come later without changing invites.
 
-## Decision needed
-- **Who runs the relay?** It is tiny. Options: your own server, or a free hosting service. It never holds anything readable either way.
+## Decided
+- **The relay runs on our own server** (Rich, 2026-10-10).
+- **Overhead is tiny:** one small Node process (tens of MB of memory), a few KB per message, and disk only for messages not yet collected, which are deleted within 7 days.
+
+## Showing people it's private
+- A **🔒 How this stays private** panel in Messages: plain words, and the 6-word safety code for each person.
+- Every message shows a 🔒 when it was decrypted and its signature checked; anything that fails is shown as **not verified**, never silently.
+- A **"see what the relay sees"** view: the scrambled message exactly as it was sent, so anyone can check it's unreadable.
+- The code is open on GitHub, relay included, so anyone technical can check it.
