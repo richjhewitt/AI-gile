@@ -90,6 +90,7 @@ function connectFolder(p, dir, create) {
   // 1. Notes: one marked block, replaced on reconnect so it never duplicates.
   const block = [MARK_START, '## AI-gile board',
     `This project is tracked on Rich's AI-gile board at http://localhost:${PORT} (project \`${p.slug}\`).`,
+    `- **Scope:** this section is only for sessions started in \`${dir.replace(/\\/g, '/')}\` itself. A session started in a subfolder has its own project: ignore this section there.`,
     `- **Ways of working:** read \`${me}/WAYS-OF-WORKING.md\` at the start of every session and follow it.`,
     `- **Board commands:** read \`${me}/AGENTS.md\` once.`,
     `- **Session start:** run \`${cli} brief ${p.slug}\`.`,
