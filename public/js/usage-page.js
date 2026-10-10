@@ -149,15 +149,18 @@ function uzTile(title, sub, latest, key, hist) {
   if (!snap) return `<div class="uz-card">${head}<div class="uz-hero word">No reading</div><div class="uz-sub">Nothing recorded for this window yet.</div></div>`;
   const w = snap[key], at = Date.parse(snap.at), resets = uzTime(w.resets), now = Date.now();
   const read = `last reading ${ago(snap.at)}`;
+  // Only terminal sessions report the plan figure: VS Code and background runs never do (AIG-113).
+  const where = "The plan figure only comes from an agent session in a <b>terminal window</b>; VS Code and background runs don't report it. Token use per project (below) is always live.";
+  const stale = now - at > 3600e3;
   if (resets && resets < now) // the window has rolled over since we last heard: the old figure is out of date
-    return `<div class="uz-card">${head}<div class="uz-hero word">Reset</div><div class="uz-big">This window has reset since the last reading.</div><div class="uz-sub">${read}. A fresh figure appears with the next agent session.</div></div>`;
+    return `<div class="uz-card">${head}<div class="uz-hero word">No live figure</div><div class="uz-big">This window has reset since the last reading.</div><div class="uz-sub">${read}. ${where}</div></div>`;
   const left = Math.max(0, Math.min(100, Math.round(100 - w.pct))), st = uzStatus(left);
   const resetTxt = !resets ? '' : resets - now < 24 * 3600e3 ? `resets in ${uzHM(resets - now)}` : `resets ${uzDay(resets)} (in ${uzHM(resets - now)})`;
   return `<div class="uz-card">${head}
     <div class="uz-hero">${left}<small>% left</small></div>
     <div class="uz-meter" role="meter" aria-label="${title}: ${left}% left" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${left}"><span style="width:${left}%;background:${st.c}"></span></div>
     <div class="uz-status" style="--c:${st.c}">${st.icon} ${st.label}</div>
-    <div class="uz-big">${resetTxt || 'reset time unknown'}</div><div class="uz-sub">${read}</div></div>`;
+    <div class="uz-big">${resetTxt || 'reset time unknown'}</div><div class="uz-sub">${read}${stale ? '. May be out of date. ' + where : ''}</div></div>`;
 }
 
 /* ---------- tooltip plumbing ---------- */
