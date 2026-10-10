@@ -7,8 +7,10 @@ const DEFAULT_NAMES = { verify: 'For you' };   // the For you column (AIG-106) s
 function colsOf(p) {
   const saved = (p && p.columns) || [], byStatus = Object.fromEntries(saved.map(c => [c.status, c]));
   const order = saved.length ? saved.map(c => c.status) : Object.keys(COLS);
-  return order.map(k => { const c = byStatus[k] || {}; return { key: k, name: c.name || DEFAULT_NAMES[k] || COLS[k], emoji: c.emoji || '', color: c.color || '', hidden: !!c.hidden }; });
+  return order.map(k => { const c = byStatus[k] || {}; return { key: k, name: c.name || DEFAULT_NAMES[k] || COLS[k], emoji: c.emoji || '', color: c.color || '', hidden: !!c.hidden, wip: +c.wip || 0 }; });
 }
+// WIP limit (AIG-118): 'at' when the column is full, 'over' when past the limit; 0 = no limit.
+const wipState = (n, limit) => !limit ? '' : n > limit ? 'over' : n === limit ? 'at' : '';
 const colLabel = (p, k) => { const c = colsOf(p).find(x => x.key === k); return c ? (c.emoji ? c.emoji + ' ' : '') + c.name : COLS[k]; };
 const COL_COLORS = { team: '#e11d74', done: 'var(--done)', verify: 'var(--you)', review: '#0ea5a4', doing: 'var(--accent)', todo: 'var(--warn)' };
 const TYPES = ['feature', 'bug', 'task'];

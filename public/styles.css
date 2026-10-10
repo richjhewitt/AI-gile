@@ -221,6 +221,12 @@ body.pop .panel { max-width: none; max-height: none; width: 100%; min-height: 10
 
 /* ---------- board columns (AIG-116) ---------- */
 .column[style] { border-top: 4px solid var(--colc); }
+/* WIP limits (AIG-118): amber at the limit, red over it */
+.column.wip-at { background: color-mix(in srgb, var(--warn) 12%, transparent); box-shadow: inset 0 0 0 2px var(--warn); }
+.column.wip-over { background: color-mix(in srgb, var(--danger) 12%, transparent); box-shadow: inset 0 0 0 2px var(--danger); }
+.column.wip-at .wipn { color: var(--warn); } .column.wip-over .wipn { color: var(--danger); }
+.wipn { font-weight: 600; }
+.colrow input.wip { flex: 0 0 70px; }
 .colrow { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
 .colrow input[type=text] { flex: 1; }
 .colrow input.emoji { flex: 0 0 56px; text-align: center; }
