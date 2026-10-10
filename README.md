@@ -108,6 +108,7 @@ All endpoints take and return JSON.
 | PATCH, DELETE | `/api/projects/:slug/cards/:id` | Update or delete a card |
 | POST | `/api/projects/:slug/cards/:id/comments` | Add a comment: `{author, text, needsYou?}` |
 | POST | `/api/projects/:slug/cards/:id/verdict` | Accept or send back: `{accept, text}` |
+| POST, DELETE | `/api/projects/:slug/cards/:id/snooze` | Wait and see: hide a card in For you to test for an hour (`snoozedUntil`); DELETE brings it back |
 | POST | `/api/projects/:slug/team` | Add or update a team member: `{name, model?, role?, task?, status?}` |
 | POST | `/api/projects/:slug/log` | Add a log entry: `{author, text, kind: "log" \| "decision"}` |
 | GET | `/api/projects/:slug/updates[?mark=1]` | Owner activity since the team last looked |

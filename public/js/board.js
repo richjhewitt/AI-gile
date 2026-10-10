@@ -54,6 +54,7 @@ function metaHtml(c) {
       ${c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
       ${c.needsYou && c.status !== 'done' ? '<span class="pill you">needs you</span>' : ''}
       ${c.blocked ? '<span class="pill blocked">blocked</span>' : ''}
+      ${snoozed(c) ? `<span class="pill snoozed">⏳ back at ${new Date(c.snoozedUntil).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span><button class="poke" onclick="event.preventDefault();event.stopPropagation();bringBack('${c.id}')">Bring back</button>` : ''}
       ${c.comments.length ? `<span class="pill">💬 ${c.comments.length}</span>` : ''}`;
 }
 
@@ -72,6 +73,10 @@ function cardHtml(c) {
     <div class="t">${esc(c.title)}</div>
     ${live ? `<div class="heard">💬 ${esc(heard.who)} ${ago(heard.at)}${heard.text ? ': ' + esc(heard.text.slice(0, 60).replace(/\n/g, ' ')) : ''}</div>` : ''}
     <div class="meta">${metaHtml(c)}${live ? `<button class="poke${stale ? ' hot' : ''}" title="Nudge the team: any update?" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">👉 Poke</button>` : ''}</div></a>`;
+}
+const snoozed = c => c.status === 'verify' && c.snoozedUntil && new Date(c.snoozedUntil) > Date.now();
+async function bringBack(id) {
+  try { await api('DELETE', `/api/projects/${slug()}/cards/${id}/snooze`); refresh(true); } catch (e) { alert(e.message); }
 }
 async function poke(id) {
   try { await api('POST', `/api/projects/${slug()}/cards/${id}/poke`); refresh(true); } catch (e) { alert(e.message); }

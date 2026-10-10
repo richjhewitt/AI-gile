@@ -114,6 +114,18 @@ def('api', 'projects/cards CRUD, comment/verdict/taskdone/poke, updates feed, in
   inbox = await s.ok('GET', '/api/inbox');
   check('inbox has verify', inbox.some(c => c.id === c5.id));
   check('inbox carries project info', inbox[0].project === 'alpha' && inbox[0].projectName === 'Alpha');
+  const sn = await s.ok('POST', `/api/projects/alpha/cards/${c5.id}/snooze`);
+  check('snooze sets snoozedUntil about an hour ahead', sn.snoozedUntil && Math.abs(new Date(sn.snoozedUntil) - Date.now() - 3600e3) < 60e3, sn.snoozedUntil);
+  inbox = await s.ok('GET', '/api/inbox');
+  check('snoozed card is left out of the inbox', !inbox.some(c => c.id === c5.id));
+  await s.ok('DELETE', `/api/projects/alpha/cards/${c5.id}/snooze`);
+  inbox = await s.ok('GET', '/api/inbox');
+  check('bring back clears it and the card is in the inbox again', inbox.some(c => c.id === c5.id) && !(await getCard(s, 'alpha', c5.id)).snoozedUntil);
+  await s.ok('POST', `/api/projects/alpha/cards/${c5.id}/snooze`);
+  await s.ok('POST', `/api/projects/alpha/cards/${c5.id}/verdict`, { accept: false, text: 'nope' });
+  check('a verdict clears the snooze', !(await getCard(s, 'alpha', c5.id)).snoozedUntil);
+  check('snooze outside verify is rejected', (await s.api('POST', `/api/projects/alpha/cards/${c5.id}/snooze`)).status === 400);
+  await s.ok('PATCH', `/api/projects/alpha/cards/${c5.id}`, { status: 'verify' });
   const td = await s.ok('POST', `/api/projects/alpha/cards/${c4.id}/taskdone`, { text: 'did it' });
   check('taskdone hands back and goes to team', td.status === 'team' && td.assignee === 'Pixel' && /Done: did it/.test(td.comments.at(-1).text), [td.status, td.assignee]);
   const c6 = await mkCard(s, 'alpha', 'Stuck', { status: 'doing' });
@@ -235,6 +247,13 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   await page.dragAndDrop('.card[data-id="ALP-1"]', '.column[data-status="review"]');
   await page.waitForTimeout(600);
   check('drag moves the card (server)', (await getCard(s, 'alpha', 'ALP-1')).status === 'review');
+  const sv = await mkCard(s, 'alpha', 'Snoozed one', { status: 'verify' });
+  await s.ok('POST', `/api/projects/alpha/cards/${sv.id}/snooze`);
+  await page.waitForTimeout(1500);
+  check('snoozed card shows back-at label and Bring back', /back at \d/.test(await page.textContent(`.card[data-id="${sv.id}"]`)) && (await page.locator(`.card[data-id="${sv.id}"] button:has-text("Bring back")`).count()) === 1);
+  await page.click(`.card[data-id="${sv.id}"] button:has-text("Bring back")`);
+  await page.waitForTimeout(1500);
+  check('Bring back clears the label', !(await getCard(s, 'alpha', sv.id)).snoozedUntil && !/back at/.test(await page.textContent(`.card[data-id="${sv.id}"]`)));
   check('drag moves the card (page)', (await page.locator('.column[data-status=review] .card[data-id="ALP-1"]').count()) === 1);
 
   await page.click('.toolbar button.primary');

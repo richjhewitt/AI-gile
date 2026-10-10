@@ -254,7 +254,7 @@
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       ${c.testSteps ? `<details class="ib-steps"><summary>How to test</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : '<div class="ib-hint">No test steps written.</div>'}
       <div class="ib-err"></div>
-      <div class="actions"><button class="good" data-act="accept">✅ Accept</button><button data-act="wait" title="Not sure yet: move it to the back of your queue">⏳ Wait and see</button>
+      <div class="actions"><button class="good" data-act="accept">✅ Accept</button><button data-act="wait" title="Not sure yet: hide it for an hour">⏳ Wait and see</button>
       <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">Send back needs a reason: open the card</a></div>`;
   }
   const sigOf = c => !isTest(c) ?[c.title, lastAsk(c).at, lastAsk(c).text].join('|') : [c.title, c.updated, c.testSteps].join('|');
@@ -399,7 +399,7 @@
   }
   async function waitAndSee(n) {
     lock(n);
-    try { await post('PATCH', base(n), {}); n.dataset.sending = ''; await load(); toast(`⏳ ${n.dataset.id} moved to the back of the queue.`); }
+    try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await load(); toast(`⏳ ${n.dataset.id} hidden for an hour.`); }
     catch (e) { fail(n, e); }
   }
 
