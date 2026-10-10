@@ -251,7 +251,7 @@
       <div class="ib-question">${linkify(a.text, c)}</div>
       <textarea rows="2" placeholder="Type your answer. Enter sends, Shift+Enter adds a new line." aria-label="Your answer to ${esc(c.id)}"></textarea>
       <div class="ib-err"></div>
-      <div class="actions"><button class="primary" data-act="send">Send answer</button><span class="ib-hint">Your answer goes to the team and clears this question.</span></div>`;
+      <div class="actions">${c.blocked ? '' : '<button class="good" data-act="go" title="Sends GO as your answer">👍 Go</button>'}<button class="primary" data-act="send">Send answer</button><span class="ib-hint">Your answer goes to the team and clears this question.</span></div>`;
   }
   function kHtml(c) {
     const a = lastAsk(c);
@@ -386,16 +386,17 @@
     if (tb) { tab = tb.dataset.tab; tabPref.set(tab); paintPage(); return; }
     const b = e.target.closest('button[data-act]'); if (!b) return;
     const n = b.closest('.ib-item'), act = b.dataset.act;
-    if (act === 'send') send(n); else if (act === 'accept') accept(n); else if (act === 'wait') waitAndSee(n); else if (act === 'taskdone') taskDone(n);
+    if (act === 'send') send(n); else if (act === 'go') send(n, 'GO'); else if (act === 'accept') accept(n); else if (act === 'wait') waitAndSee(n); else if (act === 'taskdone') taskDone(n);
   }
   const base = n => `/api/projects/${n.dataset.project}/cards/${n.dataset.id}`;
   const fail = (n, e) => { n.querySelector('.ib-err').textContent = e.message || String(e); n.dataset.sending = ''; n.querySelectorAll('button').forEach(b => b.disabled = false); };
   const lock = n => { n.dataset.sending = '1'; n.querySelector('.ib-err').textContent = ''; n.querySelectorAll('button').forEach(b => b.disabled = true); };
   const done = (n, msg) => { n.remove(); raw = raw.filter(c => keyOf(c) !== n.dataset.key); items = view(); paintTop(); paintPage(); toast(msg); load().catch(() => {}); };
 
-  async function send(n) {
+  // fixed: a one-tap answer (👍 Go, AIG-75) instead of the typed one.
+  async function send(n, fixed) {
     if (n.dataset.sending) return;
-    const ta = n.querySelector('textarea'), text = ta.value.trim();
+    const ta = n.querySelector('textarea'), text = fixed || ta.value.trim();
     if (!text) { n.querySelector('.ib-err').textContent = 'Write something first.'; return; }
     lock(n);
     try { await post('POST', base(n) + '/comments', { author: 'Rich', text }); done(n, `Sent to the team on ${n.dataset.id}.`); }

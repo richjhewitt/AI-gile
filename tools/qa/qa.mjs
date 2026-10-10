@@ -760,6 +760,29 @@ def('perms', '🔐 Permissions: ticks follow the rules, save keeps hooks, new fo
   noErrors(page);
 }, true);
 
+def('gobutton', '👍 Go answers a question in one tap, in the inbox and on the card', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const q1 = await mkCard(s, 'alpha', 'First question'), q2 = await mkCard(s, 'alpha', 'Second question'), b = await mkCard(s, 'alpha', 'Stuck');
+  for (const c of [q1, q2]) s.cli(['ask', 'alpha', c.id, 'Go?', '--as', 'Lead']);
+  s.cli(['block', 'alpha', b.id, 'no key', '--as', 'Lead']);
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector(`.ib-item[data-id="${q1.id}"] button[data-act="go"]`);
+  check('blocked card has no Go', (await page.locator(`.ib-item[data-id="${b.id}"] button[data-act="go"]`).count()) === 0);
+  await page.click(`.ib-item[data-id="${q1.id}"] button[data-act="go"]`);
+  await page.waitForSelector(`.ib-item[data-id="${q1.id}"]`, { state: 'detached', timeout: 4000 }).catch(() => {});
+  let c = await getCard(s, 'alpha', q1.id);
+  check('inbox Go sends GO and clears the question', c.comments.at(-1).author === 'Rich' && c.comments.at(-1).text === 'GO' && !c.needsYou && c.status === 'team', c);
+  await page.goto(BASE + '/#/p/alpha/' + q2.id);
+  await page.click('.reply button:has-text("Go")');
+  await sleep(500);
+  c = await getCard(s, 'alpha', q2.id);
+  check('card Go sends GO', c.comments.at(-1).text === 'GO' && !c.needsYou, c);
+  await page.goto(BASE + '/#/p/alpha/' + q1.id);
+  await page.waitForSelector('.reply');
+  check('no Go once answered', (await page.locator('.reply button:has-text("Go")').count()) === 0);
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

@@ -89,7 +89,7 @@ function renderCard(p, c) {
       ${newest.length ? msg(newest[0], true) : '<p class="muted">No messages yet.</p>'}
       <div class="reply"><textarea id="r-text" rows="3" placeholder="Reply as Rich: moves the card to For the team… (Enter to send, Shift+Enter for a new line)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
         <div class="err" id="r-err"></div>
-        <div class="actions"><button class="primary" onclick="sendReply()">Send reply</button></div></div>
+        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="Sends GO as your answer">👍 Go</button>` : ''}<button class="primary" onclick="sendReply()">Send reply</button></div></div>
       ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">Earlier (newest first)</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
@@ -137,8 +137,9 @@ function closeCard() {
   $('modal').innerHTML = '';
   location.hash = '#/p/' + slug();
 }
-async function sendReply() {
-  const t = $('r-text').value.trim();
+// fixed: a one-tap answer (👍 Go on a question, AIG-75) instead of the typed one.
+async function sendReply(fixed) {
+  const t = fixed || $('r-text').value.trim();
   if (!t) { setErr('r-err', 'Write something first'); return; }
   try {
     await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: 'Rich', text: t });
