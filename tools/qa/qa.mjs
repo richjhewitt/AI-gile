@@ -833,6 +833,28 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
   c = await getCard(s, 'alpha', c2.id);
   const last = c.comments.at(-1);
   check('inbox reply carries text and file', last.text === 'here you go' && last.attachments && last.attachments[0].name === 'notes.txt', last);
+
+  // Your call: send back with only a screenshot (it counts as the reason).
+  const c3 = await mkCard(s, 'alpha', 'To test');
+  s.cli(['test', 'alpha', c3.id, '1. look', '--as', 'Lead']);
+  await page.goto(BASE + '/#/p/alpha/' + c3.id);
+  await page.waitForSelector('.verdict input[type=file]', { state: 'attached' });
+  await page.setInputFiles('.verdict input[type=file]', { name: 'bug.png', mimeType: 'image/png', buffer: Buffer.from(PNG, 'base64') });
+  await page.click('.verdict button:has-text("Send back")');
+  await sleep(800);
+  c = await getCard(s, 'alpha', c3.id);
+  check('send back with a screenshot only', c.status === 'team' && c.comments.at(-1).verdict === 'sendback' && c.comments.at(-1).attachments[0].name === 'bug.png', c.comments.at(-1));
+
+  // Inbox task: Done with a file.
+  const c4 = await mkCard(s, 'alpha', 'Do a thing');
+  s.cli(['task', 'alpha', c4.id, 'run it', '--as', 'Lead']);
+  await page.goto(BASE + '/#/inbox');
+  await page.waitForSelector(`.ib-item[data-id="${c4.id}"] input[type=file]`, { state: 'attached' });
+  await page.setInputFiles(`.ib-item[data-id="${c4.id}"] input[type=file]`, { name: 'out.txt', mimeType: 'text/plain', buffer: Buffer.from('ok') });
+  await page.click(`.ib-item[data-id="${c4.id}"] button[data-act="taskdone"]`);
+  await sleep(800);
+  c = await getCard(s, 'alpha', c4.id);
+  check('task Done carries the file', /^✅ Done/.test(c.comments.at(-1).text) && c.comments.at(-1).attachments[0].name === 'out.txt', c.comments.at(-1));
   noErrors(page);
 }, true);
 

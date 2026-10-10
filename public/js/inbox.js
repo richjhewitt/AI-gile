@@ -262,7 +262,7 @@
       <div class="ib-question">${linkify(a.text, c)}</div>
       <textarea rows="1" placeholder="Optional note for the team. Enter marks it done." aria-label="Note for ${esc(c.id)}"></textarea>
       <div class="ib-err"></div>
-      <div class="actions"><button class="good" data-act="taskdone">✅ Done</button><span class="ib-hint">Tells the team it's done.</span></div>`;
+      <div class="actions"><button class="good" data-act="taskdone">✅ Done</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">Tells the team it's done.</span></div>`;
   }
   function tHtml(c) {
     return `<div class="ib-top"><span class="ib-tag">🧪 To test</span><span class="ib-proj">${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">waiting ${ago(c.updated).replace(' ago', '')}</span></div>
@@ -410,9 +410,14 @@
   }
   async function taskDone(n) {
     if (n.dataset.sending) return;
-    const text = n.querySelector('textarea').value.trim();
+    const text = n.querySelector('textarea').value.trim(), key = n.dataset.project + '/' + n.dataset.id;
     lock(n);
-    try { await post('POST', base(n) + '/taskdone', { text }); done(n, `✅ ${n.dataset.id} done. The team has been told.`); }
+    try {
+      const attachments = await Attach.upload(key, n.dataset.project);
+      await post('POST', base(n) + '/taskdone', { text, attachments });
+      Attach.clear(key);
+      done(n, `✅ ${n.dataset.id} done. The team has been told.`);
+    }
     catch (e) { fail(n, e); }
   }
   async function accept(n) {

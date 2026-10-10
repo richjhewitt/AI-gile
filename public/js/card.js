@@ -72,7 +72,7 @@ function renderCard(p, c) {
       <div class="muted">Built and waiting for you to test${c.testSteps ? ' (steps below)' : ''}.</div>
       <label class="f" style="margin-top:8px"><span>Comment (required to send back)</span><textarea id="v-text" rows="3" placeholder="What did you see? What's wrong?"></textarea></label>
       <div class="err" id="v-err"></div>
-      <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button><button onclick="waitAndSee()" title="Not sure yet: hide it from your inbox for an hour">⏳ Wait and see</button></div></div>` : '';
+      <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button><button onclick="waitAndSee()" title="Not sure yet: hide it from your inbox for an hour">⏳ Wait and see</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>` : '';
   // Tabs: Reply (latest message on top, reply box right under it, older ones below), Details, Test.
   const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">Latest</span>' : ''}<span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div>${Attach.shown(m, p.slug)}</div>`;
   const newest = [...c.comments].reverse();
@@ -152,10 +152,12 @@ async function waitAndSee() {
   try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); closeCard(); } catch (err) { setErr('v-err', err); }
 }
 async function verdict(accept) {
-  const t = $('v-text').value.trim();
-  if (!accept && !t) { setErr('v-err', 'Say what is wrong before sending it back'); $('v-text').focus(); return; }
+  const t = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';
+  if (!accept && !t && !Attach.has(key)) { setErr('v-err', 'Say what is wrong before sending it back'); $('v-text').focus(); return; }
   try {
-    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { accept, text: t });
+    const attachments = await Attach.upload(key, slug());
+    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { accept, text: t, attachments });
+    Attach.clear(key);
     closeCard();
   } catch (err) { setErr('v-err', err); }
 }
