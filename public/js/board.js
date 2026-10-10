@@ -52,6 +52,7 @@ function renderBoard(p) {
       <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'team'})">🐞 Raise bug</button>
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>
+      ${p.path ? `<button onclick="permsDialog()" title="What this project's team may do without asking">🔐 Permissions</button>` : ''}
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
     <div class="flight">🛠 <b>In flight:</b> ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || '<span class="muted">nothing right now</span>'}</div>
     ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? ` <code>${esc(p.path)}</code>` : ''}</p>` : ''}

@@ -5,7 +5,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 ## Run and test
 - Server: `node server.js` (or `start-aigile.bat`) -> http://localhost:4321. `AIGILE_PORT` and `AIGILE_DATA` change the port and data folder; `AIGILE_DEV=1` adds the "new version, refresh" prompt.
 - CLI: `node aigile.js help` (`AIGILE_URL` points it at another server; `AIGILE_AS` sets the author).
-- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `quietinbox`, `poke`, `docs`, `mdlinks`, `newproject`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
+- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `quietinbox`, `poke`, `docs`, `mdlinks`, `newproject`, `perms`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
 
 ## Server
 | File | What |
@@ -13,7 +13,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `server.js` | Wiring and http plumbing: dev build id, route dispatch (`/api/*`), static files from `public/`, JSON errors |
 | `lib/store.js` | Config paths and port; `load`/`save` of `data/<slug>.json`; `localSettings`; `summary` (project card on the home page); `attention` (needs a poke: asleep with work, or stuck); card rules (`cleanCard`, `toTeam`, `findCard`, `docList`, `bad`/`need`) |
 | `lib/routes.js` | Every API route as `[method, regex, handler]`; see the markers: projects, cards, comments/verdicts/tasks/pokes, team/log/updates feed, docs (incl. `/file`) and inbox |
-| `lib/onboard.js` | `connectFolder`: marked notes block, merged comment hooks and team permissions, git init for a new folder, git exclude |
+| `lib/onboard.js` | `connectFolder`: marked notes block, merged comment hooks and default team permissions, git init for a new folder, git exclude; `getPermissions`/`setPermissions` and the `PRESETS` ticks for the 🔐 Permissions dialog |
 | `lib/presence.js` | Team presence (`heard`, `presenceOf`, `heardFromFolder`) and the background runner: `startTeam`/`nudge` (agent command run hidden in the project folder, log in `data/logs/<slug>.log`, one run per team), `restartTeam`, `logTail` |
 | `lib/quiet.js` | Going quiet: `setQuiet` (📣 card to every team with open work, starts sleeping ones, night mode file `data/quiet.state`), `quietSince` |
 | `lib/limits.js` | `recordLimits` / `limitsHistory` for the plan usage log |

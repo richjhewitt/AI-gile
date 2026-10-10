@@ -727,6 +727,39 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
   noErrors(page);
 }, true);
 
+def('perms', '🔐 Permissions: ticks follow the rules, save keeps hooks, new folders get the defaults', async (s, ctx) => {
+  const local = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')).agent || {}; } catch { return {}; } })();
+  const folder = path.join(tmp('perms'), 'proj');
+  await mkProject(s, 'Alpha', 'ALP');
+  check('no folder: refused', (await s.api('GET', '/api/projects/alpha/permissions')).status === 400);
+  await s.ok('POST', '/api/projects/alpha/connect', { path: folder, create: true });
+  const sfile = path.join(folder, local.settingsFile);
+  const r = await s.ok('GET', '/api/projects/alpha/permissions');
+  const ways = r.presets.ways.rules.allow[0];
+  check('new folder gets run, edit, push-asks and ways', ['Bash', 'Edit', ways].every(x => r.allow.includes(x)) && r.ask.includes('Bash(git push:*)') && !r.allow.includes('WebFetch'), r);
+  check('ways rule is an absolute read of the AI-gile folder', /^Read\(\/\/[a-z]\/.*AI-gile\/\*\*\)$/.test(ways), ways);
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.click('button:has-text("Permissions")');
+  await page.waitForSelector('#perm-ticks input');
+  const ticked = async k => page.isChecked(`#perm-ticks input[data-k="${k}"]`);
+  check('ticks match the file', (await ticked('run')) && (await ticked('ways')) && !(await ticked('web')));
+  await page.check('#perm-ticks input[data-k="web"]');
+  check('ticking adds the rules', (await page.inputValue('#perm-allow')).includes('WebFetch'));
+  await page.uncheck('#perm-ticks input[data-k="run"]');
+  check('unticking removes them', !(await page.inputValue('#perm-allow')).split('\n').includes('Bash'));
+  await page.fill('#perm-deny', 'Bash(rm -rf:*)');
+  await page.click('#dialog button:has-text("Save")');
+  await page.waitForSelector('#perm-done:has-text("Saved")');
+  const st = JSON.parse(fs.readFileSync(sfile, 'utf8'));
+  check('saved to the file', st.permissions.allow.includes('WebFetch') && !st.permissions.allow.includes('Bash') && st.permissions.deny[0] === 'Bash(rm -rf:*)', st.permissions);
+  check('hooks kept', !!st.hooks && !!st.hooks.Stop);
+  await page.fill('#perm-deny', '');
+  await page.click('#dialog button:has-text("Save")');
+  await sleep(300);
+  check('empty list removed from the file', !('deny' in JSON.parse(fs.readFileSync(sfile, 'utf8')).permissions));
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

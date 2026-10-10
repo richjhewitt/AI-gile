@@ -99,6 +99,42 @@ async function doConnect() {
   } catch (e) { setErr('c-err', e); }
 }
 
+/* ---------- team permissions ---------- */
+// ---- permissions: ticks for the common rule sets, plus the full lists as text (one rule per line) (AIG-74) ----
+const PERM_LISTS = [['allow', 'Allowed without asking'], ['ask', 'Ask first'], ['deny', 'Never']];
+async function permsDialog() {
+  let r;
+  try { r = await api('GET', `/api/projects/${slug()}/permissions`); } catch (e) { alert(e.message); return; }
+  state.permPresets = r.presets;
+  openDialog(`<h2>🔐 Permissions</h2>
+    <p class="muted">What this project's team may do without asking you. Saved in <code>${esc(r.file)}</code>.</p>
+    <div id="perm-ticks">${Object.entries(r.presets).map(([k, v]) => `<label class="chk"><input type="checkbox" data-k="${k}" onchange="permTick(this)"> ${esc(v.label)}</label>`).join('')}</div>
+    ${PERM_LISTS.map(([l, label]) => `<label class="f"><span>${label} (one rule per line)</span><textarea id="perm-${l}" rows="4" oninput="permSync()">${esc(r[l].join('\n'))}</textarea></label>`).join('')}
+    <div class="err" id="perm-err"></div><div id="perm-done" class="muted"></div>
+    <div class="actions"><button class="primary" onclick="savePerms()">Save</button><button type="button" onclick="closeDialog()">Close</button></div>`);
+  permSync();
+}
+const permLines = l => $('perm-' + l).value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+// A tick is on when every rule it stands for is in its list.
+function permSync() {
+  for (const box of document.querySelectorAll('#perm-ticks input'))
+    box.checked = Object.entries(state.permPresets[box.dataset.k].rules).every(([l, rules]) => rules.every(x => permLines(l).includes(x)));
+}
+function permTick(box) {
+  for (const [l, rules] of Object.entries(state.permPresets[box.dataset.k].rules)) {
+    const cur = permLines(l).filter(x => !rules.includes(x));
+    $('perm-' + l).value = (box.checked ? [...cur, ...rules] : cur).join('\n');
+  }
+  permSync();
+}
+async function savePerms() {
+  try {
+    await api('PUT', `/api/projects/${slug()}/permissions`, Object.fromEntries(PERM_LISTS.map(([l]) => [l, permLines(l)])));
+    $('perm-err').textContent = '';
+    $('perm-done').textContent = '✅ Saved. The team uses these from its next run.';
+  } catch (e) { setErr('perm-err', e); }
+}
+
 /* ---------- docs: read a project's .md files ---------- */
 // The project's .md files, fetched once per project, so file names in cards can open them.
 async function loadDocs(s) {
