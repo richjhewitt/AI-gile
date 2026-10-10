@@ -82,6 +82,11 @@
   #teamTop .muted { display: none; }
   #teamTop .primary { padding: 3px 10px; font-size: 13px; border-radius: 99px; }
   #teamTop .pres { padding: 3px 10px; border-radius: 99px; background: var(--col); }
+  .codebox { position: relative; margin: 6px 0; white-space: normal; }
+  .codebox pre { background: #1e2430; color: #e6e9ef; padding: 12px 14px; padding-right: 90px; border-radius: 8px; overflow-x: auto; margin: 0; white-space: pre; font-size: 13px; }
+  .codebox pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  .codebox .copy { position: absolute; top: 6px; right: 6px; font-size: 12px; padding: 3px 8px; }
+  .desc code, .body code, .ib-question code { background: var(--col); padding: 1px 5px; border-radius: 4px; font-size: 0.92em; }
   .seen { font-size: 12px; margin-left: 6px; color: var(--muted); }
   .card.is-blocked { border-left: 3px solid var(--danger); }
   .card .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
@@ -457,7 +462,19 @@ async function loadDocs(s) {
 }
 
 // Escape, then make web links, this project's card ids (e.g. AIG-12) and its .md files clickable.
-function linkify(text, p) {
+// Card text: ```fenced``` blocks become code boxes with a Copy button, `inline` becomes code,
+// everything else goes through fmt (escape + links). Also used by inbox.js.
+function withCode(text, fmt) {
+  return String(text ?? '').split(/```[^\n]*\n?([\s\S]*?)```/g).map((part, i) => i % 2
+    ? `<div class="codebox"><button class="copy" onclick="copyCode(this)">📋 Copy</button><pre><code>${esc(part.replace(/\n$/, ''))}</code></pre></div>`
+    : fmt(i ? part.replace(/^\n/, '') : part).replace(/`([^`\n]+)`/g, '<code>$1</code>')).join('');
+}
+function copyCode(btn) {
+  navigator.clipboard.writeText(btn.nextElementSibling.textContent)
+    .then(() => { btn.textContent = '✅ Copied'; setTimeout(() => { btn.textContent = '📋 Copy'; }, 1500); });
+}
+function linkify(text, p) { return withCode(text, t => linkifyText(t, p)); }
+function linkifyText(text, p) {
   const docs = state.docsFor === p.slug ? state.docs || [] : [];
   const docIndex = name => { const n = name.toLowerCase(); return docs.findIndex(d => d.toLowerCase() === n || d.toLowerCase().split('/').pop() === n); };
   return linkifyBase(text, p).replace(/(^|[\s(>"'`])((?:[\w.-]+\/)*[\w.-]+\.md)\b/gi, (m, pre, name) => {

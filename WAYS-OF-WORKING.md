@@ -15,6 +15,7 @@ Every card description, test step, question and comment is **short bullet points
 - Plain words; bold (`**like this**`) only the thing to click or look at
 - No paragraphs, no background stories, no "I have now..." preambles
 - Test steps: what to click, then what he should see
+- Commands Rich has to run go in a ``` code block (it gets a Copy button), one command per block
 - If it doesn't fit in about 5 bullets, split the card
 
 ## The board

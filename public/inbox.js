@@ -107,10 +107,10 @@
     || { author: c.assignee || 'The team', at: c.updated, text: c.description || c.title };
   const keyOf = c => c.project + '/' + c.id;
   // Escape, then link web addresses and card ids (e.g. AIG-12) in the same project.
-  const linkify = (text, c) => esc(text)
+  const linkify = (text, c) => withCode(text, t => esc(t)
     .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')
     .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, u => `<a href="${u}" target="_blank" rel="noopener" style="text-decoration:underline">${u}</a>`)
-    .replace(/(^|[^\w/#-])([A-Z]{1,6}-\d+)\b/g, (m, pre, id) => `${pre}<a href="#/p/${c.project}/${id}" style="text-decoration:underline">${id}</a>`);
+    .replace(/(^|[^\w/#-])([A-Z]{1,6}-\d+)\b/g, (m, pre, id) => `${pre}<a href="#/p/${c.project}/${id}" style="text-decoration:underline">${id}</a>`));
 
   const pref = {
     get() { try { return localStorage.getItem('aigile.alerts') === '1'; } catch { return false; } },
