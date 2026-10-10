@@ -23,12 +23,12 @@ The choices behind `public/lang/nl-BE.json`, for the reviewer. One translation p
 | bug / sprint / commit / test | bug / sprint / commit / test | Flemish developers use the English words; no bracket. Marker kept. |
 | feature | feature | Same; "functie" reads as "function". |
 | task | taak | |
-| Stand-up | Stand-up | Used as is in Flemish offices. Report = "Stand-up-verslag" (verslag is the usual Flemish word for a report). |
+| Stand-up | Stand-up | Used as is in Flemish offices. Report = "Stand-up-verslag" (verslag is the usual Flemish word for a report). "Stand-up all" = "Stand-up voor iedereen" ("voor allen" is stiff). |
 | Blockers | Blokkades | |
 | blocked | geblokkeerd / zit vast | "zit vast" when a person is stuck, "geblokkeerd" as a status. |
 | needs you | heeft jou nodig | |
-| Poke | Duwtje | "Een duwtje geven" is the natural Flemish nudge; NL would rather "porren". |
-| Wake | wekken / wakker maken | |
+| Poke | Duwtje | "Een duwtje geven" is the natural Flemish nudge; NL would rather "porren". Header pill: "Duwtje nodig: {n} teams" (short, so the header does not wrap). |
+| Wake | wekken / wakker maken | Buttons say "wekken" ("Team wekken"): shorter, fits the board header. |
 | lead / team lead | teamleider | A non-developer reads "lead" as lood (metal). |
 | assignee | Toegewezen aan | |
 | Lanes | Rijen | Explains itself (the title already says "rows"). |
@@ -44,6 +44,7 @@ The choices behind `public/lang/nl-BE.json`, for the reviewer. One translation p
 | reading (of the usage meter) | meting | |
 | resets | begint opnieuw | Avoids the English "reset". |
 | Setup | Instellingen | |
+| Reset (back to the standard) | Terugzetten | "Herstellen" reads as "repair". |
 | Archive / Unarchive | Archiveren / Terughalen | |
 | Accept / Send back | Goedkeuren / Terugsturen | |
 | Wait and see | Even afwachten | |
@@ -51,11 +52,12 @@ The choices behind `public/lang/nl-BE.json`, for the reviewer. One translation p
 
 ## Flemish rather than Netherlands Dutch
 - **Bewaren** for Save (NL: Opslaan). Belgian software and banks use "bewaren".
-- **Nota** for a note (NL: notitie).
+- **Nota** for a short note you write to the team (NL: notitie). The agent's notes *file* stays "notities" / "notitiebestand": that is how Flemings name such a file too.
 - **Verwittigen** for "the team has been told" (NL: op de hoogte gebracht / laten weten).
 - **Vooraleer** for "before" (NL: voordat).
 - **Binnen {in}** for a time ahead: "begint opnieuw binnen 2u" (NL: over 2 uur).
-- **u** for hours: "5u", "3u geleden" (NL: "5 uur", "3 uur geleden"); "min." for minutes.
+- **u** for hours: "5u", "3u geleden" (NL: "5 uur", "3 uur geleden"); **m** for minutes ("3m geleden", as in "1h 58m"), so the card footer fits next to a name.
+- **Maximum 20** for "at most 20" (NL: maximaal).
 - **bv.** for e.g. (NL: bijv.).
 - **Aan het laden… / Aan het zoeken…** (Flemish loves "aan het" + verb; NL: Laden…, Zoeken…).
 - **Herladen** for Refresh (NL: Vernieuwen).
@@ -67,3 +69,4 @@ The choices behind `public/lang/nl-BE.json`, for the reviewer. One translation p
 
 ## Dev words
 `{{dev:word}}` stays around the English term. The Flemish words chosen for dev terms are the English words themselves (backlog, sprint, bug, commit, test), so no bracket is written in this file. If a later card adds the English in brackets automatically, it should skip words that are already English, or "bug (bug)" will appear.
+- Where the Dutch needs the verb, the marker goes around the whole Dutch word: "🧪 3 te {{dev:testen}}" (badge), so no half-word marker like "{{dev:test}}en".
