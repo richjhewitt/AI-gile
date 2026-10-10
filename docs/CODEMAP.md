@@ -5,7 +5,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 ## Run and test
 - Server: `node server.js` (or `start-aigile.bat`) -> http://localhost:4321. `AIGILE_PORT` and `AIGILE_DATA` change the port and data folder; `AIGILE_DEV=1` adds the "new version, refresh" prompt.
 - CLI: `node aigile.js help` (`AIGILE_URL` points it at another server; `AIGILE_AS` sets the author).
-- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `quietinbox`, `poke`, `blocked`, `docs`, `mdlinks`, `newproject`, `perms`, `gobutton`, `attach`, `refresh`, `look`, `guard`, `owner`, `setup`, `update`, `foryou`, `popout`, `columns`, `cardview`, `wip`, `lanes`, `quick`, `standup`, `views`, `steps`, `fynext`, `theme`, `chats`, `discover`, `dms`, `openit`, `testnotes`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
+- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `quietinbox`, `poke`, `blocked`, `docs`, `mdlinks`, `newproject`, `perms`, `gobutton`, `attach`, `refresh`, `look`, `guard`, `owner`, `setup`, `update`, `foryou`, `popout`, `columns`, `cardview`, `wip`, `lanes`, `quick`, `standup`, `views`, `steps`, `fynext`, `theme`, `chats`, `discover`, `dms`, `openit`, `testnotes`, `i18n`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
 
 ## Server
 | File | What |
@@ -33,6 +33,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `styles.css` | All styles: tokens, Portfolio, Board, Card detail panel, buttons and forms, phones |
 | `js/usage-page.js` | The `#/usage` page (charts are hand-written SVG) |
 | `js/inbox.js` | Top-bar inbox button, the `#/inbox` page, alerts; self-contained |
+| `js/i18n.js` | Languages (AIG-124): `t(key, vars)`, `loadLang` (runs before the first render), `setLang`, `langPickHtml`; see "Languages" below |
 | `js/core.js` | `state`, `api`, `esc`, `ago`, the router (`parseRoute`), `busy`/`refresh`/`render` (the 1s poll never wipes typing), `slug`/`curCard`/`setErr` |
 | `js/format.js` | Card text: `withCode`, `spaceBullets`, `linkify`, `.md` links (`mdLinks`, opened by `showDocPath` in dialogs.js); `md` (Docs renderer) |
 | `js/attach.js` | `Attach`: 📎 button, paste-a-screenshot and pending chips for any reply box (card and inbox), `upload` on send, `shown` thumbnails under comments |
@@ -43,6 +44,14 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `js/card.js` | `cardFields`, assignee select, `renderCard` (Reply/Details/Test tabs), edit/delete/reply/verdict |
 | `js/dialogs.js` | `openDialog`, New card, New project, Connect folder, Docs |
 | `js/app.js` | Start-up: hashchange, the 1s poll, the new-build prompt; going quiet (`goQuiet`, `setNight` night theme); `pokeBadge` (top bar) |
+
+## Languages (AIG-124)
+- Every screen text lives in `public/lang/<code>.json` (`en`, `nl`, `nl-BE`), one flat object of readable, area-grouped keys (`card.accept`, `inbox.empty.title`). `en.json` is complete and the fallback; `nl.json` and `nl-BE.json` start as copies of it and must keep exactly the same keys (QA `i18n` checks).
+- `t('key', { name })` (js/i18n.js, loaded right after core.js) returns the text in the chosen language, else English, else the key. `{name}` placeholders are filled from vars; vars are NOT escaped, so wrap user data in `esc()` and the result in `esc()` when it goes into HTML. Keys ending `.html` hold markup and are inserted raw.
+- The language is `localStorage` `aigile.lang` (default `en`). `loadLang()` fetches the files and `app.js` renders only after it (`i18n.ready`); polls and timers wait for it. The picker (header `#langPick`, Setup page) calls `setLang`, which reloads. Static text in `index.html` uses `data-i18n`, `data-i18n-title`, `data-i18n-label`.
+- Add a string: put the key in `en.json` (and the same key in `nl.json` and `nl-BE.json`), call `t()` where the text is. Do not build a sentence from pieces; give the translator one string with placeholders. Do not name a local variable `t` in a function that calls `t()`. Lists that held text at load time are getters or functions now (`COLS`, `THEMES`, `lanesList()`), so they follow the language.
+- Dev words: wrap a developer word in the English file as `{{dev:commit}}` (also `{{dev:Backlog}}`, `{{dev:test}}`, `{{dev:sprint}}`, `{{dev:bug}}`). For now `t()` renders the marker as the word itself; a later card will show the English word in brackets for Dutch and Flemish and add tooltips, finding the markers with `/\{\{dev:([^}]+)\}\}/`.
+- Not translated: server and CLI text (`lib/`, `aigile.js`, API error messages), the Setup field labels and help (they come from the server), data users and teams typed, card ids, project names.
 
 ## Data
 - `data/<slug>.json`: one file per project (cards, comments, team, log, `teamSeenAt`); written atomically via a `.tmp` file. Git-ignored.

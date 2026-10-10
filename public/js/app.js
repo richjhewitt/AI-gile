@@ -21,7 +21,7 @@ if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', '
 }
 window.addEventListener('hashchange', () => { state.editing = false; refresh(true); });
 // The language file is in before the first render (AIG-124).
-loadLang().then(() => { theme(); refresh(true); });
+loadLang().then(() => { theme(); refresh(true); checkBuild(); });
 setInterval(() => { if (!document.hidden) refresh(); }, 1000);
 setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136)
 
@@ -29,6 +29,7 @@ setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136
 // card so he can reach it mid-reply. It never covers what he's typing and stays until he clicks it.
 let loadedBuild = null;
 async function checkBuild() {
+  if (!i18n.ready) return;
   try {
     const m = await api('GET', '/api/meta');
     if (m.owner && m.owner !== state.owner) { state.owner = m.owner; refresh(true); }
@@ -65,7 +66,7 @@ window.showRestartApp = () => {
   if (!$('upRestart').firstChild)
     $('upRestart').innerHTML = `<button class="primary" onclick="if (okToLeave(t('update.what.restart'))) location.href = 'aigile://restart'" title="${esc(t('update.restart.title'))}">${esc(t('update.restart'))}</button>`;
 };
-checkBuild();
+
 
 /* ---------- teams that need a poke: top-bar badge ---------- */
 function pokeBadge(projects) {

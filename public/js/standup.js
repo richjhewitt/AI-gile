@@ -20,6 +20,7 @@ const standupButtons = p => `<button onclick="callStandup(['${p.slug}'])" title=
 const suDay = () => new Date().toLocaleDateString('sv');
 const suPromptGone = () => { const el = $('suPrompt'); if (el) el.remove(); };
 function morningPrompt() {
+  if (!i18n.ready) return void setTimeout(morningPrompt, 500);
   if ($('suPrompt') || !state.route || state.route.pop || state.route.view === 'setup') return;
   try { if (localStorage.getItem('aigile.standupAsked') === suDay()) return; } catch { return; }   // no storage: never nag
   const a = document.activeElement;

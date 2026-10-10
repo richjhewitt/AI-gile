@@ -13,6 +13,7 @@ const Dms = (() => {
   const here = () => (location.hash.match(/^#\/p\/([^/]+)/) || [])[1] || '';
 
   async function loadRail() {
+    if (!i18n.ready) return void setTimeout(loadRail, 100);
     try { [projects, chats] = await Promise.all([api('GET', '/api/projects'), api('GET', '/api/chats')]); } catch { return; }
     const cur = here(), p = projects.find(x => x.slug === cur);
     if (p) seen.set(cur, p.updated);   // looking at it now counts as seen

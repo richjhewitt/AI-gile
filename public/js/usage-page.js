@@ -105,16 +105,16 @@ const uzDateLabel = s => uzDate(s).toLocaleDateString([], { month: 'short', day:
 
 /* ---------- page ---------- */
 function renderUsagePage() {
-  if (!uz.data) return '<p class="muted">Loading…</p>';
+  if (!uz.data) return `<p class="muted">${esc(t('common.loading'))}</p>`;
   const { usage, limits } = uz.data;
   const hist = limits.history || [];
   const width = Math.max(260, Math.min(960, ($('app').clientWidth || 360) - 40 - 30));
   const noReading = !hist.length;
   const tiles = noReading
     ? uzSetup(limits.setup)
-    : `<div class="uz-tiles">${uzTile('This session', '5-hour window', limits.latest, 'h5', hist)}${uzTile('This week', '7-day window', limits.latest, 'wk', hist)}</div>
-       <p class="uz-note">Your plan has two limits: one per 5-hour session and one per week. There's no monthly limit. Colours: ✅ plenty = 50% or more left · ⚠️ getting low = 20 to 49% left · ⛔ nearly out = under 20% left.</p>`;
-  return `<div class="uz"><h2>⚡ Usage</h2><p class="uz-explain">How much of your plan you have left, and which projects are using it.</p>
+    : `<div class="uz-tiles">${uzTile(t('usage.session'), t('usage.session.sub'), limits.latest, 'h5', hist)}${uzTile(t('usage.week'), t('usage.week.sub'), limits.latest, 'wk', hist)}</div>
+       <p class="uz-note">${esc(t('usage.note'))}</p>`;
+  return `<div class="uz"><h2>${esc(t('usage.h'))}</h2><p class="uz-explain">${esc(t('usage.explain'))}</p>
     ${tiles}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}</div>`;
 }
 
@@ -122,46 +122,46 @@ function renderUsagePage() {
 function uzSetup(setup) {
   const lines = setup ? setup.snippet : '';
   if (setup && setup.installed) return `<div class="uz-card uz-setup">
-    <h3>✅ Switched on: waiting for the first reading</h3>
-    <p>Your plan has <b>two limits</b>: one per <b>5-hour session</b> and one per <b>week</b>. There's no monthly limit. The two big "% left" gauges appear here as soon as the first reading arrives.</p>
-    <p><b>To get it:</b> start a <b>new</b> session (sessions that were already open don't pick it up). If nothing shows within a minute, start one in a terminal instead (type the usual command in any project folder), because the VS Code panel may not send readings.</p>
+    <h3>${esc(t('usage.on.h'))}</h3>
+    <p>${t('usage.on.p1.html')}</p>
+    <p>${t('usage.on.p2.html')}</p>
   </div>`;
   return `<div class="uz-card uz-setup">
-    <h3>📏 How much of your plan is left: not switched on yet</h3>
-    <p>Your plan has <b>two limits</b>: one per <b>5-hour session</b> and one per <b>week</b>. There's no monthly limit. Once switched on, two big gauges here show <b>% left</b> of each, and when it resets.</p>
-    ${setup ? `<p><b>One-time step:</b> open <code>${esc(setup.file)}</code> in Notepad, paste these lines on a new line just after the first <code>{</code>, and save.</p>
+    <h3>${esc(t('usage.off.h'))}</h3>
+    <p>${t('usage.off.p1.html')}</p>
+    ${setup ? `<p>${t('usage.off.step.html', { file: esc(setup.file) })}</p>
     <pre class="uz-snip">${esc(lines)}</pre>
-    <button class="primary" onclick="navigator.clipboard.writeText(${esc(JSON.stringify(lines))}).then(() => this.textContent = '✅ Copied')">📋 Copy the lines</button>
-    <p class="muted">Or tell the lead in chat: <i>"yes, add the status line to my global settings"</i>.</p>
-    <p class="muted">The gauges fill in the next time any agent session runs.</p>` : '<p class="muted">Ask the lead to set this up.</p>'}
+    <button class="primary" onclick="navigator.clipboard.writeText(${esc(JSON.stringify(lines))}).then(() => this.textContent = ${esc(JSON.stringify(t('usage.copied')))})">${esc(t('usage.copy'))}</button>
+    <p class="muted">${t('usage.off.chat.html')}</p>
+    <p class="muted">${esc(t('usage.off.fill'))}</p>` : `<p class="muted">${esc(t('usage.off.ask'))}</p>`}
   </div>`;
 }
 
 function uzStatus(left) {
-  return left >= 50 ? { icon: '✅', label: 'Plenty left', c: 'var(--good)' }
-    : left >= 20 ? { icon: '⚠️', label: 'Getting low', c: 'var(--warning)' }
-    : { icon: '⛔', label: 'Nearly out', c: 'var(--critical)' };
+  return left >= 50 ? { icon: '✅', label: t('usage.status.plenty'), c: 'var(--good)' }
+    : left >= 20 ? { icon: '⚠️', label: t('usage.status.low'), c: 'var(--warning)' }
+    : { icon: '⛔', label: t('usage.status.out'), c: 'var(--critical)' };
 }
 
 function uzTile(title, sub, latest, key, hist) {
   const head = `<div class="uz-tile-h">${title} <span>(${sub})</span></div>`;
   // Use the newest reading that has this window (a reading can hold only one of the two).
   const snap = latest && latest[key] ? latest : [...hist].reverse().find(s => s[key]);
-  if (!snap) return `<div class="uz-card">${head}<div class="uz-hero word">No reading</div><div class="uz-sub">Nothing recorded for this window yet.</div></div>`;
+  if (!snap) return `<div class="uz-card">${head}<div class="uz-hero word">${esc(t('usage.noreading'))}</div><div class="uz-sub">${esc(t('usage.nothing'))}</div></div>`;
   const w = snap[key], at = Date.parse(snap.at), resets = uzTime(w.resets), now = Date.now();
-  const read = `last reading ${ago(snap.at)}`;
+  const read = t('usage.lastreading', { when: ago(snap.at) });
   // Only terminal sessions report the plan figure: VS Code and background runs never do (AIG-113).
-  const where = "The plan figure only comes from an agent session in a <b>terminal window</b>; VS Code and background runs don't report it. Token use per project (below) is always live.";
+  const where = t('usage.where.html');
   const stale = now - at > 3600e3;
   if (resets && resets < now) // the window has rolled over since we last heard: the old figure is out of date
-    return `<div class="uz-card">${head}<div class="uz-hero word">No live figure</div><div class="uz-big">This window has reset since the last reading.</div><div class="uz-sub">${read}. ${where}</div></div>`;
+    return `<div class="uz-card">${head}<div class="uz-hero word">${esc(t('usage.nolive'))}</div><div class="uz-big">${esc(t('usage.hasreset'))}</div><div class="uz-sub">${esc(read)}. ${where}</div></div>`;
   const left = Math.max(0, Math.min(100, Math.round(100 - w.pct))), st = uzStatus(left);
-  const resetTxt = !resets ? '' : resets - now < 24 * 3600e3 ? `resets in ${uzHM(resets - now)}` : `resets ${uzDay(resets)} (in ${uzHM(resets - now)})`;
+  const resetTxt = !resets ? '' : resets - now < 24 * 3600e3 ? t('usage.resetsin', { in: uzHM(resets - now) }) : t('usage.resetson', { day: uzDay(resets), in: uzHM(resets - now) });
   return `<div class="uz-card">${head}
-    <div class="uz-hero">${left}<small>% left</small></div>
-    <div class="uz-meter" role="meter" aria-label="${title}: ${left}% left" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${left}"><span style="width:${left}%;background:${st.c}"></span></div>
+    <div class="uz-hero">${left}<small>${esc(t('usage.pctleft'))}</small></div>
+    <div class="uz-meter" role="meter" aria-label="${esc(t('usage.meter', { title, left }))}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${left}"><span style="width:${left}%;background:${st.c}"></span></div>
     <div class="uz-status" style="--c:${st.c}">${st.icon} ${st.label}</div>
-    <div class="uz-big">${resetTxt || 'reset time unknown'}</div><div class="uz-sub">${read}${stale ? '. May be out of date. ' + where : ''}</div></div>`;
+    <div class="uz-big">${esc(resetTxt || t('usage.resetunknown'))}</div><div class="uz-sub">${esc(read)}${stale ? '. ' + esc(t('usage.stale')) + ' ' + where : ''}</div></div>`;
 }
 
 /* ---------- tooltip plumbing ---------- */
@@ -197,14 +197,14 @@ document.addEventListener('keydown', e => {
 document.addEventListener('focusout', e => { const c = e.target.closest?.('.uz-chart'); if (c) uzHide(c); });
 
 /* ---------- line chart: % of limit used ---------- */
-const UZ_KEYS = [['h5', 'Session (5-hour)', 'var(--s1)'], ['wk', 'Week (7-day)', 'var(--s2)']];
+const UZ_KEYS = [['h5', 'usage.key.h5', 'var(--s1)'], ['wk', 'usage.key.wk', 'var(--s2)']];
 function uzLineCard(hist, W) {
   const hours = { 24: 24, 7: 168, 30: 720 }[uz.range] || 168, now = Date.now(), t0 = now - hours * 3600e3;
   const snaps = hist.filter(s => Date.parse(s.at) >= t0);
   const H = 250, L = 38, R = 12, T = 12, B = 28, iw = W - L - R, ih = H - T - B;
   const x = t => L + (t - t0) / (now - t0) * iw, y = p => T + (1 - p / 100) * ih;
   let g = [0, 25, 50, 75, 100].map(p => `<line x1="${L}" x2="${W - R}" y1="${y(p)}" y2="${y(p)}" stroke="var(--grid)" ${p === 100 ? 'stroke-dasharray="4 4"' : ''}/><text x="${L - 6}" y="${y(p) + 4}" text-anchor="end">${p}%</text>`).join('');
-  g += `<text x="${W - R}" y="${y(100) - 4}" text-anchor="end">Limit: you're out at 100%</text>`;
+  g += `<text x="${W - R}" y="${y(100) - 4}" text-anchor="end">${esc(t('usage.limit'))}</text>`;
   // x ticks at local midnights (7/30 days) or every 6 hours (24h), thinned so labels never touch
   const ticks = []; const d = new Date(t0);
   if (hours <= 24) { d.setMinutes(0, 0, 0); d.setHours(Math.ceil(d.getHours() / 6) * 6); for (let t = +d; t <= now; t += 6 * 3600e3) ticks.push(t); }
@@ -225,24 +225,24 @@ function uzLineCard(hist, W) {
   uz.hover[id] = { n: snaps.length, w: W,
     pick: px => { let b = 0, bd = 1e18; snaps.forEach((s, i) => { const dd = Math.abs(x(Date.parse(s.at)) - px); if (dd < bd) { bd = dd; b = i; } }); return b; },
     show(i, c) { const s = snaps[i]; if (!s) return;
-      const sx = x(Date.parse(s.at)), vals = UZ_KEYS.map(([k, name, col]) => [name, col, s[k]]).filter(v => v[2]);
+      const sx = x(Date.parse(s.at)), vals = UZ_KEYS.map(([k, name, col]) => [t(name), col, s[k]]).filter(v => v[2]);
       c.querySelector('.uz-cross').setAttribute('x1', sx); c.querySelector('.uz-cross').setAttribute('x2', sx);
       c.querySelectorAll('.uz-hv').forEach(e => e.setAttribute('visibility', 'visible'));
       c.querySelectorAll('.uz-dot').forEach((e, j) => { const v = UZ_KEYS.map(([k]) => s[k]); const q = v[j]; e.setAttribute('visibility', q ? 'visible' : 'hidden'); if (q) { e.setAttribute('cx', sx); e.setAttribute('cy', y(Math.min(100, q.pct))); } });
-      uzTip(c, [uzEl('div', 't', uzDay(Date.parse(s.at))), ...vals.map(v => uzRow(v[1], v[0], Math.round(v[2].pct) + '% used', true))], sx, T);
+      uzTip(c, [uzEl('div', 't', uzDay(Date.parse(s.at))), ...vals.map(v => uzRow(v[1], v[0], t('usage.tip.used', { pct: Math.round(v[2].pct) }), true))], sx, T);
       uz.hover[id].i = i; } };
-  const empty = !snaps.length ? `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" style="font-size:13px">No readings in this time range yet.</text>` : '';
-  const chart = `<div class="uz-chart" id="${id}"><svg viewBox="0 0 ${W} ${H}" role="img" tabindex="0" aria-label="Line chart: percent of your plan limit used over time, session and week. Use left and right arrow keys to read values.">
+  const empty = !snaps.length ? `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" style="font-size:13px">${esc(t('usage.noreadings.range'))}</text>` : '';
+  const chart = `<div class="uz-chart" id="${id}"><svg viewBox="0 0 ${W} ${H}" role="img" tabindex="0" aria-label="${esc(t('usage.line.aria'))}">
     ${g}${empty}${marks}<line class="uz-cross uz-hv" y1="${T}" y2="${T + ih}" stroke="var(--muted)" stroke-dasharray="3 3" visibility="hidden"/>
     ${UZ_KEYS.map(([, , col]) => `<circle class="uz-dot uz-hv" r="4.5" fill="${col}" stroke="var(--panel)" stroke-width="2" visibility="hidden"/>`).join('')}</svg><div class="uz-tip"></div></div>`;
   const rows = [...snaps].reverse().slice(0, 200).map(s => `<tr><td>${esc(uzDay(Date.parse(s.at)))}</td><td>${s.h5 ? Math.round(s.h5.pct) + '%' : '–'}</td><td>${s.wk ? Math.round(s.wk.pct) + '%' : '–'}</td></tr>`).join('');
-  const table = `<div class="uz-tablewrap"><table><thead><tr><th>When</th><th>Session used</th><th>Week used</th></tr></thead><tbody>${rows || '<tr><td colspan="3">No readings in this range.</td></tr>'}</tbody></table></div>`;
-  const legend = `<div class="uz-legend">${UZ_KEYS.map(([k, name, col]) => `<span style="--c:${col}"><i class="ln"></i>${name}</span>`).join('')}</div>`;
-  return `<div class="uz-card"><div class="uz-bar-head"><h2>% of your limit used over time</h2>
-    <div class="uz-ranges" role="group" aria-label="Time range">${[['24', '24 hours'], ['7', '7 days'], ['30', '30 days']].map(([v, l]) => `<button aria-pressed="${uz.range === v}" onclick="uzSet('range','${v}')">${l}</button>`).join('')}</div></div>
-    <p class="uz-explain">The higher the line, the more of your plan you have used. At 100% you are out until it resets.</p>
+  const table = `<div class="uz-tablewrap"><table><thead><tr><th>${esc(t('usage.th.when'))}</th><th>${esc(t('usage.th.session'))}</th><th>${esc(t('usage.th.week'))}</th></tr></thead><tbody>${rows || `<tr><td colspan="3">${esc(t('usage.noreadings'))}</td></tr>`}</tbody></table></div>`;
+  const legend = `<div class="uz-legend">${UZ_KEYS.map(([k, name, col]) => `<span style="--c:${col}"><i class="ln"></i>${esc(t(name))}</span>`).join('')}</div>`;
+  return `<div class="uz-card"><div class="uz-bar-head"><h2>${esc(t('usage.line.h'))}</h2>
+    <div class="uz-ranges" role="group" aria-label="${esc(t('usage.range'))}">${[['24', 'usage.r24'], ['7', 'usage.r7'], ['30', 'usage.r30']].map(([v, l]) => `<button aria-pressed="${uz.range === v}" onclick="uzSet('range','${v}')">${esc(t(l))}</button>`).join('')}</div></div>
+    <p class="uz-explain">${esc(t('usage.line.explain'))}</p>
     ${uz.table.line ? table : chart}${legend}
-    <button class="uz-toggle" onclick="uzToggle('line')">${uz.table.line ? 'Show chart' : 'Show as table'}</button></div>`;
+    <button class="uz-toggle" onclick="uzToggle('line')">${esc(uz.table.line ? t('usage.showchart') : t('usage.showtable'))}</button></div>`;
 }
 
 /* ---------- stacked bars: which projects used the most ---------- */
@@ -252,14 +252,14 @@ function uzProjects(u, projects, W) {
   const slugs = Object.keys(u.daily.projects).sort();
   const series = slugs.slice(0, 6).map((slug, i) => ({ key: slug, name: names[slug] || slug, col: `var(--s${i + 1})`, days: u.daily.projects[slug] }));
   const otherDays = u.daily.other.map((d, i) => ({ date: d.date, tokens: d.tokens + slugs.slice(6).reduce((a, s) => a + u.daily.projects[s][i].tokens, 0) }));
-  series.push({ key: 'other', name: 'Other (not on the board)', col: 'var(--s-other)', days: otherDays });
+  series.push({ key: 'other', name: t('usage.other'), col: 'var(--s-other)', days: otherDays });
   const dates = u.daily.org.map(d => d.date);
   series.forEach(s => { s.total = s.days.reduce((a, d) => a + d.tokens, 0); });
   const grand = series.reduce((a, s) => a + s.total, 0);
   const shown = series.filter(s => s.total > 0 || s.key !== 'other');
   const top = [...series].filter(s => s.key !== 'other').sort((a, b) => b.total - a.total)[0];
   const headline = grand && top && top.total
-    ? `${esc(top.name)} used the most: ${Math.round(top.total / grand * 100)}% of the last 30 days.` : 'No agent work recorded in the last 30 days.';
+    ? t('usage.headline.html', { name: esc(top.name), pct: Math.round(top.total / grand * 100) }) : esc(t('usage.headline.none'));
 
   const H = 240, L = 40, R = 8, T = 10, B = 28, iw = W - L - R, ih = H - T - B, n = dates.length, step = iw / n, bw = Math.max(4, step - 3);
   const totals = dates.map((_, i) => series.reduce((a, s) => a + s.days[i].tokens, 0)), max = Math.max(...totals, 1);
@@ -283,27 +283,27 @@ function uzProjects(u, projects, W) {
     show(i, c) { const sx = L + step * i + step / 2;
       const hb = c.querySelector('.uz-band'); hb.setAttribute('x', L + step * i); hb.setAttribute('visibility', 'visible');
       const rows = shown.filter(s => s.days[i].tokens > 0).reverse().map(s => uzRow(s.col, s.name, uzShort(s.days[i].tokens)));
-      uzTip(c, [uzEl('div', 't', uzDateLabel(dates[i]) + ': ' + uzShort(totals[i]) + ' in total'), ...(rows.length ? rows : [uzEl('div', 't', 'Nothing recorded')])], sx, T);
+      uzTip(c, [uzEl('div', 't', t('usage.tip.total', { day: uzDateLabel(dates[i]), n: uzShort(totals[i]) })), ...(rows.length ? rows : [uzEl('div', 't', t('usage.tip.none'))])], sx, T);
       uz.hover[id].i = i; } };
-  const chart = `<div class="uz-chart" id="${id}"><svg viewBox="0 0 ${W} ${H}" role="img" tabindex="0" aria-label="Stacked bar chart: daily usage over the last 30 days, split by project. Use left and right arrow keys to read each day.">
+  const chart = `<div class="uz-chart" id="${id}"><svg viewBox="0 0 ${W} ${H}" role="img" tabindex="0" aria-label="${esc(t('usage.bars.aria'))}">
     ${g}<rect class="uz-band uz-hv" y="${T}" width="${step}" height="${ih}" fill="var(--muted)" opacity=".15" visibility="hidden"/>${bars}</svg><div class="uz-tip"></div></div>`;
   const legend = `<div class="uz-legend">${shown.map(s => `<span style="--c:${s.col}"><i></i>${esc(s.name)} <em>${uzShort(s.total)}</em></span>`).join('')}</div>`;
   const rows = [...dates.keys()].reverse().map(i => `<tr><td>${esc(uzDateLabel(dates[i]))}</td>${shown.map(s => `<td>${uzShort(s.days[i].tokens)}</td>`).join('')}<td><b>${uzShort(totals[i])}</b></td></tr>`).join('');
-  const table = `<div class="uz-tablewrap"><table><thead><tr><th>Day</th>${shown.map(s => `<th>${esc(s.name)}</th>`).join('')}<th>Total</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  const table = `<div class="uz-tablewrap"><table><thead><tr><th>${esc(t('usage.th.day'))}</th>${shown.map(s => `<th>${esc(s.name)}</th>`).join('')}<th>${esc(t('usage.th.total'))}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 
   // ranked list: today and the last 7 days, per project
-  const rank = [...slugs.map(s => ({ name: names[s] || s, col: slugs.indexOf(s) < 6 ? `var(--s${slugs.indexOf(s) + 1})` : 'var(--s-other)', t: u.projects[s] })), { name: 'Other (not on the board)', col: 'var(--s-other)', t: u.other }]
+  const rank = [...slugs.map(s => ({ name: names[s] || s, col: slugs.indexOf(s) < 6 ? `var(--s${slugs.indexOf(s) + 1})` : 'var(--s-other)', t: u.projects[s] })), { name: t('usage.other'), col: 'var(--s-other)', t: u.other }]
     .filter(r => r.t && (r.t.d7 || r.t.today)).sort((a, b) => b.t.d7 - a.t.d7);
   const m7 = Math.max(...rank.map(r => r.t.d7), 1);
-  const ranked = rank.length ? `<div class="uz-card"><h2>Today and this week, by project</h2><p class="uz-explain">The busiest project is at the top. The bar shows the last 7 days.</p>
-    <div class="uz-rank">${rank.map(r => `<div class="nm">${esc(r.name)}</div><div><div class="nums">today <b>${uzShort(r.t.today)}</b> · 7 days <b>${uzShort(r.t.d7)}</b></div><div class="track" style="--c:${r.col}"><span style="width:${Math.max(2, r.t.d7 / m7 * 100)}%"></span></div></div>`).join('')}</div></div>` : '';
-  return `<div class="uz-card"><h2>Which projects used the most</h2><div class="uz-head">${headline}</div>
-    <p class="uz-explain">Each bar is one day of the last 30. Taller means agents did more work that day. Work is counted in tokens, the small pieces of text agents read and write.</p>
+  const ranked = rank.length ? `<div class="uz-card"><h2>${esc(t('usage.rank.h'))}</h2><p class="uz-explain">${esc(t('usage.rank.explain'))}</p>
+    <div class="uz-rank">${rank.map(r => `<div class="nm">${esc(r.name)}</div><div><div class="nums">${t('usage.rank.nums.html', { today: uzShort(r.t.today), d7: uzShort(r.t.d7) })}</div><div class="track" style="--c:${r.col}"><span style="width:${Math.max(2, r.t.d7 / m7 * 100)}%"></span></div></div>`).join('')}</div></div>` : '';
+  return `<div class="uz-card"><h2>${esc(t('usage.bars.h'))}</h2><div class="uz-head">${headline}</div>
+    <p class="uz-explain">${esc(t('usage.bars.explain'))}</p>
     ${uz.table.bars ? table : chart}${legend}
-    <button class="uz-toggle" onclick="uzToggle('bars')">${uz.table.bars ? 'Show chart' : 'Show as table'}</button></div>${ranked}`;
+    <button class="uz-toggle" onclick="uzToggle('bars')">${esc(uz.table.bars ? t('usage.showchart') : t('usage.showtable'))}</button></div>${ranked}`;
 }
 
-const uzNoLogs = () => `<div class="uz-card uz-empty"><b>Project usage isn't set up on this PC</b><span class="muted">Point the board at your agent session logs folder to see which projects use the most.</span></div>`;
+const uzNoLogs = () => `<div class="uz-card uz-empty"><b>${esc(t('usage.nologs.h'))}</b><span class="muted">${esc(t('usage.nologs'))}</span></div>`;
 
 function uzSet(k, v) { uz[k] = v; render(); }
 function uzToggle(k) { uz.table[k] = !uz.table[k]; render(); }

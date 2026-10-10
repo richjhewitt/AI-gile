@@ -4,7 +4,7 @@
 // callers esc() user data). Keys ending in .html hold markup. {{dev:word}} marks a developer word for the
 // glossary card; for now it renders as the word itself.
 const LANGS = { en: 'English', nl: 'Nederlands', 'nl-BE': 'Vlaams' };
-const i18n = { lang: 'en', dict: {}, en: {} };
+const i18n = { lang: 'en', dict: {}, en: {}, ready: false };   // ready: the language file is in, so polls and timers may draw
 const langCode = () => { let l = 'en'; try { l = localStorage.getItem('aigile.lang') || 'en'; } catch {} return LANGS[l] ? l : 'en'; };
 function t(key, vars) {
   let s = i18n.dict[key] ?? i18n.en[key] ?? key;
@@ -23,6 +23,7 @@ async function loadLang() {
   document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
   document.querySelectorAll('[data-i18n-label]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nLabel)); });
   document.querySelectorAll('.lang-pick').forEach(el => { el.value = i18n.lang; });
+  i18n.ready = true;
 }
 // The language <select> (header and Setup page).
 const langPickHtml = cls => `<select class="lang-pick ${cls || ''}" onchange="setLang(this.value)" title="${esc(t('lang.title'))}" aria-label="${esc(t('lang.title'))}">${Object.entries(LANGS).map(([k, v]) => `<option value="${k}" ${k === i18n.lang ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>`;
