@@ -878,6 +878,29 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
   noErrors(page);
 }, true);
 
+def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; it asks before losing an unsent reply', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Typing here');
+  let build = 'one';
+  const page = await ctx.newPage();
+  await page.route('**/api/meta', async r => { try { const res = await r.fetch(); await r.fulfill({ response: res, json: { ...(await res.json()), dev: true, build } }); } catch {} });
+  await page.goto(BASE + '/#/p/alpha/' + c.id);
+  await page.click('[data-ctab="reply"]');
+  await page.fill('#r-text', 'half a sentence');
+  build = 'two';
+  await page.waitForSelector('#updateTop button', { timeout: 8000 });
+  check('Refresh pill shows, no pop-up', (await page.textContent('#updateTop')).includes('Refresh') && (await page.locator('.overlay.center').count()) === 0);
+  check('typing untouched', (await page.inputValue('#r-text')) === 'half a sentence');
+  let asked = '';
+  page.once('dialog', d => { asked = d.message(); d.dismiss(); });
+  await page.click('#updateTop button');
+  await sleep(300);
+  check('asks before losing the reply, and stays when cancelled', /unsent reply/.test(asked) && (await page.inputValue('#r-text')) === 'half a sentence', asked);
+  await page.fill('#r-text', '');
+  await Promise.all([page.waitForEvent('load'), page.click('#updateTop button')]);
+  check('reloads straight away with nothing unsent', true);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

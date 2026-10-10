@@ -3,7 +3,8 @@ window.addEventListener('hashchange', () => { state.editing = false; refresh(tru
 refresh(true);
 setInterval(() => { if (!document.hidden) refresh(); }, 1000);
 
-// Dev builds: when the server or page changes, prompt Rich to refresh instead of running stale code.
+// Dev builds: when the server or page changes, a small 🆕 Refresh pill floats at the top (AIG-78), above any open
+// card so he can reach it mid-reply. It never covers what he's typing and stays until he clicks it.
 let loadedBuild = null;
 async function checkBuild() {
   try {
@@ -11,12 +12,16 @@ async function checkBuild() {
     setNight(m.quiet);
     pokeBadge(await api('GET', '/api/projects'));
     if (loadedBuild === null) { loadedBuild = m.build; return; }
-    if (m.dev && m.build !== loadedBuild && !$('update').firstChild)
-      $('update').innerHTML = `<div class="overlay center" style="z-index:50"><div class="dialog">
-        <h2>🆕 New version available</h2><p>The board has been updated. Refresh to get the latest version.</p>
-        <div class="actions"><button class="primary" onclick="location.reload()">Refresh now</button>
-        <button onclick="$('update').innerHTML=''; loadedBuild=null">Later</button></div></div></div>`;
+    if (m.dev && m.build !== loadedBuild && !$('updateTop').firstChild)
+      $('updateTop').innerHTML = `<button class="primary" onclick="refreshPage()" title="The board has been updated: refresh to get the latest version">🆕 Refresh</button>`;
   } catch {}
+}
+// Unsent text anywhere (a reply, an answer, a dialog) or pending attachments: ask before losing it.
+function refreshPage() {
+  const unsent = [...document.querySelectorAll('textarea, input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
+    || !!document.querySelector('.att-chip');
+  if (unsent && !confirm('You have an unsent reply. Refresh anyway and lose it?')) return;
+  location.reload();
 }
 checkBuild();
 
