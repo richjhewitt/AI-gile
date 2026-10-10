@@ -69,6 +69,7 @@ node ../AI-gile/aigile.js help
 node ../AI-gile/aigile.js updates <project>   # what the owner said since you last looked
 node ../AI-gile/aigile.js next <project>      # what to work on, in priority order
 node ../AI-gile/aigile.js test <project> <id> "1. Open ... 2. Click ..." --as <name>
+node ../AI-gile/aigile.js standup <project> --done "..." --next "..." --blockers "none" --as <name>   # answer a 📣 Stand-up card
 ```
 
 [AGENTS.md](AGENTS.md) covers:

@@ -22,6 +22,7 @@ if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', '
 window.addEventListener('hashchange', () => { state.editing = false; refresh(true); });
 refresh(true);
 setInterval(() => { if (!document.hidden) refresh(); }, 1000);
+setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136)
 
 // Dev builds: when the server or page changes, a small 🆕 Refresh pill floats at the top (AIG-78), above any open
 // card so he can reach it mid-reply. It never covers what he's typing and stays until he clicks it.

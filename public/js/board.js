@@ -54,6 +54,7 @@ function renderBoard(p) {
       <button onclick="askTeamDialog()" title="Send the team a quick question; the answer comes back to your Messages">💬 Ask the team</button>
       <select class="lanesel" title="Group the board into rows" onchange="setLanes(this.value)">${LANES.map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${l}</option>`).join('')}</select>
       <button onclick="viewsDialog()" title="Save the current search and filters as a view, or switch to one">👁 Views</button>
+      ${standupButtons(p)}
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>
       <button onclick="lookDialog()" title="This project's colour and emoji">🎨 Look</button>

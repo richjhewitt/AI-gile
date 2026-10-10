@@ -35,6 +35,9 @@ Every card description, test step, question and comment is **short bullet points
 - Decide small things yourselves and log them (`log --decision`)
 - Reply on the card with one line (what you'll be doing), then move it to done
 
+## Stand-ups
+- A **📣 Stand-up** card means: answer once with `aigile standup <proj> --done "..." --next "..." --blockers "..." --as NAME` (`none` if no blockers)
+
 ## Deciding and building
 - **Propose, then wait for Rich's go.** Collect new requests, suggest a plan, and don't start building (or send agents) until he says go. If he asks for design suggestions, give options with your pick.
 - **Don't invent rules.** Only enforce what Rich asked for, plus technical sanity. If a limit seems wise, ask first.

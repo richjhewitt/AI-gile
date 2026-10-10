@@ -44,6 +44,7 @@ function parseRoute() {
   if (location.hash === '#/inbox') return { view: 'inbox' };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/setup') return { view: 'setup' };
+  if (location.hash === '#/standups') return { view: 'standups' };
   const pop = location.hash.match(/^#\/pop\/([^/]+)\/([^/]+)/);
   if (pop) return { view: 'project', slug: pop[1], card: pop[2], pop: true };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
@@ -77,6 +78,9 @@ async function refresh(force) {
     } else if (state.route.view === 'setup') {
       state.setup = await api('GET', '/api/setup');
       sig = JSON.stringify([state.route, state.setup]);
+    } else if (state.route.view === 'standups') {
+      state.standups = await api('GET', '/api/standups');
+      sig = JSON.stringify([state.route, state.standups]);
     } else if (state.route.view === 'usage') {
       await loadUsagePage(force);   // heavy, so at most every ~15s
       sig = JSON.stringify([state.route, uzSig()]);
@@ -108,6 +112,7 @@ function renderBoardOnly() {
   queueMicrotask(paintFilterBar);
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'usage') return;
+  if (state.route.view === 'standups') { $('app').innerHTML = renderStandups(); return; }
   $('app').innerHTML = state.route.view === 'home' ? renderHome() : renderBoard(state.project);
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
 }
@@ -118,6 +123,7 @@ function render() {
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'setup') { $('crumb').textContent = '/ Setup'; if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'standups') { $('crumb').textContent = '/ Stand-ups'; $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ Usage'; $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
   // A popped-out card (AIG-122): just the card, filling its own window; no header or board behind it.

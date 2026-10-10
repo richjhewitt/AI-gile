@@ -313,3 +313,19 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .fprow { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
 .fprow .fp-name { flex: 0 0 200px; } .fprow .fp-key { flex: 0 0 64px; }
 .fprow > .muted { flex: 1; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* ---------- stand-up report (AIG-135) and morning prompt (AIG-136) ---------- */
+.su { max-width: 900px; margin: 0 auto; }
+.su-blockers { border: 2px solid var(--danger); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 14px; background: var(--panel); }
+.su-blockers h3 { margin: 0 0 6px; color: var(--danger); }
+.su-blockers ul { margin: 0; padding-left: 18px; }
+.su-proj { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--proj, var(--accent)); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 12px; }
+.su-proj h3 { margin: 0 0 6px; font-size: 16px; }
+.su-proj h3 .muted { font-size: 13px; font-weight: 400; }
+.su-person { padding: 8px 0; border-top: 1px solid var(--line); }
+.su-person > div { margin-top: 3px; }
+.su-k { display: inline-block; min-width: 96px; color: var(--muted); font-size: 13px; }
+.su-red { color: var(--danger); font-weight: 600; }
+.su-person.waiting { color: var(--muted); }
+#suPrompt { position: fixed; left: 12px; bottom: 12px; z-index: 25; max-width: calc(100vw - 24px); }
+#suPrompt .su-pill { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 8px 12px; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
+.su-pick label { display: block; padding: 4px 0; }
