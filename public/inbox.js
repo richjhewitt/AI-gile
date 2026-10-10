@@ -40,6 +40,13 @@
   .ib { max-width: 860px; margin: 0 auto; }
   .ib-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
   .ib-head h2 { margin: 0; font-size: 20px; }
+  .ib-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin: -4px 0 6px; border-bottom: 1px solid var(--line); }
+  .ib-tab { flex: none; border-radius: 99px; padding: 5px 12px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+  .ib-tab.on { background: var(--text); color: var(--panel); border-color: var(--text); }
+  .ib-tab .n { font-weight: 400; opacity: .7; }
+  .ib-tab .tq, .ib-tab .tk, .ib-tab .tt { font-size: 12px; font-weight: 600; }
+  .ib-tab .tq { color: var(--q-ink); } .ib-tab.on .tq, .ib-tab.on .tk, .ib-tab.on .tt { color: inherit; }
+  .ib-tab .tk { color: var(--k-ink); } .ib-tab .tt { color: var(--t-ink); }
   .ib-toast { min-height: 20px; color: var(--muted); font-size: 13px; margin: -8px 0 10px; }
   .ib-sec h3 { display: flex; align-items: center; gap: 8px; margin: 22px 0 10px; font-size: 15px; }
   .ib-sec.q h3 { color: var(--q-ink); font-size: 17px; }
@@ -202,6 +209,7 @@
     n.onclick = () => {
       try { window.focus(); } catch {}
       flashKey = one ? keyOf(one) : null;
+      tab = 'all';   // so the question is visible whatever tab was open
       if (onInboxPage()) show(true); else location.hash = '#/inbox';
       n.close();
     };
@@ -252,6 +260,7 @@
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">
       <div class="ib-head"><h2>📥 Inbox</h2><span class="ib-hint">Everything waiting on you, across all projects.</span></div>
+      <div class="ib-tabs" id="ibTabs" role="tablist"></div>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <div id="ibEmpty"></div>
       <section class="ib-sec q" id="ibQ"><h3>❓ Questions for you <span class="ib-badge q" id="ibQn"></span></h3><div class="list"></div></section>
@@ -284,9 +293,32 @@
     });
   }
 
+  // ---- project tabs (AIG-37): All + one per project with something waiting; remembers the last tab --------
+  const tabPref = {
+    get() { try { return localStorage.getItem('aigile.inboxTab') || 'all'; } catch { return 'all'; } },
+    set(t) { try { localStorage.setItem('aigile.inboxTab', t); } catch {} },
+  };
+  let tab = tabPref.get();
+  function tabCounts(list) {
+    const q = list.filter(isQuestion).length, k = list.filter(isTask).length, t = list.filter(isTest).length;
+    return `${q ? `<span class="tq">❓${q}</span>` : ''}${k ? `<span class="tk">📋${k}</span>` : ''}${t ? `<span class="tt">🧪${t}</span>` : ''}`;
+  }
+  function paintTabs() {
+    const projects = [...new Map(items.map(c => [c.project, c.projectName])).entries()]
+      .sort((a, b) => items.filter(c => c.project === b[0] && !isTest(c)).length - items.filter(c => c.project === a[0] && !isTest(c)).length || a[1].localeCompare(b[1]));
+    if (tab !== 'all' && !projects.some(([p]) => p === tab)) tab = 'all';   // that project's inbox emptied
+    const btn = (key, name, list) => `<button class="ib-tab ${tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${tab === key}">${esc(name)} <span class="n">${list.length}</span> ${tabCounts(list)}</button>`;
+    const html = btn('all', 'All', items) + projects.map(([p, name]) => btn(p, name, items.filter(c => c.project === p))).join('');
+    const box = el('ibTabs');
+    if (box.dataset.sig !== html) { box.dataset.sig = html; box.innerHTML = html; }
+    box.hidden = projects.length < 2;
+  }
+
   function paintPage() {
     if (!el('ib')) skeleton();
-    const qs = items.filter(isQuestion), ks = items.filter(isTask), ts = items.filter(isTest);
+    paintTabs();
+    const shown = tab === 'all' ? items : items.filter(c => c.project === tab);
+    const qs = shown.filter(isQuestion), ks = shown.filter(isTask), ts = shown.filter(isTest);
     syncList(el('ibQ').querySelector('.list'), qs);
     syncList(el('ibK').querySelector('.list'), ks);
     syncList(el('ibT').querySelector('.list'), ts);
@@ -308,6 +340,8 @@
     }
   }
   function onClick(e) {
+    const tb = e.target.closest('button[data-tab]');
+    if (tb) { tab = tb.dataset.tab; tabPref.set(tab); paintPage(); return; }
     const b = e.target.closest('button[data-act]'); if (!b) return;
     const n = b.closest('.ib-item'), act = b.dataset.act;
     if (act === 'send') send(n); else if (act === 'accept') accept(n); else if (act === 'wait') waitAndSee(n); else if (act === 'taskdone') taskDone(n);
