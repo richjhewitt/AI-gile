@@ -124,7 +124,7 @@
   const alertsOn = () => canNotify() && Notification.permission === 'granted' && pref.get();
 
   /* ---------- state ---------- */
-  let items = [], loaded = false, inflight = null, seen = new Set(), flashKey = null;
+  let items = [], raw = [], hidden = 0, loaded = false, inflight = null, seen = new Set(), flashKey = null;
   const baseTitle = document.title || 'AI-gile';
 
   /* ---------- data ---------- */
@@ -135,20 +135,31 @@
       .catch(e => { inflight = null; throw e; });
     return inflight;
   }
+  // Going quiet (night mode): no tests or tasks, and only the 3 newest questions.
+  const isQuiet = () => document.documentElement.hasAttribute('data-night');
+  function view() {
+    if (!isQuiet()) { hidden = 0; return raw; }
+    const all = raw.filter(isQuestion);
+    const qs = all.slice().sort((a, b) => lastAsk(b).at.localeCompare(lastAsk(a).at)).slice(0, 3);
+    hidden = all.length - qs.length;
+    return raw.filter(c => qs.includes(c));
+  }
   function apply(list) {
-    items = list;
-    const qs = items.filter(c => !isTest(c));   // questions and tasks both alert
+    raw = list;
+    items = view();
+    const qs = items.filter(c => !isTest(c));   // questions and tasks both alert (only those shown)
     // New questions only: never on the first load. A fresh question on the same card counts as new.
-    const keys = qs.map(c => keyOf(c) + '@' + lastAsk(c).at);
+    const key = c => keyOf(c) + '@' + lastAsk(c).at;
     if (loaded) {
-      const fresh = qs.filter((c, i) => !seen.has(keys[i]));
+      const fresh = qs.filter(c => !seen.has(key(c)));
       if (fresh.length) announce(fresh);
     }
-    seen = new Set(keys);
+    seen = new Set(raw.filter(c => !isTest(c)).map(key));   // hidden ones are not new when quiet ends
     loaded = true;
     paintTop();
     if (onInboxPage()) paintPage();
   }
+  function repaint() { items = view(); paintTop(); if (onInboxPage() && el('ib')) paintPage(); }
 
   /* ---------- top bar (AIG-32, AIG-34) ---------- */
   function slot() {
@@ -268,7 +279,7 @@
       <div class="ib-tabs" id="ibTabs" role="tablist"></div>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <div id="ibEmpty"></div>
-      <section class="ib-sec q" id="ibQ"><h3>❓ Questions for you <span class="ib-badge q" id="ibQn"></span></h3><div class="list"></div></section>
+      <section class="ib-sec q" id="ibQ"><h3>❓ Questions for you <span class="ib-badge q" id="ibQn"></span></h3><div class="list"></div><div class="ib-hint" id="ibMore" hidden></div></section>
       <section class="ib-sec k" id="ibK"><h3>📋 Tasks for you <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">things only you can do</span></h3><div class="list"></div></section>
       <section class="ib-sec t" id="ibT"><h3>🧪 To test <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">longest waiting first</span></h3><div class="list"></div></section>
     </div>`;
@@ -353,7 +364,9 @@
     syncList(el('ibT').querySelector('.list'), ts);
     el('ibQ').hidden = !qs.length; el('ibK').hidden = !ks.length; el('ibT').hidden = !ts.length;
     el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = ts.length;
-    el('ibEmpty').innerHTML = items.length ? '' : '<div class="ib-empty"><div class="big">Nothing waiting on you 🎉</div><p>When a team asks a question or a feature is ready to test, it shows up here.</p></div>';
+    el('ibMore').hidden = !hidden; el('ibMore').textContent = `${hidden} more waiting for the morning`;
+    if (hidden) el('ibQ').hidden = false;
+    el('ibEmpty').innerHTML = items.length || hidden ? '' : '<div class="ib-empty"><div class="big">Nothing waiting on you 🎉</div><p>When a team asks a question or a feature is ready to test, it shows up here.</p></div>';
     if (flashKey) {
       const n = [...document.querySelectorAll('.ib-item')].find(x => x.dataset.key === flashKey);
       if (n) { n.scrollIntoView({ block: 'center' }); n.classList.add('flash'); const t = n.querySelector('textarea'); if (t) t.focus({ preventScroll: true }); flashKey = null; }
@@ -378,7 +391,7 @@
   const base = n => `/api/projects/${n.dataset.project}/cards/${n.dataset.id}`;
   const fail = (n, e) => { n.querySelector('.ib-err').textContent = e.message || String(e); n.dataset.sending = ''; n.querySelectorAll('button').forEach(b => b.disabled = false); };
   const lock = n => { n.dataset.sending = '1'; n.querySelector('.ib-err').textContent = ''; n.querySelectorAll('button').forEach(b => b.disabled = true); };
-  const done = (n, msg) => { n.remove(); items = items.filter(c => keyOf(c) !== n.dataset.key); paintTop(); paintPage(); toast(msg); load().catch(() => {}); };
+  const done = (n, msg) => { n.remove(); raw = raw.filter(c => keyOf(c) !== n.dataset.key); items = view(); paintTop(); paintPage(); toast(msg); load().catch(() => {}); };
 
   async function send(n) {
     if (n.dataset.sending) return;
@@ -425,5 +438,5 @@
   window.addEventListener('hashchange', paintTop);
   load().catch(() => {});
 
-  window.Inbox = { show };
+  window.Inbox = { show, repaint };
 })();
