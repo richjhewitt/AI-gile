@@ -156,7 +156,8 @@ function connectFolder(p, dir, create) {
   let s = {};
   if (fs.existsSync(sfile)) { try { s = JSON.parse(fs.readFileSync(sfile, 'utf8')); } catch { throw bad(agent.settingsFile + ' exists but is not valid JSON; fix it first'); } }
   s.hooks = s.hooks || {};
-  for (const [ev, flag] of [['SessionStart', '--hook'], ['UserPromptSubmit', '--hook'], ['Stop', '--stop-hook']]) {
+  // SessionStart only peeks: a session that never gets a first message mustn't mark Rich's comments as seen.
+  for (const [ev, flag] of [['SessionStart', '--hook --peek'], ['UserPromptSubmit', '--hook'], ['Stop', '--stop-hook']]) {
     s.hooks[ev] = (s.hooks[ev] || []).filter(h => !JSON.stringify(h).includes('aigile.js'))
       .concat({ hooks: [{ type: 'command', command: `${cli} updates ${p.slug} ${flag}` }] });
   }
