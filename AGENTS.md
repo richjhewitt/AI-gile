@@ -38,6 +38,8 @@ Status key: 🔄 working · 👀 in review · ✅ accepted · 🔁 sent back · 
 
 **Leads: stay reachable while idle.** Hooks only fire while a session is busy. When you finish a turn with nothing running, start `node "../AI-gile/aigile.js" wait <proj>` as a background command. It costs nothing while waiting and ends with Rich's comments as soon as he posts, which wakes you. Act on them, then start it again.
 
+**Roles on cards.** Rich may assign a card to a role instead of a person: `Lead (Opus)`, `Reviewer (Opus)`, `Frontend (Sonnet)`, `Backend (Sonnet)`, `QA (Haiku)`, `Quick fix (Haiku)` or `Docs (Haiku)`. The lead launches an agent of that kind and model for it, and the agent's `aigile start ... --as <its name>` replaces the role with its name. Use the cheapest model that fits.
+
 **Questions for Rich go on the board, not in chat:** `aigile ask <proj> <id> "question (with your assumption)" --as <name>`. If there's no card for it, `add` one first.
 
 **4. Hand features to Rich with `test`.** Don't move your own work to `done`; Rich does, by accepting it. When you have built and self-tested a feature:
