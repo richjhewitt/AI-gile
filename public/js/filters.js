@@ -2,7 +2,14 @@
 // ---- search / filter (AIG-16): purely in the browser, no extra server calls -----------------------
 // The bar lives outside #app so the 1s refresh never wipes what Rich is typing; typing only re-draws the board.
 state.filters = {};
-const curFilter = slug => state.filters[slug] || (state.filters[slug] = { q: '', type: '', who: '', sprint: '' });
+const blankFilter = () => ({ q: '', type: '', who: '', sprint: '' });
+// First look at a project in this tab: start from the last view used there (kept in the browser), if it still exists.
+function startFilter(slug) {
+  let last = ''; try { last = localStorage.getItem('aigile.view.' + slug) || ''; } catch {}
+  const v = last && state.project && state.project.slug === slug && (state.project.views || []).find(x => x.name === last);
+  return { ...blankFilter(), ...(v ? v.filters : {}) };
+}
+const curFilter = slug => state.filters[slug] || (state.filters[slug] = startFilter(slug));
 function matchesFilter(c, slug) {
   const f = curFilter(slug);
   if (f.type && c.type !== f.type) return false;
@@ -30,4 +37,40 @@ function paintFilterBar() {
   $('f-count').innerHTML = active ? `Showing <b>${shown}</b> of ${p.cards.length} · <a href="#" onclick="clearFilter();return false">clear</a>` : '';
 }
 function setFilter(key, v) { curFilter(state.project.slug)[key] = v; renderBoardOnly(); paintFilterBar(); }
-function clearFilter() { state.filters[state.project.slug] = null; $('filterbar').dataset.slug = ''; renderBoardOnly(); paintFilterBar(); }
+function clearFilter() { setLastView(state.project.slug, ''); state.filters[state.project.slug] = blankFilter(); $('filterbar').dataset.slug = ''; renderBoardOnly(); paintFilterBar(); }
+
+/* ---------- saved views (AIG-121) ---------- */
+// A view is { name, filters } stored on the project (server), so it follows Rich across browsers.
+// Which one was used last is per browser, so it lives in localStorage.
+function setLastView(slug, name) { try { name ? localStorage.setItem('aigile.view.' + slug, name) : localStorage.removeItem('aigile.view.' + slug); } catch {} }
+const lastView = slug => { try { return localStorage.getItem('aigile.view.' + slug) || ''; } catch { return ''; } };
+function applyView(i) {
+  const p = state.project, v = (p.views || [])[i]; if (!v) return;
+  state.filters[p.slug] = { ...blankFilter(), ...JSON.parse(JSON.stringify(v.filters)) };
+  setLastView(p.slug, v.name);
+  closeDialog(); $('filterbar').dataset.slug = ''; renderBoardOnly(); paintFilterBar();
+}
+async function saveViews(views) {
+  const p = state.project;
+  await api('PATCH', '/api/projects/' + p.slug, { views });
+  p.views = views.length ? views : undefined;   // show it now, before the next poll
+}
+async function saveView() {
+  const name = $('view-name').value.trim(), p = state.project, f = curFilter(p.slug);
+  if (!name) return setErr('view-err', new Error('Give the view a name'));
+  const views = (p.views || []).filter(v => v.name !== name).concat({ name, filters: { ...f } });   // same name = replace
+  try { await saveViews(views); setLastView(p.slug, name); viewsDialog(); } catch (e) { setErr('view-err', e); }
+}
+async function deleteView(i) {
+  const p = state.project, v = (p.views || [])[i]; if (!v) return;
+  try { await saveViews(p.views.filter((_, j) => j !== i)); if (lastView(p.slug) === v.name) setLastView(p.slug, ''); viewsDialog(); } catch (e) { setErr('view-err', e); }
+}
+function viewsDialog() {
+  const p = state.project, vs = p.views || [], cur = lastView(p.slug);
+  openDialog(`<h2>👁 Views</h2><p class="muted">A view is a saved search and filters for this board.</p>
+    ${vs.length ? vs.map((v, i) => `<div class="viewrow"><button type="button" class="grow" onclick="applyView(${i})">${v.name === cur ? '✓ ' : ''}${esc(v.name)}</button><button type="button" class="colbtn" title="Delete this view" onclick="deleteView(${i})">✕</button></div>`).join('') : '<p class="muted">No saved views yet.</p>'}
+    <h3>Save the current filters</h3>
+    <div class="viewrow"><input type="text" id="view-name" maxlength="40" placeholder="e.g. My bugs" onkeydown="if(event.key==='Enter')saveView()"><button class="primary" type="button" onclick="saveView()" ${vs.length >= 20 ? 'disabled title="At most 20 views"' : ''}>Save view</button></div>
+    <div class="err" id="view-err"></div>
+    <div class="actions"><button type="button" onclick="closeDialog()">Close</button></div>`);
+}

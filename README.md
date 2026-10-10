@@ -114,7 +114,7 @@ All endpoints take and return JSON.
 |---|---|---|
 | GET | `/api/projects[?all=1]` | Project summaries (`all` includes archived projects) |
 | POST | `/api/projects` | Create a project: `{name, key?, path?, description?}` |
-| GET, PATCH | `/api/projects/:slug` | Read a project, or update `name`, `description`, `path`, `key` or `archived` |
+| GET, PATCH | `/api/projects/:slug` | Read a project, or update `name`, `description`, `path`, `key`, `archived` or `views` (saved filter views, `[{name, filters}]`, max 20) |
 | POST | `/api/projects/:slug/cards` | Create a card |
 | PATCH, DELETE | `/api/projects/:slug/cards/:id` | Update or delete a card |
 | POST | `/api/projects/:slug/cards/:id/comments` | Add a comment: `{author, text, needsYou?}` |
