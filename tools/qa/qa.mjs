@@ -866,15 +866,23 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
     document.querySelector('#dialog input[type=text]').dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
   }, PNG);
   await page.waitForSelector('#dialog .att-chip');
+  // A second paste and two picked files add to the list (AIG-82).
+  await page.evaluate(b64 => {
+    const bytes = Uint8Array.from(atob(b64), ch => ch.charCodeAt(0)), dt = new DataTransfer();
+    dt.items.add(new File([bytes], 'image.png', { type: 'image/png' }));
+    document.querySelector('#dialog textarea').dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+  }, PNG);
+  await page.setInputFiles('#dialog input[type=file]', [{ name: 'a.png', mimeType: 'image/png', buffer: Buffer.from(PNG, 'base64') }, { name: 'b.png', mimeType: 'image/png', buffer: Buffer.from(PNG, 'base64') }]);
+  check('four attachments pending', (await page.locator('#dialog .att-chip').count()) === 4, await page.locator('#dialog .att-chip').count());
   await page.click('#dialog button[type=submit]');
   await sleep(800);
   const bug = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.title === 'Broken thing');
-  check('raised bug has the screenshot', bug && bug.attachments && /screenshot-.*.png$/.test(bug.attachments[0].name), bug);
+  check('raised bug has all four', bug && bug.attachments && bug.attachments.length === 4 && /screenshot-.*.png$/.test(bug.attachments[0].name), bug);
   check('show prints the bug screenshot path', s.cli(['show', 'alpha', bug.id]).out.includes(bug.attachments[0].path));
   await page.goto(BASE + '/#/p/alpha/' + bug.id);
   await page.click('[data-ctab="details"]');
   await page.waitForSelector('[data-pane="details"] .att-shown img');
-  check('bug screenshot shows under the description', true);
+  check('all four show under the description', (await page.locator('[data-pane="details"] .att-shown img').count()) === 4);
   noErrors(page);
 }, true);
 
