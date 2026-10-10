@@ -191,7 +191,8 @@
       s.dataset.sig = html; s.innerHTML = html;
       const b = el('ibAlerts'); if (b) b.onclick = toggleAlerts;
     }
-    const title = q ? `(${q}) ${baseTitle}` : t ? `🧪 ${t} · ${baseTitle}` : baseTitle;
+    // Everything waiting on Rich; the desktop app turns this count into its taskbar badge (AIG-76).
+    const title = q + k + t ? `(${q + k + t}) ${baseTitle}` : baseTitle;
     if (document.title !== title) document.title = title;
   }
 

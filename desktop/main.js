@@ -1,6 +1,6 @@
 // AI-gile desktop (AIG-76): the board in its own window. Starts the board server if it isn't running
 // (left running on quit, so teams keep their board), then shows http://localhost:<port>.
-const { app, BrowserWindow, shell } = require('electron');
+const { app, BrowserWindow, shell, nativeImage } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 
@@ -30,6 +30,11 @@ function open(ok) {
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); } });
   if (ok) win.loadURL(BASE);
   else win.loadURL('data:text/html,' + encodeURIComponent(`<body style="font:15px system-ui;padding:24px"><h2>AI-gile didn't start</h2><p>Couldn't reach ${BASE}. Run <code>start-aigile.bat</code> in ${ROOT.replace(/</g, '')} and reopen this window.</p></body>`));
+  // Taskbar badge: the page puts what's waiting on Rich in its title, "(3) AI-gile"; show it as a purple diamond.
+  win.on('page-title-updated', (e, title) => {
+    const n = Number((title.match(/^\((\d+)\)/) || [])[1]) || 0;
+    win.setOverlayIcon(n ? nativeImage.createFromPath(path.join(__dirname, 'badges', (n > 9 ? 'many' : n) + '.png')) : null, n ? `${n} waiting for you` : '');
+  });
   win.on('closed', () => { win = null; });
 }
 
