@@ -1778,6 +1778,28 @@ def('testnotes', 'the Test tab shows the team\'s notes since your last word, nex
   noErrors(page);
 }, true);
 
+def('drafts', 'unsent text survives a reload; sending clears it (AIG-171)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Talk about it');
+  await say(s, 'alpha', c.id, 'Lead', 'what do you think?');
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.click('[data-ctab="reply"]');
+  await page.type('#r-text', 'half a thought');
+  await page.reload();
+  await page.click('[data-ctab="reply"]');
+  await page.waitForSelector('#r-text');
+  await page.waitForFunction(() => document.getElementById('r-text').value === 'half a thought', null, { timeout: 4000 }).catch(() => {});
+  check('reply text is back after a reload', (await page.inputValue('#r-text')) === 'half a thought');
+  await page.press('#r-text', 'Enter');
+  await sleep(600);
+  await page.goto(BASE + '/#/p/alpha/' + c.id);
+  await page.click('[data-ctab="reply"]');
+  await page.waitForSelector('#r-text');
+  await sleep(300);
+  check('sent text does not come back', (await page.inputValue('#r-text')) === '' && (await getCard(s, 'alpha', c.id)).comments.at(-1).text === 'half a thought');
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

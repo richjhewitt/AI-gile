@@ -1,6 +1,20 @@
 /* ---------- state, api, helpers ---------- */
 // The board's human (AIG-103): name from /api/meta, default Rich.
 const me = () => (typeof state !== 'undefined' && state.owner) || 'Rich';
+/* ---------- drafts (AIG-171): unsent text survives a refresh, a restart or a crash ---------- */
+// Any textarea with data-draft="<key>" is saved to this browser as you type and filled back in when it
+// appears again (also after the page is redrawn). Sending calls clearDraft(key).
+const draftKey = k => 'aigile.draft.' + k;
+const clearDraft = k => { try { localStorage.removeItem(draftKey(k)); } catch {} };
+document.addEventListener('input', e => {
+  const k = e.target && e.target.dataset && e.target.dataset.draft; if (!k) return;
+  try { e.target.value.trim() ? localStorage.setItem(draftKey(k), e.target.value) : localStorage.removeItem(draftKey(k)); } catch {}
+});
+new MutationObserver(() => document.querySelectorAll('textarea[data-draft]:not([data-drafted])').forEach(el => {
+  el.dataset.drafted = '1';
+  let v = null; try { v = localStorage.getItem(draftKey(el.dataset.draft)); } catch {}
+  if (v && !el.value) el.value = v;
+})).observe(document.documentElement, { childList: true, subtree: true });
 const isOwner = a => String(a || '').trim().toLowerCase() === me().toLowerCase();
 // Getters, so the names follow the language chosen at start-up (AIG-124).
 const COLS = { get backlog() { return t('col.backlog'); }, get todo() { return t('col.todo'); }, get doing() { return t('col.doing'); }, get review() { return t('col.review'); }, get verify() { return t('col.verify'); }, get team() { return t('col.team'); }, get done() { return t('col.done'); } };

@@ -185,7 +185,7 @@ function happeningDialog() {
 function askTeamDialog() {
   Attach.clear('ask:' + slug());
   openDialog(`<h2>${esc(t('board.ask'))}</h2>
-    <form onsubmit="return sendAskTeam(event)"><label class="f"><span>${esc(t('ask.q'))}</span><textarea id="ask-text" rows="4" placeholder="${esc(t('ask.ph'))}"></textarea></label>
+    <form onsubmit="return sendAskTeam(event)"><label class="f"><span>${esc(t('ask.q'))}</span><textarea id="ask-text" data-draft="ask/${esc(slug())}" rows="4" placeholder="${esc(t('ask.ph'))}"></textarea></label>
     <div class="err" id="ask-err"></div>
     <div class="actions"><button class="primary" type="submit">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('ask:' + slug())}</div></form>`);
   $('ask-text').focus();
@@ -198,7 +198,7 @@ async function sendAskTeam(e) {
     const attachments = await Attach.upload('ask:' + slug(), slug());
     const title = '💬 ' + text.split('\n')[0].slice(0, 80);
     await api('POST', `/api/projects/${slug()}/cards`, { title, description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
-    Attach.clear('ask:' + slug());
+    Attach.clear('ask:' + slug()); clearDraft('ask/' + slug());
     closeDialog(); await rerender();
   } catch (err) { setErr('ask-err', err); }
   return false;
