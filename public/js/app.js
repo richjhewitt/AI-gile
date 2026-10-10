@@ -23,8 +23,19 @@ checkBuild();
 /* ---------- teams that need a poke: top-bar badge ---------- */
 function pokeBadge(projects) {
   const n = projects.filter(p => p.attention), names = n.map(p => p.name + ': ' + (p.attention.kind === 'asleep' ? p.attention.why : 'stuck')).join('\n');
-  const h = n.length ? `<a class="navlink pokebadge" href="#/" title="${esc(names)}">🔔 ${n.length} team${n.length > 1 ? 's' : ''} need${n.length > 1 ? '' : 's'} a poke</a>` : '';
+  const h = n.length ? `<button class="navlink pokebadge" onclick="pokeAll(this)" title="Tap to wake them all\n${esc(names)}">🔔 ${n.length} team${n.length > 1 ? 's' : ''} need${n.length > 1 ? '' : 's'} a poke</button>` : '';
   if ($('pokeTop').innerHTML !== h) $('pokeTop').innerHTML = h;
+}
+// Tap the badge: wake every asleep team and restart every stuck one, then show the home page.
+async function pokeAll(b) {
+  b.disabled = true; b.textContent = '⏳ Waking…';
+  const failed = [];
+  for (const p of (await api('GET', '/api/projects')).filter(p => p.attention)) {
+    const act = p.attention.kind === 'stuck' && p.presence && p.presence.running ? 'restart' : 'wake';
+    try { await api('POST', `/api/projects/${p.slug}/${act}`); } catch (e) { failed.push(p.name + ': ' + e.message); }
+  }
+  if (failed.length) alert('⚠️ Could not wake:\n' + failed.join('\n'));
+  location.hash = '#/'; refresh(true);
 }
 
 /* ---------- going quiet: night theme ---------- */

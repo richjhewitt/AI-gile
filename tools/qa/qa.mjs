@@ -557,6 +557,9 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   await page.waitForSelector('#pokeTop .pokebadge', { timeout: 7000 }).catch(() => {});
   check('top-bar badge shows', /1 team needs a poke/.test(await page.textContent('#pokeTop')), await page.textContent('#pokeTop'));
   check('home tile says why, with a Wake button', /Needs a poke/.test(await page.textContent('.proj.poke')) && !!(await page.$('.proj.poke button.primary')));
+  await page.click('#pokeTop .pokebadge');
+  await new Promise(r => setTimeout(r, 1500));
+  check('tapping the badge wakes the asleep team', /started/.test((await s.ok('GET', '/api/projects/sleepy/agentlog')).text));
   await s.ok('GET', '/api/projects/sleepy/updates');
   check('online clears it', (await s.ok('GET', '/api/projects/sleepy')).cards && (await s.ok('GET', '/api/projects')).find(p => p.slug === 'sleepy').attention === null);
   const { attention } = require('../../lib/store.js');

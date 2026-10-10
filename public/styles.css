@@ -161,7 +161,7 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 1
 .proj.archived { opacity: .6; }
 .proj.poke { border-color: var(--warn); border-left-width: 4px; }
 .pokeline { color: var(--warn); font-size: 13px; margin-bottom: 4px; }
-.navlink.pokebadge { border-color: var(--warn); color: var(--warn); font-weight: 600; }
+.navlink.pokebadge { background: none; font: inherit; cursor: pointer; border-color: var(--warn); color: var(--warn); font-weight: 600; }
 .live.paused::before { color: var(--warn); }
 /* ---------- phones ---------- */
 @media (max-width: 760px) {
