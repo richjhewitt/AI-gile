@@ -1016,6 +1016,32 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   noErrors(page);
 }, true, { AIGILE_LOCAL: (process.env.QA_SETUP_FILE = path.join(tmp('setup'), 'aigile.local.json')) });
 
+def('update', 'a clone behind its GitHub upstream offers an update and fast-forwards safely (AIG-92)', async s => {
+  const g = (cwd, ...a) => spawnSync('git', a, { cwd, encoding: 'utf8' });
+  const repo = process.env.QA_UPDATE_REPO, origin = path.join(path.dirname(repo), 'origin.git'), other = path.join(path.dirname(repo), 'other');
+  // Someone else pushes a new commit to the shared origin.
+  fs.writeFileSync(path.join(other, 'new.txt'), 'v2'); g(other, 'add', '.'); g(other, '-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qm', 'Version 2'); g(other, 'push', '-q');
+  const st = await s.ok('POST', '/api/update/check');
+  check('sees one new commit', st.behind === 1 && st.subjects[0] === 'Version 2', st);
+  check('meta carries it for the pill', (await s.ok('GET', '/api/meta')).update.behind === 1);
+  fs.writeFileSync(path.join(repo, 'a.txt'), 'changed by hand');
+  check('refuses with hand-changed files', (await s.api('POST', '/api/update/apply')).status === 400);
+  g(repo, 'checkout', '--', 'a.txt');
+  const ap = await s.ok('POST', '/api/update/apply');
+  check('fast-forwards', ap.updated === 1 && fs.existsSync(path.join(repo, 'new.txt')), ap);
+  check('up to date after', (await s.ok('POST', '/api/update/check')).behind === 0);
+}, false, (() => {
+  // Scratch origin + two clones: "repo" is the install the server updates, "other" pushes new work.
+  const dir = tmp('update'), origin = path.join(dir, 'origin.git'), repo = path.join(dir, 'install'), other = path.join(dir, 'other');
+  const g = (cwd, ...a) => spawnSync('git', a, { cwd, encoding: 'utf8' });
+  g(dir, 'init', '-q', '--bare', '-b', 'main', origin);
+  g(dir, 'clone', '-q', origin, other);
+  fs.writeFileSync(path.join(other, 'a.txt'), 'v1'); g(other, 'add', '.'); g(other, '-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qm', 'Version 1'); g(other, 'push', '-q', '-u', 'origin', 'HEAD:main');
+  g(dir, 'clone', '-q', origin, repo);
+  process.env.QA_UPDATE_REPO = repo;
+  return { AIGILE_REPO: repo, AIGILE_NO_RESTART: '1' };
+})());
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

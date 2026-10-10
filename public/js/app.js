@@ -21,6 +21,9 @@ async function checkBuild() {
     // A new install opens Setup first (AIG-91).
     if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';
     if (loadedBuild === null) { loadedBuild = m.build; return; }
+    // A newer version on GitHub (AIG-92): an ⬆ Update pill, until it's applied.
+    const u = m.update || {}, upd = u.behind ? `<button class="primary" onclick="applyUpdatePage()" title="${esc((u.subjects || []).join('\n'))}">⬆ Update</button>` : '';
+    if ($('upUpdate').dataset.sig !== upd && !$('upUpdate').dataset.busy) { $('upUpdate').dataset.sig = upd; $('upUpdate').innerHTML = upd; }
     if (m.dev && m.build !== loadedBuild && !$('upRefresh').firstChild)
       $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="The board has been updated: refresh to get the latest version">🆕 Refresh</button>`;
   } catch {}
@@ -31,6 +34,13 @@ const okToLeave = what => {
     || !!document.querySelector('.att-chip');
   return !unsent || confirm(`You have an unsent reply. ${what} anyway and lose it?`);
 };
+// Applies the update; the server restarts itself, so wait a few seconds and reload.
+async function applyUpdatePage() {
+  if (!okToLeave('Update')) return;
+  const box = $('upUpdate'); box.dataset.busy = '1'; box.innerHTML = '<button class="primary" disabled>⬆ Updating…</button>';
+  try { await api('POST', '/api/update/apply'); setTimeout(() => location.reload(), 5000); }
+  catch (e) { delete box.dataset.busy; box.dataset.sig = ''; alert('Update: ' + e.message); }
+}
 function refreshPage() { if (okToLeave('Refresh')) location.reload(); }
 // Desktop app only (AIG-83): the app calls this when its own files changed; the pill asks the app to restart itself.
 window.showRestartApp = () => {
