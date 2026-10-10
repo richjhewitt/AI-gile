@@ -5,12 +5,18 @@
   --shadow: 0 1px 2px rgba(20,30,50,.08);
   --radius: 10px;
 }
+/* Dark: the system setting, unless the user picked Light; or the user picked Dark (AIG-143). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme=light]) {
     --bg: #12151b; --panel: #1b2029; --col: #161a22; --text: #e6e9ef; --muted: #8b93a7; --line: #2a303c;
     --accent: #6d93ff; --done: #34c77b; --warn: #f0a33a; --danger: #f06262; --you: #b57cff;
     --shadow: 0 1px 2px rgba(0,0,0,.4);
   }
+}
+:root[data-theme=dark] {
+    --bg: #12151b; --panel: #1b2029; --col: #161a22; --text: #e6e9ef; --muted: #8b93a7; --line: #2a303c;
+    --accent: #6d93ff; --done: #34c77b; --warn: #f0a33a; --danger: #f06262; --you: #b57cff;
+    --shadow: 0 1px 2px rgba(0,0,0,.4);
 }
 /* Night mode (Rich went quiet): dim, warm, no blue light. */
 :root[data-night] {
@@ -266,3 +272,13 @@ body.desktop.pop .panel > .actions:first-child button { -webkit-app-region: no-d
 .fy-head:hover { text-decoration: underline; }
 /* Anything floating over the top bar must stay clickable, not drag the window (AIG-142). */
 body.desktop #updateTop, body.desktop #updateTop button, body.desktop .overlay, body.desktop .att-lightbox { -webkit-app-region: no-drag; }
+
+/* ---------- scrollbars that match the board (AIG-143): thin, only noticeable on hover ---------- */
+* { scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: transparent; border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
+:hover::-webkit-scrollbar-thumb { background-color: var(--line); }
+::-webkit-scrollbar-thumb:hover { background-color: var(--muted); }
+::-webkit-scrollbar-corner { background: transparent; }
+.theme-pick { padding: 4px 8px; border-radius: 99px; }

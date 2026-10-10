@@ -1336,6 +1336,23 @@ def('fynext', 'For you: focus on that column only; dealing with a card opens the
   noErrors(page);
 }, true);
 
+def('theme', 'theme: follows the system, or System / Light / Dark picked in the header and remembered (AIG-143)', async (s, ctx) => {
+  const page = await openPage(ctx, '#/');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.waitForSelector('#themeBtn');
+  const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  const light = await bg();
+  check('starts on System', !(await page.evaluate(() => document.documentElement.dataset.theme)));
+  await page.click('#themeBtn');   // -> Light
+  await page.click('#themeBtn');   // -> Dark
+  check('Dark picked overrides a light system', (await page.evaluate(() => document.documentElement.dataset.theme)) === 'dark' && (await bg()) !== light);
+  await page.reload(); await page.waitForSelector('#themeBtn');
+  check('the pick is remembered', (await page.evaluate(() => document.documentElement.dataset.theme)) === 'dark');
+  await page.click('#themeBtn');   // -> System
+  check('back to System follows the system', !(await page.evaluate(() => document.documentElement.dataset.theme)) && (await bg()) === light);
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

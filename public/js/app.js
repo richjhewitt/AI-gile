@@ -1,6 +1,18 @@
 /* ---------- start-up: routing, polling, new-build prompt ---------- */
 // Desktop app (Electron on Windows) loses keyboard focus after a native alert/confirm/prompt box, so text
 // boxes ignore typing for a while (AIG-84). After each box, ask the app to hand focus back.
+/* ---------- theme (AIG-143): follows the system, or the user's pick, remembered in this browser ---------- */
+const THEMES = { system: '🖥️ System', light: '☀️ Light', dark: '🌙 Dark' };
+function theme(set) {
+  let t; try { t = set || localStorage.getItem('aigile.theme') || 'system'; if (set) localStorage.setItem('aigile.theme', set); } catch { t = set || 'system'; }
+  if (t === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = t;
+  if (set && /Electron/.test(navigator.userAgent)) location.href = 'aigile://theme/' + t;   // the app's window buttons follow too
+  const b = $('themeBtn'); if (b) { b.textContent = THEMES[t].split(' ')[0]; b.title = 'Theme: ' + THEMES[t] + ' (click to change)'; }
+  return t;
+}
+const nextTheme = () => { const k = Object.keys(THEMES), cur = theme(); theme(k[(k.indexOf(cur) + 1) % k.length]); };
+theme();
+
 // The desktop app has no title bar (AIG-128): the page's own top bar is where you drag the window.
 if (/Electron/.test(navigator.userAgent)) document.body.classList.add('desktop');
 if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', 'prompt']) {

@@ -15,12 +15,18 @@
     --k-bg: #fff1d1; --k-fg: #7a4300; --k-tint: #fffaf0; --k-line: #e0a640; --k-ink: #7a4300;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme=light]) {
       --q-bg: #3b74f0; --q-fg: #fff; --q-tint: #162039; --q-line: #5b8cf5; --q-ink: #9dbbff;
       --b-line: #ef5350; --b-tint: #2c1618; --b-ink: #ff9b97;
       --t-bg: #22305a; --t-fg: #bcd0ff; --t-tint: #181e2e; --t-line: #4a5f9a; --t-ink: #a9c1ff;
       --k-bg: #3d2e10; --k-fg: #ffd591; --k-tint: #221c10; --k-line: #a0762a; --k-ink: #ffcf7a;
     }
+  }
+  :root[data-theme=dark] {
+      --q-bg: #3b74f0; --q-fg: #fff; --q-tint: #162039; --q-line: #5b8cf5; --q-ink: #9dbbff;
+      --b-line: #ef5350; --b-tint: #2c1618; --b-ink: #ff9b97;
+      --t-bg: #22305a; --t-fg: #bcd0ff; --t-tint: #181e2e; --t-line: #4a5f9a; --t-ink: #a9c1ff;
+      --k-bg: #3d2e10; --k-fg: #ffd591; --k-tint: #221c10; --k-line: #a0762a; --k-ink: #ffcf7a;
   }
   #inboxTop { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .ib-btn { display: inline-flex; align-items: center; gap: 8px; padding: 4px 8px 4px 12px; border: 1px solid var(--line); border-radius: 99px; background: var(--panel); font-weight: 600; }
