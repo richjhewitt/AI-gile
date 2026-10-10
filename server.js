@@ -43,6 +43,50 @@ function save(p) {
   fs.writeFileSync(tmp, JSON.stringify(p, null, 2));
   fs.renameSync(tmp, fileOf(p.slug));
 }
+// ---- team presence + waking a team ------------------------------------------------------------
+// A team counts as online if its session was heard from in the last 5 minutes: hooks and 'aigile wait'
+// (every 15s while idle) call /updates, and the status line reports its folder with each reading.
+const ONLINE_MS = 5 * 60e3;
+const lastHeard = new Map();   // slug -> ms
+const heard = slug => lastHeard.set(slug, Date.now());
+function presenceOf(slug) {
+  const t = lastHeard.get(slug), woke = waking.get(slug);
+  return { online: !!t && Date.now() - t < ONLINE_MS, lastHeard: t ? new Date(t).toISOString() : null,
+    waking: !!woke && Date.now() - woke < 2 * 60e3 && !(t && t > woke) };
+}
+function heardFromFolder(dir) {
+  const norm = d => String(d || '').replace(/\\/g, '/').replace(/\/+$/, '').toLowerCase();
+  const d = norm(dir);
+  if (!d) return;
+  for (const s of listSlugs()) { const p = load(s); if (p && p.path && norm(p.path) === d) heard(s); }
+}
+const waking = new Map();   // slug -> ms when Rich clicked Wake
+// The agent command comes from aigile.local.json "agent.command"; one '*' path segment is allowed
+// (resolved to the newest match), so a versioned install folder keeps working after updates.
+function agentCommand() {
+  const cmd = process.env.AIGILE_AGENT_COMMAND || (localSettings().agent || {}).command;
+  if (!cmd) throw bad('set "agent": { "command": "<full path to the agent program>" } in aigile.local.json first');
+  if (!cmd.includes('*')) return cmd;
+  const parts = cmd.replace(/\\/g, '/').split('/'), i = parts.findIndex(x => x.includes('*'));
+  const parent = parts.slice(0, i).join('/'), re = new RegExp('^' + parts[i].split('*').map(x => x.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('.*') + '$');
+  const hits = (fs.existsSync(parent) ? fs.readdirSync(parent) : []).filter(n => re.test(n))
+    .map(n => [parent, n, ...parts.slice(i + 1)].join('/')).filter(f => fs.existsSync(f))
+    .sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
+  if (!hits.length) throw bad('agent program not found: ' + cmd);
+  return hits[0];
+}
+function wakeTeam(p) {
+  if (!p.path || !fs.existsSync(p.path)) throw bad('connect a folder to this project first (🔌 Connect folder)');
+  const exe = agentCommand();
+  const prompt = `Rich woke you from the AI-gile board. Read your notes, run the board brief for project ${p.slug}, deal with his comments, then keep the wait command running in the background.`;
+  if (process.platform !== 'win32') throw bad('waking a team opens a Windows terminal; not supported on this system');
+  const { spawn } = require('child_process');
+  // start "<title>" cmd /k <exe> "<prompt>": a new, visible window that stays open after the session ends.
+  spawn('cmd.exe', ['/c', 'start', `${p.name} team`, 'cmd', '/k', exe, prompt], { cwd: p.path, detached: true, stdio: 'ignore' }).unref();
+  waking.set(p.slug, Date.now());
+  return { ok: true, folder: p.path };
+}
+
 // Plan usage history: one JSON line per change (or every 5 minutes), in data/limits.log.
 const LIMITS = path.join(DATA, 'limits.log');
 let lastLimits = null;
@@ -163,6 +207,7 @@ function summary(p) {
     team: (p.team || []).filter(m => !/retired|idle/i.test(m.status || '')),
     inFlight: inFlight(p),
     lastLog: (p.log || []).slice(-1)[0] || null,
+    presence: presenceOf(p.slug),
   };
 }
 
@@ -208,7 +253,7 @@ const routes = [
   ['POST', /^\/api\/projects\/([^/]+)\/connect$/, ([slug], b) => connectFolder(need(load(slug)), b.path, !!b.create)],
 
   // Plan usage snapshots from statusline.js: % used + reset time for the 5-hour and 7-day windows.
-  ['POST', /^\/api\/limits$/, (_, b) => recordLimits(b.rate_limits || {})],
+  ['POST', /^\/api\/limits$/, (_, b) => { heardFromFolder(b.cwd); return recordLimits(b.rate_limits || {}); }],
   ['GET', /^\/api\/limits$/, (_, __, q) => limitsHistory(Number(q.get('days')) || 30)],
 
   // Token usage per project, read from the local session logs (folder set in aigile.local.json).
@@ -238,7 +283,10 @@ const routes = [
     return summary(p);
   }],
 
-  ['GET', /^\/api\/projects\/([^/]+)$/, ([slug]) => need(load(slug))],
+  ['GET', /^\/api\/projects\/([^/]+)$/, ([slug]) => { const p = need(load(slug)); return { ...p, presence: presenceOf(p.slug) }; }],
+
+  // Wake a sleeping team: opens a visible terminal in the project's folder with a session already started.
+  ['POST', /^\/api\/projects\/([^/]+)\/wake$/, ([slug]) => wakeTeam(need(load(slug)))],
 
   ['PATCH', /^\/api\/projects\/([^/]+)$/, ([slug], b) => {
     const p = need(load(slug));
@@ -371,6 +419,7 @@ const routes = [
   // ?mark=1 moves the team's "seen" cursor to now (the UI shows "seen by team" from it).
   ['GET', /^\/api\/projects\/([^/]+)\/updates$/, ([slug], _, q) => {
     const p = need(load(slug));
+    heard(p.slug);   // hooks and 'aigile wait' call this: the team's session is alive
     const since = q.get('since') || p.teamSeenAt || '';
     const cards = [];
     for (const c of p.cards) {

@@ -77,6 +77,8 @@
   .ctab .n.hot { background: var(--you); color: #fff; }
   .comment.latest { background: var(--col); border-radius: 8px; padding: 10px 12px; border: 0; }
   .tag-latest { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent); margin-right: 8px; }
+  .pres { font-weight: 600; } .pres.on { color: var(--done); } .pres.off { color: var(--muted); } .pres.wake { color: var(--warn); }
+  .flight .primary { padding: 2px 10px; font-size: 13px; margin-left: 6px; }
   .seen { font-size: 12px; margin-left: 6px; color: var(--muted); }
   .card.is-blocked { border-left: 3px solid var(--danger); }
   .card .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
@@ -299,6 +301,7 @@ function renderHome() {
       ${bar(p.counts, active)}
       <div class="counts"><b>${Math.round(p.progress * 100)}% done</b>${Object.entries(COLS).map(([k, v]) => `<span>${v} ${p.counts[k]}</span>`).join('')}</div>
       ${p.team.length ? `<div class="last">👥 ${p.team.map(m => esc(m.name)).join(', ')}</div>` : ''}
+      <div class="last">${presenceHtml(p, false)}</div>
       ${p.inFlight.length ? `<div class="last">🛠 ${flightHtml(p.inFlight)}</div>` : ''}
       ${state.usage?.enabled && state.usage.projects[p.slug] ? `<div class="last">⚡ ${usageLine(state.usage.projects[p.slug])}</div>` : ''}
       ${p.lastLog ? `<div class="last">📝 ${esc(p.lastLog.text)} · ${ago(p.lastLog.at)}</div>` : ''}
@@ -312,6 +315,21 @@ function renderHome() {
 // "Pixel → AIG-5 (12m ago)". Quiet for 30+ minutes = stale (amber), so stalled agents stand out.
 function flightHtml(list) {
   return list.map(c => `<span class="${Date.now() - new Date(c.updated) > 30 * 60e3 ? 'stale' : ''}" title="${esc(c.title)}">${esc(c.assignee || 'unassigned')} → ${esc(c.id)} <span class="muted">(${ago(c.updated)})</span></span>`).join(' · ');
+}
+
+// Is the team's session running? (heard from in the last 5 minutes: hooks, wait, status line)
+function presenceHtml(p, withWake) {
+  const pr = p.presence || {};
+  if (pr.online) return `<span class="pres on">🟢 Team online</span> <span class="muted">heard ${ago(pr.lastHeard)}</span>`;
+  if (pr.waking) return `<span class="pres wake">⏳ Waking the team…</span> <span class="muted">a terminal window has opened</span>`;
+  const btn = withWake && p.path ? ` <button class="primary" onclick="wakeTeam(event)">▶ Wake the team</button>` : withWake ? ` <span class="muted">(connect a folder to wake it)</span>` : '';
+  return `<span class="pres off">💤 Team asleep</span>${pr.lastHeard ? ` <span class="muted">last heard ${ago(pr.lastHeard)}</span>` : ''}${btn}`;
+}
+async function wakeTeam(e) {
+  e.preventDefault(); e.stopPropagation();
+  const b = e.target; b.disabled = true; b.textContent = 'Opening…';
+  try { await api('POST', `/api/projects/${slug()}/wake`); refresh(true); }
+  catch (err) { alert(err.message); b.disabled = false; b.textContent = '▶ Wake the team'; }
 }
 
 function renderBoard(p) {
@@ -329,6 +347,7 @@ function renderBoard(p) {
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${p.archived ? '📤 Unarchive project' : '📦 Archive project'}</button></div>
+    <div class="flight">${presenceHtml(p, true)}</div>
     <div class="flight">🛠 <b>In flight:</b> ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || '<span class="muted">nothing right now</span>'}</div>
     ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? ` <code>${esc(p.path)}</code>` : ''}</p>` : ''}
     <div class="board">${cols}</div>
