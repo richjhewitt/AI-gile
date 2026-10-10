@@ -11,17 +11,20 @@ function newCard(preset = {}) {
   const bug = preset.type === 'bug';
   // Rich's new cards go straight to the team (AIG-51); the + on a column still picks that column.
   const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: 'team', assignee: '', sprint: '', ...preset };
+  Attach.clear('new:' + slug());
   openDialog(`<h2>${bug ? '🐞 Raise bug' : 'New card'}</h2>
     <form onsubmit="return createCard(event)">${cardFields(c, bug ? { titlePh: "What's broken?", descLabel: 'What happened / how to reproduce', descPh: 'Steps, what you expected, what you saw' } : { titlePh: 'What needs doing?' })}
       <div class="err" id="d-err"></div>
-      <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${bug ? 'Raise bug' : 'Create card'}</button><button type="button" onclick="closeDialog()">Cancel</button></div></form>`);
+      <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${bug ? 'Raise bug' : 'Create card'}</button><button type="button" onclick="closeDialog()">Cancel</button>${Attach.boxHtml('new:' + slug())}</div></form>`);
 }
 async function createCard(e) {
   e.preventDefault();
   const body = readFields(false, false);
   if (!body.title) { setErr('d-err', 'Give it a title'); return false; }
   try {
-    const c = await api('POST', `/api/projects/${slug()}/cards`, { ...body, createdBy: 'Rich' });
+    const attachments = await Attach.upload('new:' + slug(), slug());
+    const c = await api('POST', `/api/projects/${slug()}/cards`, { ...body, createdBy: 'Rich', attachments });
+    Attach.clear('new:' + slug());
     closeDialog();
     await rerender();
   } catch (err) { setErr('d-err', err); }

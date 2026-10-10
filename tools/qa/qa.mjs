@@ -855,6 +855,26 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
   await sleep(800);
   c = await getCard(s, 'alpha', c4.id);
   check('task Done carries the file', /^✅ Done/.test(c.comments.at(-1).text) && c.comments.at(-1).attachments[0].name === 'out.txt', c.comments.at(-1));
+
+  // Raise bug with a pasted screenshot (AIG-80).
+  await page.goto(BASE + '/#/p/alpha');
+  await page.click('button:has-text("Raise bug")');
+  await page.fill('#dialog input[type=text]', 'Broken thing');
+  await page.evaluate(b64 => {
+    const bytes = Uint8Array.from(atob(b64), ch => ch.charCodeAt(0)), dt = new DataTransfer();
+    dt.items.add(new File([bytes], 'image.png', { type: 'image/png' }));
+    document.querySelector('#dialog input[type=text]').dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+  }, PNG);
+  await page.waitForSelector('#dialog .att-chip');
+  await page.click('#dialog button[type=submit]');
+  await sleep(800);
+  const bug = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.title === 'Broken thing');
+  check('raised bug has the screenshot', bug && bug.attachments && /screenshot-.*.png$/.test(bug.attachments[0].name), bug);
+  check('show prints the bug screenshot path', s.cli(['show', 'alpha', bug.id]).out.includes(bug.attachments[0].path));
+  await page.goto(BASE + '/#/p/alpha/' + bug.id);
+  await page.click('[data-ctab="details"]');
+  await page.waitForSelector('[data-pane="details"] .att-shown img');
+  check('bug screenshot shows under the description', true);
   noErrors(page);
 }, true);
 

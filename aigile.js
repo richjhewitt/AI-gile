@@ -110,6 +110,7 @@ const files = (m, pad) => (m.attachments || []).map(a => `\n${pad}📎 ${a.name}
 function full(c) {
   const o = [line(c)];
   if (c.description) o.push('', 'Description:', c.description);
+  if (c.attachments) o.push(...c.attachments.map(a => `📎 ${a.name}: ${a.path}`));
   if (c.testSteps) o.push('', 'Test steps:', c.testSteps);
   o.push('', `Conversation (${c.comments.length}):`);
   for (const m of c.comments) o.push(`  [${when(m.at)}] ${m.author}: ${m.text.replace(/\n/g, '\n    ')}` + files(m, '    '));
