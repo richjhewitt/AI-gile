@@ -1832,6 +1832,28 @@ def('proof', 'proof on hand-back: test --commit shows what changed; --shot adds 
   noErrors(page);
 }, true);
 
+def('queue', 'your queue: holds up, your priority, kind, time; sorted, filtered, Next up (AIG-159..162)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Pick a colour'), b = await mkCard(s, 'alpha', 'Restart the server'), c = await mkCard(s, 'alpha', 'Read the plan');
+  s.cli(['ask', 'alpha', a.id, 'Blue or green?', '--as', 'Lead', '--mins', '1']);
+  s.cli(['task', 'alpha', b.id, 'run it on the server', '--as', 'Lead', '--kind', 'server', '--holds', 'ALP-7,ALP-8,ALP-9', '--mins', '5']);
+  s.cli(['ask', 'alpha', c.id, 'Read this?', '--as', 'Lead', '--kind', 'read', '--prio', 'whenever']);
+  check('bad kind refused', s.cli(['ask', 'alpha', a.id, 'x', '--as', 'Lead', '--kind', 'nope']).code !== 0);
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('#ibNext a');
+  check('Next up is what holds most up', (await page.textContent('#ibNext')).includes('Restart the server'), await page.textContent('#ibNext'));
+  check('chips show holds and time', (await page.textContent(`.ib-item[data-id="${b.id}"]`)).includes('holds up 3') && (await page.textContent(`.ib-item[data-id="${b.id}"]`)).includes('5 min'));
+  check('total time shows', (await page.textContent('#ibKinds')).includes('6 min in all'));
+  await page.click('#ibKinds [data-kind="server"]');
+  await sleep(300);
+  check('kind filter shows only server jobs', (await page.locator(`.ib-item[data-id="${b.id}"]`).count()) === 1 && (await page.locator('.ib-item.k, .ib-item.t').count()) === 1);
+  await page.click('#ibKinds [data-kind=""]');
+  await page.click(`#ibNext [data-prio]`);   // none -> now on the Next up item
+  await sleep(600);
+  check('clicking 🔥 sets your priority', (await getCard(s, 'alpha', b.id)).ownerPrio === 'now');
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

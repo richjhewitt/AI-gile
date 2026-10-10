@@ -363,3 +363,14 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .proof-files { margin: 6px 0; padding-left: 18px; font-size: 13px; }
 .proof .add { color: var(--done); } .proof .del { color: var(--danger); } .proof .hunk { color: var(--muted); }
 .proof pre.diff { max-height: 50vh; overflow: auto; font-size: 12px; background: var(--col); padding: 8px; border-radius: 6px; white-space: pre; }
+
+/* ---------- your queue (AIG-159..162) ---------- */
+.q-chips { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 2px; }
+.q-chip { font-size: 11px; padding: 1px 7px; border-radius: 99px; background: var(--col); border: 1px solid var(--line); color: var(--text); cursor: default; }
+button.q-chip { cursor: pointer; } .q-chip.prio:not([class*="p-"]) { color: var(--muted); }
+.q-chip.p-now { background: var(--danger); color: #fff; border-color: transparent; } .q-chip.p-today { background: var(--warn); color: #fff; border-color: transparent; }
+.q-chip.holds { border-color: var(--you); }
+.ib-next { margin: 8px 0; padding: 8px 12px; border-radius: 10px; border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--panel)); }
+.ib-next[hidden] { display: none; }
+.ib-kinds { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0 10px; }
+.ib-kind { border-radius: 99px; padding: 3px 10px; } .ib-kind.on { background: var(--accent); color: #fff; }

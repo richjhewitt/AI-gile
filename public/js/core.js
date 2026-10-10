@@ -15,6 +15,28 @@ new MutationObserver(() => document.querySelectorAll('textarea[data-draft]:not([
   let v = null; try { v = localStorage.getItem(draftKey(el.dataset.draft)); } catch {}
   if (v && !el.value) el.value = v;
 })).observe(document.documentElement, { childList: true, subtree: true });
+/* ---------- your queue (AIG-159..162): what holds things up, your priority, kind and time ---------- */
+const QKINDS = { decide: '❓', test: '🧪', server: '🖥️', keys: '🔑', read: '📖' };
+const PRIO_RANK = { now: 0, today: 1, whenever: 3 };   // no priority set sits between today and whenever
+// An item's kind: what the team set, else a sensible guess (tests are tests, the rest are decisions).
+const kindOfItem = c => c.kind || (c.status === 'verify' ? 'test' : 'decide');
+// Queue order: your priority, then what it holds up most, then quickest first.
+const queueRank = (a, b) => (PRIO_RANK[a.ownerPrio] ?? 2) - (PRIO_RANK[b.ownerPrio] ?? 2) || (b.holds || []).length - (a.holds || []).length || (a.mins || 999) - (b.mins || 999);
+function queueChips(c) {
+  const k = kindOfItem(c), p = c.ownerPrio;
+  return `<span class="q-chips"><span class="q-chip" title="${esc(t('queue.kind.' + k))}">${QKINDS[k]} ${esc(t('queue.kind.' + k))}</span>`
+    + `<button class="q-chip prio ${p ? 'p-' + p : ''}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
+    + ((c.holds || []).length ? `<span class="q-chip holds" title="${esc(c.holds.join(', '))}">⛓ ${esc(t('queue.holds', { n: c.holds.length }))}</span>` : '')
+    + (c.mins ? `<span class="q-chip">⏱ ${esc(t('queue.mins', { n: c.mins }))}</span>` : '') + '</span>';
+}
+// Click 🔥 to change your priority: none → now → today → whenever → none.
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-prio]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  const [s, id] = b.dataset.prio.split('/'), order = ['', 'now', 'today', 'whenever'];
+  const cur = (b.className.match(/p-(\w+)/) || [])[1] || '';
+  try { await api('PATCH', `/api/projects/${s}/cards/${id}`, { ownerPrio: order[(order.indexOf(cur) + 1) % order.length] }); refresh(true); if (typeof Inbox !== 'undefined' && Inbox.reload) Inbox.reload(); } catch (err) { alert(err.message); }
+}, true);
 const isOwner = a => String(a || '').trim().toLowerCase() === me().toLowerCase();
 // Getters, so the names follow the language chosen at start-up (AIG-124).
 const COLS = { get backlog() { return t('col.backlog'); }, get todo() { return t('col.todo'); }, get doing() { return t('col.doing'); }, get review() { return t('col.review'); }, get verify() { return t('col.verify'); }, get team() { return t('col.team'); }, get done() { return t('col.done'); } };

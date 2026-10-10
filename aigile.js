@@ -6,6 +6,13 @@ const STATUSES = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'
 const PRIO = { urgent: 0, high: 1, normal: 2, low: 3 };
 const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 'stop-hook', 'peek', 'create']);
 
+// Your queue (AIG-159..162): --holds AIG-1,AIG-2  --prio now|today|whenever  --kind decide|test|server|keys|read  --mins N
+async function queueInfo(slug, id, flags) {
+  const b = {};
+  if (flags.holds) b.holds = flags.holds; if (flags.prio) b.ownerPrio = flags.prio; if (flags.kind) b.kind = flags.kind; if (flags.mins) b.mins = flags.mins;
+  if (Object.keys(b).length) await api('PATCH', C(slug, id), b);
+}
+
 // The board's human (AIG-103): "owner" in aigile.local.json next to this file, default Rich.
 const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.parse(require('fs').readFileSync(process.env.AIGILE_LOCAL || require('path').join(__dirname, 'aigile.local.json'), 'utf8')).owner || '').trim() || 'Rich'; } catch { return 'Rich'; } })();
 
@@ -35,6 +42,7 @@ WORKING
   test <proj> <id> "steps ${OWNER} can follow" --as NAME    -> moves to verify, sets testSteps, comments
         [--open URL [--start "command"]]   adds a ▶ Open it button: starts the app if needed, opens the page
         [--commit SHA] [--shot a.png,b.png]  proof: the board shows what changed in that commit, plus your screenshots
+  ask / task / test also take: --holds AIG-1,AIG-2 (what it holds up)  --prio now|today|whenever  --kind decide|test|server|keys|read  --mins N
   block <proj> <id> ["why"] --as NAME     unblock <proj> <id>
   edit <proj> <id> [--title --desc --type --priority --sprint --assignee --test-steps]
   add <proj> "title" [--type feature|bug|task --priority low|normal|high|urgent --status s
@@ -299,12 +307,14 @@ const cmds = {
 
   async ask({ pos, flags }) {
     const slug = await project(pos[0]);
+    await queueInfo(slug, pos[1], flags);
     const c = await api('POST', C(slug, pos[1]) + '/comments', { author: who(flags), text: await text(pos[2], 'question'), needsYou: true });
     out(flags, c, c => `asked ${OWNER} on ${c.id}; card now flagged NEEDS-RICH. Move on to other work (aigile next ${slug}).`);
   },
 
   async test({ pos, flags }) {
     const slug = await project(pos[0]);
+    await queueInfo(slug, pos[1], flags);
     const author = who(flags);
     const steps = await text(pos[2], 'test steps');
     // --open URL [--start "command"]: the card gets a ▶ Open it button (AIG-146).
@@ -327,6 +337,7 @@ const cmds = {
   // It shows in his inbox under "Tasks for you"; when he clicks Done it comes back to you via "For the team".
   async task({ pos, flags }) {
     const slug = await project(pos[0]);
+    await queueInfo(slug, pos[1], flags);
     const author = who(flags);
     const what = await text(pos[2], `what ${OWNER} needs to do`);
     await api('PATCH', C(slug, pos[1]), { assignee: OWNER, needsYou: false });

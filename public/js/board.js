@@ -135,7 +135,7 @@ function forYouFirst(k) {
 function forYouQueue(p, pool = p.cards) {
   const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : 1 + KINDS.indexOf(kindOf(c));
   // Within a kind, a queue: longest-waiting first, so "Wait and see" sends a test to the back.
-  return pool.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || a.updated.localeCompare(b.updated));
+  return pool.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || queueRank(a, b) || a.updated.localeCompare(b.updated));
 }
 // Focus (AIG-141): click the For you header to see only that column; remembered per project.
 function fyFocus(s, set) {
@@ -177,7 +177,7 @@ function cardHtml(c) {
   const view = cardViewOf(state.project);
   const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}" data-id="${c.id}" draggable="true" style="display:block">
-    <div class="id">${esc(c.id)}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    <div class="id">${esc(c.id)}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}</div>${forYou(c) ? queueChips(c) : ''}
     <div class="t">${esc(c.title)}</div>
     ${live ? `<div class="heard">💬 ${esc(heard.who)} ${ago(heard.at)}${heard.text ? ': ' + esc(heard.text.slice(0, 60).replace(/\n/g, ' ')) : ''}</div>` : ''}
     <div class="meta">${metaHtml(c, view.show)}${live ? `<button class="poke${stale ? ' hot' : ''}" title="${esc(t('card.poke.title'))}" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">${esc(t('card.poke'))}</button>` : ''}</div></a>`;

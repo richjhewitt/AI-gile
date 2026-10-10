@@ -263,7 +263,7 @@
   /* ---------- inbox page (AIG-33) ---------- */
   function qHtml(c) {
     const a = lastAsk(c);
-    return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>${queueChips(c)}
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       <div class="ib-who">${t(c.blocked ? 'inbox.q.isblocked.html' : 'inbox.q.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>
@@ -273,7 +273,7 @@
   }
   function kHtml(c) {
     const a = lastAsk(c);
-    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.k.tag'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.k.tag'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>${queueChips(c)}
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       <div class="ib-who">${t('inbox.k.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>
@@ -295,6 +295,8 @@
     el('app').innerHTML = `<div class="ib" id="ib">
       <div class="ib-head"><h2>${esc(t('inbox.h'))}</h2><span class="ib-hint">${esc(t('inbox.sub'))}</span></div>
       <div class="ib-tabs" id="ibTabs" role="tablist"></div>
+      <div class="ib-next" id="ibNext"></div>
+      <div class="ib-kinds" id="ibKinds"></div>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <div id="ibEmpty"></div>
       <section class="ib-sec q" id="ibQ"><h3>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
@@ -397,12 +399,26 @@
     syncList(el('ibQ').querySelector('.list'), qs.filter(c => c.project === chat).sort((a, b) => lastAsk(a).at.localeCompare(lastAsk(b).at)));
   }
 
+  let kindFilter = '';
+  function paintQueue(shown) {
+    const n = k => shown.filter(c => kindOfItem(c) === k).length, mins = shown.filter(c => !kindFilter || kindOfItem(c) === kindFilter).reduce((s, c) => s + (c.mins || 0), 0);
+    const chips = [['', t('queue.all')], ...Object.keys(QKINDS).filter(k => n(k)).map(k => [k, QKINDS[k] + ' ' + t('queue.kind.' + k)])]
+      .map(([k, label]) => `<button class="ib-kind ${kindFilter === k ? 'on' : ''}" data-kind="${k}">${esc(label)} <span class="n">${k ? n(k) : shown.length}</span></button>`).join('')
+      + (mins ? `<span class="ib-hint">⏱ ${esc(t('queue.total', { n: mins }))}</span>` : '');
+    const kb = el('ibKinds'); if (kb.dataset.sig !== chips) { kb.dataset.sig = chips; kb.innerHTML = chips; }
+    const next = [...shown].sort(queueRank)[0];
+    const nx = next ? `<b>▶ ${esc(t('queue.next'))}</b> <a href="#/p/${esc(next.project)}/${esc(next.id)}">${esc(next.projectEmoji || '')} ${esc(next.id)} ${esc(next.title)}</a> ${queueChips(next)}` : '';
+    const nb = el('ibNext'); if (nb.dataset.sig !== nx) { nb.dataset.sig = nx; nb.innerHTML = nx; } nb.hidden = !next;
+  }
   function paintPage() {
     if (!el('ib')) skeleton();
     paintTabs();
     // All tab: items grouped by project, in tab order, each group still longest-waiting first (AIG-86).
     const shown = tab === 'all' ? [...items].sort((a, b) => tabOrder.indexOf(a.project) - tabOrder.indexOf(b.project)) : items.filter(c => c.project === tab);
-    const qs = shown.filter(isQuestion), ks = shown.filter(isTask), ts = shown.filter(isTest);
+    // Your queue (AIG-159..162): filter by kind, sort by your priority / what it holds up / time, and pick Next up.
+    paintQueue(shown);
+    const pick = shown.filter(c => !kindFilter || kindOfItem(c) === kindFilter).sort(queueRank);
+    const qs = pick.filter(isQuestion), ks = pick.filter(isTask), ts = pick.filter(isTest);
     // A link to one question (alerts, the home list) opens its chat.
     if (flashKey) { const f = qs.find(c => keyOf(c) === flashKey); if (f) chat = f.project; }
     paintChats(qs);
@@ -430,6 +446,8 @@
   function onClick(e) {
     const cb = e.target.closest('button[data-chat]');
     if (cb) { chat = cb.dataset.chat; paintPage(); return; }
+    const kb = e.target.closest('button[data-kind]');
+    if (kb) { kindFilter = kb.dataset.kind; paintPage(); return; }
     const tb = e.target.closest('button[data-tab]');
     if (tb) { tab = tb.dataset.tab; tabPref.set(tab); paintPage(); return; }
     const b = e.target.closest('button[data-act]'); if (!b) return;
