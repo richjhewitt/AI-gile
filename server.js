@@ -43,6 +43,31 @@ function save(p) {
   fs.writeFileSync(tmp, JSON.stringify(p, null, 2));
   fs.renameSync(tmp, fileOf(p.slug));
 }
+// Plan usage history: one JSON line per change (or every 5 minutes), in data/limits.log.
+const LIMITS = path.join(DATA, 'limits.log');
+let lastLimits = null;
+function recordLimits(rl) {
+  const w = x => (x && x.used_percentage != null ? { pct: Number(x.used_percentage), resets: x.resets_at ?? null } : null);
+  const snap = { at: now(), h5: w(rl.five_hour), wk: w(rl.seven_day) };
+  if (!snap.h5 && !snap.wk) throw bad('no usage figures in rate_limits');
+  const same = lastLimits && JSON.stringify([lastLimits.h5, lastLimits.wk]) === JSON.stringify([snap.h5, snap.wk]);
+  if (!same || Date.parse(snap.at) - Date.parse(lastLimits.at) > 5 * 60e3) {
+    fs.appendFileSync(LIMITS, JSON.stringify(snap) + '\n');
+    lastLimits = snap;
+  }
+  return { ok: true };
+}
+function limitsHistory(days) {
+  const since = Date.now() - days * 864e5;
+  let history = [];
+  try {
+    history = fs.readFileSync(LIMITS, 'utf8').split('\n').filter(Boolean)
+      .map(l => { try { return JSON.parse(l); } catch { return null; } })
+      .filter(s => s && Date.parse(s.at) >= since);
+  } catch {}
+  return { latest: history[history.length - 1] || null, history };
+}
+
 // Machine-specific settings, kept out of git (*.local.json).
 function localSettings() {
   try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'aigile.local.json'), 'utf8')); } catch { return {}; }
@@ -115,6 +140,10 @@ function findCard(p, id) {
 // ---- routes ----------------------------------------------------------------
 // Each handler: (params, body, query) -> response JSON. Throw bad() for errors.
 const routes = [
+  // Plan usage snapshots from statusline.js: % used + reset time for the 5-hour and 7-day windows.
+  ['POST', /^\/api\/limits$/, (_, b) => recordLimits(b.rate_limits || {})],
+  ['GET', /^\/api\/limits$/, (_, __, q) => limitsHistory(Number(q.get('days')) || 30)],
+
   // Token usage per project, read from the local session logs (folder set in aigile.local.json).
   ['GET', /^\/api\/usage$/, () => usage(process.env.AIGILE_USAGE_DIR || localSettings().usageDir,
     listSlugs().map(load).filter(Boolean).map(p => ({ slug: p.slug, path: p.path })))],

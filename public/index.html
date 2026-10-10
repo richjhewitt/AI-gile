@@ -26,6 +26,10 @@
   header h1 { font-size: 17px; margin: 0; }
   header .crumb { color: var(--muted); }
   header .spacer { flex: 1; }
+  .navlink { font-size: 13px; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--line); background: var(--col); }
+  .navlink:hover { border-color: var(--accent); }
+  a.usage { display: block; }
+  a.usage:hover { border-color: var(--accent); }
   .live { font-size: 12px; color: var(--muted); }
   .live::before { content: "●"; color: var(--done); margin-right: 4px; }
   .live.off::before { color: var(--danger); }
@@ -145,6 +149,7 @@
   <h1><a href="#/">🗂️ AI-gile</a></h1>
   <span class="crumb" id="crumb"></span>
   <span class="spacer"></span>
+  <a class="navlink" href="#/usage">⚡ Usage</a>
   <span class="live" id="live">live</span>
 </header>
 <main id="app"></main>
@@ -152,6 +157,7 @@
 <div id="dialog"></div>
 <div id="update"></div>
 
+<script src="usage-page.js"></script>
 <script>
 const COLS = { backlog: 'Backlog', todo: 'To do', doing: 'In progress', review: 'Review', verify: 'For you to test', team: 'For the team', done: 'Done' };
 const COL_COLORS = { team: '#e11d74', done: 'var(--done)', verify: 'var(--you)', review: '#0ea5a4', doing: 'var(--accent)', todo: 'var(--warn)' };
@@ -175,6 +181,7 @@ const ago = iso => {
 const $ = id => document.getElementById(id);
 
 function parseRoute() {
+  if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
   return m ? { view: 'project', slug: m[1], card: m[2] || null } : { view: 'home' };
 }
@@ -198,6 +205,9 @@ async function refresh(force) {
       const q = state.showArchived ? '?all=1' : '';
       [state.projects, state.inbox, state.usage] = await Promise.all([api('GET', '/api/projects' + q), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false }))]);
       sig = JSON.stringify([state.route, state.projects, state.inbox, state.usage]);
+    } else if (state.route.view === 'usage') {
+      await loadUsagePage(force);   // heavy, so at most every ~15s
+      sig = JSON.stringify([state.route, uzSig()]);
     } else {
       state.project = await api('GET', '/api/projects/' + state.route.slug);
       await loadDocs(state.route.slug);
@@ -224,6 +234,7 @@ async function refresh(force) {
 
 function renderBoardOnly() {
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
+  if (state.route.view === 'usage') return;
   $('app').innerHTML = state.route.view === 'home' ? renderHome() : renderBoard(state.project);
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
 }
@@ -232,6 +243,7 @@ function render() {
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'usage') { $('crumb').textContent = '/ Usage'; $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
   $('crumb').textContent = '/ ' + p.name;
   $('app').innerHTML = renderBoard(p);
@@ -256,8 +268,9 @@ function usageStrip(u) {
   if (!u?.enabled) return '';
   const total = Object.values(u.org.models7d).reduce((a, b) => a + b, 0) || 1;
   const models = Object.entries(u.org.models7d).filter(([, n]) => n).sort((a, b) => b[1] - a[1]).map(([m, n]) => `${m} ${Math.round(n / total * 100)}%`).join(' · ');
-  return `<div class="usage"><b>⚡ Usage, all projects (this PC):</b> last 5h <b>${fmtTok(u.org.h5)}</b> · today <b>${fmtTok(u.org.today)}</b> · 7 days <b>${fmtTok(u.org.d7)}</b> · 30 days ${fmtTok(u.org.d30)}
-    <span class="muted">· 7-day mix: ${models}${u.other.d7 ? ` · not on the board: ${fmtTok(u.other.d7)} (7d)` : ''}</span></div>`;
+  return `<a class="usage" href="#/usage" title="Open the Usage page"><b>⚡ Usage, all projects (this PC):</b> last 5h <b>${fmtTok(u.org.h5)}</b> · today <b>${fmtTok(u.org.today)}</b> · 7 days <b>${fmtTok(u.org.d7)}</b> · 30 days ${fmtTok(u.org.d30)}
+    <span class="muted">· 7-day mix: ${models}${u.other.d7 ? ` · not on the board: ${fmtTok(u.other.d7)} (7d)` : ''}</span>
+    <span class="muted"> · <b>See how much you have left →</b></span></a>`;
 }
 
 function renderHome() {

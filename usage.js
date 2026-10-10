@@ -83,14 +83,27 @@ function totals(b, now) {
   return w;
 }
 
+// Tokens per local calendar day for the last 30 days (today included), zero-filled: [{ date, tokens }].
+function daily(b, now) {
+  const pad = n => String(n).padStart(2, '0');
+  const key = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const days = new Map();
+  for (let i = 29; i >= 0; i--) { const d = new Date(now); d.setDate(d.getDate() - i); days.set(key(d), 0); }
+  if (b) for (const [h, row] of b) {
+    const k = key(new Date(h));
+    if (days.has(k)) days.set(k, days.get(k) + Object.values(row).reduce((a, n) => a + n, 0));
+  }
+  return [...days].map(([date, tokens]) => ({ date, tokens }));
+}
+
 // projects: [{ slug, path }]  ->  { enabled, org, projects: { slug: totals }, other: totals }
 function usage(dir, projects) {
   if (!dir || !fs.existsSync(dir)) return { enabled: false };
   scan(dir);
-  const now = Date.now(), bySlug = {}, matched = new Set();
+  const now = Date.now(), bySlug = {}, matched = new Set(), dailyBy = {};
   for (const p of projects) {
     const f = p.path && folderOf(p.path);
-    if (f && buckets.has(f)) { bySlug[p.slug] = totals(buckets.get(f), now); matched.add(f); }
+    if (f && buckets.has(f)) { bySlug[p.slug] = totals(buckets.get(f), now); dailyBy[p.slug] = daily(buckets.get(f), now); matched.add(f); }
   }
   const all = new Map(), other = new Map();
   for (const [f, b] of buckets) for (const [h, row] of b) {
@@ -98,7 +111,10 @@ function usage(dir, projects) {
       const r = target.get(h) || {}; for (const [k, n] of Object.entries(row)) r[k] = (r[k] || 0) + n; target.set(h, r);
     }
   }
-  return { enabled: true, org: totals(all, now), projects: bySlug, other: totals(other, now) };
+  return {
+    enabled: true, org: totals(all, now), projects: bySlug, other: totals(other, now),
+    daily: { projects: dailyBy, other: daily(other, now), org: daily(all, now) },
+  };
 }
 
 module.exports = { usage };
