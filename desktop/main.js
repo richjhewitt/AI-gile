@@ -1,13 +1,13 @@
 // AI-gile desktop (AIG-76): the board in its own window. Starts the board server if it isn't running
 // (left running on quit, so teams keep their board), then shows http://localhost:<port>.
-const { app, BrowserWindow, shell, nativeImage } = require('electron');
+const { app, BrowserWindow, shell } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.AIGILE_PORT) || 4321;
 const BASE = `http://localhost:${PORT}`;
-const ICON = path.join(__dirname, 'icon.png');
+const ICON = path.join(__dirname, 'icon.png'), ICON_WAITING = path.join(__dirname, 'icon-waiting.png');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function up() { try { return (await fetch(BASE + '/api/meta')).ok; } catch { return false; } }
@@ -30,13 +30,9 @@ function open(ok) {
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); } });
   if (ok) win.loadURL(BASE);
   else win.loadURL('data:text/html,' + encodeURIComponent(`<body style="font:15px system-ui;padding:24px"><h2>AI-gile didn't start</h2><p>Couldn't reach ${BASE}. Run <code>start-aigile.bat</code> in ${ROOT.replace(/</g, '')} and reopen this window.</p></body>`));
-  // Taskbar badge: the page puts what's waiting on Rich in its title, "(3) AI-gile"; show it as a purple diamond.
-  // Small taskbar buttons don't draw overlays (just a dot), so the window icon itself also gets the diamond.
-  win.on('page-title-updated', (e, title) => {
-    const n = Number((title.match(/^\((\d+)\)/) || [])[1]) || 0, b = n > 9 ? 'many' : n;
-    win.setIcon(n ? path.join(__dirname, 'badges', `icon-${b}.png`) : ICON);
-    win.setOverlayIcon(n ? nativeImage.createFromPath(path.join(__dirname, 'badges', b + '.png')) : null, n ? `${n} waiting for you` : '');
-  });
+  // Taskbar badge: the page puts what's waiting on Rich in its title, "(3) AI-gile"; then the icon gets a purple diamond.
+  // It's the window icon, not an overlay: small taskbar buttons draw overlays as a dot, and a count is unreadable there.
+  win.on('page-title-updated', (e, title) => win.setIcon(/^\(\d+\)/.test(title) ? ICON_WAITING : ICON));
   win.on('closed', () => { win = null; });
 }
 
