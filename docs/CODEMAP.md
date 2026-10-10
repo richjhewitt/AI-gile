@@ -21,7 +21,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `lib/usage.js` | Token usage per project, read from the agents' local session logs |
 | `aigile.js` | The CLI: `HELP` text, arg parsing, `api()`, `nextList` (what to work on), then one function per command under "commands" |
 | `statusline.js` | Status line script that posts plan usage and the session folder to `/api/limits` |
-| `desktop/` | Optional Electron app: `main.js` starts the server if it's down and shows the board in one window (outside links open in the browser); `make-shortcut.ps1` adds Desktop/Start menu shortcuts; `icon.png`/`icon.ico` |
+| `desktop/` | Optional Electron app: `main.js` starts the server if it's down and shows the board in one window (outside links open in the browser); `make-shortcut.ps1` adds Desktop/Start menu shortcuts; `icon.png`/`icon.ico`, and `icon-waiting.png` (purple diamond) while anything waits on Rich (the page title count) |
 
 ## Page (`public/`)
 `index.html` is the shell only. The scripts are classic scripts sharing one global scope, loaded in this order (`app.js` last):
