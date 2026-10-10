@@ -1083,6 +1083,23 @@ def('foryou', 'For you column: tests, questions, tasks and blocks together; chip
   noErrors(page);
 }, true);
 
+def('popout', '⧉ Pop out opens a card on its own in a new window (AIG-122)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Follow these steps', { status: 'verify', testSteps: '1. Do the thing\n2. See the result' });
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.waitForSelector('button:has-text("Pop out")');
+  const [pop] = await Promise.all([ctx.waitForEvent('page'), page.click('button:has-text("Pop out")')]);
+  await pop.waitForSelector('.panel h2');
+  check('pop-out shows the card', (await pop.textContent('.panel h2')) === 'Follow these steps' && /\/pop\/alpha\//.test(pop.url()), pop.url());
+  check('no header or board behind it', !(await pop.isVisible('header')) && (await pop.locator('.board').count()) === 0);
+  check('pop-out has no Pop out button of its own', (await pop.locator('button:has-text("Pop out")').count()) === 0);
+  check('main window goes back to the board', await page.waitForFunction(() => location.hash === '#/p/alpha').then(() => true).catch(() => false));
+  await pop.click('.verdict button:has-text("Accept")');
+  await sleep(500);
+  check('accepting in the pop-out works', (await getCard(s, 'alpha', c.id)).status === 'done');
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

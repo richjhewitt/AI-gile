@@ -56,8 +56,10 @@ function readFields(flags, testSteps) {
 
 /* ---------- card detail panel ---------- */
 function renderCard(p, c) {
-  const close = `location.hash='#/p/${p.slug}'`;
-  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">✕ Close</button><span style="flex:1"></span>
+  const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
+  // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
+  const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="Open this card in its own window">⧉ Pop out</button>`;
+  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">✕ Close</button>${popBtn}<span style="flex:1"></span>
       ${state.editing ? '' : '<button onclick="editCard()">✏️ Edit</button> <button class="danger" onclick="deleteCard()">🗑 Delete</button>'}</div>`;
   if (state.editing) {
     return `<div class="overlay"><div class="panel">${head}
@@ -132,7 +134,12 @@ async function deleteCard() {
 }
 
 // Once Rich has replied or given a verdict he's done with the card: close the panel, back to the board.
+function popOutCard(s, id) {
+  window.open(`#/pop/${s}/${id}`, 'aigile-' + s + '-' + id, 'width=560,height=780');
+  location.hash = '#/p/' + s;
+}
 function closeCard() {
+  if (state.route.pop) { window.close(); return; }
   state.editing = false;
   $('modal').innerHTML = '';
   location.hash = '#/p/' + slug();

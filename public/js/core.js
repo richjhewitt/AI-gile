@@ -28,6 +28,8 @@ function parseRoute() {
   if (location.hash === '#/inbox') return { view: 'inbox' };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/setup') return { view: 'setup' };
+  const pop = location.hash.match(/^#\/pop\/([^/]+)\/([^/]+)/);
+  if (pop) return { view: 'project', slug: pop[1], card: pop[2], pop: true };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
   return m ? { view: 'project', slug: m[1], card: m[2] || null } : { view: 'home' };
 }
@@ -102,6 +104,15 @@ function render() {
   if (state.route.view === 'setup') { $('crumb').textContent = '/ Setup'; if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ Usage'; $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
+  // A popped-out card (AIG-122): just the card, filling its own window; no header or board behind it.
+  document.body.classList.toggle('pop', !!state.route.pop);
+  if (state.route.pop) {
+    const c = p.cards.find(x => x.id === state.route.card);
+    $('app').innerHTML = '';
+    $('modal').innerHTML = c ? renderCard(p, c) : '<p class="muted" style="padding:16px">This card no longer exists.</p>';
+    const pp = document.querySelector('#modal .panel'); if (pp) pp.scrollTop = keepScroll;
+    return;
+  }
   $('crumb').textContent = '/ ' + (p.emoji ? p.emoji + ' ' : '') + p.name;
   $('crumb').style.color = p.color || '';
   $('app').innerHTML = renderBoard(p);

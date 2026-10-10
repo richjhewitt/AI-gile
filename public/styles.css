@@ -213,3 +213,8 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 1
 .fy-chips { display: flex; flex-wrap: wrap; gap: 4px; margin: -2px 0 8px; }
 .fy-chip { font-size: 12px; padding: 2px 8px; border-radius: 99px; }
 .fy-chip.on { background: var(--you); color: #fff; border-color: var(--you); }
+
+/* ---------- popped-out card (AIG-122): the card fills its own window ---------- */
+body.pop header, body.pop #filterbar, body.pop #updateTop { display: none; }
+body.pop .overlay { position: static; background: none; padding: 0; display: block; }
+body.pop .panel { max-width: none; max-height: none; width: 100%; min-height: 100vh; border-radius: 0; margin: 0; box-shadow: none; }

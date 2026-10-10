@@ -24,16 +24,26 @@ async function ensureServer() {
 }
 
 let win = null;
-function open(ok) {
-  win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', icon: ICON, autoHideMenuBar: true, backgroundColor: '#ffffff' });
-  // Board links to other sites open in the normal browser; the board's own (attachments) open in a new app window.
-  win.webContents.setWindowOpenHandler(({ url }) => { if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { autoHideMenuBar: true, icon: ICON } }; shell.openExternal(url); return { action: 'deny' }; });
-  win.webContents.on('will-navigate', (e, url) => {
+// Link and navigation rules for any of our windows (the main one and popped-out cards).
+function wire(w) {
+  // Board links to other sites open in the normal browser; the board's own open in a new app window.
+  // A popped-out card stays on top, so its steps stay visible while you work in another app (AIG-122).
+  w.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { autoHideMenuBar: true, icon: ICON, alwaysOnTop: url.includes('#/pop/') } };
+    shell.openExternal(url); return { action: 'deny' };
+  });
+  w.webContents.on('will-navigate', (e, url) => {
     if (url === 'aigile://restart') { e.preventDefault(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
     // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).
-    if (url === 'aigile://refocus') { e.preventDefault(); win.blur(); win.focus(); win.webContents.focus(); return; }
+    if (url === 'aigile://refocus') { e.preventDefault(); w.blur(); w.focus(); w.webContents.focus(); return; }
     if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); }
   });
+}
+function open(ok) {
+  win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', icon: ICON, autoHideMenuBar: true, backgroundColor: '#ffffff' });
+  wire(win);
+  // Popped-out cards (AIG-122) get the same handling as the main window.
+  win.webContents.on('did-create-window', child => wire(child));
   if (ok) win.loadURL(BASE);
   else win.loadURL('data:text/html,' + encodeURIComponent(`<body style="font:15px system-ui;padding:24px"><h2>AI-gile didn't start</h2><p>Couldn't reach ${BASE}. Run <code>start-aigile.bat</code> in ${ROOT.replace(/</g, '')} and reopen this window.</p></body>`));
   // Taskbar badge: the page puts what's waiting on Rich in its title, "(3) AI-gile"; then the icon gets a purple diamond.
