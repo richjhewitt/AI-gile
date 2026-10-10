@@ -1,4 +1,10 @@
 /* ---------- start-up: routing, polling, new-build prompt ---------- */
+// Desktop app (Electron on Windows) loses keyboard focus after a native alert/confirm/prompt box, so text
+// boxes ignore typing for a while (AIG-84). After each box, ask the app to hand focus back.
+if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', 'prompt']) {
+  const native = window[k].bind(window);
+  window[k] = (...a) => { const r = native(...a); location.href = 'aigile://refocus'; return r; };
+}
 window.addEventListener('hashchange', () => { state.editing = false; refresh(true); });
 refresh(true);
 setInterval(() => { if (!document.hidden) refresh(); }, 1000);

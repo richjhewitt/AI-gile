@@ -30,6 +30,8 @@ function open(ok) {
   win.webContents.setWindowOpenHandler(({ url }) => { if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { autoHideMenuBar: true, icon: ICON } }; shell.openExternal(url); return { action: 'deny' }; });
   win.webContents.on('will-navigate', (e, url) => {
     if (url === 'aigile://restart') { e.preventDefault(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
+    // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).
+    if (url === 'aigile://refocus') { e.preventDefault(); win.blur(); win.focus(); win.webContents.focus(); return; }
     if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); }
   });
   if (ok) win.loadURL(BASE);
