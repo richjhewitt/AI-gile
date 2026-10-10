@@ -58,6 +58,8 @@ aigile ask <proj> <id> "Should exports include archived items? I'm assuming no."
 
 This flags the card NEEDS-RICH and puts it in his inbox. Then move on to other work with `next`; don't stop the session for an answer. Always state your assumption in the question so a "fine" from Rich is enough. If something external stops a card (a missing key, a failing service), use `aigile block <proj> <id> "why" --as YourName`, and `unblock` when it clears.
 
+**Questions vs tasks.** Use `ask` for a question Rich answers in words. Use `aigile task <proj> <id> "exactly what to do, step by step" --as YourName` for something only he can *do*, such as providing an API key, logging in somewhere, or running a command on a server. Tasks get their own "Tasks for you" list in his inbox. When he clicks Done, the card comes back to you through "For the team".
+
 **6. Log decisions.** Anything Rich would otherwise ask "why did you do that?" about, and anything you decided while he was away:
 
 ```

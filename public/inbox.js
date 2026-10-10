@@ -10,11 +10,13 @@
   :root {
     --q-bg: #c81e1e; --q-fg: #fff; --q-tint: #fdecec; --q-line: #c81e1e; --q-ink: #9b1212;
     --t-bg: #e4ecff; --t-fg: #1e40af; --t-tint: #f1f5ff; --t-line: #8fa8e8; --t-ink: #1e40af;
+    --k-bg: #fff1d1; --k-fg: #7a4300; --k-tint: #fffaf0; --k-line: #e0a640; --k-ink: #7a4300;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --q-bg: #d62d2d; --q-fg: #fff; --q-tint: #2c1618; --q-line: #ef5350; --q-ink: #ff9b97;
       --t-bg: #22305a; --t-fg: #bcd0ff; --t-tint: #181e2e; --t-line: #4a5f9a; --t-ink: #a9c1ff;
+      --k-bg: #3d2e10; --k-fg: #ffd591; --k-tint: #221c10; --k-line: #a0762a; --k-ink: #ffcf7a;
     }
   }
   #inboxTop { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
@@ -24,6 +26,10 @@
   .ib-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 10px; border-radius: 99px; font-weight: 700; font-size: 13px; white-space: nowrap; }
   .ib-badge.q { background: var(--q-bg); color: var(--q-fg); }
   .ib-badge.t { background: var(--t-bg); color: var(--t-fg); font-weight: 600; border: 1px solid var(--t-line); }
+  .ib-badge.k { background: var(--k-bg); color: var(--k-fg); font-weight: 600; border: 1px solid var(--k-line); }
+  .ib-sec.k h3, .k .ib-tag { color: var(--k-ink); }
+  .ib-item.k { border-left: 6px solid var(--k-line); background: var(--k-tint); }
+  .ib-item.k textarea { min-height: 36px; }
   @media (prefers-reduced-motion: no-preference) {
     .ib-badge.q { animation: ibglow 2.8s ease-in-out infinite; }
     @keyframes ibglow { 0%, 100% { box-shadow: 0 0 0 0 transparent; } 50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--q-bg) 30%, transparent); } }
@@ -85,7 +91,11 @@
     if (!r.ok) throw new Error(j.error || r.statusText);
     return j;
   };
-  const isQuestion = c => c.status !== 'verify';   // server sends only questions and verify cards
+  // Server sends three kinds: tasks (assigned to Rich: something only he can do), questions, and verify cards.
+  const isTask = c => String(c.assignee || '').trim().toLowerCase() === 'rich';
+  const isQuestion = c => !isTask(c) && c.status !== 'verify';
+  const isTest = c => !isTask(c) && c.status === 'verify';
+  const kindOf = c => isTask(c) ? 'k' : isQuestion(c) ? 'q' : 't';
   const lastAsk = c => [...(c.comments || [])].reverse().find(m => String(m.author).trim().toLowerCase() !== 'rich')
     || { author: c.assignee || 'The team', at: c.updated, text: c.description || c.title };
   const keyOf = c => c.project + '/' + c.id;
@@ -115,7 +125,7 @@
   }
   function apply(list) {
     items = list;
-    const qs = items.filter(isQuestion);
+    const qs = items.filter(c => !isTest(c));   // questions and tasks both alert
     // New questions only: never on the first load. A fresh question on the same card counts as new.
     const keys = qs.map(c => keyOf(c) + '@' + lastAsk(c).at);
     if (loaded) {
@@ -139,12 +149,11 @@
   }
   const onInboxPage = () => location.hash === '#/inbox';
   function counts() {
-    const q = items.filter(isQuestion).length;
-    return { q, t: items.length - q };
+    return { q: items.filter(isQuestion).length, k: items.filter(isTask).length, t: items.filter(isTest).length };
   }
   function paintTop() {
-    const { q, t } = counts();
-    const label = (q ? `${q} question${q === 1 ? '' : 's'} waiting. ` : '') + (t ? `${t} to test. ` : '') || 'Nothing waiting. ';
+    const { q, k, t } = counts();
+    const label = (q ? `${q} question${q === 1 ? '' : 's'} waiting. ` : '') + (k ? `${k} task${k === 1 ? '' : 's'} to do. ` : '') + (t ? `${t} to test. ` : '') || 'Nothing waiting. ';
     let alertBtn = '';
     if (canNotify()) {
       const on = alertsOn(), blocked = Notification.permission === 'denied';
@@ -152,6 +161,7 @@
     }
     const html = `<a class="ib-btn ${onInboxPage() ? 'on' : ''}" href="#/inbox" aria-label="Inbox. ${esc(label)}" title="${esc(label)}">📥 Inbox
         ${q ? `<span class="ib-badge q">❓ ${q} question${q === 1 ? '' : 's'}</span>` : ''}
+        ${k ? `<span class="ib-badge k">📋 ${k} to do</span>` : ''}
         ${t ? `<span class="ib-badge t">🧪 ${t} to test</span>` : ''}</a>${alertBtn}`;
     const s = slot();
     if (s.dataset.sig !== html) {
@@ -219,6 +229,16 @@
       <div class="ib-err"></div>
       <div class="actions"><button class="primary" data-act="send">Send answer</button><span class="ib-hint">Your answer goes to the team and clears this question.</span></div>`;
   }
+  function kHtml(c) {
+    const a = lastAsk(c);
+    return `<div class="ib-top"><span class="ib-tag">📋 To do</span><span class="ib-proj">${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
+      <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
+      <div class="ib-who"><b>${esc(a.author)}</b> asked you ${ago(a.at)}</div>
+      <div class="ib-question">${linkify(a.text, c)}</div>
+      <textarea rows="1" placeholder="Optional note for the team. Enter marks it done." aria-label="Note for ${esc(c.id)}"></textarea>
+      <div class="ib-err"></div>
+      <div class="actions"><button class="good" data-act="taskdone">✅ Done</button><span class="ib-hint">Tells the team it's done.</span></div>`;
+  }
   function tHtml(c) {
     return `<div class="ib-top"><span class="ib-tag">🧪 To test</span><span class="ib-proj">${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">waiting ${ago(c.updated).replace(' ago', '')}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
@@ -227,7 +247,7 @@
       <div class="actions"><button class="good" data-act="accept">✅ Accept</button><button data-act="wait" title="Not sure yet: move it to the back of your queue">⏳ Wait and see</button>
       <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">Send back needs a reason: open the card</a></div>`;
   }
-  const sigOf = c => isQuestion(c) ? [c.title, lastAsk(c).at, lastAsk(c).text].join('|') : [c.title, c.updated, c.testSteps].join('|');
+  const sigOf = c => !isTest(c) ?[c.title, lastAsk(c).at, lastAsk(c).text].join('|') : [c.title, c.updated, c.testSteps].join('|');
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">
@@ -235,6 +255,7 @@
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <div id="ibEmpty"></div>
       <section class="ib-sec q" id="ibQ"><h3>❓ Questions for you <span class="ib-badge q" id="ibQn"></span></h3><div class="list"></div></section>
+      <section class="ib-sec k" id="ibK"><h3>📋 Tasks for you <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">things only you can do</span></h3><div class="list"></div></section>
       <section class="ib-sec t" id="ibT"><h3>🧪 To test <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">longest waiting first</span></h3><div class="list"></div></section>
     </div>`;
     el('ib').addEventListener('click', onClick);
@@ -254,9 +275,10 @@
       if (n && n.dataset.sig !== sig && !typing) { n.remove(); n = null; }
       if (!n) {
         n = document.createElement('div');
-        n.className = 'ib-item ' + (isQuestion(c) ? 'q' : 't');
+        const kind = kindOf(c);
+        n.className = 'ib-item ' + kind;
         n.dataset.key = k; n.dataset.sig = sig; n.dataset.project = c.project; n.dataset.id = c.id;
-        n.innerHTML = isQuestion(c) ? qHtml(c) : tHtml(c);
+        n.innerHTML = kind === 'q' ? qHtml(c) : kind === 'k' ? kHtml(c) : tHtml(c);
       }
       if (list.children[i] !== n) list.insertBefore(n, list.children[i] || null);
     });
@@ -264,11 +286,12 @@
 
   function paintPage() {
     if (!el('ib')) skeleton();
-    const qs = items.filter(isQuestion), ts = items.filter(c => !isQuestion(c));
+    const qs = items.filter(isQuestion), ks = items.filter(isTask), ts = items.filter(isTest);
     syncList(el('ibQ').querySelector('.list'), qs);
+    syncList(el('ibK').querySelector('.list'), ks);
     syncList(el('ibT').querySelector('.list'), ts);
-    el('ibQ').hidden = !qs.length; el('ibT').hidden = !ts.length;
-    el('ibQn').textContent = qs.length; el('ibTn').textContent = ts.length;
+    el('ibQ').hidden = !qs.length; el('ibK').hidden = !ks.length; el('ibT').hidden = !ts.length;
+    el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = ts.length;
     el('ibEmpty').innerHTML = items.length ? '' : '<div class="ib-empty"><div class="big">Nothing waiting on you 🎉</div><p>When a team asks a question or a feature is ready to test, it shows up here.</p></div>';
     if (flashKey) {
       const n = [...document.querySelectorAll('.ib-item')].find(x => x.dataset.key === flashKey);
@@ -280,13 +303,14 @@
   function onKey(e) {
     if (e.target.tagName === 'TEXTAREA' && e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
-      send(e.target.closest('.ib-item'));
+      const n = e.target.closest('.ib-item');
+      if (n.classList.contains('k')) taskDone(n); else send(n);
     }
   }
   function onClick(e) {
     const b = e.target.closest('button[data-act]'); if (!b) return;
     const n = b.closest('.ib-item'), act = b.dataset.act;
-    if (act === 'send') send(n); else if (act === 'accept') accept(n); else if (act === 'wait') waitAndSee(n);
+    if (act === 'send') send(n); else if (act === 'accept') accept(n); else if (act === 'wait') waitAndSee(n); else if (act === 'taskdone') taskDone(n);
   }
   const base = n => `/api/projects/${n.dataset.project}/cards/${n.dataset.id}`;
   const fail = (n, e) => { n.querySelector('.ib-err').textContent = e.message || String(e); n.dataset.sending = ''; n.querySelectorAll('button').forEach(b => b.disabled = false); };
@@ -299,6 +323,13 @@
     if (!text) { n.querySelector('.ib-err').textContent = 'Write something first.'; return; }
     lock(n);
     try { await post('POST', base(n) + '/comments', { author: 'Rich', text }); done(n, `Sent to the team on ${n.dataset.id}.`); }
+    catch (e) { fail(n, e); }
+  }
+  async function taskDone(n) {
+    if (n.dataset.sending) return;
+    const text = n.querySelector('textarea').value.trim();
+    lock(n);
+    try { await post('POST', base(n) + '/taskdone', { text }); done(n, `✅ ${n.dataset.id} done. The team has been told.`); }
     catch (e) { fail(n, e); }
   }
   async function accept(n) {

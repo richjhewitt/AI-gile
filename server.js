@@ -77,7 +77,8 @@ function listSlugs() {
 }
 
 // Rich's attention is needed if a team asked him something, or a feature is waiting for his test.
-const waitingOnRich = c => c.status === 'verify' || (c.needsYou && c.status !== 'done');
+// A card assigned to Rich is a task: something only he can do.
+const waitingOnRich = c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || isRich(c.assignee));
 
 // What agents are working on right now: cards in progress, newest activity first.
 const inFlight = p => p.cards.filter(c => c.status === 'doing')
@@ -199,7 +200,10 @@ const routes = [
   ['PATCH', /^\/api\/projects\/([^/]+)\/cards\/([^/]+)$/, ([slug, id], b) => {
     const p = need(load(slug));
     const c = findCard(p, id);
-    Object.assign(c, cleanCard(b, true), { updated: now() });
+    const changes = cleanCard(b, true);
+    // Assigning to Rich makes it his task; remember who to hand it back to when he's done.
+    if (isRich(changes.assignee) && !isRich(c.assignee)) c.prevAssignee = c.assignee;
+    Object.assign(c, changes, { updated: now() });
     save(p);
     return c;
   }],
@@ -244,7 +248,21 @@ const routes = [
     return c;
   }],
 
-  // Rich's poke: a one-line nudge on work that seems stuck. Wakes the team (it's a Rich comment)
+  // Rich finished a task the team gave him: tell them (moves to For the team) and hand it back.
+  ['POST', /^\/api\/projects\/([^/]+)\/cards\/([^/]+)\/taskdone$/, ([slug, id], b) => {
+    const p = need(load(slug));
+    const c = findCard(p, id);
+    const text = String(b.text || '').trim();
+    c.comments.push({ author: 'Rich', text: '✅ Done' + (text ? ': ' + text : ''), at: now() });
+    c.assignee = c.prevAssignee || '';
+    c.needsYou = false;
+    toTeam(c);
+    c.updated = now();
+    save(p);
+    return c;
+  }],
+
+  // Rich's poke:a one-line nudge on work that seems stuck. Wakes the team (it's a Rich comment)
   // but, unlike a reply, leaves the card where it is.
   ['POST', /^\/api\/projects\/([^/]+)\/cards\/([^/]+)\/poke$/, ([slug, id]) => {
     const p = need(load(slug));

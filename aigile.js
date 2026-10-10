@@ -25,6 +25,7 @@ WORKING
   assign <proj> <id> NAME
   comment <proj> <id> "text" --as NAME
   ask <proj> <id> "question" --as NAME    comment + flags the card as needing Rich
+  task <proj> <id> "what to do" --as NAME something only Rich can do (key, login, manual step): goes to his inbox
   test <proj> <id> "steps Rich can follow" --as NAME    -> moves to verify, sets testSteps, comments
   block <proj> <id> ["why"] --as NAME     unblock <proj> <id>
   edit <proj> <id> [--title --desc --type --priority --sprint --assignee --test-steps]
@@ -116,9 +117,10 @@ const out = (flags, data, fmt) => console.log(flags.json ? JSON.stringify(data, 
 
 // ---- next ----
 const lastComment = c => c.comments[c.comments.length - 1];
+const forRich = c => String(c.assignee || '').trim().toLowerCase() === 'rich'; // a task only Rich can do
 const byPrio = (a, b) => (PRIO[a.priority] ?? 2) - (PRIO[b.priority] ?? 2) || a.created.localeCompare(b.created);
 function nextList(p) {
-  const live = p.cards.filter(c => !c.blocked && !(c.needsYou));
+  const live = p.cards.filter(c => !c.blocked && !c.needsYou && !forRich(c));
   const fromRich = c => { const m = lastComment(c); return c.status === 'team' || (m && m.author.toLowerCase() === 'rich' && !['done', 'verify', 'backlog'].includes(c.status)); };
   const tiers = [];
   const sentBack = live.filter(fromRich).sort(byPrio);
@@ -184,7 +186,7 @@ const cmds = {
     o.push(...sect('For the team (Rich commented: do first)', by('team').map(c => short(c) + (lastComment(c) ? `  <- "${lastComment(c).text.slice(0, 100).replace(/\n/g, ' ')}"` : ''))));
     o.push(...sect('In flight', by('doing').map(c => short(c) + ` (${when(c.updated)})`)));
     o.push(...sect('In review', by('review').map(short)));
-    o.push(...sect('Waiting on Rich', p.cards.filter(c => c.status === 'verify' || (c.needsYou && c.status !== 'done')).map(c => short(c) + (c.status === 'verify' ? ' (testing)' : ' (question)'))));
+    o.push(...sect('Waiting on Rich', p.cards.filter(c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || forRich(c))).map(c => short(c) + (forRich(c) ? ' (task for him)' : c.status === 'verify' ? ' (testing)' : ' (question)'))));
     o.push(...sect('Blocked', p.cards.filter(c => c.blocked && c.status !== 'done').map(short)));
     const nxt = nextList(p).flatMap(([, cs]) => cs).filter(c => c.status === 'todo');
     o.push(...sect('Next up (todo)', nxt.map(short), 5));
@@ -208,7 +210,7 @@ const cmds = {
       o.push(title);
       for (const c of cs) { o.push((first ? '  >> ' : '     ') + line(c)); first = false; }
     }
-    const waiting = p.cards.filter(c => (c.blocked || c.needsYou || c.status === 'verify') && c.status !== 'done');
+    const waiting = p.cards.filter(c => (c.blocked || c.needsYou || forRich(c) || c.status === 'verify') && c.status !== 'done');
     if (waiting.length) { o.push('Waiting (not yours to pick up)'); waiting.forEach(c => o.push('     ' + line(c) + (c.status === 'verify' ? '  (Rich testing)' : ''))); }
     if (first) o.unshift('Nothing ready. Check backlog (aigile list ' + slug + ' --status backlog) or ask Rich.');
     else o.push('', `Start: aigile move ${slug} <id> doing   |   details: aigile show ${slug} <id>`);
@@ -281,6 +283,17 @@ const cmds = {
     await api('PATCH', C(slug, pos[1]), { status: 'verify', testSteps: steps, needsYou: false });
     const c = await api('POST', C(slug, pos[1]) + '/comments', { author, text: 'Ready for you to test. Steps are on the card.', needsYou: false });
     out(flags, c, c => 'handed to Rich: ' + line(c));
+  },
+
+  // Something only Rich can do (a key, a login, a manual step): assigns the card to him with the instructions.
+  // It shows in his inbox under "Tasks for you"; when he clicks Done it comes back to you via "For the team".
+  async task({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const author = who(flags);
+    const what = await text(pos[2], 'what Rich needs to do');
+    await api('PATCH', C(slug, pos[1]), { assignee: 'Rich', needsYou: false });
+    const c = await api('POST', C(slug, pos[1]) + '/comments', { author, text: what, needsYou: false });
+    out(flags, c, c => `task for Rich on ${c.id}: it's in his inbox. Carry on with other work (aigile next ${slug}).`);
   },
 
   async block({ pos, flags }) {
