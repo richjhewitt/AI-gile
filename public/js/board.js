@@ -104,7 +104,7 @@ function lanesOf(p, by) {
 }
 // The columns for a set of cards: the whole board, or one lane of it.
 function columnsHtml(p, pool) {
-  return colsOf(p).filter(c => !c.hidden).map(col => {
+  return colsOf(p).filter(c => !c.hidden && (!fyFocus(p.slug) || c.key === 'verify')).map(col => {
     const k = col.key, label = (col.emoji ? col.emoji + ' ' : '') + col.name, tint = col.color ? ` style="--colc:${esc(col.color)}"` : '';
     if (k === 'verify') return forYouColumn(p, label, tint, pool, col.wip);
     const cs = pool.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => b.updated.localeCompare(a.updated));
@@ -130,14 +130,26 @@ function forYouFirst(k) {
   if (!state.forYouFirst) { try { state.forYouFirst = localStorage.getItem('aigile.forYouFirst'); } catch {} }
   return state.forYouFirst || 'q';
 }
-function forYouColumn(p, label = 'For you', tint = '', pool = p.cards, wip = 0) {
+// The For you queue in board order; the card panel uses it to open the next one (AIG-141).
+function forYouQueue(p, pool = p.cards) {
   const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : 1 + KINDS.findIndex(([k]) => k === kindOf(c));
   // Within a kind, a queue: longest-waiting first, so 'Wait and see' sends a test to the back.
-  const cs = pool.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || a.updated.localeCompare(b.updated));
+  return pool.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || a.updated.localeCompare(b.updated));
+}
+// Focus (AIG-141): click the For you header to see only that column; remembered per project.
+function fyFocus(s, set) {
+  state.fyFocus = state.fyFocus || {};
+  if (set !== undefined) { state.fyFocus[s] = set; try { set ? localStorage.setItem('aigile.fyFocus.' + s, '1') : localStorage.removeItem('aigile.fyFocus.' + s); } catch {} refresh(true); }
+  if (!(s in state.fyFocus)) { try { state.fyFocus[s] = !!localStorage.getItem('aigile.fyFocus.' + s); } catch { state.fyFocus[s] = false; } }
+  return state.fyFocus[s];
+}
+function forYouColumn(p, label = 'For you', tint = '', pool = p.cards, wip = 0) {
+  const first = forYouFirst();
+  const cs = forYouQueue(p, pool);
   const n = k => cs.filter(c => kindOf(c) === k).length;
   const chips = KINDS.map(([k, label]) => `<button class="fy-chip ${k === first ? 'on' : ''}" data-first="${k}" title="Show these first" onclick="forYouFirst('${k}')">${label} ${n(k)}</button>`).join('');
   const all = p.cards.filter(forYou).length;
-  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, wip)}</span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
+  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${fyFocus(p.slug) ? 'Show all columns' : 'Show only this column'}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${fyFocus(p.slug) ? 'Show all columns' : 'Show only this column'}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
 }
 
 // show = the project's card view choices (board cards only); the card panel passes nothing and shows all.

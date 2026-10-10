@@ -260,3 +260,9 @@ body.desktop.pop .panel > .actions:first-child button { -webkit-app-region: no-d
 /* ---------- your own steps inside a column (AIG-117) ---------- */
 .colrow input.steps, .colrow span.steps { flex: 1.3; }
 .column.step h3 span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- For you focus (AIG-141) ---------- */
+.fy-head { cursor: pointer; }
+.fy-head:hover { text-decoration: underline; }
+/* Anything floating over the top bar must stay clickable, not drag the window (AIG-142). */
+body.desktop #updateTop, body.desktop #updateTop button, body.desktop .overlay, body.desktop .att-lightbox { -webkit-app-region: no-drag; }

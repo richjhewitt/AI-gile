@@ -322,7 +322,7 @@ def('card', 'tabs, reply survives polling, Enter sends, Accept, Wait and see, fo
   const before = (await getCard(s, 'alpha', 'ALP-1')).updated;
   await page.click('.ctab[data-ctab=test]');
   await page.click('button[onclick="waitAndSee()"]');
-  await page.waitForSelector('#modal .panel', { state: 'detached' });
+  await sleep(700);   // the panel closes, or opens the next For you card (AIG-141)
   const w = await getCard(s, 'alpha', 'ALP-1');
   check('Wait and see closes panel, keeps verify, moves to back', w.status === 'verify' && w.updated >= before && !page.url().endsWith('ALP-1'), [w.status, page.url()]);
 
@@ -331,7 +331,7 @@ def('card', 'tabs, reply survives polling, Enter sends, Accept, Wait and see, fo
   await page.waitForSelector('#r-text');
   await page.fill('#r-text', 'thanks, carry on');
   await page.press('#r-text', 'Enter');
-  await page.waitForSelector('#modal .panel', { state: 'detached' });
+  await sleep(700);   // the panel closes, or opens the next For you card (AIG-141)
   const c2 = await getCard(s, 'alpha', 'ALP-2');
   check('Enter sends and closes the panel', c2.comments.at(-1).text === 'thanks, carry on' && c2.comments.at(-1).author === 'Rich' && c2.status === 'team', [c2.status, c2.comments.at(-1)]);
 
@@ -339,8 +339,8 @@ def('card', 'tabs, reply survives polling, Enter sends, Accept, Wait and see, fo
   await page.goto(BASE + '/#/p/alpha/ALP-3');
   await page.waitForSelector('#modal .panel');
   await page.click('button.good');
-  await page.waitForSelector('#modal .panel', { state: 'detached' });
-  check('Accept closes the panel and marks done', (await getCard(s, 'alpha', 'ALP-3')).status === 'done');
+  await sleep(700);   // the panel closes, or opens the next For you card (AIG-141)
+  check('Accept marks done and leaves the card', (await getCard(s, 'alpha', 'ALP-3')).status === 'done');
 
   // Send back needs a reason (ALP-4)
   await page.goto(BASE + '/#/p/alpha/ALP-4');
@@ -349,7 +349,7 @@ def('card', 'tabs, reply survives polling, Enter sends, Accept, Wait and see, fo
   check('Send back without a reason shows an error', /Say what is wrong/.test(await page.textContent('#v-err')));
   await page.fill('#v-text', 'nope');
   await page.click('button.warn');
-  await page.waitForSelector('#modal .panel', { state: 'detached' });
+  await sleep(700);   // the panel closes, or opens the next For you card (AIG-141)
   check('Send back moves to team', (await getCard(s, 'alpha', 'ALP-4')).status === 'team');
 
   // Edit
@@ -1310,6 +1310,29 @@ def('steps', 'your own steps inside a column: sub-columns, drag between them, st
   const moved = await getCard(s, 'alpha', c.id);
   check('dragging sets the step, status stays doing', moved.step === 'Build' && moved.status === 'doing', moved);
   check('team sees plain status', /\[doing\]/.test(s.cli(['show', 'alpha', c.id]).out));
+  noErrors(page);
+}, true);
+
+def('fynext', 'For you: focus on that column only; dealing with a card opens the next one (AIG-141)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Test one', { status: 'verify', testSteps: 'do it' });
+  await sleep(20);
+  const b = await mkCard(s, 'alpha', 'Test two', { status: 'verify', testSteps: 'do it' });
+  await mkCard(s, 'alpha', 'Other work', { status: 'doing' });
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.click('.column.foryou .fy-head');
+  await page.waitForFunction(() => document.querySelectorAll('.board .column').length === 1);
+  check('focus shows only For you', (await page.locator('.board .column').count()) === 1);
+  await page.click('.column.foryou .fy-head');
+  await page.waitForFunction(() => document.querySelectorAll('.board .column').length > 1);
+  check('click again shows all', (await page.locator('.board .column').count()) > 1);
+  await page.goto(BASE + '/#/p/alpha/' + a.id);
+  await page.click('.verdict button:has-text("Accept")');
+  await page.waitForFunction(id => location.hash.endsWith('/' + id), b.id, { timeout: 4000 }).catch(() => {});
+  check('accepting opens the next test', page.url().endsWith('/' + b.id), page.url());
+  await page.click('.verdict button:has-text("Accept")');
+  await page.waitForFunction(() => location.hash === '#/p/alpha', null, { timeout: 4000 }).catch(() => {});
+  check('last one closes back to the board', page.url().endsWith('#/p/alpha'), page.url());
   noErrors(page);
 }, true);
 

@@ -145,26 +145,32 @@ function closeCard() {
   location.hash = '#/p/' + slug();
 }
 // fixed: a one-tap answer (👍 Go on a question, AIG-75) instead of the typed one.
+// After dealing with a For you card, open the next one in the queue instead of closing (AIG-141).
+function nextForYou() { const q = forYouQueue(state.project).map(c => c.id), i = q.indexOf(cardId()); return i < 0 ? null : q[i + 1] || q[i - 1] || null; }
+function doneWithCard(next) {
+  if (next && !state.route.pop) { state.editing = false; location.hash = '#/p/' + slug() + '/' + next; } else closeCard();
+}
 async function sendReply(fixed) {
-  const t = fixed || $('r-text').value.trim(), key = slug() + '/' + cardId();
+  const next = nextForYou(), t = fixed || $('r-text').value.trim(), key = slug() + '/' + cardId();
   if (!t && !Attach.has(key)) { setErr('r-err', 'Write something first'); return; }
   try {
     const attachments = fixed ? [] : await Attach.upload(key, slug());
     await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: me(), text: t, attachments });
     if (!fixed) Attach.clear(key);
-    closeCard();
+    doneWithCard(next);
   } catch (err) { setErr('r-err', err); }
 }
 async function waitAndSee() {
-  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); closeCard(); } catch (err) { setErr('v-err', err); }
+  const next = nextForYou();
+  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next); } catch (err) { setErr('v-err', err); }
 }
 async function verdict(accept) {
-  const t = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';
+  const next = nextForYou(), t = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';
   if (!accept && !t && !Attach.has(key)) { setErr('v-err', 'Say what is wrong before sending it back'); $('v-text').focus(); return; }
   try {
     const attachments = await Attach.upload(key, slug());
     await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { accept, text: t, attachments });
     Attach.clear(key);
-    closeCard();
+    doneWithCard(next);
   } catch (err) { setErr('v-err', err); }
 }
