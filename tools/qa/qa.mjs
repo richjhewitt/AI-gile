@@ -942,6 +942,11 @@ def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, 
   await page.goto(BASE + '/#/');
   await page.waitForSelector('a.proj');
   check('home card shows the emoji', (await page.textContent('a.proj[href="#/p/tunio"] h2')).includes('🎵'));
+  // Waiting on you folds away, closed by default, and stays open through the 1s redraw (AIG-105).
+  check('Waiting on you starts closed', !(await page.$eval('details.inbox', d => d.open)));
+  await page.click('details.inbox summary');
+  await sleep(1500);
+  check('stays open after redraws', await page.$eval('details.inbox', d => d.open));
   await page.goto(BASE + '/#/p/tunio');
   await page.click('button:has-text("Look")');
   await page.fill('#look-emoji', '🎸');

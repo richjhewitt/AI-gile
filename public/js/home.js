@@ -18,8 +18,8 @@ function usageStrip(u) {
 }
 
 function renderHome() {
-  const inbox = state.inbox.length ? `<div class="inbox"><h3>Waiting on you (${state.inbox.length})</h3><ul>${state.inbox.map(c =>
-    `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${esc(c.projectEmoji || '')} ${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></div>` : '';
+  const inbox = state.inbox.length ? `<details class="inbox" ${state.waitOpen ? 'open' : ''} ontoggle="state.waitOpen = this.open"><summary><h3>Waiting on you (${state.inbox.length})</h3></summary><ul>${state.inbox.map(c =>
+    `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${esc(c.projectEmoji || '')} ${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></details>` : '';   // closed by default (AIG-105)
   const cards = state.projects.map(p => {
     const active = p.total - p.counts.backlog;
     const at = p.attention;

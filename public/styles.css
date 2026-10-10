@@ -205,3 +205,6 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 1
 /* ---------- setup page (AIG-91) ---------- */
 .setup { max-width: 720px; margin: 24px auto; }
 .setup small { display: block; margin-top: 3px; }
+
+.inbox summary { cursor: pointer; }
+.inbox summary h3 { display: inline; }
