@@ -12,6 +12,7 @@ How Rich's AI dev teams work, in every project. Read this at the start of every 
 ## Writing on the board
 Every card description, test step, question and comment is **short bullet points, no faff**:
 - One idea per line, starting with `- `
+- Nicely **spaced**: a blank line between bullets, and separate groups as separate bullets; never a dense one-line list (Rich sent LOC-39 back as "too hard to read")
 - Plain words; bold (`**like this**`) only the thing to click or look at
 - No paragraphs, no background stories, no "I have now..." preambles
 - Test steps: what to click, then what he should see
