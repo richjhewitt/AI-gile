@@ -27,6 +27,7 @@ const $ = id => document.getElementById(id);
 function parseRoute() {
   if (location.hash === '#/inbox') return { view: 'inbox' };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
+  if (location.hash === '#/setup') return { view: 'setup' };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
   return m ? { view: 'project', slug: m[1], card: m[2] || null } : { view: 'home' };
 }
@@ -55,6 +56,9 @@ async function refresh(force) {
       const q = state.showArchived ? '?all=1' : '';
       [state.projects, state.inbox, state.usage] = await Promise.all([api('GET', '/api/projects' + q), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false }))]);
       sig = JSON.stringify([state.route, state.projects, state.inbox, state.usage]);
+    } else if (state.route.view === 'setup') {
+      state.setup = await api('GET', '/api/setup');
+      sig = JSON.stringify([state.route, state.setup]);
     } else if (state.route.view === 'usage') {
       await loadUsagePage(force);   // heavy, so at most every ~15s
       sig = JSON.stringify([state.route, uzSig()]);
@@ -95,6 +99,7 @@ function render() {
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'setup') { $('crumb').textContent = '/ Setup'; if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ Usage'; $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
   $('crumb').textContent = '/ ' + (p.emoji ? p.emoji + ' ' : '') + p.name;

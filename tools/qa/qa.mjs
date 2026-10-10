@@ -995,6 +995,27 @@ def('owner', 'the board works for any owner name, not just Rich (AIG-103)', asyn
   noErrors(page);
 }, true, { AIGILE_OWNER: 'Sam' });
 
+def('setup', 'a new install opens Setup; saving writes the local settings file (AIG-91)', async (s, ctx) => {
+  const file = process.env.QA_SETUP_FILE;
+  check('new install needs setup', (await s.ok('GET', '/api/meta')).setupNeeded === true);
+  const page = await openPage(ctx, '#/');
+  await page.waitForFunction(() => location.hash === '#/setup', null, { timeout: 8000 }).catch(() => {});
+  await page.waitForSelector('#setupForm');
+  check('board opens Setup first', page.url().endsWith('#/setup'));
+  check('name is required', (await s.api('POST', '/api/setup', { owner: '' })).status === 400);
+  await page.fill('input[data-key="owner"]', 'Sam');
+  await page.fill('input[data-key="agent.command"]', 'C:/tools/agent.exe');
+  await page.fill('input[data-key="agent.notesFile"]', 'NOTES.local.md');
+  await page.fill('input[data-key="agent.settingsFile"]', '.agent/settings.local.json');
+  await page.click('#setupForm button[type=submit]');
+  await page.waitForSelector('#setup-done:has-text("ready")');
+  const saved = JSON.parse(fs.readFileSync(file, 'utf8'));
+  check('saved to the local settings file', saved.owner === 'Sam' && saved.agent.command === 'C:/tools/agent.exe' && saved.agent.settingsFile === '.agent/settings.local.json', saved);
+  const m = await s.ok('GET', '/api/meta');
+  check('setup done and the name is used at once', m.setupNeeded === false && m.owner === 'Sam', m);
+  noErrors(page);
+}, true, { AIGILE_LOCAL: (process.env.QA_SETUP_FILE = path.join(tmp('setup'), 'aigile.local.json')) });
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

@@ -201,3 +201,7 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 1
   .dialog.newcard { width: min(960px, 92vw); }
   .dialog.newcard #f-description { min-height: 42vh; }
 }
+
+/* ---------- setup page (AIG-91) ---------- */
+.setup { max-width: 720px; margin: 24px auto; }
+.setup small { display: block; margin-top: 3px; }

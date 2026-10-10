@@ -18,6 +18,8 @@ async function checkBuild() {
     if (m.owner && m.owner !== state.owner) { state.owner = m.owner; refresh(true); }
     setNight(m.quiet);
     pokeBadge(await api('GET', '/api/projects'));
+    // A new install opens Setup first (AIG-91).
+    if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';
     if (loadedBuild === null) { loadedBuild = m.build; return; }
     if (m.dev && m.build !== loadedBuild && !$('upRefresh').firstChild)
       $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="The board has been updated: refresh to get the latest version">🆕 Refresh</button>`;

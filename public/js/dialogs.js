@@ -102,6 +102,28 @@ async function doConnect() {
   } catch (e) { setErr('c-err', e); }
 }
 
+/* ---------- setup page (AIG-91) ---------- */
+// ---- setup: your name and where the agent lives on this computer, saved to aigile.local.json ----
+function renderSetup() {
+  const s = state.setup;
+  return `<div class="setup"><h2>⚙️ Setup</h2>
+    <p class="muted">${s.needed ? 'Welcome! Fill these in once and the board is ready.' : 'Your settings on this computer. They stay on this computer (not in git).'}</p>
+    <form id="setupForm" onsubmit="return saveSetupPage(event)">
+      ${s.fields.map(f => `<label class="f"><span>${esc(f.label)}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}"><small class="muted">${esc(f.help)}</small></label>`).join('')}
+      <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
+      <div class="actions"><button class="primary" type="submit">Save</button></div></form></div>`;
+}
+async function saveSetupPage(e) {
+  e.preventDefault();
+  const body = Object.fromEntries([...document.querySelectorAll('#setupForm input[data-key]')].map(i => [i.dataset.key, i.value]));
+  try {
+    state.setup = await api('POST', '/api/setup', body);
+    $('setup-err').textContent = '';
+    $('setup-done').textContent = state.setup.needed ? 'Saved. Still needed: the agent program, notes file and settings file.' : '✅ Saved. The board is ready.';
+  } catch (err) { setErr('setup-err', err); }
+  return false;
+}
+
 /* ---------- project look (AIG-86) ---------- */
 // ---- look: the colour and emoji that mark this project in the inbox, tabs and home page ----
 function lookDialog() {
