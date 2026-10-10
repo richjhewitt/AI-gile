@@ -687,6 +687,13 @@ def('mdlinks', 'Any .md path in card text opens in the board', async (s, ctx) =>
   check('route: absolute outside refused', [400, 404].includes((await get(path.join(root, 'outside.md'))).status));
   check('route: non-.md refused', (await get('notes.txt')).status === 400);
   check('route: missing is 404', (await get('protocol/none.md')).status === 404);
+  // A card can mention another project's file (AIG-85): found there, and the name says where.
+  const other = path.join(tmp('mdlinks2'), 'Migration to dual OS setup');
+  fs.mkdirSync(path.join(other, 'audit'), { recursive: true });
+  fs.writeFileSync(path.join(other, 'audit', 'INVENTORY.md'), '# Inventory\n');
+  await mkProject(s, 'Migration', 'MIG', { path: other });
+  const cross = await get('setup\\audit\\INVENTORY.md');
+  check('route: file from another project', cross.status === 200 && cross.body.name === 'Migration: audit/INVENTORY.md' && cross.body.project === 'migration', cross.body);
   const c = await mkCard(s, 'alpha', 'Links', { description: 'See protocol/X.md for the rules.\n\n```\n' + abs + '\n```\n\nAlso `' + abs + '`' });
   const page = await openPage(ctx, '#/p/alpha/' + c.id);
   await page.waitForSelector('.desc a[data-p="protocol/X.md"]');
