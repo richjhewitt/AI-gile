@@ -24,6 +24,7 @@ Every card description, test step, question and comment is **short bullet points
 - Questions go on the board (`ask`), and so do things only Rich can do (`task`). In chat, just say "question on the board".
 - Hand finished work over with `test` and steps Rich can follow in under a minute. Only Rich moves work to done.
 - Anything Rich should look at, even just to read and accept, goes to **For you to test** (`test`). **Team checking** (`review`) is only for teammates checking each other's work; Rich doesn't look there.
+- **DMs** (cards starting with 💬) are Rich messaging the lead. Answer with a short `comment`: it lands in his chat. If it's an idea, make the cards for it (backlog, small chunks), reply with their ids and a 2 to 3 bullet plan, and wait for his go.
 - Log real decisions (`log --decision`), especially ones made while Rich is away.
 - When idle, keep `aigile wait <project>` running in the background so Rich's comments wake you.
 
