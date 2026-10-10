@@ -10,7 +10,9 @@ function presenceHtml(p, withWake) {
   const logBtn = withWake && p.path ? ` <button onclick="agentLog(event, '${p.slug}')">📄 Log</button>` : '';
   if (pr.running) return `<span class="pres on">🟢 Working in the background</span> <span class="muted">since ${ago(pr.startedAt)}</span>${withWake ? ` <button onclick="restartTeam(event, '${p.slug}')">⟳ Restart</button>` : ''}${logBtn}`;
   // Online without a run of ours = a session Rich opened himself (a terminal or VS Code window).
-  if (pr.online) return `<span class="pres on" title="A session you opened: type to it in its own window">🖥️ Working in a window</span> <span class="muted">heard ${ago(pr.lastHeard)}</span>`;
+  // Where a session you opened runs (AIG-107): the CLI and hooks report VS Code or a terminal.
+  const place = pr.where === 'vscode' ? '🧩 Working in VS Code' : pr.where === 'terminal' ? '🖥️ Working in a terminal' : '🖥️ Working in a window';
+  if (pr.online) return `<span class="pres on" title="A session you opened: type to it in its own window">${place}</span> <span class="muted">heard ${ago(pr.lastHeard)}</span>`;
   const btn = withWake && p.path ? ` <button class="primary" onclick="wakeTeam(event, '${p.slug}')">▶ Wake the team</button>` : withWake ? ` <span class="muted">(connect a folder to wake it)</span>` : '';
   return `<span class="pres off">💤 Team asleep</span>${pr.lastHeard ? ` <span class="muted">last heard ${ago(pr.lastHeard)}</span>` : ''}${btn}${logBtn}`;
 }

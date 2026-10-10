@@ -8,6 +8,7 @@ const path = require('path');
 
 const { PORT, HOST, DATA, PUBLIC, bad } = require('./lib/store');
 const makeRoutes = require('./lib/routes');
+const { heard } = require('./lib/presence');
 
 fs.mkdirSync(DATA, { recursive: true });
 
@@ -63,6 +64,9 @@ const server = http.createServer(async (req, res) => {
   try {
     if (pathname.startsWith('/api/')) {
       guard(req);
+      // Any CLI or hook call from a session you opened counts as that team being at work (AIG-107).
+      const where = req.headers['x-aigile-where'], pm = pathname.match(/^\/api\/projects\/([^/]+)/);
+      if (pm && (where === 'vscode' || where === 'terminal')) heard(pm[1], where);
       for (const [method, re, fn] of routes) {
         const m = pathname.match(re);
         if (m && method === req.method) {

@@ -475,6 +475,11 @@ def('presence', 'asleep -> online; Wake/comment start a background run (log, one
   check('online after an updates call (api)', (await s.ok('GET', '/api/projects/alpha')).presence.online === true);
   await page.waitForFunction(() => /in a window/.test(document.getElementById('teamTop').textContent), null, { timeout: 4000 }).catch(() => {});
   check('page says working in a window', /Working in a window/.test(await page.textContent('#teamTop')), await page.textContent('#teamTop'));
+  // AIG-107: a CLI call from VS Code marks the team as at work there, and blocks a background run on top.
+  const vs = s.cli(['show', 'alpha', 'ALP-1'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '' });
+  check('CLI from VS Code reports where', (await s.ok('GET', '/api/projects/alpha')).presence.where === 'vscode', vs);
+  await page.waitForFunction(() => /VS Code/.test(document.getElementById('teamTop').textContent), null, { timeout: 4000 }).catch(() => {});
+  check('page says working in VS Code', /Working in VS Code/.test(await page.textContent('#teamTop')), await page.textContent('#teamTop'));
   const hf = await s.ok('POST', '/api/limits', { cwd: folder + '-b', rate_limits: { five_hour: { used_percentage: 1 } } });
   check('status line report marks the folder online', hf.ok && (await s.ok('GET', '/api/projects/beta')).presence.online === true);
 

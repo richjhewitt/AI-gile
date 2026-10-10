@@ -9,6 +9,9 @@ const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 's
 // The board's human (AIG-103): "owner" in aigile.local.json next to this file, default Rich.
 const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.parse(require('fs').readFileSync(process.env.AIGILE_LOCAL || require('path').join(__dirname, 'aigile.local.json'), 'utf8')).owner || '').trim() || 'Rich'; } catch { return 'Rich'; } })();
 
+// Where this session runs, so the board can show it and knows a session is at work (AIG-107).
+const WHERE = process.env.AIGILE_BACKGROUND ? 'background' : process.env.VSCODE_PID || process.env.TERM_PROGRAM === 'vscode' ? 'vscode' : 'terminal';
+
 const HELP = `aigile: the AI-gile board CLI.  Project = slug, name or key (case-insensitive).
 Set AIGILE_URL to change the server (default http://localhost:4321). Set AIGILE_AS=NAME to skip --as.
 Text args can be "-" to read from stdin (handy for multi-line).
@@ -78,7 +81,7 @@ async function text(v, what) {
 async function api(method, path, body) {
   let res;
   try {
-    res = await fetch(BASE + path, { method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
+    res = await fetch(BASE + path, { method, headers: { 'Content-Type': 'application/json', 'X-Aigile-Where': WHERE }, body: body === undefined ? undefined : JSON.stringify(body) });
   } catch {
     die(`AI-gile isn't running: start it with node server.js in ${__dirname}  (tried ${BASE})`);
   }
