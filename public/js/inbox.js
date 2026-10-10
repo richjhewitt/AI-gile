@@ -251,7 +251,7 @@
       <div class="ib-question">${linkify(a.text, c)}</div>
       <textarea rows="2" placeholder="Type your answer. Enter sends, Shift+Enter adds a new line." aria-label="Your answer to ${esc(c.id)}"></textarea>
       <div class="ib-err"></div>
-      <div class="actions">${c.blocked ? '' : '<button class="good" data-act="go" title="Sends GO as your answer">👍 Go</button>'}<button class="primary" data-act="send">Send answer</button><span class="ib-hint">Your answer goes to the team and clears this question.</span></div>`;
+      <div class="actions">${c.blocked ? '' : '<button class="good" data-act="go" title="Sends GO as your answer">👍 Go</button>'}<button class="primary" data-act="send">Send answer</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">Your answer goes to the team and clears this question.</span></div>`;
   }
   function kHtml(c) {
     const a = lastAsk(c);
@@ -396,10 +396,15 @@
   // fixed: a one-tap answer (👍 Go, AIG-75) instead of the typed one.
   async function send(n, fixed) {
     if (n.dataset.sending) return;
-    const ta = n.querySelector('textarea'), text = fixed || ta.value.trim();
-    if (!text) { n.querySelector('.ib-err').textContent = 'Write something first.'; return; }
+    const ta = n.querySelector('textarea'), text = fixed || ta.value.trim(), key = n.dataset.project + '/' + n.dataset.id;
+    if (!text && !Attach.has(key)) { n.querySelector('.ib-err').textContent = 'Write something first.'; return; }
     lock(n);
-    try { await post('POST', base(n) + '/comments', { author: 'Rich', text }); done(n, `Sent to the team on ${n.dataset.id}.`); }
+    try {
+      const attachments = fixed ? [] : await Attach.upload(key, n.dataset.project);
+      await post('POST', base(n) + '/comments', { author: 'Rich', text, attachments });
+      if (!fixed) Attach.clear(key);
+      done(n, `Sent to the team on ${n.dataset.id}.`);
+    }
     catch (e) { fail(n, e); }
   }
   async function taskDone(n) {

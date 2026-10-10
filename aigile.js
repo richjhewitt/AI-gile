@@ -105,12 +105,14 @@ function who(flags) {
 const flagsOf = c => (c.blocked ? ' BLOCKED' : '') + (c.needsYou ? ' NEEDS-RICH' : '');
 const line = c => `${c.id} [${c.status}] ${c.type}/${c.priority}${c.assignee ? ' @' + c.assignee : ''}${c.sprint ? ' (' + c.sprint + ')' : ''}${flagsOf(c)}  ${c.title}`;
 const when = s => (s || '').replace('T', ' ').slice(0, 16);
+// Attached files (AIG-77), one per line with the full path so the agent can open them.
+const files = (m, pad) => (m.attachments || []).map(a => `\n${pad}📎 ${a.name}: ${a.path}`).join('');
 function full(c) {
   const o = [line(c)];
   if (c.description) o.push('', 'Description:', c.description);
   if (c.testSteps) o.push('', 'Test steps:', c.testSteps);
   o.push('', `Conversation (${c.comments.length}):`);
-  for (const m of c.comments) o.push(`  [${when(m.at)}] ${m.author}: ${m.text.replace(/\n/g, '\n    ')}`);
+  for (const m of c.comments) o.push(`  [${when(m.at)}] ${m.author}: ${m.text.replace(/\n/g, '\n    ')}` + files(m, '    '));
   if (!c.comments.length) o.push('  (none)');
   return o.join('\n');
 }
@@ -343,7 +345,7 @@ const cmds = {
     const o = [];
     for (const c of u.cards) {
       o.push(`${c.id} [${c.status}${c.prevStatus && c.status === 'team' ? ', was ' + c.prevStatus : ''}] ${c.type}/${c.priority}  ${c.title}`);
-      for (const it of c.items) o.push(`   ${it.kind === 'new card' ? 'Rich raised it' : it.kind === 'poke' ? 'Rich POKED (reply with a one-line status comment, leave the card where it is)' : 'Rich'} (${when(it.at)}): ${it.text.replace(/\n/g, '\n     ') || '(no description)'}`);
+      for (const it of c.items) o.push(`   ${it.kind === 'new card' ? 'Rich raised it' : it.kind === 'poke' ? 'Rich POKED (reply with a one-line status comment, leave the card where it is)' : 'Rich'} (${when(it.at)}): ${it.text.replace(/\n/g, '\n     ') || (it.attachments ? '' : '(no description)')}` + files(it, '     '));
     }
     const waiting = u.forTeam.filter(f => !u.cards.some(c => c.id === f.id));
     if (waiting.length) o.push(`Still in "For the team" (seen before): ${waiting.map(f => f.id + ' ' + f.title).join('; ')}`);

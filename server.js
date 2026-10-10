@@ -24,15 +24,18 @@ const routes = makeRoutes(() => ({ dev: DEV, build: build() }));
 /* ---------- http plumbing ---------- */
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json' };
 
+// Attachments show inline only for these types; anything else downloads.
+const ATTACH_MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.pdf': 'application/pdf', '.txt': 'text/plain; charset=utf-8', '.md': 'text/plain; charset=utf-8', '.log': 'text/plain; charset=utf-8' };
+
 function send(res, code, body) {
   res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
   res.end(JSON.stringify(body, null, 2));
 }
 
-function readBody(req) {
+function readBody(req, max = 1e6) {
   return new Promise((resolve, reject) => {
     let s = '';
-    req.on('data', d => { s += d; if (s.length > 1e6) req.destroy(); });
+    req.on('data', d => { s += d; if (s.length > max) req.destroy(); });
     req.on('end', () => {
       if (!s) return resolve({});
       try { resolve(JSON.parse(s)); } catch { reject(bad('body must be JSON')); }
@@ -48,8 +51,15 @@ const server = http.createServer(async (req, res) => {
       for (const [method, re, fn] of routes) {
         const m = pathname.match(re);
         if (m && method === req.method) {
-          const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req) : {};
-          return send(res, 200, fn(m.slice(1), body, url.searchParams));
+          // Attachment uploads are base64 files up to 10 MB, so they get a bigger body limit.
+          const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, pathname.endsWith('/attachments') ? 15e6 : 1e6) : {};
+          const out = fn(m.slice(1), body, url.searchParams);
+          // A route can answer with a file instead of JSON: { __file: absolute path }.
+          if (out && out.__file) {
+            res.writeHead(200, { 'Content-Type': ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+            return fs.createReadStream(out.__file).pipe(res);
+          }
+          return send(res, 200, out);
         }
       }
       throw bad('no such endpoint: ' + req.method + ' ' + pathname, 404);

@@ -5,7 +5,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 ## Run and test
 - Server: `node server.js` (or `start-aigile.bat`) -> http://localhost:4321. `AIGILE_PORT` and `AIGILE_DATA` change the port and data folder; `AIGILE_DEV=1` adds the "new version, refresh" prompt.
 - CLI: `node aigile.js help` (`AIGILE_URL` points it at another server; `AIGILE_AS` sets the author).
-- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `quietinbox`, `poke`, `docs`, `mdlinks`, `newproject`, `perms`, `gobutton`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
+- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `quietinbox`, `poke`, `docs`, `mdlinks`, `newproject`, `perms`, `gobutton`, `attach`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
 
 ## Server
 | File | What |
@@ -16,6 +16,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `lib/onboard.js` | `connectFolder`: marked notes block, merged comment hooks and default team permissions, git init for a new folder, git exclude; `getPermissions`/`setPermissions` and the `PRESETS` ticks for the 🔐 Permissions dialog |
 | `lib/presence.js` | Team presence (`heard`, `presenceOf`, `heardFromFolder`) and the background runner: `startTeam`/`nudge` (agent command run hidden in the project folder, log in `data/logs/<slug>.log`, one run per team), `restartTeam`, `logTail` |
 | `lib/quiet.js` | Going quiet: `setQuiet` (📣 card to every team with open work, starts sleeping ones, night mode file `data/quiet.state`), `quietSince` |
+| `lib/attachments.js` | Files attached to replies (AIG-77): `saveAttachment` (base64 upload, 10 MB), `attachmentsFor` (checks a comment's ids), `fileOf`; stored in `data/attachments/<slug>/` |
 | `lib/limits.js` | `recordLimits` / `limitsHistory` for the plan usage log |
 | `lib/usage.js` | Token usage per project, read from the agents' local session logs |
 | `aigile.js` | The CLI: `HELP` text, arg parsing, `api()`, `nextList` (what to work on), then one function per command under "commands" |
@@ -31,6 +32,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `js/inbox.js` | Top-bar inbox button, the `#/inbox` page, alerts; self-contained |
 | `js/core.js` | `state`, `api`, `esc`, `ago`, the router (`parseRoute`), `busy`/`refresh`/`render` (the 1s poll never wipes typing), `slug`/`curCard`/`setErr` |
 | `js/format.js` | Card text: `withCode`, `spaceBullets`, `linkify`, `.md` links (`mdLinks`, opened by `showDocPath` in dialogs.js); `md` (Docs renderer) |
+| `js/attach.js` | `Attach`: 📎 button, paste-a-screenshot and pending chips for any reply box (card and inbox), `upload` on send, `shown` thumbnails under comments |
 | `js/filters.js` | Search and filter bar |
 | `js/home.js` | Home page: `renderHome`, project bars, usage strip |
 | `js/board.js` | In flight and presence, `renderBoard`, `cardHtml`, `poke`, drag and drop |

@@ -783,6 +783,58 @@ def('gobutton', '👍 Go answers a question in one tap, in the inbox and on the 
   noErrors(page);
 }, true);
 
+def('attach', 'paste or attach files in replies; thumbnails; teams get the paths', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVR4nGP8z8DwnwEIGBmgACZgYAAAKfEC/tW5j8QAAAAASUVORK5CYII=';
+  const c1 = await mkCard(s, 'alpha', 'Paste here'), c2 = await mkCard(s, 'alpha', 'Inbox one');
+  check('empty upload refused', (await s.api('POST', '/api/projects/alpha/attachments', { name: 'x.png', data: '' })).status === 400);
+  check('unknown attachment is 404', (await s.api('GET', '/api/projects/alpha/attachments/zz-none.png')).status === 404);
+  check('path escape refused', [400, 404].includes((await fetch(BASE + '/api/projects/alpha/attachments/..%2F..%2Falpha.json')).status));
+
+  // Card: paste a screenshot, send with no text.
+  const page = await openPage(ctx, '#/p/alpha/' + c1.id);
+  await page.click('[data-ctab="reply"]');
+  await page.waitForSelector('#r-text');
+  await page.evaluate(b64 => {
+    const bytes = Uint8Array.from(atob(b64), ch => ch.charCodeAt(0)), dt = new DataTransfer();
+    dt.items.add(new File([bytes], 'image.png', { type: 'image/png' }));
+    const ta = document.getElementById('r-text'); ta.focus();
+    ta.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+  }, PNG);
+  await page.waitForSelector('.reply .att-chip');
+  check('pasted screenshot shows as a chip', /screenshot-.*\.png/.test(await page.textContent('.reply .att-chip')));
+  await sleep(1500);
+  check('chip survives the poll', (await page.locator('.reply .att-chip').count()) === 1);
+  await page.click('.reply button:has-text("Send reply")');
+  await sleep(600);
+  let c = await getCard(s, 'alpha', c1.id);
+  const att = (c.comments.at(-1).attachments || [])[0] || {};
+  check('comment has the attachment with a full path', /screenshot-.*\.png$/.test(att.name || '') && fs.existsSync(att.path || '-') && att.size > 0, c.comments.at(-1));
+  const r = await fetch(BASE + '/api/projects/alpha/attachments/' + encodeURIComponent(att.id));
+  check('file served as an image', r.ok && r.headers.get('content-type') === 'image/png');
+  await page.goto(BASE + '/#/p/alpha/' + c1.id);
+  await page.waitForSelector('.att-shown img');
+  await page.waitForFunction(() => document.querySelector('.att-shown img').naturalWidth > 0, null, { timeout: 4000 }).catch(() => {});
+  check('thumbnail shows in the comment', await page.evaluate(() => document.querySelector('.att-shown img').naturalWidth > 0));
+  const sh = s.cli(['show', 'alpha', c1.id]);
+  check('show prints the path', sh.out.includes('📎 ' + att.name + ': ' + att.path), sh.out);
+  const up = s.cli(['updates', 'alpha']);
+  check('updates prints the path', up.out.includes(att.path), up.out);
+
+  // Inbox: attach a file with the picker alongside text.
+  s.cli(['ask', 'alpha', c2.id, 'Logs?', '--as', 'Lead']);
+  await page.goto(BASE + '/#/inbox');
+  await page.waitForSelector(`.ib-item[data-id="${c2.id}"] input[type=file]`, { state: 'attached' });
+  await page.setInputFiles(`.ib-item[data-id="${c2.id}"] input[type=file]`, { name: 'notes.txt', mimeType: 'text/plain', buffer: Buffer.from('hello') });
+  await page.fill(`.ib-item[data-id="${c2.id}"] textarea`, 'here you go');
+  await page.click(`.ib-item[data-id="${c2.id}"] button[data-act="send"]`);
+  await sleep(800);
+  c = await getCard(s, 'alpha', c2.id);
+  const last = c.comments.at(-1);
+  check('inbox reply carries text and file', last.text === 'here you go' && last.attachments && last.attachments[0].name === 'notes.txt', last);
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

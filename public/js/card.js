@@ -74,7 +74,7 @@ function renderCard(p, c) {
       <div class="err" id="v-err"></div>
       <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button><button onclick="waitAndSee()" title="Not sure yet: hide it from your inbox for an hour">⏳ Wait and see</button></div></div>` : '';
   // Tabs: Reply (latest message on top, reply box right under it, older ones below), Details, Test.
-  const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">Latest</span>' : ''}<span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div></div>`;
+  const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">Latest</span>' : ''}<span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div>${Attach.shown(m, p.slug)}</div>`;
   const newest = [...c.comments].reverse();
   const hasTest = c.status === 'verify' || c.testSteps;
   if (state.tabFor !== c.id) { state.tabFor = c.id; state.cardTab = c.status === 'verify' ? 'test' : c.comments.length ? 'reply' : 'details'; }
@@ -89,7 +89,7 @@ function renderCard(p, c) {
       ${newest.length ? msg(newest[0], true) : '<p class="muted">No messages yet.</p>'}
       <div class="reply"><textarea id="r-text" rows="3" placeholder="Reply as Rich: moves the card to For the team… (Enter to send, Shift+Enter for a new line)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
         <div class="err" id="r-err"></div>
-        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="Sends GO as your answer">👍 Go</button>` : ''}<button class="primary" onclick="sendReply()">Send reply</button></div></div>
+        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="Sends GO as your answer">👍 Go</button>` : ''}<button class="primary" onclick="sendReply()">Send reply</button>${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>
       ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">Earlier (newest first)</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
@@ -139,10 +139,12 @@ function closeCard() {
 }
 // fixed: a one-tap answer (👍 Go on a question, AIG-75) instead of the typed one.
 async function sendReply(fixed) {
-  const t = fixed || $('r-text').value.trim();
-  if (!t) { setErr('r-err', 'Write something first'); return; }
+  const t = fixed || $('r-text').value.trim(), key = slug() + '/' + cardId();
+  if (!t && !Attach.has(key)) { setErr('r-err', 'Write something first'); return; }
   try {
-    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: 'Rich', text: t });
+    const attachments = fixed ? [] : await Attach.upload(key, slug());
+    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: 'Rich', text: t, attachments });
+    if (!fixed) Attach.clear(key);
     closeCard();
   } catch (err) { setErr('r-err', err); }
 }

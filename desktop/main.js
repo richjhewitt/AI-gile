@@ -25,8 +25,8 @@ async function ensureServer() {
 let win = null;
 function open(ok) {
   win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', icon: ICON, autoHideMenuBar: true, backgroundColor: '#ffffff' });
-  // Board links to other sites open in the normal browser, not in this window.
-  win.webContents.setWindowOpenHandler(({ url }) => { if (!url.startsWith(BASE)) shell.openExternal(url); return { action: 'deny' }; });
+  // Board links to other sites open in the normal browser; the board's own (attachments) open in a new app window.
+  win.webContents.setWindowOpenHandler(({ url }) => { if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { autoHideMenuBar: true, icon: ICON } }; shell.openExternal(url); return { action: 'deny' }; });
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); } });
   if (ok) win.loadURL(BASE);
   else win.loadURL('data:text/html,' + encodeURIComponent(`<body style="font:15px system-ui;padding:24px"><h2>AI-gile didn't start</h2><p>Couldn't reach ${BASE}. Run <code>start-aigile.bat</code> in ${ROOT.replace(/</g, '')} and reopen this window.</p></body>`));
