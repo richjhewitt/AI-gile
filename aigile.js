@@ -40,6 +40,7 @@ WORKING
 
 HOOKS (agent session hooks, see AGENTS.md)
   updates <proj> --hook                   SessionStart / UserPromptSubmit: prints news, silent if none
+  dm <proj> "text" --as NAME             chatty leads only: start a DM to ${OWNER} (a nudge or a light word; one at a time)
   wait <proj> [--every SECONDS]           run in the BACKGROUND while idle: exits with ${OWNER}'s news when they comment
   updates <proj> --stop-hook              Stop: blocks stopping once while there is unseen news
 
@@ -285,6 +286,12 @@ const cmds = {
     const slug = await project(pos[0]);
     const c = await api('POST', C(slug, pos[1]) + '/comments', { author: who(flags), text: await text(pos[2], 'comment text') });
     out(flags, c, c => `commented on ${c.id} (${c.comments.length} comments)`);
+  },
+
+  async dm({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const c = await api('POST', `/api/projects/${slug}/dm`, { author: who(flags), text: await text(pos[1], 'message') });
+    out(flags, c, c => `sent to ${OWNER}'s chat (${c.id})`);
   },
 
   async ask({ pos, flags }) {

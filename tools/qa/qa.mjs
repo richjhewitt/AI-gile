@@ -1379,6 +1379,13 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   s.cli(['comment', 'alpha', quick.id, 'Nice: made AIG-cards for it', '--as', 'Lead']);
   await page.waitForFunction(() => /made AIG-cards/.test(document.getElementById('dmList').textContent), null, { timeout: 6000 }).catch(() => {});
   check('the lead answer shows in the chat', /made AIG-cards/.test(await page.textContent('#dmList')));
+  // Chatty lead (AIG-140): off by default; when on, the lead can start a DM without adding to the board.
+  check('a lead cannot start a DM while chatty is off', s.cli(['dm', 'alpha', 'hi!', '--as', 'Lead']).code !== 0);
+  await s.ok('PATCH', '/api/projects/alpha', { chatty: true });
+  const dm = s.cli(['dm', 'alpha', '3 things are waiting on you when you have a sec', '--as', 'Lead']);
+  check('with chatty on, the lead can DM', dm.code === 0 && /sent to/.test(dm.out), dm);
+  await page.waitForFunction(() => /3 things are waiting/.test(document.getElementById('dmList').textContent), null, { timeout: 6000 }).catch(() => {});
+  check('the nudge shows in the chat, not on the board', /3 things are waiting/.test(await page.textContent('#dmList')) && (await s.ok('GET', '/api/projects/alpha')).cards.filter(x => x.status !== 'done' && /3 things/.test(x.title)).length === 0);
   noErrors(page);
 }, true);
 

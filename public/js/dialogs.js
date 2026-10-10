@@ -226,12 +226,13 @@ function lookDialog() {
     <p class="muted">Marks ${esc(p.name)} in your inbox, its tabs and the home page.</p>
     <div class="row"><label class="f"><span>Emoji</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
     <label class="f"><span>Colour</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
+    <label class="chk"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> 💬 Chatty lead: the odd nudge or light joke in your DMs <span class="muted">(uses a few more tokens)</span></label>
     <div class="err" id="look-err"></div>
     <div class="actions"><button class="primary" onclick="saveLook()">Save</button><button onclick="saveLook(true)" title="Pick the colour and emoji automatically again">Automatic</button><button type="button" onclick="closeDialog()">Cancel</button></div>`);
 }
 async function saveLook(auto) {
   try {
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }
