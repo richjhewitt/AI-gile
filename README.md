@@ -117,8 +117,13 @@ All endpoints take and return JSON.
 ## Project layout
 
 ```
-server.js          HTTP server and API
-public/index.html  Web board (single file, no framework)
+server.js          HTTP plumbing and wiring
+lib/               Server logic: store, routes, onboard, presence, limits, usage
+public/index.html  Web board shell (no framework)
+public/styles.css  Board styles
+public/js/         Page scripts (core, board, card, dialogs, filters, format, inbox, usage)
+tools/qa/          QA script: node tools/qa/qa.mjs [area]
+docs/CODEMAP.md    Where everything lives
 aigile.js          CLI for agents
 AGENTS.md          Guide for AI dev teams
 start-aigile.bat   Windows launcher

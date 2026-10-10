@@ -47,7 +47,7 @@ PROJECTS
 
 Global: --json prints raw JSON instead of the compact text.`;
 
-// ---- args ----
+/* ---------- args ---------- */
 function parse(argv) {
   const pos = [], flags = {};
   for (let i = 0; i < argv.length; i++) {
@@ -71,7 +71,7 @@ async function text(v, what) {
   return v;
 }
 
-// ---- http ----
+/* ---------- http ---------- */
 async function api(method, path, body) {
   let res;
   try {
@@ -101,7 +101,7 @@ function who(flags) {
   return String(a);
 }
 
-// ---- formatting ----
+/* ---------- formatting ---------- */
 const flagsOf = c => (c.blocked ? ' BLOCKED' : '') + (c.needsYou ? ' NEEDS-RICH' : '');
 const line = c => `${c.id} [${c.status}] ${c.type}/${c.priority}${c.assignee ? ' @' + c.assignee : ''}${c.sprint ? ' (' + c.sprint + ')' : ''}${flagsOf(c)}  ${c.title}`;
 const when = s => (s || '').replace('T', ' ').slice(0, 16);
@@ -116,7 +116,7 @@ function full(c) {
 }
 const out = (flags, data, fmt) => console.log(flags.json ? JSON.stringify(data, null, 2) : fmt(data));
 
-// ---- next ----
+/* ---------- next ---------- */
 const lastComment = c => c.comments[c.comments.length - 1];
 const forRich = c => String(c.assignee || '').trim().toLowerCase() === 'rich'; // a task only Rich can do
 const byPrio = (a, b) => (PRIO[a.priority] ?? 2) - (PRIO[b.priority] ?? 2) || a.created.localeCompare(b.created);
@@ -138,7 +138,7 @@ function nextList(p) {
   return tiers;
 }
 
-// ---- commands ----
+/* ---------- commands ---------- */
 const cmds = {
   async help() { console.log(HELP); },
 

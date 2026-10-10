@@ -1,0 +1,6 @@
+{
+  "name": "aigile-qa",
+  "private": true,
+  "description": "Dev-only QA for AI-gile (the board itself has no dependencies)",
+  "devDependencies": { "playwright": "^1.50.0" }
+}
