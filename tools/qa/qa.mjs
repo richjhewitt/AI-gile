@@ -1117,7 +1117,7 @@ def('columns', '⚙️ Columns: rename, reorder, hide and colour a board\'s colu
   await page.click('button:has-text("Columns")');
   await page.waitForSelector('.colrow');
   const row = n => page.locator('.colrow').nth(n);
-  await row(1).locator('input[type=text]:not(.emoji)').fill('Next up');   // To do
+  await row(1).locator('input[aria-label="Name"]').fill('Next up');   // To do
   await row(1).locator('input.emoji').fill('⏭️');
   await row(1).locator('button[title="Move left"]').click();                 // before Backlog
   await page.locator('.colrow').nth(1).locator('input[type=checkbox]').check(); // hide Backlog (now 2nd)
@@ -1292,6 +1292,24 @@ def('views', '👁 Views: save the filters as a named view, apply it, last view 
   check('array filters refused', (await patch([{ name: 'a', filters: [] }])).status === 400);
   check('more than 20 refused', (await patch(Array.from({ length: 21 }, (_, i) => ({ name: 'v' + i, filters: {} })))).status === 400);
   check('20 accepted', (await patch(Array.from({ length: 20 }, (_, i) => ({ name: 'v' + i, filters: {} })))).status === 200);
+  noErrors(page);
+}, true);
+
+def('steps', 'your own steps inside a column: sub-columns, drag between them, status unchanged (AIG-117)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Make it', { status: 'doing' });
+  const cols = (await s.ok('GET', '/api/meta')).statuses.map(st => ({ status: st, ...(st === 'doing' ? { steps: ['Design', 'Build', 'QA'] } : {}) }));
+  await s.ok('PATCH', '/api/projects/alpha', { columns: cols });
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('.column.step');
+  const heads = await page.$$eval('.column.step h3 span:first-child', els => els.map(e => e.textContent));
+  check('three step columns', JSON.stringify(heads) === JSON.stringify(['In progress · Design', 'In progress · Build', 'In progress · QA']), heads);
+  check('a card with no step sits in the first', (await page.locator('.column.step[data-step="Design"] .card').count()) === 1);
+  await page.dragAndDrop(`.card[data-id="${c.id}"]`, '.column.step[data-step="Build"]');
+  await sleep(600);
+  const moved = await getCard(s, 'alpha', c.id);
+  check('dragging sets the step, status stays doing', moved.step === 'Build' && moved.status === 'doing', moved);
+  check('team sees plain status', /\[doing\]/.test(s.cli(['show', 'alpha', c.id]).out));
   noErrors(page);
 }, true);
 

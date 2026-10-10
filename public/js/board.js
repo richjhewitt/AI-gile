@@ -109,6 +109,11 @@ function columnsHtml(p, pool) {
     if (k === 'verify') return forYouColumn(p, label, tint, pool, col.wip);
     const cs = pool.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => b.updated.localeCompare(a.updated));
     const all = p.cards.filter(c => c.status === k && !forYou(c)).length;   // the limit counts the whole column (AIG-118)
+    // Your own steps (AIG-117): one sub-column per step; cards with no or an old step sit in the first.
+    if (col.steps.length) return col.steps.map((st, i) => {
+      const mine = cs.filter(c => c.step === st || (i === 0 && !col.steps.includes(c.step)));
+      return `<div class="column step ${wipClass(all, col.wip)}" data-status="${k}" data-step="${esc(st)}"${tint}><h3><span>${esc(label)} · ${esc(st)}</span><span>${i ? mine.length : countHtml(mine.length, all, col.wip)}</span></h3>${mine.map(cardHtml).join('')}</div>`;
+    }).join('');
     return `<div class="column ${wipClass(all, col.wip)}" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, col.wip)} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
   }).join('');
 }
@@ -196,13 +201,13 @@ app.addEventListener('dragover', e => {
 app.addEventListener('drop', async e => {
   const col = e.target.closest?.('.column'); if (!col || !state.dragging) return;
   e.preventDefault();
-  const id = e.dataTransfer.getData('text/plain'), status = col.dataset.status;
+  const id = e.dataTransfer.getData('text/plain'), status = col.dataset.status, step = col.dataset.step || '';
   state.dragging = false;
   document.querySelectorAll('.dragging, .dragover').forEach(x => x.classList.remove('dragging', 'dragover'));
   const c = state.project.cards.find(c => c.id === id);
-  if (!c || c.status === status) return;
-  c.status = status; c.updated = new Date().toISOString(); render();   // optimistic
-  try { await api('PATCH', `/api/projects/${slug()}/cards/${id}`, { status }); }
+  if (!c || (c.status === status && (c.step || '') === step)) return;
+  c.status = status; c.step = step; c.updated = new Date().toISOString(); render();   // optimistic
+  try { await api('PATCH', `/api/projects/${slug()}/cards/${id}`, { status, step }); }
   catch (err) { alert('Could not move card: ' + err.message); }
   rerender();
 });
