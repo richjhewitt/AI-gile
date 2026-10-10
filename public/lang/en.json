@@ -515,5 +515,13 @@
  "format.open": "📄 Open",
  "format.copy": "📋 Copy",
  "format.copied": "✅ Copied",
- "format.openfile": "Open {name}"
+ "format.openfile": "Open {name}",
+ "dms.kind.question": "❓ Question",
+ "dms.kind.test": "🧪 To test",
+ "dms.kind.idea": "💬 Idea",
+ "dms.kind.other": "📌 Card",
+ "dms.count.one": "{n} message",
+ "dms.count.many": "{n} messages",
+ "dms.opencard": "Open the card",
+ "dms.replyto": "Reply to:"
 }

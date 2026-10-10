@@ -343,3 +343,16 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .dm-row .dm-rowtext { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .dm-row .dm-rowtext .muted { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dm-row .dm-unread { position: static; }
+
+/* ---------- chat folds per card (AIG-157) ---------- */
+.dm-fold { border: 1px solid var(--line); border-radius: 10px; margin: 8px 0; overflow: hidden; }
+.dm-fold.waiting { border-color: var(--you); }
+.dm-fold-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; width: 100%; text-align: left; padding: 7px 10px; border: 0; background: var(--col); cursor: pointer; }
+.dm-fold.open .dm-fold-h { border-bottom: 1px solid var(--line); }
+.dm-fold-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dm-fold-n { font-size: 11px; }
+.dm-tag { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 99px; background: var(--panel); }
+.k-question .dm-tag { color: var(--accent); } .k-test .dm-tag { color: var(--you); } .k-idea .dm-tag { color: var(--done); }
+.dm-fold-b { padding: 4px 10px 8px; }
+.dm-fold-p { padding: 5px 10px 7px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dm-cardlink { font-size: 11px; }
