@@ -9,13 +9,13 @@ function presenceHtml(p, withWake) {
   const pr = p.presence || {};
   if (pr.online) return `<span class="pres on">🟢 Team online</span> <span class="muted">heard ${ago(pr.lastHeard)}</span>`;
   if (pr.waking) return `<span class="pres wake">⏳ Waking the team…</span> <span class="muted">a terminal window has opened</span>`;
-  const btn = withWake && p.path ? ` <button class="primary" onclick="wakeTeam(event)">▶ Wake the team</button>` : withWake ? ` <span class="muted">(connect a folder to wake it)</span>` : '';
+  const btn = withWake && p.path ? ` <button class="primary" onclick="wakeTeam(event, '${p.slug}')">▶ Wake the team</button>` : withWake ? ` <span class="muted">(connect a folder to wake it)</span>` : '';
   return `<span class="pres off">💤 Team asleep</span>${pr.lastHeard ? ` <span class="muted">last heard ${ago(pr.lastHeard)}</span>` : ''}${btn}`;
 }
-async function wakeTeam(e) {
+async function wakeTeam(e, s = slug()) {
   e.preventDefault(); e.stopPropagation();
   const b = e.target; b.disabled = true; b.textContent = 'Opening…';
-  try { await api('POST', `/api/projects/${slug()}/wake`); refresh(true); }
+  try { await api('POST', `/api/projects/${s}/wake`); refresh(true); }
   catch (err) { alert(err.message); b.disabled = false; b.textContent = '▶ Wake the team'; }
 }
 

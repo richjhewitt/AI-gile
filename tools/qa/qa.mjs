@@ -498,6 +498,27 @@ def('quiet', 'Going quiet messages teams with work, wakes sleeping ones, night t
   noErrors(page);
 }, true);
 
+def('poke', 'asleep teams with work and stuck teams show as needing a poke', async (s, ctx) => {
+  await mkProject(s, 'Sleepy', 'SLP', { path: tmp('sleepy') });
+  await s.ok('POST', '/api/projects/sleepy/cards', { title: 'work', status: 'todo' });
+  await mkProject(s, 'Empty', 'EMP');
+  const ps = await s.ok('GET', '/api/projects');
+  check('asleep with work needs a poke', ps.find(p => p.slug === 'sleepy').attention?.kind === 'asleep');
+  check('no work, no poke', ps.find(p => p.slug === 'empty').attention === null);
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('#pokeTop .pokebadge', { timeout: 7000 }).catch(() => {});
+  check('top-bar badge shows', /1 team needs a poke/.test(await page.textContent('#pokeTop')), await page.textContent('#pokeTop'));
+  check('home tile says why, with a Wake button', /Needs a poke/.test(await page.textContent('.proj.poke')) && !!(await page.$('.proj.poke button.primary')));
+  await s.ok('GET', '/api/projects/sleepy/updates');
+  check('online clears it', (await s.ok('GET', '/api/projects/sleepy')).cards && (await s.ok('GET', '/api/projects')).find(p => p.slug === 'sleepy').attention === null);
+  const { attention } = require('../../lib/store.js');
+  const old = new Date(Date.now() - 11 * 60e3).toISOString(), fresh = new Date().toISOString();
+  const proj = at => ({ cards: [{ status: 'team', createdBy: '', created: old, updated: old, comments: [{ author: 'Rich', text: 'x', at }] }] });
+  check('online, comment unanswered 10+ min = stuck', attention(proj(old), { online: true })?.kind === 'stuck');
+  check('online, fresh comment = fine', attention(proj(fresh), { online: true }) === null);
+  noErrors(page);
+}, true);
+
 def('docs', 'Docs dialog lists .md files and opens one', async (s, ctx) => {
   const folder = tmp('docs');
   fs.mkdirSync(path.join(folder, 'docs'));

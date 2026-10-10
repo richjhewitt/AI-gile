@@ -22,13 +22,15 @@ function renderHome() {
     `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></div>` : '';
   const cards = state.projects.map(p => {
     const active = p.total - p.counts.backlog;
-    return `<a class="proj ${p.archived ? 'archived' : ''}" href="#/p/${p.slug}">
+    const at = p.attention;
+    return `<a class="proj ${p.archived ? 'archived' : ''} ${at ? 'poke' : ''}" href="#/p/${p.slug}">
+      ${at ? `<div class="pokeline">${at.kind === 'asleep' ? '💤' : '⚠️'} <b>Needs a poke:</b> ${at.kind === 'asleep' ? esc(at.why) : 'your comment unanswered for ' + esc(ago(at.since).replace(/ ago$/, ''))}</div>` : ''}
       <h2>${esc(p.name)} ${p.archived ? '<span class="pill">archived</span>' : ''} ${p.needsYou ? `<span class="pill you">${p.needsYou} for you</span>` : ''} ${p.blocked ? `<span class="pill blocked">${p.blocked} blocked</span>` : ''}</h2>
       <div class="muted">${esc(p.description)}</div>
       ${bar(p.counts, active)}
       <div class="counts"><b>${Math.round(p.progress * 100)}% done</b>${Object.entries(COLS).map(([k, v]) => `<span>${v} ${p.counts[k]}</span>`).join('')}</div>
       ${p.team.length ? `<div class="last">👥 ${p.team.map(m => esc(m.name)).join(', ')}</div>` : ''}
-      <div class="last">${presenceHtml(p, false)}</div>
+      <div class="last">${presenceHtml(p, at?.kind === 'asleep')}</div>
       ${p.inFlight.length ? `<div class="last">🛠 ${flightHtml(p.inFlight)}</div>` : ''}
       ${state.usage?.enabled && state.usage.projects[p.slug] ? `<div class="last">⚡ ${usageLine(state.usage.projects[p.slug])}</div>` : ''}
       ${p.lastLog ? `<div class="last">📝 ${esc(p.lastLog.text)} · ${ago(p.lastLog.at)}</div>` : ''}

@@ -9,6 +9,7 @@ async function checkBuild() {
   try {
     const m = await api('GET', '/api/meta');
     setNight(m.quiet);
+    pokeBadge(await api('GET', '/api/projects'));
     if (loadedBuild === null) { loadedBuild = m.build; return; }
     if (m.dev && m.build !== loadedBuild && !$('update').firstChild)
       $('update').innerHTML = `<div class="overlay center" style="z-index:50"><div class="dialog">
@@ -18,6 +19,13 @@ async function checkBuild() {
   } catch {}
 }
 checkBuild();
+
+/* ---------- teams that need a poke: top-bar badge ---------- */
+function pokeBadge(projects) {
+  const n = projects.filter(p => p.attention), names = n.map(p => p.name + ': ' + (p.attention.kind === 'asleep' ? p.attention.why : 'stuck')).join('\n');
+  const h = n.length ? `<a class="navlink pokebadge" href="#/" title="${esc(names)}">🔔 ${n.length} team${n.length > 1 ? 's' : ''} need${n.length > 1 ? '' : 's'} a poke</a>` : '';
+  if ($('pokeTop').innerHTML !== h) $('pokeTop').innerHTML = h;
+}
 
 /* ---------- going quiet: night theme ---------- */
 function setNight(since) {
@@ -29,9 +37,7 @@ async function goQuiet() {
   try {
     const r = await api('POST', '/api/quiet', { on: true });
     setNight(r.quiet);
-    alert(`📣 Sent to ${r.sent.length} team(s)${r.sent.length ? ': ' + r.sent.join(', ') : ''}` + (r.woke.length ? `
-▶ Woke: ${r.woke.join(', ')}` : '') + (r.failed.length ? `
-⚠️ Could not wake: ${r.failed.join('; ')}` : ''));
+    alert(`📣 Sent to ${r.sent.length} team(s)${r.sent.length ? ': ' + r.sent.join(', ') : ''}` + (r.woke.length ? `\n▶ Woke: ${r.woke.join(', ')}` : '') + (r.failed.length ? `\n⚠️ Could not wake: ${r.failed.join('; ')}` : ''));
     refresh(true);
   } catch (e) { alert(e.message); }
 }

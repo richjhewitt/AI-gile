@@ -159,6 +159,9 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 1
 .verdict h3 { margin: 0 0 6px; color: var(--you); }
 .reply { margin-top: 12px; }
 .proj.archived { opacity: .6; }
+.proj.poke { border-color: var(--warn); border-left-width: 4px; }
+.pokeline { color: var(--warn); font-size: 13px; margin-bottom: 4px; }
+.navlink.pokebadge { border-color: var(--warn); color: var(--warn); font-weight: 600; }
 .live.paused::before { color: var(--warn); }
 /* ---------- phones ---------- */
 @media (max-width: 760px) {

@@ -5,13 +5,13 @@ Where everything lives, so you can go straight to the right place. Search for th
 ## Run and test
 - Server: `node server.js` (or `start-aigile.bat`) -> http://localhost:4321. `AIGILE_PORT` and `AIGILE_DATA` change the port and data folder; `AIGILE_DEV=1` adds the "new version, refresh" prompt.
 - CLI: `node aigile.js help` (`AIGILE_URL` points it at another server; `AIGILE_AS` sets the author).
-- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `docs`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
+- QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT` changes the port, default 4390). It starts its own server on a temp data folder with a stub agent program, so the live board is never touched. Areas: `api`, `cli`, `board`, `card`, `filters`, `inbox`, `usage`, `presence`, `quiet`, `poke`, `docs`. The page areas need playwright (`cd tools/qa && npm i`; `node_modules` is git-ignored).
 
 ## Server
 | File | What |
 |---|---|
 | `server.js` | Wiring and http plumbing: dev build id, route dispatch (`/api/*`), static files from `public/`, JSON errors |
-| `lib/store.js` | Config paths and port; `load`/`save` of `data/<slug>.json`; `localSettings`; `summary` (project card on the home page); card rules (`cleanCard`, `toTeam`, `findCard`, `docList`, `bad`/`need`) |
+| `lib/store.js` | Config paths and port; `load`/`save` of `data/<slug>.json`; `localSettings`; `summary` (project card on the home page); `attention` (needs a poke: asleep with work, or stuck); card rules (`cleanCard`, `toTeam`, `findCard`, `docList`, `bad`/`need`) |
 | `lib/routes.js` | Every API route as `[method, regex, handler]`; see the markers: projects, cards, comments/verdicts/tasks/pokes, team/log/updates feed, docs and inbox |
 | `lib/onboard.js` | `connectFolder`: marked notes block, merged comment hooks, git exclude |
 | `lib/presence.js` | Team presence (`heard`, `presenceOf`, `heardFromFolder`) and `wakeTeam` (opens a terminal running the agent command) |
@@ -35,7 +35,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `js/board.js` | In flight and presence, `renderBoard`, `cardHtml`, `poke`, drag and drop |
 | `js/card.js` | `cardFields`, assignee select, `renderCard` (Reply/Details/Test tabs), edit/delete/reply/verdict |
 | `js/dialogs.js` | `openDialog`, New card, New project, Connect folder, Docs |
-| `js/app.js` | Start-up: hashchange, the 1s poll, the new-build prompt; going quiet (`goQuiet`, `setNight` night theme) |
+| `js/app.js` | Start-up: hashchange, the 1s poll, the new-build prompt; going quiet (`goQuiet`, `setNight` night theme); `pokeBadge` (top bar) |
 
 ## Data
 - `data/<slug>.json`: one file per project (cards, comments, team, log, `teamSeenAt`); written atomically via a `.tmp` file. Git-ignored.
