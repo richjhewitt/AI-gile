@@ -1,6 +1,7 @@
 /* ---------- state, api, helpers ---------- */
 // The board's human (AIG-103): name from /api/meta, default Rich.
 const me = () => (typeof state !== 'undefined' && state.owner) || 'Rich';
+const isOwner = a => String(a || '').trim().toLowerCase() === me().toLowerCase();
 const COLS = { backlog: 'Backlog', todo: 'To do', doing: 'In progress', review: 'Team checking', verify: 'For you to test', team: 'For the team', done: 'Done' };
 // A project's columns (AIG-116): its saved order, names, emoji, colours and hidden flags over the defaults.
 const DEFAULT_NAMES = { verify: 'For you' };   // the For you column (AIG-106) shows more than tests

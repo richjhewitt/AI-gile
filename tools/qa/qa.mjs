@@ -1700,6 +1700,20 @@ def('openit', '▶ Open it: starts the app with the card\'s command if needed, w
   check('the inbox test item has the button too', true);
 }, true);
 
+def('testnotes', 'the Test tab shows the team\'s notes since your last word, next to Accept (AIG-152)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Security pass');
+  await say(s, 'alpha', c.id, 'Rich', 'please check it all');
+  await say(s, 'alpha', c.id, 'Lead', 'Scanned everything: nothing personal found; fixed one gap');
+  s.cli(['test', 'alpha', c.id, '- Nothing to click: read the note above and accept', '--as', 'Lead']);
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.waitForSelector('[data-pane="test"]');
+  const pane = await page.textContent('[data-pane="test"]');
+  check('team note shows on the Test tab', pane.includes('From the team') && pane.includes('nothing personal found'), pane.slice(0, 300));
+  check('your own older comment and the auto line are left out', !pane.includes('please check it all') && !pane.includes('Ready for you to test.'));
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

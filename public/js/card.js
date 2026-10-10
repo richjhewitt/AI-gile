@@ -77,9 +77,12 @@ function renderCard(p, c) {
       ${c.openUrl ? `<div class="actions" style="margin-top:0"><button class="primary" onclick="openIt('${p.slug}', '${c.id}', this)" title="${esc(c.openUrl)}">▶ Open it</button><span class="muted">${esc(c.openUrl)}</span></div>` : ''}
       <div class="actions"><button class="good" onclick="verdict(true)">✅ Accept</button><button class="warn" onclick="verdict(false)">🔁 Send back</button><button onclick="waitAndSee()" title="Not sure yet: hide it from your inbox for an hour">⏳ Wait and see</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>` : '';
   // Tabs: Reply (latest message on top, reply box right under it, older ones below), Details, Test.
-  const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">Latest</span>' : ''}<span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${m.author.toLowerCase() === 'rich' ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div>${Attach.shown(m, p.slug)}</div>`;
+  const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">Latest</span>' : ''}<span class="who">${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${isOwner(m.author) ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">✓ seen by team</span>' : '<span class="seen">⏳ not seen yet</span>') : ''}<div class="body">${linkify(m.text, p)}</div>${Attach.shown(m, p.slug)}</div>`;
   const newest = [...c.comments].reverse();
   const hasTest = c.status === 'verify' || c.testSteps;
+  // The team's notes since your last word, shown on the Test tab next to Accept, so you never go looking (AIG-152).
+  const lastMine = c.comments.map(m => isOwner(m.author)).lastIndexOf(true);
+  const notes = c.comments.slice(lastMine + 1).filter(m => !isOwner(m.author) && !/^Ready for you to test\./.test(m.text)).slice(-3);
   if (state.tabFor !== c.id) { state.tabFor = c.id; state.cardTab = c.status === 'verify' ? 'test' : c.comments.length ? 'reply' : 'details'; }
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
@@ -99,6 +102,7 @@ function renderCard(p, c) {
       ${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : '<p class="muted">No description.</p>'}${Attach.shown(c, p.slug)}
     </div>
     ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>${verdict}
+      ${notes.length ? `<h3>💬 From the team</h3>${notes.map(m => msg(m, false)).join('')}` : ''}
       ${c.testSteps ? `<h3>🧪 How to test</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
   </div></div>`;
 }
