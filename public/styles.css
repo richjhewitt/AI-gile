@@ -307,3 +307,9 @@ body.pop { padding-left: 0; } body.pop #dmRail, body.pop #dmPanel { display: non
 .dm-to { font-size: 12px; margin-bottom: 4px; }
 .dm-empty { text-align: center; margin-top: 30px; }
 body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
+
+/* ---------- find my projects (AIG-94) ---------- */
+#fp-list { max-height: 55vh; overflow-y: auto; }
+.fprow { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.fprow .fp-name { flex: 0 0 200px; } .fprow .fp-key { flex: 0 0 64px; }
+.fprow > .muted { flex: 1; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

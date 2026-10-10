@@ -1389,6 +1389,29 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   noErrors(page);
 }, true);
 
+def('discover', '🔎 Find my projects: lists folders with git and README, flags copies, imports the ticked ones (AIG-94)', async (s, ctx) => {
+  const root = tmp('discover'), g = (cwd, ...a) => spawnSync('git', a, { cwd, encoding: 'utf8' });
+  const mk = (name, readme) => { const d = path.join(root, name); fs.mkdirSync(d); if (readme) fs.writeFileSync(path.join(d, 'README.md'), readme); return d; };
+  const app = mk('Shop App', '# Shop App\n\nA tiny web shop for **local** makers.\n');
+  g(app, 'init', '-q'); g(app, 'add', '.'); g(app, '-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qm', 'start');
+  mk('Shop App-old'); mk('notes');
+  const found = await s.ok('GET', '/api/discover?dir=' + encodeURIComponent(root));
+  const by = n => found.find(f => f.name === n);
+  check('git project found with its README line', by('Shop App').git.commits === 1 && by('Shop App').readme === 'A tiny web shop for local makers.' && by('Shop App').suggested, by('Shop App'));
+  check('a copy is flagged and not suggested', by('Shop App-old').copy && !by('Shop App-old').suggested);
+  check('a plain folder is not suggested', !by('notes').suggested);
+  const page = await openPage(ctx, '#/');
+  await page.evaluate(d => findProjectsDialog(d), root);
+  await page.waitForSelector('.fprow');
+  await page.uncheck('#fp-connect');
+  await page.click('#dialog button:has-text("Add ticked projects")');
+  await page.waitForSelector('#fp-done li');
+  const p = (await s.ok('GET', '/api/projects')).find(x => x.name === 'Shop App');
+  check('ticked project added with its folder and description', p && p.path.endsWith('/Shop App') && p.description === 'A tiny web shop for local makers.', p);
+  check('only the suggested one was added', (await s.ok('GET', '/api/projects')).length === 1);
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

@@ -102,6 +102,47 @@ async function doConnect() {
   } catch (e) { setErr('c-err', e); }
 }
 
+/* ---------- find my projects (AIG-94) ---------- */
+// ---- find my projects: list the project folders in a folder (git, old sessions, README), tick, import ----
+async function findProjectsDialog(dir) {
+  openDialog(`<h2>🔎 Find my projects</h2><p class="muted">Looks through a folder for your projects. Nothing is changed until you click Add.</p>
+    <div class="row"><label class="f" style="flex:1"><span>Folder</span><input type="text" id="fp-dir" value="${esc(dir || state.home || '')}"></label>
+    <button style="align-self:flex-end" onclick="findProjectsDialog($('fp-dir').value)">Look</button></div>
+    <div id="fp-list" class="muted">Looking…</div><div class="err" id="fp-err"></div><div id="fp-done"></div>
+    <div class="actions" id="fp-acts"></div>`, 'wide');
+  try {
+    if (!state.home) state.home = (await api('GET', '/api/meta')).home;
+    if (!dir) $('fp-dir').value = state.home;
+    state.found = await api('GET', '/api/discover' + (dir ? '?dir=' + encodeURIComponent(dir) : ''));
+  } catch (e) { $('fp-list').textContent = ''; setErr('fp-err', e); return; }
+  const key = n => n.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase() || 'PRJ';
+  const info = f => [f.git ? `${f.git.commits} commits${f.git.lastAt ? ', last ' + ago(f.git.lastAt) : ''}` : 'no git', f.sessions ? `${f.sessions.count} old sessions` : '',
+    f.known ? 'already on the board' : f.inside ? 'inside ' + f.inside : f.copy ? 'looks like a copy' : ''].filter(Boolean).join(' · ');
+  $('fp-list').classList.remove('muted');
+  $('fp-list').innerHTML = state.found.length ? state.found.map((f, i) => `<div class="fprow">
+    <input type="checkbox" data-i="${i}" ${f.suggested ? 'checked' : ''} ${f.known ? 'disabled' : ''} aria-label="Add ${esc(f.name)}">
+    <input type="text" class="fp-name" value="${esc(f.name)}" aria-label="Name"><input type="text" class="fp-key" value="${key(f.name)}" maxlength="6" aria-label="Key">
+    <span class="muted">${esc(info(f))}${f.readme ? ' · ' + esc(f.readme) : ''}</span></div>`).join('') : 'No folders found there.';
+  $('fp-acts').innerHTML = `<label class="chk"><input type="checkbox" id="fp-connect" checked> Set each folder up for its team (notes, hooks, permissions)</label>
+    <button class="primary" onclick="importFound()">Add ticked projects</button><button onclick="closeDialog()">Close</button>`;
+}
+async function importFound() {
+  const rows = [...document.querySelectorAll('.fprow')].filter(r => r.querySelector('input[type=checkbox]').checked);
+  if (!rows.length) { setErr('fp-err', 'Tick at least one project'); return; }
+  const done = [];
+  for (const r of rows) {
+    const f = state.found[+r.querySelector('input[type=checkbox]').dataset.i];
+    try {
+      const p = await api('POST', '/api/projects', { name: r.querySelector('.fp-name').value.trim() || f.name, key: r.querySelector('.fp-key').value.trim(), description: f.readme });
+      if ($('fp-connect').checked) await api('POST', `/api/projects/${p.slug}/connect`, { path: f.path });
+      else await api('PATCH', '/api/projects/' + p.slug, { path: f.path });
+      done.push('✅ ' + p.name);
+    } catch (e) { done.push('⚠️ ' + f.name + ': ' + e.message); }
+  }
+  $('fp-done').innerHTML = `<ul>${done.map(d => `<li>${esc(d)}</li>`).join('')}</ul><p class="muted">Each team reads the board and its folder the first time you wake it.</p>`;
+  $('fp-acts').innerHTML = '<button class="primary" onclick="closeDialog(); rerender()">Done</button>';
+}
+
 /* ---------- setup page (AIG-91) ---------- */
 // ---- setup: your name and where the agent lives on this computer, saved to aigile.local.json ----
 function renderSetup() {
