@@ -767,6 +767,7 @@ def('gobutton', '👍 Go answers a question in one tap, in the inbox and on the 
   s.cli(['block', 'alpha', b.id, 'no key', '--as', 'Lead']);
   const page = await openPage(ctx, '#/inbox');
   await page.waitForSelector(`.ib-item[data-id="${q1.id}"] button[data-act="go"]`);
+  check('title counts everything waiting (desktop badge)', (await page.title()) === '(3) AI-gile', await page.title());
   check('blocked card has no Go', (await page.locator(`.ib-item[data-id="${b.id}"] button[data-act="go"]`).count()) === 0);
   await page.click(`.ib-item[data-id="${q1.id}"] button[data-act="go"]`);
   await page.waitForSelector(`.ib-item[data-id="${q1.id}"]`, { state: 'detached', timeout: 4000 }).catch(() => {});
