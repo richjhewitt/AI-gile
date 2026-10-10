@@ -43,10 +43,11 @@
   .ib { max-width: 860px; margin: 0 auto; }
   .ib-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
   .ib-head h2 { margin: 0; font-size: 20px; }
-  .ib-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin: -4px 0 6px; border-bottom: 1px solid var(--line); }
+  .ib-tabs { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 6px; margin: -4px 0 6px; border-bottom: 1px solid var(--line); }
   .ib-tab { flex: none; border-radius: 99px; padding: 5px 12px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
   .ib-tab.on { background: var(--text); color: var(--panel); border-color: var(--text); }
   .ib-tab .n { font-weight: 400; opacity: .7; }
+  .ib-tab .nm { max-width: 13ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }   /* long names cut short; the emoji tells them apart (AIG-101) */
   .ib-tab .tq, .ib-tab .tk, .ib-tab .tt { font-size: 12px; font-weight: 600; }
   .ib-tab .tq { color: var(--q-ink); } .ib-tab.on .tq, .ib-tab.on .tk, .ib-tab.on .tt { color: inherit; }
   .ib-tab .tk { color: var(--k-ink); } .ib-tab .tt { color: var(--t-ink); }
@@ -363,7 +364,7 @@
     if (tab !== 'all' && !orderedProjects.some(([p]) => p === tab)) tab = 'all';   // that project's inbox emptied
     const lookOf = p => items.find(c => c.project === p) || {};
     const btn = (key, name, list) => { const l = key === 'all' ? {} : lookOf(key);
-      return `<button class="ib-tab ${tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${tab === key}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectEmoji ? esc(l.projectEmoji) + ' ' : ''}${esc(name)} <span class="n">${list.length}</span> ${tabCounts(list)}</button>`; };
+      return `<button class="ib-tab ${tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${tab === key}" title="${esc(name)}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectEmoji ? esc(l.projectEmoji) + ' ' : ''}<span class="nm">${esc(name)}</span> <span class="n">${list.length}</span> ${tabCounts(list)}</button>`; };
     tabOrder = orderedProjects.map(([p]) => p);
     const projectBtns = orderedProjects.map(([p, name]) => btn(p, name, items.filter(c => c.project === p))).join('');
     const html = allAtEnd
