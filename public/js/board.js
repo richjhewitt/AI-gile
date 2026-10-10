@@ -53,6 +53,7 @@ function renderBoard(p) {
       <button class="primary" onclick="newCard()">+ New</button>
       <button onclick="openDocs()">📄 Docs</button>
       <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'team'})">🐞 Raise bug</button>
+      <button onclick="viewsDialog()" title="Save the current search and filters as a view, or switch to one">👁 Views</button>
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? 'Connected to ' + esc(p.path) : 'Set this project up in a folder so its team uses the board'}">🔌 ${p.path ? 'Folder connected' : 'Connect folder'}</button>
       <button onclick="lookDialog()" title="This project's colour and emoji">🎨 Look</button>

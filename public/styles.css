@@ -226,3 +226,6 @@ body.pop .panel { max-width: none; max-height: none; width: 100%; min-height: 10
 .colrow input.emoji { flex: 0 0 56px; text-align: center; }
 .colrow .arrows button { padding: 2px 8px; }
 .colrow > .muted { flex: 0 0 110px; font-size: 12px; }
+.viewrow { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.viewrow input[type=text] { flex: 1; }
+.viewrow .grow { flex: 1; text-align: left; }

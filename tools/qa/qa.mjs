@@ -1129,6 +1129,52 @@ def('columns', '⚙️ Columns: rename, reorder, hide and colour a board\'s colu
   noErrors(page);
 }, true);
 
+def('views', '👁 Views: save the filters as a named view, apply it, last view re-applied on reload, delete; bad views refused (AIG-121)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET');
+  await mkCard(s, 'alpha', 'Zebra bug', { status: 'todo', type: 'bug' });
+  await mkCard(s, 'alpha', 'Zebra feature', { status: 'todo' });
+  await mkCard(s, 'alpha', 'Plain thing', { status: 'doing' });
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('#f-q');
+  const cards = () => page.locator('.board .card').count();
+  await page.fill('#f-q', 'zebra');
+  await page.selectOption('select[data-f=type]', 'bug');
+  check('filtered to one card', (await cards()) === 1);
+  await page.click('button:has-text("Views")');
+  await page.fill('#view-name', 'My bugs');
+  await page.click('#dialog button:has-text("Save view")');
+  await page.waitForSelector('.viewrow button:has-text("My bugs")');
+  const saved = (await s.ok('GET', '/api/projects/alpha')).views;
+  check('view stored on the project', saved && saved.length === 1 && saved[0].name === 'My bugs' && saved[0].filters.q === 'zebra' && saved[0].filters.type === 'bug', saved);
+  check('other project has no views', !(await s.ok('GET', '/api/projects/beta')).views);
+  await page.click('#dialog button:has-text("Close")');
+  await page.click('#f-count a');
+  check('cleared: all cards', (await cards()) === 3);
+  await page.click('button:has-text("Views")');
+  await page.click('.viewrow button:has-text("My bugs")');
+  check('applying the view filters the board', (await cards()) === 1 && (await page.inputValue('#f-q')) === 'zebra' && (await page.inputValue('select[data-f=type]')) === 'bug');
+  await page.reload();
+  await page.waitForSelector('#f-q');
+  await page.waitForSelector('.board .card');
+  check('last view re-applied after reload', (await cards()) === 1 && (await page.inputValue('#f-q')) === 'zebra');
+  await page.click('#f-count a');
+  await page.reload();
+  await page.waitForSelector('.board .card');
+  check('clearing forgets the last view', (await cards()) === 3);
+  await page.click('button:has-text("Views")');
+  await page.click('.viewrow button[title="Delete this view"]');
+  await page.waitForSelector('#dialog :text("No saved views yet")');
+  check('deleted on the server', !(await s.ok('GET', '/api/projects/alpha')).views);
+  const patch = views => s.api('PATCH', '/api/projects/alpha', { views });
+  check('empty name refused', (await patch([{ name: ' ', filters: {} }])).status === 400);
+  check('long name refused', (await patch([{ name: 'x'.repeat(41), filters: {} }])).status === 400);
+  check('non-object filters refused', (await patch([{ name: 'a', filters: 'q' }])).status === 400);
+  check('array filters refused', (await patch([{ name: 'a', filters: [] }])).status === 400);
+  check('more than 20 refused', (await patch(Array.from({ length: 21 }, (_, i) => ({ name: 'v' + i, filters: {} })))).status === 400);
+  check('20 accepted', (await patch(Array.from({ length: 20 }, (_, i) => ({ name: 'v' + i, filters: {} })))).status === 200);
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }
