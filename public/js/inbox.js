@@ -446,7 +446,7 @@
     lock(n);
     try {
       const attachments = fixed ? [] : await Attach.upload(key, n.dataset.project);
-      await post('POST', base(n) + '/comments', { author: 'Rich', text, attachments });
+      await post('POST', base(n) + '/comments', { author: me(), text, attachments });
       if (!fixed) Attach.clear(key);
       done(n, `Sent to the team on ${n.dataset.id}.`);
     }

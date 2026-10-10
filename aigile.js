@@ -6,14 +6,17 @@ const STATUSES = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'
 const PRIO = { urgent: 0, high: 1, normal: 2, low: 3 };
 const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 'stop-hook', 'peek', 'create']);
 
+// The board's human (AIG-103): "owner" in aigile.local.json next to this file, default Rich.
+const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.parse(require('fs').readFileSync(require('path').join(__dirname, 'aigile.local.json'), 'utf8')).owner || '').trim() || 'Rich'; } catch { return 'Rich'; } })();
+
 const HELP = `aigile: the AI-gile board CLI.  Project = slug, name or key (case-insensitive).
 Set AIGILE_URL to change the server (default http://localhost:4321). Set AIGILE_AS=NAME to skip --as.
 Text args can be "-" to read from stdin (handy for multi-line).
 
 START OF SESSION
   brief <proj>                            the whole picture in one call: start every session with this
-  updates <proj> [--peek]                 what Rich said/raised since you last looked (marks it seen)
-  inbox                                   everything waiting on Rich, all projects
+  updates <proj> [--peek]                 what ${OWNER} said/raised since you last looked (marks it seen)
+  inbox                                   everything waiting on ${OWNER}, all projects
   next <proj>                             what to work on, in order (see AGENTS.md)
   list <proj> [--status s] [--mine NAME] [--all]   cards (done hidden unless --status done or --all)
   show <proj> <id>                        full card with the conversation
@@ -21,12 +24,12 @@ START OF SESSION
 
 WORKING
   start <proj> <id> --as NAME             you (or an agent you launch) take a card: assign + doing + roster task
-  move <proj> <id> <status>               status: ${STATUSES.join(' | ')}  ('done' only from 'team', after reading Rich's comment)
+  move <proj> <id> <status>               status: ${STATUSES.join(' | ')}  ('done' only from 'team', after reading ${OWNER}'s comment)
   assign <proj> <id> NAME
   comment <proj> <id> "text" --as NAME
-  ask <proj> <id> "question" --as NAME    comment + flags the card as needing Rich
-  task <proj> <id> "what to do" --as NAME something only Rich can do (key, login, manual step): goes to his inbox
-  test <proj> <id> "steps Rich can follow" --as NAME    -> moves to verify, sets testSteps, comments
+  ask <proj> <id> "question" --as NAME    comment + flags the card as needing ${OWNER}
+  task <proj> <id> "what to do" --as NAME something only ${OWNER} can do (key, login, manual step): goes to their inbox
+  test <proj> <id> "steps ${OWNER} can follow" --as NAME    -> moves to verify, sets testSteps, comments
   block <proj> <id> ["why"] --as NAME     unblock <proj> <id>
   edit <proj> <id> [--title --desc --type --priority --sprint --assignee --test-steps]
   add <proj> "title" [--type feature|bug|task --priority low|normal|high|urgent --status s
@@ -34,7 +37,7 @@ WORKING
 
 HOOKS (agent session hooks, see AGENTS.md)
   updates <proj> --hook                   SessionStart / UserPromptSubmit: prints news, silent if none
-  wait <proj> [--every SECONDS]           run in the BACKGROUND while idle: exits with Rich's news when he comments
+  wait <proj> [--every SECONDS]           run in the BACKGROUND while idle: exits with ${OWNER}'s news when they comment
   updates <proj> --stop-hook              Stop: blocks stopping once while there is unseen news
 
 TEAM AND LOG
@@ -121,14 +124,14 @@ const out = (flags, data, fmt) => console.log(flags.json ? JSON.stringify(data, 
 
 /* ---------- next ---------- */
 const lastComment = c => c.comments[c.comments.length - 1];
-const forRich = c => String(c.assignee || '').trim().toLowerCase() === 'rich'; // a task only Rich can do
+const forRich = c => String(c.assignee || '').trim().toLowerCase() === OWNER.toLowerCase(); // a task only the owner can do
 const byPrio = (a, b) => (PRIO[a.priority] ?? 2) - (PRIO[b.priority] ?? 2) || a.created.localeCompare(b.created);
 function nextList(p) {
   const live = p.cards.filter(c => !c.blocked && !c.needsYou && !forRich(c));
-  const fromRich = c => { const m = lastComment(c); return c.status === 'team' || (m && m.author.toLowerCase() === 'rich' && !['done', 'verify', 'backlog'].includes(c.status)); };
+  const fromRich = c => { const m = lastComment(c); return c.status === 'team' || (m && m.author.toLowerCase() === OWNER.toLowerCase() && !['done', 'verify', 'backlog'].includes(c.status)); };
   const tiers = [];
   const sentBack = live.filter(fromRich).sort(byPrio);
-  tiers.push(["1. For the team: Rich commented (do first: just info -> move to done; needs work -> doing, fix, then test for his approval)", sentBack]);
+  tiers.push([`1. For the team: ${OWNER} commented (do first: just info -> move to done; needs work -> doing, fix, then test for their approval)`, sentBack]);
   const seen = new Set(sentBack.map(c => c.id));
   const doing = live.filter(c => c.status === 'doing' && !seen.has(c.id)).sort(byPrio);
   tiers.push(['2. Already in progress', doing]);
@@ -147,7 +150,7 @@ const cmds = {
 
   async projects({ flags }) {
     const ps = await api('GET', '/api/projects');
-    out(flags, ps, ps => ps.map(p => `${p.slug} (${p.key}) ${p.name}: ` + STATUSES.map(s => s + ' ' + p.counts[s]).join(', ') + ` | needs Rich ${p.needsYou}, blocked ${p.blocked}`).join('\n') || '(no projects)');
+    out(flags, ps, ps => ps.map(p => `${p.slug} (${p.key}) ${p.name}: ` + STATUSES.map(s => s + ' ' + p.counts[s]).join(', ') + ` | needs ${OWNER} ${p.needsYou}, blocked ${p.blocked}`).join('\n') || '(no projects)');
   },
 
   async 'new-project'({ pos, flags }) {
@@ -194,10 +197,10 @@ const cmds = {
     const short = c => `${c.id}${c.assignee ? ' @' + c.assignee : ''} ${c.title}`;
     const sect = (title, items, n = 8) => items.length ? [title + ':', ...items.slice(0, n).map(x => '  ' + x), ...(items.length > n ? [`  (+${items.length - n} more)`] : [])] : [];
     const o = [`${p.name} (${p.slug}): ` + STATUSES.map(s => `${s} ${by(s).length}`).join(' · ')];
-    o.push(...sect('For the team (Rich commented: do first)', by('team').map(c => short(c) + (lastComment(c) ? `  <- "${lastComment(c).text.slice(0, 100).replace(/\n/g, ' ')}"` : ''))));
+    o.push(...sect(`For the team (${OWNER} commented: do first)`, by('team').map(c => short(c) + (lastComment(c) ? `  <- "${lastComment(c).text.slice(0, 100).replace(/\n/g, ' ')}"` : ''))));
     o.push(...sect('In flight', by('doing').map(c => short(c) + ` (${when(c.updated)})`)));
     o.push(...sect('In review', by('review').map(short)));
-    o.push(...sect('Waiting on Rich', p.cards.filter(c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || forRich(c))).map(c => short(c) + (forRich(c) ? ' (task for him)' : c.status === 'verify' ? ' (testing)' : ' (question)'))));
+    o.push(...sect(`Waiting on ${OWNER}`, p.cards.filter(c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || forRich(c))).map(c => short(c) + (forRich(c) ? ' (task for them)' : c.status === 'verify' ? ' (testing)' : ' (question)'))));
     o.push(...sect('Blocked', p.cards.filter(c => c.blocked && c.status !== 'done').map(short)));
     const nxt = nextList(p).flatMap(([, cs]) => cs).filter(c => c.status === 'todo');
     o.push(...sect('Next up (todo)', nxt.map(short), 5));
@@ -222,8 +225,8 @@ const cmds = {
       for (const c of cs) { o.push((first ? '  >> ' : '     ') + line(c)); first = false; }
     }
     const waiting = p.cards.filter(c => (c.blocked || c.needsYou || forRich(c) || c.status === 'verify') && c.status !== 'done');
-    if (waiting.length) { o.push('Waiting (not yours to pick up)'); waiting.forEach(c => o.push('     ' + line(c) + (c.status === 'verify' ? '  (Rich testing)' : ''))); }
-    if (first) o.unshift('Nothing ready. Check backlog (aigile list ' + slug + ' --status backlog) or ask Rich.');
+    if (waiting.length) { o.push('Waiting (not yours to pick up)'); waiting.forEach(c => o.push('     ' + line(c) + (c.status === 'verify' ? `  (${OWNER} testing)` : ''))); }
+    if (first) o.unshift('Nothing ready. Check backlog (aigile list ' + slug + ' --status backlog) or ask ' + OWNER + '.');
     else o.push('', `Start: aigile move ${slug} <id> doing   |   details: aigile show ${slug} <id>`);
     console.log(o.join('\n'));
   },
@@ -255,7 +258,7 @@ const cmds = {
     if (pos[2] === 'done' && !process.env.AIGILE_ALLOW_DONE) {
       // Teams may close a card once they've read Rich's comment on it ('For the team'); otherwise Rich accepts.
       const card = (await api('GET', P(slug))).cards.find(c => c.id.toLowerCase() === String(pos[1]).toLowerCase());
-      if (card && card.status !== 'team') die("only Rich moves cards to done (he accepts them in 'verify'). Use: aigile test ...  (cards in 'team' you may move to done once you've read Rich's comment)");
+      if (card && card.status !== 'team') die(`only ${OWNER} moves cards to done (they accept them in 'verify'). Use: aigile test ...  (cards in 'team' you may move to done once you've read ${OWNER}'s comment)`);
     }
     const c = await api('PATCH', C(slug, pos[1]), { status: pos[2] });
     out(flags, c, c => 'moved ' + line(c));
@@ -284,7 +287,7 @@ const cmds = {
   async ask({ pos, flags }) {
     const slug = await project(pos[0]);
     const c = await api('POST', C(slug, pos[1]) + '/comments', { author: who(flags), text: await text(pos[2], 'question'), needsYou: true });
-    out(flags, c, c => `asked Rich on ${c.id}; card now flagged NEEDS-RICH. Move on to other work (aigile next ${slug}).`);
+    out(flags, c, c => `asked ${OWNER} on ${c.id}; card now flagged NEEDS-RICH. Move on to other work (aigile next ${slug}).`);
   },
 
   async test({ pos, flags }) {
@@ -293,7 +296,7 @@ const cmds = {
     const steps = await text(pos[2], 'test steps');
     await api('PATCH', C(slug, pos[1]), { status: 'verify', testSteps: steps, needsYou: false });
     const c = await api('POST', C(slug, pos[1]) + '/comments', { author, text: 'Ready for you to test. Steps are on the card.', needsYou: false });
-    out(flags, c, c => 'handed to Rich: ' + line(c));
+    out(flags, c, c => `handed to ${OWNER}: ` + line(c));
   },
 
   // Something only Rich can do (a key, a login, a manual step): assigns the card to him with the instructions.
@@ -301,10 +304,10 @@ const cmds = {
   async task({ pos, flags }) {
     const slug = await project(pos[0]);
     const author = who(flags);
-    const what = await text(pos[2], 'what Rich needs to do');
-    await api('PATCH', C(slug, pos[1]), { assignee: 'Rich', needsYou: false });
+    const what = await text(pos[2], `what ${OWNER} needs to do`);
+    await api('PATCH', C(slug, pos[1]), { assignee: OWNER, needsYou: false });
     const c = await api('POST', C(slug, pos[1]) + '/comments', { author, text: what, needsYou: false });
-    out(flags, c, c => `task for Rich on ${c.id}: it's in his inbox. Carry on with other work (aigile next ${slug}).`);
+    out(flags, c, c => `task for ${OWNER} on ${c.id}: it's in their inbox. Carry on with other work (aigile next ${slug}).`);
   },
 
   async block({ pos, flags }) {
@@ -346,22 +349,22 @@ const cmds = {
     const o = [];
     for (const c of u.cards) {
       o.push(`${c.id} [${c.status}${c.prevStatus && c.status === 'team' ? ', was ' + c.prevStatus : ''}] ${c.type}/${c.priority}  ${c.title}`);
-      for (const it of c.items) o.push(`   ${it.kind === 'new card' ? 'Rich raised it' : it.kind === 'poke' ? 'Rich POKED (reply with a one-line status comment, leave the card where it is)' : 'Rich'} (${when(it.at)}): ${it.text.replace(/\n/g, '\n     ') || (it.attachments ? '' : '(no description)')}` + files(it, '     '));
+      for (const it of c.items) o.push(`   ${it.kind === 'new card' ? OWNER + ' raised it' : it.kind === 'poke' ? OWNER + ' POKED (reply with a one-line status comment, leave the card where it is)' : OWNER} (${when(it.at)}): ${it.text.replace(/\n/g, '\n     ') || (it.attachments ? '' : '(no description)')}` + files(it, '     '));
     }
     const waiting = u.forTeam.filter(f => !u.cards.some(c => c.id === f.id));
     if (waiting.length) o.push(`Still in "For the team" (seen before): ${waiting.map(f => f.id + ' ' + f.title).join('; ')}`);
     // Pokes alone get the smallest possible message: one "oi" line per card.
     const onlyPokes = u.cards.length && u.cards.every(c => c.items.every(i => i.kind === 'poke'));
     if (onlyPokes && !flags.json) {
-      const msg = u.cards.map(c => `👉 Rich poked ${c.id}: reply one line (aigile comment ${u.project} ${c.id} "...").`).join('\n');
+      const msg = u.cards.map(c => `👉 ${OWNER} poked ${c.id}: reply one line (aigile comment ${u.project} ${c.id} "...").`).join('\n');
       if (flags['stop-hook']) console.log(JSON.stringify({ decision: 'block', reason: msg })); else console.log(msg);
       return;
     }
     const news = u.cards.length > 0;
     if (hook && !news) return; // hooks only speak when there's something new (saves tokens)
-    if (!news && !waiting.length) return console.log('Nothing new from Rich.');
-    const head = `📬 AI-gile board (${u.project}): ${news ? 'new from Rich since you last looked' : 'cards waiting on your team'}.`;
-    const tail = `Act on these now: read each with \`aigile show ${u.project} <id>\`, then: if it's just information, move it to done (\`aigile move ${u.project} <id> done\`); if it needs work (e.g. sent back), move it to doing, fix it and hand it back with \`aigile test\` for Rich's approval. They are marked seen.`;
+    if (!news && !waiting.length) return console.log(`Nothing new from ${OWNER}.`);
+    const head = `📬 AI-gile board (${u.project}): ${news ? `new from ${OWNER} since you last looked` : 'cards waiting on your team'}.`;
+    const tail = `Act on these now: read each with \`aigile show ${u.project} <id>\`, then: if it's just information, move it to done (\`aigile move ${u.project} <id> done\`); if it needs work (e.g. sent back), move it to doing, fix it and hand it back with \`aigile test\` for ${OWNER}'s approval. They are marked seen.`;
     const msg = [head, ...o, tail].join('\n');
     if (flags['stop-hook']) { if (news) console.log(JSON.stringify({ decision: 'block', reason: msg })); return; }
     console.log(msg);
@@ -383,7 +386,7 @@ const cmds = {
 
   async inbox({ flags }) {
     const cs = await api('GET', '/api/inbox');
-    out(flags, cs, cs => cs.map(c => `${c.project}/${line(c)}` + (lastComment(c) ? `\n     last: ${lastComment(c).author}: ${lastComment(c).text.slice(0, 160).replace(/\n/g, ' ')}` : '')).join('\n') || 'Nothing waiting on Rich.');
+    out(flags, cs, cs => cs.map(c => `${c.project}/${line(c)}` + (lastComment(c) ? `\n     last: ${lastComment(c).author}: ${lastComment(c).text.slice(0, 160).replace(/\n/g, ' ')}` : '')).join('\n') || `Nothing waiting on ${OWNER}.`);
   },
 };
 

@@ -23,7 +23,7 @@ async function createCard(e) {
   if (!body.title) { setErr('d-err', 'Give it a title'); return false; }
   try {
     const attachments = await Attach.upload('new:' + slug(), slug());
-    const c = await api('POST', `/api/projects/${slug()}/cards`, { ...body, createdBy: 'Rich', attachments });
+    const c = await api('POST', `/api/projects/${slug()}/cards`, { ...body, createdBy: me(), attachments });
     Attach.clear('new:' + slug());
     closeDialog();
     await rerender();

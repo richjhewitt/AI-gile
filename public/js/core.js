@@ -1,4 +1,6 @@
 /* ---------- state, api, helpers ---------- */
+// The board's human (AIG-103): name from /api/meta, default Rich.
+const me = () => (typeof state !== 'undefined' && state.owner) || 'Rich';
 const COLS = { backlog: 'Backlog', todo: 'To do', doing: 'In progress', review: 'Review', verify: 'For you to test', team: 'For the team', done: 'Done' };
 const COL_COLORS = { team: '#e11d74', done: 'var(--done)', verify: 'var(--you)', review: '#0ea5a4', doing: 'var(--accent)', todo: 'var(--warn)' };
 const TYPES = ['feature', 'bug', 'task'];

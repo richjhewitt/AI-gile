@@ -27,13 +27,13 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const tmp = p => fs.mkdtempSync(path.join(os.tmpdir(), 'aigile-qa-' + p + '-'));
 
 /* ---------- server and helpers ---------- */
-async function startServer() {
+async function startServer(extraEnv = {}) {
   const dir = tmp('run'), data = path.join(dir, 'data'), usageDir = path.join(dir, 'usage');
   fs.mkdirSync(usageDir);
   const out = path.join(dir, 'wake-out.txt');
   const stub = path.join(dir, 'agent-stub.bat');
   fs.writeFileSync(stub, `@echo off\r\ncd > "${out}"\r\necho %* >> "${out}"\r\nping -n 4 127.0.0.1 >nul\r\nexit\r\n`);
-  const env = { ...process.env, AIGILE_PORT: String(PORT), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir };
+  const env = { ...process.env, AIGILE_PORT: String(PORT), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, ...extraEnv };
   delete env.AIGILE_DEV; delete env.AIGILE_ALLOW_DONE; delete env.AIGILE_AS;
   const proc = spawn(process.execPath, [path.join(ROOT, 'server.js')], { env, stdio: 'ignore', cwd: ROOT });
   for (let i = 0; i < 50; i++) {
@@ -74,7 +74,7 @@ const noErrors = page => check('no page errors', page.errors.length === 0, page.
 
 /* ---------- areas ---------- */
 const areas = {};
-const def = (name, doc, fn, needsBrowser = false) => { areas[name] = { doc, fn, needsBrowser }; };
+const def = (name, doc, fn, needsBrowser = false, env = {}) => { areas[name] = { doc, fn, needsBrowser, env }; };
 
 def('api', 'projects/cards CRUD, comment/verdict/taskdone/poke, updates feed, inbox', async s => {
   const p = await mkProject(s, 'Alpha', 'ALP');
@@ -974,6 +974,27 @@ def('guard', 'only the board on this computer may use the API: host, origin and 
   check('no evil card got in', (await s.ok('GET', '/api/projects/alpha')).cards.length === 2);
 });
 
+def('owner', 'the board works for any owner name, not just Rich (AIG-103)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  check('meta tells the page the owner', (await s.ok('GET', '/api/meta')).owner === 'Sam');
+  const c = await mkCard(s, 'alpha', 'Question');
+  s.cli(['ask', 'alpha', c.id, 'Go?', '--as', 'Lead']);
+  const inbox = s.cli(['inbox']);
+  check('CLI speaks of the owner', /asked Sam|Sam/.test(s.cli(['help']).out) && !/\bRich\b/.test(s.cli(['help']).out));
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.click('[data-ctab="reply"]');
+  check('reply box says Sam', /Reply as Sam/.test(await page.getAttribute('#r-text', 'placeholder')));
+  await page.click('.reply button:has-text("Go")');
+  await sleep(500);
+  const card = await getCard(s, 'alpha', c.id);
+  check('owner reply is from Sam and counts as the owner', card.comments.at(-1).author === 'Sam' && card.status === 'team' && !card.needsYou, card);
+  const up = s.cli(['updates', 'alpha']);
+  check('team sees Sam in updates', /new from Sam/.test(up.out) && /Sam \(/.test(up.out), up.out);
+  s.cli(['task', 'alpha', c.id, 'log in', '--as', 'Lead']);
+  check('tasks go to Sam', (await getCard(s, 'alpha', c.id)).assignee === 'Sam' && (await s.ok('GET', '/api/inbox')).some(x => x.id === c.id));
+  noErrors(page);
+}, true, { AIGILE_OWNER: 'Sam' });
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }
@@ -983,7 +1004,7 @@ for (const w of wanted) if (!areas[w]) { console.error('unknown area: ' + w + ' 
 let browser = null;
 for (const name of wanted) {
   area = name;
-  const s = await startServer();
+  const s = await startServer(areas[name].env);
   let ctx = null;
   try {
     if (areas[name].needsBrowser) {

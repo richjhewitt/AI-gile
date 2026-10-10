@@ -15,6 +15,7 @@ let loadedBuild = null;
 async function checkBuild() {
   try {
     const m = await api('GET', '/api/meta');
+    if (m.owner && m.owner !== state.owner) { state.owner = m.owner; refresh(true); }
     setNight(m.quiet);
     pokeBadge(await api('GET', '/api/projects'));
     if (loadedBuild === null) { loadedBuild = m.build; return; }

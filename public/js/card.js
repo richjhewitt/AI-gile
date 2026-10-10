@@ -29,14 +29,14 @@ const ROLES = [
   ['Docs (Haiku)', '📄', 'READMEs, guides'],
 ];
 function assigneeSelect(cur) {
-  const team = (state.project?.team || []).filter(m => !/retired/i.test(m.status || '') && m.name !== 'Rich').map(m => m.name);
-  const known = new Set(['', 'Rich', ...ROLES.map(r => r[0]), ...team]);
+  const team = (state.project?.team || []).filter(m => !/retired/i.test(m.status || '') && m.name !== me()).map(m => m.name);
+  const known = new Set(['', me(), ...ROLES.map(r => r[0]), ...team]);
   const o = (v, label) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
   return `<select id="f-assignee" onchange="onAssignee(this)">
     ${o('', '— nobody yet —')}${cur && !known.has(cur) ? o(cur, '👤 ' + cur) : ''}
     <optgroup label="Roles: the lead launches this kind of agent">${ROLES.map(([v, i, t]) => o(v, `${i} ${v}: ${t}`)).join('')}</optgroup>
     ${team.length ? `<optgroup label="Team members">${team.map(n => o(n, '👤 ' + n)).join('')}</optgroup>` : ''}
-    <optgroup label="You">${o('Rich', '🙋 Rich: a task for you')}</optgroup>
+    <optgroup label="You">${o(me(), '🙋 ' + me() + ': a task for you')}</optgroup>
     <option value="__other">✏️ Someone else…</option></select>`;
 }
 function onAssignee(sel) {
@@ -87,7 +87,7 @@ function renderCard(p, c) {
     <div class="ctabs">${tabBtn('reply', `💬 Reply${c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''}`)}${tabBtn('details', '📄 Details')}${hasTest ? tabBtn('test', c.status === 'verify' ? '🧪 Test <span class="n hot">your call</span>' : '🧪 Test') : ''}</div>
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
       ${newest.length ? msg(newest[0], true) : '<p class="muted">No messages yet.</p>'}
-      <div class="reply"><textarea id="r-text" rows="3" placeholder="Reply as Rich: moves the card to For the team… (Enter to send, Shift+Enter for a new line)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
+      <div class="reply"><textarea id="r-text" rows="3" placeholder="Reply as ${esc(me())}: moves the card to For the team… (Enter to send, Shift+Enter for a new line)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
         <div class="err" id="r-err"></div>
         <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="Sends GO as your answer">👍 Go</button>` : ''}<button class="primary" onclick="sendReply()">Send reply</button>${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>
       ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">Earlier (newest first)</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}
@@ -143,7 +143,7 @@ async function sendReply(fixed) {
   if (!t && !Attach.has(key)) { setErr('r-err', 'Write something first'); return; }
   try {
     const attachments = fixed ? [] : await Attach.upload(key, slug());
-    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: 'Rich', text: t, attachments });
+    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: me(), text: t, attachments });
     if (!fixed) Attach.clear(key);
     closeCard();
   } catch (err) { setErr('r-err', err); }

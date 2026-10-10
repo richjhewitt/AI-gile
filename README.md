@@ -97,6 +97,7 @@ Activity is marked as seen when it is reported. The board shows the owner which 
 | `AIGILE_URL` | `http://localhost:4321` | Server used by the CLI |
 | `AIGILE_AS` | none | Default `--as` name for the CLI |
 | `AIGILE_USAGE_DIR` | none | Folder of agent session logs (JSONL, one subfolder per project) for token usage. Can also be set as `usageDir` in `aigile.local.json`, which is kept out of git |
+| `AIGILE_OWNER` | Rich | Your name: the person the board and its teams work for. Can also be set as `owner` in `aigile.local.json` |
 | `AIGILE_DEV` | off | Prompt open pages to refresh after each new build |
 
 ## Data
