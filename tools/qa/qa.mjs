@@ -245,7 +245,7 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('.column');
   const heads = await page.$$eval('.column h3 > span:first-child', els => els.map(e => e.textContent));
-  check('seven columns in order', JSON.stringify(heads) === JSON.stringify(['Backlog', 'To do', 'In progress', 'Review', 'For you to test', 'For the team', 'Done']), heads);
+  check('seven columns in order', JSON.stringify(heads) === JSON.stringify(['Backlog', 'To do', 'In progress', 'Review', 'For you', 'For the team', 'Done']), heads);
   check('cards render in their column', (await page.locator('.column[data-status=todo] .card').count()) === 1 && (await page.locator('.column[data-status=doing] .card').count()) === 1);
   await page.dragAndDrop('.card[data-id="ALP-1"]', '.column[data-status="review"]');
   await page.waitForTimeout(600);
@@ -1046,6 +1046,30 @@ def('update', 'a clone behind its GitHub upstream offers an update and fast-forw
   process.env.QA_UPDATE_REPO = repo;
   return { AIGILE_REPO: repo, AIGILE_NO_RESTART: '1' };
 })());
+
+def('foryou', 'For you column: tests, questions, tasks and blocks together; chips pick what comes first (AIG-106)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const t = await mkCard(s, 'alpha', 'A test', { status: 'verify', testSteps: 's' });
+  const q = await mkCard(s, 'alpha', 'A question', { status: 'doing' });
+  const k = await mkCard(s, 'alpha', 'A task', { status: 'todo' });
+  const other = await mkCard(s, 'alpha', 'Not mine', { status: 'todo' });
+  s.cli(['ask', 'alpha', q.id, 'Go?', '--as', 'Lead']); s.cli(['task', 'alpha', k.id, 'log in', '--as', 'Lead']);
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('.column.foryou .card');
+  const ids = async () => page.$$eval('.column.foryou .card', els => els.map(e => e.dataset.id));
+  check('all three kinds in For you', (await ids()).length === 3 && !(await ids()).includes(other.id), await ids());
+  check('they are not repeated in their own columns', (await page.locator(`.column[data-status="doing"] .card[data-id="${q.id}"]`).count()) === 0);
+  check('questions first by default', (await ids())[0] === q.id);
+  await page.click('.fy-chip[data-first="t"]');
+  await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, t.id, { timeout: 3000 }).catch(() => {});
+  check('Tests chip puts the test first', (await ids())[0] === t.id, await ids());
+  await page.reload(); await page.waitForSelector('.column.foryou .card');
+  check('the pick is remembered', (await ids())[0] === t.id && await page.isVisible('.fy-chip.on[data-first="t"]'));
+  await page.click('.fy-chip[data-first="k"]');
+  await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, k.id, { timeout: 3000 }).catch(() => {});
+  check('Tasks chip puts the task first', (await ids())[0] === k.id, await ids());
+  noErrors(page);
+}, true);
 
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);

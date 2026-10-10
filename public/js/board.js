@@ -40,8 +40,8 @@ function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where Rich looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
   const cols = Object.entries(COLS).map(([k, label]) => {
-    // 'For you to test' is a queue: longest-waiting first, so 'Wait and see' sends a card to the back.
-    const cs = p.cards.filter(c => c.status === k && matchesFilter(c, p.slug)).sort((a, b) => k === 'verify' ? a.updated.localeCompare(b.updated) : b.updated.localeCompare(a.updated));
+    if (k === 'verify') return forYouColumn(p);
+    const cs = p.cards.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => b.updated.localeCompare(a.updated));
     return `<div class="column" data-status="${k}"><h3><span>${label}</span><span>${cs.length} <button class="colbtn" title="New card in ${esc(label)}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
   }).join('');
   const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
@@ -64,6 +64,27 @@ function renderBoard(p) {
       <div class="box"><h3>Log &amp; decisions</h3>${log.length ? `<ul class="log">${log.map(l =>
         `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : '<p class="muted">Nothing logged yet.</p>'}</div>
     </div>`;
+}
+
+/* ---------- For you column (AIG-106) ---------- */
+// Everything waiting on the owner, whatever its status: tests, questions, tasks and blocks. Those cards show
+// here instead of in their own column (their status doesn't change). Chips pick which kind comes first.
+const KINDS = [['q', '❓ Questions'], ['t', '🧪 Tests'], ['k', '📋 Tasks']];
+const isMine = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
+const forYou = c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
+const kindOf = c => isMine(c) ? 'k' : c.status === 'verify' && !c.needsYou && !c.blocked ? 't' : 'q';
+function forYouFirst(k) {
+  if (k) { state.forYouFirst = k; try { localStorage.setItem('aigile.forYouFirst', k); } catch {} refresh(true); }
+  if (!state.forYouFirst) { try { state.forYouFirst = localStorage.getItem('aigile.forYouFirst'); } catch {} }
+  return state.forYouFirst || 'q';
+}
+function forYouColumn(p) {
+  const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : 1 + KINDS.findIndex(([k]) => k === kindOf(c));
+  // Within a kind, a queue: longest-waiting first, so 'Wait and see' sends a test to the back.
+  const cs = p.cards.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || a.updated.localeCompare(b.updated));
+  const n = k => cs.filter(c => kindOf(c) === k).length;
+  const chips = KINDS.map(([k, label]) => `<button class="fy-chip ${k === first ? 'on' : ''}" data-first="${k}" title="Show these first" onclick="forYouFirst('${k}')">${label} ${n(k)}</button>`).join('');
+  return `<div class="column foryou" data-status="verify"><h3><span>For you</span><span>${cs.length}</span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
 }
 
 function metaHtml(c) {
