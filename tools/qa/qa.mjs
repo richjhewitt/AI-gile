@@ -1809,6 +1809,29 @@ def('drafts', 'unsent text survives a reload; sending clears it (AIG-171)', asyn
   noErrors(page);
 }, true);
 
+def('proof', 'proof on hand-back: test --commit shows what changed; --shot adds screenshots (AIG-166)', async (s, ctx) => {
+  const folder = tmp('proof'), g = (...a) => spawnSync('git', a, { cwd: folder, encoding: 'utf8' });
+  g('init', '-q'); fs.writeFileSync(path.join(folder, 'app.js'), 'const colour = "red";\n'); g('add', '.'); g('-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qm', 'start');
+  fs.writeFileSync(path.join(folder, 'app.js'), 'const colour = "blue";\n'); g('-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qam', 'Make it blue');
+  const sha = g('rev-parse', 'HEAD').stdout.trim();
+  const shot = path.join(folder, 'result.png');
+  fs.writeFileSync(shot, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVR4nGP8z8DwnwEIGBmgACZgYAAAKfEC/tW5j8QAAAAASUVORK5CYII=', 'base64'));
+  await mkProject(s, 'Alpha', 'ALP', { path: folder });
+  const c = await mkCard(s, 'alpha', 'Blue please');
+  const r = s.cli(['test', 'alpha', c.id, '1. look', '--as', 'Lead', '--commit', sha.slice(0, 8), '--shot', shot]);
+  const card = await getCard(s, 'alpha', c.id);
+  check('the board keeps the proof', r.code === 0 && card.proof && card.proof.subject === 'Make it blue' && card.proof.files[0].file === 'app.js' && /\+const colour = "blue"/.test(card.proof.diff), r);
+  check('a bad commit id is refused', (await s.api('POST', `/api/projects/alpha/cards/${c.id}/proof`, { commit: 'nope; rm' })).status === 400);
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.waitForSelector('.proof');
+  const pane = await page.textContent('[data-pane="test"]');
+  check('Test tab shows what changed', pane.includes('Make it blue') && pane.includes('app.js'));
+  await page.click('.proof summary');
+  check('the change unfolds, colour-coded', await page.isVisible('.proof pre.diff .add'));
+  check('the screenshot shows on the Test tab', (await page.locator('[data-pane="test"] .att-shown img').count()) === 1);
+  noErrors(page);
+}, true);
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

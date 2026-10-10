@@ -34,6 +34,7 @@ WORKING
   task <proj> <id> "what to do" --as NAME something only ${OWNER} can do (key, login, manual step): goes to their inbox
   test <proj> <id> "steps ${OWNER} can follow" --as NAME    -> moves to verify, sets testSteps, comments
         [--open URL [--start "command"]]   adds a ▶ Open it button: starts the app if needed, opens the page
+        [--commit SHA] [--shot a.png,b.png]  proof: the board shows what changed in that commit, plus your screenshots
   block <proj> <id> ["why"] --as NAME     unblock <proj> <id>
   edit <proj> <id> [--title --desc --type --priority --sprint --assignee --test-steps]
   add <proj> "title" [--type feature|bug|task --priority low|normal|high|urgent --status s
@@ -308,7 +309,17 @@ const cmds = {
     const steps = await text(pos[2], 'test steps');
     // --open URL [--start "command"]: the card gets a ▶ Open it button (AIG-146).
     await api('PATCH', C(slug, pos[1]), { status: 'verify', testSteps: steps, needsYou: false, ...(flags.open ? { openUrl: flags.open, startCmd: flags.start || '' } : {}) });
-    const c = await api('POST', C(slug, pos[1]) + '/comments', { author, text: 'Ready for you to test. Steps are on the card.', needsYou: false });
+    // Proof on hand-back (AIG-166): --commit <sha> lets the board attach what changed; --shot a.png,b.png adds screenshots.
+    if (flags.commit) await api('POST', C(slug, pos[1]) + '/proof', { commit: flags.commit });
+    const attachments = [];
+    for (const f of String(flags.shot || '').split(',').map(s => s.trim()).filter(Boolean)) {
+      const fs = require('fs'), ext = (f.match(/\.(\w+)$/) || [])[1] || '';
+      if (!fs.existsSync(f)) die('screenshot not found: ' + f);
+      const type = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp' }[ext.toLowerCase()] || 'application/octet-stream';
+      const a = await api('POST', `/api/projects/${slug}/attachments`, { name: require('path').basename(f), type, data: fs.readFileSync(f).toString('base64') });
+      attachments.push({ id: a.id, type: a.type });
+    }
+    const c = await api('POST', C(slug, pos[1]) + '/comments', { author, text: 'Ready for you to test. Steps are on the card.', needsYou: false, attachments });
     out(flags, c, c => `handed to ${OWNER}: ` + line(c));
   },
 

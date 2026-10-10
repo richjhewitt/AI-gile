@@ -82,7 +82,7 @@ function renderCard(p, c) {
   const hasTest = c.status === 'verify' || c.testSteps;
   // The team's notes since your last word, shown on the Test tab next to Accept, so you never go looking (AIG-152).
   const lastMine = c.comments.map(m => isOwner(m.author)).lastIndexOf(true);
-  const notes = c.comments.slice(lastMine + 1).filter(m => !isOwner(m.author) && !/^Ready for you to test\./.test(m.text)).slice(-3);
+  const notes = c.comments.slice(lastMine + 1).filter(m => !isOwner(m.author) && (m.attachments || !/^Ready for you to test\./.test(m.text))).slice(-3);
   if (state.tabFor !== c.id) { state.tabFor = c.id; state.cardTab = c.status === 'verify' ? 'test' : c.comments.length ? 'reply' : 'details'; }
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
@@ -102,6 +102,7 @@ function renderCard(p, c) {
       ${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${Attach.shown(c, p.slug)}
     </div>
     ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>${verdict}
+      ${c.proof ? proofHtml(c.proof) : ''}
       ${notes.length ? `<h3>${esc(t('card.fromteam'))}</h3>${notes.map(m => msg(m, false)).join('')}` : ''}
       ${c.testSteps ? `<h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
   </div></div>`;
@@ -150,6 +151,14 @@ function closeCard() {
   location.hash = '#/p/' + slug();
 }
 // fixed: a one-tap answer (👍 Go on a question, AIG-75) instead of the typed one.
+// Proof on hand-back (AIG-166): what the commit says, the files it changed and the change itself (folded).
+function proofHtml(pr) {
+  const diff = esc(pr.diff).split('\n').map(l => /^\+(?!\+\+)/.test(l) ? `<span class="add">${l}</span>` : /^-(?!--)/.test(l) ? `<span class="del">${l}</span>` : /^(diff |@@)/.test(l) ? `<span class="hunk">${l}</span>` : l).join('\n');
+  return `<div class="proof"><h3>🔍 ${esc(t('proof.title'))}</h3>
+    <div><b>${esc(pr.subject)}</b> <span class="muted">${esc(pr.sha.slice(0, 7))} · ${ago(pr.at)}</span>${pr.url ? ` · <a href="${esc(pr.url)}" target="_blank">${esc(t('proof.github'))}</a>` : ''}</div>
+    <ul class="proof-files">${pr.files.map(f => `<li><code>${esc(f.file)}</code> <span class="add">+${f.add ?? '?'}</span> <span class="del">−${f.del ?? '?'}</span></li>`).join('')}</ul>
+    <details><summary>${esc(t('proof.show'))}</summary><pre class="diff">${diff}${pr.cut ? '\n…' : ''}</pre></details></div>`;
+}
 // ▶ Open it (AIG-146): ask the board to start the app if needed (confirming the command), then open the page.
 async function openIt(s, id, btn) {
   const c = (state.project && state.project.cards.find(x => x.id === id)) || { startCmd: btn.dataset.cmd };

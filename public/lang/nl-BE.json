@@ -525,5 +525,8 @@
  "dms.opencard": "Open the card",
  "dms.replyto": "Reply to:",
  "inbox.later": "⏳ Later",
- "inbox.later.title": "Hide it from your inbox for an hour (AIG-167)"
+ "inbox.later.title": "Hide it from your inbox for an hour (AIG-167)",
+ "proof.title": "What changed",
+ "proof.github": "Full change on GitHub",
+ "proof.show": "Show the change"
 }
