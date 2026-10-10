@@ -926,7 +926,14 @@ def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, 
   const ib = await s.ok('GET', '/api/inbox');
   check('inbox items carry the look', ib.every(c => c.projectColor && c.projectEmoji));
   const page = await openPage(ctx, '#/inbox');
+  // Messages (AIG-87): one chat per project, newest first; picking a chat shows its questions.
+  await page.waitForSelector('#ibChats button[data-chat]');
+  const chats = await page.$$eval('#ibChats button[data-chat]', els => els.map(e => e.dataset.chat));
+  check('a chat per project, newest message first', JSON.stringify(chats) === JSON.stringify(['locoradio', 'tunio']), chats);
+  check('newest chat open: only its question shows', (await page.locator(`.ib-item[data-id="${b.id}"]`).count()) === 1 && (await page.locator(`.ib-item[data-id="${a.id}"]`).count()) === 0);
+  await page.click('#ibChats button[data-chat="tunio"]');
   await page.waitForSelector(`.ib-item[data-id="${a.id}"]`);
+  check('chat shows the lead and the project look', (await page.textContent('#ibChats button[data-chat="tunio"]')).includes('Lead') && (await page.textContent('#ibChats')).includes('🎵'));
   check('badge shows emoji and name', (await page.textContent(`.ib-item[data-id="${a.id}"] .ib-proj`)).includes('🎵 Tunio'));
   check('item has the project stripe', (await page.getAttribute(`.ib-item[data-id="${a.id}"]`, 'style')).includes(sum.color));
   check('project tab shows the emoji', (await page.textContent('#ibTabs')).includes('📻 LocoRadio'));

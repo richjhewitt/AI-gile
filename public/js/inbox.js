@@ -64,6 +64,16 @@
   .ib-tag { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
   .ib-item.q.blk { border-color: var(--b-line); background: var(--b-tint); } .q.blk .ib-tag { color: var(--b-ink); }
   .q .ib-tag { color: var(--q-ink); } .t .ib-tag { color: var(--t-ink); }
+  .ib-chat { display: flex; gap: 14px; align-items: flex-start; }
+  .ib-chats { flex: 0 0 230px; display: flex; flex-direction: column; gap: 6px; position: sticky; top: 70px; }
+  .ib-chatbtn { display: flex; align-items: center; gap: 10px; text-align: left; padding: 8px 10px; border: 1px solid var(--line); border-left: 5px solid var(--proj, var(--line)); border-radius: 10px; background: var(--panel); cursor: pointer; }
+  .ib-chatbtn.on { background: color-mix(in srgb, var(--proj, var(--accent)) 14%, var(--panel)); border-color: var(--proj, var(--accent)); }
+  .ib-chatbtn .av { font-size: 22px; }
+  .ib-chatbtn .nm { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .ib-chatbtn .nm .ib-hint { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ib-thread { flex: 1; min-width: 0; }
+  .ib-thread .ib-item.q { border-radius: 16px 16px 16px 4px; }
+  @media (max-width: 720px) { .ib-chat { flex-direction: column; } .ib-chats { position: static; flex-basis: auto; width: 100%; } }
   .ib-proj { font-weight: 700; color: #fff; background: var(--proj, var(--muted)); border-radius: 999px; padding: 1px 9px; font-size: 13px; }
   .ib-item.q, .ib-item.t, .ib-item.k, .ib-item { border-left: 8px solid var(--proj, var(--line)); }
   .ib-tab[style] { border-bottom: 3px solid var(--proj); }
@@ -283,7 +293,7 @@
       <div class="ib-tabs" id="ibTabs" role="tablist"></div>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <div id="ibEmpty"></div>
-      <section class="ib-sec q" id="ibQ"><h3>❓ Questions for you <span class="ib-badge q" id="ibQn"></span></h3><div class="list"></div><div class="ib-hint" id="ibMore" hidden></div></section>
+      <section class="ib-sec q" id="ibQ"><h3>💬 Messages <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
       <section class="ib-sec k" id="ibK"><h3>📋 Tasks for you <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">things only you can do</span></h3><div class="list"></div></section>
       <section class="ib-sec t" id="ibT"><h3>🧪 To test <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">longest waiting first</span></h3><div class="list"></div></section>
     </div>`;
@@ -320,6 +330,7 @@
     set(t) { try { localStorage.setItem('aigile.inboxTab', t); } catch {} },
   };
   let tab = tabPref.get();
+  let chat = null;   // the project whose questions show in the Messages thread (AIG-87)
   let fromProject = null, selectPinned = false;   // set when the inbox is opened from a project page
   function tabCounts(list) {
     const q = list.filter(isQuestion).length, k = list.filter(isTask).length, t = list.filter(isTest).length;
@@ -363,13 +374,34 @@
     box.hidden = orderedProjects.length < 2;
   }
 
+  /* ---------- messages (AIG-87): questions as DMs, one chat per project lead ---------- */
+  // Left: a chat per project with questions (newest message first). Right: that chat's questions as bubbles,
+  // oldest at the top and newest at the bottom, each with 👍 Go and a reply box (the usual question item).
+  function paintChats(qs) {
+    const chats = [...new Map(qs.map(c => [c.project, c])).keys()]
+      .map(p => { const list = qs.filter(c => c.project === p); return { p, list, last: list.reduce((m, c) => lastAsk(c).at > m ? lastAsk(c).at : m, '') }; })
+      .sort((a, b) => b.last.localeCompare(a.last));
+    if (!chats.some(x => x.p === chat)) chat = chats.length ? chats[0].p : null;
+    const html = chats.map(({ p, list, last }) => {
+      const c = list[0], who = lastAsk(list.find(x => lastAsk(x).at === last) || c).author;
+      return `<button class="ib-chatbtn ${p === chat ? 'on' : ''}" data-chat="${esc(p)}" style="--proj:${esc(c.projectColor || '')}">
+        <span class="av">${esc(c.projectEmoji || '💬')}</span><span class="nm"><b>${esc(c.projectName)}</b><span class="ib-hint">${esc(who)} · ${ago(last)}</span></span><span class="ib-badge q">${list.length}</span></button>`;
+    }).join('');
+    const box = el('ibChats');
+    if (box.dataset.sig !== html) { box.dataset.sig = html; box.innerHTML = html; }
+    box.hidden = chats.length < 2;
+    syncList(el('ibQ').querySelector('.list'), qs.filter(c => c.project === chat).sort((a, b) => lastAsk(a).at.localeCompare(lastAsk(b).at)));
+  }
+
   function paintPage() {
     if (!el('ib')) skeleton();
     paintTabs();
     // All tab: items grouped by project, in tab order, each group still longest-waiting first (AIG-86).
     const shown = tab === 'all' ? [...items].sort((a, b) => tabOrder.indexOf(a.project) - tabOrder.indexOf(b.project)) : items.filter(c => c.project === tab);
     const qs = shown.filter(isQuestion), ks = shown.filter(isTask), ts = shown.filter(isTest);
-    syncList(el('ibQ').querySelector('.list'), qs);
+    // A link to one question (alerts, the home list) opens its chat.
+    if (flashKey) { const f = qs.find(c => keyOf(c) === flashKey); if (f) chat = f.project; }
+    paintChats(qs);
     syncList(el('ibK').querySelector('.list'), ks);
     syncList(el('ibT').querySelector('.list'), ts);
     el('ibQ').hidden = !qs.length; el('ibK').hidden = !ks.length; el('ibT').hidden = !ts.length;
@@ -392,6 +424,8 @@
     }
   }
   function onClick(e) {
+    const cb = e.target.closest('button[data-chat]');
+    if (cb) { chat = cb.dataset.chat; paintPage(); return; }
     const tb = e.target.closest('button[data-tab]');
     if (tb) { tab = tb.dataset.tab; tabPref.set(tab); paintPage(); return; }
     const b = e.target.closest('button[data-act]'); if (!b) return;
