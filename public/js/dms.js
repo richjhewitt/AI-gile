@@ -1,17 +1,41 @@
-/* ---------- DMs with the team leads (AIG-137/138): a Discord-style rail and chat, apart from the work inbox ---------- */
-// The rail down the left shows one avatar per project lead (project emoji and colour) with an unread count.
-// Clicking one opens the chat: the lead's messages left, yours right. The typing box answers the newest open
-// question, or (when none is waiting) sends the lead a new message as a quick question card (AIG-132).
+/* ---------- the rail and DMs (AIG-137/138, AIG-147..149): Discord-style, apart from the work inbox ---------- */
+// The rail down the left: Home, Inbox and 💬 DMs at the top, then each project as a "server" icon (its emoji
+// and colour) with a red count of what needs you and a white pip for activity you haven't looked at. 💬 DMs
+// opens the list of team leads; picking one opens the chat: the lead's messages left, yours right. The typing
+// box answers the newest open question, or (when none is waiting) sends the lead a quick question card.
 const Dms = (() => {
-  let chats = [], open = null, thread = null, busy = false;
+  let projects = [], chats = [], open = null, listOpen = false, thread = null, busy = false;
   const el = id => document.getElementById(id);
   const avatar = c => `<span class="dm-av" style="--proj:${esc(c.color || '')}">${esc(c.emoji || '💬')}</span>`;
+  const badge = n => n ? `<span class="dm-unread">${n > 99 ? '99+' : n}</span>` : '';
+  // "Seen" per project: the project's last update when you last opened its board (this browser only).
+  const seen = { get: s => { try { return localStorage.getItem('aigile.seen.' + s) || ''; } catch { return ''; } }, set: (s, v) => { try { localStorage.setItem('aigile.seen.' + s, v); } catch {} } };
+  const here = () => (location.hash.match(/^#\/p\/([^/]+)/) || [])[1] || '';
 
   async function loadRail() {
-    try { chats = await api('GET', '/api/chats'); } catch { return; }
-    const html = chats.map(c => `<button class="dm-railbtn ${open === c.slug ? 'on' : ''}" data-dm="${esc(c.slug)}" title="${esc(c.lead)} · ${esc(c.name)}">${avatar(c)}${c.unread ? `<span class="dm-unread">${c.unread}</span>` : ''}</button>`).join('');
+    try { [projects, chats] = await Promise.all([api('GET', '/api/projects'), api('GET', '/api/chats')]); } catch { return; }
+    const cur = here(), p = projects.find(x => x.slug === cur);
+    if (p) seen.set(cur, p.updated);   // looking at it now counts as seen
+    const dmUnread = chats.reduce((n, c) => n + c.unread, 0);
+    const btn = (attrs, inner, on, title) => `<button class="dm-railbtn ${on ? 'on' : ''}" ${attrs} title="${esc(title)}">${inner}</button>`;
+    const html = btn('data-go="#/"', '<span class="dm-av">🏠</span>', location.hash === '#/' || location.hash === '', 'Home')
+      + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>', location.hash === '#/inbox', 'Inbox')
+      + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, 'DMs with your team leads')
+      + '<div class="dm-sep"></div>'
+      + projects.filter(x => !x.archived).map(x => btn(`data-go="#/p/${esc(x.slug)}"`, avatar(x) + badge(x.needsYou) + (x.updated > seen.get(x.slug) && x.slug !== cur && !x.needsYou ? '<span class="dm-pip"></span>' : ''),
+        x.slug === cur, x.name + (x.needsYou ? ` · ${x.needsYou} waiting on you` : ''))).join('');
     const r = el('dmRail');
-    if (r && r.dataset.sig !== html) { r.dataset.sig = html; r.innerHTML = '<div class="dm-railhead" title="DMs with your team leads">💬</div>' + html; }
+    if (r && r.dataset.sig !== html) { r.dataset.sig = html; r.innerHTML = html; }
+    if (listOpen && !open) paintList();
+  }
+
+  // The DM list: one row per lead, newest first.
+  function paintList() {
+    const html = `<div class="dm-head"><b>💬 Direct messages</b><span style="flex:1"></span><button onclick="Dms.close()" title="Close">✕</button></div>
+      <div class="dm-list">${chats.map(c => `<button class="dm-row" data-dm="${esc(c.slug)}">${avatar(c)}<span class="dm-rowtext"><b>${esc(c.lead)}</b><span class="muted">${esc(c.name)}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`).join('') || '<p class="muted dm-empty">No team leads yet.</p>'}</div>`;
+    const panel = el('dmPanel');
+    if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
+    panel.hidden = false;
   }
 
   function msgHtml(m, prevCard) {
@@ -34,19 +58,21 @@ const Dms = (() => {
   }
 
   function show(slug) {
-    open = slug;
+    open = slug; listOpen = true;
     const c = chats.find(x => x.slug === slug) || { slug, name: slug };
-    el('dmPanel').innerHTML = `<div class="dm-head">${avatar(c)}<div><b>${esc(c.lead || 'Lead')}</b><div class="muted">${esc(c.name)}</div></div><span style="flex:1"></span><button onclick="Dms.close()" title="Close">✕</button></div>
+    const panel = el('dmPanel'); panel.dataset.sig = '';
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="All DMs">‹</button>${avatar(c)}<div><b>${esc(c.lead || 'Lead')}</b><div class="muted">${esc(c.name)}</div></div><span style="flex:1"></span><button onclick="Dms.close()" title="Close">✕</button></div>
       <div class="dm-list" id="dmList"></div>
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
         <textarea id="dmText" rows="2" placeholder="Message… Enter sends, Shift+Enter for a new line" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();Dms.send()}"></textarea>
         <div class="err" id="dmErr"></div>
         <div class="actions"><button class="good" id="dmGo" onclick="Dms.send('GO')" title="Answer the open question with GO">👍 Go</button><button class="primary" onclick="Dms.send()">Send</button>${Attach.boxHtml('dm:' + slug)}</div></div>`;
-    el('dmPanel').hidden = false;
+    panel.hidden = false;
     loadRail(); loadThread(true);
     el('dmText').focus();
   }
-  function close() { open = null; thread = null; el('dmPanel').hidden = true; el('dmPanel').innerHTML = ''; loadRail(); }
+  function back() { open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
+  function close() { open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
 
   async function send(fixed) {
     if (busy || !thread) return;
@@ -63,9 +89,16 @@ const Dms = (() => {
     busy = false;
   }
 
-  document.addEventListener('click', e => { const b = e.target.closest('[data-dm]'); if (b) { if (open === b.dataset.dm) close(); else show(b.dataset.dm); } });
+  document.addEventListener('click', e => {
+    const go = e.target.closest('#dmRail [data-go]');
+    if (go) { location.hash = go.dataset.go; setTimeout(loadRail, 50); return; }
+    if (e.target.closest('#dmRail [data-dms]')) { if (listOpen || open) close(); else { listOpen = true; paintList(); loadRail(); } return; }
+    const row = e.target.closest('#dmPanel [data-dm]');
+    if (row) show(row.dataset.dm);
+  });
+  window.addEventListener('hashchange', () => setTimeout(loadRail, 50));
   // Live: the rail every few seconds; an open chat a little more often.
   setInterval(() => { if (!document.hidden) { loadRail(); if (open) loadThread(); } }, 3000);
   loadRail();
-  return { show, close, send };
+  return { show, back, close, send };
 })();
