@@ -6,7 +6,18 @@ const Attach = (() => {
   const pending = new Map();
   const list = key => pending.get(key) || [];
   const isImg = a => /^image\//.test(a.type || '') || /\.(png|jpe?g|gif|webp)$/i.test(a.name || '');
-  const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? '🖼' : '📎'} ${esc(f.name)} <button type="button" data-att-del="${i}" title="Remove">✕</button></span>`).join('');
+  // Images show a thumbnail; clicking it opens a full-size preview, to check it's the right one (AIG-129).
+  const urls = new WeakMap(), urlOf = f => { if (!urls.has(f)) urls.set(f, URL.createObjectURL(f)); return urls.get(f); };
+  const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="Click to preview">` : '📎'} ${esc(f.name)} <button type="button" data-att-del="${i}" title="Remove">✕</button></span>`).join('');
+  function preview(src) {
+    const lb = document.createElement('div');
+    lb.className = 'att-lightbox'; lb.title = 'Click or press Escape to close';
+    lb.innerHTML = `<img src="${src}" alt="">`;
+    const close = () => { lb.remove(); document.removeEventListener('keydown', esc_, true); };
+    const esc_ = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+    lb.onclick = close; document.addEventListener('keydown', esc_, true);
+    document.body.appendChild(lb);
+  }
   const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="Attach a file, or paste a screenshot into the reply box">📎 Attach</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span></span>`;
   const paint = key => document.querySelectorAll('.att').forEach(b => { if (b.dataset.attKey === key) b.querySelector('.att-list').innerHTML = chips(key); });
   const add = (key, files) => { pending.set(key, [...list(key), ...files.filter(f => f.size)]); paint(key); };
@@ -15,6 +26,8 @@ const Attach = (() => {
   document.addEventListener('click', e => {
     const box = e.target.closest('.att'); if (!box) return;
     if (e.target.closest('.att-btn')) box.querySelector('input[type=file]').click();
+    const view = e.target.closest('[data-att-view]');
+    if (view) preview(view.src);
     const del = e.target.closest('[data-att-del]');
     if (del) { const k = box.dataset.attKey, l = list(k); l.splice(+del.dataset.attDel, 1); pending.set(k, l); paint(k); }
   });

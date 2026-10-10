@@ -45,7 +45,9 @@ async function applyUpdatePage() {
 }
 function refreshPage() { if (okToLeave('Refresh')) location.reload(); }
 // Desktop app only (AIG-83): the app calls this when its own files changed; the pill asks the app to restart itself.
+// A restart reloads the page too, so Refresh is hidden while Restart shows (AIG-130).
 window.showRestartApp = () => {
+  $('upRefresh').hidden = true;
   if (!$('upRestart').firstChild)
     $('upRestart').innerHTML = `<button class="primary" onclick="if (okToLeave('Restart')) location.href = 'aigile://restart'" title="The desktop app has been updated: restart it to get the latest version">🔄 Restart app</button>`;
 };

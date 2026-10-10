@@ -248,3 +248,8 @@ body.pop main { display: none; }
 body.pop .panel { padding: 10px 16px 16px; }
 body.desktop.pop .panel > .actions:first-child { -webkit-app-region: drag; padding-right: 140px; min-height: 32px; }
 body.desktop.pop .panel > .actions:first-child button { -webkit-app-region: no-drag; padding: 3px 10px; font-size: 13px; }
+
+/* ---------- attachment thumbnails and preview (AIG-129) ---------- */
+.att-thumb { height: 28px; width: auto; max-width: 56px; object-fit: cover; border-radius: 4px; cursor: zoom-in; vertical-align: middle; }
+.att-lightbox { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.75); display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
+.att-lightbox img { max-width: 94vw; max-height: 94vh; border-radius: 6px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }

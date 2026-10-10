@@ -881,6 +881,12 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
     document.querySelector('#dialog input[type=text]').dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
   }, PNG);
   await page.waitForSelector('#dialog .att-chip');
+  // AIG-129: the pasted screenshot shows as a thumbnail; clicking it previews it; Escape closes only the preview.
+  await page.click('#dialog .att-thumb');
+  await page.waitForSelector('.att-lightbox img');
+  check('thumbnail opens a full-size preview', await page.$eval('.att-lightbox img', i => i.naturalWidth > 0));
+  await page.keyboard.press('Escape');
+  check('Escape closes the preview, not the dialog', (await page.locator('.att-lightbox').count()) === 0 && (await page.locator('#dialog .dialog').count()) === 1);
   // A second paste and two picked files add to the list (AIG-82).
   await page.evaluate(b64 => {
     const bytes = Uint8Array.from(atob(b64), ch => ch.charCodeAt(0)), dt = new DataTransfer();
@@ -919,16 +925,20 @@ def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; it ask
   await page.click('#updateTop button');
   await sleep(300);
   check('asks before losing the reply, and stays when cancelled', /unsent reply/.test(asked) && (await page.inputValue('#r-text')) === 'half a sentence', asked);
-  // Desktop app: its Restart pill sits next to Refresh and also asks first (AIG-83).
-  await page.evaluate(() => window.showRestartApp());
-  check('Restart app pill next to Refresh', (await page.locator('#updateTop button').count()) === 2 && (await page.textContent('#upRestart')).includes('Restart app'));
-  page.once('dialog', d => { asked = d.message(); d.dismiss(); });
-  await page.click('#upRestart button');
-  await sleep(300);
-  check('Restart asks before losing the reply', /Restart anyway/.test(asked) && (await page.inputValue('#r-text')) === 'half a sentence', asked);
   await page.fill('#r-text', '');
   await Promise.all([page.waitForEvent('load'), page.click('#upRefresh button')]);
   check('reloads straight away with nothing unsent', true);
+  // Desktop app: its Restart pill replaces Refresh, since a restart reloads too (AIG-83, AIG-130), and asks first.
+  await page.waitForSelector('#r-text').catch(() => page.click('[data-ctab="reply"]'));
+  await page.fill('#r-text', 'another half');
+  build = 'three';
+  await page.waitForSelector('#upRefresh button', { timeout: 8000 });
+  await page.evaluate(() => window.showRestartApp());
+  check('Restart app shows and Refresh hides', (await page.textContent('#upRestart')).includes('Restart app') && !(await page.isVisible('#upRefresh button')));
+  page.once('dialog', d => { asked = d.message(); d.dismiss(); });
+  await page.click('#upRestart button');
+  await sleep(300);
+  check('Restart asks before losing the reply', /Restart anyway/.test(asked) && (await page.inputValue('#r-text')) === 'another half', asked);
 }, true);
 
 def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, home, 🎨 Look dialog', async (s, ctx) => {
