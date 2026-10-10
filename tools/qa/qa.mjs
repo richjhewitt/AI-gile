@@ -470,8 +470,8 @@ def('presence', 'asleep -> online; Wake/comment start a background run (log, one
   check('page says asleep', /asleep/.test(await page.textContent('#teamTop')), await page.textContent('#teamTop'));
   await s.ok('GET', '/api/projects/alpha/updates');
   check('online after an updates call (api)', (await s.ok('GET', '/api/projects/alpha')).presence.online === true);
-  await page.waitForFunction(() => /online/.test(document.getElementById('teamTop').textContent), null, { timeout: 4000 }).catch(() => {});
-  check('page says online', /online/.test(await page.textContent('#teamTop')), await page.textContent('#teamTop'));
+  await page.waitForFunction(() => /in a window/.test(document.getElementById('teamTop').textContent), null, { timeout: 4000 }).catch(() => {});
+  check('page says working in a window', /Working in a window/.test(await page.textContent('#teamTop')), await page.textContent('#teamTop'));
   const hf = await s.ok('POST', '/api/limits', { cwd: folder + '-b', rate_limits: { five_hour: { used_percentage: 1 } } });
   check('status line report marks the folder online', hf.ok && (await s.ok('GET', '/api/projects/beta')).presence.online === true);
 

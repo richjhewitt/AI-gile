@@ -9,7 +9,8 @@ function presenceHtml(p, withWake) {
   const pr = p.presence || {};
   const logBtn = withWake && p.path ? ` <button onclick="agentLog(event, '${p.slug}')">📄 Log</button>` : '';
   if (pr.running) return `<span class="pres on">🟢 Working in the background</span> <span class="muted">since ${ago(pr.startedAt)}</span>${withWake ? ` <button onclick="restartTeam(event, '${p.slug}')">⟳ Restart</button>` : ''}${logBtn}`;
-  if (pr.online) return `<span class="pres on">🟢 Team online</span> <span class="muted">heard ${ago(pr.lastHeard)}</span>`;
+  // Online without a run of ours = a session Rich opened himself (a terminal or VS Code window).
+  if (pr.online) return `<span class="pres on" title="A session you opened: type to it in its own window">🖥️ Working in a window</span> <span class="muted">heard ${ago(pr.lastHeard)}</span>`;
   const btn = withWake && p.path ? ` <button class="primary" onclick="wakeTeam(event, '${p.slug}')">▶ Wake the team</button>` : withWake ? ` <span class="muted">(connect a folder to wake it)</span>` : '';
   return `<span class="pres off">💤 Team asleep</span>${pr.lastHeard ? ` <span class="muted">last heard ${ago(pr.lastHeard)}</span>` : ''}${btn}${logBtn}`;
 }
