@@ -14,8 +14,8 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `lib/store.js` | Config paths and port; `load`/`save` of `data/<slug>.json`; `localSettings`; `summary` (project card on the home page); `attention` (needs a poke: asleep with work, or stuck); card rules (`cleanCard`, `toTeam`, `findCard`, `docList`, `bad`/`need`) |
 | `lib/routes.js` | Every API route as `[method, regex, handler]`; see the markers: projects, cards, comments/verdicts/tasks/pokes, team/log/updates feed, docs and inbox |
 | `lib/onboard.js` | `connectFolder`: marked notes block, merged comment hooks, git exclude |
-| `lib/presence.js` | Team presence (`heard`, `presenceOf`, `heardFromFolder`) and `wakeTeam` (opens a terminal running the agent command) |
-| `lib/quiet.js` | Going quiet: `setQuiet` (📣 card to every team with open work, wakes sleeping ones, night mode file `data/quiet.state`), `quietSince` |
+| `lib/presence.js` | Team presence (`heard`, `presenceOf`, `heardFromFolder`) and the background runner: `startTeam`/`nudge` (agent command run hidden in the project folder, log in `data/logs/<slug>.log`, one run per team), `restartTeam`, `logTail` |
+| `lib/quiet.js` | Going quiet: `setQuiet` (📣 card to every team with open work, starts sleeping ones, night mode file `data/quiet.state`), `quietSince` |
 | `lib/limits.js` | `recordLimits` / `limitsHistory` for the plan usage log |
 | `lib/usage.js` | Token usage per project, read from the agents' local session logs |
 | `aigile.js` | The CLI: `HELP` text, arg parsing, `api()`, `nextList` (what to work on), then one function per command under "commands" |
@@ -40,7 +40,8 @@ Where everything lives, so you can go straight to the right place. Search for th
 ## Data
 - `data/<slug>.json`: one file per project (cards, comments, team, log, `teamSeenAt`); written atomically via a `.tmp` file. Git-ignored.
 - `data/limits.log`: one JSON line per plan usage change (or every 5 minutes).
-- Presence ("heard from") is in memory only.
+- `data/logs/<slug>.log`: what the team's background runs printed.
+- Presence ("heard from") and the running processes are in memory only.
 
 ## API routes
 All in `lib/routes.js` (patterns are the regexes there). The list with payloads is in the README's API table. Unknown `/api/*` paths return 404 JSON from `server.js`.
@@ -49,5 +50,5 @@ All in `lib/routes.js` (patterns are the regexes there). The list with payloads 
 `aigile.local.json` (git-ignored; values are machine-specific):
 - `usageDir`: folder of the agents' session logs (`AIGILE_USAGE_DIR` overrides).
 - `globalSettingsFile`: the agent's global settings file, used to show how to switch the status line on.
-- `agent.command`: program Wake runs (one `*` path segment allowed; `AIGILE_AGENT_COMMAND` overrides).
+- `agent.command`: program background runs start (one `*` path segment allowed; `AIGILE_AGENT_COMMAND` overrides).
 - `agent.notesFile`, `agent.settingsFile`: file names `onboard` writes in a project folder.

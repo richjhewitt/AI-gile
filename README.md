@@ -108,6 +108,9 @@ All endpoints take and return JSON.
 | PATCH, DELETE | `/api/projects/:slug/cards/:id` | Update or delete a card |
 | POST | `/api/projects/:slug/cards/:id/comments` | Add a comment: `{author, text, needsYou?}` |
 | POST | `/api/projects/:slug/cards/:id/verdict` | Accept or send back: `{accept, text}` |
+| POST | `/api/projects/:slug/wake` | Start the team in the background (no window); also started by Rich's comments, send-backs, pokes and new cards |
+| POST | `/api/projects/:slug/restart` | Kill the team's background run and start a fresh one |
+| GET | `/api/projects/:slug/agentlog` | `{text}`: the end of what the background run printed |
 | POST | `/api/projects/:slug/team` | Add or update a team member: `{name, model?, role?, task?, status?}` |
 | POST | `/api/projects/:slug/log` | Add a log entry: `{author, text, kind: "log" \| "decision"}` |
 | GET | `/api/projects/:slug/updates[?mark=1]` | Owner activity since the team last looked |

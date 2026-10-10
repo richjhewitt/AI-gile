@@ -4,19 +4,34 @@ function flightHtml(list) {
   return list.map(c => `<span class="${Date.now() - new Date(c.updated) > 30 * 60e3 ? 'stale' : ''}" title="${esc(c.title)}">${esc(c.assignee || 'unassigned')} → ${esc(c.id)} <span class="muted">(${ago(c.updated)})</span></span>`).join(' · ');
 }
 
-// Is the team's session running? (heard from in the last 5 minutes: hooks, wait, status line)
+// Is the team working? Either a background run of ours, or a session heard from in the last 5 minutes (hooks, wait, status line).
 function presenceHtml(p, withWake) {
   const pr = p.presence || {};
+  const logBtn = withWake && p.path ? ` <button onclick="agentLog(event, '${p.slug}')">📄 Log</button>` : '';
+  if (pr.running) return `<span class="pres on">🟢 Working in the background</span> <span class="muted">since ${ago(pr.startedAt)}</span>${withWake ? ` <button onclick="restartTeam(event, '${p.slug}')">⟳ Restart</button>` : ''}${logBtn}`;
   if (pr.online) return `<span class="pres on">🟢 Team online</span> <span class="muted">heard ${ago(pr.lastHeard)}</span>`;
-  if (pr.waking) return `<span class="pres wake">⏳ Waking the team…</span> <span class="muted">a terminal window has opened</span>`;
   const btn = withWake && p.path ? ` <button class="primary" onclick="wakeTeam(event, '${p.slug}')">▶ Wake the team</button>` : withWake ? ` <span class="muted">(connect a folder to wake it)</span>` : '';
-  return `<span class="pres off">💤 Team asleep</span>${pr.lastHeard ? ` <span class="muted">last heard ${ago(pr.lastHeard)}</span>` : ''}${btn}`;
+  return `<span class="pres off">💤 Team asleep</span>${pr.lastHeard ? ` <span class="muted">last heard ${ago(pr.lastHeard)}</span>` : ''}${btn}${logBtn}`;
 }
 async function wakeTeam(e, s = slug()) {
   e.preventDefault(); e.stopPropagation();
-  const b = e.target; b.disabled = true; b.textContent = 'Opening…';
+  const b = e.target; b.disabled = true; b.textContent = 'Starting…';
   try { await api('POST', `/api/projects/${s}/wake`); refresh(true); }
   catch (err) { alert(err.message); b.disabled = false; b.textContent = '▶ Wake the team'; }
+}
+async function restartTeam(e, s = slug()) {
+  e.preventDefault(); e.stopPropagation();
+  const b = e.target; b.disabled = true; b.textContent = 'Restarting…';
+  try { await api('POST', `/api/projects/${s}/restart`); refresh(true); }
+  catch (err) { alert(err.message); b.disabled = false; b.textContent = '⟳ Restart'; }
+}
+async function agentLog(e, s = slug()) {
+  e.preventDefault(); e.stopPropagation();
+  try {
+    const r = await api('GET', `/api/projects/${s}/agentlog`);
+    openDialog(`<h2>📄 Team log</h2><pre id="agentLog" style="max-height:60vh;overflow:auto;white-space:pre-wrap">${esc(r.text || 'Nothing yet.')}</pre><div class="actions"><button onclick="closeDialog()">Close</button></div>`, 'wide');
+    const pre = $('agentLog'); if (pre) pre.scrollTop = pre.scrollHeight;
+  } catch (err) { alert(err.message); }
 }
 
 /* ---------- board page ---------- */

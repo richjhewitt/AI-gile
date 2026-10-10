@@ -31,7 +31,7 @@ async function startServer() {
   fs.mkdirSync(usageDir);
   const out = path.join(dir, 'wake-out.txt');
   const stub = path.join(dir, 'agent-stub.bat');
-  fs.writeFileSync(stub, `@echo off\r\ncd > "${out}"\r\necho %* >> "${out}"\r\nexit\r\n`);
+  fs.writeFileSync(stub, `@echo off\r\ncd > "${out}"\r\necho %* >> "${out}"\r\nping -n 4 127.0.0.1 >nul\r\nexit\r\n`);
   const env = { ...process.env, AIGILE_PORT: String(PORT), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir };
   delete env.AIGILE_DEV; delete env.AIGILE_ALLOW_DONE; delete env.AIGILE_AS;
   const proc = spawn(process.execPath, [path.join(ROOT, 'server.js')], { env, stdio: 'ignore', cwd: ROOT });
@@ -440,7 +440,7 @@ def('usage', '#/usage renders with and without limits.log', async (s, ctx) => {
   noErrors(page2);
 }, true);
 
-def('presence', 'asleep -> /updates -> online; Wake runs the stub in the folder', async (s, ctx) => {
+def('presence', 'asleep -> online; Wake/comment start a background run (log, one at a time, restart, log dialog)', async (s, ctx) => {
   const folder = tmp('proj');
   await mkProject(s, 'Alpha', 'ALP', { path: folder });
   fs.mkdirSync(folder + '-b');
@@ -456,20 +456,68 @@ def('presence', 'asleep -> /updates -> online; Wake runs the stub in the folder'
   const hf = await s.ok('POST', '/api/limits', { cwd: folder + '-b', rate_limits: { five_hour: { used_percentage: 1 } } });
   check('status line report marks the folder online', hf.ok && (await s.ok('GET', '/api/projects/beta')).presence.online === true);
 
+  // A team already online in a terminal is not started in the background.
+  const ca = await mkCard(s, 'alpha', 'terminal card');
+  await say(s, 'alpha', ca.id, 'Rich', 'hello');
+  await sleep(600);
+  check('online (terminal) team gets no background run', !(await s.ok('GET', '/api/projects/alpha')).presence.running && !fs.existsSync(path.join(s.data, 'logs', 'alpha.log')));
+
+  // Wake from the page.
   fs.mkdirSync(folder + '-c');
   await mkProject(s, 'Gamma', 'GAM', { path: folder + '-c' });
   await page.goto(BASE + '/#/p/gamma');
   await page.waitForSelector('#teamTop button.primary');
   await page.click('#teamTop button.primary');
   let out = '';
-  for (let i = 0; i < 60 && !out.includes('Rich woke you'); i++) { await sleep(250); try { out = fs.readFileSync(s.wakeOut, 'utf8'); } catch {} }
+  for (let i = 0; i < 60 && !out.includes('Rich commented'); i++) { await sleep(250); try { out = fs.readFileSync(s.wakeOut, 'utf8'); } catch {} }
   const norm = x => x.replace(/\\/g, '/').toLowerCase();
-  check('stub got the prompt', /Rich woke you from the AI-gile board/.test(out) && /project gamma/.test(out), out);
+  check('stub got the prompt and --continue', /Rich commented on the AI-gile board/.test(out) && /project gamma/.test(out) && /"-p" /.test(out) && /--continue/.test(out), out);
   check('stub ran with the folder as cwd', norm(out.split(/\r?\n/)[0]).replace(/\/$/, '') === norm(folder + '-c'), out.split(/\r?\n/)[0]);
-  await page.waitForTimeout(1200);
-  check('page shows waking', /Waking/.test(await page.textContent('#teamTop')), await page.textContent('#teamTop'));
+  await page.waitForFunction(() => /background/.test(document.getElementById('teamTop').textContent), null, { timeout: 4000 }).catch(() => {});
+  const top = await page.textContent('#teamTop');
+  check('page shows working in the background with Restart and Log', /Working in the background/.test(top) && /Restart/.test(top) && /Log/.test(top), top);
+  const g = await s.ok('GET', '/api/projects/gamma');
+  check('presence has running and startedAt', g.presence.running === true && g.presence.online === true && !!g.presence.startedAt);
+  const logPath = path.join(s.data, 'logs', 'gamma.log');
+  check('log file has the started header', /=== .* started ===/.test(fs.readFileSync(logPath, 'utf8')));
+  await page.click('#teamTop button:has-text("Log")');
+  await page.waitForSelector('#dialog pre', { timeout: 4000 }).catch(() => {});
+  check('Log dialog opens with the log', /started/.test((await page.textContent('#dialog pre').catch(() => '')) || ''));
+  await page.click('#dialog button:has-text("Close")');
+  const al = await s.ok('GET', '/api/projects/gamma/agentlog');
+  check('agentlog route returns text', typeof al.text === 'string' && /started/.test(al.text), al);
+
+  // Restart kills the run and starts a fresh one.
+  const rs = await s.ok('POST', '/api/projects/gamma/restart');
+  check('restart answers ok', rs.ok === true);
+  let log = '';
+  for (let i = 0; i < 40; i++) { await sleep(250); log = fs.readFileSync(logPath, 'utf8'); if ((log.match(/started ===/g) || []).length >= 2) break; }
+  check('restart ended the old run and started a new one', (log.match(/started ===/g) || []).length === 2 && /=== exited /.test(log), log);
+  check('new run is running', (await s.ok('GET', '/api/projects/gamma')).presence.running === true);
+  // The run finishes by itself and the log shows its exit.
+  for (let i = 0; i < 40 && (await s.ok('GET', '/api/projects/gamma')).presence.running; i++) await sleep(250);
+  log = fs.readFileSync(logPath, 'utf8');
+  check('run exits on its own and is logged', (await s.ok('GET', '/api/projects/gamma')).presence.running === false && (log.match(/=== exited/g) || []).length === 2, log);
+
+  // A Rich comment starts a run; more during it give exactly one more run, never two at once.
+  fs.mkdirSync(folder + '-e');
+  await mkProject(s, 'Epsilon', 'EPS', { path: folder + '-e' });
+  const ce = await mkCard(s, 'epsilon', 'work');
+  await say(s, 'epsilon', ce.id, 'Rich', 'one');
+  await sleep(500);
+  check('Rich comment starts a run', (await s.ok('GET', '/api/projects/epsilon')).presence.running === true);
+  await say(s, 'epsilon', ce.id, 'Rich', 'two');
+  await s.ok('POST', `/api/projects/epsilon/cards/${ce.id}/poke`);
+  const elog = path.join(s.data, 'logs', 'epsilon.log');
+  check('only one run while it is going', (fs.readFileSync(elog, 'utf8').match(/started ===/g) || []).length === 1);
+  let el = '';
+  for (let i = 0; i < 80; i++) { await sleep(250); el = fs.readFileSync(elog, 'utf8'); if ((el.match(/exited/g) || []).length >= 2 && !(await s.ok('GET', '/api/projects/epsilon')).presence.running) break; }
+  check('queued triggers give exactly one more run', (el.match(/started ===/g) || []).length === 2 && (el.match(/exited/g) || []).length === 2, el);
+
   await mkProject(s, 'Delta', 'DEL');
   check('wake without folder is refused', (await s.api('POST', '/api/projects/delta/wake')).status === 400);
+  const dc = await mkCard(s, 'delta', 'x');
+  check('Rich comment without a folder still succeeds', (await s.api('POST', `/api/projects/delta/cards/${dc.id}/comments`, { author: 'Rich', text: 'hi' })).status === 200);
   noErrors(page);
 }, true);
 
