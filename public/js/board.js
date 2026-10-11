@@ -97,7 +97,7 @@ function renderBoard(p) {
       ${p.path ? `<button onclick="permsDialog()" title="${esc(t('board.perms.title'))}">${esc(t('board.perms'))}</button>` : ''}
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${esc(p.archived ? t('board.unarchive') : t('board.archive'))}</button></div>
     <div class="flight">${t('board.flight.html')} ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>
-    ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? ` <code>${esc(p.path)}</code>` : ''}</p>` : ''}
+    ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? `${p.description ? ' · ' : ''}<code>${esc(p.path)}</code>` : ''}</p>` : ''}
     ${Share.laneHtml(p)}
     ${board}
     <div class="side">

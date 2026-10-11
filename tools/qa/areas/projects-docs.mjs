@@ -172,10 +172,12 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   const app = mk('Shop App', '# Shop App\n\nA tiny web shop for **local** makers.\n');
   g(app, 'init', '-q'); g(app, 'add', '.'); g(app, '-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qm', 'start');
   mk('Shop App-old'); mk('notes');
-  const shopping = mk('Shopping', '# Shopping\n\nLists.\n'); g(shopping, 'init', '-q'); g(shopping, 'add', '.'); g(shopping, '-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qm', 'start');
+  const shopping = mk('Shopping', '# Shopping\n\nLists for the whole family, no sign-up, no ads, no paywalls, no\ntracking and nothing to install, just open the page and start adding the things you need. Shared lists sync.\n'); g(shopping, 'init', '-q'); g(shopping, 'add', '.'); g(shopping, '-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qm', 'start');
   const found = await s.ok('GET', '/api/discover?dir=' + encodeURIComponent(root));
   const by = n => found.find(f => f.name === n);
   check('git project found with its README line', by('Shop App').git.commits === 1 && by('Shop App').readme === 'A tiny web shop for local makers.' && by('Shop App').suggested, by('Shop App'));
+  const wrapped = by('Shopping').readme;
+  check('a hard-wrapped README gives its whole first paragraph, cut at a word with an ellipsis (AIG-332)', wrapped.startsWith('Lists for the whole family, no sign-up, no ads, no paywalls, no tracking') && wrapped.length <= 161 && /(nothing|install|open|page|start|adding)…$|\.$/.test(wrapped), wrapped);
   check('a copy is flagged and not suggested', by('Shop App-old').copy && !by('Shop App-old').suggested);
   check('a plain folder is not suggested', !by('notes').suggested);
   const page = await openPage(ctx, '#/');
@@ -195,6 +197,9 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   check('ticked project added with its folder and description', p && p.path.endsWith('/Shop App') && p.description === 'A tiny web shop for local makers.', p);
   const all = await s.ok('GET', '/api/projects');
   check('both suggested ones added with their own keys, no rename', all.length === 2 && new Set(all.map(x => x.key)).size === 2 && all.every(x => ks.includes(x.key)), all.map(x => x.key));
+  await page.evaluate(sl => { location.hash = '#/p/' + sl; }, (all.find(x => x.name === 'Shopping') || {}).slug);
+  await page.waitForSelector('p.muted code');
+  check('board header puts a separator between description and folder path (AIG-332)', await page.$eval('p.muted:has(code)', e => / · $/.test(e.firstChild.textContent)), await page.$eval('p.muted:has(code)', e => e.textContent));
   noErrors(page);
 }, true);
 
