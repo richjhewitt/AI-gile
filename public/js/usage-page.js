@@ -118,7 +118,7 @@ function renderUsagePage() {
     : `<div class="uz-tiles">${uzTile(t('usage.session'), t('usage.session.sub'), limits.latest, 'h5', hist)}${uzTile(t('usage.week'), t('usage.week.sub'), limits.latest, 'wk', hist)}</div>
        <p class="uz-note">${esc(t('usage.note'))}</p>`;
   return `<div class="uz"><h2>${esc(t('usage.h'))}</h2><p class="uz-explain">${esc(t('usage.explain'))}</p>
-    ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}</div>`;
+    ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}${uzRuns(uz.data.runs, uz.data.projects)}</div>`;
 }
 
 // Check usage now (AIG-151): when the last reading is from, a button that fetches a fresh one, and the auto switch.
@@ -325,6 +325,14 @@ function uzProjects(u, projects, W) {
     <button class="uz-toggle" onclick="uzToggle('bars')">${esc(uz.table.bars ? t('usage.showchart') : t('usage.showtable'))}</button></div>${ranked}`;
 }
 
+// What the biggest background runs of the last 24 hours cost (AIG-266).
+function uzRuns(runs, projects) {
+  if (!runs || !runs.length) return '';
+  const name = s => (projects.find(p => p.slug === s) || {}).name || s;
+  const rows = runs.map(r => `<tr><td>${esc(name(r.slug))}</td><td>${esc(uzDay(r.end))}</td><td>${uzShort(r.in)}</td><td>${uzShort(r.out)}</td><td>${uzShort(r.cache)}</td></tr>`).join('');
+  return `<div class="uz-card"><h2>${esc(t('usage.runs.h'))}</h2><p class="uz-explain">${esc(t('usage.runs.explain'))}</p>
+    <div class="uz-tablewrap"><table><thead><tr><th>${esc(t('usage.runs.team'))}</th><th>${esc(t('usage.runs.ended'))}</th><th>${esc(t('usage.runs.in'))}</th><th>${esc(t('usage.runs.out'))}</th><th>${esc(t('usage.runs.cache'))}</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
 const uzNoLogs = () => `<div class="uz-card uz-empty"><b>${esc(t('usage.nologs.h'))}</b><span class="muted">${esc(t('usage.nologs'))}</span></div>`;
 
 function uzSet(k, v) { uz[k] = v; render(); }

@@ -185,8 +185,9 @@ def('i18n', 'languages: every language file has the same keys, the picker switch
   const read = f => JSON.parse(fs.readFileSync(path.join(langDir, f), 'utf8'));
   const en = read('en.json'), keysOf = o => Object.keys(o).sort().join('\n');
   check('English has strings', Object.keys(en).length > 100, Object.keys(en).length);
-  check('nl.json has exactly the English keys', keysOf(read('nl.json')) === keysOf(en));
-  check('nl-BE.json has exactly the English keys', keysOf(read('nl-BE.json')) === keysOf(en));
+  // New strings may start English-only and fall back (AIG-266): the other files must hold no key English lacks.
+  check('nl.json has no keys English lacks', Object.keys(read('nl.json')).every(k => k in en));
+  check('nl-BE.json has no keys English lacks', Object.keys(read('nl-BE.json')).every(k => k in en));
   check('dev words are marked in English', Object.values(en).some(v => /\{\{dev:\w+\}\}/.test(v)));
 
   // Seed something on every page: a question, a test with steps, a stand-up answer.

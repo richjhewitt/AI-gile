@@ -8,7 +8,7 @@ import { areas, CHROME, loadPw, startServer, check, sleep, setArea, getFailures 
 for (const f of ['api-cli', 'board', 'card', 'projects-docs', 'inbox', 'team-quiet', 'chats-dms', 'standup-tester', 'look-setup']) await import(`./areas/${f}.mjs`);
 
 // Run order (the order the areas were written in); a new area goes at the end.
-const ORDER = ['api', 'cli', 'board', 'card', 'filters', 'inbox', 'usage', 'presence', 'quiet', 'quietinbox', 'poke', 'blocked', 'docs', 'mdlinks', 'newproject', 'perms', 'gobutton', 'attach', 'refresh', 'look', 'logos', 'guard', 'owner', 'setup', 'update', 'foryou', 'popout', 'columns', 'cardview', 'wip', 'lanes', 'quick', 'standup', 'views', 'steps', 'fynext', 'theme', 'i18n', 'chats', 'answerbtns', 'aitester', 'discover', 'dms', 'openit', 'testnotes', 'drafts', 'proof', 'queue', 'editor'];
+const ORDER = ['api', 'cli', 'board', 'card', 'filters', 'inbox', 'usage', 'presence', 'quiet', 'quietinbox', 'poke', 'blocked', 'docs', 'mdlinks', 'newproject', 'perms', 'gobutton', 'attach', 'refresh', 'look', 'logos', 'guard', 'owner', 'setup', 'update', 'foryou', 'popout', 'columns', 'cardview', 'wip', 'lanes', 'quick', 'standup', 'views', 'steps', 'fynext', 'theme', 'i18n', 'chats', 'answerbtns', 'aitester', 'discover', 'dms', 'openit', 'testnotes', 'drafts', 'proof', 'queue', 'editor', 'runtokens'];
 for (const n of Object.keys(areas)) if (!ORDER.includes(n)) ORDER.push(n);
 for (const n of ORDER) if (!areas[n]) throw new Error('area in ORDER but not defined: ' + n);
 

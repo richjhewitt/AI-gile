@@ -168,4 +168,34 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   check('online, fresh comment = fine', attention(proj(fresh), { online: true }) === null);
   noErrors(page);
 }, true);
+
+def('runtokens', 'a background run logs the tokens its session used (fake session file), none when nothing is found; Usage page table (AIG-266)', async (s, ctx) => {
+  const folder = tmp('tok');
+  await mkProject(s, 'Tokk', 'TOK', { path: folder });
+  fs.mkdirSync(folder + '-n');
+  await mkProject(s, 'Nada', 'NAD', { path: folder + '-n' });
+  const wake = await s.ok('POST', '/api/projects/tokk/wake');
+  check('wake starts a run', wake.running === true, wake);
+  // The agent's session log: one message in the run (written twice), one an hour old.
+  const sess = path.join(s.usageDir, folder.replace(/[^A-Za-z0-9]/g, '-').toLowerCase());
+  fs.mkdirSync(sess, { recursive: true });
+  const msg = (id, ago, u) => JSON.stringify({ type: 'assistant', requestId: 'r' + id, timestamp: new Date(Date.now() - ago).toISOString(), message: { id: 'm' + id, model: 'sonnet', usage: u } });
+  const a = msg(1, 0, { input_tokens: 1000, cache_creation_input_tokens: 500, output_tokens: 400, cache_read_input_tokens: 20000 });
+  fs.writeFileSync(path.join(sess, 's1.jsonl'), [a, a, msg(2, 3600e3, { input_tokens: 99999, output_tokens: 99999 })].join('\n') + '\n');
+  await s.ok('POST', '/api/projects/nada/wake');
+  const logPath = path.join(s.data, 'logs', 'tokk.log'), nadaLog = path.join(s.data, 'logs', 'nada.log');
+  let log = '';
+  for (let i = 0; i < 60; i++) { await sleep(250); log = fs.readFileSync(logPath, 'utf8'); if (/=== tokens/.test(log)) break; }
+  check('tokens line follows the exit line', /=== exited \d+ ===\r?\n=== tokens: 1\.5k in · 400 out · 20k cache read ===/.test(log), log);
+  for (let i = 0; i < 60 && (await s.ok('GET', '/api/projects/nada')).presence.running; i++) await sleep(250);
+  const nl = fs.readFileSync(nadaLog, 'utf8');
+  check('no session found, no tokens line', /=== exited/.test(nl) && !/tokens/.test(nl), nl);
+  const runs = await s.ok('GET', '/api/usage/runs');
+  check('runs api lists the run', runs.length === 1 && runs[0].slug === 'tokk' && runs[0].in === 1500 && runs[0].out === 400 && runs[0].cache === 20000, runs);
+  const page = await openPage(ctx, '#/usage');
+  await page.waitForTimeout(1000);
+  const txt = await page.textContent('#app');
+  check('usage page shows the run table', /Background runs/.test(txt) && /Tokk/.test(txt) && /1\.5k/.test(txt), txt.slice(0, 200));
+  noErrors(page);
+}, true);
 
