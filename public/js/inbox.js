@@ -284,12 +284,13 @@
   function tHtml(c) {
     return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
+      ${aiEvidence(c, c.project)}
       ${c.testSteps ? `<details class="ib-steps"><summary>${esc(t('inbox.t.how'))}</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : `<div class="ib-hint">${esc(t('inbox.t.nosteps'))}</div>`}
       <div class="ib-err"></div>
       <div class="actions">${c.openUrl ? `<button class="primary" data-act="open" data-cmd="${esc(c.startCmd || '')}" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button>` : ''}<button class="good" data-act="accept">${esc(t('card.accept'))}</button><button data-act="wait" title="${esc(t('inbox.t.wait.title'))}">${esc(t('card.wait'))}</button>
       <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">${esc(t('inbox.t.sendback'))}</a></div>`;
   }
-  const sigOf = c => !isTest(c) ?[c.title, c.blocked, lastAsk(c).at, lastAsk(c).text, i18n.lang].join('|') : [c.title, c.updated, c.testSteps].join('|');
+  const sigOf = c => !isTest(c) ?[c.title, c.blocked, lastAsk(c).at, lastAsk(c).text, i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.aiCheck && c.aiCheck.at].join('|');
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">
@@ -301,7 +302,7 @@
       <div id="ibEmpty"></div>
       <section class="ib-sec q" id="ibQ"><h3>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
       <section class="ib-sec k" id="ibK"><h3>${esc(t('inbox.tasks'))} <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.tasks.sub'))}</span></h3><div class="list"></div></section>
-      <section class="ib-sec t" id="ibT"><h3>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span></h3><div class="list"></div></section>
+      <section class="ib-sec t" id="ibT"><h3>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span><button class="good ib-aiall" id="ibAiAll" hidden title="${esc(t('inbox.aiall.title'))}"></button></h3><div class="list"></div></section>
     </div>`;
     el('ib').addEventListener('click', onClick);
     el('ib').addEventListener('keydown', onKey);
@@ -425,6 +426,9 @@
     syncList(el('ibK').querySelector('.list'), ks);
     syncList(el('ibT').querySelector('.list'), ts);
     el('ibQ').hidden = !qs.length; el('ibK').hidden = !ks.length; el('ibT').hidden = !ts.length;
+    // Accept all AI-passed (AIG-163): every test the AI tester passed, in one click.
+    const passed = ts.filter(c => c.aiCheck && c.aiCheck.result === 'pass');
+    el('ibAiAll').hidden = !passed.length; el('ibAiAll').textContent = t('inbox.aiall', { n: passed.length });
     el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = ts.length;
     el('ibMore').hidden = !hidden; el('ibMore').textContent = t('inbox.more', { n: hidden });
     if (hidden) el('ibQ').hidden = false;
@@ -444,6 +448,7 @@
     }
   }
   function onClick(e) {
+    if (e.target.closest('#ibAiAll')) { acceptAiPassed(e.target.closest('#ibAiAll')); return; }
     const cb = e.target.closest('button[data-chat]');
     if (cb) { chat = cb.dataset.chat; paintPage(); return; }
     const kb = e.target.closest('button[data-kind]');
@@ -492,6 +497,12 @@
     lock(n);
     try { await post('POST', base(n) + '/verdict', { accept: true }); done(n, t('inbox.toast.accepted', { id: n.dataset.id })); }
     catch (e) { fail(n, e); }
+  }
+  async function acceptAiPassed(btn) {
+    const list = items.filter(c => isTest(c) && c.aiCheck && c.aiCheck.result === 'pass' && (tab === 'all' || c.project === tab));
+    btn.disabled = true; let n = 0;
+    for (const c of list) { try { await post('POST', `/api/projects/${c.project}/cards/${c.id}/verdict`, { accept: true }); n++; } catch {} }
+    btn.disabled = false; toast(t('inbox.toast.aiall', { n })); await load(); paintPage();
   }
   async function waitAndSee(n) {
     lock(n);

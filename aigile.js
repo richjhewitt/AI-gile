@@ -13,6 +13,19 @@ async function queueInfo(slug, id, flags) {
   if (Object.keys(b).length) await api('PATCH', C(slug, id), b);
 }
 
+// --shot a.png,b.png: uploads screenshots for a hand-over or an AI tester check.
+async function uploadShots(slug, shots) {
+  const fs = require('fs'), attachments = [];
+  for (const f of String(shots || '').split(',').map(s => s.trim()).filter(Boolean)) {
+    const ext = (f.match(/\.(\w+)$/) || [])[1] || '';
+    if (!fs.existsSync(f)) die('screenshot not found: ' + f);
+    const type = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp' }[ext.toLowerCase()] || 'application/octet-stream';
+    const a = await api('POST', `/api/projects/${slug}/attachments`, { name: require('path').basename(f), type, data: fs.readFileSync(f).toString('base64') });
+    attachments.push({ id: a.id, type: a.type });
+  }
+  return attachments;
+}
+
 // The board's human (AIG-103): "owner" in aigile.local.json next to this file, default Rich.
 const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.parse(require('fs').readFileSync(process.env.AIGILE_LOCAL || require('path').join(__dirname, 'aigile.local.json'), 'utf8')).owner || '').trim() || 'Rich'; } catch { return 'Rich'; } })();
 
@@ -42,6 +55,8 @@ WORKING
   test <proj> <id> "steps ${OWNER} can follow" --as NAME    -> moves to verify, sets testSteps, comments
         [--open URL [--start "command"]]   adds a ▶ Open it button: starts the app if needed, opens the page
         [--commit SHA] [--shot a.png,b.png]  proof: the board shows what changed in that commit, plus your screenshots
+  tests <proj> [--all]                    AI tester: the tests waiting for ${OWNER} that nobody checked yet, with their steps
+  checked <proj> <id> pass|fail|skip "what you saw" [--shot a.png] --as NAME   AI tester's verdict and evidence
   ask also takes: --options "A,B,C"  (up to 4 answer buttons under your question; otherwise the board guesses)
   ask / task / test also take: --holds AIG-1,AIG-2 (what it holds up)  --prio now|today|whenever  --kind decide|test|server|keys|read  --mins N
   block <proj> <id> ["why"] --as NAME     unblock <proj> <id>
@@ -313,6 +328,21 @@ const cmds = {
     out(flags, c, c => `asked ${OWNER} on ${c.id}; card now flagged NEEDS-RICH. Move on to other work (aigile next ${slug}).`);
   },
 
+  // AI tester (AIG-163): the tests waiting for the owner that nobody has checked yet, steps included, compact.
+  async tests({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const list = (await api('GET', '/api/projects/' + slug)).cards.filter(c => c.status === 'verify' && (flags.all || !c.aiCheck));
+    out(flags, list, l => l.map(c => `${c.id}  ${c.title}${c.openUrl ? '\n  open: ' + c.openUrl : ''}\n  ${String(c.testSteps || '(no steps)').replace(/\*\*/g, '').replace(/\n+/g, '\n  ')}`).join('\n\n') || 'no tests left to check');
+  },
+  async checked({ pos, flags }) {
+    const slug = await project(pos[0]), result = pos[2];
+    if (!['pass', 'fail', 'skip'].includes(result)) die('usage: checked <proj> <id> pass|fail|skip "what you saw" [--shot a.png] --as NAME');
+    const note = await text(pos[3], 'what you saw');
+    const attachments = await uploadShots(slug, flags.shot);
+    const c = await api('POST', C(slug, pos[1]) + '/aicheck', { result, note, by: who(flags), attachments });
+    out(flags, c, c => '🤖 ' + result + ': ' + line(c));
+  },
+
   async test({ pos, flags }) {
     const slug = await project(pos[0]);
     await queueInfo(slug, pos[1], flags);
@@ -322,14 +352,7 @@ const cmds = {
     await api('PATCH', C(slug, pos[1]), { status: 'verify', testSteps: steps, needsYou: false, ...(flags.open ? { openUrl: flags.open, startCmd: flags.start || '' } : {}) });
     // Proof on hand-back (AIG-166): --commit <sha> lets the board attach what changed; --shot a.png,b.png adds screenshots.
     if (flags.commit) await api('POST', C(slug, pos[1]) + '/proof', { commit: flags.commit });
-    const attachments = [];
-    for (const f of String(flags.shot || '').split(',').map(s => s.trim()).filter(Boolean)) {
-      const fs = require('fs'), ext = (f.match(/\.(\w+)$/) || [])[1] || '';
-      if (!fs.existsSync(f)) die('screenshot not found: ' + f);
-      const type = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp' }[ext.toLowerCase()] || 'application/octet-stream';
-      const a = await api('POST', `/api/projects/${slug}/attachments`, { name: require('path').basename(f), type, data: fs.readFileSync(f).toString('base64') });
-      attachments.push({ id: a.id, type: a.type });
-    }
+    const attachments = await uploadShots(slug, flags.shot);
     const c = await api('POST', C(slug, pos[1]) + '/comments', { author, text: 'Ready for you to test. Steps are on the card.', needsYou: false, attachments });
     out(flags, c, c => `handed to ${OWNER}: ` + line(c));
   },

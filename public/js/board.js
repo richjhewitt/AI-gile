@@ -159,6 +159,7 @@ function metaHtml(c, show = CARD_SHOW) {
       ${show.priority && c.priority !== 'normal' ? `<span class="pill ${c.priority}">${esc(t('priority.' + c.priority))}</span>` : ''}
       ${show.assignee && c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
       ${c.needsYou && c.status !== 'done' ? `<span class="pill you">${esc(t('card.needsyou'))}</span>` : ''}
+      ${aiChip(c)}
       ${c.blocked ? `<span class="pill blocked">${esc(t('card.blocked'))}</span>` : ''}
       ${snoozed(c) ? `<span class="pill snoozed">${esc(t('card.backat', { time: new Date(c.snoozedUntil).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }))}</span><button class="poke" onclick="event.preventDefault();event.stopPropagation();bringBack('${c.id}')">${esc(t('card.bringback'))}</button>` : ''}
       ${show.comments && c.comments.length ? `<span class="pill">💬 ${c.comments.length}</span>` : ''}

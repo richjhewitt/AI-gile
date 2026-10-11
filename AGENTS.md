@@ -56,6 +56,8 @@ This moves the card to `verify` ("For you to test"), stores the steps and adds a
 
 If there is a page to look at, add `--open http://localhost:5173/the/page` (and `--start "npm run dev"` if the app has to be started first, run in the project folder). The card then gets a **▶ Open it** button: it starts the app if the page doesn't answer yet (Rich confirms the command), waits for it, and opens the page in his browser.
 
+**AI tester.** When tests pile up in Rich's For you, the lead can launch a cheap tester agent (`--as "Tester (Haiku)"`) with `docs/TESTER.md` as its brief. It checks each test in a sandbox and posts `aigile checked <proj> <id> pass|fail|skip "what it saw" --shot a.png`. Passed ones get a 🤖 chip and evidence on the card, and Rich clears them with **Accept all AI-passed**. Failed ones come back to you. Write steps a tester can follow too: name the exact button text.
+
 **5. `ask` when you are blocked on Rich.**
 
 ```

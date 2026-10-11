@@ -384,3 +384,10 @@ button.q-chip { cursor: pointer; } .q-chip.prio:not([class*="p-"]) { color: var(
 .msg-acts { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
 .msg-act { font-size: 12px; padding: 3px 10px; border-radius: 99px; }
 .dm-msg .msg-acts { margin-left: 4px; } .dm-fold > .msg-acts { margin: 0 12px 10px; }
+
+/* ---------- AI tester's evidence (AIG-163) ---------- */
+.pill.ai.pass { background: var(--good, #2e9e5b); color: #fff; } .pill.ai.fail { background: var(--danger); color: #fff; } .pill.ai.skip { background: var(--col); }
+.ai-ev { margin: 8px 0; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); border-left: 4px solid var(--muted); }
+.ai-ev.pass { border-left-color: var(--good, #2e9e5b); } .ai-ev.fail { border-left-color: var(--danger); }
+.ai-ev .att-shown img { max-height: 160px; }
+.ib-aiall { margin-left: auto; font-size: 13px; }

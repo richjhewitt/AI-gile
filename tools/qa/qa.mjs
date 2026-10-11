@@ -1623,6 +1623,33 @@ def('answerbtns', 'answer buttons under each message, picked from what it asks; 
   noErrors(page);
 }, true);
 
+def('aitester', 'AI tester: lists unchecked tests, posts pass/fail/skip with evidence, Accept all AI-passed (AIG-163)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Dark mode'), b = await mkCard(s, 'alpha', 'Export'), c = await mkCard(s, 'alpha', 'Login');
+  for (const x of [a, b, c]) s.cli(['test', 'alpha', x.id, '- Click **Theme**: it goes dark', '--as', 'Lead']);
+  const list = s.cli(['tests', 'alpha']);
+  check('tests lists the unchecked tests with their steps', list.code === 0 && list.out.includes(a.id) && /Click Theme: it goes dark/.test(list.out), list.out);
+  const shot = path.join(tmp('aitester'), 'shot.png');
+  fs.writeFileSync(shot, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64'));
+  const pass = s.cli(['checked', 'alpha', a.id, 'pass', 'Clicked Theme, the page went dark', '--shot', shot, '--as', 'Tester']);
+  check('checked pass keeps it for you with the evidence', pass.code === 0 && (await getCard(s, 'alpha', a.id)).aiCheck.result === 'pass' && (await getCard(s, 'alpha', a.id)).status === 'verify', pass);
+  s.cli(['checked', 'alpha', b.id, 'fail', 'No Export button on the page', '--as', 'Tester']);
+  check('checked fail sends it back to the team', (await getCard(s, 'alpha', b.id)).status === 'team');
+  s.cli(['checked', 'alpha', c.id, 'skip', 'Needs your login', '--as', 'Tester']);
+  check('tests leaves out what was checked', !s.cli(['tests', 'alpha']).out.includes(a.id));
+  check('checking a card that is not waiting on you is refused', s.cli(['checked', 'alpha', b.id, 'pass', 'x', '--as', 'Tester']).code !== 0);
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('.ai-ev.pass');
+  check('the inbox shows the evidence and its screenshot', /went dark/.test(await page.textContent('.ai-ev.pass')) && (await page.locator('.ai-ev.pass img').count()) === 1);
+  check('Accept all AI-passed counts only the passed ones', /\(1\)/.test(await page.textContent('#ibAiAll')));
+  await page.click('#ibAiAll');
+  await page.waitForFunction(() => document.getElementById('ibAiAll').hidden, null, { timeout: 5000 }).catch(() => {});
+  check('Accept all accepts them', (await getCard(s, 'alpha', a.id)).status === 'done' && (await getCard(s, 'alpha', c.id)).status === 'verify');
+  s.cli(['test', 'alpha', c.id, 'new steps', '--as', 'Lead']);
+  check('handing over again clears the old check', !(await getCard(s, 'alpha', c.id)).aiCheck);
+  noErrors(page);
+}, true);
+
 def('discover', '🔎 Find my projects: lists folders with git and README, flags copies, imports the ticked ones (AIG-94)', async (s, ctx) => {
   const root = tmp('discover'), g = (cwd, ...a) => spawnSync('git', a, { cwd, encoding: 'utf8' });
   const mk = (name, readme) => { const d = path.join(root, name); fs.mkdirSync(d); if (readme) fs.writeFileSync(path.join(d, 'README.md'), readme); return d; };

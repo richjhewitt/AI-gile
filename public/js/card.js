@@ -70,7 +70,7 @@ function renderCard(p, c) {
         <span style="flex:1"></span><button type="button" class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button></div></form>
     </div></div>`;
   }
-  const verdict = c.status === 'verify' ? `<div class="verdict"><h3>${esc(t('verdict.h'))}</h3>
+  const verdict = c.status === 'verify' ? `<div class="verdict"><h3>${esc(t('verdict.h'))}</h3>${aiEvidence(c, p.slug)}
       <div class="muted">${esc(t('verdict.waiting'))}${c.testSteps ? esc(t('verdict.steps')) : ''}.</div>
       <label class="f" style="margin-top:8px"><span>${esc(t('verdict.comment'))}</span><textarea id="v-text" data-draft="${esc(p.slug + '/' + c.id)}/verdict" rows="3" placeholder="${esc(t('verdict.placeholder'))}"></textarea></label>
       <div class="err" id="v-err"></div>

@@ -553,5 +553,11 @@
  "act.no.say": "Nee: ",
  "act.accept": "✅ Goedkeuren",
  "act.sendback": "🔁 Terugsturen",
- "act.sendback.say": "Teruggestuurd: "
+ "act.sendback.say": "Teruggestuurd: ",
+ "ai.chip.pass": "🤖 Geslaagd",
+ "ai.chip.fail": "🤖 Mislukt",
+ "ai.chip.skip": "🤖 Kon niet testen",
+ "inbox.aiall": "✅ Alles wat AI liet slagen goedkeuren ({n})",
+ "inbox.aiall.title": "Keur elke test goed die de AI-tester liet slagen. Open er eerst een als je wilt kijken",
+ "inbox.toast.aiall": "{n} tests goedgekeurd"
 }

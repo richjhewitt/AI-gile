@@ -71,6 +71,9 @@ document.addEventListener('click', async e => {
     if (typeof Dms !== 'undefined') Dms.reload();
   } catch (err) { alert(err.message); b.closest('.msg-acts').querySelectorAll('button').forEach(x => x.disabled = false); }
 }, true);
+/* ---------- AI tester's evidence on a test (AIG-163): its verdict, a line or two of what it saw, its screenshot ---------- */
+const aiChip = c => c.status === 'verify' && c.aiCheck ? `<span class="pill ai ${esc(c.aiCheck.result)}" title="${esc(c.aiCheck.note)}">${esc(t('ai.chip.' + c.aiCheck.result))}</span>` : '';
+const aiEvidence = (c, slug) => c.status === 'verify' && c.aiCheck ? `<div class="ai-ev ${esc(c.aiCheck.result)}"><b>${esc(t('ai.chip.' + c.aiCheck.result))}</b> <span class="muted">${esc(c.aiCheck.by)} · ${ago(c.aiCheck.at)}</span><div>${esc(c.aiCheck.note)}</div>${Attach.shown({ attachments: c.aiCheck.shots }, slug)}</div>` : '';
 const isOwner = a => String(a || '').trim().toLowerCase() === me().toLowerCase();
 // Getters, so the names follow the language chosen at start-up (AIG-124).
 const COLS = { get backlog() { return t('col.backlog'); }, get todo() { return t('col.todo'); }, get doing() { return t('col.doing'); }, get review() { return t('col.review'); }, get verify() { return t('col.verify'); }, get team() { return t('col.team'); }, get done() { return t('col.done'); } };

@@ -553,5 +553,11 @@
  "act.no.say": "No: ",
  "act.accept": "✅ Accept",
  "act.sendback": "🔁 Send back",
- "act.sendback.say": "Sent back: "
+ "act.sendback.say": "Sent back: ",
+ "ai.chip.pass": "🤖 Passed",
+ "ai.chip.fail": "🤖 Failed",
+ "ai.chip.skip": "🤖 Couldn’t check",
+ "inbox.aiall": "✅ Accept all AI-passed ({n})",
+ "inbox.aiall.title": "Accept every test the AI tester passed. Open any first if you want to look",
+ "inbox.toast.aiall": "Accepted {n} tests"
 }
