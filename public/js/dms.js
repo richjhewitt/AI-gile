@@ -13,6 +13,9 @@ const Dms = (() => {
   const avatar = c => `<span class="dm-av" style="--proj:${esc(c.color || '')}">${pic(c.logo, c.emoji || '💬')}</span>`;
   // A lead's own picture when it has one (AIG-150), else the project's.
   const leadAv = c => c.leadPic ? `<span class="dm-av" style="--proj:${esc(c.color || '')}"><img class="pic" src="${esc(c.leadPic)}" alt=""></span>` : avatar(c);
+  // 🧭 The Lead Scrum Master's chat (AIG-359): its name in the chosen language.
+  const leadName = c => c.watchman ? t('sm.lead') : c.lead;
+  const chatName = c => c.watchman ? t('sm.name') : c.name;
   const badge = n => n ? `<span class="dm-unread">${n > 99 ? '99+' : n}</span>` : '';
   // "Seen" per project: the project's last update when you last opened its board (this browser only).
   const seen = { get: s => { try { return localStorage.getItem('aigile.seen.' + s) || ''; } catch { return ''; } }, set: (s, v) => { try { localStorage.setItem('aigile.seen.' + s, v); } catch {} } };
@@ -69,7 +72,7 @@ const Dms = (() => {
 
   // The DM list: one row per lead (🤖) and per friend (🙋), narrowed by the filter chips (All / Agents / People).
   function paintList() {
-    const rows = (filter === 'people' ? [] : chats.map(c => `<button class="dm-row" data-dm="${esc(c.slug)}">${leadAv(c)}<span class="dm-rowtext"><b>${esc(c.lead)}</b><span class="muted">${esc(c.name)}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`))
+    const rows = (filter === 'people' ? [] : chats.map(c => `<button class="dm-row" data-dm="${esc(c.slug)}">${leadAv(c)}<span class="dm-rowtext"><b>${esc(leadName(c))}</b><span class="muted">${esc(chatName(c))}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`))
       .concat(filter === 'agents' ? [] : people.map(c => `<button class="dm-row" data-dm="dm:${esc(c.id)}">${personAv}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc(t('dms.person'))}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`));
     const none = filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) ? t('dms.nonone') : t('dms.noleads');
     const chips = ['all', 'agents', 'people'].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}</button>`).join('');
@@ -98,9 +101,9 @@ const Dms = (() => {
       const preview = String(last.text || '').replace(/^\s*[-*]\s+/gm, '').replace(/[*_`#>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 90);
       return `<div class="dm-fold ${isOpen ? 'open' : ''} ${c.waiting ? 'waiting' : ''}">
         <button class="dm-fold-h k-${esc(c.kind || 'other')}" data-fold="${esc(id)}" aria-expanded="${isOpen}">
-          <span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span>
+          ${thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span>`}
           <span class="muted dm-fold-n">${esc(t(msgs.length === 1 ? 'dms.count.one' : 'dms.count.many', { n: msgs.length }))} · ${ago(last.at)}</span></button>
-        ${isOpen ? `<div class="dm-fold-b"><a class="muted dm-cardlink" href="#/p/${esc(thread.slug)}/${esc(id)}">${esc(t('dms.opencard'))}</a>${msgs.map(m => msgHtml(m, m === last ? acts : '')).join('')}</div>`
+        ${isOpen ? `<div class="dm-fold-b">${thread.watchman ? '' : `<a class="muted dm-cardlink" href="#/p/${esc(thread.slug)}/${esc(id)}">${esc(t('dms.opencard'))}</a>`}${msgs.map(m => msgHtml(m, m === last ? acts : '')).join('')}</div>`
           : `<div class="dm-fold-p muted"><b>${esc(last.author)}:</b> ${esc(preview)}</div>${acts}`}</div>`;
     }).join('');
   }
@@ -154,7 +157,31 @@ const Dms = (() => {
       : q ? t('dms.replying.html', { link: `<a href="#/p/${esc(thread.slug)}/${esc(q.id)}">${esc(q.id)}</a>`, title: esc(q.title) }) : esc(t('dms.newmsg', { lead: thread.lead }));
     if (el('dmTo').dataset.sig !== to && document.activeElement !== el('dmTarget')) { el('dmTo').dataset.sig = to; el('dmTo').innerHTML = to; }
     el('dmGo').hidden = !q;
+    paintSm();
   }
+
+  // 🧭 Launch Lead Scrum Master (AIG-359): on by day too, in VS Code (suggested), a terminal window or the background.
+  function paintSm() {
+    const bar = el('smBar'), sm = thread && thread.sm; if (!bar || !sm) return;
+    const html = sm.on
+      ? `<span class="muted">${esc(t('sm.on', { where: t('sm.where.' + sm.where + '.short'), runs: sm.runsToday, cap: sm.cap }))}</span> <button onclick="Dms.smStop()">${esc(t('sm.stop'))}</button>`
+      : `<button class="primary ai-only" id="smLaunch" onclick="Dms.smLaunch()" title="${esc(t('sm.launch.title'))}">${esc(t('sm.launch'))}</button> <span class="muted">${esc(t('sm.off'))}</span>`;
+    if (bar.dataset.sig !== html) { bar.dataset.sig = html; bar.innerHTML = html; }
+  }
+  function smLaunch() {
+    const opt = (v, on) => `<label class="chk"><input type="radio" name="smWhere" value="${v}" ${on ? 'checked' : ''}> ${esc(t('sm.where.' + v))}</label>`;
+    openDialog(`<h2>${esc(t('sm.launch'))}</h2><p class="muted">${esc(t('sm.launch.title'))}</p>
+      <fieldset class="f"><legend>${esc(t('sm.where'))}</legend>${opt('vscode', true)}${opt('terminal')}${opt('background')}</fieldset>
+      <div class="err" id="sm-err"></div>
+      <div class="actions"><button class="primary" id="smGo" onclick="Dms.smGo()">${esc(t('sm.go'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
+    const ov = document.querySelector('#dialog .overlay'); if (ov) ov.style.zIndex = '30';   // over the DM panel it was opened from
+  }
+  async function smGo() {
+    const w = (document.querySelector('input[name="smWhere"]:checked') || {}).value || 'vscode';
+    try { await api('POST', '/api/scrummaster/launch', { where: w }); closeDialog(); await loadThread(); }
+    catch (e) { el('sm-err').textContent = e.message || String(e); }
+  }
+  async function smStop() { try { await api('POST', '/api/scrummaster/stop'); await loadThread(); } catch (e) { el('dmErr').textContent = e.message || String(e); } }
 
   function show(slug) {
     open = slug; listOpen = true;
@@ -162,7 +189,8 @@ const Dms = (() => {
     thread = who ? { person: true, id: who.id, slug, name: who.name, messages: [], open: [] } : null;
     const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || { slug, name: slug };
     const panel = el('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : leadAv(c)}<div><b>${esc(who ? who.name : c.lead || t('dms.lead'))}</b><div class="muted">${esc(c.name)}</div></div><span style="flex:1"></span>${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(chatName(c))}</div></div><span style="flex:1"></span>${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+      ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}
       <div class="dm-list" id="dmList"></div>
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
         <textarea id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();Dms.send()}"></textarea>
@@ -247,5 +275,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   setInterval(() => { if (!document.hidden) { loadRail(); if (open) loadThread(); } }, 3000);
   loadRail();
-  return { show, back, close, send, ask, aim, reply, reload };
+  return { show, back, close, send, ask, aim, reply, reload, smLaunch, smGo, smStop };
 })();
