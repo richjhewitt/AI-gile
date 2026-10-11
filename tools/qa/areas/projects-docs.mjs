@@ -3,14 +3,18 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { BASE, ROOT, check, sleep, tmp, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
+// The clipboard text, with Windows line ends (\r\n) read back as \n.
+const clip = page => page.evaluate(() => navigator.clipboard.readText()).then(t => t.replace(/\r\n/g, '\n'));
 
 def('docs', 'Docs dialog lists .md files and opens one', async (s, ctx) => {
   const folder = tmp('docs');
   fs.mkdirSync(path.join(folder, 'docs'));
-  fs.writeFileSync(path.join(folder, 'README.md'), '# Hello docs\n\nSome **bold** text.\n\n- a\n- b\n');
+  const readme = '# Hello docs\n\nSome **bold** text.\n\n- a\n- b\n\n```\nnpm start\n```\n';
+  fs.writeFileSync(path.join(folder, 'README.md'), readme);
   fs.writeFileSync(path.join(folder, 'docs', 'guide.md'), '# Guide\n\n| a | b |\n|---|---|\n| 1 | 2 |\n');
   fs.writeFileSync(path.join(folder, 'notes.txt'), 'not markdown');
   await mkProject(s, 'Alpha', 'ALP', { path: folder });
+  await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: BASE });
   check('docs api lists md files', JSON.stringify(await s.ok('GET', '/api/projects/alpha/docs')) === JSON.stringify(['README.md', 'docs/guide.md']));
   check('docs api refuses other files', (await s.api('GET', '/api/projects/alpha/docs/notes.txt')).status === 404);
   const page = await openPage(ctx, '#/p/alpha');
@@ -21,6 +25,15 @@ def('docs', 'Docs dialog lists .md files and opens one', async (s, ctx) => {
   await page.click('.doclist button:first-child');
   await page.waitForSelector('.md h1');
   check('opens a doc, rendered', (await page.textContent('.md h1')) === 'Hello docs' && (await page.locator('.md li').count()) === 2 && (await page.textContent('.md b')) === 'bold');
+  // 📋 on the code block copies just that block; Copy all copies the whole file text (AIG-390)
+  check('code block has a 📋 copy button', (await page.locator('.md .codebox button.copy').count()) === 1);
+  await page.click('.md .codebox button.copy');
+  await page.waitForSelector('.md .codebox button.copy:has-text("Copied")');
+  check('code block copies just the block', (await clip(page)) === 'npm start');
+  await page.click('#dialog button:has-text("Copy all")');
+  await page.waitForSelector('#dialog button:has-text("Copied")');
+  check('Copy all copies the file text', (await clip(page)) === readme, await clip(page));
+  check('Copy all sits next to Close', (await page.locator('#dialog .actions button:has-text("Close")').count()) === 1);
   await page.click('#dialog button:has-text("Docs")');
   await page.waitForSelector('.doclist button');
   await page.click('.doclist button:nth-child(2)');
@@ -64,6 +77,16 @@ def('mdlinks', 'Any .md path in card text opens in the board', async (s, ctx) =>
   const c = await mkCard(s, 'alpha', 'Links', { description: 'See protocol/X.md for the rules.\n\n```\n' + abs + '\n```\n\nAlso `' + abs + '`' });
   const page = await openPage(ctx, '#/p/alpha/' + c.id);
   await page.waitForSelector('.desc a[data-p="protocol/X.md"]');
+  // 📋 next to a .md link copies the file's text, and does not open the viewer (AIG-390)
+  await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: BASE });
+  check('📋 sits next to the bare path', (await page.locator('.desc a[data-p="protocol/X.md"] + button.md-copy').count()) === 1);
+  await page.click('.desc button.md-copy[data-copy-md="protocol/X.md"]');
+  await page.waitForSelector('.desc button.md-copy:has-text("Copied")');
+  check('📋 copies the file text', (await clip(page)) === '# Protocol X\n');
+  check('📋 does not open the viewer', (await page.locator('#dialog .md').count()) === 0);
+  await page.locator('code button.md-copy').first().click();
+  await page.waitForSelector('code button.md-copy:has-text("Copied")');
+  check('📋 in inline code copies the file text', (await clip(page)) === '# Deep one\n');
   await page.click('.desc a[data-p="protocol/X.md"]');
   await page.waitForSelector('.md h1');
   check('bare path opens the file', (await page.textContent('.md h1')) === 'Protocol X' && (await page.textContent('#dialog .doctitle')) === 'protocol/X.md');

@@ -14,7 +14,7 @@ function withCode(text, fmt, slug) {
     const links = [];   // inline code that is a .md path is set aside so fmt leaves it whole
     part = (i ? part.replace(/^\n/, '') : part).replace(/`([^`\n]+)`/g, (m, c) => isMdPath(c) ? `\u0000${links.push(c.trim()) - 1}\u0000` : m);
     return spaceBullets(editLinks(fmt(part)).replace(/`([^`\n]+)`/g, (m, c) => `<code>${c}</code>` + (isFilePath(unesc(c)) ? editBtn(unesc(c)) : isFolderPath(unesc(c)) ? folderBtn(unesc(c)) : ''))
-      .replace(/\u0000(\d+)\u0000/g, (m, n) => `<code>${mdLink(esc(links[n]), esc(links[n]), slug)}</code>`));
+      .replace(/\u0000(\d+)\u0000/g, (m, n) => `<code>${mdLink(esc(links[n]), esc(links[n]), slug)}${mdCopyBtn(links[n], slug)}</code>`));
   }).join('');
 }
 // 📝 Open in your editor (AIG-156): full file paths (C:\..., C:/..., /home/..., ~/...) get a small button.
@@ -34,11 +34,31 @@ document.addEventListener('click', async e => {
   try { await api('POST', '/api/open-file', { path: b.dataset.editor }); const was = b.textContent; b.textContent = '✓'; setTimeout(() => { b.textContent = was; }, 1500); }
   catch (err) { alert(err.message); }
 }, true);
+// Copies text to the clipboard and shows a short "Copied" on the button (AIG-390); the button keeps its own label.
+async function copyDocText(btn, text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (err) { alert(err.message); return; }
+  const was = btn.dataset.was || (btn.dataset.was = btn.textContent);
+  btn.textContent = t('format.copied'); setTimeout(() => { btn.textContent = was; }, 1500);
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-copy-md]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  try { const d = await api('GET', `/api/projects/${b.dataset.s || slug()}/file?path=${encodeURIComponent(b.dataset.copyMd)}`); await copyDocText(b, d.text); }
+  catch (err) { alert(err.message); }
+}, true);
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-copy-block]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  copyDocText(b, b.parentNode.querySelector('pre').textContent);
+}, true);
 // A whole string that is one .md path (relative or absolute, / or \; spaces allowed).
 const isMdPath = s => /^\s*(?:[A-Za-z]:)?[^<>|?*\n`]*[^<>|?*\s\n`]\.md\s*$/i.test(s) && !/^\s*https?:/i.test(s);
 const mdLink = (html, p, slug) => `<a href="#" data-p="${p}" data-s="${esc(slug || '')}" onclick="showDocPath(this.dataset.p,this.dataset.s);return false" title="${esc(t('format.openfile', { name: p }))}">${html}</a>`;
 // Links bare .md paths (no spaces) in escaped text.
-const mdLinks = (html, slug) => html.replace(/(^|[\s(>"'`])((?:[A-Za-z]:)?(?:[\w.-]+[\\/])*[\w.-]+\.md)\b/gi, (m, pre, name) => pre + mdLink(name, name, slug));
+// 📋 next to each .md link copies the file's text (AIG-390), through the same route the viewer uses.
+const mdCopyBtn = (p, slug) => `<button class="md-copy" data-copy-md="${esc(p)}" data-s="${esc(slug || '')}" title="${esc(t('format.copymd', { name: p }))}">📋</button>`;
+const mdLinks = (html, slug) => html.replace(/(^|[\s(>"'`])((?:[A-Za-z]:)?(?:[\w.-]+[\\/])*[\w.-]+\.md)\b/gi, (m, pre, name) => pre + mdLink(name, name, slug) + mdCopyBtn(name, slug));
 // Runs of "- " lines become a spaced bullet list, so cards stay readable whoever wrote them.
 function spaceBullets(html) {
   return html.replace(/(^|\n)((?:[ \t]*[-•][ \t]+[^\n]*(?:\n[ \t]*\n?|$))+)/g, (m, pre, block) =>
@@ -80,7 +100,7 @@ function md(src) {
   const isList = l => /^\s*([-*]|\d+\.)\s+/.test(l), isRow = l => /^\s*\|/.test(l);
   while (i < lines.length) {
     const l = lines[i]; let m;
-    if (/^```/.test(l)) { const b = []; i++; while (i < lines.length && !/^```/.test(lines[i])) b.push(lines[i++]); i++; html += `<pre><code>${esc(b.join('\n'))}</code></pre>`; }
+    if (/^```/.test(l)) { const b = []; i++; while (i < lines.length && !/^```/.test(lines[i])) b.push(lines[i++]); i++; html += `<div class="codebox"><button class="copy" data-copy-block title="${esc(t('docs.copyblock'))}">📋</button><pre><code>${esc(b.join('\n'))}</code></pre></div>`; }
     else if ((m = l.match(/^(#{1,6})\s+(.*)/))) { html += `<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`; i++; }
     else if (isRow(l)) {
       const rows = []; while (i < lines.length && isRow(lines[i])) rows.push(lines[i++]);
