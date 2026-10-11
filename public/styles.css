@@ -476,3 +476,7 @@ abbr.devw { text-decoration: underline dotted var(--muted); text-underline-offse
 /* Stand-ups: needs you (amber) apart from real blockers (red) (AIG-191) */
 .su-needs { border: 1px solid var(--warn); border-left-width: 4px; border-radius: 10px; padding: 8px 12px; margin: 0 0 14px; }
 .su-needs h3 { margin: 0 0 4px; color: var(--warn); font-size: 14px; } .su-amber { color: var(--warn); }
+
+/* 🌙 Night watchman (AIG-199) */
+.watch-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; margin: 8px 0; }
+.watch-sum li { margin: 4px 0; }

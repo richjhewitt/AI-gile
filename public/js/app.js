@@ -105,15 +105,31 @@ function setNight(since) {
   if (window.Inbox) Inbox.repaint();
   $('nightTop').innerHTML = since ? `<button class="navlink" onclick="backFromQuiet()" title="${esc(t('night.since', { when: ago(since) }))}">${esc(t('night.back'))}</button>` : '';
 }
+// Going quiet asks which projects the 🌙 night watchman should watch: every active one is ticked (AIG-199).
 async function goQuiet() {
-  if (!confirm(t('quiet.confirm'))) return;
+  let ps = []; try { ps = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
+  openDialog(`<h2>${esc(t('quiet.h'))}</h2><p class="muted">${esc(t('quiet.confirm'))}</p>
+    <h3>${esc(t('watch.h'))}</h3><p class="muted">${esc(t('watch.help'))}</p>
+    <div class="watch-list">${ps.map(p => `<label class="chk"><input type="checkbox" data-watch="${esc(p.slug)}" checked> ${pic(p.logo, p.emoji)} ${esc(p.name)}</label>`).join('')}</div>
+    <div class="actions"><button class="primary" onclick="goQuietNow()">${esc(t('quiet.go'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
+}
+async function goQuietNow() {
+  const watch = [...document.querySelectorAll('#dialog [data-watch]:checked')].map(b => b.dataset.watch);
+  closeDialog();
   try {
-    const r = await api('POST', '/api/quiet', { on: true });
+    const r = await api('POST', '/api/quiet', { on: true, watch });
     setNight(r.quiet);
     alert(t('quiet.sent', { n: r.sent.length, names: r.sent.length ? ': ' + r.sent.join(', ') : '' }) + (r.woke.length ? '\n' + t('quiet.woke', { names: r.woke.join(', ') }) : '') + (r.failed.length ? '\n' + t('quiet.failed', { names: r.failed.join('; ') }) : ''));
     refresh(true);
   } catch (e) { alert(e.message); }
 }
-async function backFromQuiet() { try { await api('POST', '/api/quiet', { on: false }); setNight(null); } catch (e) { alert(e.message); } }
+// Back from quiet: the night watchman's summary, one line per project (AIG-199).
+async function backFromQuiet() {
+  try {
+    const r = await api('POST', '/api/quiet', { on: false }); setNight(null);
+    if (r.summary && r.summary.length) openDialog(`<h2>${esc(t('watch.morning'))}</h2><ul class="watch-sum">${r.summary.map(x => `<li><b>${esc(x.name)}</b>: ${esc(t('watch.line', { h: x.handedOver, d: x.done, w: x.woke }))}${x.restarted.length ? ' · ' + esc(t('watch.restarted', { ids: x.restarted.join(', ') })) : ''}${x.stuck.length ? ` · <span class="su-red">${esc(t('watch.stuck', { ids: x.stuck.join(', ') }))}</span>` : ''}</li>`).join('')}</ul>
+      <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
+  } catch (e) { alert(e.message); }
+}
 setInterval(checkBuild, 5000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });

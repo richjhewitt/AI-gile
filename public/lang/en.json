@@ -737,5 +737,13 @@
  "trial.busy": "Starting…",
  "trial.help": "A brand-new, empty copy of AI-gile in its own window (localhost:4400), with three made-up projects to find. See exactly what a friend sees on their first run. Your real board is never touched, and no AI team ever starts there.",
  "standup.needs": "🙋 Needs you ({n}): the teams carry on meanwhile",
- "standup.needs.k": "🙋 Needs you"
+ "standup.needs.k": "🙋 Needs you",
+ "quiet.h": "🌙 Going quiet",
+ "quiet.go": "🌙 Go quiet",
+ "watch.h": "🌙 Night watchman",
+ "watch.help": "While you are away it checks these projects every 10 minutes: it wakes teams that have work, restarts any that stopped mid-card, and flags a card as stuck after 3 tries. It costs nothing: the board does it, not an AI.",
+ "watch.morning": "🌙 While you were away",
+ "watch.line": "{h} handed over · {d} done · woken {w}×",
+ "watch.restarted": "restarted on {ids}",
+ "watch.stuck": "stuck: {ids}"
 }

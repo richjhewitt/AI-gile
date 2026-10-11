@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { BASE, check, sleep, tmp, mkProject, mkCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 const require = createRequire(import.meta.url);
 
 def('presence', 'asleep -> online; Wake/comment start a background run (log, one at a time, restart, log dialog)', async (s, ctx) => {
@@ -99,7 +99,11 @@ def('quiet', 'Going quiet messages teams with work, wakes sleeping ones, night t
   const page = await openPage(ctx, '#/');
   page.on('dialog', d => d.accept());
   await page.click('text=🌙 Going quiet');
+  await page.waitForSelector('#dialog [data-watch]');
+  check('it asks which projects the night watchman watches, all ticked (AIG-199)', (await page.locator('#dialog [data-watch]').count()) === 2 && (await page.locator('#dialog [data-watch]:checked').count()) === 2);
+  await page.click('#dialog .primary');
   await page.waitForSelector('html[data-night]', { timeout: 4000 }).catch(() => {});
+  check('the watchman watches what was ticked', (await s.ok('GET', '/api/watchman')).watch.length === 2);
   check('night theme on', await page.$('html[data-night]') !== null);
   const busy = await s.ok('GET', '/api/projects/busy'), idle = await s.ok('GET', '/api/projects/idle');
   const msg = busy.cards.find(c => c.title === '📣 Going quiet');
@@ -168,4 +172,26 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   check('online, fresh comment = fine', attention(proj(fresh), { online: true }) === null);
   noErrors(page);
 }, true);
-
+
+def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuck after 3 tries, wakes idle teams, morning summary (AIG-199)', async (s, ctx) => {
+  await mkProject(s, 'Cut', 'CUT', { path: tmp('cut') });
+  await mkProject(s, 'Nap', 'NAP', { path: tmp('nap') });
+  await mkProject(s, 'Skip', 'SKP', { path: tmp('skip') });
+  const mid = await mkCard(s, 'cut', 'Half done', { status: 'doing' });
+  await mkCard(s, 'nap', 'Waiting work', { status: 'todo' });
+  await mkCard(s, 'skip', 'Not watched', { status: 'todo' });
+  await s.ok('POST', '/api/quiet', { on: true, watch: ['cut', 'nap'] });
+  await sleep(4500);   // going quiet wakes the teams; wait until those runs end
+  await s.ok('POST', '/api/watchman/round');
+  let c = await getCard(s, 'cut', mid.id);
+  check('a team that stopped mid-card is started again, with a note', /Picked back up/.test(c.comments.at(-1).text));
+  let st = await s.ok('GET', '/api/watchman');
+  check('an idle team with work is woken; an unwatched one is left alone', st.summary.find(x => x.project === 'nap').woke === 1 && !st.summary.find(x => x.project === 'skip'));
+  await sleep(4500);   // the stand-in agent ends; the team is asleep again
+  await s.ok('POST', '/api/watchman/round'); await sleep(4500); await s.ok('POST', '/api/watchman/round');
+  c = await getCard(s, 'cut', mid.id);
+  check('third time on the same card: stuck, and in your pile', /Stuck/.test(c.comments.at(-1).text) && c.needsYou === true, c.comments.at(-1).text);
+  const back = await s.ok('POST', '/api/quiet', { on: false });
+  const cut = back.summary.find(x => x.project === 'cut');
+  check('back from quiet: a summary per project', cut && cut.stuck.includes(mid.id) && cut.restarted.includes(mid.id) && !(await s.ok('GET', '/api/watchman')), back.summary);
+}, false);

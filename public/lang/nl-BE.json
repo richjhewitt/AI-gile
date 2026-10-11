@@ -737,5 +737,13 @@
  "trial.busy": "Bezig met starten…",
  "trial.help": "Een gloednieuwe, lege kopie van AI-gile in een eigen venster (localhost:4400), met drie verzonnen projecten om te vinden. Zie precies wat een vriend ziet bij de eerste keer. Je echte bord blijft ongemoeid en er start daar nooit een AI-team.",
  "standup.needs": "🙋 Wacht op jou ({n}): de teams werken intussen door",
- "standup.needs.k": "🙋 Wacht op jou"
+ "standup.needs.k": "🙋 Wacht op jou",
+ "quiet.h": "🌙 Even stil",
+ "quiet.go": "🌙 Ga stil",
+ "watch.h": "🌙 Nachtwacht",
+ "watch.help": "Terwijl je weg bent kijkt hij elke 10 minuten naar deze projecten: hij maakt teams met werk wakker, start teams opnieuw die midden in een kaart stopten, en meldt een kaart als vastgelopen na 3 pogingen. Het kost niets: het bord doet het, geen AI.",
+ "watch.morning": "🌙 Terwijl je weg was",
+ "watch.line": "{h} overgedragen · {d} klaar · {w}× wakker gemaakt",
+ "watch.restarted": "opnieuw gestart op {ids}",
+ "watch.stuck": "vastgelopen: {ids}"
 }
