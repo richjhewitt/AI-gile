@@ -251,20 +251,33 @@ async function saveColumns(all) {
 /* ---------- card view (AIG-119) ---------- */
 // ---- cards: compact or roomy, and which details show on this board's cards ----
 const CARD_DETAILS = ['assignee', 'type', 'priority', 'sprint', 'comments', 'age'];
+// Two size tiles, the details as toggles in a grid, and a sample card beside them that changes as you click (AIG-184).
 function cardViewDialog() {
   const v = cardViewOf(state.project);
-  openDialog(`<div onchange="previewCardView()"><h2>${esc(t('board.cards'))}</h2><p class="muted">${esc(t('cv.intro'))}</p>` +
-    `<div class="row"><label class="chk"><input type="radio" name="cv-density" value="roomy" ${v.density === 'roomy' ? 'checked' : ''}> ${esc(t('cv.roomy'))}</label>
-    <label class="chk"><input type="radio" name="cv-density" value="compact" ${v.density === 'compact' ? 'checked' : ''}> ${esc(t('cv.compact'))}</label></div>` +
-    CARD_DETAILS.map(k => `<label class="chk" style="display:block;margin:6px 0"><input type="checkbox" data-cv="${k}" ${v.show[k] ? 'checked' : ''}> ${esc(t('cv.' + k))}</label>`).join('') +
-    `<div class="err" id="cv-err"></div><div class="actions"><button class="primary" onclick="saveCardView()">${esc(t('common.save'))}</button>` +
-    `<button onclick="saveCardView(null)" title="${esc(t('cv.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></div>`);
+  const tile = d => `<label class="cv-size ${v.density === d ? 'on' : ''}"><input type="radio" name="cv-density" value="${d}" ${v.density === d ? 'checked' : ''}>
+      <span class="cv-pic ${d}"><i></i><i></i><i></i></span><b>${esc(t('cv.' + d))}</b><small class="muted">${esc(t('cv.' + d + '.help'))}</small></label>`;
+  openDialog(`<div class="cv-dlg" onchange="previewCardView()"><h2>${esc(t('board.cards'))}</h2><p class="muted">${esc(t('cv.intro'))}</p>
+    <div class="cv-grid"><div>
+      <h3>${esc(t('cv.size'))}</h3><div class="cv-sizes">${tile('roomy')}${tile('compact')}</div>
+      <h3>${esc(t('cv.show'))}</h3><div class="cv-toggles">${CARD_DETAILS.map(k => `<label class="cv-toggle"><input type="checkbox" data-cv="${k}" ${v.show[k] ? 'checked' : ''}><span>${esc(t('cv.' + k))}</span></label>`).join('')}</div>
+    </div><div class="cv-side"><h3>${esc(t('cv.sample'))}</h3><div id="cv-sample" class="cv-sample"></div></div></div>
+    <div class="err" id="cv-err"></div><div class="actions"><button class="primary" onclick="saveCardView()">${esc(t('common.save'))}</button>
+    <button onclick="saveCardView(null)" title="${esc(t('cv.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></div>`);
+  paintCvSample();
+}
+// The sample: this board's busiest card, drawn with the choices in the dialog.
+function paintCvSample() {
+  const box = $('cv-sample'); if (!box) return;
+  const cards = state.project.cards, c = [...cards].sort((a, b) => b.comments.length - a.comments.length)[0];
+  // Only a picture of a card: no id, link or drag, so the board never mistakes it for the real one.
+  box.innerHTML = c ? cardHtml(c).replace(/ data-id="[^"]*"/, '').replace(/ draggable="true"/, '').replace(/ href="[^"]*"/, '') : `<p class="muted">${esc(t('cv.nocards'))}</p>`;
+  document.querySelectorAll('#dialog .cv-size').forEach(l => l.classList.toggle('on', l.querySelector('input').checked));
 }
 // Show each change on the board as you make it; Save keeps it, Cancel or closing drops it (AIG-119).
 function previewCardView() {
   const show = {}; document.querySelectorAll('#dialog [data-cv]').forEach(b => { show[b.dataset.cv] = b.checked; });
   state.cvPreview = { slug: slug(), view: { density: document.querySelector('#dialog [name=cv-density]:checked').value, show } };
-  renderBoardOnly();
+  renderBoardOnly(); paintCvSample();
 }
 async function saveCardView(reset) {
   const show = {}; document.querySelectorAll('#dialog [data-cv]').forEach(b => { show[b.dataset.cv] = b.checked; });
