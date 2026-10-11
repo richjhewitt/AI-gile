@@ -47,7 +47,7 @@ def('card', 'tabs, reply survives polling, Enter sends, Accept, Wait and see, fo
   await page.press('#r-text', 'Enter');
   await sleep(700);   // the panel closes, or opens the next For you card (AIG-141)
   const c2 = await getCard(s, 'alpha', 'ALP-2');
-  check('Enter sends and closes the panel', c2.comments.at(-1).text === 'thanks, carry on' && c2.comments.at(-1).author === 'Rich' && c2.status === 'team', [c2.status, c2.comments.at(-1)]);
+  check('Enter sends and closes the panel', c2.comments.at(-1).text === 'thanks, carry on' && c2.comments.at(-1).author === 'Owner' && c2.status === 'team', [c2.status, c2.comments.at(-1)]);
 
   // Accept (ALP-3)
   await page.goto(BASE + '/#/p/alpha/ALP-3');
@@ -94,7 +94,7 @@ def('gobutton', '👍 Go answers a question in one tap, in the inbox and on the 
   await page.click(`.ib-item[data-id="${q1.id}"] button[data-act="go"]`);
   await page.waitForSelector(`.ib-item[data-id="${q1.id}"]`, { state: 'detached', timeout: 4000 }).catch(() => {});
   let c = await getCard(s, 'alpha', q1.id);
-  check('inbox Go sends GO and clears the question', c.comments.at(-1).author === 'Rich' && c.comments.at(-1).text === 'GO' && !c.needsYou && c.status === 'team', c);
+  check('inbox Go sends GO and clears the question', c.comments.at(-1).author === 'Owner' && c.comments.at(-1).text === 'GO' && !c.needsYou && c.status === 'team', c);
   await page.goto(BASE + '/#/p/alpha/' + q2.id);
   await page.click('.reply button:has-text("Go")');
   await sleep(500);
@@ -296,7 +296,7 @@ def('openit', '▶ Open it: starts the app with the card\'s command if needed, w
 def('testnotes', 'the Test tab shows the team\'s notes since your last word, next to Accept (AIG-152)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const c = await mkCard(s, 'alpha', 'Security pass');
-  await say(s, 'alpha', c.id, 'Rich', 'please check it all');
+  await say(s, 'alpha', c.id, 'Owner', 'please check it all');
   await say(s, 'alpha', c.id, 'Lead', 'Scanned everything: nothing personal found; fixed one gap');
   s.cli(['test', 'alpha', c.id, '- Nothing to click: read the note above and accept', '--as', 'Lead']);
   const page = await openPage(ctx, '#/p/alpha/' + c.id);

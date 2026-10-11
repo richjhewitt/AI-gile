@@ -47,7 +47,7 @@ You get AI-gile as a zip from the person who shared it with you.
 A zip doesn't update itself: ask for a new zip when you want the latest version. Copy it over the old folder; your
 settings (`aigile.local.json`) and board data (`data` folder) stay.
 
-If you are invited to the private GitHub repo instead, run `git clone https://github.com/richjhewitt/AI-gile.git` in
+If you are invited to the private GitHub repo instead, run `git clone https://github.com/<you>/AI-gile.git` (a placeholder: use the repo URL you were given) in
 your projects folder; then the board can update itself (see **Updating**).
 
 ## 2. Start it

@@ -11,7 +11,7 @@ function presenceHtml(p, withWake) {
   const logBtn = !withWake || !p.path ? '' : p.verbose ? ` <button onclick="watchTeam(event, '${p.slug}')">${esc(t('pres.watch'))}</button>`
     : ` <button onclick="agentLog(event, '${p.slug}')">${esc(t('pres.log'))}</button>`;
   if (pr.running) return `<span class="pres on">${esc(t('pres.background'))}</span> <span class="muted">${esc(t('pres.since', { when: ago(pr.startedAt) }))}</span>${withWake ? ` <button onclick="restartTeam(event, '${p.slug}')">${esc(t('pres.restart'))}</button>` : ''}${logBtn}`;
-  // Online without a run of ours = a session Rich opened himself (a terminal or VS Code window).
+  // Online without a run of ours = a session the owner opened himself (a terminal or VS Code window).
   // Where a session you opened runs (AIG-107): the CLI and hooks report VS Code or a terminal.
   const place = t(pr.where === 'vscode' ? 'pres.vscode' : pr.where === 'terminal' ? 'pres.terminal' : 'pres.window');
   if (pr.online) return `<span class="pres on" title="${esc(t('pres.session.title'))}">${esc(place)}</span> <span class="muted">${esc(t('pres.heard', { when: ago(pr.lastHeard) }))}</span>`;
@@ -70,7 +70,7 @@ function renderWatch() {
 
 /* ---------- board page ---------- */
 function renderBoard(p) {
-  // Team status lives in the top-right corner, next to the inbox (where Rich looks for notifications).
+  // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
   const by = lanesBy(p.slug);
   const board = by ? lanesOf(p, by).map(([name, pool]) => `<div class="lane"><h4 class="lane-h">${esc(name)} <span class="muted">${pool.length}</span></h4><div class="board${fyFocus(p.slug) ? ' focus' : ''}">${columnsHtml(p, pool)}</div></div>`).join('') || `<p class="muted">${esc(t('board.nomatch'))}</p>`
@@ -216,7 +216,7 @@ function metaHtml(c, show = CARD_SHOW) {
       ${show.age ? `<span class="pill age" title="${esc(t('card.lastupdated'))}">🕒 ${ago(c.updated)}</span>` : ''}`;
 }
 
-// Last time the team said or did something on a card (Rich's own comments and pokes don't count).
+// Last time the team said or did something on a card (the owner's own comments and pokes don't count).
 const STALE_MS = 30 * 60e3;
 function lastHeard(c) {
   const m = [...c.comments].reverse().find(m => m.author.toLowerCase() !== me().toLowerCase());

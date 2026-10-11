@@ -18,7 +18,7 @@ function cardFields(c, o = {}) {
       <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> ${esc(t('card.f.needsyou'))}</label></div>` : ''}`;
 }
 // Who a card goes to: a role (the lead launches that kind of agent; the model is shown so the cost is
-// visible), a named team member, or Rich himself (a task for him). Agents swap a role for their name on start.
+// visible), a named team member, or the owner himself (a task for him). Agents swap a role for their name on start.
 const ROLES = [
   ['Lead (Opus)', '🧠', 'role.lead'],
   ['Reviewer (Opus)', '🔍', 'role.reviewer'],
@@ -147,7 +147,7 @@ async function deleteCard() {
   } catch (err) { alert(err.message); }
 }
 
-// Once Rich has replied or given a verdict he's done with the card: close the panel, back to the board.
+// Once the owner has replied or given a verdict he's done with the card: close the panel, back to the board.
 function popOutCard(s, id) {
   window.open(`#/pop/${s}/${id}`, 'aigile-' + s + '-' + id, 'width=560,height=780');
   location.hash = '#/p/' + s;

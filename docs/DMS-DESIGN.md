@@ -27,7 +27,7 @@ Messages between people using AI-gile (you and your friends), shown in **💬 Me
 - A full "ratchet" (as in Signal) that also protects old messages if a key is stolen later. Version 1 protects each message with its own key; the ratchet can come later without changing invites.
 
 ## Decided
-- **The relay runs on our own server** (Rich, 2026-10-10).
+- **The relay runs on our own server** (the owner, 2026-10-10).
 - **Overhead is tiny:** one small Node process (tens of MB of memory), a few KB per message, and disk only for messages not yet collected, which are deleted within 7 days.
 
 ## Showing people it's private

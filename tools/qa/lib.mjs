@@ -5,8 +5,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-// Tests speak to "Rich" whatever your own name is, here and in the servers they start (setup clears it to test naming).
-process.env.AIGILE_OWNER = 'Rich';
+// Tests speak to "Owner" whatever your own name is, here and in the servers they start (setup clears it to test naming).
+process.env.AIGILE_OWNER = 'Owner';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const PORT = Number(process.env.QA_PORT) || 4390;
@@ -37,7 +37,7 @@ export async function startServer(extraEnv = {}, port = PORT) {
   const out = path.join(dir, 'wake-out.txt');
   const stub = path.join(dir, 'agent-stub.bat');
   fs.writeFileSync(stub, `@echo off\r\ncd > "${out}"\r\necho %* >> "${out}"\r\nping -n 4 127.0.0.1 >nul\r\nexit\r\n`);
-  const env = { ...process.env, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Rich', ...extraEnv };   // tests speak to "Rich", whatever your own name is
+  const env = { ...process.env, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', ...extraEnv };   // tests speak to "Owner", whatever your own name is
   delete env.AIGILE_DEV; delete env.AIGILE_ALLOW_DONE; delete env.AIGILE_AS;
   const proc = spawn(process.execPath, [path.join(ROOT, 'server.js')], { env, stdio: 'ignore', cwd: ROOT });
   for (let i = 0; i < 50; i++) {

@@ -114,7 +114,7 @@ def('share', 'sharing a project with a friend: offer / accept over the DMs, need
     // Unlink and forget on B: their cards and comments go, B's own stay.
     const pf = path.join(b.data, 'bravo.json'), pj = JSON.parse(fs.readFileSync(pf, 'utf8'));
     const at = new Date().toISOString(), base = { type: 'feature', priority: 'normal', status: 'backlog', created: at, updated: at, description: '', testSteps: '' };
-    pj.cards.push({ ...base, id: 'BRA-1', title: 'Mine', comments: [{ author: 'Rich', text: 'my note', at }, { author: 'Alberto (via 🔗)', text: 'their note', at, from: 'share:' + off.id }] });
+    pj.cards.push({ ...base, id: 'BRA-1', title: 'Mine', comments: [{ author: 'Owner', text: 'my note', at }, { author: 'Alberto (via 🔗)', text: 'their note', at, from: 'share:' + off.id }] });
     pj.cards.push({ ...base, id: 'BRA-2', title: 'From Alberto', from: 'share:' + off.id, comments: [] });
     pj.nextId = 3; fs.writeFileSync(pf, JSON.stringify(pj));
     const fg = await b.ok('POST', `/api/shares/${off.id}/unlink`, { forget: true });

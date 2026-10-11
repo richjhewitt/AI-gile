@@ -46,7 +46,7 @@
     el('live').className = 'live'; el('live').textContent = t('live.ok');
     el('crumb').textContent = '/ ' + t('inbox.crumb');
     el('modal').innerHTML = '';
-    if (typeof state !== 'undefined') state.lastSig = state.lastBoardSig = null;   // so other views redraw when Rich leaves
+    if (typeof state !== 'undefined') state.lastSig = state.lastBoardSig = null;   // so other views redraw when the owner leaves
     if (force || !el('ib')) { if (!el('ib')) IB.skeleton(); IB.fromProject = (typeof state !== 'undefined' && state.lastProject) || null; IB.selectPinned = true; }
     IB.paintTop(); IB.paintPage();
   }

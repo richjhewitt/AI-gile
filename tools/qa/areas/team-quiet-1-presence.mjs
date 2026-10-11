@@ -28,7 +28,7 @@ def('presence', 'asleep -> online; Wake/comment start a background run (log, one
 
   // A team already online in a terminal is not started in the background.
   const ca = await mkCard(s, 'alpha', 'terminal card');
-  await say(s, 'alpha', ca.id, 'Rich', 'hello');
+  await say(s, 'alpha', ca.id, 'Owner', 'hello');
   await sleep(600);
   check('online (terminal) team gets no background run', !(await s.ok('GET', '/api/projects/alpha')).presence.running && !fs.existsSync(path.join(s.data, 'logs', 'alpha.log')));
 
@@ -39,9 +39,9 @@ def('presence', 'asleep -> online; Wake/comment start a background run (log, one
   await page.waitForSelector('#teamTop button.primary');
   await page.click('#teamTop button.primary');
   let out = '';
-  for (let i = 0; i < 60 && !out.includes('Rich commented'); i++) { await sleep(250); try { out = fs.readFileSync(s.wakeOut, 'utf8'); } catch {} }
+  for (let i = 0; i < 60 && !out.includes('Owner commented'); i++) { await sleep(250); try { out = fs.readFileSync(s.wakeOut, 'utf8'); } catch {} }
   const norm = x => x.replace(/\\/g, '/').toLowerCase();
-  check('stub got the prompt and --continue', /Rich commented on the AI-gile board/.test(out) && /project gamma/.test(out) && /"-p" /.test(out) && /--continue/.test(out), out);
+  check('stub got the prompt and --continue', /Owner commented on the AI-gile board/.test(out) && /project gamma/.test(out) && /"-p" /.test(out) && /--continue/.test(out), out);
   check('stub ran with the folder as cwd', norm(out.split(/\r?\n/)[0]).replace(/\/$/, '') === norm(folder + '-c'), out.split(/\r?\n/)[0]);
   await page.waitForFunction(() => /background/.test(document.getElementById('teamTop').textContent), null, { timeout: 4000 }).catch(() => {});
   const top = await page.textContent('#teamTop');
@@ -69,14 +69,14 @@ def('presence', 'asleep -> online; Wake/comment start a background run (log, one
   log = fs.readFileSync(logPath, 'utf8');
   check('run exits on its own and is logged', (await s.ok('GET', '/api/projects/gamma')).presence.running === false && (log.match(/=== exited/g) || []).length === 2, log);
 
-  // A Rich comment starts a run; more during it give exactly one more run, never two at once.
+  // A Owner comment starts a run; more during it give exactly one more run, never two at once.
   fs.mkdirSync(folder + '-e');
   await mkProject(s, 'Epsilon', 'EPS', { path: folder + '-e' });
   const ce = await mkCard(s, 'epsilon', 'work');
-  await say(s, 'epsilon', ce.id, 'Rich', 'one');
+  await say(s, 'epsilon', ce.id, 'Owner', 'one');
   await sleep(500);
-  check('Rich comment starts a run', (await s.ok('GET', '/api/projects/epsilon')).presence.running === true);
-  await say(s, 'epsilon', ce.id, 'Rich', 'two');
+  check('Owner comment starts a run', (await s.ok('GET', '/api/projects/epsilon')).presence.running === true);
+  await say(s, 'epsilon', ce.id, 'Owner', 'two');
   await s.ok('POST', `/api/projects/epsilon/cards/${ce.id}/poke`);
   const elog = path.join(s.data, 'logs', 'epsilon.log');
   check('only one run while it is going', (fs.readFileSync(elog, 'utf8').match(/started ===/g) || []).length === 1);
@@ -87,7 +87,7 @@ def('presence', 'asleep -> online; Wake/comment start a background run (log, one
   await mkProject(s, 'Delta', 'DEL');
   check('wake without folder is refused', (await s.api('POST', '/api/projects/delta/wake')).status === 400);
   const dc = await mkCard(s, 'delta', 'x');
-  check('Rich comment without a folder still succeeds', (await s.api('POST', `/api/projects/delta/cards/${dc.id}/comments`, { author: 'Rich', text: 'hi' })).status === 200);
+  check('Owner comment without a folder still succeeds', (await s.api('POST', `/api/projects/delta/cards/${dc.id}/comments`, { author: 'Owner', text: 'hi' })).status === 200);
   noErrors(page);
 }, true);
 
@@ -110,7 +110,7 @@ def('quiet', 'Going quiet messages teams with work, wakes sleeping ones, night t
   check('night theme on', await page.$('html[data-night]') !== null);
   const busy = await s.ok('GET', '/api/projects/busy'), idle = await s.ok('GET', '/api/projects/idle');
   const msg = busy.cards.find(c => c.title === '📣 Going quiet');
-  check('team with work gets the card in For the team', msg && msg.status === 'team' && msg.createdBy === 'Rich');
+  check('team with work gets the card in For the team', msg && msg.status === 'team' && msg.createdBy === 'Owner');
   check('project with no work is left alone', !idle.cards.length);
   check('message reaches the team via updates', (await s.ok('GET', '/api/projects/busy/updates')).cards.some(c => c.title === '📣 Going quiet'));
   let out = '';

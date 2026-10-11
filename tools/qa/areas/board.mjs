@@ -30,7 +30,7 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   await page.waitForSelector('#dialog .dialog', { state: 'detached' });
   await page.waitForTimeout(300);
   const made = (await s.ok('GET', '/api/projects/alpha')).cards.find(c => c.title === 'From the dialog');
-  check('created card is for the team, by Rich', made && made.status === 'team' && made.createdBy === 'Rich', made);
+  check('created card is for the team, by Owner', made && made.status === 'team' && made.createdBy === 'Owner', made);
   check('new card shows in the team column', (await page.locator('.column[data-status=team] .card', { hasText: 'From the dialog' }).count()) === 1);
 
   await page.click('button.bug');

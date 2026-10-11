@@ -14,13 +14,16 @@ const flag = n => args.includes(n);
 const opt = n => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
 const ref = opt('--ref') || 'attach';
 const positional = args.filter((a, i) => !a.startsWith('--') && args[i - 1] !== '--ref');
-const DEST = path.resolve(positional[0] || "C:/Users/rich/Desktop/Bots 'n' Code Stuff/AI-gile-public");
+const DEST = path.resolve(positional[0] || path.join(ROOT, '..', 'AI-gile-public'));
 const git = (cwd, ...a) => execFileSync('git', a, { cwd, encoding: 'utf8', maxBuffer: 1 << 28 }).trim();
 
+// Names to look for: PUBLIC_COPY_NAMES="Name1,Name2" plus the owner in your git-ignored aigile.local.json.
+let ownerName = ''; try { ownerName = JSON.parse(readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')).owner || ''; } catch {}
+const NAMES = [...(process.env.PUBLIC_COPY_NAMES || '').split(','), ownerName].map(s => s.trim()).filter(s => s.length > 2).map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 const RULES = [
-  ['personal name', /\b(Rich|Richard|Davy|Ricardo|Mike|Smizflark|richjhewitt)\b/i],
-  ['email', /[\w.+-]+@[\w-]+\.[\w.-]+/],
-  ['absolute path', /C:[\\/]+Users[\\/]|\/Users\/|Bots 'n' Code Stuff/i],
+  ['personal name', NAMES.length ? new RegExp('\\b(' + NAMES.join('|') + ')\\b', 'i') : /$^/],
+  ['email', /[\w.+-]+@(?!example\.|noreply\.)[\w-]+\.[\w.-]+/],
+  ['absolute path', /C:[\\/]+Users[\\/]+(?![\\/]*you\b)|\/Users\/(?!you\b)/i],
   ['token or key', /\bsk-[A-Za-z0-9_-]{8,}|\bghp_[A-Za-z0-9]{10,}|\b(api[_-]?key|secret|token)\b\s*[:=]\s*['"][^'"\s]{12,}['"]|AKIA[0-9A-Z]{16}/i],
 ];
 const FILE_RULES = [['data or local file', f => /(^|\/)data\//.test(f) || /\.local\./.test(f)]];

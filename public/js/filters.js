@@ -1,6 +1,6 @@
 /* ---------- search and filter bar ---------- */
 // ---- search / filter (AIG-16): purely in the browser, no extra server calls -----------------------
-// The bar lives outside #app so the 1s refresh never wipes what Rich is typing; typing only re-draws the board.
+// The bar lives outside #app so the 1s refresh never wipes what the owner is typing; typing only re-draws the board.
 state.filters = {};
 const blankFilter = () => ({ q: '', type: '', who: '', sprint: '' });
 // First look at a project in this tab: start from the last view used there (kept in the browser), if it still exists.
@@ -40,7 +40,7 @@ function setFilter(key, v) { curFilter(state.project.slug)[key] = v; renderBoard
 function clearFilter() { setLastView(state.project.slug, ''); state.filters[state.project.slug] = blankFilter(); $('filterbar').dataset.slug = ''; renderBoardOnly(); paintFilterBar(); }
 
 /* ---------- saved views (AIG-121) ---------- */
-// A view is { name, filters } stored on the project (server), so it follows Rich across browsers.
+// A view is { name, filters } stored on the project (server), so it follows the owner across browsers.
 // Which one was used last is per browser, so it lives in localStorage.
 function setLastView(slug, name) { try { name ? localStorage.setItem('aigile.view.' + slug, name) : localStorage.removeItem('aigile.view.' + slug); } catch {} }
 const lastView = slug => { try { return localStorage.getItem('aigile.view.' + slug) || ''; } catch { return ''; } };

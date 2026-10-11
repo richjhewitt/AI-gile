@@ -21,7 +21,7 @@ def('popout', '⧉ Pop out opens a card on its own in a new window (AIG-122)', a
   noErrors(page);
 }, true);
 
-def('owner', 'the board works for any owner name, not just Rich (AIG-103)', async (s, ctx) => {
+def('owner', 'the board works for any owner name, not just the default name (AIG-103)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   check('meta tells the page the owner', (await s.ok('GET', '/api/meta')).owner === 'Sam');
   const c = await mkCard(s, 'alpha', 'Question');
