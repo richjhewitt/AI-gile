@@ -247,8 +247,10 @@ def('watchdm', '🌙 watchman DMs: while quiet only its chat is listed, one mess
   s.cli(['standup', 'trouble', '--done', 'x', '--next', 'y', '--blockers', 'Server is down, nothing else can go on', '--as', 'Lead']);
   await sleep(4500);   // let the wake-up runs finish
   await s.ok('POST', '/api/watchman/round'); await s.ok('POST', '/api/watchman/round');
+  check('its message shows as unread', (await s.ok('GET', '/api/chats'))[0].unread === 1);
   const th = await s.ok('GET', '/api/chats/_watchman');
   check('a real blocker gives one message, not one per round', th.messages.length === 1 && /Server is down/.test(th.messages[0].text));
+  check('opening the chat reads it: no unread badge left (AIG-278)', (await s.ok('GET', '/api/chats'))[0].unread === 0);
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('#dmRail [data-dms]');
   await page.click('#dmRail [data-dms]');
