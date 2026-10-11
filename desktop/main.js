@@ -46,7 +46,7 @@ function savePops() {
 // Where each card's window last was (AIG-188), so one that opens again (AIG-183) comes back on the same screen and spot.
 const PLACES = () => path.join(app.getPath('userData'), 'popout-places.json');
 const places = () => { try { return JSON.parse(fs.readFileSync(PLACES(), 'utf8')); } catch { return {}; } };
-const cardOf = url => (String(url).match(/#\/pop\/[^?#]+/) || [''])[0];
+const cardOf = url => (String(url).match(/#\/pop[^?#]*/) || [''])[0];   // a card (#/pop/…) or an inbox list (#/pop-inbox/…)
 function rememberPlace(url, bounds) {
   const all = places(), k = cardOf(url); if (!k) return;
   delete all[k]; all[k] = bounds;
@@ -60,7 +60,7 @@ function placeFor(url) {
   return on ? b : null;
 }
 function trackPop(w, url) {
-  if (!url.includes('#/pop/')) return;
+  if (!url.includes('#/pop')) return;
   pops.set(w, url); savePops();
   const keep = () => { try { if (!w.isDestroyed()) rememberPlace(url, w.getBounds()); } catch {} };
   w.on('moved', () => { savePops(); keep(); }); w.on('resized', () => { savePops(); keep(); });
@@ -69,7 +69,7 @@ function trackPop(w, url) {
 }
 function reopenPops() {
   let list = []; try { list = JSON.parse(fs.readFileSync(POPS(), 'utf8')); } catch {}
-  for (const p of list) if (String(p.url).startsWith(BASE + '/#/pop/')) {
+  for (const p of list) if (String(p.url).startsWith(BASE + '/#/pop')) {
     const w = new BrowserWindow({ ...chrome(), ...(p.bounds || { width: 560, height: 780 }), alwaysOnTop: true });
     wire(w); trackPop(w, p.url); w.loadURL(p.url);
   }
@@ -83,7 +83,7 @@ function wire(w) {
   // Board links to other sites open in the normal browser; the board's own open in a new app window.
   // A popped-out card stays on top, so its steps stay visible while you work in another app (AIG-122).
   w.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop/'), ...(url.includes('#/pop/') ? placeFor(url) || {} : {}) } };
+    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop'), ...(url.includes('#/pop') ? placeFor(url) || {} : {}) } };
     shell.openExternal(url); return { action: 'deny' };
   });
   w.webContents.on('will-navigate', (e, url) => {

@@ -630,5 +630,6 @@
  "tidy.title": "Vraag de lead kaarten over hetzelfde onderdeel samen te voegen en de titels op te knappen",
  "tidy.asked": "De lead ruimt je stapel op ({id}). Je hoort het als het klaar is.",
  "tidy.already": "De lead is er al mee bezig ({id}).",
- "tidy.toast": "{n} lead(s) gevraagd je stapel op te ruimen"
+ "tidy.toast": "{n} lead(s) gevraagd je stapel op te ruimen",
+ "inbox.popout": "Deze lijst in een eigen venster openen"
 }

@@ -449,3 +449,9 @@ header { flex-wrap: wrap; row-gap: 6px; } header > * { flex-shrink: 0; white-spa
 
 /* 🧹 Tidy my pile (AIG-193) */
 .ib-tidy { margin-left: auto; font-size: 13px; } .ib-tidy + .ib-aiall { margin-left: 6px; }
+
+/* An inbox list popped out (AIG-104): only that list, filling its own window. */
+.ib-popbtn { float: right; padding: 2px 8px; font-size: 13px; }
+body.poplist header, body.poplist #filterbar, body.poplist #updateTop, body.poplist #dmRail, body.poplist #dmPanel { display: none; }
+body.poplist { padding-left: 0; } body.poplist main { padding: 10px 14px; }
+body.poplist .ib-head, body.poplist #ibOnly, body.poplist #ibNext, body.poplist #ibKinds, body.poplist #ibAiBar, body.poplist .ib-popbtn { display: none; }

@@ -207,9 +207,9 @@
       <section class="ib-sec ib-fl" id="ibAi" hidden></section>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <div id="ibEmpty"></div>
-      <section class="ib-sec q" id="ibQ"><h3>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
-      <section class="ib-sec k" id="ibK"><h3>${esc(t('inbox.tasks'))} <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.tasks.sub'))}</span></h3><div class="list"></div></section>
-      <section class="ib-sec t" id="ibT"><h3>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span><button class="ib-tidy" id="ibTidy" title="${esc(t('tidy.title'))}">🧹 ${esc(t('tidy.btn'))}</button><button class="good ib-aiall" id="ibAiAll" hidden title="${esc(t('inbox.aiall.title'))}"></button></h3><div class="list"></div></section>
+      <section class="ib-sec q" id="ibQ"><h3><button class="ib-popbtn" data-poplist="q" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
+      <section class="ib-sec k" id="ibK"><h3><button class="ib-popbtn" data-poplist="k" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.tasks'))} <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.tasks.sub'))}</span></h3><div class="list"></div></section>
+      <section class="ib-sec t" id="ibT"><h3><button class="ib-popbtn" data-poplist="t" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span><button class="ib-tidy" id="ibTidy" title="${esc(t('tidy.title'))}">🧹 ${esc(t('tidy.btn'))}</button><button class="good ib-aiall" id="ibAiAll" hidden title="${esc(t('inbox.aiall.title'))}"></button></h3><div class="list"></div></section>
     </div>`;
     el('ib').addEventListener('click', onClick);
     el('ib').addEventListener('keydown', onKey);
@@ -314,6 +314,10 @@
     if (!el('ib')) skeleton();
     paintTabs();
     // All tab: items grouped by project, in tab order, each group still longest-waiting first (AIG-86).
+    // A popped-out list (AIG-104) shows only its own kind, in a window of its own.
+    const popList = typeof state !== 'undefined' && state.route && state.route.popList;
+    document.body.classList.toggle('poplist', !!popList);
+    if (popList) { only = popList; flick = -1; }
     const shown = tab === 'all' ? [...items].sort((a, b) => tabOrder.indexOf(a.project) - tabOrder.indexOf(b.project)) : items.filter(c => c.project === tab);
     // 🤖 AI passed (AIG-192): its own view, one test at a time; the rest of the inbox steps aside while it's open.
     const aiList = shown.filter(c => isTest(c) && c.aiCheck && c.aiCheck.result === 'pass');
@@ -364,6 +368,8 @@
     }
   }
   function onClick(e) {
+    const pl = e.target.closest('[data-poplist]');
+    if (pl) { window.open('#/pop-inbox/' + pl.dataset.poplist, 'aigile-inbox-' + pl.dataset.poplist, 'width=480,height=760'); return; }
     if (e.target.closest('[data-flick]')) { flick = flick >= 0 ? -1 : 0; paintPage(); return; }
     const fl = e.target.closest('[data-fl]'); if (fl) { flickAct(fl.dataset.fl); return; }
     if (e.target.closest('[data-onlyclear]')) { e.preventDefault(); only = ''; paintPage(); return; }

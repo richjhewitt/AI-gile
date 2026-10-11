@@ -121,6 +121,9 @@ const $ = id => document.getElementById(id);
 /* ---------- router ---------- */
 function parseRoute() {
   if (location.hash === '#/inbox') return { view: 'inbox' };
+  // One inbox list in its own window (AIG-104): q = messages, k = your to-dos, t = to test.
+  const popList = location.hash.match(/^#\/pop-inbox\/([qkt])$/);
+  if (popList) return { view: 'inbox', popList: popList[1] };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/setup') return { view: 'setup' };
   if (location.hash === '#/standups') return { view: 'standups' };
