@@ -32,6 +32,8 @@ aigile team <proj> Pixel --role "Frontend" --model Sonnet --task "AIG-5 new card
 
 Status key: 🔄 working · 👀 in review · ✅ accepted · 🔁 sent back · 💤 idle. Update it when your task changes and set 💤 when you stop. Retired members: set the status to `💤 retired` and they drop off the board.
 
+Your profile picture: the first time you join a team the board gives you a free picture from the owner's picture library. To choose your own, run `aigile avatar <proj> --as NAME` (lists the pictures, their files and who wears them; open a file to look at it), then `aigile avatar <proj> <number or name> --as NAME`.
+
 **3. Move cards as you go.** Pick a card, then `aigile move <proj> <id> doing` (and `assign` it to yourself if it has no assignee). Use `review` when someone on your team is reviewing it. Use `comment` for progress and findings that the owner or the next agent should see. Add cards for work you discover: `aigile add <proj> "title" --type bug --priority high --status todo --desc "..."`.
 
 **Leads launching agents:** record each one with `aigile start <proj> <id> --as <AgentName>` (assigns the card, moves it to `doing`, sets the roster task). That is what shows the owner the "In flight" line. When the agent finishes, hand over with `test`, or `move` it on.
