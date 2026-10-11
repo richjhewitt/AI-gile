@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="css/03-columns-titlebar-dms.css">
 <link rel="stylesheet" href="css/04-rail-chat-folds-queue.css">
 <link rel="stylesheet" href="css/05-ai-testers-evidence.css">
+<link rel="stylesheet" href="css/06-notokens.css">
 </head>
 <body>
 <header>
@@ -22,6 +23,7 @@
   <span id="inboxTop"></span>
   <span id="pokeTop"></span>
   <span id="nightTop"></span>
+  <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" title="No Token Mode">⛔ No Token Mode</button>
   <a class="navlink" href="#/usage" data-i18n="nav.usage">⚡ Usage</a>
   <a class="navlink" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer">⚙️</a>
   <button id="themeBtn" class="theme-pick" onclick="nextTheme()" title="Theme">🖥️ System</button>
@@ -73,6 +75,7 @@
 <script src="js/share.js"></script>
 <script src="js/ask.js"></script>
 <script src="js/pretend.js"></script>
+<script src="js/notokens.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
