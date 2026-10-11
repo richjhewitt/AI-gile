@@ -28,10 +28,30 @@ function queueChips(c) {
   const task = isOwnerTask(c);   // a task has a 🖥️ switch for a job on a server (AIG-320); the kind chip is its mark when on
   return `<span class="q-chips">` + (task && c.server ? '' : `<span class="q-chip" title="${esc(t('queue.kind.' + k))}">${QKINDS[k]} ${esc(t('queue.kind.' + k))}</span>`)
     + (task ? `<button class="q-chip srv ${c.server ? 'on' : ''}" data-server="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.server ? 1 : 0}" title="${esc(t('queue.server.title'))}">🖥️${c.server ? ' ' + esc(t('queue.kind.server')) : ''}</button>` : '')
-    + `<button class="q-chip prio ${p ? 'p-' + p : ''}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
+    + (task && c.server ? openServerBtn(c) : '')
+    + `<button class="q-chip prio${p ? 'p-' + p : ''}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
     + ((c.holds || []).length ? `<span class="q-chip holds" title="${esc(c.holds.join(', '))}">⛓ ${esc(t('queue.holds', { n: c.holds.length }))}</span>` : '')
     + (c.mins ? `<span class="q-chip">⏱ ${esc(t('queue.mins', { n: c.mins }))}</span>` : '') + '</span>';
 }
+// 🖥️ Open server (AIG-374): the names come from Setup > My servers (state.servers, via /api/meta). The card may name one
+// (serverName); one saved server: that one; several: a small picker. The board opens only what Setup saved, by name.
+function openServerBtn(c) {
+  const names = state.servers; if (!names) return '';
+  if (!names.length) return `<a class="q-chip srv-open" href="#/setup">${esc(t('server.setup'))}</a>`;
+  const n = names.find(x => x.toLowerCase() === String(c.serverName || '').toLowerCase()) || (names.length === 1 ? names[0] : '');
+  return n ? `<button class="q-chip srv-open" data-open-server="${esc(n)}">${esc(t('server.open', { name: n }))}</button>`
+    : `<button class="q-chip srv-open" data-pick-server>${esc(t('server.open.pick'))}</button>`;
+}
+async function openServerNamed(name, btn) {
+  try { await api('POST', '/api/servers/open', { name }); if (btn) { const was = btn.textContent; btn.textContent = '✓'; setTimeout(() => { btn.textContent = was; }, 1500); } }
+  catch (err) { alert(err.message); }
+}
+document.addEventListener('click', e => {
+  const o = e.target.closest('[data-open-server]');
+  if (o) { e.preventDefault(); e.stopPropagation(); if (o.closest('#dialog')) closeDialog(); openServerNamed(o.dataset.openServer, o.closest('#dialog') ? null : o); return; }
+  if (e.target.closest('[data-pick-server]')) { e.preventDefault(); e.stopPropagation();
+    openDialog(`<h2>${esc(t('server.pick'))}</h2>` + (state.servers || []).map(n => `<p><button data-open-server="${esc(n)}">${esc(t('server.open', { name: n }))}</button></p>`).join('')); }
+}, true);
 // Click 🔥 to change your priority: none → now → today → whenever → none.
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-prio]'); if (!b) return;

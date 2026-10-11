@@ -81,6 +81,7 @@ function renderSetup() {
     <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
     <div class="f lead-prefs" id="leadPrefs">${leadPrefsHtml()}</div>
     <div class="f lead-prefs" id="runInPrefs">${runInHtml()}</div>
+    <div class="f" id="serversBox">${(srvDraft = null, serversHtml())}</div>
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
     <div class="f" id="pretendBox">${pretendBoxHtml()}</div>
@@ -150,6 +151,32 @@ async function setRunIn(prefs) {
   try { state.setup = await api('POST', '/api/setup', { prefs }); $('runInPrefs').innerHTML = runInHtml(t('setup.saved.short')); }
   catch (e) { setErr('runin-err', e); }
 }
+/* ---------- 🖥️ my servers (AIG-374) ---------- */
+// Name + how you open it (a shortcut/file path or a command). Saved to aigile.local.json; 🖥️ tasks get an Open button.
+let srvDraft = null, srvFound = null;
+function serversHtml(msg = '') {
+  if (!srvDraft) srvDraft = (leadPrefs().servers || []).map(x => ({ ...x }));
+  const rows = srvDraft.map((s, i) => `<div class="srv-row">
+    <input type="text" data-srv="name" data-i="${i}" value="${esc(s.name)}" placeholder="${esc(t('servers.name'))}" onchange="srvEdit(this)">
+    <select data-srv="kind" data-i="${i}" onchange="srvEdit(this)"><option value="path" ${s.kind === 'cmd' ? '' : 'selected'}>${esc(t('servers.kind.path'))}</option><option value="cmd" ${s.kind === 'cmd' ? 'selected' : ''}>${esc(t('servers.kind.cmd'))}</option></select>
+    <input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t(s.kind === 'cmd' ? 'servers.cmd.ph' : 'servers.path.ph'))}" onchange="srvEdit(this)">
+    <button type="button" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">✕</button></div>`).join('');
+  const found = (srvFound || []).filter(f => !srvDraft.some(s => s.value === f.path)).map(f => `<button type="button" class="srv-found" data-name="${esc(f.name)}" data-path="${esc(f.path)}" onclick="srvAddFound(this)">+ ${esc(f.name)}</button>`).join(' ');
+  return `<span>${esc(t('servers.h'))}</span><small class="muted">${esc(t('servers.help'))}</small>${rows}
+    <div><button type="button" onclick="srvAdd()">${esc(t('servers.add'))}</button> <button type="button" id="srvFind" onclick="srvFind()">${esc(t('servers.find'))}</button> ${found}</div>
+    ${srvFound && !srvFound.length ? `<small class="muted">${esc(t('servers.none'))}</small>` : ''}<div class="err" id="servers-err"></div><div class="muted">${esc(msg)}</div>`;
+}
+const srvPaint = msg => { if ($('serversBox')) $('serversBox').innerHTML = serversHtml(msg); };
+async function srvSave() {
+  try { state.setup = await api('POST', '/api/setup', { prefs: { servers: srvDraft.filter(s => s.name.trim() && s.value.trim()) } }); srvPaint(t('setup.saved.short')); }
+  catch (e) { setErr('servers-err', e); }
+}
+function srvEdit(el) { srvDraft[+el.dataset.i][el.dataset.srv] = el.value; if (el.dataset.srv === 'kind') srvPaint(); srvSave(); }
+function srvAdd() { srvDraft.push({ name: '', kind: 'path', value: '' }); srvPaint(); }
+function srvDel(i) { srvDraft.splice(i, 1); srvPaint(); srvSave(); }
+function srvAddFound(b) { srvDraft.push({ name: b.dataset.name, kind: 'path', value: b.dataset.path }); srvPaint(); srvSave(); }
+async function srvFind() { try { srvFound = await api('GET', '/api/servers/shortcuts'); } catch { srvFound = []; } srvPaint(); }
+
 // In 🎨 Look: the command box shows for Other (or the default when that's Other), the warning for anything but background.
 function lookRunIn() {
   const def = (leadPrefs().runIn || 'background'), w = $('look-runin').value || def;

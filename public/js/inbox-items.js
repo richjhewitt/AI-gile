@@ -33,7 +33,7 @@
       <div class="actions">${c.openUrl ? `<button class="primary" data-act="open" data-cmd="${esc(c.startCmd || '')}" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button>` : ''}<button class="good" data-act="accept">${esc(t('card.accept'))}</button><button data-act="wait" title="${esc(t('inbox.t.wait.title'))}">${esc(t('card.wait'))}</button>
       <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">${esc(t('inbox.t.sendback'))}</a></div>`;
   }
-  const sigOf = c => !isTest(c) ?[c.title, c.blocked, c.server, shownAsk(c).at, shownAsk(c).text, i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.aiCheck && c.aiCheck.at].join('|');
+  const sigOf = c => !isTest(c) ?[c.title, c.blocked, c.server, c.serverName, (state.servers || []).join(","), shownAsk(c).at, shownAsk(c).text, i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.aiCheck && c.aiCheck.at].join('|');
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">
