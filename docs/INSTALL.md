@@ -34,15 +34,21 @@ New to Claude Code? Start at **What you need** below.
 - **Claude Code**, the AI agent that does the work for each project. Install it from <https://claude.com/claude-code> and sign in once (open PowerShell, type `claude`, and follow the steps).
   AI-gile starts it for a team when there is work to do.
 - **Git** (optional but recommended): from <https://git-scm.com>. AI-gile works without it, but then teams can't commit,
-  **Find my projects** can't show your history, and a zip install can't update itself.
+  and **Find my projects** can't show your history.
 
 ## 1. Get AI-gile
 
-The repo is private for now, so you need an invite to it (ask Rich), or a zip of it. With a zip there are no
-automatic updates: ask for a new zip when you want the latest version.
+Rich sends you a zip of AI-gile.
 
-- **With git:** `git clone https://github.com/richjhewitt/AI-gile.git` in the folder where you keep your projects
-- **With a zip:** unzip it next to your projects, e.g. `C:\Users\you\Projects\AI-gile` (a folder name with spaces is fine)
+1. Save the zip, right-click it and choose **Extract All**. Put the result next to your projects, e.g.
+   `C:\Users\you\Projects\AI-gile` (a folder name with spaces is fine).
+2. Check that the folder you open has `start-aigile.bat` directly inside it, not one more folder down.
+
+A zip doesn't update itself: ask Rich for a new zip when you want the latest version. Copy it over the old folder; your
+settings (`aigile.local.json`) and board data (`data` folder) stay.
+
+If Rich invites you to the private GitHub repo instead, run `git clone https://github.com/richjhewitt/AI-gile.git` in
+your projects folder; then the board can update itself (see **Updating**).
 
 ## 2. Start it
 
@@ -96,7 +102,7 @@ This adds an **AI-gile** shortcut to your Desktop and Start menu. (Run it from P
 
 ## Updating
 
-When there is a new version, the board shows an **⬆ Update** pill. One click updates and restarts it.
+With a zip, see step 1. With a git clone, when there is a new version the board shows an **⬆ Update** pill. One click updates and restarts it.
 It never updates while a team is working, and never over changes you haven't saved.
 
 ## If something goes wrong
