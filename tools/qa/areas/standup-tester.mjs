@@ -15,7 +15,7 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
   await page.click('button:has-text("📣 Stand-up")');
   await page.waitForFunction(() => location.hash === '#/standups');
   const a = await cardsOf('alpha');
-  check('one project: stand-up card in For the team, marked', a.length === 1 && a[0].status === 'team' && a[0].title === '📣 Stand-up' && !!a[0].standup.at && a[0].createdBy === 'Rich', a);
+  check('one project: stand-up card in For the team, marked', a.length === 1 && a[0].status === 'team' && a[0].title === '📣 Stand-up' && !!a[0].standup.at && a[0].createdBy === 'Owner', a);
   check('other projects left alone', !(await cardsOf('beta')).length && !(await cardsOf('delta')).length);
   let out = '';
   for (let i = 0; i < 40 && !out.includes('project alpha'); i++) { await sleep(250); try { out = fs.readFileSync(s.wakeOut, 'utf8'); } catch {} }
@@ -37,7 +37,7 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
   // ---- 134: the CLI report ----
   const id = a[0].id;
   const rep = (who, extra) => s.cli(['standup', 'alpha', '--done', 'Built the thing', '--next', 'Test the thing', ...extra, '--as', who]);
-  const r1 = rep('Forge', ['--blockers', `Need the API key from Rich (${id})`]);
+  const r1 = rep('Forge', ['--blockers', `Need the API key from Owner (${id})`]);
   check('Forge answers; Pixel still to answer', r1.code === 0 && /Still to answer: Pixel/.test(r1.out) && !/Old/.test(r1.out), r1);
   const r2 = rep('Pixel', ['--blockers', 'none']);
   check('everyone answered (retired member not needed)', r2.code === 0 && /Everyone has answered/.test(r2.out), r2);
@@ -46,8 +46,8 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
   rep('Pixel', ['--blockers', 'none']);
   check('answering twice replaces, not adds', (await getCard(s, 'alpha', id)).standup.reports.length === 2);
   check('blockers are optional (default none)', s.cli(['standup', 'alpha', '--done', 'x', '--next', 'y', '--as', 'Pixel']).code === 0 && (await getCard(s, 'alpha', id)).standup.reports.find(r => r.name === 'Pixel').blockers === 'none');
-  rep('Pixel', ['--needs', 'Rich to test the export (AIG-9)', '--blockers', 'none (other work goes on)']);   // AIG-191
-  check('--needs is stored apart from blockers', (await getCard(s, 'alpha', id)).standup.reports.find(r => r.name === 'Pixel').needs === 'Rich to test the export (AIG-9)');
+  rep('Pixel', ['--needs', 'Owner to test the export (AIG-9)', '--blockers', 'none (other work goes on)']);   // AIG-191
+  check('--needs is stored apart from blockers', (await getCard(s, 'alpha', id)).standup.reports.find(r => r.name === 'Pixel').needs === 'Owner to test the export (AIG-9)');
   check('--as is required', s.cli(['standup', 'alpha', '--done', 'x', '--next', 'y']).code === 1);
   check('--done is required', s.cli(['standup', 'alpha', '--next', 'y', '--as', 'Forge']).code === 1);
   s.cli(['standup', 'beta', '--done', 'Shipped it', '--next', 'Rest', '--as', 'Solo']);
@@ -59,7 +59,7 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
   const html = await rp.innerHTML('.su');
   check('blockers box comes first, in red, with a link to the card', html.indexOf('su-blockers') < html.indexOf('su-proj') && (await rp.textContent('.su-blockers')).includes('Need the API key') && (await rp.getAttribute('.su-blockers a', 'href')) === `#/p/alpha/${id}`);
   check('only real blockers are listed (not "none")', (await rp.locator('.su-blockers li').count()) === 1);
-  check('needs-you answers are listed apart, in amber (AIG-191)', (await rp.textContent('.su-needs')).includes('Rich to test the export'));
+  check('needs-you answers are listed apart, in amber (AIG-191)', (await rp.textContent('.su-needs')).includes('Owner to test the export'));
   const alphaTxt = await rp.textContent('.su-proj:has-text("Alpha")');
   check('per person: done, next, blockers', ['Forge', 'Pixel', 'Built the thing', 'Test the thing', 'Need the API key'].every(t => alphaTxt.includes(t)) && /2 of 2 answered/.test(alphaTxt) && !alphaTxt.includes('Old'), alphaTxt);
   check('blocker text is red', (await rp.locator('.su-red').count()) === 1);

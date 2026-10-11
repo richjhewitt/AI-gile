@@ -146,10 +146,10 @@ function parseRoute() {
 }
 
 /* ---------- refresh and render loop ---------- */
-// The 1s poll must never wipe out what Rich is typing or a drag in progress.
+// The 1s poll must never wipe out what the owner is typing or a drag in progress.
 // busy() = a dialog is open, a card is being edited, a drag is running, a field has focus,
 // or any field in the panel holds unsent text. While busy we skip re-rendering (data is re-fetched
-// each tick and renders as soon as Rich is done, because the signature differs).
+// each tick and renders as soon as the owner is done, because the signature differs).
 function busy() {
   if (state.dragging || state.editing || $('dialog').firstChild) return true;
   const a = document.activeElement;
@@ -202,7 +202,7 @@ async function refresh(force) {
   }
   if (!force && state.dragging) return;
   if (!force && busy()) {
-    // Keep the board behind moving; only hold the panel/dialog Rich is using.
+    // Keep the board behind moving; only hold the panel/dialog the owner is using.
     if (sig !== state.lastBoardSig) { state.lastBoardSig = sig; renderBoardOnly(); }
     if (sig !== state.lastSig) { $('live').className = 'live paused'; $('live').textContent = t('live.paused'); }
     return;

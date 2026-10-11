@@ -13,7 +13,7 @@ def('quietinbox', 'going quiet hides tests and tasks and caps questions at 3; I\
     await sleep(15);
   }
   await mkCard(s, 'qi', 'Qi task', { status: 'doing', assignee: 'Pixel' });
-  await s.ok('PATCH', '/api/projects/qi/cards/QIX-6', { assignee: 'Rich' });
+  await s.ok('PATCH', '/api/projects/qi/cards/QIX-6', { assignee: 'Owner' });
   await say(s, 'qi', 'QIX-6', 'Pixel', 'do this');
   await mkCard(s, 'qi', 'Qi test', { status: 'verify', testSteps: 'try it' });
   const page = await openPage(ctx, '#/inbox');
@@ -52,7 +52,7 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   check('online clears it', (await s.ok('GET', '/api/projects/sleepy')).cards && (await s.ok('GET', '/api/projects')).find(p => p.slug === 'sleepy').attention === null);
   const { attention } = require('../../../lib/store.js');
   const old = new Date(Date.now() - 11 * 60e3).toISOString(), fresh = new Date().toISOString();
-  const proj = at => ({ cards: [{ status: 'team', createdBy: '', created: old, updated: old, comments: [{ author: 'Rich', text: 'x', at }] }] });
+  const proj = at => ({ cards: [{ status: 'team', createdBy: '', created: old, updated: old, comments: [{ author: 'Owner', text: 'x', at }] }] });
   check('online, comment unanswered 10+ min = stuck', attention(proj(old), { online: true })?.kind === 'stuck');
   check('online, fresh comment = fine', attention(proj(fresh), { online: true }) === null);
   noErrors(page);
@@ -70,7 +70,7 @@ def('wakenews', 'agent comments and card moves start no run; an owner comment do
   await s.ok('PATCH', `/api/projects/newsy/cards/${c.id}`, { status: 'review' });
   await sleep(600);
   check('agent comment and card moves start no run', starts() === 0, starts());
-  await say(s, 'newsy', c.id, 'Rich', 'real news');
+  await say(s, 'newsy', c.id, 'Owner', 'real news');
   await sleep(600);
   check('owner comment starts a run', starts() === 1, starts());
   await idle();

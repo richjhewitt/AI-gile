@@ -44,7 +44,7 @@
       s.querySelector('.ib-btn').onclick = e => { const b = e.target.closest('[data-only]'); IB.only = b ? b.dataset.only : ''; if (b) { IB.tab = 'all'; IB.kindFilter = ''; } if (el('ib')) IB.paintPage(); };
       const b = el('ibAlerts'); if (b) b.onclick = toggleAlerts;
     }
-    // Everything waiting on Rich; the desktop app turns this count into its taskbar badge (AIG-76).
+    // Everything waiting on the owner; the desktop app turns this count into its taskbar badge (AIG-76).
     // Going quiet (AIG-227): no count, so no purple diamond on the taskbar until the morning.
     const title = q + k + te && !document.documentElement.hasAttribute('data-night') ? `(${q + k + te}) ${baseTitle}` : baseTitle;
     if (document.title !== title) document.title = title;

@@ -7,7 +7,7 @@ const require = createRequire(import.meta.url);
 
 // Where a team runs (AIG-153): background stays as it was; a terminal, VS Code or your own command opens a window
 // instead (AIGILE_NO_WINDOWS: only logged here), once per 15 minutes for comments and always for ▶ Wake.
-const runinLocal = path.join(tmp('runinset'), 'local.json'); fs.writeFileSync(runinLocal, '{ "owner": "Rich" }');
+const runinLocal = path.join(tmp('runinset'), 'local.json'); fs.writeFileSync(runinLocal, '{ "owner": "Owner" }');
 def('runin', 'where a team runs: background, terminal, VS Code or your own command, per project and in Setup', async (s) => {
   const folder = tmp('runin'), log = () => { try { return fs.readFileSync(path.join(s.data, 'logs', 'run.log'), 'utf8'); } catch { return ''; } };
   await mkProject(s, 'Run', 'RUN', { path: folder });
@@ -17,8 +17,8 @@ def('runin', 'where a team runs: background, terminal, VS Code or your own comma
   const w = await s.ok('POST', '/api/projects/run/wake');
   check('Wake opens a terminal window', w.opened === 'terminal' && !w.running && /opened \(terminal\)/.test(log()), w);
   const ps = fs.readFileSync(path.join(s.data, 'logs', 'run.window.ps1'), 'utf8');
-  check('the window runs the agent with the prompt and --continue', /--continue 'Rich commented on the AI-gile board/.test(ps) && ps.includes(folder), ps);
-  const c = await mkCard(s, 'run', 'hi'); await say(s, 'run', c.id, 'Rich', 'hello');
+  check('the window runs the agent with the prompt and --continue', /--continue 'Owner commented on the AI-gile board/.test(ps) && ps.includes(folder), ps);
+  const c = await mkCard(s, 'run', 'hi'); await say(s, 'run', c.id, 'Owner', 'hello');
   check('a comment soon after does not open another', log().match(/opened/g).length === 1, log());
   const pr = (await s.ok('GET', '/api/projects/run')).presence;
   check('presence says it was opened, not running', pr.opened && pr.opened.where === 'terminal' && !pr.running, pr);

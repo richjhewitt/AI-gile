@@ -1,10 +1,10 @@
-# A message for Mike
+# A message for a designer friend
 
 Copy and send with `current-icon.png` and `current-icon-waiting.png` attached:
 
 ---
 
-Hey Mike! Quick fun one if you've got a minute, no pressure at all.
+Hey! Quick fun one if you've got a minute, no pressure at all.
 
 I've been building a little app called **AI-gile**: a to-do board (like Trello) where AI helpers do the
 coding work and I just say yes/no and test what they make. It needs a slightly better icon.

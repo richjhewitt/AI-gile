@@ -9,7 +9,7 @@ def('inbox', 'top-bar counts, project tabs, inline answer, task Done', async (s,
   await mkCard(s, 'alpha', 'Alpha question', { status: 'doing', assignee: 'Forge' });
   await say(s, 'alpha', 'ALP-1', 'Forge', 'which colour?', { needsYou: true });
   await mkCard(s, 'alpha', 'Alpha task', { status: 'doing', assignee: 'Pixel' });
-  await s.ok('PATCH', '/api/projects/alpha/cards/ALP-2', { assignee: 'Rich' });
+  await s.ok('PATCH', '/api/projects/alpha/cards/ALP-2', { assignee: 'Owner' });
   await say(s, 'alpha', 'ALP-2', 'Pixel', 'please add the key');
   await mkCard(s, 'alpha', 'Alpha test', { status: 'verify', testSteps: 'try it' });
   await mkCard(s, 'beta', 'Beta question', { status: 'doing' });
@@ -134,8 +134,8 @@ def('blocked', 'a blocked card shows in the inbox with the reason; his answer cl
   await page.waitForSelector('.ib-item.blk', { timeout: 7000 }).catch(() => {});
   const t = await page.textContent('.ib-item.blk').catch(() => '');
   check('inbox shows it as Blocked with the reason', /Blocked/.test(t) && /need the API key/.test(t), t);
-  await say(s, 'gamma', 'GAM-1', 'Rich', 'key is in the vault');
-  check('Rich answering clears the block', (await s.ok('GET', '/api/projects/gamma')).cards[0].blocked === false);
+  await say(s, 'gamma', 'GAM-1', 'Owner', 'key is in the vault');
+  check('Owner answering clears the block', (await s.ok('GET', '/api/projects/gamma')).cards[0].blocked === false);
   check('and it leaves the inbox', !(await s.ok('GET', '/api/inbox')).some(c => c.id === 'GAM-1'));
   noErrors(page);
 }, true);

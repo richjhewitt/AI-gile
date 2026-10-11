@@ -21,8 +21,8 @@ def('api', 'projects/cards CRUD, comment/verdict/taskdone/poke, updates feed, in
   const up = await s.ok('PATCH', '/api/projects/alpha/cards/ALP-1', { priority: 'high', sprint: 'S1' });
   check('card patched', up.priority === 'high' && up.sprint === 'S1');
 
-  const cm = await say(s, 'alpha', 'ALP-1', 'Rich', 'hello team');
-  check('Rich comment moves card to team', cm.status === 'team' && cm.prevStatus === 'doing', [cm.status, cm.prevStatus]);
+  const cm = await say(s, 'alpha', 'ALP-1', 'Owner', 'hello team');
+  check('Owner comment moves card to team', cm.status === 'team' && cm.prevStatus === 'doing', [cm.status, cm.prevStatus]);
   const bot = await say(s, 'alpha', 'ALP-1', 'Forge', 'a question', { needsYou: true });
   check('team question flags needsYou', bot.needsYou === true);
 
@@ -36,7 +36,7 @@ def('api', 'projects/cards CRUD, comment/verdict/taskdone/poke, updates feed, in
   check('sendback -> team', sb.status === 'team' && sb.prevStatus === 'verify');
 
   const c4 = await mkCard(s, 'alpha', 'Task card', { status: 'doing', assignee: 'Pixel' });
-  await s.ok('PATCH', `/api/projects/alpha/cards/${c4.id}`, { assignee: 'Rich' });
+  await s.ok('PATCH', `/api/projects/alpha/cards/${c4.id}`, { assignee: 'Owner' });
   let inbox = await s.ok('GET', '/api/inbox');
   check('inbox has the question', inbox.some(c => c.id === 'ALP-1'));
   check('inbox has the task', inbox.some(c => c.id === c4.id));
@@ -64,7 +64,7 @@ def('api', 'projects/cards CRUD, comment/verdict/taskdone/poke, updates feed, in
 
   // updates feed
   const peek = await s.ok('GET', '/api/projects/alpha/updates');
-  check('updates lists Rich items', peek.cards.some(c => c.id === 'ALP-1') && peek.cards.some(c => c.id === c6.id && c.items[0].kind === 'poke'));
+  check('updates lists Owner items', peek.cards.some(c => c.id === 'ALP-1') && peek.cards.some(c => c.id === c6.id && c.items[0].kind === 'poke'));
   check('accept alone is not news', !peek.cards.some(c => c.id === c2.id));
   check('peek does not mark', (await s.ok('GET', '/api/projects/alpha/updates')).cards.length === peek.cards.length);
   await s.ok('GET', '/api/projects/alpha/updates?mark=1');
@@ -89,8 +89,8 @@ def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
   const n1 = await mkCard(s, 'alpha', 'Plain todo', { status: 'todo' });
   const b1 = await mkCard(s, 'alpha', 'Bug todo', { status: 'todo', type: 'bug' });
   const d1 = await mkCard(s, 'alpha', 'In progress', { status: 'doing' });
-  const t1 = await mkCard(s, 'alpha', 'Rich said', { status: 'doing' });
-  await say(s, 'alpha', t1.id, 'Rich', 'please look');
+  const t1 = await mkCard(s, 'alpha', 'Owner said', { status: 'doing' });
+  await say(s, 'alpha', t1.id, 'Owner', 'please look');
   const nx = a('next', 'alpha');
   const pos = id => nx.out.indexOf(id + ' ');
   check('next exits 0', nx.code === 0, nx.err);
@@ -98,21 +98,21 @@ def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
   check('next marks the first with >>', /^ {2}>> ALP-4/m.test(nx.out), nx.out);
 
   const t = a('test', 'alpha', d1.id, 'steps to follow', '--as', 'Forge');
-  check('test hands to Rich', t.code === 0 && /handed to Rich/.test(t.out), t);
+  check('test hands to Owner', t.code === 0 && /handed to Owner/.test(t.out), t);
   const cd = await getCard(s, 'alpha', d1.id);
   check('test sets verify + steps', cd.status === 'verify' && cd.testSteps === 'steps to follow');
   const k = a('task', 'alpha', n1.id, 'add the key', '--as', 'Forge');
-  check('task goes to Rich', k.code === 0 && /task for Rich on ALP-1/.test(k.out), k);
-  check('task card is assigned to Rich', (await getCard(s, 'alpha', n1.id)).assignee === 'Rich');
+  check('task goes to Owner', k.code === 0 && /task for Owner on ALP-1/.test(k.out), k);
+  check('task card is assigned to Owner', (await getCard(s, 'alpha', n1.id)).assignee === 'Owner');
   const inb = a('inbox');
   check('cli inbox lists verify and task', inb.out.includes(d1.id) && inb.out.includes(n1.id), inb.out);
   const br = a('brief', 'alpha');
-  check('brief has the digest', br.code === 0 && /^Alpha \(alpha\):/.test(br.out) && /Waiting on Rich/.test(br.out) && /For the team/.test(br.out), br.out);
+  check('brief has the digest', br.code === 0 && /^Alpha \(alpha\):/.test(br.out) && /Waiting on Owner/.test(br.out) && /For the team/.test(br.out), br.out);
   check('list/show work', a('list', 'alpha').out.includes('Bug todo') && a('show', 'alpha', b1.id).out.includes('Conversation (0)'));
   check('add via cli', /^added ALP-5/.test(a('add', 'alpha', 'cli card', '--type', 'bug', '--desc', 'd').out));
   check('edit via cli', /^updated/.test(a('edit', 'alpha', 'ALP-5', '--title', 'renamed').out));
   check('comment via cli', /commented on ALP-5/.test(a('comment', 'alpha', 'ALP-5', 'hi', '--as', 'Forge').out));
-  check('ask via cli', /asked Rich/.test(a('ask', 'alpha', 'ALP-5', 'why?', '--as', 'Forge').out) && (await getCard(s, 'alpha', 'ALP-5')).needsYou === true);
+  check('ask via cli', /asked Owner/.test(a('ask', 'alpha', 'ALP-5', 'why?', '--as', 'Forge').out) && (await getCard(s, 'alpha', 'ALP-5')).needsYou === true);
   check('block/unblock', /^blocked/.test(a('block', 'alpha', 'ALP-5', '--as', 'Forge').out) && /^unblocked/.test(a('unblock', 'alpha', 'ALP-5').out));
   check('missing --as is an error', a('comment', 'alpha', 'ALP-5', 'x').code === 1);
 
@@ -122,22 +122,22 @@ def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
   const silent = a('updates', 'beta', '--hook');
   check('updates --hook is silent with nothing new', silent.code === 0 && silent.out === '' && silent.err === '', silent);
   const quiet = a('updates', 'beta');
-  check('plain updates says nothing new', quiet.out === 'Nothing new from Rich.', quiet.out);
-  await say(s, 'beta', bc.id, 'Rich', 'news!');
+  check('plain updates says nothing new', quiet.out === 'Nothing new from Owner.', quiet.out);
+  await say(s, 'beta', bc.id, 'Owner', 'news!');
   const sh = a('updates', 'beta', '--stop-hook');
   let j = null; try { j = JSON.parse(sh.out); } catch {}
   check('--stop-hook prints block JSON', j && j.decision === 'block' && /news!/.test(j.reason), sh.out);
   check('--stop-hook silent once seen', a('updates', 'beta', '--stop-hook').out === '');
-  await say(s, 'beta', bc.id, 'Rich', 'again');
+  await say(s, 'beta', bc.id, 'Owner', 'again');
   const hk = a('updates', 'beta', '--hook');
   check('--hook speaks when there is news', /AI-gile board \(beta\)/.test(hk.out) && /again/.test(hk.out), hk.out);
 
   // move done
   const m1 = await mkCard(s, 'beta', 'to close', { status: 'todo' });
   const refused = a('move', 'beta', m1.id, 'done');
-  check('move done refused outside team', refused.code === 1 && /only Rich/.test(refused.err), refused);
+  check('move done refused outside team', refused.code === 1 && /only Owner/.test(refused.err), refused);
   check('card was not moved', (await getCard(s, 'beta', m1.id)).status === 'todo');
-  await say(s, 'beta', m1.id, 'Rich', 'fyi');
+  await say(s, 'beta', m1.id, 'Owner', 'fyi');
   const okd = a('move', 'beta', m1.id, 'done');
   check('move done allowed from team', okd.code === 0 && /moved/.test(okd.out), okd);
   check('card is done', (await getCard(s, 'beta', m1.id)).status === 'done');

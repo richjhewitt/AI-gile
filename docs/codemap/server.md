@@ -25,7 +25,7 @@
 | `lib/usage.js` | Token usage per project, read from the agents' local session logs; `runTokens` sums one background run (AIG-266): a `=== tokens` line after `=== exited` in the team log, a row in `data/logs/_runs.jsonl`, a table on the Usage page via `GET /api/usage/runs`; the row also has cards worked on (`cardsWorked` in presence.js), models, fresh/cache-write/read/out tokens, Read count + result chars, Grep count (AIG-299); QA area `runtokens` (team-quiet) |
 | `aigile.js` | The CLI entry: picks the command and runs it. `lib/cli/core.js` (settings, arg parsing, `api()`, card text, `nextList`), `help.js` (`HELP`), `cmds-read.js`, `cmds-cards.js`, `cmds-team.js` (one function per command) |
 | `statusline.js` | Status line script that posts plan usage and the session folder to `/api/limits` |
-| `desktop/` | Optional Electron app: `main.js` starts the server if it's down and shows the board in one window (outside links open in the browser); `make-shortcut.ps1` adds Desktop/Start menu shortcuts; `icon.png`/`icon.ico`, and `icon-waiting.png` (purple diamond) while anything waits on Rich (the page title count) |
+| `desktop/` | Optional Electron app: `main.js` starts the server if it's down and shows the board in one window (outside links open in the browser); `make-shortcut.ps1` adds Desktop/Start menu shortcuts; `icon.png`/`icon.ico`, and `icon-waiting.png` (purple diamond) while anything waits on the owner (the page title count) |
 
 ## API routes
 All in `lib/routes/*.js` (patterns are the regexes there). The list with payloads is in the README's API table. Unknown `/api/*` paths return 404 JSON from `server.js`. A handler may return a promise (the DM routes talk to the relay).
@@ -41,6 +41,6 @@ All in `lib/routes/*.js` (patterns are the regexes there). The list with payload
 - `avatarsDir`: the agents' picture library folder (AIG-150; empty: `data/avatars`).
 - `dmRelay`: default DM relay address (`AIGILE_RELAY` overrides; `POST /api/dms/settings` can set one too).
 - `WAYS-OF-WORKING.md` (repo root) is the owner's private rules for every team, git-ignored; a new install gets `docs/starter/WAYS-OF-WORKING.md` with the name filled in (`ensureWays` in lib/setup.js).
-- `owner`: the board's human, whose comments wake teams and who gets questions and tests (default Rich; `AIGILE_OWNER` overrides). Code calls this person `isRich()` / `me()`.
+- `owner`: the board's human, whose comments wake teams and who gets questions and tests (default "Owner"; `AIGILE_OWNER` overrides). Code calls this person `isRich()` / `me()`.
 - `lead`, `night` (AIG-235): what kind of lead, set by the Setup questionnaire or its switches (`prefs` in `GET`/`POST /api/setup`, `prefsOf`/`setPrefs` in lib/setup.js): `lead.tidyCards` (AIG-234), `lead.chatty` (default for new projects; `chattyAll` also sets every active project), `lead.go` (`ask`/`small`: one rule line in `aigile brief`), `night.watchAll` (false: going quiet ticks no project for the watchman; an empty `watch` list means none). Dev words explained stays per browser (`aigile.explain`).
 - `runs` (AIG-153): `where` (background, terminal, vscode, other) and `cmd` (the Other command, `{folder}` filled in): where every team runs unless its project picks its own in 🎨 Look (`p.runIn`, `p.runCmd`). Saved through `prefs.runIn` / `prefs.runCmd` in `POST /api/setup`.

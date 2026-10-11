@@ -18,7 +18,7 @@
     --accent: #6d93ff; --done: #34c77b; --warn: #f0a33a; --danger: #f06262; --you: #b57cff;
     --shadow: 0 1px 2px rgba(0,0,0,.4);
 }
-/* Night mode (Rich went quiet): dim, warm, no blue light. */
+/* Night mode (the owner went quiet): dim, warm, no blue light. */
 :root[data-night] {
   --bg: #0d0906; --panel: #15100b; --col: #110c08; --text: #c9a27e; --muted: #7d6450; --line: #2a1f16;
   --accent: #a8622c; --done: #7f8a3a; --warn: #b8782e; --danger: #a8483a; --you: #8f5a4a;

@@ -1,4 +1,4 @@
-// AI-gile: tiny local board for Rich + the AI dev teams.
+// AI-gile: tiny local board for the owner + the AI dev teams.
 // Zero dependencies. Data lives in data/<slug>.json (one file per project).
 // Run: node server.js   ->   http://localhost:4321
 // This file is the http plumbing and the wiring; the logic lives in lib/ (see docs/CODEMAP.md).

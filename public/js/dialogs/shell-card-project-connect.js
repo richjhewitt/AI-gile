@@ -12,7 +12,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog'
 /* ---------- new card ---------- */
 function newCard(preset = {}) {
   const bug = preset.type === 'bug';
-  // Rich's new cards go straight to the team (AIG-51); the + on a column still picks that column.
+  // The owner's new cards go straight to the team (AIG-51); the + on a column still picks that column.
   const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: 'team', assignee: '', sprint: '', ...preset };
   Attach.clear('new:' + slug());
   openDialog(`<h2>${esc(bug ? t('board.raisebug') : t('dlg.newcard'))}</h2>

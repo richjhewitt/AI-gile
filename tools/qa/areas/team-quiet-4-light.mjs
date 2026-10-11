@@ -20,7 +20,7 @@ def('light', '🪶 Pro-friendly runs: comment runs on the smaller model, every 5
   check('after 5 runs, a fresh conversation (no --continue)', !/--continue/.test(out) && /\(fresh\)/.test(fs.readFileSync(path.join(s.data, 'logs', 'lite.log'), 'utf8')), out);
   out = await wake();
   check('then it carries on with that conversation', /--continue/.test(out), out);
-}, false, (() => { const f = path.join(tmp('liteset'), 'local.json'); fs.writeFileSync(f, '{ "owner": "Rich" }'); return { AIGILE_LOCAL: f }; })());   // its own settings file: never the real one
+}, false, (() => { const f = path.join(tmp('liteset'), 'local.json'); fs.writeFileSync(f, '{ "owner": "Owner" }'); return { AIGILE_LOCAL: f }; })());   // its own settings file: never the real one
 
 def('tester', '🤖 Test these for me: the button starts one AI tester run over unchecked tests; the watchman starts one at night (AIG-291, AIG-292)', async (s, ctx) => {
   await mkProject(s, 'Tst', 'TST', { path: tmp('tst') });
