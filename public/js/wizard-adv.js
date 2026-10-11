@@ -66,6 +66,7 @@ async function advSave() {
   try {
     state.setup = await api('POST', '/api/setup', body);
     if (WA.screen === 'lead') setExplain(WA.explain);
+    if (WA.screen === 'help') helpApply(WA.p.helpLevel);
     return true;
   } catch (e) { setErr('wz-err', e); return false; }
 }
