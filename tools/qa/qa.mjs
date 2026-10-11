@@ -2,6 +2,7 @@
 //   node tools/qa/qa.mjs [area ...]     (no args = all areas; --list shows them; QA_PORT changes the port)
 // The page areas need playwright: `cd tools/qa && npm i`, or it falls back to the shared install (QA_PLAYWRIGHT).
 // This file is the runner only. Shared helpers: lib.mjs. The areas themselves: areas/*.mjs (each calls def()).
+import './hide-windows.mjs';   // no terminal windows popping up (AIG-391)
 import fs from 'node:fs';
 import { areas, CHROME, loadPw, startServer, check, sleep, setArea, getFailures } from './lib.mjs';
 
