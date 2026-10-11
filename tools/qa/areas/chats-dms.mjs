@@ -334,7 +334,11 @@ def('teamnews', 'DMs hold only the owner and the lead; ðŸ“œ Team news pop-o
   await say(s, 'alpha', q.id, 'Forge', 'FOLDNOTE handover: folded AIG-9 into this');
   await say(s, 'alpha', q.id, 'Owner', 'JSON please');
   await s.ok('POST', '/api/projects/alpha/cards', { title: 'ðŸ’¬ Quick idea', description: 'Quick idea text', quick: true });
+  const t1 = await mkCard(s, 'alpha', 'A test for you', { testSteps: '- click it' });
+  await say(s, 'alpha', t1.id, 'Forge', 'Folded in AIG-9');
+  await s.ok('PATCH', `/api/projects/alpha/cards/${t1.id}`, { status: 'verify', needsYou: true });
   const chat = await s.ok('GET', '/api/chats/alpha');
+  check('a test waiting in verify is not in the DM (AIG-370)', !chat.messages.some(m => m.card === t1.id) && !chat.open.some(o => o.id === t1.id), chat.open);
   const texts = chat.messages.map(m => m.text).join('|');
   check('lead chat keeps the question and the owner reply', /M3U or JSON/.test(texts) && /JSON please/.test(texts), texts);
   check('lead chat leaves out a fold / handover comment', !/FOLDNOTE/.test(texts), texts);
