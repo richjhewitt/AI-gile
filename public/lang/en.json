@@ -375,6 +375,7 @@
  "dlg.find.keychanged": "(you wanted {want}, it was taken)",
  "dlg.find.none": "No folders found there.",
  "dlg.find.setup": "Set each folder up for its team (notes, hooks, permissions)",
+ "dlg.find.starter": "Make starter cards from the README, TODOs and git history (a plain script, no AI, no tokens)",
  "dlg.find.import": "Add ticked projects",
  "dlg.find.after": "Each team reads the board and its folder the first time you wake it.",
  "setup.h": "⚙️ Setup",

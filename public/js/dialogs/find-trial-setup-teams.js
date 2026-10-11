@@ -27,6 +27,7 @@ async function findProjectsDialog(dir) {
     <input type="text" class="fp-name" value="${esc(f.name)}" aria-label="${esc(t('dlg.find.name'))}"><input type="text" class="fp-key" value="${esc(f.known ? '' : keyFor(f.name))}" maxlength="6" oninput="checkFoundKeys()" aria-label="${esc(t('dlg.find.key'))}">
     <span class="muted">${esc(info(f))}${f.readme ? ' · ' + esc(f.readme) : ''}</span></div>`).join('') : esc(t('dlg.find.none'));
   $('fp-acts').innerHTML = `<label class="chk"><input type="checkbox" id="fp-connect" checked> ${esc(t('dlg.find.setup'))}</label>
+    <label class="chk"><input type="checkbox" id="fp-starter" checked> ${esc(t('dlg.find.starter'))}</label>
     <button class="primary" onclick="importFound()">${esc(t('dlg.find.import'))}</button><button onclick="closeDialog()">${esc(t('common.close'))}</button>`;
 }
 // A key typed twice (or one an existing project has) is marked at once, not changed silently after Add (AIG-331).
@@ -50,6 +51,7 @@ async function importFound() {
       const p = await api('POST', '/api/projects', body).catch(e => /already used/.test(e.message) ? api('POST', '/api/projects', { ...body, key: '' }) : Promise.reject(e));
       if ($('fp-connect').checked) await api('POST', `/api/projects/${p.slug}/connect`, { path: f.path });
       else await api('PATCH', '/api/projects/' + p.slug, { path: f.path });
+      if ($('fp-starter').checked) await api('POST', `/api/projects/${p.slug}/starter`, { lang: i18n.lang }).catch(() => {});   // no AI (AIG-340)
       done.push('✅ ' + p.name + ' (' + p.key + ')' + (body.key && p.key !== body.key.toUpperCase() ? ' ' + t('dlg.find.keychanged', { want: body.key.toUpperCase(), key: p.key }) : ''));
     } catch (e) { done.push('⚠️ ' + f.name + ': ' + e.message); }
   }

@@ -375,6 +375,7 @@
  "dlg.find.keychanged": "(je wilde {want}, die was al in gebruik)",
  "dlg.find.none": "Daar zijn geen mappen gevonden.",
  "dlg.find.setup": "Zet elke map klaar voor zijn team (notities, hooks, rechten)",
+ "dlg.find.starter": "Maak startkaarten uit de README, TODO's en de git-geschiedenis (een gewoon script, geen AI, geen tokens)",
  "dlg.find.import": "Aangevinkte projecten toevoegen",
  "dlg.find.after": "Elk team leest het bord en zijn map de eerste keer dat je het wekt.",
  "setup.h": "⚙️ Instellingen",
