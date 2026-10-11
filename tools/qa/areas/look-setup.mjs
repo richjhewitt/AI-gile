@@ -294,3 +294,23 @@ def('popreopen', '⧉ a pop-out closed by replying opens again when the team rep
   check('and it is forgotten after reopening', !/ALP-/.test(await main.evaluate(() => localStorage.getItem('aigile.reopen') || '')));
   noErrors(main);
 }, true);
+
+def('glossary', '📖 dev words explained: searchable glossary page, and tooltips when the switch is on (AIG-102)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await mkCard(s, 'alpha', 'Refactor the inbox', { status: 'backlog' });
+  const page = await openPage(ctx, '#/glossary');
+  await page.waitForSelector('.gloss-item');
+  check('the glossary lists the words', (await page.locator('.gloss-item').count()) >= 15 && /Commit/.test(await page.textContent('.gloss-list')));
+  await page.fill('#glossQ', 'branch');
+  check('search narrows it down', (await page.locator('.gloss-item:not([hidden])').count()) >= 1 && (await page.locator('.gloss-item:not([hidden])').count()) < 5);
+  await page.goto(BASE + '/#/p/alpha'); await page.waitForSelector('.board');
+  check('no tooltips while the switch is off', (await page.locator('abbr.devw').count()) === 0);
+  await page.goto(BASE + '/#/setup'); await page.waitForSelector('#explainWords');
+  await page.check('#explainWords');
+  await page.goto(BASE + '/#/p/alpha'); await page.waitForSelector('.board');
+  await page.waitForSelector('abbr.devw', { timeout: 5000 }).catch(() => {});
+  const tip = await page.getAttribute('abbr.devw', 'title').catch(() => '');
+  check('with the switch on, dev words get a plain explanation', !!tip && tip.length > 20, tip);
+  check('typing boxes are left alone', (await page.locator('input abbr, textarea abbr').count()) === 0);
+  noErrors(page);
+}, true);

@@ -127,6 +127,7 @@ function parseRoute() {
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/setup') return { view: 'setup' };
   if (location.hash === '#/standups') return { view: 'standups' };
+  if (location.hash === '#/glossary') return { view: 'glossary' };   // dev words explained (AIG-102)
   const pop = location.hash.match(/^#\/pop\/([^/]+)\/([^/]+)/);
   if (pop) return { view: 'project', slug: pop[1], card: pop[2], pop: true };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
@@ -164,6 +165,8 @@ async function refresh(force) {
     } else if (state.route.view === 'standups') {
       state.standups = await api('GET', '/api/standups');
       sig = JSON.stringify([state.route, state.standups]);
+    } else if (state.route.view === 'glossary') {
+      sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'usage') {
       await loadUsagePage(force);   // heavy, so at most every ~15s
       sig = JSON.stringify([state.route, uzSig()]);
@@ -207,6 +210,7 @@ function render() {
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ ' + t('crumb.usage'); $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
   // A popped-out card (AIG-122): just the card, filling its own window; no header or board behind it.

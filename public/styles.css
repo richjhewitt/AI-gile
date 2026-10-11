@@ -455,3 +455,9 @@ header { flex-wrap: wrap; row-gap: 6px; } header > * { flex-shrink: 0; white-spa
 body.poplist header, body.poplist #filterbar, body.poplist #updateTop, body.poplist #dmRail, body.poplist #dmPanel { display: none; }
 body.poplist { padding-left: 0; } body.poplist main { padding: 10px 14px; }
 body.poplist .ib-head, body.poplist #ibOnly, body.poplist #ibNext, body.poplist #ibKinds, body.poplist #ibAiBar, body.poplist .ib-popbtn { display: none; }
+
+/* Dev words explained (AIG-102) */
+abbr.devw { text-decoration: underline dotted var(--muted); text-underline-offset: 3px; cursor: help; }
+.gloss { max-width: 760px; margin: 0 auto; } .gloss input[type=search] { width: 100%; margin: 8px 0 16px; }
+.gloss-list { margin: 0; } .gloss-item { padding: 10px 0; border-bottom: 1px solid var(--line); } .gloss-item[hidden] { display: none; }
+.gloss-item dt { font-weight: 700; } .gloss-item dd { margin: 2px 0 0; color: var(--muted); }
