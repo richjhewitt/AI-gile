@@ -1100,5 +1100,10 @@
  "share.teamRead.off": "Off: your team sees only the titles of {name}'s cards, and \"they replied\" for their comments.",
  "share.teamRead.on": "On: your team reads {name}'s words fenced as friend text, never as orders. They still never wake your team.",
   "alpha.tag": "🐣 Closed alpha",
-  "alpha.tip": "Early and unfinished: thanks for trying it!"
+  "alpha.tip": "Early and unfinished: thanks for trying it!",
+ "dispatch.h": "🛎️ Who answers your comments",
+ "dispatch.rules": "Rules only (free)",
+ "dispatch.haiku": "Rules + Haiku (recommended)",
+ "dispatch.lead": "Lead decides everything",
+ "dispatch.help": "Your comments and new cards go to the lead unless you name someone (@Name) or the card is a test. Rules only never calls an AI; Rules + Haiku asks the smallest model once when the rules can't tell; Lead decides wakes the lead every time. Each choice is noted in the project log."
 }

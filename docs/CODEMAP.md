@@ -20,6 +20,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/limits.js`, `lib/usage.js`, `lib/usagecheck.js`: plan usage, tokens, check usage now
 - `lib/trial.js`, `tools/trial/pretend-team.js`: 🧪 try it as a new user
 - `lib/tester.js`: 🤖 AI tester runs
+- `lib/dispatch.js`: who is woken for the owner's card or comment (rules, then Haiku)
 - `aigile.js` (CLI entry) + `lib/cli/*.js` (core, help, command groups), `statusline.js`, `desktop/` (Electron)
 
 ## Page ([page.md](codemap/page.md): `public/`, classic scripts in one global scope, `app.js` last)

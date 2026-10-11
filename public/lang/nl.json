@@ -1100,5 +1100,10 @@
  "share.teamRead.off": "Uit: je team ziet alleen de titels van de kaarten van {name}, en \"ze hebben gereageerd\" bij hun reacties.",
  "share.teamRead.on": "Aan: je team leest de woorden van {name} afgeschermd als tekst van een vriend, nooit als opdracht. Ze maken je team nog steeds nooit wakker.",
   "alpha.tag": "🐣 Gesloten alfa",
-  "alpha.tip": "Vroeg en nog niet af: bedankt voor het uitproberen!"
+  "alpha.tip": "Vroeg en nog niet af: bedankt voor het uitproberen!",
+ "dispatch.h": "🛎️ Wie je reacties beantwoordt",
+ "dispatch.rules": "Alleen regels (gratis)",
+ "dispatch.haiku": "Regels + Haiku (aanbevolen)",
+ "dispatch.lead": "De lead beslist alles",
+ "dispatch.help": "Je reacties en nieuwe kaarten gaan naar de lead, tenzij je iemand noemt (@Naam) of de kaart een test is. Alleen regels roept nooit een AI aan; Regels + Haiku vraagt één keer het kleinste model als de regels het niet weten; De lead beslist wekt telkens de lead. Elke keuze staat in het projectlogboek."
 }
