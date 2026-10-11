@@ -24,7 +24,7 @@ async function morningPrompt() {
   // Nothing to stand up about on a brand-new board with no cards anywhere (AIG-333).
   try { if (!(await api('GET', '/api/projects')).some(p => p.total)) return void setTimeout(morningPrompt, 60e3); } catch { return; }
   // Never in a pop-out (AIG-281): in the small night glance it covered the projects.
-  if ($('suPrompt') || !state.route || state.route.pop || state.route.popList || ['setup', 'night', 'watch'].includes(state.route.view)) return;
+  if ($('suPrompt') || !state.route || state.route.pop || state.route.popList || ['setup', 'night', 'watch', 'news'].includes(state.route.view)) return;
   try { if (localStorage.getItem('aigile.standupAsked') === suDay()) return; } catch { return; }   // no storage: never nag
   const a = document.activeElement;
   if (busy() || (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return void setTimeout(morningPrompt, 3000);

@@ -149,6 +149,8 @@ function parseRoute() {
   if (location.hash === '#/pop-night') return { view: 'night' };   // 🌙 night glance pop-out (AIG-209)   // dev words explained (AIG-102)
   const watch = location.hash.match(/^#\/pop-watch\/([^/]+)$/);
   if (watch) return { view: 'watch', slug: watch[1] };   // 👁 Watch a verbose team in its own window (AIG-154)
+  const news = location.hash.match(/^#\/pop-news\/([^/]+)$/);
+  if (news) return { view: 'news', slug: news[1] };   // 📜 Team news in its own window (AIG-319)
   const pop = location.hash.match(/^#\/pop\/([^/]+)\/([^/]+)/);
   if (pop) return { view: 'project', slug: pop[1], card: pop[2], pop: true };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
@@ -195,6 +197,9 @@ async function refresh(force) {
     } else if (state.route.view === 'watch') {
       state.watchLog = await api('GET', `/api/projects/${state.route.slug}/agentlog`);
       sig = JSON.stringify([state.route, state.watchLog, Math.floor(Date.now() / 60e3)]);
+    } else if (state.route.view === 'news') {
+      state.news = await api('GET', `/api/projects/${state.route.slug}/news`);
+      sig = JSON.stringify([state.route, state.news, Math.floor(Date.now() / 60e3)]);
     } else if (state.route.view === 'glossary') {
       sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'usage') {
@@ -251,6 +256,7 @@ function render() {
   if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'news') { $('app').innerHTML = renderNews(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'watch') { renderWatch(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ ' + t('crumb.usage'); $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }

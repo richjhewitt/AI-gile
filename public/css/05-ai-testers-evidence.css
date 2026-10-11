@@ -126,3 +126,5 @@ body.desktop #updateTop { top: 44px; }
 .ib-dc .dc-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; } .ib-dc .dc-btns button { padding: 8px 16px; font-size: 15px; } .ib-dc .dc-btns b { opacity: .6; margin-right: 4px; }
 .ib-decide { font-weight: 600; }
 .qz { border: 1px solid var(--accent); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; } .qz-item { margin-top: 8px; }
+/* 📜 Team news pop-out (AIG-319) */
+.news-item { margin: 0 0 10px; } .news-item.mine .dm-bubble { border-left: 3px solid var(--accent, #6a8); }

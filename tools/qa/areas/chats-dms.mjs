@@ -323,3 +323,45 @@ def('dmsrelay', 'Setup: the DMs relay address box saves, and Check fetches <rela
     check('Save refuses a non-web address', true);
   } finally { relay.stop(); }
 }, true);
+
+def('teamnews', 'DMs hold only the owner and the lead; ðŸ“œ Team news pop-out lists every team comment; stand-up shows On call and hides retired (AIG-319)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Forge', role: 'Dev' });
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Ghost', role: 'Dev', status: 'ðŸ’¤ retired' });
+  const q = await mkCard(s, 'alpha', 'Export format');
+  s.cli(['ask', 'alpha', q.id, 'M3U or JSON?', '--as', 'Lead']);
+  await say(s, 'alpha', q.id, 'Forge', 'FOLDNOTE handover: folded AIG-9 into this');
+  await say(s, 'alpha', q.id, 'Owner', 'JSON please');
+  await s.ok('POST', '/api/projects/alpha/cards', { title: 'ðŸ’¬ Quick idea', description: 'Quick idea text', quick: true });
+  const chat = await s.ok('GET', '/api/chats/alpha');
+  const texts = chat.messages.map(m => m.text).join('|');
+  check('lead chat keeps the question and the owner reply', /M3U or JSON/.test(texts) && /JSON please/.test(texts), texts);
+  check('lead chat leaves out a fold / handover comment', !/FOLDNOTE/.test(texts), texts);
+  const quick = chat.messages.find(m => /Quick idea text/.test(m.text));
+  if (quick) await say(s, 'alpha', quick.card, 'Lead', 'Lead reply to the idea');
+  check('a reply to a ðŸ’¬ card shows in the chat', /Lead reply to the idea/.test(JSON.stringify(await s.ok('GET', '/api/chats/alpha'))));
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.click('#dmRail [data-dms]'); await page.click('#dmPanel [data-dm="alpha"]');
+  await page.waitForSelector('#dmList .dm-msg');
+  check('page chat has no fold comment', !/FOLDNOTE/.test(await page.textContent('#dmList')));
+  await page.waitForSelector('button[onclick^="openNews"]');
+  check('board has the Team news button', /Team news/.test(await page.textContent('button[onclick^="openNews"]')));
+  const pop = await openPage(ctx, '#/pop-news/alpha');
+  await pop.waitForSelector('.news-item');
+  const items = await pop.$$eval('.news-item', n => n.map(x => x.textContent));
+  check('Team news lists every comment, newest first, with card links', items.length >= 4 && /Lead reply/.test(items[0]) && items.some(x => /FOLDNOTE/.test(x)) && await pop.$('.news-item a[href^="#/pop/alpha/"]') !== null, items);
+  await say(s, 'alpha', q.id, 'Forge', 'LIVECOMMENT');
+  await pop.waitForFunction(() => /LIVECOMMENT/.test(document.body.textContent), null, { timeout: 6000 }).catch(() => {});
+  check('Team news updates live', /LIVECOMMENT/.test(await pop.textContent('body')));
+  noErrors(pop);
+  await s.ok('POST', '/api/standup', { projects: ['alpha'] });
+  s.cli(['standup', 'alpha', '--done', 'old', '--next', 'y', '--as', 'Ghost']);
+  s.cli(['standup', 'alpha', '--done', 'Led', '--next', 'y', '--as', 'Lead']);
+  const rp = await openPage(ctx, '#/standups');
+  await rp.waitForSelector('.su-person');
+  const su = await rp.textContent('.su');
+  check('stand-up: a non-reporter shows On call', /Forge/.test(su) && /On call/.test(su), su);
+  check('stand-up: a retired member is not listed', !/Ghost/.test(su), su);
+}, true);
+
