@@ -330,9 +330,9 @@ function uzProjects(u, projects, W) {
 function uzRuns(runs, projects) {
   if (!runs || !runs.length) return '';
   const name = s => (projects.find(p => p.slug === s) || {}).name || s;
-  const rows = runs.map(r => `<tr><td>${esc(name(r.slug))}</td><td>${esc(uzDay(r.end))}</td><td>${uzShort(r.in)}</td><td>${uzShort(r.out)}</td><td>${uzShort(r.cache)}</td></tr>`).join('');
+  const rows = runs.map(r => `<tr><td>${esc(name(r.slug))}</td><td>${esc(uzDay(r.end))}</td><td>${uzShort(r.in)}</td><td>${uzShort(r.out)}</td><td>${uzShort(r.cache)}</td><td>${esc((r.cards || []).join(', '))}</td><td>${esc((r.models || []).join(', '))}</td><td>${r.reads == null ? '' : `${r.reads} / ${uzShort(r.readChars || 0)}`}</td></tr>`).join('');
   return `<div class="uz-card"><h2>${esc(t('usage.runs.h'))}</h2><p class="uz-explain">${esc(t('usage.runs.explain'))}</p>
-    <div class="uz-tablewrap"><table><thead><tr><th>${esc(t('usage.runs.team'))}</th><th>${esc(t('usage.runs.ended'))}</th><th>${esc(t('usage.runs.in'))}</th><th>${esc(t('usage.runs.out'))}</th><th>${esc(t('usage.runs.cache'))}</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+    <div class="uz-tablewrap"><table><thead><tr><th>${esc(t('usage.runs.team'))}</th><th>${esc(t('usage.runs.ended'))}</th><th>${esc(t('usage.runs.in'))}</th><th>${esc(t('usage.runs.out'))}</th><th>${esc(t('usage.runs.cache'))}</th><th>${esc(t('usage.runs.cards'))}</th><th>${esc(t('usage.runs.models'))}</th><th>${esc(t('usage.runs.reads'))}</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 const uzNoLogs = () => `<div class="uz-card uz-empty"><b>${esc(t('usage.nologs.h'))}</b><span class="muted">${esc(t('usage.nologs'))}</span></div>`;
 
