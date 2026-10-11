@@ -544,5 +544,14 @@
  "queue.total": "{n} min in all",
  "queue.next": "Next up:",
  "queue.all": "All",
- "format.edit": "Open in your editor"
+ "format.edit": "Open in your editor",
+ "act.go": "✅ Go",
+ "act.notyet": "✋ Not yet",
+ "act.notyet.say": "Not yet: ",
+ "act.yes": "👍 Yes",
+ "act.no": "👎 No",
+ "act.no.say": "No: ",
+ "act.accept": "✅ Accept",
+ "act.sendback": "🔁 Send back",
+ "act.sendback.say": "Sent back: "
 }

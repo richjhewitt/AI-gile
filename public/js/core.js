@@ -37,6 +37,40 @@ document.addEventListener('click', async e => {
   const cur = (b.className.match(/p-(\w+)/) || [])[1] || '';
   try { await api('PATCH', `/api/projects/${s}/cards/${id}`, { ownerPrio: order[(order.indexOf(cur) + 1) % order.length] }); refresh(true); if (typeof Inbox !== 'undefined' && Inbox.reload) Inbox.reload(); } catch (err) { alert(err.message); }
 }, true);
+/* ---------- answer buttons under a message (AIG-176): picked from what it asks ---------- */
+// say: sent straight away; ask: starts a reply with that text (it needs a reason); accept: accepts the test.
+function askActions(m, kind) {
+  if (Array.isArray(m.options) && m.options.length) return m.options.map(o => ({ label: o, say: o }));
+  if (kind === 'test') return [{ label: t('act.accept'), accept: true }, { label: t('act.sendback'), ask: t('act.sendback.say') }];
+  const text = String(m.text || '');
+  if (/\bGO\s*\?/.test(text) || /\b(?:ok|okay|good) to (?:go|start|build)\b[^?]*\?/i.test(text)) return [{ label: t('act.go'), say: 'GO' }, { label: t('act.notyet'), ask: t('act.notyet.say') }];
+  const q = (text.replace(/\*\*/g, '').match(/[^.!?\n]*\?/g) || []).pop() || '';
+  if (/^\s*[-*•]?\s*(?:should|shall|can|could|do|does|did|is|are|was|were|will|would|ok|okay|happy|want|fine|any|have|has)\b/i.test(q)) return [{ label: t('act.yes'), say: 'Yes' }, { label: t('act.no'), ask: t('act.no.say') }];
+  return [];
+}
+function actionsHtml(acts, slug, id) {
+  if (!acts.length) return '';
+  const card = esc(slug + '/' + id);
+  return `<div class="msg-acts">${acts.map(a => `<button class="msg-act ${a.ask ? '' : 'good'}" data-card="${card}" ${a.accept ? 'data-accept="1"' : a.ask ? `data-ask="${esc(a.ask)}"` : `data-say="${esc(a.say)}"`}>${esc(a.label)}</button>`).join('')}</div>`;
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('.msg-act[data-card]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  const [s, id] = b.dataset.card.split('/');
+  if (b.dataset.ask != null) {   // needs a reason: start the reply where the message is
+    const item = b.closest('.ib-item'), ta = item ? item.querySelector('textarea') : null;
+    if (ta) { ta.value = b.dataset.ask; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    else if (typeof Dms !== 'undefined') Dms.reply(id, b.dataset.ask);
+    return;
+  }
+  b.closest('.msg-acts').querySelectorAll('button').forEach(x => x.disabled = true);
+  try {
+    if (b.dataset.accept) await api('POST', `/api/projects/${s}/cards/${id}/verdict`, { accept: true });
+    else await api('POST', `/api/projects/${s}/cards/${id}/comments`, { author: me(), text: b.dataset.say });
+    b.textContent = '✓ ' + b.textContent;
+    if (typeof Dms !== 'undefined') Dms.reload();
+  } catch (err) { alert(err.message); b.closest('.msg-acts').querySelectorAll('button').forEach(x => x.disabled = false); }
+}, true);
 const isOwner = a => String(a || '').trim().toLowerCase() === me().toLowerCase();
 // Getters, so the names follow the language chosen at start-up (AIG-124).
 const COLS = { get backlog() { return t('col.backlog'); }, get todo() { return t('col.todo'); }, get doing() { return t('col.doing'); }, get review() { return t('col.review'); }, get verify() { return t('col.verify'); }, get team() { return t('col.team'); }, get done() { return t('col.done'); } };

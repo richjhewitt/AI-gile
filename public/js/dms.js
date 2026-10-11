@@ -40,7 +40,8 @@ const Dms = (() => {
     panel.hidden = false;
   }
 
-  const msgHtml = m => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div></div>`;
+  // acts: answer buttons under the message (AIG-176), only on the latest one still waiting on you.
+  const msgHtml = (m, acts = '') => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${acts}</div>`;
   // One fold per card (AIG-157): a clear header (kind, id, title); only one fold open at a time, the rest show
   // one line with the latest message, so each card can be dealt with on its own.
   function foldsHtml() {
@@ -50,13 +51,14 @@ const Dms = (() => {
     if (!list.some(([id]) => id === fold)) fold = (target && groups.has(target) ? target : null) || (list.length ? list.at(-1)[0] : null);
     return list.map(([id, msgs]) => {
       const c = (thread.cards || {})[id] || {}, last = msgs.at(-1), isOpen = id === fold;
+      const acts = c.waiting && !last.mine ? actionsHtml(askActions(last, c.kind), thread.slug, id) : '';
       const preview = String(last.text || '').replace(/^\s*[-*]\s+/gm, '').replace(/[*_`#>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 90);
       return `<div class="dm-fold ${isOpen ? 'open' : ''} ${c.waiting ? 'waiting' : ''}">
         <button class="dm-fold-h k-${esc(c.kind || 'other')}" data-fold="${esc(id)}" aria-expanded="${isOpen}">
           <span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span>
           <span class="muted dm-fold-n">${esc(t(msgs.length === 1 ? 'dms.count.one' : 'dms.count.many', { n: msgs.length }))} · ${ago(last.at)}</span></button>
-        ${isOpen ? `<div class="dm-fold-b"><a class="muted dm-cardlink" href="#/p/${esc(thread.slug)}/${esc(id)}">${esc(t('dms.opencard'))}</a>${msgs.map(msgHtml).join('')}</div>`
-          : `<div class="dm-fold-p muted"><b>${esc(last.author)}:</b> ${esc(preview)}</div>`}</div>`;
+        ${isOpen ? `<div class="dm-fold-b"><a class="muted dm-cardlink" href="#/p/${esc(thread.slug)}/${esc(id)}">${esc(t('dms.opencard'))}</a>${msgs.map(m => msgHtml(m, m === last ? acts : '')).join('')}</div>`
+          : `<div class="dm-fold-p muted"><b>${esc(last.author)}:</b> ${esc(preview)}</div>${acts}`}</div>`;
     }).join('');
   }
   async function loadThread(scroll) {
@@ -98,6 +100,9 @@ const Dms = (() => {
   }
   // Open a fold; if that card is waiting on you, the typing box answers it.
   function openFold(id) { fold = id; if (thread && thread.open.some(o => o.id === id)) target = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
+  // An answer button that needs a reason (AIG-176): aim the typing box at that card and start the reply.
+  function reply(id, text) { aim(id); const ta = el('dmText'); if (ta) { ta.value = text; ta.focus(); ta.setSelectionRange(text.length, text.length); } }
+  function reload() { if (open) loadThread(); loadRail(); }
   function aim(id) { target = id; fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   function back() { open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
   function close() { open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
@@ -130,5 +135,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   setInterval(() => { if (!document.hidden) { loadRail(); if (open) loadThread(); } }, 3000);
   loadRail();
-  return { show, back, close, send, aim };
+  return { show, back, close, send, aim, reply, reload };
 })();

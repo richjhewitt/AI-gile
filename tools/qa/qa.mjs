@@ -1596,6 +1596,33 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   noErrors(page);
 }, true);
 
+def('answerbtns', 'answer buttons under each message, picked from what it asks; the team can set its own (AIG-176)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });
+  const a = await mkCard(s, 'alpha', 'Big plan'), b = await mkCard(s, 'alpha', 'Export'), c = await mkCard(s, 'alpha', 'Format');
+  s.cli(['ask', 'alpha', a.id, 'Plan:\n- build it\n\nGO?', '--as', 'Lead']);
+  s.cli(['ask', 'alpha', b.id, 'Should exports include archived items?', '--as', 'Lead']);
+  s.cli(['ask', 'alpha', c.id, 'Which format?', '--options', 'M3U,JSON', '--as', 'Lead']);
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('#dmRail [data-dms]');
+  await page.click('#dmRail [data-dms]');
+  await page.click('#dmPanel [data-dm="alpha"]');
+  await page.waitForSelector('#dmList .msg-act');
+  const labels = await page.$$eval('#dmList .msg-act', bs => bs.map(x => x.textContent.trim()));
+  check('a GO? plan gets Go and Not yet; a yes/no question gets Yes and No; set options show as given', ['✅ Go', '✋ Not yet', '👍 Yes', '👎 No', 'M3U', 'JSON'].every(l => labels.includes(l)), labels);
+  await page.click(`#dmList .msg-act[data-card="alpha/${a.id}"][data-say="GO"]`);
+  await page.waitForFunction(async id => (await (await fetch('/api/projects/alpha')).json()).cards.find(x => x.id === id).comments.at(-1).text === 'GO', a.id, { timeout: 5000 }).catch(() => {});
+  const ga = await getCard(s, 'alpha', a.id);
+  check('Go on a message further up answers that card, not the newest', ga.comments.at(-1).text === 'GO' && !ga.needsYou, ga.comments.at(-1));
+  await page.waitForSelector(`#dmList .msg-act[data-card="alpha/${b.id}"][data-ask]`);
+  await page.click(`#dmList .msg-act[data-card="alpha/${b.id}"][data-ask]`);
+  check('No starts a reply to that card instead of sending', (await page.inputValue('#dmText')) === 'No: ' && (await getCard(s, 'alpha', b.id)).needsYou);
+  await page.goto(BASE + '/#/inbox');
+  await page.waitForSelector(`.ib-item .msg-act[data-card="alpha/${c.id}"]`);
+  check('the inbox shows the same buttons', (await page.locator(`.ib-item .msg-act[data-card="alpha/${c.id}"]`).count()) === 2);
+  noErrors(page);
+}, true);
+
 def('discover', '🔎 Find my projects: lists folders with git and README, flags copies, imports the ticked ones (AIG-94)', async (s, ctx) => {
   const root = tmp('discover'), g = (cwd, ...a) => spawnSync('git', a, { cwd, encoding: 'utf8' });
   const mk = (name, readme) => { const d = path.join(root, name); fs.mkdirSync(d); if (readme) fs.writeFileSync(path.join(d, 'README.md'), readme); return d; };

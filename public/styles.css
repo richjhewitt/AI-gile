@@ -379,3 +379,8 @@ button.q-chip { cursor: pointer; } .q-chip.prio:not([class*="p-"]) { color: var(
 .edit-btn { border: 0; background: none; padding: 0 3px; cursor: pointer; font-size: 0.9em; }
 /* Focus on For you (AIG-141): the one column goes wide and sits in the middle. */
 .board.focus { grid-template-columns: minmax(0, 820px); justify-content: center; }
+
+/* ---------- answer buttons under a message (AIG-176) ---------- */
+.msg-acts { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
+.msg-act { font-size: 12px; padding: 3px 10px; border-radius: 99px; }
+.dm-msg .msg-acts { margin-left: 4px; } .dm-fold > .msg-acts { margin: 0 12px 10px; }

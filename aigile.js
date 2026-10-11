@@ -42,6 +42,7 @@ WORKING
   test <proj> <id> "steps ${OWNER} can follow" --as NAME    -> moves to verify, sets testSteps, comments
         [--open URL [--start "command"]]   adds a ▶ Open it button: starts the app if needed, opens the page
         [--commit SHA] [--shot a.png,b.png]  proof: the board shows what changed in that commit, plus your screenshots
+  ask also takes: --options "A,B,C"  (up to 4 answer buttons under your question; otherwise the board guesses)
   ask / task / test also take: --holds AIG-1,AIG-2 (what it holds up)  --prio now|today|whenever  --kind decide|test|server|keys|read  --mins N
   block <proj> <id> ["why"] --as NAME     unblock <proj> <id>
   edit <proj> <id> [--title --desc --type --priority --sprint --assignee --test-steps]
@@ -308,7 +309,7 @@ const cmds = {
   async ask({ pos, flags }) {
     const slug = await project(pos[0]);
     await queueInfo(slug, pos[1], flags);
-    const c = await api('POST', C(slug, pos[1]) + '/comments', { author: who(flags), text: await text(pos[2], 'question'), needsYou: true });
+    const c = await api('POST', C(slug, pos[1]) + '/comments', { author: who(flags), text: await text(pos[2], 'question'), needsYou: true, options: flags.options });
     out(flags, c, c => `asked ${OWNER} on ${c.id}; card now flagged NEEDS-RICH. Move on to other work (aigile next ${slug}).`);
   },
 

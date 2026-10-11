@@ -544,5 +544,14 @@
  "queue.total": "{n} min in totaal",
  "queue.next": "Volgende:",
  "queue.all": "Alles",
- "format.edit": "Openen in je editor"
+ "format.edit": "Openen in je editor",
+ "act.go": "✅ Go",
+ "act.notyet": "✋ Nog niet",
+ "act.notyet.say": "Nog niet: ",
+ "act.yes": "👍 Ja",
+ "act.no": "👎 Nee",
+ "act.no.say": "Nee: ",
+ "act.accept": "✅ Goedkeuren",
+ "act.sendback": "🔁 Terugsturen",
+ "act.sendback.say": "Teruggestuurd: "
 }
