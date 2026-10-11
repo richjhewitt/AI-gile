@@ -25,7 +25,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 ## Page ([page.md](codemap/page.md): `public/`, classic scripts in one global scope, `app.js` last)
 - `css/01..05-*.css` (linked in order from index.html); `js/core.js` (state, api, router, render); `js/format.js` (card text, md); `js/i18n.js` (languages)
 - `js/home.js`, `js/board.js`, `js/card.js`, `js/dialogs/*.js`, `js/filters.js`, `js/attach.js`
-- `js/inbox.js` with `inbox-style.js`, `inbox-queue.js`, `inbox-ai.js`
+- `js/inbox*.js` (state, top, items, tabs, page, actions, style, queue, ai)
 - `js/standup.js`, `js/usage-page.js`, `js/glossary.js`, `js/tour.js`, `js/night.js`, `js/leadquiz.js`
 - `js/app.js`: start-up, 1s poll, going quiet
 

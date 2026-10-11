@@ -11,7 +11,13 @@
 | `public/js/glossary.js` | Dev words explained (AIG-102): the 📖 glossary page (#/glossary, searchable) and, with Setup's "Explain developer words" on, hover tooltips on those words anywhere (MutationObserver); words in the language files as gloss.<id>.word/.text/.also |
 | `public/js/tour.js` | 🎓 Guided tour (AIG-95): three levels (new / refresh / anyway), a spotlight and bubble per stop (TOUR list of selectors), texts in the language files (tour.*) |
 | `public/js/night.js` | 🌙 Night glance (AIG-209): `#/pop-night`, a calm red-tinted pop-out with the watchman per project; a slow amber glow only for stuck cards or real stand-up blockers |
-| `js/inbox.js` | Top-bar inbox button, the `#/inbox` page, alerts; uses the two files above |
+| `js/inbox-state.js` | `IB`: the inbox's shared mutable state (items, tab, chat, flick, only...), plus helpers (`el`, `esc`, `post`, `isTask`...) and `load`/`apply`/`repaint`. The inbox files below are each a closure and share state and functions only through `IB` |
+| `js/inbox-top.js` | `paintTop` (top-bar button and tab title), `announce` / `toggleAlerts` (new-question alerts) |
+| `js/inbox-items.js` | `qHtml` / `kHtml` / `tHtml`, `skeleton` (page frame), `syncList` |
+| `js/inbox-tabs.js` | `paintTabs` (project tabs), `paintChats` (Messages) |
+| `js/inbox-page.js` | `paintPage`, `toast` |
+| `js/inbox-actions.js` | `send`, `taskDone`, `accept`, `waitAndSee`, `startTester`, `acceptAiPassed`, `flickAct` and the AI view keys |
+| `js/inbox.js` | Injects the styles; `onClick` / `onKey`, `show` (called by core.js), the poll; exports `window.Inbox` |
 | `js/i18n.js` | Languages (AIG-124): `t(key, vars)`, `loadLang` (runs before the first render), `setLang`, `langPickHtml`; see "Languages" below |
 | `js/core.js` | `state`, `api`, `esc`, `ago`, the router (`parseRoute`), `busy`/`refresh`/`render` (the 1s poll never wipes typing), `slug`/`curCard`/`setErr` |
 | `js/format.js` | Card text: `withCode`, `spaceBullets`, `linkify`, `.md` links (`mdLinks`, opened by `showDocPath` in js/dialogs/); `md` (Docs renderer) |
@@ -21,6 +27,6 @@
 | `js/standup.js` | Stand-ups: `callStandup` (📣 buttons on the board and home), `standupButtons`, the `#/standups` report page (`renderStandups`, blockers first), the once-a-day `morningPrompt` pill (`suPick` to choose projects; day saved in localStorage `aigile.standupAsked`) |
 | `js/board.js` | In flight and presence, `renderBoard`, swimlanes (`lanesOf`, `columnsHtml`), `cardHtml`, `poke`, drag and drop, the For you header buttons `tidyPile` and `testForMe` (🤖, AIG-300; AI-passed tests sort first in `forYouQueue`) |
 | `js/card.js` | `cardFields`, assignee select, `renderCard` (Reply/Details/Test tabs), edit/delete/reply/verdict |
-| `js/dialogs/*.js` | Five files in load order: `shell-card-project-connect` (`openDialog`, New card, New project, Connect), `find-trial-setup-teams`, `happening-columns`, `card-view-picture-look`, `permissions-docs` (Docs). `js/inbox.js` stays one file: it is one closure sharing its state |
+| `js/dialogs/*.js` | Five files in load order: `shell-card-project-connect` (`openDialog`, New card, New project, Connect), `find-trial-setup-teams`, `happening-columns`, `card-view-picture-look`, `permissions-docs` (Docs). the inbox files share their state through the `IB` object in `inbox-state.js` |
 | `js/leadquiz.js` | What kind of lead? (AIG-235..237): `QUIZ` (question -> settings), `leadQuiz`/`saveQuiz` dialog (offered once when the name is first saved), `leadPrefsHtml` the "Your lead" switches on the Setup page, `setLeadPref` |
 | `js/app.js` | Start-up: hashchange, the 1s poll, the new-build prompt; going quiet (`goQuiet`, `setNight` night theme); `pokeBadge` (top bar) |
