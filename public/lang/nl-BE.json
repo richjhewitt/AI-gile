@@ -1216,5 +1216,6 @@
  "wz.plan.nospare.help": "Helemaal geen grenzen.",
  "wz.5.h": "Alles staat klaar! 🎉",
  "wz.5.sub": "Pas dit alles aan bij ⚙️ Instellingen, of start de wizard opnieuw.",
- "wz.5.more": "Een paar vakken onderaan Instellingen zijn nog leeg; vul ze in en bewaar."
+ "wz.5.more": "Een paar vakken onderaan Instellingen zijn nog leeg; vul ze in en bewaar.",
+ "emoji.hint": "↑↓ kiezen, Enter plakt, Esc sluit"
 }

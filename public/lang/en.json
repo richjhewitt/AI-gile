@@ -1216,5 +1216,6 @@
  "wz.plan.nospare.help": "No limits at all.",
  "wz.5.h": "All set! 🎉",
  "wz.5.sub": "Change any of this in ⚙️ Setup, or run the wizard again.",
- "wz.5.more": "A couple of boxes at the bottom of Setup are still empty; fill them in and save."
+ "wz.5.more": "A couple of boxes at the bottom of Setup are still empty; fill them in and save.",
+ "emoji.hint": "↑↓ choose, Enter picks, Esc closes"
 }
