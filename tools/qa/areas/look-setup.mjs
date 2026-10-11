@@ -335,3 +335,21 @@ def('tour', '🎓 guided tour: three levels, a spotlight per stop, Next / Back /
   check('Skip ends it', (await page.locator('#tourLayer').count()) === 0);
   noErrors(page);
 }, true);
+
+def('trial', '🧪 try it as a new user: a fresh empty board with made-up projects on its own port (AIG-201..203)', async (s, ctx) => {
+  const page = await openPage(ctx, '#/setup');
+  await page.waitForSelector('#trialBtn');
+  const popP = ctx.waitForEvent('page', { timeout: 15000 }).catch(() => null);
+  await page.click('#trialBtn');
+  const pop = await popP;
+  check('the button opens the fresh board in a new window', !!pop && /localhost:4400/.test(pop.url()), pop && pop.url());
+  const meta = await (await fetch('http://127.0.0.1:4400/api/meta')).json();
+  check('it is a first run: Setup needed, no projects', meta.setupNeeded === true && (await (await fetch('http://127.0.0.1:4400/api/projects')).json()).length === 0, meta);
+  const found = await (await fetch('http://127.0.0.1:4400/api/discover', { headers: { 'Content-Type': 'application/json' } })).json().catch(() => null);
+  check('Find my projects finds the three made-up projects, nothing real', Array.isArray(found) && found.length === 3 && found.some(f => f.name === 'Pancake Shop'), found && found.map ? found.map(f => f.name) : found);
+  check('the real board is untouched', (await s.ok('GET', '/api/projects')).length === 0);
+  await s.api('DELETE', '/api/trial');
+  await sleep(500);
+  check('stopping it frees the port', await fetch('http://127.0.0.1:4400/api/meta').then(() => false).catch(() => true));
+  noErrors(page);
+}, true);

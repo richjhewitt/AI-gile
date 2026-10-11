@@ -731,5 +731,9 @@
  "tour.setup.short": "Je instellingen, taal en de woordenlijst.",
  "tour.done.title": "Dat was het!",
  "tour.done.text": "Neem de rondleiding opnieuw wanneer je wilt, vanaf de homepagina. Maak een kaart of stuur een lead een bericht om te beginnen.",
- "tour.done.short": "Aan de slag. De rondleiding staat altijd op de homepagina."
+ "tour.done.short": "Aan de slag. De rondleiding staat altijd op de homepagina.",
+ "trial.h": "🧪 Probeer het als nieuwe gebruiker",
+ "trial.btn": "🧪 Open een nieuw bord",
+ "trial.busy": "Bezig met starten…",
+ "trial.help": "Een gloednieuwe, lege kopie van AI-gile in een eigen venster (localhost:4400), met drie verzonnen projecten om te vinden. Zie precies wat een vriend ziet bij de eerste keer. Je echte bord blijft ongemoeid en er start daar nooit een AI-team."
 }

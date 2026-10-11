@@ -731,5 +731,9 @@
  "tour.setup.short": "Your settings, language and the dev-word glossary.",
  "tour.done.title": "That’s it!",
  "tour.done.text": "Take the tour again any time from the home page. Raise a card or message a lead to get started.",
- "tour.done.short": "Off you go. The tour is on the home page any time."
+ "tour.done.short": "Off you go. The tour is on the home page any time.",
+ "trial.h": "🧪 Try it as a new user",
+ "trial.btn": "🧪 Open a fresh board",
+ "trial.busy": "Starting…",
+ "trial.help": "A brand-new, empty copy of AI-gile in its own window (localhost:4400), with three made-up projects to find. See exactly what a friend sees on their first run. Your real board is never touched, and no AI team ever starts there."
 }
