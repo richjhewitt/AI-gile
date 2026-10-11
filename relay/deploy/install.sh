@@ -2,6 +2,10 @@
 # AI-gile DM relay: installer for a Debian/Ubuntu server. Safe to re-run (it updates in place).
 #   sudo bash install.sh relay.example.com
 # Run it from a folder that holds relay.js next to it (or one folder up, as in the repo).
+#
+# If nginx is already running (a server with other sites) it adds ONE new nginx site for your
+# domain and gets its certificate with certbot; it never edits or replaces other sites.
+# Otherwise it installs Caddy. Force a mode with:  sudo WEB=nginx bash install.sh relay.example.com
 set -euo pipefail
 
 DOMAIN="${1:-}"
@@ -16,13 +20,40 @@ for c in "$HERE/relay.js" "$HERE/../relay.js"; do if [ -f "$c" ]; then SRC="$c";
 command -v apt-get >/dev/null || { echo "This installer is for Debian/Ubuntu (needs apt-get)." >&2; exit 1; }
 export DEBIAN_FRONTEND=noninteractive
 
+WEB="${WEB:-}"
+if [ -z "$WEB" ]; then
+  if systemctl is-active --quiet nginx 2>/dev/null; then WEB=nginx; else WEB=caddy; fi
+fi
+case "$WEB" in nginx|caddy) ;; *) echo "WEB must be nginx or caddy." >&2; exit 1 ;; esac
+echo "==> Web server mode: $WEB"
+
+SITE=aigile-relay
+if [ "$WEB" = nginx ]; then
+  # Checked before anything is changed: no other site may already answer to this name.
+  if grep -RIlE "server_name[^;]*[[:space:]]$DOMAIN([[:space:]]|;)" /etc/nginx/sites-enabled /etc/nginx/conf.d \
+       --exclude="$SITE" --exclude="$SITE.conf" 2>/dev/null | grep -q .; then
+    echo "An existing nginx site already uses server_name $DOMAIN. Not touching it; use another name." >&2; exit 1
+  fi
+  if command -v ss >/dev/null && ss -ltnH 'sport = :4500' | grep -q . && ! systemctl is-active --quiet aigile-relay; then
+    echo "Something else already listens on port 4500. Not continuing." >&2; exit 1
+  fi
+fi
+
 echo "==> Packages"
 apt-get update -y
-apt-get install -y curl ca-certificates gnupg debian-keyring debian-archive-keyring apt-transport-https
+if [ "$WEB" = nginx ]; then
+  apt-get install -y curl ca-certificates
+  command -v certbot >/dev/null || apt-get install -y certbot python3-certbot-nginx
+else
+  apt-get install -y curl ca-certificates gnupg debian-keyring debian-archive-keyring apt-transport-https
+fi
 
-echo "==> Node.js (needs 18 or newer)"
+echo "==> Node.js (needs 18 or newer; an existing Node is never replaced)"
 node_major() { if command -v node >/dev/null; then node -p 'process.versions.node.split(".")[0]'; else echo 0; fi; }
 if [ "$(node_major)" -lt 18 ]; then
+  if command -v node >/dev/null; then
+    echo "Node $(node -v) is installed and other things may rely on it. Upgrade it to 18+ yourself, then re-run." >&2; exit 1
+  fi
   curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
   apt-get install -y nodejs
 fi
@@ -69,15 +100,47 @@ systemctl daemon-reload
 systemctl enable aigile-relay >/dev/null
 systemctl restart aigile-relay
 
-echo "==> Caddy (HTTPS with automatic certificates)"
-if ! command -v caddy >/dev/null; then
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor --yes -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-  curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' > /etc/apt/sources.list.d/caddy-stable.list
-  chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg /etc/apt/sources.list.d/caddy-stable.list
-  apt-get update -y
-  apt-get install -y caddy
-fi
-cat > /etc/caddy/Caddyfile <<CADDY
+if [ "$WEB" = nginx ]; then
+  echo "==> nginx site (only /etc/nginx/sites-available/$SITE is created)"
+  if [ ! -f "/etc/nginx/sites-available/$SITE" ]; then
+    cat > "/etc/nginx/sites-available/$SITE" <<NGINX
+server {
+	listen 80;
+	listen [::]:80;
+	server_name $DOMAIN;
+	# No access log: nothing records who connected or when.
+	access_log off;
+	client_max_body_size 12m;
+	location / {
+		proxy_pass http://127.0.0.1:4500;
+		proxy_http_version 1.1;
+		proxy_set_header Host \$host;
+		proxy_set_header X-Forwarded-For \$remote_addr;
+		proxy_set_header X-Forwarded-Proto \$scheme;
+	}
+}
+NGINX
+  else
+    echo "    keeping existing /etc/nginx/sites-available/$SITE (certbot may have edited it)"
+  fi
+  ln -sf "/etc/nginx/sites-available/$SITE" "/etc/nginx/sites-enabled/$SITE"
+  if ! nginx -t; then
+    rm -f "/etc/nginx/sites-enabled/$SITE"
+    echo "nginx -t failed: the new site was switched off again and nginx was not reloaded." >&2; exit 1
+  fi
+  systemctl reload nginx
+  certbot --nginx --non-interactive --agree-tos --register-unsafely-without-email --redirect -d "$DOMAIN" \
+    || echo "WARNING: certbot failed. Check the DNS A record for $DOMAIN, then run: sudo certbot --nginx -d $DOMAIN"
+else
+  echo "==> Caddy (HTTPS with automatic certificates)"
+  if ! command -v caddy >/dev/null; then
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor --yes -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' > /etc/apt/sources.list.d/caddy-stable.list
+    chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg /etc/apt/sources.list.d/caddy-stable.list
+    apt-get update -y
+    apt-get install -y caddy
+  fi
+  cat > /etc/caddy/Caddyfile <<CADDY
 $DOMAIN {
 	# No access log: nothing records who connected or when.
 	log {
@@ -89,8 +152,9 @@ $DOMAIN {
 	reverse_proxy 127.0.0.1:4500
 }
 CADDY
-systemctl enable caddy >/dev/null
-systemctl reload caddy 2>/dev/null || systemctl restart caddy
+  systemctl enable caddy >/dev/null
+  systemctl reload caddy 2>/dev/null || systemctl restart caddy
+fi
 
 echo "==> Checking"
 ok=""
