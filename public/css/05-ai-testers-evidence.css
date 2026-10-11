@@ -55,6 +55,7 @@ header { flex-wrap: wrap; row-gap: 6px; } header > * { flex-shrink: 0; white-spa
 
 /* An inbox list popped out (AIG-104): only that list, filling its own window. */
 .ib-popbtn { float: right; padding: 2px 8px; font-size: 13px; }
+.ib-popone { float: right; margin-left: 6px; padding: 0 6px; font-size: 12px; line-height: 18px; }
 body.poplist header, body.poplist #filterbar, body.poplist #updateTop, body.poplist #dmRail, body.poplist #dmPanel { display: none; }
 body.poplist { padding-left: 0; } body.poplist main { padding: 10px 14px; }
 body.poplist .ib-head, body.poplist #ibOnly, body.poplist #ibNext, body.poplist #ibKinds, body.poplist #ibAiBar, body.poplist .ib-popbtn { display: none; }

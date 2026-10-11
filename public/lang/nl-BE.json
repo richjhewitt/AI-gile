@@ -727,6 +727,7 @@
  "tidy.asked": "De lead ruimt je stapel op ({id}). Je hoort het als het klaar is.",
  "tidy.already": "De lead is er al mee bezig ({id}).",
  "tidy.toast": "{n} lead(s) gevraagd je stapel op te ruimen",
+ "inbox.popone": "Deze kaart in een eigen venster openen",
  "inbox.popout": "Deze lijst in een eigen venster openen",
  "gloss.h": "📖 Ontwikkelaarswoorden uitgelegd",
  "gloss.intro": "De woorden die ontwikkelaars (en de AI-teams) gebruiken, in gewone taal.",
