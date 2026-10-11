@@ -52,7 +52,7 @@
     // Accept all AI-passed (AIG-163): every test the AI tester passed, in one click.
     const passed = ts.filter(c => c.aiCheck && c.aiCheck.result === 'pass');
     // 🤖 Test these for me (AIG-291): tests with steps the AI tester hasn't looked at yet.
-    const unchecked = ts.filter(c => c.testSteps && !c.aiCheck).length;
+    const unchecked = ts.filter(c => c.testSteps && !c.info && !c.aiCheck).length;
     el('ibTester').hidden = !unchecked && !IB.testerOn; el('ibTester').disabled = IB.testerOn;
     el('ibTester').textContent = IB.testerOn ? t('tester.running') : t('tester.btn', { n: unchecked });
     el('ibAiAll').hidden = !passed.length; el('ibAiAll').title = t('inbox.aiall.title') + ': ' + passed.map(c => c.id).join(', '); el('ibAiAll').textContent = t('inbox.aiall', { n: passed.length });
