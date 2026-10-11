@@ -138,6 +138,9 @@ All endpoints take and return JSON.
 | GET, PATCH, DELETE | `/api/dms/contacts[/:id]` | List people; rename, mark the safety code `checked`, `blocked`; remove |
 | GET, POST | `/api/dms/contacts/:id/messages` | Read the chat; send `{text}` |
 | GET | `/api/dms/contacts/:id/messages/:mid/raw` | The sealed envelope exactly as the relay saw it |
+| GET, POST | `/api/shares` | Links between your projects and friends' (`?slug=`); offer one `{slug, contact, allow?}` (needs a checked safety code) |
+| PATCH | `/api/shares/:id` | `{on}`: the project's 🔗 switch (off drops everything for the link) |
+| POST | `/api/shares/:id/accept`, `/decline`, `/ping`, `/unlink` | Accept an offer `{slug, allow?}`, say no, check the link, end it (`{forget: true}` also deletes their cards and comments) |
 
 ## Private DMs and the relay
 
