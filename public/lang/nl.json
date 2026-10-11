@@ -887,5 +887,11 @@
  "tester.running": "🤖 Bezig met testen…",
  "tester.title": "De AI-tester volgt de teststappen en zet bij elke kaart 🤖 geslaagd, mislukt of overgeslagen. Jij keurt nog goed.",
  "tester.started": "AI-tester gestart: de uitslagen verschijnen als 🤖-labels",
- "fy.tester.title": "Test deze voor mij: de AI-tester volgt de stappen van de {n} tests die hier wachten. Jij keurt nog goed."
+ "fy.tester.title": "Test deze voor mij: de AI-tester volgt de stappen van de {n} tests die hier wachten. Jij keurt nog goed.",
+ "dmsrelay.h": "Relay-adres voor DM's",
+ "dmsrelay.help": "De server die je versleutelde DM's tussen borden doorgeeft, zoals https://relay.example.com. Controleer vraagt of hij bereikbaar is.",
+ "dmsrelay.check": "Controleer",
+ "dmsrelay.checking": "Bezig met controleren...",
+ "dmsrelay.ok": "✅ De relay antwoordt.",
+ "dmsrelay.bad": "❌ {why}"
 }

@@ -1,4 +1,4 @@
-// QA areas: chats, answerbtns, dms, railorder, dmchats.
+// QA areas: chats, answerbtns, dms, railorder, dmchats, dmsrelay.
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
@@ -295,3 +295,39 @@ def('dmchats', 'friends\' private DMs show as chats next to the team leads, with
     noErrors(page);
   } finally { b.stop(); relay.stop(); }
 }, true, { AIGILE_DM_POLL_MS: '300' });
+
+def('dmsrelay', 'Setup: the DMs relay address box saves, and Check fetches <relay>/health on the server: a local relay passes, a bad address fails with a reason (AIG-309)', async (s, ctx) => {
+  const relay = await startRelay(PORT + 3, { RELAY_RATE: '100000' });
+  try {
+    check('check passes against a running relay', (await s.ok('POST', '/api/dms/check', { relay: relay.base })).ok === true);
+    const dead = await s.ok('POST', '/api/dms/check', { relay: 'http://127.0.0.1:1' });
+    check('check fails for a dead address, with a reason', dead.ok === false && /reach/.test(dead.reason), dead);
+    const ftp = await s.ok('POST', '/api/dms/check', { relay: 'ftp://example.com' });
+    check('only http(s) is checked', ftp.ok === false && /http/.test(ftp.reason), ftp);
+    const notRelay = await s.ok('POST', '/api/dms/check', { relay: s.base + '/api' });
+    check('this board is not a relay', notRelay.ok === false, notRelay);
+
+    const page = await openPage(ctx, '#/setup');
+    await page.waitForSelector('#dmsRelay');
+    await page.fill('#dmsRelay', relay.base);
+    await page.click('#dmsRelayCheck');
+    await page.waitForFunction(() => /✅/.test(document.getElementById('dmsRelay-msg').textContent));
+    check('Check shows a tick for the running relay', true);
+    await page.fill('#dmsRelay', 'http://127.0.0.1:1');
+    await page.click('#dmsRelayCheck');
+    await page.waitForFunction(() => /❌/.test(document.getElementById('dmsRelay-msg').textContent));
+    check('Check shows a cross and the reason for a bad address', /could not reach/.test(await page.textContent('#dmsRelay-msg')));
+    await page.fill('#dmsRelay', relay.base);
+    await page.click('#dmsRelaySave');
+    await page.waitForFunction(() => /Saved/.test(document.getElementById('dmsRelay-msg').textContent));
+    check('Save keeps the address', (await s.ok('GET', '/api/dms')).relay === relay.base);
+    await page.reload();
+    await page.waitForFunction(() => document.getElementById('dmsRelay') && document.getElementById('dmsRelay').value);
+    check('the saved address is in the box after a refresh', (await page.inputValue('#dmsRelay')) === relay.base);
+    noErrors(page);
+    await page.fill('#dmsRelay', 'file:///etc');
+    await page.click('#dmsRelaySave');
+    await page.waitForFunction(() => document.getElementById('dmsRelay-err').textContent);
+    check('Save refuses a non-web address', true);
+  } finally { relay.stop(); }
+}, true);

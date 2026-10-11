@@ -46,11 +46,8 @@ You should see `{"ok":true}`.
 
 5. Point the board at it: in AI-gile open **Setup**, find **DMs**, and put `https://relay.example.com` in **Relay address**. Save.
 
-You should see the relay address kept after a refresh. (Until the Setup field exists, run this instead on the computer running the board, then refresh.)
+You should see the relay address kept after a refresh. Press **Check** to see ✅ when the board can reach the relay.
 
-```
-curl -X POST http://localhost:4321/api/dms/settings -H "Content-Type: application/json" -d "{\"relay\":\"https://relay.example.com\"}"
-```
 
 6. Check it end to end: add a friend with an invite code (or use two boards), send a message, and see it arrive. In Messages, **see what the relay sees** shows the scrambled version.
 

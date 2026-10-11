@@ -887,5 +887,11 @@
  "tester.running": "🤖 Testing…",
  "tester.title": "The AI tester follows the test steps and marks each card 🤖 passed, failed or skipped. You still accept.",
  "tester.started": "AI tester started: results show up as 🤖 chips",
- "fy.tester.title": "Test these for me: the AI tester follows the steps of the {n} tests waiting here. You still accept."
+ "fy.tester.title": "Test these for me: the AI tester follows the steps of the {n} tests waiting here. You still accept.",
+ "dmsrelay.h": "DMs relay address",
+ "dmsrelay.help": "The server that passes your sealed DMs between boards, like https://relay.example.com. Check asks it if it is up.",
+ "dmsrelay.check": "Check",
+ "dmsrelay.checking": "Checking...",
+ "dmsrelay.ok": "✅ The relay answered.",
+ "dmsrelay.bad": "❌ {why}"
 }

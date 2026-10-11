@@ -62,6 +62,7 @@ function renderSetup() {
     <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
     <div class="f lead-prefs" id="leadPrefs">${leadPrefsHtml()}</div>
     <div class="f lead-prefs" id="runInPrefs">${runInHtml()}</div>
+    <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f"><span>${esc(t('trial.h'))}</span><div><button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <div class="f"><span>${esc(t('face.me'))}</span>${logoEditor('me-pic', s.mePic)}</div>
@@ -70,6 +71,25 @@ function renderSetup() {
       ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}"><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small></label>`).join('')}
       <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
       <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button></div></form></div>`;
+}
+/* ---------- DMs relay address (AIG-309) ---------- */
+// Where DMs go through: save the address, or Check it (the board server fetches <relay>/health).
+function dmsRelayHtml() {
+  setTimeout(() => api('GET', '/api/dms').then(d => { const i = $('dmsRelay'); if (i && !i.value && !i.dataset.t) i.value = d.relay || ''; }).catch(() => {}), 0);
+  return `<span>${esc(t('dmsrelay.h'))}</span><input type="text" id="dmsRelay" value="" placeholder="https://relay.example.com" oninput="this.dataset.t=1" autocomplete="off" spellcheck="false">
+    <small class="muted">${esc(t('dmsrelay.help'))}</small>
+    <div class="actions"><button type="button" id="dmsRelaySave" onclick="saveDmsRelay()">${esc(t('common.save'))}</button> <button type="button" id="dmsRelayCheck" onclick="checkDmsRelay()">${esc(t('dmsrelay.check'))}</button></div>
+    <div class="err" id="dmsRelay-err"></div><div class="muted" id="dmsRelay-msg"></div>`;
+}
+async function saveDmsRelay() {
+  setErr('dmsRelay-err', ''); $('dmsRelay-msg').textContent = '';
+  try { const d = await api('POST', '/api/dms/settings', { relay: $('dmsRelay').value.trim() }); $('dmsRelay').value = d.relay || ''; $('dmsRelay-msg').textContent = t('setup.saved.short'); }
+  catch (e) { setErr('dmsRelay-err', e); }
+}
+async function checkDmsRelay() {
+  setErr('dmsRelay-err', ''); const m = $('dmsRelay-msg'); m.textContent = t('dmsrelay.checking');
+  try { const r = await api('POST', '/api/dms/check', { relay: $('dmsRelay').value.trim() }); m.textContent = r.ok ? t('dmsrelay.ok') : t('dmsrelay.bad', { why: r.reason }); }
+  catch (e) { m.textContent = ''; setErr('dmsRelay-err', e); }
 }
 async function saveSetupPage(e) {
   e.preventDefault();
