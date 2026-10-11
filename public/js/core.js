@@ -1,6 +1,6 @@
 /* ---------- state, api, helpers ---------- */
-// The board's human (AIG-103): name from /api/meta, default Rich.
-const me = () => (typeof state !== 'undefined' && state.owner) || 'Rich';
+// The board's human (AIG-103): name from /api/meta, default Owner.
+const me = () => (typeof state !== 'undefined' && state.owner) || 'Owner';
 /* ---------- drafts (AIG-171): unsent text survives a refresh, a restart or a crash ---------- */
 // Any textarea with data-draft="<key>" is saved to this browser as you type and filled back in when it
 // appears again (also after the page is redrawn). Sending calls clearDraft(key).
@@ -109,6 +109,14 @@ const api = async (method, url, body) => {
 };
 // A project's picture, or its emoji when it has none (AIG-175). Round, one em, so it sits where the emoji sat.
 function pic(logo, emoji) { return logo ? `<img class="pic" src="${esc(logo)}" alt="">` : esc(emoji || ''); }
+// Profile pictures (AIG-150): yours from Setup (meta.ownerPic), an agent's from the picture library (m.avatar on the team).
+const avatarUrl = f => f ? '/api/avatars/' + encodeURIComponent(f) : '';
+function faceUrl(name, team) {
+  if (isOwner(name)) return state.ownerPic || '';
+  const m = (team || []).find(m => m.name.toLowerCase() === String(name || '').trim().toLowerCase());
+  return m ? avatarUrl(m.avatar) : '';
+}
+const face = (name, team) => { const u = faceUrl(name, team); return u ? `<img class="face" src="${esc(u)}" alt="" title="${esc(name)}">` : ''; };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ago = (iso, bare) => {   // bare = without "ago", for "unanswered for 5m"
   const s = (Date.now() - new Date(iso)) / 1000, b = bare ? '.bare' : '';
@@ -121,9 +129,16 @@ const $ = id => document.getElementById(id);
 /* ---------- router ---------- */
 function parseRoute() {
   if (location.hash === '#/inbox') return { view: 'inbox' };
+  // One inbox list in its own window (AIG-104): q = messages, k = your to-dos, t = to test.
+  const popList = location.hash.match(/^#\/pop-inbox\/([qkt])$/);
+  if (popList) return { view: 'inbox', popList: popList[1] };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/setup') return { view: 'setup' };
   if (location.hash === '#/standups') return { view: 'standups' };
+  if (location.hash === '#/glossary') return { view: 'glossary' };
+  if (location.hash === '#/pop-night') return { view: 'night' };   // 🌙 night glance pop-out (AIG-209)   // dev words explained (AIG-102)
+  const watch = location.hash.match(/^#\/pop-watch\/([^/]+)$/);
+  if (watch) return { view: 'watch', slug: watch[1] };   // 👁 Watch a verbose team in its own window (AIG-154)
   const pop = location.hash.match(/^#\/pop\/([^/]+)\/([^/]+)/);
   if (pop) return { view: 'project', slug: pop[1], card: pop[2], pop: true };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
@@ -161,6 +176,14 @@ async function refresh(force) {
     } else if (state.route.view === 'standups') {
       state.standups = await api('GET', '/api/standups');
       sig = JSON.stringify([state.route, state.standups]);
+    } else if (state.route.view === 'night') {
+      [state.watch, state.projects, state.standups] = await Promise.all([api('GET', '/api/watchman').catch(() => null), api('GET', '/api/projects'), api('GET', '/api/standups').catch(() => null)]);
+      sig = JSON.stringify([state.route, state.watch, state.projects.map(p => [p.slug, p.presence && p.presence.online]), state.standups && state.standups.blockers, Math.floor(Date.now() / 60e3)]);
+    } else if (state.route.view === 'watch') {
+      state.watchLog = await api('GET', `/api/projects/${state.route.slug}/agentlog`);
+      sig = JSON.stringify([state.route, state.watchLog, Math.floor(Date.now() / 60e3)]);
+    } else if (state.route.view === 'glossary') {
+      sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'usage') {
       await loadUsagePage(force);   // heavy, so at most every ~15s
       sig = JSON.stringify([state.route, uzSig()]);
@@ -204,6 +227,9 @@ function render() {
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'watch') { renderWatch(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ ' + t('crumb.usage'); $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
   // A popped-out card (AIG-122): just the card, filling its own window; no header or board behind it.
@@ -232,3 +258,9 @@ const slug = () => state.route.slug;
 const cardId = () => state.route.card;
 const curCard = () => state.project.cards.find(c => c.id === cardId());
 const setErr = (id, e) => { const el = $(id); if (el) el.textContent = e ? (e.message || e) : ''; };
+
+// A small note at the bottom that fades by itself (AIG-259), instead of a Windows alert box for good news.
+function note(msg) {
+  let n = document.getElementById('note'); if (!n) { n = document.createElement('div'); n.id = 'note'; n.setAttribute('role', 'status'); document.body.appendChild(n); }
+  n.textContent = msg; n.classList.add('on'); clearTimeout(note.t); note.t = setTimeout(() => n.classList.remove('on'), 4000);
+}

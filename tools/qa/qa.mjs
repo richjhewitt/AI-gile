@@ -2,6 +2,7 @@
 //   node tools/qa/qa.mjs [area ...]     (no args = all areas; --list shows them; QA_PORT changes the port)
 // The page areas need playwright: `cd tools/qa && npm i`, or it falls back to the shared install (QA_PLAYWRIGHT).
 // This file is the runner only. Shared helpers: lib.mjs. The areas themselves: areas/*.mjs (each calls def()).
+import fs from 'node:fs';
 import { areas, CHROME, loadPw, startServer, check, sleep, setArea, getFailures } from './lib.mjs';
 
 // Every file in areas/ registers its areas on import; add a new file here.
@@ -35,6 +36,7 @@ for (const name of wanted) {
     if (ctx) await ctx.close().catch(() => {});
     s.stop();
     await sleep(300);
+    try { fs.rmSync(s.dir, { recursive: true, force: true }); } catch {}   // the temp data folder is not kept
   }
 }
 if (browser) await browser.close();

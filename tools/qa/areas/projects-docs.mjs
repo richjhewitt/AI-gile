@@ -113,7 +113,7 @@ def('perms', '🔐 Permissions: ticks follow the rules, save keeps hooks, new fo
   const r = await s.ok('GET', '/api/projects/alpha/permissions');
   const ways = r.presets.ways.rules.allow[0];
   check('new folder gets run, edit, push-asks and ways', ['Bash', 'Edit', ways].every(x => r.allow.includes(x)) && r.ask.includes('Bash(git push:*)') && !r.allow.includes('WebFetch'), r);
-  check('ways rule is an absolute read of the AI-gile folder', /^Read\(\/\/[a-z]\/.*AI-gile\/\*\*\)$/.test(ways), ways);
+  check('ways rule is an absolute read of the board folder', /^Read\(\/\/[a-z]\/.*\/\*\*\)$/.test(ways), ways);
   const page = await openPage(ctx, '#/p/alpha');
   await page.click('button:has-text("Permissions")');
   await page.waitForSelector('#perm-ticks input');

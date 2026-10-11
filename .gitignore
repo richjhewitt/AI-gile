@@ -7,3 +7,6 @@ node_modules/
 # The owner's own ways of working: private, made from docs/starter on a new install (AIG-96)
 /WAYS-OF-WORKING.md
 .claude/
+
+# Friends' zips (AIG-248)
+dist/

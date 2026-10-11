@@ -26,7 +26,7 @@ async function up() { try { return (await fetch(BASE + '/api/meta')).ok; } catch
 // Same as start-aigile.bat: node server.js in the AI-gile folder, detached and hidden.
 async function ensureServer() {
   if (await up()) return true;
-  const node = process.env.AIGILE_NODE || 'node', env = { ...process.env, AIGILE_DEV: '1' };
+  const node = process.env.AIGILE_NODE || 'node', env = { ...process.env };   // dev mode comes from aigile.local.json now (AIG-253)
   delete env.ELECTRON_RUN_AS_NODE;
   spawn(node, ['server.js'], { cwd: ROOT, detached: true, stdio: 'ignore', windowsHide: true, env }).unref();
   for (let i = 0; i < 50; i++) { await sleep(200); if (await up()) return true; }
@@ -46,7 +46,7 @@ function savePops() {
 // Where each card's window last was (AIG-188), so one that opens again (AIG-183) comes back on the same screen and spot.
 const PLACES = () => path.join(app.getPath('userData'), 'popout-places.json');
 const places = () => { try { return JSON.parse(fs.readFileSync(PLACES(), 'utf8')); } catch { return {}; } };
-const cardOf = url => (String(url).match(/#\/pop\/[^?#]+/) || [''])[0];
+const cardOf = url => (String(url).match(/#\/pop[^?#]*/) || [''])[0];   // a card (#/pop/…) or an inbox list (#/pop-inbox/…)
 function rememberPlace(url, bounds) {
   const all = places(), k = cardOf(url); if (!k) return;
   delete all[k]; all[k] = bounds;
@@ -60,7 +60,7 @@ function placeFor(url) {
   return on ? b : null;
 }
 function trackPop(w, url) {
-  if (!url.includes('#/pop/')) return;
+  if (!url.includes('#/pop')) return;
   pops.set(w, url); savePops();
   const keep = () => { try { if (!w.isDestroyed()) rememberPlace(url, w.getBounds()); } catch {} };
   w.on('moved', () => { savePops(); keep(); }); w.on('resized', () => { savePops(); keep(); });
@@ -69,7 +69,7 @@ function trackPop(w, url) {
 }
 function reopenPops() {
   let list = []; try { list = JSON.parse(fs.readFileSync(POPS(), 'utf8')); } catch {}
-  for (const p of list) if (String(p.url).startsWith(BASE + '/#/pop/')) {
+  for (const p of list) if (String(p.url).startsWith(BASE + '/#/pop')) {
     const w = new BrowserWindow({ ...chrome(), ...(p.bounds || { width: 560, height: 780 }), alwaysOnTop: true });
     wire(w); trackPop(w, p.url); w.loadURL(p.url);
   }
@@ -83,13 +83,15 @@ function wire(w) {
   // Board links to other sites open in the normal browser; the board's own open in a new app window.
   // A popped-out card stays on top, so its steps stay visible while you work in another app (AIG-122).
   w.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop/'), ...(url.includes('#/pop/') ? placeFor(url) || {} : {}) } };
+    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop'), ...(url.includes('#/pop') ? placeFor(url) || {} : {}) } };
     shell.openExternal(url); return { action: 'deny' };
   });
   w.webContents.on('will-navigate', (e, url) => {
     if (url === 'aigile://restart') { e.preventDefault(); quitting = true; savePops(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
     // The page's theme pick (AIG-143): the window buttons and every window follow it.
     if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark'].includes(t)) nativeTheme.themeSource = t; return; }
+    // Goodnight (AIG-228): only the night glance stays on screen.
+    if (url === 'aigile://minimize') { e.preventDefault(); w.minimize(); return; }
     // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).
     if (url === 'aigile://refocus') { e.preventDefault(); w.blur(); w.focus(); w.webContents.focus(); return; }
     if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); }

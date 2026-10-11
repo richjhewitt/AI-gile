@@ -84,7 +84,8 @@ async function loadUsagePage(force) {
     api('GET', '/api/projects?all=1').catch(() => []),
   ]);
   const check = await api('GET', '/api/usage/check').catch(() => null);
-  uz.data = { usage, limits, check, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
+  const runs = await api('GET', '/api/usage/runs').catch(() => []);   // AIG-266
+  uz.data = { usage, limits, check, runs, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
   uz.fetchedAt = Date.now();
 }
 const uzSig = () => JSON.stringify([uz.data, Math.floor(Date.now() / 60e3)]); // minute tick keeps "resets in" fresh

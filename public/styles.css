@@ -174,7 +174,8 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 1
 .verdict h3 { margin: 0 0 6px; color: var(--you); }
 .reply { margin-top: 12px; }
 .proj.archived { opacity: .6; }
-.proj.poke { border-color: var(--warn); border-left-width: 4px; }
+/* not .poke: that is the 👉 Poke button, whose margin and pill corners broke the tiles (AIG-200) */
+.proj.needs-poke { border-color: var(--warn); border-left-width: 4px; }
 .pokeline { color: var(--warn); font-size: 13px; margin-bottom: 4px; }
 .navlink.pokebadge { background: none; font: inherit; cursor: pointer; border-color: var(--warn); color: var(--warn); font-weight: 600; }
 .live.paused::before { color: var(--warn); }
@@ -217,6 +218,16 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 1
 /* ---------- setup page (AIG-91) ---------- */
 .setup { max-width: 720px; margin: 24px auto; }
 .setup small { display: block; margin-top: 3px; }
+/* What kind of lead (AIG-235): one question per block, the answers as big tappable choices */
+.lead-prefs { margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); }
+.lead-prefs > span { font-size: 12px; color: var(--muted); }
+.lead-prefs label.f.chk { display: block; margin-top: 10px; }
+label.f[hidden], .runin-blind[hidden] { display: none; }   /* where teams run (AIG-153) */
+#runInPrefs label.f { margin-top: 10px; } .runin-blind { display: block; margin-top: 8px; }
+.quiz-q { margin: 0 0 14px; }
+.quiz-opts { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.quiz-opt { display: inline-flex; gap: 6px; align-items: center; padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; font-size: 13px; }
+.quiz-opt:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 
 .inbox summary { cursor: pointer; }
 .inbox summary h3 { display: inline; }
@@ -301,6 +312,13 @@ body.pop { padding-left: 0; } body.pop #dmRail, body.pop #dmPanel { display: non
 .logo-edit .pic { width: 44px; height: 44px; }
 .logo-edit .brand-logo { width: 44px; height: 44px; }
 .logo-edit input[type=text] { flex: 1; min-width: 180px; }
+/* profile pictures (AIG-150): next to names in chats, comments and the team list; the library on Setup */
+.face { width: 1.5em; height: 1.5em; border-radius: 50%; object-fit: cover; vertical-align: -0.45em; margin-right: 5px; }
+.dm-meta .face { width: 18px; height: 18px; vertical-align: -5px; }
+.face-lib { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0; }
+.face-lib figure { margin: 0; width: 64px; text-align: center; }
+.face-lib .face { width: 48px; height: 48px; margin: 0; }
+.face-lib figcaption { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dm-av { display: inline-flex; width: 42px; height: 42px; border-radius: 50%; align-items: center; justify-content: center; font-size: 21px; background: color-mix(in srgb, var(--proj, var(--accent)) 22%, var(--panel)); border: 2px solid transparent; transition: border-radius .15s; }
 .dm-railbtn:hover .dm-av, .dm-railbtn.on .dm-av { border-radius: 14px; border-color: var(--proj, var(--accent)); }
 .dm-unread { position: absolute; right: -2px; bottom: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
@@ -446,3 +464,75 @@ header { flex-wrap: wrap; row-gap: 6px; } header > * { flex-shrink: 0; white-spa
 .cv-sample { background: var(--col); padding: 10px; border-radius: 10px; pointer-events: none; }
 .dialog:has(.cv-dlg) { max-width: 760px; width: 100%; }
 .cv-toggle span { white-space: nowrap; }
+
+/* 🧹 Tidy my pile (AIG-193) */
+.ib-tidy { margin-left: auto; font-size: 13px; } .ib-tidy + .ib-aiall { margin-left: 6px; }
+
+/* An inbox list popped out (AIG-104): only that list, filling its own window. */
+.ib-popbtn { float: right; padding: 2px 8px; font-size: 13px; }
+body.poplist header, body.poplist #filterbar, body.poplist #updateTop, body.poplist #dmRail, body.poplist #dmPanel { display: none; }
+body.poplist { padding-left: 0; } body.poplist main { padding: 10px 14px; }
+body.poplist .ib-head, body.poplist #ibOnly, body.poplist #ibNext, body.poplist #ibKinds, body.poplist #ibAiBar, body.poplist .ib-popbtn { display: none; }
+
+/* 👁 Watch a verbose team (AIG-154): the dialog and its pop-out */
+.watchlog { max-height: 60vh; overflow: auto; white-space: pre-wrap; font-size: 12.5px; line-height: 1.5; }
+.watch-pop { padding: 2px 8px; font-size: 13px; margin-left: 6px; vertical-align: middle; }
+body.poplist .watchlog { max-height: calc(100vh - 90px); }
+
+/* Dev words explained (AIG-102) */
+abbr.devw { text-decoration: underline dotted var(--muted); text-underline-offset: 3px; cursor: help; }
+.gloss { max-width: 760px; margin: 0 auto; } .gloss input[type=search] { width: 100%; margin: 8px 0 16px; }
+.gloss-list { margin: 0; } .gloss-item { padding: 10px 0; border-bottom: 1px solid var(--line); } .gloss-item[hidden] { display: none; }
+.gloss-item dt { font-weight: 700; } .gloss-item dd { margin: 2px 0 0; color: var(--muted); }
+
+/* 🎓 Guided tour (AIG-95): a spotlight on one part of the board and a bubble beside it */
+#tourLayer { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+.tour-spot { position: fixed; border-radius: 12px; outline: 3px solid var(--accent); }
+.tour-bubble { position: fixed; width: min(340px, calc(100vw - 24px)); background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; box-shadow: 0 12px 32px rgba(0,0,0,.35); pointer-events: auto; }
+.tour-bubble.center { left: 50% !important; top: 30% !important; transform: translateX(-50%); }
+.tour-bubble h3 { margin: 2px 0 6px; } .tour-bubble p { margin: 0 0 8px; } .tour-why { color: var(--muted); font-size: 13px; }
+.tour-step { font-size: 12px; } .tour-skip { margin-left: auto; }
+.tour-lvls { display: grid; gap: 8px; margin: 10px 0; } .tour-lvl { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 10px 12px; }
+.tour-dim { position: fixed; background: rgba(0, 0, 0, .55); }
+
+/* Stand-ups: needs you (amber) apart from real blockers (red) (AIG-191) */
+.su-needs { border: 1px solid var(--warn); border-left-width: 4px; border-radius: 10px; padding: 8px 12px; margin: 0 0 14px; }
+.su-needs h3 { margin: 0 0 4px; color: var(--warn); font-size: 14px; } .su-amber { color: var(--warn); }
+
+/* 🌙 Night watchman (AIG-199) */
+.watch-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; margin: 8px 0; }
+.watch-sum li { margin: 4px 0; }
+
+/* 🔄 Restart the board (AIG-206): floats at the top, like the Refresh pill */
+.up-restart { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 40; } .up-restart:empty { display: none; }
+
+/* Going quiet: a proper goodnight (AIG-208) */
+.qd { text-align: center; } .qd-moon { font-size: 44px; line-height: 1; margin-top: 4px; }
+.qd h2 { margin: 6px 0 2px; } .qd h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 16px 0 6px; }
+.qd-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.qd-chip { padding: 3px 10px; border-radius: 99px; background: var(--col); border: 1px solid var(--line); font-size: 13px; }
+.qd .actions { justify-content: center; }
+
+/* 🌙 Night glance (AIG-209): near-black, red-tinted, low contrast; a slow amber glow only when something is urgent */
+body.nightglance { background: #0b0605 !important; color: #b07a6a; filter: brightness(.85); }
+body.nightglance main { padding: 14px; }
+/* Drag it anywhere (AIG-217): the night glance has no header, so the whole window is the handle, onto a second screen */
+body.desktop.nightglance main { -webkit-app-region: drag; min-height: 100vh; box-sizing: border-box; }
+.ng { font-size: 14px; } .ng-head { font-size: 16px; color: #c99282; } .ng-moon { opacity: .8; }
+.ng-when { font-size: 12px; color: #6e4a40; margin: 2px 0 12px; } .ng-calm { color: #6e4a40; margin-bottom: 10px; }
+.ng-list { list-style: none; padding: 0; margin: 0; } .ng-list li { padding: 6px 0; border-bottom: 1px solid #1c120f; display: flex; gap: 8px; align-items: baseline; }
+.ng-list b { font-weight: 500; color: #c99282; } .ng-word { color: #6e4a40; font-size: 13px; } .ng-dot { filter: saturate(.6) brightness(.8); }
+.ng-urgent-line { color: #e0a060; margin-bottom: 10px; }
+body.ng-urgent::after { content: ""; position: fixed; inset: 0; pointer-events: none; box-shadow: inset 0 0 40px 6px rgba(224, 140, 60, .55); animation: ng-breathe 6s ease-in-out infinite; }
+@keyframes ng-breathe { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { body.ng-urgent::after { animation: none; opacity: .7; } }
+
+/* 🌙 The watchman's chat is read-only (AIG-211) */
+#dmPanel.dm-readonly .dm-compose { display: none; }
+/* Going quiet (AIG-227): the projects' counts and dots on the left wait for the morning; only the watchman's chat may badge */
+:root[data-night] #dmRail [data-slug] .dm-unread, :root[data-night] #dmRail .dm-pip { display: none; }
+/* Desktop app (AIG-241): the top bar is the window's drag area, and a maximised window can swallow clicks on pills over it; sit just below it */
+body.desktop #updateTop { top: 44px; }
+/* A note that fades by itself (AIG-259) */
+#note { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 12px); z-index: 60; max-width: min(520px, calc(100vw - 32px)); padding: 10px 16px; border-radius: 999px; background: var(--panel); color: var(--text); border: 1px solid var(--line); box-shadow: 0 6px 20px rgba(0,0,0,.25); font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
+#note.on { opacity: 1; transform: translate(-50%, 0); }
