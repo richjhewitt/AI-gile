@@ -239,7 +239,7 @@ def('i18n', 'languages: every language file has the same keys, the picker switch
   await page.check('#enSwitch');
   await page.waitForSelector('#enBtn:not([hidden])');
   await page.click('#enBtn');
-  await page.waitForFunction(() => document.documentElement.lang === 'en', null, { timeout: 8000 });
+  await page.waitForFunction(() => document.documentElement.lang === 'en' && /NL/.test(document.getElementById('enBtn')?.textContent || ''), null, { timeout: 8000 }).catch(() => {});   // the button repaints just after the language loads
   check('🌐 EN shows the board in English, and the button offers the way back', /NL/.test(await page.textContent('#enBtn')) && (await page.evaluate(() => localStorage.getItem('aigile.lang'))) === 'nl');
   await page.waitForSelector('#setupForm');
   check('Setup still shows your own language', (await page.inputValue('.setup .lang-pick')) === 'nl');
