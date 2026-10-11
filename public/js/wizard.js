@@ -10,7 +10,7 @@ const WZ_STYLES = {
 };
 const WZ_PLANS = ['fly', 'careful', 'normal', 'generous', 'nospare'];
 const WZ_STEPS = 5;
-const WZ = { shown: false, step: 1, name: '', agent: '', style: '', plan: '', hadOwner: false };
+const WZ = { shown: false, step: 1, name: '', agent: '', style: '', plan: '', help: '', hadOwner: false };
 
 // Which style the current settings already match ('' when none does).
 function wzStyleOf(pr, explain) {
@@ -36,13 +36,13 @@ function wizardMaybe() {
     <div class="err" id="wz-err"></div>`, 'wizard');
 }
 async function wizardWing() {
-  try { state.setup = await api('POST', '/api/setup', { prefs: { wizardSeen: true } }); closeDialog(); }
+  try { state.setup = await api('POST', '/api/setup', { prefs: { wizardSeen: true } }); closeDialog(); helpMaybe(); }
   catch (e) { setErr('wz-err', e); }
 }
 function wizardStart() {
   const s = state.setup, pr = s.prefs || {}, first = !pr.wizardSeen;
   WZ.hadOwner = !!wzField('owner').value;
-  Object.assign(WZ, { step: 1, name: wzField('owner').value, agent: wzField('agent.command').value, style: wzStyleOf(pr, glossOn()) || (first ? 'balanced' : ''), plan: pr.plan || (first ? 'normal' : '') });
+  Object.assign(WZ, { step: 1, name: wzField('owner').value, agent: wzField('agent.command').value, style: wzStyleOf(pr, glossOn()) || (first ? 'balanced' : ''), plan: pr.plan || (first ? 'normal' : ''), help: pr.helpLevel || '2' });
   wizardShow();
 }
 // Take what is typed on this screen before moving on.
@@ -52,7 +52,7 @@ function wzKeep() {
 }
 function wizardShow() {
   const n = WZ.step, dots = `<div class="wz-dots" aria-label="${esc(t('wz.step', { n, of: WZ_STEPS }))}">${Array.from({ length: WZ_STEPS }, (_, i) => `<span class="wz-dot ${i + 1 === n ? 'on' : i + 1 < n ? 'past' : ''}"></span>`).join('')}</div>`;
-  const pick = (name, val, cur, label, help = '') => `<label class="quiz-opt wz-opt"><input type="radio" name="${name}" value="${val}" ${cur === val ? 'checked' : ''} onchange="WZ.${name === 'wz-style' ? 'style' : 'plan'} = this.value"> <span>${esc(label)}${help ? `<small class="muted"> ${esc(help)}</small>` : ''}</span></label>`;
+  const pick = (name, val, cur, label, help = '') => `<label class="quiz-opt wz-opt"><input type="radio" name="${name}" value="${val}" ${cur === val ? 'checked' : ''} onchange="WZ.${{ 'wz-style': 'style', 'wz-help': 'help' }[name] || 'plan'} = this.value"> <span>${esc(label)}${help ? `<small class="muted"> ${esc(help)}</small>` : ''}</span></label>`;
   let body = '';
   if (n === 1) body = `<h2>${esc(t('wz.1.h'))}</h2><p>${esc(t('wz.1.sub'))}</p><p class="muted">${esc(t('wz.1.pick'))}</p><label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('wz-lang')}</label>`;
   if (n === 2) {
@@ -62,7 +62,8 @@ function wizardShow() {
       <label class="f"><span>${esc(t('wz.2.agent'))}</span><input type="text" id="wz-agent" value="${esc(WZ.agent)}" placeholder="${esc(g)}" autocomplete="off" spellcheck="false"><small class="muted">${esc(t('wz.2.agent.help'))}</small>
       ${g && !WZ.agent ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(g)}</code> <button type="button" id="wzUse" onclick="$('wz-agent').value = ${esc(JSON.stringify(g))}; this.closest('.suggest').remove()">${esc(t('setup.suggest.use'))}</button></small>` : ''}</label>`;
   }
-  if (n === 3) body = `<h2>${esc(t('wz.3.h'))}</h2><p class="muted">${esc(t('wz.3.sub'))}</p><div class="wz-opts">${Object.keys(WZ_STYLES).map(k => pick('wz-style', k, WZ.style, t('wz.style.' + k), t('wz.style.' + k + '.help'))).join('')}</div>`;
+  if (n === 3) body = `<h2>${esc(t('wz.3.h'))}</h2><p class="muted">${esc(t('wz.3.sub'))}</p><div class="wz-opts">${Object.keys(WZ_STYLES).map(k => pick('wz-style', k, WZ.style, t('wz.style.' + k), t('wz.style.' + k + '.help'))).join('')}</div>
+      <h3>${esc(t('wz.adv.help.h'))}</h3><div class="wz-opts">${HELP_LEVELS.map(v => pick('wz-help', v, WZ.help, t('help.level.' + v))).join('')}</div>`;
   if (n === 4) body = `<h2>${esc(t('wz.4.h'))}</h2><p class="muted">${esc(t('wz.4.sub'))}</p><div class="wz-opts">${WZ_PLANS.map(k => pick('wz-plan', k, WZ.plan, t('budget.plan.' + k), t('wz.plan.' + k + '.help'))).join('')}</div>`;
   if (n === 5) body = `<h2>${esc(t('wz.5.h'))}</h2><p>${esc(t('wz.5.sub'))}</p>${state.setup.needed ? `<p class="muted">${esc(t('wz.5.more'))}</p>` : ''}`;
   const skip = n > 1 && n < 5 && !(n === 2 && !WZ.hadOwner && !WZ.name) ? `<button id="wzSkip" onclick="wizardGo(${n + 1}, true)">${esc(t('wz.skip'))}</button>` : '';
@@ -73,7 +74,7 @@ function wizardShow() {
 }
 async function wizardGo(to, skipped) {
   wzKeep();
-  if (skipped) { if (WZ.step === 3) WZ.style = ''; if (WZ.step === 4) WZ.plan = ''; if (WZ.step === 2 && WZ.hadOwner) { /* keep what is there */ } }
+  if (skipped) { if (WZ.step === 3) { WZ.style = ''; WZ.help = ''; } if (WZ.step === 4) WZ.plan = ''; if (WZ.step === 2 && WZ.hadOwner) { /* keep what is there */ } }
   if (WZ.step === 2 && to > 2 && !WZ.name && !WZ.hadOwner) { setErr('wz-err', t('wz.need.name')); return; }
   if (to === 5) { if (!(await wzSave())) return; }
   WZ.step = to; wizardShow();
@@ -85,12 +86,14 @@ async function wzSave() {
   if (WZ.agent) body['agent.command'] = WZ.agent;
   if (WZ.style) Object.assign(body.prefs, wzPrefsOf(WZ.style));
   if (WZ.plan) body.prefs.plan = WZ.plan;
+  if (WZ.help) body.prefs.helpLevel = WZ.help;
   const explain = body.prefs.explain; delete body.prefs.explain;
   try {
     // Blank name or program with a name already set: the server keeps the old ones (it only takes keys that are sent).
     state.setup = await api('POST', '/api/setup', body);
     if (explain !== undefined) setExplain(explain);
+    if (WZ.help) helpApply(WZ.help);
     return true;
   } catch (e) { setErr('wz-err', e); return false; }
 }
-function wizardClose() { closeDialog(); WZ.shown = true; state.route.view === 'setup' && $('app') && ($('app').innerHTML = renderSetup()); }
+function wizardClose() { closeDialog(); WZ.shown = true; helpMaybe(); state.route.view === 'setup' && $('app') && ($('app').innerHTML = renderSetup()); }

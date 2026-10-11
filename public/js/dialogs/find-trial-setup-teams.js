@@ -61,11 +61,14 @@ async function importFound() {
 
 /* ---------- try it as a new user (AIG-201..203) ---------- */
 // A fresh, empty copy of the board on its own port, with made-up projects to find: opens in a new window.
+// From Setup (a button) or the ❓ Help menu (none). With all the help on, the new window starts with the Agile intro, in this language (AIG-328).
 async function startTrial(btn) {
-  btn.disabled = true; const was = btn.textContent; btn.textContent = t('trial.busy'); $('trial-err').textContent = '';
-  try { const r = await api('POST', '/api/trial'); window.open(r.url, 'aigile-trial'); }
-  catch (e) { $('trial-err').textContent = e.message; }
-  btn.disabled = false; btn.textContent = was;
+  const was = btn && btn.textContent, err = $('trial-err');
+  if (btn) { btn.disabled = true; btn.textContent = t('trial.busy'); }
+  if (err) err.textContent = '';
+  try { const r = await api('POST', '/api/trial'); window.open(r.url + (HELP.level === '1' ? '?intro=1&lang=' + encodeURIComponent(chosenLang()) : ''), 'aigile-trial'); }
+  catch (e) { if (err) err.textContent = e.message; else alert(e.message); }
+  if (btn) { btn.disabled = false; btn.textContent = was; }
 }
 
 /* ---------- setup page (AIG-91) ---------- */

@@ -95,7 +95,7 @@ function linkifyBase(text, p) {
 // Small markdown renderer: headings, lists, tables, code blocks, links, bold/italic/code.
 function md(src) {
   const lines = src.replace(/\r/g, '').split('\n'); let html = '', i = 0;
-  const inline = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+  const inline = s => esc(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/(^|[^*])\*([^*\s][^*]*)\*(?!\*)/g, '$1<em>$2</em>')
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, t, u) => /^https?:/.test(u) ? `<a href="${u}" target="_blank" rel="noopener">${t}</a>` : t);
   const isList = l => /^\s*([-*]|\d+\.)\s+/.test(l), isRow = l => /^\s*\|/.test(l);
   while (i < lines.length) {

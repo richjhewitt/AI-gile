@@ -13,7 +13,7 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   const page = await openPage(ctx, '#/setup');
   await page.waitForSelector('#wzYes');
   check('first run shows both choices', (await page.textContent('#wzYes')).includes('wizard') && (await page.textContent('#wzNo')).includes('wing it'));
-  await page.click('#wzNo');
+  await page.click('#wzNo'); await page.click('#helpNo');   // AIG-345: the help offer after the wizard
   await page.waitForSelector('#wzYes', { state: 'detached' });
   await sleep(200);
   const after = await setup();
