@@ -1,0 +1,64 @@
+// QA areas: popout, owner, setup (split from look-setup.mjs, AIG-297).
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
+import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+
+def('popout', '⧉ Pop out opens a card on its own in a new window (AIG-122)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Follow these steps', { status: 'verify', testSteps: '1. Do the thing\n2. See the result' });
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.waitForSelector('button:has-text("Pop out")');
+  const [pop] = await Promise.all([ctx.waitForEvent('page'), page.click('button:has-text("Pop out")')]);
+  await pop.waitForSelector('.panel h2');
+  check('pop-out shows the card', (await pop.textContent('.panel h2')) === 'Follow these steps' && /\/pop\/alpha\//.test(pop.url()), pop.url());
+  check('no header or board behind it', !(await pop.isVisible('header')) && (await pop.locator('.board').count()) === 0);
+  check('pop-out has no Pop out button of its own', (await pop.locator('button:has-text("Pop out")').count()) === 0);
+  check('main window goes back to the board', await page.waitForFunction(() => location.hash === '#/p/alpha').then(() => true).catch(() => false));
+  await pop.click('.verdict button:has-text("Accept")');
+  await sleep(500);
+  check('accepting in the pop-out works', (await getCard(s, 'alpha', c.id)).status === 'done');
+  noErrors(page);
+}, true);
+
+def('owner', 'the board works for any owner name, not just Rich (AIG-103)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  check('meta tells the page the owner', (await s.ok('GET', '/api/meta')).owner === 'Sam');
+  const c = await mkCard(s, 'alpha', 'Question');
+  s.cli(['ask', 'alpha', c.id, 'Go?', '--as', 'Lead']);
+  const inbox = s.cli(['inbox']);
+  check('CLI speaks of the owner', /asked Sam|Sam/.test(s.cli(['help']).out) && !/\bRich\b/.test(s.cli(['help']).out));
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.click('[data-ctab="reply"]');
+  check('reply box says Sam', /Reply as Sam/.test(await page.getAttribute('#r-text', 'placeholder')));
+  await page.click('.reply button:has-text("Go")');
+  await sleep(500);
+  const card = await getCard(s, 'alpha', c.id);
+  check('owner reply is from Sam and counts as the owner', card.comments.at(-1).author === 'Sam' && card.status === 'team' && !card.needsYou, card);
+  const up = s.cli(['updates', 'alpha']);
+  check('team sees Sam in updates', /new from Sam/.test(up.out) && /Sam \(/.test(up.out), up.out);
+  s.cli(['task', 'alpha', c.id, 'log in', '--as', 'Lead']);
+  check('tasks go to Sam', (await getCard(s, 'alpha', c.id)).assignee === 'Sam' && (await s.ok('GET', '/api/inbox')).some(x => x.id === c.id));
+  noErrors(page);
+}, true, { AIGILE_OWNER: 'Sam' });
+
+def('setup', 'a new install opens Setup; saving writes the local settings file (AIG-91)', async (s, ctx) => {
+  const file = process.env.QA_SETUP_FILE;
+  check('new install needs setup', (await s.ok('GET', '/api/meta')).setupNeeded === true);
+  const page = await openPage(ctx, '#/');
+  await page.waitForFunction(() => location.hash === '#/setup', null, { timeout: 8000 }).catch(() => {});
+  await page.waitForSelector('#setupForm');
+  check('board opens Setup first', page.url().endsWith('#/setup'));
+  check('name is required', (await s.api('POST', '/api/setup', { owner: '' })).status === 400);
+  await page.fill('input[data-key="owner"]', 'Sam');
+  await page.fill('input[data-key="agent.command"]', 'C:/tools/agent.exe');
+  await page.fill('input[data-key="agent.notesFile"]', 'NOTES.local.md');
+  await page.fill('input[data-key="agent.settingsFile"]', '.agent/settings.local.json');
+  await page.click('#setupForm button[type=submit]');
+  await page.waitForSelector('#setup-done:has-text("ready")');
+  const saved = JSON.parse(fs.readFileSync(file, 'utf8'));
+  check('saved to the local settings file', saved.owner === 'Sam' && saved.agent.command === 'C:/tools/agent.exe' && saved.agent.settingsFile === '.agent/settings.local.json', saved);
+  const m = await s.ok('GET', '/api/meta');
+  check('setup done and the name is used at once', m.setupNeeded === false && m.owner === 'Sam', m);
+  noErrors(page);
+}, true, { AIGILE_OWNER: '', AIGILE_LOCAL: (process.env.QA_SETUP_FILE = path.join(tmp('setup'), 'aigile.local.json')) });
