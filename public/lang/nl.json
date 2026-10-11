@@ -755,5 +755,18 @@
  "quiet.done.woke": "▶ {n} slapend(e) team(s) wakker gemaakt",
  "quiet.done.watch": "🌙 De nachtwacht houdt {n} in de gaten",
  "quiet.done.none": "Geen team heeft open werk, dus niemand hoefde het te weten.",
- "quiet.done.ok": "Welterusten"
+ "quiet.done.ok": "Welterusten",
+ "ng.h": "Nachtwacht",
+ "ng.off": "Je bent niet stil, dus de nachtwacht staat uit.",
+ "ng.checked": "Gecontroleerd {when}",
+ "ng.first": "Eerste controle over een paar minuten",
+ "ng.calm": "Alles rustig. Niets heeft je vannacht nodig.",
+ "ng.working": "aan het werk",
+ "ng.asleep": "slaapt",
+ "ng.restarted": "weer opgepakt",
+ "ng.stuck": "vastgelopen: {ids}",
+ "ng.u.stuck": "{name}: {ids} vastgelopen na 3 pogingen",
+ "ng.u.blocker": "{name}: geblokkeerd: {text}",
+ "ng.open": "🌙 Nachtblik",
+ "ng.open.title": "Een klein, rustig venster voor een tweede scherm: de nachtwacht in één blik"
 }

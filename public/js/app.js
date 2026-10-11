@@ -111,7 +111,7 @@ async function pokeAll(b) {
 function setNight(since) {
   document.documentElement.toggleAttribute('data-night', !!since);
   if (window.Inbox) Inbox.repaint();
-  $('nightTop').innerHTML = since ? `<button class="navlink" onclick="backFromQuiet()" title="${esc(t('night.since', { when: ago(since) }))}">${esc(t('night.back'))}</button>` : '';
+  $('nightTop').innerHTML = since ? `<button class="navlink" onclick="openNightGlance()" title="${esc(t('ng.open.title'))}">🌙</button><button class="navlink" onclick="backFromQuiet()" title="${esc(t('night.since', { when: ago(since) }))}">${esc(t('night.back'))}</button>` : '';
 }
 // Going quiet asks which projects the 🌙 night watchman should watch: every active one is ticked (AIG-199).
 async function goQuiet() {
@@ -135,7 +135,7 @@ async function goQuietNow() {
       ${r.woke.length ? `<h3>${esc(t('quiet.done.woke', { n: r.woke.length }))}</h3>${chips(r.woke)}` : ''}
       ${(r.watching || []).length ? `<h3>${esc(t('quiet.done.watch', { n: r.watching.length }))}</h3>${chips(r.watching.map(s => look[s] || s))}` : ''}
       ${r.failed.length ? `<div class="err">${esc(t('quiet.failed', { names: r.failed.join('; ') }))}</div>` : ''}
-      <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('quiet.done.ok'))}</button></div></div>`);
+      <div class="actions"><button onclick="openNightGlance(); closeDialog()" title="${esc(t('ng.open.title'))}">${esc(t('ng.open'))}</button><button class="primary" onclick="closeDialog()">${esc(t('quiet.done.ok'))}</button></div></div>`);
     refresh(true);
   } catch (e) { alert(e.message); }
 }

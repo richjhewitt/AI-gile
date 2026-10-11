@@ -198,3 +198,21 @@ def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuc
   const cut = back.summary.find(x => x.project === 'cut');
   check('back from quiet: a summary per project', cut && cut.stuck.includes(mid.id) && cut.restarted.includes(mid.id) && !(await s.ok('GET', '/api/watchman')), back.summary);
 }, false);
+
+def('nightglance', '🌙 night glance: a calm pop-out with the watchman per project; an amber glow only for real blockers (AIG-209)', async (s, ctx) => {
+  await mkProject(s, 'Calm', 'CLM', { path: tmp('calm') });
+  await mkProject(s, 'Trouble', 'TRB', { path: tmp('trouble') });
+  const page = await openPage(ctx, '#/pop-night');
+  await page.waitForSelector('.ng');
+  check('when not going quiet it says the watchman is off', /watchman is off/.test(await page.textContent('.ng')));
+  await s.ok('POST', '/api/quiet', { on: true });
+  await page.reload(); await page.waitForSelector('.ng-list li');
+  check('one quiet line per watched project, no top bar', (await page.locator('.ng-list li').count()) === 2 && await page.locator('header').isHidden());
+  check('calm night: no glow', /All calm/.test(await page.textContent('.ng')) && !(await page.evaluate(() => document.body.classList.contains('ng-urgent'))));
+  await s.ok('POST', '/api/standup', { projects: ['trouble'] });
+  s.cli(['standup', 'trouble', '--done', 'x', '--next', 'y', '--blockers', 'Server is down, nothing else can go on', '--as', 'Lead']);
+  await page.reload(); await page.waitForSelector('.ng-urgent-line', { timeout: 6000 }).catch(() => {});
+  check('a real blocker: the edge glows and one line says what', await page.evaluate(() => document.body.classList.contains('ng-urgent')) && /Server is down/.test(await page.textContent('.ng-urgent-line')));
+  await s.ok('POST', '/api/quiet', { on: false });
+  noErrors(page);
+}, true);

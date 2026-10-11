@@ -755,5 +755,18 @@
  "quiet.done.woke": "▶ Woke {n} sleeping team(s)",
  "quiet.done.watch": "🌙 The watchman keeps an eye on {n}",
  "quiet.done.none": "No team has open work, so nobody needed telling.",
- "quiet.done.ok": "Good night"
+ "quiet.done.ok": "Good night",
+ "ng.h": "Night watch",
+ "ng.off": "Not going quiet, so the watchman is off.",
+ "ng.checked": "Checked {when}",
+ "ng.first": "First check in a few minutes",
+ "ng.calm": "All calm. Nothing needs you tonight.",
+ "ng.working": "working",
+ "ng.asleep": "asleep",
+ "ng.restarted": "picked back up",
+ "ng.stuck": "stuck: {ids}",
+ "ng.u.stuck": "{name}: {ids} stuck after 3 tries",
+ "ng.u.blocker": "{name}: blocked: {text}",
+ "ng.open": "🌙 Night glance",
+ "ng.open.title": "A small, calm window for a second screen: the watchman at a glance"
 }
