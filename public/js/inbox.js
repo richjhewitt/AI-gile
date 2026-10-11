@@ -21,11 +21,11 @@
     return j;
   };
   // Server sends three kinds: tasks (assigned to Rich: something only he can do), questions, and verify cards.
-  const isTask = c => String(c.assignee || '').trim().toLowerCase() === 'rich';
+  const isTask = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
   const isQuestion = c => !isTask(c) && c.status !== 'verify';
   const isTest = c => !isTask(c) && c.status === 'verify';
   const kindOf = c => isTask(c) ? 'k' : isQuestion(c) ? 'q' : 't';
-  const lastAsk = c => [...(c.comments || [])].reverse().find(m => String(m.author).trim().toLowerCase() !== 'rich')
+  const lastAsk = c => [...(c.comments || [])].reverse().find(m => String(m.author).trim().toLowerCase() !== me().toLowerCase())
     || { author: c.assignee || 'The team', at: c.updated, text: c.description || c.title };
   const keyOf = c => c.project + '/' + c.id;
   // Escape, then link web addresses and card ids (e.g. AIG-12) in the same project.
@@ -53,14 +53,13 @@
       .catch(e => { inflight = null; throw e; });
     return inflight;
   }
-  // Going quiet (night mode): no tests or tasks, and only the 3 newest questions.
+  // Going quiet (night mode).
   const isQuiet = () => document.documentElement.hasAttribute('data-night');
   function view() {
+    // AIG-229: nothing at all at night, just how many things wait for the morning (the watchman's chat is the way in).
     if (!isQuiet()) { hidden = 0; return raw; }
-    const all = raw.filter(isQuestion);
-    const qs = all.slice().sort((a, b) => lastAsk(b).at.localeCompare(lastAsk(a).at)).slice(0, 3);
-    hidden = all.length - qs.length;
-    return raw.filter(c => qs.includes(c));
+    hidden = raw.length;
+    return [];
   }
   function apply(list) {
     if (typeof i18n === 'undefined' || !i18n.ready) { setTimeout(() => load().catch(() => {}), 100); return; }   // wait for the language file (AIG-124)
@@ -113,7 +112,8 @@
       const b = el('ibAlerts'); if (b) b.onclick = toggleAlerts;
     }
     // Everything waiting on Rich; the desktop app turns this count into its taskbar badge (AIG-76).
-    const title = q + k + te ? `(${q + k + te}) ${baseTitle}` : baseTitle;
+    // Going quiet (AIG-227): no count, so no purple diamond on the taskbar until the morning.
+    const title = q + k + te && !document.documentElement.hasAttribute('data-night') ? `(${q + k + te}) ${baseTitle}` : baseTitle;
     if (document.title !== title) document.title = title;
   }
 
@@ -186,7 +186,7 @@
       <div class="actions"><button class="good" data-act="taskdone">${esc(t('inbox.k.done'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.k.hint'))}</span></div>`;
   }
   function tHtml(c) {
-    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${aiChip(c)}<span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       ${aiEvidence(c, c.project)}
       ${c.testSteps ? `<details class="ib-steps"><summary>${esc(t('inbox.t.how'))}</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : `<div class="ib-hint">${esc(t('inbox.t.nosteps'))}</div>`}
@@ -207,9 +207,9 @@
       <section class="ib-sec ib-fl" id="ibAi" hidden></section>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <div id="ibEmpty"></div>
-      <section class="ib-sec q" id="ibQ"><h3>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
-      <section class="ib-sec k" id="ibK"><h3>${esc(t('inbox.tasks'))} <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.tasks.sub'))}</span></h3><div class="list"></div></section>
-      <section class="ib-sec t" id="ibT"><h3>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span><button class="good ib-aiall" id="ibAiAll" hidden title="${esc(t('inbox.aiall.title'))}"></button></h3><div class="list"></div></section>
+      <section class="ib-sec q" id="ibQ"><h3><button class="ib-popbtn" data-poplist="q" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
+      <section class="ib-sec k" id="ibK"><h3><button class="ib-popbtn" data-poplist="k" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.tasks'))} <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.tasks.sub'))}</span></h3><div class="list"></div></section>
+      <section class="ib-sec t" id="ibT"><h3><button class="ib-popbtn" data-poplist="t" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span><button class="ib-tidy" id="ibTidy" title="${esc(t('tidy.title'))}">🧹 ${esc(t('tidy.btn'))}</button><button class="good ib-aiall" id="ibAiAll" hidden title="${esc(t('inbox.aiall.title'))}"></button></h3><div class="list"></div></section>
     </div>`;
     el('ib').addEventListener('click', onClick);
     el('ib').addEventListener('keydown', onKey);
@@ -314,6 +314,10 @@
     if (!el('ib')) skeleton();
     paintTabs();
     // All tab: items grouped by project, in tab order, each group still longest-waiting first (AIG-86).
+    // A popped-out list (AIG-104) shows only its own kind, in a window of its own.
+    const popList = typeof state !== 'undefined' && state.route && state.route.popList;
+    document.body.classList.toggle('poplist', !!popList);
+    if (popList) { only = popList; flick = -1; }
     const shown = tab === 'all' ? [...items].sort((a, b) => tabOrder.indexOf(a.project) - tabOrder.indexOf(b.project)) : items.filter(c => c.project === tab);
     // 🤖 AI passed (AIG-192): its own view, one test at a time; the rest of the inbox steps aside while it's open.
     const aiList = shown.filter(c => isTest(c) && c.aiCheck && c.aiCheck.result === 'pass');
@@ -332,7 +336,9 @@
     // Your queue (AIG-159..162): filter by kind, sort by your priority / what it holds up / time, and pick Next up.
     paintQueue(shown, kindFilter);
     const pick = shown.filter(c => !kindFilter || kindOfItem(c) === kindFilter).sort(queueRank);
-    const qs = pick.filter(isQuestion), ks = pick.filter(isTask), ts = pick.filter(isTest);
+    // Tests the AI tester passed come first, so Accept all AI-passed matches what you see at the top (AIG-196).
+    const aiPassed = c => !!(c.aiCheck && c.aiCheck.result === 'pass');
+    const qs = pick.filter(isQuestion), ks = pick.filter(isTask), ts = pick.filter(isTest).sort((a, b) => aiPassed(b) - aiPassed(a));
     // A link to one question (alerts, the home list) opens its chat.
     if (flashKey) { const f = qs.find(c => keyOf(c) === flashKey); if (f) chat = f.project; }
     paintChats(qs);
@@ -342,7 +348,7 @@
     el('ibOnly').hidden = !only; el('ibOnly').innerHTML = only ? `${esc(t('inbox.only.' + only))} · <a href="#" data-onlyclear>${esc(t('inbox.only.all'))}</a>` : '';
     // Accept all AI-passed (AIG-163): every test the AI tester passed, in one click.
     const passed = ts.filter(c => c.aiCheck && c.aiCheck.result === 'pass');
-    el('ibAiAll').hidden = !passed.length; el('ibAiAll').textContent = t('inbox.aiall', { n: passed.length });
+    el('ibAiAll').hidden = !passed.length; el('ibAiAll').title = t('inbox.aiall.title') + ': ' + passed.map(c => c.id).join(', '); el('ibAiAll').textContent = t('inbox.aiall', { n: passed.length });
     el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = ts.length;
     el('ibMore').hidden = !hidden; el('ibMore').textContent = t('inbox.more', { n: hidden });
     if (hidden && (!only || only === 'q')) el('ibQ').hidden = false;
@@ -362,9 +368,12 @@
     }
   }
   function onClick(e) {
+    const pl = e.target.closest('[data-poplist]');
+    if (pl) { window.open('#/pop-inbox/' + pl.dataset.poplist, 'aigile-inbox-' + pl.dataset.poplist, 'width=480,height=760'); return; }
     if (e.target.closest('[data-flick]')) { flick = flick >= 0 ? -1 : 0; paintPage(); return; }
     const fl = e.target.closest('[data-fl]'); if (fl) { flickAct(fl.dataset.fl); return; }
     if (e.target.closest('[data-onlyclear]')) { e.preventDefault(); only = ''; paintPage(); return; }
+    if (e.target.closest('#ibTidy')) { const ps = [...new Set(items.filter(isTest).filter(c => tab === 'all' || c.project === tab).map(c => c.project))]; (async () => { for (const s of ps) { try { await post('POST', `/api/projects/${s}/tidy`); } catch {} } toast(t('tidy.toast', { n: ps.length })); })(); return; }
     if (e.target.closest('#ibAiAll')) { acceptAiPassed(e.target.closest('#ibAiAll')); return; }
     const cb = e.target.closest('button[data-chat]');
     if (cb) { chat = cb.dataset.chat; paintPage(); return; }

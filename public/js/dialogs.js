@@ -146,6 +146,15 @@ async function importFound() {
   $('fp-acts').innerHTML = `<button class="primary" onclick="closeDialog(); rerender()">${esc(t('common.done'))}</button>`;
 }
 
+/* ---------- try it as a new user (AIG-201..203) ---------- */
+// A fresh, empty copy of the board on its own port, with made-up projects to find: opens in a new window.
+async function startTrial(btn) {
+  btn.disabled = true; const was = btn.textContent; btn.textContent = t('trial.busy'); $('trial-err').textContent = '';
+  try { const r = await api('POST', '/api/trial'); window.open(r.url, 'aigile-trial'); }
+  catch (e) { $('trial-err').textContent = e.message; }
+  btn.disabled = false; btn.textContent = was;
+}
+
 /* ---------- setup page (AIG-91) ---------- */
 // ---- setup: your name and where the agent lives on this computer, saved to aigile.local.json ----
 function renderSetup() {
@@ -154,7 +163,9 @@ function renderSetup() {
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
     <label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('setup-lang')}<small class="muted">${esc(t('setup.lang.help'))}</small></label>
     <label class="f chk"><span><input type="checkbox" id="enSwitch" ${ls('aigile.enSwitch') === '1' ? 'checked' : ''} onchange="setEnSwitch(this.checked)"> ${esc(t('lang.en.switch'))}</span><small class="muted">${esc(t('lang.en.help'))}</small></label>
+    <label class="f chk"><span><input type="checkbox" id="explainWords" ${glossOn() ? 'checked' : ''} onchange="setExplain(this.checked)"> ${esc(t('gloss.switch'))}</span><small class="muted">${esc(t('gloss.switch.help'))} <a href="#/glossary">${esc(t('gloss.open'))}</a></small></label>
     <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
+    <div class="f"><span>${esc(t('trial.h'))}</span><div><button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">
       ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}"><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small></label>`).join('')}

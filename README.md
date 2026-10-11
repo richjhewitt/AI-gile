@@ -23,6 +23,8 @@ AI-gile gives the project owner a live, at-a-glance view of every project. It al
 
 ## Quick start
 
+New here? **[docs/INSTALL.md](docs/INSTALL.md)** walks through a first install on Windows, step by step.
+
 ```sh
 node server.js
 ```
@@ -98,7 +100,7 @@ Activity is marked as seen when it is reported. The board shows the owner which 
 | `AIGILE_URL` | `http://localhost:4321` | Server used by the CLI |
 | `AIGILE_AS` | none | Default `--as` name for the CLI |
 | `AIGILE_USAGE_DIR` | none | Folder of agent session logs (JSONL, one subfolder per project) for token usage. Can also be set as `usageDir` in `aigile.local.json`, which is kept out of git |
-| `AIGILE_OWNER` | Rich | Your name: the person the board and its teams work for. Can also be set as `owner` in `aigile.local.json` |
+| `AIGILE_OWNER` | Owner | Your name: the person the board and its teams work for. Can also be set as `owner` in `aigile.local.json` |
 | `AIGILE_DEV` | off | Prompt open pages to refresh after each new build |
 
 ## Data
@@ -120,7 +122,7 @@ All endpoints take and return JSON.
 | PATCH, DELETE | `/api/projects/:slug/cards/:id` | Update or delete a card |
 | POST | `/api/projects/:slug/cards/:id/comments` | Add a comment: `{author, text, needsYou?}` |
 | POST | `/api/projects/:slug/cards/:id/verdict` | Accept or send back: `{accept, text}` |
-| POST | `/api/projects/:slug/wake` | Start the team in the background (no window); also started by Rich's comments, send-backs, pokes and new cards |
+| POST | `/api/projects/:slug/wake` | Start the team in the background (no window); also started by the owner's comments, send-backs, pokes and new cards |
 | POST | `/api/projects/:slug/restart` | Kill the team's background run and start a fresh one |
 | GET | `/api/projects/:slug/agentlog` | `{text}`: the end of what the background run printed |
 | GET | `/api/projects/:slug/file?path=` | `{name, text}`: any `.md` file inside the project folder (relative, project-folder-prefixed or absolute path; `/` or `\`); 400 if not `.md`, 404 if missing or outside |
