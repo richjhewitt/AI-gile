@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import net from 'node:net';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 // Tests speak to "Owner" whatever your own name is, here and in the servers they start (setup clears it to test naming).
 process.env.AIGILE_OWNER = 'Owner';
@@ -32,6 +33,8 @@ export const tmp = p => fs.mkdtempSync(path.join(os.tmpdir(), 'aigile-qa-' + p +
 /* ---------- server and helpers ---------- */
 // A free port from the OS (listen on 0), so two QA runs on one machine never pick the same second-board or relay port.
 export const freePort = () => new Promise((res, rej) => { const srv = net.createServer(); srv.once('error', rej); srv.listen(0, '127.0.0.1', () => { const { port } = srv.address(); srv.close(() => res(port)); }); });
+// Is a port free right now on the loopback address the QA server uses? A busy port means another process owns it.
+export const portFree = port => new Promise(res => { const srv = net.createServer(); srv.once('error', () => res(false)); srv.listen(port, '127.0.0.1', () => srv.close(() => res(true))); });
 // A local relay on a free port and a temp data folder of its own.
 export async function startRelay(extraEnv = {}) {
   const port = await freePort();
@@ -46,20 +49,29 @@ export const until = async (fn, ms = 8000) => { const end = Date.now() + ms; let
 
 // port: a second board for the dms area runs on another port.
 export async function startServer(extraEnv = {}, port = PORT) {   // a second board passes await freePort()
+  // A busy QA_PORT means another process (a board, a relay, an old run) would answer our calls: stop the run at once.
+  if (!(await portFree(port))) {
+    if (port === PORT) { console.error(`QA_PORT ${port} is in use by another process: pick another QA_PORT`); process.exit(3); }
+    throw new Error(`port ${port} is in use by another process`);
+  }
   const BASE = `http://127.0.0.1:${port}`;
+  // A random token the server must hand back on /api/meta: proves the server that answers is this run's own.
+  const token = crypto.randomBytes(16).toString('hex');
   const dir = tmp('run'), data = path.join(dir, 'data'), usageDir = path.join(dir, 'usage');
   fs.mkdirSync(usageDir);
   const out = path.join(dir, 'wake-out.txt');
   const stub = path.join(dir, 'agent-stub.bat');
   fs.writeFileSync(stub, `@echo off\r\ncd > "${out}"\r\necho %* >> "${out}"\r\nping -n 4 127.0.0.1 >nul\r\nexit\r\n`);
-  const env = { ...process.env, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', ...extraEnv };   // tests speak to "Owner", whatever your own name is
+  const env = { ...process.env, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', AIGILE_QA_TOKEN: token, ...extraEnv };   // tests speak to "Owner", whatever your own name is
   delete env.AIGILE_DEV; delete env.AIGILE_ALLOW_DONE; delete env.AIGILE_AS;
   const proc = spawn(process.execPath, [path.join(ROOT, 'server.js')], { env, stdio: 'ignore', cwd: ROOT });
-  for (let i = 0; i < 100; i++) {
+  let mine = false;
+  for (let i = 0; i < 100 && !mine; i++) {
     if (proc.exitCode !== null) break;   // it died (port taken?): do not mistake another run's server for ours
-    try { if ((await fetch(BASE + '/api/meta')).ok) break; } catch {}
-    await sleep(100);
+    try { mine = (await (await fetch(BASE + '/api/meta')).json()).qaToken === token; } catch {}
+    if (!mine) await sleep(100);
   }
+  if (!mine) { try { proc.kill(); } catch {} throw new Error(`the server on port ${port} is not this QA run's (no matching token): another process holds it`); }
   const api = async (method, url, body) => {
     const r = await fetch(BASE + url, { method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
     const j = await r.json().catch(() => ({}));

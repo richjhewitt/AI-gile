@@ -4,7 +4,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, PORT, BASE, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, freePort, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def } from '../lib.mjs';
 import { shareCards } from './share-cards.mjs';
 import { shareMore } from './share-more.mjs';
 
@@ -33,8 +33,8 @@ export async function pair(a, b, relay) {
 }
 
 def('share', 'sharing a project with a friend: offer / accept over the DMs, needs a checked safety code, replays and old seq dropped, the 🔗 switch drops while off, unlink and forget, block ends links (AIG-304)', async (s, ctx) => {
-  const relay = await startRelay(PORT + 3);
-  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, PORT + 1);
+  const relay = await startRelay(await freePort());
+  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, await freePort());
   const a = s;
   try {
     const { ca, cb, boxA, boxB } = await pair(a, b, relay);
