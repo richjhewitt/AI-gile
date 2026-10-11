@@ -377,6 +377,7 @@ async function lookDialog() {
     <label class="f"><span>${esc(t('cols.colour'))}</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
     <div class="f"><span>${esc(t('logo.title'))}</span>${logoEditor('look-logo', p.logo)}</div>
     <label class="chk"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> ${esc(t('look.chatty'))} <span class="muted">${esc(t('look.chatty.cost'))}</span></label>
+    <label class="chk"><input type="checkbox" id="look-verbose" ${p.verbose ? 'checked' : ''}> ${esc(t('look.verbose'))}</label>
     <label class="f"><span>${esc(t('look.runin'))}</span>${runInSelect('look-runin', p.runIn || '', 'lookRunIn()', def)}${runInBlind(w)}</label>
     <label class="f" id="look-runcmd-box" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="look-runcmd" value="${esc(p.runCmd || '')}" placeholder="${esc(leadPrefs().runCmd || 'cursor "{folder}"')}"><small class="muted">${esc(t('runin.cmd.look'))}</small></label>
     <div class="err" id="look-err"></div>
@@ -384,7 +385,7 @@ async function lookDialog() {
 }
 async function saveLook(auto) {
   try {
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }
