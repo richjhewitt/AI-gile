@@ -108,3 +108,4 @@ server.listen(PORT, HOST, () => { console.log(`AI-gile running at http://localho
 require('./lib/dm').startDms();
 if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();
 require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anything while you are going quiet (AIG-199)
+require('./lib/notokens').start();   // ⛔ No Token Mode turns itself on at the usage limit (AIG-338)

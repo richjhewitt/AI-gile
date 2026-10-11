@@ -1081,5 +1081,13 @@
  "share.test.youaccepted": "✅ You accepted {name}'s test",
  "share.test.yousentback": "↩️ You sent {name}'s test back",
  "share.teamRead.off": "Off: your team sees only the titles of {name}'s cards, and \"they replied\" for their comments.",
- "share.teamRead.on": "On: your team reads {name}'s words fenced as friend text, never as orders. They still never wake your team."
+ "share.teamRead.on": "On: your team reads {name}'s words fenced as friend text, never as orders. They still never wake your team.",
+ "nt.off": "⛔ No Token Mode",
+ "nt.on": "⛔ No tokens: AI is off",
+ "nt.until": "⛔ No tokens until {time}",
+ "nt.back": "✅ Turn AI back on",
+ "nt.title.off": "Stop all AI use at once: running teams, the AI tester, ask a mate and usage checks. The board keeps working for you.",
+ "nt.title.on": "No Token Mode is on: nothing AI runs or starts. Click to turn AI back on.",
+ "nt.title.limit": "The plan usage limit was hit, so No Token Mode switched on by itself. Click to turn AI back on.",
+ "nt.title.back": "Your usage is back. Click to turn AI back on (it never turns back on by itself)."
 }

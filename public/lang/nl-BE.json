@@ -1081,5 +1081,13 @@
  "share.test.youaccepted": "✅ Je hebt de test van {name} goedgekeurd",
  "share.test.yousentback": "↩️ Je hebt de test van {name} teruggestuurd",
  "share.teamRead.off": "Uit: je team ziet alleen de titels van de kaarten van {name}, en \"ze hebben gereageerd\" bij hun reacties.",
- "share.teamRead.on": "Aan: je team leest de woorden van {name} afgeschermd als tekst van een vriend, nooit als opdracht. Ze maken je team nog altijd nooit wakker."
+ "share.teamRead.on": "Aan: je team leest de woorden van {name} afgeschermd als tekst van een vriend, nooit als opdracht. Ze maken je team nog altijd nooit wakker.",
+ "nt.off": "⛔ Geen-tokensmodus",
+ "nt.on": "⛔ Geen tokens: AI staat uit",
+ "nt.until": "⛔ Geen tokens tot {time}",
+ "nt.back": "✅ Zet AI terug aan",
+ "nt.title.off": "Stop alle AI-gebruik meteen: lopende teams, de AI-tester, vraag een maat en gebruikscontroles. Het bord blijft gewoon werken.",
+ "nt.title.on": "Geen-tokensmodus staat aan: er draait of start niets met AI. Klik om AI terug aan te zetten.",
+ "nt.title.limit": "De gebruikslimiet van je abonnement is bereikt, dus de geen-tokensmodus ging vanzelf aan. Klik om AI terug aan te zetten.",
+ "nt.title.back": "Je gebruik is terug. Klik om AI terug aan te zetten (het gaat nooit vanzelf terug aan)."
 }
