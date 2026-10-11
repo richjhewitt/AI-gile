@@ -6,7 +6,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const { PORT, HOST, DATA, PUBLIC, bad } = require('./lib/store');
+const { PORT, HOST, DATA, PUBLIC, bad, localSettings } = require('./lib/store');
 const makeRoutes = require('./lib/routes');
 const { heard } = require('./lib/presence');
 
@@ -15,7 +15,8 @@ fs.mkdirSync(DATA, { recursive: true });
 /* ---------- dev build id ---------- */
 // Development flag: open pages show a "new version, refresh" prompt after each build.
 // A build = a server restart or a change to the page, so the id is start time + page mtime.
-const DEV = /^(1|true|yes)$/i.test(process.env.AIGILE_DEV || '');
+// On for whoever builds AI-gile ("dev": true in aigile.local.json, or AIGILE_DEV=1), off for friends (AIG-253).
+const DEV = /^(1|true|yes)$/i.test(process.env.AIGILE_DEV || '') || localSettings().dev === true;
 const STARTED = Date.now();
 const pageFiles = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? pageFiles(path.join(dir, e.name)) : [path.join(dir, e.name)]);
 const build = () => STARTED + '-' + Math.max(...pageFiles(PUBLIC).map(f => fs.statSync(f).mtimeMs));
@@ -98,7 +99,8 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, HOST, () => console.log(`AI-gile running at http://localhost:${PORT}`));
+// The port goes in a file next to the data (AIG-252), so the teams' commands find a board that isn't on 4321.
+server.listen(PORT, HOST, () => { console.log(`AI-gile running at http://localhost:${PORT}`); try { fs.writeFileSync(path.join(DATA, 'board.port'), String(PORT)); } catch {} });
 // Private DMs: collect this board's relay mailbox every few seconds while DMs are on (lib/dm.js).
 require('./lib/dm').startDms();
 if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();

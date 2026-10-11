@@ -136,7 +136,9 @@ async function importFound() {
   for (const r of rows) {
     const f = state.found[+r.querySelector('input[type=checkbox]').dataset.i];
     try {
-      const p = await api('POST', '/api/projects', { name: r.querySelector('.fp-name').value.trim() || f.name, key: r.querySelector('.fp-key').value.trim(), description: f.readme });
+      const body = { name: r.querySelector('.fp-name').value.trim() || f.name, key: r.querySelector('.fp-key').value.trim(), description: f.readme };
+      // Two projects that start alike get the same guessed key (AIG-244): if it's taken, the board picks a free one.
+      const p = await api('POST', '/api/projects', body).catch(e => /already used/.test(e.message) ? api('POST', '/api/projects', { ...body, key: '' }) : Promise.reject(e));
       if ($('fp-connect').checked) await api('POST', `/api/projects/${p.slug}/connect`, { path: f.path });
       else await api('PATCH', '/api/projects/' + p.slug, { path: f.path });
       done.push('✅ ' + p.name);
