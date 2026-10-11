@@ -129,6 +129,7 @@
  "dms.title": "💬 Direct messages",
  "dms.noleads": "No team leads yet.",
  "dms.nomsgs": "No messages yet. Say hi, or send an idea: the lead turns it into cards.",
+ "dms.nomsgs.watch": "The watchman only writes here if something critical happens overnight. You can't reply: to ask something, message a project's lead.",
  "dms.replying.html": "Replying to {link} {title}",
  "dms.newmsg": "New message to {lead}",
  "dms.all": "All DMs",

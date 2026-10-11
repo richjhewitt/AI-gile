@@ -129,6 +129,7 @@
  "dms.title": "💬 Privéberichten",
  "dms.noleads": "Nog geen teamleiders.",
  "dms.nomsgs": "Nog geen berichten. Zeg hoi, of stuur een idee: de teamleider maakt er kaarten van.",
+ "dms.nomsgs.watch": "De nachtwaker schrijft hier alleen als er 's nachts iets kritieks gebeurt. Antwoorden kan niet: stuur een vraag naar de teamleider van een project.",
  "dms.replying.html": "Antwoord op {link} {title}",
  "dms.newmsg": "Nieuw bericht aan {lead}",
  "dms.all": "Alle DM's",

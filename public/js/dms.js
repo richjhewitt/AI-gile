@@ -92,7 +92,7 @@ const Dms = (() => {
     thread.open.forEach(o => waitingSeen.add(o.id));
     if (fresh) { target = fresh.id; fold = fresh.id; }
     if (!thread.open.some(o => o.id === target)) target = thread.open.length ? thread.open[0].id : null;
-    const html = foldsHtml() || `<p class="muted dm-empty">${esc(t('dms.nomsgs'))}</p>`;
+    const html = foldsHtml() || `<p class="muted dm-empty">${esc(t(chats.some(x => x.slug === open && x.watchman) ? 'dms.nomsgs.watch' : 'dms.nomsgs'))}</p>`;
     if (list.dataset.sig !== html) {
       const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
       list.dataset.sig = html; list.innerHTML = html;
