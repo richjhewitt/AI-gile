@@ -143,7 +143,7 @@ def('quietinbox', 'going quiet hides tests and tasks and caps questions at 3; I\
   await page.waitForTimeout(500);
   check('quiet: 3 newest questions, no task or test', (await page.locator('.ib-item.q').count()) === 3 && (await page.locator('.ib-item.k, .ib-item.t').count()) === 0);
   check('quiet: newest question is shown, oldest is not', (await page.locator('.ib-item[data-id="QIX-5"]').count()) === 1 && (await page.locator('.ib-item[data-id="QIX-1"]').count()) === 0);
-  check('quiet: more waiting line', /2 more waiting for the morning/.test(await page.textContent('#ibMore')));
+  check('quiet: more waiting line', /2 waiting for the morning/.test(await page.textContent('#ibMore')));
   const top = await page.textContent('#inboxTop .ib-btn');
   check('quiet: top bar hides tasks and tests', /3 questions/.test(top) && !/to do|to test/.test(top), top);
   await page.click('text=☀️ I\'m back');
@@ -217,7 +217,7 @@ def('nightglance', '🌙 night glance: a calm pop-out with the watchman per proj
   noErrors(page);
 }, true);
 
-def('watchdm', '🌙 watchman DMs: while quiet only its chat is listed, one message per critical problem, read-only (AIG-211)', async (s, ctx) => {
+def('watchdm', '🌙 watchman DMs: while quiet only its chat is listed, one message per critical problem, you can write to it (AIG-211, AIG-221)', async (s, ctx) => {
   await mkProject(s, 'Calm', 'CLM', { path: tmp('calm2') });
   await mkProject(s, 'Trouble', 'TRB', { path: tmp('trouble2') });
   check('awake: the leads\' chats are listed', (await s.ok('GET', '/api/chats')).some(c => c.slug === 'calm'));
@@ -235,7 +235,7 @@ def('watchdm', '🌙 watchman DMs: while quiet only its chat is listed, one mess
   await page.click('#dmRail [data-dms]');
   await page.click('#dmPanel [data-dm="_watchman"]');
   await page.waitForSelector('#dmList .dm-msg');
-  check('its chat shows the message and has no typing box', /Server is down/.test(await page.textContent('#dmList')) && await page.locator('#dmPanel .dm-compose').isHidden());
+  check('its chat shows the message and has a typing box (AIG-221)', /Server is down/.test(await page.textContent('#dmList')) && await page.locator('#dmPanel .dm-compose').isVisible());
   await s.ok('POST', '/api/quiet', { on: false });
   check('back from quiet: the leads are back', (await s.ok('GET', '/api/chats')).some(c => c.slug === 'calm'));
   noErrors(page);

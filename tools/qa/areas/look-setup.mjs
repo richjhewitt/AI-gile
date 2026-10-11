@@ -5,11 +5,11 @@ import path from 'node:path';
 import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
 def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, home, 🎨 Look dialog', async (s, ctx) => {
-  await mkProject(s, 'Tunio', 'TUN'); await mkProject(s, 'LocoRadio', 'LOC');
+  await mkProject(s, 'Tunio', 'TUN'); await mkProject(s, 'LocoRadio', 'LOC');   // Tunio has no keyword emoji since AIG-245: its spare one (🔭) comes from its slug
   const a = await mkCard(s, 'tunio', 'Music q'), b = await mkCard(s, 'locoradio', 'Radio q');
   s.cli(['ask', 'tunio', a.id, 'Go?', '--as', 'Lead']); s.cli(['ask', 'locoradio', b.id, 'Go?', '--as', 'Lead']);
   const sum = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'tunio');
-  check('summary has an automatic colour and emoji', /^#[0-9a-f]{6}$/i.test(sum.color) && sum.emoji === '🎵', sum);
+  check('summary has an automatic colour and emoji', /^#[0-9a-f]{6}$/i.test(sum.color) && sum.emoji === '🔭', sum);
   const ib = await s.ok('GET', '/api/inbox');
   check('inbox items carry the look', ib.every(c => c.projectColor && c.projectEmoji));
   const page = await openPage(ctx, '#/inbox');
@@ -20,13 +20,13 @@ def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, 
   check('newest chat open: only its question shows', (await page.locator(`.ib-item[data-id="${b.id}"]`).count()) === 1 && (await page.locator(`.ib-item[data-id="${a.id}"]`).count()) === 0);
   await page.click('#ibChats button[data-chat="tunio"]');
   await page.waitForSelector(`.ib-item[data-id="${a.id}"]`);
-  check('chat shows the lead and the project look', (await page.textContent('#ibChats button[data-chat="tunio"]')).includes('Lead') && (await page.textContent('#ibChats')).includes('🎵'));
-  check('badge shows emoji and name', (await page.textContent(`.ib-item[data-id="${a.id}"] .ib-proj`)).includes('🎵 Tunio'));
+  check('chat shows the lead and the project look', (await page.textContent('#ibChats button[data-chat="tunio"]')).includes('Lead') && (await page.textContent('#ibChats')).includes('🔭'));
+  check('badge shows emoji and name', (await page.textContent(`.ib-item[data-id="${a.id}"] .ib-proj`)).includes('🔭 Tunio'));
   check('item has the project stripe', (await page.getAttribute(`.ib-item[data-id="${a.id}"]`, 'style')).includes(sum.color));
   check('project tab shows the emoji', (await page.textContent('#ibTabs')).includes('📻 LocoRadio'));
   await page.goto(BASE + '/#/');
   await page.waitForSelector('a.proj');
-  check('home card shows the emoji', (await page.textContent('a.proj[href="#/p/tunio"] h2')).includes('🎵'));
+  check('home card shows the emoji', (await page.textContent('a.proj[href="#/p/tunio"] h2')).includes('🔭'));
   // Waiting on you folds away, closed by default, and stays open through the 1s redraw (AIG-105).
   check('Waiting on you starts closed', !(await page.$eval('details.inbox', d => d.open)));
   await page.click('details.inbox summary');
@@ -43,7 +43,7 @@ def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, 
   check('bad colour refused', (await s.api('PATCH', '/api/projects/tunio', { color: 'red' })).status === 400);
   await s.ok('PATCH', '/api/projects/tunio', { color: '', emoji: '' });
   t = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'tunio');
-  check('Automatic brings the picks back', t.emoji === '🎵' && t.color === sum.color, t);
+  check('Automatic brings the picks back', t.emoji === '🔭' && t.color === sum.color, t);
   noErrors(page);
 }, true);
 
@@ -72,7 +72,7 @@ def('logos', 'a project picture and an app logo replace the emoji / 🗂️: upl
   check('typed path is copied in and served as svg', sv.headers.get('content-type') === 'image/svg+xml' && /sandbox/.test(sv.headers.get('content-security-policy') || ''));
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('a.proj[href="#/p/tunio"] h2 img.pic');
-  check('home card shows the picture, not the emoji', !(await page.textContent('a.proj[href="#/p/tunio"] h2')).includes('🎵'));
+  check('home card shows the picture, not the emoji', !(await page.textContent('a.proj[href="#/p/tunio"] h2')).includes('🔭'));
   // Through the Look dialog: pick a file, then Remove.
   await page.goto(BASE + '/#/p/tunio');
   await page.click('button:has-text("Look")');
@@ -84,7 +84,7 @@ def('logos', 'a project picture and an app logo replace the emoji / 🗂️: upl
   await page.click('#look-logo button:has-text("Remove")');
   await page.waitForSelector('#look-logo img.pic', { state: 'detached' });
   const gone = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'tunio');
-  check('Remove goes back to the emoji', gone.logo === '' && gone.emoji === '🎵' && (await fetch(s.base + '/api/projects/tunio/logo')).status === 404, gone);
+  check('Remove goes back to the emoji', gone.logo === '' && gone.emoji === '🔭' && (await fetch(s.base + '/api/projects/tunio/logo')).status === 404, gone);
   check('removing again is harmless', (await s.api('DELETE', '/api/projects/tunio/logo')).status === 200);
   // App logo: tab icon and header.
   const fav0 = await page.getAttribute('#favicon', 'href');
@@ -388,9 +388,9 @@ def('pretend', '🧪 the trial\'s pretend team: fills a new project, answers an 
   await s.api('DELETE', '/api/trial');
 }, false);
 
-def('restartqueue', '🔄 restart while a team is busy: it waits for them instead of refusing (AIG-213)', async (s) => {
+def('restartqueue', '🔄 restart while a team is busy: it restarts straight away (AIG-214)', async (s) => {
   await mkProject(s, 'Busy', 'BSY', { path: tmp('busy') });
   await s.ok('POST', '/api/projects/busy/wake');
   const r = await s.ok('POST', '/api/restart');
-  check('it is queued, naming the busy team', r.ok === true && r.queued === true && r.waitingFor.includes('busy'), r);
+  check('it restarts straight away, even with a busy team (no queue)', r.ok === true && !r.queued && !r.waitingFor, r);
 }, false, { AIGILE_NO_RESTART: '1' });
