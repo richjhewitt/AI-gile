@@ -338,6 +338,8 @@
  "setup.lang.help": "De taal van het bord. Deze browser onthoudt ze.",
  "setup.saved.more": "Bewaard. Nog nodig: het agentprogramma, het notitiebestand en het instellingenbestand.",
  "setup.saved": "✅ Bewaard. Het bord is klaar.",
+ "setup.next": "Volgende: 🔎 zoek uw projecten op Home →",
+ "setup.agent.problem": "⚠️ Het agentprogramma is niet gevonden ({msg}). De teams worden pas wakker als dit juist staat.",
  "happening.h": "👀 Hoe staat {name} ervoor",
  "happening.doing": "🛠 Bezig",
  "happening.doing.none": "Niks bezig.",

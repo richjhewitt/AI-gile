@@ -338,6 +338,8 @@
  "setup.lang.help": "The language of the board. Asked once here; it is remembered in this browser.",
  "setup.saved.more": "Saved. Still needed: the agent program, notes file and settings file.",
  "setup.saved": "✅ Saved. The board is ready.",
+ "setup.next": "Next: 🔎 find your projects on Home →",
+ "setup.agent.problem": "⚠️ The agent program can't be found ({msg}). Teams won't wake until it's right.",
  "happening.h": "👀 What's happening in {name}",
  "happening.doing": "🛠 In progress",
  "happening.doing.none": "Nothing in progress.",
