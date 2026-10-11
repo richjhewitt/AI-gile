@@ -272,3 +272,25 @@ def('usagecheck', '🔄 Check usage now: starts the agent hidden, waits for a re
   fs.writeFileSync(bat, `@echo off\r\nnode "${script}"\r\n`);
   return { AIGILE_AGENT_COMMAND: bat, AIGILE_NO_USAGE_AUTO: '1' };
 })());
+
+def('popreopen', '⧉ a pop-out closed by replying opens again when the team replies (AIG-183)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Server steps', { status: 'team' });
+  s.cli(['ask', 'alpha', c.id, 'Step 1: run the setup. Done?', '--as', 'Lead']);
+  const main = await openPage(ctx, '#/p/alpha');
+  const popP = ctx.waitForEvent('page');
+  await main.evaluate(id => window.open('#/pop/alpha/' + id, 'aigile-alpha-' + id, 'width=560,height=780'), c.id);   // opened by the page, like ⧉ Pop out
+  const pop = await popP;
+  await pop.waitForSelector('#r-text');
+  await pop.fill('#r-text', 'Done step 1');
+  const closed = pop.waitForEvent('close', { timeout: 5000 }).then(() => true).catch(() => false);
+  await pop.click('.reply .actions .primary');
+  check('replying closes the pop-out', await closed);
+  check('the card is remembered', /alpha\/ALP-/.test(await main.evaluate(() => localStorage.getItem('aigile.reopen') || '')));
+  const opened = ctx.waitForEvent('page', { timeout: 15000 }).catch(() => null);
+  s.cli(['comment', 'alpha', c.id, 'Thanks. Step 2: restart it', '--as', 'Lead']);
+  const again = await opened;
+  check('the team replying opens it again', !!again && (await again.evaluate(() => location.hash)) === '#/pop/alpha/' + c.id, again && await again.evaluate(() => location.hash));
+  check('and it is forgotten after reopening', !/ALP-/.test(await main.evaluate(() => localStorage.getItem('aigile.reopen') || '')));
+  noErrors(main);
+}, true);
