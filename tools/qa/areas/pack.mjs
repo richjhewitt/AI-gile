@@ -1,7 +1,20 @@
 // QA area: pack (AIG-357, docs/HANDOFF.md): hand a card to an outside chat AI as an AIGILE pack and paste its reply back.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, sleep, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+import os from 'node:os';
+
+// The stub agent for ✨ Copy with AI help (AIG-377): for a haiku run it notes its folder, its arguments and what came on
+// stdin, then answers like the real program's json output (a code fence, chatter and a leaked path included).
+// Any other run (a team wake) just waits and exits.
+const STUB = tmp('packstub'), CWD = path.join(STUB, 'cwd.txt'), ARGS = path.join(STUB, 'args.txt'), IN = path.join(STUB, 'stdin.txt');
+const stub = path.join(STUB, 'agent-pack.bat');
+const RESULT = ['Here is the pack:', '```', 'AIGILE/1 PACK packs X-1', 'T: Fix the parser', 'WANT: Find why empty input breaks the parser and fix it. Also see C:\\Users\\rich\\leak.txt',
+  'CTX:', '- Stub rewrite: it breaks on empty input', 'DONE:', '- An empty file says empty', '```'].join('\n');
+const JSONOUT = JSON.stringify({ type: 'result', is_error: false, result: RESULT, usage: { input_tokens: 30, output_tokens: 20, cache_read_input_tokens: 5 }, modelUsage: { 'stub-haiku': {} } });
+fs.writeFileSync(stub, ['@echo off', 'echo %* | findstr /c:"haiku" >nul', 'if errorlevel 1 (ping -n 3 127.0.0.1 >nul & exit /b 0)',
+  `cd >> "${CWD}"`, `echo %* > "${ARGS}"`, `findstr "^" > "${IN}"`, `echo ${JSONOUT}`, ''].join('\r\n'));
+const aiRuns = () => fs.existsSync(CWD) ? fs.readFileSync(CWD, 'utf8').split(/\r?\n/).filter(Boolean) : [];
 
 const REPLY = id => `Sure, here you go.
 
@@ -134,4 +147,44 @@ def('pack', 'AIGILE pack: a card copied for another AI (scrubbed), its reply pas
   await page.waitForSelector('#packCopy');
   check('the buttons speak Flemish', /Kopiëren voor een andere AI/.test(await page.textContent('#packCopy')) && /Antwoord plakken/.test(await page.textContent('#packPaste')));
   await page.evaluate(() => localStorage.setItem('aigile.lang', 'en'));
-}, true);
+  // ✨ Copy with AI help (AIG-377): one tiny Haiku run on the scrubbed pack; the result is an edited pack.
+  const owner = (await s.ok('GET', '/api/meta')).owner;
+  const ai = await s.ok('POST', `/api/projects/packs/cards/${c.id}/pack/ai`, {});
+  check('AI help returns a pack with the real header and the rewritten lines', ai.text.startsWith(`AIGILE/1 PACK packs ${c.id}\nT: Fix the parser`) && /WANT: Find why/.test(ai.text) && /Stub rewrite/.test(ai.text) && /\nDONE:\n- An empty file/.test(ai.text) && ai.text.trim().endsWith('REPLY: AIGILE/1 BACK') && !/```|Here is the pack/.test(ai.text), ai.text);
+  check('the model\'s answer is scrubbed again', !/leak\.txt|C:\\Users/.test(ai.text) && ai.removed.some(x => x.field === 'ai'), ai);
+  const sent = fs.readFileSync(IN, 'utf8');
+  check('the model saw the card: title, description, steps, the last word', /Fix the parser/.test(sent) && /It breaks on empty input/.test(sent) && /Paste an empty file/.test(sent) && /Please keep it small/.test(sent), sent);
+  check('no path, folder or secret went to the model', !/C:\\Users|sk-ant|proj-pack|secret\\notes/i.test(sent) && /\[removed\]/.test(sent), sent);
+  const args = fs.readFileSync(ARGS, 'utf8');
+  check('the run is haiku, one turn, no tools, user settings only', /haiku/.test(args) && /"--max-turns" "1"/.test(args) && /"--tools" ""/.test(args) && /"--setting-sources" "user"/.test(args) && /--strict-mcp-config/.test(args) && !/--continue|dangerously/.test(args), args);
+  check('it ran in an empty temp folder, not the project', aiRuns().length === 1 && aiRuns()[0].startsWith(os.tmpdir()) && !aiRuns()[0].includes('proj-pack'), aiRuns());
+  const rows = fs.readFileSync(path.join(s.data, 'logs', '_runs.jsonl'), 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l)).filter(r => r.slug === '_pack');
+  check('its tokens are logged for the Usage page', rows.length === 1 && rows[0].in === 30 && rows[0].out === 20 && ai.tokens === 55, rows);
+  const asWho = (where, as) => fetch(s.base + `/api/projects/packs/cards/${c.id}/pack/ai`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Aigile-Where': where, 'X-Aigile-As': encodeURIComponent(as) }, body: '{}' }).then(r => r.status);
+  check('a team (CLI) or a background run cannot start it', (await asWho('cli', 'Packs Lead')) === 403 && (await asWho('background', owner)) === 403 && aiRuns().length === 1);
+  await s.ok('POST', '/api/notokens', { on: true });
+  const off = await s.api('POST', `/api/projects/packs/cards/${c.id}/pack/ai`, {});
+  check('No Token Mode refuses it and nothing runs', off.status === 409 && /No Token Mode/.test(off.body.error || '') && aiRuns().length === 1, off);
+  await page.reload();
+  await page.waitForFunction(() => document.body.classList.contains('notokens'), null, { timeout: 5000 });
+  await page.waitForSelector('#packCopy');
+  check('in No Token Mode the AI button is hidden, plain Copy stays', !(await page.isVisible('#packAi')) && await page.isVisible('#packCopy'));
+  await s.ok('POST', '/api/notokens', { on: false });
+  await page.waitForFunction(() => !document.body.classList.contains('notokens'), null, { timeout: 5000 });
+  check('and it is back when AI is back', await page.isVisible('#packAi'));
+  await page.click('#packAi');
+  await page.waitForSelector('#packText:not([readonly])', { timeout: 15000 });
+  const shown = await page.inputValue('#packText');
+  check('the result opens in an editable box', /Stub rewrite/.test(shown) && shown.startsWith(`AIGILE/1 PACK packs ${c2.id}`), shown);
+  check('it says the tokens used', /55/.test(await page.textContent('#packMsg')), await page.textContent('#packMsg'));
+  await page.fill('#packText', 'AIGILE/1 PACK edited by the owner');
+  await page.click('#packCopyBtn');
+  await sleep(200);
+  check('Copy works from the edited box', !!(await page.$('#packCopyBtn')) && (await page.inputValue('#packText')) === 'AIGILE/1 PACK edited by the owner');
+  await page.click('#dialog button:has-text("Close")');
+  await page.evaluate(() => localStorage.setItem('aigile.lang', 'nl-BE'));
+  await page.reload();
+  await page.waitForSelector('#packAi');
+  check('the AI button speaks Flemish', /Kopiëren met AI-hulp/.test(await page.textContent('#packAi')));
+  await page.evaluate(() => localStorage.setItem('aigile.lang', 'en'));
+}, true, { AIGILE_AGENT_COMMAND: stub });

@@ -64,6 +64,7 @@ FILES: names of attached images
 
 ## API and CLI
 - `GET /api/projects/:slug/cards/:id/pack[?want=]` -> `{ text, removed: [{field, kind, text}], primer }`.
+- `POST /api/projects/:slug/cards/:id/pack/ai` (AIG-377, owner only) -> `{ text, removed, primer, tokens }`: **✨ Copy with AI help**. The scrubbed pack goes to one tiny Haiku run (`-p --model haiku`, 1 turn, no tools, user settings only, an empty temp folder, prompt on stdin) that rewrites WANT / CTX / DONE; its answer is scrubbed again and opens in an editable box before Copy. Refused in ⛔ No Token Mode (the button is hidden) and over the token budget (the reason is shown). Tokens are logged as slug `_pack` on the Usage page.
 - `POST /api/projects/:slug/cards/:id/unpack` `{ text }` -> `{ valid, comment, back }`.
 - `POST /api/projects/:slug/cards/:id/outside/cards` `{ at, pick: [index] }` -> `{ added: [card] }` (indexes into that comment's proposed cards; already added ones are skipped).
 - `aigile pack <proj> <id> [--want "..."] [--primer]` prints the pack (what was removed goes to stderr). `aigile unpack <proj> <id> - [--add 1,3]` reads a reply from stdin and posts it; `--add` adds those proposed cards (1-based).
