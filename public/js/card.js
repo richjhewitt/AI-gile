@@ -72,7 +72,7 @@ function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
   const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
-  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}<span style="flex:1"></span>
+  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${state.editing ? '' : timerUi(c)}<span style="flex:1"></span>
       ${state.editing ? '' : `<button onclick="editCard()">${esc(t('card.edit'))}</button> <button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button>`}</div>`;
   if (state.editing) {
     return `<div class="overlay"><div class="panel">${head}
@@ -260,6 +260,32 @@ async function sendReply(fixed) {
     }
     doneWithCard(next);
   } catch (err) { setErr('r-err', err); }
+}
+/* ---------- timed card (AIG-385): ⏰ come back at ---------- */
+function timerUi(c) {
+  if (c.status === 'done') return '';
+  const label = timed(c) ? '⏰ ' + timedWhen(c.timedUntil) : '⏰';
+  return `<button id="tm-btn" onclick="timerToggle()" title="${esc(t('timed.title'))}">${esc(label)}</button>
+    <span id="tm-box" hidden><select id="tm-pre" onchange="timerPre()"><option value="">${esc(t('timed.pick'))}</option><option value="1h">${esc(t('timed.p.1h'))}</option><option value="3h">${esc(t('timed.p.3h'))}</option><option value="tom">${esc(t('timed.p.tom'))}</option><option value="mon">${esc(t('timed.p.mon'))}</option></select>
+    <input type="datetime-local" id="tm-at" aria-label="${esc(t('timed.at'))}"> <button class="primary" onclick="timerSet()">${esc(t('timed.set'))}</button>${timed(c) ? ` <button onclick="timerClear()">${esc(t('timed.clear'))}</button>` : ''}</span>`;
+}
+function timerToggle() { const b = $('tm-box'); if (b) b.hidden = !b.hidden; }
+const localInput = d => new Date(d.getTime() - d.getTimezoneOffset() * 60e3).toISOString().slice(0, 16);
+function timerPre() {
+  const v = $('tm-pre').value, d = new Date();
+  if (v === '1h') d.setHours(d.getHours() + 1); else if (v === '3h') d.setHours(d.getHours() + 3);
+  else if (v === 'tom') { d.setDate(d.getDate() + 1); d.setHours(9, 0, 0, 0); }
+  else if (v === 'mon') { d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7)); d.setHours(9, 0, 0, 0); }
+  else return;
+  $('tm-at').value = localInput(d);
+}
+async function timerSet() {
+  const v = $('tm-at').value;
+  if (!v) { $('tm-at').focus(); return; }
+  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/timer`, { until: new Date(v).toISOString() }); refresh(true); } catch (e) { alert(e.message); }
+}
+async function timerClear() {
+  try { await api('DELETE', `/api/projects/${slug()}/cards/${cardId()}/timer`); refresh(true); } catch (e) { alert(e.message); }
 }
 async function waitAndSee() {
   const next = nextForYou();

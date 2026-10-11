@@ -172,7 +172,10 @@ function columnsHtml(p, pool) {
 // here instead of in their own column (their status doesn't change). Chips pick which kind comes first.
 const KINDS = ['q', 't', 's', 'o', 'k'], kindLabel = k => t('fy.kind.' + k);
 const isMine = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
-const forYou = c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
+const timed = c => !!c.timedUntil && new Date(c.timedUntil) > Date.now();   // AIG-385
+const timedChip = c => timed(c) ? `<span class="pill timed" title="${esc(t('timed.title'))}">⏰ ${esc(timedWhen(c.timedUntil))}</span>` : '';
+const timedWhen = iso => { const d = new Date(iso), day = d.toDateString() === new Date().toDateString() ? '' : d.toLocaleDateString(i18n.lang, { weekday: 'short', day: 'numeric', month: 'short' }) + ' '; return day + d.toLocaleTimeString(i18n.lang, { hour: '2-digit', minute: '2-digit' }); };
+const forYou = c => c.status !== 'done' && !timed(c) && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
 const kindOf = c => isMine(c) ? (c.server ? 's' : c.outside ? 'o' : 'k') : c.status === 'verify' && !c.needsYou && !c.blocked ? 't' : 'q';
 function forYouFirst(k) {
   if (k) { state.forYouFirst = k; try { localStorage.setItem('aigile.forYouFirst', k); } catch {} refresh(true); }
@@ -214,7 +217,7 @@ function forYouColumn(p, label = t('col.verify.short'), tint = '', pool = p.card
   const all = p.cards.filter(forYou).length;
   const unchecked = cs.filter(c => c.testSteps && !c.aiCheck).length, testing = !!state.testerOn;
   const robot = unchecked || testing ? `<button class="colbtn" id="fyTester-${p.slug}" ${testing ? 'disabled' : ''} title="${esc(testing ? t('tester.running') : t('fy.tester.title', { n: unchecked }))}" onclick="testForMe('${p.slug}')">🤖${testing ? '' : ' ' + unchecked}</button>` : '';
-  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${esc(t('tidy.title'))}" onclick="tidyPile('${p.slug}', this)">🧹</button>${robot}<button class="colbtn" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
+  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${esc(t('tidy.title'))}" onclick="tidyPile('${p.slug}', this)">🧹</button>${robot}<button class="colbtn" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}${pool.filter(c => c.status === 'verify' && timed(c) && matchesFilter(c, p.slug)).map(cardHtml).join('')}</div>`;   // timed tests wait at the bottom with their ⏰ (AIG-385)
 }
 
 // show = the project's card view choices (board cards only); the card panel passes nothing and shows all.
@@ -223,6 +226,7 @@ function metaHtml(c, show = CARD_SHOW) {
       ${show.priority && c.priority !== 'normal' ? `<span class="pill ${c.priority}">${esc(t('priority.' + c.priority))}</span>` : ''}
       ${show.assignee && c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
       ${c.needsYou && c.status !== 'done' ? `<span class="pill you">${esc(t('card.needsyou'))}</span>` : ''}
+      ${timedChip(c)}
       ${aiChip(c)}
       ${c.blocked ? `<span class="pill blocked">${esc(t('card.blocked'))}</span>` : ''}
       ${snoozed(c) ? `<span class="pill snoozed">${esc(t('card.backat', { time: new Date(c.snoozedUntil).toLocaleTimeString(i18n.lang, { hour: '2-digit', minute: '2-digit' }) }))}</span><button class="poke" onclick="event.preventDefault();event.stopPropagation();bringBack('${c.id}')">${esc(t('card.bringback'))}</button>` : ''}

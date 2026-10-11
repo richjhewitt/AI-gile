@@ -130,6 +130,7 @@ All endpoints take and return JSON.
 | GET | `/api/projects/:slug/agentlog` | `{text}`: the end of what the background run printed |
 | GET | `/api/projects/:slug/file?path=` | `{name, text}`: any `.md` file inside the project folder (relative, project-folder-prefixed or absolute path; `/` or `\`); 400 if not `.md`, 404 if missing or outside |
 | POST, DELETE | `/api/projects/:slug/cards/:id/snooze` | Wait and see: hide a card in For you to test for an hour (`snoozedUntil`); DELETE brings it back |
+| POST, DELETE | `/api/projects/:slug/cards/:id/timer` | Timed card: `{ until }` (ISO or "+2h" / "tomorrow 9:00") hides it from For you, the inbox and team `next` until then (`timedUntil`); the server brings it back on top and wakes its team. CLI: `aigile snooze` |
 | POST | `/api/projects/:slug/team` | Add or update a team member: `{name, model?, role?, task?, status?}` |
 | POST | `/api/projects/:slug/log` | Add a log entry: `{author, text, kind: "log" \| "decision"}` |
 | GET | `/api/projects/:slug/updates[?mark=1]` | Owner activity since the team last looked |
