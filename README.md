@@ -23,6 +23,8 @@ AI-gile gives the project owner a live, at-a-glance view of every project. It al
 
 ## Quick start
 
+New here? **[docs/INSTALL.md](docs/INSTALL.md)** walks through a first install on Windows, step by step.
+
 ```sh
 node server.js
 ```

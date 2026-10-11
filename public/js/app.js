@@ -51,19 +51,37 @@ async function checkBuild() {
     // A new install opens Setup first (AIG-91).
     if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';
     if (loadedBuild === null) { loadedBuild = m.build; return; }
+    // While you're quiet (AIG-224): a new board or page code reloads by itself, unless something is half-typed.
+    if (m.quiet && m.build !== loadedBuild && !hasUnsent()) { location.reload(); return; }
     // A newer version on GitHub (AIG-92): an ⬆ Update pill, until it's applied.
     const u = m.update || {}, upd = u.behind ? `<button class="primary" onclick="applyUpdatePage()" title="${esc((u.subjects || []).join('\n'))}">${esc(t('update.btn'))}</button>` : '';
     if ($('upUpdate').dataset.sig !== upd && !$('upUpdate').dataset.busy) { $('upUpdate').dataset.sig = upd; $('upUpdate').innerHTML = upd; }
+    // New server code that the running board hasn't loaded yet (AIG-206): one click restarts it.
+    const rs = m.stale ? `<button class="primary" onclick="restartBoard(this)" title="${esc(t('restart.title'))}">${esc(t('restart.btn'))}</button>` : '';
+    if ($('upRestart') && $('upRestart').dataset.sig !== rs && !$('upRestart').dataset.busy) { $('upRestart').dataset.sig = rs; $('upRestart').innerHTML = rs; }
     if (m.dev && m.build !== loadedBuild && !$('upRefresh').firstChild)
       $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="${esc(t('update.refresh.title'))}">${esc(t('update.refresh'))}</button>`;
   } catch {}
 }
+// After a queued restart: reload as soon as a new board (a new start time in its build id) answers.
+function waitForNewBoard() {
+  const startedOf = b => String(b || "").split("-")[0], was = startedOf(loadedBuild);
+  const tick = setInterval(async () => { try { const m = await api("GET", "/api/meta"); if (startedOf(m.build) !== was) { clearInterval(tick); location.reload(); } } catch {} }, 3000);
+}
+async function restartBoard(btn) {
+  const box = $('upRestart'); box.dataset.busy = '1'; btn.disabled = true; btn.textContent = t('restart.busy');
+  try {
+    const r = await api('POST', '/api/restart');
+    // Teams busy (AIG-213): it waits for them, then restarts by itself; the page reloads once the new board answers.
+    if (r.queued) { btn.textContent = t('restart.queued', { names: r.waitingFor.join(', ') }); waitForNewBoard(); }
+    else setTimeout(() => location.reload(), 3500);
+  }
+  catch (e) { alert(e.message); box.dataset.busy = ''; btn.disabled = false; btn.textContent = t('restart.btn'); }
+}
 // Unsent text anywhere (a reply, an answer, a dialog) or pending attachments: ask before losing it.
-const okToLeave = what => {
-  const unsent = [...document.querySelectorAll('textarea, input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
-    || !!document.querySelector('.att-chip');
-  return !unsent || confirm(t('leave.confirm', { what }));
-};
+const hasUnsent = () => [...document.querySelectorAll('textarea, input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
+  || !!document.querySelector('.att-chip');
+const okToLeave = what => !hasUnsent() || confirm(t('leave.confirm', { what }));
 // Applies the update; the server restarts itself, so wait a few seconds and reload.
 async function applyUpdatePage() {
   if (!okToLeave(t('update.what.update'))) return;
@@ -75,6 +93,8 @@ function refreshPage() { if (okToLeave(t('update.what.refresh'))) location.reloa
 // Desktop app only (AIG-83): the app calls this when its own files changed; the pill asks the app to restart itself.
 // A restart reloads the page too, so Refresh is hidden while Restart shows (AIG-130).
 window.showRestartApp = () => {
+  // While you're quiet (AIG-224) the app restarts itself; your pop-outs come back where they were.
+  if (document.documentElement.hasAttribute('data-night') && !hasUnsent()) { location.href = 'aigile://restart'; return; }
   $('upRefresh').hidden = true;
   if (!$('upRestart').firstChild)
     $('upRestart').innerHTML = `<button class="primary" onclick="if (okToLeave(t('update.what.restart'))) location.href = 'aigile://restart'" title="${esc(t('update.restart.title'))}">${esc(t('update.restart'))}</button>`;
@@ -103,17 +123,46 @@ async function pokeAll(b) {
 function setNight(since) {
   document.documentElement.toggleAttribute('data-night', !!since);
   if (window.Inbox) Inbox.repaint();
-  $('nightTop').innerHTML = since ? `<button class="navlink" onclick="backFromQuiet()" title="${esc(t('night.since', { when: ago(since) }))}">${esc(t('night.back'))}</button>` : '';
+  $('nightTop').innerHTML = since ? `<button class="navlink" onclick="openNightGlance()" title="${esc(t('ng.open.title'))}">🌙</button><button class="navlink" onclick="backFromQuiet()" title="${esc(t('night.since', { when: ago(since) }))}">${esc(t('night.back'))}</button>` : '';
 }
+// Going quiet asks which projects the 🌙 night watchman should watch: every active one is ticked (AIG-199).
 async function goQuiet() {
-  if (!confirm(t('quiet.confirm'))) return;
+  let ps = []; try { ps = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
+  openDialog(`<h2>${esc(t('quiet.h'))}</h2><p class="muted">${esc(t('quiet.confirm'))}</p>
+    <h3>${esc(t('watch.h'))}</h3><p class="muted">${esc(t('watch.help'))}</p>
+    <div class="watch-list">${ps.map(p => `<label class="chk"><input type="checkbox" data-watch="${esc(p.slug)}" checked> ${pic(p.logo, p.emoji)} ${esc(p.name)}</label>`).join('')}</div>
+    <div class="actions"><button class="primary" onclick="goQuietNow()">${esc(t('quiet.go'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
+}
+async function goQuietNow() {
+  const watch = [...document.querySelectorAll('#dialog [data-watch]:checked')].map(b => b.dataset.watch);
+  closeDialog();
   try {
-    const r = await api('POST', '/api/quiet', { on: true });
+    const r = await api('POST', '/api/quiet', { on: true, watch });
     setNight(r.quiet);
-    alert(t('quiet.sent', { n: r.sent.length, names: r.sent.length ? ': ' + r.sent.join(', ') : '' }) + (r.woke.length ? '\n' + t('quiet.woke', { names: r.woke.join(', ') }) : '') + (r.failed.length ? '\n' + t('quiet.failed', { names: r.failed.join('; ') }) : ''));
+    // A proper goodnight instead of a plain alert box (AIG-208): who was told, who was woken, what the watchman watches.
+    const chips = names => `<div class="qd-chips">${names.map(n => `<span class="qd-chip">${esc(n)}</span>`).join('')}</div>`;
+    const look = Object.fromEntries((state.projects || []).map(p => [p.slug, p.name]));
+    openDialog(`<div class="qd"><div class="qd-moon">🌙</div><h2>${esc(t('quiet.done.h'))}</h2><p class="muted">${esc(t('quiet.done.sub'))}</p>
+      ${r.sent.length ? `<h3>${esc(t('quiet.done.told', { n: r.sent.length }))}</h3>${chips(r.sent)}` : `<p class="muted">${esc(t('quiet.done.none'))}</p>`}
+      ${r.woke.length ? `<h3>${esc(t('quiet.done.woke', { n: r.woke.length }))}</h3>${chips(r.woke)}` : ''}
+      ${(r.watching || []).length ? `<h3>${esc(t('quiet.done.watch', { n: r.watching.length }))}</h3>${chips(r.watching.map(s => look[s] || s))}` : ''}
+      ${r.failed.length ? `<div class="err">${esc(t('quiet.failed', { names: r.failed.join('; ') }))}</div>` : ''}
+      <div class="actions"><button onclick="openNightGlance(); closeDialog()" title="${esc(t('ng.open.title'))}">${esc(t('ng.open'))}</button><button class="primary" onclick="goodnight()">${esc(t('quiet.done.ok'))}</button></div></div>`);
     refresh(true);
   } catch (e) { alert(e.message); }
 }
-async function backFromQuiet() { try { await api('POST', '/api/quiet', { on: false }); setNight(null); } catch (e) { alert(e.message); } }
+// Goodnight (AIG-228): the night glance opens and, in the desktop app, the main window gets out of the way.
+function goodnight() {
+  closeDialog(); openNightGlance();
+  if (document.body.classList.contains('desktop')) location.href = 'aigile://minimize';
+}
+// Back from quiet: the night watchman's summary, one line per project (AIG-199).
+async function backFromQuiet() {
+  try {
+    const r = await api('POST', '/api/quiet', { on: false }); setNight(null);
+    if (r.summary && r.summary.length) openDialog(`<h2>${esc(t('watch.morning'))}</h2><ul class="watch-sum">${r.summary.map(x => `<li><b>${esc(x.name)}</b>: ${esc(t('watch.line', { h: x.handedOver, d: x.done, w: x.woke }))}${x.restarted.length ? ' · ' + esc(t('watch.restarted', { ids: x.restarted.join(', ') })) : ''}${x.stuck.length ? ` · <span class="su-red">${esc(t('watch.stuck', { ids: x.stuck.join(', ') }))}</span>` : ''}</li>`).join('')}</ul>
+      <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
+  } catch (e) { alert(e.message); }
+}
 setInterval(checkBuild, 5000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });

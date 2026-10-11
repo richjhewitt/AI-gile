@@ -85,6 +85,8 @@ aigile log <proj> "Sprint 3 pushed (abc1234), 120 tests green." --as YourName
 
 **7c. Tidy quick cards.** When the owner raises a card in a hurry (messy title, one long line), give it a short, recognisable title (`aigile edit <proj> <id> --title "..." --desc "..."`) and a description in readable bullets, so it is easy to find when switching context. Keep their meaning; don't add scope.
 
+**7e. 🧹 Tidy cards.** A card titled **🧹 Tidy the For you pile** means the owner clicked Tidy my pile: fold related cards with `aigile fold <proj> <target> <id> [<id>...] --as <you>` (test steps move across, the others close), fix muddled titles, comment "Folded N → M" with what went where, then move it to done.
+
 **7d. One card per feature to test.** Small parts of one feature (1/4, 2/4…) reach the owner as **one** card: fold the other parts into the last one (copy their test steps across, comment "folded into X", close them), and fold any other card in For you about the same thing. Keeps the board clean.
 
 **8. Pokes.** A "👉 any update?" poke from the owner on a card in `doing` or `review` means "this looks stuck, any update?". Reply with one line (`comment`) and leave the card where it is.
@@ -96,7 +98,9 @@ aigile standup <proj> --done "What I finished" --next "What I do next" --blocker
 ```
 
 - Keep each part to a line or two; `--blockers` is optional and means `none` if left out
-- Your answer is stored on the card and shows in the owner's stand-up report; blockers are shown to them in red, so name the card id and what you need from them
+- Your answer is stored on the card and shows in the owner's stand-up report
+- **`--blockers`** only for what stops **all** your work (nothing else can go on). Shown in red
+- **`--needs`** for things waiting on the owner while you carry on with other work (a test, a key, a question). Shown in amber. Name the card id and what you need
 - Answering again replaces your earlier answer
 - When everyone on the roster has answered (the command tells you who is left), the lead moves the card to done
 
