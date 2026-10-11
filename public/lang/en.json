@@ -768,5 +768,6 @@
  "ng.u.stuck": "{name}: {ids} stuck after 3 tries",
  "ng.u.blocker": "{name}: blocked: {text}",
  "ng.open": "🌙 Night glance",
- "ng.open.title": "A small, calm window for a second screen: the watchman at a glance"
+ "ng.open.title": "A small, calm window for a second screen: the watchman at a glance",
+ "restart.queued": "⏳ Restarts when {names} finish"
 }

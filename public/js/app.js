@@ -61,9 +61,19 @@ async function checkBuild() {
       $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="${esc(t('update.refresh.title'))}">${esc(t('update.refresh'))}</button>`;
   } catch {}
 }
+// After a queued restart: reload as soon as a new board (a new start time in its build id) answers.
+function waitForNewBoard() {
+  const startedOf = b => String(b || "").split("-")[0], was = startedOf(loadedBuild);
+  const tick = setInterval(async () => { try { const m = await api("GET", "/api/meta"); if (startedOf(m.build) !== was) { clearInterval(tick); location.reload(); } } catch {} }, 3000);
+}
 async function restartBoard(btn) {
   const box = $('upRestart'); box.dataset.busy = '1'; btn.disabled = true; btn.textContent = t('restart.busy');
-  try { await api('POST', '/api/restart'); setTimeout(() => location.reload(), 3500); }
+  try {
+    const r = await api('POST', '/api/restart');
+    // Teams busy (AIG-213): it waits for them, then restarts by itself; the page reloads once the new board answers.
+    if (r.queued) { btn.textContent = t('restart.queued', { names: r.waitingFor.join(', ') }); waitForNewBoard(); }
+    else setTimeout(() => location.reload(), 3500);
+  }
   catch (e) { alert(e.message); box.dataset.busy = ''; btn.disabled = false; btn.textContent = t('restart.btn'); }
 }
 // Unsent text anywhere (a reply, an answer, a dialog) or pending attachments: ask before losing it.

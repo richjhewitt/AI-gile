@@ -387,3 +387,10 @@ def('pretend', '🧪 the trial\'s pretend team: fills a new project, answers an 
   check('after Go, the first card lands in For you with test steps', !!built && built.cards.some(c => c.status === 'verify' && /Gift cards/.test(c.title) && c.testSteps));
   await s.api('DELETE', '/api/trial');
 }, false);
+
+def('restartqueue', '🔄 restart while a team is busy: it waits for them instead of refusing (AIG-213)', async (s) => {
+  await mkProject(s, 'Busy', 'BSY', { path: tmp('busy') });
+  await s.ok('POST', '/api/projects/busy/wake');
+  const r = await s.ok('POST', '/api/restart');
+  check('it is queued, naming the busy team', r.ok === true && r.queued === true && r.waitingFor.includes('busy'), r);
+}, false, { AIGILE_NO_RESTART: '1' });

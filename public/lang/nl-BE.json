@@ -768,5 +768,6 @@
  "ng.u.stuck": "{name}: {ids} vastgelopen na 3 pogingen",
  "ng.u.blocker": "{name}: geblokkeerd: {text}",
  "ng.open": "🌙 Nachtblik",
- "ng.open.title": "Een klein, rustig venster voor een tweede scherm: de nachtwacht in één blik"
+ "ng.open.title": "Een klein, rustig venster voor een tweede scherm: de nachtwacht in één blik",
+ "restart.queued": "⏳ Herstart zodra {names} klaar zijn"
 }
