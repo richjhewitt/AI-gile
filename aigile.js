@@ -27,7 +27,7 @@ async function uploadShots(slug, shots) {
 }
 
 // The board's human (AIG-103): "owner" in aigile.local.json next to this file, default Owner.
-const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.parse(require('fs').readFileSync(process.env.AIGILE_LOCAL || require('path').join(__dirname, 'aigile.local.json'), 'utf8')).owner || '').trim() || 'Owner'; } catch { return 'Rich'; } })();
+const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.parse(require('fs').readFileSync(process.env.AIGILE_LOCAL || require('path').join(__dirname, 'aigile.local.json'), 'utf8')).owner || '').trim() || 'Owner'; } catch { return 'Owner'; } })();
 
 // Where this session runs, so the board can show it and knows a session is at work (AIG-107).
 const WHERE = process.env.AIGILE_BACKGROUND ? 'background' : process.env.VSCODE_PID || process.env.TERM_PROGRAM === 'vscode' ? 'vscode' : 'terminal';
