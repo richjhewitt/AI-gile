@@ -68,6 +68,17 @@ function renderWatch() {
   paintWatch(state.watchLog);
 }
 
+/* ---------- 📜 Team news (AIG-319) ---------- */
+// Every team comment on the project's cards, newest first, in its own window (#/pop-news/<slug>), redrawn by the 1 s poll.
+function openNews(s) { window.open('#/pop-news/' + s, 'aigile-news-' + s, 'width=520,height=760'); }
+function renderNews() {
+  document.body.classList.add('poplist');
+  const s = state.route.slug, list = state.news || [];
+  const top = `<h3 style="margin:4px 0">${esc(t('news.h'))} · ${esc(s)}</h3>`;
+  if (!list.length) return top + `<p class="muted">${esc(t('news.none'))}</p>`;
+  return top + `<div class="newslist">${list.map(m => `<div class="news-item${m.mine ? ' mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> · <a href="#/pop/${esc(s)}/${esc(m.card)}" target="_blank">${esc(m.card)}</a> <span class="muted">${esc(m.title)} · ${ago(m.at)}</span></div><div class="dm-bubble">${esc(m.text || '').replace(/\n/g, '<br>')}</div></div>`).join('')}</div>`;
+}
+
 /* ---------- board page ---------- */
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
@@ -88,6 +99,7 @@ function renderBoard(p) {
       <select class="lanesel" title="${esc(t('lanes.title'))}" onchange="setLanes(this.value)">${lanesList().map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
       <button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>
       ${standupButtons(p)}
+      <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path ? t('board.connected') : t('board.connect'))}</button>
       ${Share.button(p)}
