@@ -2,7 +2,7 @@
 // ---- search / filter (AIG-16): purely in the browser, no extra server calls -----------------------
 // The bar lives outside #app so the 1s refresh never wipes what the owner is typing; typing only re-draws the board.
 state.filters = {};
-const blankFilter = () => ({ q: '', type: '', who: '', sprint: '' });
+const blankFilter = () => ({ q: '', type: '', who: '', sprint: '', group: '' });
 // First look at a project in this tab: start from the last view used there (kept in the browser), if it still exists.
 function startFilter(slug) {
   let last = ''; try { last = localStorage.getItem('aigile.view.' + slug) || ''; } catch {}
@@ -15,7 +15,8 @@ function matchesFilter(c, slug) {
   if (f.type && c.type !== f.type) return false;
   if (f.who && (c.assignee || '') !== f.who) return false;
   if (f.sprint && (c.sprint || '') !== f.sprint) return false;
-  if (f.q) { const q = f.q.toLowerCase(); if (![c.id, c.title, c.description, c.assignee, c.sprint].some(x => String(x || '').toLowerCase().includes(q))) return false; }
+  if (f.group && (c.group || '') !== f.group) return false;
+  if (f.q) { const q = f.q.toLowerCase(); if (![c.id, c.title, c.description, c.assignee, c.sprint, c.group].some(x => String(x || '').toLowerCase().includes(q))) return false; }
   return true;
 }
 function paintFilterBar() {
@@ -25,8 +26,8 @@ function paintFilterBar() {
   const uniq = key => [...new Set(p.cards.map(c => c[key]).filter(Boolean))].sort();
   const opt = (v, label, cur) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
   const sel = (key, all, list) => `<select data-f="${key}">${opt('', all, f[key])}${list.map(v => opt(v, key === 'type' ? t('type.' + v) : v, f[key])).join('')}</select>`;
-  const shown = p.cards.filter(c => matchesFilter(c, p.slug)).length, active = f.q || f.type || f.who || f.sprint;
-  const selects = sel('type', t('filter.types'), ['feature', 'bug', 'task']) + sel('who', t('filter.anyone'), uniq('assignee')) + sel('sprint', t('filter.sprints'), uniq('sprint'));
+  const shown = p.cards.filter(c => matchesFilter(c, p.slug)).length, active = f.q || f.type || f.who || f.sprint || f.group;
+  const selects = sel('type', t('filter.types'), ['feature', 'bug', 'task']) + sel('who', t('filter.anyone'), uniq('assignee')) + sel('sprint', t('filter.sprints'), uniq('sprint')) + (uniq('group').length || f.group ? sel('group', t('filter.groups'), uniq('group')) : '');
   if (bar.dataset.slug !== p.slug) {   // build once per project; afterwards only the selects and count update
     bar.dataset.slug = p.slug;
     bar.innerHTML = `<div class="fbar"><input type="search" id="f-q" placeholder="${esc(t('filter.search'))}" value="${esc(f.q)}" oninput="setFilter('q', this.value)">

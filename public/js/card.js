@@ -13,6 +13,7 @@ function cardFields(c, o = {}) {
     <div class="row">
       <label class="f"><span>${esc(t('card.f.assignee'))}</span>${assigneeSelect(c.assignee || '')}</label>
       <label class="f"><span>${esc(t('card.f.sprint'))}</span><input type="text" id="f-sprint" value="${esc(c.sprint)}"></label>
+      <label class="f"><span>${esc(t('card.f.group'))}</span><input type="text" id="f-group" list="f-group-list" placeholder="${esc(t('card.f.group.ph'))}" value="${esc(c.group || '')}"><datalist id="f-group-list">${[...new Set((state.project ? state.project.cards : []).map(x => x.group).filter(Boolean))].sort().map(g => `<option value="${esc(g)}">`).join('')}</datalist></label>
     </div>
     ${o.flags ? `<div><label class="chk"><input type="checkbox" id="f-blocked" ${c.blocked ? 'checked' : ''}> ${esc(t('card.f.blocked'))}</label>
       <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> ${esc(t('card.f.needsyou'))}</label></div>` : ''}`;
@@ -61,7 +62,7 @@ function onAssignee(sel) {
 
 function readFields(flags, testSteps) {
   const o = { title: $('f-title').value.trim(), description: $('f-description').value, type: $('f-type').value, priority: $('f-priority').value,
-    status: $('f-status').value, assignee: $('f-assignee').value.trim(), sprint: $('f-sprint').value.trim() };
+    status: $('f-status').value, assignee: $('f-assignee').value.trim(), sprint: $('f-sprint').value.trim(), group: $('f-group').value.trim() };
   if (testSteps) o.testSteps = $('f-testSteps').value;
   if (flags) { o.blocked = $('f-blocked').checked; o.needsYou = $('f-needsYou').checked; }
   return o;

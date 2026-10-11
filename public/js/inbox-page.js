@@ -46,7 +46,8 @@
     if (IB.flashKey) { const f = qs.find(c => keyOf(c) === IB.flashKey); if (f) IB.chat = f.project; }
     IB.paintChats(qs);
     IB.syncList(el('ibK').querySelector('.list'), ks);
-    IB.syncList(el('ibT').querySelector('.list'), ts);
+    const tsg = IB.groupTests(ts);
+    IB.syncList(el('ibT').querySelector('.list'), tsg);
     el('ibQ').hidden = !qs.length || (IB.only && IB.only !== 'q'); el('ibK').hidden = !ks.length || (IB.only && IB.only !== 'k'); el('ibT').hidden = !ts.length || (IB.only && IB.only !== 't');
     el('ibOnly').hidden = !IB.only; el('ibOnly').innerHTML = IB.only ? `${esc(t('inbox.only.' + IB.only))} · <a href="#" data-onlyclear>${esc(t('inbox.only.all'))}</a>` : '';
     // Accept all AI-passed (AIG-163): every test the AI tester passed, in one click.
@@ -56,7 +57,7 @@
     el('ibTester').hidden = !unchecked && !IB.testerOn; el('ibTester').disabled = IB.testerOn;
     el('ibTester').textContent = IB.testerOn ? t('tester.running') : t('tester.btn', { n: unchecked });
     el('ibAiAll').hidden = !passed.length; el('ibAiAll').title = t('inbox.aiall.title') + ': ' + passed.map(c => c.id).join(', '); el('ibAiAll').textContent = t('inbox.aiall', { n: passed.length });
-    el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = ts.length;
+    el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = tsg.length;
     el('ibMore').hidden = !IB.hidden; el('ibMore').textContent = t('inbox.more', { n: IB.hidden });
     if (IB.hidden && (!IB.only || IB.only === 'q')) el('ibQ').hidden = false;
     if (typeof Share !== 'undefined') Share.paintInbox();   // link offers from friends (AIG-304)

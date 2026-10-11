@@ -33,7 +33,7 @@
       <div class="actions">${c.openUrl ? `<button class="primary" data-act="open" data-cmd="${esc(c.startCmd || '')}" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button>` : ''}<button class="good" data-act="accept">${esc(t('card.accept'))}</button><button data-act="wait" title="${esc(t('inbox.t.wait.title'))}">${esc(t('card.wait'))}</button>
       <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">${esc(t('inbox.t.sendback'))}</a></div>`;
   }
-  const sigOf = c => !isTest(c) ?[c.title, c.blocked, c.server, c.serverName, (state.servers || []).join(","), shownAsk(c).at, shownAsk(c).text, i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.aiCheck && c.aiCheck.at].join('|');
+  const sigOf = c => c.group ? IB.sigOfGroup(c) : !isTest(c) ?[c.title, c.blocked, c.server, c.serverName, (state.servers || []).join(","), shownAsk(c).at, shownAsk(c).text, i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.aiCheck && c.aiCheck.at].join('|');
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">
@@ -82,9 +82,11 @@
         n = document.createElement('div');
         const kind = kindOf(c);
         n.className = 'ib-item ' + kind + (kind === 'q' && c.blocked ? ' blk' : '');
+        if (c.group) n.dataset.group = c.groupName;
+        if (c.group) n.dataset.group = c.groupName;
         n.dataset.key = k; n.dataset.sig = sig; n.dataset.project = c.project; n.dataset.id = c.id;
         if (c.projectColor) n.style.setProperty('--proj', c.projectColor);   // project stripe and badge (AIG-86)
-        n.innerHTML = kind === 'q' ? qHtml(c) : kind === 'k' ? kHtml(c) : tHtml(c);
+        n.innerHTML = kind === 'q' ? qHtml(c) : kind === 'k' ? kHtml(c) : c.group ? IB.gHtml(c) : tHtml(c);
       }
       if (list.children[i] !== n) list.insertBefore(n, list.children[i] || null);
     });
