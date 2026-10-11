@@ -70,6 +70,7 @@ HOOKS (agent session hooks, see AGENTS.md)
   dm <proj> "text" --as NAME             chatty leads only: start a DM to ${OWNER} (a nudge or a light word; one at a time)
   wait <proj> [--every SECONDS]           run in the BACKGROUND while idle: exits with ${OWNER}'s news when they comment
   updates <proj> --stop-hook              Stop: blocks stopping once while there is unseen news
+  bye <proj>                              SessionEnd: the window closed, a background run takes over
 
 TEAM AND LOG
   team <proj> NAME [--role R --model M --task T --status S]    upsert roster entry
@@ -448,6 +449,12 @@ const cmds = {
     const msg = [head, ...o, tail].join('\n');
     if (flags['stop-hook']) { if (news) console.log(JSON.stringify({ decision: 'block', reason: msg })); return; }
     console.log(msg);
+  },
+
+  // SessionEnd hook (AIG-219): background runs end too, but must not wake themselves again.
+  async bye({ pos }) {
+    if (WHERE === 'background') return;
+    try { await api('POST', P(await project(pos[0])) + '/bye', {}); } catch {}   // board down: nothing to tell
   },
 
   // Idle sessions don't fire hooks. A lead runs this as a background command; it costs nothing while

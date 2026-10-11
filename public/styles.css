@@ -494,6 +494,8 @@ abbr.devw { text-decoration: underline dotted var(--muted); text-underline-offse
 /* 🌙 Night glance (AIG-209): near-black, red-tinted, low contrast; a slow amber glow only when something is urgent */
 body.nightglance { background: #0b0605 !important; color: #b07a6a; filter: brightness(.85); }
 body.nightglance main { padding: 14px; }
+/* Drag it anywhere (AIG-217): the night glance has no header, so the whole window is the handle, onto a second screen */
+body.desktop.nightglance main { -webkit-app-region: drag; min-height: 100vh; box-sizing: border-box; }
 .ng { font-size: 14px; } .ng-head { font-size: 16px; color: #c99282; } .ng-moon { opacity: .8; }
 .ng-when { font-size: 12px; color: #6e4a40; margin: 2px 0 12px; } .ng-calm { color: #6e4a40; margin-bottom: 10px; }
 .ng-list { list-style: none; padding: 0; margin: 0; } .ng-list li { padding: 6px 0; border-bottom: 1px solid #1c120f; display: flex; gap: 8px; align-items: baseline; }
