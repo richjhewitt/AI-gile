@@ -186,7 +186,7 @@
       <div class="actions"><button class="good" data-act="taskdone">${esc(t('inbox.k.done'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.k.hint'))}</span></div>`;
   }
   function tHtml(c) {
-    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${aiChip(c)}<span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       ${aiEvidence(c, c.project)}
       ${c.testSteps ? `<details class="ib-steps"><summary>${esc(t('inbox.t.how'))}</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : `<div class="ib-hint">${esc(t('inbox.t.nosteps'))}</div>`}
@@ -332,7 +332,9 @@
     // Your queue (AIG-159..162): filter by kind, sort by your priority / what it holds up / time, and pick Next up.
     paintQueue(shown, kindFilter);
     const pick = shown.filter(c => !kindFilter || kindOfItem(c) === kindFilter).sort(queueRank);
-    const qs = pick.filter(isQuestion), ks = pick.filter(isTask), ts = pick.filter(isTest);
+    // Tests the AI tester passed come first, so Accept all AI-passed matches what you see at the top (AIG-196).
+    const aiPassed = c => !!(c.aiCheck && c.aiCheck.result === 'pass');
+    const qs = pick.filter(isQuestion), ks = pick.filter(isTask), ts = pick.filter(isTest).sort((a, b) => aiPassed(b) - aiPassed(a));
     // A link to one question (alerts, the home list) opens its chat.
     if (flashKey) { const f = qs.find(c => keyOf(c) === flashKey); if (f) chat = f.project; }
     paintChats(qs);
@@ -342,7 +344,7 @@
     el('ibOnly').hidden = !only; el('ibOnly').innerHTML = only ? `${esc(t('inbox.only.' + only))} · <a href="#" data-onlyclear>${esc(t('inbox.only.all'))}</a>` : '';
     // Accept all AI-passed (AIG-163): every test the AI tester passed, in one click.
     const passed = ts.filter(c => c.aiCheck && c.aiCheck.result === 'pass');
-    el('ibAiAll').hidden = !passed.length; el('ibAiAll').textContent = t('inbox.aiall', { n: passed.length });
+    el('ibAiAll').hidden = !passed.length; el('ibAiAll').title = t('inbox.aiall.title') + ': ' + passed.map(c => c.id).join(', '); el('ibAiAll').textContent = t('inbox.aiall', { n: passed.length });
     el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = ts.length;
     el('ibMore').hidden = !hidden; el('ibMore').textContent = t('inbox.more', { n: hidden });
     if (hidden && (!only || only === 'q')) el('ibQ').hidden = false;

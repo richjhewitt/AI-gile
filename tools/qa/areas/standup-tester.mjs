@@ -141,6 +141,7 @@ def('aitester', 'AI tester: lists unchecked tests, posts pass/fail/skip with evi
   const page = await openPage(ctx, '#/inbox');
   await page.waitForSelector('.ai-ev.pass');
   check('the inbox shows the evidence and its screenshot', /went dark/.test(await page.textContent('.ai-ev.pass')) && (await page.locator('.ai-ev.pass img').count()) === 1);
+  check('the passed test is first in the list, with its 🤖 chip (AIG-196)', /Passed/.test(await page.textContent('#ibT .ib-item .pill.ai.pass')) && (await page.getAttribute('#ibT .ib-item', 'data-id')) === a.id);
   check('Accept all AI-passed counts only the passed ones', /\(1\)/.test(await page.textContent('#ibAiAll')));
   await page.click('#ibAiAll');
   await page.waitForFunction(() => document.getElementById('ibAiAll').hidden, null, { timeout: 5000 }).catch(() => {});
