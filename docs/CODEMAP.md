@@ -16,7 +16,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/quiet.js`, `lib/watchman.js`: going quiet, 🌙 night watchman
 - `lib/standup.js`: stand-ups
 - `lib/attachments.js`, `lib/logos.js`, `lib/avatars.js`: reply files, project/app logos, profile pictures
-- `lib/dm.js`, `relay/relay.js`: private DMs and their relay
+- `lib/dm.js`, `relay/relay.js`: private DMs and their relay; `lib/share.js`: sharing a project with a friend over them
 - `lib/limits.js`, `lib/usage.js`, `lib/usagecheck.js`: plan usage, tokens, check usage now
 - `lib/trial.js`, `tools/trial/pretend-team.js`: 🧪 try it as a new user
 - `lib/tester.js`: 🤖 AI tester runs
@@ -26,6 +26,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `css/01..05-*.css` (linked in order from index.html); `js/core.js` (state, api, router, render); `js/format.js` (card text, md); `js/i18n.js` (languages)
 - `js/home.js`, `js/board.js`, `js/card.js`, `js/dialogs/*.js`, `js/filters.js`, `js/attach.js`
 - `js/inbox*.js` (state, top, items, tabs, page, actions, style, queue, ai)
+- `js/dms.js` (DM chats), `js/share.js` (🔗 Share dialog, link offers in the inbox)
 - `js/standup.js`, `js/usage-page.js`, `js/glossary.js`, `js/tour.js`, `js/night.js`, `js/leadquiz.js`
 - `js/app.js`: start-up, 1s poll, going quiet
 

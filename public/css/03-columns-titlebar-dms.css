@@ -117,3 +117,11 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .dm-row .dm-rowtext .muted { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dm-row .dm-unread { position: static; }
 
+/* ---------- sharing a project (AIG-304) ---------- */
+.share-safety { border: 1px dashed var(--line); border-radius: var(--radius); padding: 8px 12px; margin: 8px 0; }
+.share-words { font-size: 16px; letter-spacing: .02em; margin: 4px 0 8px; }
+.share-ticks { display: grid; gap: 2px; margin: 8px 0; }
+.share-what { margin: 6px 0; padding-left: 18px; }
+.share-switch { font-weight: 600; }
+.share-offer input[data-share-new] { width: 100%; max-width: 320px; margin: 4px 0; }
+

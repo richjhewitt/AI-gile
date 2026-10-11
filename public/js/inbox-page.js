@@ -49,7 +49,8 @@
     el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = ts.length;
     el('ibMore').hidden = !IB.hidden; el('ibMore').textContent = t('inbox.more', { n: IB.hidden });
     if (IB.hidden && (!IB.only || IB.only === 'q')) el('ibQ').hidden = false;
-    el('ibEmpty').innerHTML = IB.items.length || IB.hidden ? '' : `<div class="ib-empty"><div class="big">${esc(t('inbox.empty.title'))}</div><p>${esc(t('inbox.empty.text'))}</p></div>`;
+    if (typeof Share !== 'undefined') Share.paintInbox();   // link offers from friends (AIG-304)
+    el('ibEmpty').innerHTML = IB.items.length || IB.hidden || IB.offers ? '' : `<div class="ib-empty"><div class="big">${esc(t('inbox.empty.title'))}</div><p>${esc(t('inbox.empty.text'))}</p></div>`;
     if (IB.flashKey) {
       const n = [...document.querySelectorAll('.ib-item')].find(x => x.dataset.key === IB.flashKey);
       if (n) { n.scrollIntoView({ block: 'center' }); n.classList.add('flash'); const t = n.querySelector('textarea'); if (t) t.focus({ preventScroll: true }); IB.flashKey = null; }

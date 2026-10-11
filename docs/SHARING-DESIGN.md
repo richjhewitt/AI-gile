@@ -109,6 +109,18 @@ My teams run with Bash/PowerShell, file edits and sometimes web access (`PRESETS
 - Code or file sharing of any kind (if ever: a separate design, via git, never via the board).
 - Reporters (end users) and the Discord bot.
 
+## As built (cards 1..3, AIG-304)
+`lib/share.js`, `public/js/share.js`, QA area `share`. Where it differs from the text above, and why:
+- **link-end passes the switch, both ways.** Unlinking still tells the friend while my switch is off, and their link-end is applied while mine is off. It only ever closes things; otherwise the other side keeps a dead link.
+- **✋ No sends a link-end** (no extra kind); the offerer sees "said no".
+- **Per-day caps:** 50 new cards per link per day, as above, plus 500 messages of any kind per link per day as a flood guard (comments would hit 50 too soon). Also: share payloads over 64 KB (before attachments, card 9) and more than 5 waiting offers from one person are dropped.
+- **👋 Check the link:** an `ack` with `ping: true`; the friend's board answers with a plain `ack` while its switch is on. This is what "last heard from {friend}" shows.
+- **Dropped-while-off messages still move the seq on,** so they can't be replayed in once the switch is on again.
+- **Blocking or removing a contact ends every link with them** locally (no message, they're blocked).
+- **The safety code check lives in the 🔗 dialog and the inbox offer** too (the DMs page has no contacts screen yet): the 6 words and "✅ We read them to each other and they match".
+- **Accepting into a new project:** the page makes the project first, then accepts into it.
+- **Unlink and forget** keeps the link file as a tombstone (so a replayed offer for that link id stays dropped) but clears their project name, and deletes cards and comments tagged `from: 'share:<link>'` (cards 5 and 6 add those).
+
 ## Build cards (in order)
 1. **Share wire format**: `t: 'share'` payloads in `lib/share.js` on top of `dm.js` `seal`/`receive`, per-link `seq`, size caps, tests.
 2. **Link offer and accept**: 🔗 Share with... on a project, offer in the inbox, ✅ / ✋, `data/shares/` files; needs a checked safety code.
