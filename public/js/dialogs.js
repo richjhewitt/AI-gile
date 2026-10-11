@@ -152,6 +152,7 @@ function renderSetup() {
   const s = state.setup;
   return `<div class="setup"><h2>${esc(t('setup.h'))}</h2>
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
+    <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
     <label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('setup-lang')}<small class="muted">${esc(t('setup.lang.help'))}</small></label>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">

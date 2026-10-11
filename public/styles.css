@@ -401,3 +401,7 @@ button.q-chip { cursor: pointer; } .q-chip.prio:not([class*="p-"]) { color: var(
 .ai-ev.pass { border-left-color: var(--good, #2e9e5b); } .ai-ev.fail { border-left-color: var(--danger); }
 .ai-ev .att-shown img { max-height: 160px; }
 .ib-aiall { margin-left: auto; font-size: 13px; }
+
+/* The top bar wraps to a second row instead of squashing its buttons (AIG-143). */
+header { flex-wrap: wrap; row-gap: 6px; } header > * { flex-shrink: 0; white-space: nowrap; } header .crumb { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.setup-theme { font-size: 14px; border-radius: 6px; padding: 6px 8px; align-self: flex-start; }

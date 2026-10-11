@@ -568,5 +568,7 @@
  "logo.path.ph": "of een bestandspad, bijv. C:/Projects/tunio/logo.png",
  "logo.use": "Dit bestand gebruiken",
  "logo.help": "PNG, JPG, SVG, ICO of WEBP, tot 1 MB. Vervangt de emoji.",
- "logo.toobig": "De afbeelding mag maximaal 1 MB zijn"
+ "logo.toobig": "De afbeelding mag maximaal 1 MB zijn",
+ "setup.theme": "Thema",
+ "setup.theme.help": "Licht of donker. Systeem volgt je computer. Ook de 🖥️-knop bovenaan."
 }

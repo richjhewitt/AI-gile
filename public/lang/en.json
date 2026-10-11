@@ -568,5 +568,7 @@
  "logo.path.ph": "or a file path, e.g. C:/Projects/tunio/logo.png",
  "logo.use": "Use this file",
  "logo.help": "PNG, JPG, SVG, ICO or WEBP, up to 1 MB. It replaces the emoji.",
- "logo.toobig": "The picture can be up to 1 MB"
+ "logo.toobig": "The picture can be up to 1 MB",
+ "setup.theme": "Theme",
+ "setup.theme.help": "Light or dark. System follows your computer. Also the 🖥️ button at the top."
 }
