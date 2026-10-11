@@ -1577,7 +1577,7 @@ def('i18n', 'languages: every language file has the same keys, the picker switch
   await page.goto(BASE + '/#/');
   await page.waitForSelector('#app .toolbar');
   check('starts in English', (await page.evaluate(() => document.documentElement.lang)) === 'en' && (await page.textContent('#app .toolbar .primary')).includes('New project'));
-  check('the header picker has three languages', (await page.locator('#langPick option').allTextContents()).join('|') === 'English|Nederlands|Vlaams');
+  check('no language picker in the top bar', (await page.locator('header select').count()) === 0);
   const stray = () => page.evaluate(() => {
     const re = /\b(?:card|inbox|home|board|dlg|setup|usage|standup|dms|pres|cols?|verdict|filter|views|lanes|fy|ago|live|theme|update|poke|night|quiet|crumb|attach|format|happening|ask|look|perm|docs|assignee|role|cv|lang|leave|projects|common)\.[a-z][\w.]*|\{\{dev:/;
     const texts = [document.body.innerText, ...[...document.querySelectorAll('[title],[placeholder],[aria-label]')].map(e => [e.title, e.placeholder, e.getAttribute('aria-label')].join(' '))];
@@ -1594,16 +1594,30 @@ def('i18n', 'languages: every language file has the same keys, the picker switch
   await page.keyboard.press('Escape');
 
   // Switching to Dutch loads nl.json (the stub), sets <html lang>, and falls back to English for the missing key.
-  await page.goto(BASE + '/#/'); await page.waitForSelector('#app .toolbar');
-  await page.selectOption('#langPick', 'nl');
+  await page.goto(BASE + '/#/setup'); await page.waitForSelector('#setupForm');
+  check('Setup has the picker with three languages', (await page.locator('.setup .lang-pick option').allTextContents()).join('|') === 'English|Nederlands|Vlaams');
+  await page.selectOption('.setup .lang-pick', 'nl');
+  await page.waitForFunction(() => document.documentElement.lang === 'nl', null, { timeout: 8000 });
+  await page.goto(BASE + '/#/'); await page.reload();
   await page.waitForFunction(() => document.documentElement.lang === 'nl', null, { timeout: 8000 });
   await page.waitForSelector('#app .toolbar');
   check('html lang is nl', (await page.evaluate(() => document.documentElement.lang)) === 'nl');
   check('a string comes from nl.json', (await page.textContent('#app .toolbar .primary')).trim() === '+ NIEUW PROJECT', await page.textContent('#app .toolbar .primary'));
   check('a missing key falls back to English', (await page.textContent('#app .toolbar')).includes('Find my projects'));
-  check('the choice is remembered', (await page.evaluate(() => localStorage.getItem('aigile.lang'))) === 'nl' && (await page.inputValue('#langPick')) === 'nl');
-  check('the Setup page has the picker too', await (async () => { await page.goto(BASE + '/#/setup'); await page.waitForSelector('#setupForm'); return (await page.inputValue('.setup .lang-pick')) === 'nl'; })());
-  await page.selectOption('#langPick', 'en');
+  check('the choice is remembered', (await page.evaluate(() => localStorage.getItem('aigile.lang'))) === 'nl');
+  check('no 🌐 EN button until the switch is on', await page.locator('#enBtn').isHidden());
+  await page.goto(BASE + '/#/setup'); await page.waitForSelector('#setupForm');
+  await page.check('#enSwitch');
+  await page.waitForSelector('#enBtn:not([hidden])');
+  await page.click('#enBtn');
+  await page.waitForFunction(() => document.documentElement.lang === 'en', null, { timeout: 8000 });
+  check('🌐 EN shows the board in English, and the button offers the way back', /NL/.test(await page.textContent('#enBtn')) && (await page.evaluate(() => localStorage.getItem('aigile.lang'))) === 'nl');
+  await page.waitForSelector('#setupForm');
+  check('Setup still shows your own language', (await page.inputValue('.setup .lang-pick')) === 'nl');
+  await page.click('#enBtn');
+  await page.waitForFunction(() => document.documentElement.lang === 'nl', null, { timeout: 8000 });
+  await page.waitForSelector('#setupForm');
+  await page.selectOption('.setup .lang-pick', 'en');
   await page.waitForFunction(() => document.documentElement.lang === 'en', null, { timeout: 8000 });
   await page.waitForSelector('#setupForm');
   check('back to English', (await page.evaluate(() => localStorage.getItem('aigile.lang'))) === 'en');

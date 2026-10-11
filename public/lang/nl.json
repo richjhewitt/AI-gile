@@ -570,5 +570,9 @@
  "logo.help": "PNG, JPG, SVG, ICO of WEBP, tot 1 MB. Vervangt de emoji.",
  "logo.toobig": "De afbeelding mag maximaal 1 MB zijn",
  "setup.theme": "Thema",
- "setup.theme.help": "Licht of donker. Systeem volgt je computer. Ook de 🖥️-knop bovenaan."
+ "setup.theme.help": "Licht of donker. Systeem volgt je computer. Ook de 🖥️-knop bovenaan.",
+ "lang.en.switch": "Snel naar Engels",
+ "lang.en.help": "Zet een 🌐 EN-knop in de bovenbalk: één klik toont het bord in het Engels (handig voor de ontwikkelaarswoorden), nog een klik gaat terug.",
+ "lang.en.title": "Toon het bord in het Engels (klik nog eens voor {name})",
+ "lang.en.back": "Terug naar {name}"
 }

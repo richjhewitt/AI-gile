@@ -333,7 +333,7 @@
  "setup.h": "⚙️ Setup",
  "setup.welcome": "Welcome! Fill these in once and the board is ready.",
  "setup.intro": "Your settings on this computer. They stay on this computer (not in git).",
- "setup.lang.help": "The language of the board. It is remembered in this browser.",
+ "setup.lang.help": "The language of the board. Asked once here; it is remembered in this browser.",
  "setup.saved.more": "Saved. Still needed: the agent program, notes file and settings file.",
  "setup.saved": "✅ Saved. The board is ready.",
  "happening.h": "👀 What's happening in {name}",
@@ -570,5 +570,9 @@
  "logo.help": "PNG, JPG, SVG, ICO or WEBP, up to 1 MB. It replaces the emoji.",
  "logo.toobig": "The picture can be up to 1 MB",
  "setup.theme": "Theme",
- "setup.theme.help": "Light or dark. System follows your computer. Also the 🖥️ button at the top."
+ "setup.theme.help": "Light or dark. System follows your computer. Also the 🖥️ button at the top.",
+ "lang.en.switch": "Quick English switch",
+ "lang.en.help": "Adds a 🌐 EN button to the top bar: one click shows the board in English (handy for the developer words), again goes back.",
+ "lang.en.title": "Show the board in English (click again for {name})",
+ "lang.en.back": "Back to {name}"
 }
