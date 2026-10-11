@@ -74,4 +74,11 @@ async function run() {
     }
   }
 }
-run().catch(e => { console.error('pretend team: ' + e.message); process.exitCode = 1; });
+// 🙋 Ask a mate (AIG-384): the board runs this same program for a friend's question, with the question on stdin and
+// AIGILE_ASK=1. Answer with a short canned reply in the agent's json shape, so the journey works with no tokens.
+async function answerAsk() {
+  process.stdin.resume(); await new Promise(r => { process.stdin.on('end', r); process.stdin.on('error', r); process.stdin.on('close', r); });
+  const nl = !!process.env.AIGILE_PRETEND;
+  console.log(JSON.stringify({ type: 'result', is_error: false, result: nl ? 'Dit is een vast antwoord van mijn nep-AI: er is geen echte AI aan het werk, maar de weg heen en terug werkt!' : 'This is a canned answer from the pretend AI: no real AI is running, but the trip there and back works!' }));
+}
+(process.env.AIGILE_ASK ? answerAsk() : run()).catch(e => { console.error('pretend team: ' + e.message); process.exitCode = 1; });
