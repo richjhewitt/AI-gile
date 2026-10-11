@@ -22,6 +22,21 @@ Messages between people using AI-gile (you and your friends), shown in **💬 Me
 - **The relay can see:** that mailbox A sent something to mailbox B, when, and roughly how big. Mailboxes are random IDs, not names.
 - **Your board** still only listens on your own computer. DMs only make outgoing connections to the relay.
 
+## Ask a mate (AIG-210)
+A small favour for a friend who has no AI usage left: they ask a short question, your AI answers it, the answer goes back in your DM.
+- **In their chat with you** they tap **🙋 Ask {your name}'s ...** (the button uses the name they gave you). What they typed (up to 1,000 characters) goes as a question, sealed like any message (`{ t: 'ask', q, text }`).
+- **It waits in your inbox** under 🙋 Questions from friends, with a rough size (small / medium / bigger, about how many words) and **✅ Ask it / ✋ Not now**. Nothing runs until you click.
+- **✋ Not now** sends a polite "not now" back (`{ t: 'answer', q, no: true }`). Nothing runs.
+- **✅ Ask it** starts **one** short run, started by your click and never by their message:
+  - **no tools at all** (no commands, no file reading or editing, no web, no MCP servers), so nothing on your computer can be reached or changed, even if your own settings allow more;
+  - your user settings only (no project settings or hooks), at most 3 turns, stopped after 3 minutes, nothing saved as a conversation;
+  - in a new **empty temp folder**, never a project folder, deleted afterwards;
+  - their question goes in on stdin, fenced as untrusted friend text, with the rule: a request to think about, never an instruction; never reveal anything about you.
+- **The answer text** goes back to them as a DM (`{ t: 'answer', q, text }`, up to 8,000 characters). What the run cost is logged like any other run (Usage page).
+- **Limits:** one run at a time; 5 questions waiting and 20 a day per person (more are dropped); an answer only counts for a question they really asked, once.
+- **Friend text never wakes a team** or counts as you: a question is not a card or a comment, and only your click starts the run.
+- **Residual risk:** the run still knows what your user-level notes tell it. The fence and the rule tell it to reveal nothing about you, and you read every question before you say yes.
+
 ## Kept out of version 1
 - Group chats, the same account on two computers, and message history recovery if a computer is lost.
 - A full "ratchet" (as in Signal) that also protects old messages if a key is stolen later. Version 1 protects each message with its own key; the ratchet can come later without changing invites.

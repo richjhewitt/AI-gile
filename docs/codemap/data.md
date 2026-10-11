@@ -6,4 +6,6 @@
 - A stand-up card (AIG-133) has `standup: { at, reports: [{ name, done, next, blockers, at }] }`; the CLI `standup` command fills `reports`.
 - `data/limits.log`: one JSON line per plan usage change (or every 5 minutes).
 - `data/logs/<slug>.log`: what the team's background runs printed.
+- `data/logs/_ask.log`: ask-a-mate runs (AIG-210): start, tokens, exit (never the question text). Their cost rows go in `data/logs/_runs.jsonl` with `slug: '_ask'`.
+- Ask a mate questions and answers live in the friend's chat file `data/dms/<contact>.json` as lines with `kind: 'ask' | 'answer'`, `q` (the question id) and, for a question, `state` (`waiting` / `running` / `answered` / `declined`, plus `failed` when a run didn't work).
 - Presence ("heard from") and the running processes are in memory only.

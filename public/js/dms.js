@@ -102,8 +102,15 @@ const Dms = (() => {
   }
   // A friend's chat: plain bubbles, no cards or folds.
   function personHtml(msgs, name) {
-    return msgs.map(m => `<div class="dm-msg ${m.dir === 'out' ? 'mine' : ''}"><div class="dm-meta"><b>${esc(m.dir === 'out' ? me() : name)}</b> ${ago(m.at)}${m.status === 'failed' ? ' · ' + esc(t('dms.failed')) : m.status === 'sending' ? ' · ' + esc(t('dms.sending')) : ''}</div>
-      <div class="dm-bubble">${m.verified === false ? `<i class="muted">${esc(t('dms.unverified'))}</i>` : linkify(m.text || '', thread)}${Attach.shown(m, '', `/api/dms/contacts/${thread.id}/files`)}</div></div>`).join('');
+    return msgs.map(m => `<div class="dm-msg ${m.dir === 'out' ? 'mine' : ''} ${m.kind ? 'dm-' + esc(m.kind) : ''}"><div class="dm-meta"><b>${esc(m.dir === 'out' ? me() : name)}</b> ${ago(m.at)}${m.status === 'failed' ? ' · ' + esc(t('dms.failed')) : m.status === 'sending' ? ' · ' + esc(t('dms.sending')) : ''}</div>
+      ${askTag(m, name)}<div class="dm-bubble">${m.verified === false ? `<i class="muted">${esc(t('dms.unverified'))}</i>` : m.kind === 'answer' && m.no ? `<i>${esc(t(m.dir === 'out' ? 'ask.no.out' : 'ask.no.in', { name }))}</i>` : m.kind === 'ask' && m.dir === 'in' ? esc(m.text || '') : linkify(m.text || '', thread)}${Attach.shown(m, '', `/api/dms/contacts/${thread.id}/files`)}</div></div>`).join('');
+  }
+  // Ask a mate (AIG-210): a question for someone's AI, and its answer, get a small tag over the bubble. A question
+  // a friend sent me is shown as plain text (no links) until I deal with it in the inbox.
+  function askTag(m, name) {
+    if (m.kind === 'ask') return `<div class="dm-asktag">${esc(m.dir === 'out' ? t('ask.tag.out', { name }) : t('ask.tag.in'))} · <span class="muted">${esc(t((m.dir === 'out' ? 'ask.out.' : 'ask.in.') + (m.state || 'waiting'), { name }))}</span></div>`;
+    if (m.kind === 'answer' && !m.no) return `<div class="dm-asktag">${esc(m.dir === 'out' ? t('ask.tag.mine') : t('ask.tag.answer', { name }))}</div>`;
+    return '';
   }
   async function loadPerson(scroll) {
     let msgs;
@@ -156,7 +163,7 @@ const Dms = (() => {
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
         <textarea id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();Dms.send()}"></textarea>
         <div class="err" id="dmErr"></div>
-        <div class="actions"><button class="good" id="dmGo" ${who ? `onclick="Dms.send('👍')" title="${esc(t('dms.like.title'))}">${esc(t('dms.like'))}` : `onclick="Dms.send('GO')" title="${esc(t('dms.go.title'))}">${esc(t('dms.go'))}`}</button><button class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button>${Attach.boxHtml('dm:' + slug)}</div></div>`;
+        <div class="actions"><button class="good" id="dmGo" ${who ? `onclick="Dms.send('👍')" title="${esc(t('dms.like.title'))}">${esc(t('dms.like'))}` : `onclick="Dms.send('GO')" title="${esc(t('dms.go.title'))}">${esc(t('dms.go'))}`}</button><button class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button>${who ? `<button id="dmAsk" onclick="Dms.ask()" title="${esc(t('ask.btn.title', { name: who.name }))}">${esc(t('ask.btn', { name: who.name }))}</button>` : ''}${Attach.boxHtml('dm:' + slug)}</div></div>`;
     panel.hidden = false;
     if (who) el('dmGo').hidden = false;
     loadRail(); loadThread(true);
@@ -203,6 +210,22 @@ const Dms = (() => {
     busy = false;
   }
 
+  // 🙋 Ask {name}'s AI (AIG-210): what's typed goes as a short question; they say yes or no before anything runs.
+  const MAX_ASK = 1000;
+  async function ask() {
+    if (busy || !thread || !thread.person) return;
+    const text = el('dmText').value.trim();
+    if (!text) { el('dmErr').textContent = t('ask.empty'); el('dmText').focus(); return; }
+    if (text.length > MAX_ASK) { el('dmErr').textContent = t('ask.long', { n: MAX_ASK }); return; }
+    busy = true; el('dmErr').textContent = '';
+    try {
+      await api('POST', `/api/dms/contacts/${thread.id}/ask`, { text });
+      el('dmText').value = ''; clearDraft('dm/' + thread.slug);
+      await loadThread(true); loadRail();
+    } catch (e) { el('dmErr').textContent = e.message || String(e); }
+    busy = false;
+  }
+
   document.addEventListener('click', e => {
     const fl = e.target.closest('#dmPanel [data-dmfilter]');
     if (fl) { filter = fl.dataset.dmfilter; try { localStorage.setItem('aigile.dmfilter', filter); } catch {} paintList(); return; }
@@ -220,5 +243,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   setInterval(() => { if (!document.hidden) { loadRail(); if (open) loadThread(); } }, 3000);
   loadRail();
-  return { show, back, close, send, aim, reply, reload };
+  return { show, back, close, send, ask, aim, reply, reload };
 })();
