@@ -44,6 +44,9 @@ async function newProject() {
       <div class="row"><label class="f"><span>${esc(t('dlg.np.key'))}</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
       <label class="f"><span>${esc(t('dlg.np.folder'))}</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="${esc(t('dlg.np.folder.ph'))}"></label>
       <label class="f"><span>${esc(t('dlg.np.desc'))}</span><textarea id="p-desc" rows="3"></textarea></label>
+      <label class="f"><span>${esc(t('dlg.np.tpl'))}</span><select id="p-tpl" onchange="$('p-own').style.display = this.value === 'own' ? '' : 'none'">
+        <option value="kanban">${esc(t('dlg.np.tpl.kanban'))}</option><option value="scrum">${esc(t('dlg.np.tpl.scrum'))}</option><option value="own">${esc(t('dlg.np.tpl.own'))}</option></select></label>
+      <label class="f" id="p-own" style="display:none"><span>${esc(t('dlg.np.tpl.own.help'))}</span><input type="text" id="p-own-names" placeholder="${esc(t('dlg.np.tpl.own.ph'))}"></label>
       <div class="err" id="d-err"></div><div id="p-done"></div>
       <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`);
 }
@@ -53,6 +56,13 @@ function suggestKey() {
   const clean = name.replace(/[<>:"/\\|?*]/g, '').trim();
   if (!f.dataset.touched && state.home) f.value = clean ? state.home + '\\' + clean : '';
 }
+const STATUS_ORDER = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'];
+// Column names for a template, one per status in order ('' = keep the default name).
+function boardTemplateNames(tpl, own) {
+  if (tpl === 'scrum') return ['dlg.np.scrum.backlog', 'dlg.np.scrum.sprintbacklog', 'dlg.np.scrum.sprint', 'dlg.np.scrum.review'].map(k => t(k));
+  if (tpl === 'own') return own.split(',').map(x => x.trim().slice(0, 40));
+  return [];
+}
 async function createProject(e) {
   e.preventDefault();
   const name = $('p-name').value.trim(), folder = $('p-path').value.trim();
@@ -60,6 +70,9 @@ async function createProject(e) {
   let p;
   try {
     p = await api('POST', '/api/projects', { name, key: $('p-key').value.trim(), description: $('p-desc').value.trim() });
+    // A template only pre-fills the column names (AIG-170); the statuses underneath never change.
+    const names = boardTemplateNames($('p-tpl').value, $('p-own-names').value);
+    if (names.some(Boolean)) await api('PATCH', '/api/projects/' + p.slug, { columns: STATUS_ORDER.map((status, i) => ({ status, name: names[i] || undefined })) });
   } catch (err) { setErr('d-err', err); return false; }
   if (!folder) { closeDialog(); location.hash = '#/p/' + p.slug; return false; }
   $('p-acts').innerHTML = `<button type="button" class="primary" onclick="closeDialog(); location.hash = '#/p/${p.slug}'">${esc(t('dlg.np.open'))}</button>`;
