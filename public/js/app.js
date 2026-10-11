@@ -12,6 +12,8 @@ function theme(set) {
 }
 // The same choice as a dropdown, for the Setup page (AIG-143).
 const themePickHtml = () => { const cur = theme(); return `<select class="setup-theme" onchange="theme(this.value)">${Object.keys(THEMES).map(k => `<option value="${k}" ${k === cur ? 'selected' : ''}>${esc(THEMES[k])}</option>`).join('')}</select>`; };
+// Why a team needs a poke, in your language (AIG-174); older servers only send the English text.
+const asleepWhy = a => a.n != null ? t(a.n === 1 ? 'poke.asleep.one' : 'poke.asleep.many', { n: a.n }) : a.why;
 const nextTheme = () => { const k = Object.keys(THEMES), cur = theme(); theme(k[(k.indexOf(cur) + 1) % k.length]); };
 theme();
 
@@ -81,7 +83,7 @@ window.showRestartApp = () => {
 
 /* ---------- teams that need a poke: top-bar badge ---------- */
 function pokeBadge(projects) {
-  const n = projects.filter(p => p.attention), names = n.map(p => p.name + ': ' + (p.attention.kind === 'asleep' ? p.attention.why : t('poke.stuck'))).join('\n');
+  const n = projects.filter(p => p.attention), names = n.map(p => p.name + ': ' + (p.attention.kind === 'asleep' ? asleepWhy(p.attention) : t('poke.stuck'))).join('\n');
   const h = n.length ? `<button class="navlink pokebadge" onclick="pokeAll(this)" title="${esc(t('poke.title'))}\n${esc(names)}">${esc(n.length > 1 ? t('poke.many', { n: n.length }) : t('poke.one'))}</button>` : '';
   if ($('pokeTop').innerHTML !== h) $('pokeTop').innerHTML = h;
 }

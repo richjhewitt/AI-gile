@@ -10,6 +10,8 @@ const ls = k => { try { return localStorage.getItem(k); } catch { return null; }
 const chosenLang = () => { const l = ls('aigile.lang') || 'en'; return LANGS[l] ? l : 'en'; };
 const enSwitch = () => ls('aigile.enSwitch') === '1' && chosenLang() !== 'en';
 const langCode = () => enSwitch() && ls('aigile.enNow') === '1' ? 'en' : chosenLang();
+// A text the server sends in English (Setup labels, permission ticks): the language file's version when there is one (AIG-174).
+const tk = (key, fallback, vars) => (i18n.dict[key] ?? i18n.en[key]) != null ? t(key, vars) : fallback;
 function t(key, vars) {
   let s = i18n.dict[key] ?? i18n.en[key] ?? key;
   if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => k in vars ? vars[k] : m);

@@ -157,7 +157,7 @@ function renderSetup() {
     <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">
-      ${s.fields.map(f => `<label class="f"><span>${esc(f.label)}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}"><small class="muted">${esc(f.help)}</small></label>`).join('')}
+      ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}"><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small></label>`).join('')}
       <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
       <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button></div></form></div>`;
 }
@@ -342,7 +342,7 @@ async function permsDialog() {
   state.permPresets = r.presets;
   openDialog(`<h2>${esc(t('board.perms'))}</h2>
     <p class="muted">${t('perm.intro.html', { file: esc(r.file) })}</p>
-    <div id="perm-ticks">${Object.entries(r.presets).map(([k, v]) => `<label class="chk"><input type="checkbox" data-k="${k}" onchange="permTick(this)"> ${esc(v.label)}</label>`).join('')}</div>
+    <div id="perm-ticks">${Object.entries(r.presets).map(([k, v]) => `<label class="chk"><input type="checkbox" data-k="${k}" onchange="permTick(this)"> ${esc(tk('perm.p.' + k, v.label))}</label>`).join('')}</div>
     ${PERM_LISTS.map(([l, label]) => `<label class="f"><span>${esc(t('perm.rule', { label: t(label) }))}</span><textarea id="perm-${l}" rows="4" oninput="permSync()">${esc(r[l].join('\n'))}</textarea></label>`).join('')}
     <div class="err" id="perm-err"></div><div id="perm-done" class="muted"></div>
     <div class="actions"><button class="primary" onclick="savePerms()">${esc(t('common.save'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);

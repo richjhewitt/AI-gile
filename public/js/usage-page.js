@@ -98,12 +98,13 @@ function uzTime(v) {
   return isNaN(t) ? null : t;
 }
 const uzHM = ms => { const m = Math.max(0, Math.round(ms / 60e3)), d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60);
-  return d ? `${d}d ${h}h` : h ? `${h}h ${m % 60}m` : `${m % 60}m`; };
-const uzDay = t => new Date(t).toLocaleDateString([], { weekday: 'short' }) + ' ' + new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  const u = k => t('usage.unit.' + k);   // d / h / m in your language (AIG-174)
+  return d ? `${d}${u('d')} ${h}${u('h')}` : h ? `${h}${u('h')} ${m % 60}${u('m')}` : `${m % 60}${u('m')}`; };
+const uzDay = t => new Date(t).toLocaleDateString(i18n.lang, { weekday: 'short' }) + ' ' + new Date(t).toLocaleTimeString(i18n.lang, { hour: '2-digit', minute: '2-digit', hour12: false });
 const uzShort = n => { const f = (v, u) => (v >= 100 ? Math.round(v) : +v.toFixed(1)) + u;
   return n >= 1e9 ? f(n / 1e9, 'B') : n >= 1e6 ? f(n / 1e6, 'M') : n >= 1e3 ? f(n / 1e3, 'k') : String(Math.round(n)); };
 const uzDate = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
-const uzDateLabel = s => uzDate(s).toLocaleDateString([], { month: 'short', day: 'numeric' });
+const uzDateLabel = s => uzDate(s).toLocaleDateString(i18n.lang, { month: 'short', day: 'numeric' });
 
 /* ---------- page ---------- */
 function renderUsagePage() {
@@ -232,7 +233,7 @@ function uzLineCard(hist, W) {
   else { d.setHours(24, 0, 0, 0); for (let t = new Date(d); +t <= now; t.setDate(t.getDate() + 1)) ticks.push(+t); }
   const maxLabels = Math.max(2, Math.floor(iw / 62)), step = Math.ceil(ticks.length / maxLabels);
   ticks.forEach((t, i) => { if (i % step) return;
-    const lab = hours <= 24 ? new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : new Date(t).toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const lab = hours <= 24 ? new Date(t).toLocaleTimeString(i18n.lang, { hour: '2-digit', minute: '2-digit', hour12: false }) : new Date(t).toLocaleDateString(i18n.lang, { month: 'short', day: 'numeric' });
     g += `<line x1="${x(t)}" x2="${x(t)}" y1="${T + ih}" y2="${T + ih + 4}" stroke="var(--muted)"/><text x="${x(t)}" y="${H - 8}" text-anchor="middle">${lab}</text>`; });
   let marks = '';
   for (const [k, , col] of UZ_KEYS) {

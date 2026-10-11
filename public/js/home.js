@@ -24,7 +24,7 @@ function renderHome() {
     const active = p.total - p.counts.backlog;
     const at = p.attention;
     return `<a class="proj ${p.archived ? 'archived' : ''} ${at ? 'poke' : ''}" href="#/p/${p.slug}" style="--proj:${esc(p.color)}">
-      ${at ? `<div class="pokeline">${at.kind === 'asleep' ? '💤' : '⚠️'} <b>${esc(t('home.poke'))}</b> ${at.kind === 'asleep' ? esc(at.why) : esc(t('home.unanswered', { when: ago(at.since, true) }))}</div>` : ''}
+      ${at ? `<div class="pokeline">${at.kind === 'asleep' ? '💤' : '⚠️'} <b>${esc(t('home.poke'))}</b> ${at.kind === 'asleep' ? esc(asleepWhy(at)) : esc(t('home.unanswered', { when: ago(at.since, true) }))}</div>` : ''}
       <h2>${pic(p.logo, p.emoji)} ${esc(p.name)} ${p.archived ? `<span class="pill">${esc(t('home.archived'))}</span>` : ''} ${p.needsYou ? `<span class="pill you">${esc(t('home.foryou', { n: p.needsYou }))}</span>` : ''} ${p.blocked ? `<span class="pill blocked">${esc(t('home.blocked', { n: p.blocked }))}</span>` : ''}</h2>
       <div class="muted">${esc(p.description)}</div>
       ${bar(p.counts, active)}
