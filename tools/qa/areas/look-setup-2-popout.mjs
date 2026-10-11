@@ -89,5 +89,7 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   check('saved to the local settings file', saved.owner === 'Sam' && saved.agent.command === 'C:/tools/agent.exe' && saved.agent.settingsFile === '.agent/settings.local.json', saved);
   const m = await s.ok('GET', '/api/meta');
   check('setup done and the name is used at once', m.setupNeeded === false && m.owner === 'Sam', m);
+  // AIG-335: a repaint of the board part while Setup is open and no project is loaded must not throw (it read p.presence of null).
+  check('repainting the board on Setup with no project does not throw', await page.evaluate(() => { try { state.route = { view: 'setup' }; state.project = null; renderBoardOnly(); return true; } catch (e) { return false; } }));
   noErrors(page);
 }, true, { AIGILE_OWNER: '', AIGILE_LOCAL: (process.env.QA_SETUP_FILE = path.join(tmp('setup'), 'aigile.local.json')) });

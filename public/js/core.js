@@ -220,6 +220,8 @@ function renderBoardOnly() {
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'usage') return;
   if (state.route.view === 'standups') { $('app').innerHTML = renderStandups(); return; }
+  // Only the home page and a board are painted here; Setup, the inbox and the rest paint themselves (AIG-335: no project yet on a fresh board).
+  if (state.route.view !== 'home' && !(state.route.view === 'project' && state.project)) return;
   $('app').innerHTML = state.route.view === 'home' ? renderHome() : renderBoard(state.project);
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
 }
