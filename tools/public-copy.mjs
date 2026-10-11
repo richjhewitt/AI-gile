@@ -23,7 +23,7 @@ const NAMES = [...(process.env.PUBLIC_COPY_NAMES || '').split(','), ownerName].m
 const RULES = [
   ['personal name', NAMES.length ? new RegExp('\\b(' + NAMES.join('|') + ')\\b', 'i') : /$^/],
   ['email', /[\w.+-]+@(?!example\.|noreply\.)[\w-]+\.[\w.-]+/],
-  ['absolute path', /C:[\\/]+Users[\\/]+(?!you\b)|\/Users\/(?!you\b)/i],
+  ['absolute path', /C:[\\/]+Users[\\/]+(?![\\/]*you\b)|\/Users\/(?!you\b)/i],
   ['token or key', /\bsk-[A-Za-z0-9_-]{8,}|\bghp_[A-Za-z0-9]{10,}|\b(api[_-]?key|secret|token)\b\s*[:=]\s*['"][^'"\s]{12,}['"]|AKIA[0-9A-Z]{16}/i],
 ];
 const FILE_RULES = [['data or local file', f => /(^|\/)data\//.test(f) || /\.local\./.test(f)]];
