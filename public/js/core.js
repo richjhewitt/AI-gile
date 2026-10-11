@@ -204,6 +204,7 @@ async function refresh(force) {
   if (!force && busy()) {
     // Keep the board behind moving; only hold the panel/dialog the owner is using.
     if (sig !== state.lastBoardSig) { state.lastBoardSig = sig; renderBoardOnly(); }
+    if (state.route.pop && sig !== state.lastSig && popChatLive()) { state.lastSig = sig; return; }   // a chat keeps moving while you type (AIG-313)
     if (sig !== state.lastSig) { $('live').className = 'live paused'; $('live').textContent = t('live.paused'); }
     return;
   }
@@ -247,8 +248,10 @@ function render() {
   if (state.route.pop) {
     const c = p.cards.find(x => x.id === state.route.card);
     $('app').innerHTML = '';
+    const de = document.documentElement, first = !$('modal')._html, y = window.scrollY, atEnd = first || de.scrollHeight - y - window.innerHeight < 60;   // chat: follow the newest unless scrolled up
     paintModal(c ? renderCard(p, c) : `<p class="muted" style="padding:16px">${esc(t('card.gone'))}</p>`);
     const pp = document.querySelector('#modal .panel'); if (pp) pp.scrollTop = keepScroll;
+    window.scrollTo(0, atEnd ? de.scrollHeight : y);
     return;
   }
   $('crumb').textContent = '/ ' + (p.emoji ? p.emoji + ' ' : '') + p.name;
