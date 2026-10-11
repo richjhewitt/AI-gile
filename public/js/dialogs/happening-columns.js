@@ -23,7 +23,12 @@ function askTeamDialog() {
   const box = $('ask-text'); box.closest('.dialog').classList.add('wide'); growBox(box); box.focus();
 }
 // Long thoughts (AIG-344): the box grows with the text, up to most of the screen, and can still be dragged.
-function growBox(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight + 4, innerHeight * 0.6) + 'px'; }
+// Once you drag the corner yourself (AIG-363), the box keeps your size instead of growing by itself.
+function growBox(el) {
+  if (!el.dataset.sizer) { el.dataset.sizer = '1'; let h0; el.addEventListener('pointerdown', () => { h0 = el.offsetHeight; }); el.addEventListener('pointerup', () => { if (h0 && el.offsetHeight !== h0) el.dataset.userSized = '1'; }); }
+  if (el.dataset.userSized) return;
+  el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight + 4, innerHeight * 0.6) + 'px';
+}
 async function sendAskTeam(e) {
   e.preventDefault();
   const text = $('ask-text').value.trim();
