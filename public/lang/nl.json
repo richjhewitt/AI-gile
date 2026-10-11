@@ -1434,5 +1434,14 @@
  "gif.none": "Geen GIF's gevonden",
  "gif.adding": "Toevoegen...",
  "setup.f.giphyKey": "Giphy-sleutel",
- "setup.f.giphyKey.help": "Gratis sleutel van developers.giphy.com; zet 🎞️ GIF zoeken aan in reacties en chats. Blijft alleen op deze computer"
+ "setup.f.giphyKey.help": "Gratis sleutel van developers.giphy.com; zet 🎞️ GIF zoeken aan in reacties en chats. Blijft alleen op deze computer",
+ "timed.title": "Getimed: tot dan uit je weg",
+ "timed.pick": "Kom terug…",
+ "timed.p.1h": "Over 1 uur",
+ "timed.p.3h": "Over 3 uur",
+ "timed.p.tom": "Morgen 9:00",
+ "timed.p.mon": "Maandag 9:00",
+ "timed.at": "Kom terug op",
+ "timed.set": "Instellen",
+ "timed.clear": "Wissen"
 }
