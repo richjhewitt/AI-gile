@@ -215,6 +215,47 @@ def('dms', 'private DMs: invite/accept, same safety code, encrypted send through
   }
 }, false, { AIGILE_DM_POLL_MS: '300' });
 
+def('dmstore', 'the relay keeps nothing once the friend has it: files acked then gone, big unacked ones expire sooner, a full mailbox refuses with a message the sender sees (AIG-341)', async s => {
+  const relay = await startRelay({ RELAY_RATE: '100000', RELAY_BOX_BYTES: '20000', RELAY_BIG_BYTES: '5000' });
+  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, await freePort());
+  try {
+    await s.ok('POST', '/api/dms/settings', { on: true, relay: relay.base });
+    const onB = await b.ok('POST', '/api/dms/settings', { on: true, relay: relay.base });
+    const inv = await s.ok('POST', '/api/dms/invites', { name: 'Davy' });
+    const cb = await b.ok('POST', '/api/dms/accept', { code: inv.code, name: 'Rich' });
+    const ca = await until(async () => (await s.ok('GET', '/api/dms/contacts'))[0]);
+    await until(async () => (await b.ok('GET', '/api/dms/contacts'))[0] && (await s.ok('GET', '/api/dms/contacts'))[0]);
+    const file = { name: 'pic.bin', type: 'application/octet-stream', data: Buffer.alloc(3000, 7).toString('base64') };
+    await b.ok('POST', `/api/dms/contacts/${cb.id}/messages`, { text: 'a file', attachments: [file] });
+    const got = await until(async () => (await s.ok('GET', `/api/dms/contacts/${ca.id}/messages`)).find(m => m.attachments));
+    check('the file arrived', !!got);
+    const mineA = (await s.ok('GET', '/api/dms')).mailbox;
+    check('and the relay mailbox is empty straight after the ack', await until(() => envFiles(relay, mineA).length === 0 && filesUnder(relay.data).every(f => f.endsWith('owner.json'))));
+
+    // Expiry: write envelopes by their age into a claimed mailbox, then collect. Big ones (over 5000 bytes here) last 48 h, others 7 days.
+    const k = crypto.generateKeyPairSync('ed25519');
+    const box = crypto.randomBytes(18).toString('base64url');
+    check('claim a mailbox', (await relaySigned(relay, 'GET', '/m/' + box, k)).status === 200);
+    const day = 24 * 3600e3, name = age => (Date.now() - age) + '-' + crypto.randomBytes(8).toString('hex') + '.json';
+    const put = (age, size) => { const f = name(age); fs.writeFileSync(path.join(relay.data, box, f), 'x'.repeat(size)); return f; };
+    const bigOld = put(3 * day, 6000), bigNew = put(1 * day, 6000), smallOld = put(3 * day, 100), smallAncient = put(8 * day, 100);
+    await relaySigned(relay, 'GET', '/m/' + box, k);
+    const left = fs.readdirSync(path.join(relay.data, box));
+    check('a big envelope unacked for 3 days is gone', !left.includes(bigOld));
+    check('a big one under 48 hours stays', left.includes(bigNew));
+    check('a small one at 3 days stays (7 days)', left.includes(smallOld));
+    check('a small one at 8 days is gone', !left.includes(smallAncient));
+
+    // The cap: B is off so nothing is collected; A keeps sending files until the mailbox is full.
+    await b.ok('POST', '/api/dms/settings', { on: false });
+    const big = { name: 'big.bin', type: 'application/octet-stream', data: Buffer.alloc(6000, 9).toString('base64') };
+    let last;
+    for (let i = 0; i < 4; i++) last = await s.ok('POST', `/api/dms/contacts/${ca.id}/messages`, { text: 'more ' + i, attachments: [big] });
+    check('the sender sees it failed, with who is full', last.status === 'failed' && last.reason === ca.name + "'s mailbox is full: they need to open AI-gile", last);
+    check('the relay holds no more than the cap', filesUnder(path.join(relay.data, onB.mailbox)).filter(f => !f.endsWith('owner.json')).reduce((n, f) => n + fs.statSync(f).size, 0) <= 20000);
+  } finally { b.stop(); relay.stop(); }
+}, false, { AIGILE_DM_POLL_MS: '300' });
+
 def('railorder', 'drag a project in the left rail to reorder; the order is used for the project list and DMs (AIG-189)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET'); await mkProject(s, 'Gamma', 'GAM');
   const page = await openPage(ctx, '#/');

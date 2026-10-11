@@ -11,7 +11,9 @@
 //   GET  /health
 // Signed requests carry x-relay-key (Ed25519 public key, base64url), x-relay-ts (ms), x-relay-nonce and x-relay-sig:
 // an Ed25519 signature over "aigile-relay-v1\n<METHOD>\n<path>\n<ts>\n<nonce>\n<sha256 hex of the body>".
-// Envelopes are deleted once collected, or after 7 days.
+// Envelopes are deleted as soon as the owner acks them, else after 7 days (big ones, over 1 MB: after 48 hours).
+// Nothing else is kept: no copies, no logs, no temp files (an envelope is one file, written in place and unlinked on ack/expiry).
+//   GET  /stats            { envelopes, bytes }: only if RELAY_STATS_KEY (the operator's public signing key) is set, and signed by it
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -21,10 +23,13 @@ const PORT = Number(process.env.RELAY_PORT) || 4500;
 const HOST = process.env.RELAY_HOST || '0.0.0.0';
 const DATA = path.resolve(process.env.RELAY_DATA || path.join(__dirname, 'data'));
 const MAX_BODY = 12 * 1024 * 1024;                       // one envelope (attachments later)
-const KEEP_MS = 7 * 24 * 3600e3;                          // uncollected envelopes are deleted after 7 days
+const KEEP_MS = (Number(process.env.RELAY_KEEP_HOURS) || 7 * 24) * 3600e3;          // unacked envelopes are deleted after 7 days
+const BIG_BYTES = Number(process.env.RELAY_BIG_BYTES) || 1024 * 1024;               // an envelope over this size ...
+const BIG_KEEP_MS = (Number(process.env.RELAY_BIG_KEEP_HOURS) || 48) * 3600e3;      // ... is deleted after 48 hours
+const STATS_KEY = process.env.RELAY_STATS_KEY || '';
 const SKEW_MS = 2 * 60e3;                                 // a signed request is only good for 2 minutes
 const RATE = Number(process.env.RELAY_RATE) || 300;       // requests per minute per IP
-const BOX_MAX = 500, BOX_BYTES = 100 * 1024 * 1024;       // per mailbox
+const BOX_MAX = 500, BOX_BYTES = Number(process.env.RELAY_BOX_BYTES) || 50 * 1024 * 1024;      // per mailbox
 const TOTAL_BYTES = Number(process.env.RELAY_MAX_BYTES) || 2 * 1024 ** 3;
 const TRUST_PROXY = /^(1|true|yes)$/i.test(process.env.RELAY_TRUST_PROXY || '');   // behind a reverse proxy: use X-Forwarded-For
 
@@ -38,17 +43,23 @@ fs.mkdirSync(DATA, { recursive: true });
 
 /* ---------- storage ---------- */
 // DATA/<box>/owner.json: { key } (the owner's public signing key); DATA/<box>/<ms>-<hex>.json: one envelope.
-const envFiles = box => { try { return fs.readdirSync(boxDir(box)).filter(f => isRid(f.slice(0, -5)) && f.endsWith('.json')).sort(); } catch { return []; } };
+// An envelope's age is in its name. Expired ones (7 days; big ones 48 hours) are deleted whenever a mailbox is looked at.
+const expired = (f, size) => Date.now() - Number(f.split('-')[0]) > (size > BIG_BYTES ? BIG_KEEP_MS : KEEP_MS);
+const envFiles = box => {
+  let names; try { names = fs.readdirSync(boxDir(box)).filter(f => isRid(f.slice(0, -5)) && f.endsWith('.json')).sort(); } catch { return []; }
+  return names.filter(f => {
+    const file = path.join(boxDir(box), f), n = sizeOf(file);
+    if (!expired(f, n)) return true;
+    try { fs.unlinkSync(file); used -= n; count--; } catch {}
+    return false;
+  });
+};
 const ownerOf = box => { try { return JSON.parse(fs.readFileSync(path.join(boxDir(box), 'owner.json'), 'utf8')).key; } catch { return null; } };
 const sizeOf = f => { try { return fs.statSync(f).size; } catch { return 0; } };
-let used = 0;   // bytes held across all mailboxes
+var used = 0, count = 0;   // bytes and envelopes held across all mailboxes
 function sweep() {
-  used = 0;
-  const old = Date.now() - KEEP_MS;
-  for (const box of fs.readdirSync(DATA).filter(isBox)) for (const f of envFiles(box)) {
-    const file = path.join(boxDir(box), f);
-    if (Number(f.split('-')[0]) < old) { try { fs.unlinkSync(file); } catch {} } else used += sizeOf(file);
-  }
+  used = 0; count = 0;
+  for (const box of fs.readdirSync(DATA).filter(isBox)) for (const f of envFiles(box)) { used += sizeOf(path.join(boxDir(box), f)); count++; }
 }
 
 /* ---------- rate limit and replay protection ---------- */
@@ -66,7 +77,7 @@ setInterval(() => {
 }, 30e3).unref();
 
 // A request from the mailbox owner: valid signature, fresh timestamp, unused nonce. The first signed request claims an unclaimed mailbox.
-function owner(req, box, pathname, body) {
+function owner(req, box, pathname, body, onlyKey) {
   const h = n => String(req.headers[n] || '');
   const key = h('x-relay-key'), ts = h('x-relay-ts'), nonce = h('x-relay-nonce'), sig = h('x-relay-sig');
   if (!/^[A-Za-z0-9_-]{43}$/.test(key) || !/^\d{13}$/.test(ts) || !/^[A-Za-z0-9_-]{16,64}$/.test(nonce) || !/^[A-Za-z0-9_-]{86}$/.test(sig)) throw fail('sign the request', 401);
@@ -77,6 +88,7 @@ function owner(req, box, pathname, body) {
   if (!crypto.verify(null, Buffer.from(msg), pub, Buffer.from(sig, 'base64url'))) throw fail('bad signature', 401);
   if (nonces.has(key + nonce)) throw fail('that request was already used', 401);
   nonces.set(key + nonce, Date.now());
+  if (onlyKey) { if (key !== onlyKey) throw fail('not allowed', 403); return; }   // the operator's /stats
   const known = ownerOf(box);
   if (known && known !== key) throw fail('not your mailbox', 403);
   if (!known) {
@@ -109,6 +121,7 @@ async function handle(req, res) {
   if (limited(ip)) throw fail('slow down', 429);
   const { pathname } = new URL(req.url, 'http://relay');
   if (req.method === 'GET' && pathname === '/health') return send(res, 200, { ok: true });
+  if (req.method === 'GET' && pathname === '/stats' && STATS_KEY) { owner(req, null, pathname, '', STATS_KEY); sweep(); return send(res, 200, { envelopes: count, bytes: used }); }
   const m = pathname.match(/^\/m\/([^/]+)(\/ack)?$/);
   if (!m || !isBox(m[1])) throw fail('not found', 404);
   const box = m[1], ack = !!m[2];
@@ -126,7 +139,7 @@ async function handle(req, res) {
     if (files.length >= BOX_MAX || bytes + body.length > BOX_BYTES || used + body.length > TOTAL_BYTES) throw fail('mailbox full', 507);
     const rid = Date.now() + '-' + crypto.randomBytes(8).toString('hex');
     fs.writeFileSync(path.join(boxDir(box), rid + '.json'), body);
-    used += Buffer.byteLength(body);
+    used += Buffer.byteLength(body); count++;
     return send(res, 201, { ok: true });
   }
   // Collect: the owner gets what is waiting (up to 100 envelopes / 24 MB per call).
@@ -152,7 +165,7 @@ async function handle(req, res) {
     for (const rid of rids.slice(0, 1000)) {
       if (!isRid(String(rid))) continue;
       const f = path.join(boxDir(box), rid + '.json'), n = sizeOf(f);
-      try { fs.unlinkSync(f); deleted++; used -= n; } catch {}
+      try { fs.unlinkSync(f); deleted++; used -= n; count--; } catch {}
     }
     return send(res, 200, { deleted });
   }
