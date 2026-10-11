@@ -50,6 +50,7 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   await page.waitForFunction(() => /made AIG-cards/.test(document.getElementById('dmList').textContent), null, { timeout: 6000 }).catch(() => {});
   check('the lead answer shows in the chat', /made AIG-cards/.test(await page.textContent('#dmList')));
   // Chatty lead (AIG-140): off by default; when on, the lead can start a DM without adding to the board.
+  await s.ok('PATCH', '/api/projects/alpha', { chatty: false });   // not the owner's default for new projects
   check('a lead cannot start a DM while chatty is off', s.cli(['dm', 'alpha', 'hi!', '--as', 'Lead']).code !== 0);
   await s.ok('PATCH', '/api/projects/alpha', { chatty: true });
   const dm = s.cli(['dm', 'alpha', '3 things are waiting on you when you have a sec', '--as', 'Lead']);

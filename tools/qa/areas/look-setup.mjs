@@ -382,11 +382,12 @@ def('pretend', '🧪 the trial\'s pretend team: fills a new project, answers an 
   await tj('POST', '/api/projects/pancake-shop/wake');
   const seeded = await until(async () => { const p = await tj('GET', '/api/projects/pancake-shop'); return (p.team || []).some(m => m.name === 'Lead (pretend)') && p.cards.some(c => c.status === 'verify') && p; });
   check('a new project gets a pretend lead and cards in every column, one to test', !!seeded && seeded.cards.length >= 5);
-  const idea = await tj('POST', '/api/projects/pancake-shop/cards', { title: '💬 Gift cards', description: 'Gift cards', status: 'team', type: 'task', quick: true, createdBy: 'Rich' });
+  const who = (await tj('GET', '/api/meta')).owner;   // a fresh trial board has the default owner name, not the real owner's
+  const idea = await tj('POST', '/api/projects/pancake-shop/cards', { title: '💬 Gift cards', description: 'Gift cards', status: 'team', type: 'task', quick: true, createdBy: who });
   const planned = await until(async () => { const c = (await tj('GET', '/api/projects/pancake-shop')).cards.find(x => x.id === idea.id); return c && c.comments.some(m => /GO\?/.test(m.text)) && c; });
   check('an idea gets two cards and a plan with GO?', !!planned && planned.needsYou === true);
   const before = seeded.cards.filter(c => c.status === 'verify').length;
-  await tj('POST', `/api/projects/pancake-shop/cards/${idea.id}/comments`, { author: 'Rich', text: 'GO' });
+  await tj('POST', `/api/projects/pancake-shop/cards/${idea.id}/comments`, { author: who, text: 'GO' });
   const built = await until(async () => { const p = await tj('GET', '/api/projects/pancake-shop'); return p.cards.filter(c => c.status === 'verify').length > before && p; });
   check('after Go, the first card lands in For you with test steps', !!built && built.cards.some(c => c.status === 'verify' && /Gift cards/.test(c.title) && c.testSteps));
   await s.api('DELETE', '/api/trial');
