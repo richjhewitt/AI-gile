@@ -102,4 +102,4 @@ server.listen(PORT, HOST, () => console.log(`AI-gile running at http://localhost
 // Private DMs: collect this board's relay mailbox every few seconds while DMs are on (lib/dm.js).
 require('./lib/dm').startDms();
 if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();
-require('./lib/watchman').startWatchman();   // 🌙 only does anything while you are going quiet (AIG-199)
+require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anything while you are going quiet (AIG-199)

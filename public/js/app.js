@@ -51,6 +51,8 @@ async function checkBuild() {
     // A new install opens Setup first (AIG-91).
     if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';
     if (loadedBuild === null) { loadedBuild = m.build; return; }
+    // While you're quiet (AIG-224): a new board or page code reloads by itself, unless something is half-typed.
+    if (m.quiet && m.build !== loadedBuild && !hasUnsent()) { location.reload(); return; }
     // A newer version on GitHub (AIG-92): an ⬆ Update pill, until it's applied.
     const u = m.update || {}, upd = u.behind ? `<button class="primary" onclick="applyUpdatePage()" title="${esc((u.subjects || []).join('\n'))}">${esc(t('update.btn'))}</button>` : '';
     if ($('upUpdate').dataset.sig !== upd && !$('upUpdate').dataset.busy) { $('upUpdate').dataset.sig = upd; $('upUpdate').innerHTML = upd; }
@@ -77,11 +79,9 @@ async function restartBoard(btn) {
   catch (e) { alert(e.message); box.dataset.busy = ''; btn.disabled = false; btn.textContent = t('restart.btn'); }
 }
 // Unsent text anywhere (a reply, an answer, a dialog) or pending attachments: ask before losing it.
-const okToLeave = what => {
-  const unsent = [...document.querySelectorAll('textarea, input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
-    || !!document.querySelector('.att-chip');
-  return !unsent || confirm(t('leave.confirm', { what }));
-};
+const hasUnsent = () => [...document.querySelectorAll('textarea, input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
+  || !!document.querySelector('.att-chip');
+const okToLeave = what => !hasUnsent() || confirm(t('leave.confirm', { what }));
 // Applies the update; the server restarts itself, so wait a few seconds and reload.
 async function applyUpdatePage() {
   if (!okToLeave(t('update.what.update'))) return;
@@ -93,6 +93,8 @@ function refreshPage() { if (okToLeave(t('update.what.refresh'))) location.reloa
 // Desktop app only (AIG-83): the app calls this when its own files changed; the pill asks the app to restart itself.
 // A restart reloads the page too, so Refresh is hidden while Restart shows (AIG-130).
 window.showRestartApp = () => {
+  // While you're quiet (AIG-224) the app restarts itself; your pop-outs come back where they were.
+  if (document.documentElement.hasAttribute('data-night') && !hasUnsent()) { location.href = 'aigile://restart'; return; }
   $('upRefresh').hidden = true;
   if (!$('upRestart').firstChild)
     $('upRestart').innerHTML = `<button class="primary" onclick="if (okToLeave(t('update.what.restart'))) location.href = 'aigile://restart'" title="${esc(t('update.restart.title'))}">${esc(t('update.restart'))}</button>`;
