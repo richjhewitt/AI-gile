@@ -362,6 +362,10 @@ def('restartpill', '🔄 new server code shows a Restart the board pill; it asks
   fs.utimesSync(f, t, t);   // server code changed after the server started
   check('meta says the server is stale', (await s.ok('GET', '/api/meta')).stale === true);
   await page.waitForSelector('#upRestart button', { timeout: 10000 });
+  // AIG-295: one pill only, and in the desktop app it is clickable, not part of the draggable title bar.
+  check('the pill has one place on the page', (await page.locator('#upRestart').count()) === 1);
+  const region = await page.evaluate(() => { document.body.classList.add('desktop'); const st = getComputedStyle(document.querySelector('#upRestart button')); const r = st.webkitAppRegion || st.getPropertyValue('-webkit-app-region'); document.body.classList.remove('desktop'); return r; });
+  check('in the app the pill is clickable (no-drag)', region === 'no-drag', region);
   page.once('dialog', d => d.accept());
   await page.click('#upRestart button');
   await sleep(400);
