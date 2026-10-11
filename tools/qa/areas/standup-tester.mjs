@@ -152,5 +152,19 @@ def('aitester', 'AI tester: lists unchecked tests, posts pass/fail/skip with evi
   s.cli(['test', 'alpha', c.id, 'new steps', '--as', 'Lead']);
   check('handing over again clears the old check', !(await getCard(s, 'alpha', c.id)).aiCheck);
   noErrors(page);
+  // ---- AIG-300: the For you column header has a 🤖 button, and AI-passed tests sort to the top ----
+  const d = await mkCard(s, 'alpha', 'Zoom'), e = await mkCard(s, 'alpha', 'Print'), f = await mkCard(s, 'alpha', 'Share');
+  for (const x of [d, e, f]) s.cli(['test', 'alpha', x.id, '- Click **Go**: it works', '--as', 'Lead']);
+  s.cli(['checked', 'alpha', f.id, 'pass', 'Worked', '--as', 'Tester']);
+  const bp = await openPage(ctx, '#/p/alpha');
+  await bp.waitForSelector('.column.foryou .card');
+  const firstId = await bp.evaluate(() => document.querySelector('.column.foryou .card').dataset.id || document.querySelector('.column.foryou .card').textContent);
+  check('AI-passed test is first in the For you column, with its 🤖 chip', String(firstId).includes(f.id) && (await bp.locator('.column.foryou .card').first().locator('.pill.ai.pass').count()) === 1, firstId);
+  const rb = bp.locator('.column.foryou [id^="fyTester-"]');
+  check('🤖 button shows the count of tests waiting (3 unchecked)', (await rb.count()) === 1 && /3/.test(await rb.textContent()) && /3/.test(await rb.getAttribute('title')), await rb.textContent());
+  await rb.click();
+  await bp.waitForFunction(() => /AI tester started/.test(document.body.innerText), null, { timeout: 5000 }).catch(() => {});
+  check('clicking it starts the AI tester', /AI tester started/.test(await bp.innerText('body')));
+  noErrors(bp);
 }, true);
 
