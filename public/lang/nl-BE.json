@@ -1174,5 +1174,10 @@
  "nt.title.off": "Stop alle AI-gebruik meteen: lopende teams, de AI-tester, vraag een maat en gebruikscontroles. Het bord blijft gewoon werken.",
  "nt.title.on": "Geen-tokensmodus staat aan: er draait of start niets met AI. Klik om AI terug aan te zetten.",
  "nt.title.limit": "De gebruikslimiet van je abonnement is bereikt, dus de geen-tokensmodus ging vanzelf aan. Klik om AI terug aan te zetten.",
- "nt.title.back": "Je gebruik is terug. Klik om AI terug aan te zetten (het gaat nooit vanzelf terug aan)."
+ "nt.title.back": "Je gebruik is terug. Klik om AI terug aan te zetten (het gaat nooit vanzelf terug aan).",
+ "dispatch.h": "🛎️ Wie je reacties beantwoordt",
+ "dispatch.rules": "Alleen regels (gratis)",
+ "dispatch.haiku": "Regels + Haiku (aangeraden)",
+ "dispatch.lead": "De lead beslist alles",
+ "dispatch.help": "Je reacties en nieuwe kaarten gaan naar de lead, tenzij je iemand noemt (@Naam) of de kaart een test is. Alleen regels roept nooit een AI op; Regels + Haiku vraagt één keer het kleinste model als de regels het niet weten; De lead beslist wekt telkens de lead. Elke keuze staat in het projectlogboek."
 }

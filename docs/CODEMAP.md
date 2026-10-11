@@ -22,6 +22,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/trial.js`, `tools/trial/pretend-team.js`: 🧪 try it as a new user
 - `lib/pretend.js`: 🧪 pretend friend (AIG-322): local relay + second board "Davy" (nl-BE) on free ports, invite swapped, stop keeps or wipes his data
 - `lib/tester.js`: 🤖 AI tester runs
+- `lib/dispatch.js`: who is woken for the owner's card or comment (rules, then Haiku)
 - `aigile.js` (CLI entry) + `lib/cli/*.js` (core, help, command groups), `statusline.js`, `desktop/` (Electron)
 
 ## Page ([page.md](codemap/page.md): `public/`, classic scripts in one global scope, `app.js` last)

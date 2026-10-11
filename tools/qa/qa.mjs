@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import { areas, CHROME, loadPw, startServer, check, sleep, setArea, getFailures } from './lib.mjs';
 
 // Every file in areas/ registers its areas on import; add a new file here.
-for (const f of ['api-cli', 'board', 'card', 'projects-docs', 'inbox', 'team-quiet-1-presence', 'team-quiet-2-quietinbox', 'team-quiet-3-watchman', 'team-quiet-4-light', 'team-quiet-5-runin', 'chats-dms', 'standup-tester', 'look-setup-1-look', 'look-setup-2-popout', 'look-setup-3-i18n', 'look-setup-4-glossary', 'share', 'dm-invite', 'ask', 'ideabtn', 'decide', 'pretend-friend', 'budget', 'notokens', 'join']) await import(`./areas/${f}.mjs`);
+for (const f of ['api-cli', 'board', 'card', 'projects-docs', 'inbox', 'team-quiet-1-presence', 'team-quiet-2-quietinbox', 'team-quiet-3-watchman', 'team-quiet-4-light', 'team-quiet-5-runin', 'chats-dms', 'standup-tester', 'look-setup-1-look', 'look-setup-2-popout', 'look-setup-3-i18n', 'look-setup-4-glossary', 'share', 'dm-invite', 'ask', 'ideabtn', 'decide', 'pretend-friend', 'budget', 'notokens', 'join', 'dispatch']) await import(`./areas/${f}.mjs`);
 
 // Run order (the order the areas were written in); a new area goes at the end.
 const ORDER = ['api', 'cli', 'board', 'card', 'filters', 'inbox', 'usage', 'presence', 'quiet', 'quietinbox', 'poke', 'blocked', 'docs', 'mdlinks', 'newproject', 'perms', 'gobutton', 'attach', 'refresh', 'look', 'logos', 'guard', 'owner', 'setup', 'update', 'foryou', 'popout', 'popchat', 'columns', 'cardview', 'wip', 'lanes', 'quick', 'standup', 'views', 'steps', 'fynext', 'theme', 'i18n', 'chats', 'answerbtns', 'aitester', 'discover', 'dms', 'openit', 'testnotes', 'drafts', 'proof', 'queue', 'editor', 'runtokens', 'newscrum', 'dmchats', 'share', 'ask', 'ideabtn', 'decide'];
