@@ -38,6 +38,46 @@ async function sendAskTeam(e) {
   return false;
 }
 
+/* ---------- 💡 idea button (AIG-351): a quick thought from any page, to one team, every team, or "decide later" ---------- */
+// One project: a 💬 card in its For the team, exactly like Ask the team. All projects: one in each. Decide later: a 💬 card in the
+// project you are on (else the first one), made by "Ideas" instead of you so nobody is woken, and marked as waiting on you, so it sits in your inbox.
+async function ideaDialog() {
+  let projects = [], leads = {};
+  try { projects = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
+  try { (await api('GET', '/api/chats')).forEach(c => { leads[c.slug] = c.lead; }); } catch {}
+  const here = slug() || '';
+  const pick = projects.some(p => p.slug === here) ? here : '_later';
+  Attach.clear('idea');
+  openDialog(`<h2>${esc(t('idea.h'))}</h2>
+    <form onsubmit="return sendIdea(event)"><label class="f"><span>${esc(t('idea.q'))}</span><textarea id="idea-text" class="grow" data-draft="idea" rows="4" oninput="growBox(this)" onkeydown="if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') sendIdea(event)" placeholder="${esc(t('idea.ph'))}"></textarea></label>
+    <label class="f"><span>${esc(t('idea.to'))}</span><select id="idea-to">
+      ${projects.map(p => `<option value="${esc(p.slug)}" ${p.slug === pick ? 'selected' : ''}>${esc((p.emoji || '') + ' ' + p.name + (leads[p.slug] ? ' (' + leads[p.slug] + ')' : ''))}</option>`).join('')}
+      <option value="_all">${esc(t('idea.all'))}</option><option value="_later" ${pick === '_later' ? 'selected' : ''}>${esc(t('idea.later'))}</option></select></label>
+    <div class="err" id="idea-err"></div>
+    <div class="actions"><button class="primary" type="submit" title="Ctrl+Enter">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('idea')}</div></form>`, 'wide');
+  const box = $('idea-text'); box.closest('.dialog').classList.add('wide'); growBox(box); box.focus();
+}
+async function sendIdea(e) {
+  e.preventDefault();
+  const text = $('idea-text').value.trim(), to = $('idea-to').value;
+  if (!text) { setErr('idea-err', t('idea.err')); return false; }
+  try {
+    const all = (await api('GET', '/api/projects')).filter(p => !p.archived).map(p => p.slug);
+    const targets = to === '_all' ? all : to === '_later' ? [all.includes(slug()) ? slug() : all[0]] : [to];
+    if (!targets[0]) throw new Error(t('idea.noproj'));
+    const title = '💬 ' + text.split('\n')[0].slice(0, 80);
+    for (const s of targets) {
+      const attachments = await Attach.upload('idea', s);
+      await api('POST', `/api/projects/${s}/cards`, to === '_later'
+        ? { title, description: text, type: 'task', status: 'backlog', createdBy: 'Ideas', quick: true, needsYou: true, attachments }
+        : { title, description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
+    }
+    Attach.clear('idea'); clearDraft('idea');
+    closeDialog(); await rerender();
+  } catch (err) { setErr('idea-err', err); }
+  return false;
+}
+
 /* ---------- board columns (AIG-116) ---------- */
 // ---- columns: rename, reorder, hide and colour this board's columns (display only: statuses never change) ----
 const KEY_COLS = { verify: 'cols.key.verify', team: 'cols.key.team' };
