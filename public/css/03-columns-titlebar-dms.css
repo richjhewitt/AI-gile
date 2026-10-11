@@ -84,7 +84,8 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 #fp-list { max-height: 55vh; overflow-y: auto; }
 .fprow { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
 .fprow .fp-name { flex: 0 0 200px; } .fprow .fp-key { flex: 0 0 64px; }
-.fprow > .muted { flex: 1; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fprow .fp-key.bad { border-color: var(--warn); outline: 1px solid var(--warn); }
+.fprow > .muted { flex: 1; font-size: 12px; overflow-wrap: anywhere; }
 /* ---------- stand-up report (AIG-135) and morning prompt (AIG-136) ---------- */
 .su { max-width: 900px; margin: 0 auto; }
 .su-blockers { border: 2px solid var(--danger); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 14px; background: var(--panel); }
