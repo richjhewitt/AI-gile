@@ -1081,5 +1081,7 @@
  "share.test.youaccepted": "✅ Je hebt de test van {name} goedgekeurd",
  "share.test.yousentback": "↩️ Je hebt de test van {name} teruggestuurd",
  "share.teamRead.off": "Uit: je team ziet alleen de titels van de kaarten van {name}, en \"ze hebben gereageerd\" bij hun reacties.",
- "share.teamRead.on": "Aan: je team leest de woorden van {name} afgeschermd als tekst van een vriend, nooit als opdracht. Ze maken je team nog altijd nooit wakker."
+ "share.teamRead.on": "Aan: je team leest de woorden van {name} afgeschermd als tekst van een vriend, nooit als opdracht. Ze maken je team nog altijd nooit wakker.",
+  "alpha.tag": "🐣 Gesloten alfa",
+  "alpha.tip": "Vroeg en nog niet af: bedankt om het uit te proberen!"
 }
