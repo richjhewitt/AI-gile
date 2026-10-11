@@ -203,6 +203,8 @@
       <div class="ib-next" id="ibNext"></div>
       <div class="ib-kinds" id="ibKinds"></div>
       <div class="ib-only" id="ibOnly" hidden></div>
+      <div class="ib-aibar" id="ibAiBar"></div>
+      <section class="ib-sec ib-fl" id="ibAi" hidden></section>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <div id="ibEmpty"></div>
       <section class="ib-sec q" id="ibQ"><h3>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
@@ -306,12 +308,27 @@
     syncList(el('ibQ').querySelector('.list'), qs.filter(c => c.project === chat).sort((a, b) => lastAsk(a).at.localeCompare(lastAsk(b).at)));
   }
 
+  let flick = -1;   // the AI-passed test shown in the 🤖 view (AIG-192); -1 = view closed
   let kindFilter = '', only = '';   // only: q, k or t from a top bar chip (AIG-187)
   function paintPage() {
     if (!el('ib')) skeleton();
     paintTabs();
     // All tab: items grouped by project, in tab order, each group still longest-waiting first (AIG-86).
     const shown = tab === 'all' ? [...items].sort((a, b) => tabOrder.indexOf(a.project) - tabOrder.indexOf(b.project)) : items.filter(c => c.project === tab);
+    // 🤖 AI passed (AIG-192): its own view, one test at a time; the rest of the inbox steps aside while it's open.
+    const aiList = shown.filter(c => isTest(c) && c.aiCheck && c.aiCheck.result === 'pass');
+    if (flick >= aiList.length) flick = aiList.length - 1;
+    const bar = aiList.length ? `<button class="ib-tab ${flick >= 0 ? 'on' : ''}" data-flick="1">${esc(t('inbox.ai.tab', { n: aiList.length }))}</button>` : '';
+    if (el('ibAiBar').dataset.sig !== bar) { el('ibAiBar').dataset.sig = bar; el('ibAiBar').innerHTML = bar; }
+    const flOn = flick >= 0;
+    el('ibAi').hidden = !flOn;
+    for (const id of ['ibNext', 'ibKinds', 'ibQ', 'ibK', 'ibT', 'ibEmpty', 'ibMore', 'ibOnly']) if (flOn) el(id).hidden = true;
+    if (flOn) {
+      const cur = aiList[flick], html = aiFlickHtml(cur, flick, aiList.length);
+      if (el('ibAi').dataset.sig !== html) { el('ibAi').dataset.sig = html; el('ibAi').dataset.key = keyOf(cur); el('ibAi').innerHTML = html; }
+      return;
+    }
+    el('ibNext').hidden = false; el('ibKinds').hidden = false; el('ibEmpty').hidden = false;
     // Your queue (AIG-159..162): filter by kind, sort by your priority / what it holds up / time, and pick Next up.
     paintQueue(shown, kindFilter);
     const pick = shown.filter(c => !kindFilter || kindOfItem(c) === kindFilter).sort(queueRank);
@@ -345,6 +362,8 @@
     }
   }
   function onClick(e) {
+    if (e.target.closest('[data-flick]')) { flick = flick >= 0 ? -1 : 0; paintPage(); return; }
+    const fl = e.target.closest('[data-fl]'); if (fl) { flickAct(fl.dataset.fl); return; }
     if (e.target.closest('[data-onlyclear]')) { e.preventDefault(); only = ''; paintPage(); return; }
     if (e.target.closest('#ibAiAll')) { acceptAiPassed(e.target.closest('#ibAiAll')); return; }
     const cb = e.target.closest('button[data-chat]');
@@ -402,6 +421,26 @@
     for (const c of list) { try { await post('POST', `/api/projects/${c.project}/cards/${c.id}/verdict`, { accept: true }); n++; } catch {} }
     btn.disabled = false; toast(t('inbox.toast.aiall', { n })); await load(); paintPage();
   }
+  // The 🤖 view's buttons and keys (AIG-192): accept or send back the one shown, then the next slides in.
+  async function flickAct(act) {
+    const shown = tab === 'all' ? items : items.filter(c => c.project === tab);
+    const list = shown.filter(c => isTest(c) && c.aiCheck && c.aiCheck.result === 'pass'), n = list.length, cur = list[flick];
+    if (act === 'exit' || !cur) { flick = -1; paintPage(); return; }
+    if (act === 'next' || act === 'prev') { flick = (flick + (act === 'next' ? 1 : -1) + n) % n; paintPage(); return; }
+    const text = el('flText').value.trim();
+    if (act === 'back' && !text) { el('flErr').textContent = t('verdict.err'); el('flText').focus(); return; }
+    el('ibAi').querySelectorAll('button').forEach(b => b.disabled = true);
+    try {
+      await post('POST', `/api/projects/${cur.project}/cards/${cur.id}/verdict`, act === 'accept' ? { accept: true } : { accept: false, text });
+      toast(t(act === 'accept' ? 'inbox.toast.accepted' : 'inbox.toast.sentback', { id: cur.id }));
+      el('ibAi').dataset.sig = '';
+      await load(); paintPage();
+    } catch (err) { el('flErr').textContent = err.message || String(err); el('ibAi').querySelectorAll('button').forEach(b => b.disabled = false); }
+  }
+  document.addEventListener('keydown', e => {
+    if (flick < 0 || !el('ibAi') || el('ibAi').hidden || /TEXTAREA|INPUT|SELECT/.test(e.target.tagName)) return;
+    if (e.key === 'ArrowRight') flickAct('next'); else if (e.key === 'ArrowLeft') flickAct('prev'); else if (e.key === 'a' || e.key === 'A') flickAct('accept'); else if (e.key === 'Escape') flickAct('exit');
+  });
   async function waitAndSee(n) {
     lock(n);
     try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await load(); toast(t('inbox.toast.hidden', { id: n.dataset.id })); }

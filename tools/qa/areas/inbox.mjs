@@ -184,3 +184,30 @@ def('inboxonly', 'top bar chips: "to do" shows only your to-dos, "to test" only 
   check('"to test" shows only tests', await page.locator('#ibT').isVisible());
   noErrors(page);
 }, true);
+
+def('aiflick', '🤖 AI passed view: one test at a time with the evidence, accept or send back, next slides in (AIG-192)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const ids = [];
+  for (const n of ['One', 'Two', 'Three']) { const c = await mkCard(s, 'alpha', 'Test ' + n); s.cli(['test', 'alpha', c.id, 'click ' + n, '--as', 'Lead']); ids.push(c.id); }
+  s.cli(['checked', 'alpha', ids[0], 'pass', 'Saw one working', '--as', 'Tester']);
+  s.cli(['checked', 'alpha', ids[1], 'pass', 'Saw two working', '--as', 'Tester']);
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('[data-flick]');
+  check('the 🤖 AI passed button counts only passed tests', /\(2\)/.test(await page.textContent('[data-flick]')));
+  await page.click('[data-flick]');
+  await page.waitForSelector('#ibAi:not([hidden]) .ai-ev');
+  check('it shows one test with what the tester saw', /1 of 2/.test(await page.textContent('#ibAi .fl-head')) && /Saw one working/.test(await page.textContent('#ibAi')) && await page.locator('#ibT').isHidden());
+  await page.keyboard.press('ArrowRight');
+  await page.waitForFunction(() => /2 of 2/.test(document.querySelector('#ibAi .fl-head').textContent), null, { timeout: 3000 }).catch(() => {});
+  check('→ flicks to the next one', /Saw two working/.test(await page.textContent('#ibAi')));
+  await page.click('#ibAi [data-fl="back"]');
+  check('send back needs a reason', /./.test(await page.textContent('#flErr')));
+  await page.fill('#flText', 'Button is the wrong colour');
+  await page.click('#ibAi [data-fl="back"]');
+  await page.waitForFunction(() => /1 of 1/.test(document.querySelector('#ibAi .fl-head')?.textContent || ''), null, { timeout: 5000 }).catch(() => {});
+  check('sent back goes to the team; the other slides in', (await getCard(s, 'alpha', ids[1])).status === 'team' && /Saw one working/.test(await page.textContent('#ibAi')));
+  await page.click('#ibAi [data-fl="accept"]');
+  await page.waitForFunction(() => document.getElementById('ibAi').hidden, null, { timeout: 5000 }).catch(() => {});
+  check('accepting the last one closes the view, back to the inbox', (await getCard(s, 'alpha', ids[0])).status === 'done' && await page.locator('#ibAi').isHidden() && await page.locator('#ibT').isVisible());
+  noErrors(page);
+}, true);

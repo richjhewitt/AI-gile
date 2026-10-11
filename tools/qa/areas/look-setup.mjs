@@ -178,7 +178,7 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   const m = await s.ok('GET', '/api/meta');
   check('setup done and the name is used at once', m.setupNeeded === false && m.owner === 'Sam', m);
   noErrors(page);
-}, true, { AIGILE_LOCAL: (process.env.QA_SETUP_FILE = path.join(tmp('setup'), 'aigile.local.json')) });
+}, true, { AIGILE_OWNER: '', AIGILE_LOCAL: (process.env.QA_SETUP_FILE = path.join(tmp('setup'), 'aigile.local.json')) });
 
 def('i18n', 'languages: every language file has the same keys, the picker switches the file (stubbed copy), no raw keys or {{dev:}} markers on screen (AIG-124)', async (s, ctx) => {
   const langDir = path.join(ROOT, 'public', 'lang');

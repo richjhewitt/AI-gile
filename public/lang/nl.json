@@ -587,5 +587,13 @@
  "inbox.only.q": "Alleen vragen",
  "inbox.only.k": "Alleen je taken",
  "inbox.only.t": "Alleen tests",
- "inbox.only.all": "Alles tonen"
+ "inbox.only.all": "Alles tonen",
+ "inbox.ai.tab": "🤖 Geslaagd bij AI ({n})",
+ "inbox.ai.h": "🤖 Geslaagd bij AI · {i} van {n}",
+ "inbox.ai.prev": "Vorige",
+ "inbox.ai.next": "Volgende",
+ "inbox.ai.exit": "✕ Terug naar de inbox",
+ "inbox.ai.ph": "Terugsturen? Zeg wat er mis is",
+ "inbox.ai.keys": "Toetsen: ← → bladeren, A goedkeuren, Esc sluiten",
+ "inbox.toast.sentback": "{id} teruggestuurd naar het team"
 }

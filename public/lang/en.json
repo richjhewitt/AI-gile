@@ -587,5 +587,13 @@
  "inbox.only.q": "Showing only questions",
  "inbox.only.k": "Showing only your to-dos",
  "inbox.only.t": "Showing only tests",
- "inbox.only.all": "Show everything"
+ "inbox.only.all": "Show everything",
+ "inbox.ai.tab": "🤖 AI passed ({n})",
+ "inbox.ai.h": "🤖 AI passed · {i} of {n}",
+ "inbox.ai.prev": "Previous",
+ "inbox.ai.next": "Next",
+ "inbox.ai.exit": "✕ Back to the inbox",
+ "inbox.ai.ph": "Sending it back? Say what is wrong",
+ "inbox.ai.keys": "Keys: ← → to flick, A to accept, Esc to leave",
+ "inbox.toast.sentback": "{id} sent back to the team"
 }

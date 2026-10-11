@@ -421,3 +421,10 @@ header { flex-wrap: wrap; row-gap: 6px; } header > * { flex-shrink: 0; white-spa
 /* Dragging projects in the left rail (AIG-189): a line shows where it will land. */
 .dm-railbtn.dragging { opacity: .4; }
 .dm-railbtn.drop-before { box-shadow: 0 -3px 0 var(--accent); } .dm-railbtn.drop-after { box-shadow: 0 3px 0 var(--accent); }
+
+/* 🤖 AI passed view in the inbox (AIG-192) */
+.ib-aibar { margin: 4px 0 8px; } .ib-aibar:empty { display: none; }
+.ib-fl { border: 2px solid var(--accent); border-radius: 12px; padding: 12px 14px; }
+.ib-fl .fl-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; } .ib-fl .fl-head .spacer { flex: 1; }
+.ib-fl .ai-ev .att-shown img { max-height: 360px; }
+.ib-fl textarea { width: 100%; margin-top: 8px; }
