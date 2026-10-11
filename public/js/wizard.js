@@ -27,6 +27,8 @@ const wzField = k => (state.setup.fields.find(f => f.key === k) || {});
 // First run only: a Setup page that still needs filling in, and the wizard not answered yet.
 function wizardMaybe() {
   const s = state.setup;
+  let back = ''; try { back = sessionStorage.getItem('aigile.wzAdv') || ''; sessionStorage.removeItem('aigile.wzAdv'); } catch {}
+  if (back && s && !$('dialog').firstChild) { WZ.shown = true; advResume(ADV_SCREENS[ADV_SCREENS.indexOf(back) + 1] || 'summary'); return; }
   if (WZ.shown || !s || !s.needed || (s.prefs || {}).wizardSeen || $('dialog').firstChild) return;
   WZ.shown = true;
   openDialog(`<h2>${esc(t('wz.ask.h'))}</h2><p>${esc(t('wz.ask.sub'))}</p>
@@ -52,7 +54,7 @@ function wizardShow() {
   const n = WZ.step, dots = `<div class="wz-dots" aria-label="${esc(t('wz.step', { n, of: WZ_STEPS }))}">${Array.from({ length: WZ_STEPS }, (_, i) => `<span class="wz-dot ${i + 1 === n ? 'on' : i + 1 < n ? 'past' : ''}"></span>`).join('')}</div>`;
   const pick = (name, val, cur, label, help = '') => `<label class="quiz-opt wz-opt"><input type="radio" name="${name}" value="${val}" ${cur === val ? 'checked' : ''} onchange="WZ.${name === 'wz-style' ? 'style' : 'plan'} = this.value"> <span>${esc(label)}${help ? `<small class="muted"> ${esc(help)}</small>` : ''}</span></label>`;
   let body = '';
-  if (n === 1) body = `<h2>${esc(t('wz.1.h'))}</h2><p>${esc(t('wz.1.sub'))}</p><label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('wz-lang')}</label>`;
+  if (n === 1) body = `<h2>${esc(t('wz.1.h'))}</h2><p>${esc(t('wz.1.sub'))}</p><p class="muted">${esc(t('wz.1.pick'))}</p><label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('wz-lang')}</label>`;
   if (n === 2) {
     const g = wzField('agent.command').suggest;
     body = `<h2>${esc(t('wz.2.h'))}</h2>
@@ -66,6 +68,7 @@ function wizardShow() {
   const skip = n > 1 && n < 5 && !(n === 2 && !WZ.hadOwner && !WZ.name) ? `<button id="wzSkip" onclick="wizardGo(${n + 1}, true)">${esc(t('wz.skip'))}</button>` : '';
   openDialog(`${dots}${body}<div class="err" id="wz-err"></div>
     <div class="actions">${n > 1 && n < 5 ? `<button id="wzBack" onclick="wizardGo(${n - 1})">${esc(t('wz.back'))}</button>` : ''}${skip}
+    ${n === 1 ? `<button id="wzAdv" onclick="advStart()">${esc(t('wz.1.adv'))}</button>` : ''}
     ${n < 5 ? `<button class="primary" id="wzNext" onclick="wizardGo(${n + 1})">${esc(t('wz.next'))}</button>` : `<button class="primary" id="wzDone" onclick="wizardClose()">${esc(t('wz.done'))}</button>`}</div>`, 'wizard');
 }
 async function wizardGo(to, skipped) {

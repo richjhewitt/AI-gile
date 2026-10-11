@@ -131,4 +131,5 @@ body.desktop #updateTop { top: 44px; }
 .news-item { margin: 0 0 10px; } .news-item.mine .dm-bubble { border-left: 3px solid var(--accent, #6a8); }
 /* 🧙 Setup wizard (AIG-354) */
 .wz-dots { display: flex; gap: 6px; margin-bottom: 12px; } .wz-dot { width: 22px; height: 6px; border-radius: 3px; background: var(--line, #8884); } .wz-dot.on { background: var(--accent); } .wz-dot.past { background: var(--accent); opacity: .5; }
+.wz-sum { width: 100%; border-collapse: collapse; } .wz-sum th { text-align: left; font-weight: 600; padding: 4px 8px 4px 0; vertical-align: top; white-space: nowrap; } .wz-sum td { padding: 4px 8px 4px 0; vertical-align: top; } .wz-sum tr + tr { border-top: 1px solid var(--line, #8884); }
 .wz-opts { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; } .wz-opt { display: flex; align-items: baseline; gap: 6px; }
