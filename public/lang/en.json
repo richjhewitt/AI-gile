@@ -440,6 +440,8 @@
  "look.intro": "Marks {name} in your inbox, its tabs and the home page.",
  "look.chatty": "💬 Chatty lead: the odd nudge or light joke in your DMs",
  "look.chatty.cost": "(uses a few more tokens)",
+ "look.roles": "👥 Team: switch each AI role on or off",
+ "look.roles.count": "This project may use up to {total} agents: {list}",
  "look.verbose": "👁 Verbose: a background team shows each step and command as it works, so you can follow it live with 👁 Watch",
  "look.auto": "Automatic",
  "look.auto.title": "Pick the colour and emoji automatically again",

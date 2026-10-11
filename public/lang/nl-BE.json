@@ -440,6 +440,8 @@
  "look.intro": "Zo herken je {name} in je inbox, op de tabbladen en op de startpagina.",
  "look.chatty": "💬 Babbelzieke teamleider: af en toe een duwtje of een grapje in je berichten",
  "look.chatty.cost": "(kost een paar tokens meer)",
+ "look.roles": "👥 Team: zet elke AI-rol aan of uit",
+ "look.roles.count": "Dit project mag maximaal {total} agents gebruiken: {list}",
  "look.verbose": "👁 Uitgebreid: een team op de achtergrond toont elke stap en elk commando terwijl het bezig is, zodat je live kan meekijken met 👁 Meekijken",
  "look.auto": "Automatisch",
  "look.auto.title": "Kies de kleur en emoji weer automatisch",
