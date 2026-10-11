@@ -99,6 +99,7 @@ function renderBoard(p) {
     <div class="flight">${t('board.flight.html')} ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>
     ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? `${p.description ? ' · ' : ''}<code>${esc(p.path)}</code>` : ''}</p>` : ''}
     ${Share.laneHtml(p)}
+    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path ? t('board.empty.path', { wake: esc(t('pres.wake')) }) : t('board.empty.nopath', { connect: esc(t('board.connect')) })}</div>`}
     ${board}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>

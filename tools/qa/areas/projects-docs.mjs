@@ -200,6 +200,10 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   await page.evaluate(sl => { location.hash = '#/p/' + sl; }, (all.find(x => x.name === 'Shopping') || {}).slug);
   await page.waitForSelector('p.muted code');
   check('board header puts a separator between description and folder path (AIG-332)', await page.$eval('p.muted:has(code)', e => / · $/.test(e.firstChild.textContent)), await page.$eval('p.muted:has(code)', e => e.textContent));
+  check('an empty imported board says what happens next (AIG-333)', /Wake the team/.test(await page.$eval('#emptyHint', e => e.textContent)));
+  await page.evaluate(() => { localStorage.removeItem('aigile.standupAsked'); return morningPrompt(); });
+  await page.waitForTimeout(500);
+  check('no stand-up prompt on a board with no cards anywhere', !(await page.$('#suPrompt')));
   noErrors(page);
 }, true);
 

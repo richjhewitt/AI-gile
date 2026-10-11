@@ -72,6 +72,7 @@ main { padding: 20px; }
 .column[data-status=verify] { outline: 2px dashed var(--you); outline-offset: -2px; }
 .column[data-status=team] { outline: 2px dashed #e11d74; outline-offset: -2px; }
 .flight { margin: 0 0 10px; font-size: 13px; }
+.emptyhint { margin: 0 0 12px; padding: 10px 12px; border: 1px dashed var(--accent); border-radius: 8px; font-size: 13px; }
 .stale { color: var(--warn); }
 .heard { font-size: 12px; color: var(--muted); margin: -2px 0 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .card.stale-card { border: 2px solid #f97316; background: color-mix(in srgb, #f97316 12%, var(--panel)); }
