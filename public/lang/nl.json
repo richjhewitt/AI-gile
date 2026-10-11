@@ -128,6 +128,7 @@
  "dms.inbox": "Inbox",
  "dms.title": "💬 Privéberichten",
  "dms.noleads": "Nog geen teamleiders.",
+ "dms.clear": "Deze chat leegmaken",
  "dms.nomsgs": "Nog geen berichten. Zeg hoi, of stuur een idee: de teamleider maakt er kaarten van.",
  "dms.nomsgs.watch": "De nachtwaker geeft je berichten door. Begin met de naam van een team (my-app: …), of all: … voor alle teams. Hun antwoorden komen hier.",
  "dms.replying.html": "Antwoord op {link} {title}",

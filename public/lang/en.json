@@ -128,6 +128,7 @@
  "dms.inbox": "Inbox",
  "dms.title": "💬 Direct messages",
  "dms.noleads": "No team leads yet.",
+ "dms.clear": "Clear this chat",
  "dms.nomsgs": "No messages yet. Say hi, or send an idea: the lead turns it into cards.",
  "dms.nomsgs.watch": "The watchman passes your messages on. Start with a team's name (my-app: …), or all: … for every team. Their answers show up here.",
  "dms.replying.html": "Replying to {link} {title}",
