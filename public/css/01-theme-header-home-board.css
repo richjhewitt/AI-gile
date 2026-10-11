@@ -103,6 +103,10 @@ ul.bl li:last-child { margin-bottom: 0; }
 .codebox .copy { position: absolute; top: 6px; right: 6px; font-size: 12px; padding: 3px 8px; }
 .codebox .copy.open { right: 92px; }
 .codebox .copy.open ~ pre { padding-right: 170px; }
+.codebox .copy.edit { right: 100px; }
+.codebox .copy.edit ~ pre { padding-right: 160px; }
+.codebox .copy.open ~ .copy.edit { right: 170px; }
+.codebox .copy.open ~ .copy.edit ~ pre { padding-right: 240px; }
 .doctitle { margin-right: auto; align-self: center; }
 .desc code, .body code, .ib-question code { background: var(--col); padding: 1px 5px; border-radius: 4px; font-size: 0.92em; }
 #filterbar { padding: 12px 20px 0; }

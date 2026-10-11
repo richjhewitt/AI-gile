@@ -23,7 +23,7 @@
 | `js/i18n.js` | Languages (AIG-124): `t(key, vars)`, `loadLang` (runs before the first render), `setLang`, `langPickHtml`; see "Languages" below |
 | `js/core.js` | `state`, `api`, `esc`, `ago`, the router (`parseRoute`), `busy`/`refresh`/`render` (the 1s poll never wipes typing), `slug`/`curCard`/`setErr` |
 | `js/format.js` | Card text: `withCode`, `spaceBullets`, `linkify`, `.md` links (`mdLinks`, opened by `showDocPath` in js/dialogs/); `md` (Docs renderer) |
-| `js/attach.js` | `Attach`: 📎 button, paste-a-screenshot and pending chips for any reply box (card, inbox and chats), `upload` on send (`read` gives the files as base64 for a private DM), `shown` thumbnails under comments |
+| `js/attach.js` | `Attach`: 📎 button, paste-a-screenshot and pending chips for any reply box (card, inbox and chats), `upload` on send (`read` gives the files as base64 for a private DM), `shown` thumbnails under comments; any `.att-shown` picture opens in a lightbox on click (AIG-372: Esc or click closes, arrows between the item's pictures; one delegated handler); QA area `lightbox` |
 | `js/filters.js` | Search and filter bar; saved views (`viewsDialog`, `applyView`; stored on the project, last one used in localStorage) |
 | `js/home.js` | Home page: `renderHome`, project bars, usage strip |
 | `js/standup.js` | Stand-ups: `callStandup` (📣 buttons on the board and home), `standupButtons`, the `#/standups` report page (`renderStandups`, blockers first), the once-a-day `morningPrompt` pill (`suPick` to choose projects; day saved in localStorage `aigile.standupAsked`) |
