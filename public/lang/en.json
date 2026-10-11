@@ -625,5 +625,10 @@
  "poke.asleep.many": "asleep with {n} cards to do",
  "usage.unit.d": "d",
  "usage.unit.h": "h",
- "usage.unit.m": "m"
+ "usage.unit.m": "m",
+ "tidy.btn": "Tidy my pile",
+ "tidy.title": "Ask the lead to fold cards about the same feature into one, and tidy the titles",
+ "tidy.asked": "Asked the lead to tidy your pile ({id}). They report back when done.",
+ "tidy.already": "The lead is already on it ({id}).",
+ "tidy.toast": "Asked {n} lead(s) to tidy your pile"
 }

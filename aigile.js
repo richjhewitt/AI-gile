@@ -55,6 +55,7 @@ WORKING
   test <proj> <id> "steps ${OWNER} can follow" --as NAME    -> moves to verify, sets testSteps, comments
         [--open URL [--start "command"]]   adds a ▶ Open it button: starts the app if needed, opens the page
         [--commit SHA] [--shot a.png,b.png]  proof: the board shows what changed in that commit, plus your screenshots
+  fold <proj> <target> <id> [<id>...] --as NAME   fold cards about the same feature into one (steps move across, the others close)
   tests <proj> [--all]                    AI tester: the tests waiting for ${OWNER} that nobody checked yet, with their steps
   checked <proj> <id> pass|fail|skip "what you saw" [--shot a.png] --as NAME   AI tester's verdict and evidence
   ask also takes: --options "A,B,C"  (up to 4 answer buttons under your question; otherwise the board guesses)
@@ -341,6 +342,15 @@ const cmds = {
     const attachments = await uploadShots(slug, flags.shot);
     const c = await api('POST', C(slug, pos[1]) + '/aicheck', { result, note, by: who(flags), attachments });
     out(flags, c, c => '🤖 ' + result + ': ' + line(c));
+  },
+
+  // Fold (AIG-190/193): cards about the same feature join one card; their test steps move across and they close.
+  async fold({ pos, flags }) {
+    const slug = await project(pos[0]), into = pos[1], ids = pos.slice(2);
+    if (!into || !ids.length) die('usage: fold <proj> <target id> <id> [<id>...] --as NAME');
+    let c;
+    for (const id of ids) c = await api('POST', C(slug, id) + '/fold', { into, author: who(flags) });
+    out(flags, c, c => `folded ${ids.join(', ')} into ` + line(c));
   },
 
   async test({ pos, flags }) {

@@ -137,6 +137,11 @@ function forYouQueue(p, pool = p.cards) {
   // Within a kind, a queue: longest-waiting first, so "Wait and see" sends a test to the back.
   return pool.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || queueRank(a, b) || a.updated.localeCompare(b.updated));
 }
+// 🧹 Tidy my pile (AIG-193): the lead folds related cards in For you into one each, and reports back.
+async function tidyPile(s, btn) {
+  try { const r = await api('POST', `/api/projects/${s}/tidy`); alert(t(r.already ? 'tidy.already' : 'tidy.asked', { id: r.id })); refresh(true); }
+  catch (e) { alert(e.message); }
+}
 // Focus (AIG-141): click the For you header to see only that column; remembered per project.
 function fyFocus(s, set) {
   state.fyFocus = state.fyFocus || {};
@@ -150,7 +155,7 @@ function forYouColumn(p, label = t('col.verify.short'), tint = '', pool = p.card
   const n = k => cs.filter(c => kindOf(c) === k).length;
   const chips = KINDS.map(k => `<button class="fy-chip ${k === first ? 'on' : ''}" data-first="${k}" title="${esc(t('fy.first'))}" onclick="forYouFirst('${k}')">${esc(kindLabel(k))} ${n(k)}</button>`).join('');
   const all = p.cards.filter(forYou).length;
-  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
+  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${esc(t('tidy.title'))}" onclick="tidyPile('${p.slug}', this)">🧹</button><button class="colbtn" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
 }
 
 // show = the project's card view choices (board cards only); the card panel passes nothing and shows all.

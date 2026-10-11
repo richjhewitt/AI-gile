@@ -625,5 +625,10 @@
  "poke.asleep.many": "slaapt met {n} kaarten te doen",
  "usage.unit.d": "d",
  "usage.unit.h": "u",
- "usage.unit.m": "m"
+ "usage.unit.m": "m",
+ "tidy.btn": "Ruim mijn stapel op",
+ "tidy.title": "Vraag de lead kaarten over hetzelfde onderdeel samen te voegen en de titels op te knappen",
+ "tidy.asked": "De lead ruimt je stapel op ({id}). Je hoort het als het klaar is.",
+ "tidy.already": "De lead is er al mee bezig ({id}).",
+ "tidy.toast": "{n} lead(s) gevraagd je stapel op te ruimen"
 }

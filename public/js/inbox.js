@@ -209,7 +209,7 @@
       <div id="ibEmpty"></div>
       <section class="ib-sec q" id="ibQ"><h3>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
       <section class="ib-sec k" id="ibK"><h3>${esc(t('inbox.tasks'))} <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.tasks.sub'))}</span></h3><div class="list"></div></section>
-      <section class="ib-sec t" id="ibT"><h3>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span><button class="good ib-aiall" id="ibAiAll" hidden title="${esc(t('inbox.aiall.title'))}"></button></h3><div class="list"></div></section>
+      <section class="ib-sec t" id="ibT"><h3>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span><button class="ib-tidy" id="ibTidy" title="${esc(t('tidy.title'))}">🧹 ${esc(t('tidy.btn'))}</button><button class="good ib-aiall" id="ibAiAll" hidden title="${esc(t('inbox.aiall.title'))}"></button></h3><div class="list"></div></section>
     </div>`;
     el('ib').addEventListener('click', onClick);
     el('ib').addEventListener('keydown', onKey);
@@ -365,6 +365,7 @@
     if (e.target.closest('[data-flick]')) { flick = flick >= 0 ? -1 : 0; paintPage(); return; }
     const fl = e.target.closest('[data-fl]'); if (fl) { flickAct(fl.dataset.fl); return; }
     if (e.target.closest('[data-onlyclear]')) { e.preventDefault(); only = ''; paintPage(); return; }
+    if (e.target.closest('#ibTidy')) { const ps = [...new Set(items.filter(isTest).filter(c => tab === 'all' || c.project === tab).map(c => c.project))]; (async () => { for (const s of ps) { try { await post('POST', `/api/projects/${s}/tidy`); } catch {} } toast(t('tidy.toast', { n: ps.length })); })(); return; }
     if (e.target.closest('#ibAiAll')) { acceptAiPassed(e.target.closest('#ibAiAll')); return; }
     const cb = e.target.closest('button[data-chat]');
     if (cb) { chat = cb.dataset.chat; paintPage(); return; }
