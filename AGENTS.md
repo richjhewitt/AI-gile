@@ -2,7 +2,7 @@
 
 AI-gile is the owner's kanban board at http://localhost:4321: they raise work there, you pick it up and hand finished features back for them to test. It replaces `BOARD.local.md`; the board is the source of truth, that file is history.
 
-You talk to it with one command, from your own project folder:
+One command, from your own project folder:
 
 ```
 node "../AI-gile/aigile.js" <command> <project> ...
@@ -23,7 +23,7 @@ aigile show <proj> <id>          # full card and conversation: read before start
 
 The owner's comments on a card are instructions. (`aigile inbox` shows what waits on them.)
 
-**2. Keep the team roster current.** One entry per team member, including you:
+**2. Keep the team roster current.** One entry per member, including you:
 
 ```
 aigile team <proj> Pixel --role "Frontend" --model Sonnet --task "AIG-5 new card form" --status "🔄 working"
@@ -31,17 +31,15 @@ aigile team <proj> Pixel --role "Frontend" --model Sonnet --task "AIG-5 new card
 
 Status: 🔄 working · 👀 in review · ✅ accepted · 🔁 sent back · 💤 idle (set when you stop; `💤 retired` drops you off the board).
 
-Profile picture: on joining you get one from the owner's picture library. To choose: `aigile avatar <proj> --as NAME` lists them, then `aigile avatar <proj> <number or name> --as NAME`.
+Profile picture: you get one from the owner's library on joining. To choose: `aigile avatar <proj> --as NAME` lists them, then `aigile avatar <proj> <number or name> --as NAME`.
 
 **3. Move cards as you go.** `aigile move <proj> <id> doing` (`assign` it to yourself if unassigned); `review` only while a teammate checks it. `comment` for progress and findings. Add cards for work you discover: `aigile add <proj> "title" --type bug --priority high --status todo --desc "..."`.
 
-**Leads launching agents:** record each one with `aigile start <proj> <id> --as <AgentName>` (assigns the card, moves it to `doing`, sets the roster task); that shows the owner the "In flight" line. When the agent finishes, hand over with `test`, or `move` it on.
+**Leads launching agents:** record each with `aigile start <proj> <id> --as <AgentName>` (assigns the card, moves it to `doing`, sets the roster task, shows the owner the "In flight" line). When the agent finishes, hand over with `test`, or `move` it on.
 
 **Leads: stay reachable while idle.** Hooks only fire while busy. With nothing running, start `node "../AI-gile/aigile.js" wait <proj>` in the background: it costs nothing and ends with the owner's comments, waking you. Act, then start it again.
 
-**Roles on cards.** Cards may be assigned to a role: `Lead (Opus)`, `Reviewer (Opus)`, `Frontend (Sonnet)`, `Backend (Sonnet)`, `QA (Haiku)`, `Quick fix (Haiku)`, `Docs (Haiku)`. The lead launches that kind of agent; its `start ... --as <name>` replaces the role with its name.
-
-**Questions for the owner go on the board, not in chat:** `aigile ask <proj> <id> "question (with your assumption)" --as <name>`. No card for it? `add` one first.
+**Roles on cards.** A card may be assigned to a role: `Lead (Opus)`, `Reviewer (Opus)`, `Frontend (Sonnet)`, `Backend (Sonnet)`, `QA (Haiku)`, `Quick fix (Haiku)`, `Docs (Haiku)`. The lead launches that kind of agent; its `start ... --as <name>` replaces the role with its name.
 
 **4. Hand features to the owner with `test`.** Don't move your own work to `done`; the owner accepts it. Once built and self-tested:
 
@@ -51,21 +49,21 @@ aigile test <proj> <id> "1. Open http://localhost:4321
 3. You should see Y" --as YourName
 ```
 
-This moves the card to `verify` ("For you to test"), stores the steps and adds a comment. Write steps they can follow cold in under a minute, with the expected result. They accept (done) or sends it back with a reason (back to `doing` with their comment).
+This moves the card to `verify` ("For you to test"), stores the steps and adds a comment. Write steps they can follow cold in under a minute, with the expected result and the exact button text. They accept (done) or send it back with a reason (back to `doing` with their comment).
 
 **Proof** so they can accept at a glance: `--commit <sha>` (the board reads the commit itself and shows what changed: no tokens) and `--shot a.png,b.png`.
 
-If there is a page to look at, add `--open http://localhost:5173/the/page` (and `--start "npm run dev"` if the app must be started first, run in the project folder). The card gets a **▶ Open it** button that starts the app if needed (the owner confirms the command), waits, and opens the page.
+For a page to look at, add `--open http://localhost:5173/the/page` (and `--start "npm run dev"` if the app must be started first, run in the project folder). The card gets a **▶ Open it** button that starts the app if needed (the owner confirms the command), waits, and opens the page.
 
-**AI tester.** When tests pile up, the lead can launch a Sonnet tester (`--as "Tester (Sonnet)"`, brief `docs/TESTER.md`). It posts `aigile checked <proj> <id> pass|fail|skip "what it saw" --shot a.png`; passes get a 🤖 chip and the owner clears them with **Accept all AI-passed**, fails come back to you. Name exact button text in steps.
+**AI tester.** When tests pile up, the lead can launch a Sonnet tester (`--as "Tester (Sonnet)"`, brief `docs/TESTER.md`). It posts `aigile checked <proj> <id> pass|fail|skip "what it saw" --shot a.png`; passes get a 🤖 chip and the owner clears them with **Accept all AI-passed**, fails come back to you.
 
-**5. `ask` when you are blocked on the owner.**
+**5. Blocked on the owner? `ask`; don't wait.**
 
 ```
 aigile ask <proj> <id> "Should exports include archived items? I'm assuming no." --as YourName
 ```
 
-This flags the card NEEDS-OWNER and puts it in their inbox with one-click answers: a plan ending in **GO?** gets Go / Not yet, a yes/no gets Yes / No, otherwise `--options "M3U,JSON"` (up to 4). Then move on with `next`; don't stop for an answer. State your assumption so a "fine" is enough. For an external blocker (missing key, failing service) use `aigile block <proj> <id> "why" --as YourName`, and `unblock` when it clears; their reply clears the block too.
+No card for it? `add` one first. This flags the card NEEDS-OWNER and puts it in their inbox with one-click answers: a plan ending in **GO?** gets Go / Not yet, a yes/no gets Yes / No, otherwise `--options "M3U,JSON"` (up to 4). Then move on with `next`. State your assumption so a "fine" is enough. For an external blocker (missing key, failing service) use `aigile block <proj> <id> "why" --as YourName`, and `unblock` when it clears; their reply clears the block too.
 
 **Questions vs tasks.** `ask` is for questions. `aigile task <proj> <id> "exactly what to do, step by step" --as YourName` is for something only they can *do* (an API key, a login, a server command); it lands in "Tasks for you", and Done sends the card back through "For the team".
 
@@ -80,7 +78,7 @@ aigile log <proj> "Sprint 3 pushed (abc1234), 120 tests green." --as YourName
 
 **7. Cards in "For the team" (`team`).** Any comment from the owner moves the card there, including "send back". Read it, then:
 - just information or an answer → `aigile move <proj> <id> done`
-- needs work → move to `doing`, fix it, then `aigile test` so it goes back to the owner
+- needs work → move to `doing`, fix it, then `aigile test`
 
 **7b. DMs from the owner (💬 cards).** A card titled 💬 is the owner messaging the lead. Reply with `aigile comment <proj> <id> "..." --as Lead`: it shows in their chat. For an idea: `add` the cards (status `backlog`, small chunks), reply with their ids and a 2 to 3 bullet plan, and wait for their go. Close the 💬 card (`move ... done`) once they have replied and nothing is left.
 
@@ -88,7 +86,7 @@ aigile log <proj> "Sprint 3 pushed (abc1234), 120 tests green." --as YourName
 
 **7d. One card per feature to test.** Fold small parts (1/4, 2/4…) and other For you cards about the same thing into the last one (copy test steps, comment "folded into X", close them).
 
-**7e. 🧹 Tidy cards.** A **🧹 Tidy the For you pile** card: fold related cards (`aigile fold <proj> <target> <id> [<id>...] --as <you>`), fix muddled titles, comment "Folded N → M" with what went where, then move it to done.
+**7e. 🧹 Tidy cards.** On a **🧹 Tidy the For you pile** card: fold related cards (`aigile fold <proj> <target> <id> [<id>...] --as <you>`), fix muddled titles, comment "Folded N → M" with what went where, then move it to done.
 
 **8. Pokes.** A "👉 any update?" poke on a card in `doing` or `review` means it looks stuck. One-line `comment`; leave the card where it is.
 
@@ -104,7 +102,7 @@ aigile standup <proj> --done "What I finished" --next "What I do next" --blocker
 
 ## What `next` returns
 
-Skips `blocked` and NEEDS-OWNER cards (listed at the bottom). Order: (1) For the team (`team`), do first; (2) `doing`, to resume; (3) bugs and urgent/high `todo`; (4) rest of `todo` by priority, then oldest. `>>` marks your pick. `backlog` is never offered: The owner or the lead moves cards to todo.
+Skips `blocked` and NEEDS-OWNER cards (listed at the bottom). Order: (1) For the team (`team`), do first; (2) `doing`, to resume; (3) bugs and urgent/high `todo`; (4) rest of `todo` by priority, then oldest. `>>` marks your pick. `backlog` is never offered: the owner or the lead moves cards to todo.
 
 Fields: status backlog/todo/doing/review/verify/team/done; type feature/bug/task; priority low/normal/high/urgent; sprint and assignee are free text.
 
