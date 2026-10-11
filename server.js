@@ -65,7 +65,7 @@ function readBody(req, max = 1e6) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
-  const pathname = decodeURIComponent(url.pathname);
+  let pathname; try { pathname = decodeURIComponent(url.pathname); } catch { res.writeHead(400); return res.end(); }   // a bad %-code no longer stops the board (AIG-150)
   try {
     if (pathname.startsWith('/api/')) {
       guard(req);
