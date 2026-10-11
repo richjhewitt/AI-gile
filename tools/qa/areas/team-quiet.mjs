@@ -216,3 +216,27 @@ def('nightglance', '🌙 night glance: a calm pop-out with the watchman per proj
   await s.ok('POST', '/api/quiet', { on: false });
   noErrors(page);
 }, true);
+
+def('watchdm', '🌙 watchman DMs: while quiet only its chat is listed, one message per critical problem, read-only (AIG-211)', async (s, ctx) => {
+  await mkProject(s, 'Calm', 'CLM', { path: tmp('calm2') });
+  await mkProject(s, 'Trouble', 'TRB', { path: tmp('trouble2') });
+  check('awake: the leads\' chats are listed', (await s.ok('GET', '/api/chats')).some(c => c.slug === 'calm'));
+  await s.ok('POST', '/api/quiet', { on: true });
+  let chats = await s.ok('GET', '/api/chats');
+  check('quiet: only the watchman is listed, with nothing unread', chats.length === 1 && chats[0].slug === '_watchman' && chats[0].unread === 0);
+  await s.ok('POST', '/api/standup', { projects: ['trouble'] });
+  s.cli(['standup', 'trouble', '--done', 'x', '--next', 'y', '--blockers', 'Server is down, nothing else can go on', '--as', 'Lead']);
+  await sleep(4500);   // let the wake-up runs finish
+  await s.ok('POST', '/api/watchman/round'); await s.ok('POST', '/api/watchman/round');
+  const th = await s.ok('GET', '/api/chats/_watchman');
+  check('a real blocker gives one message, not one per round', th.messages.length === 1 && /Server is down/.test(th.messages[0].text));
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('#dmRail [data-dms]');
+  await page.click('#dmRail [data-dms]');
+  await page.click('#dmPanel [data-dm="_watchman"]');
+  await page.waitForSelector('#dmList .dm-msg');
+  check('its chat shows the message and has no typing box', /Server is down/.test(await page.textContent('#dmList')) && await page.locator('#dmPanel .dm-compose').isHidden());
+  await s.ok('POST', '/api/quiet', { on: false });
+  check('back from quiet: the leads are back', (await s.ok('GET', '/api/chats')).some(c => c.slug === 'calm'));
+  noErrors(page);
+}, true);
