@@ -1,4 +1,4 @@
-// QA areas: card, gobutton, attach, refresh, drafts, openit, testnotes, editor.
+// QA areas: card, gobutton, attach, refresh, drafts, openit, testnotes, editor, steady.
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
@@ -356,5 +356,34 @@ def('testorder', 'Test tab: newest note right under the reply box; a replaced te
   const first = await page.textContent('[data-pane="test"] .comment');
   check('the newest note comes first', /Passed: saved/.test(first), first);
   check('the replaced check is faded and labelled', /Failed: could not/.test(await page.textContent('[data-pane="test"] .stale')) && (await page.locator('[data-pane="test"] .stale').count()) === 1);
+  noErrors(page);
+}, true);
+
+def('steady', 'an open card stays put while the board polls, also with a team sitting in aigile wait (AIG-310)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Tested by the AI', { status: 'verify', testSteps: '- Open Setup\n- Pick Nederlands' });
+  await say(s, 'alpha', c.id, 'Lead', 'Folded in ALP-9');
+  await say(s, 'alpha', c.id, 'Lead', 'OK: parked the rest');
+  const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVR4nGP8z8DwnwEIGBmgACZgYAAAKfEC/tW5j8QAAAAASUVORK5CYII=';
+  const shot = await s.ok('POST', '/api/projects/alpha/attachments', { name: 'shot.png', type: 'image/png', data: PNG });
+  await s.ok('POST', `/api/projects/alpha/cards/${c.id}/aicheck`, { result: 'pass', note: 'Saw it in Dutch', by: 'Tester', attachments: [shot] });
+  await s.ok('GET', '/api/projects/alpha/updates?wait=1');   // the team sits in 'aigile wait': presence.waitingMs ticks on each request
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.waitForSelector('#modal .panel .ai-ev img');
+  await sleep(1200);
+  const mark = () => page.evaluate(() => { const p = document.querySelector('#modal .panel'); p.dataset.qaMark = '1'; return p.innerHTML; });
+  const still = () => page.evaluate(() => { const p = document.querySelector('#modal .panel'); return { same: !!p && p.dataset.qaMark === '1', html: p && p.innerHTML }; });
+  let html = await mark(); await sleep(3200); let now = await still();
+  check('open card is not rebuilt over 3s of polling while the team waits', now.same && now.html === html, now.same);
+  // Something else on the board changes: the board redraws, the open card does not.
+  html = await mark();
+  await mkCard(s, 'alpha', 'Elsewhere on the board');
+  await page.waitForFunction(() => document.querySelector('#app').textContent.includes('Elsewhere on the board'), null, { timeout: 5000 });
+  now = await still();
+  check('a change elsewhere on the board leaves the open card alone', now.same && now.html === html, now.same);
+  // A new word on this card does redraw it.
+  await say(s, 'alpha', c.id, 'Lead', 'One more thing');
+  const shows = await page.waitForFunction(() => document.querySelector('#modal .panel').textContent.includes('One more thing'), null, { timeout: 5000 }).then(() => true, () => false);
+  check('a new comment on the open card still shows', shows);
   noErrors(page);
 }, true);
