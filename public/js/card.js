@@ -73,7 +73,7 @@ function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
   const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
-  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}<span style="flex:1"></span>
+  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${state.editing ? '' : timerUi(c)}<span style="flex:1"></span>
       ${state.editing ? '' : `<button onclick="editCard()">${esc(t('card.edit'))}</button> <button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button>`}</div>`;
   if (state.editing) {
     return `<div class="overlay"><div class="panel">${head}
@@ -147,6 +147,27 @@ function popChatLive() {
   const ty = document.getElementById('typing'), nt = tmp.querySelector('#typing');
   if (ty && !nt) ty.remove(); else if (!ty && nt) chat.after(nt);
   if (atEnd) window.scrollTo(0, de.scrollHeight);
+  return true;
+}
+// The open card on the board (AIG-314): a new team message must show even while the reply box is focused or holds a
+// draft. Only what sits above and below the reply box, and the tab row, are swapped; the box itself is never touched.
+function cardLive() {
+  const p = state.project, c = p && p.cards.find(x => x.id === state.route.card), r = document.querySelector('#modal .panel .reply');
+  if (!c || !r || state.editing || state.dragging || $('dialog').firstChild) return false;
+  const tmp = document.createElement('div'); tmp.innerHTML = renderCard(p, c);
+  const nr = tmp.querySelector('.reply'), tabs = document.querySelector('#modal .ctabs'), nt = tmp.querySelector('.ctabs');
+  if (!nr || nr.parentNode.dataset.pane !== r.parentNode.dataset.pane) return false;
+  let changed = false;
+  if (tabs && nt && tabs.innerHTML !== nt.innerHTML) { tabs.innerHTML = nt.innerHTML; changed = true; }
+  const side = (el, dir) => { const a = []; for (let n = el[dir]; n; n = n[dir]) a.push(n); return a; };
+  for (const dir of ['previousSibling', 'nextSibling']) {
+    const o = side(r, dir), n = side(nr, dir), h = l => l.map(x => x.outerHTML || x.textContent).join('');
+    if (h(o) === h(n)) continue;
+    changed = true; o.forEach(x => x.remove());
+    if (dir === 'previousSibling') n.reverse().forEach(x => r.parentNode.insertBefore(x, r));   // nearest-first -> document order
+    else n.forEach(x => r.parentNode.appendChild(x));
+  }
+  if (changed) $('modal')._html = null;
   return true;
 }
 // Test tab notes (AIG-186): newest first, so the latest word sits right under the reply box. An AI tester check
@@ -261,6 +282,32 @@ async function sendReply(fixed) {
     }
     doneWithCard(next);
   } catch (err) { setErr('r-err', err); }
+}
+/* ---------- timed card (AIG-385): ⏰ come back at ---------- */
+function timerUi(c) {
+  if (c.status === 'done') return '';
+  const label = timed(c) ? '⏰ ' + timedWhen(c.timedUntil) : '⏰';
+  return `<button id="tm-btn" onclick="timerToggle()" title="${esc(t('timed.title'))}">${esc(label)}</button>
+    <span id="tm-box" hidden><select id="tm-pre" onchange="timerPre()"><option value="">${esc(t('timed.pick'))}</option><option value="1h">${esc(t('timed.p.1h'))}</option><option value="3h">${esc(t('timed.p.3h'))}</option><option value="tom">${esc(t('timed.p.tom'))}</option><option value="mon">${esc(t('timed.p.mon'))}</option></select>
+    <input type="datetime-local" id="tm-at" aria-label="${esc(t('timed.at'))}"> <button class="primary" onclick="timerSet()">${esc(t('timed.set'))}</button>${timed(c) ? ` <button onclick="timerClear()">${esc(t('timed.clear'))}</button>` : ''}</span>`;
+}
+function timerToggle() { const b = $('tm-box'); if (b) b.hidden = !b.hidden; }
+const localInput = d => new Date(d.getTime() - d.getTimezoneOffset() * 60e3).toISOString().slice(0, 16);
+function timerPre() {
+  const v = $('tm-pre').value, d = new Date();
+  if (v === '1h') d.setHours(d.getHours() + 1); else if (v === '3h') d.setHours(d.getHours() + 3);
+  else if (v === 'tom') { d.setDate(d.getDate() + 1); d.setHours(9, 0, 0, 0); }
+  else if (v === 'mon') { d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7)); d.setHours(9, 0, 0, 0); }
+  else return;
+  $('tm-at').value = localInput(d);
+}
+async function timerSet() {
+  const v = $('tm-at').value;
+  if (!v) { $('tm-at').focus(); return; }
+  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/timer`, { until: new Date(v).toISOString() }); refresh(true); } catch (e) { alert(e.message); }
+}
+async function timerClear() {
+  try { await api('DELETE', `/api/projects/${slug()}/cards/${cardId()}/timer`); refresh(true); } catch (e) { alert(e.message); }
 }
 async function waitAndSee() {
   const next = nextForYou();

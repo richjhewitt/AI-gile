@@ -1446,5 +1446,14 @@
  "gif.none": "No GIFs found",
  "gif.adding": "Adding...",
  "setup.f.giphyKey": "Giphy API key",
- "setup.f.giphyKey.help": "Free key from developers.giphy.com; turns on 🎞️ GIF search in comments and chats. Kept on this computer only"
+ "setup.f.giphyKey.help": "Free key from developers.giphy.com; turns on 🎞️ GIF search in comments and chats. Kept on this computer only",
+ "timed.title": "Timed: out of your way until then",
+ "timed.pick": "Come back…",
+ "timed.p.1h": "In 1 hour",
+ "timed.p.3h": "In 3 hours",
+ "timed.p.tom": "Tomorrow 9:00",
+ "timed.p.mon": "Monday 9:00",
+ "timed.at": "Come back at",
+ "timed.set": "Set",
+ "timed.clear": "Clear"
 }

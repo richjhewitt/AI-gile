@@ -47,6 +47,7 @@ main { padding: 20px; }
 .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; background: var(--col); color: var(--muted); white-space: nowrap; }
 .pill.grp { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .pill.you { background: var(--you); color: #fff; }
+.pill.timed { background: var(--chip, rgba(127,127,127,.18)); }
 .pill.blocked { background: var(--danger); color: #fff; }
 .pill.urgent { color: var(--danger); } .pill.high { color: var(--warn); }
 

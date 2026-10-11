@@ -57,6 +57,15 @@
     el('ib').addEventListener('keydown', IB.onKey);
   }
 
+  // Swap only what sits above the reply box; the box, its error line and its buttons keep their text and focus.
+  function refreshAbove(n, c) {
+    const ta = n.querySelector('textarea'), kind = kindOf(c); if (!ta || kind === 't') return;
+    const tmp = document.createElement('div'); tmp.innerHTML = kind === 'q' ? qHtml(c) : kHtml(c);
+    const nta = tmp.querySelector('textarea'); if (!nta) return;
+    while (n.firstChild && n.firstChild !== ta) n.firstChild.remove();
+    while (tmp.firstChild && tmp.firstChild !== nta) n.insertBefore(tmp.firstChild, ta);
+    n.dataset.sig = sigOf(c); n.className = 'ib-item ' + kind + (kind === 'q' && c.blocked ? ' blk' : '');
+  }
   // Keeps existing item elements (and whatever is typed in them) and only adds, removes or updates the rest.
   // A reply box that is focused or holds text is never touched, so the 1s poll can't wipe it.
   function syncList(list, data) {
@@ -67,6 +76,7 @@
       const k = keyOf(c), sig = sigOf(c);
       let n = have.get(k);
       const typing = n && [...n.querySelectorAll('textarea')].some(t => t.value || t === document.activeElement);
+      if (n && n.dataset.sig !== sig && typing) refreshAbove(n, c);   // a newer message shows even under a half-typed reply (AIG-314)
       if (n && n.dataset.sig !== sig && !typing) { n.remove(); n = null; }
       if (!n) {
         n = document.createElement('div');
