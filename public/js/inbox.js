@@ -21,11 +21,11 @@
     return j;
   };
   // Server sends three kinds: tasks (assigned to Rich: something only he can do), questions, and verify cards.
-  const isTask = c => String(c.assignee || '').trim().toLowerCase() === 'rich';
+  const isTask = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
   const isQuestion = c => !isTask(c) && c.status !== 'verify';
   const isTest = c => !isTask(c) && c.status === 'verify';
   const kindOf = c => isTask(c) ? 'k' : isQuestion(c) ? 'q' : 't';
-  const lastAsk = c => [...(c.comments || [])].reverse().find(m => String(m.author).trim().toLowerCase() !== 'rich')
+  const lastAsk = c => [...(c.comments || [])].reverse().find(m => String(m.author).trim().toLowerCase() !== me().toLowerCase())
     || { author: c.assignee || 'The team', at: c.updated, text: c.description || c.title };
   const keyOf = c => c.project + '/' + c.id;
   // Escape, then link web addresses and card ids (e.g. AIG-12) in the same project.
@@ -53,14 +53,13 @@
       .catch(e => { inflight = null; throw e; });
     return inflight;
   }
-  // Going quiet (night mode): no tests or tasks, and only the 3 newest questions.
+  // Going quiet (night mode).
   const isQuiet = () => document.documentElement.hasAttribute('data-night');
   function view() {
+    // AIG-229: nothing at all at night, just how many things wait for the morning (the watchman's chat is the way in).
     if (!isQuiet()) { hidden = 0; return raw; }
-    const all = raw.filter(isQuestion);
-    const qs = all.slice().sort((a, b) => lastAsk(b).at.localeCompare(lastAsk(a).at)).slice(0, 3);
-    hidden = all.length - qs.length;
-    return raw.filter(c => qs.includes(c));
+    hidden = raw.length;
+    return [];
   }
   function apply(list) {
     if (typeof i18n === 'undefined' || !i18n.ready) { setTimeout(() => load().catch(() => {}), 100); return; }   // wait for the language file (AIG-124)

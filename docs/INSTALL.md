@@ -35,7 +35,7 @@ New to Claude Code? Start at **What you need** below.
 
 ## 1. Get AI-gile
 
-The repo is private for now, so you need an invite to it (ask Rich), or a zip of it.
+The repo is private for now, so you need an invite to it (ask the person who shared it), or a zip of it.
 
 - **With git:** `git clone https://github.com/richjhewitt/AI-gile.git` in the folder where you keep your projects
 - **With a zip:** unzip it next to your projects, e.g. `C:\Users\you\Projects\AI-gile`

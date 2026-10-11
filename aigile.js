@@ -26,8 +26,8 @@ async function uploadShots(slug, shots) {
   return attachments;
 }
 
-// The board's human (AIG-103): "owner" in aigile.local.json next to this file, default Rich.
-const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.parse(require('fs').readFileSync(process.env.AIGILE_LOCAL || require('path').join(__dirname, 'aigile.local.json'), 'utf8')).owner || '').trim() || 'Rich'; } catch { return 'Rich'; } })();
+// The board's human (AIG-103): "owner" in aigile.local.json next to this file, default Owner.
+const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.parse(require('fs').readFileSync(process.env.AIGILE_LOCAL || require('path').join(__dirname, 'aigile.local.json'), 'utf8')).owner || '').trim() || 'Owner'; } catch { return 'Owner'; } })();
 
 // Where this session runs, so the board can show it and knows a session is at work (AIG-107).
 const WHERE = process.env.AIGILE_BACKGROUND ? 'background' : process.env.VSCODE_PID || process.env.TERM_PROGRAM === 'vscode' ? 'vscode' : 'terminal';
@@ -139,7 +139,7 @@ function who(flags) {
 }
 
 /* ---------- formatting ---------- */
-const flagsOf = c => (c.blocked ? ' BLOCKED' : '') + (c.needsYou ? ' NEEDS-RICH' : '');
+const flagsOf = c => (c.blocked ? ' BLOCKED' : '') + (c.needsYou ? ' NEEDS-OWNER' : '');
 const line = c => `${c.id} [${c.status}] ${c.type}/${c.priority}${c.assignee ? ' @' + c.assignee : ''}${c.sprint ? ' (' + c.sprint + ')' : ''}${flagsOf(c)}  ${c.title}`;
 const when = s => (s || '').replace('T', ' ').slice(0, 16);
 // Attached files (AIG-77), one per line with the full path so the agent can open them.
@@ -331,7 +331,7 @@ const cmds = {
     const slug = await project(pos[0]);
     await queueInfo(slug, pos[1], flags);
     const c = await api('POST', C(slug, pos[1]) + '/comments', { author: who(flags), text: await text(pos[2], 'question'), needsYou: true, options: flags.options });
-    out(flags, c, c => `asked ${OWNER} on ${c.id}; card now flagged NEEDS-RICH. Move on to other work (aigile next ${slug}).`);
+    out(flags, c, c => `asked ${OWNER} on ${c.id}; card now flagged NEEDS-OWNER. Move on to other work (aigile next ${slug}).`);
   },
 
   // AI tester (AIG-163): the tests waiting for the owner that nobody has checked yet, steps included, compact.
