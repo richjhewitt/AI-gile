@@ -194,6 +194,10 @@ function cardLive() {
     if (dir === 'previousSibling') n.reverse().forEach(x => r.parentNode.insertBefore(x, r));   // nearest-first -> document order
     else n.forEach(x => r.parentNode.appendChild(x));
   }
+  // The one-click answers and Looks right live inside the box but follow the newest message (AIG-371, AIG-315): swap just those.
+  const acts = r.querySelector('.card-acts'), nacts = nr.querySelector('.card-acts'), lr = r.querySelector('[data-looksright]'), nlr = nr.querySelector('[data-looksright]');
+  if ((acts ? acts.outerHTML : '') !== (nacts ? nacts.outerHTML : '')) { changed = true; if (acts && nacts) acts.replaceWith(nacts); else if (acts) acts.remove(); else r.prepend(nacts); }
+  if ((lr ? lr.outerHTML : '') !== (nlr ? nlr.outerHTML : '')) { changed = true; if (lr && nlr) lr.replaceWith(nlr); else if (lr) lr.remove(); else r.querySelector('.primary').after(nlr); }
   if (changed) $('modal')._html = null;
   return true;
 }
