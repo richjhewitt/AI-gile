@@ -6,7 +6,7 @@ const boardPort = () => { try { return require('fs').readFileSync(require('path'
 const BASE = (process.env.AIGILE_URL || `http://localhost:${boardPort()}`).replace(/\/$/, '');
 const STATUSES = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'];
 const PRIO = { urgent: 0, high: 1, normal: 2, low: 3 };
-const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 'stop-hook', 'peek', 'create']);
+const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 'stop-hook', 'peek', 'create', 'sprint']);
 
 // Your queue (AIG-159..162): --holds AIG-1,AIG-2  --prio now|today|whenever  --kind decide|test|server|keys|read  --mins N
 async function queueInfo(slug, id, flags) {
@@ -73,6 +73,8 @@ HOOKS (agent session hooks, see AGENTS.md)
   wait <proj> [--every SECONDS]           run in the BACKGROUND while idle: exits with ${OWNER}'s news when they comment
   updates <proj> --stop-hook              Stop: blocks stopping once while there is unseen news
   bye <proj>                              SessionEnd: the window closed, a background run takes over
+  wake <proj> [--sprint]                  start a team's background run (--sprint: work through To do)
+  watchsay "text"                         the 🌙 watchman's one-line answer in its chat
 
 TEAM AND LOG
   team <proj> NAME [--role R --model M --task T --status S]    upsert roster entry (a new member gets a free library picture)
@@ -474,6 +476,18 @@ const cmds = {
   async bye({ pos }) {
     if (WHERE === 'background') return;
     try { await api('POST', P(await project(pos[0])) + '/bye', {}); } catch {}   // board down: nothing to tell
+  },
+
+  // Wake a team (AIG-262): --sprint works through To do, not only the owner's comments.
+  async wake({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const r = await api('POST', P(slug) + '/wake', { sprint: !!flags.sprint });
+    out(flags, r, r => r.terminal ? slug + ': a session is already at work there' : slug + ': woke the team' + (flags.sprint ? ' to sprint' : ''));
+  },
+  // The 🌙 watchman agent's one-line answer to the owner (AIG-262).
+  async watchsay({ pos, flags }) {
+    const r = await api('POST', '/api/chats/_watchman/say', { text: await text(pos[0], 'text') });
+    out(flags, r, () => 'said it in the watchman chat');
   },
 
   // Idle sessions don't fire hooks. A lead runs this as a background command; it costs nothing while
