@@ -627,6 +627,8 @@
  "queue.prio.title": "Your priority: click to change",
  "queue.holds": "holds up {n}",
  "queue.mins": "{n} min",
+ "queue.bump": "reminded {at}",
+ "queue.bump.title": "Reminded {n} time(s): the team asked again instead of sending a copy",
  "queue.total": "{n} min in all",
  "queue.next": "Next up:",
  "queue.all": "All",

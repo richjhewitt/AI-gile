@@ -618,6 +618,8 @@
  "queue.prio.title": "Jouw prioriteit: klik om te wijzigen",
  "queue.holds": "houdt {n} tegen",
  "queue.mins": "{n} min",
+ "queue.bump": "herinnerd {at}",
+ "queue.bump.title": "{n} keer herinnerd: het team vroeg het opnieuw in plaats van een kopie door te sturen",
  "queue.total": "{n} min in totaal",
  "queue.next": "Aan de beurt:",
  "queue.all": "Alles",

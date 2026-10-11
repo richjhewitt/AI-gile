@@ -12,7 +12,7 @@ function decideItem(c) {
   return acts.length ? { c, quiz: false, text: a.text, acts } : null;
 }
 // shown: the inbox items for the current tab; returns the pile, grouped by project (shown is in tab order).
-function decideList(shown) { return shown.filter(IB.isQuestion).map(decideItem).filter(Boolean); }
+function decideList(shown) { return shown.filter(IB.isQuestion).map(decideItem).filter(Boolean).sort((a, b) => (b.c.bumpedAt || '').localeCompare(a.c.bumpedAt || '')); }   // a bumped reminder first (AIG-373)
 // Two lines that say what is asked: the bold question line (with what leads up to it), else the first lines.
 function decideSummary(text) {
   const ls = String(text || '').replace(/```[\s\S]*?```/g, '').split('\n').map(s => s.trim().replace(/^[-*#>•\s]+/, '')).filter(Boolean);
