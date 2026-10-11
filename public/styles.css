@@ -509,3 +509,5 @@ body.ng-urgent::after { content: ""; position: fixed; inset: 0; pointer-events: 
 #dmPanel.dm-readonly .dm-compose { display: none; }
 /* Going quiet (AIG-227): the projects' counts and dots on the left wait for the morning; only the watchman's chat may badge */
 :root[data-night] #dmRail [data-slug] .dm-unread, :root[data-night] #dmRail .dm-pip { display: none; }
+/* Desktop app (AIG-241): the top bar is the window's drag area, and a maximised window can swallow clicks on pills over it; sit just below it */
+body.desktop #updateTop { top: 44px; }
