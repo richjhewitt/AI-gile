@@ -572,6 +572,7 @@
  "queue.next": "Volgende:",
  "queue.all": "Alles",
  "format.edit": "Openen in je editor",
+ "format.browser": "Openen in je browser",
  "act.go": "✅ Go",
  "act.notyet": "✋ Nog niet",
  "act.notyet.say": "Nog niet: ",

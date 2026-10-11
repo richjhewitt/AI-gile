@@ -23,7 +23,9 @@ const isFilePath = s => /^\s*(?:[A-Za-z]:[\\/]|\/|~[\\/])[^<>|?*\n`"]*\.\w{1,8}\
 const isFolderPath = s => /^\s*(?:[A-Za-z]:[\\/]|~[\\/])[^<>|?*\n`"]*[^<>|?*\n`"\\/.]\s*[\\/]?\s*$/.test(s) && !/\.\w{1,8}\s*$/.test(s);
 const folderBtn = (p, cls = 'edit-btn') => `<button class="${cls}" data-editor="${esc(p.trim())}" title="${esc(p.trim())}">📂</button>`;
 const unesc = s => String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
-const editBtn = (p, cls = 'edit-btn') => `<button class="${cls}" data-editor="${esc(p.trim())}" title="${esc(t('format.edit'))}">📝</button>`;
+// A web page (.html) opens in the browser, not the editor (AIG-294).
+const isPage = p => /\.html?\s*$/i.test(p);
+const editBtn = (p, cls = 'edit-btn') => `<button class="${cls}" data-editor="${esc(p.trim())}" title="${esc(t(isPage(p) ? 'format.browser' : 'format.edit'))}">${isPage(p) ? '🌐' : '📝'}</button>`;
 // Bare full paths without spaces in escaped text (paths with spaces belong in `code`).
 const editLinks = html => html.replace(/(^|[\s(>])((?:[A-Za-z]:[\\/]|~[\\/])[^\s<>"`]*\.\w{1,8})(?=[\s<).,;:!?]|$)/g, (m, pre, p) => pre + p + editBtn(unesc(p)));
 document.addEventListener('click', async e => {

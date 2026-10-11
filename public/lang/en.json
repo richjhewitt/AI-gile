@@ -579,6 +579,7 @@
  "queue.next": "Next up:",
  "queue.all": "All",
  "format.edit": "Open in your editor",
+ "format.browser": "Open in your browser",
  "act.go": "✅ Go",
  "act.notyet": "✋ Not yet",
  "act.notyet.say": "Not yet: ",
