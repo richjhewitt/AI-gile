@@ -446,7 +446,9 @@ const cmds = {
     if (!news && !waiting.length) return console.log(`Nothing new from ${OWNER}.`);
     const head = `📬 AI-gile board (${u.project}): ${news ? `new from ${OWNER} since you last looked` : 'cards waiting on your team'}.`;
     const tail = `Act on these now: read each with \`aigile show ${u.project} <id>\`, then: if it's just information, move it to done (\`aigile move ${u.project} <id> done\`); if it needs work (e.g. sent back), move it to doing, fix it and hand it back with \`aigile test\` for ${OWNER}'s approval. They are marked seen.`;
-    const msg = [head, ...o, tail].join('\n');
+    // Tidy cards is on (AIG-234): neaten what the owner raised before working on it.
+    const tidy = u.tidy && u.cards.some(c => c.items.some(i => i.kind === 'new card')) ? `First tidy each card ${OWNER} raised: a short, clear title (aigile edit --title) and a description of short bullet points (--desc). Put ${OWNER}'s original words in a comment starting "Original:", so nothing is lost.` : '';
+    const msg = [head, ...o, tidy, tail].filter(Boolean).join('\n');
     if (flags['stop-hook']) { if (news) console.log(JSON.stringify({ decision: 'block', reason: msg })); return; }
     console.log(msg);
   },
