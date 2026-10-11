@@ -147,9 +147,14 @@ async function goQuietNow() {
       ${r.woke.length ? `<h3>${esc(t('quiet.done.woke', { n: r.woke.length }))}</h3>${chips(r.woke)}` : ''}
       ${(r.watching || []).length ? `<h3>${esc(t('quiet.done.watch', { n: r.watching.length }))}</h3>${chips(r.watching.map(s => look[s] || s))}` : ''}
       ${r.failed.length ? `<div class="err">${esc(t('quiet.failed', { names: r.failed.join('; ') }))}</div>` : ''}
-      <div class="actions"><button onclick="openNightGlance(); closeDialog()" title="${esc(t('ng.open.title'))}">${esc(t('ng.open'))}</button><button class="primary" onclick="closeDialog()">${esc(t('quiet.done.ok'))}</button></div></div>`);
+      <div class="actions"><button onclick="openNightGlance(); closeDialog()" title="${esc(t('ng.open.title'))}">${esc(t('ng.open'))}</button><button class="primary" onclick="goodnight()">${esc(t('quiet.done.ok'))}</button></div></div>`);
     refresh(true);
   } catch (e) { alert(e.message); }
+}
+// Goodnight (AIG-228): the night glance opens and, in the desktop app, the main window gets out of the way.
+function goodnight() {
+  closeDialog(); openNightGlance();
+  if (document.body.classList.contains('desktop')) location.href = 'aigile://minimize';
 }
 // Back from quiet: the night watchman's summary, one line per project (AIG-199).
 async function backFromQuiet() {

@@ -90,6 +90,8 @@ function wire(w) {
     if (url === 'aigile://restart') { e.preventDefault(); quitting = true; savePops(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
     // The page's theme pick (AIG-143): the window buttons and every window follow it.
     if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark'].includes(t)) nativeTheme.themeSource = t; return; }
+    // Goodnight (AIG-228): only the night glance stays on screen.
+    if (url === 'aigile://minimize') { e.preventDefault(); w.minimize(); return; }
     // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).
     if (url === 'aigile://refocus') { e.preventDefault(); w.blur(); w.focus(); w.webContents.focus(); return; }
     if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); }
