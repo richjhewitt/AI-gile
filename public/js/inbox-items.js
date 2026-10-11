@@ -24,7 +24,17 @@
       <div class="ib-err"></div>
       <div class="actions"><button class="good" data-act="taskdone">${esc(t('inbox.k.done'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.k.hint'))}</span></div>`;
   }
+  // 📖 To read (AIG-392): nothing to click. 👍 Got it accepts; 💬 Reply sends a note to the team and keeps the card here.
+  function rHtml(c) {
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('info.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
+      <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
+      <div class="ib-question">${linkify(c.testSteps || '', c)}</div>
+      <textarea rows="1" data-draft="${esc(c.project + '/' + c.id)}/info" placeholder="${esc(t('info.ph'))}" aria-label="${esc(t('info.aria', { id: c.id }))}"></textarea>
+      <div class="ib-err"></div>
+      <div class="actions"><button class="good" data-act="gotit">${esc(t('info.gotit'))}</button><button data-act="inforeply" title="${esc(t('info.reply.title'))}">${esc(t('info.reply'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}</div>`;
+  }
   function tHtml(c) {
+    if (c.info) return rHtml(c);
     return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${aiChip(c)}<button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       ${aiEvidence(c, c.project)}
@@ -33,7 +43,7 @@
       <div class="actions">${c.openUrl ? `<button class="primary" data-act="open" data-cmd="${esc(c.startCmd || '')}" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button>` : ''}<button class="good" data-act="accept">${esc(t('card.accept'))}</button><button data-act="wait" title="${esc(t('inbox.t.wait.title'))}">${esc(t('card.wait'))}</button>
       <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">${esc(t('inbox.t.sendback'))}</a></div>`;
   }
-  const sigOf = c => c.group ? IB.sigOfGroup(c) : !isTest(c) ?[c.title, c.blocked, c.server, c.serverName, (state.servers || []).join(","), shownAsk(c).at, shownAsk(c).text, i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.aiCheck && c.aiCheck.at].join('|');
+  const sigOf = c => c.group ? IB.sigOfGroup(c) : !isTest(c) ?[c.title, c.blocked, c.server, c.serverName, (state.servers || []).join(","), shownAsk(c).at, shownAsk(c).text, i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.info, c.aiCheck && c.aiCheck.at, i18n.lang].join('|');
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">

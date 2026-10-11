@@ -16,7 +16,9 @@ Post `skip` with the reason (one line) when the steps need any of these:
 - the owner's login, keys, passwords or accounts
 - a server, a deploy, another computer, a phone
 - the desktop app, an app restart, pop-out windows, window buttons, the editor (VS Code), sounds or notifications
-- "nothing to click: read the note", or steps too vague to follow
+- steps too vague to follow
+
+(📖 To read cards, handed over with `--info` or steps starting "Nothing to click", never reach you: `tests` leaves them out.)
 
 ## 3. Check the rest in a sandbox
 

@@ -7,12 +7,13 @@ function decideItem(c) {
     const items = c.quiz.items, idx = items.findIndex(x => !x.answer);
     if (idx >= 0) return { c, quiz: true, idx, n: items.length, q: items[idx].q, acts: items[idx].options.map(o => ({ label: o, say: o })) };
   }
+  if (c.info && c.status === 'verify' && !IB.isTask(c)) return { c, quiz: false, info: true, text: c.testSteps || c.title, acts: [{ label: t('info.gotit'), gotit: true }] };   // 📖 To read (AIG-392)
   if (c.blocked || c.status === 'verify') return null;
   const a = IB.shownAsk(c), acts = askActions(a, 'question');
   return acts.length ? { c, quiz: false, text: a.text, acts } : null;
 }
 // shown: the inbox items for the current tab; returns the pile, grouped by project (shown is in tab order).
-function decideList(shown) { return shown.filter(IB.isQuestion).map(decideItem).filter(Boolean).sort((a, b) => (b.c.bumpedAt || '').localeCompare(a.c.bumpedAt || '')); }   // a bumped reminder first (AIG-373)
+function decideList(shown) { return shown.filter(c => IB.isQuestion(c) || (c.info && IB.isTest(c))).map(decideItem).filter(Boolean).sort((a, b) => (b.c.bumpedAt || '').localeCompare(a.c.bumpedAt || '')); }   // a bumped reminder first (AIG-373)
 // Two lines that say what is asked: the bold question line (with what leads up to it), else the first lines.
 function decideSummary(text) {
   const ls = String(text || '').replace(/```[\s\S]*?```/g, '').split('\n').map(s => s.trim().replace(/^[-*#>•\s]+/, '')).filter(Boolean);
@@ -25,7 +26,7 @@ function decideHtml(d, i, n) {
   const body = d.quiz
     ? `<div class="dc-topic">${esc(t('decide.topic', { topic: c.quiz.topic }))} · <span class="muted">${esc(t('decide.qn', { i: d.idx + 1, n: d.n }))}</span></div><div class="dc-sum dc-q">${esc(d.q)}</div>`
     : `<div class="dc-sum">${IB.linkify(decideSummary(d.text), c).replace(/\n/g, '<br>')}</div>`;
-  const reason = d.acts.some(a => a.ask != null) ? `<textarea id="dcText" rows="2" placeholder="${esc(t('decide.ph'))}"></textarea>` : '';
+  const reason = d.info || d.acts.some(a => a.ask != null) ? `<textarea id="dcText" rows="2" placeholder="${esc(t('decide.ph'))}"></textarea>` : '';
   return `<div class="fl-head"><b>${esc(t('decide.h', { i: i + 1, n }))}</b><span class="spacer"></span>
       <button data-dc="prev" ${n < 2 ? 'disabled' : ''} title="${esc(t('decide.back'))}">‹</button><button data-dc="next" ${n < 2 ? 'disabled' : ''} title="${esc(t('decide.skip'))}">${esc(t('decide.skip'))}</button>
       <button data-dc="exit">${esc(t('decide.exit'))}</button></div>
@@ -66,9 +67,9 @@ document.addEventListener('click', async e => {
       if (ta) { ta.value = a.ask; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
       return;
     }
-    await send(cur, a.say);
+    await send(cur, a.say, a.gotit);
   }
-  async function send(cur, text) {
+  async function send(cur, text, gotit) {
     if (busy) return;
     busy = true; el('ibDc').querySelectorAll('button').forEach(b => b.disabled = true);
     const c = cur.c, base = `/api/projects/${c.project}/cards/${c.id}`;
@@ -76,6 +77,12 @@ document.addEventListener('click', async e => {
       if (cur.quiz) {
         await post('POST', base + '/quiz/answer', { index: cur.idx, answer: text });
         IB.toast(t(cur.idx + 1 === cur.n ? 'decide.toast.done' : 'decide.toast.q', { id: c.id, i: cur.idx + 1, n: cur.n }));
+      } else if (gotit) {
+        await post('POST', base + '/verdict', { accept: true });
+        IB.toast(t('info.toast.gotit', { id: c.id }));
+      } else if (cur.info) {
+        await post('POST', base + '/verdict', { reply: true, text });
+        IB.toast(t('info.toast.replied', { id: c.id }));
       } else {
         await post('POST', base + '/comments', { author: me(), text });
         IB.toast(t('decide.toast', { id: c.id }));

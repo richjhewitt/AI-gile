@@ -20,7 +20,8 @@ const QKINDS = { decide: '❓', test: '🧪', server: '🖥️', outside: '🤝'
 const isOwnerTask = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
 const PRIO_RANK = { now: 0, today: 1, whenever: 3 };   // no priority set sits between today and whenever
 // An item's kind: what the team set, else a sensible guess (tests are tests, the rest are decisions).
-const kindOfItem = c => isOwnerTask(c) && c.server ? 'server' : isOwnerTask(c) && c.outside ? 'outside' : c.kind || (c.status === 'verify' ? 'test' : 'decide');
+const isInfo = c => !!c.info && c.status === 'verify' && !isOwnerTask(c);   // 📖 To read (AIG-392): an info-only hand-over
+const kindOfItem = c => isOwnerTask(c) && c.server ? 'server' : isOwnerTask(c) && c.outside ? 'outside' : isInfo(c) ? 'read' : c.kind || (c.status === 'verify' ? 'test' : 'decide');
 // Queue order: your priority, then what it holds up most, then quickest first.
 const queueRank = (a, b) => (PRIO_RANK[a.ownerPrio] ?? 2) - (PRIO_RANK[b.ownerPrio] ?? 2) || (b.bumpedAt || '').localeCompare(a.bumpedAt || '') || (b.holds || []).length - (a.holds || []).length || (a.mins || 999) - (b.mins || 999);
 const bumpTime = at => new Date(at).toLocaleString([], { hour: '2-digit', minute: '2-digit', ...(Date.now() - new Date(at) > 864e5 ? { day: 'numeric', month: 'short' } : {}) });

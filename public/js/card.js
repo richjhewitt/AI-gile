@@ -84,7 +84,11 @@ function renderCard(p, c) {
         <span style="flex:1"></span><button type="button" class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button></div></form>
     </div></div>`;
   }
-  const verdict = c.status === 'verify' ? `<div class="verdict"><h3>${esc(t('verdict.h'))}</h3>${aiEvidence(c, p.slug)}
+  const verdict = c.status === 'verify' && c.info ? `<div class="verdict"><h3>${esc(t('info.tag'))}</h3>
+      <label class="f" style="margin-top:8px"><span>${esc(t('info.label'))}</span><textarea id="v-text" data-draft="${esc(p.slug + '/' + c.id)}/info" rows="2" placeholder="${esc(t('info.ph'))}"></textarea></label>
+      <div class="err" id="v-err"></div>
+      <div class="actions"><button class="good" onclick="gotIt()">${esc(t('info.gotit'))}</button><button onclick="infoReply()" title="${esc(t('info.reply.title'))}">${esc(t('info.reply'))}</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>`
+    : c.status === 'verify' ? `<div class="verdict"><h3>${esc(t('verdict.h'))}</h3>${aiEvidence(c, p.slug)}
       <div class="muted">${esc(t('verdict.waiting'))}${c.testSteps ? esc(t('verdict.steps')) : ''}.</div>
       <label class="f" style="margin-top:8px"><span>${esc(t('verdict.comment'))}</span><textarea id="v-text" data-draft="${esc(p.slug + '/' + c.id)}/verdict" rows="3" placeholder="${esc(t('verdict.placeholder'))}"></textarea></label>
       <div class="err" id="v-err"></div>
@@ -344,6 +348,17 @@ async function timerClear() {
 async function waitAndSee() {
   const next = nextForYou();
   try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next); } catch (err) { setErr('v-err', err); }
+}
+// 📖 To read (AIG-392): Got it accepts (a typed note goes along); Reply tells the team and keeps the card here.
+async function gotIt() { return verdict(true); }
+async function infoReply() {
+  const txt = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';
+  if (!txt && !Attach.has(key)) { setErr('v-err', t('info.err')); $('v-text').focus(); return; }
+  try {
+    const attachments = await Attach.upload(key, slug());
+    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { reply: true, text: txt, attachments });
+    Attach.clear(key); clearDraft(slug() + '/' + cardId() + '/info'); $('v-text').value = ''; setErr('v-err', ''); refresh(true);
+  } catch (err) { setErr('v-err', err); }
 }
 async function verdict(accept) {
   const next = nextForYou(), txt = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';

@@ -41,6 +41,26 @@
     try { await post('POST', base(n) + '/verdict', { accept: true }); done(n, t('inbox.toast.accepted', { id: n.dataset.id })); }
     catch (e) { fail(n, e); }
   }
+  // 📖 To read (AIG-392): Got it accepts; Reply sends the note to the team and the card stays.
+  async function gotIt(n) {
+    lock(n);
+    try { await post('POST', base(n) + '/verdict', { accept: true }); done(n, t('info.toast.gotit', { id: n.dataset.id })); }
+    catch (e) { fail(n, e); }
+  }
+  async function infoReply(n) {
+    if (n.dataset.sending) return;
+    const ta = n.querySelector('textarea'), text = ta.value.trim(), key = n.dataset.project + '/' + n.dataset.id;
+    if (!text && !Attach.has(key)) { n.querySelector('.ib-err').textContent = t('info.err'); ta.focus(); return; }
+    lock(n);
+    try {
+      const attachments = await Attach.upload(key, n.dataset.project);
+      await post('POST', base(n) + '/verdict', { reply: true, text, attachments });
+      Attach.clear(key); clearDraft(key + '/info'); ta.value = '';
+      n.dataset.sending = ''; n.querySelectorAll('button').forEach(b => b.disabled = false);
+      n.querySelector('.ib-err').textContent = ''; IB.toast(t('info.toast.replied', { id: n.dataset.id }));
+    }
+    catch (e) { fail(n, e); }
+  }
   // Start the AI tester, then look every 10 s until it is done; its verdicts arrive as 🤖 chips (AIG-291).
   async function startTester() {
     try { await post('POST', '/api/tester', {}); } catch (e) { IB.toast(e.message || String(e)); return; }
@@ -79,5 +99,5 @@
     try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await IB.load(); IB.toast(t('inbox.toast.hidden', { id: n.dataset.id })); }
     catch (e) { fail(n, e); }
   }
-  Object.assign(IB, { send, taskDone, accept, waitAndSee, startTester, acceptAiPassed, flickAct });
+  Object.assign(IB, { send, taskDone, accept, gotIt, infoReply, waitAndSee, startTester, acceptAiPassed, flickAct });
 })();

@@ -651,7 +651,7 @@
  "queue.kind.server": "Server",
  "queue.kind.outside": "Hulp van buiten",
  "queue.kind.keys": "Toegang",
- "queue.kind.read": "Lezen",
+ "queue.kind.read": "Te lezen",
  "queue.prio.none": "prioriteit kiezen",
  "queue.prio.now": "nu",
  "queue.prio.today": "vandaag",
@@ -1479,5 +1479,16 @@
  "timed.p.mon": "Maandag 9:00",
  "timed.at": "Kom terug op",
  "timed.set": "Instellen",
- "timed.clear": "Wissen"
+ "timed.clear": "Wissen",
+ "fy.kind.r": "📖 Te lezen",
+ "info.tag": "📖 Te lezen",
+ "info.label": "Nog iets toe te voegen? (optioneel)",
+ "info.ph": "Optioneel: een berichtje voor het team",
+ "info.aria": "Bericht voor {id}",
+ "info.gotit": "👍 Begrepen",
+ "info.reply": "💬 Reageren",
+ "info.reply.title": "Stuur je bericht naar het team; de kaart blijft hier staan tot je Begrepen zegt",
+ "info.err": "Schrijf eerst een reactie",
+ "info.toast.gotit": "👍 {id}: begrepen.",
+ "info.toast.replied": "💬 Reactie naar het team gestuurd ({id})."
 }

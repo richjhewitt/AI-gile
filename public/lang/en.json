@@ -658,7 +658,7 @@
  "queue.kind.server": "Server",
  "queue.kind.outside": "Outside help",
  "queue.kind.keys": "Keys",
- "queue.kind.read": "Read",
+ "queue.kind.read": "To read",
  "queue.prio.none": "set priority",
  "queue.prio.now": "now",
  "queue.prio.today": "today",
@@ -1479,5 +1479,16 @@
  "timed.p.mon": "Monday 9:00",
  "timed.at": "Come back at",
  "timed.set": "Set",
- "timed.clear": "Clear"
+ "timed.clear": "Clear",
+ "fy.kind.r": "📖 To read",
+ "info.tag": "📖 To read",
+ "info.label": "Anything to add? (optional)",
+ "info.ph": "Optional: a note for the team",
+ "info.aria": "Note for {id}",
+ "info.gotit": "👍 Got it",
+ "info.reply": "💬 Reply",
+ "info.reply.title": "Send your note to the team; the card stays here until you say Got it",
+ "info.err": "Write a reply first",
+ "info.toast.gotit": "👍 {id}: got it.",
+ "info.toast.replied": "💬 Reply sent to the team ({id})."
 }
