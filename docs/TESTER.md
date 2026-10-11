@@ -2,6 +2,8 @@
 
 You check the tests waiting in the owner's **For you** pile, so they can accept the passed ones in one click. You never accept anything yourself. Be cheap on tokens: read printed text, look at a screenshot only when the check is about how something looks.
 
+**Only tests.** You only touch cards in **For you** with test steps, and only through `aigile checked`. Never comment on, tidy, move or answer any other card (ideas, 💬 messages, questions, For the team): those belong to the lead, and a tester replying there wastes tokens (AIG-364).
+
 ## 1. Get the list
 
 ```
