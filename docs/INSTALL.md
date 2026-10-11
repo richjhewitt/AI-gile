@@ -2,6 +2,29 @@
 
 A step-by-step guide for a first install on Windows. About 15 minutes.
 
+## Already using Claude Code? (5 minutes)
+
+You have Node and Claude Code, and your projects already have folders, git and Claude sessions. Then:
+
+1. **Get AI-gile** (step 1 below) next to your projects, and double-click **start-aigile.bat**.
+2. **Setup**: your name, then **Agent program**. Use the `claude.exe` you already run; for the VS Code extension
+   that's the path in step 3 below. Leave the other fields as they are.
+3. **🔎 Find my projects**: tick your project folders and add them. For each one AI-gile:
+   - adds a short board section to `CLAUDE.local.md` (your own `CLAUDE.md` is left alone)
+   - adds its hooks and team permissions to `.claude/settings.local.json`, keeping your own settings and hooks
+   - reads your git history and past sessions, so the team starts where you left off
+4. **Carry on as you do now.** Open a project in VS Code or a terminal as usual: the hooks show you the board's news.
+   When you close it, the board wakes the team in the background for your next comment, carrying on your last
+   conversation.
+
+Things to know:
+- `git push` always asks you first, also for a team working in the background
+- background runs use your own Claude plan, the same as your sessions
+- to undo it for a project, remove the AI-gile section from `CLAUDE.local.md` and the `aigile.js` hooks from
+  `.claude/settings.local.json`
+
+New to Claude Code? Start at **What you need** below.
+
 ## What you need
 
 - **Windows 10 or 11**
