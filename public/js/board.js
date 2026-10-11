@@ -168,12 +168,21 @@ function forYouFirst(k) {
 function forYouQueue(p, pool = p.cards) {
   const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : 1 + KINDS.indexOf(kindOf(c));
   // Within a kind, a queue: longest-waiting first, so "Wait and see" sends a test to the back.
-  return pool.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || queueRank(a, b) || a.updated.localeCompare(b.updated));
+  // Tests the AI tester passed come first, ready for a quick accept (AIG-300).
+  const ai = c => c.aiCheck && c.aiCheck.result === 'pass' ? 0 : 1;
+  return pool.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => ai(a) - ai(b) || rank(a) - rank(b) || queueRank(a, b) || a.updated.localeCompare(b.updated));
 }
 // 🧹 Tidy my pile (AIG-193): the lead folds related cards in For you into one each, and reports back.
 async function tidyPile(s, btn) {
   try { const r = await api('POST', `/api/projects/${s}/tidy`); note(t(r.already ? 'tidy.already' : 'tidy.asked', { id: r.id })); refresh(true); }
   catch (e) { alert(e.message); }
+}
+// 🤖 Test these for me, from the For you header (AIG-300): same AI tester as the inbox, for this project's tests.
+async function testForMe(s) {
+  try { await api('POST', '/api/tester', { projects: [s] }); } catch (e) { alert(e.message); return; }
+  state.testerOn = true; note(t('tester.started')); refresh(true);
+  const look = async () => { let st = null; try { st = await api('GET', '/api/tester'); } catch {} if (st && st.running) return void setTimeout(look, 10e3); state.testerOn = false; refresh(true); };
+  setTimeout(look, 10e3);
 }
 // Focus (AIG-141): click the For you header to see only that column; remembered per project.
 function fyFocus(s, set) {
@@ -188,7 +197,9 @@ function forYouColumn(p, label = t('col.verify.short'), tint = '', pool = p.card
   const n = k => cs.filter(c => kindOf(c) === k).length;
   const chips = KINDS.map(k => `<button class="fy-chip ${k === first ? 'on' : ''}" data-first="${k}" title="${esc(t('fy.first'))}" onclick="forYouFirst('${k}')">${esc(kindLabel(k))} ${n(k)}</button>`).join('');
   const all = p.cards.filter(forYou).length;
-  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${esc(t('tidy.title'))}" onclick="tidyPile('${p.slug}', this)">🧹</button><button class="colbtn" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
+  const unchecked = cs.filter(c => c.testSteps && !c.aiCheck).length, testing = !!state.testerOn;
+  const robot = unchecked || testing ? `<button class="colbtn" id="fyTester-${p.slug}" ${testing ? 'disabled' : ''} title="${esc(testing ? t('tester.running') : t('fy.tester.title', { n: unchecked }))}" onclick="testForMe('${p.slug}')">🤖${testing ? '' : ' ' + unchecked}</button>` : '';
+  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${esc(t('tidy.title'))}" onclick="tidyPile('${p.slug}', this)">🧹</button>${robot}<button class="colbtn" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
 }
 
 // show = the project's card view choices (board cards only); the card panel passes nothing and shows all.

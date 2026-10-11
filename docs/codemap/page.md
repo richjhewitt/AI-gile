@@ -19,7 +19,7 @@
 | `js/filters.js` | Search and filter bar; saved views (`viewsDialog`, `applyView`; stored on the project, last one used in localStorage) |
 | `js/home.js` | Home page: `renderHome`, project bars, usage strip |
 | `js/standup.js` | Stand-ups: `callStandup` (📣 buttons on the board and home), `standupButtons`, the `#/standups` report page (`renderStandups`, blockers first), the once-a-day `morningPrompt` pill (`suPick` to choose projects; day saved in localStorage `aigile.standupAsked`) |
-| `js/board.js` | In flight and presence, `renderBoard`, swimlanes (`lanesOf`, `columnsHtml`), `cardHtml`, `poke`, drag and drop |
+| `js/board.js` | In flight and presence, `renderBoard`, swimlanes (`lanesOf`, `columnsHtml`), `cardHtml`, `poke`, drag and drop, the For you header buttons `tidyPile` and `testForMe` (🤖, AIG-300; AI-passed tests sort first in `forYouQueue`) |
 | `js/card.js` | `cardFields`, assignee select, `renderCard` (Reply/Details/Test tabs), edit/delete/reply/verdict |
 | `js/dialogs.js` | `openDialog`, New card, New project, Connect folder, Docs |
 | `js/leadquiz.js` | What kind of lead? (AIG-235..237): `QUIZ` (question -> settings), `leadQuiz`/`saveQuiz` dialog (offered once when the name is first saved), `leadPrefsHtml` the "Your lead" switches on the Setup page, `setLeadPref` |
