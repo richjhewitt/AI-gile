@@ -1222,5 +1222,7 @@
  "ug.over": "Over je tokenbudget",
  "ug.nt": "Geen-tokensmodus staat aan",
  "emoji.hint": "↑↓ kiezen, Enter plakt, Esc sluit",
- "dlg.find.starter": "Maak startkaarten uit de README, TODO's en de git-geschiedenis (een gewoon script, geen AI, geen tokens)"
+ "dlg.find.starter": "Maak startkaarten uit de README, TODO's en de git-geschiedenis (een gewoon script, geen AI, geen tokens)",
+ "look.roles": "👥 Team: zet elke AI-rol aan of uit",
+ "look.roles.count": "Dit project mag maximaal {total} agents gebruiken: {list}"
 }

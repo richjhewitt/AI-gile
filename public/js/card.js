@@ -28,13 +28,26 @@ const ROLES = [
   ['Quick fix (Haiku)', '🔧', 'role.quickfix'],
   ['Docs (Haiku)', '📄', 'role.docs'],
 ];
+// Team roles per project (AIG-366): p.roles lists the roles that are on; none = all on. Lead is always on.
+const TEAM_ROLES = [...ROLES.map(r => r[0]), 'Tester (Sonnet)'];
+const projectRoleOn = (r, p = state.project) => r === TEAM_ROLES[0] || !p || !Array.isArray(p.roles) || p.roles.includes(r);
+// Per model the helper limit when set, else the number of roles on: { total, list: "Opus 1, Sonnet 2, Haiku 3" }.
+function rolesCount(on) {
+  const pr = leadPrefs(); let total = 0;
+  const list = ['Opus', 'Sonnet', 'Haiku'].map(m => {
+    const n = TEAM_ROLES.filter(r => on.includes(r) && r.includes('(' + m + ')')).length, lim = pr['helpers' + m];
+    const k = lim !== '' && lim != null ? Math.min(n, lim) : n;
+    total += k; return n ? m + ' ' + k : '';
+  }).filter(Boolean).join(', ');
+  return { total, list };
+}
 function assigneeSelect(cur) {
   const team = (state.project?.team || []).filter(m => !/retired/i.test(m.status || '') && m.name !== me()).map(m => m.name);
   const known = new Set(['', me(), ...ROLES.map(r => r[0]), ...team]);
   const o = (v, label) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
   return `<select id="f-assignee" onchange="onAssignee(this)">
     ${o('', t('assignee.nobody'))}${cur && !known.has(cur) ? o(cur, '👤 ' + cur) : ''}
-    <optgroup label="${esc(t('assignee.roles'))}">${ROLES.map(([v, i, d]) => o(v, `${i} ${v}: ${t(d)}`)).join('')}</optgroup>
+    <optgroup label="${esc(t('assignee.roles'))}">${ROLES.filter(r => r[0] === cur || projectRoleOn(r[0])).map(([v, i, d]) => o(v, `${i} ${v}: ${t(d)}`)).join('')}</optgroup>
     ${team.length ? `<optgroup label="${esc(t('assignee.members'))}">${team.map(n => o(n, '👤 ' + n)).join('')}</optgroup>` : ''}
     <optgroup label="${esc(t('assignee.you'))}">${o(me(), '🙋 ' + me() + t('assignee.you.task'))}</optgroup>
     <option value="__other">${esc(t('assignee.other'))}</option></select>`;
