@@ -174,7 +174,7 @@ function metaHtml(c, show = CARD_SHOW) {
 // Last time the team said or did something on a card (Rich's own comments and pokes don't count).
 const STALE_MS = 30 * 60e3;
 function lastHeard(c) {
-  const m = [...c.comments].reverse().find(m => m.author.toLowerCase() !== 'rich');
+  const m = [...c.comments].reverse().find(m => m.author.toLowerCase() !== me().toLowerCase());
   return m ? { who: m.author, at: m.at, text: m.text } : { who: c.assignee || 'team', at: c.created, text: '' };
 }
 function cardHtml(c) {
