@@ -168,6 +168,7 @@ function renderSetup() {
     <label class="f chk"><span><input type="checkbox" id="explainWords" ${glossOn() ? 'checked' : ''} onchange="setExplain(this.checked)"> ${esc(t('gloss.switch'))}</span><small class="muted">${esc(t('gloss.switch.help'))} <a href="#/glossary">${esc(t('gloss.open'))}</a></small></label>
     <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
     <div class="f lead-prefs" id="leadPrefs">${leadPrefsHtml()}</div>
+    <div class="f lead-prefs" id="runInPrefs">${runInHtml()}</div>
     <div class="f"><span>${esc(t('trial.h'))}</span><div><button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <div class="f"><span>${esc(t('face.me'))}</span>${logoEditor('me-pic', s.mePic)}</div>
@@ -190,6 +191,30 @@ async function saveSetupPage(e) {
     if (!named && body.owner) leadQuiz();   // first run: the name is in, so offer "What kind of lead?" once (AIG-235)
   } catch (err) { setErr('setup-err', err); }
   return false;
+}
+
+/* ---------- where teams run (AIG-153) ---------- */
+// Background (hidden, the board tracks it), a terminal window, VS Code, or the owner's own command with {folder}.
+// The default for all is on the Setup page (saved at once); each project can pick its own in 🎨 Look.
+const RUN_IN = ['background', 'terminal', 'vscode', 'other'];
+const runInSelect = (id, cur, onchange, def) => `<select class="setup-theme" id="${id}" onchange="${onchange}">${(def ? [''] : []).concat(RUN_IN).map(v =>
+  `<option value="${v}" ${cur === v ? 'selected' : ''}>${esc(v ? t('runin.' + v) : t('runin.default', { where: t('runin.' + def) }))}</option>`).join('')}</select>`;
+const runInBlind = where => `<small class="muted runin-blind" ${where === 'background' ? 'hidden' : ''}>${esc(t('runin.blind'))}</small>`;
+function runInHtml(msg = '') {
+  const pr = leadPrefs(), w = pr.runIn || 'background';
+  return `<span>${esc(t('runin.h'))}</span>${runInSelect('runIn', w, 'setRunIn({ runIn: this.value })')}<small class="muted">${esc(t('runin.help'))}</small>
+    <label class="f" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="runCmd" value="${esc(pr.runCmd || '')}" placeholder='cursor "{folder}"' onchange="setRunIn({ runCmd: this.value })"><small class="muted">${esc(t('runin.cmd.help'))}</small></label>
+    ${runInBlind(w)}<div class="err" id="runin-err"></div><div class="muted">${esc(msg)}</div>`;
+}
+async function setRunIn(prefs) {
+  try { state.setup = await api('POST', '/api/setup', { prefs }); $('runInPrefs').innerHTML = runInHtml(t('setup.saved.short')); }
+  catch (e) { setErr('runin-err', e); }
+}
+// In 🎨 Look: the command box shows for Other (or the default when that's Other), the warning for anything but background.
+function lookRunIn() {
+  const def = (leadPrefs().runIn || 'background'), w = $('look-runin').value || def;
+  $('look-runcmd-box').hidden = w !== 'other';
+  document.querySelector('#dialog .runin-blind').hidden = w === 'background';
 }
 
 /* ---------- what's happening and ask the team (AIG-132) ---------- */
@@ -342,20 +367,24 @@ function libraryHtml(l) {
 
 /* ---------- project look (AIG-86) ---------- */
 // ---- look: the colour and emoji that mark this project in the inbox, tabs and home page ----
-function lookDialog() {
+async function lookDialog() {
   const p = state.project;
+  if (!state.setup) try { state.setup = await api('GET', '/api/setup'); } catch {}   // the default for where it runs (AIG-153)
+  const def = leadPrefs().runIn || 'background', w = p.runIn || def;
   openDialog(`<h2>${esc(t('board.look'))}</h2>
     <p class="muted">${esc(t('look.intro', { name: p.name }))}</p>
     <div class="row"><label class="f"><span>${esc(t('cols.emoji'))}</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
     <label class="f"><span>${esc(t('cols.colour'))}</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
     <div class="f"><span>${esc(t('logo.title'))}</span>${logoEditor('look-logo', p.logo)}</div>
     <label class="chk"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> ${esc(t('look.chatty'))} <span class="muted">${esc(t('look.chatty.cost'))}</span></label>
+    <label class="f"><span>${esc(t('look.runin'))}</span>${runInSelect('look-runin', p.runIn || '', 'lookRunIn()', def)}${runInBlind(w)}</label>
+    <label class="f" id="look-runcmd-box" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="look-runcmd" value="${esc(p.runCmd || '')}" placeholder="${esc(leadPrefs().runCmd || 'cursor "{folder}"')}"><small class="muted">${esc(t('runin.cmd.look'))}</small></label>
     <div class="err" id="look-err"></div>
     <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
 async function saveLook(auto) {
   try {
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }
