@@ -243,6 +243,32 @@ def('poplist', '⧉ pop an inbox list out into its own window: only that list, n
   noErrors(page);
 }, true);
 
+def('popone', '⤢ pop one inbox item out into its own window; a task item shows the task, not a later comment (AIG-367)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const b = await mkCard(s, 'alpha', 'Add the record');
+  s.cli(['task', 'alpha', b.id, 'step 1: add a DNS A record', '--as', 'Lead']);
+  await sleep(20);
+  await say(s, 'alpha', b.id, 'Herald', 'technical handover note');
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('#ibK .ib-item .ib-popone');
+  const txt = await page.textContent('#ibK .ib-item .ib-question');
+  check('the task item shows the task text, not the later comment', /DNS A record/.test(txt) && !/handover/.test(txt), txt);
+  check('who set it is Lead', /Lead/.test(await page.textContent('#ibK .ib-item .ib-who')));
+  const popP = ctx.waitForEvent('page');
+  await page.click('#ibK .ib-item .ib-popone');
+  const pop = await popP;
+  await pop.waitForLoadState();
+  check('the window opens on that card', (await pop.evaluate(() => location.hash)) === '#/pop/alpha/' + b.id, await pop.evaluate(() => location.hash));
+  const q = await mkCard(s, 'alpha', 'Which colour');
+  s.cli(['ask', 'alpha', q.id, 'which colour?', '--as', 'Forge']);
+  await sleep(20);
+  await say(s, 'alpha', q.id, 'Herald', 'also FYI something else');
+  await page.waitForSelector('#ibQ .ib-item .ib-popone');
+  const qt = await page.textContent('#ibQ .ib-item .ib-question');
+  check('a question item shows the question, not a later comment', /which colour/.test(qt) && !/FYI/.test(qt), qt);
+  noErrors(page);
+}, true);
+
 def('servertask', 'a task can be marked 🖥️ Server: CLI flag, grouped first in For you and the inbox, owner toggle (AIG-320)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const a = await mkCard(s, 'alpha', 'Plain task'), b = await mkCard(s, 'alpha', 'Deploy it'), c = await mkCard(s, 'alpha', 'Forgot to mark');

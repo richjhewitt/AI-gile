@@ -2,11 +2,11 @@
 // Classic script; shares the inbox's state and helpers through the IB object (js/inbox-state.js).
 (function () {
   'use strict';
-  const { el, esc, isTest, kindOf, lastAsk, keyOf, linkify } = IB;
+  const { el, esc, isTest, kindOf, lastAsk, shownAsk, keyOf, linkify } = IB;
   /* ---------- inbox page (AIG-33) ---------- */
   function qHtml(c) {
-    const a = lastAsk(c), acts = c.blocked ? [] : askActions(a, 'question');
-    return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>${queueChips(c)}
+    const a = shownAsk(c), acts = c.blocked ? [] : askActions(a, 'question');
+    return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button></div>${queueChips(c)}
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       <div class="ib-who">${t(c.blocked ? 'inbox.q.isblocked.html' : 'inbox.q.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>${actionsHtml(acts, c.project, c.id)}
@@ -15,8 +15,8 @@
       <div class="actions">${c.blocked || acts.length ? '' : `<button class="good" data-act="go" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>`}<button class="primary" data-act="send">${esc(t('inbox.q.send'))}</button><button data-act="wait" title="${esc(t('inbox.later.title'))}">${esc(t('inbox.later'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.q.hint'))}</span></div>`;
   }
   function kHtml(c) {
-    const a = lastAsk(c);
-    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.k.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>${queueChips(c)}
+    const a = shownAsk(c);
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.k.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button></div>${queueChips(c)}
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       <div class="ib-who">${t('inbox.k.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>
@@ -25,7 +25,7 @@
       <div class="actions"><button class="good" data-act="taskdone">${esc(t('inbox.k.done'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.k.hint'))}</span></div>`;
   }
   function tHtml(c) {
-    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${aiChip(c)}<span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${aiChip(c)}<button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       ${aiEvidence(c, c.project)}
       ${c.testSteps ? `<details class="ib-steps"><summary>${esc(t('inbox.t.how'))}</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : `<div class="ib-hint">${esc(t('inbox.t.nosteps'))}</div>`}
@@ -33,7 +33,7 @@
       <div class="actions">${c.openUrl ? `<button class="primary" data-act="open" data-cmd="${esc(c.startCmd || '')}" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button>` : ''}<button class="good" data-act="accept">${esc(t('card.accept'))}</button><button data-act="wait" title="${esc(t('inbox.t.wait.title'))}">${esc(t('card.wait'))}</button>
       <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">${esc(t('inbox.t.sendback'))}</a></div>`;
   }
-  const sigOf = c => !isTest(c) ?[c.title, c.blocked, c.server, lastAsk(c).at, lastAsk(c).text, i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.aiCheck && c.aiCheck.at].join('|');
+  const sigOf = c => !isTest(c) ?[c.title, c.blocked, c.server, shownAsk(c).at, shownAsk(c).text, i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.aiCheck && c.aiCheck.at].join('|');
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">

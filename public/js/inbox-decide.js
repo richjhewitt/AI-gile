@@ -8,7 +8,7 @@ function decideItem(c) {
     if (idx >= 0) return { c, quiz: true, idx, n: items.length, q: items[idx].q, acts: items[idx].options.map(o => ({ label: o, say: o })) };
   }
   if (c.blocked || c.status === 'verify') return null;
-  const a = IB.lastAsk(c), acts = askActions(a, 'question');
+  const a = IB.shownAsk(c), acts = askActions(a, 'question');
   return acts.length ? { c, quiz: false, text: a.text, acts } : null;
 }
 // shown: the inbox items for the current tab; returns the pile, grouped by project (shown is in tab order).

@@ -733,6 +733,7 @@
  "tidy.asked": "Asked the lead to tidy your pile ({id}). They report back when done.",
  "tidy.already": "The lead is already on it ({id}).",
  "tidy.toast": "Asked {n} lead(s) to tidy your pile",
+ "inbox.popone": "Pop this card out into its own window",
  "inbox.popout": "Pop this list out into its own window",
  "gloss.h": "📖 Dev words explained",
  "gloss.intro": "The words developers (and the AI teams) use, in plain English.",

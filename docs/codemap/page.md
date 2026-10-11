@@ -14,7 +14,7 @@
 | `public/js/night.js` | 🌙 Night glance (AIG-209): `#/pop-night`, a calm red-tinted pop-out with the watchman per project; a slow amber glow only for stuck cards or real stand-up blockers |
 | `js/inbox-state.js` | `IB`: the inbox's shared mutable state (items, tab, chat, flick, only...), plus helpers (`el`, `esc`, `post`, `isTask`...) and `load`/`apply`/`repaint`. The inbox files below are each a closure and share state and functions only through `IB` |
 | `js/inbox-top.js` | `paintTop` (top-bar button and tab title), `announce` / `toggleAlerts` (new-question alerts) |
-| `js/inbox-items.js` | `qHtml` / `kHtml` / `tHtml`, `skeleton` (page frame), `syncList` |
+| `js/inbox-items.js` | (AIG-367: ⤢ `.ib-popone` pops one card out, `shownAsk` shows the marked task / question) `qHtml` / `kHtml` / `tHtml`, `skeleton` (page frame), `syncList` |
 | `js/inbox-tabs.js` | `paintTabs` (project tabs), `paintChats` (Messages) |
 | `js/inbox-page.js` | `paintPage`, `toast` |
 | `js/inbox-actions.js` | `send`, `taskDone`, `accept`, `waitAndSee`, `startTester`, `acceptAiPassed`, `flickAct` and the AI view keys |
