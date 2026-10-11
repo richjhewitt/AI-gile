@@ -104,6 +104,9 @@ def('quiet', 'Going quiet messages teams with work, wakes sleeping ones, night t
   await page.click('#dialog .primary');
   await page.waitForSelector('html[data-night]', { timeout: 4000 }).catch(() => {});
   check('the watchman watches what was ticked', (await s.ok('GET', '/api/watchman')).watch.length === 2);
+  await page.waitForSelector('#dialog .qd', { timeout: 5000 }).catch(() => {});
+  check('a goodnight dialog says who was told, not a plain alert (AIG-208)', /Busy/.test(await page.textContent('#dialog .qd')));
+  await page.click('#dialog .qd .primary');
   check('night theme on', await page.$('html[data-night]') !== null);
   const busy = await s.ok('GET', '/api/projects/busy'), idle = await s.ok('GET', '/api/projects/idle');
   const msg = busy.cards.find(c => c.title === '📣 Going quiet');

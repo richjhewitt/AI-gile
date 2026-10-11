@@ -748,5 +748,12 @@
  "watch.stuck": "vastgelopen: {ids}",
  "restart.btn": "🔄 Bord herstarten",
  "restart.title": "Nieuwe functies werken pas na een herstart van het bord. Duurt een paar seconden; wacht als een team bezig is.",
- "restart.busy": "Bezig met herstarten…"
+ "restart.busy": "Bezig met herstarten…",
+ "quiet.done.h": "Slaap lekker",
+ "quiet.done.sub": "De teams werken door; je krijgt een overzicht als je terug bent.",
+ "quiet.done.told": "📣 {n} team(s) verteld",
+ "quiet.done.woke": "▶ {n} slapend(e) team(s) wakker gemaakt",
+ "quiet.done.watch": "🌙 De nachtwacht houdt {n} in de gaten",
+ "quiet.done.none": "Geen team heeft open werk, dus niemand hoefde het te weten.",
+ "quiet.done.ok": "Welterusten"
 }

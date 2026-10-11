@@ -483,3 +483,10 @@ abbr.devw { text-decoration: underline dotted var(--muted); text-underline-offse
 
 /* 🔄 Restart the board (AIG-206): floats at the top, like the Refresh pill */
 .up-restart { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 40; } .up-restart:empty { display: none; }
+
+/* Going quiet: a proper goodnight (AIG-208) */
+.qd { text-align: center; } .qd-moon { font-size: 44px; line-height: 1; margin-top: 4px; }
+.qd h2 { margin: 6px 0 2px; } .qd h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 16px 0 6px; }
+.qd-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.qd-chip { padding: 3px 10px; border-radius: 99px; background: var(--col); border: 1px solid var(--line); font-size: 13px; }
+.qd .actions { justify-content: center; }

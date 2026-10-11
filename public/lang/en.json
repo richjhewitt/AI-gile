@@ -748,5 +748,12 @@
  "watch.stuck": "stuck: {ids}",
  "restart.btn": "🔄 Restart the board",
  "restart.title": "New features need the board restarted to work. Takes a few seconds; waits if a team is busy.",
- "restart.busy": "Restarting…"
+ "restart.busy": "Restarting…",
+ "quiet.done.h": "Sleep well",
+ "quiet.done.sub": "The teams carry on; you get a summary when you’re back.",
+ "quiet.done.told": "📣 Told {n} team(s)",
+ "quiet.done.woke": "▶ Woke {n} sleeping team(s)",
+ "quiet.done.watch": "🌙 The watchman keeps an eye on {n}",
+ "quiet.done.none": "No team has open work, so nobody needed telling.",
+ "quiet.done.ok": "Good night"
 }

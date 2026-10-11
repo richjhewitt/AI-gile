@@ -127,7 +127,15 @@ async function goQuietNow() {
   try {
     const r = await api('POST', '/api/quiet', { on: true, watch });
     setNight(r.quiet);
-    alert(t('quiet.sent', { n: r.sent.length, names: r.sent.length ? ': ' + r.sent.join(', ') : '' }) + (r.woke.length ? '\n' + t('quiet.woke', { names: r.woke.join(', ') }) : '') + (r.failed.length ? '\n' + t('quiet.failed', { names: r.failed.join('; ') }) : ''));
+    // A proper goodnight instead of a plain alert box (AIG-208): who was told, who was woken, what the watchman watches.
+    const chips = names => `<div class="qd-chips">${names.map(n => `<span class="qd-chip">${esc(n)}</span>`).join('')}</div>`;
+    const look = Object.fromEntries((state.projects || []).map(p => [p.slug, p.name]));
+    openDialog(`<div class="qd"><div class="qd-moon">🌙</div><h2>${esc(t('quiet.done.h'))}</h2><p class="muted">${esc(t('quiet.done.sub'))}</p>
+      ${r.sent.length ? `<h3>${esc(t('quiet.done.told', { n: r.sent.length }))}</h3>${chips(r.sent)}` : `<p class="muted">${esc(t('quiet.done.none'))}</p>`}
+      ${r.woke.length ? `<h3>${esc(t('quiet.done.woke', { n: r.woke.length }))}</h3>${chips(r.woke)}` : ''}
+      ${(r.watching || []).length ? `<h3>${esc(t('quiet.done.watch', { n: r.watching.length }))}</h3>${chips(r.watching.map(s => look[s] || s))}` : ''}
+      ${r.failed.length ? `<div class="err">${esc(t('quiet.failed', { names: r.failed.join('; ') }))}</div>` : ''}
+      <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('quiet.done.ok'))}</button></div></div>`);
     refresh(true);
   } catch (e) { alert(e.message); }
 }
