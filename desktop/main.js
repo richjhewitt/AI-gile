@@ -82,7 +82,9 @@ nativeTheme.on('updated', () => BrowserWindow.getAllWindows().forEach(w => { try
 function wire(w) {
   // Board links to other sites open in the normal browser; the board's own open in a new app window.
   // A popped-out card stays on top, so its steps stay visible while you work in another app (AIG-122).
-  w.webContents.setWindowOpenHandler(({ url }) => {
+  w.webContents.setWindowOpenHandler(({ url, frameName }) => {
+    // The pretend friend's board (AIG-323) opens in a window of its own: a localhost address named aigile-pretend.
+    if (frameName === 'aigile-pretend' && /^http:\/\/(localhost|127\.0\.0\.1):\d+\//.test(url)) return { action: 'allow', overrideBrowserWindowOptions: chrome() };
     if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop'), ...(url.includes('#/pop') ? placeFor(url) || {} : {}) } };
     shell.openExternal(url); return { action: 'deny' };
   });

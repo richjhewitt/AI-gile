@@ -15,7 +15,7 @@ function dmsFriendsPaint() {
   const { d, list } = DF.data;
   // keep what is being typed across repaints
   const keep = { c: ($('dmfCode') || {}).value || '', n: ($('dmfName') || {}).value || '', i: ($('dmfInvName') || {}).value || '' };
-  const contact = c => `<div class="dmf-c" data-cid="${esc(c.id)}"><b>${esc(c.name)}</b>${c.blocked ? ` <span class="muted">${esc(t('dmf.blocked'))}</span>` : ''}
+  const contact = c => `<div class="dmf-c" data-cid="${esc(c.id)}"><b>${esc(c.name)}</b>${c.pretend ? ` <span class="muted">${esc(t("pretend.tag"))}</span>` : ""}${c.blocked ? ` <span class="muted">${esc(t('dmf.blocked'))}</span>` : ''}
       <div class="dmf-words"><code>${esc(c.safety)}</code></div>
       <small class="muted">${esc(t(c.checked ? 'dmf.checked' : 'dmf.words.help'))}</small>
       <div class="actions">${c.checked ? '' : `<button type="button" data-act="match">${esc(t('dmf.match'))}</button> `}<button type="button" data-act="block">${esc(t(c.blocked ? 'dmf.unblock' : 'dmf.block'))}</button> <button type="button" data-act="remove">${esc(t('dmf.remove'))}</button></div></div>`;

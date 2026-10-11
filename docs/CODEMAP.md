@@ -19,6 +19,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/dm.js`, `relay/relay.js`: private DMs and their relay; `lib/share.js`: sharing a project with a friend over them; `lib/ask.js`: ask a mate (a friend's question for my AI, AIG-210)
 - `lib/limits.js`, `lib/usage.js`, `lib/usagecheck.js`: plan usage, tokens, check usage now
 - `lib/trial.js`, `tools/trial/pretend-team.js`: 🧪 try it as a new user
+- `lib/pretend.js`: 🧪 pretend friend (AIG-322): local relay + second board "Davy" (nl-BE) on free ports, invite swapped, stop keeps or wipes his data
 - `lib/tester.js`: 🤖 AI tester runs
 - `aigile.js` (CLI entry) + `lib/cli/*.js` (core, help, command groups), `statusline.js`, `desktop/` (Electron)
 
