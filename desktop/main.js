@@ -26,7 +26,7 @@ async function up() { try { return (await fetch(BASE + '/api/meta')).ok; } catch
 // Same as start-aigile.bat: node server.js in the AI-gile folder, detached and hidden.
 async function ensureServer() {
   if (await up()) return true;
-  const node = process.env.AIGILE_NODE || 'node', env = { ...process.env, AIGILE_DEV: '1' };
+  const node = process.env.AIGILE_NODE || 'node', env = { ...process.env };   // dev mode comes from aigile.local.json now (AIG-253)
   delete env.ELECTRON_RUN_AS_NODE;
   spawn(node, ['server.js'], { cwd: ROOT, detached: true, stdio: 'ignore', windowsHide: true, env }).unref();
   for (let i = 0; i < 50; i++) { await sleep(200); if (await up()) return true; }
