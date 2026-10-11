@@ -33,7 +33,9 @@ node tools/tester/look.mjs "http://127.0.0.1:4399/#/p/ai-gile" --click "👁 Vie
 - Steps run in order: `--click "text or css"`, `--fill "css=value"`, `--press Enter`, `--goto url`, `--wait 500`
 - `--text` narrows what is printed (a css selector); keep `--lines` at 40 or less
 - It prints the title, any page errors, then the text; a step that fails prints `STEP FAILED`
-- If a step can't be done after 2 tries with different selectors, that's a `fail` (say what you couldn't find), not a reason to keep trying
+- Can't find a button? Print the page text around it first (`--text` with a wider selector) and use its exact words, or a css selector like `.fy-head`
+- **`fail` only with proof**: the printed text shows the expected result is missing or wrong. "I couldn't click it" or a timeout is **not** proof: `skip` and say what you couldn't do. A wrong fail sends good work back to the team
+- **`pass` only for what the steps check**: say what you saw that matches the last step's expected result, in the steps' own words
 - "Refresh" in the steps means nothing to do: each `look.mjs` run opens a fresh page
 
 For other projects: only check when the card has an **open:** link to a local dev page and the steps only look and click. Anything that changes real data: `skip`.
