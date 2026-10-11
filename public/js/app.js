@@ -63,7 +63,9 @@ async function checkBuild() {
     // New server code that the running board hasn't loaded yet (AIG-206): one click restarts it.
     const rs = m.stale ? `<button class="primary" onclick="restartBoard(this)" title="${esc(t('restart.title'))}">${esc(t('restart.btn'))}</button>` : '';
     if ($('upRestart') && $('upRestart').dataset.sig !== rs && !$('upRestart').dataset.busy) { $('upRestart').dataset.sig = rs; $('upRestart').innerHTML = rs; }
-    if (m.dev && m.build !== loadedBuild && !$('upRefresh').firstChild)
+    // Restarting reloads the page too (AIG-346), so while a restart is due, Refresh doesn't show as well.
+    if (m.stale) $('upRefresh').innerHTML = '';
+    else if (m.dev && m.build !== loadedBuild && !$('upRefresh').firstChild)
       $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="${esc(t('update.refresh.title'))}">${esc(t('update.refresh'))}</button>`;
   } catch {}
 }
