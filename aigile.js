@@ -74,7 +74,8 @@ HOOKS (agent session hooks, see AGENTS.md)
 TEAM AND LOG
   team <proj> NAME [--role R --model M --task T --status S]    upsert roster entry
   log <proj> "text" [--decision] --as NAME
-  standup <proj> --done "..." --next "..." [--blockers "... | none"] --as NAME    answer a 📣 Stand-up card (AGENTS.md)
+  standup <proj> --done "..." --next "..." [--needs "..."] [--blockers "... | none"] --as NAME    answer a 📣 Stand-up card (AGENTS.md)
+        --needs: waits on the owner while you carry on;  --blockers: only what stops ALL your work
 
 PROJECTS
   new-project <name> [--key K --path P --desc D]
@@ -412,6 +413,7 @@ const cmds = {
     const slug = await project(pos[0]);
     const b = { author: who(flags), done: await text(flags.done, '--done'), next: await text(flags.next, '--next') };
     if (flags.blockers !== undefined) b.blockers = flags.blockers === true ? 'none' : await text(flags.blockers, '--blockers');
+    if (flags.needs !== undefined && flags.needs !== true) b.needs = await text(flags.needs, '--needs');   // waits on the owner, other work goes on (AIG-191)
     const r = await api('POST', P(slug) + '/standup', b);
     out(flags, r, r => `stand-up answered on ${r.card}` + (r.waiting.length ? `. Still to answer: ${r.waiting.join(', ')}` : '. Everyone has answered: the lead can move the card to done.'));
   },

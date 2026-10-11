@@ -98,7 +98,9 @@ aigile standup <proj> --done "What I finished" --next "What I do next" --blocker
 ```
 
 - Keep each part to a line or two; `--blockers` is optional and means `none` if left out
-- Your answer is stored on the card and shows in Rich's stand-up report; blockers are shown to him in red, so name the card id and what you need from him
+- Your answer is stored on the card and shows in Rich's stand-up report
+- **`--blockers`** only for what stops **all** your work (nothing else can go on). Shown in red
+- **`--needs`** for things waiting on Rich while you carry on with other work (a test, a key, a question). Shown in amber. Name the card id and what you need
 - Answering again replaces your earlier answer
 - When everyone on the roster has answered (the command tells you who is left), the lead moves the card to done
 
