@@ -78,6 +78,7 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   await page.waitForFunction(() => location.hash === '#/setup', null, { timeout: 8000 }).catch(() => {});
   await page.waitForSelector('#setupForm');
   check('board opens Setup first', page.url().endsWith('#/setup'));
+  await page.click('#wzNo'); await page.waitForSelector('#wzNo', { state: 'detached' });   // AIG-354: the wizard offer, waved off
   check('name is required', (await s.api('POST', '/api/setup', { owner: '' })).status === 400);
   await page.fill('input[data-key="owner"]', 'Sam');
   // AIG-334: a guessed agent program is only a suggestion; typing just a name must not save it.
