@@ -121,3 +121,8 @@ body.desktop #updateTop { top: 44px; }
 /* A note that fades by itself (AIG-259) */
 #note { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 12px); z-index: 60; max-width: min(520px, calc(100vw - 32px)); padding: 10px 16px; border-radius: 999px; background: var(--panel); color: var(--text); border: 1px solid var(--line); box-shadow: 0 6px 20px rgba(0,0,0,.25); font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
 #note.on { opacity: 1; transform: translate(-50%, 0); }
+/* ⚡ Decide pile and 🗂️ Topics (AIG-361) */
+.ib-dc .dc-topic { font-weight: 600; margin-top: 6px; } .ib-dc .dc-sum { margin: 8px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; } .ib-dc .dc-q { font-size: 17px; font-weight: 600; -webkit-line-clamp: 4; }
+.ib-dc .dc-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; } .ib-dc .dc-btns button { padding: 8px 16px; font-size: 15px; } .ib-dc .dc-btns b { opacity: .6; margin-right: 4px; }
+.ib-decide { font-weight: 600; }
+.qz { border: 1px solid var(--accent); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; } .qz-item { margin-top: 8px; }

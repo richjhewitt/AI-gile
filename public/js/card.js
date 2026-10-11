@@ -93,6 +93,7 @@ function renderCard(p, c) {
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
       ${Share.cardComments(p, c)}
+      ${quizPanel(p, c)}
       ${pop ? chatHtml(p, c, msg) : replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>

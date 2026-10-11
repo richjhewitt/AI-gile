@@ -8,6 +8,7 @@
 | `js/inbox-style.js` | `INBOX_CSS`: the inbox styles, injected by inbox.js (loaded just before it) |
 | `js/inbox-queue.js` | `paintQueue(shown, kindFilter)`: the inbox kind chips and the Next up line (AIG-159..162); called by inbox.js |
 | `public/js/inbox-ai.js` | `aiFlickHtml`: the inbox's 🤖 AI passed view, one test at a time with the tester's evidence (AIG-192); inbox.js owns the list, clicks and keys |
+| `js/inbox-decide.js` | ⚡ Decide pile and 🗂️ Topics (AIG-361): `decideList` / `decideItem` (answer-button questions via `askActions`, open quizzes), `decideHtml`, `decideAct` and the keys (1-4 answer, → skip, Enter open, Esc); `quizPanel` on the card (`.qz-opt`); the ⚡ Decide chip is added by `paintQueue`; texts `decide.*`, `card.quiz.*` |
 | `public/js/glossary.js` | Dev words explained (AIG-102): the 📖 glossary page (#/glossary, searchable) and, with Setup's "Explain developer words" on, hover tooltips on those words anywhere (MutationObserver); words in the language files as gloss.<id>.word/.text/.also |
 | `public/js/tour.js` | 🎓 Guided tour (AIG-95): three levels (new / refresh / anyway), a spotlight and bubble per stop (TOUR list of selectors), texts in the language files (tour.*) |
 | `public/js/night.js` | 🌙 Night glance (AIG-209): `#/pop-night`, a calm red-tinted pop-out with the watchman per project; a slow amber glow only for stuck cards or real stand-up blockers |
