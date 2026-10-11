@@ -1399,5 +1399,15 @@
  "wz.adv.val.helpers": "helpers Opus {o}, Sonnet {s}, Haiku {h}",
  "wz.adv.val.budget": "5 uur {h}%, week {w}%",
  "wz.adv.val.light": "Pro-vriendelijk",
- "wz.adv.val.lead": "{tidy}, {chatty}, {go}, {words}"
+ "wz.adv.val.lead": "{tidy}, {chatty}, {go}, {words}",
+ "gif.title": "Zoek een GIF (Giphy)",
+ "gif.nokey": "Voeg een gratis Giphy-sleutel toe in Instellingen",
+ "gif.search": "Zoek GIF's (leeg: populair)",
+ "gif.powered": "Powered by GIPHY",
+ "gif.more": "Meer",
+ "gif.loading": "Laden...",
+ "gif.none": "Geen GIF's gevonden",
+ "gif.adding": "Toevoegen...",
+ "setup.f.giphyKey": "Giphy-sleutel",
+ "setup.f.giphyKey.help": "Gratis sleutel van developers.giphy.com; zet 🎞️ GIF zoeken aan in reacties en chats. Blijft alleen op deze computer"
 }

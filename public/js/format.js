@@ -48,13 +48,23 @@ function copyCode(btn) {
   navigator.clipboard.writeText(btn.parentNode.querySelector('pre').textContent)
     .then(() => { btn.textContent = t('format.copied'); setTimeout(() => { btn.textContent = t('format.copy'); }, 1500); });
 }
+// A pasted GIF link (AIG-343) shows under the link as a picture: https only, a .gif address or a giphy/tenor media address; the browser
+// only draws real images (anything else just fails and hides), loaded lazily, and a click opens it in the lightbox.
+function gifLink(u) {
+  const raw = u.replace(/&amp;/g, '&'); let x; try { x = new URL(raw); } catch { return ''; }
+  const h = x.hostname.toLowerCase();
+  let src = '';
+  if (x.protocol === 'https:' && (/\.gif$/i.test(x.pathname) || (/^(media\d*|i)\.giphy\.com$/.test(h) && /\/media\//.test(x.pathname)) || (/^(media\d*|c)\.tenor\.com$/.test(h) && /\.gif$/i.test(x.pathname)))) src = raw;
+  else { const m = x.protocol === 'https:' && /^(www\.)?giphy\.com$/.test(h) && x.pathname.match(/^\/gifs\/(?:[^/]*-)?([A-Za-z0-9]+)\/?$/); if (m) src = 'https://media.giphy.com/media/' + m[1] + '/giphy.gif'; }
+  return src ? `<img class="gif-inline" src="${esc(src)}" alt="GIF" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : '';
+}
 function linkify(text, p) { return withCode(text, t => linkifyText(t, p), p.slug); }
 function linkifyText(text, p) { return mdLinks(linkifyBase(text, p), p.slug); }
 function linkifyBase(text, p) {
   const key = String(p.key).replace(/[^A-Za-z0-9]/g, '');
   return esc(text)
     .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')   // **bold**, used in bullet-point cards
-    .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`)
+    .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>${gifLink(u)}`)
     // A bare web address like test.locoradio.live/?x (AIG-318); common endings only, so file names stay plain.
     .replace(/(^|[^\w@/.:"=-])((?:[a-z0-9-]+\.)+(?:com|net|org|io|live|dev|app|co|uk|nl|be|ai|me|tv|gg|xyz|info|site|online)(?::\d+)?(?:\/[^\s<]*[^\s<.,;:!?)\]])?)(?![\w-])/gi,
       (m, pre, u) => `${pre}<a href="https://${u}" target="_blank" rel="noopener">${u}</a>`)
