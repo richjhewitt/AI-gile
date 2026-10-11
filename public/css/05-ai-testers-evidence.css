@@ -128,3 +128,6 @@ body.desktop #updateTop { top: 44px; }
 .qz { border: 1px solid var(--accent); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; } .qz-item { margin-top: 8px; }
 /* 📜 Team news pop-out (AIG-319) */
 .news-item { margin: 0 0 10px; } .news-item.mine .dm-bubble { border-left: 3px solid var(--accent, #6a8); }
+/* 🧙 Setup wizard (AIG-354) */
+.wz-dots { display: flex; gap: 6px; margin-bottom: 12px; } .wz-dot { width: 22px; height: 6px; border-radius: 3px; background: var(--line, #8884); } .wz-dot.on { background: var(--accent); } .wz-dot.past { background: var(--accent); opacity: .5; }
+.wz-opts { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; } .wz-opt { display: flex; align-items: baseline; gap: 6px; }
