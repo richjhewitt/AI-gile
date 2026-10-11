@@ -109,6 +109,14 @@ const api = async (method, url, body) => {
 };
 // A project's picture, or its emoji when it has none (AIG-175). Round, one em, so it sits where the emoji sat.
 function pic(logo, emoji) { return logo ? `<img class="pic" src="${esc(logo)}" alt="">` : esc(emoji || ''); }
+// Profile pictures (AIG-150): yours from Setup (meta.ownerPic), an agent's from the picture library (m.avatar on the team).
+const avatarUrl = f => f ? '/api/avatars/' + encodeURIComponent(f) : '';
+function faceUrl(name, team) {
+  if (isOwner(name)) return state.ownerPic || '';
+  const m = (team || []).find(m => m.name.toLowerCase() === String(name || '').trim().toLowerCase());
+  return m ? avatarUrl(m.avatar) : '';
+}
+const face = (name, team) => { const u = faceUrl(name, team); return u ? `<img class="face" src="${esc(u)}" alt="" title="${esc(name)}">` : ''; };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ago = (iso, bare) => {   // bare = without "ago", for "unanswered for 5m"
   const s = (Date.now() - new Date(iso)) / 1000, b = bare ? '.bare' : '';

@@ -310,6 +310,13 @@ body.pop { padding-left: 0; } body.pop #dmRail, body.pop #dmPanel { display: non
 .logo-edit .pic { width: 44px; height: 44px; }
 .logo-edit .brand-logo { width: 44px; height: 44px; }
 .logo-edit input[type=text] { flex: 1; min-width: 180px; }
+/* profile pictures (AIG-150): next to names in chats, comments and the team list; the library on Setup */
+.face { width: 1.5em; height: 1.5em; border-radius: 50%; object-fit: cover; vertical-align: -0.45em; margin-right: 5px; }
+.dm-meta .face { width: 18px; height: 18px; vertical-align: -5px; }
+.face-lib { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0; }
+.face-lib figure { margin: 0; width: 64px; text-align: center; }
+.face-lib .face { width: 48px; height: 48px; margin: 0; }
+.face-lib figcaption { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dm-av { display: inline-flex; width: 42px; height: 42px; border-radius: 50%; align-items: center; justify-content: center; font-size: 21px; background: color-mix(in srgb, var(--proj, var(--accent)) 22%, var(--panel)); border: 2px solid transparent; transition: border-radius .15s; }
 .dm-railbtn:hover .dm-av, .dm-railbtn.on .dm-av { border-radius: 14px; border-color: var(--proj, var(--accent)); }
 .dm-unread { position: absolute; right: -2px; bottom: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }

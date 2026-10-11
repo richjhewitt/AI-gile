@@ -814,5 +814,13 @@
  "lead.go.help": "One line every team reads in its brief.",
  "lead.watchAll": "🌙 Watchman ticks every project",
  "lead.watchAll.help": "When you go quiet, every project is ticked for the night watchman. Off: none are ticked, so nights stay quiet.",
- "setup.saved.short": "✅ Saved."
+ "setup.saved.short": "✅ Saved.",
+ "face.me": "Your picture",
+ "face.me.help": "PNG, JPG, SVG, ICO or WEBP, up to 1 MB. Shown next to your messages and comments.",
+ "face.lib": "Agents' pictures",
+ "face.lib.help": "Drop pictures (png, jpg, svg, webp, gif) in {dir}. Each agent takes one the first time it joins a team, and can change it with aigile avatar.",
+ "face.free": "free",
+ "face.empty": "No pictures yet.",
+ "setup.f.avatarsDir": "Picture library",
+ "setup.f.avatarsDir.help": "Folder of pictures the agents pick from when they join a team (png, jpg, svg, webp, gif). Empty: the avatars folder in the board's data folder"
 }

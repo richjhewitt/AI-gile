@@ -814,5 +814,13 @@
  "lead.go.help": "Eén regel die elk team in zijn overzicht leest.",
  "lead.watchAll": "🌙 Nachtwacht vinkt elk project aan",
  "lead.watchAll.help": "Als je even stil gaat, staat elk project aangevinkt voor de nachtwacht. Uit: niks aangevinkt, dus rustige nachten.",
- "setup.saved.short": "✅ Bewaard."
+ "setup.saved.short": "✅ Bewaard.",
+ "face.me": "Jouw profielfoto",
+ "face.me.help": "PNG, JPG, SVG, ICO of WEBP, tot 1 MB. Komt naast je berichten en reacties.",
+ "face.lib": "Foto's van de agents",
+ "face.lib.help": "Steek foto's (png, jpg, svg, webp, gif) in {dir}. Elke agent pakt er eentje als hij voor het eerst bij een team komt, en kan die wisselen met aigile avatar.",
+ "face.free": "vrij",
+ "face.empty": "Nog geen foto's.",
+ "setup.f.avatarsDir": "Fotomap",
+ "setup.f.avatarsDir.help": "Map met foto's waar de agents uit kiezen als ze bij een team komen (png, jpg, svg, webp, gif). Leeg: de map avatars in de datamap van het bord"
 }

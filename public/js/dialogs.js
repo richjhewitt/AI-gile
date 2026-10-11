@@ -170,6 +170,8 @@ function renderSetup() {
     <div class="f lead-prefs" id="leadPrefs">${leadPrefsHtml()}</div>
     <div class="f"><span>${esc(t('trial.h'))}</span><div><button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
+    <div class="f"><span>${esc(t('face.me'))}</span>${logoEditor('me-pic', s.mePic)}</div>
+    <div class="f"><span>${esc(t('face.lib'))}</span>${libraryHtml(s.library)}</div>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">
       ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}"><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small></label>`).join('')}
       <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
@@ -304,21 +306,22 @@ async function saveCardView(reset) {
 }
 
 /* ---------- picture picker (AIG-175): a project picture or the app logo ---------- */
-// id 'app-logo' edits the app logo (Setup); any other id edits this project's picture (Look dialog).
-const logoUrl = id => id === 'app-logo' ? '/api/app-logo' : '/api/projects/' + slug() + '/logo';
+// id 'app-logo' edits the app logo (Setup), 'me-pic' your profile picture (Setup, AIG-150); any other id this project's picture (Look dialog).
+const logoUrl = id => id === 'app-logo' ? '/api/app-logo' : id === 'me-pic' ? '/api/me-picture' : '/api/projects/' + slug() + '/logo';
 function logoEditor(id, url) {
   return `<div id="${id}"><div class="logo-edit">${url ? `<img class="${id === 'app-logo' ? 'brand-logo' : 'pic'}" src="${esc(url)}" alt="">` : ''}
     <input type="file" id="${id}-file" accept=".png,.jpg,.jpeg,.svg,.ico,.webp" aria-label="${esc(t('logo.pick'))}" onchange="logoUpload('${id}')">
     ${url ? `<button type="button" onclick="logoRemove('${id}')">${esc(t('logo.remove'))}</button>` : ''}</div>
     <div class="logo-edit"><input type="text" id="${id}-path" placeholder="${esc(t('logo.path.ph'))}" aria-label="${esc(t('logo.path'))}"><button type="button" onclick="logoUsePath('${id}')">${esc(t('logo.use'))}</button></div>
-    <small class="muted">${esc(t('logo.help'))}</small><div class="err" id="${id}-err"></div></div>`;
+    <small class="muted">${esc(t(id === 'me-pic' ? 'face.me.help' : 'logo.help'))}</small><div class="err" id="${id}-err"></div></div>`;
 }
 async function logoSend(id, method, body) {
   try {
     const r = await api(method, logoUrl(id), body);
     if (id === 'app-logo') { state.setup = r; applyAppLogo(r.logo); }
+    else if (id === 'me-pic') { state.setup = r; state.ownerPic = r.mePic; }
     else state.project = { ...state.project, logo: r.logo };
-    $(id).outerHTML = logoEditor(id, r.logo);
+    $(id).outerHTML = logoEditor(id, id === 'me-pic' ? r.mePic : r.logo);
   } catch (e) { setErr(id + '-err', e); }
 }
 function logoUpload(id) {
@@ -330,6 +333,12 @@ function logoUpload(id) {
 }
 const logoUsePath = id => $(id + '-path').value.trim() && logoSend(id, 'POST', { path: $(id + '-path').value.trim() });
 const logoRemove = id => logoSend(id, 'DELETE');
+// The agents' picture library (AIG-150): the folder, and each picture with who wears it.
+function libraryHtml(l) {
+  l = l || { dir: '', pictures: [] };
+  return `<div class="face-lib">${l.pictures.map(x => `<figure title="${esc(x.file)}"><img class="face" src="${esc(x.url)}" alt=""><figcaption class="muted">${esc(x.usedBy.map(u => u.name).join(', ') || t('face.free'))}</figcaption></figure>`).join('') || `<span class="muted">${esc(t('face.empty'))}</span>`}</div>
+    <small class="muted">${esc(t('face.lib.help', { dir: l.dir }))}</small>`;
+}
 
 /* ---------- project look (AIG-86) ---------- */
 // ---- look: the colour and emoji that mark this project in the inbox, tabs and home page ----
