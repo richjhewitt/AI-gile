@@ -63,7 +63,9 @@ const Dms = (() => {
   }
 
   // acts: answer buttons under the message (AIG-176), only on the latest one still waiting on you.
-  const msgHtml = (m, acts = '') => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${acts}</div>`;
+  const msgHtml = (m, acts = '') => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${acts}${pickHtml(m)}</div>`;
+  // The 🌙 watchman asking which team a message is for (AIG-221): one button per team.
+  const pickHtml = m => m.pick && m === thread.messages.at(-1) ? `<div class="actions">${m.pick.map((o, i) => `<button data-pick="${i}">${esc(o.label)}</button>`).join('')}</div>` : '';
   // One fold per card (AIG-157): a clear header (kind, id, title); only one fold open at a time, the rest show
   // one line with the latest message, so each card can be dealt with on its own.
   function foldsHtml() {
@@ -110,7 +112,6 @@ const Dms = (() => {
     open = slug; listOpen = true;
     const c = chats.find(x => x.slug === slug) || { slug, name: slug };
     const panel = el('dmPanel'); panel.dataset.sig = '';
-    panel.classList.toggle('dm-readonly', !!c.watchman);   // the 🌙 watchman's chat is read-only (AIG-211)
     panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${avatar(c)}<div><b>${esc(c.lead || t('dms.lead'))}</b><div class="muted">${esc(c.name)}</div></div><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-list" id="dmList"></div>
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
@@ -137,7 +138,8 @@ const Dms = (() => {
     busy = true; el('dmErr').textContent = '';
     try {
       const attachments = fixed ? [] : await Attach.upload(key, thread.slug);
-      if (q) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
+      if (thread.watchman) await api('POST', '/api/chats/_watchman', { text });   // the watchman passes it on (AIG-221)
+      else if (q) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
       else await api('POST', `/api/projects/${thread.slug}/cards`, { title: '💬 ' + text.split('\n')[0].slice(0, 80), description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
       await loadThread(true); loadRail();
@@ -149,6 +151,8 @@ const Dms = (() => {
     const go = e.target.closest('#dmRail [data-go]');
     if (go) { location.hash = go.dataset.go; setTimeout(loadRail, 50); return; }
     if (e.target.closest('#dmRail [data-dms]')) { if (listOpen || open) close(); else { listOpen = true; paintList(); loadRail(); } return; }
+    const pk = e.target.closest('#dmPanel [data-pick]');
+    if (pk) { const m = thread && thread.messages.at(-1); if (m && m.pick) send(m.pick[pk.dataset.pick].text); return; }
     const f = e.target.closest('#dmPanel [data-fold]');
     if (f) { openFold(f.dataset.fold); return; }
     const row = e.target.closest('#dmPanel [data-dm]');
