@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 // aigile: CLI for AI dev teams to use the AI-gile board. Zero dependencies, Node 18+.
 // Usage: node "<path>/aigile.js" help
-const BASE = (process.env.AIGILE_URL || 'http://localhost:4321').replace(/\/$/, '');
+// The board's own port (AIG-252): it writes it to data/board.port when it starts; 4321 if there's none.
+const boardPort = () => { try { return require('fs').readFileSync(require('path').join(process.env.AIGILE_DATA || require('path').join(__dirname, 'data'), 'board.port'), 'utf8').trim(); } catch { return '4321'; } };
+const BASE = (process.env.AIGILE_URL || `http://localhost:${boardPort()}`).replace(/\/$/, '');
 const STATUSES = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'];
 const PRIO = { urgent: 0, high: 1, normal: 2, low: 3 };
 const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 'stop-hook', 'peek', 'create']);
@@ -33,7 +35,7 @@ const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.pars
 const WHERE = process.env.AIGILE_BACKGROUND ? 'background' : process.env.VSCODE_PID || process.env.TERM_PROGRAM === 'vscode' ? 'vscode' : 'terminal';
 
 const HELP = `aigile: the AI-gile board CLI.  Project = slug, name or key (case-insensitive).
-Set AIGILE_URL to change the server (default http://localhost:4321). Set AIGILE_AS=NAME to skip --as.
+Set AIGILE_URL to change the server (default: the port the board last started on, else 4321). Set AIGILE_AS=NAME to skip --as.
 Text args can be "-" to read from stdin (handy for multi-line).
 
 START OF SESSION
