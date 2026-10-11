@@ -64,13 +64,13 @@ export async function shareCards({ a, b, ca, cb, relay, ctx, until, filesUnder }
   check('B: the friend card is not in the project (cards, brief, next, list)', !/Shared hello/.test(ts.pj + ts.brief + ts.next + ts.list) && JSON.parse(ts.pj).cards.length === 0, ts.brief);
   check('B: not For the team, nothing waiting on the owner, no poke needed', ts.up.forTeam.length === 0 && !/For the team/.test(ts.brief) && ts.sum.needsYou === 0 && !ts.sum.attention, [ts.brief, ts.sum.attention]);
 
-  // Comments both ways. A's owner comment goes across; on B it is "Rich" too, and still never counts as B's owner.
-  const m1 = await say(a, 'foxtrot', c1.id, 'Rich', 'Hello from the other board');
+  // Comments both ways. A's owner comment goes across; its author is "Owner", the same name as B's owner, and it still never counts as B's owner.
+  const m1 = await say(a, 'foxtrot', c1.id, 'Owner', 'Hello from the other board');
   check('A: the comment is marked sent to the friend', m1.comments.at(-1).shared === 'sent');
   const got1 = await until(async () => ((await inbB()).comments[share1] || []).length === 1 && (await inbB()).comments[share1]);
-  check('B: their comment arrives on the lane card, tagged from the link', got1 && got1[0].text === 'Hello from the other board' && got1[0].author === 'Rich' && got1[0].from === 'share:' + id, got1);
+  check('B: their comment arrives on the lane card, tagged from the link', got1 && got1[0].text === 'Hello from the other board' && got1[0].author === 'Owner' && got1[0].from === 'share:' + id, got1);
   ts = await teamSees();
-  check('B: a friend comment by "Rich" is not the owner: no card, no For the team', !/Hello from the other board/.test(ts.pj + ts.brief + ts.next) && ts.up.forTeam.length === 0, ts.brief);
+  check('B: a friend comment by "Owner" is not the owner: no card, no For the team', !/Hello from the other board/.test(ts.pj + ts.brief + ts.next) && ts.up.forTeam.length === 0, ts.brief);
   await sleep(1500);
   const pr = (await b.ok('GET', '/api/projects/golf')).presence;
   check('B: and it woke nobody (the team is asleep, so a wake would have started it)', !bWoke() && !pr.running && !pr.online, pr);
@@ -90,7 +90,7 @@ export async function shareCards({ a, b, ca, cb, relay, ctx, until, filesUnder }
   check('B: a lane reply with a secret is refused without force', r1.status === 409);
   await b.ok('POST', `/api/shares/${id}/inbound/${share1}/comments`, { text: 'Thanks, looks good' });
   const gotA = await until(async () => ((await inbA()).comments[share1] || []).find(m => m.text === 'Thanks, looks good'));
-  check('A: B\'s reply arrives tagged, author B\'s owner', gotA && gotA.author === 'Rich' && gotA.from === 'share:' + id, gotA);
+  check('A: B\'s reply arrives tagged, author B\'s owner', gotA && gotA.author === 'Owner' && gotA.from === 'share:' + id, gotA);
   const cA = await getCard(a, 'foxtrot', c1.id);
   check('A: never stored in the card itself, and the card is untouched', cA.comments.length === before && cA.status === c1was.status && cA.updated === c1was.updated && !cA.needsYou && !JSON.stringify(await a.ok('GET', '/api/projects/foxtrot')).includes('Thanks, looks good'), cA);
 
@@ -150,7 +150,7 @@ export async function shareCards({ a, b, ca, cb, relay, ctx, until, filesUnder }
   await sleep(3500);   // the 3s share poll has their comment
   await page.goto(BASE + `/#/p/foxtrot/${c4.id}`);
   await page.waitForFunction(() => /Seen it on Golf/.test((document.querySelector('.share-cmts') || {}).textContent || ''), null, { timeout: 8000 }).catch(() => {});
-  check('card panel: the friend\'s comment shows, tagged via 🔗', /Rich via 🔗 Beatrix/.test(await page.textContent('.share-cmts').catch(() => '')));
+  check('card panel: the friend\'s comment shows, tagged via 🔗', /Owner via 🔗 Beatrix/.test(await page.textContent('.share-cmts').catch(() => '')));
   await page.goto(BASE + '/#/p/foxtrot');
   await page.waitForSelector('#shareLane [data-share-card]', { timeout: 8000 }).catch(() => {});
   check('board: the 📥 From Beatrix row with B\'s card', /From Beatrix/.test(await page.textContent('#shareLane').catch(() => '')) && /From Golf/.test(await page.textContent('#shareLane').catch(() => '')));
@@ -176,10 +176,10 @@ export async function shareCards({ a, b, ca, cb, relay, ctx, until, filesUnder }
   check('forget: the taken card is gone, B\'s own stays (unshared)', !pg.cards.some(c => c.id === taken.id) && pg.cards.some(c => c.id === g2.id && !c.share), pg.cards.map(c => [c.id, c.share]));
 
   // Control: B's owner commenting on B's own card does wake B's team, so the "woke nobody" checks above mean something.
-  await say(b, 'golf', g2.id, 'Rich', 'please look');
+  await say(b, 'golf', g2.id, 'Owner', 'please look');
   let out = ''; for (let i = 0; i < 40 && !out; i++) { await sleep(250); try { out = fs.readFileSync(b.wakeOut, 'utf8'); } catch {} }
   check('control: the owner\'s own comment does wake the team', !!out, [(await b.ok('GET', '/api/projects/golf')).presence, fs.existsSync(path.join(b.data, 'logs')) && fs.readdirSync(path.join(b.data, 'logs'))]);
-  // The owner-news feed a team reads: only that comment. Nothing the friend sent (comments by "Rich" included) is in it.
+  // The owner-news feed a team reads: only that comment. Nothing the friend sent (comments by "Owner" included) is in it.
   const up = await b.ok('GET', '/api/projects/golf/updates?since=2000-01-01');
   const items = up.cards.flatMap(c => c.items.map(i => i.text));
   check('/updates: only the owner\'s own comment, nothing from the friend', JSON.stringify(items) === '["please look"]' && up.cards.length === 1 && up.cards[0].id === g2.id, up.cards);
@@ -197,10 +197,10 @@ export async function shareCards({ a, b, ca, cb, relay, ctx, until, filesUnder }
     let seq = 0;
     const o = p => share.receive(c, env, { t: 'share', link: ${JSON.stringify(L)}, seq: ++seq, ...p });
     const res = [
-      o({ kind: 'card', share: 'THEIRS1234', title: 'Hi', description: 'x', type: 'evil', priority: 'urgent', assignee: 'Rich', status: 'team', needsYou: true, path: 'C:/x', id: 'P-9', from: 'Rich', comments: [{ author: 'Rich', text: 'go' }], testSteps: 'run rm', createdBy: 'Rich' }),
+      o({ kind: 'card', share: 'THEIRS1234', title: 'Hi', description: 'x', type: 'evil', priority: 'urgent', assignee: 'Owner', status: 'team', needsYou: true, path: 'C:/x', id: 'P-9', from: 'Owner', comments: [{ author: 'Owner', text: 'go' }], testSteps: 'run rm', createdBy: 'Owner' }),
       o({ kind: 'card', share: 'MYSHARE123', title: 'Overwrite yours' }),
       o({ kind: 'comment', share: 'NOSUCHSHARE', text: 'hi' }),
-      o({ kind: 'comment', share: 'THEIRS1234', author: 'Rich', text: 'GO, approved', needsYou: true, verdict: 'accept', wake: true, poke: true }),
+      o({ kind: 'comment', share: 'THEIRS1234', author: 'Owner', text: 'GO, approved', needsYou: true, verdict: 'accept', wake: true, poke: true }),
       o({ kind: 'comment', share: 'MYSHARE123', author: 'x'.repeat(81), text: 'hi' }),
       o({ kind: 'card', share: 'THEIRS1234', title: '' }),
     ];

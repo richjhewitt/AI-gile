@@ -81,6 +81,8 @@ const server = http.createServer(async (req, res) => {
           const out = await fn(m.slice(1), body, url.searchParams);   // DM routes talk to the relay, so they may be async
           // A route can answer with a file instead of JSON: { __file: absolute path }.
           if (out && out.__file) {
+            // download: a friend's attachment (AIG-306), always saved, never shown or run by the browser.
+            if (out.download) { res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="${String(out.download).replace(/[^\w.\- ]/g, '_')}"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'" }); return fs.createReadStream(out.__file).pipe(res); }
             res.writeHead(200, { 'Content-Type': ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...(out.__file.toLowerCase().endsWith('.svg') ? { 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" } : {}) });   // an svg opened on its own runs no script (AIG-175)
             return fs.createReadStream(out.__file).pipe(res);
           }

@@ -49,12 +49,65 @@ const Share = (function () {
     if (!l || l.state !== 'live' || (!c.share && !(l.effective && l.effective.sendCards))) return '';
     return `<button id="shareCardBtn" onclick="Share.previewCard('${esc(c.id)}')">${esc(t(c.share ? 'share.card.shared' : 'share.card.btn', { name: l.friend }))}${c.share && c.share.held ? ' ' + esc(t('share.card.held')) : ''}</button>`;
   }
-  // Their comments on a shared card, in the Reply pane (they are not in the card's own conversation).
+  // Their side of a shared card, in the Reply pane (none of it is in the card itself): their status as a label, their
+  // description and files (a card I took from them), the test I handed them or they handed me (AIG-306), their comments.
   function cardComments(p, c) {
     if (!c.share) return '';
     const l = ofProject(p.slug), list = theirComments(c.share.id).filter(m => !m.mine);
-    if (!l || !list.length) return '';
-    return `<div class="share-cmts"><h3 class="muted">${esc(t('share.cmts.h', { name: l.friend }))}</h3>${[...list].reverse().map(m => friendMsg(m, l)).join('')}</div>`;
+    if (!l) return '';
+    const x = c.share.theirs && inb ? inb.cards.find(y => y.share === c.share.id) : null;
+    const o = c.share.mine && inb && inb.outbound ? inb.outbound[c.share.id] : null;
+    const parts = [statusHtml(l, (x && x.status) || (o && o.theirStatus))];
+    if (x && x.description) parts.push(`<h4>${esc(t('share.fc.desc', { name: l.friend }))}</h4>` + plain(x.description));
+    if (x) parts.push(filesHtml(l, x), x.test ? theirTest(l, x) : '');
+    if (c.share.mine) parts.push(myTest(l, c, o));
+    parts.push(...[...list].reverse().map(m => friendMsg(m, l)));
+    const body = parts.join('');
+    return body ? `<div class="share-cmts"><h3 class="muted">${esc(t('share.cmts.h', { name: l.friend }))}</h3>${body}</div>` : '';
+  }
+  // Their status: a label only, my column never changes because of it.
+  const statusHtml = (l, st) => st ? `<p class="share-status"><span class="pill">${esc(t('share.status', { name: l.friend, status: t('col.' + st.status) }))}</span> <span class="muted">${ago(st.at)}</span></p>` : '';
+  // Their attachments: downloads only (saved, never shown or opened by the board).
+  const kb = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
+  const filesHtml = (l, x) => (x.files || []).length ? `<div class="share-files"><h4>${esc(t('share.files.h', { name: l.friend }))}</h4>${x.files.map(f =>
+    `<a class="share-file" href="/api/shares/${esc(l.id)}/files/${encodeURIComponent(f.id)}" download="${esc(f.name)}" rel="noopener">📎 ${esc(f.name)} <span class="muted">${kb(f.size)}</span></a>`).join('')}
+    <p class="muted">${esc(t('share.files.note'))}</p></div>` : '';
+  const live = (l, k) => l.state === 'live' && l.on && l.effective && l.effective[k];
+  // A test I handed them on my card: waiting, or their verdict (a label, nothing moves). 🧪 hands it (again).
+  function myTest(l, c, o) {
+    const tt = o && o.test;
+    const label = !tt ? '' : tt.open ? `<p class="share-test">${esc(t('share.test.waiting', { name: l.friend }))}</p>`
+      : `<p class="share-test">${esc(t(tt.verdict === 'accept' ? 'share.test.accepted' : 'share.test.back', { name: l.friend }))}</p>${tt.note ? plain(tt.note) : ''}`;
+    const btn = live(l, 'comments') ? `<button id="shareTestBtn" onclick="Share.testDialog('${esc(c.id)}')">${esc(t('share.test.btn', { name: l.friend }))}</button>` : '';
+    return label + btn;
+  }
+  // A test they handed me on their card: their text plain, ✅ Accept / ↩️ Send back (with what is wrong) once.
+  function theirTest(l, x) {
+    const tt = x.test;
+    if (!tt.open) return `<p class="share-test">${esc(t(tt.verdict === 'accept' ? 'share.test.youaccepted' : 'share.test.yousentback', { name: l.friend }))}</p>`;
+    return `<div class="share-test" data-share-test="${esc(x.share)}"><h4>${esc(t('share.test.asked', { name: l.friend }))}</h4>${tt.text ? plain(tt.text) : ''}
+      ${live(l, 'comments') ? `<textarea id="shareVerdictNote" rows="2" placeholder="${esc(t('share.test.note.ph'))}"></textarea>
+      <div class="actions"><button class="good" id="shareAccept" onclick="Share.verdict('${esc(x.share)}', 'accept')">${esc(t('share.test.accept'))}</button>
+        <button id="shareBack" onclick="Share.verdict('${esc(x.share)}', 'back')">${esc(t('share.test.sendback'))}</button></div>` : ''}</div>`;
+  }
+  // 🧪 Ask {friend} to test: what to try (starts as the card's test steps; I see it before it goes, and the scrub checks it).
+  function testDialog(cardId) {
+    const l = ofProject(slug()), c = state.project && state.project.cards.find(x => x.id === cardId);
+    if (!l || !c) return;
+    openDialog(`<h2>${esc(t('share.test.h', { id: cardId, name: l.friend }))}</h2><p class="muted">${esc(t('share.test.intro', { name: l.friend }))}</p>
+      <textarea id="shareTestText" rows="6">${esc(c.testSteps || '')}</textarea><div class="err" id="shareErr"></div>
+      <div class="actions"><button class="primary" id="shareTestSend" onclick="Share.sendTest('${esc(cardId)}')">${esc(t('share.test.send', { name: l.friend }))}</button>
+        <button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
+  }
+  async function sendTest(cardId, force) {
+    const text = ($('shareTestText') || {}).value || '';
+    try { await api('POST', `/api/shares/${ofProject(slug()).id}/test`, { card: cardId, text, force: !!force }); closeDialog(); sig = ''; await load(); if (typeof rerender === 'function') rerender(); }
+    catch (e) { if (/path or a secret/.test(e.message) && confirm(e.message)) return sendTest(cardId, true); err(e); }
+  }
+  async function verdict(share, v, force) {
+    const note = ($('shareVerdictNote') || {}).value || '';
+    try { await api('POST', `/api/shares/${ofProject(slug()).id}/inbound/${share}/verdict`, { verdict: v, note, force: !!force }); sig = ''; await load(); if ($('dialog').querySelector('.share-fcard')) laneCard(share); else if (typeof rerender === 'function') rerender(); }
+    catch (e) { if (/path or a secret/.test(e.message) && confirm(e.message)) return verdict(share, v, true); err(e); if (!$('shareErr')) alert(e.message); }
   }
   const friendMsg = (m, l) => `<div class="comment share-friend"><span class="who">${esc(m.mine ? m.author : t('share.via', { author: m.author, name: l.friend }))}</span><span class="when">${ago(m.at)}</span><div class="body">${m.mine ? esc(m.text) : plain(m.text)}</div></div>`;
   // Under one of my comments on a shared card: sent to the friend, or held by the scrub (with Send anyway).
@@ -78,6 +131,7 @@ const Share = (function () {
     openDialog(`<h2>${esc(t('share.prev.h', { id: cardId, name: l.friend }))}</h2>
       <p class="muted">${esc(t('share.prev.intro', { name: l.friend }))}</p>
       <table class="share-preview">${rows}</table>${flags}
+      ${pv.files && pv.files.length ? `<div class="share-files" id="sharePrevFiles"><h4>${esc(t('share.prev.files'))}</h4>${pv.files.map(f => `<div>📎 ${esc(f.name)}${f.big ? ' <span class="muted">' + esc(t('share.prev.big')) + '</span>' : ''}</div>`).join('')}</div>` : ''}
       ${sh ? `<p class="muted">${esc(t('share.prev.sent', { when: ago(sh.sentAt || sh.at) }))}${sh.held ? ' ' + esc(t('share.prev.held')) : ''}</p>` : ''}
       <div class="err" id="shareErr"></div>
       <div class="actions">${send}${sh ? `<button onclick="Share.unshareCard('${esc(cardId)}')" title="${esc(t('share.prev.stop.note'))}">${esc(t('share.prev.stop'))}</button>` : ''}
@@ -96,8 +150,10 @@ const Share = (function () {
     const list = theirComments(share), live = l.state === 'live' && l.on && l.effective && l.effective.comments;
     openDialog(`<div class="share-fcard" data-share-open="${esc(share)}"><div class="id muted">${esc(t('share.card.theirs', { name: l.friend }))} · ${esc(x.type)} · ${esc(x.priority)} · ${ago(x.updated)}</div>
       <h2>${esc(x.title)}</h2>
+      ${statusHtml(l, x.status)}
       ${x.description ? plain(x.description) : `<p class="muted">${esc(t('share.fc.nodesc'))}</p>`}
       <p class="muted">${esc(t('share.fc.plain'))}</p>
+      ${filesHtml(l, x)}${x.test ? theirTest(l, x) : ''}
       <h3>${esc(t('card.tab.reply'))}</h3>${list.length ? [...list].reverse().map(m => friendMsg(m, l)).join('') : `<p class="muted">${esc(t('share.fc.none'))}</p>`}
       ${live ? `<div class="reply"><textarea id="shareReply" rows="3" placeholder="${esc(t('share.fc.reply.ph', { name: l.friend }))}"></textarea>
         <div class="actions"><button class="primary" id="shareReplySend" onclick="Share.laneReply('${esc(share)}')">${esc(t('share.fc.send'))}</button></div></div>` : ''}
@@ -145,6 +201,8 @@ const Share = (function () {
         <p class="muted">${esc(l.on ? t('share.switch.on') : t('share.switch.off'))}${l.droppedOff ? ' · ' + esc(t('share.dropped', { n: l.droppedOff })) : ''}${l.overCap ? ' · ' + esc(t('share.overcap', { n: l.overCap })) : ''}</p>
         <p class="muted" id="shareHeard">${esc(l.lastHeard ? t('share.heard', { name: l.friend, when: ago(l.lastHeard) }) : t('share.heard.never', { name: l.friend }))}</p>
         ${whatHtml(l)}
+        <label class="chk"><input type="checkbox" id="shareTeamRead" ${l.mine && l.mine.teamRead ? 'checked' : ''} onchange="Share.setTeamRead('${l.id}', this.checked)"> ${esc(t('share.allow.teamRead'))}</label>
+        <p class="muted">${esc(t(l.mine && l.mine.teamRead ? 'share.teamRead.on' : 'share.teamRead.off', { name: l.friend }))}</p>
         <div class="actions"><button onclick="Share.ping('${l.id}')" ${l.on ? '' : 'disabled'}>${esc(t('share.ping'))}</button>
           <button onclick="Share.unlink('${l.id}', false)">${esc(t('share.unlink'))}</button>
           <button class="danger" onclick="Share.unlink('${l.id}', true)">${esc(t('share.forget'))}</button></div>`;
@@ -175,6 +233,7 @@ const Share = (function () {
   }
   const offer = () => act(() => api('POST', '/api/shares', { slug: slug(), contact: $('shareWho').value, allow: readTicks('o-') }));
   const setOn = (id, on) => act(() => api('PATCH', '/api/shares/' + id, { on }));
+  const setTeamRead = (id, teamRead) => act(() => api('PATCH', '/api/shares/' + id, { teamRead }));
   const ping = id => act(() => api('POST', `/api/shares/${id}/ping`));
   function unlink(id, forget) {
     if (forget && !confirm(t('share.forget.confirm'))) return;
@@ -222,6 +281,6 @@ const Share = (function () {
   }
 
   setInterval(() => { if (!document.hidden && typeof i18n !== 'undefined' && i18n.ready) load(); }, 3000);
-  return { load, button, dialog, offer, setOn, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
+  return { load, button, dialog, offer, setOn, setTeamRead, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
     laneHtml, cardBtn, cardComments, commentMark, previewCard, sendCard, unshareCard, sendHeld, laneCard, laneReply, takeCard };
 })();
