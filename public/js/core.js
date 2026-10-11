@@ -157,6 +157,9 @@ function busy() {
   return [...document.querySelectorAll('#modal textarea, #modal input[type=text]')].some(el => el.value !== el.defaultValue);
 }
 
+// The render signature (AIG-310): presence.waitingMs ticks on every request while a team sits in 'aigile wait', so it is
+// left out; with it in, the board and the open card were redrawn every second and the panel flickered.
+const renderSig = x => JSON.stringify(x, (k, v) => k === 'waitingMs' ? undefined : v);
 async function refresh(force) {
   if (!i18n.ready) return;   // the language file comes first (AIG-124)
   if (state.route && state.route.view === 'project') state.lastProject = state.route.slug; else if (state.route && state.route.view !== 'inbox') state.lastProject = null;
@@ -169,7 +172,7 @@ async function refresh(force) {
     if (state.route.view === 'home') {
       const q = state.showArchived ? '?all=1' : '';
       [state.projects, state.inbox, state.usage] = await Promise.all([api('GET', '/api/projects' + q), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false }))]);
-      sig = JSON.stringify([state.route, state.projects, state.inbox, state.usage]);
+      sig = renderSig([state.route, state.projects, state.inbox, state.usage]);
     } else if (state.route.view === 'setup') {
       state.setup = await api('GET', '/api/setup');
       sig = JSON.stringify([state.route, state.setup]);
@@ -190,7 +193,7 @@ async function refresh(force) {
     } else {
       state.project = await api('GET', '/api/projects/' + state.route.slug);
       await loadDocs(state.route.slug);
-      sig = JSON.stringify([state.route, state.project]);
+      sig = renderSig([state.route, state.project]);
     }
   } catch (e) {
     $('live').className = 'live off';
@@ -220,6 +223,13 @@ function renderBoardOnly() {
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
 }
 
+// The open card is only rebuilt when its own HTML changed (AIG-310), so a change elsewhere on the board doesn't
+// reload its pictures and jump its layout. Anything else that wrote into #modal since is always replaced.
+function paintModal(html) {
+  const m = $('modal');
+  if (m._html === html && m.firstChild === m._node) return;
+  m.innerHTML = html; m._html = html; m._node = m.firstChild;
+}
 function render() {
   queueMicrotask(paintFilterBar);
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
@@ -237,7 +247,7 @@ function render() {
   if (state.route.pop) {
     const c = p.cards.find(x => x.id === state.route.card);
     $('app').innerHTML = '';
-    $('modal').innerHTML = c ? renderCard(p, c) : `<p class="muted" style="padding:16px">${esc(t('card.gone'))}</p>`;
+    paintModal(c ? renderCard(p, c) : `<p class="muted" style="padding:16px">${esc(t('card.gone'))}</p>`);
     const pp = document.querySelector('#modal .panel'); if (pp) pp.scrollTop = keepScroll;
     return;
   }
@@ -246,7 +256,7 @@ function render() {
   $('app').innerHTML = renderBoard(p);
   const card = state.route.card && p.cards.find(c => c.id === state.route.card);
   if (!card) state.editing = false;
-  $('modal').innerHTML = card ? renderCard(p, card) : '';
+  paintModal(card ? renderCard(p, card) : '');
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
   const pn = document.querySelector('#modal .panel'); if (pn) pn.scrollTop = keepScroll;
 }
