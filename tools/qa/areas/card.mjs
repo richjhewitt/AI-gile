@@ -330,4 +330,18 @@ def('editor', '📝 file paths in card text open in your editor (AIG-156)', asyn
   process.env.QA_EDITOR_DIR = dir;
   return { AIGILE_LOCAL: path.join(dir, 'local.json') };
 })());
-
+
+def('testorder', 'Test tab: newest note right under the reply box; a replaced tester check is faded (AIG-186)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Saved views');
+  s.cli(['test', 'alpha', c.id, 'save a view', '--as', 'Lead']);
+  s.cli(['comment', 'alpha', c.id, '🤖 Failed: could not find Views', '--as', 'Tester']);
+  s.cli(['comment', 'alpha', c.id, 'Ignore that, it works', '--as', 'Lead']);
+  s.cli(['comment', 'alpha', c.id, '🤖 Passed: saved and reopened My bugs', '--as', 'Tester']);
+  const page = await openPage(ctx, '#/p/alpha/' + c.id);
+  await page.waitForSelector('[data-pane="test"] .comment');
+  const first = await page.textContent('[data-pane="test"] .comment');
+  check('the newest note comes first', /Passed: saved/.test(first), first);
+  check('the replaced check is faded and labelled', /Failed: could not/.test(await page.textContent('[data-pane="test"] .stale')) && (await page.locator('[data-pane="test"] .stale').count()) === 1);
+  noErrors(page);
+}, true);

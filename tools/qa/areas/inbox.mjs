@@ -165,4 +165,22 @@ def('usage', '#/usage renders with and without limits.log', async (s, ctx) => {
   await page2.waitForSelector('.proj');
   noErrors(page2);
 }, true);
-
+
+def('inboxonly', 'top bar chips: "to do" shows only your to-dos, "to test" only tests; Show everything (AIG-187)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Try it'), b = await mkCard(s, 'alpha', 'Add the key');
+  s.cli(['test', 'alpha', a.id, 'click it', '--as', 'Lead']);
+  s.cli(['task', 'alpha', b.id, 'paste the key', '--as', 'Lead']);
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('.ib-btn .ib-badge[data-only="k"]');
+  await page.click('.ib-btn .ib-badge[data-only="k"]');
+  await page.waitForSelector('#ibK:not([hidden])');
+  check('"to do" shows only your to-dos', await page.locator('#ibT').isHidden() && /to-dos/.test(await page.textContent('#ibOnly')));
+  await page.click('[data-onlyclear]');
+  await page.waitForSelector('#ibT:not([hidden])');
+  check('Show everything brings the rest back', await page.locator('#ibK').isVisible() && await page.locator('#ibOnly').isHidden());
+  await page.click('.ib-btn .ib-badge[data-only="t"]');
+  await page.waitForSelector('#ibK[hidden]', { state: 'attached' });
+  check('"to test" shows only tests', await page.locator('#ibT').isVisible());
+  noErrors(page);
+}, true);

@@ -582,5 +582,10 @@
  "usage.check.busy": "Bezig… (een paar seconden)",
  "usage.check.title": "Start Claude verborgen, stuurt één klein bericht op het goedkoopste model, leest je verbruik en sluit weer",
  "usage.check.auto": "Zelf checken als de meting ouder is dan een uur",
- "usage.check.auto.title": "Alleen als geen terminalsessie het laatste uur een meting stuurde; kost elke keer één klein bericht"
+ "usage.check.auto.title": "Alleen als geen terminalsessie het laatste uur een meting stuurde; kost elke keer één klein bericht",
+ "card.stale": "Vervangen door een nieuwere check",
+ "inbox.only.q": "Alleen vragen",
+ "inbox.only.k": "Alleen je taken",
+ "inbox.only.t": "Alleen tests",
+ "inbox.only.all": "Alles tonen"
 }

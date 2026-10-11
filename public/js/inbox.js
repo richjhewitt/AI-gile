@@ -102,12 +102,14 @@
       alertBtn = `<button class="ib-alerts ${on ? 'on' : ''}" id="ibAlerts" title="${esc(blocked ? t('inbox.alerts.blocked.title') : on ? t('inbox.alerts.off.title') : t('inbox.alerts.on.title'))}" ${blocked ? 'disabled' : ''}>${esc(blocked ? t('inbox.alerts.blocked') : on ? t('inbox.alerts.on') : t('inbox.alerts.turnon'))}</button>`;
     }
     const html = `<a class="ib-btn ${onInboxPage() ? 'on' : ''}" href="#/inbox" aria-label="${esc(t('inbox.btn.aria', { label }))}" title="${esc(label)}">${esc(t('inbox.btn'))}
-        ${q ? `<span class="ib-badge q">${esc(t(q === 1 ? 'inbox.badge.q.one' : 'inbox.badge.q.many', { n: q }))}</span>` : ''}
-        ${k ? `<span class="ib-badge k">${esc(t('inbox.badge.k', { n: k }))}</span>` : ''}
-        ${te ? `<span class="ib-badge t">${esc(t('inbox.badge.t', { n: te }))}</span>` : ''}</a>${alertBtn}`;
+        ${q ? `<span class="ib-badge q" data-only="q">${esc(t(q === 1 ? 'inbox.badge.q.one' : 'inbox.badge.q.many', { n: q }))}</span>` : ''}
+        ${k ? `<span class="ib-badge k" data-only="k">${esc(t('inbox.badge.k', { n: k }))}</span>` : ''}
+        ${te ? `<span class="ib-badge t" data-only="t">${esc(t('inbox.badge.t', { n: te }))}</span>` : ''}</a>${alertBtn}`;
     const s = slot();
     if (s.dataset.sig !== html) {
       s.dataset.sig = html; s.innerHTML = html;
+      // A chip shows only that kind (AIG-187); the Inbox word itself shows everything.
+      s.querySelector('.ib-btn').onclick = e => { const b = e.target.closest('[data-only]'); only = b ? b.dataset.only : ''; if (el('ib')) paintPage(); };
       const b = el('ibAlerts'); if (b) b.onclick = toggleAlerts;
     }
     // Everything waiting on Rich; the desktop app turns this count into its taskbar badge (AIG-76).
@@ -200,6 +202,7 @@
       <div class="ib-tabs" id="ibTabs" role="tablist"></div>
       <div class="ib-next" id="ibNext"></div>
       <div class="ib-kinds" id="ibKinds"></div>
+      <div class="ib-only" id="ibOnly" hidden></div>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <div id="ibEmpty"></div>
       <section class="ib-sec q" id="ibQ"><h3>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
@@ -302,7 +305,7 @@
     syncList(el('ibQ').querySelector('.list'), qs.filter(c => c.project === chat).sort((a, b) => lastAsk(a).at.localeCompare(lastAsk(b).at)));
   }
 
-  let kindFilter = '';
+  let kindFilter = '', only = '';   // only: q, k or t from a top bar chip (AIG-187)
   function paintPage() {
     if (!el('ib')) skeleton();
     paintTabs();
@@ -317,13 +320,14 @@
     paintChats(qs);
     syncList(el('ibK').querySelector('.list'), ks);
     syncList(el('ibT').querySelector('.list'), ts);
-    el('ibQ').hidden = !qs.length; el('ibK').hidden = !ks.length; el('ibT').hidden = !ts.length;
+    el('ibQ').hidden = !qs.length || (only && only !== 'q'); el('ibK').hidden = !ks.length || (only && only !== 'k'); el('ibT').hidden = !ts.length || (only && only !== 't');
+    el('ibOnly').hidden = !only; el('ibOnly').innerHTML = only ? `${esc(t('inbox.only.' + only))} · <a href="#" data-onlyclear>${esc(t('inbox.only.all'))}</a>` : '';
     // Accept all AI-passed (AIG-163): every test the AI tester passed, in one click.
     const passed = ts.filter(c => c.aiCheck && c.aiCheck.result === 'pass');
     el('ibAiAll').hidden = !passed.length; el('ibAiAll').textContent = t('inbox.aiall', { n: passed.length });
     el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = ts.length;
     el('ibMore').hidden = !hidden; el('ibMore').textContent = t('inbox.more', { n: hidden });
-    if (hidden) el('ibQ').hidden = false;
+    if (hidden && (!only || only === 'q')) el('ibQ').hidden = false;
     el('ibEmpty').innerHTML = items.length || hidden ? '' : `<div class="ib-empty"><div class="big">${esc(t('inbox.empty.title'))}</div><p>${esc(t('inbox.empty.text'))}</p></div>`;
     if (flashKey) {
       const n = [...document.querySelectorAll('.ib-item')].find(x => x.dataset.key === flashKey);
@@ -340,6 +344,7 @@
     }
   }
   function onClick(e) {
+    if (e.target.closest('[data-onlyclear]')) { e.preventDefault(); only = ''; paintPage(); return; }
     if (e.target.closest('#ibAiAll')) { acceptAiPassed(e.target.closest('#ibAiAll')); return; }
     const cb = e.target.closest('button[data-chat]');
     if (cb) { chat = cb.dataset.chat; paintPage(); return; }

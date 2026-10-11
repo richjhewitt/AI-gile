@@ -582,5 +582,10 @@
  "usage.check.busy": "Checking… (a few seconds)",
  "usage.check.title": "Starts Claude hidden, sends one tiny message on the cheapest model, reads your usage, closes it",
  "usage.check.auto": "Check by itself when it is over an hour old",
- "usage.check.auto.title": "Only when no terminal session has sent a reading in the last hour; costs one tiny message each time"
+ "usage.check.auto.title": "Only when no terminal session has sent a reading in the last hour; costs one tiny message each time",
+ "card.stale": "Replaced by a newer check",
+ "inbox.only.q": "Showing only questions",
+ "inbox.only.k": "Showing only your to-dos",
+ "inbox.only.t": "Showing only tests",
+ "inbox.only.all": "Show everything"
 }

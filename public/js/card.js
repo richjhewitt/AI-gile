@@ -103,9 +103,17 @@ function renderCard(p, c) {
     </div>
     ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>${verdict}
       ${c.proof ? proofHtml(c.proof) : ''}
-      ${notes.length ? `<h3>${esc(t('card.fromteam'))}</h3>${notes.map(m => msg(m, false)).join('')}` : ''}
+      ${notes.length ? `<h3>${esc(t('card.fromteam'))}</h3>${notesHtml(notes, msg)}` : ''}
       ${c.testSteps ? `<h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
   </div></div>`;
+}
+// Test tab notes (AIG-186): newest first, so the latest word sits right under the reply box. An AI tester check
+// that a newer one replaced is faded and labelled, so a corrected verdict can't be mistaken for the current one.
+const isCheck = m => /^🤖 /.test(m.text || '');
+function notesHtml(notes, msg) {
+  const lastCheck = notes.filter(isCheck).pop();
+  return [...notes].reverse().map(m => isCheck(m) && m !== lastCheck
+    ? `<div class="stale" title="${esc(t('card.stale'))}">${msg(m, false)}<div class="stale-note">${esc(t('card.stale'))}</div></div>` : msg(m, false)).join('');
 }
 // Switch card tab without re-rendering, so anything typed in another tab is kept.
 function cardTab(k) {
