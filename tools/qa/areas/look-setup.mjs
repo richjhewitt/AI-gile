@@ -353,3 +353,18 @@ def('trial', '🧪 try it as a new user: a fresh empty board with made-up projec
   check('stopping it frees the port', await fetch('http://127.0.0.1:4400/api/meta').then(() => false).catch(() => true));
   noErrors(page);
 }, true);
+
+def('restartpill', '🔄 new server code shows a Restart the board pill; it asks the server to restart (AIG-206)', async (s, ctx) => {
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('#upRestart', { state: 'attached' });
+  check('no pill while the server is up to date', (await page.locator('#upRestart button').count()) === 0);
+  const f = path.join(ROOT, 'lib', 'store.js'), t = new Date();
+  fs.utimesSync(f, t, t);   // server code changed after the server started
+  check('meta says the server is stale', (await s.ok('GET', '/api/meta')).stale === true);
+  await page.waitForSelector('#upRestart button', { timeout: 10000 });
+  page.once('dialog', d => d.accept());
+  await page.click('#upRestart button');
+  await sleep(400);
+  check('clicking it asks for a restart (switched off in tests)', /Restarting/.test(await page.textContent('#upRestart')));
+  noErrors(page);
+}, true, { AIGILE_NO_RESTART: '1' });

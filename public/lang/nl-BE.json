@@ -745,5 +745,8 @@
  "watch.morning": "🌙 Terwijl je weg was",
  "watch.line": "{h} overgedragen · {d} klaar · {w}× wakker gemaakt",
  "watch.restarted": "opnieuw gestart op {ids}",
- "watch.stuck": "vastgelopen: {ids}"
+ "watch.stuck": "vastgelopen: {ids}",
+ "restart.btn": "🔄 Bord herstarten",
+ "restart.title": "Nieuwe functies werken pas na een herstart van het bord. Duurt een paar seconden; wacht als een team bezig is.",
+ "restart.busy": "Bezig met herstarten…"
 }

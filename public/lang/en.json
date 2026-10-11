@@ -745,5 +745,8 @@
  "watch.morning": "🌙 While you were away",
  "watch.line": "{h} handed over · {d} done · woken {w}×",
  "watch.restarted": "restarted on {ids}",
- "watch.stuck": "stuck: {ids}"
+ "watch.stuck": "stuck: {ids}",
+ "restart.btn": "🔄 Restart the board",
+ "restart.title": "New features need the board restarted to work. Takes a few seconds; waits if a team is busy.",
+ "restart.busy": "Restarting…"
 }

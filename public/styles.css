@@ -480,3 +480,6 @@ abbr.devw { text-decoration: underline dotted var(--muted); text-underline-offse
 /* 🌙 Night watchman (AIG-199) */
 .watch-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; margin: 8px 0; }
 .watch-sum li { margin: 4px 0; }
+
+/* 🔄 Restart the board (AIG-206): floats at the top, like the Refresh pill */
+.up-restart { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 40; } .up-restart:empty { display: none; }

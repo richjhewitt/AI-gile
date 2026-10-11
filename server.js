@@ -20,7 +20,11 @@ const STARTED = Date.now();
 const pageFiles = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? pageFiles(path.join(dir, e.name)) : [path.join(dir, e.name)]);
 const build = () => STARTED + '-' + Math.max(...pageFiles(PUBLIC).map(f => fs.statSync(f).mtimeMs));
 
-const routes = makeRoutes(() => ({ dev: DEV, build: build() }));
+// Server code newer than this running server (AIG-206): the page offers 🔄 Restart the board instead of failing on new routes.
+const serverFiles = () => [path.join(__dirname, 'server.js'), ...fs.readdirSync(path.join(__dirname, 'lib')).filter(f => f.endsWith('.js')).map(f => path.join(__dirname, 'lib', f))];
+const stale = () => { try { return Math.max(...serverFiles().map(f => fs.statSync(f).mtimeMs)) > STARTED; } catch { return false; } };
+
+const routes = makeRoutes(() => ({ dev: DEV, build: build(), stale: stale() }));
 
 /* ---------- http plumbing ---------- */
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json' };

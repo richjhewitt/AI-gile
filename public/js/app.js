@@ -54,9 +54,17 @@ async function checkBuild() {
     // A newer version on GitHub (AIG-92): an ⬆ Update pill, until it's applied.
     const u = m.update || {}, upd = u.behind ? `<button class="primary" onclick="applyUpdatePage()" title="${esc((u.subjects || []).join('\n'))}">${esc(t('update.btn'))}</button>` : '';
     if ($('upUpdate').dataset.sig !== upd && !$('upUpdate').dataset.busy) { $('upUpdate').dataset.sig = upd; $('upUpdate').innerHTML = upd; }
+    // New server code that the running board hasn't loaded yet (AIG-206): one click restarts it.
+    const rs = m.stale ? `<button class="primary" onclick="restartBoard(this)" title="${esc(t('restart.title'))}">${esc(t('restart.btn'))}</button>` : '';
+    if ($('upRestart') && $('upRestart').dataset.sig !== rs && !$('upRestart').dataset.busy) { $('upRestart').dataset.sig = rs; $('upRestart').innerHTML = rs; }
     if (m.dev && m.build !== loadedBuild && !$('upRefresh').firstChild)
       $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="${esc(t('update.refresh.title'))}">${esc(t('update.refresh'))}</button>`;
   } catch {}
+}
+async function restartBoard(btn) {
+  const box = $('upRestart'); box.dataset.busy = '1'; btn.disabled = true; btn.textContent = t('restart.busy');
+  try { await api('POST', '/api/restart'); setTimeout(() => location.reload(), 3500); }
+  catch (e) { alert(e.message); box.dataset.busy = ''; btn.disabled = false; btn.textContent = t('restart.btn'); }
 }
 // Unsent text anywhere (a reply, an answer, a dialog) or pending attachments: ask before losing it.
 const okToLeave = what => {
