@@ -208,9 +208,13 @@ def('runtokens', 'a background run logs the tokens its session used (fake sessio
   // (the stand-in agent is gone in a second or two); the sum allows a second either side of the run.
   const sess = path.join(s.usageDir, folder.replace(/[^A-Za-z0-9]/g, '-').toLowerCase());
   fs.mkdirSync(sess, { recursive: true });
-  const msg = (id, ago, u) => JSON.stringify({ type: 'assistant', requestId: 'r' + id, timestamp: new Date(Date.now() - ago).toISOString(), message: { id: 'm' + id, model: 'sonnet', usage: u } });
-  const a = msg(1, 0, { input_tokens: 1000, cache_creation_input_tokens: 500, output_tokens: 400, cache_read_input_tokens: 20000 });
-  fs.writeFileSync(path.join(sess, 's1.jsonl'), [a, a, msg(2, 3600e3, { input_tokens: 99999, output_tokens: 99999 })].join('\n') + '\n');
+  const msg = (id, ago, u, tools) => JSON.stringify({ type: 'assistant', requestId: 'r' + id, timestamp: new Date(Date.now() - ago).toISOString(), message: { id: 'm' + id, model: 'sonnet', usage: u, content: tools } });
+  const a = msg(1, 0, { input_tokens: 1000, cache_creation_input_tokens: 500, output_tokens: 400, cache_read_input_tokens: 20000 }, [{ type: 'tool_use', id: 'tu1', name: 'Read' }, { type: 'tool_use', id: 'tu2', name: 'Read' }, { type: 'tool_use', id: 'tu3', name: 'Grep' }, { type: 'text', text: 'x' }]);
+  const res = JSON.stringify({ type: 'user', timestamp: new Date().toISOString(), message: { content: [{ type: 'tool_result', tool_use_id: 'tu1', content: 'a'.repeat(300) }, { type: 'tool_result', tool_use_id: 'tu2', content: [{ type: 'text', text: 'b'.repeat(200) }] }, { type: 'tool_result', tool_use_id: 'tu3', content: 'c'.repeat(5000) }] } });
+  fs.writeFileSync(path.join(sess, 's1.jsonl'), [a, a, res, msg(2, 3600e3, { input_tokens: 99999, output_tokens: 99999 })].join('\n') + '\n');
+  const work = await mkCard(s, 'tokk', 'Worked in the run');
+  await mkCard(s, 'tokk', 'Untouched card', { status: 'done' });
+  await say(s, 'tokk', work.id, 'Smizzy', 'on it');
   const wake = await s.ok('POST', '/api/projects/tokk/wake');
   check('wake starts a run', wake.running === true, wake);
   await s.ok('POST', '/api/projects/nada/wake');
@@ -225,6 +229,9 @@ def('runtokens', 'a background run logs the tokens its session used (fake sessio
   check('no session found, no tokens line', /=== exited/.test(nl) && !/tokens/.test(nl), nl);
   const runs = await s.ok('GET', '/api/usage/runs');
   check('runs api lists the run', runs.length === 1 && runs[0].slug === 'tokk' && runs[0].in === 1500 && runs[0].out === 400 && runs[0].cache === 20000, runs);
+  const r0 = runs[0] || {};
+  check('run row has the split, model, read and grep counts (AIG-299)', r0.fresh === 1000 && r0.cw === 500 && (r0.models || []).join() === 'sonnet' && r0.reads === 2 && r0.readChars === 500 && r0.greps === 1, r0);
+  check('run row names the card the team worked on', (r0.cards || []).includes(work.id), r0);
   const page = await openPage(ctx, '#/usage');
   await page.waitForTimeout(1000);
   const txt = await page.textContent('#app');
