@@ -341,12 +341,13 @@ function lookDialog() {
     <label class="f"><span>${esc(t('cols.colour'))}</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
     <div class="f"><span>${esc(t('logo.title'))}</span>${logoEditor('look-logo', p.logo)}</div>
     <label class="chk"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> ${esc(t('look.chatty'))} <span class="muted">${esc(t('look.chatty.cost'))}</span></label>
+    <label class="chk"><input type="checkbox" id="look-verbose" ${p.verbose ? 'checked' : ''}> ${esc(t('look.verbose'))}</label>
     <div class="err" id="look-err"></div>
     <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
 async function saveLook(auto) {
   try {
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }

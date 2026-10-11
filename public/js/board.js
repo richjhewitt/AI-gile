@@ -7,7 +7,9 @@ function flightHtml(list) {
 // Is the team working? Either a background run of ours, or a session heard from in the last 5 minutes (hooks, wait, status line).
 function presenceHtml(p, withWake) {
   const pr = p.presence || {};
-  const logBtn = withWake && p.path ? ` <button onclick="agentLog(event, '${p.slug}')">${esc(t('pres.log'))}</button>` : '';
+  // A verbose project gets 👁 Watch (the log, live) in place of 📄 Log (AIG-154).
+  const logBtn = !withWake || !p.path ? '' : p.verbose ? ` <button onclick="watchTeam(event, '${p.slug}')">${esc(t('pres.watch'))}</button>`
+    : ` <button onclick="agentLog(event, '${p.slug}')">${esc(t('pres.log'))}</button>`;
   if (pr.running) return `<span class="pres on">${esc(t('pres.background'))}</span> <span class="muted">${esc(t('pres.since', { when: ago(pr.startedAt) }))}</span>${withWake ? ` <button onclick="restartTeam(event, '${p.slug}')">${esc(t('pres.restart'))}</button>` : ''}${logBtn}`;
   // Online without a run of ours = a session Rich opened himself (a terminal or VS Code window).
   // Where a session you opened runs (AIG-107): the CLI and hooks report VS Code or a terminal.
@@ -35,6 +37,32 @@ async function agentLog(e, s = slug()) {
     openDialog(`<h2>${esc(t('pres.log.h'))}</h2><pre id="agentLog" style="max-height:60vh;overflow:auto;white-space:pre-wrap">${esc(r.text || t('pres.log.empty'))}</pre><div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
     const pre = $('agentLog'); if (pre) pre.scrollTop = pre.scrollHeight;
   } catch (err) { alert(err.message); }
+}
+
+/* ---------- 👁 Watch (AIG-154) ---------- */
+// A verbose team's latest run as it goes: asks every 2.5 s while open and keeps to the bottom, unless you scrolled up to read.
+const watchBody = () => `<div id="watchState" class="muted"></div><pre id="watchLog" class="watchlog"></pre>`;
+function paintWatch(r) {
+  const pre = $('watchLog'); if (!pre || !r) return;
+  // Only the latest run: from its last "=== ... started" line.
+  const ls = String(r.text || '').split('\n'), i = ls.map(l => /^=== .* started/.test(l)).lastIndexOf(true);
+  const txt = ls.slice(Math.max(0, i)).join('\n').trim() || t('pres.log.empty');
+  const end = pre.scrollHeight - pre.scrollTop - pre.clientHeight < 40;
+  if (pre.textContent !== txt) { pre.textContent = txt; if (end) pre.scrollTop = pre.scrollHeight; }
+  $('watchState').textContent = (r.running ? t('watch.running', { when: ago(r.startedAt) }) : t('watch.idle')) + (r.verbose ? '' : ' ' + t('watch.off'));
+}
+async function watchTeam(e, s = slug()) {
+  e.preventDefault(); e.stopPropagation();
+  openDialog(`<h2>${esc(t('watch.h'))} <button class="watch-pop" title="${esc(t('watch.pop'))}" onclick="window.open('#/pop-watch/${s}', 'aigile-watch-${s}', 'width=620,height=720')">⧉</button></h2>
+    ${watchBody()}<div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
+  const tick = async () => { if (!$('watchLog')) return clearInterval(timer); try { paintWatch(await api('GET', `/api/projects/${s}/agentlog`)); } catch {} };
+  const timer = setInterval(tick, 2500); tick();
+}
+// The pop-out (#/pop-watch/<slug>) rides the 1 s page poll; the shell is drawn once so scrolling up to read stays put.
+function renderWatch() {
+  document.body.classList.add('poplist');
+  if (!$('watchLog')) $('app').innerHTML = `<h3 style="margin:4px 0">${esc(t('watch.h'))} · ${esc(state.route.slug)}</h3>${watchBody()}`;
+  paintWatch(state.watchLog);
 }
 
 /* ---------- board page ---------- */
