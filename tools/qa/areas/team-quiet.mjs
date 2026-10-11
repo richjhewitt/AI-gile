@@ -176,7 +176,30 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   noErrors(page);
 }, true);
 
-def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuck after 3 tries, wakes idle teams, morning summary (AIG-199)', async (s, ctx) => {
+// AIG-272: a background run only starts for unseen owner news, not for agent comments, card moves or news already seen.
+def('wakenews', 'agent comments and card moves start no run; an owner comment does; news already seen does not (AIG-272)', async s => {
+  await mkProject(s, 'Newsy', 'NWS', { path: tmp('wn') });
+  const c = await mkCard(s, 'newsy', 'news card');
+  const log = path.join(s.data, 'logs', 'newsy.log');
+  const starts = () => { try { return (fs.readFileSync(log, 'utf8').match(/started/g) || []).length; } catch { return 0; } };
+  const idle = async () => { for (let i = 0; i < 60 && (await s.ok('GET', '/api/projects/newsy')).presence.running; i++) await sleep(250); };
+  await say(s, 'newsy', c.id, 'Smizzy', 'agent comment');
+  await s.ok('PATCH', `/api/projects/newsy/cards/${c.id}`, { status: 'doing' });
+  await s.ok('PATCH', `/api/projects/newsy/cards/${c.id}`, { status: 'review' });
+  await sleep(600);
+  check('agent comment and card moves start no run', starts() === 0, starts());
+  await say(s, 'newsy', c.id, 'Rich', 'real news');
+  await sleep(600);
+  check('owner comment starts a run', starts() === 1, starts());
+  await idle();
+  await s.ok('GET', '/api/projects/newsy/updates?mark=1');
+  await say(s, 'newsy', c.id, 'Smizzy', 'agent again');
+  await sleep(600);
+  check('news already marked seen starts no run', starts() === 1, starts());
+  check('updates agrees there is nothing new', (await s.ok('GET', '/api/projects/newsy/updates')).cards.length === 0);
+}, false);
+
+def('watchman','🌙 night watchman: restarts a cut-off team, flags a card stuck after 3 tries, wakes idle teams, morning summary (AIG-199)', async (s, ctx) => {
   await mkProject(s, 'Cut', 'CUT', { path: tmp('cut') });
   await mkProject(s, 'Nap', 'NAP', { path: tmp('nap') });
   await mkProject(s, 'Skip', 'SKP', { path: tmp('skip') });
