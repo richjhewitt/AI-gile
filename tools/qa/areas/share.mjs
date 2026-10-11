@@ -5,6 +5,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ROOT, PORT, BASE, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { shareCards } from './share-cards.mjs';
 
 export async function startRelay(port) {
   const data = tmp('relay');
@@ -200,5 +201,9 @@ def('share', 'sharing a project with a friend: offer / accept over the DMs, need
     await page.waitForFunction(() => !document.querySelector('.share-offer'), null, { timeout: 5000 }).catch(() => {});
     check('and the offer leaves the inbox', await page.locator('.share-offer').count() === 0);
     noErrors(page);
+    await page.close();
+
+    // Shared cards and comments (AIG-305): tools/qa/areas/share-cards.mjs.
+    await shareCards({ a, b, ca, cb, relay, ctx, until, filesUnder });
   } finally { b.stop(); relay.stop(); }
 }, true, { AIGILE_DM_POLL_MS: '300' });

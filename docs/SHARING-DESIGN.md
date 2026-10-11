@@ -121,6 +121,17 @@ My teams run with Bash/PowerShell, file edits and sometimes web access (`PRESETS
 - **Accepting into a new project:** the page makes the project first, then accepts into it.
 - **Unlink and forget** keeps the link file as a tombstone (so a replayed offer for that link id stays dropped) but clears their project name, and deletes cards and comments tagged `from: 'share:<link>'` (cards 5 and 6 add those).
 
+## As built (cards 4..6, AIG-305)
+Same files, plus `tools/qa/areas/share-cards.mjs` (the second half of QA area `share`). Where it differs, and why:
+- **Friend text lives in the link file, not the project.** The 📥 lane and every comment from the friend are kept in `data/shares/<link>.json` (`inbound`) and reach only the page (`GET /api/shares/:id/inbound`). Teams read project files, so nothing a friend sends can be in `nextList`, `brief`, For the team, `toTeam`, `/updates` (owner news) or a wake, by construction rather than by a filter in each of those. Their comments on my shared card show beside it in the card panel, never inside `c.comments`.
+- **The lane is a row above the board,** not a column: it is not a status, so no column code, WIP limit or For you rule ever counts it. A lane card opens in a dialog with the text plain (escaped, links not clickable) and **➡️ Take into my Backlog**.
+- **Taking a card** copies the allow-listed fields into my Backlog, tagged `from: 'share:<link>'` (so Unlink and forget removes it) and `createdBy: '{friend} (via 🔗)'`, not me: it is not owner news and wakes nobody. A team sees it only once I move it out of the Backlog (card 7 fences it then). Their later updates change the lane copy only, never my card.
+- **Comments both ways go from the card's own conversation:** any comment posted through the comments route on a shared card (mine or my team's) is sent, unless the scrub flags it: then it is kept, marked `shared: 'held'`, and "Send anyway" sends it. Verdicts, AI tester checks and folds are not sent. Incoming comments keep author, text, time and the link tag only, and show as "{author} via 🔗 {friend}".
+- **The scrub** looks for Windows, UNC and home paths, the connected folder and the board's data folder, key and settings file names, private keys and common token shapes. A flagged card or lane reply is refused (409) unless sent with `force`, which the preview's "Send anyway" does. An edit to a shared card that the scrub flags is held (`share.held`) and goes only from the preview.
+- **Unticking 🔗** stops sending; their comments on it are dropped from then on (counted as `refused`). Their copy stays theirs; there is no "unshare" message.
+- **Refused messages** (an allowance off, a share id I don't hold, a card share id that is one of mine) still move the seq on, so they can't be replayed in later.
+- **Not yet:** any local caller of the API can tick 🔗 or read `/inbound` (no roles on the board's API; card 10). `teamRead` is not used yet: card 7.
+
 ## Build cards (in order)
 1. **Share wire format**: `t: 'share'` payloads in `lib/share.js` on top of `dm.js` `seal`/`receive`, per-link `seq`, size caps, tests.
 2. **Link offer and accept**: 🔗 Share with... on a project, offer in the inbox, ✅ / ✋, `data/shares/` files; needs a checked safety code.

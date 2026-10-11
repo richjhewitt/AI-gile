@@ -98,6 +98,7 @@ function renderBoard(p) {
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${esc(p.archived ? t('board.unarchive') : t('board.archive'))}</button></div>
     <div class="flight">${t('board.flight.html')} ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>
     ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? ` <code>${esc(p.path)}</code>` : ''}</p>` : ''}
+    ${Share.laneHtml(p)}
     ${board}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>
@@ -228,7 +229,7 @@ function cardHtml(c) {
   const view = cardViewOf(state.project);
   const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}" data-id="${c.id}" draggable="true" style="display:block">
-    <div class="id">${esc(c.id)}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}</div>${forYou(c) ? queueChips(c) : ''}
+    <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}</div>${forYou(c) ? queueChips(c) : ''}
     <div class="t">${esc(c.title)}</div>
     ${live ? `<div class="heard">💬 ${esc(heard.who)} ${ago(heard.at)}${heard.text ? ': ' + esc(heard.text.slice(0, 60).replace(/\n/g, ' ')) : ''}</div>` : ''}
     <div class="meta">${metaHtml(c, view.show)}${live ? `<button class="poke${stale ? ' hot' : ''}" title="${esc(t('card.poke.title'))}" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">${esc(t('card.poke'))}</button>` : ''}</div></a>`;
