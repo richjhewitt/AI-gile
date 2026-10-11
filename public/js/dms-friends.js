@@ -8,8 +8,59 @@ function dmsFriendsHtml() {
 async function dmsFriendsLoad() {
   const box = $('dmfBody'); if (!box) return;
   try { const [d, list] = await Promise.all([api('GET', '/api/dms'), api('GET', '/api/dms/contacts')]); DF.data = { d, list }; dmsFriendsPaint(); }
-  catch (e) { box.textContent = e.message || String(e); }
+  catch (e) { box.textContent = e.message || String(e); return; }
+  joinLoad();
 }
+
+/* ---------- 🎟️ Invite a friend to AI-gile (AIG-347): a one-use download link, made and listed here ---------- */
+// The link carries the help level and a DM invite, so the friend's board starts already linked to this one.
+const JN = { data: null, link: '', help: '2', err: '', msg: '' };
+async function joinLoad() {
+  try { JN.data = await api('GET', '/api/join'); } catch (e) { JN.err = JN.err || e.message || String(e); }
+  joinPaint();
+}
+function joinExpiry(c) {
+  if (c.used) return t('join.used');
+  const ms = c.exp - Date.now();
+  if (ms <= 0) return t('join.expired');
+  const d = Math.floor(ms / 86400e3);
+  return d >= 2 ? t('join.exp.days', { n: d }) : d === 1 ? t('join.exp.day') : t('join.exp.soon');
+}
+function joinHtml() {
+  const d = JN.data, keep = { n: ($('joinName') || {}).value || '', h: ($('joinHelp') || {}).value || JN.help };
+  const row = c => `<div class="join-c" data-code="${esc(c.code)}"><b>${esc(['', '🐣', '🙂', '😎'][c.help] || '')} ${esc(c.name || c.code)}</b> <code>${esc(c.code)}</code>
+      <small class="muted">${esc(joinExpiry(c))}</small></div>`;
+  return `<div class="dmf-sec" id="joinSec"><b>${esc(t('join.h'))}</b><small class="muted">${esc(t('join.help'))}</small>
+      <select id="joinHelp">${['1', '2', '3'].map(n => `<option value="${n}" ${keep.h === n ? 'selected' : ''}>${esc(['', '🐣', '🙂', '😎'][n] + ' ' + t('join.level.' + n))}</option>`).join('')}</select>
+      <input type="text" id="joinName" value="${esc(keep.n)}" placeholder="${esc(t('dmf.invite.name'))}" autocomplete="off">
+      <div class="actions"><button type="button" id="joinMake">${esc(t('join.btn'))}</button></div>
+      ${JN.link ? `<input type="text" id="joinLink" readonly value="${esc(JN.link)}" onclick="this.select()"><small class="muted">${esc(t('join.send'))}</small>
+      <div class="actions"><button type="button" id="joinCopy">${esc(t('dmf.copy'))}</button></div>` : ''}
+      <div class="err" id="join-err">${esc(JN.err)}</div><div class="muted" id="join-msg">${esc(JN.msg)}</div>
+      ${d && d.codes.length ? `<b>${esc(t('join.open'))}</b>${d.codes.map(row).join('')}` : ''}
+      ${d && d.error ? `<small class="muted">${esc(t('join.noStatus'))}</small>` : ''}
+      <details><summary class="muted">${esc(t('join.server'))}</summary>
+        <input type="text" id="joinUrl" value="${esc(d ? d.url : '')}" autocomplete="off"><div class="actions"><button type="button" id="joinSave">${esc(t('join.save'))}</button></div>
+        <small class="muted">${esc(t('join.key'))}</small><input type="text" id="joinKey" readonly value="${esc(d ? d.ownerKey : '')}" onclick="this.select()"></details></div>`;
+}
+function joinPaint() {
+  const sec = $('joinSec'); if (!sec) return;
+  sec.outerHTML = joinHtml();
+}
+document.addEventListener('click', async ev => {
+  const b = ev.target.closest && ev.target.closest('#joinSec button'); if (!b) return;
+  JN.err = ''; JN.msg = '';
+  try {
+    if (b.id === 'joinMake') {
+      b.disabled = true;
+      JN.help = $('joinHelp').value;
+      JN.link = (await api('POST', '/api/join/codes', { help: JN.help, name: $('joinName').value.trim() })).link;
+      $('joinName').value = ''; JN.msg = t('join.made');
+    } else if (b.id === 'joinCopy') { try { await navigator.clipboard.writeText(JN.link); } catch { $('joinLink').select(); document.execCommand('copy'); } JN.msg = t('join.copied'); }
+    else if (b.id === 'joinSave') { await api('POST', '/api/join/settings', { url: $('joinUrl').value.trim() }); JN.msg = t('join.saved'); }
+  } catch (e) { JN.err = e.message || String(e); }
+  await joinLoad();
+});
 function dmsFriendsPaint() {
   const box = $('dmfBody'); if (!box || !DF.data) return;
   const { d, list } = DF.data;
@@ -21,6 +72,7 @@ function dmsFriendsPaint() {
       <div class="actions">${c.checked ? '' : `<button type="button" data-act="match">${esc(t('dmf.match'))}</button> `}<button type="button" data-act="block">${esc(t(c.blocked ? 'dmf.unblock' : 'dmf.block'))}</button> <button type="button" data-act="remove">${esc(t('dmf.remove'))}</button></div></div>`;
   box.className = '';
   box.innerHTML = `<label class="chk"><input type="checkbox" id="dmfOn" ${d.on ? 'checked' : ''}> ${esc(t('dmf.on'))}</label>
+    ${joinHtml()}
     <div class="dmf-sec"><b>${esc(t('dmf.invite.h'))}</b><small class="muted">${esc(t('dmf.invite.help'))}</small>
       <input type="text" id="dmfInvName" value="${esc(keep.i)}" placeholder="${esc(t('dmf.invite.name'))}" autocomplete="off">
       <div class="actions"><button type="button" id="dmfInvite">${esc(t('dmf.invite.btn'))}</button></div>
@@ -34,7 +86,7 @@ function dmsFriendsPaint() {
     <div class="dmf-sec"><b>${esc(t('dmf.list.h'))}</b>${list.length ? list.map(contact).join('') : `<small class="muted">${esc(t('dmf.none'))}</small>`}</div>`;
 }
 document.addEventListener('click', async ev => {
-  const b = ev.target.closest && ev.target.closest('#dmfBody button'); if (!b) return;
+  const b = ev.target.closest && ev.target.closest('#dmfBody button'); if (!b || b.closest('#joinSec')) return;
   DF.err = ''; DF.msg = '';
   try {
     if (b.id === 'dmfInvite') { DF.code = (await api('POST', '/api/dms/invites', { name: $('dmfInvName').value.trim() })).code; }
