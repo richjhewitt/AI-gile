@@ -417,3 +417,7 @@ header { flex-wrap: wrap; row-gap: 6px; } header > * { flex-shrink: 0; white-spa
 .stale { opacity: .5; } .stale .body { text-decoration: line-through; } .stale-note { font-size: 12px; color: var(--muted); margin: -4px 0 8px; }
 .ib-only { margin: 4px 0 10px; color: var(--muted); font-size: 13px; } .ib-only[hidden] { display: none; }
 .ib-btn .ib-badge[data-only] { cursor: pointer; } .ib-btn .ib-badge[data-only]:hover { outline: 2px solid var(--accent); }
+
+/* Dragging projects in the left rail (AIG-189): a line shows where it will land. */
+.dm-railbtn.dragging { opacity: .4; }
+.dm-railbtn.drop-before { box-shadow: 0 -3px 0 var(--accent); } .dm-railbtn.drop-after { box-shadow: 0 3px 0 var(--accent); }

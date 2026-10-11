@@ -265,8 +265,9 @@
   function paintTabs() {
     // Opened from a project page: that project first (selected once, on arrival) and All last, for the
     // whole visit. Other projects are ordered by their most recent message, newest first.
+    const rankOf = p => { const c = items.find(x => x.project === p); return c && c.projectRank != null ? c.projectRank : 1e6; };
     const projects = [...new Map(items.map(c => [c.project, c.projectName])).entries()]
-      .sort((a, b) => mostRecentMessageTime(b[0]).localeCompare(mostRecentMessageTime(a[0])));
+      .sort((a, b) => rankOf(a[0]) - rankOf(b[0]) || mostRecentMessageTime(b[0]).localeCompare(mostRecentMessageTime(a[0])));   // your order (AIG-189)
     const pinned = fromProject && projects.find(([p]) => p === fromProject);
     if (pinned && selectPinned) tab = fromProject;
     selectPinned = false;

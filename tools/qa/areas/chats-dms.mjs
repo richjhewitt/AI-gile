@@ -211,4 +211,19 @@ def('dms', 'private DMs: invite/accept, same safety code, encrypted send through
     b.stop(); relay.stop(); tiny.stop();
   }
 }, false, { AIGILE_DM_POLL_MS: '300' });
-
+
+def('railorder', 'drag a project in the left rail to reorder; the order is used for the project list and DMs (AIG-189)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET'); await mkProject(s, 'Gamma', 'GAM');
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('#dmRail [data-slug="gamma"]');
+  const rail = () => page.$$eval('#dmRail [data-slug]', bs => bs.map(b => b.dataset.slug).join(','));
+  check('starts by name', (await rail()) === 'alpha,beta,gamma', await rail());
+  await page.dragAndDrop('#dmRail [data-slug="gamma"]', '#dmRail [data-slug="alpha"]', { targetPosition: { x: 10, y: 4 } });
+  await page.waitForFunction(() => [...document.querySelectorAll('#dmRail [data-slug]')].map(b => b.dataset.slug).join(',') === 'gamma,alpha,beta', null, { timeout: 5000 }).catch(() => {});
+  check('dropping Gamma above Alpha moves it to the top', (await rail()) === 'gamma,alpha,beta', await rail());
+  check('the board keeps that order', (await s.ok('GET', '/api/projects')).map(p => p.slug).join(',') === 'gamma,alpha,beta');
+  check('the DMs list follows it', (await s.ok('GET', '/api/chats')).map(c => c.slug).join(',') === 'gamma,alpha,beta');
+  await mkProject(s, 'Delta', 'DEL');
+  check('a new project goes at the bottom', (await s.ok('GET', '/api/projects')).map(p => p.slug).join(',') === 'gamma,alpha,beta,delta');
+  noErrors(page);
+}, true);

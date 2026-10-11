@@ -13,6 +13,28 @@ const Dms = (() => {
   const seen = { get: s => { try { return localStorage.getItem('aigile.seen.' + s) || ''; } catch { return ''; } }, set: (s, v) => { try { localStorage.setItem('aigile.seen.' + s, v); } catch {} } };
   const here = () => (location.hash.match(/^#\/p\/([^/]+)/) || [])[1] || '';
 
+  // Drag a project icon up or down to reorder (AIG-189), like servers in Discord. The rail doesn't redraw mid-drag.
+  let dragging = null;
+  const railEl = () => el('dmRail');
+  document.addEventListener('dragstart', e => { const b = e.target.closest && e.target.closest('#dmRail [data-slug]'); if (!b) return; dragging = b.dataset.slug; b.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', dragging); } catch {} });
+  document.addEventListener('dragover', e => {
+    const b = dragging && e.target.closest && e.target.closest('#dmRail [data-slug]'); if (!b) return;
+    e.preventDefault();
+    const r = b.getBoundingClientRect(), after = e.clientY > r.top + r.height / 2;
+    railEl().querySelectorAll('.drop-before,.drop-after').forEach(x => x.classList.remove('drop-before', 'drop-after'));
+    if (b.dataset.slug !== dragging) b.classList.add(after ? 'drop-after' : 'drop-before');
+  });
+  document.addEventListener('drop', async e => {
+    const b = dragging && e.target.closest && e.target.closest('#dmRail [data-slug]'); if (!b) return;
+    e.preventDefault();
+    const order = [...railEl().querySelectorAll('[data-slug]')].map(x => x.dataset.slug).filter(s => s !== dragging);
+    const r = b.getBoundingClientRect(), after = e.clientY > r.top + r.height / 2, at = order.indexOf(b.dataset.slug);
+    if (b.dataset.slug !== dragging) order.splice(after ? at + 1 : at, 0, dragging); else return;
+    try { await api('POST', '/api/projects/order', { slugs: order }); } catch (err) { alert(err.message); }
+    dragging = null; railEl().dataset.sig = ''; loadRail(); if (typeof refresh === 'function') refresh(true);
+  });
+  document.addEventListener('dragend', () => { if (!dragging) return; dragging = null; const r = railEl(); if (r) { r.querySelectorAll('.dragging,.drop-before,.drop-after').forEach(x => x.classList.remove('dragging', 'drop-before', 'drop-after')); r.dataset.sig = ''; } loadRail(); });
+
   async function loadRail() {
     if (!i18n.ready) return void setTimeout(loadRail, 100);
     try { [projects, chats] = await Promise.all([api('GET', '/api/projects'), api('GET', '/api/chats')]); } catch { return; }
@@ -24,10 +46,10 @@ const Dms = (() => {
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>', location.hash === '#/inbox', t('dms.inbox'))
       + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, t('dms.rail.label'))
       + '<div class="dm-sep"></div>'
-      + projects.filter(x => !x.archived).map(x => btn(`data-go="#/p/${esc(x.slug)}"`, avatar(x) + badge(x.needsYou) + (x.updated > seen.get(x.slug) && x.slug !== cur && !x.needsYou ? '<span class="dm-pip"></span>' : ''),
+      + projects.filter(x => !x.archived).map(x => btn(`data-go="#/p/${esc(x.slug)}" data-slug="${esc(x.slug)}" draggable="true"`, avatar(x) + badge(x.needsYou) + (x.updated > seen.get(x.slug) && x.slug !== cur && !x.needsYou ? '<span class="dm-pip"></span>' : ''),
         x.slug === cur, x.name + (x.needsYou ? ' · ' + t('dms.waiting', { n: x.needsYou }) : ''))).join('');
     const r = el('dmRail');
-    if (r && r.dataset.sig !== html) { r.dataset.sig = html; r.innerHTML = html; }
+    if (r && r.dataset.sig !== html && !dragging) { r.dataset.sig = html; r.innerHTML = html; }
     if (listOpen && !open) paintList();
   }
 
