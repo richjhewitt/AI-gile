@@ -171,6 +171,8 @@ function parseRoute() {
   if (watch) return { view: 'watch', slug: watch[1] };   // 👁 Watch a verbose team in its own window (AIG-154)
   const news = location.hash.match(/^#\/pop-news\/([^/]+)$/);
   if (news) return { view: 'news', slug: news[1] };   // 📜 Team news in its own window (AIG-319)
+  const shared = location.hash.match(/^#\/shared\/([A-Za-z0-9_-]{22})$/);
+  if (shared) return { view: 'shared', link: shared[1] };   // a project a friend shares with me, as its own board (AIG-324)
   const pop = location.hash.match(/^#\/pop\/([^/]+)\/([^/]+)/);
   if (pop) return { view: 'project', slug: pop[1], card: pop[2], pop: true };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
@@ -222,6 +224,9 @@ async function refresh(force) {
       sig = JSON.stringify([state.route, state.news, Math.floor(Date.now() / 60e3)]);
     } else if (state.route.view === 'glossary') {
       sig = JSON.stringify([state.route, i18n.lang]);
+    } else if (state.route.view === 'shared') {
+      state.sboard = await api('GET', `/api/shares/${state.route.link}/board`).catch(() => null);
+      sig = JSON.stringify([state.route, state.sboard, i18n.lang]);
     } else if (state.route.view === 'usage') {
       await loadUsagePage(force);   // heavy, so at most every ~15s
       sig = JSON.stringify([state.route, uzSig()]);
@@ -255,6 +260,7 @@ function renderBoardOnly() {
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'usage') return;
   if (state.route.view === 'standups') { $('app').innerHTML = renderStandups(); return; }
+  if (state.route.view === 'shared') { $('app').innerHTML = ShareBoard.render(state.sboard); return; }
   // Only the home page and a board are painted here; Setup, the inbox and the rest paint themselves (AIG-335: no project yet on a fresh board).
   if (state.route.view !== 'home' && !(state.route.view === 'project' && state.project)) return;
   $('app').innerHTML = state.route.view === 'home' ? renderHome() : renderBoard(state.project);
@@ -279,6 +285,7 @@ function render() {
   if (state.route.view === 'news') { $('app').innerHTML = renderNews(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'watch') { renderWatch(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'shared') { $('crumb').textContent = '/ 🔗 ' + (state.sboard ? state.sboard.theirName || state.sboard.friend : ''); $('crumb').style.color = ''; $('app').innerHTML = ShareBoard.render(state.sboard); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ ' + t('crumb.usage'); $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
   // A popped-out card (AIG-122): just the card, filling its own window; no header or board behind it.
