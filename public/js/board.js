@@ -224,6 +224,7 @@ function metaHtml(c, show = CARD_SHOW) {
       ${show.assignee && c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
       ${c.needsYou && c.status !== 'done' ? `<span class="pill you">${esc(t('card.needsyou'))}</span>` : ''}
       ${aiChip(c)}
+      ${c.group ? `<span class="pill grp" title="${esc(t('group.chip.title', { name: c.group }))}">🗂️ ${esc(c.group)}</span>` : ''}
       ${c.blocked ? `<span class="pill blocked">${esc(t('card.blocked'))}</span>` : ''}
       ${snoozed(c) ? `<span class="pill snoozed">${esc(t('card.backat', { time: new Date(c.snoozedUntil).toLocaleTimeString(i18n.lang, { hour: '2-digit', minute: '2-digit' }) }))}</span><button class="poke" onclick="event.preventDefault();event.stopPropagation();bringBack('${c.id}')">${esc(t('card.bringback'))}</button>` : ''}
       ${show.comments && c.comments.length ? `<span class="pill">💬 ${c.comments.length}</span>` : ''}

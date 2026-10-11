@@ -97,6 +97,14 @@ def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
   check('next order team, doing, bug, rest', pos(t1.id) > 0 && pos(t1.id) < pos(d1.id) && pos(d1.id) < pos(b1.id) && pos(b1.id) < pos(n1.id), nx.out);
   check('next marks the first with >>', /^ {2}>> ALP-4/m.test(nx.out), nx.out);
 
+  // Value flags take their value with a space or an = (AIG-386): --sprint "Addon testing" used to save 'true'.
+  a('edit', 'alpha', n1.id, '--sprint', 'Addon testing');
+  check('edit --sprint "two words" (space) saves the words', (await getCard(s, 'alpha', n1.id)).sprint === 'Addon testing', (await getCard(s, 'alpha', n1.id)).sprint);
+  a('edit', 'alpha', n1.id, '--sprint=S2 now');
+  check('edit --sprint=value still works', (await getCard(s, 'alpha', n1.id)).sprint === 'S2 now');
+  a('edit', 'alpha', n1.id, '--sprint', '');
+  check('edit --sprint "" clears it', (await getCard(s, 'alpha', n1.id)).sprint === '');
+
   const t = a('test', 'alpha', d1.id, 'steps to follow', '--as', 'Forge');
   check('test hands to Owner', t.code === 0 && /handed to Owner/.test(t.out), t);
   const cd = await getCard(s, 'alpha', d1.id);

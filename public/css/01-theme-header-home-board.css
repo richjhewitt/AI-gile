@@ -45,6 +45,7 @@ a.usage:hover { border-color: var(--accent); }
 main { padding: 20px; }
 .muted { color: var(--muted); }
 .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; background: var(--col); color: var(--muted); white-space: nowrap; }
+.pill.grp { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .pill.you { background: var(--you); color: #fff; }
 .pill.blocked { background: var(--danger); color: #fff; }
 .pill.urgent { color: var(--danger); } .pill.high { color: var(--warn); }
