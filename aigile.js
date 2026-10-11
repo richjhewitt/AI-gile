@@ -233,7 +233,9 @@ const cmds = {
     const p = await api('GET', P(slug));
     if (flags.json) return console.log(JSON.stringify(p, null, 2));
     const by = s => p.cards.filter(c => c.status === s);
-    const short = c => `${c.id}${c.assignee ? ' @' + c.assignee : ''} ${c.title}`;
+    const cut = (t, n) => { t = String(t).replace(/\s+/g, ' '); return t.length > n ? t.slice(0, n - 1) + '…' : t; };
+    const short = c => `${c.id}${c.assignee ? ' @' + c.assignee : ''} ${cut(c.title, 80)}`;
+    const logLine = l => `${when(l.at).slice(5)} ${l.author}: ${cut(l.text, 140)}`;
     const sect = (title, items, n = 8) => items.length ? [title + ':', ...items.slice(0, n).map(x => '  ' + x), ...(items.length > n ? [`  (+${items.length - n} more)`] : [])] : [];
     const o = [`${p.name} (${p.slug}): ` + STATUSES.map(s => `${s} ${by(s).length}`).join(' · ')];
     // How the owner wants builds started (AIG-235): one line, set in ⚙️ Setup (What kind of lead).
@@ -242,7 +244,7 @@ const cmds = {
     o.push(...sect(`For the team (${OWNER} commented: do first)`, by('team').map(c => short(c) + (lastComment(c) ? `  <- "${lastComment(c).text.slice(0, 100).replace(/\n/g, ' ')}"` : ''))));
     o.push(...sect('In flight', by('doing').map(c => short(c) + ` (${when(c.updated)})`)));
     o.push(...sect('In review', by('review').map(short)));
-    o.push(...sect(`Waiting on ${OWNER}`, p.cards.filter(c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || forRich(c))).map(c => short(c) + (forRich(c) ? ' (task for them)' : c.status === 'verify' ? ' (testing)' : ' (question)'))));
+    o.push(...sect(`Waiting on ${OWNER}`, p.cards.filter(c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || forRich(c))).map(c => short(c) + (forRich(c) ? ' (task for them)' : c.status === 'verify' ? ' (testing)' : ' (question)')), 5));
     o.push(...sect('Blocked', p.cards.filter(c => c.blocked && c.status !== 'done').map(short)));
     const nxt = nextList(p).flatMap(([, cs]) => cs).filter(c => c.status === 'todo');
     o.push(...sect('Next up (todo)', nxt.map(short), 5));
@@ -251,8 +253,8 @@ const cmds = {
     const team = (p.team || []).filter(m => !/retired/i.test(m.status || '') && !stale(m));
     if (team.length) o.push('Team: ' + team.map(m => `${m.name}${m.model ? ' (' + m.model + ')' : ''} ${m.status || ''}${m.task && !/idle/i.test(m.status || '') ? ': ' + m.task : ''}`).join(' | '));
     const log = (p.log || []);
-    o.push(...sect('Recent decisions', log.filter(l => l.kind === 'decision').slice(-5).reverse().map(l => `${when(l.at).slice(5)} ${l.author}: ${l.text}`)));
-    o.push(...sect('Recent log', log.filter(l => l.kind !== 'decision').slice(-5).reverse().map(l => `${when(l.at).slice(5)} ${l.author}: ${l.text}`)));
+    o.push(...sect('Recent decisions', log.filter(l => l.kind === 'decision').slice(-3).reverse().map(logLine)));
+    o.push(...sect('Recent log', log.filter(l => l.kind !== 'decision').slice(-3).reverse().map(logLine)));
     o.push(`More: aigile show ${slug} <id> | aigile list ${slug} --status backlog`);
     console.log(o.join('\n'));
   },
@@ -466,9 +468,10 @@ const cmds = {
     if (hook && !news) return; // hooks only speak when there's something new (saves tokens)
     if (!news && !waiting.length) return console.log(`Nothing new from ${OWNER}.`);
     const head = `📬 AI-gile board (${u.project}): ${news ? `new from ${OWNER} since you last looked` : 'cards waiting on your team'}.`;
-    const tail = `Act on these now: read each with \`aigile show ${u.project} <id>\`, then: if it's just information, move it to done (\`aigile move ${u.project} <id> done\`); if it needs work (e.g. sent back), move it to doing, fix it and hand it back with \`aigile test\` for ${OWNER}'s approval. They are marked seen.`;
+    // Short (AIG-267): it's read on every hook.
+    const tail = `Act now: \`aigile show ${u.project} <id>\`; information only -> \`aigile move ${u.project} <id> done\`; needs work -> doing, fix, then \`aigile test\`. Marked seen.`;
     // Tidy cards is on (AIG-234): neaten what the owner raised before working on it.
-    const tidy = u.tidy && u.cards.some(c => c.items.some(i => i.kind === 'new card')) ? `First tidy each card ${OWNER} raised: a short, clear title (aigile edit --title) and a description of short bullet points (--desc). Put ${OWNER}'s original words in a comment starting "Original:", so nothing is lost.` : '';
+    const tidy = u.tidy && u.cards.some(c => c.items.some(i => i.kind === 'new card')) ? `First tidy each card ${OWNER} raised: short title (aigile edit --title), bullet description (--desc), ${OWNER}'s words in a comment starting "Original:".` : '';
     const msg = [head, ...o, tidy, tail].filter(Boolean).join('\n');
     if (flags['stop-hook']) { if (news) console.log(JSON.stringify({ decision: 'block', reason: msg })); return; }
     console.log(msg);
