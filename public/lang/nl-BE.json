@@ -847,5 +847,12 @@
  "face.free": "vrij",
  "face.empty": "Nog geen foto's.",
  "setup.f.avatarsDir": "Fotomap",
- "setup.f.avatarsDir.help": "Map met foto's waar de agents uit kiezen als ze bij een team komen (png, jpg, svg, webp, gif). Leeg: de map avatars in de datamap van het bord"
+ "setup.f.avatarsDir.help": "Map met foto's waar de agents uit kiezen als ze bij een team komen (png, jpg, svg, webp, gif). Leeg: de map avatars in de datamap van het bord",
+ "usage.runs.h": "Achtergrondruns, laatste 24 uur",
+ "usage.runs.explain": "Wat elke teamrun gebruikte, de grootste eerst. Invoer telt ook nieuwe context die in de cache werd geschreven; cache gelezen is context die opnieuw werd gelezen, en dat is goedkoop.",
+ "usage.runs.team": "Team",
+ "usage.runs.ended": "Klaar",
+ "usage.runs.in": "In",
+ "usage.runs.out": "Uit",
+ "usage.runs.cache": "Cache gelezen"
 }
