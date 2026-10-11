@@ -141,6 +141,11 @@ All endpoints take and return JSON.
 | GET, POST | `/api/shares` | Links between your projects and friends' (`?slug=`); offer one `{slug, contact, allow?}` (needs a checked safety code) |
 | PATCH | `/api/shares/:id` | `{on}`: the project's 🔗 switch (off drops everything for the link) |
 | POST | `/api/shares/:id/accept`, `/decline`, `/ping`, `/unlink` | Accept an offer `{slug, allow?}`, say no, check the link, end it (`{forget: true}` also deletes their cards and comments) |
+| GET | `/api/shares/:id/preview?card=` | Exactly what 🔗 would send for a card (title, description, type, priority) and what the path/secret scrub flags |
+| POST, DELETE | `/api/shares/:id/cards`, `/api/shares/:id/cards/:card` | Tick 🔗 `{card, force?}` (again: send an update; flagged text needs `force`), untick |
+| POST | `/api/shares/:id/held` | `{card, at}`: send a comment the scrub held back |
+| GET | `/api/shares/:id/inbound` | The 📥 lane (their cards) and every comment from them; never part of a project |
+| POST | `/api/shares/:id/inbound/:share/comments`, `/take` | Reply on a lane card `{text, force?}`; take it into your Backlog |
 
 ## Private DMs and the relay
 

@@ -7,3 +7,4 @@
 - `data/limits.log`: one JSON line per plan usage change (or every 5 minutes).
 - `data/logs/<slug>.log`: what the team's background runs printed.
 - Presence ("heard from") and the running processes are in memory only.
+- Sharing (AIG-304/305): `data/shares/<link>.json` per link (git-ignored) holds the link, `outbound` (my share id -> my card id, `stopped` once unticked) and `inbound` (`cards`: the 📥 lane by their share id; `comments`: every comment from them, and mine on lane cards, by share id). A card I ticked 🔗 has `share: { link, id, mine, sent, sentAt, held? }`; a lane card I took has `share: { link, id, theirs }` and `from: 'share:<link>'`. A comment on a shared card has `shared: 'sent' | 'held'`. Friend text is never written into `data/<slug>.json` until I take a lane card.

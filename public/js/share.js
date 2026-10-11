@@ -10,16 +10,114 @@ const Share = (function () {
   const ofProject = s => links.find(l => l.slug === s && open(l)) || links.find(l => l.slug === s && l.state === 'ended' && !l.forgotten && l.endedBy !== 'declined');
   const offers = () => links.filter(l => l.state === 'incoming' && !l.expired);
 
+  // inb: what the friend sent on the open project's link (AIG-305): { link, friend, cards: [lane cards], comments: { share: [...] } }.
+  // Only the page reads it (GET /api/shares/:id/inbound); it is never in a project file, so teams never see it.
+  let inb = null;
+  const curSlug = () => typeof state !== 'undefined' && state.route && state.route.slug;
   async function load() {
     try {
       [links, people] = await Promise.all([api('GET', '/api/shares'), api('GET', '/api/dms/contacts')]);
       projects = offers().length ? await api('GET', '/api/projects') : [];   // only an offer needs the project list
+      const l = curSlug() && ofProject(curSlug());
+      inb = l && !l.forgotten && l.state !== 'offered' && l.state !== 'incoming' ? await api('GET', `/api/shares/${l.id}/inbound`) : null;
     } catch { return; }
-    const s = JSON.stringify([links, people.map(p => [p.id, p.name, p.checked, p.blocked]), projects.map(p => [p.slug, p.name])]);
+    const s = JSON.stringify([links, people.map(p => [p.id, p.name, p.checked, p.blocked]), projects.map(p => [p.slug, p.name]), inb]);
     if (s === sig) return;
     sig = s;
-    if (typeof state !== 'undefined' && state.route && state.route.view === 'project' && !busy()) renderBoardOnly();
+    // The board (its 📥 row) always; an open card too (their comments) unless you are typing in it, like the 1s poll.
+    if (typeof state !== 'undefined' && state.route && state.route.view === 'project') { if (!busy()) refresh(true); else if (!state.dragging) renderBoardOnly(); }
     paintInbox();
+  }
+
+  /* ---------- shared cards (AIG-305): 🔗 on a card, the preview, the 📥 lane, comments both ways ---------- */
+  const liveLink = s => { const l = ofProject(s); return l && l.state === 'live' ? l : null; };
+  const theirComments = share => (inb && inb.comments[share]) || [];
+  const plain = s => `<div class="share-plain">${esc(s)}</div>`;   // a friend's text: escaped, links not clickable
+  // The 📥 From {friend} row above the board: their cards, which stay here until I take one.
+  function laneHtml(p) {
+    const l = ofProject(p.slug);
+    if (!l || !inb || inb.link !== l.id || (!inb.cards.length && !(l.state === 'live' && l.effective && l.effective.takeCards))) return '';
+    const cards = inb.cards.map(x => `<button class="share-lcard" data-share-card="${esc(x.share)}" onclick="Share.laneCard('${esc(x.share)}')">
+      <span class="t">${esc(x.title)}</span><span class="muted">${esc(x.type)} · ${esc(x.priority)}${theirComments(x.share).length ? ' · ' + esc(t('share.lane.replies', { n: theirComments(x.share).length })) : ''}${x.taken ? ' · ' + esc(t('share.lane.taken', { id: x.taken })) : ''}</span></button>`).join('');
+    return `<div class="share-lane" id="shareLane"><h3>${esc(t('share.lane.h', { name: l.friend }))} <span class="muted">${inb.cards.length}</span></h3>
+      <p class="muted">${esc(t('share.lane.note'))}</p>${cards || `<p class="muted">${esc(t('share.lane.none', { name: l.friend }))}</p>`}</div>`;
+  }
+  // The card panel's 🔗 button: share it, see what is shared, or where it came from.
+  function cardBtn(p, c) {
+    const l = ofProject(p.slug);
+    if (c.share && c.share.theirs) return `<span class="pill share-pill">${esc(t('share.card.theirs', { name: l ? l.friend : '' }))}</span>`;
+    if (!l || l.state !== 'live' || (!c.share && !(l.effective && l.effective.sendCards))) return '';
+    return `<button id="shareCardBtn" onclick="Share.previewCard('${esc(c.id)}')">${esc(t(c.share ? 'share.card.shared' : 'share.card.btn', { name: l.friend }))}${c.share && c.share.held ? ' ' + esc(t('share.card.held')) : ''}</button>`;
+  }
+  // Their comments on a shared card, in the Reply pane (they are not in the card's own conversation).
+  function cardComments(p, c) {
+    if (!c.share) return '';
+    const l = ofProject(p.slug), list = theirComments(c.share.id).filter(m => !m.mine);
+    if (!l || !list.length) return '';
+    return `<div class="share-cmts"><h3 class="muted">${esc(t('share.cmts.h', { name: l.friend }))}</h3>${[...list].reverse().map(m => friendMsg(m, l)).join('')}</div>`;
+  }
+  const friendMsg = (m, l) => `<div class="comment share-friend"><span class="who">${esc(m.mine ? m.author : t('share.via', { author: m.author, name: l.friend }))}</span><span class="when">${ago(m.at)}</span><div class="body">${m.mine ? esc(m.text) : plain(m.text)}</div></div>`;
+  // Under one of my comments on a shared card: sent to the friend, or held by the scrub (with Send anyway).
+  function commentMark(p, c, m) {
+    if (!c.share || !m.shared) return '';
+    const l = ofProject(p.slug), name = l ? l.friend : '';
+    if (m.shared === 'sent') return `<div class="muted share-sent">${esc(t('share.sent', { name }))}</div>`;
+    return `<div class="share-held">${esc(t('share.held', { name }))} ${l && l.state === 'live' ? `<button onclick="Share.sendHeld('${esc(c.id)}', '${esc(m.at)}')">${esc(t('share.prev.anyway'))}</button>` : ''}</div>`;
+  }
+  // 🔗 on a card: exactly what goes (the allow-listed fields), what the scrub flags, then Send / Send anyway.
+  async function previewCard(cardId) {
+    const l = ofProject(slug());
+    if (!l) return;
+    let pv;
+    try { pv = await api('GET', `/api/shares/${l.id}/preview?card=${encodeURIComponent(cardId)}`); } catch (e) { alert(e.message); return; }
+    const sh = pv.shared, can = l.state === 'live' && l.on && l.effective && l.effective.sendCards;
+    const rows = pv.fields.map(k => `<tr data-field="${k}"><th>${esc(t('share.prev.f.' + k))}</th><td>${k === 'description' ? plain(pv.payload[k] || '') : esc(pv.payload[k])}</td></tr>`).join('');
+    const flags = pv.flags.length ? `<div class="share-flags"><p>${esc(t('share.prev.flags'))}</p><ul>${pv.flags.map(f => `<li>${esc(t('share.prev.f.' + f.field))}: ${esc(t('share.prev.kind.' + f.kind))} <code>${esc(f.text)}</code></li>`).join('')}</ul></div>` : '';
+    const send = !can ? `<p class="muted">${esc(t('share.prev.off'))}</p>`
+      : `<button class="primary" id="shareCardSend" onclick="Share.sendCard('${esc(cardId)}', ${pv.flags.length ? 'true' : 'false'})">${esc(pv.flags.length ? t('share.prev.anyway') : sh ? t('share.prev.update') : t('share.prev.send', { name: l.friend }))}</button>`;
+    openDialog(`<h2>${esc(t('share.prev.h', { id: cardId, name: l.friend }))}</h2>
+      <p class="muted">${esc(t('share.prev.intro', { name: l.friend }))}</p>
+      <table class="share-preview">${rows}</table>${flags}
+      ${sh ? `<p class="muted">${esc(t('share.prev.sent', { when: ago(sh.sentAt || sh.at) }))}${sh.held ? ' ' + esc(t('share.prev.held')) : ''}</p>` : ''}
+      <div class="err" id="shareErr"></div>
+      <div class="actions">${send}${sh ? `<button onclick="Share.unshareCard('${esc(cardId)}')" title="${esc(t('share.prev.stop.note'))}">${esc(t('share.prev.stop'))}</button>` : ''}
+        <button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
+  }
+  async function cardAct(fn) { try { await fn(); closeDialog(); sig = ''; await load(); if (typeof rerender === 'function') rerender(); } catch (e) { err(e); } }
+  const sendCard = (cardId, force) => cardAct(() => api('POST', `/api/shares/${ofProject(slug()).id}/cards`, { card: cardId, force }));
+  const unshareCard = cardId => cardAct(() => api('DELETE', `/api/shares/${ofProject(slug()).id}/cards/${encodeURIComponent(cardId)}`));
+  async function sendHeld(cardId, at) {
+    try { await api('POST', `/api/shares/${ofProject(slug()).id}/held`, { card: cardId, at }); if (typeof rerender === 'function') rerender(); } catch (e) { alert(e.message); }
+  }
+  // A card in the 📥 lane: their text as plain text, the replies both ways, a reply box, ➡️ Take into my Backlog.
+  function laneCard(share) {
+    const l = ofProject(slug()), x = inb && inb.cards.find(c => c.share === share);
+    if (!l || !x) return;
+    const list = theirComments(share), live = l.state === 'live' && l.on && l.effective && l.effective.comments;
+    openDialog(`<div class="share-fcard" data-share-open="${esc(share)}"><div class="id muted">${esc(t('share.card.theirs', { name: l.friend }))} · ${esc(x.type)} · ${esc(x.priority)} · ${ago(x.updated)}</div>
+      <h2>${esc(x.title)}</h2>
+      ${x.description ? plain(x.description) : `<p class="muted">${esc(t('share.fc.nodesc'))}</p>`}
+      <p class="muted">${esc(t('share.fc.plain'))}</p>
+      <h3>${esc(t('card.tab.reply'))}</h3>${list.length ? [...list].reverse().map(m => friendMsg(m, l)).join('') : `<p class="muted">${esc(t('share.fc.none'))}</p>`}
+      ${live ? `<div class="reply"><textarea id="shareReply" rows="3" placeholder="${esc(t('share.fc.reply.ph', { name: l.friend }))}"></textarea>
+        <div class="actions"><button class="primary" id="shareReplySend" onclick="Share.laneReply('${esc(share)}')">${esc(t('share.fc.send'))}</button></div></div>` : ''}
+      <div class="err" id="shareErr"></div>
+      <div class="actions">${x.taken ? `<a class="btn" href="#/p/${esc(slug())}/${esc(x.taken)}" onclick="closeDialog()">${esc(t('share.fc.open', { id: x.taken }))}</a>`
+        : `<button class="good" id="shareTake" onclick="Share.takeCard('${esc(share)}')" title="${esc(t('share.fc.takehelp'))}">${esc(t('share.fc.take'))}</button>`}
+        <button onclick="closeDialog()">${esc(t('common.close'))}</button></div>
+      ${x.taken ? '' : `<p class="muted">${esc(t('share.fc.takehelp'))}</p>`}</div>`, 'wide');
+  }
+  async function laneReply(share, force) {
+    const text = ($('shareReply') || {}).value || '';
+    if (!text.trim()) return;
+    try { await api('POST', `/api/shares/${ofProject(slug()).id}/inbound/${share}/comments`, { text, force: !!force }); sig = ''; await load(); laneCard(share); }
+    catch (e) {
+      if (/path or a secret/.test(e.message) && confirm(e.message)) return laneReply(share, true);
+      err(e);
+    }
+  }
+  async function takeCard(share) {
+    try { const c = await api('POST', `/api/shares/${ofProject(slug()).id}/inbound/${share}/take`); sig = ''; await load(); laneCard(share); refresh(true); return c; } catch (e) { err(e); }
   }
 
   /* ---------- the board's button and dialog ---------- */
@@ -124,5 +222,6 @@ const Share = (function () {
   }
 
   setInterval(() => { if (!document.hidden && typeof i18n !== 'undefined' && i18n.ready) load(); }, 3000);
-  return { load, button, dialog, offer, setOn, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers };
+  return { load, button, dialog, offer, setOn, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
+    laneHtml, cardBtn, cardComments, commentMark, previewCard, sendCard, unshareCard, sendHeld, laneCard, laneReply, takeCard };
 })();
