@@ -20,7 +20,7 @@
     if (!r.ok) throw new Error(j.error || r.statusText);
     return j;
   };
-  // Server sends three kinds: tasks (assigned to Rich: something only he can do), questions, and verify cards.
+  // Server sends three kinds: tasks (assigned to the owner: something only they can do), questions, and verify cards.
   const isTask = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
   const isQuestion = c => !isTask(c) && c.status !== 'verify';
   const isTest = c => !isTask(c) && c.status === 'verify';
@@ -53,13 +53,14 @@
       .catch(e => { inflight = null; throw e; });
     return inflight;
   }
-  // Going quiet (night mode).
+  // Going quiet (night mode): no tests or tasks, and only the 3 newest questions.
   const isQuiet = () => document.documentElement.hasAttribute('data-night');
   function view() {
-    // AIG-229: nothing at all at night, just how many things wait for the morning (the watchman's chat is the way in).
     if (!isQuiet()) { hidden = 0; return raw; }
-    hidden = raw.length;
-    return [];
+    const all = raw.filter(isQuestion);
+    const qs = all.slice().sort((a, b) => lastAsk(b).at.localeCompare(lastAsk(a).at)).slice(0, 3);
+    hidden = all.length - qs.length;
+    return raw.filter(c => qs.includes(c));
   }
   function apply(list) {
     if (typeof i18n === 'undefined' || !i18n.ready) { setTimeout(() => load().catch(() => {}), 100); return; }   // wait for the language file (AIG-124)
