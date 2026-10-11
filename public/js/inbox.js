@@ -211,7 +211,7 @@
       <div id="ibEmpty"></div>
       <section class="ib-sec q" id="ibQ"><h3><button class="ib-popbtn" data-poplist="q" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
       <section class="ib-sec k" id="ibK"><h3><button class="ib-popbtn" data-poplist="k" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.tasks'))} <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.tasks.sub'))}</span></h3><div class="list"></div></section>
-      <section class="ib-sec t" id="ibT"><h3><button class="ib-popbtn" data-poplist="t" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span><button class="ib-tidy" id="ibTidy" title="${esc(t('tidy.title'))}">🧹 ${esc(t('tidy.btn'))}</button><button class="good ib-aiall" id="ibAiAll" hidden title="${esc(t('inbox.aiall.title'))}"></button></h3><div class="list"></div></section>
+      <section class="ib-sec t" id="ibT"><h3><button class="ib-popbtn" data-poplist="t" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span><button class="ib-tidy" id="ibTidy" title="${esc(t('tidy.title'))}">🧹 ${esc(t('tidy.btn'))}</button><button class="ib-tidy" id="ibTester" hidden title="${esc(t('tester.title'))}"></button><button class="good ib-aiall" id="ibAiAll" hidden title="${esc(t('inbox.aiall.title'))}"></button></h3><div class="list"></div></section>
     </div>`;
     el('ib').addEventListener('click', onClick);
     el('ib').addEventListener('keydown', onKey);
@@ -350,6 +350,10 @@
     el('ibOnly').hidden = !only; el('ibOnly').innerHTML = only ? `${esc(t('inbox.only.' + only))} · <a href="#" data-onlyclear>${esc(t('inbox.only.all'))}</a>` : '';
     // Accept all AI-passed (AIG-163): every test the AI tester passed, in one click.
     const passed = ts.filter(c => c.aiCheck && c.aiCheck.result === 'pass');
+    // 🤖 Test these for me (AIG-291): tests with steps the AI tester hasn't looked at yet.
+    const unchecked = ts.filter(c => c.testSteps && !c.aiCheck).length;
+    el('ibTester').hidden = !unchecked && !testerOn; el('ibTester').disabled = testerOn;
+    el('ibTester').textContent = testerOn ? t('tester.running') : t('tester.btn', { n: unchecked });
     el('ibAiAll').hidden = !passed.length; el('ibAiAll').title = t('inbox.aiall.title') + ': ' + passed.map(c => c.id).join(', '); el('ibAiAll').textContent = t('inbox.aiall', { n: passed.length });
     el('ibQn').textContent = qs.length; el('ibKn').textContent = ks.length; el('ibTn').textContent = ts.length;
     el('ibMore').hidden = !hidden; el('ibMore').textContent = t('inbox.more', { n: hidden });
@@ -377,6 +381,7 @@
     if (e.target.closest('[data-onlyclear]')) { e.preventDefault(); only = ''; paintPage(); return; }
     if (e.target.closest('#ibTidy')) { const ps = [...new Set(items.filter(isTest).filter(c => tab === 'all' || c.project === tab).map(c => c.project))]; (async () => { for (const s of ps) { try { await post('POST', `/api/projects/${s}/tidy`); } catch {} } toast(t('tidy.toast', { n: ps.length })); })(); return; }
     if (e.target.closest('#ibAiAll')) { acceptAiPassed(e.target.closest('#ibAiAll')); return; }
+    if (e.target.closest('#ibTester')) { startTester(); return; }
     const cb = e.target.closest('button[data-chat]');
     if (cb) { chat = cb.dataset.chat; paintPage(); return; }
     const kb = e.target.closest('button[data-kind]');
@@ -425,6 +430,14 @@
     lock(n);
     try { await post('POST', base(n) + '/verdict', { accept: true }); done(n, t('inbox.toast.accepted', { id: n.dataset.id })); }
     catch (e) { fail(n, e); }
+  }
+  // Start the AI tester, then look every 10 s until it is done; its verdicts arrive as 🤖 chips (AIG-291).
+  let testerOn = false;
+  async function startTester() {
+    try { await post('POST', '/api/tester', {}); } catch (e) { toast(e.message || String(e)); return; }
+    testerOn = true; toast(t('tester.started')); paintPage();
+    const look = async () => { let st = null; try { st = await (await fetch('/api/tester')).json(); } catch {} if (st && st.running) return void setTimeout(look, 10e3); testerOn = false; await load(); paintPage(); };
+    setTimeout(look, 10e3);
   }
   async function acceptAiPassed(btn) {
     const list = items.filter(c => isTest(c) && c.aiCheck && c.aiCheck.result === 'pass' && (tab === 'all' || c.project === tab));

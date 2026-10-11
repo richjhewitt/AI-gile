@@ -348,6 +348,32 @@ def('light', '🪶 Pro-friendly runs: comment runs on the smaller model, every 5
   check('then it carries on with that conversation', /--continue/.test(out), out);
 }, false, (() => { const f = path.join(tmp('liteset'), 'local.json'); fs.writeFileSync(f, '{ "owner": "Rich" }'); return { AIGILE_LOCAL: f }; })());   // its own settings file: never the real one
 
+def('tester', '🤖 Test these for me: the button starts one AI tester run over unchecked tests; the watchman starts one at night (AIG-291, AIG-292)', async (s, ctx) => {
+  await mkProject(s, 'Tst', 'TST', { path: tmp('tst') });
+  const c = await mkCard(s, 'tst', 'Try the thing');
+  check('nothing to test: refused', (await s.api('POST', '/api/tester', {})).status === 400);
+  s.cli(['test', 'tst', c.id, '- Click **Go**\n\n- It says done', '--as', 'Lead']);
+  check('one test waits for the tester', (await s.ok('GET', '/api/tester')).waiting === 1);
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('#ibTester:not([hidden])', { timeout: 6000 }).catch(() => {});
+  check('the inbox offers "Test these for me (1)"', /Test these for me \(1\)/.test(await page.textContent('#ibTester')));
+  await page.click('#ibTester');
+  await page.waitForFunction(() => /Testing/.test(document.getElementById('ibTester').textContent), null, { timeout: 5000 }).catch(() => {});
+  check('it shows it is testing', /Testing/.test(await page.textContent('#ibTester')));
+  check('a second start while it runs starts nothing new', (await s.ok('POST', '/api/tester', {})).already === true);
+  await sleep(1500);
+  check('the tester runs on the smaller model, in its own name, with the tester brief', /--model.*sonnet/.test(fs.readFileSync(s.wakeOut, 'utf8')) && /Tester \(Sonnet\)/.test(fs.readFileSync(s.wakeOut, 'utf8')) && /TESTER\.md/.test(fs.readFileSync(s.wakeOut, 'utf8')));
+  for (let i = 0; i < 40 && (await s.ok('GET', '/api/tester')).running; i++) await sleep(250);
+  // At night: the watchman starts it by itself.
+  await s.ok('POST', '/api/quiet', { on: true, watch: ['tst'] });
+  await sleep(4500);
+  await s.ok('POST', '/api/watchman/round'); await sleep(300);
+  const log = fs.readFileSync(path.join(s.data, 'logs', '_tester.log'), 'utf8');
+  check('at night the watchman starts the tester', (log.match(/started:/g) || []).length === 2, log);
+  await s.ok('POST', '/api/quiet', { on: false });
+  noErrors(page);
+}, true);
+
 def('verbose', '👁 verbose runs: the team\'s steps land in its log as readable lines, also from a hidden run (AIG-154, AIG-275)', async s => {
   await mkProject(s, 'Loud', 'LOU', { path: tmp('loud') });
   await s.ok('PATCH', '/api/projects/loud', { verbose: true });

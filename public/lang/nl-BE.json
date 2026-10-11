@@ -854,5 +854,9 @@
  "usage.runs.ended": "Klaar",
  "usage.runs.in": "In",
  "usage.runs.out": "Uit",
- "usage.runs.cache": "Cache gelezen"
+ "usage.runs.cache": "Cache gelezen",
+ "tester.btn": "🤖 Test deze voor mij ({n})",
+ "tester.running": "🤖 Bezig met testen…",
+ "tester.title": "De AI-tester volgt de teststappen en zet bij elke kaart 🤖 geslaagd, mislukt of overgeslagen. Jij keurt nog goed.",
+ "tester.started": "AI-tester gestart: de uitslagen verschijnen als 🤖-labels"
 }

@@ -854,5 +854,9 @@
  "face.free": "free",
  "face.empty": "No pictures yet.",
  "setup.f.avatarsDir": "Picture library",
- "setup.f.avatarsDir.help": "Folder of pictures the agents pick from when they join a team (png, jpg, svg, webp, gif). Empty: the avatars folder in the board's data folder"
+ "setup.f.avatarsDir.help": "Folder of pictures the agents pick from when they join a team (png, jpg, svg, webp, gif). Empty: the avatars folder in the board's data folder",
+ "tester.btn": "🤖 Test these for me ({n})",
+ "tester.running": "🤖 Testing…",
+ "tester.title": "The AI tester follows the test steps and marks each card 🤖 passed, failed or skipped. You still accept.",
+ "tester.started": "AI tester started: results show up as 🤖 chips"
 }
