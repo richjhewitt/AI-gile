@@ -50,12 +50,15 @@ async function suPicked(e) {
 
 /* ---------- stand-up report page (AIG-135): #/standups, read-only ---------- */
 // Per project, per person: done, next, blockers. Real blockers are also listed in red at the top, each linking to the stand-up card so the owner can answer there.
-const noBlocker = t => /^(none|no|nothing|n\/a|-|no blockers?)\.?$/i.test(String(t || '').trim());
+const noBlocker = t => /^(none|no|nothing|n\/a|-|no blockers?)\b/i.test(String(t || '').trim());
 const suLines = t => esc(t).replace(/\n/g, '<br>');
 function renderStandups() {
   const d = state.standups;
   if (!d) return `<p class="muted">${esc(t('common.loading'))}</p>`;
   const blockers = d.blockers.length ? `<div class="su-blockers"><h3>${esc(t('standup.blockers', { n: d.blockers.length }))}</h3><ul>${d.blockers.map(b =>
+    `<li><a href="#/p/${esc(b.project)}/${esc(b.card)}"><b>${esc(b.projectName)}</b> · ${esc(b.name)}</a>: ${suLines(b.text)} <span class="muted">${ago(b.at)}</span></li>`).join('')}</ul></div>` : '';
+  // 🙋 Needs you (AIG-191): waiting on you, but the team carries on with other work. Amber, under the red list.
+  const needs = (d.needs || []).length ? `<div class="su-needs"><h3>${esc(t('standup.needs', { n: d.needs.length }))}</h3><ul>${d.needs.map(b =>
     `<li><a href="#/p/${esc(b.project)}/${esc(b.card)}"><b>${esc(b.projectName)}</b> · ${esc(b.name)}</a>: ${suLines(b.text)} <span class="muted">${ago(b.at)}</span></li>`).join('')}</ul></div>` : '';
   const projects = d.projects.map(p => `<div class="su-proj" style="--proj:${esc(p.color)}">
       <h3>${pic(p.logo, p.emoji)} <a href="#/p/${esc(p.project)}">${esc(p.projectName)}</a> <span class="muted">${esc(t('standup.answered', { a: p.answered, n: p.people.length, when: ago(p.at) }))} · <a href="#/p/${esc(p.project)}/${esc(p.card)}">${esc(p.card)}</a>${p.status === 'done' ? ' · ' + esc(t('standup.closed')) : ''}</span></h3>
@@ -63,8 +66,9 @@ function renderStandups() {
         : `<div class="su-person"><b>${esc(r.name)}</b> <span class="muted">${ago(r.at)}</span>
           <div><span class="su-k">${esc(t('standup.done'))}</span> ${suLines(r.done) || '-'}</div>
           <div><span class="su-k">${esc(t('standup.next'))}</span> ${suLines(r.next) || '-'}</div>
+          ${r.needs ? `<div class="su-amber"><span class="su-k">${esc(t('standup.needs.k'))}</span> ${suLines(r.needs)}</div>` : ''}
           <div class="${noBlocker(r.blockers) ? '' : 'su-red'}"><span class="su-k">${esc(t('standup.blockers.k'))}</span> ${suLines(r.blockers)}</div></div>`).join('')}
     </div>`).join('');
   return `<div class="su"><div class="toolbar"><h2>${esc(t('standup.report.h'))}</h2><span class="grow"></span><button onclick="callStandup()">${esc(t('standup.all'))}</button></div>
-    ${blockers}${projects || `<p class="muted">${t('standup.empty.html')}</p>`}</div>`;
+    ${blockers}${needs}${projects || `<p class="muted">${t('standup.empty.html')}</p>`}</div>`;
 }

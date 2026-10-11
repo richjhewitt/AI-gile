@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { BASE, check, sleep, tmp, mkProject, mkCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 const require = createRequire(import.meta.url);
 
 def('presence', 'asleep -> online; Wake/comment start a background run (log, one at a time, restart, log dialog)', async (s, ctx) => {
@@ -99,7 +99,14 @@ def('quiet', 'Going quiet messages teams with work, wakes sleeping ones, night t
   const page = await openPage(ctx, '#/');
   page.on('dialog', d => d.accept());
   await page.click('text=🌙 Going quiet');
+  await page.waitForSelector('#dialog [data-watch]');
+  check('it asks which projects the night watchman watches, all ticked (AIG-199)', (await page.locator('#dialog [data-watch]').count()) === 2 && (await page.locator('#dialog [data-watch]:checked').count()) === 2);
+  await page.click('#dialog .primary');
   await page.waitForSelector('html[data-night]', { timeout: 4000 }).catch(() => {});
+  check('the watchman watches what was ticked', (await s.ok('GET', '/api/watchman')).watch.length === 2);
+  await page.waitForSelector('#dialog .qd', { timeout: 5000 }).catch(() => {});
+  check('a goodnight dialog says who was told, not a plain alert (AIG-208)', /Busy/.test(await page.textContent('#dialog .qd')));
+  await page.click('#dialog .qd .primary');
   check('night theme on', await page.$('html[data-night]') !== null);
   const busy = await s.ok('GET', '/api/projects/busy'), idle = await s.ok('GET', '/api/projects/idle');
   const msg = busy.cards.find(c => c.title === '📣 Going quiet');
@@ -155,7 +162,7 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('#pokeTop .pokebadge', { timeout: 7000 }).catch(() => {});
   check('top-bar badge shows', /1 team needs a poke/.test(await page.textContent('#pokeTop')), await page.textContent('#pokeTop'));
-  check('home tile says why, with a Wake button', /Needs a poke/.test(await page.textContent('.proj.poke')) && !!(await page.$('.proj.poke button.primary')));
+  check('home tile says why, with a Wake button', /Needs a poke/.test(await page.textContent('.proj.needs-poke')) && !!(await page.$('.proj.needs-poke button.primary')));
   await page.click('#pokeTop .pokebadge');
   await new Promise(r => setTimeout(r, 1500));
   check('tapping the badge wakes the asleep team', /started/.test((await s.ok('GET', '/api/projects/sleepy/agentlog')).text));
@@ -168,4 +175,68 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   check('online, fresh comment = fine', attention(proj(fresh), { online: true }) === null);
   noErrors(page);
 }, true);
-
+
+def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuck after 3 tries, wakes idle teams, morning summary (AIG-199)', async (s, ctx) => {
+  await mkProject(s, 'Cut', 'CUT', { path: tmp('cut') });
+  await mkProject(s, 'Nap', 'NAP', { path: tmp('nap') });
+  await mkProject(s, 'Skip', 'SKP', { path: tmp('skip') });
+  const mid = await mkCard(s, 'cut', 'Half done', { status: 'doing' });
+  await mkCard(s, 'nap', 'Waiting work', { status: 'todo' });
+  await mkCard(s, 'skip', 'Not watched', { status: 'todo' });
+  await s.ok('POST', '/api/quiet', { on: true, watch: ['cut', 'nap'] });
+  await sleep(4500);   // going quiet wakes the teams; wait until those runs end
+  await s.ok('POST', '/api/watchman/round');
+  let c = await getCard(s, 'cut', mid.id);
+  check('a team that stopped mid-card is started again, with a note', /Picked back up/.test(c.comments.at(-1).text));
+  let st = await s.ok('GET', '/api/watchman');
+  check('an idle team with work is woken; an unwatched one is left alone', st.summary.find(x => x.project === 'nap').woke === 1 && !st.summary.find(x => x.project === 'skip'));
+  await sleep(4500);   // the stand-in agent ends; the team is asleep again
+  await s.ok('POST', '/api/watchman/round'); await sleep(4500); await s.ok('POST', '/api/watchman/round');
+  c = await getCard(s, 'cut', mid.id);
+  check('third time on the same card: stuck, and in your pile', /Stuck/.test(c.comments.at(-1).text) && c.needsYou === true, c.comments.at(-1).text);
+  const back = await s.ok('POST', '/api/quiet', { on: false });
+  const cut = back.summary.find(x => x.project === 'cut');
+  check('back from quiet: a summary per project', cut && cut.stuck.includes(mid.id) && cut.restarted.includes(mid.id) && !(await s.ok('GET', '/api/watchman')), back.summary);
+}, false);
+
+def('nightglance', '🌙 night glance: a calm pop-out with the watchman per project; an amber glow only for real blockers (AIG-209)', async (s, ctx) => {
+  await mkProject(s, 'Calm', 'CLM', { path: tmp('calm') });
+  await mkProject(s, 'Trouble', 'TRB', { path: tmp('trouble') });
+  const page = await openPage(ctx, '#/pop-night');
+  await page.waitForSelector('.ng');
+  check('when not going quiet it says the watchman is off', /watchman is off/.test(await page.textContent('.ng')));
+  await s.ok('POST', '/api/quiet', { on: true });
+  await page.reload(); await page.waitForSelector('.ng-list li');
+  check('one quiet line per watched project, no top bar', (await page.locator('.ng-list li').count()) === 2 && await page.locator('header').isHidden());
+  check('calm night: no glow', /All calm/.test(await page.textContent('.ng')) && !(await page.evaluate(() => document.body.classList.contains('ng-urgent'))));
+  await s.ok('POST', '/api/standup', { projects: ['trouble'] });
+  s.cli(['standup', 'trouble', '--done', 'x', '--next', 'y', '--blockers', 'Server is down, nothing else can go on', '--as', 'Lead']);
+  await page.reload(); await page.waitForSelector('.ng-urgent-line', { timeout: 6000 }).catch(() => {});
+  check('a real blocker: the edge glows and one line says what', await page.evaluate(() => document.body.classList.contains('ng-urgent')) && /Server is down/.test(await page.textContent('.ng-urgent-line')));
+  await s.ok('POST', '/api/quiet', { on: false });
+  noErrors(page);
+}, true);
+
+def('watchdm', '🌙 watchman DMs: while quiet only its chat is listed, one message per critical problem, read-only (AIG-211)', async (s, ctx) => {
+  await mkProject(s, 'Calm', 'CLM', { path: tmp('calm2') });
+  await mkProject(s, 'Trouble', 'TRB', { path: tmp('trouble2') });
+  check('awake: the leads\' chats are listed', (await s.ok('GET', '/api/chats')).some(c => c.slug === 'calm'));
+  await s.ok('POST', '/api/quiet', { on: true });
+  let chats = await s.ok('GET', '/api/chats');
+  check('quiet: only the watchman is listed, with nothing unread', chats.length === 1 && chats[0].slug === '_watchman' && chats[0].unread === 0);
+  await s.ok('POST', '/api/standup', { projects: ['trouble'] });
+  s.cli(['standup', 'trouble', '--done', 'x', '--next', 'y', '--blockers', 'Server is down, nothing else can go on', '--as', 'Lead']);
+  await sleep(4500);   // let the wake-up runs finish
+  await s.ok('POST', '/api/watchman/round'); await s.ok('POST', '/api/watchman/round');
+  const th = await s.ok('GET', '/api/chats/_watchman');
+  check('a real blocker gives one message, not one per round', th.messages.length === 1 && /Server is down/.test(th.messages[0].text));
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('#dmRail [data-dms]');
+  await page.click('#dmRail [data-dms]');
+  await page.click('#dmPanel [data-dm="_watchman"]');
+  await page.waitForSelector('#dmList .dm-msg');
+  check('its chat shows the message and has no typing box', /Server is down/.test(await page.textContent('#dmList')) && await page.locator('#dmPanel .dm-compose').isHidden());
+  await s.ok('POST', '/api/quiet', { on: false });
+  check('back from quiet: the leads are back', (await s.ok('GET', '/api/chats')).some(c => c.slug === 'calm'));
+  noErrors(page);
+}, true);

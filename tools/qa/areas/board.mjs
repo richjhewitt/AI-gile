@@ -287,4 +287,24 @@ def('quick', '👀 What\'s happening? summarises the board; 💬 Ask the team se
   check('the answer lands in your Messages', (await getCard(s, 'alpha', q.id)).needsYou === true && (await s.ok('GET', '/api/inbox')).some(c => c.id === q.id));
   noErrors(page);
 }, true);
-
+
+def('tidy', '🧹 Tidy my pile asks the lead; fold moves test steps across and closes the card (AIG-193)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Queue part 1'), b = await mkCard(s, 'alpha', 'Queue part 2');
+  s.cli(['test', 'alpha', a.id, 'check part one', '--as', 'Lead']);
+  s.cli(['test', 'alpha', b.id, 'check part two', '--as', 'Lead']);
+  const f = s.cli(['fold', 'alpha', b.id, a.id, '--as', 'Lead']);
+  const tb = await getCard(s, 'alpha', b.id), ta = await getCard(s, 'alpha', a.id);
+  check('fold moves the steps across and closes the other card', f.code === 0 && /check part one/.test(tb.testSteps) && /Also \(was ALP-1/.test(tb.testSteps) && ta.status === 'done' && /Folded into/.test(ta.comments.at(-1).text), f);
+  check('a card cannot fold into itself', s.cli(['fold', 'alpha', b.id, b.id, '--as', 'Lead']).code !== 0);
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('.column.foryou button[title*="fold"]');
+  page.once('dialog', d => d.accept());
+  await page.click('.column.foryou button[title*="fold"]');
+  await sleep(600);
+  const jobs = (await s.ok('GET', '/api/projects/alpha')).cards.filter(c => c.tidy && c.status !== 'done');
+  check('🧹 makes one tidy job for the lead in For the team', jobs.length === 1 && jobs[0].status === 'team' && /aigile fold/.test(jobs[0].description));
+  const again = await s.ok('POST', '/api/projects/alpha/tidy');
+  check('a second click while it is open does not make another', again.already === true && (await s.ok('GET', '/api/projects/alpha')).cards.filter(c => c.tidy).length === 1);
+  noErrors(page);
+}, true);

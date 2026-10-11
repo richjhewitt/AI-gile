@@ -55,6 +55,7 @@ WORKING
   test <proj> <id> "steps ${OWNER} can follow" --as NAME    -> moves to verify, sets testSteps, comments
         [--open URL [--start "command"]]   adds a ▶ Open it button: starts the app if needed, opens the page
         [--commit SHA] [--shot a.png,b.png]  proof: the board shows what changed in that commit, plus your screenshots
+  fold <proj> <target> <id> [<id>...] --as NAME   fold cards about the same feature into one (steps move across, the others close)
   tests <proj> [--all]                    AI tester: the tests waiting for ${OWNER} that nobody checked yet, with their steps
   checked <proj> <id> pass|fail|skip "what you saw" [--shot a.png] --as NAME   AI tester's verdict and evidence
   ask also takes: --options "A,B,C"  (up to 4 answer buttons under your question; otherwise the board guesses)
@@ -69,11 +70,13 @@ HOOKS (agent session hooks, see AGENTS.md)
   dm <proj> "text" --as NAME             chatty leads only: start a DM to ${OWNER} (a nudge or a light word; one at a time)
   wait <proj> [--every SECONDS]           run in the BACKGROUND while idle: exits with ${OWNER}'s news when they comment
   updates <proj> --stop-hook              Stop: blocks stopping once while there is unseen news
+  bye <proj>                              SessionEnd: the window closed, a background run takes over
 
 TEAM AND LOG
   team <proj> NAME [--role R --model M --task T --status S]    upsert roster entry
   log <proj> "text" [--decision] --as NAME
-  standup <proj> --done "..." --next "..." [--blockers "... | none"] --as NAME    answer a 📣 Stand-up card (AGENTS.md)
+  standup <proj> --done "..." --next "..." [--needs "..."] [--blockers "... | none"] --as NAME    answer a 📣 Stand-up card (AGENTS.md)
+        --needs: waits on the owner while you carry on;  --blockers: only what stops ALL your work
 
 PROJECTS
   new-project <name> [--key K --path P --desc D]
@@ -343,6 +346,15 @@ const cmds = {
     out(flags, c, c => '🤖 ' + result + ': ' + line(c));
   },
 
+  // Fold (AIG-190/193): cards about the same feature join one card; their test steps move across and they close.
+  async fold({ pos, flags }) {
+    const slug = await project(pos[0]), into = pos[1], ids = pos.slice(2);
+    if (!into || !ids.length) die('usage: fold <proj> <target id> <id> [<id>...] --as NAME');
+    let c;
+    for (const id of ids) c = await api('POST', C(slug, id) + '/fold', { into, author: who(flags) });
+    out(flags, c, c => `folded ${ids.join(', ')} into ` + line(c));
+  },
+
   async test({ pos, flags }) {
     const slug = await project(pos[0]);
     await queueInfo(slug, pos[1], flags);
@@ -402,6 +414,7 @@ const cmds = {
     const slug = await project(pos[0]);
     const b = { author: who(flags), done: await text(flags.done, '--done'), next: await text(flags.next, '--next') };
     if (flags.blockers !== undefined) b.blockers = flags.blockers === true ? 'none' : await text(flags.blockers, '--blockers');
+    if (flags.needs !== undefined && flags.needs !== true) b.needs = await text(flags.needs, '--needs');   // waits on the owner, other work goes on (AIG-191)
     const r = await api('POST', P(slug) + '/standup', b);
     out(flags, r, r => `stand-up answered on ${r.card}` + (r.waiting.length ? `. Still to answer: ${r.waiting.join(', ')}` : '. Everyone has answered: the lead can move the card to done.'));
   },
@@ -433,9 +446,17 @@ const cmds = {
     if (!news && !waiting.length) return console.log(`Nothing new from ${OWNER}.`);
     const head = `📬 AI-gile board (${u.project}): ${news ? `new from ${OWNER} since you last looked` : 'cards waiting on your team'}.`;
     const tail = `Act on these now: read each with \`aigile show ${u.project} <id>\`, then: if it's just information, move it to done (\`aigile move ${u.project} <id> done\`); if it needs work (e.g. sent back), move it to doing, fix it and hand it back with \`aigile test\` for ${OWNER}'s approval. They are marked seen.`;
-    const msg = [head, ...o, tail].join('\n');
+    // Tidy cards is on (AIG-234): neaten what the owner raised before working on it.
+    const tidy = u.tidy && u.cards.some(c => c.items.some(i => i.kind === 'new card')) ? `First tidy each card ${OWNER} raised: a short, clear title (aigile edit --title) and a description of short bullet points (--desc). Put ${OWNER}'s original words in a comment starting "Original:", so nothing is lost.` : '';
+    const msg = [head, ...o, tidy, tail].filter(Boolean).join('\n');
     if (flags['stop-hook']) { if (news) console.log(JSON.stringify({ decision: 'block', reason: msg })); return; }
     console.log(msg);
+  },
+
+  // SessionEnd hook (AIG-219): background runs end too, but must not wake themselves again.
+  async bye({ pos }) {
+    if (WHERE === 'background') return;
+    try { await api('POST', P(await project(pos[0])) + '/bye', {}); } catch {}   // board down: nothing to tell
   },
 
   // Idle sessions don't fire hooks. A lead runs this as a background command; it costs nothing while
