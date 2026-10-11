@@ -244,3 +244,9 @@ const slug = () => state.route.slug;
 const cardId = () => state.route.card;
 const curCard = () => state.project.cards.find(c => c.id === cardId());
 const setErr = (id, e) => { const el = $(id); if (el) el.textContent = e ? (e.message || e) : ''; };
+
+// A small note at the bottom that fades by itself (AIG-259), instead of a Windows alert box for good news.
+function note(msg) {
+  let n = document.getElementById('note'); if (!n) { n = document.createElement('div'); n.id = 'note'; n.setAttribute('role', 'status'); document.body.appendChild(n); }
+  n.textContent = msg; n.classList.add('on'); clearTimeout(note.t); note.t = setTimeout(() => n.classList.remove('on'), 4000);
+}

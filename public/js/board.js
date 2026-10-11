@@ -139,7 +139,7 @@ function forYouQueue(p, pool = p.cards) {
 }
 // 🧹 Tidy my pile (AIG-193): the lead folds related cards in For you into one each, and reports back.
 async function tidyPile(s, btn) {
-  try { const r = await api('POST', `/api/projects/${s}/tidy`); alert(t(r.already ? 'tidy.already' : 'tidy.asked', { id: r.id })); refresh(true); }
+  try { const r = await api('POST', `/api/projects/${s}/tidy`); note(t(r.already ? 'tidy.already' : 'tidy.asked', { id: r.id })); refresh(true); }
   catch (e) { alert(e.message); }
 }
 // Focus (AIG-141): click the For you header to see only that column; remembered per project.
