@@ -56,6 +56,7 @@ Where everything lives, so you can go straight to the right place. Search for th
 | `js/board.js` | In flight and presence, `renderBoard`, swimlanes (`lanesOf`, `columnsHtml`), `cardHtml`, `poke`, drag and drop |
 | `js/card.js` | `cardFields`, assignee select, `renderCard` (Reply/Details/Test tabs), edit/delete/reply/verdict |
 | `js/dialogs.js` | `openDialog`, New card, New project, Connect folder, Docs |
+| `js/leadquiz.js` | What kind of lead? (AIG-235..237): `QUIZ` (question -> settings), `leadQuiz`/`saveQuiz` dialog (offered once when the name is first saved), `leadPrefsHtml` the "Your lead" switches on the Setup page, `setLeadPref` |
 | `js/app.js` | Start-up: hashchange, the 1s poll, the new-build prompt; going quiet (`goQuiet`, `setNight` night theme); `pokeBadge` (top bar) |
 
 ## Languages (AIG-124)
@@ -89,3 +90,4 @@ All in `lib/routes.js` (patterns are the regexes there). The list with payloads 
 - `dmRelay`: default DM relay address (`AIGILE_RELAY` overrides; `POST /api/dms/settings` can set one too).
 - `WAYS-OF-WORKING.md` (repo root) is the owner's private rules for every team, git-ignored; a new install gets `docs/starter/WAYS-OF-WORKING.md` with the name filled in (`ensureWays` in lib/setup.js).
 - `owner`: the board's human, whose comments wake teams and who gets questions and tests (default Rich; `AIGILE_OWNER` overrides). Code calls this person `isRich()` / `me()`.
+- `lead`, `night` (AIG-235): what kind of lead, set by the Setup questionnaire or its switches (`prefs` in `GET`/`POST /api/setup`, `prefsOf`/`setPrefs` in lib/setup.js): `lead.tidyCards` (AIG-234), `lead.chatty` (default for new projects; `chattyAll` also sets every active project), `lead.go` (`ask`/`small`: one rule line in `aigile brief`), `night.watchAll` (false: going quiet ticks no project for the watchman; an empty `watch` list means none). Dev words explained stays per browser (`aigile.explain`).

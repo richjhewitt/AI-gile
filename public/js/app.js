@@ -128,12 +128,13 @@ function setNight(since) {
   if (window.Inbox) Inbox.repaint();
   $('nightTop').innerHTML = since ? `<button class="navlink" onclick="openNightGlance()" title="${esc(t('ng.open.title'))}">🌙</button><button class="navlink" onclick="backFromQuiet()" title="${esc(t('night.since', { when: ago(since) }))}">${esc(t('night.back'))}</button>` : '';
 }
-// Going quiet asks which projects the 🌙 night watchman should watch: every active one is ticked (AIG-199).
+// Going quiet asks which projects the 🌙 night watchman should watch: every active one is ticked (AIG-199),
+// or none when the owner picked quiet nights in Setup (AIG-235).
 async function goQuiet() {
-  let ps = []; try { ps = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
+  let ps = [], all = true; try { ps = (await api('GET', '/api/projects')).filter(p => !p.archived); all = (await api('GET', '/api/setup')).prefs.watchAll !== false; } catch {}
   openDialog(`<h2>${esc(t('quiet.h'))}</h2><p class="muted">${esc(t('quiet.confirm'))}</p>
     <h3>${esc(t('watch.h'))}</h3><p class="muted">${esc(t('watch.help'))}</p>
-    <div class="watch-list">${ps.map(p => `<label class="chk"><input type="checkbox" data-watch="${esc(p.slug)}" checked> ${pic(p.logo, p.emoji)} ${esc(p.name)}</label>`).join('')}</div>
+    <div class="watch-list">${ps.map(p => `<label class="chk"><input type="checkbox" data-watch="${esc(p.slug)}" ${all ? 'checked' : ''}> ${pic(p.logo, p.emoji)} ${esc(p.name)}</label>`).join('')}</div>
     <label class="chk">${esc(t('quiet.until'))} <input type="time" id="quietUntil" value="09:00"></label><p class="muted">${esc(t('quiet.until.help'))}</p>
     <div class="actions"><button class="primary" onclick="goQuietNow()">${esc(t('quiet.go'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
