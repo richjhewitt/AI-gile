@@ -273,7 +273,7 @@
     const projects = [...new Map(items.map(c => [c.project, c.projectName])).entries()]
       .sort((a, b) => rankOf(a[0]) - rankOf(b[0]) || mostRecentMessageTime(b[0]).localeCompare(mostRecentMessageTime(a[0])));   // your order (AIG-189)
     const pinned = fromProject && projects.find(([p]) => p === fromProject);
-    if (pinned && selectPinned) tab = fromProject;
+    if (pinned && selectPinned && !only) tab = fromProject;   // a top bar chip counts every project: it keeps All (AIG-293)
     selectPinned = false;
     const orderedProjects = pinned ? [pinned, ...projects.filter(([p]) => p !== fromProject)] : projects;
     const allAtEnd = !!pinned;

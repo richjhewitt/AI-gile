@@ -190,6 +190,11 @@ def('inboxonly', 'top bar chips: "to do" shows only your to-dos, "to test" only 
   await page.waitForSelector('.ib-btn .ib-badge[data-only="q"]'); await page.click('.ib-btn .ib-badge[data-only="q"]');
   await page.waitForSelector('#ibQ:not([hidden])', { timeout: 5000 }).catch(() => {});
   check('"questions" from another project\'s tab shows the questions (AIG-288)', await page.locator('#ibQ').isVisible() && /Red or blue/.test(await page.textContent('#ibQ')));
+  // AIG-293: clicked from a project's board, "to do" still shows the to-dos of every project.
+  await page.goto(BASE + '/#/p/beta'); await page.waitForSelector('.ib-btn .ib-badge[data-only="k"]');
+  await page.click('.ib-btn .ib-badge[data-only="k"]');
+  await page.waitForSelector('#ibK:not([hidden])', { timeout: 5000 }).catch(() => {});
+  check('"to do" clicked on another project\'s board shows the to-dos (AIG-293)', await page.locator('#ibK').isVisible() && /Add the key/.test(await page.textContent('#ibK')));
   noErrors(page);
 }, true);
 
