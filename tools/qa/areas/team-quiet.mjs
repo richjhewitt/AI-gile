@@ -218,6 +218,19 @@ def('keepgoing', '🌙 keeps every team on task: the every-minute look picks up 
   await s.ok('POST', '/api/quiet', { on: false });
 }, false, { AIGILE_IDLE_MS: '1' });
 
+def('verbose', '👁 verbose runs: the team\'s steps land in its log as readable lines, also from a hidden run (AIG-154, AIG-275)', async s => {
+  await mkProject(s, 'Loud', 'LOU', { path: tmp('loud') });
+  await s.ok('PATCH', '/api/projects/loud', { verbose: true });
+  check('wake starts a run', (await s.ok('POST', '/api/projects/loud/wake')).running === true);
+  let r; for (let i = 0; i < 40; i++) { await sleep(250); r = await s.ok('GET', '/api/projects/loud/agentlog'); if (/=== exited/.test(r.text)) break; }
+  check('its step shows as a readable line, then the run ends', r.verbose && /💬 hello from a verbose run/.test(r.text) && /=== exited/.test(r.text) && !/"type"/.test(r.text), r.text);
+}, false, (() => {
+  // A stand-in agent that talks like the real one in verbose mode: one JSON event per line on stdout.
+  const bat = path.join(tmp('loudagent'), 'agent.bat');
+  fs.writeFileSync(bat, `@echo off\r\necho {"type":"assistant","message":{"content":[{"type":"text","text":"hello from a verbose run"}]}}\r\nping -n 2 127.0.0.1 >nul\r\n`);
+  return { AIGILE_AGENT_COMMAND: bat };
+})());
+
 def('nightglance', '🌙 night glance: a calm pop-out with the watchman per project; an amber glow only for real blockers (AIG-209)', async (s, ctx) => {
   await mkProject(s, 'Calm', 'CLM', { path: tmp('calm') });
   await mkProject(s, 'Trouble', 'TRB', { path: tmp('trouble') });
