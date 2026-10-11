@@ -83,6 +83,8 @@ aigile log <proj> "Sprint 3 pushed (abc1234), 120 tests green." --as YourName
 
 **7b. DMs from Rich (💬 cards).** A card whose title starts with 💬 is Rich messaging the lead from his DM chat. Reply with `aigile comment <proj> <id> "..." --as Lead`: your comment shows in his chat (left side). If it's an idea: `add` the cards for it (status `backlog`, small chunks), reply with their ids and a 2 to 3 bullet plan, and wait for his go. Close the 💬 card (`move ... done`) once he has replied and nothing is left to do.
 
+**7c. Tidy quick cards.** When Rich raises a card in a hurry (messy title, one long line), give it a short, recognisable title (`aigile edit <proj> <id> --title "..." --desc "..."`) and a description in readable bullets, so it is easy to find when switching context. Keep his meaning; don't add scope.
+
 **8. Pokes.** A "👉 any update?" poke from Rich on a card in `doing` or `review` means "this looks stuck, any update?". Reply with one line (`comment`) and leave the card where it is.
 
 **9. Stand-ups.** A **📣 Stand-up** card in For the team means Rich wants a short report from each of you. Every team member answers once, in your own name:

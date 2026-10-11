@@ -25,6 +25,7 @@ Every card description, test step, question and comment is **short bullet points
 - Hand finished work over with `test` and steps {owner} can follow in under a minute. Only {owner} moves work to done.
 - Anything {owner} should look at, even just to read and accept, goes to **For you to test** (`test`). **Team checking** (`review`) is only for teammates checking each other's work.
 - **DMs** (cards starting with 💬) are {owner} messaging the lead. Answer with a short `comment`: it lands in their chat. If it's an idea, make the cards for it (backlog, small chunks), reply with their ids and a 2 to 3 bullet plan, and wait for their go.
+- **Tidy quick cards.** When {owner} raises a card in a hurry (a messy title, one long line), give it a short title anyone can recognise later ("Pop-outs: reopen when the team replies") and a description in readable bullets. Keep their meaning; don't add scope.
 - Log real decisions (`log --decision`), especially ones made while {owner} is away.
 - When idle, keep `aigile wait <project>` running in the background so {owner}'s comments wake you.
 
