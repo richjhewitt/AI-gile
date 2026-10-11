@@ -1,4 +1,4 @@
-// QA areas: chats, answerbtns, dms.
+// QA areas: chats, answerbtns, dms, railorder, dmchats.
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
@@ -237,3 +237,60 @@ def('railorder', 'drag a project in the left rail to reorder; the order is used 
   check('a new project goes at the bottom', (await s.ok('GET', '/api/projects')).map(p => p.slug).join(',') === 'gamma,alpha,beta,delta');
   noErrors(page);
 }, true);
+
+def('dmchats', 'friends\' private DMs show as chats next to the team leads, with an All / Agents / People filter, the same reply box, 👍 and attachments (AIG-111)', async (s, ctx) => {
+  const relay = await startRelay(PORT + 3, { RELAY_RATE: '100000' });
+  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, PORT + 1);
+  try {
+    await mkProject(s, 'Alpha', 'ALP');
+    await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });
+    await s.ok('POST', '/api/dms/settings', { on: true, relay: relay.base });
+    await b.ok('POST', '/api/dms/settings', { on: true, relay: relay.base });
+    const inv = await s.ok('POST', '/api/dms/invites', { name: 'Beatrix' });
+    const cb = await b.ok('POST', '/api/dms/accept', { code: inv.code, name: 'Alberto' });
+    const ca = await until(async () => (await s.ok('GET', '/api/dms/contacts'))[0]);
+    check('the friend is a contact', ca && ca.name === 'Beatrix', ca);
+    await b.ok('POST', `/api/dms/contacts/${cb.id}/messages`, { text: 'Hi from Alberto' });
+    await until(async () => (await s.ok('GET', `/api/dms/contacts/${ca.id}/messages`)).length);
+
+    const page = await openPage(ctx, '#/');
+    await page.waitForSelector('#dmRail [data-dms]');
+    await page.click('#dmRail [data-dms]');
+    await page.waitForSelector('#dmPanel [data-dm="alpha"]');
+    check('All shows the lead and the friend', await page.locator('#dmPanel [data-dm="alpha"]').count() === 1 && await page.locator(`#dmPanel [data-dm="dm:${ca.id}"]`).count() === 1);
+    check('the friend\'s new message counts as unread', (await page.textContent(`#dmPanel [data-dm="dm:${ca.id}"] .dm-unread`)) === '1');
+    await page.click('#dmPanel [data-dmfilter="agents"]');
+    check('Agents shows only the lead', await page.locator('#dmPanel [data-dm="alpha"]').count() === 1 && await page.locator('#dmPanel [data-dm^="dm:"]').count() === 0);
+    await page.click('#dmPanel [data-dmfilter="people"]');
+    check('People shows only the friend', await page.locator('#dmPanel [data-dm="alpha"]').count() === 0 && await page.locator(`#dmPanel [data-dm="dm:${ca.id}"]`).count() === 1);
+    await page.click('#dmPanel [data-dmfilter="all"]');
+    check('All brings both back', await page.locator('#dmPanel .dm-row').count() === 2);
+
+    await page.click(`#dmPanel [data-dm="dm:${ca.id}"]`);
+    await page.waitForSelector('#dmList .dm-msg');
+    check('their message is on the left', /Hi from Alberto/.test(await page.textContent('#dmList .dm-msg:not(.mine)')));
+    await page.fill('#dmText', 'Hello back');
+    await page.press('#dmText', 'Enter');
+    await page.waitForSelector('#dmList .dm-msg.mine');
+    check('the reply box sends a private message', /Hello back/.test(await page.textContent('#dmList .dm-msg.mine')));
+    check('and it reaches the friend, decrypted', !!(await until(async () => (await b.ok('GET', `/api/dms/contacts/${cb.id}/messages`)).find(m => m.dir === 'in' && m.text === 'Hello back'))));
+    await page.click('#dmGo');
+    check('👍 sends a thumbs up', !!(await until(async () => (await b.ok('GET', `/api/dms/contacts/${cb.id}/messages`)).find(m => m.dir === 'in' && m.text === '👍'))));
+    await page.setInputFiles('#dmPanel .att input[type=file]', { name: 'note.txt', mimeType: 'text/plain', buffer: Buffer.from('secret note') });
+    await page.waitForSelector('#dmPanel .att-chip');
+    await page.fill('#dmText', 'See file');
+    await page.press('#dmText', 'Enter');
+    await page.waitForSelector('#dmList .att-file');
+    const got = await until(async () => (await b.ok('GET', `/api/dms/contacts/${cb.id}/messages`)).find(m => m.attachments));
+    check('an attachment is sent and shown', got && got.attachments[0].name === 'note.txt' && (await (await fetch(`${b.base}/api/dms/contacts/${cb.id}/files/${encodeURIComponent(got.attachments[0].id)}`)).text()) === 'secret note', got);
+    check('the relay never sees the file text', !filesUnder(relay.data).some(f => fs.readFileSync(f, 'utf8').includes('secret note')));
+
+    await page.click('#dmPanel button[onclick="Dms.back()"]');
+    await page.waitForSelector('#dmPanel [data-dmfilter]');
+    check('the chosen filter is still there when you come back to the list', await page.locator('#dmPanel [data-dmfilter="all"].on').count() === 1);
+    await page.click('#dmPanel [data-dm="alpha"]');
+    await page.waitForSelector('#dmGo');
+    check('a lead\'s chat still has its own Go button', /Go/.test(await page.textContent('#dmGo')));
+    noErrors(page);
+  } finally { b.stop(); relay.stop(); }
+}, true, { AIGILE_DM_POLL_MS: '300' });
