@@ -70,6 +70,8 @@ No card for it? `add` one first. This flags the card NEEDS-OWNER and puts it in 
 **Questions vs tasks.** `ask` is for questions. `aigile task <proj> <id> "exactly what to do, step by step" --as YourName` is for something only they can *do* (an API key, a login, a server command); add `--server` when it means running something on a server, so it is grouped at the top of their tasks; mark tasks that wait on another person or outside AI with `--outside` (grouped as 🤝 Outside help, after Server); it lands in "Tasks for you", and Done sends the card back through "For the team".
 **Server steps.** For a `--server [NAME]` task, start the steps at "on the server, run ..."; never write the ssh login or how to connect. The owner opens his server with the Open button the task shows (set up in Setup > My servers).
 
+**Remind, never re-send.** To remind the owner of an open task or question, use `aigile bump <proj> <id> --as YourName`, never send it again (a repeat `ask`/`task` is bumped instead of copied).
+
 **6. Log decisions.** Anything the owner might ask "why?" about, and anything decided while they were away:
 
 ```

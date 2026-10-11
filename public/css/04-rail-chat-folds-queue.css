@@ -39,3 +39,4 @@ button.q-chip { cursor: pointer; } .q-chip.srv:not(.on) { color: var(--muted); o
 .msg-act { font-size: 12px; padding: 3px 10px; border-radius: 99px; }
 .dm-msg .msg-acts { margin-left: 4px; } .dm-fold > .msg-acts { margin: 0 12px 10px; }
 
+.q-chip.bump { border-color: var(--you); }

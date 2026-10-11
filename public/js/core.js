@@ -22,7 +22,8 @@ const PRIO_RANK = { now: 0, today: 1, whenever: 3 };   // no priority set sits b
 // An item's kind: what the team set, else a sensible guess (tests are tests, the rest are decisions).
 const kindOfItem = c => isOwnerTask(c) && c.server ? 'server' : isOwnerTask(c) && c.outside ? 'outside' : c.kind || (c.status === 'verify' ? 'test' : 'decide');
 // Queue order: your priority, then what it holds up most, then quickest first.
-const queueRank = (a, b) => (PRIO_RANK[a.ownerPrio] ?? 2) - (PRIO_RANK[b.ownerPrio] ?? 2) || (b.holds || []).length - (a.holds || []).length || (a.mins || 999) - (b.mins || 999);
+const queueRank = (a, b) => (PRIO_RANK[a.ownerPrio] ?? 2) - (PRIO_RANK[b.ownerPrio] ?? 2) || (b.bumpedAt || '').localeCompare(a.bumpedAt || '') || (b.holds || []).length - (a.holds || []).length || (a.mins || 999) - (b.mins || 999);
+const bumpTime = at => new Date(at).toLocaleString([], { hour: '2-digit', minute: '2-digit', ...(Date.now() - new Date(at) > 864e5 ? { day: 'numeric', month: 'short' } : {}) });
 function queueChips(c) {
   const k = kindOfItem(c), p = c.ownerPrio;
   const task = isOwnerTask(c);   // a task has a 🖥️ switch for a job on a server (AIG-320); the kind chip is its mark when on
@@ -32,6 +33,7 @@ function queueChips(c) {
     + (task && c.server ? openServerBtn(c) : '')
     + `<button class="q-chip prio${p ? 'p-' + p : ''}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
     + ((c.holds || []).length ? `<span class="q-chip holds" title="${esc(c.holds.join(', '))}">⛓ ${esc(t('queue.holds', { n: c.holds.length }))}</span>` : '')
+    + (c.bumpedAt ? `<span class="q-chip bump" title="${esc(t('queue.bump.title', { n: c.bumps || 1 }))}">⏫ ${esc(t('queue.bump', { at: bumpTime(c.bumpedAt) }))}</span>` : '')
     + (c.mins ? `<span class="q-chip">⏱ ${esc(t('queue.mins', { n: c.mins }))}</span>` : '') + '</span>';
 }
 // 🖥️ Open server (AIG-374): the names come from Setup > My servers (state.servers, via /api/meta). The card may name one
