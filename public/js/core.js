@@ -255,6 +255,7 @@ async function refresh(force) {
     // Keep the board behind moving; only hold the panel/dialog the owner is using.
     if (sig !== state.lastBoardSig) { state.lastBoardSig = sig; renderBoardOnly(); }
     if (state.route.pop && sig !== state.lastSig && popChatLive()) { state.lastSig = sig; return; }   // a chat keeps moving while you type (AIG-313)
+    if (!state.route.pop && state.route.view === 'project' && state.route.card && sig !== state.lastSig && cardLive()) { $('live').className = 'live'; $('live').textContent = t('live.ok'); return; }   // new messages land under a half-typed reply (AIG-314)
     if (sig !== state.lastSig) { $('live').className = 'live paused'; $('live').textContent = t('live.paused'); }
     return;
   }

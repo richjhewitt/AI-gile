@@ -2,6 +2,7 @@
 //   node tools/qa/qa.mjs [area ...]     (no args = all areas; --list shows them; QA_PORT changes the port)
 // The page areas need playwright: `cd tools/qa && npm i`, or it falls back to the shared install (QA_PLAYWRIGHT).
 // This file is the runner only. Shared helpers: lib.mjs. The areas themselves: areas/*.mjs (each calls def()).
+import './hide-windows.mjs';   // no terminal windows popping up (AIG-391)
 import fs from 'node:fs';
 import { areas, CHROME, loadPw, startServer, check, sleep, setArea, getFailures } from './lib.mjs';
 
@@ -9,7 +10,7 @@ import { areas, CHROME, loadPw, startServer, check, sleep, setArea, getFailures 
 for (const f of ['api-cli', 'board', 'card', 'projects-docs', 'inbox', 'team-quiet-1-presence', 'team-quiet-2-quietinbox', 'team-quiet-3-watchman', 'team-quiet-4-light', 'team-quiet-5-runin', 'chats-dms', 'standup-tester', 'look-setup-1-look', 'look-setup-2-popout', 'look-setup-3-i18n', 'look-setup-4-glossary', 'share', 'dm-invite', 'ask', 'ideabtn', 'decide', 'pretend-friend', 'budget', 'notokens', 'join', 'dispatch', 'wizard', 'emoji', 'starter', 'teamroles', 'pack', 'lightbox', 'servers', 'share-board', 'bump', 'plainnote', 'gifs', 'scrummaster', 'timed']) await import(`./areas/${f}.mjs`);
 
 // Run order (the order the areas were written in); a new area goes at the end.
-const ORDER = ['api', 'cli', 'board', 'card', 'filters', 'inbox', 'usage', 'presence', 'quiet', 'quietinbox', 'poke', 'blocked', 'docs', 'mdlinks', 'newproject', 'perms', 'gobutton', 'attach', 'refresh', 'look', 'logos', 'guard', 'owner', 'setup', 'update', 'foryou', 'popout', 'popchat', 'columns', 'cardview', 'wip', 'lanes', 'quick', 'standup', 'views', 'steps', 'fynext', 'theme', 'i18n', 'chats', 'answerbtns', 'aitester', 'discover', 'dms', 'openit', 'testnotes', 'drafts', 'proof', 'queue', 'editor', 'runtokens', 'newscrum', 'dmchats', 'dmstore', 'share', 'ask', 'ideabtn', 'decide', 'bump', 'plainnote'];
+const ORDER = ['api', 'cli', 'board', 'card', 'filters', 'inbox', 'inboxlive', 'usage', 'presence', 'quiet', 'quietinbox', 'poke', 'blocked', 'docs', 'mdlinks', 'newproject', 'perms', 'gobutton', 'attach', 'refresh', 'look', 'logos', 'guard', 'owner', 'setup', 'update', 'foryou', 'popout', 'popchat', 'columns', 'cardview', 'wip', 'lanes', 'quick', 'standup', 'views', 'steps', 'fynext', 'theme', 'i18n', 'chats', 'answerbtns', 'aitester', 'discover', 'dms', 'openit', 'testnotes', 'drafts', 'proof', 'queue', 'editor', 'runtokens', 'newscrum', 'dmchats', 'dmstore', 'share', 'ask', 'ideabtn', 'decide', 'bump', 'plainnote'];
 for (const n of Object.keys(areas)) if (!ORDER.includes(n)) ORDER.push(n);
 for (const n of ORDER) if (!areas[n]) throw new Error('area in ORDER but not defined: ' + n);
 

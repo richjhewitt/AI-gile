@@ -3,6 +3,7 @@
 // Run it in the background; it prints the address, and everything it changes vanishes when it stops.
 //
 //   node tools/tester/sandbox.mjs [port]      (default 4399)
+import '../qa/hide-windows.mjs';   // no terminal windows popping up (AIG-391)
 import fs from 'fs';
 import os from 'os';
 import path from 'path';

@@ -387,5 +387,15 @@ def('steady', 'an open card stays put while the board polls, also with a team si
   await say(s, 'alpha', c.id, 'Lead', 'One more thing');
   const shows = await page.waitForFunction(() => document.querySelector('#modal .panel').textContent.includes('One more thing'), null, { timeout: 5000 }).then(() => true, () => false);
   check('a new comment on the open card still shows', shows);
+  // AIG-314: with the reply box focused and half typed, a new team comment still shows within 2s and the draft stays.
+  await page.click('[data-ctab="reply"]');
+  await page.fill('#r-text', 'half a reply');
+  await page.focus('#r-text');
+  const t0 = Date.now();
+  await say(s, 'alpha', c.id, 'Lead', 'Live under a draft');
+  const live = await page.waitForFunction(() => document.querySelector('#modal .panel').textContent.includes('Live under a draft'), null, { timeout: 2500 }).then(() => true, () => false);
+  check('a new comment shows within 2s while a reply is half typed', live, Date.now() - t0);
+  check('the draft is kept and still focused', (await page.inputValue('#r-text')) === 'half a reply' && await page.evaluate(() => document.activeElement && document.activeElement.id === 'r-text'));
+  check('the tab count follows the new comment', /\d/.test(await page.textContent('[data-ctab="reply"]')));
   noErrors(page);
 }, true);
