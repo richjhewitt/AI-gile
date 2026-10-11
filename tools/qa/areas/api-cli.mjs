@@ -77,7 +77,7 @@ def('api', 'projects/cards CRUD, comment/verdict/taskdone/poke, updates feed, in
   await s.ok('POST', '/api/projects/alpha/team', { name: 'Forge', role: 'dev' });
   await s.ok('POST', '/api/projects/alpha/log', { author: 'Forge', text: 'did a thing', kind: 'decision' });
   const full = await s.ok('GET', '/api/projects/alpha');
-  check('team and log stored', full.team[0].name === 'Forge' && full.log[0].kind === 'decision');
+  check('team and log stored', full.team[0].name === 'Forge' && full.log.some(e => e.kind === 'decision' && e.author === 'Forge'));
   check('meta lists statuses', (await s.ok('GET', '/api/meta')).statuses.length === 7);
   check('unknown endpoint is 404', (await s.api('GET', '/api/nope')).status === 404);
 });
