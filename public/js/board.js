@@ -52,11 +52,11 @@ function paintWatch(r) {
   const txt = ls.slice(Math.max(0, i)).join('\n').trim() || t('pres.log.empty');
   const end = pre.scrollHeight - pre.scrollTop - pre.clientHeight < 40;
   if (pre.textContent !== txt) { pre.textContent = txt; if (end) pre.scrollTop = pre.scrollHeight; }
-  $('watchState').textContent = (r.running ? t('watch.running', { when: ago(r.startedAt) }) : t('watch.idle')) + (r.verbose ? '' : ' ' + t('watch.off'));
+  $('watchState').textContent = (r.running ? t('eye.running', { when: ago(r.startedAt) }) : t('eye.idle')) + (r.verbose ? '' : ' ' + t('eye.off'));
 }
 async function watchTeam(e, s = slug()) {
   e.preventDefault(); e.stopPropagation();
-  openDialog(`<h2>${esc(t('watch.h'))} <button class="watch-pop" title="${esc(t('watch.pop'))}" onclick="window.open('#/pop-watch/${s}', 'aigile-watch-${s}', 'width=620,height=720')">⧉</button></h2>
+  openDialog(`<h2>${esc(t('eye.h'))} <button class="watch-pop" title="${esc(t('eye.pop'))}" onclick="window.open('#/pop-watch/${s}', 'aigile-watch-${s}', 'width=620,height=720')">⧉</button></h2>
     ${watchBody()}<div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
   const tick = async () => { if (!$('watchLog')) return clearInterval(timer); try { paintWatch(await api('GET', `/api/projects/${s}/agentlog`)); } catch {} };
   const timer = setInterval(tick, 2500); tick();
@@ -64,7 +64,7 @@ async function watchTeam(e, s = slug()) {
 // The pop-out (#/pop-watch/<slug>) rides the 1 s page poll; the shell is drawn once so scrolling up to read stays put.
 function renderWatch() {
   document.body.classList.add('poplist');
-  if (!$('watchLog')) $('app').innerHTML = `<h3 style="margin:4px 0">${esc(t('watch.h'))} · ${esc(state.route.slug)}</h3>${watchBody()}`;
+  if (!$('watchLog')) $('app').innerHTML = `<h3 style="margin:4px 0">${esc(t('eye.h'))} · ${esc(state.route.slug)}</h3>${watchBody()}`;
   paintWatch(state.watchLog);
 }
 
