@@ -1,6 +1,6 @@
 // AI-gile desktop (AIG-76): the board in its own window. Starts the board server if it isn't running
 // (left running on quit, so teams keep their board), then shows http://localhost:<port>.
-const { app, BrowserWindow, shell, nativeTheme, nativeImage } = require('electron');
+const { app, BrowserWindow, shell, nativeTheme, nativeImage, screen } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -43,10 +43,28 @@ function savePops() {
   const list = [...pops].filter(([w]) => !w.isDestroyed()).map(([w, url]) => ({ url, bounds: w.getBounds() }));
   try { fs.writeFileSync(POPS(), JSON.stringify(list)); } catch {}
 }
+// Where each card's window last was (AIG-188), so one that opens again (AIG-183) comes back on the same screen and spot.
+const PLACES = () => path.join(app.getPath('userData'), 'popout-places.json');
+const places = () => { try { return JSON.parse(fs.readFileSync(PLACES(), 'utf8')); } catch { return {}; } };
+const cardOf = url => (String(url).match(/#\/pop\/[^?#]+/) || [''])[0];
+function rememberPlace(url, bounds) {
+  const all = places(), k = cardOf(url); if (!k) return;
+  delete all[k]; all[k] = bounds;
+  const keys = Object.keys(all); for (const old of keys.slice(0, Math.max(0, keys.length - 100))) delete all[old];   // keep the last 100
+  try { fs.writeFileSync(PLACES(), JSON.stringify(all)); } catch {}
+}
+// The saved spot for a card, if it is still on a connected screen (a screen that was unplugged would hide it).
+function placeFor(url) {
+  const b = places()[cardOf(url)]; if (!b) return null;
+  const on = screen.getAllDisplays().some(d => { const a = d.workArea; return b.x < a.x + a.width - 40 && b.x + b.width > a.x + 40 && b.y >= a.y - 10 && b.y < a.y + a.height - 40; });
+  return on ? b : null;
+}
 function trackPop(w, url) {
   if (!url.includes('#/pop/')) return;
   pops.set(w, url); savePops();
-  w.on('moved', savePops); w.on('resized', savePops);
+  const keep = () => { try { if (!w.isDestroyed()) rememberPlace(url, w.getBounds()); } catch {} };
+  w.on('moved', () => { savePops(); keep(); }); w.on('resized', () => { savePops(); keep(); });
+  w.on('close', keep);
   w.on('closed', () => { pops.delete(w); if (!quitting) savePops(); });
 }
 function reopenPops() {
@@ -65,7 +83,7 @@ function wire(w) {
   // Board links to other sites open in the normal browser; the board's own open in a new app window.
   // A popped-out card stays on top, so its steps stay visible while you work in another app (AIG-122).
   w.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop/') } };
+    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop/'), ...(url.includes('#/pop/') ? placeFor(url) || {} : {}) } };
     shell.openExternal(url); return { action: 'deny' };
   });
   w.webContents.on('will-navigate', (e, url) => {
