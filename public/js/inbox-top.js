@@ -22,11 +22,11 @@
     return s;
   }
   function counts() {
-    return { q: IB.items.filter(isQuestion).length, k: IB.items.filter(isTask).length, t: IB.items.filter(isTest).length };
+    return { q: IB.items.filter(isQuestion).length, k: IB.items.filter(isTask).length, t: IB.items.filter(isTest).length, f: IB.friends() };
   }
   function paintTop() {
-    const { q, k, t: te } = counts();   // te: a local `t` would hide the t() text function
-    const label = (q ? t(q === 1 ? 'inbox.sum.q.one' : 'inbox.sum.q.many', { n: q }) : '') + (k ? t(k === 1 ? 'inbox.sum.k.one' : 'inbox.sum.k.many', { n: k }) : '') + (te ? t('inbox.sum.t', { n: te }) : '') || t('inbox.sum.none');
+    const { q, k, t: te, f } = counts();   // te: a local `t` would hide the t() text function
+    const label = (q ? t(q === 1 ? 'inbox.sum.q.one' : 'inbox.sum.q.many', { n: q }) : '') + (k ? t(k === 1 ? 'inbox.sum.k.one' : 'inbox.sum.k.many', { n: k }) : '') + (te ? t('inbox.sum.t', { n: te }) : '') + (f ? t(f === 1 ? 'inbox.sum.f.one' : 'inbox.sum.f.many', { n: f }) : '') || t('inbox.sum.none');
     let alertBtn = '';
     if (canNotify()) {
       const on = alertsOn(), blocked = Notification.permission === 'denied';
@@ -35,7 +35,8 @@
     const html = `<a class="ib-btn ${onInboxPage() ? 'on' : ''}" href="#/inbox" aria-label="${esc(t('inbox.btn.aria', { label }))}" title="${esc(label)}">${esc(t('inbox.btn'))}
         ${q ? `<span class="ib-badge q" data-only="q">${esc(t(q === 1 ? 'inbox.badge.q.one' : 'inbox.badge.q.many', { n: q }))}</span>` : ''}
         ${k ? `<span class="ib-badge k" data-only="k">${esc(t('inbox.badge.k', { n: k }))}</span>` : ''}
-        ${te ? `<span class="ib-badge t" data-only="t">${esc(t('inbox.badge.t', { n: te }))}</span>` : ''}</a>${alertBtn}`;
+        ${te ? `<span class="ib-badge t" data-only="t">${esc(t('inbox.badge.t', { n: te }))}</span>` : ''}
+        ${f ? `<span class="ib-badge q" data-friends="1">${esc(t('inbox.badge.f', { n: f }))}</span>` : ''}</a>${alertBtn}`;
     const s = slot();
     if (s.dataset.sig !== html) {
       s.dataset.sig = html; s.innerHTML = html;
@@ -46,7 +47,7 @@
     }
     // Everything waiting on the owner; the desktop app turns this count into its taskbar badge (AIG-76).
     // Going quiet (AIG-227): no count, so no purple diamond on the taskbar until the morning.
-    const title = q + k + te && !document.documentElement.hasAttribute('data-night') ? `(${q + k + te}) ${baseTitle}` : baseTitle;
+    const title = q + k + te + f && !document.documentElement.hasAttribute('data-night') ? `(${q + k + te + f}) ${baseTitle}` : baseTitle;
     if (document.title !== title) document.title = title;
   }
 

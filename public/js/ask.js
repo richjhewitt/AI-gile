@@ -4,10 +4,12 @@
 const Ask = (function () {
   'use strict';
   let asks = [], sig = '';
+  const off = () => typeof NoTokens !== 'undefined' && NoTokens.on;   // ⛔ No Token Mode (AIG-383)
 
   async function load() {
     try { asks = (await api('GET', '/api/dms/asks')).asks || []; } catch { return; }
-    const s = JSON.stringify(asks);
+    if (typeof IB !== 'undefined') IB.setFriends('asks', asks.length);   // counted in the inbox and its badges (AIG-382)
+    const s = JSON.stringify([asks, off()]);
     if (s === sig) return;
     sig = s;
     paintInbox();
@@ -22,14 +24,14 @@ const Ask = (function () {
       <div class="ib-who ask-size">${esc(t('ask.size', { size: t('ask.size.' + a.size), n: a.words }))}</div>
       ${a.failed ? `<div class="ib-err">${esc(t('ask.failed', { why: a.failed }))}</div>` : ''}
       <div class="ib-err" data-ask-err></div>
+      ${off() && !running ? `<div class="ib-err ask-off">${esc(t('ask.off'))}</div>` : ''}
       <div class="actions">${running ? `<button disabled>${esc(t('ask.running'))}</button>`
-        : `<button class="good" data-ask-yes onclick="Ask.yes('${esc(key)}')">${esc(t('ask.yes'))}</button><button data-ask-no onclick="Ask.no('${esc(key)}')">${esc(t('ask.no'))}</button>`}</div></div>`;
+        : `${off() ? '' : `<button class="good" data-ask-yes onclick="Ask.yes('${esc(key)}')">${esc(t('ask.yes'))}</button>`}<button data-ask-no onclick="Ask.no('${esc(key)}')">${esc(t('ask.no'))}</button>`}</div></div>`;
   }
   function paintInbox() {
     const box = document.getElementById('ibAsk');
     if (!box) return;
     const html = asks.length ? `<h3>${esc(t('ask.inbox.h'))} <span class="ib-badge">${asks.length}</span></h3>${asks.map(itemHtml).join('')}` : '';
-    if (typeof IB !== 'undefined') IB.asks = asks.length;
     const empty = document.getElementById('ibEmpty');
     if (empty && asks.length) empty.innerHTML = '';
     if (box.dataset.sig === html) return;

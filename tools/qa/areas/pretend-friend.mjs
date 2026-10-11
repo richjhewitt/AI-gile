@@ -41,6 +41,16 @@ def('pretendfriend', 'Setup: start a pretend friend (local relay + board "Davy")
     await davy('POST', `/api/dms/contacts/${dc.id}/messages`, { text: 'hoi baas' });
     check('his answer comes back', !!(await until(async () => (await s.ok('GET', `/api/dms/contacts/${list[0].id}/messages`)).find(m => m.text === 'hoi baas' && m.dir === 'in'))));
 
+    // AIG-384: Ask a mate works end to end on Davy's board with no tokens: his stub agent answers ask runs with a canned reply.
+    const q = await s.ok('POST', `/api/dms/contacts/${list[0].id}/ask`, { text: 'Is the stub there?' });
+    const aq = await until(async () => (await davy('GET', '/api/dms/asks')).asks.find(x => /stub/.test(x.text)));
+    check("the question waits in Davy's inbox", !!aq && aq.state === 'waiting', JSON.stringify(aq));
+    const yes = await davy('POST', `/api/dms/asks/${aq.contact}/${aq.id}/yes`, {});
+    check('Davy says yes and it starts', yes.ok === true && yes.state === 'running', JSON.stringify(yes));
+    const ans = await until(async () => (await s.ok('GET', `/api/dms/contacts/${list[0].id}/messages`)).find(m => m.kind === 'answer' && !m.no), 20000);
+    check('the canned answer comes back in Flemish, not "no answer came back"', !!ans && /nep-AI/.test(ans.text), JSON.stringify(ans));
+    check('and the question shows answered', (await s.ok('GET', `/api/dms/contacts/${list[0].id}/messages`)).find(m => m.id === q.id).state === 'answered');
+
     // Setup on the real board: running state, Open, Stop asks keep or wipe
     const ps = await openPage(ctx, '#/setup');
     await ps.waitForSelector('#pfOpen');

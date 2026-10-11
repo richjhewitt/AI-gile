@@ -41,6 +41,15 @@ def('ask', 'ask a mate: a friend\'s short question waits for ✅ / ✋; ✅ runs
     check('the run flags: no tools, deny list, user settings only, no MCP, capped turns, no saved session', ['--tools', '', '--setting-sources', 'user', '--strict-mcp-config', '--max-turns', '3', '--no-session-persistence', '--output-format', 'json'].every(x => status.flags.includes(x))
       && /Bash,PowerShell,Edit,Write/.test(status.flags.join(' ')) && !status.flags.includes('--continue') && !status.flags.some(f => /dangerously|bypass/i.test(f)), status.flags);
 
+    // AIG-381: the list, ✅ and ✋ are the owner's: the page (no header) or the CLI as the owner; never a team or a background run.
+    const owner = (await a.ok('GET', '/api/meta')).owner;
+    const asWho = (where, as, method, url) => fetch(a.base + url, { method, headers: { 'Content-Type': 'application/json', 'X-Aigile-Where': where, ...(as ? { 'X-Aigile-As': encodeURIComponent(as) } : {}) } }).then(r => r.status);
+    const yesUrl = `/api/dms/asks/${got.contact}/${got.id}/yes`, noUrl = `/api/dms/asks/${got.contact}/${got.id}/no`;
+    check('a team (CLI) gets 403 on the list, ✅ and ✋', (await asWho('cli', 'Alpha Lead', 'GET', '/api/dms/asks')) === 403 && (await asWho('cli', 'Alpha Lead', 'POST', yesUrl)) === 403 && (await asWho('cli', 'Alpha Lead', 'POST', noUrl)) === 403);
+    check('a background run gets 403 even under the owner name', (await asWho('background', owner, 'POST', yesUrl)) === 403 && (await asWho('background', owner, 'POST', noUrl)) === 403);
+    check('and nothing ran or changed', runs().length === 0 && (await asksA()).find(x => x.id === got.id).state === 'waiting');
+    check('the owner on the CLI gets through the check', (await asWho('cli', owner, 'GET', '/api/dms/asks')) === 200);
+
     await b.ok('POST', `/api/dms/contacts/${ca.id}/ask`, { text: 'Can you also write my essay?' });
     await b.ok('POST', `/api/dms/contacts/${ca.id}/ask`, { text: 'And a third one: capital of Belgium?' });
     await until(async () => (await asksA()).length === 3);
@@ -51,6 +60,12 @@ def('ask', 'ask a mate: a friend\'s short question waits for ✅ / ✋; ✅ runs
     check('the inbox shows the three questions with ✅ Ask it / ✋ Not now', await page.locator('.ask-item').count() === 3 && /Ask it/.test(await page.textContent('.ask-item')) && /Not now/.test(await page.textContent('.ask-item')));
     check('with the size hint', /Size: small \(~10 words\)/.test(await page.textContent('.ask-item')));
     check('the friend text is shown as text, not markup', (await page.textContent('.ask-item .ask-q')).includes('<</friend-text>>'));
+
+    // AIG-382: friends' questions count in the top bar, the rail and the title, even though the cards inbox is empty.
+    check('the top Inbox button badges the three questions', await page.locator('.ib-btn .ib-badge[data-friends]').count() === 1 && /3/.test(await page.textContent('.ib-btn .ib-badge[data-friends]')), await page.textContent('#inboxTop'));
+    check('the rail inbox shows 3 too', (await page.textContent('#dmRail [data-go="#/inbox"] .dm-unread').catch(() => '')).trim() === '3');
+    check('and the tab title counts them', /^\(3\)/.test(await page.title()), await page.title());
+    check('the page says something is waiting', !/Nothing waiting/.test(await page.getAttribute('.ib-btn', 'title')), await page.getAttribute('.ib-btn', 'title'));
 
     // ✋ Not now on the essay: B gets a polite no.
     await page.locator('.ask-item', { hasText: 'essay' }).locator('[data-ask-no]').click();
@@ -84,6 +99,24 @@ def('ask', 'ask a mate: a friend\'s short question waits for ✅ / ✋; ✅ runs
     await page.waitForFunction(() => document.querySelectorAll('.ask-item').length === 1, null, { timeout: 6000 }).catch(() => {});
     check('the inbox keeps only the question still waiting', await page.locator('.ask-item').count() === 1 && /Belgium/.test(await page.textContent('.ask-item')));
     check('a dealt-with question can\'t be run again', (await a.api('POST', `/api/dms/asks/${got.contact}/${got.id}/yes`)).status === 409);
+
+    check('the badge follows: 1 left', /1/.test(await page.textContent('.ib-btn .ib-badge[data-friends]')), await page.textContent('#inboxTop'));
+
+    // AIG-383: ⛔ No Token Mode: no ✅, a short note instead, ✋ stays; the friend gets one "delayed" notice.
+    check('before: the question is not marked delayed', !(await msgsB()).find(m => m.kind === 'ask' && /Belgium/.test(m.text)).delayed);
+    await a.ok('POST', '/api/notokens', { on: true });
+    await page.waitForFunction(() => document.querySelector('.ask-off'), null, { timeout: 8000 }).catch(() => {});
+    check('the owner sees why: AI is off, with ✋ left', /AI is off: turn it back on to answer, or ✋ Not now/.test(await page.textContent('.ask-item .ask-off')) && await page.locator('.ask-item [data-ask-yes]').count() === 0 && await page.isVisible('.ask-item [data-ask-no]'));
+    const late = await until(async () => (await msgsB()).find(m => m.kind === 'ask' && /Belgium/.test(m.text) && m.delayed), 12000);
+    check('the friend question is marked delayed, still waiting', late && late.state === 'waiting', await msgsB());
+    check('the friend chat has words for it', /answer delayed: AI is off on their side/.test(JSON.stringify(await (await fetch(b.base + '/lang/en.json')).json())));
+    const chatLen = (await a.ok('GET', `/api/dms/contacts/${cb.id}/messages`)).length;
+    await sleep(7000);
+    check('the notice is sent once, not repeated (one mark, no extra chat lines)', (await a.ok('GET', `/api/dms/contacts/${cb.id}/messages`)).length === chatLen && JSON.parse(fs.readFileSync(path.join(a.data, 'dms', cb.id + '.json'), 'utf8')).filter(m => m.offTold).length === 1);
+    check('✅ is refused while it is off', (await a.api('POST', `/api/dms/asks/${third.contact}/${third.id}/yes`)).status === 409);
+    await page.locator('.ask-item', { hasText: 'Belgium' }).locator('[data-ask-no]').click();
+    check('✋ still works while it is off', !!(await until(async () => (await msgsB()).filter(m => m.kind === 'answer' && m.no).length === 2, 8000)));
+    await a.ok('POST', '/api/notokens', { on: false });
 
     // A's chat with B: the 🙋 button uses the other person's name and sends what's typed as a question.
     await page.click('#dmRail [data-dms]');
