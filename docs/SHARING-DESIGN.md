@@ -49,7 +49,7 @@ A linked friend is a **guest on the link**, not a person on my board. They map o
 | Admin | Can tick cards 🔗 and approve friend cards into my columns; cannot make or end links |
 | Developer (my AI teams, or a human dev) | Works shared cards once I've moved them into a column; their comments on a shared card go to the friend |
 | Member / Tester | The friend's default level: raise cards into my 📥 lane, comment on shared cards. Tester adds Accept / Send back on a shared test card I hand them |
-| Reporter | Later: end users via a friend's board are out of scope for version 1 |
+| Reporter | Raises bugs and sees only their own (AIG-307; end users via the app or a bot stay later) |
 | Viewer | A link with "Take cards" and "Comments" both off: they only see my shared cards |
 
 - The friend's role is fixed by **my** allowances, on **my** board. Nothing they send can raise it.
@@ -141,6 +141,27 @@ Same files, plus `tools/qa/areas/share-more.mjs` (the third part of QA area `sha
 - **Attachments:** only the card's own attachments (from raising a bug or a paste), not comment attachments: one sealed `file` message each, 6 MB at most (so base64 inside the sealed envelope still fits the relay's 12 MB), 10 per card, 20 a day in. They are kept in `data/shares/files/<link>/` under a random name of our own (the friend's name is cleaned and only shown), owner-only, deleted by Unlink and forget, and only ever served as a download (octet-stream, `Content-Disposition: attachment`, nosniff, sandbox). Teams get a count, never a path.
 - **Not yet:** roles (card 10). A test or status for a card that was unticked is refused, like comments.
 
+## As built (card 10, AIG-307, with AIG-185 and the 🧪 Alpha tester from AIG-324)
+Same files, plus `tools/qa/areas/share-roles.mjs` (the fourth part of QA area `share`). Where it differs from "Roles (AIG-185) on a linked project" above, and why:
+- **A role per link, set by me on my board.** The friend gets one of: 👀 Viewer, 🧪 Alpha tester, 🐞 Reporter, 🙂 Member (the default), ✅ Tester, 🛠️ Developer, ⭐ Admin (Owner is me, never a link role). It is picked in the 🔗 dialog, **for this project** (`L.role`) or **for all my projects with them** (`data/shares/people.json`, per contact; it clears each link's own role, and a link's own role wins over it). `PATCH /api/shares/:id {role, scope: project|all}`; each live link then sends `{ kind: 'role', role }`, which the friend's board keeps as a label ("Alberto made you: Member"), never as a power. Offers and accepts carry the role too.
+- **What each role lets them send** (`CAN` in lib/share.js, checked in `receive` after the allowances; refused ones count as `refused` and still move the seq on):
+
+| Role | Raise into my 📥 row | Comment | Their status on my shared cards | On their own cards | Verdicts on tests I hand them | My cards shared with them |
+|---|---|---|---|---|---|---|
+| 👀 Viewer | nothing | no | no | nothing | no | yes (read only) |
+| 🧪 Alpha tester | bugs and ideas (bug, feature) | only on their own cards | no | nothing else | no | yes |
+| 🐞 Reporter | bugs | only on their own cards | no | status, files | no | **no**: they see only their own |
+| 🙂 Member | any card | on any shared card | only on cards I 🙋 assign them | status, tests, files | no | yes |
+| ✅ Tester | as Member | as Member | as Member | as Member | **yes** | yes |
+| 🛠️ Developer | as Member | as Member | **on every shared card** | as Member | yes | yes |
+| ⭐ Admin | as Developer | | | | | |
+
+- **🙋 Assign to {friend}** on my shared card (`PATCH /api/shares/:id/cards/:card {assigned}`, `c.share.assigned`, `outbound[share].assigned`) is what "acts only on cards assigned to them" means for a Member or Tester: there is no remote write, so acting is their status label. They are told (`{ kind: 'assign', share, on }`), and the card shows "🙋 assigned to you" in their 📥 row. It is never an assignee in my team.
+- **On my side the role trims what I send:** 🔗 on a card is refused for a Reporter (and their copies of my cards stop updating); 🧪 Ask to test needs a Tester, Developer or Admin, since nobody else can answer.
+- **Developer and Admin are the same on a link.** The rest of Admin (ticking 🔗, taking cards into my columns, without making or ending links) needs a person working on my board, which is the later step below. No role ever counts as me (`isRich()`), wakes a team, or gets into a project file: that is by construction (the link file), not by role.
+- **Only the owner uses `/api/shares`** (closes the gap from 2/4). The board tells the owner from agents the way it already does: the page sends no `X-Aigile-Where`; the CLI always sends it, and now also `X-Aigile-As` (the `--as` / `AIGILE_AS` name). A request with `X-Aigile-Where` passes only as the owner's name and never as `background` (a background run is always a team). So a team can't tick 🔗, read `/inbound`, change a role or flip the switch through the CLI; its one door stays `GET /api/projects/:slug/cards/:id/friend` (`aigile show`). This is a rule for the tools, not a wall: an agent with a shell on the same computer is a local user and could fake the page. Real separation needs logins, below.
+- **Later: "invite people to my board"** (humans working on my board itself, not linked boards): a login per person (a key pair or passkey per browser, like a DM contact, never a shared password), the board bound to more than localhost behind the relay or a tunnel with TLS, every route checking the person's role server-side (today only `/api/shares` asks who is calling), the owner-only list (links, switch, roles, permissions, Setup, DMs, Ask a mate ✅) made explicit, an audit line per action, and "invite" and "remove" that revoke at once. The `CAN` table here is the start of that role list.
+
 ## Build cards (in order)
 1. **Share wire format**: `t: 'share'` payloads in `lib/share.js` on top of `dm.js` `seal`/`receive`, per-link `seq`, size caps, tests.
 2. **Link offer and accept**: 🔗 Share with... on a project, offer in the inbox, ✅ / ✋, `data/shares/` files; needs a checked safety code.
@@ -151,5 +172,5 @@ Same files, plus `tools/qa/areas/share-more.mjs` (the third part of QA area `sha
 7. **Friend-text fence for teams**: the "let my team read" allowance, the fenced block, the ways-of-working rule, title-only when off.
 8. **Status labels and Tester verdicts**: their status as a label; Accept / Send back on a test I hand them.
 9. **Shared attachments**: optional, sealed like DM attachments, stored as data only.
-10. **Roles on links**: Admin can tick and approve, owner-only links and switch; wires into AIG-185 when that lands.
+10. **Roles on links**: a role per link or per person (the AIG-185 roles plus 🧪 Alpha tester), enforced on everything a friend sends; owner-only `/api/shares` (built, AIG-307).
 11. **QA area `share`**: two boards on temp data and a local relay; checks the allow-list, killswitch, replay, no wakes, fenced text.
