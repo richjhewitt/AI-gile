@@ -22,8 +22,8 @@ let ownerName = ''; try { ownerName = JSON.parse(readFileSync(path.join(ROOT, 'a
 const NAMES = [...(process.env.PUBLIC_COPY_NAMES || '').split(','), ownerName].map(s => s.trim()).filter(s => s.length > 2).map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 const RULES = [
   ['personal name', NAMES.length ? new RegExp('\\b(' + NAMES.join('|') + ')\\b', 'i') : /$^/],
-  ['email', /[\w.+-]+@[\w-]+\.[\w.-]+/],
-  ['absolute path', /C:[\\/]+Users[\\/](?!you\b)|\/Users\/(?!you\b)/i],
+  ['email', /[\w.+-]+@(?!example\.|noreply\.)[\w-]+\.[\w.-]+/],
+  ['absolute path', /C:[\\/]+Users[\\/]+(?!you\b)|\/Users\/(?!you\b)/i],
   ['token or key', /\bsk-[A-Za-z0-9_-]{8,}|\bghp_[A-Za-z0-9]{10,}|\b(api[_-]?key|secret|token)\b\s*[:=]\s*['"][^'"\s]{12,}['"]|AKIA[0-9A-Z]{16}/i],
 ];
 const FILE_RULES = [['data or local file', f => /(^|\/)data\//.test(f) || /\.local\./.test(f)]];
