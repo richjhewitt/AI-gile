@@ -574,5 +574,6 @@
  "lang.en.switch": "Quick English switch",
  "lang.en.help": "Adds a 🌐 EN button to the top bar: one click shows the board in English (handy for the developer words), again goes back.",
  "lang.en.title": "Show the board in English (click again for {name})",
- "lang.en.back": "Back to {name}"
+ "lang.en.back": "Back to {name}",
+ "act.other": "✏️ Other…"
 }

@@ -51,7 +51,8 @@ function askActions(m, kind) {
 function actionsHtml(acts, slug, id) {
   if (!acts.length) return '';
   const card = esc(slug + '/' + id);
-  return `<div class="msg-acts">${acts.map(a => `<button class="msg-act ${a.ask ? '' : 'good'}" data-card="${card}" ${a.accept ? 'data-accept="1"' : a.ask ? `data-ask="${esc(a.ask)}"` : `data-say="${esc(a.say)}"`}>${esc(a.label)}</button>`).join('')}</div>`;
+  acts = [...acts, { label: t('act.other'), ask: '' }];   // ✏️ Other…: your own answer (AIG-178)
+  return `<div class="msg-acts">${acts.map(a => `<button class="msg-act ${a.ask != null ? '' : 'good'}" data-card="${card}" ${a.accept ? 'data-accept="1"' : a.ask != null ? `data-ask="${esc(a.ask)}"` : `data-say="${esc(a.say)}"`}>${esc(a.label)}</button>`).join('')}</div>`;
 }
 document.addEventListener('click', async e => {
   const b = e.target.closest('.msg-act[data-card]'); if (!b) return;
@@ -59,7 +60,7 @@ document.addEventListener('click', async e => {
   const [s, id] = b.dataset.card.split('/');
   if (b.dataset.ask != null) {   // needs a reason: start the reply where the message is
     const item = b.closest('.ib-item'), ta = item ? item.querySelector('textarea') : null;
-    if (ta) { ta.value = b.dataset.ask; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    if (ta) { if (b.dataset.ask) ta.value = b.dataset.ask; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
     else if (typeof Dms !== 'undefined') Dms.reply(id, b.dataset.ask);
     return;
   }

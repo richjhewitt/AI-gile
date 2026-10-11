@@ -101,7 +101,7 @@ const Dms = (() => {
   // Open a fold; if that card is waiting on you, the typing box answers it.
   function openFold(id) { fold = id; if (thread && thread.open.some(o => o.id === id)) target = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   // An answer button that needs a reason (AIG-176): aim the typing box at that card and start the reply.
-  function reply(id, text) { aim(id); const ta = el('dmText'); if (ta) { ta.value = text; ta.focus(); ta.setSelectionRange(text.length, text.length); } }
+  function reply(id, text) { aim(id); const ta = el('dmText'); if (ta) { if (text) ta.value = text; ta.focus(); ta.setSelectionRange(text.length, text.length); } }
   function reload() { if (open) loadThread(); loadRail(); }
   function aim(id) { target = id; fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   function back() { open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }

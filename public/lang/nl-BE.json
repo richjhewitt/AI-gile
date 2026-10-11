@@ -574,5 +574,6 @@
  "lang.en.switch": "Snel naar Engels",
  "lang.en.help": "Zet een 🌐 EN-knop in de bovenbalk: één klik toont het bord in het Engels (handig voor de ontwikkelaarswoorden), nog een klik gaat terug.",
  "lang.en.title": "Toon het bord in het Engels (klik nog eens voor {name})",
- "lang.en.back": "Terug naar {name}"
+ "lang.en.back": "Terug naar {name}",
+ "act.other": "✏️ Anders…"
 }
