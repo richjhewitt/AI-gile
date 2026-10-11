@@ -246,7 +246,9 @@ const cmds = {
     o.push(...sect('Blocked', p.cards.filter(c => c.blocked && c.status !== 'done').map(short)));
     const nxt = nextList(p).flatMap(([, cs]) => cs).filter(c => c.status === 'todo');
     o.push(...sect('Next up (todo)', nxt.map(short), 5));
-    const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
+    // Helpers idle for 12 hours are from an earlier session: left off, so they don't look like a sleeping team (AIG-269).
+    const stale = m => /idle/i.test(m.status || '') && !/lead/i.test(m.name + ' ' + (m.role || '')) && Date.now() - Date.parse(m.updated || 0) > 12 * 3600e3;
+    const team = (p.team || []).filter(m => !/retired/i.test(m.status || '') && !stale(m));
     if (team.length) o.push('Team: ' + team.map(m => `${m.name}${m.model ? ' (' + m.model + ')' : ''} ${m.status || ''}${m.task && !/idle/i.test(m.status || '') ? ': ' + m.task : ''}`).join(' | '));
     const log = (p.log || []);
     o.push(...sect('Recent decisions', log.filter(l => l.kind === 'decision').slice(-5).reverse().map(l => `${when(l.at).slice(5)} ${l.author}: ${l.text}`)));

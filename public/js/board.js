@@ -75,7 +75,9 @@ function renderBoard(p) {
   const by = lanesBy(p.slug);
   const board = by ? lanesOf(p, by).map(([name, pool]) => `<div class="lane"><h4 class="lane-h">${esc(name)} <span class="muted">${pool.length}</span></h4><div class="board${fyFocus(p.slug) ? ' focus' : ''}">${columnsHtml(p, pool)}</div></div>`).join('') || `<p class="muted">${esc(t('board.nomatch'))}</p>`
     : `<div class="board${fyFocus(p.slug) ? ' focus' : ''}">${columnsHtml(p, p.cards)}</div>`;
-  const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
+  // Helpers idle for 12 hours are from an earlier session: left off, so they don't look like a sleeping team (AIG-269).
+  const stale = m => /idle/i.test(m.status || '') && !/lead/i.test(m.name + ' ' + (m.role || '')) && Date.now() - Date.parse(m.updated || 0) > 12 * 3600e3;
+  const team = (p.team || []).filter(m => !/retired/i.test(m.status || '') && !stale(m));
   const log = (p.log || []).slice().reverse().slice(0, 50);
   return `<div class="toolbar"><h2>${esc(p.name)}${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}</h2>
       <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
