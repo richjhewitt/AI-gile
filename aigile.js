@@ -233,6 +233,9 @@ const cmds = {
     const short = c => `${c.id}${c.assignee ? ' @' + c.assignee : ''} ${c.title}`;
     const sect = (title, items, n = 8) => items.length ? [title + ':', ...items.slice(0, n).map(x => '  ' + x), ...(items.length > n ? [`  (+${items.length - n} more)`] : [])] : [];
     const o = [`${p.name} (${p.slug}): ` + STATUSES.map(s => `${s} ${by(s).length}`).join(' · ')];
+    // How the owner wants builds started (AIG-235): one line, set in ⚙️ Setup (What kind of lead).
+    const go = ((await api('GET', '/api/setup')).prefs || {}).go;
+    if (go) o.push(go === 'small' ? `${OWNER}'s rule: small things (a fix or tweak, under an hour) you may build without asking; log them as a decision. Bigger work: propose and wait for go.` : `${OWNER}'s rule: ask before every build, however small. Propose and wait for go.`);
     o.push(...sect(`For the team (${OWNER} commented: do first)`, by('team').map(c => short(c) + (lastComment(c) ? `  <- "${lastComment(c).text.slice(0, 100).replace(/\n/g, ' ')}"` : ''))));
     o.push(...sect('In flight', by('doing').map(c => short(c) + ` (${when(c.updated)})`)));
     o.push(...sect('In review', by('review').map(short)));
