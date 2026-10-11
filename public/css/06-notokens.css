@@ -1,0 +1,17 @@
+/* ⛔ No Token Mode (AIG-337..339): the top-bar switch, and the AI buttons that hide while it is on. */
+#ntBtn { white-space: nowrap; }
+#ntBtn.on { background: var(--danger); border-color: var(--danger); color: #fff; }
+#ntBtn.back { background: var(--done); border-color: var(--done); color: #fff; animation: ntGlow 1.6s ease-in-out infinite; }
+@keyframes ntGlow { 0%, 100% { box-shadow: 0 0 0 0 var(--done); } 50% { box-shadow: 0 0 10px 3px var(--done); } }
+@media (prefers-reduced-motion: reduce) { #ntBtn.back { animation: none; box-shadow: 0 0 8px 2px var(--done); } }
+
+/* AI buttons: wake, restart team, 👁 Watch, the AI tester (board and inbox), ask a mate's Ask it, check usage now, the poke badge. */
+.notokens [onclick^="wakeTeam"],
+.notokens [onclick^="restartTeam"],
+.notokens [onclick^="watchTeam"],
+.notokens [onclick^="testForMe"],
+.notokens [onclick^="uzCheckNow"],
+.notokens [data-ask-yes],
+.notokens #ibTester,
+.notokens #pokeTop,
+.notokens .ai-only { display: none !important; }

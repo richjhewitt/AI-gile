@@ -1145,5 +1145,13 @@
  "budget.plan.normal": "⚖️ Gewoon",
  "budget.plan.generous": "🚀 Royaal",
  "budget.plan.nospare": "💸 Kosten noch moeite gespaard",
- "budget.plan.help": "Eén stap stelt de gebruikscontroles, beide budgetpercentages, de runlimiet en de helpers per model hieronder in. Pas je daarna iets aan, dan is er geen stap geselecteerd."
+ "budget.plan.help": "Eén stap stelt de gebruikscontroles, beide budgetpercentages, de runlimiet en de helpers per model hieronder in. Pas je daarna iets aan, dan is er geen stap geselecteerd.",
+ "nt.off": "⛔ Geen-tokensmodus",
+ "nt.on": "⛔ Geen tokens: AI staat uit",
+ "nt.until": "⛔ Geen tokens tot {time}",
+ "nt.back": "✅ Zet AI weer aan",
+ "nt.title.off": "Stop al het AI-gebruik meteen: lopende teams, de AI-tester, vraag een maat en gebruikscontroles. Het bord blijft gewoon werken.",
+ "nt.title.on": "Geen-tokensmodus staat aan: er draait of start niets met AI. Klik om AI weer aan te zetten.",
+ "nt.title.limit": "De gebruikslimiet van je abonnement is bereikt, dus de geen-tokensmodus ging vanzelf aan. Klik om AI weer aan te zetten.",
+ "nt.title.back": "Je gebruik is terug. Klik om AI weer aan te zetten (het gaat nooit vanzelf weer aan)."
 }
