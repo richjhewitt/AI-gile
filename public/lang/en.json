@@ -1220,5 +1220,7 @@
  "ug.title": "5h: {h5} left · week: {wk} left · last reading {when}",
  "ug.none": "No usage reading yet (⚡ Usage shows how to switch it on)",
  "ug.over": "Over your token budget",
- "ug.nt": "No Token Mode is on"
+ "ug.nt": "No Token Mode is on",
+ "wz.5.more": "A couple of boxes at the bottom of Setup are still empty; fill them in and save.",
+ "emoji.hint": "↑↓ choose, Enter picks, Esc closes"
 }

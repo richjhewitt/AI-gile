@@ -1220,5 +1220,7 @@
  "ug.title": "5u: {h5} over · week: {wk} over · laatste meting {when}",
  "ug.none": "Nog geen verbruiksmeting (⚡ Verbruik laat zien hoe je die aanzet)",
  "ug.over": "Over je tokenbudget",
- "ug.nt": "Geen-tokensmodus staat aan"
+ "ug.nt": "Geen-tokensmodus staat aan",
+ "wz.5.more": "Een paar vakken onderaan Instellingen zijn nog leeg; vul ze in en bewaar.",
+ "emoji.hint": "↑↓ kiezen, Enter plakt, Esc sluit"
 }
