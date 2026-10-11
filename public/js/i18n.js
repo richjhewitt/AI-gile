@@ -7,7 +7,18 @@ const LANGS = { en: 'English', nl: 'Nederlands', 'nl-BE': 'Vlaams' };
 const i18n = { lang: 'en', dict: {}, en: {}, ready: false };   // ready: the language file is in, so polls and timers may draw
 // The language picked in Setup, and the one on screen: English while the quick English switch is flipped (AIG-124).
 const ls = k => { try { return localStorage.getItem(k); } catch { return null; } };
-const chosenLang = () => { const l = ls('aigile.lang') || 'en'; return LANGS[l] ? l : 'en'; };
+// No pick saved yet (AIG-352): the first device language that the app has, nl-BE before nl before en (nl-NL -> nl, fr-BE -> en).
+const deviceLang = () => {
+  let list = []; try { list = navigator.languages && navigator.languages.length ? [...navigator.languages] : [navigator.language]; } catch {}
+  for (const d of list) {
+    const tag = String(d || '').toLowerCase();
+    const hit = Object.keys(LANGS).find(k => k.toLowerCase() === tag) || Object.keys(LANGS).find(k => k.toLowerCase() === tag.split('-')[0]);
+    if (hit) return hit;
+  }
+  return 'en';
+};
+// An explicit pick in Setup always wins over the device language.
+const chosenLang = () => { const saved = ls('aigile.lang'); return saved ? (LANGS[saved] ? saved : 'en') : deviceLang(); };
 const enSwitch = () => ls('aigile.enSwitch') === '1' && chosenLang() !== 'en';
 const langCode = () => enSwitch() && ls('aigile.enNow') === '1' ? 'en' : chosenLang();
 // A text the server sends in English (Setup labels, permission ticks): the language file's version when there is one (AIG-174).

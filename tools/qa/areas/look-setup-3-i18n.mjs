@@ -75,6 +75,27 @@ def('i18n', 'languages: every language file has the same keys, the picker switch
   await page.waitForSelector('#setupForm');
   check('back to English', (await page.evaluate(() => localStorage.getItem('aigile.lang'))) === 'en');
   noErrors(page);
+
+  // No saved pick (AIG-352): the device language decides, nl-BE before nl before en; an explicit pick wins.
+  const b = ctx.browser();
+  const startIn = async (locale, pick) => {
+    const c = await b.newContext({ locale, viewport: { width: 1400, height: 900 } });
+    try {
+      const p = await c.newPage();
+      p.errors = []; p.on('pageerror', e => p.errors.push('pageerror: ' + e.message));
+      await p.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
+      await p.goto(BASE + '/#/'); await p.waitForSelector('#app .toolbar');
+      if (pick) { await p.evaluate(l => localStorage.setItem('aigile.lang', l), pick); await p.reload(); await p.waitForSelector('#app .toolbar'); }
+      await sleep(200);
+      return { lang: await p.evaluate(() => document.documentElement.lang), errors: p.errors };
+    } finally { await c.close(); }
+  };
+  check('a nl-BE device with no pick starts in Flemish', (await startIn('nl-BE')).lang === 'nl-BE');
+  check('a nl-NL device with no pick starts in Dutch', (await startIn('nl-NL')).lang === 'nl');
+  check('a fr-BE device with no pick starts in English', (await startIn('fr-BE')).lang === 'en');
+  const saved = await startIn('nl-BE', 'en');
+  check('a saved en pick wins over a nl-BE device', saved.lang === 'en', saved.lang);
+  check('no page errors in the device-language starts', saved.errors.length === 0, saved.errors);
 }, true);
 
 def('usagecheck', '🔄 Check usage now: starts the agent hidden, waits for a reading, auto switch (AIG-151)', async (s, ctx) => {
