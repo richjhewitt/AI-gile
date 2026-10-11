@@ -141,6 +141,12 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .share-sent { font-size: 12px; margin-top: 4px; }
 .share-friend { border-left: 3px solid var(--you); }
 .share-mark { font-size: 11px; }
+.share-status { margin: 4px 0; font-size: 12px; }
+.share-test { border-left: 3px solid var(--you); padding: 2px 0 2px 10px; margin: 8px 0; }
+.share-test h4, .share-files h4, .share-cmts h4 { margin: 6px 0 2px; font-size: 13px; }
+.share-test textarea, #shareTestText { width: 100%; box-sizing: border-box; }
+.share-files { margin: 8px 0; }
+.share-file { display: block; overflow-wrap: anywhere; margin: 2px 0; }
 
 /* ---------- ask a mate (AIG-210) ---------- */
 .dm-asktag { font-size: 12px; font-weight: 600; margin: 0 0 2px; }

@@ -146,6 +146,9 @@ All endpoints take and return JSON.
 | POST | `/api/shares/:id/held` | `{card, at}`: send a comment the scrub held back |
 | GET | `/api/shares/:id/inbound` | The 📥 lane (their cards) and every comment from them; never part of a project |
 | POST | `/api/shares/:id/inbound/:share/comments`, `/take` | Reply on a lane card `{text, force?}`; take it into your Backlog |
+| POST | `/api/shares/:id/test`, `/api/shares/:id/inbound/:share/verdict` | Hand the friend a test on a shared card `{card, text, force?}`; answer theirs `{verdict: accept or back, note?}` (a label, nothing moves) |
+| GET | `/api/shares/:id/files/:fid` | One of their attachments, as a download only |
+| GET | `/api/projects/:slug/cards/:id/friend` | What a team is given about a shared card: friend text fenced if you let your team read their cards, else only a count |
 
 ## Private DMs and the relay
 
