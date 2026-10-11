@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
-import { ROOT, PORT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, freePort, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 
 def('card', 'tabs, reply survives polling, Enter sends, Accept, Wait and see, formatting', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -272,7 +272,7 @@ def('drafts', 'unsent text survives a reload; sending clears it (AIG-171)', asyn
 }, true);
 
 def('openit', '▶ Open it: starts the app with the card\'s command if needed, waits, opens the page (AIG-146)', async (s, ctx) => {
-  const folder = tmp('openit'), port = PORT + 9;
+  const folder = tmp('openit'), port = await freePort();
   await mkProject(s, 'Alpha', 'ALP', { path: folder });
   const c = await mkCard(s, 'alpha', 'Settings page');
   // A tiny app that answers on its port and quits by itself after 20s.
