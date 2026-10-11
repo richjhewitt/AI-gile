@@ -2,7 +2,7 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, check, sleep, tmp, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, ROOT, check, sleep, tmp, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
 
 def('docs', 'Docs dialog lists .md files and opens one', async (s, ctx) => {
   const folder = tmp('docs');
@@ -103,6 +103,36 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
   noErrors(page);
 }, true);
 
+def('newscrum', 'New project from the Scrum or own-columns template names the columns, statuses unchanged (AIG-170)', async (s, ctx) => {
+  const page = await openPage(ctx, '#/');
+  const heads = () => page.$$eval('.column h3 span:first-child', els => els.map(e => e.textContent));
+  await page.click('button:has-text("+ New project")');
+  await page.fill('#p-name', 'Scrum Team');
+  await page.fill('#p-path', '');
+  await page.selectOption('#p-tpl', 'scrum');
+  await page.click('#dialog button[type=submit]');
+  await page.waitForFunction(() => location.hash === '#/p/scrum-team');
+  await page.waitForSelector('.column h3');
+  const h = await heads();
+  check('Scrum names the columns', ['Sprint backlog', 'Sprint', 'Review'].every(n => h.some(x => x.includes(n))), h);
+  const p = await s.ok('GET', '/api/projects/scrum-team');
+  check('statuses unchanged', p.columns.map(c => c.status).join() === 'backlog,todo,doing,review,verify,team,done', p.columns);
+  await page.goto(BASE + '#/');
+  await page.click('button:has-text("+ New project")');
+  await page.fill('#p-name', 'Own Team');
+  await page.fill('#p-path', '');
+  await page.selectOption('#p-tpl', 'own');
+  await page.fill('#p-own-names', 'Ideas, Next');
+  await page.click('#dialog button[type=submit]');
+  await page.waitForFunction(() => location.hash === '#/p/own-team');
+  await page.waitForSelector('.column h3');
+  const h2 = await heads();
+  check('own names applied, rest default', h2[0].includes('Ideas') && h2[1].includes('Next') && h2[2].includes('In progress'), h2);
+  const k = await s.ok('POST', '/api/projects', { name: 'Plain' });
+  check('Kanban leaves columns default', !(await s.ok('GET', '/api/projects/' + k.slug)).columns);
+  noErrors(page);
+}, true);
+
 def('perms', '🔐 Permissions: ticks follow the rules, save keeps hooks, new folders get the defaults', async (s, ctx) => {
   const local = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')).agent || {}; } catch { return {}; } })();
   const folder = path.join(tmp('perms'), 'proj');
@@ -113,7 +143,7 @@ def('perms', '🔐 Permissions: ticks follow the rules, save keeps hooks, new fo
   const r = await s.ok('GET', '/api/projects/alpha/permissions');
   const ways = r.presets.ways.rules.allow[0];
   check('new folder gets run, edit, push-asks and ways', ['Bash', 'Edit', ways].every(x => r.allow.includes(x)) && r.ask.includes('Bash(git push:*)') && !r.allow.includes('WebFetch'), r);
-  check('ways rule is an absolute read of the AI-gile folder', /^Read\(\/\/[a-z]\/.*AI-gile\/\*\*\)$/.test(ways), ways);
+  check('ways rule is an absolute read of the board folder', /^Read\(\/\/[a-z]\/.*\/\*\*\)$/.test(ways), ways);
   const page = await openPage(ctx, '#/p/alpha');
   await page.click('button:has-text("Permissions")');
   await page.waitForSelector('#perm-ticks input');

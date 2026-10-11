@@ -7,13 +7,18 @@ function flightHtml(list) {
 // Is the team working? Either a background run of ours, or a session heard from in the last 5 minutes (hooks, wait, status line).
 function presenceHtml(p, withWake) {
   const pr = p.presence || {};
-  const logBtn = withWake && p.path ? ` <button onclick="agentLog(event, '${p.slug}')">${esc(t('pres.log'))}</button>` : '';
+  // A verbose project gets 👁 Watch (the log, live) in place of 📄 Log (AIG-154).
+  const logBtn = !withWake || !p.path ? '' : p.verbose ? ` <button onclick="watchTeam(event, '${p.slug}')">${esc(t('pres.watch'))}</button>`
+    : ` <button onclick="agentLog(event, '${p.slug}')">${esc(t('pres.log'))}</button>`;
   if (pr.running) return `<span class="pres on">${esc(t('pres.background'))}</span> <span class="muted">${esc(t('pres.since', { when: ago(pr.startedAt) }))}</span>${withWake ? ` <button onclick="restartTeam(event, '${p.slug}')">${esc(t('pres.restart'))}</button>` : ''}${logBtn}`;
   // Online without a run of ours = a session Rich opened himself (a terminal or VS Code window).
   // Where a session you opened runs (AIG-107): the CLI and hooks report VS Code or a terminal.
   const place = t(pr.where === 'vscode' ? 'pres.vscode' : pr.where === 'terminal' ? 'pres.terminal' : 'pres.window');
   if (pr.online) return `<span class="pres on" title="${esc(t('pres.session.title'))}">${esc(place)}</span> <span class="muted">${esc(t('pres.heard', { when: ago(pr.lastHeard) }))}</span>`;
   const btn = withWake && p.path ? ` <button class="primary" onclick="wakeTeam(event, '${p.slug}')">${esc(t('pres.wake'))}</button>` : withWake ? ` <span class="muted">${esc(t('pres.connect'))}</span>` : '';
+  // A window the board opened (AIG-153): it can't see that run, so it says when it opened it, and ▶ Wake opens another.
+  const op = pr.opened;
+  if (op && Date.now() - new Date(op.at) < 15 * 60e3) return `<span class="pres on" title="${esc(t('runin.blind'))}">${esc(t('pres.opened.' + op.where))}</span> <span class="muted">${esc(t('pres.opened.since', { when: ago(op.at) }))}</span>${btn}${logBtn}`;
   return `<span class="pres off">${esc(t('pres.asleep'))}</span>${pr.lastHeard ? ` <span class="muted">${esc(t('pres.lastheard', { when: ago(pr.lastHeard) }))}</span>` : ''}${btn}${logBtn}`;
 }
 async function wakeTeam(e, s = slug()) {
@@ -37,6 +42,32 @@ async function agentLog(e, s = slug()) {
   } catch (err) { alert(err.message); }
 }
 
+/* ---------- 👁 Watch (AIG-154) ---------- */
+// A verbose team's latest run as it goes: asks every 2.5 s while open and keeps to the bottom, unless you scrolled up to read.
+const watchBody = () => `<div id="watchState" class="muted"></div><pre id="watchLog" class="watchlog"></pre>`;
+function paintWatch(r) {
+  const pre = $('watchLog'); if (!pre || !r) return;
+  // Only the latest run: from its last "=== ... started" line.
+  const ls = String(r.text || '').split('\n'), i = ls.map(l => /^=== .* started/.test(l)).lastIndexOf(true);
+  const txt = ls.slice(Math.max(0, i)).join('\n').trim() || t('pres.log.empty');
+  const end = pre.scrollHeight - pre.scrollTop - pre.clientHeight < 40;
+  if (pre.textContent !== txt) { pre.textContent = txt; if (end) pre.scrollTop = pre.scrollHeight; }
+  $('watchState').textContent = (r.running ? t('eye.running', { when: ago(r.startedAt) }) : t('eye.idle')) + (r.verbose ? '' : ' ' + t('eye.off'));
+}
+async function watchTeam(e, s = slug()) {
+  e.preventDefault(); e.stopPropagation();
+  openDialog(`<h2>${esc(t('eye.h'))} <button class="watch-pop" title="${esc(t('eye.pop'))}" onclick="window.open('#/pop-watch/${s}', 'aigile-watch-${s}', 'width=620,height=720')">⧉</button></h2>
+    ${watchBody()}<div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
+  const tick = async () => { if (!$('watchLog')) return clearInterval(timer); try { paintWatch(await api('GET', `/api/projects/${s}/agentlog`)); } catch {} };
+  const timer = setInterval(tick, 2500); tick();
+}
+// The pop-out (#/pop-watch/<slug>) rides the 1 s page poll; the shell is drawn once so scrolling up to read stays put.
+function renderWatch() {
+  document.body.classList.add('poplist');
+  if (!$('watchLog')) $('app').innerHTML = `<h3 style="margin:4px 0">${esc(t('eye.h'))} · ${esc(state.route.slug)}</h3>${watchBody()}`;
+  paintWatch(state.watchLog);
+}
+
 /* ---------- board page ---------- */
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where Rich looks for notifications).
@@ -44,7 +75,9 @@ function renderBoard(p) {
   const by = lanesBy(p.slug);
   const board = by ? lanesOf(p, by).map(([name, pool]) => `<div class="lane"><h4 class="lane-h">${esc(name)} <span class="muted">${pool.length}</span></h4><div class="board${fyFocus(p.slug) ? ' focus' : ''}">${columnsHtml(p, pool)}</div></div>`).join('') || `<p class="muted">${esc(t('board.nomatch'))}</p>`
     : `<div class="board${fyFocus(p.slug) ? ' focus' : ''}">${columnsHtml(p, p.cards)}</div>`;
-  const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
+  // Helpers idle for 12 hours are from an earlier session: left off, so they don't look like a sleeping team (AIG-269).
+  const stale = m => /idle/i.test(m.status || '') && !/lead/i.test(m.name + ' ' + (m.role || '')) && Date.now() - Date.parse(m.updated || 0) > 12 * 3600e3;
+  const team = (p.team || []).filter(m => !/retired/i.test(m.status || '') && !stale(m));
   const log = (p.log || []).slice().reverse().slice(0, 50);
   return `<div class="toolbar"><h2>${esc(p.name)}${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}</h2>
       <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
@@ -67,7 +100,7 @@ function renderBoard(p) {
     ${board}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>
-        `<tr><td><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t('board.team.none'))}</p>`}</div>
+        `<tr><td>${face(m.name, team)}<b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t('board.team.none'))}</p>`}</div>
       <div class="box"><h3>${esc(t('board.log'))}</h3>${log.length ? `<ul class="log">${log.map(l =>
         `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}</div>
     </div>`;
@@ -137,6 +170,11 @@ function forYouQueue(p, pool = p.cards) {
   // Within a kind, a queue: longest-waiting first, so "Wait and see" sends a test to the back.
   return pool.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => rank(a) - rank(b) || queueRank(a, b) || a.updated.localeCompare(b.updated));
 }
+// 🧹 Tidy my pile (AIG-193): the lead folds related cards in For you into one each, and reports back.
+async function tidyPile(s, btn) {
+  try { const r = await api('POST', `/api/projects/${s}/tidy`); note(t(r.already ? 'tidy.already' : 'tidy.asked', { id: r.id })); refresh(true); }
+  catch (e) { alert(e.message); }
+}
 // Focus (AIG-141): click the For you header to see only that column; remembered per project.
 function fyFocus(s, set) {
   state.fyFocus = state.fyFocus || {};
@@ -150,7 +188,7 @@ function forYouColumn(p, label = t('col.verify.short'), tint = '', pool = p.card
   const n = k => cs.filter(c => kindOf(c) === k).length;
   const chips = KINDS.map(k => `<button class="fy-chip ${k === first ? 'on' : ''}" data-first="${k}" title="${esc(t('fy.first'))}" onclick="forYouFirst('${k}')">${esc(kindLabel(k))} ${n(k)}</button>`).join('');
   const all = p.cards.filter(forYou).length;
-  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
+  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${esc(t('tidy.title'))}" onclick="tidyPile('${p.slug}', this)">🧹</button><button class="colbtn" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}</div>`;
 }
 
 // show = the project's card view choices (board cards only); the card panel passes nothing and shows all.
@@ -169,7 +207,7 @@ function metaHtml(c, show = CARD_SHOW) {
 // Last time the team said or did something on a card (Rich's own comments and pokes don't count).
 const STALE_MS = 30 * 60e3;
 function lastHeard(c) {
-  const m = [...c.comments].reverse().find(m => m.author.toLowerCase() !== 'rich');
+  const m = [...c.comments].reverse().find(m => m.author.toLowerCase() !== me().toLowerCase());
   return m ? { who: m.author, at: m.at, text: m.text } : { who: c.assignee || 'team', at: c.created, text: '' };
 }
 function cardHtml(c) {

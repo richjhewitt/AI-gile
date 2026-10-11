@@ -182,6 +182,19 @@ def('inboxonly', 'top bar chips: "to do" shows only your to-dos, "to test" only 
   await page.click('.ib-btn .ib-badge[data-only="t"]');
   await page.waitForSelector('#ibK[hidden]', { state: 'attached' });
   check('"to test" shows only tests', await page.locator('#ibT').isVisible());
+  // AIG-288: on a project's tab with no questions, the "questions" chip still shows the questions (it opens All).
+  await mkProject(s, 'Beta', 'BET');
+  const q = await mkCard(s, 'beta', 'Which colour?');
+  s.cli(['ask', 'beta', q.id, 'Red or blue?', '--as', 'Lead']);
+  await page.waitForSelector('[data-tab="alpha"]'); await page.click('[data-tab="alpha"]');
+  await page.waitForSelector('.ib-btn .ib-badge[data-only="q"]'); await page.click('.ib-btn .ib-badge[data-only="q"]');
+  await page.waitForSelector('#ibQ:not([hidden])', { timeout: 5000 }).catch(() => {});
+  check('"questions" from another project\'s tab shows the questions (AIG-288)', await page.locator('#ibQ').isVisible() && /Red or blue/.test(await page.textContent('#ibQ')));
+  // AIG-293: clicked from a project's board, "to do" still shows the to-dos of every project.
+  await page.goto(BASE + '/#/p/beta'); await page.waitForSelector('.ib-btn .ib-badge[data-only="k"]');
+  await page.click('.ib-btn .ib-badge[data-only="k"]');
+  await page.waitForSelector('#ibK:not([hidden])', { timeout: 5000 }).catch(() => {});
+  check('"to do" clicked on another project\'s board shows the to-dos (AIG-293)', await page.locator('#ibK').isVisible() && /Add the key/.test(await page.textContent('#ibK')));
   noErrors(page);
 }, true);
 
@@ -209,5 +222,23 @@ def('aiflick', '🤖 AI passed view: one test at a time with the evidence, accep
   await page.click('#ibAi [data-fl="accept"]');
   await page.waitForFunction(() => document.getElementById('ibAi').hidden, null, { timeout: 5000 }).catch(() => {});
   check('accepting the last one closes the view, back to the inbox', (await getCard(s, 'alpha', ids[0])).status === 'done' && await page.locator('#ibAi').isHidden() && await page.locator('#ibT').isVisible());
+  noErrors(page);
+}, true);
+
+def('poplist', '⧉ pop an inbox list out into its own window: only that list, no top bar (AIG-104)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Try it'), b = await mkCard(s, 'alpha', 'Add the key');
+  s.cli(['test', 'alpha', a.id, 'click it', '--as', 'Lead']);
+  s.cli(['task', 'alpha', b.id, 'paste the key', '--as', 'Lead']);
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('#ibT [data-poplist="t"]');
+  const popP = ctx.waitForEvent('page');
+  await page.click('#ibT [data-poplist="t"]');
+  const pop = await popP;
+  await pop.waitForLoadState();
+  await pop.waitForSelector('#ibT .ib-item', { timeout: 8000 });
+  check('the window opens on that list', (await pop.evaluate(() => location.hash)) === '#/pop-inbox/t');
+  check('only tests show; no top bar or rail', await pop.locator('#ibK').isHidden() && await pop.locator('header').isHidden() && await pop.locator('#dmRail').isHidden());
+  check('its buttons work as usual', (await pop.locator('#ibT .ib-item button[data-act="accept"]').count()) === 1);
   noErrors(page);
 }, true);

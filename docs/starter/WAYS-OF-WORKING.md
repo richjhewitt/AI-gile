@@ -38,7 +38,8 @@ Every card description, test step, question and comment is **short bullet points
 - Reply on the card with one line (what you'll be doing), then move it to done
 
 ## Stand-ups
-- A **📣 Stand-up** card means: answer once with `aigile standup <proj> --done "..." --next "..." --blockers "..." --as NAME` (`none` if no blockers)
+- A **📣 Stand-up** card means: answer once with `aigile standup <proj> --done "..." --next "..." [--needs "..."] --blockers "..." --as NAME`
+- **Blockers** only for what stops **all** your work: nothing else can go on (`none` otherwise). **Needs** for what waits on {owner} while you carry on with other work
 
 ## Deciding and building
 - **Propose, then wait for {owner}'s go.** Collect new requests, suggest a plan, and don't start building (or send agents) until they say go. If they ask for design suggestions, give options with your pick.

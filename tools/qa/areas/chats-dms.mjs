@@ -24,7 +24,17 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   await page.click('#dmPanel [data-dm="alpha"]');
   await page.waitForSelector('#dmList .dm-msg');
   check('their message on the left', /M3U or JSON/.test(await page.textContent('#dmList .dm-msg:not(.mine)')));
-  check('typing box replies to the open question', /Replying to/.test(await page.textContent('#dmTo')));
+  check('typing box replies to the open question', (await page.inputValue('#dmTarget')) === c.id);
+  // A general message while a question waits (AIG-285): pick "New message to" in the list.
+  await page.selectOption('#dmTarget', '_new');
+  await page.fill('#dmText', 'Unrelated: how is the week going?');
+  await page.press('#dmText', 'Enter');
+  await sleep(600);
+  const gen = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.quick);
+  check('"New message to" sends a general message; the question stays open', gen && /Unrelated/.test(gen.title) && (await getCard(s, 'alpha', c.id)).needsYou, gen);
+  await s.ok('PATCH', `/api/projects/alpha/cards/${gen.id}`, { status: 'done' });
+  await page.waitForFunction(id => document.getElementById('dmTarget') && document.getElementById('dmTarget').value === id, c.id, { timeout: 5000 }).catch(() => {});
+  check('after sending, the typing box answers the question again', (await page.inputValue('#dmTarget')) === c.id);
   await page.fill('#dmText', 'JSON please');
   await page.press('#dmText', 'Enter');
   await page.waitForSelector('#dmList .dm-msg.mine');
@@ -34,7 +44,7 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   await page.fill('#dmText', 'Idea: dark mode for the player');
   await page.press('#dmText', 'Enter');
   await sleep(600);
-  const quick = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.quick);
+  const quick = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.quick && x.status !== 'done');
   check('with nothing open, a new message becomes a quick question for the team', quick && quick.title === '💬 Idea: dark mode for the player' && quick.status === 'team', quick);
   s.cli(['comment', 'alpha', quick.id, 'Nice: made AIG-cards for it', '--as', 'Lead']);
   await page.waitForFunction(() => /made AIG-cards/.test(document.getElementById('dmList').textContent), null, { timeout: 6000 }).catch(() => {});

@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 // aigile: CLI for AI dev teams to use the AI-gile board. Zero dependencies, Node 18+.
 // Usage: node "<path>/aigile.js" help
-const BASE = (process.env.AIGILE_URL || 'http://localhost:4321').replace(/\/$/, '');
+// The board's own port (AIG-252): it writes it to data/board.port when it starts; 4321 if there's none.
+const boardPort = () => { try { return require('fs').readFileSync(require('path').join(process.env.AIGILE_DATA || require('path').join(__dirname, 'data'), 'board.port'), 'utf8').trim(); } catch { return '4321'; } };
+const BASE = (process.env.AIGILE_URL || `http://localhost:${boardPort()}`).replace(/\/$/, '');
 const STATUSES = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'];
 const PRIO = { urgent: 0, high: 1, normal: 2, low: 3 };
-const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 'stop-hook', 'peek', 'create']);
+const BOOL = new Set(['decision', 'needs-you', 'all', 'json', 'full', 'hook', 'stop-hook', 'peek', 'create', 'sprint']);
 
 // Your queue (AIG-159..162): --holds AIG-1,AIG-2  --prio now|today|whenever  --kind decide|test|server|keys|read  --mins N
 async function queueInfo(slug, id, flags) {
@@ -26,14 +28,14 @@ async function uploadShots(slug, shots) {
   return attachments;
 }
 
-// The board's human (AIG-103): "owner" in aigile.local.json next to this file, default Rich.
-const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.parse(require('fs').readFileSync(process.env.AIGILE_LOCAL || require('path').join(__dirname, 'aigile.local.json'), 'utf8')).owner || '').trim() || 'Rich'; } catch { return 'Rich'; } })();
+// The board's human (AIG-103): "owner" in aigile.local.json next to this file, default Owner.
+const OWNER = process.env.AIGILE_OWNER || (() => { try { return String(JSON.parse(require('fs').readFileSync(process.env.AIGILE_LOCAL || require('path').join(__dirname, 'aigile.local.json'), 'utf8')).owner || '').trim() || 'Owner'; } catch { return 'Owner'; } })();
 
 // Where this session runs, so the board can show it and knows a session is at work (AIG-107).
 const WHERE = process.env.AIGILE_BACKGROUND ? 'background' : process.env.VSCODE_PID || process.env.TERM_PROGRAM === 'vscode' ? 'vscode' : 'terminal';
 
 const HELP = `aigile: the AI-gile board CLI.  Project = slug, name or key (case-insensitive).
-Set AIGILE_URL to change the server (default http://localhost:4321). Set AIGILE_AS=NAME to skip --as.
+Set AIGILE_URL to change the server (default: the port the board last started on, else 4321). Set AIGILE_AS=NAME to skip --as.
 Text args can be "-" to read from stdin (handy for multi-line).
 
 START OF SESSION
@@ -55,6 +57,7 @@ WORKING
   test <proj> <id> "steps ${OWNER} can follow" --as NAME    -> moves to verify, sets testSteps, comments
         [--open URL [--start "command"]]   adds a ▶ Open it button: starts the app if needed, opens the page
         [--commit SHA] [--shot a.png,b.png]  proof: the board shows what changed in that commit, plus your screenshots
+  fold <proj> <target> <id> [<id>...] --as NAME   fold cards about the same feature into one (steps move across, the others close)
   tests <proj> [--all]                    AI tester: the tests waiting for ${OWNER} that nobody checked yet, with their steps
   checked <proj> <id> pass|fail|skip "what you saw" [--shot a.png] --as NAME   AI tester's verdict and evidence
   ask also takes: --options "A,B,C"  (up to 4 answer buttons under your question; otherwise the board guesses)
@@ -69,11 +72,16 @@ HOOKS (agent session hooks, see AGENTS.md)
   dm <proj> "text" --as NAME             chatty leads only: start a DM to ${OWNER} (a nudge or a light word; one at a time)
   wait <proj> [--every SECONDS]           run in the BACKGROUND while idle: exits with ${OWNER}'s news when they comment
   updates <proj> --stop-hook              Stop: blocks stopping once while there is unseen news
+  bye <proj>                              SessionEnd: the window closed, a background run takes over
+  wake <proj> [--sprint]                  start a team's background run (--sprint: work through To do)
+  watchsay "text"                         the 🌙 watchman's one-line answer in its chat
 
 TEAM AND LOG
-  team <proj> NAME [--role R --model M --task T --status S]    upsert roster entry
+  team <proj> NAME [--role R --model M --task T --status S]    upsert roster entry (a new member gets a free library picture)
+  avatar <proj> [PIC] --as NAME           your profile picture: no PIC lists the picture library, PIC (number or name) takes one
   log <proj> "text" [--decision] --as NAME
-  standup <proj> --done "..." --next "..." [--blockers "... | none"] --as NAME    answer a 📣 Stand-up card (AGENTS.md)
+  standup <proj> --done "..." --next "..." [--needs "..."] [--blockers "... | none"] --as NAME    answer a 📣 Stand-up card (AGENTS.md)
+        --needs: waits on the owner while you carry on;  --blockers: only what stops ALL your work
 
 PROJECTS
   new-project <name> [--key K --path P --desc D]
@@ -136,7 +144,7 @@ function who(flags) {
 }
 
 /* ---------- formatting ---------- */
-const flagsOf = c => (c.blocked ? ' BLOCKED' : '') + (c.needsYou ? ' NEEDS-RICH' : '');
+const flagsOf = c => (c.blocked ? ' BLOCKED' : '') + (c.needsYou ? ' NEEDS-OWNER' : '');
 const line = c => `${c.id} [${c.status}] ${c.type}/${c.priority}${c.assignee ? ' @' + c.assignee : ''}${c.sprint ? ' (' + c.sprint + ')' : ''}${flagsOf(c)}  ${c.title}`;
 const when = s => (s || '').replace('T', ' ').slice(0, 16);
 // Attached files (AIG-77), one per line with the full path so the agent can open them.
@@ -225,21 +233,28 @@ const cmds = {
     const p = await api('GET', P(slug));
     if (flags.json) return console.log(JSON.stringify(p, null, 2));
     const by = s => p.cards.filter(c => c.status === s);
-    const short = c => `${c.id}${c.assignee ? ' @' + c.assignee : ''} ${c.title}`;
+    const cut = (t, n) => { t = String(t).replace(/\s+/g, ' '); return t.length > n ? t.slice(0, n - 1) + '…' : t; };
+    const short = c => `${c.id}${c.assignee ? ' @' + c.assignee : ''} ${cut(c.title, 80)}`;
+    const logLine = l => `${when(l.at).slice(5)} ${l.author}: ${cut(l.text, 140)}`;
     const sect = (title, items, n = 8) => items.length ? [title + ':', ...items.slice(0, n).map(x => '  ' + x), ...(items.length > n ? [`  (+${items.length - n} more)`] : [])] : [];
     const o = [`${p.name} (${p.slug}): ` + STATUSES.map(s => `${s} ${by(s).length}`).join(' · ')];
+    // How the owner wants builds started (AIG-235): one line, set in ⚙️ Setup (What kind of lead).
+    const go = ((await api('GET', '/api/setup')).prefs || {}).go;
+    if (go) o.push(go === 'small' ? `${OWNER}'s rule: small things (a fix or tweak, under an hour) you may build without asking; log them as a decision. Bigger work: propose and wait for go.` : `${OWNER}'s rule: ask before every build, however small. Propose and wait for go.`);
     o.push(...sect(`For the team (${OWNER} commented: do first)`, by('team').map(c => short(c) + (lastComment(c) ? `  <- "${lastComment(c).text.slice(0, 100).replace(/\n/g, ' ')}"` : ''))));
     o.push(...sect('In flight', by('doing').map(c => short(c) + ` (${when(c.updated)})`)));
     o.push(...sect('In review', by('review').map(short)));
-    o.push(...sect(`Waiting on ${OWNER}`, p.cards.filter(c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || forRich(c))).map(c => short(c) + (forRich(c) ? ' (task for them)' : c.status === 'verify' ? ' (testing)' : ' (question)'))));
+    o.push(...sect(`Waiting on ${OWNER}`, p.cards.filter(c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || forRich(c))).map(c => short(c) + (forRich(c) ? ' (task for them)' : c.status === 'verify' ? ' (testing)' : ' (question)')), 5));
     o.push(...sect('Blocked', p.cards.filter(c => c.blocked && c.status !== 'done').map(short)));
     const nxt = nextList(p).flatMap(([, cs]) => cs).filter(c => c.status === 'todo');
     o.push(...sect('Next up (todo)', nxt.map(short), 5));
-    const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
+    // Helpers idle for 12 hours are from an earlier session: left off, so they don't look like a sleeping team (AIG-269).
+    const stale = m => /idle/i.test(m.status || '') && !/lead/i.test(m.name + ' ' + (m.role || '')) && Date.now() - Date.parse(m.updated || 0) > 12 * 3600e3;
+    const team = (p.team || []).filter(m => !/retired/i.test(m.status || '') && !stale(m));
     if (team.length) o.push('Team: ' + team.map(m => `${m.name}${m.model ? ' (' + m.model + ')' : ''} ${m.status || ''}${m.task && !/idle/i.test(m.status || '') ? ': ' + m.task : ''}`).join(' | '));
     const log = (p.log || []);
-    o.push(...sect('Recent decisions', log.filter(l => l.kind === 'decision').slice(-5).reverse().map(l => `${when(l.at).slice(5)} ${l.author}: ${l.text}`)));
-    o.push(...sect('Recent log', log.filter(l => l.kind !== 'decision').slice(-5).reverse().map(l => `${when(l.at).slice(5)} ${l.author}: ${l.text}`)));
+    o.push(...sect('Recent decisions', log.filter(l => l.kind === 'decision').slice(-3).reverse().map(logLine)));
+    o.push(...sect('Recent log', log.filter(l => l.kind !== 'decision').slice(-3).reverse().map(logLine)));
     o.push(`More: aigile show ${slug} <id> | aigile list ${slug} --status backlog`);
     console.log(o.join('\n'));
   },
@@ -325,7 +340,7 @@ const cmds = {
     const slug = await project(pos[0]);
     await queueInfo(slug, pos[1], flags);
     const c = await api('POST', C(slug, pos[1]) + '/comments', { author: who(flags), text: await text(pos[2], 'question'), needsYou: true, options: flags.options });
-    out(flags, c, c => `asked ${OWNER} on ${c.id}; card now flagged NEEDS-RICH. Move on to other work (aigile next ${slug}).`);
+    out(flags, c, c => `asked ${OWNER} on ${c.id}; card now flagged NEEDS-OWNER. Move on to other work (aigile next ${slug}).`);
   },
 
   // AI tester (AIG-163): the tests waiting for the owner that nobody has checked yet, steps included, compact.
@@ -341,6 +356,15 @@ const cmds = {
     const attachments = await uploadShots(slug, flags.shot);
     const c = await api('POST', C(slug, pos[1]) + '/aicheck', { result, note, by: who(flags), attachments });
     out(flags, c, c => '🤖 ' + result + ': ' + line(c));
+  },
+
+  // Fold (AIG-190/193): cards about the same feature join one card; their test steps move across and they close.
+  async fold({ pos, flags }) {
+    const slug = await project(pos[0]), into = pos[1], ids = pos.slice(2);
+    if (!into || !ids.length) die('usage: fold <proj> <target id> <id> [<id>...] --as NAME');
+    let c;
+    for (const id of ids) c = await api('POST', C(slug, id) + '/fold', { into, author: who(flags) });
+    out(flags, c, c => `folded ${ids.join(', ')} into ` + line(c));
   },
 
   async test({ pos, flags }) {
@@ -388,7 +412,18 @@ const cmds = {
     const b = { name: pos[1] };
     for (const k of ['role', 'model', 'task', 'status']) if (flags[k] !== undefined) b[k] = flags[k] === true ? '' : flags[k];
     const m = await api('POST', P(slug) + '/team', b);
-    out(flags, m, m => `team: ${m.name}${m.role ? ' | ' + m.role : ''}${m.model ? ' | ' + m.model : ''} | ${m.task || '-'} | ${m.status || '-'}`);
+    out(flags, m, m => `team: ${m.name}${m.role ? ' | ' + m.role : ''}${m.model ? ' | ' + m.model : ''} | ${m.task || '-'} | ${m.status || '-'}${m.avatar ? ' | 🖼️ ' + m.avatar : ''}`);
+  },
+
+  // Your profile picture (AIG-150): no PIC lists the owner's picture library (who wears what); PIC (a name or number) takes one.
+  async avatar({ pos, flags }) {
+    const slug = await project(pos[0]), name = who(flags);
+    if (pos[1]) { const m = await api('POST', P(slug) + '/team', { name, avatar: pos[1] }); return out(flags, m, m => `${m.name} now wears ${m.avatar}`); }
+    const [lib, p] = await Promise.all([api('GET', '/api/avatars'), api('GET', P(slug))]);
+    const mine = ((p.team || []).find(m => m.name.toLowerCase() === name.toLowerCase()) || {}).avatar;
+    out(flags, lib, l => !l.pictures.length ? `The picture library is empty (${l.dir}). Ask ${OWNER} to drop some pictures in it.`
+      : [`Picture library: ${l.dir}  (open a file to look at it)`, ...l.pictures.map((x, i) => `${i + 1}. ${x.file}${x.file === mine ? '  <- yours' : ''}${x.usedBy.length ? '  (' + x.usedBy.map(u => u.name + '@' + u.project).join(', ') + ')' : '  (free)'}`),
+        `Take one: aigile avatar ${slug} <number or name> --as ${name}`].join('\n'));
   },
 
   async log({ pos, flags }) {
@@ -402,6 +437,7 @@ const cmds = {
     const slug = await project(pos[0]);
     const b = { author: who(flags), done: await text(flags.done, '--done'), next: await text(flags.next, '--next') };
     if (flags.blockers !== undefined) b.blockers = flags.blockers === true ? 'none' : await text(flags.blockers, '--blockers');
+    if (flags.needs !== undefined && flags.needs !== true) b.needs = await text(flags.needs, '--needs');   // waits on the owner, other work goes on (AIG-191)
     const r = await api('POST', P(slug) + '/standup', b);
     out(flags, r, r => `stand-up answered on ${r.card}` + (r.waiting.length ? `. Still to answer: ${r.waiting.join(', ')}` : '. Everyone has answered: the lead can move the card to done.'));
   },
@@ -432,10 +468,31 @@ const cmds = {
     if (hook && !news) return; // hooks only speak when there's something new (saves tokens)
     if (!news && !waiting.length) return console.log(`Nothing new from ${OWNER}.`);
     const head = `📬 AI-gile board (${u.project}): ${news ? `new from ${OWNER} since you last looked` : 'cards waiting on your team'}.`;
-    const tail = `Act on these now: read each with \`aigile show ${u.project} <id>\`, then: if it's just information, move it to done (\`aigile move ${u.project} <id> done\`); if it needs work (e.g. sent back), move it to doing, fix it and hand it back with \`aigile test\` for ${OWNER}'s approval. They are marked seen.`;
-    const msg = [head, ...o, tail].join('\n');
+    // Short (AIG-267): it's read on every hook.
+    const tail = `Act now: \`aigile show ${u.project} <id>\`; information only -> \`aigile move ${u.project} <id> done\`; needs work -> doing, fix, then \`aigile test\`. Marked seen.`;
+    // Tidy cards is on (AIG-234): neaten what the owner raised before working on it.
+    const tidy = u.tidy && u.cards.some(c => c.items.some(i => i.kind === 'new card')) ? `First tidy each card ${OWNER} raised: short title (aigile edit --title), bullet description (--desc), ${OWNER}'s words in a comment starting "Original:".` : '';
+    const msg = [head, ...o, tidy, tail].filter(Boolean).join('\n');
     if (flags['stop-hook']) { if (news) console.log(JSON.stringify({ decision: 'block', reason: msg })); return; }
     console.log(msg);
+  },
+
+  // SessionEnd hook (AIG-219): background runs end too, but must not wake themselves again.
+  async bye({ pos }) {
+    if (WHERE === 'background') return;
+    try { await api('POST', P(await project(pos[0])) + '/bye', {}); } catch {}   // board down: nothing to tell
+  },
+
+  // Wake a team (AIG-262): --sprint works through To do, not only the owner's comments.
+  async wake({ pos, flags }) {
+    const slug = await project(pos[0]);
+    const r = await api('POST', P(slug) + '/wake', { sprint: !!flags.sprint });
+    out(flags, r, r => r.terminal ? slug + ': a session is already at work there' : slug + ': woke the team' + (flags.sprint ? ' to sprint' : ''));
+  },
+  // The 🌙 watchman agent's one-line answer to the owner (AIG-262).
+  async watchsay({ pos, flags }) {
+    const r = await api('POST', '/api/chats/_watchman/say', { text: await text(pos[0], 'text') });
+    out(flags, r, () => 'said it in the watchman chat');
   },
 
   // Idle sessions don't fire hooks. A lead runs this as a background command; it costs nothing while
@@ -445,7 +502,7 @@ const cmds = {
     const every = Math.max(5, Number(flags.every) || 15) * 1000;
     for (;;) {
       try {
-        const u = await api('GET', P(slug) + '/updates');
+        const u = await api('GET', P(slug) + '/updates?wait=1');   // wait=1: the board sees the session is idle (AIG-277)
         if (u.cards.length) return cmds.updates({ pos, flags: {} });
       } catch {} // board down: keep waiting
       await new Promise(r => setTimeout(r, every));

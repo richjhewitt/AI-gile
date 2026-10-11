@@ -2,13 +2,14 @@
 //   node tools/qa/qa.mjs [area ...]     (no args = all areas; --list shows them; QA_PORT changes the port)
 // The page areas need playwright: `cd tools/qa && npm i`, or it falls back to the shared install (QA_PLAYWRIGHT).
 // This file is the runner only. Shared helpers: lib.mjs. The areas themselves: areas/*.mjs (each calls def()).
+import fs from 'node:fs';
 import { areas, CHROME, loadPw, startServer, check, sleep, setArea, getFailures } from './lib.mjs';
 
 // Every file in areas/ registers its areas on import; add a new file here.
 for (const f of ['api-cli', 'board', 'card', 'projects-docs', 'inbox', 'team-quiet', 'chats-dms', 'standup-tester', 'look-setup']) await import(`./areas/${f}.mjs`);
 
 // Run order (the order the areas were written in); a new area goes at the end.
-const ORDER = ['api', 'cli', 'board', 'card', 'filters', 'inbox', 'usage', 'presence', 'quiet', 'quietinbox', 'poke', 'blocked', 'docs', 'mdlinks', 'newproject', 'perms', 'gobutton', 'attach', 'refresh', 'look', 'logos', 'guard', 'owner', 'setup', 'update', 'foryou', 'popout', 'columns', 'cardview', 'wip', 'lanes', 'quick', 'standup', 'views', 'steps', 'fynext', 'theme', 'i18n', 'chats', 'answerbtns', 'aitester', 'discover', 'dms', 'openit', 'testnotes', 'drafts', 'proof', 'queue', 'editor', 'dmchats'];
+const ORDER = ['api', 'cli', 'board', 'card', 'filters', 'inbox', 'usage', 'presence', 'quiet', 'quietinbox', 'poke', 'blocked', 'docs', 'mdlinks', 'newproject', 'perms', 'gobutton', 'attach', 'refresh', 'look', 'logos', 'guard', 'owner', 'setup', 'update', 'foryou', 'popout', 'columns', 'cardview', 'wip', 'lanes', 'quick', 'standup', 'views', 'steps', 'fynext', 'theme', 'i18n', 'chats', 'answerbtns', 'aitester', 'discover', 'dms', 'openit', 'testnotes', 'drafts', 'proof', 'queue', 'editor', 'runtokens', 'newscrum', 'dmchats'];
 for (const n of Object.keys(areas)) if (!ORDER.includes(n)) ORDER.push(n);
 for (const n of ORDER) if (!areas[n]) throw new Error('area in ORDER but not defined: ' + n);
 
@@ -35,6 +36,7 @@ for (const name of wanted) {
     if (ctx) await ctx.close().catch(() => {});
     s.stop();
     await sleep(300);
+    try { fs.rmSync(s.dir, { recursive: true, force: true }); } catch {}   // the temp data folder is not kept
   }
 }
 if (browser) await browser.close();

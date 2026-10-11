@@ -8,8 +8,11 @@
 const Dms = (() => {
   let projects = [], chats = [], people = [], filter = 'all', open = null, listOpen = false, thread = null, busy = false;
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
+  const GENERAL = '_new';   // target: a new message to the lead instead of an answer (AIG-285)
   const el = id => document.getElementById(id);
   const avatar = c => `<span class="dm-av" style="--proj:${esc(c.color || '')}">${pic(c.logo, c.emoji || '💬')}</span>`;
+  // A lead's own picture when it has one (AIG-150), else the project's.
+  const leadAv = c => c.leadPic ? `<span class="dm-av" style="--proj:${esc(c.color || '')}"><img class="pic" src="${esc(c.leadPic)}" alt=""></span>` : avatar(c);
   const badge = n => n ? `<span class="dm-unread">${n > 99 ? '99+' : n}</span>` : '';
   // "Seen" per project: the project's last update when you last opened its board (this browser only).
   const seen = { get: s => { try { return localStorage.getItem('aigile.seen.' + s) || ''; } catch { return ''; } }, set: (s, v) => { try { localStorage.setItem('aigile.seen.' + s, v); } catch {} } };
@@ -62,7 +65,7 @@ const Dms = (() => {
 
   // The DM list: one row per lead (🤖) and per friend (🙋), narrowed by the filter chips (All / Agents / People).
   function paintList() {
-    const rows = (filter === 'people' ? [] : chats.map(c => `<button class="dm-row" data-dm="${esc(c.slug)}">${avatar(c)}<span class="dm-rowtext"><b>${esc(c.lead)}</b><span class="muted">${esc(c.name)}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`))
+    const rows = (filter === 'people' ? [] : chats.map(c => `<button class="dm-row" data-dm="${esc(c.slug)}">${leadAv(c)}<span class="dm-rowtext"><b>${esc(c.lead)}</b><span class="muted">${esc(c.name)}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`))
       .concat(filter === 'agents' ? [] : people.map(c => `<button class="dm-row" data-dm="dm:${esc(c.id)}">${personAv}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc(t('dms.person'))}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`));
     const none = filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) ? t('dms.nonone') : t('dms.noleads');
     const chips = ['all', 'agents', 'people'].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}</button>`).join('');
@@ -75,7 +78,9 @@ const Dms = (() => {
   }
 
   // acts: answer buttons under the message (AIG-176), only on the latest one still waiting on you.
-  const msgHtml = (m, acts = '') => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${acts}</div>`;
+  const msgHtml = (m, acts = '') => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta">${face(m.author, thread.team)}<b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${acts}${pickHtml(m)}</div>`;
+  // The 🌙 watchman asking which team a message is for (AIG-221): one button per team.
+  const pickHtml = m => m.pick && m === thread.messages.at(-1) ? `<div class="actions">${m.pick.map((o, i) => `<button data-pick="${i}">${esc(o.label)}</button>`).join('')}</div>` : '';
   // One fold per card (AIG-157): a clear header (kind, id, title); only one fold open at a time, the rest show
   // one line with the latest message, so each card can be dealt with on its own.
   function foldsHtml() {
@@ -123,17 +128,18 @@ const Dms = (() => {
     // A card that newly starts waiting on you opens by itself, and the typing box answers it.
     const fresh = thread.open.find(o => !waitingSeen.has(o.id));
     thread.open.forEach(o => waitingSeen.add(o.id));
-    if (fresh) { target = fresh.id; fold = fresh.id; }
-    if (!thread.open.some(o => o.id === target)) target = thread.open.length ? thread.open[0].id : null;
-    const html = foldsHtml() || `<p class="muted dm-empty">${esc(t('dms.nomsgs'))}</p>`;
+    if (fresh && target !== GENERAL) { target = fresh.id; fold = fresh.id; }
+    if (target !== GENERAL && !thread.open.some(o => o.id === target)) target = thread.open.length ? thread.open[0].id : null;
+    const html = foldsHtml() || `<p class="muted dm-empty">${esc(t(chats.some(x => x.slug === open && x.watchman) ? 'dms.nomsgs.watch' : 'dms.nomsgs'))}</p>`;
     if (list.dataset.sig !== html) {
       const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
       list.dataset.sig = html; list.innerHTML = html;
       if (scroll || atBottom) list.scrollTop = list.scrollHeight;
     }
-    // Which card the typing box answers: the one waiting on you, or pick when several are (AIG-157).
+    // Which card the typing box answers: the one waiting on you, or pick when several are (AIG-157). The list also
+    // offers a new message to the lead, about nothing waiting (AIG-285).
     const q = thread.open.find(o => o.id === target);
-    const to = thread.open.length > 1 ? `${esc(t('dms.replyto'))} <select id="dmTarget" onchange="Dms.aim(this.value)">${thread.open.map(o => `<option value="${esc(o.id)}" ${o.id === target ? 'selected' : ''}>${esc(o.id)} ${esc(o.title)}</option>`).join('')}</select>`
+    const to = thread.open.length && !thread.watchman ? `${esc(t('dms.replyto'))} <select id="dmTarget" onchange="Dms.aim(this.value)">${thread.open.map(o => `<option value="${esc(o.id)}" ${o.id === target ? 'selected' : ''}>${esc(o.id)} ${esc(o.title)}</option>`).join('')}<option value="${GENERAL}" ${target === GENERAL ? 'selected' : ''}>💬 ${esc(t('dms.newmsg', { lead: thread.lead }))}</option></select>`
       : q ? t('dms.replying.html', { link: `<a href="#/p/${esc(thread.slug)}/${esc(q.id)}">${esc(q.id)}</a>`, title: esc(q.title) }) : esc(t('dms.newmsg', { lead: thread.lead }));
     if (el('dmTo').dataset.sig !== to && document.activeElement !== el('dmTarget')) { el('dmTo').dataset.sig = to; el('dmTo').innerHTML = to; }
     el('dmGo').hidden = !q;
@@ -145,7 +151,7 @@ const Dms = (() => {
     thread = who ? { person: true, id: who.id, slug, name: who.name, messages: [], open: [] } : null;
     const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || { slug, name: slug };
     const panel = el('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : avatar(c)}<div><b>${esc(who ? who.name : c.lead || t('dms.lead'))}</b><div class="muted">${esc(c.name)}</div></div><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : leadAv(c)}<div><b>${esc(who ? who.name : c.lead || t('dms.lead'))}</b><div class="muted">${esc(c.name)}</div></div><span style="flex:1"></span>${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-list" id="dmList"></div>
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
         <textarea id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();Dms.send()}"></textarea>
@@ -161,7 +167,7 @@ const Dms = (() => {
   // An answer button that needs a reason (AIG-176): aim the typing box at that card and start the reply.
   function reply(id, text) { aim(id); const ta = el('dmText'); if (ta) { if (text) ta.value = text; ta.focus(); ta.setSelectionRange(text.length, text.length); } }
   function reload() { if (open) loadThread(); loadRail(); }
-  function aim(id) { target = id; fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
+  function aim(id) { target = id; if (id !== GENERAL) fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   function back() { open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
   function close() { open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
 
@@ -173,9 +179,11 @@ const Dms = (() => {
     busy = true; el('dmErr').textContent = '';
     try {
       const attachments = fixed ? [] : await Attach.upload(key, thread.slug);
-      if (q) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
+      if (thread.watchman) await api('POST', '/api/chats/_watchman', { text });   // the watchman passes it on (AIG-221)
+      else if (q) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
       else await api('POST', `/api/projects/${thread.slug}/cards`, { title: '💬 ' + text.split('\n')[0].slice(0, 80), description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
+      if (target === GENERAL) target = null;   // sent: back to answering what waits on you
       await loadThread(true); loadRail();
     } catch (e) { el('dmErr').textContent = e.message || String(e); }
     busy = false;
@@ -201,6 +209,8 @@ const Dms = (() => {
     const go = e.target.closest('#dmRail [data-go]');
     if (go) { location.hash = go.dataset.go; setTimeout(loadRail, 50); return; }
     if (e.target.closest('#dmRail [data-dms]')) { if (listOpen || open) close(); else { listOpen = true; paintList(); loadRail(); } return; }
+    const pk = e.target.closest('#dmPanel [data-pick]');
+    if (pk) { const m = thread && thread.messages.at(-1); if (m && m.pick) send(m.pick[pk.dataset.pick].text); return; }
     const f = e.target.closest('#dmPanel [data-fold]');
     if (f) { openFold(f.dataset.fold); return; }
     const row = e.target.closest('#dmPanel [data-dm]');

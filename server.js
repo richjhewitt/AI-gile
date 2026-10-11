@@ -6,7 +6,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const { PORT, HOST, DATA, PUBLIC, bad } = require('./lib/store');
+const { PORT, HOST, DATA, PUBLIC, bad, localSettings } = require('./lib/store');
 const makeRoutes = require('./lib/routes');
 const { heard } = require('./lib/presence');
 
@@ -15,12 +15,17 @@ fs.mkdirSync(DATA, { recursive: true });
 /* ---------- dev build id ---------- */
 // Development flag: open pages show a "new version, refresh" prompt after each build.
 // A build = a server restart or a change to the page, so the id is start time + page mtime.
-const DEV = /^(1|true|yes)$/i.test(process.env.AIGILE_DEV || '');
+// On for whoever builds AI-gile ("dev": true in aigile.local.json, or AIGILE_DEV=1), off for friends (AIG-253).
+const DEV = /^(1|true|yes)$/i.test(process.env.AIGILE_DEV || '') || localSettings().dev === true;
 const STARTED = Date.now();
 const pageFiles = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? pageFiles(path.join(dir, e.name)) : [path.join(dir, e.name)]);
 const build = () => STARTED + '-' + Math.max(...pageFiles(PUBLIC).map(f => fs.statSync(f).mtimeMs));
 
-const routes = makeRoutes(() => ({ dev: DEV, build: build() }));
+// Server code newer than this running server (AIG-206): the page offers 🔄 Restart the board instead of failing on new routes.
+const serverFiles = () => [path.join(__dirname, 'server.js'), ...fs.readdirSync(path.join(__dirname, 'lib')).filter(f => f.endsWith('.js')).map(f => path.join(__dirname, 'lib', f))];
+const stale = () => { try { return Math.max(...serverFiles().map(f => fs.statSync(f).mtimeMs)) > STARTED; } catch { return false; } };
+
+const routes = makeRoutes(() => ({ dev: DEV, build: build(), stale: stale() }));
 
 /* ---------- http plumbing ---------- */
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json' };
@@ -60,7 +65,7 @@ function readBody(req, max = 1e6) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
-  const pathname = decodeURIComponent(url.pathname);
+  let pathname; try { pathname = decodeURIComponent(url.pathname); } catch { res.writeHead(400); return res.end(); }   // a bad %-code no longer stops the board (AIG-150)
   try {
     if (pathname.startsWith('/api/')) {
       guard(req);
@@ -71,7 +76,7 @@ const server = http.createServer(async (req, res) => {
         const m = pathname.match(re);
         if (m && method === req.method) {
           // Attachment uploads are base64 files up to 10 MB, so they get a bigger body limit.
-          const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, (pathname.endsWith('/attachments') || /^\/api\/dms\/contacts\/[^/]+\/messages$/.test(pathname)) ? 15e6 : /\/(app-)?logo$/.test(pathname) ? 2e6 : 1e6) : {};
+          const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, (pathname.endsWith('/attachments') || /^\/api\/dms\/contacts\/[^/]+\/messages$/.test(pathname)) ? 15e6 : /\/((app-)?logo|me-picture)$/.test(pathname) ? 2e6 : 1e6) : {};
           const out = await fn(m.slice(1), body, url.searchParams);   // DM routes talk to the relay, so they may be async
           // A route can answer with a file instead of JSON: { __file: absolute path }.
           if (out && out.__file) {
@@ -94,7 +99,9 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, HOST, () => console.log(`AI-gile running at http://localhost:${PORT}`));
+// The port goes in a file next to the data (AIG-252), so the teams' commands find a board that isn't on 4321.
+server.listen(PORT, HOST, () => { console.log(`AI-gile running at http://localhost:${PORT}`); try { fs.writeFileSync(path.join(DATA, 'board.port'), String(PORT)); } catch {} });
 // Private DMs: collect this board's relay mailbox every few seconds while DMs are on (lib/dm.js).
 require('./lib/dm').startDms();
 if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();
+require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anything while you are going quiet (AIG-199)
