@@ -55,6 +55,9 @@ function linkifyBase(text, p) {
   return esc(text)
     .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')   // **bold**, used in bullet-point cards
     .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`)
+    // A bare web address like test.locoradio.live/?x (AIG-318); common endings only, so file names stay plain.
+    .replace(/(^|[^\w@/.:"=-])((?:[a-z0-9-]+\.)+(?:com|net|org|io|live|dev|app|co|uk|nl|be|ai|me|tv|gg|xyz|info|site|online)(?::\d+)?(?:\/[^\s<]*[^\s<.,;:!?)\]])?)(?![\w-])/gi,
+      (m, pre, u) => `${pre}<a href="https://${u}" target="_blank" rel="noopener">${u}</a>`)
     .replace(new RegExp(`(^|[^\\w/#-])(${key}-\\d+)\\b`, 'gi'), (m, pre, id) => `${pre}<a href="#/p/${p.slug}/${id.toUpperCase()}">${id}</a>`);
 }
 
