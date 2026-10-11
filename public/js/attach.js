@@ -56,13 +56,23 @@ const Attach = (() => {
     }
     return out;
   }
+  // For a private DM (AIG-111): the pending files as { name, type, data } to send inside the sealed message.
+  async function read(key) {
+    const out = [];
+    for (const f of list(key)) {
+      if (f.size > MAX) throw new Error(t('attach.toobig', { name: f.name }));
+      const data = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(f); });
+      out.push({ name: f.name, type: f.type, data });
+    }
+    return out;
+  }
   const clear = key => { pending.delete(key); paint(key); };
   const has = key => list(key).length > 0;
   // Under a comment: thumbnails for images (click for full size), links for other files.
-  const shown = (m, slug) => m.attachments && m.attachments.length ? `<div class="att-shown">${m.attachments.map(a => {
-    const u = `/api/projects/${slug}/attachments/${encodeURIComponent(a.id)}`;
+  const shown = (m, slug, base = `/api/projects/${slug}/attachments`) => m.attachments && m.attachments.length ? `<div class="att-shown">${m.attachments.map(a => {
+    const u = `${base}/${encodeURIComponent(a.id)}`;
     return isImg(a) ? `<a href="${u}" target="_blank" title="${esc(a.name)}"><img src="${u}" alt="${esc(a.name)}" loading="lazy"></a>` : `<a href="${u}" target="_blank" class="att-file">📎 ${esc(a.name)}</a>`;
   }).join('')}</div>` : '';
 
-  return { boxHtml, upload, clear, has, shown };
+  return { boxHtml, upload, read, clear, has, shown };
 })();

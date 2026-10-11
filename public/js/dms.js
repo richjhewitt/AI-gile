@@ -3,14 +3,20 @@
 // and colour) with a red count of what needs you and a white pip for activity you haven't looked at. 💬 DMs
 // opens the list of team leads; picking one opens the chat: the lead's messages left, yours right. The typing
 // box answers the newest open question, or (when none is waiting) sends the lead a quick question card.
+// Friends' private DMs (AIG-111, lib/dm.js) are chats too: the list has a filter All / Agents / People, and a
+// friend's chat has the same typing box, 👍 and attachments. A friend's chat key is 'dm:<contact id>'.
 const Dms = (() => {
-  let projects = [], chats = [], open = null, listOpen = false, thread = null, busy = false;
+  let projects = [], chats = [], people = [], filter = 'all', open = null, listOpen = false, thread = null, busy = false;
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
   const el = id => document.getElementById(id);
   const avatar = c => `<span class="dm-av" style="--proj:${esc(c.color || '')}">${pic(c.logo, c.emoji || '💬')}</span>`;
   const badge = n => n ? `<span class="dm-unread">${n > 99 ? '99+' : n}</span>` : '';
   // "Seen" per project: the project's last update when you last opened its board (this browser only).
   const seen = { get: s => { try { return localStorage.getItem('aigile.seen.' + s) || ''; } catch { return ''; } }, set: (s, v) => { try { localStorage.setItem('aigile.seen.' + s, v); } catch {} } };
+  const dmSeen = { get: id => { try { return localStorage.getItem('aigile.dmseen.' + id) || ''; } catch { return ''; } }, set: (id, v) => { try { localStorage.setItem('aigile.dmseen.' + id, v); } catch {} } };
+  try { filter = localStorage.getItem('aigile.dmfilter') || 'all'; } catch {}
+  const isPerson = k => String(k).startsWith('dm:');
+  const personAv = '<span class="dm-av">🙋</span>';
   const here = () => (location.hash.match(/^#\/p\/([^/]+)/) || [])[1] || '';
 
   // Drag a project icon up or down to reorder (AIG-189), like servers in Discord. The rail doesn't redraw mid-drag.
@@ -38,9 +44,10 @@ const Dms = (() => {
   async function loadRail() {
     if (!i18n.ready) return void setTimeout(loadRail, 100);
     try { [projects, chats] = await Promise.all([api('GET', '/api/projects'), api('GET', '/api/chats')]); } catch { return; }
+    try { people = (await api('GET', '/api/dms/contacts')).filter(c => !c.blocked).map(c => ({ ...c, unread: c.lastIn && c.lastIn > dmSeen.get(c.id) && open !== 'dm:' + c.id ? 1 : 0 })); } catch { people = []; }
     const cur = here(), p = projects.find(x => x.slug === cur);
     if (p) seen.set(cur, p.updated);   // looking at it now counts as seen
-    const dmUnread = chats.reduce((n, c) => n + c.unread, 0);
+    const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + people.reduce((n, c) => n + c.unread, 0);
     const btn = (attrs, inner, on, title) => `<button class="dm-railbtn ${on ? 'on' : ''}" ${attrs} title="${esc(title)}">${inner}</button>`;
     const html = btn('data-go="#/"', '<span class="dm-av">🏠</span>', location.hash === '#/' || location.hash === '', t('dms.home'))
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>', location.hash === '#/inbox', t('dms.inbox'))
@@ -53,10 +60,15 @@ const Dms = (() => {
     if (listOpen && !open) paintList();
   }
 
-  // The DM list: one row per lead, newest first.
+  // The DM list: one row per lead (🤖) and per friend (🙋), narrowed by the filter chips (All / Agents / People).
   function paintList() {
+    const rows = (filter === 'people' ? [] : chats.map(c => `<button class="dm-row" data-dm="${esc(c.slug)}">${avatar(c)}<span class="dm-rowtext"><b>${esc(c.lead)}</b><span class="muted">${esc(c.name)}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`))
+      .concat(filter === 'agents' ? [] : people.map(c => `<button class="dm-row" data-dm="dm:${esc(c.id)}">${personAv}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc(t('dms.person'))}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`));
+    const none = filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) ? t('dms.nonone') : t('dms.noleads');
+    const chips = ['all', 'agents', 'people'].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}</button>`).join('');
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
-      <div class="dm-list">${chats.map(c => `<button class="dm-row" data-dm="${esc(c.slug)}">${avatar(c)}<span class="dm-rowtext"><b>${esc(c.lead)}</b><span class="muted">${esc(c.name)}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`).join('') || `<p class="muted dm-empty">${esc(t('dms.noleads'))}</p>`}</div>`;
+      <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
+      <div class="dm-list">${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}</div>`;
     const panel = el('dmPanel');
     if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
     panel.hidden = false;
@@ -83,8 +95,29 @@ const Dms = (() => {
           : `<div class="dm-fold-p muted"><b>${esc(last.author)}:</b> ${esc(preview)}</div>${acts}`}</div>`;
     }).join('');
   }
+  // A friend's chat: plain bubbles, no cards or folds.
+  function personHtml(msgs, name) {
+    return msgs.map(m => `<div class="dm-msg ${m.dir === 'out' ? 'mine' : ''}"><div class="dm-meta"><b>${esc(m.dir === 'out' ? me() : name)}</b> ${ago(m.at)}${m.status === 'failed' ? ' · ' + esc(t('dms.failed')) : m.status === 'sending' ? ' · ' + esc(t('dms.sending')) : ''}</div>
+      <div class="dm-bubble">${m.verified === false ? `<i class="muted">${esc(t('dms.unverified'))}</i>` : linkify(m.text || '', thread)}${Attach.shown(m, '', `/api/dms/contacts/${thread.id}/files`)}</div></div>`).join('');
+  }
+  async function loadPerson(scroll) {
+    let msgs;
+    try { msgs = await api('GET', `/api/dms/contacts/${open.slice(3)}/messages`); } catch { return; }
+    const list = el('dmList'); if (!list || !thread || thread.id !== open.slice(3)) return;
+    thread.messages = msgs;
+    const lastIn = msgs.filter(m => m.dir === 'in').map(m => m.at).sort().pop();
+    if (lastIn && lastIn > dmSeen.get(thread.id)) dmSeen.set(thread.id, lastIn);
+    const html = personHtml(msgs, thread.name) || `<p class="muted dm-empty">${esc(t('dms.nomsgperson', { name: thread.name }))}</p>`;
+    if (list.dataset.sig !== html) {
+      const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
+      list.dataset.sig = html; list.innerHTML = html;
+      if (scroll || atBottom) list.scrollTop = list.scrollHeight;
+    }
+    el('dmTo').textContent = t('dms.newperson', { name: thread.name });
+  }
   async function loadThread(scroll) {
     if (!open) return;
+    if (isPerson(open)) return loadPerson(scroll);
     try { thread = await api('GET', '/api/chats/' + open); } catch { return; }
     const list = el('dmList'); if (!list) return;
     // A card that newly starts waiting on you opens by itself, and the typing box answers it.
@@ -108,15 +141,18 @@ const Dms = (() => {
 
   function show(slug) {
     open = slug; listOpen = true;
-    const c = chats.find(x => x.slug === slug) || { slug, name: slug };
+    const who = isPerson(slug) ? people.find(x => 'dm:' + x.id === slug) || { id: slug.slice(3), name: t('dms.person') } : null;
+    thread = who ? { person: true, id: who.id, slug, name: who.name, messages: [], open: [] } : null;
+    const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || { slug, name: slug };
     const panel = el('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${avatar(c)}<div><b>${esc(c.lead || t('dms.lead'))}</b><div class="muted">${esc(c.name)}</div></div><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : avatar(c)}<div><b>${esc(who ? who.name : c.lead || t('dms.lead'))}</b><div class="muted">${esc(c.name)}</div></div><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-list" id="dmList"></div>
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
         <textarea id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();Dms.send()}"></textarea>
         <div class="err" id="dmErr"></div>
-        <div class="actions"><button class="good" id="dmGo" onclick="Dms.send('GO')" title="${esc(t('dms.go.title'))}">${esc(t('dms.go'))}</button><button class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button>${Attach.boxHtml('dm:' + slug)}</div></div>`;
+        <div class="actions"><button class="good" id="dmGo" ${who ? `onclick="Dms.send('👍')" title="${esc(t('dms.like.title'))}">${esc(t('dms.like'))}` : `onclick="Dms.send('GO')" title="${esc(t('dms.go.title'))}">${esc(t('dms.go'))}`}</button><button class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button>${Attach.boxHtml('dm:' + slug)}</div></div>`;
     panel.hidden = false;
+    if (who) el('dmGo').hidden = false;
     loadRail(); loadThread(true);
     el('dmText').focus();
   }
@@ -131,6 +167,7 @@ const Dms = (() => {
 
   async function send(fixed) {
     if (busy || !thread) return;
+    if (thread.person) return sendPerson(fixed);
     const key = 'dm:' + thread.slug, text = fixed || el('dmText').value.trim(), q = thread.open.find(o => o.id === target);
     if (!text && !Attach.has(key)) { el('dmErr').textContent = t('dms.empty'); return; }
     busy = true; el('dmErr').textContent = '';
@@ -144,7 +181,23 @@ const Dms = (() => {
     busy = false;
   }
 
+  // A friend gets the text and any files sealed in one message (lib/dm.js).
+  async function sendPerson(fixed) {
+    const key = 'dm:' + thread.slug, text = fixed || el('dmText').value.trim();
+    if (!text && !Attach.has(key)) { el('dmErr').textContent = t('dms.empty'); return; }
+    busy = true; el('dmErr').textContent = '';
+    try {
+      const attachments = fixed ? [] : await Attach.read(key);
+      await api('POST', `/api/dms/contacts/${thread.id}/messages`, { text, attachments });
+      if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
+      await loadThread(true); loadRail();
+    } catch (e) { el('dmErr').textContent = e.message || String(e); }
+    busy = false;
+  }
+
   document.addEventListener('click', e => {
+    const fl = e.target.closest('#dmPanel [data-dmfilter]');
+    if (fl) { filter = fl.dataset.dmfilter; try { localStorage.setItem('aigile.dmfilter', filter); } catch {} paintList(); return; }
     const go = e.target.closest('#dmRail [data-go]');
     if (go) { location.hash = go.dataset.go; setTimeout(loadRail, 50); return; }
     if (e.target.closest('#dmRail [data-dms]')) { if (listOpen || open) close(); else { listOpen = true; paintList(); loadRail(); } return; }
