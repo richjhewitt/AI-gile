@@ -314,3 +314,24 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
   check('typing boxes are left alone', (await page.locator('input abbr, textarea abbr').count()) === 0);
   noErrors(page);
 }, true);
+
+def('tour', '🎓 guided tour: three levels, a spotlight per stop, Next / Back / Skip (AIG-95)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('button:has-text("🎓")');
+  await page.click('button:has-text("🎓")');
+  await page.waitForSelector('.tour-lvl');
+  check('three levels to pick from', (await page.locator('.tour-lvl').count()) === 3);
+  await page.click('.tour-lvl >> nth=0');   // new to this
+  await page.waitForSelector('.tour-bubble');
+  check('it starts with a welcome and says how many stops', /Welcome/.test(await page.textContent('.tour-bubble')) && /Stop 1 of 8/.test(await page.textContent('.tour-step')));
+  check('new to this also switches the dev words on', (await page.evaluate(() => localStorage.getItem('aigile.explain'))) === '1');
+  await page.click('.tour-bubble .primary');
+  check('the next stop puts a spotlight on the left rail', /Your projects/.test(await page.textContent('.tour-bubble')) && await page.locator('.tour-spot').isVisible());
+  await page.click('.tour-bubble .primary'); await page.click('.tour-bubble .primary');
+  await page.waitForFunction(() => /For you/.test(document.querySelector('.tour-bubble h3')?.textContent || ''), null, { timeout: 6000 }).catch(() => {});
+  check('a board stop opens a board on its own', /#\/p\/alpha/.test(page.url()) && /For you/.test(await page.textContent('.tour-bubble h3')));
+  await page.click('.tour-skip');
+  check('Skip ends it', (await page.locator('#tourLayer').count()) === 0);
+  noErrors(page);
+}, true);

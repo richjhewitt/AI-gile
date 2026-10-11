@@ -38,6 +38,7 @@ function renderHome() {
   }).join('');
   return `<div class="toolbar"><button class="primary" onclick="newProject()">${esc(t('home.newproject'))}</button>
       <button onclick="findProjectsDialog()" title="${esc(t('home.find.title'))}">${esc(t('home.find'))}</button>
+      <button onclick="tourDialog()" title="${esc(t('tour.btn.title'))}">${esc(t('tour.btn'))}</button>
       <button onclick="goQuiet()" title="${esc(t('home.quiet.title'))}">${esc(t('home.quiet'))}</button>
       <button onclick="callStandup()" title="${esc(t('standup.all.title'))}">${esc(t('standup.all'))}</button>
       <a class="navlink" href="#/standups" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a><span class="grow"></span>
