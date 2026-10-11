@@ -43,7 +43,7 @@ For other projects: only check when the card has an **open:** link to a local de
 ## 4. Post your verdict
 
 ```
-node aigile.js checked <proj> <id> pass "Saved 'My bugs' with the Bug filter; picking it again showed only bugs" --shot shot-AIG-121.png --as "Tester (Haiku)"
+node aigile.js checked <proj> <id> pass "Saved 'My bugs' with the Bug filter; picking it again showed only bugs" --shot shot-AIG-121.png --as "Tester (Sonnet)"
 ```
 
 - `pass`: you did every step and saw what it says. The note says what you saw, in one or two plain lines
