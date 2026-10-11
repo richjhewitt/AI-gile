@@ -13,6 +13,7 @@ const Pack = (() => {
 
   function cardBtns(p, c) {
     return `<button id="packCopy" onclick="Pack.copy()" title="${esc(t('pack.copy.title'))}">${esc(t('pack.copy'))}</button>`
+      + `<button id="packAi" class="ai-only" onclick="Pack.ai()" title="${esc(t('pack.ai.title'))}">${esc(t('pack.ai'))}</button>`
       + `<button id="packPaste" onclick="Pack.paste()">${esc(t('pack.paste'))}</button>`;
   }
 
@@ -40,6 +41,28 @@ const Pack = (() => {
       <div class="muted" id="packMsg"></div>`);
     if (await copyText(r.text, 'packText')) $('packMsg').textContent = t('pack.copied');
   }
+  // ✨ Copy with AI help (AIG-377): one tiny AI run tidies the scrubbed pack; it opens in an editable box, then Copy.
+  async function ai() {
+    const s = slug(), c = curCard();
+    openDialog(`<h2>${esc(t('pack.ai.h'))}</h2><p class="muted" id="packAiWait">${esc(t('pack.ai.working'))}</p>`);
+    let r;
+    try { r = await api('POST', `/api/projects/${s}/cards/${encodeURIComponent(c.id)}/pack/ai`, {}); }
+    catch (e) {
+      return openDialog(`<h2>${esc(t('pack.ai.h'))}</h2><div class="err" id="packAiErr">${esc(t('pack.ai.fail', { why: e.message }))}</div>
+        <div class="actions"><button onclick="Pack.ai()">${esc(t('pack.ai.again'))}</button><span style="flex:1"></span><button onclick="closeDialog()">${esc(t('card.close'))}</button></div>`);
+    }
+    last = r;
+    openDialog(`<h2>${esc(t('pack.ai.h'))}</h2>
+      <p class="muted">${esc(t('pack.ai.help'))}</p>
+      <textarea id="packText" rows="14" style="width:100%;font-family:monospace;font-size:12px">${esc(r.text)}</textarea>
+      ${removedHtml(r)}
+      <textarea id="packPrimer" hidden>${esc(r.primer)}</textarea>
+      <div class="actions"><button class="primary" id="packCopyBtn" onclick="Pack.copyEdited()">${esc(t('pack.copy.again'))}</button>
+        <button id="packPrimerBtn" onclick="Pack.copyPrimer(this)">${esc(t('pack.primer.copy'))}</button>
+        <span style="flex:1"></span><button onclick="closeDialog()">${esc(t('card.close'))}</button></div>
+      <div class="muted" id="packMsg">${esc(t('pack.ai.tokens', { n: r.tokens || 0 }))}</div>`);
+  }
+  async function copyEdited() { const el = $('packText'); if (el && await copyText(el.value, 'packText')) $('packMsg').textContent = t('pack.copied'); }
   async function copyPack(btn) { if (last && await copyText(last.text, 'packText')) $('packMsg').textContent = t('pack.copied'); }
   async function copyPrimer(btn) {
     if (!last) return;
@@ -90,5 +113,5 @@ const Pack = (() => {
     await refresh(true);
   }
 
-  return { cardBtns, copy, copyPack, copyPrimer, paste, send, body, addCards };
+  return { cardBtns, copy, ai, copyEdited, copyPack, copyPrimer, paste, send, body, addCards };
 })();
