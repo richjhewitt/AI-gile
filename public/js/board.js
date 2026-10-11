@@ -170,10 +170,10 @@ function columnsHtml(p, pool) {
 /* ---------- For you column (AIG-106) ---------- */
 // Everything waiting on the owner, whatever its status: tests, questions, tasks and blocks. Those cards show
 // here instead of in their own column (their status doesn't change). Chips pick which kind comes first.
-const KINDS = ['q', 't', 's', 'k'], kindLabel = k => t('fy.kind.' + k);
+const KINDS = ['q', 't', 's', 'o', 'k'], kindLabel = k => t('fy.kind.' + k);
 const isMine = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
 const forYou = c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
-const kindOf = c => isMine(c) ? (c.server ? 's' : 'k') : c.status === 'verify' && !c.needsYou && !c.blocked ? 't' : 'q';
+const kindOf = c => isMine(c) ? (c.server ? 's' : c.outside ? 'o' : 'k') : c.status === 'verify' && !c.needsYou && !c.blocked ? 't' : 'q';
 function forYouFirst(k) {
   if (k) { state.forYouFirst = k; try { localStorage.setItem('aigile.forYouFirst', k); } catch {} refresh(true); }
   if (!state.forYouFirst) { try { state.forYouFirst = localStorage.getItem('aigile.forYouFirst'); } catch {} }
@@ -181,7 +181,7 @@ function forYouFirst(k) {
 }
 // The For you queue in board order; the card panel uses it to open the next one (AIG-141).
 function forYouQueue(p, pool = p.cards) {
-  const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : kindOf(c) === 's' && first === 'k' ? 0.5 : 1 + KINDS.indexOf(kindOf(c));   // server tasks lead the Tasks (AIG-320)
+  const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : kindOf(c) === 's' && first === 'k' ? 0.5 : kindOf(c) === 'o' && first === 'k' ? 0.7 : 1 + KINDS.indexOf(kindOf(c));   // server tasks lead the Tasks (AIG-320)
   // Within a kind, a queue: longest-waiting first, so "Wait and see" sends a test to the back.
   // Tests the AI tester passed come first, ready for a quick accept (AIG-300).
   const ai = c => c.aiCheck && c.aiCheck.result === 'pass' ? 0 : 1;

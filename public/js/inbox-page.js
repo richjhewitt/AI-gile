@@ -41,7 +41,7 @@
     const pick = shown.filter(c => !IB.kindFilter || kindOfItem(c) === IB.kindFilter).sort(queueRank);
     // Tests the AI tester passed come first, so Accept all AI-passed matches what you see at the top (AIG-196).
     const aiPassed = c => !!(c.aiCheck && c.aiCheck.result === 'pass');
-    const qs = pick.filter(isQuestion), ks = pick.filter(isTask).sort((a, b) => !!b.server - !!a.server), ts = pick.filter(isTest).sort((a, b) => aiPassed(b) - aiPassed(a));
+    const qs = pick.filter(isQuestion), ks = pick.filter(isTask).sort((a, b) => (!!b.server * 2 + !!b.outside) - (!!a.server * 2 + !!a.outside)), ts = pick.filter(isTest).sort((a, b) => aiPassed(b) - aiPassed(a));
     // A link to one question (alerts, the home list) opens its chat.
     if (IB.flashKey) { const f = qs.find(c => keyOf(c) === IB.flashKey); if (f) IB.chat = f.project; }
     IB.paintChats(qs);
