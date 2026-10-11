@@ -439,7 +439,7 @@
  "inbox.tasks.sub": "dingen die enkel jij kan doen",
  "inbox.t.sub": "langst wachtend eerst",
  "inbox.all": "Alles",
- "inbox.more": "nog {n} die tot morgenvroeg wachten",
+ "inbox.more": "🌙 {n} die tot morgenvroeg wachten",
  "inbox.empty.title": "Niks wacht op jou 🎉",
  "inbox.empty.text": "Als een team een vraag stelt of iets klaar is voor jouw {{dev:test}}, verschijnt het hier.",
  "inbox.toast.sent": "Naar het team verstuurd ({id}).",

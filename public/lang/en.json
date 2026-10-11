@@ -439,7 +439,7 @@
  "inbox.tasks.sub": "things only you can do",
  "inbox.t.sub": "longest waiting first",
  "inbox.all": "All",
- "inbox.more": "{n} more waiting for the morning",
+ "inbox.more": "🌙 {n} waiting for the morning",
  "inbox.empty.title": "Nothing waiting on you 🎉",
  "inbox.empty.text": "When a team asks a question or a feature is ready to {{dev:test}}, it shows up here.",
  "inbox.toast.sent": "Sent to the team on {id}.",
