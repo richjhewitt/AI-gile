@@ -133,6 +133,11 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .share-lcard .t { font-weight: 600; overflow-wrap: anywhere; }
 .share-lcard .muted { font-size: 12px; }
 .share-plain { white-space: pre-wrap; overflow-wrap: anywhere; margin: 6px 0; }
+/* A friend's shared project as its own board (AIG-324): read-only-ish, cards open a dialog, nothing drags. */
+.share-boardlink { margin: 0 0 8px; }
+.sb-card { cursor: pointer; }
+.sb-card .t { overflow-wrap: anywhere; }
+.sb-mine { border-color: var(--you); }
 .share-preview { width: 100%; border-collapse: collapse; margin: 8px 0; }
 .share-preview th { text-align: left; vertical-align: top; padding: 4px 8px 4px 0; width: 110px; color: var(--muted); font-weight: 600; }
 .share-preview td { padding: 4px 0; border-top: 1px solid var(--line); }

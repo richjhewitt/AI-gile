@@ -37,8 +37,14 @@ const Share = (function () {
   const theirComments = share => (inb && inb.comments[share]) || [];
   const plain = s => `<div class="share-plain">${esc(s)}</div>`;   // a friend's text: escaped, links not clickable
   // The 📥 From {friend} row above the board: their cards, which stay here until I take one.
+  // AIG-324: what they share with me, as its own board (#/shared/<link>), shaped by the role they gave me.
+  const boardLink = l => l && l.theirRole && !l.forgotten && ['live', 'ended'].includes(l.state)
+    ? `<p class="share-boardlink"><a class="btn" id="shareOpenBoard" href="#/shared/${esc(l.id)}">${esc(t('sb.open', { name: l.friend }))}</a> <span class="muted">${esc(t('sb.youare', { role: t('share.role.' + l.theirRole) }))}</span></p>` : '';
   function laneHtml(p) {
     const l = ofProject(p.slug);
+    return boardLink(l) + rowHtml(l);
+  }
+  function rowHtml(l) {
     if (!l || !inb || inb.link !== l.id || (!inb.cards.length && !(l.state === 'live' && l.effective && l.effective.takeCards))) return '';
     const cards = inb.cards.map(x => `<button class="share-lcard" data-share-card="${esc(x.share)}" onclick="Share.laneCard('${esc(x.share)}')">
       <span class="t">${esc(x.title)}</span><span class="muted">${esc(x.type)} · ${esc(x.priority)}${theirComments(x.share).length ? ' · ' + esc(t('share.lane.replies', { n: theirComments(x.share).length })) : ''}${x.taken ? ' · ' + esc(t('share.lane.taken', { id: x.taken })) : ''}${x.forYou ? ' · 🙋 ' + esc(t('share.lane.forYou')) : ''}</span></button>`).join('');
@@ -221,6 +227,8 @@ const Share = (function () {
         <p class="muted" id="shareHeard">${esc(l.lastHeard ? t('share.heard', { name: l.friend, when: ago(l.lastHeard) }) : t('share.heard.never', { name: l.friend }))}</p>
         ${whatHtml(l)}
         ${roleHtml(l)}
+        <label class="chk"><input type="checkbox" id="shareBoard" ${l.board ? 'checked' : ''} ${can(l, 'seeMine') ? '' : 'disabled'} onchange="Share.setBoard('${l.id}', this.checked)"> ${esc(t('share.board', { name: l.friend }))}</label>
+        <p class="muted" id="shareBoardHelp">${esc(t(!can(l, 'seeMine') ? 'share.board.no' : l.board ? 'share.board.on' : 'share.board.off', { name: l.friend }))}</p>
         <label class="chk"><input type="checkbox" id="shareTeamRead" ${l.mine && l.mine.teamRead ? 'checked' : ''} onchange="Share.setTeamRead('${l.id}', this.checked)"> ${esc(t('share.allow.teamRead'))}</label>
         <p class="muted">${esc(t(l.mine && l.mine.teamRead ? 'share.teamRead.on' : 'share.teamRead.off', { name: l.friend }))}</p>
         <div class="actions"><button onclick="Share.ping('${l.id}')" ${l.on ? '' : 'disabled'}>${esc(t('share.ping'))}</button>
@@ -254,6 +262,7 @@ const Share = (function () {
   const offer = () => act(() => api('POST', '/api/shares', { slug: slug(), contact: $('shareWho').value, allow: readTicks('o-') }));
   const setOn = (id, on) => act(() => api('PATCH', '/api/shares/' + id, { on }));
   const setTeamRead = (id, teamRead) => act(() => api('PATCH', '/api/shares/' + id, { teamRead }));
+  const setBoard = (id, board) => act(async () => { const r = await api('PATCH', '/api/shares/' + id, { board }); if (r.shared) note(t('share.board.sent', { n: r.shared.sent, held: r.shared.held })); });
   const setRole = id => act(() => api('PATCH', '/api/shares/' + id, { role: $('shareRole').value, scope: $('shareRoleScope').value }));
   const ping = id => act(() => api('POST', `/api/shares/${id}/ping`));
   function unlink(id, forget) {
@@ -302,6 +311,6 @@ const Share = (function () {
   }
 
   setInterval(() => { if (!document.hidden && typeof i18n !== 'undefined' && i18n.ready) load(); }, 3000);
-  return { load, button, dialog, offer, setOn, setTeamRead, setRole, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
+  return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setRole, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
     laneHtml, cardBtn, cardComments, commentMark, previewCard, sendCard, unshareCard, sendHeld, laneCard, laneReply, takeCard };
 })();

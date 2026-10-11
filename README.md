@@ -151,6 +151,9 @@ All endpoints take and return JSON.
 | POST | `/api/shares/:id/inbound/:share/comments`, `/take` | Reply on a lane card `{text, force?}`; take it into your Backlog |
 | POST | `/api/shares/:id/test`, `/api/shares/:id/inbound/:share/verdict` | Hand the friend a test on a shared card `{card, text, force?}`; answer theirs `{verdict: accept or back, note?}` (a label, nothing moves) |
 | GET | `/api/shares/:id/files/:fid` | One of their attachments, as a download only |
+| PATCH | `/api/shares/:id` | `{board}`: show the friend my whole board (every card of the project, live, with its column) instead of only ticked cards (default off; not for a Reporter) |
+| GET | `/api/shares/:id/board` | What the friend shares with me, as a board: their cards with their column, the cards I raised there, the role they gave me (`can`) |
+| POST | `/api/shares/:id/raise`, `/api/shares/:id/board/:share/comments`, `/status` | On their board: raise a card `{type, title, description?, force?}`, comment `{text, force?}`, my status on their card `{status}` (a label); each only as the role allows |
 | GET | `/api/projects/:slug/cards/:id/friend` | What a team is given about a shared card: friend text fenced if you let your team read their cards, else only a count |
 
 ## Private DMs and the relay
