@@ -499,7 +499,7 @@ const cmds = {
     const every = Math.max(5, Number(flags.every) || 15) * 1000;
     for (;;) {
       try {
-        const u = await api('GET', P(slug) + '/updates');
+        const u = await api('GET', P(slug) + '/updates?wait=1');   // wait=1: the board sees the session is idle (AIG-277)
         if (u.cards.length) return cmds.updates({ pos, flags: {} });
       } catch {} // board down: keep waiting
       await new Promise(r => setTimeout(r, every));

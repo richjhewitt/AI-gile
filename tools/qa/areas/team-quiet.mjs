@@ -199,6 +199,25 @@ def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuc
   check('back from quiet: a summary per project', cut && cut.stuck.includes(mid.id) && cut.restarted.includes(mid.id) && !(await s.ok('GET', '/api/watchman')), back.summary);
 }, false);
 
+def('keepgoing', '🌙 keeps every team on task: the every-minute look picks up a card left in progress, and a session idle in its wait gets one nudge that ends the wait (AIG-277)', async s => {
+  await mkProject(s, 'Half', 'HLF', { path: tmp('half') });
+  await mkProject(s, 'Idle', 'IDL', { path: tmp('idle') });
+  const mid = await mkCard(s, 'half', 'Half done', { status: 'doing' });
+  const todo = await mkCard(s, 'idle', 'Buildable', { status: 'todo' });
+  await s.ok('POST', '/api/quiet', { on: true, watch: ['half', 'idle'] });
+  await sleep(4500);   // going quiet wakes both teams; wait until those runs end
+  await s.ok('GET', '/api/projects/idle/updates?wait=1');   // the Idle session now sits in 'aigile wait'
+  await sleep(50);
+  await s.ok('POST', '/api/watchman/quick');
+  check('the every-minute look picks up a card left in progress', /Picked back up/.test((await getCard(s, 'half', mid.id)).comments.at(-1)?.text || ''));
+  check('an idle session with work it can do gets a keep-going nudge', /Keep going/.test((await getCard(s, 'idle', todo.id)).comments.at(-1)?.text || ''));
+  const u = await s.ok('GET', '/api/projects/idle/updates?wait=1');
+  check('the nudge ends its wait', u.cards.some(c => c.id === todo.id), u);
+  await s.ok('POST', '/api/watchman/quick');
+  check('one nudge, not one a minute', (await getCard(s, 'idle', todo.id)).comments.filter(m => /Keep going/.test(m.text)).length === 1);
+  await s.ok('POST', '/api/quiet', { on: false });
+}, false, { AIGILE_IDLE_MS: '1' });
+
 def('nightglance', '🌙 night glance: a calm pop-out with the watchman per project; an amber glow only for real blockers (AIG-209)', async (s, ctx) => {
   await mkProject(s, 'Calm', 'CLM', { path: tmp('calm') });
   await mkProject(s, 'Trouble', 'TRB', { path: tmp('trouble') });
