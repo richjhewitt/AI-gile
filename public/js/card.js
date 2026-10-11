@@ -124,9 +124,37 @@ function replyHtml(p, c, msg, newest) {
       ${replyBox(p, c)}
       ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">${esc(t('card.earlier'))}</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}`;
 }
-const replyBox = (p, c) => `<div class="reply"><textarea id="r-text" data-draft="${esc(p.slug + '/' + c.id)}/reply" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
+const replyBox = (p, c) => `<div class="reply">${cardAnswers(p, c)}<textarea id="r-text" data-draft="${esc(p.slug + '/' + c.id)}/reply" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
         <div class="err" id="r-err"></div>
-        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>`;
+        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${looksRight(c)}${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>`;
+/* ---------- one-click answers on the card itself (AIG-371, AIG-315) ----------
+   An open `aigile task` (assigned to the owner) always gets a ✅ Done. An open `aigile ask` (needs the owner) gets the same
+   Go / Yes / --options buttons as the inbox (askActions, core.js); one that needs a reason (Not yet, No) starts the reply box.
+   👍 Looks right sits next to Send reply when the newest comment is from the team and holds a code block or says
+   "you should see" (en) / "je zou ... zien" / "zou je ... moeten zien" (nl). It sends the localised "Done, it looked as expected". */
+const LOOKS_RIGHT_RE = /```|you should see|you'll see|je zou[^.\n]{0,40}zien|zou je[^.\n]{0,40}zien|je moet[^.\n]{0,40}zien/i;
+function looksRight(c) {
+  const m = (c.comments || []).at(-1);
+  return m && !isOwner(m.author) && c.status !== 'done' && LOOKS_RIGHT_RE.test(m.text || '') ? `<button class="good" data-looksright title="${esc(t('card.looksright.title'))}" onclick="sendReply(t('card.looksright.say'))">${esc(t('card.looksright'))}</button>` : '';
+}
+function cardAnswers(p, c) {
+  if (c.status === 'done') return '';
+  if (isOwner(c.assignee)) return `<div class="msg-acts card-acts"><button class="good" data-cardtaskdone onclick="cardTaskDone()">${esc(t('inbox.k.done'))}</button></div>`;
+  if (!c.needsYou || c.blocked || c.status === 'verify') return '';
+  const cs = [...(c.comments || [])].reverse(), a = cs.find(x => x.mark === 'ask' && !isOwner(x.author)) || cs.find(x => !isOwner(x.author));
+  const acts = a ? askActions(a, 'question') : [];
+  return acts.length ? `<div class="msg-acts card-acts">${acts.map(x => `<button class="${x.ask != null ? '' : 'good'}" data-cardact ${x.ask != null ? `data-ask="${esc(x.ask)}"` : `data-say="${esc(x.say)}"`}>${esc(x.label)}</button>`).join('')}</div>` : '';
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-cardact]'); if (!b) return;
+  e.preventDefault();
+  if (b.dataset.ask != null) { const ta = $('r-text'); if (ta) { ta.value = b.dataset.ask; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } return; }
+  sendReply(b.dataset.say);
+});
+async function cardTaskDone() {
+  const next = nextForYou();
+  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/taskdone`, { text: $('r-text').value.trim() }); clearDraft(slug() + '/' + cardId() + '/reply'); doneWithCard(next); } catch (err) { setErr('r-err', err); }
+}
 // A popped-out card is a live chat (AIG-313): oldest first, newest at the bottom, a typing line while the team
 // works on the card, the reply box underneath. Sending never closes it.
 function chatHtml(p, c, msg) {
