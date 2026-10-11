@@ -109,6 +109,7 @@ ul.bl li:last-child { margin-bottom: 0; }
 .codebox .copy.open ~ .copy.edit { right: 170px; }
 .codebox .copy.open ~ .copy.edit ~ pre { padding-right: 240px; }
 .doctitle { margin-right: auto; align-self: center; }
+.md-copy { font-size: 11px; padding: 0 4px; margin-left: 2px; line-height: 1.4; vertical-align: baseline; }
 .desc code, .body code, .ib-question code { background: var(--col); padding: 1px 5px; border-radius: 4px; font-size: 0.92em; }
 #filterbar { padding: 12px 20px 0; }
 .fbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
