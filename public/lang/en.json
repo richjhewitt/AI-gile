@@ -559,5 +559,14 @@
  "ai.chip.skip": "🤖 Couldn’t check",
  "inbox.aiall": "✅ Accept all AI-passed ({n})",
  "inbox.aiall.title": "Accept every test the AI tester passed. Open any first if you want to look",
- "inbox.toast.aiall": "Accepted {n} tests"
+ "inbox.toast.aiall": "Accepted {n} tests",
+ "logo.title": "Picture",
+ "logo.app": "App logo",
+ "logo.pick": "Choose a picture",
+ "logo.remove": "Remove",
+ "logo.path": "Path of a picture on this computer",
+ "logo.path.ph": "or a file path, e.g. C:/Projects/tunio/logo.png",
+ "logo.use": "Use this file",
+ "logo.help": "PNG, JPG, SVG, ICO or WEBP, up to 1 MB. It replaces the emoji.",
+ "logo.toobig": "The picture can be up to 1 MB"
 }

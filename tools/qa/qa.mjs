@@ -994,6 +994,63 @@ def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, 
   noErrors(page);
 }, true);
 
+def('logos', 'a project picture and an app logo replace the emoji / 🗂️: upload, typed path, served, shown, removed (AIG-175)', async (s, ctx) => {
+  await mkProject(s, 'Tunio', 'TUN');
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+  const dir = tmp('logos'), file = path.join(dir, 'logo.png');
+  fs.writeFileSync(file, png);
+  const up = await s.ok('POST', '/api/projects/tunio/logo', { name: 'logo.png', type: 'image/png', data: png.toString('base64') });
+  check('upload returns the logo url', /^\/api\/projects\/tunio\/logo\?v=\d+$/.test(up.logo), up);
+  const sum = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'tunio');
+  check('summary carries the logo', sum.logo === up.logo, sum.logo);
+  const img = await fetch(s.base + up.logo);
+  check('image is served with its type', img.status === 200 && img.headers.get('content-type') === 'image/png' && (await img.arrayBuffer()).byteLength === png.length);
+  // Refused: other types, a big file, shell characters, a missing file, a relative path.
+  check('wrong type refused', (await s.api('POST', '/api/projects/tunio/logo', { name: 'x.exe', data: 'AAAA' })).status === 400);
+  check('over 1 MB refused', (await s.api('POST', '/api/projects/tunio/logo', { name: 'big.png', data: Buffer.alloc(1100000).toString('base64') })).status === 400);
+  for (const bad of ['C:/x/$HOME/a.png', 'C:/x/%TEMP%/a.png', file + '`', 'logo.png', path.join(dir, 'nope.png')])
+    check('path refused: ' + bad.slice(-18), (await s.api('POST', '/api/projects/tunio/logo', { path: bad })).status === 400);
+  fs.writeFileSync(path.join(dir, 'big.png'), Buffer.alloc(1100000));
+  check('big file on disk refused', (await s.api('POST', '/api/projects/tunio/logo', { path: path.join(dir, 'big.png') })).status === 400);
+  check('logo of an unknown project refused', (await s.api('POST', '/api/projects/nope/logo', { name: 'a.png', data: 'AAAA' })).status === 404);
+  const svg = path.join(dir, 'mark.svg'); fs.writeFileSync(svg, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><rect width="1" height="1"/></svg>');
+  const viaPath = await s.ok('POST', '/api/projects/tunio/logo', { path: svg.split(path.sep).join('/') });
+  const sv = await fetch(s.base + viaPath.logo);
+  check('typed path is copied in and served as svg', sv.headers.get('content-type') === 'image/svg+xml' && /sandbox/.test(sv.headers.get('content-security-policy') || ''));
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('a.proj[href="#/p/tunio"] h2 img.pic');
+  check('home card shows the picture, not the emoji', !(await page.textContent('a.proj[href="#/p/tunio"] h2')).includes('🎵'));
+  // Through the Look dialog: pick a file, then Remove.
+  await page.goto(BASE + '/#/p/tunio');
+  await page.click('button:has-text("Look")');
+  const before = await page.getAttribute('#look-logo img.pic', 'src');
+  await page.setInputFiles('#look-logo-file', file);
+  await page.waitForFunction(old => document.querySelector('#look-logo img.pic')?.getAttribute('src') !== old, before);
+  const afterPick = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'tunio');
+  check('the picked png is stored', (await fetch(s.base + afterPick.logo)).headers.get('content-type') === 'image/png');
+  await page.click('#look-logo button:has-text("Remove")');
+  await page.waitForSelector('#look-logo img.pic', { state: 'detached' });
+  const gone = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'tunio');
+  check('Remove goes back to the emoji', gone.logo === '' && gone.emoji === '🎵' && (await fetch(s.base + '/api/projects/tunio/logo')).status === 404, gone);
+  check('removing again is harmless', (await s.api('DELETE', '/api/projects/tunio/logo')).status === 200);
+  // App logo: tab icon and header.
+  const fav0 = await page.getAttribute('#favicon', 'href');
+  await page.click('#dialog button:has-text("Cancel")');
+  await page.goto(BASE + '/#/setup');
+  await page.waitForSelector('#app-logo-file');
+  await page.setInputFiles('#app-logo-file', file);
+  await page.waitForSelector('#app-logo img.brand-logo');
+  check('favicon points at the app logo', (await page.getAttribute('#favicon', 'href')).startsWith('/api/app-logo'));
+  check('header shows the picture', (await page.$$('#brand img.brand-logo')).length === 1);
+  check('app logo is served', (await fetch(s.base + '/api/app-logo')).headers.get('content-type') === 'image/png');
+  check('meta carries it', (await s.ok('GET', '/api/meta')).appLogo.startsWith('/api/app-logo'));
+  await page.click('#app-logo button:has-text("Remove")');
+  await page.waitForSelector('#app-logo img.brand-logo', { state: 'detached' });
+  check('favicon is the emoji again', (await page.getAttribute('#favicon', 'href')) === fav0 && (await page.textContent('#brand')).includes('🗂️'));
+  check('app logo gone', (await fetch(s.base + '/api/app-logo')).status === 404 && (await s.ok('GET', '/api/meta')).appLogo === '');
+  noErrors(page);
+}, true);
+
 def('guard', 'only the board on this computer may use the API: host, origin and JSON checks (AIG-90)', async s => {
   await mkProject(s, 'Alpha', 'ALP');
   // Raw request so the Host and Origin headers can be set freely.

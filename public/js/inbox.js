@@ -263,7 +263,7 @@
   /* ---------- inbox page (AIG-33) ---------- */
   function qHtml(c) {
     const a = lastAsk(c), acts = c.blocked ? [] : askActions(a, 'question');
-    return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>${queueChips(c)}
+    return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>${queueChips(c)}
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       <div class="ib-who">${t(c.blocked ? 'inbox.q.isblocked.html' : 'inbox.q.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>${actionsHtml(acts, c.project, c.id)}
@@ -273,7 +273,7 @@
   }
   function kHtml(c) {
     const a = lastAsk(c);
-    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.k.tag'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>${queueChips(c)}
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.k.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>${queueChips(c)}
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       <div class="ib-who">${t('inbox.k.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>
@@ -282,7 +282,7 @@
       <div class="actions"><button class="good" data-act="taskdone">${esc(t('inbox.k.done'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.k.hint'))}</span></div>`;
   }
   function tHtml(c) {
-    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${esc(c.projectEmoji || '')} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       ${aiEvidence(c, c.project)}
       ${c.testSteps ? `<details class="ib-steps"><summary>${esc(t('inbox.t.how'))}</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : `<div class="ib-hint">${esc(t('inbox.t.nosteps'))}</div>`}
@@ -370,7 +370,7 @@
     if (tab !== 'all' && !orderedProjects.some(([p]) => p === tab)) tab = 'all';   // that project's inbox emptied
     const lookOf = p => items.find(c => c.project === p) || {};
     const btn = (key, name, list) => { const l = key === 'all' ? {} : lookOf(key);
-      return `<button class="ib-tab ${tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${tab === key}" title="${esc(name)}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectEmoji ? esc(l.projectEmoji) + ' ' : ''}<span class="nm">${esc(name)}</span> <span class="n">${list.length}</span> ${tabCounts(list)}</button>`; };
+      return `<button class="ib-tab ${tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${tab === key}" title="${esc(name)}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectLogo || l.projectEmoji ? pic(l.projectLogo, l.projectEmoji) + ' ' : ''}<span class="nm">${esc(name)}</span> <span class="n">${list.length}</span> ${tabCounts(list)}</button>`; };
     tabOrder = orderedProjects.map(([p]) => p);
     const projectBtns = orderedProjects.map(([p, name]) => btn(p, name, items.filter(c => c.project === p))).join('');
     const html = allAtEnd
@@ -392,7 +392,7 @@
     const html = chats.map(({ p, list, last }) => {
       const c = list[0], who = lastAsk(list.find(x => lastAsk(x).at === last) || c).author;
       return `<button class="ib-chatbtn ${p === chat ? 'on' : ''}" data-chat="${esc(p)}" style="--proj:${esc(c.projectColor || '')}">
-        <span class="av">${esc(c.projectEmoji || '💬')}</span><span class="nm"><b>${esc(c.projectName)}</b><span class="ib-hint">${esc(who)} · ${ago(last)}</span></span><span class="ib-badge q">${list.length}</span></button>`;
+        <span class="av">${pic(c.projectLogo, c.projectEmoji || '💬')}</span><span class="nm"><b>${esc(c.projectName)}</b><span class="ib-hint">${esc(who)} · ${ago(last)}</span></span><span class="ib-badge q">${list.length}</span></button>`;
     }).join('');
     const box = el('ibChats');
     if (box.dataset.sig !== html) { box.dataset.sig = html; box.innerHTML = html; }
@@ -408,7 +408,7 @@
       + (mins ? `<span class="ib-hint">⏱ ${esc(t('queue.total', { n: mins }))}</span>` : '');
     const kb = el('ibKinds'); if (kb.dataset.sig !== chips) { kb.dataset.sig = chips; kb.innerHTML = chips; }
     const next = [...shown].sort(queueRank)[0];
-    const nx = next ? `<b>▶ ${esc(t('queue.next'))}</b> <a href="#/p/${esc(next.project)}/${esc(next.id)}">${esc(next.projectEmoji || '')} ${esc(next.id)} ${esc(next.title)}</a> ${queueChips(next)}` : '';
+    const nx = next ? `<b>▶ ${esc(t('queue.next'))}</b> <a href="#/p/${esc(next.project)}/${esc(next.id)}">${pic(next.projectLogo, next.projectEmoji)} ${esc(next.id)} ${esc(next.title)}</a> ${queueChips(next)}` : '';
     const nb = el('ibNext'); if (nb.dataset.sig !== nx) { nb.dataset.sig = nx; nb.innerHTML = nx; } nb.hidden = !next;
   }
   function paintPage() {

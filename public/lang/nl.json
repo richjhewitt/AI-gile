@@ -559,5 +559,14 @@
  "ai.chip.skip": "🤖 Kon niet testen",
  "inbox.aiall": "✅ Alles wat AI liet slagen goedkeuren ({n})",
  "inbox.aiall.title": "Keur elke test goed die de AI-tester liet slagen. Open er eerst een als je wilt kijken",
- "inbox.toast.aiall": "{n} tests goedgekeurd"
+ "inbox.toast.aiall": "{n} tests goedgekeurd",
+ "logo.title": "Afbeelding",
+ "logo.app": "App-logo",
+ "logo.pick": "Kies een afbeelding",
+ "logo.remove": "Verwijderen",
+ "logo.path": "Pad van een afbeelding op deze computer",
+ "logo.path.ph": "of een bestandspad, bijv. C:/Projects/tunio/logo.png",
+ "logo.use": "Dit bestand gebruiken",
+ "logo.help": "PNG, JPG, SVG, ICO of WEBP, tot 1 MB. Vervangt de emoji.",
+ "logo.toobig": "De afbeelding mag maximaal 1 MB zijn"
 }

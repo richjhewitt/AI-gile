@@ -28,12 +28,21 @@ setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136
 // Dev builds: when the server or page changes, a small 🆕 Refresh pill floats at the top (AIG-78), above any open
 // card so he can reach it mid-reply. It never covers what he's typing and stays until he clicks it.
 let loadedBuild = null;
+// App logo (AIG-175): the tab icon and the header link use the picture from Setup, else the 🗂️ they start with.
+const FAVICON0 = document.getElementById('favicon').getAttribute('href');
+function applyAppLogo(url) {
+  const f = $('favicon'), b = $('brand');
+  if (f.dataset.logo === (url || '')) return;
+  f.dataset.logo = url || ''; f.setAttribute('href', url || FAVICON0);
+  b.innerHTML = url ? `<img class="brand-logo" src="${esc(url)}" alt=""> AI-gile` : '🗂️ AI-gile';
+}
 async function checkBuild() {
   if (!i18n.ready) return;
   try {
     const m = await api('GET', '/api/meta');
     if (m.owner && m.owner !== state.owner) { state.owner = m.owner; refresh(true); }
     setNight(m.quiet);
+    applyAppLogo(m.appLogo);
     pokeBadge(await api('GET', '/api/projects'));
     // A new install opens Setup first (AIG-91).
     if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';

@@ -153,6 +153,7 @@ function renderSetup() {
   return `<div class="setup"><h2>${esc(t('setup.h'))}</h2>
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
     <label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('setup-lang')}<small class="muted">${esc(t('setup.lang.help'))}</small></label>
+    <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">
       ${s.fields.map(f => `<label class="f"><span>${esc(f.label)}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}"><small class="muted">${esc(f.help)}</small></label>`).join('')}
       <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
@@ -269,6 +270,34 @@ async function saveCardView(reset) {
   try { await api('PATCH', '/api/projects/' + slug(), { cardView }); state.cvPreview = null; closeDialog(); await rerender(); } catch (e) { setErr('cv-err', e); }
 }
 
+/* ---------- picture picker (AIG-175): a project picture or the app logo ---------- */
+// id 'app-logo' edits the app logo (Setup); any other id edits this project's picture (Look dialog).
+const logoUrl = id => id === 'app-logo' ? '/api/app-logo' : '/api/projects/' + slug() + '/logo';
+function logoEditor(id, url) {
+  return `<div id="${id}"><div class="logo-edit">${url ? `<img class="${id === 'app-logo' ? 'brand-logo' : 'pic'}" src="${esc(url)}" alt="">` : ''}
+    <input type="file" id="${id}-file" accept=".png,.jpg,.jpeg,.svg,.ico,.webp" aria-label="${esc(t('logo.pick'))}" onchange="logoUpload('${id}')">
+    ${url ? `<button type="button" onclick="logoRemove('${id}')">${esc(t('logo.remove'))}</button>` : ''}</div>
+    <div class="logo-edit"><input type="text" id="${id}-path" placeholder="${esc(t('logo.path.ph'))}" aria-label="${esc(t('logo.path'))}"><button type="button" onclick="logoUsePath('${id}')">${esc(t('logo.use'))}</button></div>
+    <small class="muted">${esc(t('logo.help'))}</small><div class="err" id="${id}-err"></div></div>`;
+}
+async function logoSend(id, method, body) {
+  try {
+    const r = await api(method, logoUrl(id), body);
+    if (id === 'app-logo') { state.setup = r; applyAppLogo(r.logo); }
+    else state.project = { ...state.project, logo: r.logo };
+    $(id).outerHTML = logoEditor(id, r.logo);
+  } catch (e) { setErr(id + '-err', e); }
+}
+function logoUpload(id) {
+  const f = $(id + '-file').files[0]; if (!f) return;
+  if (f.size > 1024 * 1024) return setErr(id + '-err', new Error(t('logo.toobig')));
+  const rd = new FileReader();
+  rd.onload = () => logoSend(id, 'POST', { name: f.name, type: f.type, data: String(rd.result).split(',')[1] });
+  rd.readAsDataURL(f);
+}
+const logoUsePath = id => $(id + '-path').value.trim() && logoSend(id, 'POST', { path: $(id + '-path').value.trim() });
+const logoRemove = id => logoSend(id, 'DELETE');
+
 /* ---------- project look (AIG-86) ---------- */
 // ---- look: the colour and emoji that mark this project in the inbox, tabs and home page ----
 function lookDialog() {
@@ -277,6 +306,7 @@ function lookDialog() {
     <p class="muted">${esc(t('look.intro', { name: p.name }))}</p>
     <div class="row"><label class="f"><span>${esc(t('cols.emoji'))}</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
     <label class="f"><span>${esc(t('cols.colour'))}</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
+    <div class="f"><span>${esc(t('logo.title'))}</span>${logoEditor('look-logo', p.logo)}</div>
     <label class="chk"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> ${esc(t('look.chatty'))} <span class="muted">${esc(t('look.chatty.cost'))}</span></label>
     <div class="err" id="look-err"></div>
     <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);

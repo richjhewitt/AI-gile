@@ -106,6 +106,8 @@ const api = async (method, url, body) => {
   if (!r.ok) throw new Error(j.error || r.statusText);
   return j;
 };
+// A project's picture, or its emoji when it has none (AIG-175). Round, one em, so it sits where the emoji sat.
+function pic(logo, emoji) { return logo ? `<img class="pic" src="${esc(logo)}" alt="">` : esc(emoji || ''); }
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const ago = (iso, bare) => {   // bare = without "ago", for "unanswered for 5m"
   const s = (Date.now() - new Date(iso)) / 1000, b = bare ? '.bare' : '';
