@@ -105,7 +105,7 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
 
 def('newscrum', 'New project from the Scrum or own-columns template names the columns, statuses unchanged (AIG-170)', async (s, ctx) => {
   const page = await openPage(ctx, '#/');
-  const heads = () => page.$eval('.column h3 span:first-child', els => els.map(e => e.textContent));
+  const heads = () => page.$$eval('.column h3 span:first-child', els => els.map(e => e.textContent));
   await page.click('button:has-text("+ New project")');
   await page.fill('#p-name', 'Scrum Team');
   await page.fill('#p-path', '');
