@@ -57,8 +57,14 @@ Copy the new `relay.js` across (step 1) and run step 3 again. It is safe to re-r
 ## Looking after it
 - Is it running: `sudo systemctl status aigile-relay`
 - Logs: `sudo journalctl -u aigile-relay` shows only startup lines. The web server access log is off for this site.
-- Where messages wait: `/var/lib/aigile-relay` (readable only by the relay's own user). They are deleted once collected, or after 7 days.
+- Where messages wait: `/var/lib/aigile-relay` (readable only by the relay's own user). They are deleted the moment the friend's board has them (it acks right after storing). If the friend never collects, an envelope is deleted after 7 days, or after 48 hours if it is over 1 MB (files). A mailbox holds at most 50 MB; a sender who hits that sees "<name>'s mailbox is full: they need to open AI-gile".
 - Restart: `sudo systemctl restart aigile-relay`
+
+## What the relay stores, and for how long
+- Per mailbox: the owner's public signing key, and sealed (encrypted) envelopes waiting to be collected. Messages and files (up to 8 MB per message) are inside the sealed envelope; the relay cannot read them.
+- Deleted right after the friend acks them. Not acked: 7 days, or 48 hours for envelopes over 1 MB. No copies, no request logs, no temp files (each envelope is one file, unlinked on delete).
+- Tunables (environment, in the systemd unit): `RELAY_KEEP_HOURS` (168), `RELAY_BIG_BYTES` (1048576), `RELAY_BIG_KEEP_HOURS` (48), `RELAY_BOX_BYTES` (52428800 per mailbox), `RELAY_MAX_BYTES` (2 GB in all).
+- Optional `GET /stats` (envelope count and total bytes) exists only if `RELAY_STATS_KEY` (your public signing key, base64url) is set, and only that key's signed request gets it.
 
 ## What gets installed
 - `/opt/aigile-relay/relay.js`, run by systemd as the `aigile-relay` user (no login, no shell), starting on boot and restarting if it stops.
