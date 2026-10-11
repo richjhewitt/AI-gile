@@ -4,7 +4,7 @@
 const IB = {
   items: [], raw: [], hidden: 0, flashKey: null,   // what is shown, what the server sent, how many quiet mode hides
   tab: 'all', chat: null, fromProject: null, selectPinned: false, tabOrder: [],   // project tabs and the Messages chat (AIG-37, AIG-87)
-  flick: -1, kindFilter: '', only: '', testerOn: false,   // flick: the 🤖 view (-1 closed); only: q, k or t from a top bar chip (AIG-187)
+  flick: -1, decide: -1, kindFilter: '', only: '', testerOn: false,   // flick: the 🤖 view (-1 closed); only: q, k or t from a top bar chip (AIG-187)
 };
 (function () {
   'use strict';

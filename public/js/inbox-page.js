@@ -17,10 +17,20 @@
     if (IB.flick >= aiList.length) IB.flick = aiList.length - 1;
     const bar = aiList.length ? `<button class="ib-tab ${IB.flick >= 0 ? 'on' : ''}" data-flick="1">${esc(t('inbox.ai.tab', { n: aiList.length }))}</button>` : '';
     if (el('ibAiBar').dataset.sig !== bar) { el('ibAiBar').dataset.sig = bar; el('ibAiBar').innerHTML = bar; }
-    const flOn = IB.flick >= 0;
-    el('ibAi').hidden = !flOn;
+    // ⚡ Decide (AIG-361): the open answer-button questions and Topics, one at a time.
+    const dcList = decideList(shown);
+    if (IB.decide >= dcList.length) IB.decide = dcList.length - 1;
+    const dcOn = IB.decide >= 0;
+    el('ibDc').hidden = !dcOn;
+    const flOn = IB.flick >= 0 || dcOn;
+    el('ibAi').hidden = IB.flick < 0 || dcOn;
     for (const id of ['ibNext', 'ibKinds', 'ibQ', 'ibK', 'ibT', 'ibEmpty', 'ibMore', 'ibOnly']) if (flOn) el(id).hidden = true;
-    if (flOn) {
+    if (dcOn) {
+      const cur = dcList[IB.decide], html = decideHtml(cur, IB.decide, dcList.length);
+      if (el('ibDc').dataset.sig !== html) { el('ibDc').dataset.sig = html; el('ibDc').innerHTML = html; }
+      return;
+    }
+    if (IB.flick >= 0) {
       const cur = aiList[IB.flick], html = aiFlickHtml(cur, IB.flick, aiList.length);
       if (el('ibAi').dataset.sig !== html) { el('ibAi').dataset.sig = html; el('ibAi').dataset.key = keyOf(cur); el('ibAi').innerHTML = html; }
       return;

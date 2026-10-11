@@ -44,6 +44,7 @@
       <div class="ib-only" id="ibOnly" hidden></div>
       <div class="ib-aibar" id="ibAiBar"></div>
       <section class="ib-sec ib-fl" id="ibAi" hidden></section>
+      <section class="ib-sec ib-fl ib-dc" id="ibDc" hidden></section>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <section class="ib-sec share" id="ibShare" hidden></section>
       <section class="ib-sec ask" id="ibAsk" hidden></section>
