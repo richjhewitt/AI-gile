@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import net from 'node:net';
 import { fileURLToPath } from 'node:url';
 // Tests speak to "Owner" whatever your own name is, here and in the servers they start (setup clears it to test naming).
 process.env.AIGILE_OWNER = 'Owner';
@@ -29,8 +30,22 @@ export const sleep = ms => new Promise(r => setTimeout(r, ms));
 export const tmp = p => fs.mkdtempSync(path.join(os.tmpdir(), 'aigile-qa-' + p + '-'));
 
 /* ---------- server and helpers ---------- */
+// A free port from the OS (listen on 0), so two QA runs on one machine never pick the same second-board or relay port.
+export const freePort = () => new Promise((res, rej) => { const srv = net.createServer(); srv.once('error', rej); srv.listen(0, '127.0.0.1', () => { const { port } = srv.address(); srv.close(() => res(port)); }); });
+// A local relay on a free port and a temp data folder of its own.
+export async function startRelay(extraEnv = {}) {
+  const port = await freePort();
+  const data = path.join(tmp('relay'), 'data');
+  const proc = spawn(process.execPath, [path.join(ROOT, 'relay', 'relay.js')], { env: { ...process.env, RELAY_PORT: String(port), RELAY_HOST: '127.0.0.1', RELAY_DATA: data, RELAY_RATE: '100000', ...extraEnv }, stdio: 'ignore' });
+  const base = `http://127.0.0.1:${port}`;
+  for (let i = 0; i < 100; i++) { try { if ((await fetch(base + '/health')).ok) break; } catch {} await sleep(100); }
+  return { base, port, data, stop: () => { try { proc.kill(); } catch {} } };
+}
+// Wait for a condition (polled), up to ms.
+export const until = async (fn, ms = 8000) => { const end = Date.now() + ms; let v; while (!(v = await fn()) && Date.now() < end) await sleep(100); return v; };
+
 // port: a second board for the dms area runs on another port.
-export async function startServer(extraEnv = {}, port = PORT) {
+export async function startServer(extraEnv = {}, port = PORT) {   // a second board passes await freePort()
   const BASE = `http://127.0.0.1:${port}`;
   const dir = tmp('run'), data = path.join(dir, 'data'), usageDir = path.join(dir, 'usage');
   fs.mkdirSync(usageDir);
@@ -40,7 +55,8 @@ export async function startServer(extraEnv = {}, port = PORT) {
   const env = { ...process.env, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', ...extraEnv };   // tests speak to "Owner", whatever your own name is
   delete env.AIGILE_DEV; delete env.AIGILE_ALLOW_DONE; delete env.AIGILE_AS;
   const proc = spawn(process.execPath, [path.join(ROOT, 'server.js')], { env, stdio: 'ignore', cwd: ROOT });
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 100; i++) {
+    if (proc.exitCode !== null) break;   // it died (port taken?): do not mistake another run's server for ours
     try { if ((await fetch(BASE + '/api/meta')).ok) break; } catch {}
     await sleep(100);
   }
