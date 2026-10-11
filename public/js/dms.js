@@ -6,6 +6,7 @@
 const Dms = (() => {
   let projects = [], chats = [], open = null, listOpen = false, thread = null, busy = false;
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
+  const GENERAL = '_new';   // target: a new message to the lead instead of an answer (AIG-285)
   const el = id => document.getElementById(id);
   const avatar = c => `<span class="dm-av" style="--proj:${esc(c.color || '')}">${pic(c.logo, c.emoji || '💬')}</span>`;
   // A lead's own picture when it has one (AIG-150), else the project's.
@@ -94,17 +95,18 @@ const Dms = (() => {
     // A card that newly starts waiting on you opens by itself, and the typing box answers it.
     const fresh = thread.open.find(o => !waitingSeen.has(o.id));
     thread.open.forEach(o => waitingSeen.add(o.id));
-    if (fresh) { target = fresh.id; fold = fresh.id; }
-    if (!thread.open.some(o => o.id === target)) target = thread.open.length ? thread.open[0].id : null;
+    if (fresh && target !== GENERAL) { target = fresh.id; fold = fresh.id; }
+    if (target !== GENERAL && !thread.open.some(o => o.id === target)) target = thread.open.length ? thread.open[0].id : null;
     const html = foldsHtml() || `<p class="muted dm-empty">${esc(t(chats.some(x => x.slug === open && x.watchman) ? 'dms.nomsgs.watch' : 'dms.nomsgs'))}</p>`;
     if (list.dataset.sig !== html) {
       const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
       list.dataset.sig = html; list.innerHTML = html;
       if (scroll || atBottom) list.scrollTop = list.scrollHeight;
     }
-    // Which card the typing box answers: the one waiting on you, or pick when several are (AIG-157).
+    // Which card the typing box answers: the one waiting on you, or pick when several are (AIG-157). The list also
+    // offers a new message to the lead, about nothing waiting (AIG-285).
     const q = thread.open.find(o => o.id === target);
-    const to = thread.open.length > 1 ? `${esc(t('dms.replyto'))} <select id="dmTarget" onchange="Dms.aim(this.value)">${thread.open.map(o => `<option value="${esc(o.id)}" ${o.id === target ? 'selected' : ''}>${esc(o.id)} ${esc(o.title)}</option>`).join('')}</select>`
+    const to = thread.open.length && !thread.watchman ? `${esc(t('dms.replyto'))} <select id="dmTarget" onchange="Dms.aim(this.value)">${thread.open.map(o => `<option value="${esc(o.id)}" ${o.id === target ? 'selected' : ''}>${esc(o.id)} ${esc(o.title)}</option>`).join('')}<option value="${GENERAL}" ${target === GENERAL ? 'selected' : ''}>💬 ${esc(t('dms.newmsg', { lead: thread.lead }))}</option></select>`
       : q ? t('dms.replying.html', { link: `<a href="#/p/${esc(thread.slug)}/${esc(q.id)}">${esc(q.id)}</a>`, title: esc(q.title) }) : esc(t('dms.newmsg', { lead: thread.lead }));
     if (el('dmTo').dataset.sig !== to && document.activeElement !== el('dmTarget')) { el('dmTo').dataset.sig = to; el('dmTo').innerHTML = to; }
     el('dmGo').hidden = !q;
@@ -129,7 +131,7 @@ const Dms = (() => {
   // An answer button that needs a reason (AIG-176): aim the typing box at that card and start the reply.
   function reply(id, text) { aim(id); const ta = el('dmText'); if (ta) { if (text) ta.value = text; ta.focus(); ta.setSelectionRange(text.length, text.length); } }
   function reload() { if (open) loadThread(); loadRail(); }
-  function aim(id) { target = id; fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
+  function aim(id) { target = id; if (id !== GENERAL) fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   function back() { open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
   function close() { open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
 
@@ -144,6 +146,7 @@ const Dms = (() => {
       else if (q) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
       else await api('POST', `/api/projects/${thread.slug}/cards`, { title: '💬 ' + text.split('\n')[0].slice(0, 80), description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
+      if (target === GENERAL) target = null;   // sent: back to answering what waits on you
       await loadThread(true); loadRail();
     } catch (e) { el('dmErr').textContent = e.message || String(e); }
     busy = false;
