@@ -85,6 +85,8 @@ aigile log <proj> "Sprint 3 pushed (abc1234), 120 tests green." --as YourName
 
 **7c. Tidy quick cards.** When Rich raises a card in a hurry (messy title, one long line), give it a short, recognisable title (`aigile edit <proj> <id> --title "..." --desc "..."`) and a description in readable bullets, so it is easy to find when switching context. Keep his meaning; don't add scope.
 
+**7d. One card per feature to test.** Small parts of one feature (1/4, 2/4…) reach Rich as **one** card: fold the other parts into the last one (copy their test steps across, comment "folded into X", close them), and fold any other card in For you about the same thing. Keeps the board clean.
+
 **8. Pokes.** A "👉 any update?" poke from Rich on a card in `doing` or `review` means "this looks stuck, any update?". Reply with one line (`comment`) and leave the card where it is.
 
 **9. Stand-ups.** A **📣 Stand-up** card in For the team means Rich wants a short report from each of you. Every team member answers once, in your own name:
