@@ -75,7 +75,8 @@ HOOKS (agent session hooks, see AGENTS.md)
   bye <proj>                              SessionEnd: the window closed, a background run takes over
 
 TEAM AND LOG
-  team <proj> NAME [--role R --model M --task T --status S]    upsert roster entry
+  team <proj> NAME [--role R --model M --task T --status S]    upsert roster entry (a new member gets a free library picture)
+  avatar <proj> [PIC] --as NAME           your profile picture: no PIC lists the picture library, PIC (number or name) takes one
   log <proj> "text" [--decision] --as NAME
   standup <proj> --done "..." --next "..." [--needs "..."] [--blockers "... | none"] --as NAME    answer a 📣 Stand-up card (AGENTS.md)
         --needs: waits on the owner while you carry on;  --blockers: only what stops ALL your work
@@ -405,7 +406,18 @@ const cmds = {
     const b = { name: pos[1] };
     for (const k of ['role', 'model', 'task', 'status']) if (flags[k] !== undefined) b[k] = flags[k] === true ? '' : flags[k];
     const m = await api('POST', P(slug) + '/team', b);
-    out(flags, m, m => `team: ${m.name}${m.role ? ' | ' + m.role : ''}${m.model ? ' | ' + m.model : ''} | ${m.task || '-'} | ${m.status || '-'}`);
+    out(flags, m, m => `team: ${m.name}${m.role ? ' | ' + m.role : ''}${m.model ? ' | ' + m.model : ''} | ${m.task || '-'} | ${m.status || '-'}${m.avatar ? ' | 🖼️ ' + m.avatar : ''}`);
+  },
+
+  // Your profile picture (AIG-150): no PIC lists the owner's picture library (who wears what); PIC (a name or number) takes one.
+  async avatar({ pos, flags }) {
+    const slug = await project(pos[0]), name = who(flags);
+    if (pos[1]) { const m = await api('POST', P(slug) + '/team', { name, avatar: pos[1] }); return out(flags, m, m => `${m.name} now wears ${m.avatar}`); }
+    const [lib, p] = await Promise.all([api('GET', '/api/avatars'), api('GET', P(slug))]);
+    const mine = ((p.team || []).find(m => m.name.toLowerCase() === name.toLowerCase()) || {}).avatar;
+    out(flags, lib, l => !l.pictures.length ? `The picture library is empty (${l.dir}). Ask ${OWNER} to drop some pictures in it.`
+      : [`Picture library: ${l.dir}  (open a file to look at it)`, ...l.pictures.map((x, i) => `${i + 1}. ${x.file}${x.file === mine ? '  <- yours' : ''}${x.usedBy.length ? '  (' + x.usedBy.map(u => u.name + '@' + u.project).join(', ') + ')' : '  (free)'}`),
+        `Take one: aigile avatar ${slug} <number or name> --as ${name}`].join('\n'));
   },
 
   async log({ pos, flags }) {
