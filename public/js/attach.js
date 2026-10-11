@@ -8,7 +8,7 @@ const Attach = (() => {
   const isImg = a => /^image\//.test(a.type || '') || /\.(png|jpe?g|gif|webp)$/i.test(a.name || '');
   // Images show a thumbnail; clicking it opens a full-size preview, to check it's the right one (AIG-129).
   const urls = new WeakMap(), urlOf = f => { if (!urls.has(f)) urls.set(f, URL.createObjectURL(f)); return urls.get(f); };
-  const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="${esc(t('attach.preview'))}">` : '📎'} ${esc(f.name)} <button type="button" data-att-del="${i}" title="${esc(t('attach.remove'))}">✕</button></span>`).join('');
+  const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="${esc(t('attach.preview'))}">` : '📎'} <span class="att-name" title="${esc(f.name)}">${esc(f.name)}</span><button type="button" data-att-del="${i}" title="${esc(t('attach.remove'))}">✕</button></span>`).join('');
   function preview(src) {
     const lb = document.createElement('div');
     lb.className = 'att-lightbox'; lb.title = t('attach.close');
@@ -18,6 +18,27 @@ const Attach = (() => {
     lb.onclick = close; document.addEventListener('keydown', esc_, true);
     document.body.appendChild(lb);
   }
+  // Any picture under a comment, card, DM or AI tester evidence (.att-shown) opens full size; arrows move between the item's pictures.
+  function gallery(imgs, at) {
+    const lb = document.createElement('div');
+    lb.className = 'att-lightbox'; lb.title = t('attach.close');
+    const img = document.createElement('img'); lb.appendChild(img);
+    const show = () => { img.src = imgs[at].src; img.alt = imgs[at].alt || ''; };
+    const close = () => { lb.remove(); document.removeEventListener('keydown', key_, true); };
+    const key_ = e => {
+      if (e.key === 'Escape') { e.stopPropagation(); close(); }
+      else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && imgs.length > 1) { e.preventDefault(); e.stopPropagation(); at = (at + (e.key === 'ArrowRight' ? 1 : imgs.length - 1)) % imgs.length; show(); }
+    };
+    lb.onclick = close; document.addEventListener('keydown', key_, true);
+    show(); document.body.appendChild(lb);
+  }
+  document.addEventListener('click', e => {
+    const img = e.target.closest('.att-shown a > img'); if (!img || e.button) return;
+    e.preventDefault(); e.stopPropagation();
+    const scope = img.closest('.ib-item, .ib-fl, .comment, .dm-msg, .ai-ev, .att-shown');
+    const imgs = [...scope.querySelectorAll('.att-shown a > img')];
+    gallery(imgs, Math.max(0, imgs.indexOf(img)));
+  }, true);
   const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="${esc(t('attach.title'))}">${esc(t('attach.btn'))}</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span></span>`;
   const paint = key => document.querySelectorAll('.att').forEach(b => { if (b.dataset.attKey === key) b.querySelector('.att-list').innerHTML = chips(key); });
   const add = (key, files) => { pending.set(key, [...list(key), ...files.filter(f => f.size)]); paint(key); };

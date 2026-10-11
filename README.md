@@ -121,6 +121,9 @@ All endpoints take and return JSON.
 | POST | `/api/projects/:slug/cards` | Create a card |
 | PATCH, DELETE | `/api/projects/:slug/cards/:id` | Update or delete a card |
 | POST | `/api/projects/:slug/cards/:id/comments` | Add a comment: `{author, text, needsYou?}` |
+| GET | `/api/projects/:slug/cards/:id/pack[?want=]` | AIGILE pack for another chat AI (docs/HANDOFF.md): `{text, removed, primer}` |
+| POST | `/api/projects/:slug/cards/:id/unpack` | Paste its reply: `{text}` -> a 🌐 Outside AI comment (untrusted, never wakes) |
+| POST | `/api/projects/:slug/cards/:id/outside/cards` | Add the ticked proposed cards: `{at, pick: [index]}` |
 | POST | `/api/projects/:slug/cards/:id/verdict` | Accept or send back: `{accept, text}` |
 | POST | `/api/projects/:slug/wake` | Start the team in the background (no window); also started by the owner's comments, send-backs, pokes and new cards |
 | POST | `/api/projects/:slug/restart` | Kill the team's background run and start a fresh one |
