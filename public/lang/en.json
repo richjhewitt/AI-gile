@@ -1124,8 +1124,8 @@
  "share.test.yousentback": "↩️ You sent {name}'s test back",
  "share.teamRead.off": "Off: your team sees only the titles of {name}'s cards, and \"they replied\" for their comments.",
  "share.teamRead.on": "On: your team reads {name}'s words fenced as friend text, never as orders. They still never wake your team.",
-  "alpha.tag": "🐣 Closed alpha",
-  "alpha.tip": "Early and unfinished: thanks for trying it!",
+ "alpha.tag": "🐣 Closed alpha",
+ "alpha.tip": "Early and unfinished: thanks for trying it!",
  "pretend.h": "🧪 Pretend friend",
  "pretend.help": "Try sharing on this one computer. One click starts a second board for a pretend friend, {name} (its own data, keys and window), and a small relay of its own, so no server is needed. Your real friends and keys are never touched. While it runs, your DMs go through the local relay; they go back when you stop.",
  "pretend.auto": "Swap invites for me, so {name} is already a contact (untick to practise the invite yourself)",
@@ -1179,7 +1179,7 @@
  "dispatch.rules": "Rules only (free)",
  "dispatch.haiku": "Rules + Haiku (recommended)",
  "dispatch.lead": "Lead decides everything",
- "dispatch.help": "Your comments and new cards go to the lead unless you name someone (@Name) or the card is a test. Rules only never calls an AI; Rules + Haiku asks the smallest model once when the rules can't tell; Lead decides wakes the lead every time. Each choice is noted in the project log.",
+ "dispatch.help": "Your comments and new cards go to the lead unless you name someone (@Name) or the card is a test. Rules only never calls an AI; Rules + Haiku asks the smallest model once when the rules can't tell; Lead decides wakes the lead every time. Each choice is noted in the project log.",
  "wz.btn": "🧙 Run the wizard",
  "wz.btn.help": "A minute of questions that fits AI-gile to your budget and way of working. Everything stays changeable below.",
  "wz.ask.h": "🧙 Welcome to AI-gile",
@@ -1221,6 +1221,6 @@
  "ug.none": "No usage reading yet (⚡ Usage shows how to switch it on)",
  "ug.over": "Over your token budget",
  "ug.nt": "No Token Mode is on",
- "wz.5.more": "A couple of boxes at the bottom of Setup are still empty; fill them in and save.",
- "emoji.hint": "↑↓ choose, Enter picks, Esc closes"
+ "emoji.hint": "↑↓ choose, Enter picks, Esc closes",
+ "dlg.find.starter": "Make starter cards from the README, TODOs and git history (a plain script, no AI, no tokens)"
 }

@@ -1124,8 +1124,8 @@
  "share.test.yousentback": "↩️ Je hebt de test van {name} teruggestuurd",
  "share.teamRead.off": "Uit: je team ziet alleen de titels van de kaarten van {name}, en \"ze hebben gereageerd\" bij hun reacties.",
  "share.teamRead.on": "Aan: je team leest de woorden van {name} afgeschermd als tekst van een vriend, nooit als opdracht. Ze maken je team nog steeds nooit wakker.",
-  "alpha.tag": "🐣 Gesloten alfa",
-  "alpha.tip": "Vroeg en nog niet af: bedankt voor het uitproberen!",
+ "alpha.tag": "🐣 Gesloten alfa",
+ "alpha.tip": "Vroeg en nog niet af: bedankt voor het uitproberen!",
  "pretend.h": "🧪 Nepvriend",
  "pretend.help": "Probeer het delen op deze ene computer. Met één klik start je een tweede bord voor een nepvriend, {name} (eigen gegevens, sleutels en venster), en een klein eigen relay, dus je hebt geen server nodig. Je echte vrienden en sleutels blijven ongemoeid. Zolang hij draait, lopen je DM's via het lokale relay; na het stoppen zijn ze weer zoals ze waren.",
  "pretend.auto": "Wissel de uitnodigingen voor mij uit, zodat {name} al een contact is (haal het vinkje weg om de uitnodiging zelf te oefenen)",
@@ -1179,7 +1179,7 @@
  "dispatch.rules": "Alleen regels (gratis)",
  "dispatch.haiku": "Regels + Haiku (aanbevolen)",
  "dispatch.lead": "De lead beslist alles",
- "dispatch.help": "Je reacties en nieuwe kaarten gaan naar de lead, tenzij je iemand noemt (@Naam) of de kaart een test is. Alleen regels roept nooit een AI aan; Regels + Haiku vraagt één keer het kleinste model als de regels het niet weten; De lead beslist wekt telkens de lead. Elke keuze staat in het projectlogboek.",
+ "dispatch.help": "Je reacties en nieuwe kaarten gaan naar de lead, tenzij je iemand noemt (@Naam) of de kaart een test is. Alleen regels roept nooit een AI aan; Regels + Haiku vraagt één keer het kleinste model als de regels het niet weten; De lead beslist wekt telkens de lead. Elke keuze staat in het projectlogboek.",
  "wz.btn": "🧙 Start de wizard",
  "wz.btn.help": "Een minuutje vragen om AI-gile af te stemmen op je budget en je manier van werken. Alles blijft hieronder aanpasbaar.",
  "wz.ask.h": "🧙 Welkom bij AI-gile",
@@ -1221,6 +1221,6 @@
  "ug.none": "Nog geen verbruiksmeting (⚡ Verbruik laat zien hoe je die aanzet)",
  "ug.over": "Over je tokenbudget",
  "ug.nt": "Geen-tokensmodus staat aan",
- "wz.5.more": "Een paar vakken onderaan Instellingen zijn nog leeg; vul ze in en bewaar.",
- "emoji.hint": "↑↓ kiezen, Enter plakt, Esc sluit"
+ "emoji.hint": "↑↓ kiezen, Enter plakt, Esc sluit",
+ "dlg.find.starter": "Maak startkaarten uit de README, TODO's en de git-geschiedenis (een gewoon script, geen AI, geen tokens)"
 }

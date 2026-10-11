@@ -190,7 +190,7 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   await page.fill('.fprow:has(input[value=Shopping]) .fp-key', ks.find(k => k !== own));
   check('a doubled key is marked at once', await page.$eval('.fprow:has(input[value=Shopping]) .fp-key', i => i.classList.contains('bad')));
   await page.fill('.fprow:has(input[value=Shopping]) .fp-key', own);
-  await page.uncheck('#fp-connect');
+  await page.uncheck('#fp-connect'); await page.uncheck('#fp-starter');
   await page.click('#dialog button:has-text("Add ticked projects")');
   await page.waitForSelector('#fp-done li');
   const p = (await s.ok('GET', '/api/projects')).find(x => x.name === 'Shop App');
