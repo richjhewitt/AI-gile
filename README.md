@@ -169,7 +169,7 @@ server.js          HTTP plumbing and wiring
 lib/               Server logic: store, routes, onboard, presence, limits, usage, dm (private DMs)
 relay/relay.js     The standalone DM relay (run on a server)
 public/index.html  Web board shell (no framework)
-public/styles.css  Board styles
+public/css/        Board styles (five files, linked in order)
 public/js/         Page scripts (core, board, card, dialogs, filters, format, inbox, usage)
 tools/qa/          QA script: node tools/qa/qa.mjs [area]
 docs/CODEMAP.md    Where everything lives
