@@ -33,13 +33,13 @@ const Attach = (() => {
     show(); document.body.appendChild(lb);
   }
   document.addEventListener('click', e => {
-    const img = e.target.closest('.att-shown a > img'); if (!img || e.button) return;
+    const img = e.target.closest('.att-shown a > img, img.gif-inline'); if (!img || e.button) return;
     e.preventDefault(); e.stopPropagation();
-    const scope = img.closest('.ib-item, .ib-fl, .comment, .dm-msg, .ai-ev, .att-shown');
-    const imgs = [...scope.querySelectorAll('.att-shown a > img')];
+    const scope = img.closest('.ib-item, .ib-fl, .comment, .dm-msg, .ai-ev, .att-shown') || img.parentNode;
+    const imgs = [...scope.querySelectorAll('.att-shown a > img, img.gif-inline')];
     gallery(imgs, Math.max(0, imgs.indexOf(img)));
   }, true);
-  const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="${esc(t('attach.title'))}">${esc(t('attach.btn'))}</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span></span>`;
+  const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="${esc(t('attach.title'))}">${esc(t('attach.btn'))}</button><button type="button" class="att-gif" title="${esc(t('gif.title'))}">🎞️</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span></span>`;
   const paint = key => document.querySelectorAll('.att').forEach(b => { if (b.dataset.attKey === key) b.querySelector('.att-list').innerHTML = chips(key); });
   const add = (key, files) => { pending.set(key, [...list(key), ...files.filter(f => f.size)]); paint(key); };
   const stamp = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
@@ -47,6 +47,7 @@ const Attach = (() => {
   document.addEventListener('click', e => {
     const box = e.target.closest('.att'); if (!box) return;
     if (e.target.closest('.att-btn')) box.querySelector('input[type=file]').click();
+    if (e.target.closest('.att-gif')) gifPicker(e.target.closest('.att-gif'), box);
     const view = e.target.closest('[data-att-view]');
     if (view) preview(view.src);
     const del = e.target.closest('[data-att-del]');
@@ -56,6 +57,49 @@ const Attach = (() => {
     const box = e.target.closest && e.target.closest('.att');
     if (box && e.target.type === 'file') { add(box.dataset.attKey, [...e.target.files]); e.target.value = ''; }
   });
+  // 🎞️ GIF search (AIG-343): the board's server asks Giphy and downloads the pick; it joins the box like an attached file.
+  let gifEl = null, gifKey = null;
+  function closeGif() { if (gifEl) gifEl.remove(); gifEl = null; document.removeEventListener('keydown', gifKey, true); document.removeEventListener('mousedown', gifOut, true); }
+  const gifOut = e => { if (gifEl && !gifEl.contains(e.target) && !e.target.closest('.att-gif')) closeGif(); };
+  async function gifPicker(btn, box) {
+    if (gifEl) { closeGif(); return; }
+    const el = gifEl = document.createElement('div'); el.className = 'gif-picker';
+    const r = btn.getBoundingClientRect();
+    el.style.left = Math.max(8, Math.min(r.left, innerWidth - 360)) + 'px';
+    if (r.bottom + 380 > innerHeight && r.top > 380) el.style.bottom = (innerHeight - r.top + 4) + 'px'; else el.style.top = (r.bottom + 4) + 'px';
+    gifKey = e => { if (e.key === 'Escape') { e.stopPropagation(); closeGif(); } };
+    document.addEventListener('keydown', gifKey, true); document.addEventListener('mousedown', gifOut, true);
+    document.body.appendChild(el);
+    let has = false; try { has = (await api('GET', '/api/giphy')).key; } catch {}
+    if (gifEl !== el) return;
+    if (!has) { el.innerHTML = `<div class="gif-nokey"><a href="#/setup">${esc(t('gif.nokey'))}</a></div>`; el.querySelector('a').onclick = closeGif; return; }
+    el.innerHTML = `<input type="search" class="gif-q" maxlength="50" placeholder="${esc(t('gif.search'))}"><div class="gif-msg muted"></div><div class="gif-grid"></div><div class="gif-foot"><span>${esc(t('gif.powered'))}</span><button type="button" class="gif-more" hidden>${esc(t('gif.more'))}</button></div>`;
+    const q = el.querySelector('.gif-q'), grid = el.querySelector('.gif-grid'), msg = el.querySelector('.gif-msg'), more = el.querySelector('.gif-more');
+    let next = null, seq = 0;
+    const load = async (append) => {
+      const my = ++seq; msg.textContent = t('gif.loading');
+      try {
+        const j = await api('POST', '/api/giphy/search', { q: q.value, offset: append ? next : 0 });
+        if (my !== seq || gifEl !== el) return;
+        if (!append) grid.innerHTML = '';
+        grid.insertAdjacentHTML('beforeend', j.results.map(g => `<button type="button" class="gif-tile" data-id="${esc(g.id)}" title="${esc(g.title)}"><img src="${esc(g.preview)}" alt="${esc(g.title)}" loading="lazy" referrerpolicy="no-referrer"></button>`).join(''));
+        next = j.next; more.hidden = next === null; msg.textContent = grid.children.length ? '' : t('gif.none');
+      } catch (err) { if (my === seq) msg.textContent = err.message; }
+    };
+    let timer; q.oninput = () => { clearTimeout(timer); timer = setTimeout(() => load(false), 400); };
+    q.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); clearTimeout(timer); load(false); } };
+    more.onclick = () => load(true);
+    grid.onclick = async e => {
+      const tile = e.target.closest('.gif-tile'); if (!tile || tile.disabled) return;
+      tile.disabled = true; msg.textContent = t('gif.adding');
+      try {
+        const g = await api('POST', '/api/giphy/pick', { id: tile.dataset.id });
+        const bin = atob(g.data), bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        add(box.dataset.attKey, [new File([bytes], g.name, { type: g.type })]); closeGif();
+      } catch (err) { tile.disabled = false; msg.textContent = err.message; }
+    };
+    q.focus(); load(false);
+  }
   // Pasting an image into a reply box attaches it; pasted text still goes in as text.
   document.addEventListener('paste', e => {
     const ta = e.target.closest && e.target.closest('textarea, input[type=text]'), scope = ta && ta.closest('.reply, .verdict, .ib-item, .dialog'), box = scope && scope.querySelector('.att');
