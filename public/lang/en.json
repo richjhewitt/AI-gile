@@ -314,6 +314,8 @@
  "common.reset": "Reset",
  "common.done": "Done",
  "dlg.newcard": "New card",
+ "dlg.newcard.project": "Project",
+ "dlg.newcard.added": "Added {id} to {project}",
  "dlg.bug.titleph": "What's broken?",
  "dlg.bug.desclabel": "What happened / how to reproduce",
  "dlg.bug.descph": "Steps, what you expected, what you saw",

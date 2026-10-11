@@ -314,6 +314,8 @@
  "common.reset": "Terugzetten",
  "common.done": "Klaar",
  "dlg.newcard": "Nieuwe kaart",
+ "dlg.newcard.project": "Project",
+ "dlg.newcard.added": "{id} toegevoegd aan {project}",
  "dlg.bug.titleph": "Wat is er kapot?",
  "dlg.bug.desclabel": "Wat er gebeurde / hoe je het opnieuw doet gebeuren",
  "dlg.bug.descph": "Stappen, wat je verwachtte, wat je zag",
