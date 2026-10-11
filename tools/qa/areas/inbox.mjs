@@ -182,6 +182,14 @@ def('inboxonly', 'top bar chips: "to do" shows only your to-dos, "to test" only 
   await page.click('.ib-btn .ib-badge[data-only="t"]');
   await page.waitForSelector('#ibK[hidden]', { state: 'attached' });
   check('"to test" shows only tests', await page.locator('#ibT').isVisible());
+  // AIG-288: on a project's tab with no questions, the "questions" chip still shows the questions (it opens All).
+  await mkProject(s, 'Beta', 'BET');
+  const q = await mkCard(s, 'beta', 'Which colour?');
+  s.cli(['ask', 'beta', q.id, 'Red or blue?', '--as', 'Lead']);
+  await page.waitForSelector('[data-tab="alpha"]'); await page.click('[data-tab="alpha"]');
+  await page.waitForSelector('.ib-btn .ib-badge[data-only="q"]'); await page.click('.ib-btn .ib-badge[data-only="q"]');
+  await page.waitForSelector('#ibQ:not([hidden])', { timeout: 5000 }).catch(() => {});
+  check('"questions" from another project\'s tab shows the questions (AIG-288)', await page.locator('#ibQ').isVisible() && /Red or blue/.test(await page.textContent('#ibQ')));
   noErrors(page);
 }, true);
 

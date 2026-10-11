@@ -109,7 +109,8 @@
     if (s.dataset.sig !== html) {
       s.dataset.sig = html; s.innerHTML = html;
       // A chip shows only that kind (AIG-187); the Inbox word itself shows everything.
-      s.querySelector('.ib-btn').onclick = e => { const b = e.target.closest('[data-only]'); only = b ? b.dataset.only : ''; if (el('ib')) paintPage(); };
+      // The chip counts every project, so it opens the All tab: on one project's tab it could show nothing (AIG-288).
+      s.querySelector('.ib-btn').onclick = e => { const b = e.target.closest('[data-only]'); only = b ? b.dataset.only : ''; if (b) { tab = 'all'; kindFilter = ''; } if (el('ib')) paintPage(); };
       const b = el('ibAlerts'); if (b) b.onclick = toggleAlerts;
     }
     // Everything waiting on Rich; the desktop app turns this count into its taskbar badge (AIG-76).
