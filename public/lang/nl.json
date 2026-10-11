@@ -1224,5 +1224,20 @@
  "emoji.hint": "↑↓ kiezen, Enter plakt, Esc sluit",
  "dlg.find.starter": "Maak startkaarten uit de README, TODO's en de git-geschiedenis (een gewoon script, geen AI, geen tokens)",
  "look.roles": "👥 Team: zet elke AI-rol aan of uit",
- "look.roles.count": "Dit project mag maximaal {total} agents gebruiken: {list}"
+ "look.roles.count": "Dit project mag maximaal {total} agents gebruiken: {list}",
+ "server.setup": "Stel je server in bij Instellingen",
+ "server.open": "Open {name}",
+ "server.open.pick": "Open een server...",
+ "server.pick": "Welke server?",
+ "servers.h": "🖥️ Mijn servers",
+ "servers.help": "Geef elke server een naam en zeg hoe je hem opent: een snelkoppeling of bestand (zoals een .lnk) of een opdracht. Een 🖥️-taak krijgt dan een Open-knop, dus het team heeft je login nooit nodig.",
+ "servers.name": "Naam",
+ "servers.kind.path": "Snelkoppeling of bestand",
+ "servers.kind.cmd": "Opdracht",
+ "servers.path.ph": "C:/Users/jij/Desktop/Mijn Server.lnk",
+ "servers.cmd.ph": "een opdracht; opent in een PowerShell-venster",
+ "servers.remove": "Deze server verwijderen",
+ "servers.add": "+ Server toevoegen",
+ "servers.find": "Snelkoppelingen op mijn bureaublad zoeken",
+ "servers.none": "Geen snelkoppeling met \"server\" in de naam op je bureaublad."
 }

@@ -15,6 +15,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/presence.js`: team presence, background runs, where a team runs, verbose log, 👁 Watch
 - `lib/quiet.js`, `lib/watchman.js`: going quiet, 🌙 night watchman
 - `lib/notokens.js`: ⛔ No Token Mode (one switch; `guard()` in every AI starter: presence.startTeam, tester, ask, usagecheck, watchman; `data/notokens.conf`; turns on at the usage limit, never off by itself; `aigile notokens on|off`)
+- `lib/servers.js`: 🖥️ My servers (AIG-374): saved in aigile.local.json `servers`, Desktop `.lnk` finder, `open(name)` (only saved values; commands open in a visible `powershell -NoExit` window; `AIGILE_OPEN_STUB`, `AIGILE_DESKTOP` for tests); page: `openServerBtn` (core.js), Setup box in find-trial-setup-teams.js; QA `servers`
 - `lib/standup.js`: stand-ups
 - `lib/attachments.js`, `lib/logos.js`, `lib/avatars.js`: reply files, project/app logos, profile pictures
 - `lib/dm.js`, `relay/relay.js`: private DMs and their relay; `lib/share.js`: sharing a project with a friend over them; `lib/ask.js`: ask a mate (a friend's question for my AI, AIG-210)

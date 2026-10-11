@@ -1224,5 +1224,20 @@
  "emoji.hint": "↑↓ choose, Enter picks, Esc closes",
  "dlg.find.starter": "Make starter cards from the README, TODOs and git history (a plain script, no AI, no tokens)",
  "look.roles": "👥 Team: switch each AI role on or off",
- "look.roles.count": "This project may use up to {total} agents: {list}"
+ "look.roles.count": "This project may use up to {total} agents: {list}",
+ "server.setup": "Set up your server in Setup",
+ "server.open": "Open {name}",
+ "server.open.pick": "Open a server...",
+ "server.pick": "Which server?",
+ "servers.h": "🖥️ My servers",
+ "servers.help": "Name each server and say how you open it: a shortcut or file (like a .lnk) or a command. A 🖥️ task then gets an Open button, so the team never needs your login.",
+ "servers.name": "Name",
+ "servers.kind.path": "Shortcut or file",
+ "servers.kind.cmd": "Command",
+ "servers.path.ph": "C:/Users/you/Desktop/My Server.lnk",
+ "servers.cmd.ph": "a command; it opens in a PowerShell window",
+ "servers.remove": "Remove this server",
+ "servers.add": "+ Add a server",
+ "servers.find": "Find shortcuts on my Desktop",
+ "servers.none": "No shortcut with \"server\" in its name on your Desktop."
 }

@@ -1224,5 +1224,20 @@
  "ug.none": "Nog geen verbruiksmeting (⚡ Verbruik laat zien hoe je die aanzet)",
  "ug.over": "Over je tokenbudget",
  "ug.nt": "Geen-tokensmodus staat aan",
- "emoji.hint": "↑↓ kiezen, Enter plakt, Esc sluit"
+ "emoji.hint": "↑↓ kiezen, Enter plakt, Esc sluit",
+ "server.setup": "Stel je server in bij Instellingen",
+ "server.open": "Open {name}",
+ "server.open.pick": "Open een server...",
+ "server.pick": "Welke server?",
+ "servers.h": "🖥️ Mijn servers",
+ "servers.help": "Geef elke server een naam en zeg hoe je hem opent: een snelkoppeling of bestand (zoals een .lnk) of een commando. Een 🖥️-taak krijgt dan een Open-knop, dus het team heeft je login nooit nodig.",
+ "servers.name": "Naam",
+ "servers.kind.path": "Snelkoppeling of bestand",
+ "servers.kind.cmd": "Commando",
+ "servers.path.ph": "C:/Users/jij/Desktop/Mijn Server.lnk",
+ "servers.cmd.ph": "een commando; opent in een PowerShell-venster",
+ "servers.remove": "Deze server verwijderen",
+ "servers.add": "+ Server toevoegen",
+ "servers.find": "Snelkoppelingen op mijn bureaublad zoeken",
+ "servers.none": "Geen snelkoppeling met \"server\" in de naam op je bureaublad."
 }

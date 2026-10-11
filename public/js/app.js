@@ -25,7 +25,7 @@ if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', '
 }
 window.addEventListener('hashchange', () => { state.editing = false; refresh(true); });
 // The language file is in before the first render (AIG-124).
-loadLang().then(() => { theme(); refresh(true); checkBuild(); NoTokens.start(); UsageGlance.start(); });
+loadLang().then(() => api('GET', '/api/meta').then(m => { state.servers = m.servers || []; }, () => {})).then(() => { theme(); refresh(true); checkBuild(); NoTokens.start(); UsageGlance.start(); });
 setInterval(() => { if (!document.hidden) refresh(); }, 1000);
 setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136)
 
@@ -50,6 +50,7 @@ async function checkBuild() {
     if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});
     wasQuiet = m.quiet; setNight(m.quiet);
     applyAppLogo(m.appLogo);
+    if (JSON.stringify(m.servers || []) !== JSON.stringify(state.servers)) { state.servers = m.servers || []; refresh(true); }   // My servers (AIG-374)
     if ((m.ownerPic || '') !== (state.ownerPic || '')) { state.ownerPic = m.ownerPic || ''; refresh(true); }   // your picture (AIG-150)
     pokeBadge(await api('GET', '/api/projects'));
     // A new install opens Setup first (AIG-91).
