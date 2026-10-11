@@ -361,6 +361,8 @@
  "dlg.find.add": "{name} toevoegen",
  "dlg.find.name": "Naam",
  "dlg.find.key": "Code",
+ "dlg.find.keydup": "De code {key} is al van een ander project of een aangevinkte rij: kies een andere.",
+ "dlg.find.keychanged": "(je wilde {want}, die was al in gebruik)",
  "dlg.find.none": "Daar zijn geen mappen gevonden.",
  "dlg.find.setup": "Zet elke map klaar voor zijn team (notities, hooks, rechten)",
  "dlg.find.import": "Aangevinkte projecten toevoegen",

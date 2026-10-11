@@ -172,6 +172,7 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   const app = mk('Shop App', '# Shop App\n\nA tiny web shop for **local** makers.\n');
   g(app, 'init', '-q'); g(app, 'add', '.'); g(app, '-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qm', 'start');
   mk('Shop App-old'); mk('notes');
+  const shopping = mk('Shopping', '# Shopping\n\nLists.\n'); g(shopping, 'init', '-q'); g(shopping, 'add', '.'); g(shopping, '-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qm', 'start');
   const found = await s.ok('GET', '/api/discover?dir=' + encodeURIComponent(root));
   const by = n => found.find(f => f.name === n);
   check('git project found with its README line', by('Shop App').git.commits === 1 && by('Shop App').readme === 'A tiny web shop for local makers.' && by('Shop App').suggested, by('Shop App'));
@@ -180,12 +181,20 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   const page = await openPage(ctx, '#/');
   await page.evaluate(d => findProjectsDialog(d), root);
   await page.waitForSelector('.fprow');
+  const keys = await page.$$eval('.fprow', rs => rs.map(r => [r.querySelector('.fp-name').value, r.querySelector('.fp-key').value]));
+  const ks = keys.filter(k => /^Shop/.test(k[0]) && k[0] !== 'Shop App-old').map(k => k[1]);
+  check('two projects starting alike get different keys before Add (AIG-331)', ks.length === 2 && ks[0] !== ks[1] && ks.every(Boolean), keys);
+  const own = await page.$eval('.fprow:has(input[value=Shopping]) .fp-key', i => i.value);
+  await page.fill('.fprow:has(input[value=Shopping]) .fp-key', ks.find(k => k !== own));
+  check('a doubled key is marked at once', await page.$eval('.fprow:has(input[value=Shopping]) .fp-key', i => i.classList.contains('bad')));
+  await page.fill('.fprow:has(input[value=Shopping]) .fp-key', own);
   await page.uncheck('#fp-connect');
   await page.click('#dialog button:has-text("Add ticked projects")');
   await page.waitForSelector('#fp-done li');
   const p = (await s.ok('GET', '/api/projects')).find(x => x.name === 'Shop App');
   check('ticked project added with its folder and description', p && p.path.endsWith('/Shop App') && p.description === 'A tiny web shop for local makers.', p);
-  check('only the suggested one was added', (await s.ok('GET', '/api/projects')).length === 1);
+  const all = await s.ok('GET', '/api/projects');
+  check('both suggested ones added with their own keys, no rename', all.length === 2 && new Set(all.map(x => x.key)).size === 2 && all.every(x => ks.includes(x.key)), all.map(x => x.key));
   noErrors(page);
 }, true);
 

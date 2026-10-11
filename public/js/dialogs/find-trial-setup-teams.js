@@ -11,16 +11,32 @@ async function findProjectsDialog(dir) {
     if (!dir) $('fp-dir').value = state.home;
     state.found = await api('GET', '/api/discover' + (dir ? '?dir=' + encodeURIComponent(dir) : ''));
   } catch (e) { $('fp-list').textContent = ''; setErr('fp-err', e); return; }
-  const key = n => n.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase() || 'PRJ';
+  // Card keys are unique (AIG-331): pick a free one for every row up front, the same way the board does, and show it before Add.
+  const used = new Set((await api('GET', '/api/projects').catch(() => [])).map(o => o.key));
+  state.foundTaken = [...used];
+  const keyFor = n => {
+    const L = n.replace(/[^A-Za-z0-9]/g, '').toUpperCase() || 'PRJ';
+    const k = [L.slice(0, 3), ...[...L.slice(3)].map(l => L.slice(0, 2) + l), ...[2, 3, 4, 5, 6, 7, 8, 9].map(d => L.slice(0, 2) + d)].find(x => !used.has(x)) || L.slice(0, 2) + Date.now() % 100;
+    used.add(k); return k;
+  };
   const info = f => [f.git ? t('dlg.find.commits', { n: f.git.commits }) + (f.git.lastAt ? t('dlg.find.last', { when: ago(f.git.lastAt) }) : '') : t('dlg.find.nogit'), f.sessions ? t('dlg.find.sessions', { n: f.sessions.count }) : '',
     f.known ? t('dlg.find.known') : f.inside ? t('dlg.find.inside', { dir: f.inside }) : f.copy ? t('dlg.find.copy') : ''].filter(Boolean).join(' · ');
   $('fp-list').classList.remove('muted');
   $('fp-list').innerHTML = state.found.length ? state.found.map((f, i) => `<div class="fprow">
     <input type="checkbox" data-i="${i}" ${f.suggested ? 'checked' : ''} ${f.known ? 'disabled' : ''} aria-label="${esc(t('dlg.find.add', { name: f.name }))}">
-    <input type="text" class="fp-name" value="${esc(f.name)}" aria-label="${esc(t('dlg.find.name'))}"><input type="text" class="fp-key" value="${key(f.name)}" maxlength="6" aria-label="${esc(t('dlg.find.key'))}">
+    <input type="text" class="fp-name" value="${esc(f.name)}" aria-label="${esc(t('dlg.find.name'))}"><input type="text" class="fp-key" value="${esc(f.known ? '' : keyFor(f.name))}" maxlength="6" oninput="checkFoundKeys()" aria-label="${esc(t('dlg.find.key'))}">
     <span class="muted">${esc(info(f))}${f.readme ? ' · ' + esc(f.readme) : ''}</span></div>`).join('') : esc(t('dlg.find.none'));
   $('fp-acts').innerHTML = `<label class="chk"><input type="checkbox" id="fp-connect" checked> ${esc(t('dlg.find.setup'))}</label>
     <button class="primary" onclick="importFound()">${esc(t('dlg.find.import'))}</button><button onclick="closeDialog()">${esc(t('common.close'))}</button>`;
+}
+// A key typed twice (or one an existing project has) is marked at once, not changed silently after Add (AIG-331).
+function checkFoundKeys() {
+  const seen = {};
+  document.querySelectorAll('.fprow').forEach(r => { const k = r.querySelector('.fp-key').value.trim().toUpperCase(); if (k && r.querySelector('input[type=checkbox]').checked) seen[k] = (seen[k] || 0) + 1; });
+  document.querySelectorAll('.fprow').forEach(r => {
+    const i = r.querySelector('.fp-key'), k = i.value.trim().toUpperCase(), dup = k && ((seen[k] || 0) > 1 || (state.foundTaken || []).includes(k));
+    i.classList.toggle('bad', !!dup); i.title = dup ? t('dlg.find.keydup', { key: k }) : '';
+  });
 }
 async function importFound() {
   const rows = [...document.querySelectorAll('.fprow')].filter(r => r.querySelector('input[type=checkbox]').checked);
@@ -34,7 +50,7 @@ async function importFound() {
       const p = await api('POST', '/api/projects', body).catch(e => /already used/.test(e.message) ? api('POST', '/api/projects', { ...body, key: '' }) : Promise.reject(e));
       if ($('fp-connect').checked) await api('POST', `/api/projects/${p.slug}/connect`, { path: f.path });
       else await api('PATCH', '/api/projects/' + p.slug, { path: f.path });
-      done.push('✅ ' + p.name);
+      done.push('✅ ' + p.name + ' (' + p.key + ')' + (body.key && p.key !== body.key.toUpperCase() ? ' ' + t('dlg.find.keychanged', { want: body.key.toUpperCase(), key: p.key }) : ''));
     } catch (e) { done.push('⚠️ ' + f.name + ': ' + e.message); }
   }
   $('fp-done').innerHTML = `<ul>${done.map(d => `<li>${esc(d)}</li>`).join('')}</ul><p class="muted">${esc(t('dlg.find.after'))}</p>`;
