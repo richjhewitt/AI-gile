@@ -176,6 +176,27 @@ function popChatLive() {
   if (atEnd) window.scrollTo(0, de.scrollHeight);
   return true;
 }
+// The open card on the board (AIG-314): a new team message must show even while the reply box is focused or holds a
+// draft. Only what sits above and below the reply box, and the tab row, are swapped; the box itself is never touched.
+function cardLive() {
+  const p = state.project, c = p && p.cards.find(x => x.id === state.route.card), r = document.querySelector('#modal .panel .reply');
+  if (!c || !r || state.editing || state.dragging || $('dialog').firstChild) return false;
+  const tmp = document.createElement('div'); tmp.innerHTML = renderCard(p, c);
+  const nr = tmp.querySelector('.reply'), tabs = document.querySelector('#modal .ctabs'), nt = tmp.querySelector('.ctabs');
+  if (!nr || nr.parentNode.dataset.pane !== r.parentNode.dataset.pane) return false;
+  let changed = false;
+  if (tabs && nt && tabs.innerHTML !== nt.innerHTML) { tabs.innerHTML = nt.innerHTML; changed = true; }
+  const side = (el, dir) => { const a = []; for (let n = el[dir]; n; n = n[dir]) a.push(n); return a; };
+  for (const dir of ['previousSibling', 'nextSibling']) {
+    const o = side(r, dir), n = side(nr, dir), h = l => l.map(x => x.outerHTML || x.textContent).join('');
+    if (h(o) === h(n)) continue;
+    changed = true; o.forEach(x => x.remove());
+    if (dir === 'previousSibling') n.reverse().forEach(x => r.parentNode.insertBefore(x, r));   // nearest-first -> document order
+    else n.forEach(x => r.parentNode.appendChild(x));
+  }
+  if (changed) $('modal')._html = null;
+  return true;
+}
 // Test tab notes (AIG-186): newest first, so the latest word sits right under the reply box. An AI tester check
 // that a newer one replaced is faded and labelled, so a corrected verdict can't be mistaken for the current one.
 const isCheck = m => /^🤖 /.test(m.text || '');

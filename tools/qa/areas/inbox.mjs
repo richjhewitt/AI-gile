@@ -344,3 +344,18 @@ def('outsidetask', 'a task can be marked 🤝 Outside help: CLI flag, own group 
   check('inbox has an Outside help chip with its count', /Outside help\s*1/.test(await ip.textContent('#ibKinds')), await ip.textContent('#ibKinds'));
   noErrors(page); noErrors(ip);
 }, true);
+
+def('inboxlive', 'a new team message shows in an inbox item while its reply box holds a draft (AIG-314)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await mkCard(s, 'alpha', 'Alpha question', { status: 'doing', assignee: 'Forge' });
+  await say(s, 'alpha', 'ALP-1', 'Forge', 'which colour?', { needsYou: true });
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('.ib-item textarea');
+  await page.fill('.ib-item textarea', 'half a reply');
+  await page.focus('.ib-item textarea');
+  await say(s, 'alpha', 'ALP-1', 'Forge', 'actually, which size?', { needsYou: true });
+  const live = await page.waitForFunction(() => document.querySelector('.ib-item .ib-question')?.textContent.includes('which size'), null, { timeout: 2500 }).then(() => true, () => false);
+  check('the newer question shows within 2s', live);
+  check('the draft is kept and focused', (await page.inputValue('.ib-item textarea')) === 'half a reply' && await page.evaluate(() => document.activeElement && document.activeElement.tagName === 'TEXTAREA'));
+  noErrors(page);
+}, true);
