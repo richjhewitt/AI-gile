@@ -35,7 +35,9 @@ Where everything lives, so you can go straight to the right place. Search for th
 |---|---|
 | `styles.css` | All styles: tokens, Portfolio, Board, Card detail panel, buttons and forms, phones |
 | `js/usage-page.js` | The `#/usage` page (charts are hand-written SVG) |
-| `js/inbox.js` | Top-bar inbox button, the `#/inbox` page, alerts; self-contained |
+| `js/inbox-style.js` | `INBOX_CSS`: the inbox styles, injected by inbox.js (loaded just before it) |
+| `js/inbox-queue.js` | `paintQueue(shown, kindFilter)`: the inbox kind chips and the Next up line (AIG-159..162); called by inbox.js |
+| `js/inbox.js` | Top-bar inbox button, the `#/inbox` page, alerts; uses the two files above |
 | `js/i18n.js` | Languages (AIG-124): `t(key, vars)`, `loadLang` (runs before the first render), `setLang`, `langPickHtml`; see "Languages" below |
 | `js/core.js` | `state`, `api`, `esc`, `ago`, the router (`parseRoute`), `busy`/`refresh`/`render` (the 1s poll never wipes typing), `slug`/`curCard`/`setErr` |
 | `js/format.js` | Card text: `withCode`, `spaceBullets`, `linkify`, `.md` links (`mdLinks`, opened by `showDocPath` in dialogs.js); `md` (Docs renderer) |
