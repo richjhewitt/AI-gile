@@ -1,21 +1,12 @@
 // QA area: dminvite (AIG-311): Setup's DM friends section, two boards and a local relay, the whole flow by clicking:
 // switch DMs on, Invite a friend (code, Copy), Add a friend (paste, name), the same 6 safety words on both,
 // ✅ They match, Block / Unblock, Remove, a bad code, and the texts in nl and nl-BE.
-import { spawn } from 'node:child_process';
-import path from 'node:path';
-import { ROOT, PORT, check, sleep, tmp, startServer, openPage, noErrors, def } from '../lib.mjs';
+import { freePort, startRelay, until, check, sleep, startServer, openPage, noErrors, def } from '../lib.mjs';
 
-async function startRelay(port) {
-  const proc = spawn(process.execPath, [path.join(ROOT, 'relay', 'relay.js')], { env: { ...process.env, RELAY_PORT: String(port), RELAY_DATA: tmp('relay'), RELAY_RATE: '100000' }, stdio: 'ignore' });
-  const base = `http://127.0.0.1:${port}`;
-  for (let i = 0; i < 50; i++) { try { if ((await fetch(base + '/health')).ok) break; } catch {} await sleep(100); }
-  return { base, stop: () => { try { proc.kill(); } catch {} } };
-}
-const until = async (fn, ms = 8000) => { const end = Date.now() + ms; let v; while (!(v = await fn()) && Date.now() < end) await sleep(100); return v; };
 
 def('dminvite', 'Setup: invite a friend (code + Copy), add a friend (paste + name), the 6 safety words, They match, Block, Remove, between two boards and a local relay (AIG-311)', async (s, ctx) => {
-  const relay = await startRelay(PORT + 3);
-  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, PORT + 1);
+  const relay = await startRelay();
+  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, await freePort());
   try {
     await s.ok('POST', '/api/dms/settings', { relay: relay.base });
     await b.ok('POST', '/api/dms/settings', { relay: relay.base });

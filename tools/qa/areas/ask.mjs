@@ -5,8 +5,8 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { PORT, BASE, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def } from '../lib.mjs';
-import { startRelay, until, pair } from './share.mjs';
+import { BASE, freePort, startRelay, until, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { pair } from './share.mjs';
 
 // The stub agent: notes its folder (one line per run), its arguments and what came on stdin, then answers like the
 // real program's --output-format json.
@@ -17,8 +17,8 @@ fs.writeFileSync(stub, `@echo off\r\ncd >> "${OUT}"\r\necho %* > "${ARGS}"\r\nfi
 const runs = () => fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8').split(/\r?\n/).filter(Boolean) : [];
 
 def('ask', 'ask a mate: a friend\'s short question waits for ✅ / ✋; ✅ runs once, capped and tool-less, in an empty temp folder; the answer goes back as a DM (AIG-210)', async (a, ctx) => {
-  const relay = await startRelay(PORT + 3);
-  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, PORT + 1);
+  const relay = await startRelay();
+  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, await freePort());
   try {
     const { ca, cb } = await pair(a, b, relay);   // ca: B's contact for A ("Alberto"); cb: A's contact for B ("Beatrix")
     await mkProject(a, 'Alpha', 'ALP', { path: STUB });

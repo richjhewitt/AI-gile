@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import http from 'node:http';
 import path from 'node:path';
-import { ROOT, PORT, BASE, check, sleep, tmp, startServer, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, PORT, BASE, freePort, startRelay, until, check, sleep, tmp, startServer, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 
 def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, answer the open question or send a new message (AIG-137/138)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET');
@@ -90,15 +90,7 @@ def('answerbtns', 'answer buttons under each message, picked from what it asks; 
 }, true);
 
 /* ---------- private DMs (AIG-110/112) ---------- */
-// A relay and two boards (A = the area's own server, B = a second one on PORT+1), all on temp folders.
-async function startRelay(port, extraEnv = {}) {
-  const data = path.join(tmp('relay'), 'data');
-  const proc = spawn(process.execPath, [path.join(ROOT, 'relay', 'relay.js')], { env: { ...process.env, RELAY_PORT: String(port), RELAY_HOST: '127.0.0.1', RELAY_DATA: data, ...extraEnv }, stdio: 'ignore' });
-  const base = `http://127.0.0.1:${port}`;
-  for (let i = 0; i < 50; i++) { try { if ((await fetch(base + '/health')).ok) break; } catch {} await sleep(100); }
-  return { base, data, stop: () => { try { proc.kill(); } catch {} } };
-}
-const until = async (fn, ms = 8000) => { const end = Date.now() + ms; let v; while (!(v = await fn()) && Date.now() < end) await sleep(100); return v; };
+// A relay and two boards (A = the area's own server, B = a second one), all on free ports and temp folders.
 const filesUnder = dir => fs.existsSync(dir) ? fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? filesUnder(path.join(dir, e.name)) : [path.join(dir, e.name)]) : [];
 const envFiles = (relay, box) => filesUnder(path.join(relay.data, box)).filter(f => !f.endsWith('owner.json'));
 // A request to the relay signed like a board's (lib/dm.js relayCall), with parts that can be bent for the tests.
@@ -112,9 +104,9 @@ async function relaySigned(relay, method, p, key, { ts = Date.now(), nonce = cry
 }
 
 def('dms', 'private DMs: invite/accept, same safety code, encrypted send through a relay that sees no plaintext, tamper shows not verified, block, DMs off (AIG-110/112)', async s => {
-  const relay = await startRelay(PORT + 3, { RELAY_RATE: '100000' });
-  const tiny = await startRelay(PORT + 2, { RELAY_RATE: '5' });
-  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, PORT + 1);
+  const relay = await startRelay({ RELAY_RATE: '100000' });
+  const tiny = await startRelay({ RELAY_RATE: '5' });
+  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, await freePort());
   const a = s;
   try {
     check('relay is up', (await fetch(relay.base + '/health')).ok);
@@ -210,7 +202,7 @@ def('dms', 'private DMs: invite/accept, same safety code, encrypted send through
     check('relay: an old request is refused', (await relaySigned(relay, 'GET', '/m/' + box, k, { ts: Date.now() - 10 * 60e3 })).status === 401);
     check('relay: an envelope for another mailbox is refused', (await fetch(relay.base + '/m/' + box, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to: onB.mailbox, ct: 'x', sig: 'y' }) })).status === 400);
     const big = await new Promise(res => {
-      const rq = http.request({ host: '127.0.0.1', port: PORT + 3, method: 'POST', path: '/m/' + box, headers: { 'Content-Type': 'application/json', 'Content-Length': 13 * 1024 * 1024 } }, x => { x.resume(); res(x.statusCode); });
+      const rq = http.request({ host: '127.0.0.1', port: relay.port, method: 'POST', path: '/m/' + box, headers: { 'Content-Type': 'application/json', 'Content-Length': 13 * 1024 * 1024 } }, x => { x.resume(); res(x.statusCode); });
       rq.on('error', () => res('error'));
       rq.write('{');
     });
@@ -240,8 +232,8 @@ def('railorder', 'drag a project in the left rail to reorder; the order is used 
 }, true);
 
 def('dmchats', 'friends\' private DMs show as chats next to the team leads, with an All / Agents / People filter, the same reply box, 👍 and attachments (AIG-111)', async (s, ctx) => {
-  const relay = await startRelay(PORT + 3, { RELAY_RATE: '100000' });
-  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, PORT + 1);
+  const relay = await startRelay({ RELAY_RATE: '100000' });
+  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, await freePort());
   try {
     await mkProject(s, 'Alpha', 'ALP');
     await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });
@@ -297,7 +289,7 @@ def('dmchats', 'friends\' private DMs show as chats next to the team leads, with
 }, true, { AIGILE_DM_POLL_MS: '300' });
 
 def('dmsrelay', 'Setup: the DMs relay address box saves, and Check fetches <relay>/health on the server: a local relay passes, a bad address fails with a reason (AIG-309)', async (s, ctx) => {
-  const relay = await startRelay(PORT + 3, { RELAY_RATE: '100000' });
+  const relay = await startRelay({ RELAY_RATE: '100000' });
   try {
     check('check passes against a running relay', (await s.ok('POST', '/api/dms/check', { relay: relay.base })).ok === true);
     const dead = await s.ok('POST', '/api/dms/check', { relay: 'http://127.0.0.1:1' });
