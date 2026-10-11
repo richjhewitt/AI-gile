@@ -1,0 +1,26 @@
+/* ⛔ No Token Mode (AIG-337..339): the top-bar switch, and the AI buttons that hide while it is on. */
+#ntBtn { white-space: nowrap; }
+#ntBtn.on { background: var(--danger); border-color: var(--danger); color: #fff; }
+#ntBtn.back { background: var(--done); border-color: var(--done); color: #fff; animation: ntGlow 1.6s ease-in-out infinite; }
+@keyframes ntGlow { 0%, 100% { box-shadow: 0 0 0 0 var(--done); } 50% { box-shadow: 0 0 10px 3px var(--done); } }
+@media (prefers-reduced-motion: reduce) { #ntBtn.back { animation: none; box-shadow: 0 0 8px 2px var(--done); } }
+
+/* AI buttons: wake, restart team, 👁 Watch, the AI tester (board and inbox), ask a mate's Ask it, check usage now, the poke badge. */
+.notokens [onclick^="wakeTeam"],
+.notokens [onclick^="restartTeam"],
+.notokens [onclick^="watchTeam"],
+.notokens [onclick^="testForMe"],
+.notokens [onclick^="uzCheckNow"],
+.notokens [data-ask-yes],
+.notokens #ibTester,
+.notokens #pokeTop,
+.notokens .ai-only { display: none !important; }
+
+/* ⚡ Usage at a glance (AIG-356): two mini bars, a dash, the ⛔ and a red dot inside the Usage nav link. */
+#ugBars { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; vertical-align: middle; }
+.ug-bars { display: inline-flex; flex-direction: column; gap: 2px; }
+.ug-bar { display: block; width: 26px; height: 5px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.ug-bar b { display: block; height: 100%; border-radius: 99px; }
+.ug-bar.g b { background: #0ca30c; } .ug-bar.a b { background: #fab219; } .ug-bar.r b { background: #d03b3b; }
+.ug-dash { color: var(--muted, #888); }
+.ug-dot { width: 8px; height: 8px; border-radius: 50%; background: #d03b3b; display: inline-block; }

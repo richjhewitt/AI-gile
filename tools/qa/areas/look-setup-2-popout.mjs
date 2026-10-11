@@ -78,8 +78,23 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   await page.waitForFunction(() => location.hash === '#/setup', null, { timeout: 8000 }).catch(() => {});
   await page.waitForSelector('#setupForm');
   check('board opens Setup first', page.url().endsWith('#/setup'));
+  await page.click('#wzNo'); await page.waitForSelector('#wzNo', { state: 'detached' });   // AIG-354: the wizard offer, waved off
   check('name is required', (await s.api('POST', '/api/setup', { owner: '' })).status === 400);
   await page.fill('input[data-key="owner"]', 'Sam');
+  // AIG-334: a guessed agent program is only a suggestion; typing just a name must not save it.
+  check('the agent program box starts empty', (await page.inputValue('input[data-key="agent.command"]')) === '');
+  await page.click('#setupForm button[type=submit]');
+  await page.waitForSelector('#setup-done:has-text("Saved")');
+  const first = JSON.parse(fs.readFileSync(file, 'utf8'));
+  check('saving only a name saves no guessed agent program or file names', first.owner === 'Sam' && !Object.keys(first.agent || {}).length, first);
+
+  await page.evaluate(() => closeDialog());
+  const useSel = '#setupForm label:has(input[data-key="agent.notesFile"]) .usesuggest';
+  if (await page.$(useSel)) {
+    const sug = await page.getAttribute('input[data-key="agent.notesFile"]', 'data-suggest');
+    await page.evaluate(sel => document.querySelector(sel).click(), useSel);
+    check('"Use this" puts the suggestion in the box', (await page.inputValue('input[data-key="agent.notesFile"]')) === sug);
+  }
   await page.fill('input[data-key="agent.command"]', 'C:/tools/agent.exe');
   await page.fill('input[data-key="agent.notesFile"]', 'NOTES.local.md');
   await page.fill('input[data-key="agent.settingsFile"]', '.agent/settings.local.json');
@@ -89,5 +104,7 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   check('saved to the local settings file', saved.owner === 'Sam' && saved.agent.command === 'C:/tools/agent.exe' && saved.agent.settingsFile === '.agent/settings.local.json', saved);
   const m = await s.ok('GET', '/api/meta');
   check('setup done and the name is used at once', m.setupNeeded === false && m.owner === 'Sam', m);
+  // AIG-335: a repaint of the board part while Setup is open and no project is loaded must not throw (it read p.presence of null).
+  check('repainting the board on Setup with no project does not throw', await page.evaluate(() => { try { state.route = { view: 'setup' }; state.project = null; renderBoardOnly(); return true; } catch (e) { return false; } }));
   noErrors(page);
 }, true, { AIGILE_OWNER: '', AIGILE_LOCAL: (process.env.QA_SETUP_FILE = path.join(tmp('setup'), 'aigile.local.json')) });

@@ -68,6 +68,17 @@ function renderWatch() {
   paintWatch(state.watchLog);
 }
 
+/* ---------- 📜 Team news (AIG-319) ---------- */
+// Every team comment on the project's cards, newest first, in its own window (#/pop-news/<slug>), redrawn by the 1 s poll.
+function openNews(s) { window.open('#/pop-news/' + s, 'aigile-news-' + s, 'width=520,height=760'); }
+function renderNews() {
+  document.body.classList.add('poplist');
+  const s = state.route.slug, list = state.news || [];
+  const top = `<h3 style="margin:4px 0">${esc(t('news.h'))} · ${esc(s)}</h3>`;
+  if (!list.length) return top + `<p class="muted">${esc(t('news.none'))}</p>`;
+  return top + `<div class="newslist">${list.map(m => `<div class="news-item${m.mine ? ' mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> · <a href="#/pop/${esc(s)}/${esc(m.card)}" target="_blank">${esc(m.card)}</a> <span class="muted">${esc(m.title)} · ${ago(m.at)}</span></div><div class="dm-bubble">${esc(m.text || '').replace(/\n/g, '<br>')}</div></div>`).join('')}</div>`;
+}
+
 /* ---------- board page ---------- */
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
@@ -88,6 +99,7 @@ function renderBoard(p) {
       <select class="lanesel" title="${esc(t('lanes.title'))}" onchange="setLanes(this.value)">${lanesList().map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
       <button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>
       ${standupButtons(p)}
+      <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path ? t('board.connected') : t('board.connect'))}</button>
       ${Share.button(p)}
@@ -97,8 +109,9 @@ function renderBoard(p) {
       ${p.path ? `<button onclick="permsDialog()" title="${esc(t('board.perms.title'))}">${esc(t('board.perms'))}</button>` : ''}
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${esc(p.archived ? t('board.unarchive') : t('board.archive'))}</button></div>
     <div class="flight">${t('board.flight.html')} ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>
-    ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? ` <code>${esc(p.path)}</code>` : ''}</p>` : ''}
+    ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? `${p.description ? ' · ' : ''}<code>${esc(p.path)}</code>` : ''}</p>` : ''}
     ${Share.laneHtml(p)}
+    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path ? t('board.empty.path', { wake: esc(t('pres.wake')) }) : t('board.empty.nopath', { connect: esc(t('board.connect')) })}</div>`}
     ${board}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>
@@ -157,10 +170,10 @@ function columnsHtml(p, pool) {
 /* ---------- For you column (AIG-106) ---------- */
 // Everything waiting on the owner, whatever its status: tests, questions, tasks and blocks. Those cards show
 // here instead of in their own column (their status doesn't change). Chips pick which kind comes first.
-const KINDS = ['q', 't', 'k'], kindLabel = k => t('fy.kind.' + k);
+const KINDS = ['q', 't', 's', 'k'], kindLabel = k => t('fy.kind.' + k);
 const isMine = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
 const forYou = c => c.status !== 'done' && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
-const kindOf = c => isMine(c) ? 'k' : c.status === 'verify' && !c.needsYou && !c.blocked ? 't' : 'q';
+const kindOf = c => isMine(c) ? (c.server ? 's' : 'k') : c.status === 'verify' && !c.needsYou && !c.blocked ? 't' : 'q';
 function forYouFirst(k) {
   if (k) { state.forYouFirst = k; try { localStorage.setItem('aigile.forYouFirst', k); } catch {} refresh(true); }
   if (!state.forYouFirst) { try { state.forYouFirst = localStorage.getItem('aigile.forYouFirst'); } catch {} }
@@ -168,7 +181,7 @@ function forYouFirst(k) {
 }
 // The For you queue in board order; the card panel uses it to open the next one (AIG-141).
 function forYouQueue(p, pool = p.cards) {
-  const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : 1 + KINDS.indexOf(kindOf(c));
+  const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : kindOf(c) === 's' && first === 'k' ? 0.5 : 1 + KINDS.indexOf(kindOf(c));   // server tasks lead the Tasks (AIG-320)
   // Within a kind, a queue: longest-waiting first, so "Wait and see" sends a test to the back.
   // Tests the AI tester passed come first, ready for a quick accept (AIG-300).
   const ai = c => c.aiCheck && c.aiCheck.result === 'pass' ? 0 : 1;
@@ -229,7 +242,7 @@ function cardHtml(c) {
   const view = cardViewOf(state.project);
   const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}" data-id="${c.id}" draggable="true" style="display:block">
-    <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}</div>${forYou(c) ? queueChips(c) : ''}
+    <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}${forYou(c) ? `<button class="ib-popone" title="${esc(t('inbox.popone'))}" onclick="event.preventDefault();event.stopPropagation();window.open('#/pop/${state.project.slug}/${c.id}', 'aigile-${state.project.slug}-${c.id}', 'width=560,height=780')">⤢</button>` : ''}</div>${forYou(c) ? queueChips(c) : ''}
     <div class="t">${esc(c.title)}</div>
     ${live ? `<div class="heard">💬 ${esc(heard.who)} ${ago(heard.at)}${heard.text ? ': ' + esc(heard.text.slice(0, 60).replace(/\n/g, ' ')) : ''}</div>` : ''}
     <div class="meta">${metaHtml(c, view.show)}${live ? `<button class="poke${stale ? ' hot' : ''}" title="${esc(t('card.poke.title'))}" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">${esc(t('card.poke'))}</button>` : ''}</div></a>`;

@@ -65,7 +65,9 @@ aigile ask <proj> <id> "Should exports include archived items? I'm assuming no."
 
 No card for it? `add` one first. This flags the card NEEDS-OWNER and puts it in their inbox with one-click answers: a plan ending in **GO?** gets Go / Not yet, a yes/no gets Yes / No, otherwise `--options "M3U,JSON"` (up to 4). Then move on with `next`. State your assumption so a "fine" is enough. For an external blocker (missing key, failing service) use `aigile block <proj> <id> "why" --as YourName`, and `unblock` when it clears; their reply clears the block too.
 
-**Questions vs tasks.** `ask` is for questions. `aigile task <proj> <id> "exactly what to do, step by step" --as YourName` is for something only they can *do* (an API key, a login, a server command); it lands in "Tasks for you", and Done sends the card back through "For the team".
+**Several questions on the same subject?** Group them: `aigile quiz <proj> <id> --topic "Sharing" "Question one?|Opt A,Opt B" "Question two?|Yes,No" --as YourName`. Keep each question to one line (up to 4 short options); the owner answers them together in the ⚡ Decide pile and you get one comment back. When you ask Go, keep the plan to a 2-line summary.
+
+**Questions vs tasks.** `ask` is for questions. `aigile task <proj> <id> "exactly what to do, step by step" --as YourName` is for something only they can *do* (an API key, a login, a server command); add `--server` when it means running something on a server, so it is grouped at the top of their tasks; it lands in "Tasks for you", and Done sends the card back through "For the team".
 
 **6. Log decisions.** Anything the owner might ask "why?" about, and anything decided while they were away:
 

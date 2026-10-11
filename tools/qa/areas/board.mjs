@@ -53,6 +53,36 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   noErrors(page);
 }, true);
 
+def('newcard-project', 'New card: Project picker defaults to this board; another project gets the card, with a link note (AIG-316)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await mkProject(s, 'Beta', 'BET');
+  const cards = async slug => (await s.ok('GET', `/api/projects/${slug}`)).cards;
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('.column');
+  await page.click('.toolbar button.primary');
+  await page.waitForSelector('#nc-project');
+  check('Project picker defaults to the board you are on', (await page.inputValue('#nc-project')) === 'alpha');
+  await page.fill('#f-title', 'Stays home');
+  await page.click('#dialog button[type=submit]');
+  await page.waitForSelector('#dialog .dialog', { state: 'detached' });
+  await page.waitForTimeout(300);
+  check('default: card in this project, none in the other', (await cards('alpha')).some(c => c.title === 'Stays home') && !(await cards('beta')).some(c => c.title === 'Stays home'));
+  await page.click('.toolbar button.primary');
+  await page.waitForSelector('#nc-project');
+  await page.selectOption('#nc-project', 'beta');
+  await page.fill('#f-title', 'Goes to beta');
+  await page.click('#dialog button[type=submit]');
+  await page.waitForSelector('#nc-link');
+  const b = (await cards('beta')).find(c => c.title === 'Goes to beta');
+  check('the card is created in the other project', b && b.id === 'BET-1' && b.createdBy === 'Owner', b);
+  check('and this project is unchanged', !(await cards('alpha')).some(c => c.title === 'Goes to beta') && (await page.locator('.card', { hasText: 'Goes to beta' }).count()) === 0);
+  check('a note says where it went, with a link', /Added BET-1 to .*Beta/.test(await page.textContent('#dialog h2')) && (await page.getAttribute('#nc-link', 'href')) === '#/p/beta/BET-1');
+  await page.click('#nc-link');
+  await page.waitForTimeout(600);
+  check('the link opens the new card', page.url().endsWith('#/p/beta/BET-1'));
+  noErrors(page);
+}, true);
+
 def('filters', 'search survives polling, type filter, clear', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   await mkCard(s, 'alpha', 'Zebra feature', { status: 'todo' });
@@ -278,6 +308,10 @@ def('quick', '👀 What\'s happening? summarises the board; 💬 Ask the team se
   await page.waitForSelector('#dialog h2');
   check('summary shows what is in progress', (await page.textContent('#dialog')).includes('Building the thing'));
   await page.click('#dialog button:has-text("Ask the team")');
+  const h0 = await page.$eval('#ask-text', e => e.offsetHeight);
+  await page.fill('#ask-text', 'A long thought\n'.repeat(12));
+  await page.dispatchEvent('#ask-text', 'input');
+  check('Ask the team: the box is wide and grows with a long thought (AIG-344)', await page.$eval('#ask-text', (e, h) => e.offsetHeight > h && e.closest('.dialog').offsetWidth > 600, h0), h0);
   await page.fill('#ask-text', 'Where are we with the login page?');
   await page.click('#dialog button[type=submit]');
   await sleep(500);

@@ -73,6 +73,9 @@ def('restartpill', '🔄 new server code shows a Restart the board pill; it asks
   await page.waitForSelector('#upRestart button', { timeout: 10000 });
   // AIG-295: one pill only, and in the desktop app it is clickable, not part of the draggable title bar.
   check('the pill has one place on the page', (await page.locator('#upRestart').count()) === 1);
+  // AIG-346: it says Restart the app, and no Refresh pill shows next to it (the restart reloads the page anyway).
+  check('the pill says Restart the app', /Restart the app/.test(await page.textContent('#upRestart')));
+  check('no Refresh pill beside it', (await page.locator('#upRefresh button').count()) === 0);
   const region = await page.evaluate(() => { document.body.classList.add('desktop'); const st = getComputedStyle(document.querySelector('#upRestart button')); const r = st.webkitAppRegion || st.getPropertyValue('-webkit-app-region'); document.body.classList.remove('desktop'); return r; });
   check('in the app the pill is clickable (no-drag)', region === 'no-drag', region);
   page.once('dialog', d => d.accept());

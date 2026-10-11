@@ -4,7 +4,7 @@
 const IB = {
   items: [], raw: [], hidden: 0, flashKey: null,   // what is shown, what the server sent, how many quiet mode hides
   tab: 'all', chat: null, fromProject: null, selectPinned: false, tabOrder: [],   // project tabs and the Messages chat (AIG-37, AIG-87)
-  flick: -1, kindFilter: '', only: '', testerOn: false,   // flick: the 🤖 view (-1 closed); only: q, k or t from a top bar chip (AIG-187)
+  flick: -1, decide: -1, kindFilter: '', only: '', testerOn: false,   // flick: the 🤖 view (-1 closed); only: q, k or t from a top bar chip (AIG-187)
 };
 (function () {
   'use strict';
@@ -25,6 +25,12 @@ const IB = {
   const kindOf = c => isTask(c) ? 'k' : isQuestion(c) ? 'q' : 't';
   const lastAsk = c => [...(c.comments || [])].reverse().find(m => String(m.author).trim().toLowerCase() !== me().toLowerCase())
     || { author: c.assignee || 'The team', at: c.updated, text: c.description || c.title };
+  // The item shows the task / question itself (AIG-367), not whatever the team said last: the newest comment marked by `aigile task` / `ask`.
+  const shownAsk = c => {
+    const mark = isTask(c) ? 'task' : c.blocked ? '' : 'ask';
+    const m = mark && [...(c.comments || [])].reverse().find(x => x.mark === mark && String(x.author).trim().toLowerCase() !== me().toLowerCase());
+    return m || lastAsk(c);
+  };
   const keyOf = c => c.project + '/' + c.id;
   // Escape, then link web addresses and card ids (e.g. AIG-12) in the same project.
   const linkify = (text, c) => withCode(text, t => mdLinks(esc(t)
@@ -74,5 +80,5 @@ const IB = {
   }
   function repaint() { if (!loaded) return; IB.items = view(); IB.paintTop(); if (onInboxPage() && el('ib')) IB.paintPage(); }
   const onInboxPage = () => location.hash === '#/inbox';
-  Object.assign(IB, { el, esc, post, isTask, isQuestion, isTest, kindOf, lastAsk, keyOf, linkify, onInboxPage, tabPref, load, apply, repaint, view });
+  Object.assign(IB, { el, esc, post, isTask, isQuestion, isTest, kindOf, lastAsk, shownAsk, keyOf, linkify, onInboxPage, tabPref, load, apply, repaint, view });
 })();

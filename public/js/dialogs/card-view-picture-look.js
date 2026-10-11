@@ -85,12 +85,15 @@ async function lookDialog() {
     <label class="chk"><input type="checkbox" id="look-verbose" ${p.verbose ? 'checked' : ''}> ${esc(t('look.verbose'))}</label>
     <label class="f"><span>${esc(t('look.runin'))}</span>${runInSelect('look-runin', p.runIn || '', 'lookRunIn()', def)}${runInBlind(w)}</label>
     <label class="f" id="look-runcmd-box" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="look-runcmd" value="${esc(p.runCmd || '')}" placeholder="${esc(leadPrefs().runCmd || 'cursor "{folder}"')}"><small class="muted">${esc(t('runin.cmd.look'))}</small></label>
+    <div class="f" id="look-roles"><span>${esc(t('look.roles'))}</span>${TEAM_ROLES.map((r, i) => `<label class="chk"><input type="checkbox" data-role="${esc(r)}" ${projectRoleOn(r, p) ? 'checked' : ''} ${i ? '' : 'disabled'} onchange="lookRolesCount()"> ${esc(r)}</label>`).join('')}<small class="muted" id="look-rolecount">${esc(t('look.roles.count', rolesCount(TEAM_ROLES.filter(r => projectRoleOn(r, p)))))}</small></div>
     <div class="err" id="look-err"></div>
     <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
+const lookRolesOn = () => [...document.querySelectorAll('#look-roles input[data-role]')].filter(i => i.checked || i.disabled).map(i => i.dataset.role);
+function lookRolesCount() { $('look-rolecount').textContent = t('look.roles.count', rolesCount(lookRolesOn())); }
 async function saveLook(auto) {
   try {
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, roles: lookRolesOn() });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }

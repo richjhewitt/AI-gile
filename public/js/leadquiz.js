@@ -34,6 +34,16 @@ async function saveQuiz() {
 }
 
 /* ---------- "Your lead" on the Setup page: the questionnaire and each setting as its own switch ---------- */
+// Usage checks, token budget, parallel runs and helpers per model (AIG-353).
+function budgetHtml(pr) {
+  const row = (k, label, min, max) => `<label class="f"><span>${esc(t(label))}</span><input type="number" id="pf-${k}" min="${min}" max="${max}" value="${pr[k] ?? ''}" style="width:5em" onchange="setLeadPref({ ${k}: this.value === '' ? '' : Number(this.value) })"></label>`;
+  const plans = ['fly', 'careful', 'normal', 'generous', 'nospare'];
+  return `<div class="f"><span>${esc(t('budget.plan'))}</span><div class="quiz-opts" id="pf-plan">${plans.map(k => `<label class="quiz-opt"><input type="radio" name="pf-plan" value="${k}" ${pr.plan === k ? 'checked' : ''} onchange="setLeadPref({ plan: '${k}' })"> ${esc(t('budget.plan.' + k))}</label>`).join('')}</div><small class="muted">${esc(t('budget.plan.help'))}</small></div>
+    <label class="f"><span>${esc(t('budget.usage'))}</span><select class="setup-theme" id="pf-usageChecks" onchange="setLeadPref({ usageChecks: this.value })">${['off', 'hand', 'auto'].map(v => `<option value="${v}" ${pr.usageChecks === v ? 'selected' : ''}>${esc(t('budget.usage.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('budget.usage.help'))}</small></label>
+    ${row('budgetH5', 'budget.h5', 1, 100)}${row('budgetWk', 'budget.wk', 1, 100)}<small class="muted">${esc(t('budget.help'))}</small>
+    ${row('maxRuns', 'budget.runs', 0, 50)}<small class="muted">${esc(t('budget.runs.help'))}</small>
+    <span>${esc(t('budget.helpers'))}</span>${['Opus', 'Sonnet', 'Haiku'].map(m => row('helpers' + m, 'budget.helpers.' + m.toLowerCase(), 0, 50)).join('')}<small class="muted">${esc(t('budget.helpers.help'))}</small>`;
+}
 function leadPrefsHtml(msg = '') {
   const pr = leadPrefs();
   const sw = k => `<label class="f chk"><span><input type="checkbox" ${pr[k] ? 'checked' : ''} onchange="setLeadPref({ ${k}: this.checked })"> ${esc(t('lead.' + k))}</span><small class="muted">${esc(t('lead.' + k + '.help'))}</small></label>`;
@@ -41,6 +51,7 @@ function leadPrefsHtml(msg = '') {
     ${sw('tidyCards')}${sw('chatty')}
     <label class="f"><span>${esc(t('lead.go'))}</span><select class="setup-theme" onchange="setLeadPref({ go: this.value })">${['', 'ask', 'small'].map(v => `<option value="${v}" ${(pr.go || '') === v ? 'selected' : ''}>${esc(t('lead.go.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.go.help'))}</small></label>
     ${sw('watchAll')}${sw('light')}
+    ${budgetHtml(pr)}
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;
 }
 const paintLeadPrefs = msg => { if ($('leadPrefs')) $('leadPrefs').innerHTML = leadPrefsHtml(msg); };

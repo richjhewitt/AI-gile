@@ -1,4 +1,4 @@
-// QA areas: inbox, foryou, fynext, queue, blocked, usage.
+// QA areas: inbox, foryou, fynext, queue, servertask, blocked, usage.
 import fs from 'node:fs';
 import path from 'node:path';
 import { BASE, check, sleep, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
@@ -144,6 +144,8 @@ def('usage', '#/usage renders with and without limits.log', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const page = await openPage(ctx, '#/usage');
   await page.waitForTimeout(800);
+  // AIG-356: the nav glance. No reading: a grey dash and no bars.
+  check('glance: no reading shows a dash, no bars', (await page.locator('#ugBars .ug-dash').count()) === 1 && (await page.locator('#ugBars .ug-bar').count()) === 0 && /–/.test(await page.textContent('#ugBars')));
   const t1 = await page.textContent('#app');
   check('usage page renders (no limits.log)', /usage/i.test(t1) && t1.trim().length > 40, t1.slice(0, 120));
   check('limits.log absent', !fs.existsSync(path.join(s.data, 'limits.log')));
@@ -161,6 +163,18 @@ def('usage', '#/usage renders with and without limits.log', async (s, ctx) => {
   const t2 = await page2.textContent('#app');
   check('usage page renders with limits.log', /20\s*%/.test(t2) || (await page2.locator('svg').count()) > 0, t2.slice(0, 160));
   noErrors(page2);
+  // AIG-356: 20% used -> 80% left (green), 33% used -> 67% left (green); the tooltip says so.
+  const glance = async () => { await page2.evaluate(() => UsageGlance.poll()); await page2.waitForTimeout(400); return { bars: await page2.locator('#ugBars .ug-bar').evaluateAll(es => es.map(e => e.className.replace('ug-bar ', ''))), title: await page2.getAttribute('#usageNav', 'title'), dot: await page2.locator('#ugBars .ug-dot').count(), dash: await page2.locator('#ugBars .ug-dash').count() }; };
+  let g = await glance();
+  check('glance: two green bars, tooltip with % left and age', g.bars.join() === 'g,g' && /5h: 80% left · week: 67% left · last reading/.test(g.title) && g.dot === 0, g);
+  const lat = await s.ok('GET', '/api/limits/latest');
+  check('latest api: newest reading, not over budget', lat.latest.h5.pct === 20 && lat.over === false);
+  await s.ok('POST', '/api/limits', { rate_limits: { five_hour: { used_percentage: 65, resets_at: soon }, seven_day: { used_percentage: 85, resets_at: soon + 86400 } } });
+  g = await glance();
+  check('glance: amber 5h and red week colours', g.bars.join() === 'a,r' && g.dot === 0, g);
+  await s.ok('POST', '/api/limits', { rate_limits: { five_hour: { used_percentage: 95, resets_at: soon }, seven_day: { used_percentage: 85, resets_at: soon + 86400 } } });
+  g = await glance();
+  check('glance: over the budget shows a red dot', g.bars.join() === 'r,r' && g.dot === 1 && /budget/.test(g.title), g);
   await page2.goto(BASE + '/#/');
   await page2.waitForSelector('.proj');
   noErrors(page2);
@@ -241,4 +255,62 @@ def('poplist', '⧉ pop an inbox list out into its own window: only that list, n
   check('only tests show; no top bar or rail', await pop.locator('#ibK').isHidden() && await pop.locator('header').isHidden() && await pop.locator('#dmRail').isHidden());
   check('its buttons work as usual', (await pop.locator('#ibT .ib-item button[data-act="accept"]').count()) === 1);
   noErrors(page);
+}, true);
+
+def('popone', '⤢ pop one inbox item out into its own window; a task item shows the task, not a later comment (AIG-367)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const b = await mkCard(s, 'alpha', 'Add the record');
+  s.cli(['task', 'alpha', b.id, 'step 1: add a DNS A record', '--as', 'Lead']);
+  await sleep(20);
+  await say(s, 'alpha', b.id, 'Herald', 'technical handover note');
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('#ibK .ib-item .ib-popone');
+  const txt = await page.textContent('#ibK .ib-item .ib-question');
+  check('the task item shows the task text, not the later comment', /DNS A record/.test(txt) && !/handover/.test(txt), txt);
+  check('who set it is Lead', /Lead/.test(await page.textContent('#ibK .ib-item .ib-who')));
+  const popP = ctx.waitForEvent('page');
+  await page.click('#ibK .ib-item .ib-popone');
+  const pop = await popP;
+  await pop.waitForLoadState();
+  check('the window opens on that card', (await pop.evaluate(() => location.hash)) === '#/pop/alpha/' + b.id, await pop.evaluate(() => location.hash));
+  const q = await mkCard(s, 'alpha', 'Which colour');
+  s.cli(['ask', 'alpha', q.id, 'which colour?', '--as', 'Forge']);
+  await sleep(20);
+  await say(s, 'alpha', q.id, 'Herald', 'also FYI something else');
+  await page.waitForSelector('#ibQ .ib-item .ib-popone');
+  const qt = await page.textContent('#ibQ .ib-item .ib-question');
+  check('a question item shows the question, not a later comment', /which colour/.test(qt) && !/FYI/.test(qt), qt);
+  noErrors(page);
+}, true);
+
+def('servertask', 'a task can be marked 🖥️ Server: CLI flag, grouped first in For you and the inbox, owner toggle (AIG-320)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Plain task'), b = await mkCard(s, 'alpha', 'Deploy it'), c = await mkCard(s, 'alpha', 'Forgot to mark');
+  s.cli(['task', 'alpha', a.id, 'log in', '--as', 'Lead']);
+  await sleep(20);
+  const r = s.cli(['task', 'alpha', b.id, 'run the migration', '--server', '--as', 'Lead']);
+  check('task --server works', r.code === 0, r);
+  s.cli(['task', 'alpha', c.id, 'restart it', '--as', 'Lead']);
+  check('server flag is stored only when asked', (await getCard(s, 'alpha', b.id)).server === true && !(await getCard(s, 'alpha', a.id)).server);
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('.column.foryou .card');
+  const ids = async () => page.$$eval('.column.foryou .card', els => els.map(e => e.dataset.id));
+  check('For you has a Server chip with its count', /Server 1/.test(await page.textContent('.fy-chip[data-first="s"]')), await page.textContent('.fy-chips'));
+  await page.click('.fy-chip[data-first="k"]');
+  await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, b.id, { timeout: 3000 }).catch(() => {});
+  check('server tasks lead the Tasks', (await ids())[0] === b.id, await ids());
+  check('server task shows its 🖥️ mark', (await page.textContent(`.column.foryou .card[data-id="${b.id}"]`)).includes('🖥️'));
+  // the owner marks the forgotten one
+  await page.click(`.column.foryou .card[data-id="${c.id}"] [data-server]`);
+  await page.waitForFunction(() => document.querySelectorAll('.column.foryou .card [data-server][data-on="1"]').length === 2, null, { timeout: 4000 }).catch(() => {});
+  check('toggle marks a task as server', (await getCard(s, 'alpha', c.id)).server === true);
+  await page.click(`.column.foryou .card[data-id="${c.id}"] [data-server]`);
+  await page.waitForFunction(() => document.querySelectorAll('.column.foryou .card [data-server][data-on="1"]').length === 1, null, { timeout: 4000 }).catch(() => {});
+  check('toggle unmarks it again', !(await getCard(s, 'alpha', c.id)).server);
+  const ip = await openPage(ctx, '#/inbox');
+  await ip.waitForSelector('#ibK .ib-item');
+  const order = await ip.$$eval('#ibK .ib-item', els => els.map(e => e.dataset.id));
+  check('inbox lists server tasks first', order[0] === b.id && order.length === 3, order);
+  check('inbox has a Server chip with its count', /Server\s*1/.test(await ip.textContent('#ibKinds')), await ip.textContent('#ibKinds'));
+  noErrors(page); noErrors(ip);
 }, true);

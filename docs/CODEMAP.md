@@ -14,12 +14,15 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/onboard.js`: connect a folder, permissions presets
 - `lib/presence.js`: team presence, background runs, where a team runs, verbose log, 👁 Watch
 - `lib/quiet.js`, `lib/watchman.js`: going quiet, 🌙 night watchman
+- `lib/notokens.js`: ⛔ No Token Mode (one switch; `guard()` in every AI starter: presence.startTeam, tester, ask, usagecheck, watchman; `data/notokens.conf`; turns on at the usage limit, never off by itself; `aigile notokens on|off`)
 - `lib/standup.js`: stand-ups
 - `lib/attachments.js`, `lib/logos.js`, `lib/avatars.js`: reply files, project/app logos, profile pictures
 - `lib/dm.js`, `relay/relay.js`: private DMs and their relay; `lib/share.js`: sharing a project with a friend over them; `lib/ask.js`: ask a mate (a friend's question for my AI, AIG-210)
 - `lib/limits.js`, `lib/usage.js`, `lib/usagecheck.js`: plan usage, tokens, check usage now
 - `lib/trial.js`, `tools/trial/pretend-team.js`: 🧪 try it as a new user
+- `lib/pretend.js`: 🧪 pretend friend (AIG-322): local relay + second board "Davy" (nl-BE) on free ports, invite swapped, stop keeps or wipes his data
 - `lib/tester.js`: 🤖 AI tester runs
+- `lib/dispatch.js`: who is woken for the owner's card or comment (rules, then Haiku)
 - `aigile.js` (CLI entry) + `lib/cli/*.js` (core, help, command groups), `statusline.js`, `desktop/` (Electron)
 
 ## Page ([page.md](codemap/page.md): `public/`, classic scripts in one global scope, `app.js` last)
@@ -27,6 +30,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `js/home.js`, `js/board.js`, `js/card.js`, `js/dialogs/*.js`, `js/filters.js`, `js/attach.js`
 - `js/inbox*.js` (state, top, items, tabs, page, actions, style, queue, ai)
 - `js/dms.js` (DM chats), `js/share.js` (🔗 Share dialog, link offers in the inbox), `js/ask.js` (friends' questions in the inbox)
+- `js/notokens.js` + `css/06-notokens.css`: the top-bar ⛔ switch; body class `notokens` hides AI buttons by CSS (add `.ai-only` or an onclick prefix to the list)
 - `js/standup.js`, `js/usage-page.js`, `js/glossary.js`, `js/tour.js`, `js/night.js`, `js/leadquiz.js`
 - `js/app.js`: start-up, 1s poll, going quiet
 

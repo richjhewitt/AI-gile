@@ -124,7 +124,7 @@ function renderUsagePage() {
 
 // Check usage now (AIG-151): when the last reading is from, a button that fetches a fresh one, and the auto switch.
 function uzCheckBar(latest, check) {
-  if (!check) return '';
+  if (!check || check.mode === 'off') return '';
   const at = latest && latest.at;
   return `<div class="uz-check"><span class="uz-sub">${esc(at ? t('usage.check.last', { when: ago(at) }) : t('usage.check.never'))}</span>
     <button id="uzCheck" onclick="uzCheckNow(this)" title="${esc(t('usage.check.title'))}">${esc(t('usage.check.btn'))}</button>

@@ -17,9 +17,13 @@
     }
   }
   function onClick(e) {
+    const pc = e.target.closest('[data-popcard]');
+    if (pc) { const n = pc.closest('.ib-item'); window.open(`#/pop/${n.dataset.project}/${n.dataset.id}`, 'aigile-' + n.dataset.project + '-' + n.dataset.id, 'width=560,height=780'); return; }
     const pl = e.target.closest('[data-poplist]');
     if (pl) { window.open('#/pop-inbox/' + pl.dataset.poplist, 'aigile-inbox-' + pl.dataset.poplist, 'width=480,height=760'); return; }
-    if (e.target.closest('[data-flick]')) { IB.flick = IB.flick >= 0 ? -1 : 0; IB.paintPage(); return; }
+    if (e.target.closest('[data-decide]')) { e.target.closest('[data-decide]').blur(); IB.decide = IB.decide >= 0 ? -1 : 0; IB.flick = -1; IB.paintPage(); return; }
+    const dc = e.target.closest('[data-dc]'); if (dc) { IB.decideAct(dc.dataset.dc, +dc.dataset.n); return; }
+    if (e.target.closest('[data-flick]')) { IB.decide = -1; IB.flick = IB.flick >= 0 ? -1 : 0; IB.paintPage(); return; }
     const fl = e.target.closest('[data-fl]'); if (fl) { IB.flickAct(fl.dataset.fl); return; }
     if (e.target.closest('[data-onlyclear]')) { e.preventDefault(); IB.only = ''; IB.paintPage(); return; }
     if (e.target.closest('#ibTidy')) { const ps = [...new Set(IB.items.filter(isTest).filter(c => IB.tab === 'all' || c.project === IB.tab).map(c => c.project))]; (async () => { for (const s of ps) { try { await post('POST', `/api/projects/${s}/tidy`); } catch {} } IB.toast(t('tidy.toast', { n: ps.length })); })(); return; }

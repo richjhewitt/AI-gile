@@ -19,10 +19,12 @@ const standupButtons = p => `<button onclick="callStandup(['${p.slug}'])" title=
 // field has focus, so it can't land on what is being typed. Shown at most once per day: the day is saved when it appears.
 const suDay = () => new Date().toLocaleDateString('sv');
 const suPromptGone = () => { const el = $('suPrompt'); if (el) el.remove(); };
-function morningPrompt() {
+async function morningPrompt() {
   if (!i18n.ready) return void setTimeout(morningPrompt, 500);
+  // Nothing to stand up about on a brand-new board with no cards anywhere (AIG-333).
+  try { if (!(await api('GET', '/api/projects')).some(p => p.total)) return void setTimeout(morningPrompt, 60e3); } catch { return; }
   // Never in a pop-out (AIG-281): in the small night glance it covered the projects.
-  if ($('suPrompt') || !state.route || state.route.pop || state.route.popList || ['setup', 'night', 'watch'].includes(state.route.view)) return;
+  if ($('suPrompt') || !state.route || state.route.pop || state.route.popList || ['setup', 'night', 'watch', 'news'].includes(state.route.view)) return;
   try { if (localStorage.getItem('aigile.standupAsked') === suDay()) return; } catch { return; }   // no storage: never nag
   const a = document.activeElement;
   if (busy() || (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return void setTimeout(morningPrompt, 3000);

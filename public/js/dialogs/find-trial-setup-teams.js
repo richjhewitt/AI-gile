@@ -11,16 +11,33 @@ async function findProjectsDialog(dir) {
     if (!dir) $('fp-dir').value = state.home;
     state.found = await api('GET', '/api/discover' + (dir ? '?dir=' + encodeURIComponent(dir) : ''));
   } catch (e) { $('fp-list').textContent = ''; setErr('fp-err', e); return; }
-  const key = n => n.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase() || 'PRJ';
+  // Card keys are unique (AIG-331): pick a free one for every row up front, the same way the board does, and show it before Add.
+  const used = new Set((await api('GET', '/api/projects').catch(() => [])).map(o => o.key));
+  state.foundTaken = [...used];
+  const keyFor = n => {
+    const L = n.replace(/[^A-Za-z0-9]/g, '').toUpperCase() || 'PRJ';
+    const k = [L.slice(0, 3), ...[...L.slice(3)].map(l => L.slice(0, 2) + l), ...[2, 3, 4, 5, 6, 7, 8, 9].map(d => L.slice(0, 2) + d)].find(x => !used.has(x)) || L.slice(0, 2) + Date.now() % 100;
+    used.add(k); return k;
+  };
   const info = f => [f.git ? t('dlg.find.commits', { n: f.git.commits }) + (f.git.lastAt ? t('dlg.find.last', { when: ago(f.git.lastAt) }) : '') : t('dlg.find.nogit'), f.sessions ? t('dlg.find.sessions', { n: f.sessions.count }) : '',
     f.known ? t('dlg.find.known') : f.inside ? t('dlg.find.inside', { dir: f.inside }) : f.copy ? t('dlg.find.copy') : ''].filter(Boolean).join(' · ');
   $('fp-list').classList.remove('muted');
   $('fp-list').innerHTML = state.found.length ? state.found.map((f, i) => `<div class="fprow">
     <input type="checkbox" data-i="${i}" ${f.suggested ? 'checked' : ''} ${f.known ? 'disabled' : ''} aria-label="${esc(t('dlg.find.add', { name: f.name }))}">
-    <input type="text" class="fp-name" value="${esc(f.name)}" aria-label="${esc(t('dlg.find.name'))}"><input type="text" class="fp-key" value="${key(f.name)}" maxlength="6" aria-label="${esc(t('dlg.find.key'))}">
+    <input type="text" class="fp-name" value="${esc(f.name)}" aria-label="${esc(t('dlg.find.name'))}"><input type="text" class="fp-key" value="${esc(f.known ? '' : keyFor(f.name))}" maxlength="6" oninput="checkFoundKeys()" aria-label="${esc(t('dlg.find.key'))}">
     <span class="muted">${esc(info(f))}${f.readme ? ' · ' + esc(f.readme) : ''}</span></div>`).join('') : esc(t('dlg.find.none'));
   $('fp-acts').innerHTML = `<label class="chk"><input type="checkbox" id="fp-connect" checked> ${esc(t('dlg.find.setup'))}</label>
+    <label class="chk"><input type="checkbox" id="fp-starter" checked> ${esc(t('dlg.find.starter'))}</label>
     <button class="primary" onclick="importFound()">${esc(t('dlg.find.import'))}</button><button onclick="closeDialog()">${esc(t('common.close'))}</button>`;
+}
+// A key typed twice (or one an existing project has) is marked at once, not changed silently after Add (AIG-331).
+function checkFoundKeys() {
+  const seen = {};
+  document.querySelectorAll('.fprow').forEach(r => { const k = r.querySelector('.fp-key').value.trim().toUpperCase(); if (k && r.querySelector('input[type=checkbox]').checked) seen[k] = (seen[k] || 0) + 1; });
+  document.querySelectorAll('.fprow').forEach(r => {
+    const i = r.querySelector('.fp-key'), k = i.value.trim().toUpperCase(), dup = k && ((seen[k] || 0) > 1 || (state.foundTaken || []).includes(k));
+    i.classList.toggle('bad', !!dup); i.title = dup ? t('dlg.find.keydup', { key: k }) : '';
+  });
 }
 async function importFound() {
   const rows = [...document.querySelectorAll('.fprow')].filter(r => r.querySelector('input[type=checkbox]').checked);
@@ -34,7 +51,8 @@ async function importFound() {
       const p = await api('POST', '/api/projects', body).catch(e => /already used/.test(e.message) ? api('POST', '/api/projects', { ...body, key: '' }) : Promise.reject(e));
       if ($('fp-connect').checked) await api('POST', `/api/projects/${p.slug}/connect`, { path: f.path });
       else await api('PATCH', '/api/projects/' + p.slug, { path: f.path });
-      done.push('✅ ' + p.name);
+      if ($('fp-starter').checked) await api('POST', `/api/projects/${p.slug}/starter`, { lang: i18n.lang }).catch(() => {});   // no AI (AIG-340)
+      done.push('✅ ' + p.name + ' (' + p.key + ')' + (body.key && p.key !== body.key.toUpperCase() ? ' ' + t('dlg.find.keychanged', { want: body.key.toUpperCase(), key: p.key }) : ''));
     } catch (e) { done.push('⚠️ ' + f.name + ': ' + e.message); }
   }
   $('fp-done').innerHTML = `<ul>${done.map(d => `<li>${esc(d)}</li>`).join('')}</ul><p class="muted">${esc(t('dlg.find.after'))}</p>`;
@@ -56,6 +74,7 @@ function renderSetup() {
   const s = state.setup;
   return `<div class="setup"><h2>${esc(t('setup.h'))}</h2>
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
+    <div class="f"><span>${esc(t('wz.btn'))}</span><div><button type="button" id="wzRun" onclick="wizardStart()">${esc(t('wz.btn'))}</button></div><small class="muted">${esc(t('wz.btn.help'))}</small></div>
     <label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('setup-lang')}<small class="muted">${esc(t('setup.lang.help'))}</small></label>
     <label class="f chk"><span><input type="checkbox" id="enSwitch" ${ls('aigile.enSwitch') === '1' ? 'checked' : ''} onchange="setEnSwitch(this.checked)"> ${esc(t('lang.en.switch'))}</span><small class="muted">${esc(t('lang.en.help'))}</small></label>
     <label class="f chk"><span><input type="checkbox" id="explainWords" ${glossOn() ? 'checked' : ''} onchange="setExplain(this.checked)"> ${esc(t('gloss.switch'))}</span><small class="muted">${esc(t('gloss.switch.help'))} <a href="#/glossary">${esc(t('gloss.open'))}</a></small></label>
@@ -64,12 +83,13 @@ function renderSetup() {
     <div class="f lead-prefs" id="runInPrefs">${runInHtml()}</div>
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
+    <div class="f" id="pretendBox">${pretendBoxHtml()}</div>
     <div class="f"><span>${esc(t('trial.h'))}</span><div><button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <div class="f"><span>${esc(t('face.me'))}</span>${logoEditor('me-pic', s.mePic)}</div>
     <div class="f"><span>${esc(t('face.lib'))}</span>${libraryHtml(s.library)}</div>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">
-      ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}"><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small></label>`).join('')}
+      ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}" ${f.suggest ? `placeholder="${esc(f.suggest)}" data-suggest="${esc(f.suggest)}"` : ''}><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small>${f.suggest && !f.value ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(f.suggest)}</code> <button type="button" class="usesuggest" onclick="useSuggest(this)">${esc(t('setup.suggest.use'))}</button></small>` : ''}</label>`).join('')}
       <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
       <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button></div></form></div>`;
 }
@@ -91,6 +111,11 @@ async function checkDmsRelay() {
   setErr('dmsRelay-err', ''); const m = $('dmsRelay-msg'); m.textContent = t('dmsrelay.checking');
   try { const r = await api('POST', '/api/dms/check', { relay: $('dmsRelay').value.trim() }); m.textContent = r.ok ? t('dmsrelay.ok') : t('dmsrelay.bad', { why: r.reason }); }
   catch (e) { m.textContent = ''; setErr('dmsRelay-err', e); }
+}
+// A suggested value goes into the box only when the owner says so (AIG-334); Save then keeps it.
+function useSuggest(btn) {
+  const lab = btn.closest('label'), i = lab.querySelector('input[data-key]');
+  i.value = i.dataset.suggest; lab.querySelector('.suggest').remove();
 }
 async function saveSetupPage(e) {
   e.preventDefault();
@@ -118,6 +143,7 @@ function runInHtml(msg = '') {
   const pr = leadPrefs(), w = pr.runIn || 'background';
   return `<span>${esc(t('runin.h'))}</span>${runInSelect('runIn', w, 'setRunIn({ runIn: this.value })')}<small class="muted">${esc(t('runin.help'))}</small>
     <label class="f" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="runCmd" value="${esc(pr.runCmd || '')}" placeholder='cursor "{folder}"' onchange="setRunIn({ runCmd: this.value })"><small class="muted">${esc(t('runin.cmd.help'))}</small></label>
+    <label class="f"><span>${esc(t('dispatch.h'))}</span><select class="setup-theme" id="dispatchMode" onchange="setRunIn({ dispatch: this.value })">${['rules', 'haiku', 'lead'].map(v => `<option value="${v}" ${(pr.dispatch || 'haiku') === v ? 'selected' : ''}>${esc(t('dispatch.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('dispatch.help'))}</small></label>
     ${runInBlind(w)}<div class="err" id="runin-err"></div><div class="muted">${esc(msg)}</div>`;
 }
 async function setRunIn(prefs) {
