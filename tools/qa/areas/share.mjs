@@ -6,14 +6,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { ROOT, PORT, BASE, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def } from '../lib.mjs';
 
-async function startRelay(port) {
+export async function startRelay(port) {
   const data = tmp('relay');
   const proc = spawn(process.execPath, [path.join(ROOT, 'relay', 'relay.js')], { env: { ...process.env, RELAY_PORT: String(port), RELAY_DATA: data, RELAY_RATE: '100000' }, stdio: 'ignore' });
   const base = `http://127.0.0.1:${port}`;
   for (let i = 0; i < 50; i++) { try { if ((await fetch(base + '/health')).ok) break; } catch {} await sleep(100); }
   return { base, data, stop: () => { try { proc.kill(); } catch {} } };
 }
-const until = async (fn, ms = 8000) => { const end = Date.now() + ms; let v; while (!(v = await fn()) && Date.now() < end) await sleep(100); return v; };
+export const until = async (fn, ms = 8000) => { const end = Date.now() + ms; let v; while (!(v = await fn()) && Date.now() < end) await sleep(100); return v; };
 const filesUnder = dir => fs.existsSync(dir) ? fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? filesUnder(path.join(dir, e.name)) : [path.join(dir, e.name)]) : [];
 const envFiles = (relay, box) => filesUnder(path.join(relay.data, box)).filter(f => !f.endsWith('owner.json'));
 // The envelope as it waits on the relay (to drop it in again later, like a relay replaying old mail).
@@ -21,7 +21,7 @@ const envOf = f => { const j = JSON.parse(fs.readFileSync(f, 'utf8')); return j.
 const drop = (relay, box, env) => fetch(relay.base + '/m/' + box, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(env) });
 
 // Two boards that are DM contacts. a = the QA server, b = a second board.
-async function pair(a, b, relay) {
+export async function pair(a, b, relay) {
   await a.ok('POST', '/api/dms/settings', { on: true, relay: relay.base });
   await b.ok('POST', '/api/dms/settings', { on: true, relay: relay.base });
   const inv = await a.ok('POST', '/api/dms/invites', { name: 'Beatrix' });

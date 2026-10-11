@@ -46,6 +46,7 @@
       <section class="ib-sec ib-fl" id="ibAi" hidden></section>
       <div class="ib-toast" id="ibToast" role="status" aria-live="polite"></div>
       <section class="ib-sec share" id="ibShare" hidden></section>
+      <section class="ib-sec ask" id="ibAsk" hidden></section>
       <div id="ibEmpty"></div>
       <section class="ib-sec q" id="ibQ"><h3><button class="ib-popbtn" data-poplist="q" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>
       <section class="ib-sec k" id="ibK"><h3><button class="ib-popbtn" data-poplist="k" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.tasks'))} <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.tasks.sub'))}</span></h3><div class="list"></div></section>

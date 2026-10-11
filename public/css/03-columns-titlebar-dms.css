@@ -125,3 +125,8 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .share-switch { font-weight: 600; }
 .share-offer input[data-share-new] { width: 100%; max-width: 320px; margin: 4px 0; }
 
+/* ---------- ask a mate (AIG-210) ---------- */
+.dm-asktag { font-size: 12px; font-weight: 600; margin: 0 0 2px; }
+.dm-msg.dm-ask .dm-bubble, .dm-msg.dm-answer .dm-bubble { border: 1px dashed var(--line); }
+.ask-q { white-space: pre-wrap; overflow-wrap: anywhere; border-left: 3px solid var(--line); padding: 4px 10px; margin: 6px 0; }
+
