@@ -50,6 +50,7 @@ async function checkBuild() {
     if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});
     wasQuiet = m.quiet; setNight(m.quiet);
     applyAppLogo(m.appLogo);
+    if ((m.ownerPic || '') !== (state.ownerPic || '')) { state.ownerPic = m.ownerPic || ''; refresh(true); }   // your picture (AIG-150)
     pokeBadge(await api('GET', '/api/projects'));
     // A new install opens Setup first (AIG-91).
     if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';

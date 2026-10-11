@@ -65,7 +65,7 @@ function readBody(req, max = 1e6) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
-  const pathname = decodeURIComponent(url.pathname);
+  let pathname; try { pathname = decodeURIComponent(url.pathname); } catch { res.writeHead(400); return res.end(); }   // a bad %-code no longer stops the board (AIG-150)
   try {
     if (pathname.startsWith('/api/')) {
       guard(req);
@@ -76,7 +76,7 @@ const server = http.createServer(async (req, res) => {
         const m = pathname.match(re);
         if (m && method === req.method) {
           // Attachment uploads are base64 files up to 10 MB, so they get a bigger body limit.
-          const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, pathname.endsWith('/attachments') ? 15e6 : /\/(app-)?logo$/.test(pathname) ? 2e6 : 1e6) : {};
+          const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, pathname.endsWith('/attachments') ? 15e6 : /\/((app-)?logo|me-picture)$/.test(pathname) ? 2e6 : 1e6) : {};
           const out = await fn(m.slice(1), body, url.searchParams);   // DM routes talk to the relay, so they may be async
           // A route can answer with a file instead of JSON: { __file: absolute path }.
           if (out && out.__file) {

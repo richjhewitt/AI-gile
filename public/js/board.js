@@ -16,6 +16,9 @@ function presenceHtml(p, withWake) {
   const place = t(pr.where === 'vscode' ? 'pres.vscode' : pr.where === 'terminal' ? 'pres.terminal' : 'pres.window');
   if (pr.online) return `<span class="pres on" title="${esc(t('pres.session.title'))}">${esc(place)}</span> <span class="muted">${esc(t('pres.heard', { when: ago(pr.lastHeard) }))}</span>`;
   const btn = withWake && p.path ? ` <button class="primary" onclick="wakeTeam(event, '${p.slug}')">${esc(t('pres.wake'))}</button>` : withWake ? ` <span class="muted">${esc(t('pres.connect'))}</span>` : '';
+  // A window the board opened (AIG-153): it can't see that run, so it says when it opened it, and ▶ Wake opens another.
+  const op = pr.opened;
+  if (op && Date.now() - new Date(op.at) < 15 * 60e3) return `<span class="pres on" title="${esc(t('runin.blind'))}">${esc(t('pres.opened.' + op.where))}</span> <span class="muted">${esc(t('pres.opened.since', { when: ago(op.at) }))}</span>${btn}${logBtn}`;
   return `<span class="pres off">${esc(t('pres.asleep'))}</span>${pr.lastHeard ? ` <span class="muted">${esc(t('pres.lastheard', { when: ago(pr.lastHeard) }))}</span>` : ''}${btn}${logBtn}`;
 }
 async function wakeTeam(e, s = slug()) {
@@ -95,7 +98,7 @@ function renderBoard(p) {
     ${board}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>
-        `<tr><td><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t('board.team.none'))}</p>`}</div>
+        `<tr><td>${face(m.name, team)}<b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t('board.team.none'))}</p>`}</div>
       <div class="box"><h3>${esc(t('board.log'))}</h3>${log.length ? `<ul class="log">${log.map(l =>
         `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}</div>
     </div>`;
