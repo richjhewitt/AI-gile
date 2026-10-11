@@ -735,7 +735,7 @@
  "trial.h": "🧪 Try it as a new user",
  "trial.btn": "🧪 Open a fresh board",
  "trial.busy": "Starting…",
- "trial.help": "A brand-new, empty copy of AI-gile in its own window (localhost:4400), with three made-up projects to find. See exactly what a friend sees on their first run. Your real board is never touched, and no AI team ever starts there.",
+ "trial.help": "A brand-new, empty copy of AI-gile in its own window (localhost:4400), with three made-up projects to find and a pretend team that answers you. See exactly what a friend sees on their first run. Your real board is never touched; no AI, no cost.",
  "standup.needs": "🙋 Needs you ({n}): the teams carry on meanwhile",
  "standup.needs.k": "🙋 Needs you",
  "quiet.h": "🌙 Going quiet",

@@ -368,3 +368,22 @@ def('restartpill', '🔄 new server code shows a Restart the board pill; it asks
   check('clicking it asks for a restart (switched off in tests)', /Restarting/.test(await page.textContent('#upRestart')));
   noErrors(page);
 }, true, { AIGILE_NO_RESTART: '1' });
+
+def('pretend', '🧪 the trial\'s pretend team: fills a new project, answers an idea with a plan, hands work over after Go (AIG-205)', async (s) => {
+  const T = 'http://127.0.0.1:4400', H = { 'Content-Type': 'application/json' };
+  const tj = async (m, u, b) => (await fetch(T + u, { method: m, headers: H, body: b ? JSON.stringify(b) : undefined })).json();
+  const until = async (fn, ms = 20000) => { for (let t = Date.now(); Date.now() - t < ms; await sleep(400)) { const v = await fn(); if (v) return v; } return null; };
+  const trial = await s.ok('POST', '/api/trial');
+  await tj('POST', '/api/projects', { name: 'Pancake Shop', key: 'PAN', path: path.join(trial.projects, 'Pancake Shop') });
+  await tj('POST', '/api/projects/pancake-shop/wake');
+  const seeded = await until(async () => { const p = await tj('GET', '/api/projects/pancake-shop'); return (p.team || []).some(m => m.name === 'Lead (pretend)') && p.cards.some(c => c.status === 'verify') && p; });
+  check('a new project gets a pretend lead and cards in every column, one to test', !!seeded && seeded.cards.length >= 5);
+  const idea = await tj('POST', '/api/projects/pancake-shop/cards', { title: '💬 Gift cards', description: 'Gift cards', status: 'team', type: 'task', quick: true, createdBy: 'Rich' });
+  const planned = await until(async () => { const c = (await tj('GET', '/api/projects/pancake-shop')).cards.find(x => x.id === idea.id); return c && c.comments.some(m => /GO\?/.test(m.text)) && c; });
+  check('an idea gets two cards and a plan with GO?', !!planned && planned.needsYou === true);
+  const before = seeded.cards.filter(c => c.status === 'verify').length;
+  await tj('POST', `/api/projects/pancake-shop/cards/${idea.id}/comments`, { author: 'Rich', text: 'GO' });
+  const built = await until(async () => { const p = await tj('GET', '/api/projects/pancake-shop'); return p.cards.filter(c => c.status === 'verify').length > before && p; });
+  check('after Go, the first card lands in For you with test steps', !!built && built.cards.some(c => c.status === 'verify' && /Gift cards/.test(c.title) && c.testSteps));
+  await s.api('DELETE', '/api/trial');
+}, false);
