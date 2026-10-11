@@ -24,6 +24,7 @@ const Share = (function () {
       const l = curSlug() && ofProject(curSlug());
       inb = l && !l.forgotten && l.state !== 'offered' && l.state !== 'incoming' ? await api('GET', `/api/shares/${l.id}/inbound`) : null;
     } catch { return; }
+    if (typeof IB !== 'undefined') IB.setFriends('offers', offers().length);   // counted in the inbox and its badges even off the inbox page (AIG-382)
     const s = JSON.stringify([links, people.map(p => [p.id, p.name, p.checked, p.blocked]), projects.map(p => [p.slug, p.name]), inb]);
     if (s === sig) return;
     sig = s;

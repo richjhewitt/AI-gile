@@ -195,6 +195,7 @@ def('share', 'sharing a project with a friend: offer / accept over the DMs, need
     await page.goto(BASE + '/#/inbox');
     await page.waitForSelector('.share-offer [data-share-yes]', { timeout: 10000 }).catch(() => {});
     check('the inbox shows the offer with ✅ / ✋', await page.locator('.share-offer').count() === 1 && /Charlie/.test(await page.textContent('.share-offer')));
+    check('the link offer is counted: top bar badge and rail 📥 (AIG-382)', /1/.test(await page.textContent('.ib-btn .ib-badge[data-friends]').catch(() => '')) && (await page.textContent('#dmRail [data-go="#/inbox"] .dm-unread').catch(() => '')).trim() === '1', await page.textContent('#inboxTop'));
     check('only projects without a link to pick from', !(await page.$$eval('.share-offer [data-share-into] option', os => os.map(o => o.value))).includes('delta'));
     await page.selectOption('.share-offer [data-share-into]', 'echo');
     await page.click('.share-offer [data-share-yes]');
@@ -202,6 +203,8 @@ def('share', 'sharing a project with a friend: offer / accept over the DMs, need
     check('✅ links it to the picked project', le && le.state === 'live' && le.theirName === 'Charlie', le);
     await page.waitForFunction(() => !document.querySelector('.share-offer'), null, { timeout: 5000 }).catch(() => {});
     check('and the offer leaves the inbox', await page.locator('.share-offer').count() === 0);
+    await page.waitForFunction(() => !document.querySelector('.ib-badge[data-friends]'), null, { timeout: 5000 }).catch(() => {});
+    check('and the badge goes with it', await page.locator('.ib-badge[data-friends]').count() === 0);
     noErrors(page);
     await page.close();
 

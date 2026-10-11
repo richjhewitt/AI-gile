@@ -55,7 +55,7 @@ const Dms = (() => {
     const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + people.reduce((n, c) => n + c.unread, 0);
     const btn = (attrs, inner, on, title) => `<button class="dm-railbtn ${on ? 'on' : ''}" ${attrs} title="${esc(title)}">${inner}</button>`;
     const html = btn('data-go="#/"', '<span class="dm-av">🏠</span>', location.hash === '#/' || location.hash === '', t('dms.home'))
-      + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>', location.hash === '#/inbox', t('dms.inbox'))
+      + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
       + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, t('dms.rail.label'))
       + '<div class="dm-sep"></div>'
       + projects.filter(x => !x.archived).map(x => btn(`data-go="#/p/${esc(x.slug)}" data-slug="${esc(x.slug)}" draggable="true"`, avatar(x) + badge(x.needsYou) + (x.updated > seen.get(x.slug) && x.slug !== cur && !x.needsYou ? '<span class="dm-pip"></span>' : ''),
@@ -112,7 +112,7 @@ const Dms = (() => {
   // Ask a mate (AIG-210): a question for someone's AI, and its answer, get a small tag over the bubble. A question
   // a friend sent me is shown as plain text (no links) until I deal with it in the inbox.
   function askTag(m, name) {
-    if (m.kind === 'ask') return `<div class="dm-asktag">${esc(m.dir === 'out' ? t('ask.tag.out', { name }) : t('ask.tag.in'))} · <span class="muted">${esc(t((m.dir === 'out' ? 'ask.out.' : 'ask.in.') + (m.state || 'waiting'), { name }))}</span></div>`;
+    if (m.kind === 'ask') return `<div class="dm-asktag">${esc(m.dir === 'out' ? t('ask.tag.out', { name }) : t('ask.tag.in'))} · <span class="muted">${esc(t((m.dir === 'out' ? 'ask.out.' : 'ask.in.') + (m.dir === 'out' && m.delayed && (m.state || 'waiting') === 'waiting' ? 'delayed' : m.state || 'waiting'), { name }))}</span></div>`;
     if (m.kind === 'answer' && !m.no) return `<div class="dm-asktag">${esc(m.dir === 'out' ? t('ask.tag.mine') : t('ask.tag.answer', { name }))}</div>`;
     return '';
   }

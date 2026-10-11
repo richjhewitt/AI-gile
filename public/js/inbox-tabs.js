@@ -35,7 +35,7 @@
     if (IB.tab !== 'all' && !orderedProjects.some(([p]) => p === IB.tab)) IB.tab = 'all';   // that project's inbox emptied
     const lookOf = p => IB.items.find(c => c.project === p) || {};
     const btn = (key, name, list) => { const l = key === 'all' ? {} : lookOf(key);
-      return `<button class="ib-tab ${IB.tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${IB.tab === key}" title="${esc(name)}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectLogo || l.projectEmoji ? pic(l.projectLogo, l.projectEmoji) + ' ' : ''}<span class="nm">${esc(name)}</span> <span class="n">${list.length}</span> ${tabCounts(list)}</button>`; };
+      return `<button class="ib-tab ${IB.tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${IB.tab === key}" title="${esc(name)}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectLogo || l.projectEmoji ? pic(l.projectLogo, l.projectEmoji) + ' ' : ''}<span class="nm">${esc(name)}</span> <span class="n">${list.length + (key === 'all' ? IB.friends() : 0)}</span> ${tabCounts(list)}</button>`; };
     IB.tabOrder = orderedProjects.map(([p]) => p);
     const projectBtns = orderedProjects.map(([p, name]) => btn(p, name, IB.items.filter(c => c.project === p))).join('');
     const html = allAtEnd
