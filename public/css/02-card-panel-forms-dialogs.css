@@ -129,3 +129,11 @@ body.pop .panel { max-width: none; max-height: none; width: 100%; min-height: 10
 .colrow > .muted { flex: 0 0 110px; font-size: 12px; }
 
 textarea.grow { max-height: 85vh; resize: vertical; }
+
+/* ---------- AIGILE pack (AIG-357): another AI's reply, untrusted ---------- */
+.pack-untrusted { font-size: 12px; margin: 4px 0 2px; }
+.pack-body { border-left: 3px solid var(--warn); padding-left: 8px; }
+.pack-cards, .pack-ask, .pack-removed, .pack-primer { margin-top: 8px; }
+.pack-cards label.pack-card { display: block; margin: 4px 0; cursor: pointer; }
+.pack-removed ul, .pack-ask ul { margin: 4px 0 0 18px; padding: 0; }
+.pack-primer { border: 1px dashed var(--line); border-radius: var(--radius); padding: 8px 10px; margin-bottom: 8px; }
