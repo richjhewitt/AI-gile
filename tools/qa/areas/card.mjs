@@ -128,6 +128,8 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
   check('pasted screenshot shows as a chip', /screenshot-.*\.png/.test(await page.textContent('.reply .att-chip')));
   await sleep(1500);
   check('chip survives the poll', (await page.locator('.reply .att-chip').count()) === 1);
+  // AIG-376: the ✕ stays inside the chip (a long name used to push it out of view)
+  check('the chip\'s ✕ is visible inside it', await page.$eval('.reply .att-chip', ch => { const b = ch.querySelector('[data-att-del]').getBoundingClientRect(), c = ch.getBoundingClientRect(); return b.width > 0 && b.right <= c.right + 1; }));
   await page.click('.reply button:has-text("Send reply")');
   await sleep(600);
   let c = await getCard(s, 'alpha', c1.id);

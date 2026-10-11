@@ -8,7 +8,7 @@ const Attach = (() => {
   const isImg = a => /^image\//.test(a.type || '') || /\.(png|jpe?g|gif|webp)$/i.test(a.name || '');
   // Images show a thumbnail; clicking it opens a full-size preview, to check it's the right one (AIG-129).
   const urls = new WeakMap(), urlOf = f => { if (!urls.has(f)) urls.set(f, URL.createObjectURL(f)); return urls.get(f); };
-  const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="${esc(t('attach.preview'))}">` : '📎'} ${esc(f.name)} <button type="button" data-att-del="${i}" title="${esc(t('attach.remove'))}">✕</button></span>`).join('');
+  const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="${esc(t('attach.preview'))}">` : '📎'} <span class="att-name" title="${esc(f.name)}">${esc(f.name)}</span><button type="button" data-att-del="${i}" title="${esc(t('attach.remove'))}">✕</button></span>`).join('');
   function preview(src) {
     const lb = document.createElement('div');
     lb.className = 'att-lightbox'; lb.title = t('attach.close');
