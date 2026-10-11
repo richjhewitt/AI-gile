@@ -41,6 +41,8 @@ def('notokens', 'No Token Mode: kills runs, refuses wakes/nudges/tests/usage che
   const page = await openPage(ctx, '#/p/nova');
   await page.waitForFunction(() => document.body.classList.contains('notokens'), null, { timeout: 5000 }).catch(() => {});
   check('body has the notokens class', await page.evaluate(() => document.body.classList.contains('notokens')));
+  await page.waitForFunction(() => document.querySelector('#ugBars .ug-nt'), null, { timeout: 5000 }).catch(() => {});
+  check('the Usage link shows the ⛔ too (AIG-356)', (await page.locator('#ugBars .ug-nt').count()) === 1);
   check('the switch says it is on', /No tokens/.test(await page.textContent('#ntBtn')), await page.textContent('#ntBtn'));
   await page.evaluate(() => { document.getElementById('teamTop').insertAdjacentHTML('beforeend', '<button id="qaW" onclick="wakeTeam(event, \'nova\')">w</button><button id="qaT" onclick="testForMe(\'nova\')">t</button><button id="qaOk" onclick="void 0">ok</button>'); });
   check('wake and AI tester buttons are hidden', !(await page.isVisible('#qaW')) && !(await page.isVisible('#qaT')));
