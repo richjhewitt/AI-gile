@@ -3,7 +3,7 @@
 The relay passes sealed (already encrypted) messages between boards. It sees scrambled data only and keeps no request logs. This sets it up on a small Linux server in a few copy-paste steps, with HTTPS handled automatically.
 
 ## What you need
-- A small VPS running **Debian or Ubuntu** (the cheapest size is plenty), and its IP address.
+- A VPS running **Debian or Ubuntu** (the cheapest size is plenty), and its IP address. A server that already runs nginx and certbot for other sites is fine: the installer detects that and adds one new site beside them, leaving the others alone. On a bare server it installs Caddy instead.
 - A **domain name** (or subdomain, e.g. `relay.yourname.com`) with an **A record pointing at the VPS IP**. Do this before step 3, or the certificate cannot be issued.
 - **Ports 80 and 443 open** on the VPS (the default on most providers; if there is a firewall panel, allow both).
 - **SSH** access, as root or a user with `sudo`.
@@ -28,13 +28,13 @@ ssh you@YOUR-VPS-IP
 
 You should get a prompt on the server.
 
-3. Run the installer with your domain (a minute or two; it installs Node and Caddy if missing).
+3. Run the installer with your domain (a minute or two; it installs Node only if missing, and never replaces an existing Node).
 
 ```
 sudo bash install.sh relay.example.com
 ```
 
-You should see `==> ...` headings go by, ending with `Relay is running.` and the address to use. If it stops with an error, nothing is left half-done: fix what it says and run the same command again.
+You should see `==> Web server mode: nginx` (or `caddy` on a bare server), then `==> ...` headings, ending with `Relay is running.` and the address to use. It stops before changing anything if another nginx site already uses your domain. If it stops with an error, fix what it says and run the same command again.
 
 4. Check it from anywhere (your own computer is fine). The first time, the certificate can take up to a minute.
 
@@ -56,11 +56,12 @@ Copy the new `relay.js` across (step 1) and run step 3 again. It is safe to re-r
 
 ## Looking after it
 - Is it running: `sudo systemctl status aigile-relay`
-- Logs: `sudo journalctl -u aigile-relay` shows only startup lines. Caddy's access log is off.
+- Logs: `sudo journalctl -u aigile-relay` shows only startup lines. The web server access log is off for this site.
 - Where messages wait: `/var/lib/aigile-relay` (readable only by the relay's own user). They are deleted once collected, or after 7 days.
 - Restart: `sudo systemctl restart aigile-relay`
 
 ## What gets installed
 - `/opt/aigile-relay/relay.js`, run by systemd as the `aigile-relay` user (no login, no shell), starting on boot and restarting if it stops.
-- The relay listens on `127.0.0.1:4500` only; the outside world reaches it through Caddy on port 443.
-- Caddy (from its official package repository) with a Caddyfile that proxies your domain to the relay.
+- The relay listens on `127.0.0.1:4500` only; the outside world reaches it through nginx (or Caddy) on port 443.
+- Behind nginx (when it was already running): one new file `/etc/nginx/sites-available/aigile-relay` plus its symlink in `sites-enabled`, with no access log and bodies up to 12 MB, and a certificate from `certbot --nginx` with HTTP redirected to HTTPS. Other sites are never edited; `nginx -t` runs before each reload. certbot is installed only if missing.
+- On a bare server instead: Caddy (from its official package repository) with a Caddyfile that proxies your domain to the relay.
