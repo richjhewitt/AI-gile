@@ -113,7 +113,8 @@
       const b = el('ibAlerts'); if (b) b.onclick = toggleAlerts;
     }
     // Everything waiting on Rich; the desktop app turns this count into its taskbar badge (AIG-76).
-    const title = q + k + te ? `(${q + k + te}) ${baseTitle}` : baseTitle;
+    // Going quiet (AIG-227): no count, so no purple diamond on the taskbar until the morning.
+    const title = q + k + te && !document.documentElement.hasAttribute('data-night') ? `(${q + k + te}) ${baseTitle}` : baseTitle;
     if (document.title !== title) document.title = title;
   }
 

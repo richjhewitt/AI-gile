@@ -507,3 +507,5 @@ body.ng-urgent::after { content: ""; position: fixed; inset: 0; pointer-events: 
 
 /* 🌙 The watchman's chat is read-only (AIG-211) */
 #dmPanel.dm-readonly .dm-compose { display: none; }
+/* Going quiet (AIG-227): the projects' counts and dots on the left wait for the morning; only the watchman's chat may badge */
+:root[data-night] #dmRail [data-slug] .dm-unread, :root[data-night] #dmRail .dm-pip { display: none; }
