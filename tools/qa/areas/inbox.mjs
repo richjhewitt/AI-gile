@@ -314,3 +314,33 @@ def('servertask', 'a task can be marked 🖥️ Server: CLI flag, grouped first 
   check('inbox has a Server chip with its count', /Server\s*1/.test(await ip.textContent('#ibKinds')), await ip.textContent('#ibKinds'));
   noErrors(page); noErrors(ip);
 }, true);
+
+def('outsidetask', 'a task can be marked 🤝 Outside help: CLI flag, own group after Server, owner toggle (AIG-380)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Plain task'), b = await mkCard(s, 'alpha', 'Ask the vendor'), c = await mkCard(s, 'alpha', 'Deploy it');
+  s.cli(['task', 'alpha', a.id, 'log in', '--as', 'Lead']);
+  await sleep(20);
+  const r = s.cli(['task', 'alpha', b.id, 'wait for the vendor', '--outside', '--as', 'Lead']);
+  check('task --outside works', r.code === 0, r);
+  s.cli(['task', 'alpha', c.id, 'run it', '--server', '--as', 'Lead']);
+  check('outside flag is stored only when asked', (await getCard(s, 'alpha', b.id)).outside === true && !(await getCard(s, 'alpha', a.id)).outside);
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('.column.foryou .card');
+  const ids = async () => page.$$eval('.column.foryou .card', els => els.map(e => e.dataset.id));
+  check('For you has an Outside help chip with its count', /Outside help 1/.test(await page.textContent('.fy-chip[data-first="o"]')), await page.textContent('.fy-chips'));
+  await page.click('.fy-chip[data-first="k"]');
+  await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, c.id, { timeout: 3000 }).catch(() => {});
+  check('order is Server, Outside help, other tasks', (await ids()).join() === [c.id, b.id, a.id].join(), await ids());
+  await page.click(`.column.foryou .card[data-id="${a.id}"] [data-outside]`);
+  await page.waitForFunction(() => document.querySelectorAll('.column.foryou .card [data-outside][data-on="1"]').length === 2, null, { timeout: 4000 }).catch(() => {});
+  check('toggle marks a task as outside', (await getCard(s, 'alpha', a.id)).outside === true);
+  await page.click(`.column.foryou .card[data-id="${a.id}"] [data-outside]`);
+  await page.waitForFunction(() => document.querySelectorAll('.column.foryou .card [data-outside][data-on="1"]').length === 1, null, { timeout: 4000 }).catch(() => {});
+  check('toggle unmarks it again', !(await getCard(s, 'alpha', a.id)).outside);
+  const ip = await openPage(ctx, '#/inbox');
+  await ip.waitForSelector('#ibK .ib-item');
+  const order = await ip.$$eval('#ibK .ib-item', els => els.map(e => e.dataset.id));
+  check('inbox lists Server, then Outside help, then the rest', order.join() === [c.id, b.id, a.id].join(), order);
+  check('inbox has an Outside help chip with its count', /Outside help\s*1/.test(await ip.textContent('#ibKinds')), await ip.textContent('#ibKinds'));
+  noErrors(page); noErrors(ip);
+}, true);
