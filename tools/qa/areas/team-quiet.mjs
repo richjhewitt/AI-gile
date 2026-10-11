@@ -247,6 +247,20 @@ def('limit', '🌙 usage limit: no restarts counted while out, carry on after th
   check('clearing it removes it', !(await s.ok('GET', '/api/chats')).some(c => c.slug === '_watchman'));
 }, false);
 
+def('limitread', '⏳ a usage reading at 100% holds every wake until its reset, before any run fails on it (AIG-265)', async s => {
+  await mkProject(s, 'Full', 'FUL', { path: tmp('full') });
+  await mkCard(s, 'full', 'Work', { status: 'todo' });
+  await s.ok('POST', '/api/limits', { rate_limits: { five_hour: { used_percentage: 100, resets_at: Math.floor(Date.now() / 1000) + 3600 }, seven_day: { used_percentage: 40, resets_at: Math.floor(Date.now() / 1000) + 86400 } } });
+  await s.ok('POST', '/api/quiet', { on: true, watch: ['full'] });
+  await sleep(4500);   // going quiet itself may start one run; then the watchman takes over
+  const logf = path.join(s.data, 'logs', 'full.log'), runs = () => { try { return (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length; } catch { return 0; } };
+  const n = runs();
+  await s.ok('POST', '/api/watchman/round'); await sleep(300);
+  check('at 100% the team is not woken', runs() === n);
+  check('one message says when teams start again', (await s.ok('GET', '/api/chats/_watchman')).messages.some(m => /usage limit/.test(m.text)));
+  await s.ok('POST', '/api/quiet', { on: false });
+}, false);
+
 def('stuckonly', '🌙 a card flagged stuck stops only itself: the team is still woken for its other work (AIG-283)', async s => {
   await mkProject(s, 'Jam', 'JAM', { path: tmp('jam') });
   const mid = await mkCard(s, 'jam', 'Keeps failing', { status: 'doing' });
