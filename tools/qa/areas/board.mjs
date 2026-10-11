@@ -278,6 +278,10 @@ def('quick', '👀 What\'s happening? summarises the board; 💬 Ask the team se
   await page.waitForSelector('#dialog h2');
   check('summary shows what is in progress', (await page.textContent('#dialog')).includes('Building the thing'));
   await page.click('#dialog button:has-text("Ask the team")');
+  const h0 = await page.$eval('#ask-text', e => e.offsetHeight);
+  await page.fill('#ask-text', 'A long thought\n'.repeat(12));
+  await page.dispatchEvent('#ask-text', 'input');
+  check('Ask the team: the box is wide and grows with a long thought (AIG-344)', await page.$eval('#ask-text', (e, h) => e.offsetHeight > h && e.closest('.dialog').offsetWidth > 600, h0), h0);
   await page.fill('#ask-text', 'Where are we with the login page?');
   await page.click('#dialog button[type=submit]');
   await sleep(500);

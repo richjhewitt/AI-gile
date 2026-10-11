@@ -17,11 +17,13 @@ function happeningDialog() {
 function askTeamDialog() {
   Attach.clear('ask:' + slug());
   openDialog(`<h2>${esc(t('board.ask'))}</h2>
-    <form onsubmit="return sendAskTeam(event)"><label class="f"><span>${esc(t('ask.q'))}</span><textarea id="ask-text" data-draft="ask/${esc(slug())}" rows="4" placeholder="${esc(t('ask.ph'))}"></textarea></label>
+    <form onsubmit="return sendAskTeam(event)"><label class="f"><span>${esc(t('ask.q'))}</span><textarea id="ask-text" class="grow" data-draft="ask/${esc(slug())}" rows="4" oninput="growBox(this)" placeholder="${esc(t('ask.ph'))}"></textarea></label>
     <div class="err" id="ask-err"></div>
     <div class="actions"><button class="primary" type="submit">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('ask:' + slug())}</div></form>`);
-  $('ask-text').focus();
+  const box = $('ask-text'); box.closest('.dialog').classList.add('wide'); growBox(box); box.focus();
 }
+// Long thoughts (AIG-344): the box grows with the text, up to most of the screen, and can still be dragged.
+function growBox(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight + 4, innerHeight * 0.6) + 'px'; }
 async function sendAskTeam(e) {
   e.preventDefault();
   const text = $('ask-text').value.trim();

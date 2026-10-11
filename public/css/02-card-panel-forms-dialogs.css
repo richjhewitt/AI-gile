@@ -128,3 +128,5 @@ body.pop .panel { max-width: none; max-height: none; width: 100%; min-height: 10
 .colrow .arrows button { padding: 2px 8px; }
 .colrow > .muted { flex: 0 0 110px; font-size: 12px; }
 
+.dialog.wide { width: min(860px, 100%); }
+textarea.grow { max-height: 75vh; }
