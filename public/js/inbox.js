@@ -20,12 +20,12 @@
     if (!r.ok) throw new Error(j.error || r.statusText);
     return j;
   };
-  // Server sends three kinds: tasks (assigned to Rich: something only he can do), questions, and verify cards.
-  const isTask = c => String(c.assignee || '').trim().toLowerCase() === 'rich';
+  // Server sends three kinds: tasks (assigned to the owner: something only they can do), questions, and verify cards.
+  const isTask = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
   const isQuestion = c => !isTask(c) && c.status !== 'verify';
   const isTest = c => !isTask(c) && c.status === 'verify';
   const kindOf = c => isTask(c) ? 'k' : isQuestion(c) ? 'q' : 't';
-  const lastAsk = c => [...(c.comments || [])].reverse().find(m => String(m.author).trim().toLowerCase() !== 'rich')
+  const lastAsk = c => [...(c.comments || [])].reverse().find(m => String(m.author).trim().toLowerCase() !== me().toLowerCase())
     || { author: c.assignee || 'The team', at: c.updated, text: c.description || c.title };
   const keyOf = c => c.project + '/' + c.id;
   // Escape, then link web addresses and card ids (e.g. AIG-12) in the same project.
