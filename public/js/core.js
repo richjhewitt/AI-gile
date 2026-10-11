@@ -17,14 +17,17 @@ new MutationObserver(() => document.querySelectorAll('textarea[data-draft]:not([
 })).observe(document.documentElement, { childList: true, subtree: true });
 /* ---------- your queue (AIG-159..162): what holds things up, your priority, kind and time ---------- */
 const QKINDS = { decide: '❓', test: '🧪', server: '🖥️', keys: '🔑', read: '📖' };
+const isOwnerTask = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
 const PRIO_RANK = { now: 0, today: 1, whenever: 3 };   // no priority set sits between today and whenever
 // An item's kind: what the team set, else a sensible guess (tests are tests, the rest are decisions).
-const kindOfItem = c => c.kind || (c.status === 'verify' ? 'test' : 'decide');
+const kindOfItem = c => isOwnerTask(c) && c.server ? 'server' : c.kind || (c.status === 'verify' ? 'test' : 'decide');
 // Queue order: your priority, then what it holds up most, then quickest first.
 const queueRank = (a, b) => (PRIO_RANK[a.ownerPrio] ?? 2) - (PRIO_RANK[b.ownerPrio] ?? 2) || (b.holds || []).length - (a.holds || []).length || (a.mins || 999) - (b.mins || 999);
 function queueChips(c) {
   const k = kindOfItem(c), p = c.ownerPrio;
-  return `<span class="q-chips"><span class="q-chip" title="${esc(t('queue.kind.' + k))}">${QKINDS[k]} ${esc(t('queue.kind.' + k))}</span>`
+  const task = isOwnerTask(c);   // a task has a 🖥️ switch for a job on a server (AIG-320); the kind chip is its mark when on
+  return `<span class="q-chips">` + (task && c.server ? '' : `<span class="q-chip" title="${esc(t('queue.kind.' + k))}">${QKINDS[k]} ${esc(t('queue.kind.' + k))}</span>`)
+    + (task ? `<button class="q-chip srv ${c.server ? 'on' : ''}" data-server="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.server ? 1 : 0}" title="${esc(t('queue.server.title'))}">🖥️${c.server ? ' ' + esc(t('queue.kind.server')) : ''}</button>` : '')
     + `<button class="q-chip prio ${p ? 'p-' + p : ''}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
     + ((c.holds || []).length ? `<span class="q-chip holds" title="${esc(c.holds.join(', '))}">⛓ ${esc(t('queue.holds', { n: c.holds.length }))}</span>` : '')
     + (c.mins ? `<span class="q-chip">⏱ ${esc(t('queue.mins', { n: c.mins }))}</span>` : '') + '</span>';
@@ -36,6 +39,13 @@ document.addEventListener('click', async e => {
   const [s, id] = b.dataset.prio.split('/'), order = ['', 'now', 'today', 'whenever'];
   const cur = (b.className.match(/p-(\w+)/) || [])[1] || '';
   try { await api('PATCH', `/api/projects/${s}/cards/${id}`, { ownerPrio: order[(order.indexOf(cur) + 1) % order.length] }); refresh(true); if (typeof Inbox !== 'undefined' && Inbox.reload) Inbox.reload(); } catch (err) { alert(err.message); }
+}, true);
+// Click 🖥️ on a task to mark (or unmark) it as a job for a server.
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-server]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  const [s, id] = b.dataset.server.split('/');
+  try { await api('PATCH', `/api/projects/${s}/cards/${id}`, { server: b.dataset.on !== '1' }); refresh(true); if (typeof Inbox !== 'undefined' && Inbox.reload) Inbox.reload(); } catch (err) { alert(err.message); }
 }, true);
 /* ---------- answer buttons under a message (AIG-176): picked from what it asks ---------- */
 // say: sent straight away; ask: starts a reply with that text (it needs a reason); accept: accepts the test.

@@ -1,4 +1,4 @@
-// QA areas: inbox, foryou, fynext, queue, blocked, usage.
+// QA areas: inbox, foryou, fynext, queue, servertask, blocked, usage.
 import fs from 'node:fs';
 import path from 'node:path';
 import { BASE, check, sleep, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
@@ -241,4 +241,36 @@ def('poplist', '⧉ pop an inbox list out into its own window: only that list, n
   check('only tests show; no top bar or rail', await pop.locator('#ibK').isHidden() && await pop.locator('header').isHidden() && await pop.locator('#dmRail').isHidden());
   check('its buttons work as usual', (await pop.locator('#ibT .ib-item button[data-act="accept"]').count()) === 1);
   noErrors(page);
+}, true);
+
+def('servertask', 'a task can be marked 🖥️ Server: CLI flag, grouped first in For you and the inbox, owner toggle (AIG-320)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Plain task'), b = await mkCard(s, 'alpha', 'Deploy it'), c = await mkCard(s, 'alpha', 'Forgot to mark');
+  s.cli(['task', 'alpha', a.id, 'log in', '--as', 'Lead']);
+  await sleep(20);
+  const r = s.cli(['task', 'alpha', b.id, 'run the migration', '--server', '--as', 'Lead']);
+  check('task --server works', r.code === 0, r);
+  s.cli(['task', 'alpha', c.id, 'restart it', '--as', 'Lead']);
+  check('server flag is stored only when asked', (await getCard(s, 'alpha', b.id)).server === true && !(await getCard(s, 'alpha', a.id)).server);
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('.column.foryou .card');
+  const ids = async () => page.$$eval('.column.foryou .card', els => els.map(e => e.dataset.id));
+  check('For you has a Server chip with its count', /Server 1/.test(await page.textContent('.fy-chip[data-first="s"]')), await page.textContent('.fy-chips'));
+  await page.click('.fy-chip[data-first="k"]');
+  await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, b.id, { timeout: 3000 }).catch(() => {});
+  check('server tasks lead the Tasks', (await ids())[0] === b.id, await ids());
+  check('server task shows its 🖥️ mark', (await page.textContent(`.column.foryou .card[data-id="${b.id}"]`)).includes('🖥️'));
+  // the owner marks the forgotten one
+  await page.click(`.column.foryou .card[data-id="${c.id}"] [data-server]`);
+  await page.waitForFunction(() => document.querySelectorAll('.column.foryou .card [data-server][data-on="1"]').length === 2, null, { timeout: 4000 }).catch(() => {});
+  check('toggle marks a task as server', (await getCard(s, 'alpha', c.id)).server === true);
+  await page.click(`.column.foryou .card[data-id="${c.id}"] [data-server]`);
+  await page.waitForFunction(() => document.querySelectorAll('.column.foryou .card [data-server][data-on="1"]').length === 1, null, { timeout: 4000 }).catch(() => {});
+  check('toggle unmarks it again', !(await getCard(s, 'alpha', c.id)).server);
+  const ip = await openPage(ctx, '#/inbox');
+  await ip.waitForSelector('#ibK .ib-item');
+  const order = await ip.$$eval('#ibK .ib-item', els => els.map(e => e.dataset.id));
+  check('inbox lists server tasks first', order[0] === b.id && order.length === 3, order);
+  check('inbox has a Server chip with its count', /Server\s*1/.test(await ip.textContent('#ibKinds')), await ip.textContent('#ibKinds'));
+  noErrors(page); noErrors(ip);
 }, true);
