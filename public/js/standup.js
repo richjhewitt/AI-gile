@@ -21,7 +21,8 @@ const suDay = () => new Date().toLocaleDateString('sv');
 const suPromptGone = () => { const el = $('suPrompt'); if (el) el.remove(); };
 function morningPrompt() {
   if (!i18n.ready) return void setTimeout(morningPrompt, 500);
-  if ($('suPrompt') || !state.route || state.route.pop || state.route.view === 'setup') return;
+  // Never in a pop-out (AIG-281): in the small night glance it covered the projects.
+  if ($('suPrompt') || !state.route || state.route.pop || state.route.popList || ['setup', 'night', 'watch'].includes(state.route.view)) return;
   try { if (localStorage.getItem('aigile.standupAsked') === suDay()) return; } catch { return; }   // no storage: never nag
   const a = document.activeElement;
   if (busy() || (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return void setTimeout(morningPrompt, 3000);

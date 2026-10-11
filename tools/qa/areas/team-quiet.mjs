@@ -228,6 +228,8 @@ def('nightglance', '🌙 night glance: a calm pop-out with the watchman per proj
   await page.reload(); await page.waitForSelector('.ng-list li');
   check('one quiet line per watched project, no top bar', (await page.locator('.ng-list li').count()) === 2 && await page.locator('header').isHidden());
   check('calm night: no glow', /All calm/.test(await page.textContent('.ng')) && !(await page.evaluate(() => document.body.classList.contains('ng-urgent'))));
+  await page.evaluate(() => localStorage.removeItem('aigile.standupAsked')); await page.reload(); await page.waitForSelector('.ng-list li'); await page.waitForTimeout(2500);
+  check('no "Call stand-ups?" box over the glance, even on a new day (AIG-281)', (await page.locator('#suPrompt').count()) === 0);
   await s.ok('POST', '/api/standup', { projects: ['trouble'] });
   s.cli(['standup', 'trouble', '--done', 'x', '--next', 'y', '--blockers', 'Server is down, nothing else can go on', '--as', 'Lead']);
   await page.reload(); await page.waitForSelector('.ng-urgent-line', { timeout: 6000 }).catch(() => {});
