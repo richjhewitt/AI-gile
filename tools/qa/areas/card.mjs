@@ -326,7 +326,7 @@ def('editor', '📝 file paths in card text open in your editor (AIG-156)', asyn
   // A stand-in editor that just records which file it was asked to open.
   const dir = tmp('editor'), script = path.join(dir, 'rec.js');
   fs.writeFileSync(script, `require('fs').writeFileSync(${JSON.stringify(path.join(dir, 'opened.txt'))}, process.argv[2] || '')`);
-  fs.writeFileSync(path.join(dir, 'local.json'), JSON.stringify({ ...JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')), editor: `node "${script}"` }));
+  fs.writeFileSync(path.join(dir, 'local.json'), JSON.stringify({ ...(() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')); } catch { return {}; } })(), editor: `node "${script}"` }));
   process.env.QA_EDITOR_DIR = dir;
   return { AIGILE_LOCAL: path.join(dir, 'local.json') };
 })());
