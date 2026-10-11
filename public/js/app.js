@@ -40,12 +40,15 @@ function applyAppLogo(url) {
   f.dataset.logo = url || ''; f.setAttribute('href', url || FAVICON0);
   b.innerHTML = url ? `<img class="brand-logo" src="${esc(url)}" alt=""> AI-gile` : '🗂️ AI-gile';
 }
+let wasQuiet = null;   // was the board quiet at the last check (AIG-232)
 async function checkBuild() {
   if (!i18n.ready) return;
   try {
     const m = await api('GET', '/api/meta');
     if (m.owner && m.owner !== state.owner) { state.owner = m.owner; refresh(true); }
-    setNight(m.quiet);
+    // Quiet ended by itself at the wake-up time (AIG-232): show what happened overnight.
+    if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});
+    wasQuiet = m.quiet; setNight(m.quiet);
     applyAppLogo(m.appLogo);
     pokeBadge(await api('GET', '/api/projects'));
     // A new install opens Setup first (AIG-91).
@@ -131,13 +134,14 @@ async function goQuiet() {
   openDialog(`<h2>${esc(t('quiet.h'))}</h2><p class="muted">${esc(t('quiet.confirm'))}</p>
     <h3>${esc(t('watch.h'))}</h3><p class="muted">${esc(t('watch.help'))}</p>
     <div class="watch-list">${ps.map(p => `<label class="chk"><input type="checkbox" data-watch="${esc(p.slug)}" checked> ${pic(p.logo, p.emoji)} ${esc(p.name)}</label>`).join('')}</div>
+    <label class="chk">${esc(t('quiet.until'))} <input type="time" id="quietUntil" value="09:00"></label><p class="muted">${esc(t('quiet.until.help'))}</p>
     <div class="actions"><button class="primary" onclick="goQuietNow()">${esc(t('quiet.go'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
 async function goQuietNow() {
-  const watch = [...document.querySelectorAll('#dialog [data-watch]:checked')].map(b => b.dataset.watch);
+  const watch = [...document.querySelectorAll('#dialog [data-watch]:checked')].map(b => b.dataset.watch), until = (quietUntil || {}).value || '';
   closeDialog();
   try {
-    const r = await api('POST', '/api/quiet', { on: true, watch });
+    const r = await api('POST', '/api/quiet', { on: true, watch, until });
     setNight(r.quiet);
     // A proper goodnight instead of a plain alert box (AIG-208): who was told, who was woken, what the watchman watches.
     const chips = names => `<div class="qd-chips">${names.map(n => `<span class="qd-chip">${esc(n)}</span>`).join('')}</div>`;
@@ -159,10 +163,13 @@ function goodnight() {
 // Back from quiet: the night watchman's summary, one line per project (AIG-199).
 async function backFromQuiet() {
   try {
-    const r = await api('POST', '/api/quiet', { on: false }); setNight(null);
-    if (r.summary && r.summary.length) openDialog(`<h2>${esc(t('watch.morning'))}</h2><ul class="watch-sum">${r.summary.map(x => `<li><b>${esc(x.name)}</b>: ${esc(t('watch.line', { h: x.handedOver, d: x.done, w: x.woke }))}${x.restarted.length ? ' · ' + esc(t('watch.restarted', { ids: x.restarted.join(', ') })) : ''}${x.stuck.length ? ` · <span class="su-red">${esc(t('watch.stuck', { ids: x.stuck.join(', ') }))}</span>` : ''}</li>`).join('')}</ul>
-      <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
+    const r = await api('POST', '/api/quiet', { on: false }); setNight(null); showMorning(r.summary);
   } catch (e) { alert(e.message); }
+}
+// The night watchman's summary, one line per project: after Back from quiet, or when quiet ended by itself (AIG-232).
+function showMorning(summary) {
+  if (summary && summary.length) openDialog(`<h2>${esc(t('watch.morning'))}</h2><ul class="watch-sum">${summary.map(x => `<li><b>${esc(x.name)}</b>: ${esc(t('watch.line', { h: x.handedOver, d: x.done, w: x.woke }))}${x.restarted.length ? ' · ' + esc(t('watch.restarted', { ids: x.restarted.join(', ') })) : ''}${x.stuck.length ? ` · <span class="su-red">${esc(t('watch.stuck', { ids: x.stuck.join(', ') }))}</span>` : ''}</li>`).join('')}</ul>
+      <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
 }
 setInterval(checkBuild, 5000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });

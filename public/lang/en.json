@@ -741,6 +741,8 @@
  "standup.needs.k": "🙋 Needs you",
  "quiet.h": "🌙 Going quiet",
  "quiet.go": "🌙 Go quiet",
+ "quiet.until": "Wake me at",
+ "quiet.until.help": "At this time you are back from quiet by itself, and the summary is waiting.",
  "watch.h": "🌙 Night watchman",
  "watch.help": "While you are away it checks these projects every 10 minutes: it wakes teams that have work, restarts any that stopped mid-card, and flags a card as stuck after 3 tries. It costs nothing: the board does it, not an AI.",
  "watch.morning": "🌙 While you were away",

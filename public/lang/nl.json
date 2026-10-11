@@ -741,6 +741,8 @@
  "standup.needs.k": "🙋 Wacht op jou",
  "quiet.h": "🌙 Even stil",
  "quiet.go": "🌙 Ga stil",
+ "quiet.until": "Maak me wakker om",
+ "quiet.until.help": "Op dit uur ben je vanzelf terug, en het overzicht staat klaar.",
  "watch.h": "🌙 Nachtwacht",
  "watch.help": "Terwijl je weg bent kijkt hij elke 10 minuten naar deze projecten: hij maakt teams met werk wakker, start teams opnieuw die midden in een kaart stopten, en meldt een kaart als vastgelopen na 3 pogingen. Het kost niets: het bord doet het, geen AI.",
  "watch.morning": "🌙 Terwijl je weg was",
