@@ -6,6 +6,9 @@ const Share = (function () {
   let links = [], people = [], projects = [], sig = '';
   const ALLOW = ['send', 'take', 'comments', 'status', 'files', 'teamRead'];
   const DEFAULT = { send: true, take: true, comments: true, status: false, files: false, teamRead: false };
+  // Roles on links (AIG-307): the server decides (lib/share.js CAN, sent as l.can); the page only shows and hides.
+  const ROLES = ['viewer', 'alpha', 'reporter', 'member', 'tester', 'developer', 'admin'];
+  const can = (l, k) => !!(l && l.can && l.can[k]);
   const open = l => ['offered', 'incoming', 'live'].includes(l.state) && !l.expired;
   const ofProject = s => links.find(l => l.slug === s && open(l)) || links.find(l => l.slug === s && l.state === 'ended' && !l.forgotten && l.endedBy !== 'declined');
   const offers = () => links.filter(l => l.state === 'incoming' && !l.expired);
@@ -38,7 +41,7 @@ const Share = (function () {
     const l = ofProject(p.slug);
     if (!l || !inb || inb.link !== l.id || (!inb.cards.length && !(l.state === 'live' && l.effective && l.effective.takeCards))) return '';
     const cards = inb.cards.map(x => `<button class="share-lcard" data-share-card="${esc(x.share)}" onclick="Share.laneCard('${esc(x.share)}')">
-      <span class="t">${esc(x.title)}</span><span class="muted">${esc(x.type)} · ${esc(x.priority)}${theirComments(x.share).length ? ' · ' + esc(t('share.lane.replies', { n: theirComments(x.share).length })) : ''}${x.taken ? ' · ' + esc(t('share.lane.taken', { id: x.taken })) : ''}</span></button>`).join('');
+      <span class="t">${esc(x.title)}</span><span class="muted">${esc(x.type)} · ${esc(x.priority)}${theirComments(x.share).length ? ' · ' + esc(t('share.lane.replies', { n: theirComments(x.share).length })) : ''}${x.taken ? ' · ' + esc(t('share.lane.taken', { id: x.taken })) : ''}${x.forYou ? ' · 🙋 ' + esc(t('share.lane.forYou')) : ''}</span></button>`).join('');
     return `<div class="share-lane" id="shareLane"><h3>${esc(t('share.lane.h', { name: l.friend }))} <span class="muted">${inb.cards.length}</span></h3>
       <p class="muted">${esc(t('share.lane.note'))}</p>${cards || `<p class="muted">${esc(t('share.lane.none', { name: l.friend }))}</p>`}</div>`;
   }
@@ -46,7 +49,7 @@ const Share = (function () {
   function cardBtn(p, c) {
     const l = ofProject(p.slug);
     if (c.share && c.share.theirs) return `<span class="pill share-pill">${esc(t('share.card.theirs', { name: l ? l.friend : '' }))}</span>`;
-    if (!l || l.state !== 'live' || (!c.share && !(l.effective && l.effective.sendCards))) return '';
+    if (!l || l.state !== 'live' || (!c.share && !(l.effective && l.effective.sendCards && can(l, 'seeMine')))) return '';
     return `<button id="shareCardBtn" onclick="Share.previewCard('${esc(c.id)}')">${esc(t(c.share ? 'share.card.shared' : 'share.card.btn', { name: l.friend }))}${c.share && c.share.held ? ' ' + esc(t('share.card.held')) : ''}</button>`;
   }
   // Their side of a shared card, in the Reply pane (none of it is in the card itself): their status as a label, their
@@ -60,7 +63,7 @@ const Share = (function () {
     const parts = [statusHtml(l, (x && x.status) || (o && o.theirStatus))];
     if (x && x.description) parts.push(`<h4>${esc(t('share.fc.desc', { name: l.friend }))}</h4>` + plain(x.description));
     if (x) parts.push(filesHtml(l, x), x.test ? theirTest(l, x) : '');
-    if (c.share.mine) parts.push(myTest(l, c, o));
+    if (c.share.mine) parts.push(myTest(l, c, o), assignHtml(l, c));
     parts.push(...[...list].reverse().map(m => friendMsg(m, l)));
     const body = parts.join('');
     return body ? `<div class="share-cmts"><h3 class="muted">${esc(t('share.cmts.h', { name: l.friend }))}</h3>${body}</div>` : '';
@@ -78,8 +81,14 @@ const Share = (function () {
     const tt = o && o.test;
     const label = !tt ? '' : tt.open ? `<p class="share-test">${esc(t('share.test.waiting', { name: l.friend }))}</p>`
       : `<p class="share-test">${esc(t(tt.verdict === 'accept' ? 'share.test.accepted' : 'share.test.back', { name: l.friend }))}</p>${tt.note ? plain(tt.note) : ''}`;
-    const btn = live(l, 'comments') ? `<button id="shareTestBtn" onclick="Share.testDialog('${esc(c.id)}')">${esc(t('share.test.btn', { name: l.friend }))}</button>` : '';
+    const btn = live(l, 'comments') && can(l, 'verdict') ? `<button id="shareTestBtn" onclick="Share.testDialog('${esc(c.id)}')">${esc(t('share.test.btn', { name: l.friend }))}</button>` : '';
     return label + btn;
+  }
+  // 🙋 Assign to {friend}: a Member or Tester acts (their status label) only on cards assigned to them.
+  const assignHtml = (l, c) => l.state === 'live' && l.on && l.can && l.can.act === 'assigned'
+    ? `<button id="shareAssignBtn" class="${c.share.assigned ? 'good' : ''}" onclick="Share.assign('${esc(c.id)}', ${c.share.assigned ? 'false' : 'true'})">${esc(t(c.share.assigned ? 'share.assign.on' : 'share.assign.btn', { name: l.friend }))}</button>` : '';
+  async function assign(cardId, on) {
+    try { await api('PATCH', `/api/shares/${ofProject(slug()).id}/cards/${encodeURIComponent(cardId)}`, { assigned: on }); sig = ''; await load(); if (typeof rerender === 'function') rerender(); } catch (e) { alert(e.message); }
   }
   // A test they handed me on their card: their text plain, ✅ Accept / ↩️ Send back (with what is wrong) once.
   function theirTest(l, x) {
@@ -191,6 +200,16 @@ const Share = (function () {
   const whatHtml = l => l.effective ? `<ul class="share-what">${[['sendCards', 'share.eff.send'], ['takeCards', 'share.eff.take'], ['comments', 'share.eff.comments'], ['status', 'share.eff.status'], ['files', 'share.eff.files'], ['teamRead', 'share.eff.teamRead']]
     .map(([k, key]) => `<li>${l.effective[k] ? '✅' : '⛔'} ${esc(t(key, { name: l.friend }))}</li>`).join('')}</ul>` : '';
 
+  // Their role: one of the AIG-185 roles, for this project or all my projects with them; what it lets them do.
+  function roleHtml(l) {
+    const opts = ROLES.map(r => `<option value="${r}" ${l.role === r ? 'selected' : ''}>${esc(t('share.role.' + r))}</option>`).join('');
+    return `<div class="share-role"><label class="f"><span>${esc(t('share.role.label'))}</span><select id="shareRole" onchange="Share.setRole('${l.id}')">${opts}</select></label>
+      <label class="f"><span>${esc(t('share.role.scope'))}</span><select id="shareRoleScope" onchange="Share.setRole('${l.id}')">
+        <option value="project" ${l.roleScope !== 'all' ? 'selected' : ''}>${esc(t('share.role.scope.project'))}</option>
+        <option value="all" ${l.roleScope === 'all' ? 'selected' : ''}>${esc(t('share.role.scope.all', { name: l.friend }))}</option></select></label>
+      <p class="muted" id="shareRoleHelp">${esc(t('share.role.help.' + l.role))} ${esc(t('share.role.never', { name: l.friend }))}</p>
+      ${l.theirRole ? `<p class="muted" id="shareTheirRole">${esc(t('share.role.theirs', { name: l.friend, role: t('share.role.' + l.theirRole) }))}</p>` : ''}</div>`;
+  }
   async function dialog() {
     await load();
     const s = slug(), l = ofProject(s), p = state.project;
@@ -201,6 +220,7 @@ const Share = (function () {
         <p class="muted">${esc(l.on ? t('share.switch.on') : t('share.switch.off'))}${l.droppedOff ? ' · ' + esc(t('share.dropped', { n: l.droppedOff })) : ''}${l.overCap ? ' · ' + esc(t('share.overcap', { n: l.overCap })) : ''}</p>
         <p class="muted" id="shareHeard">${esc(l.lastHeard ? t('share.heard', { name: l.friend, when: ago(l.lastHeard) }) : t('share.heard.never', { name: l.friend }))}</p>
         ${whatHtml(l)}
+        ${roleHtml(l)}
         <label class="chk"><input type="checkbox" id="shareTeamRead" ${l.mine && l.mine.teamRead ? 'checked' : ''} onchange="Share.setTeamRead('${l.id}', this.checked)"> ${esc(t('share.allow.teamRead'))}</label>
         <p class="muted">${esc(t(l.mine && l.mine.teamRead ? 'share.teamRead.on' : 'share.teamRead.off', { name: l.friend }))}</p>
         <div class="actions"><button onclick="Share.ping('${l.id}')" ${l.on ? '' : 'disabled'}>${esc(t('share.ping'))}</button>
@@ -234,6 +254,7 @@ const Share = (function () {
   const offer = () => act(() => api('POST', '/api/shares', { slug: slug(), contact: $('shareWho').value, allow: readTicks('o-') }));
   const setOn = (id, on) => act(() => api('PATCH', '/api/shares/' + id, { on }));
   const setTeamRead = (id, teamRead) => act(() => api('PATCH', '/api/shares/' + id, { teamRead }));
+  const setRole = id => act(() => api('PATCH', '/api/shares/' + id, { role: $('shareRole').value, scope: $('shareRoleScope').value }));
   const ping = id => act(() => api('POST', `/api/shares/${id}/ping`));
   function unlink(id, forget) {
     if (forget && !confirm(t('share.forget.confirm'))) return;
@@ -281,6 +302,6 @@ const Share = (function () {
   }
 
   setInterval(() => { if (!document.hidden && typeof i18n !== 'undefined' && i18n.ready) load(); }, 3000);
-  return { load, button, dialog, offer, setOn, setTeamRead, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
+  return { load, button, dialog, offer, setOn, setTeamRead, setRole, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
     laneHtml, cardBtn, cardComments, commentMark, previewCard, sendCard, unshareCard, sendHeld, laneCard, laneReply, takeCard };
 })();

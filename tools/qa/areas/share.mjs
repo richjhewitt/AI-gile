@@ -7,6 +7,7 @@ import path from 'node:path';
 import { ROOT, BASE, freePort, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def } from '../lib.mjs';
 import { shareCards } from './share-cards.mjs';
 import { shareMore } from './share-more.mjs';
+import { shareRoles } from './share-roles.mjs';
 
 export async function startRelay(port) {
   const data = tmp('relay');
@@ -208,5 +209,7 @@ def('share', 'sharing a project with a friend: offer / accept over the DMs, need
     await shareCards({ a, b, ca, cb, relay, ctx, until, filesUnder });
     // The team fence, status labels, tests and verdicts, attachments (AIG-306): tools/qa/areas/share-more.mjs.
     await shareMore({ a, b, ca, cb, relay, ctx, until, filesUnder });
+    // Roles on links, owner-only /api/shares, the per-role allow/deny table (AIG-307): tools/qa/areas/share-roles.mjs.
+    await shareRoles({ a, b, ca, cb, relay, ctx, until, filesUnder });
   } finally { b.stop(); relay.stop(); }
 }, true, { AIGILE_DM_POLL_MS: '300' });

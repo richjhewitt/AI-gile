@@ -20,6 +20,8 @@ export async function shareMore({ a, b, ca, cb, relay, until, filesUnder, ctx })
   const id = off.id;
   check('more: Hotel and India linked with status and attachments', !!(await until(async () => (await a.ok('GET', '/api/shares?slug=hotel')).find(l => l.state === 'live' && l.effective.status && l.effective.files && !l.effective.teamRead))));
   const inbA = () => a.ok('GET', `/api/shares/${id}/inbound`), inbB = () => b.ok('GET', `/api/shares/${id}/inbound`);
+  // Roles (AIG-307): both make the other a Tester here, so status labels on assigned cards, tests and verdicts cross.
+  await a.ok('PATCH', `/api/shares/${id}`, { role: 'tester' }); await b.ok('PATCH', `/api/shares/${id}`, { role: 'tester' });
   // B's team woke for the control check in part 2: let that stub run start, then watch for a new wake from here on.
   await sleep(1500); try { fs.unlinkSync(b.wakeOut); } catch {}
   const bWoke = () => fs.existsSync(b.wakeOut);
@@ -32,6 +34,7 @@ export async function shareMore({ a, b, ca, cb, relay, until, filesUnder, ctx })
   const sent = await a.ok('POST', `/api/shares/${id}/cards`, { card: h1.id, force: true });   // "the .env" is flagged by the scrub
   check('sent with its file', sent.files && sent.files.sent.length === 1, sent.files);
   const share1 = sent.share.id;
+  await a.ok('PATCH', `/api/shares/${id}/cards/${h1.id}`, { assigned: true });   // a Tester's status counts only on cards assigned to them
   const lc = await until(async () => { const x = (await inbB()).cards.find(c => c.share === share1); return x && (x.files || []).length && x.status ? x : null; });
   check('B: the lane card has the file and A\'s status as a label', lc && lc.files[0].name === up.name && lc.status.status === 'backlog', lc);
   const fpath = lc && path.join(b.data, 'shares', 'files', id, lc.files[0].id);
@@ -100,7 +103,7 @@ export async function shareMore({ a, b, ca, cb, relay, until, filesUnder, ctx })
   const data = tmp('sharemore');
   const L = 'M'.repeat(22), mine = { send: true, take: true, comments: true, status: true, files: true, teamRead: false };
   fs.mkdirSync(path.join(data, 'shares'), { recursive: true });
-  fs.writeFileSync(path.join(data, 'shares', L + '.json'), JSON.stringify({ v: 1, id: L, contact: 'aaaaaaaaaaaa', slug: 'p', state: 'live', mine, theirs: mine, on: true, seqOut: 0, seqIn: 0, created: new Date().toISOString(), exp: 0,
+  fs.writeFileSync(path.join(data, 'shares', L + '.json'), JSON.stringify({ v: 1, id: L, contact: 'aaaaaaaaaaaa', slug: 'p', state: 'live', mine, theirs: mine, role: 'tester', on: true, seqOut: 0, seqIn: 0, created: new Date().toISOString(), exp: 0,
     outbound: { MYSHARE123: { card: 'P-1', test: { text: 't', open: true } }, MYSHARE456: { card: 'P-2' } }, inbound: { cards: { THEIRS1234: { share: 'THEIRS1234', title: 'x', updated: new Date().toISOString() } } } }));
   const r = spawnSync(process.execPath, ['-e', `
     const share = require(${JSON.stringify(path.join(ROOT, 'lib', 'share.js'))});
