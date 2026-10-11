@@ -10,13 +10,16 @@ function closeDialog() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog').firstChild) closeDialog(); });
 
 /* ---------- new card ---------- */
-function newCard(preset = {}) {
+async function newCard(preset = {}) {
+  let projects = [], leads = {};
+  try { projects = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
+  try { (await api('GET', '/api/chats')).forEach(c => { leads[c.slug] = c.lead; }); } catch {}
   const bug = preset.type === 'bug';
   // The owner's new cards go straight to the team (AIG-51); the + on a column still picks that column.
   const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: 'team', assignee: '', sprint: '', ...preset };
   Attach.clear('new:' + slug());
   openDialog(`<h2>${esc(bug ? t('board.raisebug') : t('dlg.newcard'))}</h2>
-    <form onsubmit="return createCard(event)">${cardFields(c, bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') })}
+    <form onsubmit="return createCard(event)">${projects.length > 1 ? `<label class="f"><span>${esc(t('dlg.newcard.project'))}</span><select id="nc-project">${projectOptionsHtml(projects, leads, slug())}</select></label>` : ''}${cardFields(c, bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') })}
       <div class="err" id="d-err"></div>
       <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${esc(bug ? t('dlg.raisebug') : t('dlg.createcard'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');
 }
@@ -25,9 +28,18 @@ async function createCard(e) {
   const body = readFields(false, false);
   if (!body.title) { setErr('d-err', t('dlg.err.title')); return false; }
   try {
-    const attachments = await Attach.upload('new:' + slug(), slug());
-    const c = await api('POST', `/api/projects/${slug()}/cards`, { ...body, createdBy: me(), attachments });
+    const sel = $('nc-project'), target = sel && sel.value || slug();
+    const attachments = await Attach.upload('new:' + slug(), target);
+    const c = await api('POST', `/api/projects/${target}/cards`, { ...body, createdBy: me(), attachments });
     Attach.clear('new:' + slug());
+    if (target !== slug()) {   // another project: say where it went, with a link (AIG-316)
+      const name = sel.options[sel.selectedIndex].textContent.replace(/\s*\([^)]*\)\s*$/, '').trim();
+      $('dialog').querySelector('.dialog').innerHTML = `<h2>${esc(t('dlg.newcard.added', { id: c.id, project: name }))}</h2>
+        <p><a id="nc-link" href="#/p/${esc(target)}/${esc(c.id)}" onclick="closeDialog()">${esc(c.id)} ${esc(c.title)}</a></p>
+        <div class="actions"><button type="button" class="primary" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`;
+      await rerender();
+      return false;
+    }
     closeDialog();
     await rerender();
   } catch (err) { setErr('d-err', err); }

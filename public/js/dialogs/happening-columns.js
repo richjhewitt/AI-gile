@@ -41,6 +41,10 @@ async function sendAskTeam(e) {
 /* ---------- 💡 idea button (AIG-351): a quick thought from any page, to one team, every team, or "decide later" ---------- */
 // One project: a 💬 card in its For the team, exactly like Ask the team. All projects: one in each. Decide later: a 💬 card in the
 // project you are on (else the first one), made by "Ideas" instead of you so nobody is woken, and marked as waiting on you, so it sits in your inbox.
+// The project <option>s shared by the idea picker and the New card Project picker (AIG-316).
+function projectOptionsHtml(projects, leads, pick) {
+  return projects.map(p => `<option value="${esc(p.slug)}" ${p.slug === pick ? 'selected' : ''}>${esc((p.emoji || '') + ' ' + p.name + (leads[p.slug] ? ' (' + leads[p.slug] + ')' : ''))}</option>`).join('');
+}
 async function ideaDialog() {
   let projects = [], leads = {};
   try { projects = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
@@ -51,7 +55,7 @@ async function ideaDialog() {
   openDialog(`<h2>${esc(t('idea.h'))}</h2>
     <form onsubmit="return sendIdea(event)"><label class="f"><span>${esc(t('idea.q'))}</span><textarea id="idea-text" class="grow" data-draft="idea" rows="4" oninput="growBox(this)" onkeydown="if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') sendIdea(event)" placeholder="${esc(t('idea.ph'))}"></textarea></label>
     <label class="f"><span>${esc(t('idea.to'))}</span><select id="idea-to">
-      ${projects.map(p => `<option value="${esc(p.slug)}" ${p.slug === pick ? 'selected' : ''}>${esc((p.emoji || '') + ' ' + p.name + (leads[p.slug] ? ' (' + leads[p.slug] + ')' : ''))}</option>`).join('')}
+      ${projectOptionsHtml(projects, leads, pick)}
       <option value="_all">${esc(t('idea.all'))}</option><option value="_later" ${pick === '_later' ? 'selected' : ''}>${esc(t('idea.later'))}</option></select></label>
     <div class="err" id="idea-err"></div>
     <div class="actions"><button class="primary" type="submit" title="Ctrl+Enter">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('idea')}</div></form>`, 'wide');
