@@ -1,6 +1,6 @@
 /* ---------- state, api, helpers ---------- */
-// The board's human (AIG-103): name from /api/meta, default Rich.
-const me = () => (typeof state !== 'undefined' && state.owner) || 'Rich';
+// The board's human (AIG-103): name from /api/meta, default Owner.
+const me = () => (typeof state !== 'undefined' && state.owner) || 'Owner';
 /* ---------- drafts (AIG-171): unsent text survives a refresh, a restart or a crash ---------- */
 // Any textarea with data-draft="<key>" is saved to this browser as you type and filled back in when it
 // appears again (also after the page is redrawn). Sending calls clearDraft(key).
