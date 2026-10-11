@@ -9,7 +9,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 
 ## Server ([server.md](codemap/server.md): files, API routes, local-only settings)
 - `server.js`: http plumbing, `/api/*` dispatch, static files from `public/`
-- `lib/routes.js`: every API route as `[method, regex, handler]`
+- `lib/routes.js` + `lib/routes/*.js`: every API route as `[method, regex, handler]`, grouped (shared requires in `ctx.js`)
 - `lib/store.js`: config, load/save of `data/<slug>.json`, card rules, project order
 - `lib/onboard.js`: connect a folder, permissions presets
 - `lib/presence.js`: team presence, background runs, where a team runs, verbose log, 👁 Watch
@@ -20,11 +20,11 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/limits.js`, `lib/usage.js`, `lib/usagecheck.js`: plan usage, tokens, check usage now
 - `lib/trial.js`, `tools/trial/pretend-team.js`: 🧪 try it as a new user
 - `lib/tester.js`: 🤖 AI tester runs
-- `aigile.js` (CLI), `statusline.js`, `desktop/` (Electron)
+- `aigile.js` (CLI entry) + `lib/cli/*.js` (core, help, command groups), `statusline.js`, `desktop/` (Electron)
 
 ## Page ([page.md](codemap/page.md): `public/`, classic scripts in one global scope, `app.js` last)
-- `styles.css`; `js/core.js` (state, api, router, render); `js/format.js` (card text, md); `js/i18n.js` (languages)
-- `js/home.js`, `js/board.js`, `js/card.js`, `js/dialogs.js`, `js/filters.js`, `js/attach.js`
+- `css/01..05-*.css` (linked in order from index.html); `js/core.js` (state, api, router, render); `js/format.js` (card text, md); `js/i18n.js` (languages)
+- `js/home.js`, `js/board.js`, `js/card.js`, `js/dialogs/*.js`, `js/filters.js`, `js/attach.js`
 - `js/inbox.js` with `inbox-style.js`, `inbox-queue.js`, `inbox-ai.js`
 - `js/standup.js`, `js/usage-page.js`, `js/glossary.js`, `js/tour.js`, `js/night.js`, `js/leadquiz.js`
 - `js/app.js`: start-up, 1s poll, going quiet

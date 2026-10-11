@@ -22,7 +22,8 @@ const pageFiles = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e 
 const build = () => STARTED + '-' + Math.max(...pageFiles(PUBLIC).map(f => fs.statSync(f).mtimeMs));
 
 // Server code newer than this running server (AIG-206): the page offers 🔄 Restart the board instead of failing on new routes.
-const serverFiles = () => [path.join(__dirname, 'server.js'), ...fs.readdirSync(path.join(__dirname, 'lib')).filter(f => f.endsWith('.js')).map(f => path.join(__dirname, 'lib', f))];
+const libFiles = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? libFiles(path.join(d, e.name)) : e.name.endsWith('.js') ? [path.join(d, e.name)] : []);
+const serverFiles = () => [path.join(__dirname, 'server.js'), ...libFiles(path.join(__dirname, 'lib'))];
 const stale = () => { try { return Math.max(...serverFiles().map(f => fs.statSync(f).mtimeMs)) > STARTED; } catch { return false; } };
 
 const routes = makeRoutes(() => ({ dev: DEV, build: build(), stale: stale() }));

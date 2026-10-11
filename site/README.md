@@ -1,7 +1,7 @@
 # aigile.lol site
 
 Static one-page site: `index.html`, `style.css`, `assets/`. No build step, no trackers, no cookies.
-Colours come from the board (`public/styles.css`); re-copy them if the board's colours change.
+Colours come from the board (`public/css/*.css`); re-copy them if the board's colours change.
 
 ## Deploy
 

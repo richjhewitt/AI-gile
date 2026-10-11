@@ -3,7 +3,7 @@
 `index.html` is the shell only. The scripts are classic scripts sharing one global scope, loaded in this order (`app.js` last):
 | File | What |
 |---|---|
-| `styles.css` | All styles: tokens, Portfolio, Board, Card detail panel, buttons and forms, phones |
+| `css/01-*.css` .. `css/05-*.css` | All styles, split on the section markers and linked in order from index.html (cascade order matters): tokens, header, Portfolio, Board; card panel, forms, dialogs, phones; columns, title bar, DMs; rail, chat folds, queue; AI tester evidence |
 | `js/usage-page.js` | The `#/usage` page (charts are hand-written SVG) |
 | `js/inbox-style.js` | `INBOX_CSS`: the inbox styles, injected by inbox.js (loaded just before it) |
 | `js/inbox-queue.js` | `paintQueue(shown, kindFilter)`: the inbox kind chips and the Next up line (AIG-159..162); called by inbox.js |
@@ -14,13 +14,13 @@
 | `js/inbox.js` | Top-bar inbox button, the `#/inbox` page, alerts; uses the two files above |
 | `js/i18n.js` | Languages (AIG-124): `t(key, vars)`, `loadLang` (runs before the first render), `setLang`, `langPickHtml`; see "Languages" below |
 | `js/core.js` | `state`, `api`, `esc`, `ago`, the router (`parseRoute`), `busy`/`refresh`/`render` (the 1s poll never wipes typing), `slug`/`curCard`/`setErr` |
-| `js/format.js` | Card text: `withCode`, `spaceBullets`, `linkify`, `.md` links (`mdLinks`, opened by `showDocPath` in dialogs.js); `md` (Docs renderer) |
+| `js/format.js` | Card text: `withCode`, `spaceBullets`, `linkify`, `.md` links (`mdLinks`, opened by `showDocPath` in js/dialogs/); `md` (Docs renderer) |
 | `js/attach.js` | `Attach`: 📎 button, paste-a-screenshot and pending chips for any reply box (card, inbox and chats), `upload` on send (`read` gives the files as base64 for a private DM), `shown` thumbnails under comments |
 | `js/filters.js` | Search and filter bar; saved views (`viewsDialog`, `applyView`; stored on the project, last one used in localStorage) |
 | `js/home.js` | Home page: `renderHome`, project bars, usage strip |
 | `js/standup.js` | Stand-ups: `callStandup` (📣 buttons on the board and home), `standupButtons`, the `#/standups` report page (`renderStandups`, blockers first), the once-a-day `morningPrompt` pill (`suPick` to choose projects; day saved in localStorage `aigile.standupAsked`) |
 | `js/board.js` | In flight and presence, `renderBoard`, swimlanes (`lanesOf`, `columnsHtml`), `cardHtml`, `poke`, drag and drop, the For you header buttons `tidyPile` and `testForMe` (🤖, AIG-300; AI-passed tests sort first in `forYouQueue`) |
 | `js/card.js` | `cardFields`, assignee select, `renderCard` (Reply/Details/Test tabs), edit/delete/reply/verdict |
-| `js/dialogs.js` | `openDialog`, New card, New project, Connect folder, Docs |
+| `js/dialogs/*.js` | Five files in load order: `shell-card-project-connect` (`openDialog`, New card, New project, Connect), `find-trial-setup-teams`, `happening-columns`, `card-view-picture-look`, `permissions-docs` (Docs). `js/inbox.js` stays one file: it is one closure sharing its state |
 | `js/leadquiz.js` | What kind of lead? (AIG-235..237): `QUIZ` (question -> settings), `leadQuiz`/`saveQuiz` dialog (offered once when the name is first saved), `leadPrefsHtml` the "Your lead" switches on the Setup page, `setLeadPref` |
 | `js/app.js` | Start-up: hashchange, the 1s poll, the new-build prompt; going quiet (`goQuiet`, `setNight` night theme); `pokeBadge` (top bar) |

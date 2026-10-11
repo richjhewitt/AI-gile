@@ -1,0 +1,123 @@
+/* ---------- AI tester's evidence (AIG-163) ---------- */
+.pill.ai.pass { background: var(--good, #2e9e5b); color: #fff; } .pill.ai.fail { background: var(--danger); color: #fff; } .pill.ai.skip { background: var(--col); }
+.ai-ev { margin: 8px 0; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); border-left: 4px solid var(--muted); }
+.ai-ev.pass { border-left-color: var(--good, #2e9e5b); } .ai-ev.fail { border-left-color: var(--danger); }
+.ai-ev .att-shown img { max-height: 160px; }
+.ib-aiall { margin-left: auto; font-size: 13px; }
+
+/* The top bar wraps to a second row instead of squashing its buttons (AIG-143). */
+header { flex-wrap: wrap; row-gap: 6px; } header > * { flex-shrink: 0; white-space: nowrap; } header .crumb { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.setup-theme { font-size: 14px; border-radius: 6px; padding: 6px 8px; align-self: flex-start; }
+/* Unread counts on the rail are purple diamonds, like the taskbar icon (AIG-181). */
+.dm-unread { background: #a855f7; border-radius: 0; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); width: 24px; min-width: 0; height: 24px; padding: 0; line-height: 24px; font-size: 10px; right: -6px; bottom: -6px; }
+.dm-row .dm-unread { width: 24px; }
+/* Columns dialog (AIG-116): the colour picker stays small so the name box gets the room. */
+.colrow input[type=color] { flex: 0 0 44px; width: 44px; min-width: 0; padding: 2px; height: 34px; }
+.colrow input[type=text]:not(.emoji):not(.steps) { flex: 2 1 120px; min-width: 100px; }
+.colrow input.steps { flex: 1.3 1 100px; min-width: 80px; }
+
+/* Test tab: a tester check a newer one replaced (AIG-186); inbox showing one kind (AIG-187). */
+.stale { opacity: .5; } .stale .body { text-decoration: line-through; } .stale-note { font-size: 12px; color: var(--muted); margin: -4px 0 8px; }
+.ib-only { margin: 4px 0 10px; color: var(--muted); font-size: 13px; } .ib-only[hidden] { display: none; }
+.ib-btn .ib-badge[data-only] { cursor: pointer; } .ib-btn .ib-badge[data-only]:hover { outline: 2px solid var(--accent); }
+
+/* Dragging projects in the left rail (AIG-189): a line shows where it will land. */
+.dm-railbtn.dragging { opacity: .4; }
+.dm-railbtn.drop-before { box-shadow: 0 -3px 0 var(--accent); } .dm-railbtn.drop-after { box-shadow: 0 3px 0 var(--accent); }
+
+/* 🤖 AI passed view in the inbox (AIG-192) */
+.ib-aibar { margin: 4px 0 8px; } .ib-aibar:empty { display: none; }
+.ib-fl { border: 2px solid var(--accent); border-radius: 12px; padding: 12px 14px; }
+.ib-fl .fl-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; } .ib-fl .fl-head .spacer { flex: 1; }
+.ib-fl .ai-ev .att-shown img { max-height: 360px; }
+.ib-fl textarea { width: 100%; margin-top: 8px; }
+
+/* Cards dialog (AIG-184): size tiles, detail toggles, a sample card */
+.cv-dlg h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 14px 0 8px; }
+.cv-grid { display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: start; }
+@media (max-width: 640px) { .cv-grid { grid-template-columns: 1fr; } }
+.cv-sizes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cv-size { display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 2px solid var(--line); border-radius: 10px; cursor: pointer; }
+.cv-size.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--panel)); }
+.cv-size input { position: absolute; opacity: 0; pointer-events: none; }
+.cv-pic { display: flex; flex-direction: column; gap: 4px; padding: 6px; background: var(--col); border-radius: 6px; margin-bottom: 4px; }
+.cv-pic i { display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; height: 18px; }
+.cv-pic.compact i { height: 9px; } .cv-pic.compact { gap: 3px; }
+.cv-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.cv-toggle { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.cv-toggle:has(input:checked) { border-color: var(--accent); }
+.cv-sample { background: var(--col); padding: 10px; border-radius: 10px; pointer-events: none; }
+.dialog:has(.cv-dlg) { max-width: 760px; width: 100%; }
+.cv-toggle span { white-space: nowrap; }
+
+/* 🧹 Tidy my pile (AIG-193) */
+.ib-tidy { margin-left: auto; font-size: 13px; } .ib-tidy + .ib-aiall { margin-left: 6px; }
+
+/* An inbox list popped out (AIG-104): only that list, filling its own window. */
+.ib-popbtn { float: right; padding: 2px 8px; font-size: 13px; }
+body.poplist header, body.poplist #filterbar, body.poplist #updateTop, body.poplist #dmRail, body.poplist #dmPanel { display: none; }
+body.poplist { padding-left: 0; } body.poplist main { padding: 10px 14px; }
+body.poplist .ib-head, body.poplist #ibOnly, body.poplist #ibNext, body.poplist #ibKinds, body.poplist #ibAiBar, body.poplist .ib-popbtn { display: none; }
+
+/* 👁 Watch a verbose team (AIG-154): the dialog and its pop-out */
+.watchlog { max-height: 60vh; overflow: auto; white-space: pre-wrap; font-size: 12.5px; line-height: 1.5; }
+.watch-pop { padding: 2px 8px; font-size: 13px; margin-left: 6px; vertical-align: middle; }
+body.poplist .watchlog { max-height: calc(100vh - 90px); }
+
+/* Dev words explained (AIG-102) */
+abbr.devw { text-decoration: underline dotted var(--muted); text-underline-offset: 3px; cursor: help; }
+.gloss { max-width: 760px; margin: 0 auto; } .gloss input[type=search] { width: 100%; margin: 8px 0 16px; }
+.gloss-list { margin: 0; } .gloss-item { padding: 10px 0; border-bottom: 1px solid var(--line); } .gloss-item[hidden] { display: none; }
+.gloss-item dt { font-weight: 700; } .gloss-item dd { margin: 2px 0 0; color: var(--muted); }
+
+/* 🎓 Guided tour (AIG-95): a spotlight on one part of the board and a bubble beside it */
+#tourLayer { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+.tour-spot { position: fixed; border-radius: 12px; outline: 3px solid var(--accent); }
+.tour-bubble { position: fixed; width: min(340px, calc(100vw - 24px)); background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; box-shadow: 0 12px 32px rgba(0,0,0,.35); pointer-events: auto; }
+.tour-bubble.center { left: 50% !important; top: 30% !important; transform: translateX(-50%); }
+.tour-bubble h3 { margin: 2px 0 6px; } .tour-bubble p { margin: 0 0 8px; } .tour-why { color: var(--muted); font-size: 13px; }
+.tour-step { font-size: 12px; } .tour-skip { margin-left: auto; }
+.tour-lvls { display: grid; gap: 8px; margin: 10px 0; } .tour-lvl { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 10px 12px; }
+.tour-dim { position: fixed; background: rgba(0, 0, 0, .55); }
+
+/* Stand-ups: needs you (amber) apart from real blockers (red) (AIG-191) */
+.su-needs { border: 1px solid var(--warn); border-left-width: 4px; border-radius: 10px; padding: 8px 12px; margin: 0 0 14px; }
+.su-needs h3 { margin: 0 0 4px; color: var(--warn); font-size: 14px; } .su-amber { color: var(--warn); }
+
+/* 🌙 Night watchman (AIG-199) */
+.watch-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; margin: 8px 0; }
+.watch-sum li { margin: 4px 0; }
+
+/* 🔄 Restart the board (AIG-206): floats at the top, like the Refresh pill */
+#updateTop { z-index: 40; }   /* the restart pill lives here: clickable in the app's title bar too (AIG-295) */
+
+/* Going quiet: a proper goodnight (AIG-208) */
+.qd { text-align: center; } .qd-moon { font-size: 44px; line-height: 1; margin-top: 4px; }
+.qd h2 { margin: 6px 0 2px; } .qd h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 16px 0 6px; }
+.qd-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.qd-chip { padding: 3px 10px; border-radius: 99px; background: var(--col); border: 1px solid var(--line); font-size: 13px; }
+.qd .actions { justify-content: center; }
+
+/* 🌙 Night glance (AIG-209): near-black, red-tinted, low contrast; a slow amber glow only when something is urgent */
+body.nightglance { background: #0b0605 !important; color: #b07a6a; filter: brightness(.85); }
+body.nightglance main { padding: 14px; }
+/* Drag it anywhere (AIG-217): the night glance has no header, so the whole window is the handle, onto a second screen */
+body.desktop.nightglance main { -webkit-app-region: drag; min-height: 100vh; box-sizing: border-box; }
+.ng { font-size: 14px; } .ng-head { font-size: 16px; color: #c99282; } .ng-moon { opacity: .8; }
+.ng-when { font-size: 12px; color: #6e4a40; margin: 2px 0 12px; } .ng-calm { color: #6e4a40; margin-bottom: 10px; }
+.ng-list { list-style: none; padding: 0; margin: 0; } .ng-list li { padding: 6px 0; border-bottom: 1px solid #1c120f; display: flex; gap: 8px; align-items: baseline; }
+.ng-list b { font-weight: 500; color: #c99282; } .ng-word { color: #6e4a40; font-size: 13px; } .ng-dot { filter: saturate(.6) brightness(.8); }
+.ng-urgent-line { color: #e0a060; margin-bottom: 10px; }
+body.ng-urgent::after { content: ""; position: fixed; inset: 0; pointer-events: none; box-shadow: inset 0 0 40px 6px rgba(224, 140, 60, .55); animation: ng-breathe 6s ease-in-out infinite; }
+@keyframes ng-breathe { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { body.ng-urgent::after { animation: none; opacity: .7; } }
+
+/* 🌙 The watchman's chat is read-only (AIG-211) */
+#dmPanel.dm-readonly .dm-compose { display: none; }
+/* Going quiet (AIG-227): the projects' counts and dots on the left wait for the morning; only the watchman's chat may badge */
+:root[data-night] #dmRail [data-slug] .dm-unread, :root[data-night] #dmRail .dm-pip { display: none; }
+/* Desktop app (AIG-241): the top bar is the window's drag area, and a maximised window can swallow clicks on pills over it; sit just below it */
+body.desktop #updateTop { top: 44px; }
+/* A note that fades by itself (AIG-259) */
+#note { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 12px); z-index: 60; max-width: min(520px, calc(100vw - 32px)); padding: 10px 16px; border-radius: 999px; background: var(--panel); color: var(--text); border: 1px solid var(--line); box-shadow: 0 6px 20px rgba(0,0,0,.25); font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
+#note.on { opacity: 1; transform: translate(-50%, 0); }
