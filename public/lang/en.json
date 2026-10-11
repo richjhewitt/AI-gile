@@ -837,6 +837,8 @@
  "lead.go.help": "One line every team reads in its brief.",
  "lead.watchAll": "🌙 Watchman ticks every project",
  "lead.watchAll.help": "When you go quiet, every project is ticked for the night watchman. Off: none are ticked, so nights stay quiet.",
+ "lead.light": "🪶 Pro-friendly: use fewer tokens",
+ "lead.light.help": "Answering your comments uses the smaller model, and every 5th run starts a fresh conversation instead of carrying a long one. Night building keeps the big model. Good for Pro plans.",
  "setup.saved.short": "✅ Saved.",
  "face.me": "Your picture",
  "face.me.help": "PNG, JPG, SVG, ICO or WEBP, up to 1 MB. Shown next to your messages and comments.",

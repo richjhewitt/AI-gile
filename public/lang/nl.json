@@ -837,6 +837,8 @@
  "lead.go.help": "Eén regel die elk team in zijn overzicht leest.",
  "lead.watchAll": "🌙 Nachtwacht vinkt elk project aan",
  "lead.watchAll.help": "Als je even stil gaat, staat elk project aangevinkt voor de nachtwacht. Uit: niets aangevinkt, dus rustige nachten.",
+ "lead.light": "🪶 Pro-vriendelijk: minder tokens gebruiken",
+ "lead.light.help": "Antwoorden op je reacties gebruiken het kleinere model, en elke 5e run begint een nieuw gesprek in plaats van een lang gesprek mee te slepen. Bouwen 's nachts houdt het grote model. Handig voor een Pro-abonnement.",
  "setup.saved.short": "✅ Opgeslagen.",
  "face.me": "Jouw profielfoto",
  "face.me.help": "PNG, JPG, SVG, ICO of WEBP, tot 1 MB. Staat naast je berichten en reacties.",

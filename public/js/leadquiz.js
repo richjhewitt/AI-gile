@@ -40,7 +40,7 @@ function leadPrefsHtml(msg = '') {
   return `<span>${esc(t('lead.h'))}</span><div><button type="button" onclick="leadQuiz()">${esc(t('quiz.btn'))}</button></div><small class="muted">${esc(t('quiz.help'))}</small>
     ${sw('tidyCards')}${sw('chatty')}
     <label class="f"><span>${esc(t('lead.go'))}</span><select class="setup-theme" onchange="setLeadPref({ go: this.value })">${['', 'ask', 'small'].map(v => `<option value="${v}" ${(pr.go || '') === v ? 'selected' : ''}>${esc(t('lead.go.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.go.help'))}</small></label>
-    ${sw('watchAll')}
+    ${sw('watchAll')}${sw('light')}
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;
 }
 const paintLeadPrefs = msg => { if ($('leadPrefs')) $('leadPrefs').innerHTML = leadPrefsHtml(msg); };

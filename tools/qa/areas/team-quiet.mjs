@@ -298,6 +298,23 @@ def('stuckonly', '🌙 a card flagged stuck stops only itself: the team is still
   await s.ok('POST', '/api/quiet', { on: false });
 }, false);
 
+def('light', '🪶 Pro-friendly runs: comment runs on the smaller model, every 5th run a fresh conversation; off changes nothing (AIG-268)', async s => {
+  await mkProject(s, 'Lite', 'LIT', { path: tmp('lite') });
+  const wake = async () => { await s.ok('POST', '/api/projects/lite/wake'); for (let i = 0; i < 60 && (await s.ok('GET', '/api/projects/lite')).presence.running; i++) await sleep(250); return fs.readFileSync(s.wakeOut, 'utf8'); };
+  let out = await wake();
+  check('off: no model flag, --continue as before', !/--model/.test(out) && /--continue/.test(out), out);
+  await s.ok('POST', '/api/setup', { prefs: { light: true } });
+  check('the switch is saved', (await s.ok('GET', '/api/setup')).prefs.light === true);
+  out = await wake();
+  check('on: a comment run uses the smaller model', /--model"? "?sonnet/.test(out) && /--continue/.test(out), out);
+  for (let i = 0; i < 3; i++) out = await wake();
+  check('still carrying the conversation before the 5th run', /--continue/.test(out), out);
+  out = await wake();
+  check('after 5 runs, a fresh conversation (no --continue)', !/--continue/.test(out) && /\(fresh\)/.test(fs.readFileSync(path.join(s.data, 'logs', 'lite.log'), 'utf8')), out);
+  out = await wake();
+  check('then it carries on with that conversation', /--continue/.test(out), out);
+}, false, (() => { const f = path.join(tmp('liteset'), 'local.json'); fs.writeFileSync(f, '{ "owner": "Rich" }'); return { AIGILE_LOCAL: f }; })());   // its own settings file: never the real one
+
 def('verbose', '👁 verbose runs: the team\'s steps land in its log as readable lines, also from a hidden run (AIG-154, AIG-275)', async s => {
   await mkProject(s, 'Loud', 'LOU', { path: tmp('loud') });
   await s.ok('PATCH', '/api/projects/loud', { verbose: true });
