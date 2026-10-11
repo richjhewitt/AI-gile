@@ -1098,5 +1098,7 @@
  "share.test.youaccepted": "✅ You accepted {name}'s test",
  "share.test.yousentback": "↩️ You sent {name}'s test back",
  "share.teamRead.off": "Off: your team sees only the titles of {name}'s cards, and \"they replied\" for their comments.",
- "share.teamRead.on": "On: your team reads {name}'s words fenced as friend text, never as orders. They still never wake your team."
+ "share.teamRead.on": "On: your team reads {name}'s words fenced as friend text, never as orders. They still never wake your team.",
+  "alpha.tag": "🐣 Closed alpha",
+  "alpha.tip": "Early and unfinished: thanks for trying it!"
 }

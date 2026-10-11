@@ -75,6 +75,32 @@ def('i18n', 'languages: every language file has the same keys, the picker switch
   await page.waitForSelector('#setupForm');
   check('back to English', (await page.evaluate(() => localStorage.getItem('aigile.lang'))) === 'en');
   noErrors(page);
+
+  // No saved pick (AIG-352): the device language decides, nl-BE before nl before en; an explicit pick wins.
+  const b = ctx.browser();
+  const startIn = async (locale, pick) => {
+    const c = await b.newContext({ locale, viewport: { width: 1400, height: 900 } });
+    try {
+      const p = await c.newPage();
+      p.errors = []; p.on('pageerror', e => p.errors.push('pageerror: ' + e.message));
+      await p.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
+      await p.goto(BASE + '/#/'); await p.waitForSelector('#app .toolbar');
+      if (pick) { await p.evaluate(l => localStorage.setItem('aigile.lang', l), pick); await p.reload(); await p.waitForSelector('#app .toolbar'); }
+      await sleep(200);
+      return { lang: await p.evaluate(() => document.documentElement.lang), errors: p.errors, alpha: ((await p.textContent("header .alpha-tag")) || "").trim(), tip: await p.getAttribute("header .alpha-tag", "title") };
+    } finally { await c.close(); }
+  };
+  check('a nl-BE device with no pick starts in Flemish', (await startIn('nl-BE')).lang === 'nl-BE');
+  check('a nl-NL device with no pick starts in Dutch', (await startIn('nl-NL')).lang === 'nl');
+  check('a fr-BE device with no pick starts in English', (await startIn('fr-BE')).lang === 'en');
+  const saved = await startIn('nl-BE', 'en');
+  check('a saved en pick wins over a nl-BE device', saved.lang === 'en', saved.lang);
+  check('no page errors in the device-language starts', saved.errors.length === 0, saved.errors);
+  // The closed alpha label (AIG-348) in the top bar, in each language.
+  const flem = await startIn('nl-BE'), engl = await startIn('en-US');
+  check('the alpha label reads Gesloten alfa in Flemish, with its tooltip', flem.alpha === '🐣 Gesloten alfa' && flem.tip === 'Vroeg en nog niet af: bedankt om het uit te proberen!', flem.alpha + ' / ' + flem.tip);
+  check('the alpha label reads Closed alpha in English, with its tooltip', engl.alpha === '🐣 Closed alpha' && engl.tip === 'Early and unfinished: thanks for trying it!', engl.alpha + ' / ' + engl.tip);
+  check('the alpha label is on the board page in the main context', (await page.locator('header .alpha-tag').count()) === 1);
 }, true);
 
 def('usagecheck', '🔄 Check usage now: starts the agent hidden, waits for a reading, auto switch (AIG-151)', async (s, ctx) => {
