@@ -1,0 +1,120 @@
+// QA area: scrummaster (AIG-359): the 🧭 Lead Scrum Master by day: its chat answers a daytime message (Opus, in its own
+// folder), sorts a 💡 decide-later idea into the right project by rules, wakes a team asleep with To do, keeps to the daily
+// AI-run cap and No Token Mode, the 🧭 Launch button and its where-it-runs choice, and the hang watchdog restarts a silent run.
+import fs from 'node:fs';
+import path from 'node:path';
+import { check, sleep, until, tmp, mkProject, mkCard, openPage, noErrors, def, ROOT } from '../lib.mjs';
+
+// The stub agent: in the Lead Scrum Master's folder it notes the model and answers with watchsay; in a "hang" project it
+// sits silent; anything else is noted and ends at once.
+const dir = tmp('scrum'), calls = path.join(dir, 'calls.txt'), stub = path.join(dir, 'sm-stub.bat'), local = path.join(dir, 'local.json');
+fs.writeFileSync(path.join(dir, 'sm-stub.js'), `const fs = require('fs'), a = process.argv.slice(2), m = a[a.indexOf('--model') + 1] || '-', cwd = process.cwd();
+fs.appendFileSync(${JSON.stringify(calls)}, m + ' ' + cwd + '\\n');
+if (/scrummaster/i.test(cwd)) { console.log('{"type":"system"}'); require('child_process').spawnSync(process.execPath, [${JSON.stringify(path.join(ROOT, 'aigile.js'))}, 'watchsay', 'Stub reply from ' + m], { stdio: 'inherit' }); }
+else if (/hang/i.test(cwd)) setTimeout(() => {}, 25000);`);
+fs.writeFileSync(stub, `@echo off\r\nnode "${path.join(dir, 'sm-stub.js')}" %*\r\nexit /b 0\r\n`);
+fs.writeFileSync(local, JSON.stringify({ owner: 'Owner', agent: { command: 'x', notesFile: 'CLAUDE.local.md', settingsFile: '.claude/settings.local.json' }, scrumMaster: { aiRunsPerDay: 3, digestAt: '23:59' } }));
+const callList = () => { try { return fs.readFileSync(calls, 'utf8').split('\n').filter(Boolean); } catch { return []; } };
+
+def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-later ideas by rules, wakes teams with To do, daily AI-run cap, No Token Mode, Launch choice, hang watchdog (AIG-359)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP', { path: tmp('alpha') });
+  await mkProject(s, 'Beta', 'BET', { path: tmp('beta') });
+  const chat = async () => (await s.ok('GET', '/api/chats/_watchman')).messages;
+  let chats = await s.ok('GET', '/api/chats');
+  check('awake: its chat is listed under its new name', chats.some(c => c.slug === '_watchman' && c.lead === '🧭 Lead Scrum Master'), chats.map(c => c.lead));
+
+  // A daytime message gets a reply (relay used to refuse unless quiet), from an Opus run in its own folder.
+  const r = await s.ok('POST', '/api/chats/_watchman', { text: 'How are things today?' });
+  check('a daytime message starts it', r.working === true, r);
+  check('the stub answers in its chat', !!(await until(async () => (await chat()).some(m => m.text === 'Stub reply from opus'), 15000)), await chat());
+  check('the run is on Opus, in data/scrummaster', callList().some(l => /^opus .*scrummaster/i.test(l)), callList());
+  check('its folder has the brief as CLAUDE.md', /MAY NOT write code/.test(fs.readFileSync(path.join(s.data, 'scrummaster', 'CLAUDE.md'), 'utf8')));
+  await until(async () => !(await s.ok('GET', '/api/chats/_watchman')).busy, 10000);
+
+  // 💡 The idea box can send to the 🧭 Lead Scrum Master, top of the list (AIG-388): it lands in its chat and starts a run.
+  const ip = await openPage(ctx, '#/');
+  await ip.click('#ideaBtn'); await ip.waitForSelector('#idea-text');
+  check('the idea box offers the Lead Scrum Master first', (await ip.evaluate(() => document.querySelector('#idea-to option').value)) === '_sm');
+  await ip.selectOption('#idea-to', '_sm');
+  await ip.fill('#idea-text', 'Create a new project for my recipes');
+  await ip.press('#idea-text', 'Control+Enter');
+  await ip.waitForSelector('#idea-text', { state: 'detached' });
+  check('the idea is in its chat', (await chat()).some(m => m.mine && m.text === '💡 Idea: Create a new project for my recipes'));
+  check('and it handles it (a run answers)', !!(await until(async () => (await chat()).filter(m => /Stub reply/.test(m.text)).length >= 2, 15000)));
+  check('no card was made by the box itself', !(await s.ok('GET', '/api/projects/alpha')).cards.some(c => /recipes/.test(c.title)));
+  check('its brief says it cannot make projects and asks with quick buttons', /can't create projects or folders/.test(fs.readFileSync(path.join(s.data, 'scrummaster', 'CLAUDE.md'), 'utf8')));
+  s.cli(['watchsay', 'Where should the folder for Recipes go?', '--options', 'C:/Projects/recipes,I will pick']);
+  const q = (await chat()).at(-1);
+  check('watchsay --options gives quick-answer buttons', q.pick && q.pick.length === 2 && q.pick[0].text === 'C:/Projects/recipes', q);
+  noErrors(ip); await ip.close();
+  await until(async () => !(await s.ok('GET', '/api/chats/_watchman')).busy, 10000);
+
+  // 💡 A decide-later idea that names a project goes to that project's For the team, by rules (no AI).
+  const idea = await mkCard(s, 'alpha', '💬 Beta could use a dark mode', { description: 'Beta could use a dark mode', type: 'task', status: 'backlog', createdBy: 'Ideas', quick: true, needsYou: true });
+  const vague = await mkCard(s, 'alpha', '💬 something vague to think about', { type: 'task', status: 'backlog', createdBy: 'Ideas', quick: true, needsYou: true });
+  await mkCard(s, 'alpha', 'Real work', { status: 'todo' });
+  const before = callList().length;
+  check('a round does nothing before launch', !(await s.ok('POST', '/api/scrummaster/round')).on);
+  const st = await s.ok('POST', '/api/scrummaster/launch', { where: 'background' });
+  check('launch in the background turns it on', st.on && st.where === 'background', st);
+  check('a bad place is refused', (await s.api('POST', '/api/scrummaster/launch', { where: 'moon' })).status === 400);
+  await s.ok('POST', '/api/scrummaster/round');
+  const beta = (await s.ok('GET', '/api/projects/beta')).cards, alpha = (await s.ok('GET', '/api/projects/alpha')).cards;
+  const moved = beta.find(c => c.title === idea.title);
+  check('the idea is in Beta\'s For the team, signed by it', moved && moved.status === 'team' && moved.createdBy === '🧭 Lead Scrum Master' && !moved.needsYou, beta);
+  check('and gone from Alpha', !alpha.some(c => c.id === idea.id));
+  check('the unclear one stays in your inbox', alpha.some(c => c.id === vague.id && c.status === 'backlog' && c.needsYou));
+  check('the status lists what it sorted, by rules', (await s.ok('GET', '/api/scrummaster')).sorted.some(x => x.card === idea.id && x.to === 'beta' && x.how === 'rules'));
+  check('Alpha, asleep with To do, is woken', !!(await until(() => callList().slice(before).some(l => /alpha/i.test(l)), 8000)), callList());
+  check('the rules spent no Opus or Sonnet run', !callList().slice(before).some(l => /^(opus|sonnet) /.test(l)), callList());
+
+  // The daily cap (3 here, one used by the idea): the second message runs, the third gets "used up" and no run.
+  await s.ok('POST', '/api/chats/_watchman', { text: 'Second one' });
+  await until(async () => (await chat()).filter(m => /Stub reply/.test(m.text)).length >= 3, 15000);
+  await until(async () => !(await s.ok('GET', '/api/chats/_watchman')).busy, 10000);
+  const n = callList().filter(l => /scrummaster/i.test(l)).length;
+  await s.ok('POST', '/api/chats/_watchman', { text: 'Third one' });
+  check('over the cap it says so', !!(await until(async () => (await chat()).some(m => /AI runs are used up/.test(m.text)), 8000)), await chat());
+  await sleep(1500);
+  check('and starts no run', callList().filter(l => /scrummaster/i.test(l)).length === n && (await s.ok('GET', '/api/scrummaster')).runsToday === 3, callList());
+
+  // ⛔ No Token Mode: messages are refused, a round wakes nobody.
+  await s.ok('POST', '/api/notokens', { on: true });
+  check('No Token Mode refuses a message', (await s.api('POST', '/api/chats/_watchman', { text: 'hello?' })).status === 409);
+  await mkCard(s, 'beta', 'More work', { status: 'todo' });
+  const b2 = callList().length;
+  await s.ok('POST', '/api/scrummaster/round'); await sleep(1500);
+  check('No Token Mode: the round starts nothing', callList().length === b2, callList().slice(b2));
+  await s.ok('POST', '/api/notokens', { on: false });
+  await s.ok('POST', '/api/scrummaster/stop');
+
+  // 🧭 Launch on the page: VS Code is suggested; the bar then says it is on.
+  const page = await openPage(ctx, '#/');
+  await page.waitForSelector('#dmRail [data-dms]');
+  await page.click('#dmRail [data-dms]');
+  await page.click('#dmPanel [data-dm="_watchman"]');
+  await page.waitForSelector('#smLaunch');
+  check('the chat head shows its name', /Lead Scrum Master/.test(await page.textContent('#dmPanel .dm-head')));
+  await page.click('#smLaunch');
+  check('the dialog suggests VS Code', await page.locator('#dialog input[name="smWhere"][value="vscode"]').isChecked() && await page.locator('#dialog input[name="smWhere"]').count() === 3);
+  await page.click('#smGo');
+  await page.waitForFunction(() => /VS Code/.test((document.getElementById('smBar') || {}).textContent || ''), null, { timeout: 8000 });
+  const wlog = fs.readFileSync(path.join(s.data, 'logs', '_scrummaster.log'), 'utf8');
+  check('it opened VS Code on its folder', /opened \(vscode\): code ".*scrummaster"/.test(wlog), wlog);
+  await page.click('#smBar button');
+  await page.waitForSelector('#smLaunch');
+  check('Stop turns it off', !(await s.ok('GET', '/api/scrummaster')).on);
+  noErrors(page);
+
+  // Hang watchdog: a verbose background run that writes nothing is stopped and started again, with a note on its card.
+  await mkProject(s, 'Hang', 'HNG', { path: tmp('hang') });
+  await s.ok('PATCH', '/api/projects/hang', { verbose: true });
+  const hc = await mkCard(s, 'hang', 'Long job', { status: 'doing' });
+  await s.ok('POST', '/api/projects/hang/wake');
+  const hlog = () => { try { return fs.readFileSync(path.join(s.data, 'logs', 'hang.log'), 'utf8'); } catch { return ''; } };
+  check('a silent run is caught', !!(await until(() => /=== hung: no new log lines/.test(hlog()), 25000)), hlog());
+  check('and started again', !!(await until(() => (hlog().match(/=== \S+ started/g) || []).length >= 2, 5000)), hlog());
+  const card = (await s.ok('GET', '/api/projects/hang')).cards.find(c => c.id === hc.id);
+  check('with a note on the card in progress', card.comments.some(m => m.author === '🧭 Lead Scrum Master' && /Restarted/.test(m.text)), card.comments);
+  await s.ok('POST', '/api/notokens', { on: true });   // stop the stub runs
+}, true, { AIGILE_AGENT_COMMAND: stub, AIGILE_LOCAL: local, AIGILE_NO_WINDOWS: '1', AIGILE_HANG_MS: '4000', AIGILE_NO_USAGE_AUTO: '1' });

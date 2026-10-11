@@ -60,6 +60,7 @@ async function ideaDialog() {
   openDialog(`<h2>${esc(t('idea.h'))}</h2>
     <form onsubmit="return sendIdea(event)"><label class="f"><span>${esc(t('idea.q'))}</span><textarea id="idea-text" class="grow" data-draft="idea" rows="4" oninput="growBox(this)" onkeydown="if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') sendIdea(event)" placeholder="${esc(t('idea.ph'))}"></textarea></label>
     <label class="f"><span>${esc(t('idea.to'))}</span><select id="idea-to">
+      <option value="_sm">${esc(t('idea.sm'))}</option>
       ${projectOptionsHtml(projects, leads, pick)}
       <option value="_all">${esc(t('idea.all'))}</option><option value="_later" ${pick === '_later' ? 'selected' : ''}>${esc(t('idea.later'))}</option></select></label>
     <div class="err" id="idea-err"></div>
@@ -71,6 +72,12 @@ async function sendIdea(e) {
   const text = $('idea-text').value.trim(), to = $('idea-to').value;
   if (!text) { setErr('idea-err', t('idea.err')); return false; }
   try {
+    // 🧭 Lead Scrum Master (AIG-388): the idea goes to its own chat; it turns it into cards in the right project(s).
+    if (to === '_sm') {
+      await api('POST', '/api/chats/_watchman', { text: '💡 Idea: ' + text });
+      Attach.clear('idea'); clearDraft('idea'); closeDialog(); await rerender();
+      return false;
+    }
     const all = (await api('GET', '/api/projects')).filter(p => !p.archived).map(p => p.slug);
     const targets = to === '_all' ? all : to === '_later' ? [all.includes(slug()) ? slug() : all[0]] : [to];
     if (!targets[0]) throw new Error(t('idea.noproj'));

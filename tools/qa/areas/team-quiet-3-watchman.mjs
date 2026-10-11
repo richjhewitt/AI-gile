@@ -73,7 +73,7 @@ def('limit', '🌙 usage limit: no restarts counted while out, carry on after th
   check('awake again: the night\'s chat is still listed, with something new', w && w.unread >= 1, w);
   check('its last message says what got done', /The night[\s\S]*Out/.test((await s.ok('GET', '/api/chats/_watchman')).messages.at(-1).text));
   await s.ok('POST', '/api/chats/_watchman', { text: 'clear chat' });
-  check('clearing it removes it', !(await s.ok('GET', '/api/chats')).some(c => c.slug === '_watchman'));
+  check('clearing it empties it; it stays listed so you can write to it by day (AIG-359)', (await s.ok('GET', '/api/chats/_watchman')).messages.length === 0 && (await s.ok('GET', '/api/chats')).some(c => c.slug === '_watchman'));
 }, false);
 
 def('limitread', '⏳ a usage reading at 100% holds every wake until its reset, before any run fails on it (AIG-265)', async s => {

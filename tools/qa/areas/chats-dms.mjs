@@ -266,7 +266,7 @@ def('railorder', 'drag a project in the left rail to reorder; the order is used 
   await page.waitForFunction(() => [...document.querySelectorAll('#dmRail [data-slug]')].map(b => b.dataset.slug).join(',') === 'gamma,alpha,beta', null, { timeout: 5000 }).catch(() => {});
   check('dropping Gamma above Alpha moves it to the top', (await rail()) === 'gamma,alpha,beta', await rail());
   check('the board keeps that order', (await s.ok('GET', '/api/projects')).map(p => p.slug).join(',') === 'gamma,alpha,beta');
-  check('the DMs list follows it', (await s.ok('GET', '/api/chats')).map(c => c.slug).join(',') === 'gamma,alpha,beta');
+  check('the DMs list follows it (the 🧭 Lead Scrum Master last, AIG-359)', (await s.ok('GET', '/api/chats')).map(c => c.slug).join(',') === 'gamma,alpha,beta,_watchman');
   await mkProject(s, 'Delta', 'DEL');
   check('a new project goes at the bottom', (await s.ok('GET', '/api/projects')).map(p => p.slug).join(',') === 'gamma,alpha,beta,delta');
   noErrors(page);
@@ -298,7 +298,7 @@ def('dmchats', 'friends\' private DMs show as chats next to the team leads, with
     await page.click('#dmPanel [data-dmfilter="people"]');
     check('People shows only the friend', await page.locator('#dmPanel [data-dm="alpha"]').count() === 0 && await page.locator(`#dmPanel [data-dm="dm:${ca.id}"]`).count() === 1);
     await page.click('#dmPanel [data-dmfilter="all"]');
-    check('All brings both back', await page.locator('#dmPanel .dm-row').count() === 2);
+    check('All brings both back (and the 🧭 Lead Scrum Master, AIG-359)', await page.locator('#dmPanel .dm-row').count() === 3);
 
     await page.click(`#dmPanel [data-dm="dm:${ca.id}"]`);
     await page.waitForSelector('#dmList .dm-msg');
