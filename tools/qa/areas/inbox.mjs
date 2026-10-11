@@ -144,6 +144,8 @@ def('usage', '#/usage renders with and without limits.log', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const page = await openPage(ctx, '#/usage');
   await page.waitForTimeout(800);
+  // AIG-356: the nav glance. No reading: a grey dash and no bars.
+  check('glance: no reading shows a dash, no bars', (await page.locator('#ugBars .ug-dash').count()) === 1 && (await page.locator('#ugBars .ug-bar').count()) === 0 && /–/.test(await page.textContent('#ugBars')));
   const t1 = await page.textContent('#app');
   check('usage page renders (no limits.log)', /usage/i.test(t1) && t1.trim().length > 40, t1.slice(0, 120));
   check('limits.log absent', !fs.existsSync(path.join(s.data, 'limits.log')));
@@ -161,6 +163,18 @@ def('usage', '#/usage renders with and without limits.log', async (s, ctx) => {
   const t2 = await page2.textContent('#app');
   check('usage page renders with limits.log', /20\s*%/.test(t2) || (await page2.locator('svg').count()) > 0, t2.slice(0, 160));
   noErrors(page2);
+  // AIG-356: 20% used -> 80% left (green), 33% used -> 67% left (green); the tooltip says so.
+  const glance = async () => { await page2.evaluate(() => UsageGlance.poll()); await page2.waitForTimeout(400); return { bars: await page2.locator('#ugBars .ug-bar').evaluateAll(es => es.map(e => e.className.replace('ug-bar ', ''))), title: await page2.getAttribute('#usageNav', 'title'), dot: await page2.locator('#ugBars .ug-dot').count(), dash: await page2.locator('#ugBars .ug-dash').count() }; };
+  let g = await glance();
+  check('glance: two green bars, tooltip with % left and age', g.bars.join() === 'g,g' && /5h: 80% left · week: 67% left · last reading/.test(g.title) && g.dot === 0, g);
+  const lat = await s.ok('GET', '/api/limits/latest');
+  check('latest api: newest reading, not over budget', lat.latest.h5.pct === 20 && lat.over === false);
+  await s.ok('POST', '/api/limits', { rate_limits: { five_hour: { used_percentage: 65, resets_at: soon }, seven_day: { used_percentage: 85, resets_at: soon + 86400 } } });
+  g = await glance();
+  check('glance: amber 5h and red week colours', g.bars.join() === 'a,r' && g.dot === 0, g);
+  await s.ok('POST', '/api/limits', { rate_limits: { five_hour: { used_percentage: 95, resets_at: soon }, seven_day: { used_percentage: 85, resets_at: soon + 86400 } } });
+  g = await glance();
+  check('glance: over the budget shows a red dot', g.bars.join() === 'r,r' && g.dot === 1 && /budget/.test(g.title), g);
   await page2.goto(BASE + '/#/');
   await page2.waitForSelector('.proj');
   noErrors(page2);
