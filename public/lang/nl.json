@@ -1348,5 +1348,15 @@
  "share.board.off": "Uit: {name} ziet alleen de kaarten die je met 🔗 aanvinkt.",
  "share.board.on": "Aan: elke kaart gaat mee (alleen titel, beschrijving, type, prioriteit en de kolom), nieuwe ook. Een kaart met een pad of geheim erin wacht.",
  "share.board.no": "Een Melder ziet alleen de eigen kaarten, dus niet je bord.",
- "share.board.sent": "{n} kaarten verstuurd, {held} wachten (er staat een pad of geheim in)"
+ "share.board.sent": "{n} kaarten verstuurd, {held} wachten (er staat een pad of geheim in)",
+ "gif.title": "Zoek een GIF (Giphy)",
+ "gif.nokey": "Voeg een gratis Giphy-sleutel toe in Instellingen",
+ "gif.search": "Zoek GIF's (leeg: populair)",
+ "gif.powered": "Powered by GIPHY",
+ "gif.more": "Meer",
+ "gif.loading": "Laden...",
+ "gif.none": "Geen GIF's gevonden",
+ "gif.adding": "Toevoegen...",
+ "setup.f.giphyKey": "Giphy-sleutel",
+ "setup.f.giphyKey.help": "Gratis sleutel van developers.giphy.com; zet 🎞️ GIF zoeken aan in reacties en chats. Blijft alleen op deze computer"
 }
