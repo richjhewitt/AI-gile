@@ -97,3 +97,4 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, HOST, () => console.log(`AI-gile running at http://localhost:${PORT}`));
 // Private DMs: collect this board's relay mailbox every few seconds while DMs are on (lib/dm.js).
 require('./lib/dm').startDms();
+if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();

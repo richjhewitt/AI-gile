@@ -575,5 +575,12 @@
  "lang.en.help": "Zet een 🌐 EN-knop in de bovenbalk: één klik toont het bord in het Engels (handig voor de ontwikkelaarswoorden), nog een klik gaat terug.",
  "lang.en.title": "Toon het bord in het Engels (klik nog eens voor {name})",
  "lang.en.back": "Terug naar {name}",
- "act.other": "✏️ Anders…"
+ "act.other": "✏️ Anders…",
+ "usage.check.last": "Laatste meting {when}",
+ "usage.check.never": "Nog geen meting",
+ "usage.check.btn": "🔄 Verbruik nu checken",
+ "usage.check.busy": "Bezig… (een paar seconden)",
+ "usage.check.title": "Start Claude verborgen, stuurt één klein bericht op het goedkoopste model, leest je verbruik en sluit weer",
+ "usage.check.auto": "Zelf checken als de meting ouder is dan een uur",
+ "usage.check.auto.title": "Alleen als geen terminalsessie het laatste uur een meting stuurde; kost elke keer één klein bericht"
 }

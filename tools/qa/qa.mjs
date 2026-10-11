@@ -2007,6 +2007,26 @@ def('editor', '📝 file paths in card text open in your editor (AIG-156)', asyn
   return { AIGILE_LOCAL: path.join(dir, 'local.json') };
 })());
 
+def('usagecheck', '🔄 Check usage now: starts the agent hidden, waits for a reading, auto switch (AIG-151)', async (s, ctx) => {
+  check('status says auto is off at first', (await s.ok('GET', '/api/usage/check')).auto === false);
+  const page = await openPage(ctx, '#/usage');
+  await page.waitForSelector('#uzCheck');
+  await page.click('#uzCheck');
+  await page.waitForFunction(() => /Last reading/.test(document.querySelector('.uz-check').textContent), null, { timeout: 30000 }).catch(() => {});
+  check('the button gets a fresh reading from the stand-in agent', /Last reading/.test(await page.textContent('.uz-check')) && (await s.ok('GET', '/api/limits')).latest.h5.pct === 42, await page.textContent('.uz-check'));
+  check('a second check within 2 minutes is refused', (await s.api('POST', '/api/usage/check')).status === 400);
+  await page.check('.uz-check input[type=checkbox]');
+  await sleep(300);
+  check('the auto switch is saved', (await s.ok('GET', '/api/usage/check')).auto === true);
+  noErrors(page);
+}, true, (() => {
+  // A stand-in agent: posts a usage reading to this QA server, like Claude's status line would.
+  const dir = tmp('usagecheck'), script = path.join(dir, 'post.js'), bat = path.join(dir, 'agent.bat');
+  fs.writeFileSync(script, `fetch('http://127.0.0.1:' + process.env.AIGILE_PORT + '/api/limits', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rate_limits: { five_hour: { used_percentage: 42, resets_at: 1 }, seven_day: { used_percentage: 7, resets_at: 2 } } }) }).catch(() => {}).then(() => setTimeout(() => {}, 30000));`);
+  fs.writeFileSync(bat, `@echo off\r\nnode "${script}"\r\n`);
+  return { AIGILE_AGENT_COMMAND: bat, AIGILE_NO_USAGE_AUTO: '1' };
+})());
+
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
 if (args.includes('--list')) { for (const [n, a] of Object.entries(areas)) console.log(n.padEnd(10) + a.doc); process.exit(0); }

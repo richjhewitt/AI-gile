@@ -37,6 +37,7 @@ const uz = {
   .uz-setup h3 { margin: 0 0 8px; font-size: 17px; }
   .uz-snip { background: var(--col); padding: 10px 12px; border-radius: 8px; overflow-x: auto; font-size: 13px; }
   .uz-empty { text-align: center; padding: 28px 16px; }
+  .uz-check { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 12px; }
   .uz-empty b { display: block; font-size: 17px; margin-bottom: 4px; }
   .uz-bar-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; margin-bottom: 4px; }
   .uz-bar-head h2 { flex: 1; min-width: 200px; }
@@ -82,7 +83,8 @@ async function loadUsagePage(force) {
     api('GET', '/api/limits?days=30').catch(() => ({ latest: null, history: [] })),
     api('GET', '/api/projects?all=1').catch(() => []),
   ]);
-  uz.data = { usage, limits, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
+  const check = await api('GET', '/api/usage/check').catch(() => null);
+  uz.data = { usage, limits, check, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
   uz.fetchedAt = Date.now();
 }
 const uzSig = () => JSON.stringify([uz.data, Math.floor(Date.now() / 60e3)]); // minute tick keeps "resets in" fresh
@@ -115,7 +117,26 @@ function renderUsagePage() {
     : `<div class="uz-tiles">${uzTile(t('usage.session'), t('usage.session.sub'), limits.latest, 'h5', hist)}${uzTile(t('usage.week'), t('usage.week.sub'), limits.latest, 'wk', hist)}</div>
        <p class="uz-note">${esc(t('usage.note'))}</p>`;
   return `<div class="uz"><h2>${esc(t('usage.h'))}</h2><p class="uz-explain">${esc(t('usage.explain'))}</p>
-    ${tiles}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}</div>`;
+    ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}</div>`;
+}
+
+// Check usage now (AIG-151): when the last reading is from, a button that fetches a fresh one, and the auto switch.
+function uzCheckBar(latest, check) {
+  if (!check) return '';
+  const at = latest && latest.at;
+  return `<div class="uz-check"><span class="uz-sub">${esc(at ? t('usage.check.last', { when: ago(at) }) : t('usage.check.never'))}</span>
+    <button id="uzCheck" onclick="uzCheckNow(this)" title="${esc(t('usage.check.title'))}">${esc(t('usage.check.btn'))}</button>
+    <label class="uz-sub" title="${esc(t('usage.check.auto.title'))}"><input type="checkbox" ${check.auto ? 'checked' : ''} onchange="api('POST', '/api/usage/auto', { on: this.checked })"> ${esc(t('usage.check.auto'))}</label>
+    <span class="uz-sub" id="uzCheckMsg"></span></div>`;
+}
+async function uzCheckNow(btn) {
+  btn.disabled = true; const was = btn.textContent; btn.textContent = t('usage.check.busy');
+  try {
+    const r = await api('POST', '/api/usage/check');
+    $('uzCheckMsg').textContent = r.ok ? '' : r.reason;
+    await loadUsagePage(true); render();
+  } catch (e) { const m = $('uzCheckMsg'); if (m) m.textContent = e.message; }
+  const b = $('uzCheck'); if (b) { b.disabled = false; b.textContent = was; }
 }
 
 // No plan reading yet: explain the two limits and show the one-time setup (file + lines come from the server's local settings).
