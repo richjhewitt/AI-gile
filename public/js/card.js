@@ -93,11 +93,7 @@ function renderCard(p, c) {
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
       ${Share.cardComments(p, c)}
-      ${newest.length ? msg(newest[0], true) : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}
-      <div class="reply"><textarea id="r-text" data-draft="${esc(p.slug + '/' + c.id)}/reply" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
-        <div class="err" id="r-err"></div>
-        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>
-      ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">${esc(t('card.earlier'))}</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}
+      ${pop ? chatHtml(p, c, msg) : replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
       ${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${Attach.shown(c, p.slug)}
@@ -107,6 +103,36 @@ function renderCard(p, c) {
       ${notes.length ? `<h3>${esc(t('card.fromteam'))}</h3>${notesHtml(notes, msg)}` : ''}
       ${c.testSteps ? `<h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
   </div></div>`;
+}
+// The Reply tab as it was: latest message on top, the reply box right under it, older ones below.
+function replyHtml(p, c, msg, newest) {
+  return `${newest.length ? msg(newest[0], true) : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}
+      ${replyBox(p, c)}
+      ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">${esc(t('card.earlier'))}</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}`;
+}
+const replyBox = (p, c) => `<div class="reply"><textarea id="r-text" data-draft="${esc(p.slug + '/' + c.id)}/reply" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
+        <div class="err" id="r-err"></div>
+        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>`;
+// A popped-out card is a live chat (AIG-313): oldest first, newest at the bottom, a typing line while the team
+// works on the card, the reply box underneath. Sending never closes it.
+function chatHtml(p, c, msg) {
+  const pr = p.presence || {}, typing = (pr.running || pr.online) && (c.status === 'doing' || c.status === 'team') && !c.needsYou;
+  return `<div class="chat">${c.comments.length ? c.comments.map(m => msg(m, false)).join('') : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}</div>
+      ${typing ? `<div class="typing muted" id="typing">${esc(t('card.typing'))}</div>` : ''}
+      ${replyBox(p, c)}`;
+}
+// While the owner types in a pop-out, only the messages and the typing line are swapped, never the reply box.
+function popChatLive() {
+  const p = state.project, c = p && p.cards.find(x => x.id === state.route.card), chat = document.querySelector('#modal .chat');
+  if (!c || !chat || state.editing) return false;
+  const tmp = document.createElement('div'); tmp.innerHTML = renderCard(p, c);
+  const nc = tmp.querySelector('.chat'); if (!nc) return false;
+  const de = document.documentElement, atEnd = de.scrollHeight - window.scrollY - window.innerHeight < 60;
+  if (chat.innerHTML !== nc.innerHTML) chat.innerHTML = nc.innerHTML;
+  const ty = document.getElementById('typing'), nt = tmp.querySelector('#typing');
+  if (ty && !nt) ty.remove(); else if (!ty && nt) chat.after(nt);
+  if (atEnd) window.scrollTo(0, de.scrollHeight);
+  return true;
 }
 // Test tab notes (AIG-186): newest first, so the latest word sits right under the reply box. An AI tester check
 // that a newer one replaced is faded and labelled, so a corrected verdict can't be mistaken for the current one.
@@ -213,7 +239,11 @@ async function sendReply(fixed) {
     await api('POST', `/api/projects/${slug()}/cards/${cardId()}/comments`, { author: me(), text: txt, attachments });
     if (!fixed) Attach.clear(key);
     clearDraft(slug() + '/' + cardId() + '/reply');
-    rememberPop(slug(), cardId());
+    if (state.route.pop) {   // a pop-out stays open like a chat (AIG-313): the box clears, ready for the next reply
+      const box = $('r-text'); if (box) { box.value = ''; box.focus(); }
+      setErr('r-err', ''); refresh(true);
+      return;
+    }
     doneWithCard(next);
   } catch (err) { setErr('r-err', err); }
 }

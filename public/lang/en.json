@@ -294,6 +294,7 @@
  "card.tab.details": "📄 Details",
  "card.tab.test": "🧪 {{dev:Test}}",
  "card.tab.yourcall": "your call",
+ "card.typing": "typing…",
  "card.nomsgs": "No messages yet.",
  "card.reply.ph": "Reply as {name}: moves the card to For the team… (Enter to send, Shift+Enter for a new line)",
  "card.go.title": "Sends GO as your answer",

@@ -21,6 +21,35 @@ def('popout', '⧉ Pop out opens a card on its own in a new window (AIG-122)', a
   noErrors(page);
 }, true);
 
+def('popchat', '⧉ a pop-out stays open after Send and new team messages land at the bottom, like a chat (AIG-313)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Server steps', { status: 'doing', assignee: 'Forge' });
+  s.cli(['comment', 'alpha', c.id, 'Step 1: run the setup', '--as', 'Forge']);
+  const main = await openPage(ctx, '#/p/alpha');
+  const popP = ctx.waitForEvent('page');
+  await main.evaluate(id => window.open('#/pop/alpha/' + id, 'aigile-alpha-' + id, 'width=560,height=780'), c.id);
+  const pop = await popP;
+  await pop.waitForSelector('#r-text');
+  await s.ok('GET', '/api/projects/alpha/updates');   // the team is heard from: online
+  await pop.waitForSelector('#typing', { timeout: 5000 });
+  check('typing line while the team works on the card', /typing|typen/.test(await pop.textContent('#typing')));
+  let closed = false; pop.on('close', () => { closed = true; });
+  await pop.fill('#r-text', 'Done step 1');
+  await pop.click('.reply .actions .primary');
+  await pop.waitForFunction(() => document.querySelector('.chat').textContent.includes('Done step 1'), null, { timeout: 5000 });
+  await sleep(500);
+  check('the pop-out stays open after Send', !closed && !pop.isClosed());
+  check('the reply box is empty again', (await pop.inputValue('#r-text')) === '');
+  await pop.fill('#r-text', 'half a draft');
+  s.cli(['comment', 'alpha', c.id, 'Step 2: restart it', '--as', 'Forge']);
+  await pop.waitForFunction(() => document.querySelector('.chat').textContent.includes('Step 2: restart it'), null, { timeout: 5000 });
+  const order = await pop.$$eval('.chat .comment .body', els => els.map(e => e.textContent.trim()));
+  check('messages run oldest to newest, the new one at the bottom', order.at(-1) === 'Step 2: restart it' && order[0] === 'Step 1: run the setup', order);
+  check('a draft survives a new message', (await pop.inputValue('#r-text')) === 'half a draft');
+  check('the newest message is in view', await pop.evaluate(() => { const r = [...document.querySelectorAll('.chat .comment')].at(-1).getBoundingClientRect(); return r.bottom <= window.innerHeight + 1; }));
+  noErrors(main);
+}, true);
+
 def('owner', 'the board works for any owner name, not just the default name (AIG-103)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   check('meta tells the page the owner', (await s.ok('GET', '/api/meta')).owner === 'Sam');
