@@ -38,7 +38,12 @@ try {
       let hit = null;
       for (const l of tries) { const f = l.filter({ visible: true }).first(); if (await f.count().catch(() => 0)) { hit = f; break; } }
       await (hit || page.locator(v).first()).click({ timeout: 5000 });
-    } else if (k === 'fill') { const at = v.indexOf('='); await page.fill(v.slice(0, at), v.slice(at + 1), { timeout: 5000 }); }
+    } else if (k === 'fill') {
+      // css=value: the first '=' outside [...] splits them, so attribute selectors like [maxlength="40"] work.
+      let at = -1;
+      for (let i = 0, depth = 0; i < v.length && at < 0; i++) { if (v[i] === '[') depth++; else if (v[i] === ']') depth--; else if (v[i] === '=' && !depth) at = i; }
+      await page.fill(v.slice(0, at), v.slice(at + 1), { timeout: 5000 });
+    }
     else if (k === 'press') await page.keyboard.press(v);
     else if (k === 'goto') await page.goto(v, { waitUntil: 'load' });
     else if (k === 'wait') { await page.waitForTimeout(+v || 500); continue; }
