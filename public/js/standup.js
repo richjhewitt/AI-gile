@@ -36,7 +36,7 @@ function morningPrompt() {
 async function suPick() {
   const ps = await api('GET', '/api/projects');
   openDialog(`<h2>${esc(t('standup.pick.title'))}</h2><form class="su-pick" onsubmit="return suPicked(event)">
-    ${ps.map(p => `<label class="chk"><input type="checkbox" value="${esc(p.slug)}"> ${esc(p.emoji)} ${esc(p.name)}</label>`).join('') || `<p class="muted">${esc(t('projects.none'))}</p>`}
+    ${ps.map(p => `<label class="chk"><input type="checkbox" value="${esc(p.slug)}"> ${pic(p.logo, p.emoji)} ${esc(p.name)}</label>`).join('') || `<p class="muted">${esc(t('projects.none'))}</p>`}
     <div class="err" id="su-err"></div>
     <div class="actions"><button class="primary" type="submit">${esc(t('standup.pick.go'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`);
 }
@@ -58,7 +58,7 @@ function renderStandups() {
   const blockers = d.blockers.length ? `<div class="su-blockers"><h3>${esc(t('standup.blockers', { n: d.blockers.length }))}</h3><ul>${d.blockers.map(b =>
     `<li><a href="#/p/${esc(b.project)}/${esc(b.card)}"><b>${esc(b.projectName)}</b> · ${esc(b.name)}</a>: ${suLines(b.text)} <span class="muted">${ago(b.at)}</span></li>`).join('')}</ul></div>` : '';
   const projects = d.projects.map(p => `<div class="su-proj" style="--proj:${esc(p.color)}">
-      <h3>${esc(p.emoji)} <a href="#/p/${esc(p.project)}">${esc(p.projectName)}</a> <span class="muted">${esc(t('standup.answered', { a: p.answered, n: p.people.length, when: ago(p.at) }))} · <a href="#/p/${esc(p.project)}/${esc(p.card)}">${esc(p.card)}</a>${p.status === 'done' ? ' · ' + esc(t('standup.closed')) : ''}</span></h3>
+      <h3>${pic(p.logo, p.emoji)} <a href="#/p/${esc(p.project)}">${esc(p.projectName)}</a> <span class="muted">${esc(t('standup.answered', { a: p.answered, n: p.people.length, when: ago(p.at) }))} · <a href="#/p/${esc(p.project)}/${esc(p.card)}">${esc(p.card)}</a>${p.status === 'done' ? ' · ' + esc(t('standup.closed')) : ''}</span></h3>
       ${p.people.map(r => r.waiting ? `<div class="su-person waiting"><b>${esc(r.name)}</b> <span class="muted">${esc(t('standup.waiting'))}</span></div>`
         : `<div class="su-person"><b>${esc(r.name)}</b> <span class="muted">${ago(r.at)}</span>
           <div><span class="su-k">${esc(t('standup.done'))}</span> ${suLines(r.done) || '-'}</div>

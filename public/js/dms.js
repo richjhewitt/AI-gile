@@ -7,7 +7,7 @@ const Dms = (() => {
   let projects = [], chats = [], open = null, listOpen = false, thread = null, busy = false;
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
   const el = id => document.getElementById(id);
-  const avatar = c => `<span class="dm-av" style="--proj:${esc(c.color || '')}">${esc(c.emoji || '💬')}</span>`;
+  const avatar = c => `<span class="dm-av" style="--proj:${esc(c.color || '')}">${pic(c.logo, c.emoji || '💬')}</span>`;
   const badge = n => n ? `<span class="dm-unread">${n > 99 ? '99+' : n}</span>` : '';
   // "Seen" per project: the project's last update when you last opened its board (this browser only).
   const seen = { get: s => { try { return localStorage.getItem('aigile.seen.' + s) || ''; } catch { return ''; } }, set: (s, v) => { try { localStorage.setItem('aigile.seen.' + s, v); } catch {} } };

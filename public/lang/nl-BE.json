@@ -553,5 +553,14 @@
  "act.no.say": "Nee: ",
  "act.accept": "✅ Goedkeuren",
  "act.sendback": "🔁 Terugsturen",
- "act.sendback.say": "Teruggestuurd: "
+ "act.sendback.say": "Teruggestuurd: ",
+ "logo.title": "Afbeelding",
+ "logo.app": "App-logo",
+ "logo.pick": "Kies een afbeelding",
+ "logo.remove": "Verwijderen",
+ "logo.path": "Pad van een afbeelding op deze computer",
+ "logo.path.ph": "of een bestandspad, bijv. C:/Projects/tunio/logo.png",
+ "logo.use": "Dit bestand gebruiken",
+ "logo.help": "PNG, JPG, SVG, ICO of WEBP, tot 1 MB. Vervangt de emoji.",
+ "logo.toobig": "De afbeelding mag maximaal 1 MB zijn"
 }

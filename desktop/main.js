@@ -1,6 +1,6 @@
 // AI-gile desktop (AIG-76): the board in its own window. Starts the board server if it isn't running
 // (left running on quit, so teams keep their board), then shows http://localhost:<port>.
-const { app, BrowserWindow, shell, nativeTheme } = require('electron');
+const { app, BrowserWindow, shell, nativeTheme, nativeImage } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -9,6 +9,16 @@ const ROOT = path.resolve(__dirname, '..');
 const PORT = Number(process.env.AIGILE_PORT) || 4321;
 const BASE = `http://localhost:${PORT}`;
 const ICON = path.join(__dirname, 'icon.png'), ICON_WAITING = path.join(__dirname, 'icon-waiting.png');
+// App logo (AIG-175): if one is set in Setup (png, jpg or ico), it is the window icon; else the default.
+const DATA = path.resolve(process.env.AIGILE_DATA || path.join(ROOT, 'data'));
+function appIcon() {
+  try {
+    const f = fs.readdirSync(path.join(DATA, 'logos')).find(n => /^_app\.(png|jpe?g|ico)$/i.test(n));
+    const img = f && nativeImage.createFromPath(path.join(DATA, 'logos', f));
+    if (img && !img.isEmpty()) return img;
+  } catch {}
+  return ICON;
+}
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function up() { try { return (await fetch(BASE + '/api/meta')).ok; } catch { return false; } }
@@ -48,7 +58,7 @@ function reopenPops() {
 }
 // No Windows title bar (AIG-128): just the window buttons, in the board's own colours, over the page's top bar.
 const bar = () => nativeTheme.shouldUseDarkColors ? { color: '#1b2029', symbolColor: '#e6e9ef', height: 36 } : { color: '#ffffff', symbolColor: '#1d2330', height: 36 };
-const chrome = () => ({ autoHideMenuBar: true, icon: ICON, titleBarStyle: 'hidden', titleBarOverlay: bar() });
+const chrome = () => ({ autoHideMenuBar: true, icon: appIcon(), titleBarStyle: 'hidden', titleBarOverlay: bar() });
 nativeTheme.on('updated', () => BrowserWindow.getAllWindows().forEach(w => { try { w.setTitleBarOverlay(bar()); } catch {} }));
 // Link and navigation rules for any of our windows (the main one and popped-out cards).
 function wire(w) {
@@ -77,7 +87,7 @@ function open(ok) {
   // Taskbar badge: the page puts what's waiting on Rich in its title, "(3) AI-gile"; then the icon gets a purple diamond.
   // It's the window icon, not an overlay: small taskbar buttons draw overlays as a dot, and a count is unreadable there.
   // A missing or broken icon file must never show an error box (AIG-81): keep the current icon instead.
-  win.on('page-title-updated', (e, title) => { try { win.setIcon(/^\(\d+\)/.test(title) ? ICON_WAITING : ICON); } catch {} });
+  win.on('page-title-updated', (e, title) => { try { win.setIcon(/^\(\d+\)/.test(title) ? ICON_WAITING : appIcon()); } catch {} });
   // Closing the main window closes the app, pop-outs too, and remembers them for next time.
   win.on('close', () => { quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); });
   win.on('closed', () => { win = null; });

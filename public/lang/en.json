@@ -553,5 +553,14 @@
  "act.no.say": "No: ",
  "act.accept": "✅ Accept",
  "act.sendback": "🔁 Send back",
- "act.sendback.say": "Sent back: "
+ "act.sendback.say": "Sent back: ",
+ "logo.title": "Picture",
+ "logo.app": "App logo",
+ "logo.pick": "Choose a picture",
+ "logo.remove": "Remove",
+ "logo.path": "Path of a picture on this computer",
+ "logo.path.ph": "or a file path, e.g. C:/Projects/tunio/logo.png",
+ "logo.use": "Use this file",
+ "logo.help": "PNG, JPG, SVG, ICO or WEBP, up to 1 MB. It replaces the emoji.",
+ "logo.toobig": "The picture can be up to 1 MB"
 }
