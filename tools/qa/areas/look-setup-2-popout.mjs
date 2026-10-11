@@ -80,6 +80,20 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   check('board opens Setup first', page.url().endsWith('#/setup'));
   check('name is required', (await s.api('POST', '/api/setup', { owner: '' })).status === 400);
   await page.fill('input[data-key="owner"]', 'Sam');
+  // AIG-334: a guessed agent program is only a suggestion; typing just a name must not save it.
+  check('the agent program box starts empty', (await page.inputValue('input[data-key="agent.command"]')) === '');
+  await page.click('#setupForm button[type=submit]');
+  await page.waitForSelector('#setup-done:has-text("Saved")');
+  const first = JSON.parse(fs.readFileSync(file, 'utf8'));
+  check('saving only a name saves no guessed agent program or file names', first.owner === 'Sam' && !Object.keys(first.agent || {}).length, first);
+
+  await page.evaluate(() => closeDialog());
+  const useSel = '#setupForm label:has(input[data-key="agent.notesFile"]) .usesuggest';
+  if (await page.$(useSel)) {
+    const sug = await page.getAttribute('input[data-key="agent.notesFile"]', 'data-suggest');
+    await page.evaluate(sel => document.querySelector(sel).click(), useSel);
+    check('"Use this" puts the suggestion in the box', (await page.inputValue('input[data-key="agent.notesFile"]')) === sug);
+  }
   await page.fill('input[data-key="agent.command"]', 'C:/tools/agent.exe');
   await page.fill('input[data-key="agent.notesFile"]', 'NOTES.local.md');
   await page.fill('input[data-key="agent.settingsFile"]', '.agent/settings.local.json');

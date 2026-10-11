@@ -374,6 +374,8 @@
  "setup.welcome": "Welcome! Fill these in once and the board is ready.",
  "setup.intro": "Your settings on this computer. They stay on this computer (not in git).",
  "setup.lang.help": "The language of the board. Asked once here; it is remembered in this browser.",
+ "setup.suggest": "Suggestion (not saved until you use it):",
+ "setup.suggest.use": "Use this",
  "setup.saved.more": "Saved. Still needed: the agent program, notes file and settings file.",
  "setup.saved": "✅ Saved. The board is ready.",
  "setup.next": "Next: 🔎 find your projects on Home →",

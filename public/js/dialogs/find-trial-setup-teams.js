@@ -85,7 +85,7 @@ function renderSetup() {
     <div class="f"><span>${esc(t('face.me'))}</span>${logoEditor('me-pic', s.mePic)}</div>
     <div class="f"><span>${esc(t('face.lib'))}</span>${libraryHtml(s.library)}</div>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">
-      ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}"><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small></label>`).join('')}
+      ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}" ${f.suggest ? `placeholder="${esc(f.suggest)}" data-suggest="${esc(f.suggest)}"` : ''}><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small>${f.suggest && !f.value ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(f.suggest)}</code> <button type="button" class="usesuggest" onclick="useSuggest(this)">${esc(t('setup.suggest.use'))}</button></small>` : ''}</label>`).join('')}
       <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
       <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button></div></form></div>`;
 }
@@ -107,6 +107,11 @@ async function checkDmsRelay() {
   setErr('dmsRelay-err', ''); const m = $('dmsRelay-msg'); m.textContent = t('dmsrelay.checking');
   try { const r = await api('POST', '/api/dms/check', { relay: $('dmsRelay').value.trim() }); m.textContent = r.ok ? t('dmsrelay.ok') : t('dmsrelay.bad', { why: r.reason }); }
   catch (e) { m.textContent = ''; setErr('dmsRelay-err', e); }
+}
+// A suggested value goes into the box only when the owner says so (AIG-334); Save then keeps it.
+function useSuggest(btn) {
+  const lab = btn.closest('label'), i = lab.querySelector('input[data-key]');
+  i.value = i.dataset.suggest; lab.querySelector('.suggest').remove();
 }
 async function saveSetupPage(e) {
   e.preventDefault();

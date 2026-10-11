@@ -374,6 +374,8 @@
  "setup.welcome": "Welkom! Vul dit één keer in en het bord is klaar.",
  "setup.intro": "Je instellingen op deze computer. Ze blijven op deze computer (niet in git).",
  "setup.lang.help": "De taal van het bord. Deze browser onthoudt hem.",
+ "setup.suggest": "Suggestie (pas bewaard als je ze gebruikt):",
+ "setup.suggest.use": "Gebruik deze",
  "setup.saved.more": "Opgeslagen. Nog nodig: het agentprogramma, het notitiebestand en het instellingenbestand.",
  "setup.saved": "✅ Opgeslagen. Het bord is klaar.",
  "setup.next": "Volgende: 🔎 zoek je projecten op Home →",
