@@ -41,17 +41,22 @@ async function showStop() {
   if (!layer) { layer = document.createElement('div'); layer.id = 'tourLayer'; document.body.append(layer); }
   const short = tour.level !== 'new', last = tour.i === tour.steps.length - 1;
   const why = !short && t('tour.' + s.id + '.why') !== 'tour.' + s.id + '.why' ? `<p class="tour-why">${esc(t('tour.' + s.id + '.why'))}</p>` : '';
-  layer.innerHTML = `<div class="tour-spot"></div><div class="tour-bubble" role="dialog" aria-live="polite">
+  layer.innerHTML = `<div class="tour-dim"></div><div class="tour-dim"></div><div class="tour-dim"></div><div class="tour-dim"></div><div class="tour-spot"></div><div class="tour-bubble" role="dialog" aria-live="polite">
       <div class="tour-step muted">${esc(t('tour.step', { i: tour.i + 1, n: tour.steps.length }))}</div>
       <h3>${esc(t('tour.' + s.id + '.title'))}</h3><p>${esc(t('tour.' + s.id + (short ? '.short' : '.text')))}</p>${why}
       <div class="actions">${tour.i ? `<button onclick="tourMove(-1)">${esc(t('tour.back'))}</button>` : ''}
         <button class="primary" onclick="tourMove(1)">${esc(t(last ? 'tour.finish' : 'tour.next'))}</button>
         ${last ? '' : `<button class="tour-skip" onclick="endTour()">${esc(t('tour.skip'))}</button>`}</div></div>`;
   const spot = layer.querySelector('.tour-spot'), bubble = layer.querySelector('.tour-bubble');
-  if (!target) { spot.hidden = true; bubble.classList.add('center'); return; }
+  const dims = [...layer.querySelectorAll('.tour-dim')];
+  if (!target) { spot.hidden = true; Object.assign(dims[0].style, { left: 0, top: 0, width: '100vw', height: '100vh' }); bubble.classList.add('center'); return; }
   target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   const r = target.getBoundingClientRect(), pad = 6;
-  Object.assign(spot.style, { left: r.left - pad + 'px', top: r.top - pad + 'px', width: r.width + pad * 2 + 'px', height: Math.min(r.height, innerHeight - r.top - 12) + pad * 2 + 'px' });
+  const L = r.left - pad, T = r.top - pad, W = r.width + pad * 2, H = Math.min(r.height, innerHeight - r.top - 12) + pad * 2;
+  Object.assign(spot.style, { left: L + 'px', top: T + 'px', width: W + 'px', height: H + 'px' });
+  // Four dark panels around the spotlight (a giant box-shadow doesn't always paint).
+  [[0, 0, '100vw', Math.max(0, T)], [0, T + H, '100vw', '100vh'], [0, T, Math.max(0, L), H], [L + W, T, '100vw', H]].forEach(([x, y, w, h], k) =>
+    Object.assign(dims[k].style, { left: x + 'px', top: y + 'px', width: typeof w === 'number' ? w + 'px' : w, height: typeof h === 'number' ? h + 'px' : h }));
   // The bubble goes beside the spotlight where there is room, else below it.
   const bw = Math.min(340, innerWidth - 24), right = r.right + 16 + bw < innerWidth;
   Object.assign(bubble.style, right ? { left: r.right + 16 + 'px', top: Math.max(12, Math.min(r.top, innerHeight - 260)) + 'px' }

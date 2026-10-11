@@ -464,9 +464,10 @@ abbr.devw { text-decoration: underline dotted var(--muted); text-underline-offse
 
 /* 🎓 Guided tour (AIG-95): a spotlight on one part of the board and a bubble beside it */
 #tourLayer { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
-.tour-spot { position: fixed; border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, .55); outline: 3px solid var(--accent); transition: all .2s; }
+.tour-spot { position: fixed; border-radius: 12px; outline: 3px solid var(--accent); }
 .tour-bubble { position: fixed; width: min(340px, calc(100vw - 24px)); background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; box-shadow: 0 12px 32px rgba(0,0,0,.35); pointer-events: auto; }
 .tour-bubble.center { left: 50% !important; top: 30% !important; transform: translateX(-50%); }
 .tour-bubble h3 { margin: 2px 0 6px; } .tour-bubble p { margin: 0 0 8px; } .tour-why { color: var(--muted); font-size: 13px; }
 .tour-step { font-size: 12px; } .tour-skip { margin-left: auto; }
 .tour-lvls { display: grid; gap: 8px; margin: 10px 0; } .tour-lvl { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 10px 12px; }
+.tour-dim { position: fixed; background: rgba(0, 0, 0, .55); }
