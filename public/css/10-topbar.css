@@ -37,3 +37,8 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .today-track i.over { background: var(--danger); }
 .today-bv { flex: 1 0 100%; }
 @media (min-width: 700px) { .today-bv { flex: 0 0 auto; } }
+.today-ai.on { background: var(--danger); color: #fff; border-color: var(--danger); }
+.aioff { font-size: 14px; vertical-align: 1px; }
+.today-pctrow { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+.today-pctrow span { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }
+.today-pctrow input { width: 80px; }

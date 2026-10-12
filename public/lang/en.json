@@ -2161,5 +2161,18 @@
   "today.over.title": "This project used its share of today's tokens, so it only runs for ⭐ crucial cards or when you start it",
   "today.usage.h": "🎯 Today's share by project",
   "srv.today.rest": "{name} rests today: it only wakes for your own comments",
-  "srv.today.over": "{name} has used its share of today's tokens: only ⭐ crucial cards run until tomorrow"
+  "srv.today.over": "{name} has used its share of today's tokens: only ⭐ crucial cards run until tomorrow",
+ "today.aioff": "AI off",
+ "today.aioff.title": "Switch AI off for this project: no team runs and no wakes, not even for your comments. The board still works by hand.",
+ "today.aioff.badge": "AI is off for this project",
+ "look.aioff": "AI off for this project",
+ "look.aioff.sub": "No team runs or wakes, even for your comments. You can switch it back on any time.",
+ "today.pct.h": "Exact shares",
+ "today.pct.intro": "Optional: give each project an exact % of the usage window. The total must be 100. These replace the weight split and stay until you remove them.",
+ "today.pct.on": "These percentages are used instead of the weights. They stay across days.",
+ "today.pct.equal": "Split equally",
+ "today.pct.total": "Total: {total}% (must be 100)",
+ "today.pct.weights": "Use the weights again",
+ "srv.today.total": "The shares add up to {total}%, they must add up to 100",
+ "srv.aioff.guard": "AI is off for {name}: switch it on in Look to let the team run"
 }

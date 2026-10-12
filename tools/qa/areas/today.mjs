@@ -3,7 +3,7 @@
 // split by weight and the slow-down of a project past its share. The page: the 🎯 Today link, the badge on the project cards.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, sleep, tmp, mkProject, mkCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 
 def('today', '🎯 Today: weights per project, reset each morning, order, 💤 rest only wakes for the owner, token split by weight and slow-down (AIG-595/596/597)', async (s, ctx) => {
   for (const [n, k] of [['Aa', 'AAA'], ['Bb', 'BBB'], ['Cc', 'CCC'], ['Dd', 'DDD'], ['Ee', 'EEE']]) await mkProject(s, n, k, { path: tmp('today-' + n) });
@@ -96,5 +96,65 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   await page.goto(page.url().replace('#/today', '#/usage'));
   await page.waitForSelector('.today-usage', { timeout: 8000 }).catch(() => {});
   check('the usage page shows each project\'s share and use', (await page.$$('.today-usage .today-bar')).length === 5);
+  // AIG-607: exact shares replace the weight split, add up to 100, stay across days; at its share a project pauses, ⭐ crucial still runs.
+  const bad1 = await s.api('POST', '/api/today/shares', { pct: { aa: 60, bb: 30 } });
+  check('shares that do not add up to 100 are refused, with the total', bad1.status === 400 && /90/.test(JSON.stringify(bad1.body)), bad1);
+  check('and nothing was saved', (await today()).mode !== 'pct');
+  d = await s.ok('POST', '/api/today/shares', { pct: { aa: 50, bb: 50 } });
+  check('exact shares are saved and used instead of the weights', d.mode === 'pct' && row(d, 'aa').share === 50 && row(d, 'bb').share === 50 && row(d, 'cc').share === 0 && row(d, 'aa').allowed === 500000, d.projects.map(p => p.share));
+  fs.writeFileSync(path.join(s.data, 'today.stub'), new Date(Date.now() + 2 * 864e5).toISOString().slice(0, 10));
+  d = await today();
+  check('they do not reset with the day (the weights do)', d.mode === 'pct' && row(d, 'aa').share === 50 && d.projects.every(p => p.weight === 'normal'));
+  fs.rmSync(path.join(s.data, 'today.stub'), { force: true });
+  d = await s.ok('POST', '/api/today/shares', { equal: true });
+  check('split equally gives every project the same', d.mode === 'equal' && d.projects.every(p => p.share === 20), d.projects.map(p => p.share));
+  d = await s.ok('POST', '/api/today/shares', { pct: { aa: 50, bb: 50 } });
+  const cardA = await mkCard(s, 'aa', 'share work', { status: 'todo' });
+  check('aa used 600000 of its 500000: paused until the next window; bb is fine', row(d, 'aa').over === true && row(d, 'bb').over === false, [row(d, 'aa').used, row(d, 'aa').allowed]);
+  fs.rmSync(s.wakeOut, { force: true });
+  await say(s, 'aa', cardA.id, 'Owner', 'please continue');
+  await sleep(2000);
+  check('a project at its share starts no run', !fs.existsSync(s.wakeOut));
+  await s.ok('PATCH', `/api/projects/aa/cards/${cardA.id}`, { crucial: true });
+  fs.rmSync(s.wakeOut, { force: true });
+  await say(s, 'aa', cardA.id, 'Owner', 'this one matters');
+  for (let i = 0; i < 30 && !fs.existsSync(s.wakeOut); i++) await sleep(200);
+  check('but with a ⭐ crucial card it still runs', fs.existsSync(s.wakeOut));
+  for (let i = 0; i < 40 && (await s.ok('GET', '/api/projects/aa')).presence.running; i++) await sleep(250);
+  // The page: the running total, and Save only at 100.
+  await page.goto(page.url().replace('#/usage', '#/today'));
+  await page.waitForSelector('.today-pct');
+  await page.check('#todayEqual'); await page.uncheck('#todayEqual');
+  await page.fill('.today-pct[data-slug="aa"]', '70'); await page.fill('.today-pct[data-slug="bb"]', '20');
+  check('the page shows the running total and will not save 90', /90/.test(await page.textContent('#todayTotal')) && await page.isDisabled('#todaySaveShares'));
+  await page.fill('.today-pct[data-slug="bb"]', '30');
+  check('at 100 Save is on', /100/.test(await page.textContent('#todayTotal')) && !(await page.isDisabled('#todaySaveShares')));
+  await page.click('#todaySaveShares');
+  await page.waitForFunction(() => document.querySelector('.today-pct[data-slug="aa"]')?.value === '70', null, { timeout: 5000 }).catch(() => {});
+  check('Save keeps them', row(await today(), 'aa').share === 70);
+  await s.ok('POST', '/api/today/shares', {});
+  check('and they can go back to the weights', (await today()).mode === 'weights');
+
+  // AIG-608: AI off for one project: nothing starts, even for the owner's comments; back on works.
+  const cardB = await mkCard(s, 'bb', 'by hand', { status: 'todo' });
+  await s.ok('PATCH', '/api/projects/bb', { aiOff: true });
+  check('the project shows AI off', row(await today(), 'bb').aiOff === true && (await s.ok('GET', '/api/projects')).find(p => p.slug === 'bb').aiOff === true);
+  fs.rmSync(s.wakeOut, { force: true });
+  await say(s, 'bb', cardB.id, 'Owner', 'hello team');
+  await sleep(2000);
+  check('the owner\'s comment wakes nobody (dispatcher and team)', !fs.existsSync(s.wakeOut));
+  const w = await s.api('POST', '/api/projects/bb/wake', {});
+  check('even the Wake button is refused', w.status === 409 && /AI is off/.test(JSON.stringify(w.body)), w);
+  await s.ok('PATCH', `/api/projects/bb/cards/${cardB.id}`, { status: 'doing' });
+  check('the board still works by hand', (await getCard(s, 'bb', cardB.id)).status === 'doing');
+  await page.reload(); await page.waitForSelector('.today-row[data-slug="bb"]');
+  check('Today shows it as a pressed AI off button', (await page.getAttribute('.today-row[data-slug="bb"] [data-aioff]', 'aria-pressed')) === 'true');
+  await page.click('.today-row[data-slug="bb"] [data-aioff]');
+  await page.waitForFunction(() => document.querySelector('.today-row[data-slug="bb"] [data-aioff]')?.getAttribute('aria-pressed') === 'false', null, { timeout: 5000 }).catch(() => {});
+  check('and the row button switches it back on', row(await today(), 'bb').aiOff === false);
+  fs.rmSync(s.wakeOut, { force: true });
+  await say(s, 'bb', cardB.id, 'Owner', 'are you there now?');
+  for (let i = 0; i < 30 && !fs.existsSync(s.wakeOut); i++) await sleep(200);
+  check('back on, the owner\'s comment wakes the team again', fs.existsSync(s.wakeOut));
   noErrors(page);
 }, true);
