@@ -3,7 +3,9 @@
 const badgeUrl = (a, c, x) => `/api/avatars/badge/${a}/${c}/${x}`;
 const BADGE_RE = /^badge:([a-z]+)\/([a-z]+)\/([a-z]+)$/;
 let badgeSel = null;
-async function badgeDialog(name) {
+let badgeBack = false;   // opened from the 👥 Team dialog (AIG-634): Save and Cancel go back to it
+async function badgeDialog(name, back) {
+  badgeBack = !!back;
   const team = (state.project.team || []).filter(m => !/retired/i.test(m.status || ''));
   if (!team.length) return;
   const lib = await api('GET', '/api/avatars'), P = lib.badge;
@@ -16,7 +18,7 @@ async function badgeDialog(name) {
     <h3>${esc(t('badge.animal'))}</h3><div class="bm-row">${P.animals.map(a => opt('a', a, `<img src="${badgeUrl(a, 'grey', 'none')}" alt="">`, a)).join('')}</div>
     <h3>${esc(t('badge.colour'))}</h3><div class="bm-row">${P.colours.map(c => opt('c', c.name, `<i style="background:${esc(c.hex)}"></i>`, c.name)).join('')}</div>
     <h3>${esc(t('badge.accessory'))}</h3><div class="bm-row">${P.accessories.map(x => opt('x', x, `<img src="${badgeUrl('ghost', 'grey', x)}" alt="">`, x)).join('')}</div>
-    <div class="err" id="bm-err"></div><div class="actions"><button class="primary" onclick="saveBadge()">${esc(t('common.save'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></div>`);
+    <div class="err" id="bm-err"></div><div class="actions"><button class="primary" onclick="saveBadge()">${esc(t('common.save'))}</button><button type="button" onclick="${badgeBack ? 'teamDialog()' : 'closeDialog()'}">${esc(t('common.cancel'))}</button></div></div>`);
   paintBadge();
 }
 function badgeWho(name) {
@@ -31,5 +33,5 @@ function paintBadge() {
   document.querySelectorAll('#dialog .bm-opt').forEach(b => b.classList.toggle('on', badgeSel[b.dataset.k] === b.dataset.v));
 }
 async function saveBadge() {
-  try { await api('POST', '/api/projects/' + slug() + '/team', { name: badgeSel.name, avatar: `badge:${badgeSel.a}/${badgeSel.c}/${badgeSel.x}` }); closeDialog(); await refresh(true); } catch (e) { setErr('bm-err', e); }
+  try { await api('POST', '/api/projects/' + slug() + '/team', { name: badgeSel.name, avatar: `badge:${badgeSel.a}/${badgeSel.c}/${badgeSel.x}` }); if (badgeBack) { await refresh(true); await teamDialog(); } else { closeDialog(); await refresh(true); } } catch (e) { setErr('bm-err', e); }
 }

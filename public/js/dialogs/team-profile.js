@@ -50,6 +50,7 @@ function teamHtml() {
       <button type="button" id="tm-team-add" onclick="teamApply('add')">${esc(t('tm.team.add'))}</button><button type="button" id="tm-team-replace" onclick="teamApply('replace')">${esc(t('tm.team.replace'))}</button></div>
     <small class="muted">${esc(t('tm.team.sub'))}</small>
     ${xtHtml()}
+    ${matesHtml()}
     ${peopleHtml()}
     <div class="tm-msg" id="tm-msg" role="status">${TM.msg}</div>
     <details class="tm-owner" id="tm-owner"><summary>${esc(t('tm.owner.h'))}</summary><small class="muted">${esc(t('tm.owner.sub'))}</small>${['steps', 'go', 'words'].map(ownerRow).join('')}</details>
