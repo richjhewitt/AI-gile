@@ -6,6 +6,9 @@ import path from 'node:path';
 import { ROOT, BASE, check, sleep, openPage, def } from '../lib.mjs';
 
 def('boot', '⏳ start-up survives a bad load: broken or 503 script, failed language file or first API call retry and come up, backoff never faster than 1s/2s/4s, render() throwing shows a Reload note, conflict-marked page files answer 503 (AIG-517)', async (s, ctx) => {
+  // Review fix: each script and stylesheet is in index.html once (a script loaded twice wires its handlers twice).
+  const html = fs.readFileSync(path.join(ROOT, 'public', 'index.html'), 'utf8'), refs = [...html.matchAll(/<(?:script src|link rel="stylesheet" href)="([^"]+)"/g)].map(m => m[1]);
+  check('index.html loads every script and stylesheet once', refs.length === new Set(refs).size, refs.filter((r, i) => refs.indexOf(r) !== i));
   // Server: a page file with a conflict marker line is 503 + Retry-After 2 until it is fixed (checked again once it changes).
   const name = 'qa-conflict-' + process.pid, js = path.join(ROOT, 'public', 'js', name + '.js'), css = path.join(ROOT, 'public', 'css', name + '.css');
   try {
