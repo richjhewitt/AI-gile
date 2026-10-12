@@ -33,6 +33,7 @@ The choices behind `public/lang/nl-BE.json`, for the reviewer. One translation p
 | assignee | Toegewezen aan | |
 | Lanes | Rijen | Explains itself (the title already says "rows"). |
 | Views | Weergaven | |
+| Space (a project holding projects) | Ruimte | "Map" is the folder. Put into = "in steken" (Flemish everyday), fold / unfold = inklappen / uitklappen ("toeplooien" is too spoken). |
 | Permissions | Rechten | Shorter and what Flemings say for access rights; NL often "Machtigingen". |
 | Look (colour and emoji) | Stijl | |
 | Docs | Documenten | |

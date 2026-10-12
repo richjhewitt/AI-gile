@@ -355,7 +355,8 @@ function render() {
     window.scrollTo(0, atEnd ? de.scrollHeight : y);
     return;
   }
-  $('crumb').textContent = '/ ' + (p.emoji ? p.emoji + ' ' : '') + p.name;
+  // 🪐 The spaces it sits in come first (AIG-434): / Idea Playground / JointPassingBot.
+  $('crumb').textContent = '/ ' + ((p.space && p.space.up) || []).map(u => u.name + ' / ').join('') + (p.emoji ? p.emoji + ' ' : '') + p.name;
   $('crumb').style.color = p.color || '';
   $('app').innerHTML = renderBoard(p);
   const card = state.route.card && p.cards.find(c => c.id === state.route.card);

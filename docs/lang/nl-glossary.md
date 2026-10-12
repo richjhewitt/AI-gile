@@ -42,6 +42,7 @@ Choices made for `public/lang/nl.json` (Netherlands Dutch, informal "je"). One t
 | Enter sends, Shift+Enter … | Enter verstuurt, Shift+Enter voor een nieuwe regel | One wording in every typing box. |
 | gauge | meter | Standard. |
 | folder / connect folder | map / map koppelen | Windows Dutch uses "map". |
+| space (a project holding projects) | ruimte | "Map" is taken by folder; "ruimte" is what Dutch apps call a space. Fold / unfold = inklappen / uitklappen. |
 | permissions | rechten | Short; "machtigingen" is long and formal. |
 | look (colour and emoji) | stijl | "Uiterlijk" made the board toolbar wrap. |
 | archive / unarchive | archiveren / uit archief halen | Standard. |

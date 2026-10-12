@@ -164,3 +164,30 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .ask-q { white-space: pre-wrap; overflow-wrap: anywhere; border-left: 3px solid var(--line); padding: 4px 10px; margin: 6px 0; }
 
 .sm-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 6px 12px; border-bottom: 1px solid var(--line); }   /* 🧭 Launch Lead Scrum Master (AIG-359) */
+
+/* ---------- 🪐 Spaces (AIG-434/464): projects inside projects, on home, a space's board and the rail ---------- */
+.space-tree { grid-auto-flow: row dense; }
+.space-kids { grid-column: 1 / -1; padding: 10px 0 2px 12px; margin: -4px 0 0 10px; border-left: 3px solid var(--proj, var(--line)); }
+.space-kids .grid, .space-box .grid { grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); }
+.space-fold, .space-menu { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; border-radius: 6px; color: var(--muted); cursor: pointer; flex: none; }
+.space-fold:hover, .space-menu:hover, .space-fold:focus-visible, .space-menu:focus-visible { background: var(--col); color: var(--text); }
+.space-grow { flex: 1; }
+.space-pill { background: color-mix(in srgb, var(--proj, var(--accent)) 18%, var(--panel)); color: var(--text); }
+.proj.dragging { opacity: .4; }
+.proj.drop-into { outline: 3px dashed var(--accent); outline-offset: 2px; }
+.space-out { display: none; margin: 0 0 12px; padding: 12px; border: 2px dashed var(--line); border-radius: var(--radius); text-align: center; color: var(--muted); }
+body.space-dragging .space-out { display: block; }
+.space-out.drop-into { border-color: var(--accent); color: var(--text); }
+.space-box { margin: 0 0 14px; padding: 8px 12px 12px; border: 1px solid var(--line); border-left: 6px solid var(--proj, var(--line)); border-radius: var(--radius); background: var(--panel); }
+.space-box > summary { cursor: pointer; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; list-style: none; }
+.space-box > summary::before { content: '▸'; color: var(--muted); } .space-box[open] > summary::before { content: '▾'; }
+.space-box > summary h3 { margin: 4px 0; font-size: 15px; }
+.space-box[open] > summary { margin-bottom: 10px; }
+.space-into { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.space-into select { min-width: 0; max-width: 100%; }
+/* the rail: a space and its projects in one rounded folder, like Discord's server folders */
+.dm-space { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 6px; border-radius: 16px; padding-left: 3px; padding-right: 3px; background: color-mix(in srgb, var(--proj, var(--accent)) 14%, transparent); flex: none; }
+.dm-space .dm-space { background: color-mix(in srgb, var(--proj, var(--accent)) 18%, transparent); }
+.dm-spacefold { border: 0; background: none; padding: 0 6px; margin: -6px 0 -2px; font-size: 11px; line-height: 14px; color: var(--muted); cursor: pointer; }
+.dm-spacefold:hover { color: var(--text); }
+.dm-railbtn.drop-into .dm-av { outline: 3px dashed var(--accent); outline-offset: 1px; }
