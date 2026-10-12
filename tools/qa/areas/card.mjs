@@ -419,3 +419,30 @@ def('steady', 'an open card stays put while the board polls, also with a team si
   check('the tab count follows the new comment', /\d/.test(await page.textContent('[data-ctab="reply"]')));
   noErrors(page);
 }, true);
+
+def('testpile', 'testing pile: "3 of 12 left" line on the card while working through For you to test; Enter sends off for card replies (AIG-633, AIG-632)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  for (const n of ['One', 'Two', 'Three']) await mkCard(s, 'alpha', 'Pile ' + n, { status: 'verify', testSteps: 'Step ' + n });
+  const page = await openPage(ctx, '#/p/alpha/ALP-1');
+  await page.waitForSelector('#pileLeft');
+  check('first card shows 3 of 3 left', (await page.textContent('#pileLeft')).trim() === '3 of 3 left', await page.textContent('#pileLeft'));
+  await page.click('button.good');
+  await page.waitForFunction(() => !location.hash.endsWith('ALP-1') && /2 of 3 left/.test((document.querySelector('#pileLeft') || {}).textContent || '')).catch(() => {});
+  check('after Accept the next card shows 2 of 3 left', (await page.textContent('#pileLeft')).trim() === '2 of 3 left', await page.textContent('#pileLeft'));
+  const cur = page.url().split('/').pop();
+  await page.fill('#v-text', 'not right');
+  await page.click('button.warn');
+  await page.waitForFunction(c => !location.hash.endsWith(c) && /1 of 3 left/.test((document.querySelector('#pileLeft') || {}).textContent || ''), cur).catch(() => {});
+  check('after Send back the next card shows 1 of 3 left', (await page.textContent('#pileLeft')).trim() === '1 of 3 left', await page.textContent('#pileLeft'));
+  // Enter sends off for card replies: Enter is a new line, Ctrl+Enter sends
+  await mkCard(s, 'alpha', 'Chatty', { status: 'doing', assignee: 'Forge' });
+  await say(s, 'alpha', 'ALP-4', 'Forge', 'working on it');
+  await page.evaluate(() => localStorage.setItem('aigile.enterOff', '["card"]'));
+  await page.goto(BASE + '/#/p/alpha/ALP-4'); await page.reload();
+  await page.waitForSelector('#r-text');
+  await page.click('#r-text'); await page.keyboard.type('first line'); await page.keyboard.press('Enter'); await sleep(600);
+  check('Enter sends off: new line, nothing sent', (await page.inputValue('#r-text')) === 'first line\n' && (await getCard(s, 'alpha', 'ALP-4')).comments.length === 1);
+  await page.keyboard.press('Control+Enter'); await sleep(700);
+  check('Ctrl+Enter sends', (await getCard(s, 'alpha', 'ALP-4')).comments.at(-1).text.startsWith('first line'));
+  noErrors(page);
+}, true);

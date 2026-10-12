@@ -129,7 +129,7 @@ function renderCard(p, c) {
       <label class="f" style="margin-top:8px"><span>${esc(t('info.label'))}</span><textarea id="v-text" data-draft="${esc(p.slug + '/' + c.id)}/info" rows="2" placeholder="${esc(t('info.ph'))}"></textarea></label>
       <div class="err" id="v-err"></div>
       <div class="actions"><button class="good" onclick="gotIt()">${esc(t('info.gotit'))}</button><button onclick="infoReply()" title="${esc(t('info.reply.title'))}">${esc(t('info.reply'))}</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>`
-    : c.status === 'verify' ? `<div class="verdict"><h3>${esc(t('verdict.h'))}</h3>${aiEvidence(c, p.slug)}
+    : c.status === 'verify' ? `<div class="verdict"><h3>${esc(t('verdict.h'))}</h3>${pileLeft(p, c)}${aiEvidence(c, p.slug)}
       <div class="muted">${esc(t('verdict.waiting'))}${c.testSteps ? esc(t('verdict.steps')) : ''}.</div>
       <label class="f" style="margin-top:8px"><span>${esc(t('verdict.comment'))}</span><textarea id="v-text" data-draft="${esc(p.slug + '/' + c.id)}/verdict" rows="3" placeholder="${esc(t('verdict.placeholder'))}"></textarea></label>
       <div class="err" id="v-err"></div>
@@ -142,6 +142,7 @@ function renderCard(p, c) {
   // The team's notes since your last word, shown on the Test tab next to Accept, so you never go looking (AIG-152).
   const lastMine = c.comments.map(m => isOwner(m.author)).lastIndexOf(true);
   const notes = c.comments.slice(lastMine + 1).filter(m => !isOwner(m.author) && (m.attachments || !/^Ready for you to test\./.test(m.text))).slice(-3);
+  if (c.status !== 'verify') state.pileRun = null;
   if (state.tabFor !== c.id) { state.tabFor = c.id; state.cardTab = c.status === 'verify' ? 'test' : c.comments.length ? 'reply' : 'details'; }
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
@@ -171,7 +172,7 @@ function replyHtml(p, c, msg, newest) {
       ${replyBox(p, c)}
       ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">${esc(t('card.earlier'))}</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}`;
 }
-const replyBox = (p, c) => `<div class="reply">${cardAnswers(p, c)}<textarea id="r-text" data-draft="${esc(p.slug + '/' + c.id)}/reply" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendReply()}"></textarea>
+const replyBox = (p, c) => `<div class="reply">${cardAnswers(p, c)}<textarea id="r-text" data-draft="${esc(p.slug + '/' + c.id)}/reply" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(EnterSend.is(event,'card')){event.preventDefault();sendReply()}"></textarea>
         <div class="err" id="r-err"></div>
         <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${looksRight(c)}${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>`;
 /* ---------- one-click answers on the card itself (AIG-371, AIG-315) ----------
@@ -368,6 +369,15 @@ async function reopenPops() {
 setInterval(reopenPops, 5000);
 
 // After dealing with a For you card, open the next one in the queue instead of closing (AIG-141).
+// "3 of 12 left" (AIG-633): while working through the For you to test pile, a small line on the card. The total is the
+// biggest the pile has been in this run (a run ends when you open a card that is not waiting for a test).
+function pileLeft(p, c) {
+  const left = forYouQueue(p).filter(x => x.status === 'verify' && kindOf(x) === 't').length;
+  if (!state.pileRun || state.pileRun.slug !== p.slug) state.pileRun = { slug: p.slug, total: left };
+  state.pileRun.total = Math.max(state.pileRun.total, left);
+  if (left < 1 || state.pileRun.total < 2) return '';
+  return `<div class="muted pile-left" id="pileLeft">${esc(t('pile.left', { n: left, total: state.pileRun.total }))}</div>`;
+}
 function nextForYou() { const q = forYouQueue(state.project).map(c => c.id), i = q.indexOf(cardId()); return i < 0 ? null : q[i + 1] || q[i - 1] || null; }
 function doneWithCard(next) {
   if (next && !state.route.pop) { state.editing = false; location.hash = '#/p/' + slug() + '/' + next; } else closeCard();
