@@ -242,8 +242,8 @@ async function refresh(force) {
   try {
     if (state.route.view === 'home') {
       const q = state.showArchived ? '?all=1' : '';
-      [state.projects, state.inbox, state.usage] = await Promise.all([api('GET', '/api/projects' + q), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false }))]);
-      sig = renderSig([state.route, state.projects, state.inbox, state.usage]);
+      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([api('GET', '/api/projects' + q), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
+      sig = renderSig([state.route, state.projects, state.inbox, state.usage, state.sm && [state.sm.on, state.sm.where, state.sm.listening, state.sm.running, state.sm.lastRunAt, state.sm.lastRound]]);
     } else if (state.route.view === 'setup') {
       state.setup = await api('GET', '/api/setup');
       sig = JSON.stringify([state.route, state.setup]);

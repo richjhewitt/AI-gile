@@ -143,6 +143,11 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   check('level 5 adds the 40 min card', await flagged() === base + 3, await flagged());
   check('the AI runs stayed inside the daily cap (3)', (await s.ok('GET', '/api/scrummaster')).runsToday <= 3);
 
+  // The home screen shows the Lead Scrum Master like a team's presence (AIG-463): idle when on and between runs, off when stopped.
+  const home = await openPage(ctx, '#/');
+  await home.waitForSelector('.smline');
+  check('home: on and between runs it shows idle with when it last ran', /Lead Scrum Master/.test(await home.textContent('.smline')) && /Idle/.test(await home.textContent('.smline')) && /last ran/.test(await home.textContent('.smline')), await home.textContent('.smline'));
+
   // Reminders: one bump of a question waiting longer than the scale says, never again.
   const qa = await mkCard(s, 'alpha', 'Which colour?', { status: 'verify' });
   await say(s, 'alpha', qa.id, 'Lead', 'Which colour do you want?', { needsYou: true, mark: 'ask' });
@@ -182,6 +187,8 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   const fl = await flagged();
   await s.ok('POST', '/api/scrummaster/round');
   check('off stops the rounds', await flagged() === fl && (await s.ok('GET', '/api/scrummaster')).on === false);
+  await home.reload(); await home.waitForSelector('.smline');
+  check('home: stopped it shows off', /Off/.test(await home.textContent('.smline')), await home.textContent('.smline'));
   await s.ok('POST', '/api/setup', { prefs: { smPush: 3 } });
 
   // Hang watchdog: a verbose background run that writes nothing is stopped and started again, with a note on its card.
