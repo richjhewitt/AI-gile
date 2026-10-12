@@ -2088,5 +2088,7 @@
  "sec.none": "Geen geheimen gevraagd of opgeslagen.",
  "sec.auto": "Opgeslagen geheimen automatisch verwijderen na",
  "sec.auto.never": "nooit",
- "sec.auto.hours": {"one":"{count} uur","other":"{count} uur"}
+ "sec.auto.hours": {"one":"{count} uur","other":"{count} uur"},
+  "nudge.title": "Geef het team een duwtje (gratis; alleen het wekken kost tokens)",
+  "nudge.lit": "Lijkt vast te zitten: klik om het team een duwtje te geven"
 }

@@ -206,8 +206,29 @@ async function cardTaskDone() {
 function chatHtml(p, c, msg) {
   const pr = p.presence || {}, typing = (pr.running || pr.online) && (c.status === 'doing' || c.status === 'team') && !c.needsYou;
   return `<div class="chat">${c.comments.length ? c.comments.map(m => msg(m, false)).join('') : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}</div>
-      ${typing ? `<div class="typing muted" id="typing">${esc(t('card.typing'))}</div>` : ''}
+      ${typing || nudgeLit(p, c, false) ? `<div class="typing muted" id="typing">${typing ? esc(t('card.typing')) : ''} ${nudgeBtn(p, c, typing)}</div>` : ''}
       ${followBar(p, c)}${replyBox(p, c)}`;
+}
+// 👉 Nudge (AIG-593): by the typing line, lit when your last message is still not seen after 3 min, or the team has been
+// typing for 5 min with nothing new. A click is the card's normal poke (free; only the wake run uses tokens). A run that
+// really hangs is restarted by the board's own hang check (presence.js), so the button never kills a working run.
+const typingSince = {};
+const NUDGE_UNSEEN_MS = 3 * 60e3, NUDGE_TYPING_MS = 5 * 60e3;
+function nudgeLit(p, c, typing) {
+  const k = p.slug + '/' + c.id, last = c.comments[c.comments.length - 1], now = Date.now();
+  const lastAt = last ? Date.parse(last.at) : 0;   // typing time restarts with each new message
+  if (!typing) delete typingSince[k]; else if (!typingSince[k]) typingSince[k] = now; else if (lastAt > typingSince[k]) typingSince[k] = lastAt;
+  const mine = [...c.comments].reverse().find(m => isOwner(m.author));
+  const unseen = mine && !mine.poke && !(p.teamSeenAt && mine.at <= p.teamSeenAt) && now - Date.parse(mine.at) > NUDGE_UNSEEN_MS && !c.comments.slice(c.comments.indexOf(mine) + 1).some(m => !isOwner(m.author));
+  return !!(unseen || (typing && now - typingSince[k] > NUDGE_TYPING_MS));
+}
+function nudgeBtn(p, c, typing) {
+  const lit = nudgeLit(p, c, typing);
+  return `<button type="button" class="nudge${lit ? ' lit' : ''}" id="nudgeBtn" onclick="nudgeCard(this)" title="${esc(t(lit ? 'nudge.lit' : 'nudge.title'))}" aria-label="${esc(t('nudge.title'))}">👉</button>`;
+}
+async function nudgeCard(btn) {
+  if (btn) btn.disabled = true;
+  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/poke`); refresh(true); } catch (e) { alert(e.message); if (btn) btn.disabled = false; }
 }
 // AIG-426: the lead carried on in another card: a button to go there (and, if set, going by itself).
 function followBar(p, c) { return c.followUp && p.cards.some(x => x.id === c.followUp) ? Follow.html('card', p.slug, c.id, c.followUp) : ''; }
@@ -220,7 +241,7 @@ function popChatLive() {
   const de = document.documentElement, atEnd = de.scrollHeight - window.scrollY - window.innerHeight < 60;
   if (chat.innerHTML !== nc.innerHTML) chat.innerHTML = nc.innerHTML;
   const ty = document.getElementById('typing'), nt = tmp.querySelector('#typing');
-  if (ty && !nt) ty.remove(); else if (!ty && nt) chat.after(nt);
+  if (ty && !nt) ty.remove(); else if (!ty && nt) chat.after(nt); else if (ty && nt && ty.innerHTML !== nt.innerHTML && !ty.contains(document.activeElement)) ty.innerHTML = nt.innerHTML;   // 👉 lights up (AIG-593)
   const fbar = document.querySelector('#modal .follow-bar'), nbar = tmp.querySelector('.follow-bar');
   if (fbar && !nbar) fbar.remove(); else if (nbar && (!fbar || fbar.dataset.follow !== nbar.dataset.follow)) { if (fbar) fbar.remove(); (document.getElementById('typing') || chat).after(nbar); }
   if (atEnd) window.scrollTo(0, de.scrollHeight);
