@@ -29,7 +29,7 @@ const stale = () => { try { return Math.max(...serverFiles().map(f => fs.statSyn
 const routes = makeRoutes(() => ({ dev: DEV, build: build(), stale: stale() }));
 
 /* ---------- http plumbing ---------- */
-const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json' };
+const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json', '.webmanifest': 'application/manifest+json' };
 
 // Only this computer's own board, CLI and hooks may use the API (AIG-90). The server already listens on
 // 127.0.0.1, but a website open in the same browser could still send requests to it:

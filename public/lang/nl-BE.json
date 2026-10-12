@@ -1596,5 +1596,13 @@
  "wait.h": "Wacht op",
  "wait.pick": "⏳ Wacht op…",
  "wait.remove": "Niet meer op deze wachten",
- "wait.chip.title": "Wacht op {ids}: ligt opzij tot het klaar is"
+ "wait.chip.title": "Wacht op {ids}: ligt opzij tot het klaar is",
+ "help.m.install": "📱 Zet op beginscherm",
+ "pwa.h": "Zet AI-gile op je gsm",
+ "pwa.intro": "Open het bord in de browser van je gsm en zet het op het startscherm, dan opent het schermvullend als een app.",
+ "pwa.ios": "iPhone / iPad (Safari)",
+ "pwa.ios.how": "Tik op de knop Deel en kies \"Zet op beginscherm\".",
+ "pwa.android": "Android (Chrome)",
+ "pwa.android.how": "Tik op het menu ⋮ en kies \"App installeren\" of \"Toevoegen aan startscherm\".",
+ "pwa.note": "Het bord draait op je computer, dus je gsm moet erbij kunnen (bijvoorbeeld op hetzelfde wifi). Alleen het uiterlijk van de app blijft op de gsm, nooit je kaarten."
 }
