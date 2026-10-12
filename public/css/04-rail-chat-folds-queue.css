@@ -4,6 +4,10 @@
 .dm-fold-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; width: 100%; text-align: left; padding: 7px 10px; border: 0; background: var(--col); cursor: pointer; }
 .dm-fold.open .dm-fold-h { border-bottom: 1px solid var(--line); }
 .dm-fold-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dm-fold-id { display: flex; gap: 6px; flex: 1; min-width: 0; color: inherit; text-decoration: none; }
+.dm-fold-id:hover b, .dm-fold-id:focus-visible b { text-decoration: underline; }
+.dm-fold-id b { color: var(--accent); white-space: nowrap; }
+.dm-cardacts { margin: 0 0 6px; }
 .dm-fold-n { font-size: 11px; }
 .dm-tag { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 99px; background: var(--panel); }
 .k-question .dm-tag { color: var(--accent); } .k-test .dm-tag { color: var(--you); } .k-idea .dm-tag { color: var(--done); }

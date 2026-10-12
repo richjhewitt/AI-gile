@@ -644,7 +644,11 @@
  "dms.kind.other": "📌 Card",
  "dms.count.one": "{n} message",
  "dms.count.many": "{n} messages",
- "dms.opencard": "Open the card",
+ "dms.opencard": "📂 Open card",
+
+ "dms.popout": "⤢ Pop out",
+
+ "dms.popout.title": "Open this card in its own window",
  "dms.replyto": "Reply to:",
  "dms.filter.all": "All",
  "dms.filter.agents": "🤖 Agents",

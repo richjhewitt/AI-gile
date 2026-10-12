@@ -57,7 +57,38 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   check('with chatty on, the lead can DM', dm.code === 0 && /sent to/.test(dm.out), dm);
   await page.waitForFunction(() => /3 things are waiting/.test(document.getElementById('dmList').textContent), null, { timeout: 6000 }).catch(() => {});
   check('the nudge shows in the chat, not on the board', /3 things are waiting/.test(await page.textContent('#dmList')) && (await s.ok('GET', '/api/projects/alpha')).cards.filter(x => x.status !== 'done' && /3 things/.test(x.title)).length === 0);
+  // AIG-449: a card in the chat opens from its header (id + title), from 📂 Open card, and pops out with ⤢ Pop out.
+  const freshChat = async () => { const pg = await openPage(ctx, '#/'); await pg.click('#dmRail [data-dms]'); await pg.click('#dmPanel [data-dm="alpha"]'); await pg.waitForSelector(`#dmList .dm-fold-h[data-fold="${c.id}"]`); return pg; };
+  const hp = await freshChat();
+  check('the card header id links to the card on its board', (await hp.getAttribute(`#dmList .dm-fold-h[data-fold="${c.id}"] a.dm-fold-id`, 'href')) === `#/p/alpha/${c.id}`);
+  await hp.click(`#dmList .dm-fold-h[data-fold="${c.id}"] a.dm-fold-id`);
+  await hp.waitForFunction(id => location.hash === '#/p/alpha/' + id, c.id, { timeout: 5000 }).catch(() => {});
+  await hp.waitForSelector('.panel h2', { timeout: 5000 }).catch(() => {});
+  check('clicking the header id opens the card', (await hp.evaluate(id => location.hash === '#/p/alpha/' + id, c.id)) && (await hp.textContent('.panel h2').catch(() => '')) === c.title, await hp.evaluate(() => location.hash));
+  const op = await freshChat();
+  await op.click(`#dmList .dm-fold-h[data-fold="${c.id}"] .dm-fold-n`);
+  await op.waitForSelector(`#dmList .dm-fold.open [data-opencard="${c.id}"]`);
+  check('the open card has a 📂 Open card button and a ⤢ Pop out button', (await op.textContent(`#dmList [data-opencard="${c.id}"]`)).includes('Open card') && (await op.textContent(`#dmList [data-popcard="${c.id}"]`)).includes('Pop out'));
+  await op.click(`#dmList [data-opencard="${c.id}"]`);
+  await op.waitForFunction(id => location.hash === '#/p/alpha/' + id, c.id, { timeout: 5000 }).catch(() => {});
+  check('📂 Open card opens the card on its board', (await op.evaluate(() => location.hash)) === `#/p/alpha/${c.id}`);
+  const pp = await freshChat();
+  await pp.click(`#dmList .dm-fold-h[data-fold="${c.id}"] .dm-fold-n`);
+  await pp.waitForSelector(`#dmList .dm-fold.open [data-popcard="${c.id}"]`);
+  const popP = ctx.waitForEvent('page');
+  await pp.click(`#dmList [data-popcard="${c.id}"]`);
+  const pop = await popP;
+  await pop.waitForLoadState();
+  await pop.waitForSelector('.panel h2', { timeout: 8000 }).catch(() => {});
+  check('⤢ Pop out opens that card in its own window', pop.url().includes(`#/pop/alpha/${c.id}`) && (await pop.textContent('.panel h2').catch(() => '')) === c.title, pop.url());
+  // Card ids in a message are links into the board (format.js linkify, with the project's key).
+  await say(s, 'alpha', quick.id, 'Lead', `Also see ${c.id} for the export`);
+  const lp = await freshChat();
+  await lp.click(`#dmList .dm-fold-h[data-fold="${quick.id}"] .dm-fold-n`);
+  await lp.waitForSelector(`#dmList .dm-fold.open a[href="#/p/alpha/${c.id}"]`, { timeout: 6000 }).catch(() => {});
+  check('a card id mentioned in a message is a link to it', (await lp.locator(`#dmList .dm-fold.open .dm-bubble a[href="#/p/alpha/${c.id}"]`).count()) > 0);
   noErrors(page);
+  noErrors(hp); noErrors(op); noErrors(pp);
 }, true);
 
 def('answerbtns', 'answer buttons under each message, picked from what it asks; the team can set its own (AIG-176)', async (s, ctx) => {
