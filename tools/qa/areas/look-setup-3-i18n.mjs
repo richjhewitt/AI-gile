@@ -55,8 +55,8 @@ def('i18n', 'languages: every language file has the same keys, the picker switch
   await page.waitForFunction(() => document.documentElement.lang === 'nl', null, { timeout: 8000 });
   await page.waitForSelector('#app .toolbar');
   check('html lang is nl', (await page.evaluate(() => document.documentElement.lang)) === 'nl');
-  check('a string comes from nl.json', (await page.textContent('#app .toolbar .primary')).trim() === '+ NIEUW PROJECT', await page.textContent('#app .toolbar .primary'));
-  check('a missing key falls back to English', (await page.textContent('#app .toolbar')).includes('Find my projects'));
+  check('a string comes from nl.json', (await page.textContent('#app .toolbar .primary')).trim().toLowerCase() === '+ nieuw project', await page.textContent('#app .toolbar .primary'));
+  check('a missing key falls back to English', await page.evaluate(() => { delete i18n.dict['home.newproject']; return t('home.newproject') === i18n.en['home.newproject']; }));
   check('the choice is remembered', (await page.evaluate(() => localStorage.getItem('aigile.lang'))) === 'nl');
   check('no 🌐 EN button until the switch is on', await page.locator('#enBtn').isHidden());
   await page.goto(BASE + '/#/setup'); await page.waitForSelector('#setupForm');

@@ -11,8 +11,8 @@
 
   function onKey(e) {
     if (e.target.tagName === 'TEXTAREA' && e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+      const n = e.target.closest('.ib-item'); if (!n) return;   // ⚡ Decide's own box (#dcText) has its own Enter (AIG-445)
       e.preventDefault();
-      const n = e.target.closest('.ib-item');
       if (n.classList.contains('k')) IB.taskDone(n); else IB.send(n);
     }
   }

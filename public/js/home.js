@@ -17,6 +17,15 @@ function usageStrip(u) {
     <span class="muted"> · <b>${t('home.usage.left')}</b></span></a>`;
 }
 
+// The Lead Scrum Master, in the same style as a team's presence (AIG-463): running now (and where), idle (and when it last ran), or off.
+function smLine(sm) {
+  if (!sm) return '';
+  const run = sm.lastRunAt || sm.lastRound, name = '<b>' + esc(t('smpres.name')) + '</b>';
+  if (sm.running || sm.listening) return `<div class="smline">🧭 ${name} <span class="pres on">${esc(t(sm.running ? 'smpres.background' : sm.where === 'vscode' ? 'pres.vscode' : 'pres.terminal'))}</span></div>`;
+  if (sm.on) return `<div class="smline">🧭 ${name} <span class="pres off">${esc(t('smpres.idle'))}</span>${run ? ` <span class="muted">${esc(t('smpres.lastran', { when: ago(run) }))}</span>` : ''}</div>`;
+  return `<div class="smline">🧭 ${name} <span class="pres off">${esc(t('smpres.off'))}</span></div>`;
+}
+
 function renderHome() {
   const inbox = state.inbox.length ? `<details class="inbox" ${state.waitOpen ? 'open' : ''} ontoggle="state.waitOpen = this.open"><summary><h3>${esc(t('home.waiting', { n: state.inbox.length }))}</h3></summary><ul>${state.inbox.map(c =>
     `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></details>` : '';   // closed by default (AIG-105)
@@ -43,5 +52,5 @@ function renderHome() {
       <button onclick="callStandup()" title="${esc(t('standup.all.title'))}">${esc(t('standup.all'))}</button>
       <a class="navlink" href="#/standups" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a><span class="grow"></span>
       <label class="chk"><input type="checkbox" ${state.showArchived ? 'checked' : ''} onchange="toggleArchived(this.checked)"> ${esc(t('home.showarchived'))}</label></div>`
-    + usageStrip(state.usage) + inbox + `<div class="grid">${cards || `<p class="muted">${esc(t('projects.none'))}</p>`}</div>`;
+    + usageStrip(state.usage) + inbox + `<div class="grid">${cards || `<p class="muted">${esc(t('projects.none'))}</p>`}</div>` + smLine(state.sm);
 }

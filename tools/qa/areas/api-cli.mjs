@@ -140,6 +140,23 @@ def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
   const hk = a('updates', 'beta', '--hook');
   check('--hook speaks when there is news', /AI-gile board \(beta\)/.test(hk.out) && /again/.test(hk.out), hk.out);
 
+
+  // The hooks belong to the project's lead (AIG-455): a Tester run or a session from another folder leaves them alone.
+  const home = tmp('leadhome'), elsewhere = tmp('elsewhere');
+  await mkProject(s, 'Zeta', 'ZET', { path: home });
+  const gc = await mkCard(s, 'zeta', 'G card', { status: 'doing' });
+  await say(s, 'zeta', gc.id, 'Owner', 'for the lead');
+  const seenAt = async () => (await s.ok('GET', '/api/projects/zeta')).teamSeenAt || '';
+  const t0 = await seenAt();
+  for (const [why, env, cwd] of [['AIGILE_ROLE=tester', { AIGILE_ROLE: 'tester' }, home], ['AIGILE_AS=Tester (Sonnet)', { AIGILE_AS: 'Tester (Sonnet)' }, home], ['another folder', {}, elsewhere]]) {
+    const h = s.cli(['updates', 'zeta', '--hook'], env, cwd), sp = s.cli(['updates', 'zeta', '--stop-hook'], env, cwd), by = s.cli(['bye', 'zeta'], env, cwd);
+    check(`hook from ${why}: silent, exit 0`, h.code === 0 && h.out === '' && sp.code === 0 && sp.out === '' && by.code === 0 && by.out === '', [h, sp, by]);
+  }
+  check('non-lead hooks do not count as the lead being present', (await s.ok('GET', '/api/projects/zeta')).presence.lastHeard === null);
+  check('non-lead hooks mark nothing as seen', (await seenAt()) === t0 && (await s.ok('GET', '/api/projects/zeta/updates')).cards.length === 1);
+  const lead = s.cli(['updates', 'zeta', '--stop-hook'], {}, home);
+  check('a real lead hook (project folder) still blocks with the news', /for the lead/.test(lead.out) && (await s.ok('GET', '/api/projects/zeta')).presence.lastHeard !== null && (await s.ok('GET', '/api/projects/zeta/updates')).cards.length === 0, lead.out);
+
   // move done
   const m1 = await mkCard(s, 'beta', 'to close', { status: 'todo' });
   const refused = a('move', 'beta', m1.id, 'done');
@@ -240,4 +257,4 @@ def('proof', 'proof on hand-back: test --commit shows what changed; --shot adds 
   check('the screenshot shows on the Test tab', (await page.locator('[data-pane="test"] .att-shown img').count()) === 1);
   noErrors(page);
 }, true);
-
+

@@ -50,13 +50,16 @@ def('decide', '⚡ Decide pile: keys answer / skip / open; a 3-question Topic po
   await page.waitForFunction(() => /Question 2 of 3/.test(document.getElementById('ibDc').textContent));
   let tc = await getCard(s, 'alpha', q.id);
   check('answering one question keeps the rest open, nothing posted yet', tc.quiz.items[0].answer === 'Friends' && tc.needsYou && !tc.comments.some(m => /^Topic:/.test(m.text)), tc.quiz.items);
-  await page.keyboard.press('1');
+  // ✏️ Other… in the pile (AIG-445): type, Enter saves it and moves on.
+  await page.click('#ibDc [data-dc="other"]');
+  await page.fill('#dcText', 'Only weekends');
+  await page.keyboard.press('Enter');
   await page.waitForFunction(() => /Question 3 of 3/.test(document.getElementById('ibDc').textContent));
   await page.keyboard.press('1');
   await sleep(1000);
   tc = await getCard(s, 'alpha', q.id);
   const posted = tc.comments.filter(m => /^Topic:/.test(m.text));
-  check('all answered: ONE comment "Topic: Sharing — Q1: Friends, Q2: Yes, Q3: Yes"', posted.length === 1 && posted[0].text === 'Topic: Sharing — Q1: Friends, Q2: Yes, Q3: Yes' && !tc.needsYou, posted);
+  check('all answered: ONE comment "Topic: Sharing — Q1: Friends, Q2: Only weekends, Q3: Yes"', posted.length === 1 && posted[0].text === 'Topic: Sharing — Q1: Friends, Q2: Only weekends, Q3: Yes' && !tc.needsYou, posted);
   await idle();
   check('the team was woken once', starts() === before + 1, [before, starts()]);
 
