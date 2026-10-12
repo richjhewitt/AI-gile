@@ -1730,5 +1730,10 @@
  "prof.team.ux": "UX team",
  "prof.team.security": "Security review crew",
  "prof.team.docs-launch": "Docs and launch team",
- "prof.team.data": "Data team"
+ "prof.team.data": "Data team",
+ "icon.h": "App icon colours",
+ "icon.main": "Main colour",
+ "icon.waiting": "Waiting diamond",
+ "icon.reset": "Back to the defaults",
+ "icon.help": "Pick a preset or any colour. The browser tab icon changes straight away. The desktop app's taskbar icon changes the next time it redraws, so restart the app if it stays the same."
 }

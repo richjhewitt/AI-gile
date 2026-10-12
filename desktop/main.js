@@ -17,7 +17,13 @@ function appIcon() {
     const img = f && nativeImage.createFromPath(path.join(DATA, 'logos', f));
     if (img && !img.isEmpty()) return img;
   } catch {}
-  return ICON;
+  return custom('icon.png') || ICON;
+}
+// Icon colours (AIG-400): Setup draws tinted copies of the icon into data/appicon/ (lib/appicon.js); used when present.
+function custom(name) {
+  const f = path.join(DATA, 'appicon', name);
+  try { if (fs.existsSync(f)) { const img = nativeImage.createFromPath(f); if (!img.isEmpty()) return img; } } catch {}
+  return null;
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -113,7 +119,7 @@ function open(ok) {
   // Taskbar badge: the page puts what's waiting on the owner in its title, "(3) AI-gile"; then the icon gets a purple diamond.
   // It's the window icon, not an overlay: small taskbar buttons draw overlays as a dot, and a count is unreadable there.
   // A missing or broken icon file must never show an error box (AIG-81): keep the current icon instead.
-  win.on('page-title-updated', (e, title) => { try { win.setIcon(/^\(\d+\)/.test(title) ? ICON_WAITING : appIcon()); } catch {} });
+  win.on('page-title-updated', (e, title) => { try { win.setIcon(/^\(\d+\)/.test(title) ? custom('icon-waiting.png') || ICON_WAITING : appIcon()); } catch {} });
   // Closing the main window closes the app, pop-outs too, and remembers them for next time.
   win.on('close', () => { quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); });
   win.on('closed', () => { win = null; });

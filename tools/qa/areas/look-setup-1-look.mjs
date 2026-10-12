@@ -101,6 +101,22 @@ def('logos', 'a project picture and an app logo replace the emoji / 🗂️: upl
   await page.waitForSelector('#app-logo img.brand-logo', { state: 'detached' });
   check('favicon is the emoji again', (await page.getAttribute('#favicon', 'href')) === fav0 && (await page.textContent('#brand')).includes('🗂️'));
   check('app logo gone', (await fetch(s.base + '/api/app-logo')).status === 404 && (await s.ok('GET', '/api/meta')).appLogo === '');
+  // Icon colours (AIG-400): bad colours refused; a preset recolours the tab icon; Reset goes back to the emoji.
+  check('default icon colours: no custom icon', (await s.ok('GET', '/api/meta')).appIcon === null && (await fetch(s.base + '/api/app-icon.svg')).status === 404);
+  check('a bad icon colour is refused', (await s.api('POST', '/api/setup', { prefs: { iconColors: { main: 'red' } } })).status === 400);
+  await page.waitForSelector('#icon-main .icon-sw');
+  await page.click('#icon-main .icon-sw[data-c="#16a34a"]');
+  await page.waitForFunction(() => (document.getElementById('favicon').getAttribute('href') || '').startsWith('/api/app-icon.svg'));
+  const favSvg = await (await fetch(s.base + (await page.getAttribute('#favicon', 'href')))).text();
+  check('favicon is the mark in the picked main colour', favSvg.includes('#16a34a') && !favSvg.includes('#3b6cf6'), favSvg.slice(0, 120));
+  check('saved in the prefs and meta', (await s.ok('GET', '/api/setup')).prefs.iconColors.main === '#16a34a' && (await s.ok('GET', '/api/meta')).appIcon.main === '#16a34a');
+  await page.click('#icon-waiting .icon-sw[data-c="#f59e0b"]');
+  await page.waitForFunction(() => document.querySelector('#icon-waiting .icon-sw[data-c="#f59e0b"]').style.borderColor !== 'transparent');
+  const waitSvg = await (await fetch(s.base + '/api/app-icon.svg?waiting=1')).text();
+  check('waiting icon has the diamond in the picked colour', waitSvg.includes('#f59e0b') && waitSvg.includes('#16a34a'), waitSvg.slice(0, 160));
+  await page.click('#iconReset');
+  await page.waitForFunction(h => document.getElementById('favicon').getAttribute('href') === h, fav0);
+  check('Reset: emoji favicon, no custom icon', (await s.ok('GET', '/api/meta')).appIcon === null && (await fetch(s.base + '/api/app-icon.svg')).status === 404);
   noErrors(page);
 }, true);
 

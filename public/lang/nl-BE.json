@@ -1730,5 +1730,10 @@
  "prof.team.ux": "UX-team",
  "prof.team.security": "Beveiligingscheck-ploeg",
  "prof.team.docs-launch": "Docs- en lanceringsteam",
- "prof.team.data": "Datateam"
+ "prof.team.data": "Datateam",
+ "icon.h": "Kleuren van het app-icoon",
+ "icon.main": "Hoofdkleur",
+ "icon.waiting": "Wachtende ruit",
+ "icon.reset": "Terug naar de standaard",
+ "icon.help": "Kies een voorinstelling of een eigen kleur. Het icoon in het browsertabblad verandert meteen. Het taakbalkicoon van de desktop-app verandert zodra het opnieuw getekend wordt: start de app opnieuw als het hetzelfde blijft."
 }
