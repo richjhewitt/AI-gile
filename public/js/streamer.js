@@ -10,7 +10,9 @@ const Streamer = (() => {
   const KEY = 'aigile.streamer', DOTS = '••••';
   let manual = false, auto = false, st = { auto: true, running: false, program: '' }, hidden = new Set(), ready = null, note = null;
   try { manual = localStorage.getItem(KEY) === '1'; } catch {}
-  const on = () => manual || auto;
+  // The stream window (AIG-631): opened by Setup's 🎥 Open stream window as /?stream=1; always in streamer mode, whatever the saved setting.
+  const forced = /[?&]stream=1(&|$)/.test(location.search);
+  const on = () => forced || manual || auto;
 
   /* ---- the one masking function ---- */
   const oct = '(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)';
@@ -111,12 +113,12 @@ const Streamer = (() => {
   function apply(was) {
     const o = on();
     document.documentElement.toggleAttribute('data-streamer', o);
-    const b = $('streamBtn'); if (b) { b.classList.toggle('stream-on', o); b.setAttribute('aria-pressed', String(o)); b.title = t(o ? 'streamer.title.on' : 'streamer.title'); }
+    const b = $('streamBtn'); if (b) { b.disabled = forced; b.classList.toggle('stream-on', o); b.setAttribute('aria-pressed', String(o)); b.title = t(o ? 'streamer.title.on' : 'streamer.title'); }
     if (o) { ready = prime(); watch(); scan(document.body); if (!state.setup) api('GET', '/api/setup').then(s => { state.setup = s; scan(document.body); }).catch(() => {}); } else restore();
     if (was !== o) { ready = o ? prime() : ready; Promise.resolve(ready).then(() => { if (typeof Dms !== 'undefined') Dms.reload(); if (typeof refresh === 'function') refresh(true); if (typeof Inbox !== 'undefined' && Inbox.show && state.route && state.route.view === 'inbox') Inbox.show(true); }); }
     paintSetup();
   }
-  function toggle() { const was = on(); manual = !manual; if (!manual) auto = false; try { localStorage.setItem(KEY, manual ? '1' : '0'); } catch {} apply(was); }
+  function toggle() { if (forced) return; const was = on(); manual = !manual; if (!manual) auto = false; try { localStorage.setItem(KEY, manual ? '1' : '0'); } catch {} apply(was); }
   function toast(msg, offBtn) {
     if (note) note.remove();
     note = document.createElement('div'); note.id = 'streamNote'; note.setAttribute('role', 'status'); note.dataset.nomask = '1';
@@ -136,8 +138,9 @@ const Streamer = (() => {
   /* ---- Setup > Streamer ---- */
   function setupHtml() {
     return `<span>${esc(t('streamer.setup.h'))}</span><label class="chk"><input type="checkbox" id="streamAuto" ${st.auto ? 'checked' : ''} onchange="Streamer.setAuto(this.checked)"> ${esc(t('streamer.setup.auto'))}</label>
-      <small class="muted">${esc(t('streamer.setup.help'))}</small>${st.running ? `<small class="muted">${esc(t('streamer.setup.running', { program: st.program || 'OBS' }))}</small>` : ''}`;
+      <small class="muted">${esc(t('streamer.setup.help'))}</small>${forced ? '' : `<div><button type="button" id="streamWin" onclick="Streamer.openWindow()" title="${esc(t('streamer.win.title'))}">🎥 ${esc(t('streamer.win'))}</button></div>`}${st.running ? `<small class="muted">${esc(t('streamer.setup.running', { program: st.program || 'OBS' }))}</small>` : ''}`;
   }
+  function openWindow() { window.open('/?stream=1', 'aigileStream', 'popup=yes,width=1280,height=800'); }
   function paintSetup() { const b = $('streamerBox'); if (b) b.innerHTML = setupHtml(); }
   async function setAuto(v) {
     try { st = { ...st, ...(await api('POST', '/api/streamer', { auto: !!v })) }; } catch (e) { alert(e.message); }
@@ -145,5 +148,5 @@ const Streamer = (() => {
     paintSetup(); poll();
   }
   function start() { apply(false); poll(); setInterval(poll, Number(window.AIGILE_STREAM_POLL) || 5000); }
-  return { on, mask, raw, filter, toggle, dismiss, setAuto, setupHtml, start, poll, get hidden() { return hidden; } };
+  return { on, forced, openWindow, mask, raw, filter, toggle, dismiss, setAuto, setupHtml, start, poll, get hidden() { return hidden; } };
 })();

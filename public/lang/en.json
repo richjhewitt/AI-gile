@@ -2268,5 +2268,7 @@
   "rf.mode.one": "One big Refactor project for all of them",
   "rf.go": "Make the cards",
   "rf.none": "No big files found in your project folders. Nothing to tidy.",
-  "rf.cards": "{n} cards in backlog"
+  "rf.cards": "{n} cards in backlog",
+  "streamer.win": "Open stream window",
+  "streamer.win.title": "Open a second window of this board that is always in streamer mode: put this one on your stream"
 }

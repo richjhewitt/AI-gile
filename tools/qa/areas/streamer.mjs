@@ -79,6 +79,19 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   await page.goto(`${BASE}/#/`); await page.reload(); await page.waitForSelector('a.proj');
   check('switched off: the private project is back', (await page.locator('a.proj').count()) === 2);
 
+  // The stream window (AIG-631): Setup > 🎥 Open stream window opens a second window that is always in streamer mode
+  await page.goto(`${BASE}/#/setup`); await page.reload(); await page.waitForSelector('#streamWin');
+  const [win] = await Promise.all([ctx.waitForEvent('page'), page.click('#streamWin')]);
+  await win.waitForSelector('html[data-streamer]');
+  check('the stream window is at /?stream=1 and in streamer mode', win.url().includes('stream=1') && (await win.evaluate(() => Streamer.on())));
+  await win.goto(`${BASE}/?stream=1#/`); await win.waitForSelector('a.proj');
+  await until(async () => (await win.locator('a.proj').count()) === 1);
+  check('the stream window shows only the open project', (await win.locator('a.proj').count()) === 1 && !(await win.locator('#app, main').first().textContent()).includes('Secret Board'));
+  check('the stream window cannot be switched off', (await win.evaluate(() => { Streamer.toggle(); return Streamer.on(); })) === true);
+  check('the normal window is not in streamer mode', !(await page.evaluate(() => document.documentElement.hasAttribute('data-streamer'))) && (await page.evaluate(() => Streamer.on())) === false);
+  await win.close();
+  await page.goto(`${BASE}/#/`); await page.waitForSelector('a.proj');
+
   // Auto (AIG-592): a stub file stands in for OBS in the process list
   check('the board reports nothing running at first', (await s.ok('GET', '/api/streamer')).running === false && (await s.ok('GET', '/api/streamer')).auto === true);
   fs.writeFileSync(STUB, 'obs64.exe');

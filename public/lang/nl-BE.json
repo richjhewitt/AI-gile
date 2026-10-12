@@ -2268,5 +2268,7 @@
   "rf.mode.one": "Eén groot opruimproject voor allemaal",
   "rf.go": "Maak de kaarten",
   "rf.none": "Geen grote bestanden gevonden in je projectmappen. Niets op te ruimen.",
-  "rf.cards": "{n} kaarten in de backlog"
+  "rf.cards": "{n} kaarten in de backlog",
+  "streamer.win": "Streamvenster openen",
+  "streamer.win.title": "Open een tweede venster van dit bord dat altijd in streamermodus staat: zet dit venster in uw stream"
 }
