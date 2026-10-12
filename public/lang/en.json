@@ -2304,5 +2304,21 @@
  "twitch.btn": "💬 Twitch chat",
  "twitch.title": "Your Twitch chat in a window that stays on top (Shift+click: change channel)",
  "twitch.ask": "Which Twitch channel's chat? (the name from twitch.tv/name)",
- "twitch.bad": "That doesn't look like a Twitch channel name."
+ "twitch.bad": "That doesn't look like a Twitch channel name.",
+  "streamer.obs.h": "Connect to OBS",
+  "streamer.obs.help": "In OBS open Tools > WebSocket Server Settings, tick Enable WebSocket server, and copy the port and password here. Then the board knows when you really stream, and can start and stop the stream for you.",
+  "streamer.obs.port": "Port",
+  "streamer.obs.password": "Password",
+  "streamer.obs.pw.saved": "(saved)",
+  "streamer.obs.connect": "Connect",
+  "streamer.obs.connected": "Connected",
+  "streamer.obs.connecting": "Connecting...",
+  "streamer.obs.off": "Not connected",
+  "streamer.obs.notrunning": "OBS is not running",
+  "streamer.obs.serveroff": "OBS is running, but its WebSocket server is off (Tools > WebSocket Server Settings)",
+  "streamer.obs.badpassword": "Wrong password",
+  "streamer.live": "🔴 Go live",
+  "streamer.live.title": "Turn streamer mode on and start the stream in OBS",
+  "streamer.stop": "⏹ Stop",
+  "streamer.stop.title": "Stop the stream in OBS"
 }

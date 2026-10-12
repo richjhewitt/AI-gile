@@ -3,9 +3,12 @@
 // on and off with OBS / Streamlabs (a stub file stands in for the process list) unless Setup says not to.
 import fs from 'node:fs';
 import path from 'node:path';
+import http from 'node:http';
+import crypto from 'node:crypto';
 import { BASE, check, tmp, until, sleep, mkProject, mkCard, say, openPage, noErrors, def } from '../lib.mjs';
 
 const STUB = path.join(tmp('stream'), 'obs-running.txt');
+const OBS_PORT = 45455;   // the fake OBS below listens here (AIGILE_OBS_STUB)
 const KEY = 'sk-test1234567890abcdefXYZ';
 const IP = '192.168.1.50', MAIL = 'dave@example.com';
 
@@ -162,6 +165,7 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   await sleep(7000);
   check('with the auto switch off, a running program does not turn it on', !(await page.evaluate(() => document.documentElement.hasAttribute('data-streamer'))));
   fs.unlinkSync(STUB);
+  await until(async () => (await s.ok('GET', '/api/streamer')).running === false, 5000);
 
   // Alt+Shift+S, for Discord streams the board can't see (AIG-640)
   check('Setup names the Alt+Shift+S shortcut', (await page.textContent('#streamKey')).includes('Alt+Shift+S'));
@@ -169,5 +173,124 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   check('Alt+Shift+S turns streamer mode on', await page.evaluate(() => document.documentElement.hasAttribute('data-streamer') && /on|aan/.test(document.getElementById('streamNote').textContent)));
   await page.keyboard.press('Alt+Shift+S');
   check('and off again', !(await page.evaluate(() => document.documentElement.hasAttribute('data-streamer'))));
+
+  // OBS link (AIG-643..645): a fake obs-websocket v5 server runs inside this QA process (AIGILE_OBS_STUB is its port)
+  await s.ok('POST', '/api/streamer', { auto: true });
+  const PW = 'hunter-obs-pw';
+  const bad = await fetch(`${BASE}/api/streamer/obs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'connect', port: 99999 }) });
+  check('connect rejects a port out of range', bad.status === 400, bad.status);
+  const noObs = await fetch(`${BASE}/api/streamer/obs`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'start' }) });
+  check('Go live without a connection says no (409)', noObs.status === 409, noObs.status);
+  let st = await s.ok('POST', '/api/streamer/obs', { action: 'connect', port: OBS_PORT, password: PW });
+  check('OBS not running: plain reason "notrunning"', st.obs.state === 'error' && st.obs.reason === 'notrunning', st.obs);
+  fs.writeFileSync(STUB, 'obs64.exe'); await sleep(900);
+  st = await s.ok('GET', '/api/streamer');
+  check('OBS process running but no WebSocket server: reason "serveroff"', st.obs.reason === 'serveroff', st.obs);
+  fs.unlinkSync(STUB);
+  const fake = await fakeObs(OBS_PORT, PW);
+  try {
+    await until(async () => (await s.ok('GET', '/api/streamer')).obs.state === 'connected', 8000);
+    st = await s.ok('GET', '/api/streamer');
+    check('connect ok: reconnects by itself once OBS is there; Identify auth accepted', st.obs.state === 'connected' && st.obs.port === OBS_PORT && st.obs.hasPassword === true, st.obs);
+    check('the password is never sent back to the page', !JSON.stringify(st).includes(PW));
+    st = await s.ok('POST', '/api/streamer/obs', { action: 'connect', port: OBS_PORT, password: 'wrong-one' });
+    check('wrong password: plain reason "badpassword"', st.obs.state === 'error' && st.obs.reason === 'badpassword', st.obs);
+    st = await s.ok('POST', '/api/streamer/obs', { action: 'connect', port: OBS_PORT });
+    check('connecting again without a password keeps the saved one (still wrong here)', st.obs.reason === 'badpassword' && st.obs.hasPassword === true, st.obs);
+    st = await s.ok('POST', '/api/streamer/obs', { action: 'connect', port: OBS_PORT, password: PW });
+    check('right password again: Connected', st.obs.state === 'connected', st.obs);
+    check('old streamer.conf settings survive saving the OBS link', st.auto === true && st.hide.personal === true && st.hide.private === true);
+    st = await s.ok('POST', '/api/streamer', { auto: true });
+    check('saving other streamer settings keeps the OBS link', st.obs.saved === true && st.obs.hasPassword === true);
+
+    // Setup shows it
+    await page.goto(`${BASE}/#/setup`); await page.reload(); await page.waitForSelector('#obsConnect');
+    await until(async () => (await page.textContent('#obsState')).trim().length > 0);
+    check('Setup > Streamer: Connect to OBS with the port, a password box and the status Connected', (await page.inputValue('#obsPort')) === String(OBS_PORT) && (await page.getAttribute('#obsPass', 'type')) === 'password' && /Connected|Verbonden/.test(await page.textContent('#obsState')), await page.textContent('#obsState'));
+    check('the password box does not hold the saved password', (await page.inputValue('#obsPass')) === '');
+
+    // Go live
+    await page.goto(`${BASE}/#/`); await page.reload(); await page.waitForSelector('a.proj');
+    await page.waitForSelector('#liveBtn:not([hidden])', { timeout: 10000 });
+    check('Go live button shows next to the Streamer button, streamer mode still off', /Go live|Live gaan/.test(await page.textContent('#liveBtn')) && !(await page.evaluate(() => document.documentElement.hasAttribute('data-streamer'))));
+    await page.setViewportSize({ width: 390, height: 844 });
+    check('phone: the Go live button is not hidden by CSS', await page.evaluate(() => getComputedStyle(document.getElementById('liveBtn')).display !== 'none'));
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.click('#liveBtn');
+    await page.waitForSelector('html[data-streamer]');
+    await until(async () => fake.log.includes('StartStream'), 5000);
+    check('Go live turns streamer mode on and sends StartStream', fake.log.includes('StartStream') && (await page.getAttribute('#streamBtn', 'aria-pressed')) === 'true', fake.log);
+    await until(async () => /Stop/.test(await page.textContent('#liveBtn')), 8000);
+    st = await s.ok('GET', '/api/streamer');
+    check('the board now says streaming, through OBS', st.running === true && st.via === 'obs' && st.program === 'OBS', st);
+    await page.click('#liveBtn');
+    await until(async () => fake.log.includes('StopStream'), 5000);
+    check('Stop sends StopStream', fake.log.includes('StopStream'));
+    await until(async () => /Go live|Live gaan/.test(await page.textContent('#liveBtn')), 8000);
+    await page.click('#streamBtn'); await until(async () => !(await page.evaluate(() => document.documentElement.hasAttribute('data-streamer'))));
+
+    // Auto follows the real stream, not "OBS is open"
+    fs.writeFileSync(STUB, 'obs64.exe'); await sleep(900);
+    st = await s.ok('GET', '/api/streamer');
+    check('connected: OBS being open is not "streaming"', st.running === false && st.via === 'obs', st);
+    await sleep(6000);
+    check('connected: streamer mode stays off while OBS is only open', !(await page.evaluate(() => document.documentElement.hasAttribute('data-streamer'))));
+    fake.setStreaming(true);
+    await page.waitForSelector('html[data-streamer]', { timeout: 15000 });
+    await page.waitForSelector('#streamNote');
+    check('a stream started in OBS itself turns streamer mode on by itself', /OBS/.test(await page.textContent('#streamNote')));
+    fake.setStreaming(false);
+    await page.waitForFunction(() => !document.documentElement.hasAttribute('data-streamer'), null, { timeout: 15000 });
+    check('and the stream ending turns it off again', true);
+    fs.unlinkSync(STUB);
+  } finally { fake.close(); }
+  // OBS goes away: back to the process check
+  await until(async () => (await s.ok('GET', '/api/streamer')).via === 'process', 8000);
+  check('OBS closed: the process check is back in charge', (await s.ok('GET', '/api/streamer')).obs.state !== 'connected');
+  await page.waitForSelector('#liveBtn[hidden]', { state: 'attached', timeout: 10000 });
+  check('and the Go live button hides', true);
   noErrors(page);
-}, true, { AIGILE_STREAM_STUB: STUB, AIGILE_STREAM_MS: '300' });
+}, true, { AIGILE_STREAM_STUB: STUB, AIGILE_STREAM_MS: '300', AIGILE_OBS_STUB: String(OBS_PORT), AIGILE_OBS_RETRY_MS: '300' });
+
+// A tiny fake OBS (obs-websocket v5): Hello -> Identify with auth -> Identified; answers requests; pushes StreamStateChanged.
+async function fakeObs(port, password) {
+  const salt = 'c2FsdHktc2FsdA==', challenge = 'Y2hhbGxlbmdl', log = [], socks = new Set();
+  let streaming = false;
+  const sha = s => crypto.createHash('sha256').update(s).digest('base64');
+  const frame = (op, buf) => buf.length < 126 ? Buffer.concat([Buffer.from([op, buf.length]), buf]) : Buffer.concat([Buffer.from([op, 126, buf.length >> 8, buf.length & 255]), buf]);
+  const send = (sk, o) => { if (!sk.destroyed) sk.write(frame(0x81, Buffer.from(JSON.stringify(o)))); };
+  const event = () => { for (const sk of socks) if (sk.ok) send(sk, { op: 5, d: { eventType: 'StreamStateChanged', eventIntent: 64, eventData: { outputActive: streaming, outputState: streaming ? 'OBS_WEBSOCKET_OUTPUT_STARTED' : 'OBS_WEBSOCKET_OUTPUT_STOPPED' } } }); };
+  const server = http.createServer((q, r) => r.end());
+  server.on('upgrade', (req, sk) => {
+    sk.write('HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ' + crypto.createHash('sha1').update(req.headers['sec-websocket-key'] + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11').digest('base64') + '\r\n\r\n');
+    socks.add(sk); sk.on('close', () => socks.delete(sk)); sk.on('error', () => {});
+    send(sk, { op: 0, d: { obsWebSocketVersion: '5.0.0', rpcVersion: 1, authentication: { challenge, salt } } });
+    let buf = Buffer.alloc(0);
+    sk.on('data', d => {
+      buf = Buffer.concat([buf, d]);
+      for (;;) {
+        if (buf.length < 2) return;
+        let len = buf[1] & 127, at = 2;
+        if (len === 126) { if (buf.length < 4) return; len = buf.readUInt16BE(2); at = 4; }
+        if (buf.length < at + 4 + len) return;
+        const mask = buf.subarray(at, at + 4), data = Buffer.from(buf.subarray(at + 4, at + 4 + len)).map((b, i) => b ^ mask[i % 4]), opc = buf[0] & 15;
+        buf = buf.subarray(at + 4 + len);
+        if (opc === 8) { sk.end(); return; }
+        if (opc !== 1) continue;
+        const m = JSON.parse(data.toString()), x = m.d || {};
+        if (m.op === 1) {
+          if (x.authentication !== sha(sha(password + salt) + challenge)) { sk.write(frame(0x88, Buffer.from([4009 >> 8, 4009 & 255]))); sk.end(); return; }
+          sk.ok = true; send(sk, { op: 2, d: { negotiatedRpcVersion: 1 } });
+        } else if (m.op === 6) {
+          log.push(x.requestType);
+          if (x.requestType === 'StartStream') streaming = true;
+          if (x.requestType === 'StopStream') streaming = false;
+          send(sk, { op: 7, d: { requestType: x.requestType, requestId: x.requestId, requestStatus: { result: true, code: 100 }, responseData: x.requestType === 'GetStreamStatus' ? { outputActive: streaming } : {} } });
+          if (x.requestType === 'StartStream' || x.requestType === 'StopStream') event();
+        }
+      }
+    });
+  });
+  await new Promise(r => server.listen(port, '127.0.0.1', r));
+  return { log, setStreaming(v) { streaming = v; event(); }, close() { for (const sk of socks) sk.destroy(); server.close(); } };
+}

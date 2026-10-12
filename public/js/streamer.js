@@ -8,7 +8,7 @@
 // OBS or Streamlabs is running (GET /api/streamer, checked by lib/streamer.js every 30 s; the page asks every 5 s).
 const Streamer = (() => {
   const KEY = 'aigile.streamer', DOTS = '••••';
-  let manual = false, auto = false, st = { auto: true, running: false, program: '', hide: {} }, hidden = new Set(), ready = null, note = null;
+  let manual = false, auto = false, st = { auto: true, running: false, program: '', hide: {}, obs: { state: 'off', port: 4455 } }, hidden = new Set(), ready = null, note = null;
   try { manual = localStorage.getItem(KEY) === '1'; } catch {}
   // The stream window (AIG-631): opened by Setup's 🎥 Open stream window as /?stream=1; always in streamer mode, whatever the saved setting.
   const forced = /[?&]stream=1(&|$)/.test(location.search);
@@ -123,7 +123,7 @@ const Streamer = (() => {
     const b = $('streamBtn'); if (b) { b.disabled = forced; b.classList.toggle('stream-on', o); b.setAttribute('aria-pressed', String(o)); b.title = t(o ? 'streamer.title.on' : 'streamer.title'); }
     if (o) { ready = prime(); watch(); restore(); scan(document.body); if (!state.setup) api('GET', '/api/setup').then(s => { state.setup = s; scan(document.body); }).catch(() => {}); } else restore();
     if (was !== o || force) { ready = o ? prime() : ready; Promise.resolve(ready).then(() => { if (typeof Dms !== 'undefined') Dms.reload(); if (typeof refresh === 'function') refresh(true); if (typeof Inbox !== 'undefined' && Inbox.show && state.route && state.route.view === 'inbox') Inbox.show(true); }); }
-    paintSetup();
+    paintSetup(); paintLive();
   }
   function toggle() { if (forced) return; const was = on(); manual = !manual; if (!manual) auto = false; try { localStorage.setItem(KEY, manual ? '1' : '0'); } catch {} apply(was); }
   function toast(msg, offBtn) {
@@ -136,7 +136,7 @@ const Streamer = (() => {
   // The board's word on OBS / Streamlabs. On by itself when one starts, off again when it stops (only if the page turned it on).
   async function poll() {
     let s; try { s = await fetch('/api/streamer', { cache: 'no-store' }).then(r => r.json()); } catch { return; }
-    const was = on(), hideWas = JSON.stringify(st.hide); st = { ...st, ...s };
+    const was = on(), hideWas = JSON.stringify(st.hide); st = { ...st, ...s }; paintObs(); paintLive();
     if (JSON.stringify(st.hide) !== hideWas && was === on()) apply(was, true);   // the tick list was changed (maybe in another window)
     if (!s.running) st.suppressed = '';
     const want = s.auto && s.running && !st.suppressed;
@@ -148,12 +148,45 @@ const Streamer = (() => {
     return `<span>${esc(t('streamer.setup.h'))}</span><label class="chk"><input type="checkbox" id="streamAuto" ${st.auto ? 'checked' : ''} onchange="Streamer.setAuto(this.checked)"> ${esc(t('streamer.setup.auto'))}</label>
       <small class="muted">${esc(t('streamer.setup.help'))}</small>
       <small class="muted" id="streamKey">${esc(t('streamer.setup.key'))}</small>
+      <fieldset class="stream-obs" id="streamObs"><legend>${esc(t('streamer.obs.h'))}</legend>
+        <small class="muted">${esc(t('streamer.obs.help'))}</small>
+        <label>${esc(t('streamer.obs.port'))} <input type="number" id="obsPort" min="1" max="65535" value="${esc(String((st.obs || {}).port || 4455))}"></label>
+        <label>${esc(t('streamer.obs.password'))} <input type="password" id="obsPass" autocomplete="off" data-nomask="1" placeholder="${esc((st.obs || {}).hasPassword ? t('streamer.obs.pw.saved') : '')}"></label>
+        <div><button type="button" id="obsConnect" onclick="Streamer.obsConnect()">${esc(t('streamer.obs.connect'))}</button> <span id="obsState" role="status"></span></div>
+      </fieldset>
       <fieldset class="stream-hide" id="streamHide"><legend>${esc(t('streamer.hide.h'))}</legend>
         ${['private', 'personal', 'dms', 'friends', 'life', 'secrets'].map(k => `<label class="chk"><input type="checkbox" data-hide="${k}" ${hides(k) ? 'checked' : ''} ${k === 'personal' ? 'disabled' : ''} onchange="Streamer.setHide('${k}', this.checked)"> ${esc(t('streamer.hide.' + k))}${k === 'personal' ? ` <span class="muted">${esc(t('streamer.hide.locked'))}</span>` : ''}</label>`).join('')}
       </fieldset>${forced ? '' : `<div><button type="button" id="streamWin" onclick="Streamer.openWindow()" title="${esc(t('streamer.win.title'))}">🎥 ${esc(t('streamer.win'))}</button></div>`}${st.running ? `<small class="muted">${esc(t('streamer.setup.running', { program: st.program || 'OBS' }))}</small>` : ''}`;
   }
+  /* ---- OBS link (AIG-643..645) ---- */
+  const obsText = () => { const o = st.obs || {}; return o.state === 'connected' ? t('streamer.obs.connected') : o.state === 'connecting' ? t('streamer.obs.connecting') : o.state === 'error' ? t('streamer.obs.' + (o.reason || 'notrunning')) : o.saved ? t('streamer.obs.off') : ''; };
+  function paintObs() { const e = $('obsState'); if (!e) return; const o = st.obs || {}; e.textContent = obsText(); e.className = o.state === 'connected' ? 'obs-ok' : 'muted'; }
+  // 🔴 Go live / ⏹ Stop next to the 🎥 button, only while OBS is connected
+  function paintLive() {
+    const b = $('liveBtn'); if (!b) return;
+    const o = st.obs || {}, show = o.state === 'connected' && !forced;
+    b.hidden = !show; if (!show) return;
+    b.textContent = t(o.streaming ? 'streamer.stop' : 'streamer.live'); b.title = t(o.streaming ? 'streamer.stop.title' : 'streamer.live.title');
+    b.classList.toggle('stream-on', !!o.streaming);
+  }
+  async function obsConnect() {
+    const body = { action: 'connect', port: $('obsPort').value }, pw = $('obsPass').value; if (pw) body.password = pw;
+    const e = $('obsState'); if (e) { e.textContent = t('streamer.obs.connecting'); e.className = 'muted'; }
+    try { st = { ...st, ...(await api('POST', '/api/streamer/obs', body)) }; } catch (x) { alert(x.message); }
+    const p = $('obsPass'); if (p) { p.value = ''; p.placeholder = (st.obs || {}).hasPassword ? t('streamer.obs.pw.saved') : ''; }
+    paintObs(); paintLive(); poll();
+  }
+  // Go live: streamer mode on first, then StartStream; Stop sends StopStream.
+  async function goLive() {
+    const o = st.obs || {}, b = $('liveBtn'); if (b) b.disabled = true;
+    try {
+      if (!o.streaming && !on()) toggle();
+      st = { ...st, ...(await api('POST', '/api/streamer/obs', { action: o.streaming ? 'stop' : 'start' })) };
+    } catch (x) { alert(x.message); }
+    if (b) b.disabled = false; paintLive(); poll();
+  }
   function openWindow() { window.open('/?stream=1', 'aigileStream', 'popup=yes,width=1280,height=800'); }
-  function paintSetup() { const b = $('streamerBox'); if (b) b.innerHTML = setupHtml(); }
+  function paintSetup() { const b = $('streamerBox'); if (b) { b.innerHTML = setupHtml(); paintObs(); } }
   async function setAuto(v) {
     try { st = { ...st, ...(await api('POST', '/api/streamer', { auto: !!v })) }; } catch (e) { alert(e.message); }
     if (!v && auto) { const was = on(); auto = false; apply(was); }
@@ -170,5 +203,5 @@ const Streamer = (() => {
     e.preventDefault(); toggle(); toast(t(on() ? 'streamer.key.on' : 'streamer.key.off'));
   }
   function start() { apply(false); poll(); setInterval(poll, Number(window.AIGILE_STREAM_POLL) || 5000); document.addEventListener('keydown', key); }
-  return { on, forced, openWindow, mask, raw, filter, toggle, dismiss, setAuto, setHide, setupHtml, start, poll, get hidden() { return hidden; } };
+  return { on, forced, obsConnect, goLive, openWindow, mask, raw, filter, toggle, dismiss, setAuto, setHide, setupHtml, start, poll, get hidden() { return hidden; } };
 })();

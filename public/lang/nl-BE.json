@@ -2304,5 +2304,21 @@
  "twitch.btn": "💬 Twitch-chat",
  "twitch.title": "Je Twitch-chat in een venster dat bovenop blijft (Shift+klik: ander kanaal)",
  "twitch.ask": "Van welk Twitch-kanaal wil je de chat? (de naam uit twitch.tv/naam)",
- "twitch.bad": "Dat lijkt geen Twitch-kanaalnaam."
+ "twitch.bad": "Dat lijkt geen Twitch-kanaalnaam.",
+  "streamer.obs.h": "Verbinden met OBS",
+  "streamer.obs.help": "Open in OBS Extra > WebSocket-serverinstellingen, vink WebSocket-server inschakelen aan en kopieer de poort en het wachtwoord hierheen. Dan weet het bord wanneer je echt streamt en kan het de stream voor je starten en stoppen.",
+  "streamer.obs.port": "Poort",
+  "streamer.obs.password": "Wachtwoord",
+  "streamer.obs.pw.saved": "(opgeslagen)",
+  "streamer.obs.connect": "Verbinden",
+  "streamer.obs.connected": "Verbonden",
+  "streamer.obs.connecting": "Verbinden...",
+  "streamer.obs.off": "Niet verbonden",
+  "streamer.obs.notrunning": "OBS draait niet",
+  "streamer.obs.serveroff": "OBS draait, maar de WebSocket-server staat uit (Extra > WebSocket-serverinstellingen)",
+  "streamer.obs.badpassword": "Verkeerd wachtwoord",
+  "streamer.live": "🔴 Live gaan",
+  "streamer.live.title": "Zet streamermodus aan en start de stream in OBS",
+  "streamer.stop": "⏹ Stop",
+  "streamer.stop.title": "Stop de stream in OBS"
 }
