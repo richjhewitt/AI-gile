@@ -33,6 +33,23 @@ def('assume', '🌙 assumptions log: assume + comment --assume, the page and its
   check('and marks it plugged', (await s.ok('GET', '/api/assumptions')).find(x => x.slug === 'beta').state === 'plug');
   noErrors(page);
 
+  // AIG-526: structured assumptions, grouped per card with a summary and an Open link.
+  const sc = await mkCard(s, 'alpha', 'Holiday party lines', { description: 'Hourly party lines only for the holiday card.\nSecond line that stays out.' });
+  const rs = s.cli(['assume', 'alpha', sc.id, '--decided', 'Which strains go on the card', '--options', 'all|hourly only', '--chose', 'Hourly only', '--why', 'Less clutter', '--if-plugged', 'Add the rest back', '--as', 'Lead']);
+  check('structured assume is logged', /logged an assumption/.test(rs.out), rs);
+  s.cli(['comment', 'alpha', sc.id, '--assume', '--chose', 'Keep v1', '--why', 'Nobody asked', '--as', 'Lead']);
+  s.cli(['assume', 'alpha', sc.id, 'A plain old line', '--as', 'Lead']);
+  const st = (await getCard(s, 'alpha', sc.id)).comments.filter(m => m.mark === 'assume');
+  check('fields stored on the comment, plain form stored as chose', st.length === 3 && st[0].assume.decided === 'Which strains go on the card' && st[0].assume.options.join() === 'all,hourly only' && st[0].assume.ifNo === 'Add the rest back' && st[2].assume.chose === 'A plain old line', st);
+  const p2 = await openPage(ctx, '#/assumptions');
+  await p2.waitForSelector('.as-card');
+  const cardEl = p2.locator('.as-card', { hasText: 'Holiday party lines' });
+  check('one card group holds its three entries, with summary and Open link', (await cardEl.locator('.as-item').count()) === 3 && /Hourly party lines only for the holiday card\./.test(await cardEl.locator('.as-sum').textContent()) && !/Second line/.test(await cardEl.textContent()) && /#\/p\/alpha\//.test(await cardEl.locator('.as-open').getAttribute('href')));
+  const ft = await cardEl.textContent();
+  check('entries read Had to decide / Options / We chose / Why / If you plug it', ['Had to decide:', 'Options:', 'We chose:', 'Why:', 'If you plug it:', 'all / hourly only', 'Add the rest back', 'A plain old line'].every(x => ft.includes(x)), ft);
+  check('👍 Fine and ✋ Plug this are still there', (await cardEl.locator('.as-ok').count()) === 3 && (await cardEl.locator('.as-plug').count()) === 3);
+  noErrors(page);
+
   // AIG-478: a watched team with an empty To do pulls ready urgent/high backlog cards, and says why as an assumption.
   await mkProject(s, 'Dry', 'DRY', { path: tmp('asm3') });
   const hi = await mkCard(s, 'dry', 'Ready and high', { status: 'backlog', priority: 'high' });
