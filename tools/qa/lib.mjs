@@ -60,8 +60,8 @@ export async function startServer(extraEnv = {}, port = PORT) {   // a second bo
   const dir = tmp('run'), data = path.join(dir, 'data'), usageDir = path.join(dir, 'usage');
   fs.mkdirSync(usageDir);
   const out = path.join(dir, 'wake-out.txt');
-  const stub = path.join(dir, 'agent-stub.bat');
-  fs.writeFileSync(stub, `@echo off\r\ncd > "${out}"\r\necho %* >> "${out}"\r\nping -n 4 127.0.0.1 >nul\r\nexit\r\n`);
+  const platform = require('../../lib/platform'), stub = path.join(dir, 'agent-stub' + platform.stubExt());
+  platform.writeStub(fs, stub, 'log', out);
   // The test server gets its own settings file (AIG-401): never the owner's aigile.local.json, which tests
   // that save settings (wizard, budget, setup) used to change. Only the machine bits are carried over.
   const local = path.join(dir, 'aigile.local.json');
