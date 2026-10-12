@@ -631,6 +631,7 @@
  "format.open": "📄 Openen",
  "format.copy": "📋 Kopiëren",
  "format.copied": "✅ Gekopieerd",
+ "format.copyvalue": "Deze waarde kopiëren",
  "format.copymd": "{name} kopiëren",
  "format.opendir": "De map openen in Verkenner",
  "format.copypath": "Het pad kopiëren",

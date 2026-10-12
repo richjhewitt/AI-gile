@@ -13,10 +13,13 @@ function withCode(text, fmt, slug) {
     }
     const links = [];   // inline code that is a .md path is set aside so fmt leaves it whole
     part = (i ? part.replace(/^\n/, '') : part).replace(/`([^`\n]+)`/g, (m, c) => isMdPath(c) ? `\u0000${links.push(c.trim()) - 1}\u0000` : m);
-    return spaceBullets(editLinks(fmt(part)).replace(/`([^`\n]+)`/g, (m, c) => `<code>${c}</code>` + (isFilePath(unesc(c)) ? fileBtns(unesc(c)) : isFolderPath(unesc(c)) ? folderBtn(unesc(c)) : ''))
-      .replace(/\u0000(\d+)\u0000/g, (m, n) => `<code>${mdLink(esc(links[n]), esc(links[n]), slug)}${mdCopyBtn(links[n], slug)}</code>`));
+    return spaceBullets(copyValues(editLinks(fmt(part)).replace(/`([^`\n]+)`/g, (m, c) => `<code data-copy-text="${esc(unesc(c))}" title="${esc(t('format.copyvalue'))}">${c}</code>` + (isFilePath(unesc(c)) ? fileBtns(unesc(c)) : isFolderPath(unesc(c)) ? folderBtn(unesc(c)) : ''))
+      .replace(/\u0000(\d+)\u0000/g, (m, n) => `<code>${mdLink(esc(links[n]), esc(links[n]), slug)}${mdCopyBtn(links[n], slug)}</code>`)));
   }).join('');
 }
+// AIG-470: "**Label:** value" lines get a ⧉ after the value when it is one token (host, path, number, email, URL, key), a link or `code`.
+const copyValues = html => html.replace(/(<b>[^<]*:<\/b>[ \t]+)(<code[^>]*>[^<]*<\/code>|<a [^>]*>[^<]*<\/a>|[^\s<]+)[ \t]*(?=\n|$)/gm, (m, label, v) =>
+  `${label}${v}<button class="md-copy" data-copy-text="${esc(unesc(v.replace(/<[^>]*>/g, '')))}" title="${esc(t('format.copyvalue'))}">⧉</button>`);
 // 📝 Open in your editor (AIG-156): full file paths (C:\..., C:/..., /home/..., ~/...) get a small button.
 const isFilePath = s => /^\s*(?:[A-Za-z]:[\\/]|\/|~[\\/])[^<>|?*\n`"]*\.\w{1,8}\s*$/.test(s) && !/^\s*https?:/i.test(s);
 // A full folder path (AIG-240): no extension at the end; it gets a 📂 button that opens the folder.
@@ -51,6 +54,11 @@ async function copyDocText(btn, text) {
   const was = btn.dataset.was || (btn.dataset.was = btn.textContent);
   btn.textContent = t('format.copied'); setTimeout(() => { btn.textContent = was; }, 1500);
 }
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-copy-text]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  copyDocText(b, b.dataset.copyText);
+}, true);
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-copy-md]'); if (!b) return;
   e.preventDefault(); e.stopPropagation();
