@@ -70,11 +70,22 @@ function readFields(flags, testSteps) {
 }
 
 /* ---------- card detail panel ---------- */
+// ↩ Reopen and ⋯ Move to (AIG-403): a done card goes back to the column it came from; any card can be moved to a column.
+function moveUi(p, c) {
+  const cols = colsOf(p).filter(x => x.key !== c.status);
+  return (c.status === 'done' ? `<button data-reopen onclick="moveCard('${esc(c.reopenTo || 'todo')}')" title="${esc(t('card.reopen.title'))}">${esc(t('card.reopen'))}</button> ` : '')
+    + `<select id="mv-to" data-moveto onchange="moveCard(this.value)" aria-label="${esc(t('card.moveto'))}"><option value="">${esc(t('card.moveto'))}</option>${cols.map(x => `<option value="${esc(x.key)}">${esc(((x.emoji ? x.emoji + ' ' : '') + x.name).trim())}</option>`).join('')}</select>`;
+}
+async function moveCard(status) {
+  if (!status) return;
+  try { await api('PATCH', `/api/projects/${slug()}/cards/${cardId()}`, { status }); refresh(true); } catch (e) { alert(e.message); }
+}
 function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
   const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
   const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${state.editing ? '' : timerUi(c)}${state.editing ? '' : Focus.btn(p, c)}<span style="flex:1"></span>
+      ${state.editing ? '' : moveUi(p, c)}
       ${state.editing ? '' : `<button onclick="editCard()">${esc(t('card.edit'))}</button> <button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button>`}</div>`;
   if (state.editing) {
     return `<div class="overlay"><div class="panel">${head}

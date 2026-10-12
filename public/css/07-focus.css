@@ -16,3 +16,9 @@ html[data-focus] body { overflow: hidden; }
 .fx-small { display: flex; justify-content: center; gap: 12px; }
 .fx-small button { font-size: 14px; padding: 6px 14px; opacity: .7; background: transparent; color: inherit; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
 .fx-small button:hover { opacity: 1; }
+
+/* ---------- ↩ Undo bar (AIG-403) ---------- */
+.undo-bar { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 9999; display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 10px; background: #1f2937; color: #fff; box-shadow: 0 6px 24px rgba(0,0,0,.35); font-size: 14px; max-width: 92vw; }
+.undo-bar[hidden] { display: none; }
+.undo-bar button { background: transparent; color: #93c5fd; border: 1px solid #93c5fd; border-radius: 8px; padding: 3px 10px; cursor: pointer; font-weight: 600; }
+.undo-bar button:empty { display: none; }
