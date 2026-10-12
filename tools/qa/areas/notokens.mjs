@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { BASE, check, sleep, until, tmp, mkProject, mkCard, say, openPage, noErrors, def } from '../lib.mjs';
 
-def('notokens', 'No Token Mode: kills runs, refuses wakes/nudges/tests/usage checks, hides AI buttons, turns on at the limit, glows when usage is back, never turns back on by itself (AIG-337..339)', async (s, ctx) => {
+def('notokens', 'No Token Mode: kills runs, refuses wakes/nudges/tests/usage checks, hides AI buttons, turns on at the limit, turns itself off when usage is back (AIG-337..339)', async (s, ctx) => {
   const folder = tmp('nt');
   await mkProject(s, 'Nova', 'NOV', { path: folder });
   const st = () => s.ok('GET', '/api/notokens');
@@ -66,15 +66,20 @@ def('notokens', 'No Token Mode: kills runs, refuses wakes/nudges/tests/usage che
   await page.waitForFunction(() => /\d{1,2}[:.]\d{2}/.test(document.getElementById('ntBtn').textContent), null, { timeout: 5000 }).catch(() => {});
   check('the switch shows the reset time', /\d{1,2}[:.]\d{2}/.test(await page.textContent('#ntBtn')), await page.textContent('#ntBtn'));
 
-  // Usage back: a new reading below the limit. It glows, but stays on.
+  // Usage back: a new reading below the limit. A switch only the limit turned on turns itself off (AIG-532), with no click.
   await sleep(50);
   await s.ok('POST', '/api/limits', { cwd: folder, rate_limits: { five_hour: { used_percentage: 12, resets_at: reset + 18000 } } });
-  const back = await until(async () => (await st()).back && await st(), 4000);
-  check('usage back is reported', back && back.on === true && back.back === true, back);
-  await page.waitForFunction(() => document.getElementById('ntBtn').classList.contains('back'), null, { timeout: 5000 }).catch(() => {});
-  check('the switch glows Turn AI back on', await page.evaluate(() => document.getElementById('ntBtn').classList.contains('back')) && /back on/i.test(await page.textContent('#ntBtn')), await page.textContent('#ntBtn'));
+  const gone = await until(async () => !(await st()).on && await st(), 6000);
+  check('usage back: the limit switch turns itself off', !!gone && gone.on === false, gone);
+  await page.waitForFunction(() => !document.body.classList.contains('notokens'), null, { timeout: 5000 }).catch(() => {});
+  check('the page drops the notokens class and the switch says off', await page.evaluate(() => !document.body.classList.contains('notokens') && !document.getElementById('ntBtn').classList.contains('on') && !document.getElementById('ntBtn').classList.contains('back')), await page.textContent('#ntBtn'));
+  check('a wake works again', (await s.ok('POST', '/api/projects/nova/wake')).ok === true);
+
+  // A switch you flipped yourself stays on whatever the usage says, and a click turns it off.
+  await s.ok('POST', '/api/notokens', { on: true });
+  await page.waitForFunction(() => document.body.classList.contains('notokens'), null, { timeout: 5000 });
   await sleep(1500);
-  check('it does not turn back on by itself', (await st()).on === true && (await s.api('POST', '/api/projects/nova/wake')).status === 409);
+  check('a switch flipped by hand stays on', (await st()).on === true && (await s.api('POST', '/api/projects/nova/wake')).status === 409);
   await page.click('#ntBtn');
   await page.waitForFunction(() => !document.body.classList.contains('notokens'), null, { timeout: 5000 });
   check('clicking it turns AI back on', (await st()).on === false && (await s.ok('POST', '/api/projects/nova/wake')).ok === true);

@@ -109,7 +109,8 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
 
   // ⛔ No Token Mode: messages are refused, a round wakes nobody.
   await s.ok('POST', '/api/notokens', { on: true });
-  check('No Token Mode refuses a message', (await s.api('POST', '/api/chats/_watchman', { text: 'hello?' })).status === 409);
+  const nb = callList().length, held = await s.api('POST', '/api/chats/_watchman', { text: 'hello?' });
+  check('No Token Mode answers a message by rule, with no AI run (AIG-551)', held.status === 200 && !!(await until(async () => (await chat()).some(m => m.auto && m.mine === false), 4000)) && callList().length === nb, await chat());
   await mkCard(s, 'beta', 'More work', { status: 'todo' });
   const b2 = callList().length;
   await s.ok('POST', '/api/scrummaster/round'); await sleep(1500);
