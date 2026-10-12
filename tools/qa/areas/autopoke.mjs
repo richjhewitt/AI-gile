@@ -67,8 +67,9 @@ def('autopoke', '🔔 night watch pokes the teams that would show "needs a poke"
   check('with night watch on and the whip cracked, a stuck team is poked at once', (await pokes('fast', fast.id)) === base + 1, await pokes('fast', fast.id));
   check('the poke is the 👉 comment of the owner\'s own route', (await getCard(s, 'fast', fast.id)).comments.filter(m => m.poke).at(-1).text === '👉 any update?');
   check('a poke on its way hides the pill (it says so)', (await attention('fast'))?.auto === true, await attention('fast'));
-  await page.reload(); await page.waitForSelector('#pokeTop .pokebadge');
-  check('the top bar does not list it', !/Fast/.test(await page.getAttribute('#pokeTop .pokebadge', 'title')), await page.getAttribute('#pokeTop .pokebadge', 'title'));
+  await page.reload(); await page.waitForSelector('#pokeTop', { state: 'attached' }); await sleep(2500);   // the whip lifted the cap, so the badge may be gone altogether
+  const topTitle = (await page.getAttribute('#pokeTop .pokebadge', 'title', { timeout: 500 }).catch(() => '')) || '';
+  check('the top bar does not list it', !/Fast/.test(topTitle), topTitle);
   // 4. crack the whip
   await round(); await sleep(60);
   await round();
@@ -78,7 +79,13 @@ def('autopoke', '🔔 night watch pokes the teams that would show "needs a poke"
   check('the cap is per team', (await attention('capd'))?.held?.why === 'cap');
   // 5. one lead: a team whose lead sits in a session is never poked
   check('a lead working in a session is not poked', (await pokes('lead', lead.id)) === lead0, await pokes('lead', lead.id));
-  check('its pill stays, saying the lead is in a session', (await attention('lead'))?.held?.why === 'lead', await attention('lead'));
+  check('no pill and no poke for a lead in a session: it hears the comment there', (await attention('lead'))?.auto === true && !(await attention('lead')).held, await attention('lead'));
+  check('the top bar does not list the lead either', !/Lead/.test((await page.getAttribute('#pokeTop .pokebadge', 'title', { timeout: 500 }).catch(() => '')) || ''));
+  // 6. a project left off the watch list (the owner's choice) shows no pill either
+  const off = await mk('Offlist', 'OFF'); await settle(off.slug); stale([off]); await online([off]);
+  check('a project off the watch list shows no pill', (await attention('offlist'))?.auto === true && !(await attention('offlist')).held, await attention('offlist'));
+  const off0 = await pokes('offlist', off.id); await round();
+  check('and is not poked', (await pokes('offlist', off.id)) === off0);
   noErrors(page);
   await s.ok('POST', '/api/quiet', { on: false });
 }, true, { AIGILE_POKE_MS: '10', AIGILE_ACTIVE_MS: '60000', AIGILE_ONLINE_MS: '60000' });
