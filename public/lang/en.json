@@ -1983,5 +1983,18 @@
  "saver.crucial": "⭐ Crucial",
  "saver.crucial.title": "A crucial card keeps running while the usage saver is on",
  "saver.chip.title": "Crucial: still runs while the usage saver is on",
- "inbox.k.done.tell": "📣 Done, tell the team"
+ "inbox.k.done.tell": "📣 Done, tell the team",
+ "srv.dmr.help": "Usage saver is on, so I can only do the simple things without AI: status, list <column>, move AIG-12 <column>, park AIG-12 (to Backlog), crucial AIG-12, help. Anything else waits until usage is back.",
+ "srv.dmr.status": "{name}: Backlog {backlog}, To do {todo}, Doing {doing}, Review {review}, Test {verify}, Team {team}, Done {done}. In progress: {active}",
+ "srv.dmr.nothing": "nothing",
+ "srv.dmr.list": "{status}: {n} cards",
+ "srv.dmr.listnone": "Nothing in {status}.",
+ "srv.dmr.badstatus": "I don't know the column \"{word}\". Columns: {list}.",
+ "srv.dmr.needid": "Say which card, like: {cmd} AIG-12",
+ "srv.dmr.nocard": "I can't find a card {id} here.",
+ "srv.dmr.moved": "Moved {id} to {status}.",
+ "srv.dmr.parked": "Parked {id} in the Backlog.",
+ "srv.dmr.crucial": "{id} is now crucial: it still runs while the usage saver is on.",
+ "srv.dmr.unknown": "I'm not running AI right now (usage saver or No Token Mode), so this waits until usage is back. Your message is kept and I'll read it then. Type help for what I can do now.",
+ "srv.dmr.unknownsm": "I'm not running AI right now (usage saver or No Token Mode), so this waits until usage is back. Please send it again then. Type help for what I can do now."
 }

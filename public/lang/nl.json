@@ -1983,5 +1983,18 @@
  "saver.crucial": "⭐ Cruciaal",
  "saver.crucial.title": "Een cruciale kaart blijft draaien terwijl de verbruiksbespaarder aan staat",
  "saver.chip.title": "Cruciaal: draait nog terwijl de verbruiksbespaarder aan staat",
- "inbox.k.done.tell": "📣 Klaar, laat het team weten"
+ "inbox.k.done.tell": "📣 Klaar, laat het team weten",
+ "srv.dmr.help": "De verbruiksbespaarder staat aan, dus zonder AI kan ik alleen de simpele dingen: status, list <kolom>, move AIG-12 <kolom>, park AIG-12 (naar Backlog), crucial AIG-12, help. De rest wacht tot er weer verbruik is.",
+ "srv.dmr.status": "{name}: Backlog {backlog}, To do {todo}, Bezig {doing}, Review {review}, Test {verify}, Team {team}, Klaar {done}. In uitvoering: {active}",
+ "srv.dmr.nothing": "niets",
+ "srv.dmr.list": "{status}: {n} kaarten",
+ "srv.dmr.listnone": "Niets in {status}.",
+ "srv.dmr.badstatus": "Ik ken de kolom \"{word}\" niet. Kolommen: {list}.",
+ "srv.dmr.needid": "Zeg welke kaart, bijvoorbeeld: {cmd} AIG-12",
+ "srv.dmr.nocard": "Ik vind hier geen kaart {id}.",
+ "srv.dmr.moved": "{id} verplaatst naar {status}.",
+ "srv.dmr.parked": "{id} geparkeerd in de Backlog.",
+ "srv.dmr.crucial": "{id} is nu cruciaal: de kaart draait nog terwijl de verbruiksbespaarder aan staat.",
+ "srv.dmr.unknown": "Ik draai nu geen AI (verbruiksbespaarder of No Token Mode), dus dit wacht tot er weer verbruik is. Je bericht blijft bewaard en ik lees het dan. Typ help voor wat ik nu kan.",
+ "srv.dmr.unknownsm": "Ik draai nu geen AI (verbruiksbespaarder of No Token Mode), dus dit wacht tot er weer verbruik is. Stuur het dan opnieuw. Typ help voor wat ik nu kan."
 }
