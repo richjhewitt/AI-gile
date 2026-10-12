@@ -101,8 +101,15 @@ const Attach = (() => {
     q.focus(); load(false);
   }
   // Pasting an image into a reply box attaches it; pasted text still goes in as text.
+  // The DM chat composer (.dm-compose, AIG-474) takes pasted and dropped files too.
+  const dropBox = e => { const c = e.target.closest && e.target.closest('.dm-compose'); return c && c.querySelector('.att'); };
+  document.addEventListener('dragover', e => { if (dropBox(e) && [...(e.dataTransfer.types || [])].includes('Files')) e.preventDefault(); });
+  document.addEventListener('drop', e => {
+    const box = dropBox(e), files = box && [...e.dataTransfer.files]; if (!files || !files.length) return;
+    e.preventDefault(); add(box.dataset.attKey, files);
+  });
   document.addEventListener('paste', e => {
-    const ta = e.target.closest && e.target.closest('textarea, input[type=text]'), scope = ta && ta.closest('.reply, .verdict, .ib-item, .dialog'), box = scope && scope.querySelector('.att');
+    const ta = e.target.closest && e.target.closest('textarea, input[type=text]'), scope = ta && ta.closest('.reply, .verdict, .ib-item, .dialog, .dm-compose'), box = scope && scope.querySelector('.att');
     const files = [...((e.clipboardData && e.clipboardData.files) || [])];
     if (!box || !files.length) return;
     e.preventDefault();
