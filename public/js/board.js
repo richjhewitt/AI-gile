@@ -175,7 +175,7 @@ const isMine = c => String(c.assignee || '').trim().toLowerCase() === me().toLow
 const timed = c => !!c.timedUntil && new Date(c.timedUntil) > Date.now();   // AIG-385
 const timedChip = c => timed(c) ? `<span class="pill timed" title="${esc(t('timed.title'))}">⏰ ${esc(timedWhen(c.timedUntil))}</span>` : '';
 const timedWhen = iso => { const d = new Date(iso), day = d.toDateString() === new Date().toDateString() ? '' : d.toLocaleDateString(i18n.lang, { weekday: 'short', day: 'numeric', month: 'short' }) + ' '; return day + d.toLocaleTimeString(i18n.lang, { hour: '2-digit', minute: '2-digit' }); };
-const forYou = c => c.status !== 'done' && !timed(c) && !isWaitingCard(c) && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
+const forYou = c => c.status !== 'done' && !timed(c) && !isWaitingCard(c) && !taskReplied(c) && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
 const kindOf = c => isMine(c) ? (c.lifeType ? 'l' : c.server ? 's' : c.outside ? 'o' : 'k') : c.status === 'verify' && !c.needsYou && !c.blocked ? (c.info ? 'r' : 't') : 'q';   // r: 📖 To read (AIG-392)
 function forYouFirst(k) {
   if (k) { state.forYouFirst = k; try { localStorage.setItem('aigile.forYouFirst', k); } catch {} refresh(true); }
@@ -188,7 +188,7 @@ function forYouQueue(p, pool = p.cards) {
   // Within a kind, a queue: longest-waiting first, so "Wait and see" sends a test to the back.
   // Tests the AI tester passed come first, ready for a quick accept (AIG-300).
   const ai = c => c.aiCheck && c.aiCheck.result === 'pass' ? 0 : 1;
-  return pool.filter(c => forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => ai(a) - ai(b) || rank(a) - rank(b) || queueRank(a, b) || a.updated.localeCompare(b.updated));
+  return pool.filter((c, i) => forYou(c) && matchesFilter(c, p.slug) && pool.findIndex(x => x.id === c.id) === i).sort((a, b) => ai(a) - ai(b) || rank(a) - rank(b) || queueRank(a, b) || a.updated.localeCompare(b.updated));
 }
 // 🧹 Tidy my pile (AIG-193): the lead folds related cards in For you into one each, and reports back.
 async function tidyPile(s, btn) {

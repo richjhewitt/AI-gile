@@ -30,8 +30,11 @@ const IB = {
   const shownAsk = c => {
     const mark = isTask(c) ? 'task' : c.blocked ? '' : 'ask';
     const m = mark && [...(c.comments || [])].reverse().find(x => x.mark === mark && String(x.author).trim().toLowerCase() !== me().toLowerCase());
-    return m || lastAsk(c);
+    // After the owner replied and the lead answered (AIG-472), the lead's newest message leads; the task itself folds under it (see `earlier`).
+    const last = isTask(c) && lastAsk(c);
+    return last && m && last.at > m.at && !last.mark ? last : m || lastAsk(c);
   };
+  const earlier = c => { const a = shownAsk(c); const m = isTask(c) && [...(c.comments || [])].reverse().find(x => x.mark === 'task' && String(x.author).trim().toLowerCase() !== me().toLowerCase()); return m && m !== a ? m : null; };
   const keyOf = c => c.project + '/' + c.id;
   // Escape, then link web addresses and card ids (e.g. AIG-12) in the same project.
   const linkify = (text, c) => withCode(text, t => mdLinks(esc(t)
@@ -65,7 +68,7 @@ const IB = {
   }
   function apply(list) {
     if (typeof i18n === 'undefined' || !i18n.ready) { setTimeout(() => load().catch(() => {}), 100); return; }   // wait for the language file (AIG-124)
-    IB.raw = list;
+    IB.raw = list.filter((c, i) => list.findIndex(x => keyOf(x) === keyOf(c)) === i);   // a card is one item, never two (AIG-472)
     IB.items = view();
     const qs = IB.items.filter(c => !isTest(c));   // questions and tasks both alert (only those shown)
     // New questions only: never on the first load. A fresh question on the same card counts as new.
@@ -84,5 +87,5 @@ const IB = {
   // Link offers and friends' questions are waiting on the owner too: counted in All, the top bar, the rail and the title.
   const friends = () => (IB.offers || 0) + (IB.asks || 0);
   const setFriends = (key, n) => { if (IB[key] === n) return; IB[key] = n; if (typeof IB.paintTop === 'function') IB.paintTop(); if (onInboxPage() && el('ib') && IB.paintTabs) IB.paintTabs(); };
-  Object.assign(IB, { friends, setFriends, el, esc, post, isTask, isQuestion, isTest, kindOf, lastAsk, shownAsk, keyOf, linkify, onInboxPage, tabPref, load, apply, repaint, view });
+  Object.assign(IB, { friends, setFriends, el, esc, post, isTask, isQuestion, isTest, kindOf, lastAsk, shownAsk, earlier, keyOf, linkify, onInboxPage, tabPref, load, apply, repaint, view });
 })();

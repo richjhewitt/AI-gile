@@ -28,6 +28,13 @@ document.addEventListener('click', async e => {
   try { await api('POST', `/api/projects/${s}/cards/${id}/lifedone`); refresh(true); if (typeof Inbox !== 'undefined' && Inbox.reload) Inbox.reload(); } catch (err) { alert(err.message); }
 }, true);
 const isOwnerTask = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
+// AIG-472: same rule as the server's taskReplied: the owner answered an open task and the team hasn't replied yet.
+const taskReplied = c => {
+  if (!isOwnerTask(c) || c.needsYou || c.blocked || c.status === 'verify') return false;
+  const cs = c.comments || [], me0 = me().toLowerCase(), mine = m => String(m.author).trim().toLowerCase() === me0;
+  const last = cs[cs.length - 1];
+  return cs.some(m => m.mark === 'task' && !mine(m)) && !!last && mine(last) && !/^✅ Done/.test(last.text);
+};
 const PRIO_RANK = { now: 0, today: 1, whenever: 3 };   // no priority set sits between today and whenever
 // An item's kind: what the team set, else a sensible guess (tests are tests, the rest are decisions).
 const isInfo = c => !!c.info && c.status === 'verify' && !isOwnerTask(c);   // 📖 To read (AIG-392): an info-only hand-over

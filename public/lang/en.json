@@ -540,6 +540,7 @@
  "inbox.k.ph": "Optional note for the team. Enter marks it done.",
  "inbox.k.aria": "Note for {id}",
  "inbox.k.done": "✅ Done",
+ "inbox.k.earlier": "Earlier steps",
  "inbox.k.hint": "Tells the team it's done.",
  "inbox.t.tag": "🧪 To {{dev:test}}",
  "inbox.t.waiting": "waiting {when}",
