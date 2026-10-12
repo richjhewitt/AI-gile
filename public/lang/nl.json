@@ -2211,5 +2211,8 @@
   "lic.declined": "Afgewezen.",
   "bug.send": "Stuur hem ook naar het AI-gile-team",
   "bug.send.title": "Je zit op het 🧪 Live-kanaal: de titel en tekst gaan naar de makers van AI-gile (geen namen, geen bestanden)",
-  "bug.send.err": "De bug staat op je bord, maar naar het AI-gile-team sturen lukte niet: {msg}"
+  "bug.send.err": "De bug staat op je bord, maar naar het AI-gile-team sturen lukte niet: {msg}",
+  "lead.planBig": "🧩 Nachten: plan een grote kaart als Te doen leeg is",
+  "lead.planBig.help": "Als er niets klaarstaat, zet de nachtwacht één grote backlogkaart in Te doen en de lead breekt die op in kleine kaarten met teststappen. Kost tokens; één kaart per nacht per project.",
+  "srv.assume.planbig": "Aanname: Te doen raakte vannacht leeg en er stond niets klaar, dus ik heb deze kaart klaargezet om te plannen: breek hem op in kleine kaarten met teststappen (aigile add ... --status todo) en sluit deze dan of houd hem als ouder."
 }
