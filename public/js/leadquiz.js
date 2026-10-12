@@ -51,6 +51,7 @@ function leadPrefsHtml(msg = '') {
     ${sw('tidyCards')}${sw('chatty')}
     <label class="f"><span>${esc(t('lead.go'))}</span><select class="setup-theme" onchange="setLeadPref({ go: this.value })">${['', 'ask', 'small'].map(v => `<option value="${v}" ${(pr.go || '') === v ? 'selected' : ''}>${esc(t('lead.go.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.go.help'))}</small></label>
     ${sw('watchAll')}${sw('light')}
+    <label class="f"><span>${esc(t('lead.smPush'))}</span><select class="setup-theme" id="pf-smPush" onchange="setLeadPref({ smPush: Number(this.value) })">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${(pr.smPush || 3) === n ? 'selected' : ''}>${n} · ${esc(t('sm.push.' + n))}</option>`).join('')}</select><small class="muted">${esc(t('lead.smPush.help'))}</small></label>
     ${budgetHtml(pr)}
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;
 }

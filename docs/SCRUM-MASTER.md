@@ -6,7 +6,7 @@ The night watchman grew into one role with a day and a night mode (AIG-349 part 
 
 Across every project it watches:
 
-- **Stuck cards**: in progress for over a day with nobody running.
+- **Stuck cards**: in progress with nobody running longer than the scale says (a day at level 1, 3 h at Steady).
 - **Teams asleep with To do**: woken (in the background, at most once an hour per team).
 - **Cards waiting on the owner too long**: 3 days or more, named in the digest.
 - **Overlap between projects**: open cards whose titles look alike, named in the digest.
@@ -14,6 +14,22 @@ Across every project it watches:
 - **One short digest a day**, after `digestAt` (default 17:00): done today, waiting for tests, ideas sorted, and the list above.
 
 At night (while going quiet) the watchman rounds in `lib/watchman.js` do the work, as before: restart cut-off runs, flag a card stuck after 3 tries, wake idle teams, wait out the usage limit, start the AI tester.
+
+## On or off, and the diligence scale (AIG-441)
+
+**On** runs day and night: the plain-code rounds always (free), the AI only as designed (owner messages, things rules can't fix, the digest), within the daily cap, the budget and ⛔ No Token Mode. **Off** is as before: only the night watchman while going quiet. At night the watchman still does its own rounds; going quiet keeps working. The chat says "On: checking every N min (Steady)".
+
+The scale `push` 1..5 (chat header and ⚙️ Setup, saved as `scrumMaster.push` in aigile.local.json, default 3). The table is `PUSH` in `lib/scrummaster.js`, plain numbers in minutes:
+
+| Level | Round every | Poke a card stuck over | Remind about a waiting question after | Daily AI runs | Extra |
+|---|---|---|---|---|---|
+| 1 🍽️ Keep the plates spinning | 30 min | 1 day | never | 4 | |
+| 2 | 20 min | 8 h | never | 6 | |
+| 3 ⚖️ Steady (default) | 10 min | 3 h | 4 h | 8 | |
+| 4 | 5 min | 1 h | 2 h | 12 | |
+| 5 🏇 Crack the whip | 2 min | 30 min | 1 h | 16 | a status line in the chat each hour |
+
+A reminder is ONE bump of the open question (the AIG-373 bump, `bumpOne`), never repeated for the same question. `scrumMaster.aiRunsPerDay` still overrides the cap. `AIGILE_SM_MS` overrides the interval (tests).
 
 ## May and may not
 
@@ -28,11 +44,11 @@ At night (while going quiet) the watchman rounds in `lib/watchman.js` do the wor
 
 ## Token rules
 
-- **Rounds are plain code** (every 10 minutes once launched, `AIGILE_SM_MS`): free.
+- **Rounds are plain code** (every 2 to 30 minutes by the scale, once launched): free.
 - **An AI run only** when the owner writes to it, when a round finds something the rules can't fix (a card newly stuck for a day), or at digest time when there are findings (stuck or look-alike cards).
 - **Owner messages run on Opus, routine runs on Sonnet.** Idea sorting is rules first (a `slug:` start, then the project's name, slug, key and the longer words of its name); one tiny Haiku call only when the rules can't decide, never more than once per idea.
 - **Never** under ⛔ No Token Mode or over the token budget (`lib/notokens.js`, `lib/budget.js`); Haiku is skipped then too, and the idea waits in the inbox.
-- **A daily AI-run cap**: `scrumMaster.aiRunsPerDay` in aigile.local.json (default 8). Over it, an owner message gets a one-line "used up" answer and routine runs are dropped until tomorrow.
+- **A daily AI-run cap**: `scrumMaster.aiRunsPerDay` in aigile.local.json (default by the scale: 4, 6, 8, 12, 16). Over it, an owner message gets a one-line "used up" answer and routine runs are dropped until tomorrow.
 
 ## Launch
 

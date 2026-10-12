@@ -3,7 +3,7 @@
 // AI-run cap and No Token Mode, the 🧭 Launch button and its where-it-runs choice, and the hang watchdog restarts a silent run.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, sleep, until, tmp, mkProject, mkCard, openPage, noErrors, def, ROOT } from '../lib.mjs';
+import { check, sleep, until, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def, ROOT } from '../lib.mjs';
 
 // The stub agent: in the Lead Scrum Master's folder it notes the model and answers with watchsay; in a "hang" project it
 // sits silent; anything else is noted and ends at once.
@@ -19,6 +19,7 @@ const callList = () => { try { return fs.readFileSync(calls, 'utf8').split('\n')
 def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-later ideas by rules, wakes teams with To do, daily AI-run cap, No Token Mode, Launch choice, hang watchdog (AIG-359)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP', { path: tmp('alpha') });
   await mkProject(s, 'Beta', 'BET', { path: tmp('beta') });
+  await mkProject(s, 'Gamma', 'GAM', { path: tmp('gamma') });
   const chat = async () => (await s.ok('GET', '/api/chats/_watchman')).messages;
   let chats = await s.ok('GET', '/api/chats');
   check('awake: its chat is listed under its new name', chats.some(c => c.slug === '_watchman' && c.lead === '🧭 Lead Scrum Master'), chats.map(c => c.lead));
@@ -101,10 +102,87 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   await page.waitForFunction(() => /VS Code/.test((document.getElementById('smBar') || {}).textContent || ''), null, { timeout: 8000 });
   const wlog = fs.readFileSync(path.join(s.data, 'logs', '_scrummaster.log'), 'utf8');
   check('it opened VS Code on its folder', /opened \(vscode\): code ".*scrummaster"/.test(wlog), wlog);
+  // 🎚️ The diligence scale (AIG-441) in the chat header: "On: checking every N min (Steady)", changed with the select.
+  check('the header says it is on, every 10 min, Steady', /On: checking every 10 min \(.*Steady\)/.test(await page.textContent('#smBar')), await page.textContent('#smBar'));
+  await page.selectOption('#smPush', '5');
+  await page.waitForFunction(() => /every 2 min/.test((document.getElementById('smBar') || {}).textContent || ''), null, { timeout: 8000 });
+  check('level 5 is saved: every 2 min, Crack the whip', (await s.ok('GET', '/api/scrummaster')).push === 5 && /Crack the whip/.test(await page.textContent('#smBar')));
+  await page.selectOption('#smPush', '3');
+  await page.waitForFunction(() => /every 10 min/.test((document.getElementById('smBar') || {}).textContent || ''), null, { timeout: 8000 });
   await page.click('#smBar button');
   await page.waitForSelector('#smLaunch');
   check('Stop turns it off', !(await s.ok('GET', '/api/scrummaster')).on);
   noErrors(page);
+
+  // The scale changes the interval and the thresholds; on runs day and night, off stops (AIG-441).
+  const st0 = await s.ok('GET', '/api/scrummaster');
+  check('the step table is in the status: 30/20/10/5/2 min, caps 4/6/8/12/16', [1, 2, 3, 4, 5].every((n, i) => st0.scale[n].everyMin === [30, 20, 10, 5, 2][i] && st0.scale[n].cap === [4, 6, 8, 12, 16][i]), st0.scale);
+  check('and stuck 1 day / 8 h / 3 h / 1 h / 30 min, reminders never / never / 4 h / 2 h / 1 h', [1, 2, 3, 4, 5].every((n, i) => st0.scale[n].stuckMin === [1440, 480, 180, 60, 30][i] && st0.scale[n].remindMin === [0, 0, 240, 120, 60][i]), st0.scale);
+  for (const [lv, ev] of [[1, 30], [2, 20], [3, 10], [4, 5], [5, 2]]) check(`level ${lv} checks every ${ev} min`, (await s.ok('POST', '/api/scrummaster/push', { level: lv })).everyMin === ev);
+  check('a level outside 1..5 is refused', (await s.api('POST', '/api/scrummaster/push', { level: 9 })).status === 400);
+  await s.ok('POST', '/api/setup', { prefs: { smPush: 2 } });
+  check('Setup saves the same scale', (await s.ok('GET', '/api/scrummaster')).push === 2 && (await s.ok('GET', '/api/setup')).prefs.smPush === 2);
+  const age = (slug, fn) => { const f = path.join(s.data, slug + '.json'), j = JSON.parse(fs.readFileSync(f, 'utf8')); fn(j); fs.writeFileSync(f, JSON.stringify(j, null, 1)); };
+  const hoursAgo = h => new Date(Date.now() - h * 3600e3).toISOString();
+  const sa = await mkCard(s, 'gamma', 'Stuck five hours', { status: 'doing' }), sb = await mkCard(s, 'gamma', 'Stuck two hours', { status: 'doing' }), sc = await mkCard(s, 'gamma', 'Stuck forty minutes', { status: 'doing' });
+  age('gamma', j => { for (const [c, h] of [[sa, 5], [sb, 2], [sc, 40 / 60]]) j.cards.find(x => x.id === c.id).updated = hoursAgo(h); });
+  const flagged = async () => (await s.ok('GET', '/api/scrummaster')).flagged;
+  await s.ok('POST', '/api/setup', { prefs: { smPush: 1 } });
+  check('off: a round does nothing (as today)', (await s.ok('POST', '/api/scrummaster/round')).on === false && await flagged() === 0);
+  await s.ok('POST', '/api/scrummaster/launch', { where: 'background' });
+  await sleep(2500);   // its own first round
+  const base = await flagged();
+  check('on at level 1: nothing is stuck for a day', await flagged() === base, base);
+  await s.ok('POST', '/api/scrummaster/push', { level: 2 }); await s.ok('POST', '/api/scrummaster/round');
+  check('level 2: still nothing under 8 h', await flagged() === base);
+  await s.ok('POST', '/api/scrummaster/push', { level: 3 }); await s.ok('POST', '/api/scrummaster/round');
+  check('level 3 pokes the 5 h card only', await flagged() === base + 1, await flagged());
+  await s.ok('POST', '/api/scrummaster/push', { level: 4 }); await s.ok('POST', '/api/scrummaster/round');
+  check('level 4 adds the 2 h card', await flagged() === base + 2, await flagged());
+  await s.ok('POST', '/api/scrummaster/push', { level: 5 }); await s.ok('POST', '/api/scrummaster/round');
+  check('level 5 adds the 40 min card', await flagged() === base + 3, await flagged());
+  check('the AI runs stayed inside the daily cap (3)', (await s.ok('GET', '/api/scrummaster')).runsToday <= 3);
+
+  // Reminders: one bump of a question waiting longer than the scale says, never again.
+  const qa = await mkCard(s, 'alpha', 'Which colour?', { status: 'verify' });
+  await say(s, 'alpha', qa.id, 'Lead', 'Which colour do you want?', { needsYou: true, mark: 'ask' });
+  const qb = await mkCard(s, 'alpha', 'Which font?', { status: 'verify' });
+  await say(s, 'alpha', qb.id, 'Lead', 'Which font do you want?', { needsYou: true, mark: 'ask' });
+  age('alpha', j => { for (const [c, h] of [[qa, 5], [qb, 3]]) j.cards.find(x => x.id === c.id).comments.forEach(m => { if (m.mark === 'ask') m.at = hoursAgo(h); }); });
+  const bumps = async c => (await getCard(s, 'alpha', c.id)).bumps || 0;
+  await s.ok('POST', '/api/scrummaster/push', { level: 2 }); await s.ok('POST', '/api/scrummaster/round');
+  check('level 2 never reminds', await bumps(qa) === 0);
+  await s.ok('POST', '/api/scrummaster/push', { level: 3 }); await s.ok('POST', '/api/scrummaster/round');
+  check('level 3 bumps the question waiting 5 h, not the one at 3 h', await bumps(qa) === 1 && await bumps(qb) === 0, [await bumps(qa), await bumps(qb)]);
+  await s.ok('POST', '/api/scrummaster/round'); await s.ok('POST', '/api/scrummaster/round');
+  check('and never repeats', await bumps(qa) === 1);
+  await s.ok('POST', '/api/scrummaster/push', { level: 4 }); await s.ok('POST', '/api/scrummaster/round');
+  check('level 4 (2 h) bumps the other one, once', await bumps(qb) === 1 && await bumps(qa) === 1);
+
+  // Level 5: a status line each hour in its chat.
+  const lines = async () => (await chat()).filter(m => /^🏇 /.test(m.text)).length;
+  await s.ok('POST', '/api/scrummaster/push', { level: 5 });
+  const before5 = await lines();
+  await s.ok('POST', '/api/scrummaster/round'); await s.ok('POST', '/api/scrummaster/round');
+  check('level 5 says a status line, and not another per round', await lines() >= 1 && await lines() === before5 + (before5 ? 0 : 1), [before5, await lines()]);
+
+  // ⛔ No Token Mode: a card newly stuck is noted but no AI run starts.
+  await s.ok('POST', '/api/notokens', { on: true });
+  const sd = await mkCard(s, 'gamma', 'Stuck under No Token', { status: 'doing' });
+  age('gamma', j => { j.cards.find(x => x.id === sd.id).updated = hoursAgo(9); });
+  const c0 = callList().length;
+  await s.ok('POST', '/api/scrummaster/round'); await sleep(1200);
+  check('No Token Mode: the stuck card starts no AI run', callList().length === c0, callList().slice(c0));
+  await s.ok('POST', '/api/notokens', { on: false });
+
+  // Off stops it again.
+  await s.ok('POST', '/api/scrummaster/stop');
+  const se = await mkCard(s, 'gamma', 'Stuck after off', { status: 'doing' });
+  age('gamma', j => { j.cards.find(x => x.id === se.id).updated = hoursAgo(9); });
+  const fl = await flagged();
+  await s.ok('POST', '/api/scrummaster/round');
+  check('off stops the rounds', await flagged() === fl && (await s.ok('GET', '/api/scrummaster')).on === false);
+  await s.ok('POST', '/api/setup', { prefs: { smPush: 3 } });
 
   // Hang watchdog: a verbose background run that writes nothing is stopped and started again, with a note on its card.
   await mkProject(s, 'Hang', 'HNG', { path: tmp('hang') });
