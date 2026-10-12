@@ -2032,5 +2032,10 @@
   "tb.b.assume": "Aannames",
   "tb.b.usage": "Verbruik",
   "tb.b.setup": "Tandwiel voor instellingen",
-  "tb.b.theme": "Thema"
+  "tb.b.theme": "Thema",
+  "dms.origin.auto": "⚙ Automatisch, gratis",
+  "dms.origin.auto.title": "Geschreven door regels, zonder AI, kost niets.",
+  "dms.origin.ai": "✨ AI, kost tokens",
+  "dms.origin.ai.title": "Geschreven door een AI-agent, dat kost tokens.",
+  "dms.origin.legend": "Labels bij antwoorden: ⚙ automatisch, gratis · ✨ AI, kost tokens"
 }

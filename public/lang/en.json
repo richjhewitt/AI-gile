@@ -2032,5 +2032,10 @@
   "tb.b.assume": "Assumptions",
   "tb.b.usage": "Usage",
   "tb.b.setup": "Settings gear",
-  "tb.b.theme": "Theme"
+  "tb.b.theme": "Theme",
+  "dms.origin.auto": "⚙ Automated, free",
+  "dms.origin.auto.title": "Written by rules, no AI involved, costs nothing.",
+  "dms.origin.ai": "✨ AI, uses tokens",
+  "dms.origin.ai.title": "Written by an AI agent, which uses tokens.",
+  "dms.origin.legend": "Chips on replies: ⚙ automated, free · ✨ AI, uses tokens"
 }
