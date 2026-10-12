@@ -1544,5 +1544,14 @@
  "dlg.life.hint": "Hij springt op dat moment in Voor jou (⏰). Tot dan zit hij je niet in de weg.",
  "dlg.life.suggest": "Hier vooral kaarten uit het echte leven?",
  "dlg.life.suggest.btn": "Maak hiervan een 🏡 Levensbord",
- "dlg.life.err.when": "Kies een datum en tijd voor de afspraak"
+ "dlg.life.err.when": "Kies een datum en tijd voor de afspraak",
+ "undo.moved": "{id} verplaatst naar {col}",
+ "undo.hid": "{id} een uur verborgen",
+ "undo.btn": "↩ Ongedaan maken",
+ "undo.back": "↩ {id} staat er weer zoals voorheen",
+ "undo.late": "Te laat om dat ongedaan te maken.",
+ "card.reopen": "↩ Heropenen",
+ "card.reopen.title": "Zet deze kaart terug waar hij vandaan kwam",
+ "card.moveto": "⋯ Verplaatsen naar",
+ "card.moveto.title": "Zet deze kaart in een andere kolom"
 }

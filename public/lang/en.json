@@ -1544,5 +1544,14 @@
  "dlg.life.hint": "It pops up in For you at that moment (⏰). Until then it waits out of your way.",
  "dlg.life.suggest": "Mostly real-life cards here?",
  "dlg.life.suggest.btn": "Make this a 🏡 Life board",
- "dlg.life.err.when": "Pick a date and time for the appointment"
+ "dlg.life.err.when": "Pick a date and time for the appointment",
+ "undo.moved": "Moved {id} to {col}",
+ "undo.hid": "Hid {id} for an hour",
+ "undo.btn": "↩ Undo",
+ "undo.back": "↩ {id} is back as it was",
+ "undo.late": "Too late to undo that one.",
+ "card.reopen": "↩ Reopen",
+ "card.reopen.title": "Put this card back where it came from",
+ "card.moveto": "⋯ Move to",
+ "card.moveto.title": "Move this card to another column"
 }
