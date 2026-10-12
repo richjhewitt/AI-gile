@@ -1,0 +1,17 @@
+/* ---------- top bar buttons (AIG-575/576) ---------- */
+header .tb-off { display: none !important; }
+[data-tbc="accent"] { --tbc: var(--accent); } [data-tbc="done"] { --tbc: var(--done); } [data-tbc="warn"] { --tbc: var(--warn); }
+[data-tbc="danger"] { --tbc: var(--danger); } [data-tbc="you"] { --tbc: var(--you); }
+header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > button, header [data-tbc] > a { color: var(--tbc); border-color: var(--tbc); background: color-mix(in srgb, var(--tbc) 14%, var(--col)); }
+.tb-list { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 4px; }
+.tb-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--col); }
+.tb-row[draggable="true"] { cursor: grab; }
+.tb-grip { color: var(--muted); letter-spacing: -2px; user-select: none; }
+.tb-name { flex: 1 1 140px; display: flex; align-items: center; gap: 6px; }
+.tb-side { font-size: 13px; }
+.tb-sws { display: inline-flex; gap: 4px; }
+.tb-sw { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid transparent; background: var(--tbc); cursor: pointer; }
+.tb-sw[data-tbc=""] { background: var(--panel); border: 2px dashed var(--muted); }
+.tb-sw.on { border: 2px solid var(--text); box-shadow: 0 0 0 2px var(--panel) inset; }
+.tb-mv { display: inline-flex; gap: 2px; }
+.tb-mv button { padding: 2px 8px; }

@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="css/07-focus.css">
 <link rel="stylesheet" href="css/08-phone.css">
 <link rel="stylesheet" href="css/09-terminal.css">
+<link rel="stylesheet" href="css/10-topbar.css">
 </head>
 <body>
 <header>
@@ -37,7 +38,7 @@
   <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" title="No Token Mode">⛔ No Token Mode</button>
   <a class="navlink" id="assumeNav" href="#/assumptions" data-i18n-title="assume.nav.title" title="Guesses the team made while you were away"><span data-i18n="assume.nav">🌙 Assumptions</span> <span id="assumeBadge" class="pill you" hidden></span></a>
   <a class="navlink" id="usageNav" href="#/usage"><span data-i18n="nav.usage">⚡ Usage</span><span id="ugBars"></span></a>
-  <a class="navlink" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer">⚙️</a>
+  <a class="navlink" id="setupNav" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer">⚙️</a>
   <button id="themeBtn" class="theme-pick" onclick="nextTheme()" title="Theme">🖥️ System</button>
   <button id="enBtn" class="theme-pick" hidden onclick="toggleEn()"></button>
   <span class="live" id="live" data-i18n="live.ok">live</span>
@@ -156,6 +157,7 @@ window.Boot = (() => {
 <script src="js/emoji.js"></script>
 <script src="js/pwa.js"></script>
 <script src="js/terminal.js"></script>
+<script src="js/topbar.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
