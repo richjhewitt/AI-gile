@@ -47,7 +47,7 @@ function projCard(p, sp = {}) {
   const active = p.total - p.counts.backlog;
   const at = p.attention;
   return `<a class="proj ${p.archived ? 'archived' : ''} ${at ? 'needs-poke' : ''} ${sp.kids ? 'is-space' : ''}" href="#/p/${p.slug}" style="--proj:${esc(p.color)}" ${Spaces.dragAttrs(p.slug, sp.up || '')}>
-    ${at ? `<div class="pokeline">${at.kind === 'asleep' ? '💤' : '⚠️'} <b>${esc(t('home.poke'))}</b> ${at.kind === 'asleep' ? esc(asleepWhy(at)) : esc(t('home.unanswered', { when: ago(at.since, true) }))}</div>` : ''}
+    ${at ? `<div class="pokeline">${at.kind === 'asleep' ? '💤' : '⚠️'} <b>${esc(t('home.poke'))}</b> ${at.kind === 'asleep' ? esc(asleepWhy(at)) : esc(t('home.unanswered', { when: ago(at.since, true) }))}${at.auto ? ` · ${esc(t('poke.auto'))}` : at.held ? ` · ${esc(heldWhy(at))}` : ''}</div>` : ''}
     <h2>${sp.fold || ''}${pic(p.logo, p.emoji)} ${esc(p.name)} ${Spaces.pillHtml(sp.kids)}${p.archived ? `<span class="pill">${esc(t('home.archived'))}</span>` : ''} ${p.needsYou ? `<span class="pill you">${esc(t('home.foryou', { n: p.needsYou }))}</span>` : ''} ${p.blocked ? `<span class="pill blocked">${esc(t('home.blocked', { n: p.blocked }))}</span>` : ''}<span class="space-grow"></span>${Spaces.menuHtml(p.slug)}</h2>
     <div class="muted">${esc(p.description)}</div>
     ${bar(p.counts, active)}

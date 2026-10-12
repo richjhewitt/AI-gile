@@ -13,6 +13,8 @@ function theme(set) {
 // The same choice as a dropdown, for the Setup page (AIG-143).
 const themePickHtml = () => { const cur = theme(); return `<select class="setup-theme" onchange="theme(this.value)">${Object.keys(THEMES).map(k => `<option value="${k}" ${k === cur ? 'selected' : ''}>${esc(THEMES[k])}</option>`).join('')}</select>`; };
 // Why a team needs a poke, in your language (AIG-174); older servers only send the English text.
+// Night watch (AIG-516): a team the board pokes itself has auto set (no pill); one it can't poke has held, with the reason.
+const heldWhy = a => a.held ? t('poke.held.' + a.held.why, { n: a.held.n, cap: a.held.cap }) : '';
 const asleepWhy = a => a.n != null ? t(a.n === 1 ? 'poke.asleep.one' : 'poke.asleep.many', { n: a.n }) : a.why;
 const nextTheme = () => { const k = Object.keys(THEMES), cur = theme(); theme(k[(k.indexOf(cur) + 1) % k.length]); };
 theme();
@@ -117,16 +119,15 @@ window.showRestartApp = () => {
 
 /* ---------- teams that need a poke: top-bar badge ---------- */
 function pokeBadge(projects) {
-  const n = projects.filter(p => p.attention), names = n.map(p => p.name + ': ' + (p.attention.kind === 'asleep' ? asleepWhy(p.attention) : t('poke.stuck'))).join('\n');
-  const night = document.documentElement.hasAttribute('data-night');   // AIG-516: the night watch pokes them itself
-  const h = n.length && !night ? `<button class="navlink pokebadge" onclick="pokeAll(this)" title="${esc(t('poke.title'))}\n${esc(names)}">${esc(n.length > 1 ? t('poke.many', { n: n.length }) : t('poke.one'))}</button>` : '';
+  const n = projects.filter(p => p.attention && !p.attention.auto), names = n.map(p => p.name + ': ' + (p.attention.kind === 'asleep' ? asleepWhy(p.attention) : t('poke.stuck')) + (p.attention.held ? ' (' + heldWhy(p.attention) + ')' : '')).join('\n');
+  const h = n.length ? `<button class="navlink pokebadge" onclick="pokeAll(this)" title="${esc(t('poke.title'))}\n${esc(names)}">${esc(n.length > 1 ? t('poke.many', { n: n.length }) : t('poke.one'))}</button>` : '';
   if ($('pokeTop').innerHTML !== h) $('pokeTop').innerHTML = h;
 }
 // Tap the badge: wake every asleep team and restart every stuck one, then show the home page.
 async function pokeAll(b) {
   b.disabled = true; b.textContent = t('poke.waking');
   const failed = [];
-  for (const p of (await api('GET', '/api/projects')).filter(p => p.attention)) {
+  for (const p of (await api('GET', '/api/projects')).filter(p => p.attention && !p.attention.auto)) {
     const act = p.attention.kind === 'stuck' && p.presence && p.presence.running ? 'restart' : 'wake';
     try { await api('POST', `/api/projects/${p.slug}/${act}`); } catch (e) { failed.push(p.name + ': ' + e.message); }
   }
