@@ -243,7 +243,10 @@ const Dms = (() => {
     busy = true; el('dmErr').textContent = '';
     try {
       const attachments = fixed ? [] : await Attach.upload(key, thread.slug);
-      if (thread.watchman) await api('POST', '/api/chats/_watchman', { text, attachments });   // the watchman passes it on (AIG-221)
+      if (thread.watchman) {   // Send anyway (AIG-531): No Token Mode / budget refuse it, but it is the owner's call
+        try { await api('POST', '/api/chats/_watchman', { text, attachments }); }
+        catch (e) { if (/No Token Mode|budget/i.test(e.message || '') && confirm(e.message + ' ' + t('dms.sendanyway'))) await api('POST', '/api/chats/_watchman', { text, attachments, anyway: true }); else throw e; }
+      }   // the watchman passes it on (AIG-221)
       else if (q) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
       else await api('POST', `/api/projects/${thread.slug}/cards`, { title: '💬 ' + text.split('\n')[0].slice(0, 80), description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }

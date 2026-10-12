@@ -169,6 +169,7 @@
  "dms.go": "👍 Go",
  "dms.send": "Send",
  "dms.empty": "Write something first.",
+ "dms.sendanyway": "Send it anyway? (It may use the little plan you have left.)",
  "board.unassigned": "unassigned",
  "pres.log": "📄 Log",
  "pres.background": "🟢 Working in the background",
