@@ -15,3 +15,12 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .tb-sw.on { border: 2px solid var(--text); box-shadow: 0 0 0 2px var(--panel) inset; }
 .tb-mv { display: inline-flex; gap: 2px; }
 .tb-mv button { padding: 2px 8px; }
+
+/* ---------- 🚫 No AI, ever (AIG-581): every AI part is hidden; no glow, no switch (js/noai.js) ---------- */
+.noai [onclick^="wakeTeam"], .noai [onclick^="restartTeam"], .noai [onclick^="watchTeam"], .noai [onclick^="testForMe"], .noai [onclick^="uzCheckNow"],
+.noai [onclick^="pokeColumn"], .noai [data-ask-yes], .noai #ibTester, .noai #pokeTop, .noai #pokeBadge,
+.noai #ntBtn, .noai #usageNav, .noai #ugBars, .noai #nightTop, .noai #teamTop, .noai .ai-only { display: none !important; }
+.noai-box { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--col); }
+.tm-person { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 4px; }
+.tm-person .tm-name { flex: 1 1 140px; }
+.noai [onclick^="askTeamDialog"] { display: none !important; }

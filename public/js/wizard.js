@@ -10,7 +10,7 @@ const WZ_STYLES = {
 };
 const WZ_PLANS = ['fly', 'careful', 'normal', 'generous', 'nospare'];
 const WZ_STEPS = 5;
-const WZ = { shown: false, step: 1, name: '', agent: '', style: '', plan: '', help: '', hadOwner: false };
+const WZ = { noAi: false, shown: false, step: 1, name: '', agent: '', style: '', plan: '', help: '', hadOwner: false };
 
 // Which style the current settings already match ('' when none does).
 function wzStyleOf(pr, explain) {
@@ -54,13 +54,14 @@ function wizardShow() {
   const n = WZ.step, dots = `<div class="wz-dots" aria-label="${esc(t('wz.step', { n, of: WZ_STEPS }))}">${Array.from({ length: WZ_STEPS }, (_, i) => `<span class="wz-dot ${i + 1 === n ? 'on' : i + 1 < n ? 'past' : ''}"></span>`).join('')}</div>`;
   const pick = (name, val, cur, label, help = '') => `<label class="quiz-opt wz-opt"><input type="radio" name="${name}" value="${val}" ${cur === val ? 'checked' : ''} onchange="WZ.${{ 'wz-style': 'style', 'wz-help': 'help' }[name] || 'plan'} = this.value"> <span>${esc(label)}${help ? `<small class="muted"> ${esc(help)}</small>` : ''}</span></label>`;
   let body = '';
-  if (n === 1) body = `<h2>${esc(t('wz.1.h'))}</h2><p>${esc(t('wz.1.sub'))}</p><p class="muted">${esc(t('wz.1.pick'))}</p><label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('wz-lang')}</label>`;
+  if (n === 1) body = `<h2>${esc(t('wz.1.h'))}</h2><p>${esc(t('wz.1.sub'))}</p><p class="muted">${esc(t('wz.1.pick'))}</p><label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('wz-lang')}</label>
+      <label class="chk wz-noai"><input type="checkbox" id="wz-noai" ${WZ.noAi ? 'checked' : ''} onchange="WZ.noAi = this.checked"> <b>${esc(t('noai.wz'))}</b></label><small class="muted">${esc(t('noai.wz.help'))}</small>`;
   if (n === 2) {
     const g = wzField('agent.command').suggest;
     body = `<h2>${esc(t('wz.2.h'))}</h2>
       <label class="f"><span>${esc(t('wz.2.name'))}</span><input type="text" id="wz-name" value="${esc(WZ.name)}" maxlength="80" autocomplete="off"><small class="muted">${esc(t('wz.2.name.help'))}</small></label>
-      <label class="f"><span>${esc(t('wz.2.agent'))}</span><input type="text" id="wz-agent" value="${esc(WZ.agent)}" placeholder="${esc(g)}" autocomplete="off" spellcheck="false"><small class="muted">${esc(t('wz.2.agent.help'))}</small>
-      ${g && !WZ.agent ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(g)}</code> <button type="button" id="wzUse" onclick="$('wz-agent').value = ${esc(JSON.stringify(g))}; this.closest('.suggest').remove()">${esc(t('setup.suggest.use'))}</button></small>` : ''}</label>`;
+      ${WZ.noAi ? '' : `<label class="f"><span>${esc(t('wz.2.agent'))}</span><input type="text" id="wz-agent" value="${esc(WZ.agent)}" placeholder="${esc(g)}" autocomplete="off" spellcheck="false"><small class="muted">${esc(t('wz.2.agent.help'))}</small>`}
+      ${g && !WZ.agent && !WZ.noAi ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(g)}</code> <button type="button" id="wzUse" onclick="$('wz-agent').value = ${esc(JSON.stringify(g))}; this.closest('.suggest').remove()">${esc(t('setup.suggest.use'))}</button></small>` : ''}${WZ.noAi ? '' : '</label>'}`;
   }
   if (n === 3) body = `<h2>${esc(t('wz.3.h'))}</h2><p class="muted">${esc(t('wz.3.sub'))}</p><div class="wz-opts">${Object.keys(WZ_STYLES).map(k => pick('wz-style', k, WZ.style, t('wz.style.' + k), t('wz.style.' + k + '.help'))).join('')}</div>
       <h3>${esc(t('wz.adv.help.h'))}</h3><div class="wz-opts">${HELP_LEVELS.map(v => pick('wz-help', v, WZ.help, t('help.level.' + v))).join('')}</div>`;
@@ -76,6 +77,7 @@ async function wizardGo(to, skipped) {
   wzKeep();
   if (skipped) { if (WZ.step === 3) { WZ.style = ''; WZ.help = ''; } if (WZ.step === 4) WZ.plan = ''; if (WZ.step === 2 && WZ.hadOwner) { /* keep what is there */ } }
   if (WZ.step === 2 && to > 2 && !WZ.name && !WZ.hadOwner) { setErr('wz-err', t('wz.need.name')); return; }
+  if (WZ.noAi && to > 2 && to < 5) to = 5;   // 🚫 No AI, ever (AIG-581): no team style, no spend step
   if (to === 5) { if (!(await wzSave())) return; }
   WZ.step = to; wizardShow();
 }
@@ -83,14 +85,16 @@ async function wizardGo(to, skipped) {
 async function wzSave() {
   const body = { prefs: { wizardSeen: true } };
   if (WZ.name) body.owner = WZ.name;
-  if (WZ.agent) body['agent.command'] = WZ.agent;
-  if (WZ.style) Object.assign(body.prefs, wzPrefsOf(WZ.style));
-  if (WZ.plan) body.prefs.plan = WZ.plan;
+  if (WZ.agent && !WZ.noAi) body['agent.command'] = WZ.agent;
+  if (WZ.noAi) body.prefs.noAi = true;
+  if (WZ.style && !WZ.noAi) Object.assign(body.prefs, wzPrefsOf(WZ.style));
+  if (WZ.plan && !WZ.noAi) body.prefs.plan = WZ.plan;
   if (WZ.help) body.prefs.helpLevel = WZ.help;
   const explain = body.prefs.explain;   // also sent: the server keeps it as the words scale (AIG-418)
   try {
     // Blank name or program with a name already set: the server keeps the old ones (it only takes keys that are sent).
     state.setup = await api('POST', '/api/setup', body);
+    if (WZ.noAi) NoAi.apply(true);
     if (explain !== undefined) setExplain(explain);
     if (WZ.help) helpApply(WZ.help);
     return true;
