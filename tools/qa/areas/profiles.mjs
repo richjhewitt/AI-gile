@@ -5,12 +5,13 @@
 // aigile profile, your own copies in profiles.local and each project's numbers (AIG-421). Setup sliders (AIG-422).
 // The 👥 Team dialog and the profile editor, roles from a team in the card's role picker (AIG-423). Add members or Replace
 // team, with the kept ones removed in one click and ↩ Undo or Restore (AIG-444). ⚙️ Setup, your main team (AIG-460).
+// The wizard's starter team (AIG-424).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421); Setup sliders (AIG-422); 👥 Team dialog, profile editor, role picker (AIG-423); Add members or Replace team, ↩ undo (AIG-444); Setup main team (AIG-460)', async (s, ctx) => {
+def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421); Setup sliders (AIG-422); 👥 Team dialog, profile editor, role picker (AIG-423); Add members or Replace team, ↩ undo (AIG-444); Setup main team (AIG-460); wizard starter team (AIG-424)', async (s, ctx) => {
   const file = path.join(s.dir, 'aigile.local.json');
   const local = () => JSON.parse(fs.readFileSync(file, 'utf8'));
   const prefs = async () => (await s.ok('GET', '/api/setup')).prefs;
@@ -353,5 +354,21 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   await page.reload(); await page.waitForSelector('#mainTeam input[data-role="mobile-mid"]');
   check('it is still there after a reload', (await page.locator('#mainTeam input[data-role]:checked').count()) === 4);
   await s.ok('POST', '/api/setup', { prefs: { newRoles: '' } });
+
+  // 6. 🧙 Wizard, advanced mode (AIG-424): the steps question, and a starter team in the same box as Setup's main team.
+  await page.reload(); await page.waitForSelector('#mainTeam');
+  await page.evaluate(() => { advStart(); advEdit('roles'); });
+  await page.waitForSelector('#wa-roles-team option[value="solo"]', { state: 'attached' });
+  check('the wizard offers a starter team: the 7 teams', (await page.$$eval('#wa-roles-team option', os => os.length)) === 8 && /starter team/i.test(await page.textContent('#wa-body')));
+  await page.selectOption('#wa-roles-team', 'solo');
+  check('a team ticks its roles; nothing is saved before Next', (await page.locator('#wa-roles input[data-role]:checked').count()) === 3 && (await newRoles()) === '');
+  await page.check('#wa-roles-sm');
+  await page.click('#wzNext'); await page.waitForSelector('.wz-sum');
+  check('Next saves the starter team and the Scrum Master', (await newRoles()) === 'Lead (Opus),QA (Haiku),Quick fix (Haiku)' && (await prefs()).smRole === true, await newRoles());
+  check('the summary names them', /Quick fix \(Haiku\)/.test(await page.textContent('[data-row=roles]')) && /Scrum Master/.test(await page.textContent('[data-row=roles]')), await page.textContent('[data-row=roles]'));
+  await page.click('[data-row=lead] button'); await page.waitForSelector('[name=wa-steps]');
+  check('the lead screen asks the steps question, 3 answers', (await page.locator('[name=wa-steps]').count()) === 3);
+  await page.evaluate(() => closeDialog());
+  await s.ok('POST', '/api/setup', { prefs: { newRoles: '', smRole: false } });
   noErrors(page);
 }, true);
