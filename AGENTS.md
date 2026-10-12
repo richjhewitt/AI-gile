@@ -35,7 +35,7 @@ Profile picture: pick a picture that suits you: `aigile avatar <proj> --as NAME`
 
 **3. Move cards as you go.** `aigile move <proj> <id> doing` (`assign` it to yourself if unassigned); `review` only while a teammate checks it. `comment` for progress and findings. Add cards for work you discover: `aigile add <proj> "title" --type bug --priority high --status todo --desc "..."`.
 
-**Leads launching agents:** record each with `aigile start <proj> <id> --as <AgentName>` (assigns the card, moves it to `doing`, sets the roster task, shows the owner the "In flight" line). When the agent finishes, hand over with `test`, or `move` it on. Brief each helper with `aigile profile <proj> <role>` (e.g. `frontend`): paste its lines at the top of the helper's prompt.
+**Leads launching agents:** record each with `aigile start <proj> <id> --as <AgentName>` (assigns the card, moves it to `doing`, sets the roster task, shows the owner the "In flight" line). When the agent finishes, hand over with `test`, or `move` it on. **Translating:** run `aigile i18n missing <lang>` and translate only the JSON it prints (missing or changed English keys); never read all of `public/lang/en.json`. **Helper cap:** at most 4 helpers per run (the brief gives the exact number for the owner's spend scale: 2 on 🐢 up to 6 on 🚀), each with a short brief naming the exact files or line ranges. Brief each helper with `aigile profile <proj> <role>` (e.g. `frontend`): paste its lines at the top of the helper's prompt.
 
 **Carrying on in another card?** When you carry on in another card, link it with `aigile next-card <proj> <from-id> <to-id> --as NAME` so Rich's chat follows.
 
