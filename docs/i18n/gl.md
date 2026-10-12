@@ -1,4 +1,4 @@
-# Galician (gl) - first pass
+# Galician (gl) - first pass, native-speaker reviewed
 
 Source of rules: LocoRadio docs/i18n.md and gl.json (casual "ti"; reintegrationist-free standard RAG/ILG norm; plurals one / other; dates use gl-ES). Tone: warm, plain, short.
 
@@ -58,13 +58,34 @@ Source of rules: LocoRadio docs/i18n.md and gl.json (casual "ti"; reintegrationi
 | GO (answer button) | Go (kept; GO in quoted replies) |
 | Team news | Novas do equipo |
 | AI tester | IA de probas (passed / failed = aprobada / suspensa) |
+| click | premer ("Preme…"; "Fai clic" only where "preme" would clash with a key: "Fai clic ou preme Escape") |
+| plug (an assumption) | corrixir |
+| by itself (automatic) | automaticamente (never "soo"; "soa" only after a feminine noun) |
+| raise (a bug) | informar dun / enviar (never "levantar") |
 
-## For the reviewer
-- "taboleiro" for board (some teams say "board" or "panel"): check.
-- "Por facer / En curso / Feito" for the columns and "Para ti" for For you; "Por {{dev:probar}}" for the Verify column.
-- "Devolver" for Send back next to "Aceptar".
-- "dar un toque" for poke and the playful `sm.push.*` / `scale.*` lines (🍽️ "Manter os pratos xirando", 🏇 "Chimpar o látego").
-- "Amizade" for a single friend is correct but some readers may prefer "persoa amiga"; "MD" for DM (mensaxe directa).
-- Articles before epicene nouns ("o líder", "os axentes") stay masculine by grammar.
-- `{name}` stays in its basic form; prepositions that contract ("de {name}", "a {name}") should be checked before vowels.
-- Verb forms with "tu" in long help texts (`trust.help`, `budget.*`, `scale.*`) for naturalness.
+## For the reviewer (answered in the review)
+- "taboleiro" for board: kept. It is the usual Galician word for a kanban board and reads naturally.
+- "Por facer / En curso / Feito", "Para ti" and "Por {{dev:probar}}": kept. In running text the column is capitalised ("pasan a Feito").
+- "Devolver" next to "Aceptar": kept; it is short and clear on a button.
+- "dar un toque": kept. 🏇 "Chimpar o látego" (chimpar = throw / jump) is now "Estalar o látego"; "Manter os pratos xirando" kept.
+- "Amizade" for a friend: kept for gender neutrality; "MD" for DM is fine. Fixed one leftover "dun amigo" (`inbox.sum.f.one`).
+- Articles before epicene nouns ("o líder", "os axentes"): fine, grammatical gender.
+- `{name}` after prepositions: "de {name}", "a {name}", "con {name}" never contract with a name, so all are fine.
+- "ti" verb forms in long help texts: read through; fixed "cando preme" → "cando premes" and a few infinitives where the English is an instruction.
+
+## Review
+Native-speaker review, every value read next to the English (AIG-494).
+- Filled in the 7 keys that were missing (`usage.runs.total`, `usage.kind.*`, `srv.budget.night`).
+- Gender neutrality: removed masculine or feminine adjectives aimed at the reader or a friend ("se non estás seguro" → "se tes dúbidas", "xa ligados a ti", "Calado", "volves do silencio soa", "Coller tarxetas deles", "A súa copia queda con eles", "dun amigo").
+- Glossary: `runin.blind` and `sm.night.title` still said "o vixía"; now "a vixilancia nocturna", and `sm.night.title` quotes the real setting label (`lead.watchAll`).
+- `assignee.you.task` had lost its leading ": " that the code appends after "Ti".
+- "soo" (not a word) → "automaticamente" (`gloss.hook.text`, `nt.title.limit`, `srv.limit`, `usage.check.auto`, `wz.plan.generous.help`, `wz.adv.usage.auto`).
+- Calques: "Tapar isto" (plug) → "Corrixir isto"; "fóra do teu camiño" → "sen molestar"; "levanta bugs" → "envía bugs"; "Por facer quedou seco" → "quedou baleiro"; "Faladoiría" → "Conversa"; "retén {n}" → "bloquea {n}"; "Informar de {{dev:bug}}" → "Informar dun {{dev:bug}}"; "Aceptas?" → "De acordo?".
+- Grammar: "cando che o lembra" → "cando te avisa"; "Instalala" on a button → "Instalar"; "poñeremos en contacto" → "poñerémonos en contacto"; "atascado" → "atascadas" where it lists cards; "páraos ao 60%" → "para ao 60%".
+- "Ola!" on the welcome line → "Boas vindas!" as the register notes ask.
+- Consistency: "pasar a modo silencio" everywhere for going quiet.
+
+Still worth a human native check:
+- "Persoa nova" for a new user (`trial.h`, `help.m.demo`) reads a little odd; there is no neutral short form that is clearly better.
+- "Líder con conversa" for a chatty lead, and "Ao grao" for "Get on with it".
+- Percent signs stay "{n}%" without a space, as in the first pass; RAG style prefers "50 %".
