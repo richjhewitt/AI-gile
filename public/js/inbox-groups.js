@@ -34,7 +34,7 @@
   }
   // Accept all / Wait and see for the whole group: the same call for each card in it.
   async function groupAct(n, act) {
-    const name = n.dataset.group, mine = IB.raw.filter(c => c.project === n.dataset.project && c.group === name && isTest(c));
+    const name = n.dataset.group, mine = IB.raw.filter(c => c.project === n.dataset.project && c.group === name && isTest(c) && (act !== 'accept' || !checkLeft(c)));
     n.dataset.sending = '1'; n.querySelectorAll('button').forEach(b => b.disabled = true);
     try {
       for (const c of mine) await post('POST', `/api/projects/${c.project}/cards/${c.id}/${act === 'accept' ? 'verdict' : 'snooze'}`, act === 'accept' ? { accept: true } : {});

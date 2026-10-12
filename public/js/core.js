@@ -34,6 +34,20 @@ const isInfo = c => !!c.info && c.status === 'verify' && !isOwnerTask(c);   // �
 const kindOfItem = c => isOwnerTask(c) && c.lifeType ? 'life' : isOwnerTask(c) && c.server ? 'server' : isOwnerTask(c) && c.outside ? 'outside' : isInfo(c) ? 'read' : c.kind || (c.status === 'verify' ? 'test' : 'decide');
 // Queue order: your priority, then what it holds up most, then quickest first.
 const queueRank = (a, b) => (PRIO_RANK[a.ownerPrio] ?? 2) - (PRIO_RANK[b.ownerPrio] ?? 2) || (b.bumpedAt || '').localeCompare(a.bumpedAt || '') || (b.holds || []).length - (a.holds || []).length || (a.mins || 999) - (b.mins || 999);
+/* ---------- ☑ checklist and ⏳ waits for (AIG-406) ---------- */
+const checkLeft = c => (c.checklist || []).filter(x => !x.done).length;
+const isWaitingCard = c => !!(c.waiting && c.waiting.length) && c.status !== 'done';
+const checkChip = c => (c.checklist || []).length ? `<span class="pill chk${checkLeft(c) ? '' : ' all'}" data-chk title="${esc(t('check.chip.title', { done: c.checklist.length - checkLeft(c), n: c.checklist.length }))}">☑ ${c.checklist.length - checkLeft(c)}/${c.checklist.length}</span>` : '';
+const waitChip = c => isWaitingCard(c) ? `<span class="pill waits" data-waits title="${esc(t('wait.chip.title', { ids: c.waiting.join(', ') }))}">⏳ ${esc(c.waiting.join(', '))}</span>` : '';
+// Accept with an unfinished checklist: the first click turns the button into "2 of 4 left: accept anyway?", the second goes ahead.
+function acceptSure(btn, c) {
+  const left = c ? checkLeft(c) : 0;
+  if (!left || !btn || btn.dataset.sure === '1') return true;
+  btn.dataset.sure = '1'; btn.dataset.was = btn.textContent;
+  btn.textContent = t('check.left', { left, n: c.checklist.length });
+  setTimeout(() => { if (btn.isConnected && btn.dataset.sure === '1') { btn.dataset.sure = ''; btn.textContent = btn.dataset.was; } }, 8000);
+  return false;
+}
 const bumpTime = at => new Date(at).toLocaleString([], { hour: '2-digit', minute: '2-digit', ...(Date.now() - new Date(at) > 864e5 ? { day: 'numeric', month: 'short' } : {}) });
 function queueChips(c) {
   const k = kindOfItem(c), p = c.ownerPrio;
@@ -44,6 +58,7 @@ function queueChips(c) {
     + (task ? `<button class="q-chip srv ${c.outside ? 'on' : ''}" data-outside="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.outside ? 1 : 0}" title="${esc(t('queue.outside.title'))}">🤝${c.outside ? ' ' + esc(t('queue.kind.outside')) : ''}</button>` : '')
     + (task && c.server ? openServerBtn(c) : '')
     + `<button class="q-chip prio${p ? 'p-' + p : ''}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
+    + checkChip(c) + waitChip(c)
     + ((c.holds || []).length ? `<span class="q-chip holds" title="${esc(c.holds.join(', '))}">⛓ ${esc(t('queue.holds', { n: c.holds.length }))}</span>` : '')
     + (c.bumpedAt ? `<span class="q-chip bump" title="${esc(t('queue.bump.title', { n: c.bumps || 1 }))}">⏫ ${esc(t('queue.bump', { at: bumpTime(c.bumpedAt) }))}</span>` : '')
     + (c.mins ? `<span class="q-chip">⏱ ${esc(t('queue.mins', { n: c.mins }))}</span>` : '') + '</span>';

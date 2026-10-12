@@ -175,7 +175,7 @@ const isMine = c => String(c.assignee || '').trim().toLowerCase() === me().toLow
 const timed = c => !!c.timedUntil && new Date(c.timedUntil) > Date.now();   // AIG-385
 const timedChip = c => timed(c) ? `<span class="pill timed" title="${esc(t('timed.title'))}">⏰ ${esc(timedWhen(c.timedUntil))}</span>` : '';
 const timedWhen = iso => { const d = new Date(iso), day = d.toDateString() === new Date().toDateString() ? '' : d.toLocaleDateString(i18n.lang, { weekday: 'short', day: 'numeric', month: 'short' }) + ' '; return day + d.toLocaleTimeString(i18n.lang, { hour: '2-digit', minute: '2-digit' }); };
-const forYou = c => c.status !== 'done' && !timed(c) && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
+const forYou = c => c.status !== 'done' && !timed(c) && !isWaitingCard(c) && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
 const kindOf = c => isMine(c) ? (c.lifeType ? 'l' : c.server ? 's' : c.outside ? 'o' : 'k') : c.status === 'verify' && !c.needsYou && !c.blocked ? (c.info ? 'r' : 't') : 'q';   // r: 📖 To read (AIG-392)
 function forYouFirst(k) {
   if (k) { state.forYouFirst = k; try { localStorage.setItem('aigile.forYouFirst', k); } catch {} refresh(true); }
@@ -217,7 +217,7 @@ function forYouColumn(p, label = t('col.verify.short'), tint = '', pool = p.card
   const all = p.cards.filter(forYou).length;
   const unchecked = cs.filter(c => c.testSteps && !c.info && !c.aiCheck).length, testing = !!state.testerOn;
   const robot = unchecked || testing ? `<button class="colbtn" id="fyTester-${p.slug}" ${testing ? 'disabled' : ''} title="${esc(testing ? t('tester.running') : t('fy.tester.title', { n: unchecked }))}" onclick="testForMe('${p.slug}')">🤖${testing ? '' : ' ' + unchecked}</button>` : '';
-  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${esc(t('tidy.title'))}" onclick="tidyPile('${p.slug}', this)">🧹</button>${robot}<button class="colbtn" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}${pool.filter(c => c.status === 'verify' && timed(c) && matchesFilter(c, p.slug)).map(cardHtml).join('')}</div>`;   // timed tests wait at the bottom with their ⏰ (AIG-385)
+  return `<div class="column foryou ${wipClass(all, wip)}" data-status="verify"${tint}><h3><span class="fy-head" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}">${esc(label)}</span><span>${countHtml(cs.length, all, wip)} <button class="colbtn" title="${esc(t('tidy.title'))}" onclick="tidyPile('${p.slug}', this)">🧹</button>${robot}<button class="colbtn" title="${esc(fyFocus(p.slug) ? t('fy.showall') : t('fy.showonly'))}" onclick="fyFocus('${p.slug}', ${!fyFocus(p.slug)})">${fyFocus(p.slug) ? '⤡' : '⤢'}</button></span></h3><div class="fy-chips">${chips}</div>${cs.map(cardHtml).join('')}${pool.filter(c => c.status === 'verify' && (timed(c) || isWaitingCard(c)) && matchesFilter(c, p.slug)).map(cardHtml).join('')}</div>`;   // timed tests wait at the bottom with their ⏰ (AIG-385)
 }
 
 // show = the project's card view choices (board cards only); the card panel passes nothing and shows all.
@@ -227,6 +227,7 @@ function metaHtml(c, show = CARD_SHOW) {
       ${show.assignee && c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
       ${c.needsYou && c.status !== 'done' ? `<span class="pill you">${esc(t('card.needsyou'))}</span>` : ''}
       ${timedChip(c)}
+      ${checkChip(c)}${waitChip(c)}
       ${aiChip(c)}
       ${c.group ? `<span class="pill grp" title="${esc(t('group.chip.title', { name: c.group }))}">🗂️ ${esc(c.group)}</span>` : ''}
       ${c.blocked ? `<span class="pill blocked">${esc(t('card.blocked'))}</span>` : ''}
@@ -245,7 +246,7 @@ function cardHtml(c) {
   const live = ['doing', 'review'].includes(c.status), heard = live && lastHeard(c);
   const stale = live && Date.now() - new Date(heard.at) > STALE_MS;
   const view = cardViewOf(state.project);
-  const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : ''].join(' ');
+  const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : '', isWaitingCard(c) ? 'is-waiting' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}" data-id="${c.id}" draggable="true" style="display:block">
     <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}${forYou(c) ? `<button class="ib-popone" title="${esc(t('inbox.popone'))}" onclick="event.preventDefault();event.stopPropagation();window.open('#/pop/${state.project.slug}/${c.id}', 'aigile-${state.project.slug}-${c.id}', 'width=560,height=780')">⤢</button>` : ''}</div>${forYou(c) ? queueChips(c) : ''}
     <div class="t">${esc(c.title)}</div>

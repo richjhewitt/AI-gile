@@ -1555,5 +1555,17 @@
  "card.reopen": "↩ Heropenen",
  "card.reopen.title": "Zet deze kaart terug waar hij vandaan kwam",
  "card.moveto": "⋯ Verplaats naar",
- "card.moveto.title": "Verplaats deze kaart naar een andere kolom"
+ "card.moveto.title": "Verplaats deze kaart naar een andere kolom",
+ "check.h": "Checklist",
+ "check.chip.title": "Checklist: {done} van {n} afgevinkt",
+ "check.add.ph": "Voeg een punt toe (of meer, met komma's)",
+ "check.add": "Toevoegen",
+ "check.up": "Omhoog",
+ "check.down": "Omlaag",
+ "check.remove": "Dit punt verwijderen",
+ "check.left": "Nog {left} van {n} te doen: toch accepteren?",
+ "wait.h": "Wacht op",
+ "wait.pick": "⏳ Wacht op…",
+ "wait.remove": "Niet meer op deze wachten",
+ "wait.chip.title": "Wacht op {ids}: ligt opzij tot het klaar is"
 }

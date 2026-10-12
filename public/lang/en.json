@@ -1555,5 +1555,17 @@
  "card.reopen": "↩ Reopen",
  "card.reopen.title": "Put this card back where it came from",
  "card.moveto": "⋯ Move to",
- "card.moveto.title": "Move this card to another column"
+ "card.moveto.title": "Move this card to another column",
+ "check.h": "Checklist",
+ "check.chip.title": "Checklist: {done} of {n} ticked",
+ "check.add.ph": "Add an item (or several, with commas)",
+ "check.add": "Add",
+ "check.up": "Move up",
+ "check.down": "Move down",
+ "check.remove": "Remove this item",
+ "check.left": "{left} of {n} left: accept anyway?",
+ "wait.h": "Waits for",
+ "wait.pick": "⏳ Waits for…",
+ "wait.remove": "Stop waiting for this one",
+ "wait.chip.title": "Waits for {ids}: out of the way until it is done"
 }

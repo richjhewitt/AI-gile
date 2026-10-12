@@ -105,7 +105,7 @@ function renderCard(p, c) {
       <label class="f" style="margin-top:8px"><span>${esc(t('verdict.comment'))}</span><textarea id="v-text" data-draft="${esc(p.slug + '/' + c.id)}/verdict" rows="3" placeholder="${esc(t('verdict.placeholder'))}"></textarea></label>
       <div class="err" id="v-err"></div>
       ${c.openUrl ? `<div class="actions" style="margin-top:0"><button class="primary" onclick="openIt('${p.slug}', '${c.id}', this)" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button><span class="muted">${esc(c.openUrl)}</span></div>` : ''}
-      <div class="actions"><button class="good" onclick="verdict(true)">${esc(t('card.accept'))}</button><button class="warn" onclick="verdict(false)">${esc(t('card.sendback'))}</button><button onclick="waitAndSee()" title="${esc(t('card.wait.title'))}">${esc(t('card.wait'))}</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>` : '';
+      <div class="actions"><button class="good" onclick="verdict(true, this)">${esc(t('card.accept'))}</button><button class="warn" onclick="verdict(false)">${esc(t('card.sendback'))}</button><button onclick="waitAndSee()" title="${esc(t('card.wait.title'))}">${esc(t('card.wait'))}</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>` : '';
   // Tabs: Reply (latest message on top, reply box right under it, older ones below), Details, Test.
   const msg = (m, latest) => `<div class="comment${latest ? ' latest' : ''}">${latest ? '<span class="tag-latest">' + esc(t('card.latest')) + '</span>' : ''}<span class="who">${face(m.author, p.team)}${esc(m.author)}</span><span class="when">${ago(m.at)}</span>${isOwner(m.author) ? (p.teamSeenAt && m.at <= p.teamSeenAt ? '<span class="seen">' + esc(t('card.seen')) + '</span>' : '<span class="seen">' + esc(t('card.notseen')) + '</span>') : ''}${m.from === 'outside' ? Pack.body(p, c, m) : `<div class="body">${linkify(m.text, p)}</div>`}${Attach.shown(m, p.slug)}${Share.commentMark(p, c, m)}</div>`;
   const newest = [...c.comments].reverse();
@@ -120,6 +120,7 @@ function renderCard(p, c) {
     <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2>
     <div class="meta">${metaHtml(c)}</div>
+    ${checklistUi(p, c)}${waitsUi(p, c)}
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
       ${Share.cardComments(p, c)}
@@ -331,6 +332,46 @@ async function sendReply(fixed) {
     doneWithCard(next);
   } catch (err) { setErr('r-err', err); }
 }
+/* ---------- checklist and waits for (AIG-406) ---------- */
+function checklistUi(p, c) {
+  const list = c.checklist || [], left = checkLeft(c);
+  if (c.status === 'done' && !list.length) return '';
+  const items = list.map((x, i) => `<li class="${x.done ? 'on' : ''}"><label><input type="checkbox" data-chk-i="${i}" ${x.done ? 'checked' : ''} onchange="checkTick(${i}, this.checked)"> <span>${esc(x.text)}</span></label>`
+    + `<span class="chk-acts"><button type="button" class="chk-b" title="${esc(t('check.up'))}" ${i ? '' : 'disabled'} onclick="checkMove(${i}, -1)">↑</button><button type="button" class="chk-b" title="${esc(t('check.down'))}" ${i < list.length - 1 ? '' : 'disabled'} onclick="checkMove(${i}, 1)">↓</button><button type="button" class="chk-b" title="${esc(t('check.remove'))}" onclick="checkRemove(${i})">✕</button></span></li>`).join('');
+  return `<div class="chk" id="chk-box"><div class="chk-h"><b>☑ ${esc(t('check.h'))}</b>${list.length ? ` <span class="pill chk${left ? '' : ' all'}">${list.length - left}/${list.length}</span>` : ''}</div>
+    ${list.length ? `<ul class="chk-list">${items}</ul>` : ''}
+    <div class="chk-add"><input id="chk-new" placeholder="${esc(t('check.add.ph'))}" onkeydown="if(event.key==='Enter'){event.preventDefault();checkAdd()}"> <button type="button" id="chk-add-btn" onclick="checkAdd()">${esc(t('check.add'))}</button></div></div>`;
+}
+const cardUrl = () => `/api/projects/${slug()}/cards/${cardId()}`;
+async function checkTick(i, on) {
+  try { await api('POST', cardUrl() + '/check', on ? { tick: [i + 1] } : { untick: [i + 1] }); refresh(true); } catch (e) { alert(e.message); refresh(true); }
+}
+async function checkSave(list) {
+  try { await api('PATCH', cardUrl(), { checklist: list.map(x => ({ text: x.text, done: !!x.done, by: x.by, at: x.at })) }); refresh(true); } catch (e) { alert(e.message); }
+}
+function checkAdd() {
+  const el = $('chk-new'), words = (el.value || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (!words.length) { el.focus(); return; }
+  checkSave([...(curCard().checklist || []), ...words.map(text => ({ text }))]);
+}
+function checkRemove(i) { const l = [...(curCard().checklist || [])]; l.splice(i, 1); checkSave(l); }
+function checkMove(i, d) { const l = [...(curCard().checklist || [])], j = i + d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; checkSave(l); }
+function waitsUi(p, c) {
+  const ids = c.waitsFor || [];
+  if (c.status === 'done' && !ids.length) return '';
+  const pick = `<select id="wf-add" aria-label="${esc(t('wait.pick'))}" onfocus="waitFill(this)" onmousedown="waitFill(this)" onchange="waitAdd(this.value)"><option value="">${esc(t('wait.pick'))}</option></select>`;   // options filled when opened, so a new card elsewhere does not rebuild the panel
+  return `<div class="wf" id="wf-box">${ids.length ? `<b>⏳ ${esc(t('wait.h'))}</b> ` : ''}${ids.map(id => { const b = p.cards.find(x => x.id === id), fin = !b || b.status === 'done';
+    return `<span class="pill waits ${fin ? 'fin' : ''}" title="${esc(b ? b.title : id)}">${fin ? '✓ ' : ''}<a href="#/p/${esc(p.slug)}/${esc(id)}">${esc(id)}</a> <button type="button" class="chk-b" title="${esc(t('wait.remove'))}" onclick="waitDrop('${esc(id)}')">✕</button></span>`; }).join(' ')} ${pick}</div>`;
+}
+function waitFill(sel) {
+  if (sel.options.length > 1) return;
+  const c = curCard(), ids = c.waitsFor || [];
+  for (const x of state.project.cards.filter(x => x.id !== c.id && x.status !== 'done' && !ids.includes(x.id) && !(x.waitsFor || []).includes(c.id))) sel.add(new Option(x.id + ' ' + x.title.slice(0, 60), x.id));
+}
+async function waitSave(ids) { try { await api('PATCH', cardUrl(), { waitsFor: ids }); refresh(true); } catch (e) { alert(e.message); } }
+function waitAdd(id) { if (id) waitSave([...(curCard().waitsFor || []), id]); }
+function waitDrop(id) { waitSave((curCard().waitsFor || []).filter(x => x !== id)); }
+
 /* ---------- timed card (AIG-385): ⏰ come back at ---------- */
 function timerUi(c) {
   if (c.status === 'done') return '';
@@ -372,7 +413,8 @@ async function infoReply() {
     Attach.clear(key); clearDraft(slug() + '/' + cardId() + '/info'); $('v-text').value = ''; setErr('v-err', ''); refresh(true);
   } catch (err) { setErr('v-err', err); }
 }
-async function verdict(accept) {
+async function verdict(accept, btn) {
+  if (accept && !acceptSure(btn, curCard())) return;   // unfinished checklist: "2 of 3 left: accept anyway?" (AIG-406)
   const next = nextForYou(), txt = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';
   if (!accept && !txt && !Attach.has(key)) { setErr('v-err', t('verdict.err')); $('v-text').focus(); return; }
   try {
