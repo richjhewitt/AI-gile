@@ -71,4 +71,24 @@ def('onelead', 'one lead per project: a session in VS Code or aigile wait blocks
   // 8. the heartbeat hook keeps a busy session counted
   const ping = s.cli(['ping', 'night'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '' });
   check('ping is a known command and marks the session live', !/unknown/i.test(String(ping)) && (await s.ok('GET', '/api/projects/night')).presence.where === 'vscode', ping);
+  // 9. a wake with nothing new starts no run (AIG-465): the news is read, then an agent's `aigile wake` (not the owner's click) and a stale nudge find nothing
+  await mkProject(s, 'Calm', 'CLM', { path: tmp('calm') });
+  const cc = await mkCard(s, 'calm', 'read already', { status: 'todo' });
+  await say(s, 'calm', cc.id, 'Owner', 'old news');
+  await sleep(1800);
+  await settle('calm');
+  await s.ok('GET', '/api/projects/calm/updates?mark=1');
+  const calm0 = starts('calm');
+  const nothing = s.cli(['updates', 'calm', '--peek'], { AIGILE_BACKGROUND: '1' }).out;
+  check('updates has nothing new from the owner', !/new from/.test(nothing), nothing);
+  const w2 = await s.ok('POST', '/api/projects/calm/wake', { sprint: false });   // as the page: the owner's own click still goes ahead
+  await settle('calm');
+  check('the owner\'s Wake click still starts a run with nothing new', w2.running === true && starts('calm') === calm0 + 1, log('calm'));
+  const calm1 = starts('calm');
+  await sleep(1800);
+  s.cli(['wake', 'calm'], { AIGILE_BACKGROUND: '1' });
+  await sleep(800);
+  check('an agent\'s wake with nothing new starts no run', starts('calm') === calm1 && /nothing new for the team/.test(log('calm')), log('calm'));
+  await say(s, 'calm', cc.id, 'Owner', 'fresh news'); await sleep(2000); await settle('calm');
+  check('a wake with news does start one', starts('calm') > calm1, log('calm'));
 }, false, { AIGILE_ACTIVE_MS: '1500', AIGILE_ONLINE_MS: '600', AIGILE_IDLE_MS: '1' });

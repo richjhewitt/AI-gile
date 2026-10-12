@@ -116,6 +116,17 @@ def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
   check('cli inbox lists verify and task', inb.out.includes(d1.id) && inb.out.includes(n1.id), inb.out);
   const br = a('brief', 'alpha');
   check('brief has the digest', br.code === 0 && /^Alpha \(alpha\):/.test(br.out) && /Waiting on Owner/.test(br.out) && /For the team/.test(br.out), br.out);
+  // AIG-465: no picture nag once the people in view have one; an old idle helper with none is not in view.
+  await s.ok('POST', '/api/setup', { prefs: { plan: 'normal' } });
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Forge', role: 'Lead', status: '🔄 working', avatar: 'badge:fox/teal/glasses' });
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Oldie', status: '😴 idle' });
+  const pf = path.join(s.data, 'alpha.json'), pj = JSON.parse(fs.readFileSync(pf, 'utf8'));
+  const old = pj.team.find(m => m.name === 'Oldie'); delete old.avatar; old.updated = new Date(Date.now() - 48 * 3600e3).toISOString();
+  fs.writeFileSync(pf, JSON.stringify(pj, null, 2));
+  check('the brief does not nag about pictures once a badge is set', !/Pick a picture/.test(a('brief', 'alpha').out), a('brief', 'alpha').out);
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Newbie', status: '🔄 working' });
+  const nb = (await s.ok('GET', '/api/projects/alpha')).team.find(m => m.name === 'Newbie');
+  check('a working member with no picture still gets the invite', nb.avatar || /Pick a picture/.test(a('brief', 'alpha').out), a('brief', 'alpha').out);
   check('list/show work', a('list', 'alpha').out.includes('Bug todo') && a('show', 'alpha', b1.id).out.includes('Conversation (0)'));
   check('add via cli', /^added ALP-5/.test(a('add', 'alpha', 'cli card', '--type', 'bug', '--desc', 'd').out));
   check('edit via cli', /^updated/.test(a('edit', 'alpha', 'ALP-5', '--title', 'renamed').out));
