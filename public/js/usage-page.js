@@ -83,14 +83,15 @@ const uz = {
 /* ---------- data ---------- */
 async function loadUsagePage(force) {
   if (!force && uz.data && Date.now() - uz.fetchedAt < 15e3) return;
-  const [usage, limits, projects, live] = await Promise.all([
+  // AIG-558: all at once (check and runs used to wait their turn, so the first click looked like it did nothing).
+  const [usage, limits, projects, live, check, runs] = await Promise.all([
     api('GET', '/api/usage').catch(() => ({ enabled: false })),
     api('GET', '/api/limits?days=30').catch(() => ({ latest: null, history: [] })),
     api('GET', '/api/projects?all=1').catch(() => []),
     api('GET', '/api/limits/latest').catch(() => ({ latest: null })),   // AIG-431: the compact view
+    api('GET', '/api/usage/check').catch(() => null),
+    api('GET', '/api/usage/runs').catch(() => []),   // AIG-266
   ]);
-  const check = await api('GET', '/api/usage/check').catch(() => null);
-  const runs = await api('GET', '/api/usage/runs').catch(() => []);   // AIG-266
   uz.data = { usage, limits, check, runs, live, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
   uz.fetchedAt = Date.now();
 }

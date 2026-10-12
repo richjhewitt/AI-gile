@@ -248,6 +248,7 @@ async function refresh(force) {
   if (!i18n.ready || Boot.failed) return;   // the language file comes first (AIG-124); a broken start-up reloads instead (AIG-517)
   if (state.route && state.route.view === 'project') state.lastProject = state.route.slug; else if (state.route && state.route.view !== 'inbox') state.lastProject = null;
   state.route = parseRoute();
+  const route = JSON.stringify(state.route);
   if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; $('filterbar').innerHTML = ''; $('filterbar').dataset.slug = ''; }
   // The inbox page renders itself; forget the last render so leaving it always redraws.
   if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; return Inbox.show(force); }
@@ -283,6 +284,7 @@ async function refresh(force) {
       await Assumptions.load();
       sig = JSON.stringify([state.route, Assumptions.data]);
     } else if (state.route.view === 'usage') {
+      if (!uz.data) { state.lastSig = state.lastBoardSig = null; render(); }   // AIG-558: say "Loading" at once, not after the fetch
       await loadUsagePage(force);   // heavy, so at most every ~15s
       sig = JSON.stringify([state.route, uzSig()]);
     } else {
@@ -297,6 +299,7 @@ async function refresh(force) {
     if (!$('app').firstElementChild) Boot.note();   // nothing drawn yet (AIG-517): say so; the 1s poll tries again
     return;
   }
+  if (JSON.stringify(parseRoute()) !== route) return;   // AIG-558: the page moved on while this fetched; a newer refresh draws it
   if (!force && state.dragging) return;
   if (!force && busy()) {
     // Keep the board behind moving; only hold the panel/dialog the owner is using.
