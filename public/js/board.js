@@ -93,7 +93,6 @@ function renderBoard(p) {
   return `<div class="toolbar"><h2>${esc(p.name)}${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}</h2>
       <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
       <button onclick="openDocs()">${esc(t('board.docs'))}</button>
-      <button class="bug" onclick="newCard({type:'bug',priority:'high',status:'team'})">${esc(t('board.raisebug'))}</button>
       <button onclick="happeningDialog()" title="${esc(t('board.happening.title'))}">${esc(t('board.happening'))}</button>
       <button onclick="askTeamDialog()" title="${esc(t('board.ask.title'))}">${esc(t('board.ask'))}</button>
       <select class="lanesel" title="${esc(t('lanes.title'))}" onchange="setLanes(this.value)">${lanesList().map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>

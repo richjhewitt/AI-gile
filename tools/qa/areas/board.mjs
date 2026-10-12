@@ -35,7 +35,7 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   check('created card is for the team, by Owner', made && made.status === 'team' && made.createdBy === 'Owner', made);
   check('new card shows in the team column', (await page.locator('.column[data-status=team] .card', { hasText: 'From the dialog' }).count()) === 1);
 
-  await page.click('button.bug');
+  await page.click('#bugBtn');
   await page.waitForSelector('#dialog #f-title');
   check('Raise bug presets', (await page.inputValue('#f-type')) === 'bug' && (await page.inputValue('#f-priority')) === 'high' && (await page.inputValue('#f-status')) === 'team');
   await page.fill('#f-title', 'It broke');
