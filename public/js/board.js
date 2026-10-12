@@ -114,8 +114,8 @@ function renderBoard(p) {
     ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path ? t('board.empty.path', { wake: esc(t('pres.wake')) }) : t('board.empty.nopath', { connect: esc(t('board.connect')) })}</div>`}
     ${board}
     <div class="side">
-      <div class="box"><h3>${esc(t('board.team'))}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>
-        `<tr><td>${face(m.name, team)}<b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t('board.team.none'))}</p>`}</div>
+      <div class="box"><h3>${esc(t('board.team'))}${team.length ? `<button class="bm-btn" onclick="badgeDialog()" title="${esc(t('badge.title.hint'))}">${esc(t('badge.title'))}</button>` : ''}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>
+        `<tr><td><span onclick="badgeDialog('${esc(m.name).replace(/'/g, '&#39;')}')" style="cursor:pointer">${face(m.name, team)}</span><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t('board.team.none'))}</p>`}</div>
       <div class="box"><h3>${esc(t('board.log'))}</h3>${log.length ? `<ul class="log">${log.map(l =>
         `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}</div>
     </div>`;

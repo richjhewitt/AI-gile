@@ -1506,5 +1506,12 @@
  "fx.sum.left": "🎯 Focus gestopt",
  "fx.sum.h": "Terwijl je bezig was",
  "fx.sum.l1": "Overdrachten om te testen: {h} · Vragen: {q}",
- "fx.sum.l2": "Showstoppers: {n}"
+ "fx.sum.l2": "Showstoppers: {n}",
+ "badge.title": "🎨 Badgemaker",
+ "badge.title.hint": "Verander de badge van een teamlid",
+ "badge.intro": "Een gratis plaatje, getekend door de app: kies een dier, een kleur en een accessoire. Klik op de foto van een teamlid om die te veranderen.",
+ "badge.for": "Voor",
+ "badge.animal": "Dier",
+ "badge.colour": "Kleur",
+ "badge.accessory": "Accessoire"
 }

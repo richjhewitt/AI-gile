@@ -1506,5 +1506,12 @@
  "fx.sum.left": "🎯 Focus stopped",
  "fx.sum.h": "While you were busy",
  "fx.sum.l1": "Hand-overs to test: {h} · Questions: {q}",
- "fx.sum.l2": "Showstoppers: {n}"
+ "fx.sum.l2": "Showstoppers: {n}",
+ "badge.title": "🎨 Badge maker",
+ "badge.title.hint": "Change a team member's badge picture",
+ "badge.intro": "A free picture drawn by the app: pick an animal, a colour and an accessory. Click a team member's picture to change theirs.",
+ "badge.for": "For",
+ "badge.animal": "Animal",
+ "badge.colour": "Colour",
+ "badge.accessory": "Accessory"
 }
