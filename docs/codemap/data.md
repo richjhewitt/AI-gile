@@ -1,6 +1,7 @@
 # Code map: data
 
 - `data/<slug>.json`: one file per project (cards, comments, team, log, `teamSeenAt`); written atomically via a `.tmp` file. Git-ignored.
+- Spaces (AIG-433): a project's `parent` is the slug of the project it sits in (none = top level, any depth, no loops: `checkParent` in store.js). `GET /api/projects/:slug` adds `space: { up, kids }` (the spaces it sits in, outermost first, and its own projects).
 - Board templates (AIG-170): the New project dialog (`boardTemplateNames` in js/dialogs/) just PATCHes `columns` with names after create: Kanban = none, Scrum = names for the first four statuses, Your own = comma list in status order.
 - A project's `columns` (AIG-116/118): per status `{ status, name?, emoji?, color?, hidden?, wip? }` in board order; `wip` is the card limit (0/empty = none), checked 0..999 in the PATCH route, drawn by `renderBoard`.
 - A stand-up card (AIG-133) has `standup: { at, reports: [{ name, done, next, blockers, at }] }`; the CLI `standup` command fills `reports`.
