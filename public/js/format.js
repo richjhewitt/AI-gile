@@ -91,14 +91,14 @@ function gifLink(u) {
 function linkify(text, p) { return withCode(text, t => linkifyText(t, p), p.slug); }
 function linkifyText(text, p) { return mdLinks(linkifyBase(text, p), p.slug); }
 function linkifyBase(text, p) {
-  const key = String(p.key).replace(/[^A-Za-z0-9]/g, '');
+  const key = String(p.key || '').replace(/[^A-Za-z0-9]/g, '');   // a DM thread carries its project's key (AIG-449); a friend's chat has none
   return esc(text)
     .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')   // **bold**, used in bullet-point cards
     .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>${gifLink(u)}`)
     // A bare web address like test.locoradio.live/?x (AIG-318); common endings only, so file names stay plain.
     .replace(/(^|[^\w@/.:"=-])((?:[a-z0-9-]+\.)+(?:com|net|org|io|live|dev|app|co|uk|nl|be|ai|me|tv|gg|xyz|info|site|online)(?::\d+)?(?:\/[^\s<]*[^\s<.,;:!?)\]])?)(?![\w-])/gi,
       (m, pre, u) => `${pre}<a href="https://${u}" target="_blank" rel="noopener">${u}</a>`)
-    .replace(new RegExp(`(^|[^\\w/#-])(${key}-\\d+)\\b`, 'gi'), (m, pre, id) => `${pre}<a href="#/p/${p.slug}/${id.toUpperCase()}">${id}</a>`);
+    .replace(key ? new RegExp(`(^|[^\\w/#-])(${key}-\\d+)\\b`, 'gi') : /(?!)/g, (m, pre, id) => `${pre}<a href="#/p/${p.slug}/${id.toUpperCase()}">${id}</a>`);
 }
 
 /* ---------- markdown renderer (Docs dialog) ---------- */

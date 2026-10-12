@@ -100,10 +100,10 @@ const Dms = (() => {
       const acts = c.waiting && !last.mine ? actionsHtml(askActions(last, c.kind), thread.slug, id) : '';
       const preview = String(last.text || '').replace(/^\s*[-*]\s+/gm, '').replace(/[*_`#>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 90);
       return `<div class="dm-fold ${isOpen ? 'open' : ''} ${c.waiting ? 'waiting' : ''}">
-        <button class="dm-fold-h k-${esc(c.kind || 'other')}" data-fold="${esc(id)}" aria-expanded="${isOpen}">
-          ${thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span>`}
-          <span class="muted dm-fold-n">${esc(t(msgs.length === 1 ? 'dms.count.one' : 'dms.count.many', { n: msgs.length }))} · ${ago(last.at)}</span></button>
-        ${isOpen ? `<div class="dm-fold-b">${thread.watchman ? '' : `<a class="muted dm-cardlink" href="#/p/${esc(thread.slug)}/${esc(id)}">${esc(t('dms.opencard'))}</a>`}${msgs.map(m => msgHtml(m, m === last ? acts : '')).join('')}</div>`
+        <div class="dm-fold-h k-${esc(c.kind || 'other')}" data-fold="${esc(id)}" role="button" tabindex="0" aria-expanded="${isOpen}">
+          ${thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><a class="dm-fold-id" href="#/p/${esc(thread.slug)}/${esc(id)}" title="${esc(t('dms.opencard'))}"><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span></a>`}
+          <span class="muted dm-fold-n">${esc(t(msgs.length === 1 ? 'dms.count.one' : 'dms.count.many', { n: msgs.length }))} · ${ago(last.at)}</span></div>
+        ${isOpen ? `<div class="dm-fold-b">${thread.watchman ? '' : `<div class="actions dm-cardacts"><button class="dm-opencard" data-opencard="${esc(id)}" title="${esc(t('dms.opencard'))}">${esc(t('dms.opencard'))}</button><button data-popcard="${esc(id)}" title="${esc(t('dms.popout.title'))}">${esc(t('dms.popout'))}</button></div>`}${msgs.map(m => msgHtml(m, m === last ? acts : '')).join('')}</div>`
           : `<div class="dm-fold-p muted"><b>${esc(last.author)}:</b> ${esc(preview)}</div>${acts}`}</div>`;
     }).join('');
   }
@@ -277,10 +277,21 @@ const Dms = (() => {
     if (e.target.closest('#dmRail [data-dms]')) { if (listOpen || open) close(); else { listOpen = true; paintList(); loadRail(); } return; }
     const pk = e.target.closest('#dmPanel [data-pick]');
     if (pk) { const m = thread && thread.messages.at(-1); if (m && m.pick) send(m.pick[pk.dataset.pick].text); return; }
+    // AIG-449: the card's own buttons, and its id link (which navigates and leaves the fold alone).
+    const oc = e.target.closest('#dmPanel [data-opencard]');
+    if (oc && thread) { location.hash = '#/p/' + thread.slug + '/' + oc.dataset.opencard; return; }
+    const pc = e.target.closest('#dmPanel [data-popcard]');
+    if (pc && thread) { const s = thread.slug, id = pc.dataset.popcard; window.open('#/pop/' + s + '/' + id, 'aigile-' + s + '-' + id, 'width=560,height=780'); return; }
     const f = e.target.closest('#dmPanel [data-fold]');
-    if (f) { openFold(f.dataset.fold); return; }
+    if (f) { if (!e.target.closest('a')) openFold(f.dataset.fold); return; }
     const row = e.target.closest('#dmPanel [data-dm]');
     if (row) show(row.dataset.dm);
+  });
+  // The fold header is a div (it holds the id link), so Enter or Space opens it from the keyboard too (AIG-449).
+  document.addEventListener('keydown', e => {
+    if ((e.key !== 'Enter' && e.key !== ' ') || e.target.closest('a')) return;
+    const f = e.target.closest && e.target.closest('#dmPanel .dm-fold-h[data-fold]'); if (!f) return;
+    e.preventDefault(); openFold(f.dataset.fold);
   });
   window.addEventListener('hashchange', () => setTimeout(loadRail, 50));
   // Live: the rail every few seconds; an open chat a little more often.

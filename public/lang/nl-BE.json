@@ -627,7 +627,11 @@
  "dms.kind.other": "📌 Kaart",
  "dms.count.one": "{n} bericht",
  "dms.count.many": "{n} berichten",
- "dms.opencard": "Kaart openen",
+ "dms.opencard": "📂 Kaart openen",
+
+ "dms.popout": "⤢ Eigen venster",
+
+ "dms.popout.title": "Deze kaart in een eigen venster openen",
  "dms.replyto": "Antwoord op:",
  "dms.filter.all": "Alle",
  "dms.filter.agents": "🤖 Agenten",
