@@ -44,10 +44,10 @@ First pass by a model (AIG-489), for a native-speaker check. File: `public/lang/
 | Accept / Send back | Accepter / Renvoyer | |
 | Looks right, next step | C'est bon, étape suivante | |
 | Wait and see | Attendre | |
-| Poke / Nudge | Relancer / coup de pouce | |
+| Poke / Nudge | Relancer / coup de pouce | "À relancer :" as a label; "un petit mot pour te relancer" for the chatty lead's nudge |
 | Wake the team | Réveiller l'équipe | |
 | Night watch / watchman | Veille de nuit / le veilleur | |
-| Going quiet | Mode silence / se mettre en silence | |
+| Going quiet | Mode silence / passer en mode silence | never "se mettre en veille" (reads as computer standby) |
 | No Token Mode | Mode zéro token | |
 | Token | token | |
 | Assumptions | Hypothèses | the team's guesses while you were away |
@@ -61,7 +61,14 @@ First pass by a model (AIG-489), for a native-speaker check. File: `public/lang/
 | Pro-friendly | Adapté à Pro | |
 | Share / link (to a friend) | Partager / relier | |
 | Friend / mate | ami / pote | |
-| Reporter (role) | Rapporteur de bugs | |
+| Reporter (role) | Rapporteur | as in Jira's French UI |
+| Waiting on you / Needs you | En attente de ta réponse | not "Ça attend ta réponse" |
+| brief (a team's instructions) | consignes | not "briefing" |
+| build (verb, before building) | construire | "Demander avant de construire quoi que ce soit" |
+| Watchman ticks every project | Le veilleur coche tous les projets | |
+| wizard | assistant | same word as helpers; context keeps them apart |
+| Life board | tableau Vie | |
+| friend's "they/their" | ton ami, son / sa / ses | English singular "they" is not "ils / leur" |
 
 ## Dev-word markers
 `{{dev:word}}` markers are kept in every place the English has them. In French the word inside is sometimes inflected ("{{dev:tester}}", "{{dev:testée}}"). If the later bracket-the-English-word card shows "(test)" next to these, it will still read fine.
@@ -74,3 +81,27 @@ First pass by a model (AIG-489), for a native-speaker check. File: `public/lang/
 - `share.*` strings about friends use "ami" with inclusive-neutral phrasing where easy ("il ou elle"). Check the gender handling.
 - Strings that stay the same as English on purpose: product and role names, loanwords (Backlog, Sprint, Stand-up, Kanban, Token), file/paths, "Docs", "Question(s)", "Message(s)", "Agents", "Total", "Description", "Type", "Compact".
 - `lead.go.help` etc. use "briefing" for "brief"; native may prefer "consigne".
+
+## Answers to the first-pass questions
+- `gloss.*.word` / `.also`: they match the words written in the UI (Backlog, Sprint, Stand-up, Bug, Commit, Push, Merge, Hook, Token, Branche, Dépôt, Déploiement, Refactoring; tester / testé(e) forms). No change.
+- "chef" for the lead is fine: casual, not military. Kept.
+- "Mode silence" and "Veille de nuit" are good. The verb is now always "passer en mode silence"; "se mettre en veille" was dropped.
+- Reporter: "Rapporteur" alone, the word Jira's French UI uses. "Rapporteur de bugs" was stiff.
+- Friend gender: "il ou elle", "lui/elle" and the plural "ils / leur(s)" that came from English singular "they" are replaced by "ton ami" or "son / ses". "bloqué(e)" / "ajouté(e)" are kept where a name is the subject.
+- "briefing" became "consignes".
+
+## Review (native check, AIG-489)
+159 values changed. What changed:
+- `{when}` from `ago()` already says "il y a 5 min", so "depuis {when}" read "depuis il y a 5 min". Fixed in `pres.since`, `night.since`, `inbox.q.isblocked.html`; `inbox.t.waiting` (bare duration) now says "en attente depuis {when}".
+- English trailing spaces restored (`inbox.sum.*`, `act.*.say`): these strings are joined together, so they ran into each other.
+- Calques and stiff wording: "toutes les quelques secondes", "Garder les assiettes en l'air" (now "Service minimum"), "Coup de fouet" (means a boost, now "Faire claquer le fouet"), "travail de fourmi" (now "corvées"), "coup de coude", "Ça attend ta réponse", "Le chef est prié de…", "Délier" (now "Rompre le lien"), "Construit et en attente" (a card is "Prête").
+- Grammar: imperative "Ouvres-en", "réveiller toutes" (équipes), "Ajoute-le dans les Réglages", plural cards in `lead.smPush.help`.
+- Meaning: `news.title` (one window, not "leur propre fenêtre"), `watch.line` ("{w} réveil(s)"), `lead.watchAll` (ticks = "coche"), `share.allow.*` / `share.eff.*` / `sb.*` (one friend, not "ils").
+- Shorter buttons: `usage.check.btn` "🔄 Vérifier maintenant" (and the help text that names it), `share.fc.take`, `ask.yes`.
+- Terms made consistent: mode silence, consignes, construire, En attente de ta réponse, Terminé as a column name.
+
+Still worth a human look:
+- "assistant" means both helpers (sub-agents) and the setup wizard (`wz.*`). Context separates them, but "sous-agents" for helpers is an option.
+- `sm.push.1` "🍽️ Service minimum": a free rendering, not the plate-spinning image.
+- "Tableau Vie" / "Vie quotidienne" for the Life board.
+- Straight apostrophes are still used everywhere; a typographer would want ’.
