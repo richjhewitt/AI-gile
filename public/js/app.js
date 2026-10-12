@@ -159,8 +159,8 @@ async function goQuietNow() {
     const chips = names => `<div class="qd-chips">${names.map(n => `<span class="qd-chip">${esc(n)}</span>`).join('')}</div>`;
     const look = Object.fromEntries((state.projects || []).map(p => [p.slug, p.name]));
     openDialog(`<div class="qd"><div class="qd-moon">🌙</div><h2>${esc(t('quiet.done.h'))}</h2><p class="muted">${esc(t('quiet.done.sub'))}</p>
-      ${r.sent.length ? `<h3>${esc(t('quiet.done.told', { n: r.sent.length }))}</h3>${chips(r.sent)}` : `<p class="muted">${esc(t('quiet.done.none'))}</p>`}
-      ${r.woke.length ? `<h3>${esc(t('quiet.done.woke', { n: r.woke.length }))}</h3>${chips(r.woke)}` : ''}
+      ${r.sent.length ? `<h3>${esc(t('quiet.done.told', { count: r.sent.length, n: r.sent.length }))}</h3>${chips(r.sent)}` : `<p class="muted">${esc(t('quiet.done.none'))}</p>`}
+      ${r.woke.length ? `<h3>${esc(t('quiet.done.woke', { count: r.woke.length, n: r.woke.length }))}</h3>${chips(r.woke)}` : ''}
       ${(r.watching || []).length ? `<h3>${esc(t('quiet.done.watch', { n: r.watching.length }))}</h3>${chips(r.watching.map(s => look[s] || s))}` : ''}
       ${r.failed.length ? `<div class="err">${esc(t('quiet.failed', { names: r.failed.join('; ') }))}</div>` : ''}
       <div class="actions"><button onclick="openNightGlance(); closeDialog()" title="${esc(t('ng.open.title'))}">${esc(t('ng.open'))}</button><button class="primary" onclick="goodnight()">${esc(t('quiet.done.ok'))}</button></div></div>`);

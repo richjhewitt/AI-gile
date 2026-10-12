@@ -4,7 +4,7 @@
 // switched it on, it says when the limit resets; once usage is back the switch glows "Turn AI back on" (never by itself).
 const NoTokens = (() => {
   let st = { on: false }, shown = '';
-  const hhmm = iso => { try { return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); } catch { return ''; } };
+  const hhmm = iso => { try { return new Date(iso).toLocaleTimeString(i18n.locale, { hour: '2-digit', minute: '2-digit' }); } catch { return ''; } };
   function paint() {
     const key = JSON.stringify([st, i18n.lang]);
     if (key === shown) return; shown = key;

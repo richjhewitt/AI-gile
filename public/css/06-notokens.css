@@ -17,7 +17,7 @@
 .notokens .ai-only { display: none !important; }
 
 /* ⚡ Usage at a glance (AIG-356): two mini bars, a dash, the ⛔ and a red dot inside the Usage nav link. */
-#ugBars { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; vertical-align: middle; }
+#ugBars { display: inline-flex; align-items: center; gap: 4px; margin-inline-start: 6px; vertical-align: middle; }
 .ug-bars { display: inline-flex; flex-direction: column; gap: 2px; }
 .ug-bar { display: block; width: 26px; height: 5px; border-radius: 99px; background: var(--line); overflow: hidden; }
 .ug-bar b { display: block; height: 100%; border-radius: 99px; }
