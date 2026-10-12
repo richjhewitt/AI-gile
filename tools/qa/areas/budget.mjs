@@ -48,6 +48,15 @@ def('budget', '💰 token budget refuses a wake with a reason, the parallel cap 
   r = await s.api('POST', '/api/projects/cash/wake');
   check('weekly at 90% with a cap of 85%: refused too', r.status === 400 && /weekly/.test(JSON.stringify(r.body)), JSON.stringify(r.body));
   check('the tester is held back as well', (await s.api('POST', '/api/tester', {})).status === 400);
+  // AIG-488: with the owner's language on nl the same refusal, and the No Token Mode one, come out in Dutch
+  await s.ok('POST', '/api/setup', { prefs: { lang: 'nl' } });
+  r = await s.api('POST', '/api/projects/cash/wake');
+  check('in Dutch the budget refusal is Dutch', r.status === 400 && /over het tokenbudget.*week.*90%/.test(JSON.stringify(r.body)), JSON.stringify(r.body));
+  await s.ok('POST', '/api/notokens', { on: true });
+  r = await s.api('POST', '/api/projects/cash/wake');
+  check('and so is the No Token Mode refusal', r.status === 409 && /Geen-tokensmodus staat aan/.test(JSON.stringify(r.body)), JSON.stringify(r.body));
+  await s.ok('POST', '/api/notokens', { on: false });
+  await s.ok('POST', '/api/setup', { prefs: { lang: 'en' } });
   await reading(50, 50);
   check('under both caps the wake goes', (await s.api('POST', '/api/projects/cash/wake')).status === 200);
   await idle('cash');

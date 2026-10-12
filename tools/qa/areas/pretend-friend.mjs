@@ -28,6 +28,9 @@ def('pretendfriend', 'Setup: start a pretend friend (local relay + board "Davy")
     check('the bar says who you are, in Flemish', /Je bent Davy \(nep\)/.test(await pd.textContent('#pretendBar')), await pd.textContent('#pretendBar'));
     await pd.goto(url + '#/setup'); await pd.waitForSelector('#pretendBar');
     check('the bar is on other pages too', await pd.isVisible('#pretendBar'));
+    // AIG-488: his made-up project is named in his language (Flemish), and his board saved that language
+    const dp = await (await fetch(url + 'api/projects')).json();
+    check("Davy's project has a Flemish name, and his board saved nl-BE", dp.some(p => p.name === 'Tuin van Davy') && (await (await fetch(url + 'api/setup')).json()).prefs.lang === 'nl-BE', JSON.stringify(dp.map(p => p.name)));
     await pd.waitForSelector('#pfBody');
     check('his Setup does not offer another pretend friend', !!(await until(async () => /Dit is het bord van de nepvriend/.test(await pd.textContent('#pfBody')))));
     noErrors(pd);

@@ -42,6 +42,13 @@ async function loadLang() {
   document.querySelectorAll('.lang-pick').forEach(el => { el.value = chosenLang(); });
   paintEnBtn();
   i18n.ready = true;
+  saveLang();
+}
+// The server writes some lines the owner reads (chat notes, demo cards, errors): tell it the chosen language, once per change (AIG-488).
+function saveLang() {
+  const l = chosenLang();
+  if (ls('aigile.langSaved') === l) return;
+  try { api('POST', '/api/setup', { prefs: { lang: l } }).then(() => { try { localStorage.setItem('aigile.langSaved', l); } catch {} }, () => {}); } catch {}
 }
 // Quick English switch (AIG-124): a small top-bar button flips between your language and English.
 function paintEnBtn() {
