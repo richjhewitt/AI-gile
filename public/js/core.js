@@ -285,6 +285,7 @@ async function refresh(force) {
     } else {
       state.project = await api('GET', '/api/projects/' + state.route.slug);
       await loadDocs(state.route.slug);
+      await loadProfiles();   // the role templates, for roles added from a team (AIG-423)
       sig = renderSig([state.route, state.project]);
     }
   } catch (e) {

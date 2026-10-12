@@ -35,9 +35,15 @@ const TEAM_ROLES = [...ROLES.map(r => r[0]), 'Tester (Sonnet)'];
 const projectRoleOn = (r, p = state.project) => r === TEAM_ROLES[0] || !p || !Array.isArray(p.roles) || p.roles.includes(r);
 // A role template on a project (AIG-420): kept by its id, e.g. ux-researcher-senior. state.profiles = GET /api/profiles.
 const profileRole = id => ((state.profiles || {}).roles || []).find(r => r.id === id);
+// Loaded once with the project (core.js), so the role picker can name roles added from a team.
+async function loadProfiles() { if (!state.profiles) try { state.profiles = await api('GET', '/api/profiles'); } catch { state.profiles = { roles: [], teams: [] }; } return state.profiles; }
 const Model = m => String(m || '').replace(/^./, c => c.toUpperCase());
 const roleModel = r => (/\((Opus|Sonnet|Haiku)\)$/.exec(r) || [])[1] || Model((profileRole(r) || {}).model);
 const roleName = id => { const r = profileRole(id); return r ? `${t('prof.role.' + r.group)}, ${t('prof.level.' + r.level)} (${Model(r.model)})` : id; };
+const ROLE_ICON = { lead: '🧠', reviewer: '🔍', frontend: '🎨', backend: '⚙️', qa: '🧪', quickfix: '🔧', copywriter: '📄', tester: '🤖', pm: '📋', fullstack: '🧩', mobile: '📱', devops: '🖥️', security: '🔒', uxui: '✏️', 'ux-researcher': '🔎', data: '📊', accessibility: '♿', i18n: '🌍' };
+const roleIcon = id => ROLE_ICON[(profileRole(id) || {}).group] || '👤';
+// The role templates on a project beyond today's 8 (AIG-420), e.g. reviewer-senior: assigned by their label, the name briefs use.
+const extraRoles = (p = state.project) => (p && Array.isArray(p.roles) ? p.roles : []).filter(r => !TEAM_ROLES.includes(r) && profileRole(r));
 // Per model the helper limit when set, else the number of roles on: { total, list: "Opus 1, Sonnet 2, Haiku 3" }.
 function rolesCount(on) {
   const pr = leadPrefs(); let total = 0;
@@ -50,11 +56,12 @@ function rolesCount(on) {
 }
 function assigneeSelect(cur) {
   const team = (state.project?.team || []).filter(m => !/retired/i.test(m.status || '') && m.name !== me()).map(m => m.name);
-  const known = new Set(['', me(), ...ROLES.map(r => r[0]), ...team]);
+  const extra = extraRoles().map(id => [profileRole(id).label, id]);
+  const known = new Set(['', me(), ...ROLES.map(r => r[0]), ...extra.map(x => x[0]), ...team]);
   const o = (v, label) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
   return `<select id="f-assignee" onchange="onAssignee(this)">
     ${o('', t('assignee.nobody'))}${cur && !known.has(cur) ? o(cur, '👤 ' + cur) : ''}
-    <optgroup label="${esc(t('assignee.roles'))}">${ROLES.filter(r => r[0] === cur || projectRoleOn(r[0])).map(([v, i, d]) => o(v, `${i} ${v}: ${t(d)}`)).join('')}</optgroup>
+    <optgroup label="${esc(t('assignee.roles'))}">${ROLES.filter(r => r[0] === cur || projectRoleOn(r[0])).map(([v, i, d]) => o(v, `${i} ${v}: ${t(d)}`)).join('')}${extra.map(([v, id]) => o(v, `${roleIcon(id)} ${roleName(id)}`)).join('')}</optgroup>
     ${team.length ? `<optgroup label="${esc(t('assignee.members'))}">${team.map(n => o(n, '👤 ' + n)).join('')}</optgroup>` : ''}
     <optgroup label="${esc(t('assignee.you'))}">${o(me(), '🙋 ' + me() + t('assignee.you.task'))}</optgroup>
     <option value="__other">${esc(t('assignee.other'))}</option></select>`;

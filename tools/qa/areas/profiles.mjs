@@ -2,13 +2,14 @@
 // the Setup select, the quiz question and a task's checklist shown a few at a time. The scale table and the brief
 // compiler, lib/profiles.js (AIG-417). Today's settings read and written as the owner scales (AIG-418).
 // The built-in role templates in profiles/ (AIG-419). Team templates and Add team on a project (AIG-420).
-// aigile profile, your own copies in profiles.local and each project's numbers (AIG-421).
+// aigile profile, your own copies in profiles.local and each project's numbers (AIG-421). Setup sliders (AIG-422).
+// The 👥 Team dialog and the profile editor, roles from a team in the card's role picker (AIG-423).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421)', async (s, ctx) => {
+def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421); Setup sliders (AIG-422); 👥 Team dialog, profile editor, role picker (AIG-423)', async (s, ctx) => {
   const file = path.join(s.dir, 'aigile.local.json');
   const local = () => JSON.parse(fs.readFileSync(file, 'utf8'));
   const prefs = async () => (await s.ok('GET', '/api/setup')).prefs;
@@ -226,24 +227,85 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   await page.waitForSelector('#chk-box li');
   check('steps 5: the task shows every step too', (await page.locator('#chk-box li').count()) === 4);
 
-  // 4. ➕ Add team in 🎨 Look (AIG-420): the team's roles show as ticked rows at once, with what was added and swapped.
+  // 4. 👥 Team dialog (AIG-423): from 🎨 Look or the header; a row per role, Add team (AIG-420), Add role, ✕ remove.
   await s.ok('POST', '/api/setup', { prefs: { plan: 'nospare' } });   // no helper limits, so the count line is the roles on
   await page.goto(`${BASE}/#/p/web`); await page.reload();
   await page.click('button:has-text("Look")');
-  await page.waitForSelector('#look-team');
-  check('Look offers the 7 teams', (await page.$$eval('#look-team option', os => os.length)) === 8);
-  await page.selectOption('#look-team', 'webapp');
-  await page.click('#look-roles button:has-text("Add team")');
-  await page.waitForSelector('#look-roles input[data-role="reviewer-senior"]');
-  const row = await page.textContent('#look-roles label:has(input[data-role="reviewer-senior"])');
-  check('the new role is a ticked row with its name, level and model', /Code reviewer, senior \(Sonnet\)/.test(row) && (await page.isChecked('#look-roles input[data-role="reviewer-senior"]')), row);
-  check('Reviewer (Opus) is swapped out', !(await page.isChecked('#look-roles input[data-role="Reviewer (Opus)"]')));
-  const msg = await page.textContent('#look-team-msg');
+  await page.waitForSelector('#look-roles button');
+  check('Look has no role ticks any more, it opens 👥 Team', !(await page.$('#look-roles input[data-role]')));
+  await page.click('#look-roles button');
+  await page.waitForSelector('#tm-box .tm-row');
+  check('a row per role: today\'s 8, each with ✏️, all but the Lead with ✕', (await page.locator('.tm-row').count()) === 8 && (await page.locator('.tm-row .tm-edit').count()) === 8 && (await page.locator('.tm-row .tm-del').count()) === 7);
+  check('Team offers the 7 teams', (await page.$$eval('#tm-team option', os => os.length)) === 8);
+  await page.selectOption('#tm-team', 'webapp');
+  await page.click('#tm-team-add');
+  await page.waitForSelector('.tm-row[data-role-id="reviewer-senior"]');
+  const row = await page.textContent('.tm-row[data-role-id="reviewer-senior"]');
+  check('the new role is a row with its name, level and model', /Code reviewer/.test(row) && /senior · Sonnet/.test(row), row);
+  check('Reviewer (Opus) is swapped out', !(await page.$('.tm-row[data-role-id="reviewer-principal"]')));
+  const msg = await page.textContent('#tm-msg');
   check('it says what was added and swapped out', /Added: Code reviewer, senior \(Sonnet\)\. Swapped out: Code reviewer, principal \(Opus\)/.test(msg), msg);
-  check('the count line counts it', /Opus 1, Sonnet 4, Haiku 3/.test(await page.textContent('#look-rolecount')) && /up to 8 agents/.test(await page.textContent('#look-rolecount')), await page.textContent('#look-rolecount'));
-  await page.click('#look-roles input[data-role="Docs (Haiku)"]');
-  await page.click('#dialog button:has-text("Save")');
+  check('the count line counts it', /up to 8 agents: Opus 1, Sonnet 4, Haiku 3/.test(await page.textContent('#tm-count')), await page.textContent('#tm-count'));
+  await page.click('.tm-row[data-role-id="copywriter-junior"] .tm-del');
   await until(async () => !((await roles('web')) || []).includes('Docs (Haiku)'));
-  check('Save keeps the team and the ticks', (await roles('web')).join() === 'Lead (Opus),Frontend (Sonnet),Backend (Sonnet),QA (Haiku),Quick fix (Haiku),Tester (Sonnet),reviewer-senior', await roles('web'));
+  check('✕ removes a role at once', (await roles('web')).join() === 'Lead (Opus),Frontend (Sonnet),Backend (Sonnet),QA (Haiku),Quick fix (Haiku),Tester (Sonnet),reviewer-senior', await roles('web'));
+  await page.waitForSelector('.tm-row[data-role-id="copywriter-junior"]', { state: 'detached' });
+  await page.selectOption('#tm-add-role', 'frontend-senior');
+  await page.waitForSelector('.tm-row[data-role-id="frontend-senior"]');
+  check('Add role at another level swaps out the one on', !(await page.$('.tm-row[data-role-id="frontend-mid"]')) && /Swapped out: Frontend, mid/.test(await page.textContent('#tm-msg')), await page.textContent('#tm-msg'));
+  // The card's role picker names the roles added from a team (the gap left by AIG-420).
+  const pick = await page.evaluate(() => assigneeSelect(''));
+  check('the card\'s role picker lists roles added from a team, and not the ones taken off', pick.includes('value="Code reviewer, senior (Sonnet)"') && pick.includes('Frontend, senior (Sonnet)') && !pick.includes('Docs (Haiku)') && !pick.includes('value="Frontend (Sonnet)"'), pick);
+  const card = await mkCard(s, 'web', 'Review the login page', { assignee: 'Code reviewer, senior (Sonnet)' });
+  check('a card given to one shows it picked, not as someone else', (await page.evaluate(c => assigneeSelect(c), card.assignee)).includes('selected>🔍 Code reviewer, senior (Sonnet)'));
+
+  // This project: how agents work with you (owner steps, go, words for this project only).
+  await page.click('#tm-owner summary');
+  await slide('#tmo-words', 5);
+  await until(async () => (((await webP()) || {}).owner || {}).words === 5);
+  check('this project\'s own words, briefed here only', /full technical depth/.test(wb()) && !/full technical depth/.test(brief()), wb());
+  await page.waitForSelector('#tm-owner[open] .tm-from button');
+  check('it says it is this project\'s own, the fold stays open', /This project's own/.test(await page.textContent('#tm-owner')));
+  await page.click('#tm-owner .tm-from button');
+  await until(async () => (await webP()) === undefined);
+  check('Use Setup\'s clears it', !/full technical depth/.test(wb()) && /As in ⚙️ Setup/.test(await page.textContent('#tm-owner')));
+
+  // ✏️ The profile editor: sliders, model, level, How I work, a brief preview; three ways to save.
+  const rv = 'reviewer-senior', rvRow = `.tm-row[data-role-id="${rv}"]`, edit = async () => { await page.click(rvRow + ' .tm-edit'); await page.waitForSelector('#pe-lines'); await page.waitForFunction(() => /Your role:/.test(document.getElementById('pe-lines').textContent)); };
+  await edit();
+  check('the editor starts at the role\'s level, model and steps, with a preview and its token count', (await page.inputValue('#pe-level')) === rv && (await page.inputValue('#pe-model')) === 'sonnet' && (await page.inputValue('#pe-tests')) === '4' && (await page.inputValue('#pe-alone')) === '1' && /about \d+ tokens/.test(await page.textContent('#pe-tokens')), await page.textContent('#pe-tokens'));
+  await slide('#pe-tests', 5);
+  await page.waitForFunction(() => /full QA, an AI tester pass/.test(document.getElementById('pe-lines').textContent));
+  check('the preview follows a slider before anything is saved', !(((await webP()) || {})[rv]));
+  await page.click('#pe-here'); await page.waitForSelector('#tm-box');
+  check('Save for this project only: the number on this project, the row says so', ((await webP()) || {})[rv].tests === 5 && /this project's own/.test(await page.textContent(rvRow)), await webP());
+  check('another project keeps the template', !/full QA, an AI/.test(s.cli(['profile', 'alpha', rv]).out));
+  const ownR = path.join(s.dir, 'profiles.local', 'roles', rv + '.md'), ownT = () => fs.existsSync(ownR) ? fs.readFileSync(ownR, 'utf8') : '';
+  await edit();
+  check('the editor shows this project\'s number', (await page.inputValue('#pe-tests')) === '5');
+  await page.fill('#pe-how', 'Reads the diff\n- Runs the tests');
+  await page.selectOption('#pe-model', 'opus');
+  await page.waitForFunction(() => /- Runs the tests/.test(document.getElementById('pe-lines').textContent) && /Opus\)/.test(document.getElementById('pe-lines').textContent));
+  await page.click('#pe-all'); await page.waitForSelector('#tm-box');
+  check('Save for all projects: your copy keeps what differs, this project\'s number moves into it', /model: opus/.test(ownT()) && /tests: 5/.test(ownT()) && !/alone/.test(ownT()) && /- Reads the diff\n- Runs the tests/.test(ownT()) && (await webP()) === undefined, ownT());
+  check('another project gets it too', /full QA, an AI/.test(s.cli(['profile', 'alpha', rv]).out) && /Opus\)/.test(s.cli(['profile', 'alpha', rv]).out));
+  check('the row says your copy, with the model', /your copy/.test(await page.textContent(rvRow)) && /Opus/.test(await page.textContent(rvRow)));
+  await edit(); await page.click('#pe-reset'); await page.waitForSelector('#tm-box');
+  check('Reset to template: the copy goes', !fs.existsSync(ownR) && !/your copy/.test(await page.textContent(rvRow)));
+  await edit();
+  check('Reset to template is greyed when there is nothing to reset', await page.isDisabled('#pe-reset'));
+  await page.selectOption('#pe-level', 'reviewer-principal');
+  await page.waitForFunction(() => /principal/.test(document.querySelector('#pe-box h2').textContent));
+  check('another level takes this one\'s place on the project at once', (await roles('web')).includes('Reviewer (Opus)') && !(await roles('web')).includes(rv), await roles('web'));
+  check('a bad preview is refused', (await s.api('POST', '/api/projects/web/profiles/frontend/preview', { scales: { go: 3 } })).status === 400);
+
+  // At phone width the dialog and the editor fit, with no sideways scroll.
+  await page.setViewportSize({ width: 390, height: 844 }); await sleep(300);
+  const fitsPhone = () => page.evaluate(() => { const d = document.querySelector('#dialog .dialog'); return document.documentElement.scrollWidth <= document.documentElement.clientWidth && d.scrollWidth <= d.clientWidth + 1; });
+  check('the profile editor fits a phone', await fitsPhone());
+  check('the dialog sits above the DM bar, so its buttons can be tapped', await page.evaluate(() => { const b = document.querySelector('#dialog .dialog').getBoundingClientRect(), r = document.getElementById('dmRail').getBoundingClientRect(); return b.bottom <= r.top + 1; }));
+  await page.click('#pe-box button:has-text("Back")'); await page.waitForSelector('#tm-box .tm-row');
+  check('the Team dialog fits a phone', await fitsPhone());
+  await page.setViewportSize({ width: 1400, height: 900 });
   noErrors(page);
 }, true);
