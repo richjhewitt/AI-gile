@@ -143,7 +143,7 @@ Today's 8 `TEAM_ROLES` become: lead-principal, reviewer-principal, frontend-mid,
 - **Docs and launch team**: copywriter-mid, i18n-junior, pm-mid
 - **Data team**: data-senior, backend-mid, qa-junior
 
-One click "Add team" switches those roles on in `p.roles` (adds, keeps what's there; Lead always on). The lead's brief "You may delegate to" line then lists them.
+One click "Add team" switches those roles on in `p.roles` (adds, keeps what's there; the same role at another level is swapped out; Lead always on). The lead's brief "You may delegate to" line then lists them. Built (AIG-420): `POST /api/projects/<slug>/apply-team { team, mode: add | replace }` answers with what was added and swapped out; today's 8 stay in `p.roles` by their old names, other roles by id; ➕ Add team sits under the roles in 🎨 Look until the 👥 Team dialog.
 
 ## 4. Owner-level vs agent-level
 - **Owner-level** (how agents treat the owner; one set for all agents, per project override allowed): **steps, chat, go, words, tidy, thrift**. Whoever talks to the owner uses them; helpers that don't talk to the owner still use `words` and `steps` in any test steps or task cards they write.

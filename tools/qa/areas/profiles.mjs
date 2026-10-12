@@ -1,13 +1,13 @@
 // QA area: profiles (AIG-415): how agents work with the owner. Steps at a time (AIG-416): the setting, the brief line,
 // the Setup select, the quiz question and a task's checklist shown a few at a time. The scale table and the brief
 // compiler, lib/profiles.js (AIG-417). Today's settings read and written as the owner scales (AIG-418).
-// The built-in role templates in profiles/ (AIG-419).
+// The built-in role templates in profiles/ (AIG-419). Team templates and Add team on a project (AIG-420).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419)', async (s, ctx) => {
+def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420)', async (s, ctx) => {
   const file = path.join(s.dir, 'aigile.local.json');
   const local = () => JSON.parse(fs.readFileSync(file, 'utf8'));
   const prefs = async () => (await s.ok('GET', '/api/setup')).prefs;
@@ -47,7 +47,7 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   check('levels offered as in the design', ['lead-principal', 'frontend-junior', 'backend-senior', 'qa-junior', 'security-principal', 'reviewer-senior', 'i18n-mid'].every(id => T[id]) && !T['lead-junior'] && !T['security-junior'] && !T['qa-senior']);
   check('the scales each role changes are in its file', T['qa-mid'].scales.tests === 5 && T['devops-mid'].scales.steps === 1 && T['ux-researcher-mid'].scales.words === 1 && T['pm-senior'].scales.tidy === 3);
   check('every template compiles to at most 8 lines', ids.every(id => P.roleLines(T[id]).length <= 8));
-  check('every file parses with no warnings and round-trips', ids.every(id => { const f = fs.readFileSync(path.join(PR, 'roles', id + '.md'), 'utf8'); return P.format(P.parse(f)) === f; }));
+  check('every file parses with no warnings and round-trips', ids.every(id => { const f = fs.readFileSync(path.join(PR, 'roles', id + '.md'), 'utf8'); return P.format(P.parse(f)) === f.replace(/\r/g, ''); }));
   const own = P.parse(fs.readFileSync(path.join(PR, 'owner.md'), 'utf8'));
   check('owner.md holds the ways step of every owner scale', Object.keys(P.SCALES).filter(k => P.SCALES[k].who === 'owner').every(k => own.scales[k] === P.SCALES[k].ways), own.scales);
 
@@ -100,6 +100,32 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   await set({ scales: { words: 2, go: 2, steps: 5 } });
   check('words 2 and go 2 cost no brief line', !/technical depth|without asking/.test(brief()), brief());
 
+  // 1c. Team templates and ➕ Add team (AIG-420): old role names still read, other roles kept by id.
+  const lib = await s.ok('GET', '/api/profiles');
+  check('the page gets 35 roles and 7 teams', lib.roles.length === 35 && lib.teams.length === 7, [lib.roles.length, lib.teams.length]);
+  check('every team lists only roles that exist, each with when to use it', lib.teams.every(tm => tm.roles.length >= 3 && tm.when && tm.roles.every(id => lib.roles.some(r => r.id === id))), lib.teams);
+  check('a role carries its label', lib.roles.find(r => r.id === 'ux-researcher-senior').label === 'UX researcher, senior (Sonnet)' && lib.roles.find(r => r.id === 'frontend-mid').label === 'Frontend (Sonnet)');
+  await mkProject(s, 'Web', 'WEB');
+  const roles = async sl => (await s.ok('GET', '/api/projects/' + sl)).roles;
+  let r = await s.ok('POST', '/api/projects/web/apply-team', { team: 'webapp' });
+  check('add: the team goes on, the same role at another level is swapped out, the rest kept', r.added.join() === 'reviewer-senior' && r.replaced.join() === 'reviewer-principal' && (await roles('web')).join() === 'Lead (Opus),Frontend (Sonnet),Backend (Sonnet),QA (Haiku),Quick fix (Haiku),Docs (Haiku),Tester (Sonnet),reviewer-senior', r);
+  const wb = () => s.cli(['brief', 'web']).out;
+  check('the brief names the new role and drops the swapped one', /delegate to: [^\n]*Code reviewer, senior \(Sonnet\)/.test(wb()) && !/Reviewer \(Opus\)/.test(wb()), wb());
+  r = await s.ok('POST', '/api/projects/web/apply-team', { team: 'ux' });
+  check('a second team adds to the first', ['ux-researcher-senior', 'uxui-mid', 'accessibility-mid'].every(id => r.roles.includes(id)) && r.roles.includes('Frontend (Sonnet)') && r.replaced.length === 0, r);
+  r = await s.ok('POST', '/api/projects/web/apply-team', { team: 'security', mode: 'replace' });
+  check('replace: only the team, Lead stays on', r.roles.join() === 'Lead (Opus),security-principal,reviewer-senior,devops-mid' && r.replaced.includes('ux-researcher-senior'), r);
+  check('an unknown team is refused', (await s.api('POST', '/api/projects/web/apply-team', { team: 'pirates' })).status === 404);
+  check('an unknown mode is refused', (await s.api('POST', '/api/projects/web/apply-team', { team: 'ux', mode: 'merge' })).status === 400);
+  await s.ok('PATCH', '/api/projects/web', { roles: ['frontend-mid', 'data-senior', 'nobody-mid', 'Docs (Haiku)'] });
+  check('roles by id or old name; an id of today\'s 8 is kept by its old name; unknown dropped; Lead on', (await roles('web')).join() === 'Lead (Opus),Frontend (Sonnet),Docs (Haiku),data-senior', await roles('web'));
+  await s.ok('PATCH', '/api/projects/web', { roles: Object.keys(P.OLD_ROLES).map(k => P.OLD_ROLES[k]) });
+  check('today\'s 8 by id is all on, stored as nothing', (await roles('web')) === undefined);
+  await s.ok('POST', '/api/setup', { prefs: { newRoles: ['QA (Haiku)', 'mobile-senior'] } });
+  check('new projects may start with role templates too', (await prefs()).newRoles.join() === 'Lead (Opus),QA (Haiku),mobile-senior', (await prefs()).newRoles);
+  check('an unknown role for new projects is refused', (await s.api('POST', '/api/setup', { prefs: { newRoles: ['nobody-mid'] } })).status === 400);
+  await s.ok('POST', '/api/setup', { prefs: { newRoles: '' } });
+
   // 2. Setup: the select and the quiz question.
   await s.ok('POST', '/api/setup', { prefs: { steps: 1, wizardSeen: true, helpLevel: '2' } });
   const page = await openPage(ctx, '#/setup');
@@ -139,5 +165,25 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   await page.reload(); await page.goto(`${BASE}/#/p/alpha/${task.id}`);
   await page.waitForSelector('#chk-box li');
   check('steps 5: the task shows every step too', (await page.locator('#chk-box li').count()) === 4);
+
+  // 4. ➕ Add team in 🎨 Look (AIG-420): the team's roles show as ticked rows at once, with what was added and swapped.
+  await s.ok('POST', '/api/setup', { prefs: { plan: 'nospare' } });   // no helper limits, so the count line is the roles on
+  await page.goto(`${BASE}/#/p/web`); await page.reload();
+  await page.click('button:has-text("Look")');
+  await page.waitForSelector('#look-team');
+  check('Look offers the 7 teams', (await page.$$eval('#look-team option', os => os.length)) === 8);
+  await page.selectOption('#look-team', 'webapp');
+  await page.click('#look-roles button:has-text("Add team")');
+  await page.waitForSelector('#look-roles input[data-role="reviewer-senior"]');
+  const row = await page.textContent('#look-roles label:has(input[data-role="reviewer-senior"])');
+  check('the new role is a ticked row with its name, level and model', /Code reviewer, senior \(Sonnet\)/.test(row) && (await page.isChecked('#look-roles input[data-role="reviewer-senior"]')), row);
+  check('Reviewer (Opus) is swapped out', !(await page.isChecked('#look-roles input[data-role="Reviewer (Opus)"]')));
+  const msg = await page.textContent('#look-team-msg');
+  check('it says what was added and swapped out', /Added: Code reviewer, senior \(Sonnet\)\. Swapped out: Code reviewer, principal \(Opus\)/.test(msg), msg);
+  check('the count line counts it', /Opus 1, Sonnet 4, Haiku 3/.test(await page.textContent('#look-rolecount')) && /up to 8 agents/.test(await page.textContent('#look-rolecount')), await page.textContent('#look-rolecount'));
+  await page.click('#look-roles input[data-role="Docs (Haiku)"]');
+  await page.click('#dialog button:has-text("Save")');
+  await until(async () => !((await roles('web')) || []).includes('Docs (Haiku)'));
+  check('Save keeps the team and the ticks', (await roles('web')).join() === 'Lead (Opus),Frontend (Sonnet),Backend (Sonnet),QA (Haiku),Quick fix (Haiku),Tester (Sonnet),reviewer-senior', await roles('web'));
   noErrors(page);
 }, true);

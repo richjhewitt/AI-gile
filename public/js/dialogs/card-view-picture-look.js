@@ -75,6 +75,7 @@ function libraryHtml(l) {
 async function lookDialog() {
   const p = state.project;
   if (!state.setup) try { state.setup = await api('GET', '/api/setup'); } catch {}   // the default for where it runs (AIG-153)
+  if (!state.profiles) try { state.profiles = await api('GET', '/api/profiles'); } catch { state.profiles = { roles: [], teams: [] }; }   // role and team templates (AIG-420)
   const def = leadPrefs().runIn || 'background', w = p.runIn || def;
   openDialog(`<h2>${esc(t('board.look'))}</h2>
     <p class="muted">${esc(t('look.intro', { name: p.name }))}</p>
@@ -87,9 +88,28 @@ async function lookDialog() {
     <label class="chk"><input type="checkbox" id="look-life" ${p.lifeBoard ? 'checked' : ''}> ${esc(t('look.life'))} <span class="muted">${esc(t('look.life.sub'))}</span></label>
     <label class="f"><span>${esc(t('look.runin'))}</span>${runInSelect('look-runin', p.runIn || '', 'lookRunIn()', def)}${runInBlind(w)}</label>
     <label class="f" id="look-runcmd-box" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="look-runcmd" value="${esc(p.runCmd || '')}" placeholder="${esc(leadPrefs().runCmd || 'cursor "{folder}"')}"><small class="muted">${esc(t('runin.cmd.look'))}</small></label>
-    <div class="f" id="look-roles"><span>${esc(t('look.roles'))}</span>${TEAM_ROLES.map((r, i) => `<label class="chk"><input type="checkbox" data-role="${esc(r)}" ${projectRoleOn(r, p) ? 'checked' : ''} ${i ? '' : 'disabled'} onchange="lookRolesCount()"> ${esc(r)}</label>`).join('')}<small class="muted" id="look-rolecount">${esc(t('look.roles.count', rolesCount(TEAM_ROLES.filter(r => projectRoleOn(r, p)))))}</small></div>
+    <div class="f" id="look-roles">${lookRolesHtml(p)}</div>
     <div class="err" id="look-err"></div>
     <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
+}
+// 👥 The roles on this project: today's 8 by name, then any other role template that is on (AIG-420), and ➕ Add team.
+function lookRolesHtml(p) {
+  const box = (r, label, on, lock) => `<label class="chk"><input type="checkbox" data-role="${esc(r)}" ${on ? 'checked' : ''} ${lock ? 'disabled' : ''} onchange="lookRolesCount()"> ${esc(label)}</label>`;
+  const extra = (Array.isArray(p.roles) ? p.roles : []).filter(r => !TEAM_ROLES.includes(r)), on = [...TEAM_ROLES.filter(r => projectRoleOn(r, p)), ...extra];
+  return `<span>${esc(t('look.roles'))}</span>${TEAM_ROLES.map((r, i) => box(r, r, projectRoleOn(r, p), !i)).join('')}${extra.map(r => box(r, roleName(r), true)).join('')}<small class="muted" id="look-rolecount">${esc(t('look.roles.count', rolesCount(on)))}</small>
+    <div class="row"><select id="look-team" aria-label="${esc(t('look.team.pick'))}"><option value="">${esc(t('look.team.pick'))}</option>${(state.profiles.teams || []).map(tm => `<option value="${esc(tm.id)}">${esc(t('prof.team.' + tm.id))}</option>`).join('')}</select><button type="button" onclick="lookAddTeam()">${esc(t('look.team.add'))}</button></div>
+    <small class="muted" id="look-team-msg">${esc(t('look.team.sub'))}</small>`;
+}
+// Adds the team's roles at once (saved), keeps the rest and says what was added or swapped out.
+async function lookAddTeam() {
+  const id = $('look-team').value; if (!id) return;
+  try {
+    const r = await api('POST', '/api/projects/' + slug() + '/apply-team', { team: id, mode: 'add' });
+    state.project.roles = r.roles;
+    $('look-roles').innerHTML = lookRolesHtml(state.project);
+    const added = r.added.map(roleName).join(', ') || t('look.team.nothing');
+    $('look-team-msg').textContent = t(r.replaced.length ? 'look.team.done' : 'look.team.done.none', { added, replaced: r.replaced.map(roleName).join(', ') });
+  } catch (e) { setErr('look-err', e); }
 }
 const lookRolesOn = () => [...document.querySelectorAll('#look-roles input[data-role]')].filter(i => i.checked || i.disabled).map(i => i.dataset.role);
 function lookRolesCount() { $('look-rolecount').textContent = t('look.roles.count', rolesCount(lookRolesOn())); }
