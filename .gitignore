@@ -14,3 +14,6 @@ dist/
 # A friend invite from the join link, read once on first start (AIG-347)
 /invite.json
 /invite.applied.json
+
+# Your own edited copies of the agent profiles (AIG-421)
+/profiles.local/

@@ -108,6 +108,7 @@ words: 3
 - `aigile brief` prints a **"How <owner> works"** block from the owner scales: one short sentence per scale that is **not** at its default (the step's line above). The default owner costs 0 extra lines; Rich today costs about 3.
 - The existing go / helpers / roles lines move into this compiler (same text, one place).
 - The lead's brief adds one line: `Brief helpers with: aigile profile <slug> <role>`. That prints the role's compiled lines (scales not at default + How I work), 3 to 8 lines, which the lead pastes at the top of the helper's prompt.
+- Built (AIG-421): `aigile profile <slug> [role] [--set k=n,... [--all]] [--reset [--all]]`; your copy at `PUT/DELETE /api/profiles/roles/<id>`, this project's numbers at `PUT /api/projects/<slug>/profiles/<owner|role>` (owner: steps, go, words; a role: alone, tests, steps, words; null clears one). A helper gets the owner's steps and words unless its role sets its own.
 - Ways of working keeps the prose. Where a scale is set off default, the brief line says "this overrides your ways of working".
 
 ## 3. Templates

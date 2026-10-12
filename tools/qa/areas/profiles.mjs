@@ -2,12 +2,13 @@
 // the Setup select, the quiz question and a task's checklist shown a few at a time. The scale table and the brief
 // compiler, lib/profiles.js (AIG-417). Today's settings read and written as the owner scales (AIG-418).
 // The built-in role templates in profiles/ (AIG-419). Team templates and Add team on a project (AIG-420).
+// aigile profile, your own copies in profiles.local and each project's numbers (AIG-421).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420)', async (s, ctx) => {
+def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421)', async (s, ctx) => {
   const file = path.join(s.dir, 'aigile.local.json');
   const local = () => JSON.parse(fs.readFileSync(file, 'utf8'));
   const prefs = async () => (await s.ok('GET', '/api/setup')).prefs;
@@ -125,6 +126,42 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   check('new projects may start with role templates too', (await prefs()).newRoles.join() === 'Lead (Opus),QA (Haiku),mobile-senior', (await prefs()).newRoles);
   check('an unknown role for new projects is refused', (await s.api('POST', '/api/setup', { prefs: { newRoles: ['nobody-mid'] } })).status === 400);
   await s.ok('POST', '/api/setup', { prefs: { newRoles: '' } });
+
+  // 1d. aigile profile (AIG-421): a role's lines for a helper, your own copies for all projects, this project's numbers.
+  const prof = (...a) => s.cli(['profile', 'web', ...a]);
+  check('the brief says how to brief helpers', /Brief helpers with: aigile profile web <role>/.test(wb()), wb());
+  check('no role lists the roles on the project', /frontend-mid  Frontend \(Sonnet\)/.test(prof().out) && /tester-mid/.test(prof().out), prof().out);
+  let fe2 = prof('frontend').out;
+  check('a role by name prints its lines: who, the owner\'s steps, How I work', /^Your role: Frontend \(mid, Sonnet\) on Web\./.test(fe2) && /When Owner does something by hand, give everything at once/.test(fe2) && /- Builds the page side only/.test(fe2) && fe2.split('\n').length <= 9, fe2);
+  check('by old name too', /^Your role: Code reviewer \(principal, Opus\)/.test(prof('Reviewer (Opus)').out), prof('Reviewer (Opus)').out);
+  check('an unknown role says so', prof('pirate').code !== 0 && /no role like/.test(prof('pirate').err), prof('pirate'));
+  const webP = async () => (await s.ok('GET', '/api/projects/web')).profiles;
+  fe2 = prof('frontend', '--set', 'tests=5').out;
+  check('--set: this project\'s numbers, briefed', (await webP())['frontend-mid'].tests === 5 && /full QA, an AI tester pass/.test(fe2), fe2);
+  check('another project keeps the template', !/full QA/.test(s.cli(['profile', 'alpha', 'frontend']).out));
+  for (const bad of ['go=3', 'tests=9', 'tests=lots', 'chat=3']) check(`--set ${bad} is refused for a role`, prof('frontend', '--set', bad).code !== 0);
+  const ownF = path.join(s.dir, 'profiles.local', 'roles', 'frontend-mid.md');
+  fe2 = prof('frontend', '--set', 'tests=1', '--all').out;
+  check('--all: your copy in profiles.local, only what differs', fs.existsSync(ownF) && /tests: 1/.test(fs.readFileSync(ownF, 'utf8')) && !/name:/.test(fs.readFileSync(ownF, 'utf8')), fs.existsSync(ownF) && fs.readFileSync(ownF, 'utf8'));
+  check('--all shows your copy; this project\'s number still wins over it', /on any project\./.test(fe2) && /smoke check/.test(fe2) && /full QA/.test(prof('frontend').out) &&/smoke check/.test(s.cli(['profile', 'alpha', 'frontend']).out), fe2);
+  check('the list marks your copy and this project\'s numbers', /frontend-mid  Frontend \(Sonnet\)  \(your copy\)  \(this project: tests 5\)/.test(prof().out), prof().out);
+  prof('frontend', '--reset');
+  check('--reset clears this project\'s numbers, your copy shows', (await webP()) === undefined && /smoke check/.test(prof('frontend').out), await webP());
+  prof('frontend', '--reset', '--all');
+  check('--reset --all: back to the template', !fs.existsSync(ownF) && !/smoke check|full QA/.test(prof('frontend').out));
+  let own2 = await s.ok('PUT', '/api/profiles/roles/frontend-mid', { scales: { tests: 3 }, how: ['Builds the page side only; asks Backend for new API routes', 'Checks it at phone width and in dark mode before handing over', 'Every string goes through the language files', 'Keeps to the card; a senior or the lead checks the work'] });
+  check('a copy that says the same as the template is no copy', own2.copy === null && !fs.existsSync(ownF), own2);
+  own2 = await s.ok('PUT', '/api/profiles/roles/frontend-mid', { how: ['Only the CSS'], model: 'opus' });
+  check('your own How I work and model', /- Only the CSS/.test(prof('frontend').out) && /Opus\)/.test(prof('frontend').out) && !/Builds the page/.test(prof('frontend').out), prof('frontend').out);
+  check('a bad model or role is refused', (await s.api('PUT', '/api/profiles/roles/frontend-mid', { model: 'gpt' })).status === 400 && (await s.api('PUT', '/api/profiles/roles/pirate-mid', {})).status === 404);
+  await s.ok('DELETE', '/api/profiles/roles/frontend-mid');
+  prof('owner', '--set', 'words=5');
+  check('owner --set: this project\'s own numbers, in its brief only', /full technical depth/.test(wb()) && !/full technical depth/.test(brief()), wb());
+  check('a helper writes to the owner in this project\'s words', /When you write for Owner \(test steps, task cards, comments\): full technical depth/.test(prof('frontend').out), prof('frontend').out);
+  for (const bad of ['alone=2', 'steps=9', 'chat=3']) check(`owner --set ${bad} is refused`, prof('owner', '--set', bad).code !== 0);
+  check('owner --all is for Setup', prof('owner', '--set', 'words=1', '--all').code !== 0);
+  prof('owner', '--reset');
+  check('owner --reset: Setup\'s words again', !/full technical depth/.test(wb()) && (await webP()) === undefined, wb());
 
   // 2. Setup: the select and the quiz question.
   await s.ok('POST', '/api/setup', { prefs: { steps: 1, wizardSeen: true, helpLevel: '2' } });
