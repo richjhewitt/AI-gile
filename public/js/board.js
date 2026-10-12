@@ -103,6 +103,7 @@ function renderBoard(p) {
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path ? t('board.connected') : t('board.connect'))}</button>
       ${Share.button(p)}
+      <button onclick="saveProjectFile()" title="${esc(t('ofl.save.title'))}">${esc(t('ofl.save'))}</button>
       <button onclick="lookDialog()" title="${esc(t('board.look.title'))}">${esc(t('board.look'))}</button>
       <button onclick="columnsDialog()" title="${esc(t('board.columns.title'))}">${esc(t('board.columns'))}</button>
       <button onclick="cardViewDialog()" title="${esc(t('board.cards.title'))}">${esc(t('board.cards'))}</button>
