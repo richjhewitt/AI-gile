@@ -39,6 +39,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `js/dms.js` (DM chats), `js/share.js` (🔗 Share dialog, link offers in the inbox), `js/share-board.js` (a friend's shared project as its own board, `#/shared/<link>`), `js/ask.js` (friends' questions in the inbox), `js/pack.js` (📤 Copy for another AI / 📥 Paste the reply on a card)
 - `js/notokens.js` + `css/06-notokens.css`: the top-bar ⛔ switch; body class `notokens` hides AI buttons by CSS (add `.ai-only` or an onclick prefix to the list)
 - `js/standup.js`, `js/usage-page.js`, `js/glossary.js`, `js/tour.js`, `js/help.js` (AIG-345: help levels, ❓ Help menu, first-run offer, 🎓 Agile intro slides from `GET /api/intro`; QA `helplevels`), `js/night.js`, `js/leadquiz.js`
+- `js/topbar.js` + `css/10-topbar.css`: Setup box and apply of the top bar buttons (AIG-575/576: on/off, order, left/right, theme colour, reset; localStorage `aigile.topbar`; QA `topbar`)
 - `js/app.js`: start-up, 1s poll, going quiet
 
 ## Other areas
