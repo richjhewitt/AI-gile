@@ -54,6 +54,36 @@ def('tokenlimits', '🪙 helper cap by spend scale, nightly token budget stops a
   const mark = s.cli(['brief', 'night']);
   check('a dead pid is never killed', JSON.parse(node(`const b = require(${B}); const k = []; b.checkNight({ runs: [{ slug: 'night', pid: 999999, startedAt: 1 }], kill: p => k.push(p), alive: () => false }); console.log(JSON.stringify(k));`).out) .length === 0 && mark.code === 0);
 
+  // #10 Blind spots: non-team runs are logged with a kind, lead sessions are told apart by folder, cache reads show on the Usage page.
+  const src = f => fs.readFileSync(path.join(ROOT, 'lib', f), 'utf8');
+  check('the Scrum Master, the tester, ask and pack all log their run with a kind', /logRun\('scrummaster', '_scrummaster'/.test(src('watchman.js')) && /logRun\('tester', '_tester'/.test(src('tester.js')) && /slug: '_ask', kind: 'ask'/.test(src('ask.js')) && /slug: '_pack', kind: 'pack'/.test(src('pack.js')));
+  const U = JSON.stringify(path.join(ROOT, 'lib', 'usage.js')), testerDir = tmp('tester-folder');
+  const msg = (id, u) => JSON.stringify({ type: 'assistant', requestId: 'q' + id, timestamp: new Date().toISOString(), message: { id: 'n' + id, model: 'claude-sonnet-4', usage: u, content: [] } }) + '\n';
+  const tsess = path.join(s.usageDir, folderOf(testerDir)); fs.mkdirSync(tsess, { recursive: true });
+  fs.writeFileSync(path.join(tsess, 't.jsonl'), msg(1, { input_tokens: 100, cache_creation_input_tokens: 900, output_tokens: 300, cache_read_input_tokens: 40000 }));
+  fs.writeFileSync(path.join(s.data, 'logs', '_runs.jsonl'), '');
+  const lg = JSON.parse(node(`const u = require(${U}); const log = ${JSON.stringify(path.join(s.data, 'logs', '_t.log'))}; const row = u.logRun('tester', '_tester', { folder: ${JSON.stringify(testerDir)}, start: Date.now() - 60e3, log }); const miss = u.logRun('tester', '_tester', { folder: ${JSON.stringify(testerDir + '-nope')}, start: Date.now() - 60e3 }); console.log(JSON.stringify({ row, miss }));`).out || '{}');
+  const rows = fs.readFileSync(path.join(s.data, 'logs', '_runs.jsonl'), 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l));
+  check('a tester run row has the team-run fields plus kind', rows.length === 1 && rows[0].kind === 'tester' && rows[0].slug === '_tester' && rows[0].in === 1000 && rows[0].out === 300 && rows[0].cache === 40000 && rows[0].fresh === 100 && rows[0].cw === 900 && Array.isArray(rows[0].cards) && (rows[0].models || []).length === 1, rows);
+  check('nothing found, nothing logged', lg.miss === null && rows.length === 1);
+  check('the tester log gets the tokens line', /=== tokens: 1k in · 300 out · 40k cache read ===/.test(fs.readFileSync(path.join(s.data, 'logs', '_t.log'), 'utf8')));
+  // A lead session: messages in the project's folder and in one of its helper worktrees, none of them in a team run.
+  const ldir = tmp('lead'); await mkProject(s, 'Lead', 'LED', { path: ldir });
+  const lsess = path.join(s.usageDir, folderOf(ldir)), wsess = path.join(s.usageDir, folderOf(ldir) + '--claude-worktrees-agent-1');
+  fs.mkdirSync(lsess, { recursive: true }); fs.mkdirSync(wsess, { recursive: true });
+  fs.writeFileSync(path.join(lsess, 'l.jsonl'), msg(2, { input_tokens: 10, output_tokens: 50, cache_read_input_tokens: 5000 }));
+  fs.writeFileSync(path.join(wsess, 'w.jsonl'), msg(3, { input_tokens: 10, output_tokens: 50, cache_read_input_tokens: 7000 }));
+  const runsApi = await s.ok('GET', '/api/usage/runs');
+  const lead = runsApi.find(r => r.kind === 'lead' && r.slug === 'lead');
+  check('VS Code lead sessions are attributed by folder, helper worktrees included', lead && lead.cache === 12000 && lead.out === 100, runsApi);
+  check('a kind row is listed with the team runs', runsApi.some(r => r.kind === 'tester' && r.cache === 40000), runsApi);
+  const upage = await openPage(ctx, '#/usage');
+  await upage.waitForSelector('.uz-runtotal', { timeout: 8000 });
+  const utext = await upage.textContent('.uz-runtotal'), table = await upage.textContent('.uz-tablewrap');
+  check('the Usage page totals the cache reads', /cache read/.test(utext) && /52k/.test(utext), utext);
+  check('and names the AI tester and the lead sessions', /AI tester/.test(table) && /Lead session \(VS Code\): Lead/.test(table), table.slice(0, 300));
+  noErrors(upage);
+
   // #9 aigile i18n missing <lang>: only the English keys a language file lacks, as JSON.
   const lang = f => JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'lang', f + '.json'), 'utf8'));
   const en = lang('en'), fr = lang('fr'), wantFr = Object.keys(en).filter(k => !(k in fr));
