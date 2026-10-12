@@ -207,6 +207,7 @@ function parseRoute() {
   const popList = location.hash.match(/^#\/pop-inbox\/([qkt])$/);
   if (popList) return { view: 'inbox', popList: popList[1] };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
+  if (location.hash === '#/assumptions') return { view: 'assumptions' };
   if (location.hash === '#/setup') return { view: 'setup' };
   if (location.hash === '#/standups') return { view: 'standups' };
   if (location.hash === '#/glossary') return { view: 'glossary' };
@@ -271,6 +272,9 @@ async function refresh(force) {
     } else if (state.route.view === 'shared') {
       state.sboard = await api('GET', `/api/shares/${state.route.link}/board`).catch(() => null);
       sig = JSON.stringify([state.route, state.sboard, i18n.lang]);
+    } else if (state.route.view === 'assumptions') {
+      await Assumptions.load();
+      sig = JSON.stringify([state.route, Assumptions.data]);
     } else if (state.route.view === 'usage') {
       await loadUsagePage(force);   // heavy, so at most every ~15s
       sig = JSON.stringify([state.route, uzSig()]);
@@ -304,6 +308,7 @@ function renderBoardOnly() {
   queueMicrotask(paintFilterBar);
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'usage') return;
+  if (state.route.view === 'assumptions') { $('app').innerHTML = Assumptions.render(); return; }
   if (state.route.view === 'standups') { $('app').innerHTML = renderStandups(); return; }
   if (state.route.view === 'shared') { $('app').innerHTML = ShareBoard.render(state.sboard); return; }
   // Only the home page and a board are painted here; Setup, the inbox and the rest paint themselves (AIG-335: no project yet on a fresh board).
@@ -331,6 +336,7 @@ function render() {
   if (state.route.view === 'watch') { renderWatch(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'shared') { $('crumb').textContent = '/ 🔗 ' + (state.sboard ? state.sboard.theirName || state.sboard.friend : ''); $('crumb').style.color = ''; $('app').innerHTML = ShareBoard.render(state.sboard); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'assumptions') { $('crumb').textContent = '/ 🌙 Assumptions'; $('app').innerHTML = Assumptions.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ ' + t('crumb.usage'); $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
   // A popped-out card (AIG-122): just the card, filling its own window; no header or board behind it.
