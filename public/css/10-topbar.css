@@ -51,3 +51,4 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .roll-card { display: block; margin-bottom: 6px; } .roll-from { font-size: 11px; border-left: 3px solid var(--proj, var(--line)); padding-left: 4px; margin-left: 4px; }
 @media (max-width: 600px) { .roll-col { flex-basis: 75vw; } }
 .dc-pic { display: block; max-width: 100%; max-height: 240px; margin-top: 6px; border-radius: 8px; }
+.tm-loadtpl { max-width: 11em; font-size: 12px; } .tm-type { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 6px 0; }
