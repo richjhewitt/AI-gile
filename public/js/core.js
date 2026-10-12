@@ -305,7 +305,15 @@ async function refresh(force) {
   $('live').textContent = t('live.ok');
   if (!force && sig === state.lastSig) return;
   state.lastSig = state.lastBoardSig = sig;
-  render();
+  // AIG-485: a render that throws (a script half-loaded while the app restarted) must not leave a blank page that
+  // never redraws: forget the signature so the next tick tries again, and say so instead of showing nothing.
+  try { render(); }
+  catch (e) {
+    state.lastSig = state.lastBoardSig = null;
+    $('live').className = 'live off'; $('live').textContent = t('live.offline', { msg: e.message });
+    if (!$('app').innerHTML.trim()) $('app').innerHTML = `<p class="muted" style="padding:24px">${esc(e.message)} <button onclick="location.reload()">↻</button></p>`;
+    console.error(e);
+  }
 }
 
 function renderBoardOnly() {
