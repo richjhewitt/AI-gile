@@ -175,6 +175,19 @@ def('usage', '#/usage renders with and without limits.log', async (s, ctx) => {
   await s.ok('POST', '/api/limits', { rate_limits: { five_hour: { used_percentage: 95, resets_at: soon }, seven_day: { used_percentage: 85, resets_at: soon + 86400 } } });
   g = await glance();
   check('glance: over the budget shows a red dot', g.bars.join() === 'r,r' && g.dot === 1 && /budget/.test(g.title), g);
+  // AIG-431: Compact / Full toggle. Compact = two monospace lines with bars from the latest reading; the choice is remembered.
+  await page2.click('.uz-viewtog button:nth-child(1)');
+  await page2.waitForSelector('.uz-compact', { timeout: 5000 });
+  const cl = (await page2.textContent('.uz-compact')).split('\n');
+  check('compact: two lines with bars (95% and 85% used)', cl.length === 2 && /^5h window: +95% \[XXXXXXXX\] resets in /.test(cl[0]) && /^7d window: +85% \[XXXXXXX\.\] resets in /.test(cl[1]), cl);
+  check('compact: last reading line', /last reading \d+ min ago/.test(await page2.textContent('#app')));
+  await page2.reload();
+  await page2.waitForSelector('.uz-compact', { timeout: 5000 });
+  check('compact choice is remembered after a reload', (await page2.locator('.uz-compact').count()) === 1 && (await page2.locator('.uz-hero').count()) === 0);
+  await page2.click('.uz-viewtog button:nth-child(2)');
+  await page2.waitForSelector('.uz-hero', { timeout: 5000 });
+  check('full view is back: no compact box', (await page2.locator('.uz-compact').count()) === 0);
+  noErrors(page2);
   await page2.goto(BASE + '/#/');
   await page2.waitForSelector('.proj');
   noErrors(page2);
