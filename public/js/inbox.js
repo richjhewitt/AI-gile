@@ -28,6 +28,7 @@
     if (e.target.closest('[data-onlyclear]')) { e.preventDefault(); IB.only = ''; IB.paintPage(); return; }
     if (e.target.closest('#ibTidy')) { const ps = [...new Set(IB.items.filter(isTest).filter(c => IB.tab === 'all' || c.project === IB.tab).map(c => c.project))]; (async () => { for (const s of ps) { try { await post('POST', `/api/projects/${s}/tidy`); } catch {} } IB.toast(t('tidy.toast', { n: ps.length })); })(); return; }
     if (e.target.closest('#ibAiAll')) { IB.acceptAiPassed(e.target.closest('#ibAiAll')); return; }
+    const tdr = e.target.closest('[data-tdreopen]'); if (tdr) { IB.reopenTested(tdr.closest('.ib-td-row')); return; }
     if (e.target.closest('#ibTester')) { IB.startTester(); return; }
     const cb = e.target.closest('button[data-chat]');
     if (cb) { IB.chat = cb.dataset.chat; IB.paintPage(); return; }

@@ -1611,5 +1611,15 @@
  "pwa.ios.how": "Tap the Share button, then \"Add to Home Screen\".",
  "pwa.android": "Android (Chrome)",
  "pwa.android.how": "Tap the ⋮ menu, then \"Install app\" or \"Add to Home screen\".",
- "pwa.note": "The board runs on your computer, so your phone must be able to reach it (for example on the same Wi-Fi). Only the look of the app is kept on the phone, never your cards."
+ "pwa.note": "The board runs on your computer, so your phone must be able to reach it (for example on the same Wi-Fi). Only the look of the app is kept on the phone, never your cards.",
+ "trust.h": "🧪 Trust the AI tester",
+ "trust.opt.check": "👀 I check every test",
+ "trust.opt.sure": "🤝 Sure passes go to done",
+ "trust.opt.all": "🤖 Every pass goes to done",
+ "trust.help": "The AI tester says if a pass is sure or only likely. Sure passes go to done by themselves in the second choice, every pass in the third. Look-only checks, server or outside tasks, push, release, pay or budget cards and bugs you raised yourself always wait for you.",
+ "trust.done.h": "✅ Done by the tester today",
+ "trust.is.sure": "sure",
+ "trust.is.likely": "likely",
+ "trust.reopen": "↩ Reopen",
+ "trust.reopened": "{id} is back in For you"
 }

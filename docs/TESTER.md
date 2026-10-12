@@ -47,10 +47,13 @@ For other projects: only check when the card has an **open:** link to a local de
 ## 4. Post your verdict
 
 ```
-node aigile.js checked <proj> <id> pass "Saved 'My bugs' with the Bug filter; picking it again showed only bugs" --shot shot-AIG-121.png --as "Tester (Sonnet)"
+node aigile.js checked <proj> <id> pass --sure "Saved 'My bugs' with the Bug filter; picking it again showed only bugs" --shot shot-AIG-121.png --as "Tester (Sonnet)"
 ```
 
 - `pass`: you did every step and saw what it says. The note says what you saw, in one or two plain lines
+  - add `--sure` when every step was done and the printed text proves the expected result (so the owner can trust it without looking)
+  - add `--likely` when you did the steps but the proof is partial: a step was inferred, the text only hints at the result, or you relied on a screenshot you could not read
+  - the owner may let the board move sure (or every) pass to done by itself, as you; it never does so for look-only, server, outside, money or push cards or bugs the owner raised. You still never move cards yourself
 - `fail`: say which step and what you saw instead. The card goes back to the team
 - `skip`: say why in one line. It stays with the owner
 - One screenshot, of the end result

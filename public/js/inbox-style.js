@@ -52,6 +52,7 @@ const INBOX_CSS = `
 .ib-tab .tq { color: var(--q-ink); } .ib-tab.on .tq, .ib-tab.on .tk, .ib-tab.on .tt { color: inherit; }
 .ib-tab .tk { color: var(--k-ink); } .ib-tab .tt { color: var(--t-ink); }
 .ib-toast { min-height: 20px; color: var(--muted); font-size: 13px; margin: -8px 0 10px; }
+.ib-td-row { padding: 4px 0; display: flex; gap: 8px; align-items: center; }
 .ib-sec h3 { display: flex; align-items: center; gap: 8px; margin: 22px 0 10px; font-size: 15px; }
 .ib-sec.q h3 { color: var(--q-ink); font-size: 17px; }
 .ib-sec.t h3 { color: var(--t-ink); }
