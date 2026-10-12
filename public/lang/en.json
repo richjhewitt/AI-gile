@@ -2128,5 +2128,19 @@
   "assignee.roles.noai": "Roles",
   "tour.welcome.text.noai": "A board where you and your team keep the work moving, and you decide, test and accept. Here is how to find your way around.",
   "tour.welcome.why.noai": "The idea: one calm place that shows what needs doing next.",
-  "board.team.none.noai": "No people on the team yet."
+  "board.team.none.noai": "No people on the team yet.",
+  "streamer.btn": "🎥 Streamer",
+  "streamer.title": "Streamer mode: hide private projects, DMs and friends, and cover passwords, keys, IP addresses, emails and server names",
+  "streamer.title.on": "Streamer mode is on: click to turn it off",
+  "streamer.private": "This project is private and hidden while you stream.",
+  "streamer.note.on": "🎥 Streamer mode turned on by itself: {program} is running.",
+  "streamer.note.off": "Turn it off",
+  "streamer.note.ended": "🎥 Streamer mode turned off: the streaming program stopped.",
+  "streamer.setup.h": "🎥 Streamer mode",
+  "streamer.setup.auto": "Turn it on by itself while OBS or Streamlabs is running",
+  "streamer.setup.help": "The 🎥 switch in the top bar hides private projects, DMs, friends and life cards, and shows passwords, keys, tokens, IP addresses, emails and server names as ••••. Copy and Run still use the real text.",
+  "streamer.setup.running": "{program} is running now.",
+  "look.private": "Private project",
+  "look.private.sub": "Hidden from the sidebar, home and inbox while streaming",
+  "tb.b.stream": "Streamer"
 }

@@ -83,7 +83,7 @@ const Dms = (() => {
   function railTree(list, cur, btn) {
     const T = Spaces.tree(list), needs = x => x.needsYou + T.of(x.slug).reduce((n, k) => n + needs(k), 0);
     const one = (x, n) => btn(`data-go="#/p/${esc(x.slug)}" data-slug="${esc(x.slug)}" data-parent="${esc(T.up(x.slug))}" draggable="true"`, avatar(x) + badge(n) + (x.updated > seen.get(x.slug) && x.slug !== cur && !n ? '<span class="dm-pip"></span>' : ''),
-      x.slug === cur, x.name + (n ? ' · ' + t('dms.waiting', { n }) : ''));
+      x.slug === cur, (x.private ? '🔒 ' : '') + x.name + (n ? ' · ' + t('dms.waiting', { n }) : ''));
     const item = (x, d) => {
       const kids = T.of(x.slug);
       if (!kids.length || d >= Spaces.MAX) return one(x, x.needsYou);

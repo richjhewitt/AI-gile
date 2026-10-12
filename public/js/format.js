@@ -68,7 +68,7 @@ document.addEventListener('click', async e => {
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-copy-block]'); if (!b) return;
   e.preventDefault(); e.stopPropagation();
-  copyDocText(b, b.parentNode.querySelector('pre').textContent);
+  copyDocText(b, Streamer.raw(b.parentNode.querySelector('pre')));
 }, true);
 // A whole string that is one .md path (relative or absolute, / or \; spaces allowed).
 const isMdPath = s => /^\s*(?:[A-Za-z]:)?[^<>|?*\n`]*[^<>|?*\s\n`]\.md\s*$/i.test(s) && !/^\s*https?:/i.test(s);
@@ -83,7 +83,7 @@ function spaceBullets(html) {
     pre + '<ul class="bl">' + block.split('\n').filter(l => l.trim()).map(l => `<li>${l.replace(/^[ \t]*[-•][ \t]+/, '')}</li>`).join('') + '</ul>');
 }
 function copyCode(btn) {
-  navigator.clipboard.writeText(btn.closest('.codebox').querySelector('pre').textContent)
+  navigator.clipboard.writeText(Streamer.raw(btn.closest('.codebox').querySelector('pre')))
     .then(() => { btn.textContent = t('format.copied'); setTimeout(() => { btn.textContent = t('format.copy'); }, 1500); });
 }
 // A pasted GIF link (AIG-343) shows under the link as a picture: https only, a .gif address or a giphy/tenor media address; the browser

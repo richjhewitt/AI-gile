@@ -2128,5 +2128,19 @@
   "assignee.roles.noai": "Rollen",
   "tour.welcome.text.noai": "Een bord waar jij en je team het werk gaande houden, en jij beslist, test en keurt goed. Zo vind je je weg.",
   "tour.welcome.why.noai": "Het idee: één rustige plek die laat zien wat er als volgende moet gebeuren.",
-  "board.team.none.noai": "Nog geen mensen in het team."
+  "board.team.none.noai": "Nog geen mensen in het team.",
+  "streamer.btn": "🎥 Streamer",
+  "streamer.title": "Streamermodus: verberg privéprojecten, DM's en vrienden, en dek wachtwoorden, sleutels, IP-adressen, e-mailadressen en servernamen af",
+  "streamer.title.on": "Streamermodus staat aan: klik om uit te zetten",
+  "streamer.private": "Dit project is privé en verborgen terwijl je streamt.",
+  "streamer.note.on": "🎥 Streamermodus ging vanzelf aan: {program} draait.",
+  "streamer.note.off": "Zet uit",
+  "streamer.note.ended": "🎥 Streamermodus ging uit: het streamprogramma is gestopt.",
+  "streamer.setup.h": "🎥 Streamermodus",
+  "streamer.setup.auto": "Vanzelf aanzetten zolang OBS of Streamlabs draait",
+  "streamer.setup.help": "De 🎥-knop bovenin verbergt privéprojecten, DM's, vrienden en privékaarten, en toont wachtwoorden, sleutels, tokens, IP-adressen, e-mailadressen en servernamen als ••••. Kopiëren en Uitvoeren gebruiken nog steeds de echte tekst.",
+  "streamer.setup.running": "{program} draait nu.",
+  "look.private": "Privéproject",
+  "look.private.sub": "Verborgen in de zijbalk, op home en in de inbox tijdens het streamen",
+  "tb.b.stream": "Streamer"
 }

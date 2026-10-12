@@ -179,7 +179,7 @@ const api = async (method, url, body) => {
   const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
   const j = await r.json();
   if (!r.ok) throw new Error(j.error || r.statusText);
-  return j;
+  return typeof Streamer !== 'undefined' && Streamer.on() ? Streamer.filter(method, url, j) : j;   // 🎥 streamer mode (AIG-590)
 };
 // A project's picture, or its emoji when it has none (AIG-175). Round, one em, so it sits where the emoji sat.
 function pic(logo, emoji) { return logo ? `<img class="pic" src="${esc(logo)}" alt="">` : esc(emoji || ''); }

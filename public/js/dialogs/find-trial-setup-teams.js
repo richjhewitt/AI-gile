@@ -91,6 +91,7 @@ function renderSetup() {
     <div class="f lead-prefs ai-only" id="mainTeamBox">${mainTeamBoxHtml()}</div>
     <div class="f lead-prefs ai-only" id="runInPrefs">${runInHtml()}</div>
     <div class="f" id="serversBox">${(srvDraft = null, serversHtml())}</div>
+    <div class="f" id="streamerBox">${Streamer.setupHtml()}</div>
     <div class="f" id="secretsBox">${(SEC.list = null, secretsBoxHtml())}</div>
     <div class="f" id="discordBox">${(queueMicrotask(DiscordSetup.load), DiscordSetup.html())}</div>
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>

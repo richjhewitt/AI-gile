@@ -33,7 +33,7 @@ window.addEventListener('hashchange', () => { state.editing = false; refresh(tru
     if (!Boot.ok()) return;   // a script broke meanwhile: the page reloads instead
     state.servers = m.servers || []; state.terms = m.terms || [];
     NoAi.apply(m.noAi);
-    theme(); refresh(true); checkBuild(); NoTokens.start(); UsageGlance.start(); helpBoot();
+    theme(); refresh(true); checkBuild(); NoTokens.start(); Streamer.start(); UsageGlance.start(); helpBoot();
   }, e => Boot.again(start, e));
 })();
 setInterval(() => { if (!document.hidden) refresh(); }, 1000);

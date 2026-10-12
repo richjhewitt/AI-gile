@@ -82,6 +82,7 @@ async function lookDialog() {
     <label class="f"><span>${esc(t('cols.colour'))}</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
     <div class="f"><span>${esc(t('logo.title'))}</span>${logoEditor('look-logo', p.logo)}</div>
     <label class="chk ai-only"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> ${esc(t('look.chatty'))} <span class="muted">${esc(t('look.chatty.cost'))}</span></label>
+    <label class="chk"><input type="checkbox" id="look-private" ${p.private ? 'checked' : ''}> 🔒 ${esc(t('look.private'))} <span class="muted">${esc(t('look.private.sub'))}</span></label>
     <label class="chk ai-only"><input type="checkbox" id="look-verbose" ${p.verbose ? 'checked' : ''}> ${esc(t('look.verbose'))}</label>
     <label class="chk ai-only"><input type="checkbox" id="look-second" ${p.secondLead ? 'checked' : ''}> ${esc(t('look.second'))} <span class="muted">${esc(t('look.second.sub'))}</span></label>
     <label class="chk"><input type="checkbox" id="look-life" ${p.lifeBoard ? 'checked' : ''}> ${esc(t('look.life'))} <span class="muted">${esc(t('look.life.sub'))}</span></label>
@@ -94,7 +95,7 @@ async function lookDialog() {
 // 👥 The roles on this project moved to their own dialog (AIG-423, dialogs/team-profile.js); Look only opens it.
 async function saveLook(auto) {
   try {
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }
