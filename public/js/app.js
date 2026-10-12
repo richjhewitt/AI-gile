@@ -118,7 +118,8 @@ window.showRestartApp = () => {
 /* ---------- teams that need a poke: top-bar badge ---------- */
 function pokeBadge(projects) {
   const n = projects.filter(p => p.attention), names = n.map(p => p.name + ': ' + (p.attention.kind === 'asleep' ? asleepWhy(p.attention) : t('poke.stuck'))).join('\n');
-  const h = n.length ? `<button class="navlink pokebadge" onclick="pokeAll(this)" title="${esc(t('poke.title'))}\n${esc(names)}">${esc(n.length > 1 ? t('poke.many', { n: n.length }) : t('poke.one'))}</button>` : '';
+  const night = document.documentElement.hasAttribute('data-night');   // AIG-516: the night watch pokes them itself
+  const h = n.length && !night ? `<button class="navlink pokebadge" onclick="pokeAll(this)" title="${esc(t('poke.title'))}\n${esc(names)}">${esc(n.length > 1 ? t('poke.many', { n: n.length }) : t('poke.one'))}</button>` : '';
   if ($('pokeTop').innerHTML !== h) $('pokeTop').innerHTML = h;
 }
 // Tap the badge: wake every asleep team and restart every stuck one, then show the home page.
