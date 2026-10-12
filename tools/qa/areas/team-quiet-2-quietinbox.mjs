@@ -109,7 +109,10 @@ def('runtokens', 'a background run logs the tokens its session used (fake sessio
   for (let i = 0; i < 60 && (await s.ok('GET', '/api/projects/nada')).presence.running; i++) await sleep(250);
   const nl = fs.readFileSync(nadaLog, 'utf8');
   check('no session found, no tokens line', /=== exited/.test(nl) && !/tokens/.test(nl), nl);
-  const runs = await s.ok('GET', '/api/usage/runs');
+  // The hour-old message is outside every run: it comes back as the project's own 'lead' row (AIG-522), apart from the runs.
+  const all = await s.ok('GET', '/api/usage/runs');
+  const lead = all.filter(r => r.kind === 'lead'), runs = all.filter(r => r.kind !== 'lead');
+  check('the work outside any run is one lead row (AIG-522)', lead.length === 1 && lead[0].slug === 'tokk' && lead[0].in === 99999, lead);
   check('runs api lists the run', runs.length === 1 && runs[0].slug === 'tokk' && runs[0].in === 1500 && runs[0].out === 400 && runs[0].cache === 20000, runs);
   const r0 = runs[0] || {};
   check('run row has the split, model, read and grep counts (AIG-299)', r0.fresh === 1000 && r0.cw === 500 && (r0.models || []).join() === 'sonnet' && r0.reads === 2 && r0.readChars === 500 && r0.greps === 1, r0);

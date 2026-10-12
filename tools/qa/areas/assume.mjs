@@ -18,7 +18,7 @@ def('assume', '🌙 assumptions log: assume + comment --assume, the page and its
 
   const page = await openPage(ctx, '#/assumptions');
   await page.waitForSelector('.as-item');
-  const heads = await page.$$eval('.uz h3', e => e.map(x => x.textContent));
+  const heads = await page.$$eval('.uz h3', e => e.map(x => x.firstChild.textContent.trim()));
   check('newest first, grouped by project', heads.join() === 'Beta,Alpha', heads);
   check('the badge counts unreviewed entries', !!(await page.waitForFunction(() => document.getElementById('assumeBadge')?.textContent === '2', null, { timeout: 5000 }).catch(() => null)));
   await page.click('.as-item:has-text("Blue") .as-ok');

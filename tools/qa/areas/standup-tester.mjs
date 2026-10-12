@@ -15,7 +15,7 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
   const page = await openPage(ctx, '#/p/alpha');
   page.on('dialog', d => d.accept());
   await page.click('button:has-text("📣 Stand-up")');
-  await page.waitForFunction(() => location.hash === '#/standups');
+  await page.waitForFunction(() => location.hash === '#/standups/alpha');
   const a = await cardsOf('alpha');
   check('one project: stand-up card in For the team, marked', a.length === 1 && a[0].status === 'team' && a[0].title === '📣 Stand-up' && !!a[0].standup.at && a[0].createdBy === 'Owner', a);
   check('other projects left alone', !(await cardsOf('beta')).length && !(await cardsOf('delta')).length);
@@ -106,7 +106,7 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
     const before = (await cardsOf('fresh')).length;
     await mp.check('.su-pick input[value=fresh]');
     await mp.click('#dialog button[type=submit]');
-    await mp.waitForFunction(() => location.hash === '#/standups');
+    await mp.waitForFunction(() => location.hash === '#/standups/fresh');
     check('Pick calls only the ticked project', (await cardsOf('fresh')).length === before + 1);
     await reset('2000-01-01');
     await mp.waitForSelector('#suPrompt', { timeout: 5000 });
