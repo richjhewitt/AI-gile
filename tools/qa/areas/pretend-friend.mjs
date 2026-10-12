@@ -83,3 +83,33 @@ def('pretendfriend', 'Setup: start a pretend friend (local relay + board "Davy")
     await ps.close();
   } finally { try { await s.api('POST', '/api/pretend/stop', { wipe: true }); } catch {} }
 }, true, { AIGILE_DM_POLL_MS: '300' });
+
+// AIG-468: the picker beside Start pretend friend and Open a fresh board: window kind and which code. No window is ever opened here:
+// window.open is stubbed and the trial request is answered by the test; the server's choice of code folder is checked through the API.
+def('launchpick', "Setup: window/code picker renders, the pick is remembered and sent to the API, the server picks today's or the last release folder (AIG-468)", async (s, ctx) => {
+  const os = await import('node:os'), path = await import('node:path'), fs = await import('node:fs');
+  const page = await openPage(ctx, '#/setup');
+  await page.waitForSelector('#trialBtn'); await page.waitForSelector('#pfStart');
+  check('the picker is beside Start pretend friend and Open a fresh board', (await page.locator('#pfBody select[data-lp]').count()) === 2 && (await page.locator('.f:has(#trialBtn) select[data-lp]').count()) === 2);
+  check("defaults: desktop app, today's build", (await page.inputValue('#pfBody select[data-lp=win]')) === 'app' && (await page.inputValue('#pfBody select[data-lp=code]')) === 'today');
+  check('the window choices are desktop, browser, phone', /🖥️.*\|.*🌐.*\|.*📱/.test((await page.locator('#pfBody select[data-lp=win] option').allTextContents()).join('|')));
+  await page.selectOption('#pfBody select[data-lp=win]', 'phone'); await page.selectOption('#pfBody select[data-lp=code]', 'release');
+  check('the trial picker follows the same pick', (await page.inputValue('.f:has(#trialBtn) select[data-lp=code]')) === 'release');
+  const sent = [];
+  await page.route('**/api/trial', r => { if (r.request().method() === 'POST') { sent.push(r.request().postDataJSON()); r.fulfill({ status: 200, contentType: 'application/json', body: '{"url":"http://127.0.0.1:9/"}' }); } else r.continue(); });
+  await page.evaluate(() => { window.__opened = []; window.open = (...a) => { window.__opened.push(a); }; });
+  await page.click('#trialBtn'); await until(async () => sent.length === 1);
+  check('the pick is sent to the API', sent[0] && sent[0].code === 'release' && sent[0].window === 'phone', JSON.stringify(sent));
+  const o = await until(async () => { const x = await page.evaluate(() => window.__opened); return x.length ? x : null; });
+  check('a phone-size window is asked for, about 412 by 860', !!o && /width=412,height=860/.test(String(o[0][2])), JSON.stringify(o));
+  await page.reload(); await page.waitForSelector('#pfStart');
+  check('the pick is remembered', (await page.inputValue('#pfBody select[data-lp=win]')) === 'phone' && (await page.inputValue('#pfBody select[data-lp=code]')) === 'release');
+  await page.close();
+  try {
+    const t1 = await s.ok('POST', '/api/trial', { code: 'today' });
+    check("the server runs today's folder", t1.code === 'today' && fs.existsSync(path.join(t1.dir, 'tools', 'qa', 'qa.mjs')), JSON.stringify(t1));
+    const t2 = await s.ok('POST', '/api/trial', { code: 'release' });
+    check('the server runs the last release from a temp cache folder', t2.code === 'release' && path.resolve(t2.dir).startsWith(path.resolve(os.tmpdir())) && fs.existsSync(path.join(t2.dir, 'server.js')), JSON.stringify(t2));
+    check('the release board answers', (await fetch('http://127.0.0.1:4400/api/meta')).ok);
+  } finally { try { await s.api('DELETE', '/api/trial'); } catch {} }
+}, true);
