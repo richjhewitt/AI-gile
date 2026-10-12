@@ -1633,5 +1633,19 @@
  "trust.is.sure": "sure",
  "trust.is.likely": "likely",
  "trust.reopen": "↩ Reopen",
- "trust.reopened": "{id} is back in For you"
+ "trust.reopened": "{id} is back in For you",
+ "assume.nav": "🌙 Assumptions",
+ "assume.nav.title": "Guesses the team made while you were away",
+ "assume.title": "🌙 Assumptions",
+ "assume.empty": "Nothing yet. When the team guesses while you are away, it shows here.",
+ "assume.intro": "What the team guessed while you were away, newest first. Fine, or plug it.",
+ "assume.ok": "👍 Fine",
+ "assume.plug": "✋ Plug this",
+ "assume.reply.ph": "What should change?",
+ "assume.send": "Send to the team",
+ "assume.cancel": "Cancel",
+ "assume.undo": "undo",
+ "assume.done.ok": "👍 Fine",
+ "assume.done.plug": "✋ Plugged: the team has your reply",
+ "assume.plug.comment": "Plug this assumption: {note}\n\n({what})"
 }

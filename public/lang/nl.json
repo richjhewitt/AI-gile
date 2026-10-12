@@ -1633,5 +1633,19 @@
  "trust.is.sure": "zeker",
  "trust.is.likely": "waarschijnlijk",
  "trust.reopen": "↩ Heropenen",
- "trust.reopened": "{id} staat weer bij Voor jou"
+ "trust.reopened": "{id} staat weer bij Voor jou",
+ "assume.nav": "🌙 Aannames",
+ "assume.nav.title": "Wat het team aannam terwijl jij weg was",
+ "assume.title": "🌙 Aannames",
+ "assume.empty": "Nog niets. Als het team iets aanneemt terwijl jij weg bent, staat het hier.",
+ "assume.intro": "Wat het team aannam terwijl jij weg was, nieuwste eerst. Prima, of dicht het.",
+ "assume.ok": "👍 Prima",
+ "assume.plug": "✋ Dicht dit",
+ "assume.reply.ph": "Wat moet er anders?",
+ "assume.send": "Naar het team",
+ "assume.cancel": "Annuleren",
+ "assume.undo": "ongedaan maken",
+ "assume.done.ok": "👍 Prima",
+ "assume.done.plug": "✋ Dichtgemaakt: het team heeft je antwoord",
+ "assume.plug.comment": "Dicht deze aanname: {note}\n\n({what})"
 }
