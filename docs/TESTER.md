@@ -15,7 +15,9 @@ node aigile.js tests <proj>          # unchecked tests, with their steps and Ope
 Post `skip` with the reason (one line) when the steps need any of these:
 - the owner's login, keys, passwords or accounts
 - a server, a deploy, another computer, a phone
-- the desktop app, an app restart, pop-out windows, window buttons, the editor (VS Code), sounds or notifications
+- the desktop app, pop-out windows, window buttons, the editor (VS Code), sounds or notifications
+
+A step that says **restart the app** is not a reason to skip (AIG-542): your sandbox is a fresh start from the current code, so starting it (section 3) IS the restart. Never restart the live board on port 4321: the owner is using it.
 - steps too vague to follow
 
 (📖 To read cards, handed over with `--info` or steps starting "Nothing to click", never reach you: `tests` leaves them out.)
