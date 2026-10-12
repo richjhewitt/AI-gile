@@ -62,5 +62,5 @@ async function showStop() {
   Object.assign(bubble.style, right ? { left: r.right + 16 + 'px', top: Math.max(12, Math.min(r.top, innerHeight - 260)) + 'px' }
     : { left: Math.max(12, Math.min(r.left, innerWidth - bw - 12)) + 'px', top: Math.min(r.bottom + 16, innerHeight - 260) + 'px' });
 }
-document.addEventListener('keydown', e => { if (!tour) return; if (e.key === 'Escape') endTour(); else if (e.key === 'ArrowRight') tourMove(1); else if (e.key === 'ArrowLeft') tourMove(-1); });
+document.addEventListener('keydown', e => { if (!tour) return; if (e.key === 'Escape') endTour(); else if (arrowStep(e) > 0) tourMove(1); else if (arrowStep(e) < 0) tourMove(-1); });
 window.addEventListener('resize', () => { if (tour) showStop(); });

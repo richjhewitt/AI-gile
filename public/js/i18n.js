@@ -8,6 +8,9 @@
 // Only the ones whose file is in count (GET /api/langs), so translations can arrive one at a time.
 let LANG_LIST = [{ code: 'en', label: 'EN', name: 'English', locale: 'en-GB' }];
 const LANGS = { en: 'English' };   // code -> own name, for the languages whose file is in
+// AIG-528: ← and → mean previous and next in left-to-right writing, and the other way round in right-to-left.
+// Gives 1 for next, -1 for previous, 0 for any other key.
+const arrowStep = e => { const k = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; return document.documentElement.dir === 'rtl' ? -k : k; };
 const i18n = { lang: 'en', locale: 'en-GB', dir: 'ltr', dict: {}, en: {}, ready: false };   // ready: the language file is in, so polls and timers may draw
 const langOf = c => LANG_LIST.find(l => l.code === c);
 // The language picked in Setup, and the one on screen: English while the quick English switch is flipped (AIG-124).

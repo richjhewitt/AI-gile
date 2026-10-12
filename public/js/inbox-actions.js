@@ -100,7 +100,7 @@
   }
   document.addEventListener('keydown', e => {
     if (IB.flick < 0 || !el('ibAi') || el('ibAi').hidden || /TEXTAREA|INPUT|SELECT/.test(e.target.tagName)) return;
-    if (e.key === 'ArrowRight') flickAct('next'); else if (e.key === 'ArrowLeft') flickAct('prev'); else if (e.key === 'a' || e.key === 'A') flickAct('accept'); else if (e.key === 'Escape') flickAct('exit');
+    if (arrowStep(e) > 0) flickAct('next'); else if (arrowStep(e) < 0) flickAct('prev'); else if (e.key === 'a' || e.key === 'A') flickAct('accept'); else if (e.key === 'Escape') flickAct('exit');
   });
   async function waitAndSee(n) {
     lock(n);

@@ -88,7 +88,7 @@ function introShow() {
 function introMove(d) { INTRO.i = Math.max(0, Math.min(INTRO.slides.length - 1, INTRO.i + d)); introShow(); }
 document.addEventListener('keydown', e => {
   if (!$('introSlide')) return;
-  if (e.key === 'ArrowRight' && INTRO.i < INTRO.slides.length - 1) introMove(1); else if (e.key === 'ArrowLeft') introMove(-1);
+  if (arrowStep(e) > 0 && INTRO.i < INTRO.slides.length - 1) introMove(1); else if (arrowStep(e) < 0) introMove(-1);
 });
 
 /* ---------- start-up ---------- */

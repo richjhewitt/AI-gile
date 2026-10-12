@@ -116,7 +116,7 @@ document.addEventListener('click', async e => {
     }
     if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
     if (/^[1-4]$/.test(e.key)) decideAct('ans', +e.key - 1);
-    else if (e.key === 'ArrowRight') decideAct('next'); else if (e.key === 'ArrowLeft') decideAct('prev');
+    else if (arrowStep(e) > 0) decideAct('next'); else if (arrowStep(e) < 0) decideAct('prev');
     else if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') decideAct('open'); else if (e.key === 'Escape') decideAct('exit');
   });
   IB.decideAct = decideAct;

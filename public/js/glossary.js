@@ -34,8 +34,16 @@ function glossIndex() {
   for (const id of GLOSSARY.filter(id => !NO_TIP.includes(id))) for (const w of [t('gloss.' + id + '.word'), ...String(t('gloss.' + id + '.also')).split(',')]) {
     const k = w.trim().toLowerCase(); if (k && !k.startsWith('gloss.')) glossText.set(k, t('gloss.' + id + '.text'));
   }
-  const words = [...glossText.keys()].sort((a, b) => b.length - a.length).map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  glossRe = new RegExp('(^|[^\\p{L}\\p{N}])(' + words.join('|') + ')(?=$|[^\\p{L}\\p{N}])', 'giu');
+  // AIG-518: scripts written without spaces (Chinese, Japanese, Thai, Lao, Khmer, Burmese) have no word edges, so a term
+  // there matches inside a sentence (longest first); every other term still matches whole words only.
+  const NOSPACE = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Lao}\p{Script=Khmer}\p{Script=Myanmar}]/u;
+  const quote = w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const all = [...glossText.keys()].sort((a, b) => b.length - a.length);
+  const spaced = all.filter(w => !NOSPACE.test(w)).map(quote), bare = all.filter(w => NOSPACE.test(w)).map(quote);
+  const parts = [];
+  if (spaced.length) parts.push('(?<![\\p{L}\\p{N}])(?:' + spaced.join('|') + ')(?![\\p{L}\\p{N}])');
+  if (bare.length) parts.push('(?:' + bare.join('|') + ')');
+  glossRe = new RegExp(parts.join('|') || '(?!)', 'giu');
 }
 const SKIP = /^(INPUT|TEXTAREA|SELECT|OPTION|SCRIPT|STYLE|CODE|PRE|ABBR|BUTTON|DT)$/;
 function markDevWords(root) {
@@ -50,11 +58,11 @@ function markDevWords(root) {
     const frag = document.createDocumentFragment(), s = n.nodeValue; let last = 0;
     glossRe.lastIndex = 0;
     for (let m; (m = glossRe.exec(s));) {
-      const at = m.index + m[1].length;
+      const at = m.index;
       frag.append(s.slice(last, at));
       const a = document.createElement('abbr'); a.className = 'devw'; a.tabIndex = 0;
-      a.title = glossText.get(m[2].toLowerCase()) || ''; a.textContent = m[2]; frag.append(a);
-      last = at + m[2].length;
+      a.title = glossText.get(m[0].toLowerCase()) || ''; a.textContent = m[0]; frag.append(a);
+      last = at + m[0].length;
     }
     frag.append(s.slice(last)); n.replaceWith(frag);
   }

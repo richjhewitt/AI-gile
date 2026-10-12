@@ -27,7 +27,7 @@ const Attach = (() => {
     const close = () => { lb.remove(); document.removeEventListener('keydown', key_, true); };
     const key_ = e => {
       if (e.key === 'Escape') { e.stopPropagation(); close(); }
-      else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && imgs.length > 1) { e.preventDefault(); e.stopPropagation(); at = (at + (e.key === 'ArrowRight' ? 1 : imgs.length - 1)) % imgs.length; show(); }
+      else if (arrowStep(e) && imgs.length > 1) { e.preventDefault(); e.stopPropagation(); at = (at + (arrowStep(e) > 0 ? 1 : imgs.length - 1)) % imgs.length; show(); }
     };
     lb.onclick = close; document.addEventListener('keydown', key_, true);
     show(); document.body.appendChild(lb);
