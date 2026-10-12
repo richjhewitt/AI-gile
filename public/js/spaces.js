@@ -53,8 +53,27 @@ const Spaces = (() => {
     const open = isOpen('grid:' + p.slug);
     return `<details class="space-box" ${open ? 'open' : ''} ontoggle="Spaces.gridToggle('${esc(p.slug)}', this.open)" style="--proj:${esc(p.color)}">
       <summary><h3>${esc(t('space.grid', { n: kids.length }))}</h3> <span class="muted">${esc(t('space.grid.hint'))}</span></summary>
-      ${outStrip()}<div class="grid">${kids.map(k => card(k, { kids: k.kids, fold: '', up: p.parent || '' })).join('')}</div>${chainHtml(p)}</details>`;
+      ${outStrip()}<div class="grid">${kids.map(k => card(k, { kids: k.kids, fold: '', up: p.parent || '' })).join('')}</div>${chainHtml(p)}${rollupHtml(p)}</details>`;
   }
+  // 🪐 Children's cards (AIG-436): the open cards of every project inside the space, by column, each with its project's chip.
+  // A switch per space (off by default) and a chip per child to hide or show its cards; both kept in this browser.
+  const lsSet = k => { try { return new Set(JSON.parse(localStorage.getItem(k) || '[]')); } catch { return new Set(); } };
+  const lsSave = (k, set) => { try { localStorage.setItem(k, JSON.stringify([...set])); } catch {} };
+  function rollupHtml(p) {
+    const all = (p.space && p.space.rollup) || [];
+    if (!all.length) return '';
+    const on = lsSet('aigile.rollup').has(p.slug), hide = lsSet('aigile.rollhide');
+    const sw = `<label class="chk roll-switch"><input type="checkbox" id="rollOn" ${on ? 'checked' : ''} onchange="Spaces.rollToggle('${esc(p.slug)}')"> ${esc(t('space.roll', { n: all.length }))}</label>`;
+    if (!on) return `<div class="space-roll">${sw}</div>`;
+    const kids = [...new Map(all.map(c => [c.slug, c])).values()];
+    const chips = kids.map(k => `<button type="button" class="roll-chip${hide.has(k.slug) ? ' off' : ''}" style="--proj:${esc(k.color)}" aria-pressed="${!hide.has(k.slug)}" onclick="Spaces.rollFilter('${esc(k.slug)}')">${esc(k.project)}</button>`).join(' ');
+    const shown = all.filter(c => !hide.has(c.slug));
+    const cols = ['backlog', 'todo', 'doing', 'review', 'verify', 'team'].map(k => { const cs = shown.filter(c => c.status === k); return cs.length ? `<div class="roll-col"><h4>${esc(t('col.' + k))} <span class="muted">${cs.length}</span></h4>${cs.map(c =>
+      `<a class="card roll-card${c.needsYou || c.status === 'verify' ? ' needs-you' : ''}${c.blocked ? ' is-blocked' : ''}" href="#/p/${esc(c.slug)}/${esc(c.id)}"><div class="id">${esc(c.id)} <span class="roll-from" style="--proj:${esc(c.color)}">${esc(c.project)}</span></div><div class="t">${esc(c.title)}</div></a>`).join('')}</div>` : ''; }).join('');
+    return `<div class="space-roll">${sw}<div class="roll-chips">${chips}</div><div class="roll-board">${cols || `<p class="muted">${esc(t('board.nomatch'))}</p>`}</div></div>`;
+  }
+  function rollToggle(s) { const set = lsSet('aigile.rollup'); if (set.has(s)) set.delete(s); else set.add(s); lsSave('aigile.rollup', set); refresh(true); }
+  function rollFilter(k) { const set = lsSet('aigile.rollhide'); if (set.has(k)) set.delete(k); else set.add(k); lsSave('aigile.rollhide', set); refresh(true); }
   // ⏳ The chain across the space's projects (AIG-450): what waits for what, and how far the card it waits for is.
   function chainHtml(p) {
     const ch = (p.space && p.space.chain) || [];
@@ -137,5 +156,5 @@ const Spaces = (() => {
   document.addEventListener('click', act, true);
   document.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') act(e); }, true);
 
-  return { MAX, tree, isOpen, fold, homeGrid, boardHtml, gridToggle, pillHtml, menuHtml, dragAttrs, outStrip, move, menu, menuMove };
+  return { MAX, tree, isOpen, fold, homeGrid, boardHtml, gridToggle, rollToggle, rollFilter, pillHtml, menuHtml, dragAttrs, outStrip, move, menu, menuMove };
 })();

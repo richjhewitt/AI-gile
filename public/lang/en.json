@@ -2214,5 +2214,6 @@
   "bug.send.err": "The bug is on your board, but sending it to the AI-gile team failed: {msg}",
   "lead.planBig": "🧩 Nights: plan a big card when To do runs dry",
   "lead.planBig.help": "When nothing is ready to pull in, the night watch puts one big backlog card in To do, and the lead breaks it into small cards with test steps. Uses tokens; one card a night per project.",
-  "srv.assume.planbig": "Assumption: To do ran dry overnight and nothing was ready, so I put this card up for planning: break it into small cards with test steps (aigile add ... --status todo), then close this one or keep it as the parent."
+  "srv.assume.planbig": "Assumption: To do ran dry overnight and nothing was ready, so I put this card up for planning: break it into small cards with test steps (aigile add ... --status todo), then close this one or keep it as the parent.",
+  "space.roll": "🪐 Show the cards of the projects inside ({n} open)"
 }

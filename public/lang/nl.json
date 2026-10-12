@@ -2214,5 +2214,6 @@
   "bug.send.err": "De bug staat op je bord, maar naar het AI-gile-team sturen lukte niet: {msg}",
   "lead.planBig": "🧩 Nachten: plan een grote kaart als Te doen leeg is",
   "lead.planBig.help": "Als er niets klaarstaat, zet de nachtwacht één grote backlogkaart in Te doen en de lead breekt die op in kleine kaarten met teststappen. Kost tokens; één kaart per nacht per project.",
-  "srv.assume.planbig": "Aanname: Te doen raakte vannacht leeg en er stond niets klaar, dus ik heb deze kaart klaargezet om te plannen: breek hem op in kleine kaarten met teststappen (aigile add ... --status todo) en sluit deze dan of houd hem als ouder."
+  "srv.assume.planbig": "Aanname: Te doen raakte vannacht leeg en er stond niets klaar, dus ik heb deze kaart klaargezet om te plannen: breek hem op in kleine kaarten met teststappen (aigile add ... --status todo) en sluit deze dan of houd hem als ouder.",
+  "space.roll": "🪐 Toon de kaarten van de projecten hierin ({n} open)"
 }

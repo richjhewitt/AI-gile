@@ -44,3 +44,9 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .today-pctrow { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
 .today-pctrow span { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }
 .today-pctrow input { width: 80px; }
+/* 🪐 children's cards on a space board (AIG-436) */
+.space-roll { margin-top: 10px; } .roll-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.roll-chip { border: 2px solid var(--proj, var(--line)); border-radius: 999px; padding: 2px 10px; background: none; cursor: pointer; } .roll-chip.off { opacity: .45; text-decoration: line-through; }
+.roll-board { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; } .roll-col { flex: 0 0 220px; } .roll-col h4 { margin: 4px 0; }
+.roll-card { display: block; margin-bottom: 6px; } .roll-from { font-size: 11px; border-left: 3px solid var(--proj, var(--line)); padding-left: 4px; margin-left: 4px; }
+@media (max-width: 600px) { .roll-col { flex-basis: 75vw; } }
