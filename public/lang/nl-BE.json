@@ -2090,5 +2090,19 @@
  "sec.auto.never": "nooit",
  "sec.auto.hours": {"one":"{count} uur","other":"{count} uur"},
   "nudge.title": "Geef het team een duwtje (gratis; alleen het wekken kost tokens)",
-  "nudge.lit": "Lijkt vast te zitten: klik om het team een duwtje te geven"
+  "nudge.lit": "Lijkt vast te zitten: klik om het team een duwtje te geven",
+ "streamer.btn": "🎥 Streamer",
+ "streamer.title": "Streamermodus: verberg privéprojecten, DM\u0027s en vrienden, en dek wachtwoorden, sleutels, IP-adressen, e-mailadressen en servernamen af",
+ "streamer.title.on": "Streamermodus staat aan: klik om uit te zetten",
+ "streamer.private": "Dit project is privé en verborgen terwijl je streamt.",
+ "streamer.note.on": "🎥 Streamermodus ging vanzelf aan: {program} draait.",
+ "streamer.note.off": "Zet uit",
+ "streamer.note.ended": "🎥 Streamermodus ging uit: het streamprogramma is gestopt.",
+ "streamer.setup.h": "🎥 Streamermodus",
+ "streamer.setup.auto": "Vanzelf aanzetten zolang OBS of Streamlabs draait",
+ "streamer.setup.help": "De 🎥-knop bovenin verbergt privéprojecten, DM\u0027s, vrienden en privékaarten, en toont wachtwoorden, sleutels, tokens, IP-adressen, e-mailadressen en servernamen als ••••. Kopiëren en Uitvoeren gebruiken nog steeds de echte tekst.",
+ "streamer.setup.running": "{program} draait nu.",
+ "look.private": "Privéproject",
+ "look.private.sub": "Verborgen in de zijbalk, op home en in de inbox tijdens het streamen",
+ "tb.b.stream": "Streamer"
 }

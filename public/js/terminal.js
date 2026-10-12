@@ -166,8 +166,8 @@ const Term = (() => {
   function decorate(box) {
     const panel = box.closest('[data-term]'), code = box.querySelector('pre code'); if (!panel || !code) return;
     box.dataset.runs = '1';
-    const lines = code.textContent.split('\n'), cmds = commands(lines); if (!cmds.length) return;
-    const key = panel.dataset.term + '#' + hash(code.textContent);
+    const real = Streamer.raw(code), lines = real.split('\n'), cmds = commands(lines); if (!cmds.length) return;   // the real lines, even while streaming (AIG-591)
+    const key = panel.dataset.term + '#' + hash(real);
     box.dataset.key = key; box._cmds = cmds; box._lines = lines;
     code.innerHTML = lines.map((l, i) => `<span class="cl${cmds.some(g => g.includes(i)) ? ' cmd' : ''}" data-i="${i}">${esc(l)}</span>`).join('\n');
     const acts = box.querySelector('.codebox-acts'); if (!acts) return;

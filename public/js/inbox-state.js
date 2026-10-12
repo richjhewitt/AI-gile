@@ -53,7 +53,7 @@ const IB = {
   /* ---------- data ---------- */
   function load() {
     if (inflight) return inflight;
-    inflight = fetch('/api/inbox', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error(r.statusText)))
+    inflight = fetch('/api/inbox', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error(r.statusText))).then(l => typeof Streamer !== 'undefined' && Streamer.on() ? Streamer.filter('GET', '/api/inbox', l) : l)
       .then(list => { inflight = null; apply(list); IB.testerDone(); return true; })
       .catch(e => { inflight = null; throw e; });
     return inflight;

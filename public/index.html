@@ -35,6 +35,7 @@
   <span id="inboxTop"></span>
   <span id="pokeTop"></span>
   <span id="nightTop"></span>
+  <button id="streamBtn" class="navlink" onclick="Streamer.toggle()" aria-pressed="false" data-i18n="streamer.btn" title="Streamer mode">🎥 Streamer</button>
   <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" title="No Token Mode">⛔ No Token Mode</button>
   <a class="navlink" id="assumeNav" href="#/assumptions" data-i18n-title="assume.nav.title" title="Guesses the team made while you were away"><span data-i18n="assume.nav">🌙 Assumptions</span> <span id="assumeBadge" class="pill you" hidden></span></a>
   <a class="navlink" id="usageNav" href="#/usage"><span data-i18n="nav.usage">⚡ Usage</span><span id="ugBars"></span></a>
@@ -140,6 +141,7 @@ window.Boot = (() => {
 <script src="js/dialogs/team-profile.js"></script>
 <script src="js/dialogs/expert-teams.js"></script>
 <script src="js/dialogs/secrets.js"></script>
+<script src="js/streamer.js"></script>
 <script src="js/dialogs/badge-maker.js"></script>
 <script src="js/dialogs/permissions-docs.js"></script>
 <script src="js/leadquiz.js"></script>

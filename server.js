@@ -128,4 +128,5 @@ require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anyt
 require('./lib/scrummaster').startScrumMaster();   // 🧭 day rounds, only when it is in the team (AIG-359)
 require('./lib/discord').start();   // 💬 only does anything once a bot is set up (AIG-481)
 require('./lib/budget').startNightWatch();   // a run past its team's nightly token budget is stopped (AIG-522)
+require('./lib/streamer').start();   // 🎥 streamer mode turns itself on when OBS or Streamlabs runs (AIG-592)
 require('./lib/notokens').start();   // ⛔ No Token Mode turns itself on at the usage limit (AIG-338)

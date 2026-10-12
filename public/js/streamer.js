@@ -1,0 +1,149 @@
+/* ---------- 🎥 Streamer mode (AIG-590..592) ---------- */
+// While streaming: private projects (🔒, project settings), DMs, friends and life cards are left out of what the page fetches
+// (api() calls Streamer.filter) and CSS hides the DM and friends parts (html[data-streamer]); passwords, keys, tokens, IP
+// addresses, emails and server names show as •••• in every text on the page. One function, Streamer.mask(), does the masking,
+// and a MutationObserver runs it over text nodes as they are drawn (card text, comments, terminal output, Setup > My servers).
+// The real text stays in memory: Copy buttons and ▶ Run read Streamer.raw(el), and there is no hover reveal.
+// On when the 🎥 switch is on (localStorage aigile.streamer) or, with Setup's "turn on by itself" ticked, while the board says
+// OBS or Streamlabs is running (GET /api/streamer, checked by lib/streamer.js every 30 s; the page asks every 5 s).
+const Streamer = (() => {
+  const KEY = 'aigile.streamer', DOTS = '••••';
+  let manual = false, auto = false, st = { auto: true, running: false, program: '' }, hidden = new Set(), ready = null, note = null;
+  try { manual = localStorage.getItem(KEY) === '1'; } catch {}
+  const on = () => manual || auto;
+
+  /* ---- the one masking function ---- */
+  const oct = '(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)';
+  const PATTERNS = [
+    [/-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?(?:-----END [A-Z ]*PRIVATE KEY-----|$)/g, () => DOTS],
+    // password: hunter2, token=abc123 ... only the value goes
+    [/\b(pass(?:word|wd)?|pwd|secret|token|api[_-]?key|apikey|access[_-]?key|private[_-]?key)(\s*[:=]\s*)(["']?)([^\s"',;]{4,})\3/gi, (m, k, sep, q) => k + sep + q + DOTS + q],
+    [/\bsk-[A-Za-z0-9_-]{16,}/g, () => DOTS],
+    [/\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}/g, () => DOTS],
+    [/\bgithub_pat_[A-Za-z0-9_]{20,}/g, () => DOTS],
+    [/\bAKIA[0-9A-Z]{16}\b/g, () => DOTS],
+    [/\bxox[abprs]-[A-Za-z0-9-]{10,}/g, () => DOTS],
+    [/\bAIza[0-9A-Za-z_-]{35}/g, () => DOTS],
+    [/\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/g, () => DOTS],
+    [/\b(Bearer\s+)[A-Za-z0-9._~+\/=-]{16,}/g, (m, b) => b + DOTS],
+    [/[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g, () => DOTS],
+    [new RegExp(`(?<![\\w.])${oct}(?:\\.${oct}){3}(?![\\w]|\\.\\d)`, 'g'), () => DOTS],
+    [/(?<![\w:])(?:[0-9a-f]{1,4}:){7}[0-9a-f]{1,4}(?![\w:])/gi, () => DOTS],
+  ];
+  // Server names from Setup > My servers: the name, the saved value and, for ssh, the host (user@host:port).
+  const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  function serverRe() {
+    const list = (((state.setup || {}).prefs || {}).servers) || [], words = new Set();
+    for (const s of list) {
+      const n = String(s.name || '').trim(), v = String(s.value || '').trim();
+      if (n.length >= 3) words.add(n);
+      if (v && s.kind === 'ssh') { words.add(v); const h = v.replace(/^.*@/, '').replace(/:\d+$/, ''); if (h.length >= 3) words.add(h); }
+    }
+    const key = [...words].join('\n');
+    if (serverRe.key !== key) { serverRe.key = key; serverRe.re = words.size ? new RegExp(`(?<![\\w-])(?:${[...words].sort((a, b) => b.length - a.length).map(reEsc).join('|')})(?![\\w-])`, 'gi') : null; }
+    return serverRe.re;
+  }
+  function mask(s) {
+    if (typeof s !== 'string' || s.length < 4) return s;
+    for (const [re, fn] of PATTERNS) s = s.replace(re, fn);
+    const sr = serverRe(); if (sr) s = s.replace(sr, DOTS);
+    return s;
+  }
+
+  /* ---- text on the page: masked as it is drawn, the real text kept ---- */
+  const rec = new Map();   // text node -> { raw, masked }
+  const skip = n => { const p = n.parentElement; return !p || !!p.closest('script,style,textarea,input,[contenteditable],[data-nomask],.CodeMirror'); };
+  function fix(n) {
+    if (skip(n)) return;
+    const r = rec.get(n), v = n.nodeValue;
+    if (r && v === r.masked) return;
+    const m = mask(v);
+    if (m !== v) { rec.set(n, { raw: v, masked: m }); n.nodeValue = m; } else rec.delete(n);
+  }
+  function scan(root) {
+    if (!root) return;
+    if (root.nodeType === 3) return fix(root);
+    if (root.nodeType !== 1) return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) fix(n);
+  }
+  function restore() { for (const [n, r] of rec) if (n.isConnected && n.nodeValue === r.masked) n.nodeValue = r.raw; rec.clear(); }
+  // The real text of an element, for Copy and ▶ Run.
+  function raw(el) {
+    if (!el) return '';
+    let out = '';
+    const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) { const r = rec.get(n); out += r && n.nodeValue === r.masked ? r.raw : n.nodeValue; }
+    return out;
+  }
+  let queued = new Set(), busy = false, mo = null;
+  function flush() {
+    busy = true; try { for (const n of queued) if (n.isConnected) scan(n); } finally { queued = new Set(); busy = false; }
+    for (const n of [...rec.keys()]) if (!n.isConnected) rec.delete(n);
+  }
+  function watch() {
+    if (mo) return;
+    mo = new MutationObserver(ms => {
+      if (busy) return;
+      for (const m of ms) { if (m.type === 'characterData') queued.add(m.target); else m.addedNodes.forEach(n => queued.add(n)); }
+      flush();
+    });
+    mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+
+  /* ---- what is left out of the data ---- */
+  // Called by api() with the answer; private projects, DMs, friends and life cards never reach the screens.
+  async function filter(method, url, j) {
+    if (method !== 'GET' || !on()) return j;
+    await ready;
+    const path = url.split('?')[0];
+    if (path === '/api/projects' && Array.isArray(j)) { j.forEach(p => p.private && hidden.add(p.slug)); return j.filter(p => !p.private); }
+    if (path === '/api/inbox' && Array.isArray(j)) return j.filter(c => !hidden.has(c.project || c.slug) && !c.lifeType);
+    if (path === '/api/chats' || path === '/api/dms/contacts' || path === '/api/shares') return [];
+    const m = path.match(/^\/api\/projects\/([^/]+)(\/.*)?$/);
+    if (m && (hidden.has(m[1]) || (j && j.private && !m[2]))) { hidden.add(m[1]); if (location.hash.includes(m[1])) location.hash = '#/'; throw new Error(t('streamer.private')); }
+    if (m && !m[2] && j && Array.isArray(j.cards)) return { ...j, cards: j.cards.filter(c => !c.lifeType) };
+    return j;
+  }
+  const prime = () => fetch('/api/projects?all=1').then(r => r.json()).then(l => { hidden = new Set(l.filter(p => p.private).map(p => p.slug)); }).catch(() => {});
+
+  /* ---- the switch ---- */
+  function apply(was) {
+    const o = on();
+    document.documentElement.toggleAttribute('data-streamer', o);
+    const b = $('streamBtn'); if (b) { b.classList.toggle('stream-on', o); b.setAttribute('aria-pressed', String(o)); b.title = t(o ? 'streamer.title.on' : 'streamer.title'); }
+    if (o) { ready = prime(); watch(); scan(document.body); if (!state.setup) api('GET', '/api/setup').then(s => { state.setup = s; scan(document.body); }).catch(() => {}); } else restore();
+    if (was !== o) { ready = o ? prime() : ready; Promise.resolve(ready).then(() => { if (typeof Dms !== 'undefined') Dms.reload(); if (typeof refresh === 'function') refresh(true); if (typeof Inbox !== 'undefined' && Inbox.show && state.route && state.route.view === 'inbox') Inbox.show(true); }); }
+    paintSetup();
+  }
+  function toggle() { const was = on(); manual = !manual; if (!manual) auto = false; try { localStorage.setItem(KEY, manual ? '1' : '0'); } catch {} apply(was); }
+  function toast(msg, offBtn) {
+    if (note) note.remove();
+    note = document.createElement('div'); note.id = 'streamNote'; note.setAttribute('role', 'status'); note.dataset.nomask = '1';
+    note.innerHTML = `<span>${esc(msg)}</span>${offBtn ? ` <button type="button" onclick="Streamer.dismiss(true)">${esc(t('streamer.note.off'))}</button>` : ''}<button type="button" aria-label="${esc(t('common.close'))}" onclick="Streamer.dismiss()">✕</button>`;
+    document.body.appendChild(note); setTimeout(() => { if (note) { note.remove(); note = null; } }, 9000);
+  }
+  function dismiss(turnOff) { if (note) { note.remove(); note = null; } if (turnOff) { const was = on(); auto = false; manual = false; st.suppressed = st.program; try { localStorage.setItem(KEY, '0'); } catch {} apply(was); } }
+  // The board's word on OBS / Streamlabs. On by itself when one starts, off again when it stops (only if the page turned it on).
+  async function poll() {
+    let s; try { s = await fetch('/api/streamer', { cache: 'no-store' }).then(r => r.json()); } catch { return; }
+    const was = on(); st = { ...st, ...s };
+    if (!s.running) st.suppressed = '';
+    const want = s.auto && s.running && !st.suppressed;
+    if (want && !auto && !manual) { auto = true; apply(was); toast(t('streamer.note.on', { program: s.program || 'OBS' }), true); }
+    else if (!want && auto) { auto = false; apply(was); toast(t('streamer.note.ended')); }
+  }
+  /* ---- Setup > Streamer ---- */
+  function setupHtml() {
+    return `<span>${esc(t('streamer.setup.h'))}</span><label class="chk"><input type="checkbox" id="streamAuto" ${st.auto ? 'checked' : ''} onchange="Streamer.setAuto(this.checked)"> ${esc(t('streamer.setup.auto'))}</label>
+      <small class="muted">${esc(t('streamer.setup.help'))}</small>${st.running ? `<small class="muted">${esc(t('streamer.setup.running', { program: st.program || 'OBS' }))}</small>` : ''}`;
+  }
+  function paintSetup() { const b = $('streamerBox'); if (b) b.innerHTML = setupHtml(); }
+  async function setAuto(v) {
+    try { st = { ...st, ...(await api('POST', '/api/streamer', { auto: !!v })) }; } catch (e) { alert(e.message); }
+    if (!v && auto) { const was = on(); auto = false; apply(was); }
+    paintSetup(); poll();
+  }
+  function start() { apply(false); poll(); setInterval(poll, Number(window.AIGILE_STREAM_POLL) || 5000); }
+  return { on, mask, raw, filter, toggle, dismiss, setAuto, setupHtml, start, poll, get hidden() { return hidden; } };
+})();
