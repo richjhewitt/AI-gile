@@ -187,7 +187,9 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
   check('a fun language (Esperanto) is never picked by itself', fun.lang === 'en', fun.lang);
   check('fun languages come last in the list, English second after the device language', fun.names[0] === 'en' && fun.names.slice(-2).sort().join() === 'eo,pirate', fun.names);
   check('a stubbed language shows its file (marked), its locale and dir', (await startIn('en-US', 'pt-br', {}, extra)).newProject.startsWith('BR '));
-  check('the extra stubbed files show in the list only because they are in', us.names.includes('zh-tw') && !(await startIn('en-US')).names.includes('zh-tw'));
+  // Only the stubs that don't ship a real file yet (zh-tw does now), so this keeps meaning something as translations arrive (AIG-517).
+  const stubOnly = extra.filter(c => !shipped.includes(c)), plain = (await startIn('en-US')).names;
+  check('the extra stubbed files show in the list only because they are in', stubOnly.length && stubOnly.every(c => us.names.includes(c) && !plain.includes(c)), { stubOnly, plain });
   const rtl = await startIn('en-US', 'ar', {}, extra);
   check('Arabic sets <html dir=rtl> and lang ar, Latin digits in dates', rtl.dir === 'rtl' && rtl.html === 'ar' && rtl.locale === 'ar-u-nu-latn', rtl);
   check('English goes back to dir=ltr', saved.dir === 'ltr');

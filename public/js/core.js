@@ -242,7 +242,7 @@ function busy() {
 // left out; with it in, the board and the open card were redrawn every second and the panel flickered.
 const renderSig = x => JSON.stringify(x, (k, v) => k === 'waitingMs' ? undefined : v);
 async function refresh(force) {
-  if (!i18n.ready) return;   // the language file comes first (AIG-124)
+  if (!i18n.ready || Boot.failed) return;   // the language file comes first (AIG-124); a broken start-up reloads instead (AIG-517)
   if (state.route && state.route.view === 'project') state.lastProject = state.route.slug; else if (state.route && state.route.view !== 'inbox') state.lastProject = null;
   state.route = parseRoute();
   if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; $('filterbar').innerHTML = ''; $('filterbar').dataset.slug = ''; }
@@ -291,6 +291,7 @@ async function refresh(force) {
   } catch (e) {
     $('live').className = 'live off';
     $('live').textContent = t('live.offline', { msg: e.message });
+    if (!$('app').firstElementChild) Boot.note();   // nothing drawn yet (AIG-517): say so; the 1s poll tries again
     return;
   }
   if (!force && state.dragging) return;
@@ -308,13 +309,17 @@ async function refresh(force) {
   state.lastSig = state.lastBoardSig = sig;
   // AIG-485: a render that throws (a script half-loaded while the app restarted) must not leave a blank page that
   // never redraws: forget the signature so the next tick tries again, and say so instead of showing nothing.
+  // AIG-517: always the note with a Reload button (a half-drawn page, or the last page's leftovers, is worse).
   try { render(); }
   catch (e) {
     state.lastSig = state.lastBoardSig = null;
     $('live').className = 'live off'; $('live').textContent = t('live.offline', { msg: e.message });
-    if (!$('app').innerHTML.trim()) $('app').innerHTML = `<p class="muted" style="padding:24px">${esc(e.message)} <button onclick="location.reload()">↻</button></p>`;
+    const h = `<div class="render-note" role="alert" style="padding:24px"><p>${esc(t('boot.broke'))}</p><p class="muted"><code>${esc(e.message)}</code></p><button class="primary" onclick="location.reload()">${esc(t('boot.reload'))}</button></div>`;
+    if ($('app').dataset.broke !== h || !$('app').querySelector('.render-note')) { $('app').innerHTML = h; $('app').dataset.broke = h; }
     console.error(e);
+    return;
   }
+  delete $('app').dataset.broke;
 }
 
 function renderBoardOnly() {
