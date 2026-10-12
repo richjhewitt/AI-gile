@@ -8,6 +8,7 @@ const QUIZ = [
   ['go', [['ask', { go: 'ask' }], ['small', { go: 'small' }]]],
   ['night', [['quiet', { watchAll: false }], ['work', { watchAll: true }]]],
   ['words', [['plain', { explain: true }], ['dev', { explain: false }]]],
+  ['steps', [['one', { steps: 1 }], ['stage', { steps: 3 }], ['all', { steps: 5 }]]],   // steps at a time (AIG-416)
 ];
 const leadPrefs = () => (state.setup && state.setup.prefs) || {};
 
@@ -50,6 +51,7 @@ function leadPrefsHtml(msg = '') {
   return `<span>${esc(t('lead.h'))}</span><div><button type="button" onclick="leadQuiz()">${esc(t('quiz.btn'))}</button></div><small class="muted">${esc(t('quiz.help'))}</small>
     ${sw('tidyCards')}${sw('chatty')}
     <label class="f"><span>${esc(t('lead.go'))}</span><select class="setup-theme" onchange="setLeadPref({ go: this.value })">${['', 'ask', 'small'].map(v => `<option value="${v}" ${(pr.go || '') === v ? 'selected' : ''}>${esc(t('lead.go.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.go.help'))}</small></label>
+    <label class="f"><span>${esc(t('lead.steps'))}</span><select class="setup-theme" id="pf-steps" onchange="setLeadPref({ steps: Number(this.value) })">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${pr.steps === n ? 'selected' : ''}>${n} · ${esc(t('steps.' + n))}</option>`).join('')}</select><small class="muted">${esc(t('lead.steps.help'))}</small></label>
     ${sw('smRole')}${sw('watchAll')}${sw('light')}
     <label class="f"><span>${esc(t('lead.smPush'))}</span><select class="setup-theme" id="pf-smPush" onchange="setLeadPref({ smPush: Number(this.value) })">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${(pr.smPush || 3) === n ? 'selected' : ''}>${n} · ${esc(t('sm.push.' + n))}</option>`).join('')}</select><small class="muted">${esc(t('lead.smPush.help'))}</small></label>
     ${budgetHtml(pr)}

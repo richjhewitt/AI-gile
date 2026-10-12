@@ -3,7 +3,7 @@
 // quick answers: Balanced and Normal). Next saves that screen through POST /api/setup (the prefs; the spend scale is PLANS from
 // GET /api/setup); Back and the summary's Edit links never lose a value. The summary lists every choice with an Edit link.
 const ADV_SCREENS = ['me', 'lead', 'runs', 'budget', 'parallel', 'usage', 'help', 'dispatch', 'roles', 'night', 'lang', 'summary'];
-const ADV_QUIZ = ['tidy', 'chatty', 'go', 'words'];   // the lead quiz questions on the lead screen; 'night' has its own screen
+const ADV_QUIZ = ['tidy', 'chatty', 'go', 'words', 'steps'];   // the lead quiz questions on the lead screen; 'night' has its own screen
 const WA = { screen: 'me', p: {}, explain: true, fromSummary: false };
 
 function advStart() {
@@ -43,7 +43,7 @@ function advKeep() {
 function advBody() {
   const pick = ks => Object.fromEntries(ks.map(k => [k, WA.p[k]]));
   switch (WA.screen) {
-    case 'lead': return pick(['tidyCards', 'chatty', 'go']);
+    case 'lead': return pick(['tidyCards', 'chatty', 'go', 'steps']);
     case 'runs': return pick(['runIn', 'runCmd']);
     case 'budget': return pick(['budgetH5', 'budgetWk', 'light']);
     case 'parallel': return pick(['maxRuns', 'helpersOpus', 'helpersSonnet', 'helpersHaiku']);
@@ -130,7 +130,7 @@ function advBodyHtml() {
       const q = (k, a) => t('quiz.' + k + '.' + a);
       const rows = {
         me: `${wzField('owner').value}${wzField('agent.command').value ? ', ' + wzField('agent.command').value : ''}`,
-        lead: t('wz.adv.val.lead', { tidy: q('tidy', pr.tidyCards ? 'yes' : 'no'), chatty: q('chatty', pr.chatty ? 'chatty' : 'quiet'), go: q('go', pr.go === 'ask' ? 'ask' : 'small'), words: q('words', glossOn() ? 'plain' : 'dev') }),
+        lead: t('wz.adv.val.lead', { tidy: q('tidy', pr.tidyCards ? 'yes' : 'no'), chatty: q('chatty', pr.chatty ? 'chatty' : 'quiet'), go: q('go', pr.go === 'ask' ? 'ask' : 'small'), words: q('words', glossOn() ? 'plain' : 'dev'), steps: pr.steps + ' · ' + t('steps.' + pr.steps) }),
         runs: t('runin.' + (pr.runIn || 'background')) + (pr.runIn === 'other' && pr.runCmd ? ': ' + pr.runCmd : ''),
         budget: t('wz.adv.val.budget', { h: pr.budgetH5, w: pr.budgetWk }) + (pr.light ? ', ' + t('wz.adv.val.light') : ''),
         parallel: `${t('wz.adv.val.runs', { n: pr.maxRuns || t('wz.adv.val.nolimit') })}; ${t('wz.adv.val.helpers', { o: lim(pr.helpersOpus), s: lim(pr.helpersSonnet), h: lim(pr.helpersHaiku) })}`,

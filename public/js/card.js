@@ -337,13 +337,17 @@ async function sendReply(fixed) {
   } catch (err) { setErr('r-err', err); }
 }
 /* ---------- checklist and waits for (AIG-406) ---------- */
+// A task for the owner shows its steps a few at a time (AIG-416): the owner's steps setting says how many open ones.
+const CHK_SHOW = { 1: 1, 2: 3, 3: 5 }, chkAll = new Set();
 function checklistUi(p, c) {
   const list = c.checklist || [], left = checkLeft(c);
   if (c.status === 'done' && !list.length) return '';
-  const items = list.map((x, i) => `<li class="${x.done ? 'on' : ''}"><label><input type="checkbox" data-chk-i="${i}" ${x.done ? 'checked' : ''} onchange="checkTick(${i}, this.checked)"> <span>${esc(x.text)}</span></label>`
+  const show = isOwnerTask(c) && !chkAll.has(c.id) ? CHK_SHOW[leadPrefs().steps] : 0, open = list.map((x, i) => x.done ? -1 : i).filter(i => i >= 0);
+  const hidden = show && open.length > show ? new Set(open.slice(show)) : new Set();
+  const items = list.map((x, i) => hidden.has(i) ? '' : `<li class="${x.done ? 'on' : ''}"><label><input type="checkbox" data-chk-i="${i}" ${x.done ? 'checked' : ''} onchange="checkTick(${i}, this.checked)"> <span>${esc(x.text)}</span></label>`
     + `<span class="chk-acts"><button type="button" class="chk-b" title="${esc(t('check.up'))}" ${i ? '' : 'disabled'} onclick="checkMove(${i}, -1)">↑</button><button type="button" class="chk-b" title="${esc(t('check.down'))}" ${i < list.length - 1 ? '' : 'disabled'} onclick="checkMove(${i}, 1)">↓</button><button type="button" class="chk-b" title="${esc(t('check.remove'))}" onclick="checkRemove(${i})">✕</button></span></li>`).join('');
   return `<div class="chk" id="chk-box"><div class="chk-h"><b>☑ ${esc(t('check.h'))}</b>${list.length ? ` <span class="pill chk${left ? '' : ' all'}">${list.length - left}/${list.length}</span>` : ''}</div>
-    ${list.length ? `<ul class="chk-list">${items}</ul>` : ''}
+    ${list.length ? `<ul class="chk-list">${items}</ul>` : ''}${hidden.size ? `<div class="chk-more muted" id="chk-more">${esc(t('check.more', { n: hidden.size }))} <button type="button" class="link" onclick="chkAll.add(cardId()); refresh(true)">${esc(t('check.more.all'))}</button></div>` : ''}
     <div class="chk-add"><input id="chk-new" placeholder="${esc(t('check.add.ph'))}" onkeydown="if(event.key==='Enter'){event.preventDefault();checkAdd()}"> <button type="button" id="chk-add-btn" onclick="checkAdd()">${esc(t('check.add'))}</button></div></div>`;
 }
 const cardUrl = () => `/api/projects/${slug()}/cards/${cardId()}`;

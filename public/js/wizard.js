@@ -4,9 +4,9 @@
 // fields and prefs), once, when you leave screen 4. A guessed agent program is only a suggestion until "Use this" (AIG-334).
 // Team style = answers to the lead quiz questions (QUIZ in leadquiz.js).
 const WZ_STYLES = {
-  careful: { tidy: 'yes', chatty: 'quiet', go: 'ask', night: 'quiet', words: 'plain' },
-  balanced: { tidy: 'yes', chatty: 'chatty', go: 'small', night: 'quiet', words: 'plain' },
-  fast: { tidy: 'no', chatty: 'quiet', go: 'small', night: 'work', words: 'dev' },
+  careful: { tidy: 'yes', chatty: 'quiet', go: 'ask', night: 'quiet', words: 'plain', steps: 'one' },
+  balanced: { tidy: 'yes', chatty: 'chatty', go: 'small', night: 'quiet', words: 'plain', steps: 'stage' },
+  fast: { tidy: 'no', chatty: 'quiet', go: 'small', night: 'work', words: 'dev', steps: 'all' },
 };
 const WZ_PLANS = ['fly', 'careful', 'normal', 'generous', 'nospare'];
 const WZ_STEPS = 5;
