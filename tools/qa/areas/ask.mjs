@@ -85,9 +85,9 @@ def('ask', 'ask a mate: a friend\'s short question waits for ✅ / ✋; ✅ runs
     check('the answer arrives in B\'s chat', ans && ans.text === 'Stub answer: 42' && ans.dir === 'in', await msgsB());
     check('B\'s question shows answered', (await msgsB()).find(m => m.kind === 'ask' && /six times/.test(m.text)).state === 'answered');
     const cwd = runs()[0] || '';
-    check('the run worked in an empty temp folder of its own, not a project folder', runs().length === 1 && path.resolve(path.dirname(cwd)).toLowerCase() === path.resolve(os.tmpdir()).toLowerCase() && /^aigile-ask-/.test(path.basename(cwd)) && path.resolve(cwd) !== path.resolve(STUB), runs());
-    await until(async () => !fs.existsSync(cwd), 3000);
-    check('and the temp folder is gone afterwards', !fs.existsSync(cwd), cwd);
+    // AIG-454: its own folder under the board's data/ (no project settings or hooks), kept and empty
+    check('the run worked in its own data/ask folder, not a project folder', runs().length === 1 && /[\\/]data[\\/]ask$/.test(path.resolve(cwd)) && path.resolve(cwd) !== path.resolve(STUB), runs());
+    check('the data/ask folder is kept, with nothing of the owner\'s in it', fs.existsSync(cwd) && fs.readdirSync(cwd).length === 0, cwd);
     const args = fs.readFileSync(ARGS, 'utf8');
     check('the program got the restricted flags', /"--tools" ""/.test(args) && /"--disallowedTools" "Bash,PowerShell,Edit,Write,MultiEdit,NotebookEdit,WebFetch,WebSearch,Task,Agent"/.test(args) && /"--setting-sources" "user"/.test(args) && /"--strict-mcp-config"/.test(args) && /"--max-turns" "3"/.test(args) && !/--continue|dangerously/.test(args), args);
     const stdin = fs.readFileSync(IN, 'utf8');
