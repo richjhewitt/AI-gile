@@ -49,6 +49,11 @@ async function run() {
       await api('PATCH', `/api/projects/${slug}/cards/${c.id}`, { status: 'done' });
       continue;
     }
+    // ✅ Go answered by rule (AIG-609): the board moved the idea's first card to To do itself, so build that one and hand it over.
+    if (c.status === 'todo' && c.createdBy === ME && c.title.endsWith(t('pt.first.sfx'))) {
+      await handOver(slug, c, t('pt.go.steps', { title: c.title.slice(0, -t('pt.first.sfx').length) }));
+      continue;
+    }
     if (c.status !== 'team' && !(c.quick && c.status === 'team')) continue;
     // 💬 A new idea: two cards and a short plan, with Go buttons.
     if (c.quick && !c.comments.some(m => m.author === ME)) {
