@@ -487,6 +487,8 @@
  "look.roles": "👥 Team: zet elke AI-rol aan of uit",
  "look.roles.count": "Dit project mag maximaal {total} agents gebruiken: {list}",
  "look.verbose": "👁 Uitgebreid: een team op de achtergrond toont elke stap en elk commando terwijl het bezig is, zodat je live kan meekijken met 👁 Meekijken",
+ "look.second": "Laat een tweede lead toe als er veel werk is",
+ "look.second.sub": "Uit: zolang de lead in een sessie werkt, start het bord er geen achtergrondrun bovenop.",
  "look.auto": "Automatisch",
  "look.auto.title": "Kies de kleur en emoji weer automatisch",
  "perm.allow": "Mag zonder te vragen",

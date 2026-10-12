@@ -484,6 +484,8 @@
  "look.chatty": "💬 Gezellige teamleider: soms een seintje of grapje in je DM's",
  "look.chatty.cost": "(kost wat meer tokens)",
  "look.verbose": "👁 Uitgebreid: een team op de achtergrond laat elke stap en elk commando zien terwijl het werkt, zodat je live kunt meekijken met 👁 Meekijken",
+ "look.second": "Sta een tweede lead toe als er veel werk is",
+ "look.second.sub": "Uit: zolang de lead in een sessie werkt, start het bord er geen achtergrondrun bovenop.",
  "look.auto": "Automatisch",
  "look.auto.title": "Kies de kleur en emoji weer automatisch",
  "perm.allow": "Mag zonder te vragen",
