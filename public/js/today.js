@@ -13,6 +13,21 @@ const TodayPage = (() => {
     return p && p.weight !== 'normal' ? `<span class="today-badge w-${p.weight}" title="${esc(t('today.' + p.weight))}">${ICON[p.weight]}</span>` : '';
   };
   T.set = async (slug, weight) => { T.data = await api('POST', '/api/today', { slug, weight }); render(); };
+  T.aiOff = async (slug, on) => { try { await api('PATCH', '/api/projects/' + slug, { aiOff: on }); await T.load(); render(); } catch (e) { alert(e.message); } };
+  // AIG-607: exact shares. The total must be 100 to save; the server refuses anything else too.
+  T.sum = () => {
+    const eq = $('todayEqual') && $('todayEqual').checked, ins = [...document.querySelectorAll('.today-pct')];
+    ins.forEach(i => { i.disabled = eq; });
+    const total = Math.round(ins.reduce((a, i) => a + (+i.value || 0), 0) * 10) / 10;
+    $('todayTotal').textContent = t('today.pct.total', { total }); $('todayTotal').className = total === 100 || eq ? 'muted' : 'err';
+    $('todaySaveShares').disabled = !(eq || total === 100);
+  };
+  T.saveShares = async () => {
+    const eq = $('todayEqual').checked, pct = {};
+    document.querySelectorAll('.today-pct').forEach(i => { if (+i.value) pct[i.dataset.slug] = +i.value; });
+    try { T.data = await api('POST', '/api/today/shares', eq ? { equal: true } : { pct }); render(); } catch (e) { $('todayErr').textContent = e.message; }
+  };
+  T.useWeights = async () => { T.data = await api('POST', '/api/today/shares', {}); render(); };
   T.keep = async () => { T.data = await api('POST', '/api/today/keep'); render(); };
   const fmt = n => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'k' : String(n);
   T.line = p => p.weight === 'rest' ? esc(t('today.restline'))
@@ -21,9 +36,17 @@ const TodayPage = (() => {
     const d = T.data;
     if (!d) return `<div class="uz"><h2>${esc(t('today.title'))}</h2><p class="muted">${esc(t('today.none'))}</p></div>`;
     const rows = d.projects.map(p => `<div class="today-row" data-slug="${esc(p.slug)}"><div class="today-name"><b>${esc(p.emoji)} ${esc(p.name)}</b>${p.over ? ` <span class="pill blocked" title="${esc(t('today.over.title'))}">${esc(t('today.over'))}</span>` : ''}<div class="muted">${T.line(p)}</div></div>
-      <div class="today-btns" role="group" aria-label="${esc(p.name)}">${d.weights.map(w => `<button class="today-w ${p.weight === w ? 'on' : ''}" aria-pressed="${p.weight === w}" data-w="${w}" onclick="TodayPage.set('${esc(p.slug)}','${w}')">${w === 'normal' ? '' : ICON[w] + ' '}${esc(t('today.' + w))}</button>`).join('')}</div></div>`).join('');
+      <div class="today-btns" role="group" aria-label="${esc(p.name)}">${d.weights.map(w => `<button class="today-w ${p.weight === w ? 'on' : ''}" aria-pressed="${p.weight === w}" data-w="${w}" onclick="TodayPage.set('${esc(p.slug)}','${w}')">${w === 'normal' ? '' : ICON[w] + ' '}${esc(t('today.' + w))}</button>`).join('')}<button class="today-ai ${p.aiOff ? 'on' : ''}" aria-pressed="${!!p.aiOff}" data-aioff onclick="TodayPage.aiOff('${esc(p.slug)}',${!p.aiOff})" title="${esc(t('today.aioff.title'))}">⏸ ${esc(t('today.aioff'))}</button></div></div>`).join('');
+    // AIG-607: exact shares (they replace the weight split and stay across days), or an equal split.
+    const eq = d.mode === 'equal';
+    setTimeout(() => { if ($('todayTotal')) T.sum(); }, 0);   // the running total, once the page is in
+    const shares = `<div class="uz-card today-shares"><div class="uz-tile-h">${esc(t('today.pct.h'))}</div><p class="muted">${esc(t(d.mode === 'weights' ? 'today.pct.intro' : 'today.pct.on'))}</p>
+      <label class="chk"><input type="checkbox" id="todayEqual" ${eq ? 'checked' : ''} onchange="TodayPage.sum()"> ${esc(t('today.pct.equal'))}</label>
+      ${d.projects.map(p => `<label class="today-pctrow"><span>${esc(p.emoji)} ${esc(p.name)}</span><input type="number" class="today-pct" data-slug="${esc(p.slug)}" min="0" max="100" step="0.5" value="${d.mode === 'pct' ? p.setPct || '' : ''}" oninput="TodayPage.sum()" aria-label="${esc(p.name)}"> %</label>`).join('')}
+      <div id="todayTotal" class="muted"></div><div class="err" id="todayErr"></div>
+      <div class="actions"><button class="primary" id="todaySaveShares" onclick="TodayPage.saveShares()" disabled>${esc(t('common.save'))}</button>${d.mode === 'weights' ? '' : `<button onclick="TodayPage.useWeights()">${esc(t('today.pct.weights'))}</button>`}</div></div>`;
     return `<div class="uz today"><div class="toolbar"><h2>${esc(t('today.title'))}</h2><span class="grow"></span><button id="todayKeep" onclick="TodayPage.keep()" ${d.yesterday ? '' : 'disabled'} title="${esc(t('today.keep.title'))}">${esc(t('today.keep'))}</button></div>
-      <p class="muted">${esc(t('today.intro'))}</p><div class="uz-card">${rows || `<p class="muted">${esc(t('today.none'))}</p>`}</div></div>`;
+      <p class="muted">${esc(t('today.intro'))}</p><div class="uz-card">${rows || `<p class="muted">${esc(t('today.none'))}</p>`}</div>${shares}</div>`;
   };
   // The usage page's burn-down: each project's share of today and what it has used.
   T.usageCard = () => {

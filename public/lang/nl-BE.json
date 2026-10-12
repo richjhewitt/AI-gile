@@ -2176,5 +2176,18 @@
   "noai.build.h": "Haal de volledige download",
   "noai.build.text": "Dit is de Nooit-AI-uitgave, dus er is geen AI om aan te zetten. De volledige download heeft alles, en je kunt hem meteen gebruiken.",
   "noai.build.data": "Je borden staan in de map data. Kopieer die map naar de volledige download en alles gaat mee.",
-  "noai.build.link": "Haal de volledige download"
+  "noai.build.link": "Haal de volledige download",
+  "today.aioff": "AI uit",
+  "today.aioff.title": "Zet AI uit voor dit project: geen teamruns en geen wekkers, ook niet voor jouw reacties. Het bord werkt gewoon met de hand.",
+  "today.aioff.badge": "AI staat uit voor dit project",
+  "look.aioff": "AI uit voor dit project",
+  "look.aioff.sub": "Geen teamruns of wekkers, ook niet voor jouw reacties. Je kunt het altijd weer aanzetten.",
+  "today.pct.h": "Vaste aandelen",
+  "today.pct.intro": "Optioneel: geef elk project een vast % van het gebruiksvenster. Samen moet het 100 zijn. Dit vervangt de gewichtsverdeling en blijft staan tot je het weghaalt.",
+  "today.pct.on": "Deze percentages gelden in plaats van de gewichten. Ze blijven ook de volgende dagen.",
+  "today.pct.equal": "Gelijk verdelen",
+  "today.pct.total": "Totaal: {total}% (moet 100 zijn)",
+  "today.pct.weights": "Gebruik de gewichten weer",
+  "srv.today.total": "De aandelen tellen op tot {total}%, het moet 100 zijn",
+  "srv.aioff.guard": "AI staat uit voor {name}: zet het aan in Look om het team te laten werken"
 }
