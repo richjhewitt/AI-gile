@@ -85,8 +85,17 @@ function readFields(flags, testSteps) {
 // ↩ Reopen and ⋯ Move to (AIG-403): a done card goes back to the column it came from; any card can be moved to a column.
 function moveUi(p, c) {
   const cols = colsOf(p).filter(x => x.key !== c.status);
+  // The other projects, for ➡️ Move to project (AIG-438): the home list if it is loaded, else fetched once.
+  if (!state.projects && !state.projectList && !state.projectListAsked) { state.projectListAsked = true; api('GET', '/api/projects').then(l => { state.projectList = l; refresh(true); }).catch(() => {}); }
+  const others = (state.projects || state.projectList || []).filter(x => x.slug !== p.slug && !x.archived);
   return (c.status === 'done' ? `<button data-reopen onclick="moveCard('${esc(c.reopenTo || 'todo')}')" title="${esc(t('card.reopen.title'))}">${esc(t('card.reopen'))}</button> ` : '')
-    + `<select id="mv-to" data-moveto onchange="moveCard(this.value)" aria-label="${esc(t('card.moveto'))}"><option value="">${esc(t('card.moveto'))}</option>${cols.map(x => `<option value="${esc(x.key)}">${esc(((x.emoji ? x.emoji + ' ' : '') + x.name).trim())}</option>`).join('')}</select>`;
+    + `<select id="mv-to" data-moveto onchange="moveCard(this.value)" aria-label="${esc(t('card.moveto'))}"><option value="">${esc(t('card.moveto'))}</option>${cols.map(x => `<option value="${esc(x.key)}">${esc(((x.emoji ? x.emoji + ' ' : '') + x.name).trim())}</option>`).join('')}</select>`
+    + (others.length ? ` <select id="mv-proj" onchange="moveToProject(this.value)" aria-label="${esc(t('card.moveproj'))}"><option value="">${esc(t('card.moveproj'))}</option>${others.map(x => `<option value="${esc(x.slug)}">${esc(x.name)}</option>`).join('')}</select>` : '');
+}
+// ➡️ Move to another project (AIG-438): a copy lands there with a link back; this card closes with a link forward.
+async function moveToProject(to) {
+  if (!to) return;
+  try { const r = await api('POST', `/api/projects/${slug()}/cards/${cardId()}/moveproject`, { to }); location.hash = `#/p/${r.project}/${r.id}`; } catch (e) { alert(e.message); refresh(true); }
 }
 async function moveCard(status) {
   if (!status) return;
