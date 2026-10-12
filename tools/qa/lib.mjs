@@ -83,8 +83,8 @@ export async function startServer(extraEnv = {}, port = PORT) {   // a second bo
     return { status: r.status, body: j };
   };
   const ok = async (method, url, body) => { const r = await api(method, url, body); if (r.status >= 300) throw new Error(`${method} ${url} -> ${r.status} ${JSON.stringify(r.body)}`); return r.body; };
-  const cli = (args, extraEnv = {}) => {
-    const r = spawnSync(process.execPath, [path.join(ROOT, 'aigile.js'), ...args], { env: { ...env, AIGILE_URL: BASE, ...extraEnv }, encoding: 'utf8' });
+  const cli = (args, extraEnv = {}, cwd) => {
+    const r = spawnSync(process.execPath, [path.join(ROOT, 'aigile.js'), ...args], { env: { ...env, AIGILE_URL: BASE, ...extraEnv }, encoding: 'utf8', ...(cwd ? { cwd } : {}) });
     return { code: r.status, out: (r.stdout || '').trim(), err: (r.stderr || '').trim() };
   };
   const stop = () => { try { proc.kill(); } catch {} };
