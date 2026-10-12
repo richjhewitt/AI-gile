@@ -37,6 +37,8 @@ Profile picture: pick a picture that suits you: `aigile avatar <proj> --as NAME`
 
 **Leads launching agents:** record each with `aigile start <proj> <id> --as <AgentName>` (assigns the card, moves it to `doing`, sets the roster task, shows the owner the "In flight" line). When the agent finishes, hand over with `test`, or `move` it on.
 
+**Carrying on in another card?** When you carry on in another card, link it with `aigile next-card <proj> <from-id> <to-id> --as NAME` so Rich's chat follows.
+
 **Leads: stay reachable while idle.** Hooks only fire while busy. With nothing running, start `node "../AI-gile/aigile.js" wait <proj>` in the background: it costs nothing and ends with the owner's comments, waking you. Act, then start it again.
 
 **Roles on cards.** A card may be assigned to a role: `Lead (Opus)`, `Reviewer (Opus)`, `Frontend (Sonnet)`, `Backend (Sonnet)`, `QA (Haiku)`, `Quick fix (Haiku)`, `Docs (Haiku)`. The lead launches that kind of agent; its `start ... --as <name>` replaces the role with its name.

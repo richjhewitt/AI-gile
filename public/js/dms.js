@@ -157,6 +157,9 @@ const Dms = (() => {
       : q ? t('dms.replying.html', { link: `<a href="#/p/${esc(thread.slug)}/${esc(q.id)}">${esc(q.id)}</a>`, title: esc(q.title) }) : esc(t('dms.newmsg', { lead: thread.lead }));
     if (el('dmTo').dataset.sig !== to && document.activeElement !== el('dmTarget')) { el('dmTo').dataset.sig = to; el('dmTo').innerHTML = to; }
     el('dmGo').hidden = !q;
+    // AIG-426: the lead carried on in another card; the card now open in the chat points the way.
+    const fc = (thread.cards || {})[fold] || {}, fh = fc.followUp ? Follow.html('dm', thread.slug, fold, fc.followUp.id) : '';
+    if (el('dmFollow') && el('dmFollow').dataset.sig !== fh) { el('dmFollow').dataset.sig = fh; el('dmFollow').innerHTML = fh; }
     paintSm();
   }
 
@@ -195,6 +198,7 @@ const Dms = (() => {
     panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(chatName(c))}</div></div><span style="flex:1"></span>${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}
       <div class="dm-list" id="dmList"></div>
+      <div id="dmFollow"></div>
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
         <textarea id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();Dms.send()}"></textarea>
         <div class="err" id="dmErr"></div>
@@ -208,6 +212,13 @@ const Dms = (() => {
   function openFold(id) { fold = id; if (thread && thread.open.some(o => o.id === id)) target = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   // An answer button that needs a reason (AIG-176): aim the typing box at that card and start the reply.
   function reply(id, text) { aim(id); const ta = el('dmText'); if (ta) { if (text) ta.value = text; ta.focus(); ta.setSelectionRange(text.length, text.length); } }
+  // Go to the card the lead carried on in (AIG-426): into its fold when it is in this chat, else to the card itself.
+  async function follow(slug, id) {
+    if (!thread || thread.slug !== slug) return;
+    if (!(thread.cards || {})[id]) { try { thread = await api('GET', '/api/chats/' + slug); } catch {} }
+    if ((thread.cards || {})[id]) { if (thread.open.some(o => o.id === id)) target = id; fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(true); }
+    else location.hash = '#/p/' + slug + '/' + id;
+  }
   function reload() { if (open) loadThread(); loadRail(); }
   function aim(id) { target = id; if (id !== GENERAL) fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   function back() { open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
@@ -278,5 +289,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   setInterval(() => { if (!document.hidden) { loadRail(); if (open) loadThread(); } }, 3000);
   loadRail();
-  return { show, back, close, send, ask, aim, reply, reload, smLaunch, smGo, smStop, smPush };
+  return { follow, show, back, close, send, ask, aim, reply, reload, smLaunch, smGo, smStop, smPush };
 })();
