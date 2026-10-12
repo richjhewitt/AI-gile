@@ -2211,5 +2211,12 @@
   "lic.declined": "Declined.",
   "bug.send": "Also send it to the AI-gile team",
   "bug.send.title": "You're on the 🧪 Live channel: the title and text go to the people who make AI-gile (no names, no files)",
-  "bug.send.err": "The bug is on your board, but sending it to the AI-gile team failed: {msg}"
+  "bug.send.err": "The bug is on your board, but sending it to the AI-gile team failed: {msg}",
+ "dms.filter.discord": "Discord",
+ "dc.notify": "Discord: {who}",
+ "dc.kind.dm": "Chat with {bot}",
+ "dc.via": "Replies go out through {bot}",
+ "dc.placeholder": "Reply on Discord",
+ "dc.none": "No messages yet.",
+ "dc.nonone": "No Discord chats yet. Message your bot on Discord, or add it to a server."
 }

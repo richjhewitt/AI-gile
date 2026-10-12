@@ -44,3 +44,4 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .today-pctrow { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
 .today-pctrow span { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }
 .today-pctrow input { width: 80px; }
+.dc-pic { display: block; max-width: 100%; max-height: 240px; margin-top: 6px; border-radius: 8px; }
