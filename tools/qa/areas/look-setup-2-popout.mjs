@@ -47,6 +47,11 @@ def('popchat', '⧉ a pop-out stays open after Send and new team messages land a
   check('messages run oldest to newest, the new one at the bottom', order.at(-1) === 'Step 2: restart it' && order[0] === 'Step 1: run the setup', order);
   check('a draft survives a new message', (await pop.inputValue('#r-text')) === 'half a draft');
   check('the newest message is in view', await pop.evaluate(() => { const r = [...document.querySelectorAll('.chat .comment')].at(-1).getBoundingClientRect(); return r.bottom <= window.innerHeight + 1; }));
+  // AIG-405: the bar a pop-out is dragged by stays at the top after scrolling down
+  await pop.evaluate(() => { const p = document.querySelector('.panel'); const tall = document.createElement('div'); tall.style.height = '3000px'; p.appendChild(tall); window.scrollTo(0, 2000); });
+  await sleep(200);
+  const bar = await pop.evaluate(() => { const p = document.querySelector('.panel'), a = p.querySelector(':scope > .actions'); return { top: a && Math.round(a.getBoundingClientRect().top), first: p.firstElementChild && p.firstElementChild.className, pos: a && getComputedStyle(a).position, sy: Math.round(scrollY), st: Math.round(document.scrollingElement.scrollTop), ov: getComputedStyle(p).overflowY, chain: (() => { const o = []; for (let e = a; e; e = e.parentElement) { const s = getComputedStyle(e); if (s.overflowX !== 'visible' || s.overflowY !== 'visible' || s.contain !== 'none') o.push((e.id || e.tagName) + ':' + s.overflowX + '/' + s.overflowY + '/' + s.contain); } return o.join(' '); })() }; });
+  check('pop-out: the top bar stays in view when scrolled', bar.top !== null && Math.abs(bar.top) < 12, bar);
   noErrors(main);
 }, true);
 
