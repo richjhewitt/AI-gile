@@ -1,6 +1,8 @@
 // QA areas: standup, aitester.
+const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
 def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with the CLI, the report page shows blockers first and updates live, the morning prompt shows once a day (AIG-133..136)', async (s, ctx) => {
@@ -162,9 +164,22 @@ def('aitester', 'AI tester: lists unchecked tests, posts pass/fail/skip with evi
   check('AI-passed test is first in the For you column, with its 🤖 chip', String(firstId).includes(f.id) && (await bp.locator('.column.foryou .card').first().locator('.pill.ai.pass').count()) === 1, firstId);
   const rb = bp.locator('.column.foryou [id^="fyTester-"]');
   check('🤖 button shows the count of tests waiting (3 unchecked)', (await rb.count()) === 1 && /3/.test(await rb.textContent()) && /3/.test(await rb.getAttribute('title')), await rb.textContent());
+  // ---- AIG-454: the tester runs in its own folder under data/, not AI-gile's, and leaves the owner's news unseen ----
+  await s.ok('GET', '/api/projects/alpha/updates?mark=1');   // the team has looked: teamSeenAt = now
+  const marked = (await s.ok('GET', '/api/projects/alpha')).teamSeenAt;
+  const news = await mkCard(s, 'alpha', 'Owner news after the mark', { createdBy: 'Owner' });   // unseen owner news
+  fs.rmSync(s.wakeOut, { force: true });
   await rb.click();
   await bp.waitForFunction(() => /AI tester started/.test(document.body.innerText), null, { timeout: 5000 }).catch(() => {});
   check('clicking it starts the AI tester', /AI tester started/.test(await bp.innerText('body')));
   noErrors(bp);
+  let where = '';
+  for (let i = 0; i < 40 && !where; i++) { await sleep(250); try { where = fs.readFileSync(s.wakeOut, 'utf8').split(/\r?\n/)[0].trim(); } catch {} }
+  const real = p => { try { return fs.realpathSync(p).toLowerCase(); } catch { return path.resolve(p).toLowerCase(); } };
+  check('the tester runs in data/tester, not the AI-gile folder', !!where && real(where) === real(path.join(s.data, 'tester')) && real(where) !== real(REPO), where);
+  check('the tester folder has only its brief, no hooks or settings', fs.existsSync(path.join(s.data, 'tester', 'CLAUDE.md')) && !fs.existsSync(path.join(s.data, 'tester', '.claude')));
+  const after = (await s.ok('GET', '/api/projects/alpha')).teamSeenAt;
+  check("a tester run leaves the project's teamSeenAt unchanged", !!marked && after === marked, { marked, after });
+  check("the owner's news is still unseen after a tester run", (await s.ok('GET', '/api/projects/alpha/updates')).cards.some(c => c.id === news.id), 'news card');
 }, true);
 
