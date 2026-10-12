@@ -41,9 +41,9 @@ First pass by Babel for AIG-491, before the native-speaker check.
 | Wake (team) | Sveglia | |
 | Poke | Sollecita / dare una spinta | |
 | night watch | guardia notturna | |
-| Going quiet | Vado in silenzio | |
+| Going quiet | Stacco un po' | verb «staccare» («quando stacchi», «🌙 Stacca») |
 | idle | inattivo | |
-| assumption | ipotesi | "Plug this" = "Tappala" |
+| assumption | ipotesi | "Plug this" = «Correggi» |
 | No Token Mode | modalità No Token | |
 | token | token | |
 | agent | agente | |
@@ -52,7 +52,9 @@ First pass by Babel for AIG-491, before the native-speaker check.
 | Views | Viste | |
 | DM | DM | kept |
 | Pop out | Apri a parte | |
-| Space | Space | kept |
+| friend | contatto | «amico» is gendered; «contatto» reads naturally in a DM list. Invites: «la persona che inviti» |
+| GO (reply word) | GO / Via | button «Via», but what it sends, and GO? in pt.plan, stay GO: the board looks for that word |
+| Space | Spazio | |
 | Checklist | Checklist | |
 | Hook | hook | kept |
 
@@ -64,3 +66,26 @@ First pass by Babel for AIG-491, before the native-speaker check.
 - **Imperative vs infinitive on buttons:** buttons use the imperative ("Salva", "Invia"), long confirmation questions use the infinitive ("Eliminare ...?"). Check consistency.
 - **`servers.ssh.ph`** keeps the example `rich@92.113.144.194` on purpose.
 - **Long values:** `usage.note`, `dlg.conn.intro`, `budget.*.help`, `scale.push.help` and the `share.*` help texts are close translations and may run longer than English.
+
+## Answers to the questions above
+- **«Via» for GO:** reads as an approval («dare il via», «aspetta il mio via»); kept on buttons. The titles now say that GO is what gets sent («Invia GO (via libera) come risposta»), and `pt.plan` ends in GO? again so the GO buttons show.
+- **«Tappala»:** unclear for an assumption. Now «✋ Correggi», «Corretta», «Correggi questa ipotesi».
+- **«Per te»** and **«Aspetto»:** both fine; kept.
+- **Gender of people:** reworded wherever a neutral form reads naturally: «Ti diamo il benvenuto», «Ci devi ancora pensare», «hai dubbi», «Rieccomi», «Lead loquace», «in autonomia», «Avvio non riuscito». Friends are «contatti».
+- **Imperative vs infinitive:** consistent as described. `update.what.*` are now infinitives because they are slotted into «Vuoi {what} comunque e perderla?».
+
+## Review
+Native-speaker pass for AIG-491 (199 values changed).
+- Going quiet: «Vado in silenzio» is not idiomatic; now «Stacco un po'» / «stacchi» everywhere.
+- Gendered reader, agents and friends reworded (see above); «amico» → «contatto» in DM, sharing and pretend-friend texts.
+- Wrong meaning fixed: `pres.since` and `night.since` got "5 min fa" after «da»; `inbox.t.waiting` now «in attesa da {when}»; `inbox.aiall` (accept the tests the AI passed); `leave.confirm`; GO titles.
+- «Dì» → «Di'» (imperative of dire).
+- «aspetta te» / «in attesa di te» → «ti aspetta(no)».
+- «Space» → «Spazio».
+- Shorter or more natural buttons: «Ci penso su», «Tutto ok, passo successivo», «Finestra formato telefono», «Invio per inviare, Maiusc+Invio per andare a capo».
+
+Still for a human native speaker:
+- «card» and «board» as feminine loanwords: common in Italian teams, but «scheda» / «bacheca» are the alternatives.
+- «Contatto» for friend: check it fits the invite flow; «Famiglia e amici» (life category) kept.
+- Plural `many` keys repeat `other`, as Intl gives `many` for Italian.
+
