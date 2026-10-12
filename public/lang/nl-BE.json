@@ -2222,5 +2222,20 @@
   "dc.via": "Antwoorden gaan via {bot}",
   "dc.placeholder": "Antwoord op Discord",
   "dc.none": "Nog geen berichten.",
-  "dc.nonone": "Nog geen Discord-gesprekken. Stuur je bot een bericht op Discord, of voeg hem toe aan een server."
+  "dc.nonone": "Nog geen Discord-gesprekken. Stuur je bot een bericht op Discord, of voeg hem toe aan een server.",
+  "home.newspace": "🪐 Nieuwe ruimte",
+  "home.newspace.title": "Een project met projecten erin, uit een kant-en-klare lijst",
+  "dlg.newspace": "Nieuwe ruimte",
+  "space.tpl": "🪐 Ruimtesjabloon (optioneel)",
+  "space.tpl.none": "Geen: een gewoon project",
+  "space.tpl.product": "Product",
+  "space.tpl.product.kids": "Website|App|Marketing|Support",
+  "space.tpl.software": "Softwareteam",
+  "space.tpl.software.kids": "Frontend|Backend|Mobiel|DevOps",
+  "space.tpl.event": "Evenement",
+  "space.tpl.event.kids": "Locatie|Programma|Promotie|Tickets",
+  "space.tpl.life": "Leven",
+  "space.tpl.life.kids": "Thuis|Gezondheid|Geld|Werk",
+  "space.tpl.business": "Kleine zaak",
+  "space.tpl.business.kids": "Verkoop|Klanten|Administratie|Ideeën"
 }

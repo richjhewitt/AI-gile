@@ -79,20 +79,25 @@ async function createCard(e) {
 
 /* ---------- new project, archive ---------- */
 // The folder is suggested from the name (next to AI-gile) and set up for the team on create (AIG-73).
-async function newProject() {
+// 🪐 Space templates (AIG-440): a ready list of child projects for the New project box; the names are only a start, edit freely.
+const SPACE_TPLS = ['product', 'software', 'event', 'life', 'business'];
+function spaceTpl(v) { if (v) $('p-kids').value = t('space.tpl.' + v + '.kids').split('|').join('\n'); }
+async function newProject(opts = {}) {
   try { state.home = state.home || (await api('GET', '/api/meta')).home; } catch {}
-  openDialog(`<h2>${esc(t('dlg.newproject'))}</h2>
+  openDialog(`<h2>${esc(t(opts.space ? 'dlg.newspace' : 'dlg.newproject'))}</h2>
     <form onsubmit="return createProject(event)">
       <label class="f"><span>${esc(t('dlg.np.name'))}</span><input type="text" id="p-name" oninput="suggestKey()" maxlength="80"></label>
       <div class="row"><label class="f"><span>${esc(t('dlg.np.key'))}</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
       <label class="f"><span>${esc(t('dlg.np.folder'))}</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="${esc(t('dlg.np.folder.ph'))}"></label>
       <label class="f"><span>${esc(t('dlg.np.desc'))}</span><textarea id="p-desc" rows="3"></textarea></label>
+      <label class="f"><span>${esc(t('space.tpl'))}</span><select id="p-spacetpl" onchange="spaceTpl(this.value)"><option value="">${esc(t('space.tpl.none'))}</option>${SPACE_TPLS.map(v => `<option value="${v}">${esc(t('space.tpl.' + v))}</option>`).join('')}</select></label>
       <label class="f"><span>${esc(t('dlg.np.kids'))}</span><textarea id="p-kids" rows="3" placeholder="${esc(t('dlg.np.kids.ph'))}"></textarea><small class="muted">${esc(t('dlg.np.kids.help'))}</small></label>
       <label class="f"><span>${esc(t('dlg.np.tpl'))}</span><select id="p-tpl" onchange="$('p-own').style.display = this.value === 'own' ? '' : 'none'">
         <option value="kanban">${esc(t('dlg.np.tpl.kanban'))}</option><option value="scrum">${esc(t('dlg.np.tpl.scrum'))}</option><option value="own">${esc(t('dlg.np.tpl.own'))}</option></select></label>
       <label class="f" id="p-own" style="display:none"><span>${esc(t('dlg.np.tpl.own.help'))}</span><input type="text" id="p-own-names" placeholder="${esc(t('dlg.np.tpl.own.ph'))}"></label>
       <div class="err" id="d-err"></div><div id="p-done"></div>
       <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`);
+  if (opts.space) { $('p-spacetpl').value = SPACE_TPLS[0]; spaceTpl(SPACE_TPLS[0]); }
 }
 function suggestKey() {
   const name = $('p-name').value, k = $('p-key'), f = $('p-path');

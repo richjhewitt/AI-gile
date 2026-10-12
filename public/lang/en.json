@@ -2222,5 +2222,20 @@
   "dc.via": "Replies go out through {bot}",
   "dc.placeholder": "Reply on Discord",
   "dc.none": "No messages yet.",
-  "dc.nonone": "No Discord chats yet. Message your bot on Discord, or add it to a server."
+  "dc.nonone": "No Discord chats yet. Message your bot on Discord, or add it to a server.",
+  "home.newspace": "🪐 New space",
+  "home.newspace.title": "A project with projects inside it, from a ready list",
+  "dlg.newspace": "New space",
+  "space.tpl": "🪐 Space template (optional)",
+  "space.tpl.none": "None: an ordinary project",
+  "space.tpl.product": "Product",
+  "space.tpl.product.kids": "Website|App|Marketing|Support",
+  "space.tpl.software": "Software team",
+  "space.tpl.software.kids": "Frontend|Backend|Mobile|DevOps",
+  "space.tpl.event": "Event",
+  "space.tpl.event.kids": "Venue|Programme|Promotion|Tickets",
+  "space.tpl.life": "Life",
+  "space.tpl.life.kids": "Home|Health|Money|Work",
+  "space.tpl.business": "Small business",
+  "space.tpl.business.kids": "Sales|Customers|Admin|Ideas"
 }

@@ -24,3 +24,18 @@ def('spacekids', '🪐 a new project with child projects, one per line: parent s
   noErrors(page);
   await page.close();
 }, true);
+
+def('spacetpl', '🪐 New space button: a space template fills the child projects, editable; None leaves it an ordinary project (AIG-440)', async (s, ctx) => {
+  const page = await openPage(ctx, '#/');
+  await page.click('button:has-text("New space")');
+  await page.waitForSelector('#p-spacetpl', { timeout: 8000 });
+  check('New space starts with a template picked and its children filled in', (await page.inputValue('#p-spacetpl')) === 'product' && /Website\nApp/.test(await page.inputValue('#p-kids')));
+  await page.selectOption('#p-spacetpl', 'event');
+  check('another template swaps the list', /Venue/.test(await page.inputValue('#p-kids')));
+  await page.fill('#p-name', 'Gig'); await page.fill('#p-path', '');
+  await page.fill('#p-kids', 'Venue\nTickets');
+  await page.click('#p-acts button.primary');
+  await until(async () => (await s.ok('GET', '/api/projects?all=1')).filter(p => p.parent === 'gig').length === 2, 10000);
+  check('the edited list is what gets made', (await s.ok('GET', '/api/projects?all=1')).filter(p => p.parent === 'gig').map(p => p.name).sort().join() === 'Tickets,Venue');
+  noErrors(page); await page.close();
+}, true);
