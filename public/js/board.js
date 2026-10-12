@@ -230,6 +230,7 @@ function metaHtml(c, show = CARD_SHOW) {
       ${show.priority && c.priority !== 'normal' ? `<span class="pill ${c.priority}">${esc(t('priority.' + c.priority))}</span>` : ''}
       ${show.assignee && c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
       ${c.needsYou && c.status !== 'done' ? `<span class="pill you">${esc(t('card.needsyou'))}</span>` : ''}
+      ${c.crucial ? `<span class="pill crucial" title="${esc(t('saver.chip.title'))}">⭐</span>` : ''}
       ${timedChip(c)}
       ${checkChip(c)}${waitChip(c)}
       ${aiChip(c)}

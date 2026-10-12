@@ -1972,5 +1972,15 @@
  "tm.undone": "↩ Back as it was.",
  "mt.h": "👥 Your main team",
  "mt.sub": "New projects start with this team; each project can change its own in 👥 Team. Every role is optional except the Lead, which runs the team.",
- "mt.pick": "Start from a team…"
+ "mt.pick": "Start from a team…",
+ "srv.saver.hold": "usage saver: the {name} limit is at {pct}% (saver {save}%), so only projects with a ⭐ crucial card run",
+ "srv.saver.say": "💾 Usage saver: the {name} limit is at {pct}% (saver {save}%). Teams, the AI tester and my own AI runs are down tools except for ⭐ crucial cards. Work restarts by itself when usage drops or resets.",
+ "srv.saver.tester": "usage saver is on and no ⭐ crucial test is waiting for the AI tester",
+ "saver.h5": "Usage saver %: 5-hour (blank = off)",
+ "saver.wk": "Usage saver %: weekly (blank = off)",
+ "saver.help": "Below the caps above. Past it, teams, the AI tester and the Lead Scrum Master's AI runs stop except for cards you mark ⭐ crucial. Runs already going finish. Work restarts by itself when usage drops or resets.",
+ "saver.banner": "💾 Usage saver: {pct}% of {name} (saver {save}%). Only ⭐ crucial cards run.",
+ "saver.crucial": "⭐ Crucial",
+ "saver.crucial.title": "A crucial card keeps running while the usage saver is on",
+ "saver.chip.title": "Crucial: still runs while the usage saver is on"
 }

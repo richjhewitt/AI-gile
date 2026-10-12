@@ -15,9 +15,11 @@ const UsageGlance = (() => {
   function paint() {
     const el = document.getElementById('ugBars'), a = document.getElementById('usageNav'); if (!el || !a) return;
     const nt = NoTokens.on, l = d && d.latest, h5 = l ? left(l.h5) : null, wk = l ? left(l.wk) : null;
-    const key = JSON.stringify([h5, wk, l && l.at, nt, d && d.over, i18n.lang, Math.floor(Date.now() / 60e3)]);
+    const sv = d && d.saving, key = JSON.stringify([h5, wk, l && l.at, nt, d && d.over, sv, i18n.lang, Math.floor(Date.now() / 60e3)]);
     if (key === shown) return; shown = key;
     const nothing = h5 == null && wk == null, pc = v => v == null ? '–' : v + '%';
+    const bar2 = document.getElementById('saverBar');   // 💾 usage saver (AIG-550)
+    if (bar2) { bar2.hidden = !sv; bar2.textContent = sv ? t('saver.banner', { pct: sv.pct, name: sv.name, save: sv.save }) : ''; }
     el.innerHTML = (nothing ? '<span class="ug-dash">–</span>' : `<span class="ug-bars">${bar(h5)}${bar(wk)}</span>`)
       + (nt ? '<span class="ug-nt">⛔</span>' : '') + (d && d.over ? '<span class="ug-dot"></span>' : '');
     const tips = [nothing ? t('ug.none') : t('ug.title', { h5: pc(h5), wk: pc(wk), when: ago(l.at) })];

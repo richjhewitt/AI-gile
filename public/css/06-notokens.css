@@ -26,3 +26,8 @@
 .ug-bar.g b { background: #0ca30c; } .ug-bar.a b { background: #fab219; } .ug-bar.r b { background: #d03b3b; }
 .ug-dash { color: var(--muted, #888); }
 .ug-dot { width: 8px; height: 8px; border-radius: 50%; background: #d03b3b; display: inline-block; }
+
+/* 💾 Usage saver (AIG-548..550): a slim banner under the top bar, and the ⭐ crucial toggle and chip. */
+.saver-bar { background: #fab219; color: #1a1a1a; font-size: 13px; padding: 3px 12px; text-align: center; }
+.saver-bar[hidden] { display: none; }
+.crucial-btn.on { background: #fab219; border-color: #fab219; color: #1a1a1a; }
