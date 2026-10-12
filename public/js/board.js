@@ -167,7 +167,7 @@ function columnsHtml(p, pool) {
       const mine = cs.filter(c => c.step === st || (i === 0 && !col.steps.includes(c.step)));
       return `<div class="column step ${wipClass(all, col.wip)}" data-status="${k}" data-step="${esc(st)}"${tint}><h3><span>${esc(label)} · ${esc(st)}</span><span>${i ? mine.length : countHtml(mine.length, all, col.wip)}</span></h3>${mine.map(cardHtml).join('')}</div>`;
     }).join('');
-    return `<div class="column ${wipClass(all, col.wip)}" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, col.wip)} <button class="colbtn" title="${esc(t('board.newin', { col: label }))}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
+    return `<div class="column ${wipClass(all, col.wip)}" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, col.wip)} ${['todo', 'doing', 'review', 'team'].includes(k) && cs.length ? `<button class="colbtn" title="${esc(t('board.pokeall'))}" onclick="pokeColumn('${k}', this)">👉</button> ` : ''}<button class="colbtn" title="${esc(t('board.newin', { col: label }))}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
   }).join('');
 }
 
@@ -260,6 +260,12 @@ function cardHtml(c) {
 const snoozed = c => c.status === 'verify' && c.snoozedUntil && new Date(c.snoozedUntil) > Date.now();
 async function bringBack(id) {
   try { await api('DELETE', `/api/projects/${slug()}/cards/${id}/snooze`); refresh(true); } catch (e) { alert(e.message); }
+}
+// 👉 One poke for every card in a column (AIG-527): one wake for the team, not a run per card.
+async function pokeColumn(status, btn) {
+  if (btn) btn.disabled = true;
+  try { await api('POST', `/api/projects/${slug()}/pokeall`, { status }); refresh(true); } catch (e) { alert(e.message); }
+  if (btn) btn.disabled = false;
 }
 async function poke(id) {
   try { await api('POST', `/api/projects/${slug()}/cards/${id}/poke`); refresh(true); } catch (e) { alert(e.message); }
