@@ -6,13 +6,13 @@ async function callStandup(slugs, sure) {
     suPromptGone();
     const r = await api('POST', '/api/standup', { projects: slugs });
     if (r.failed.length) alert(t('standup.failed', { names: r.failed.join('; ') }));
-    location.hash = '#/standups';
+    location.hash = slugs.length === 1 ? '#/standups/' + encodeURIComponent(slugs[0]) : '#/standups';   // one team: its own report (AIG-539)
   } catch (e) { alert(e.message); }
 }
 // Projects with at least one answer on their newest stand-up card: the board shows a link to the report then.
 const hasStandupAnswers = p => p.cards.some(c => c.standup && c.standup.reports.length);
 const standupButtons = p => `<button onclick="callStandup(['${p.slug}'])" title="${esc(t('standup.team.title'))}">${esc(t('standup.team'))}</button>`
-  + (hasStandupAnswers(p) ? ` <a class="navlink" href="#/standups" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a>` : '');
+  + (hasStandupAnswers(p) ? ` <a class="navlink" href="#/standups/${encodeURIComponent(p.slug)}" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a>` : '');
 
 /* ---------- morning prompt (AIG-136): once a day, per browser ---------- */
 // A small pill in the bottom corner, never a dialog and it never takes focus. It waits while a dialog is open or a
@@ -56,8 +56,11 @@ async function suPicked(e) {
 const noBlocker = t => /^(none|no|nothing|n\/a|-|no blockers?)\b/i.test(String(t || '').trim());
 const suLines = t => esc(t).replace(/\n/g, '<br>');
 function renderStandups() {
-  const d = state.standups;
+  let d = state.standups;
   if (!d) return `<p class="muted">${esc(t('common.loading'))}</p>`;
+  // One team only (AIG-539): #/standups/<project> keeps just that project's blockers, needs and report.
+  const only = state.route && state.route.slug;
+  if (only) d = { ...d, blockers: d.blockers.filter(b => b.project === only), needs: (d.needs || []).filter(b => b.project === only), projects: d.projects.filter(p => p.project === only) };
   const blockers = d.blockers.length ? `<div class="su-blockers"><h3>${esc(t('standup.blockers', { n: d.blockers.length }))}</h3><ul>${d.blockers.map(b =>
     `<li><a href="#/p/${esc(b.project)}/${esc(b.card)}"><b>${esc(b.projectName)}</b> · ${esc(b.name)}</a>: ${suLines(b.text)} <span class="muted">${ago(b.at)}</span></li>`).join('')}</ul></div>` : '';
   // 🙋 Needs you (AIG-191): waiting on you, but the team carries on with other work. Amber, under the red list.
@@ -72,6 +75,6 @@ function renderStandups() {
           ${r.needs ? `<div class="su-amber"><span class="su-k">${esc(t('standup.needs.k'))}</span> ${suLines(r.needs)}</div>` : ''}
           <div class="${noBlocker(r.blockers) ? '' : 'su-red'}"><span class="su-k">${esc(t('standup.blockers.k'))}</span> ${suLines(r.blockers)}</div></div>`).join('')}
     </div>`).join('');
-  return `<div class="su"><div class="toolbar"><h2>${esc(t('standup.report.h'))}</h2><span class="grow"></span><button onclick="callStandup()">${esc(t('standup.all'))}</button></div>
+  return `<div class="su"><div class="toolbar"><h2>${esc(t('standup.report.h'))}</h2><span class="grow"></span>${only ? `<a class="navlink" href="#/standups">${esc(t('standup.report.all'))}</a> <button onclick="callStandup(['${esc(only)}'])">${esc(t('standup.team'))}</button>` : `<button onclick="callStandup()">${esc(t('standup.all'))}</button>`}</div>
     ${blockers}${needs}${projects || `<p class="muted">${t('standup.empty.html')}</p>`}</div>`;
 }

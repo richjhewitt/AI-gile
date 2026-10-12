@@ -209,7 +209,8 @@ function parseRoute() {
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/assumptions') return { view: 'assumptions' };
   if (location.hash === '#/setup') return { view: 'setup' };
-  if (location.hash === '#/standups') return { view: 'standups' };
+  const suRoute = location.hash.match(/^#\/standups(?:\/([^/]+))?$/);   // AIG-539: #/standups/<project> shows one team
+  if (suRoute) return { view: 'standups', ...(suRoute[1] ? { slug: decodeURIComponent(suRoute[1]) } : {}) };
   if (location.hash === '#/glossary') return { view: 'glossary' };
   if (location.hash === '#/pop-night') return { view: 'night' };   // 🌙 night glance pop-out (AIG-209)   // dev words explained (AIG-102)
   const watch = location.hash.match(/^#\/pop-watch\/([^/]+)$/);
