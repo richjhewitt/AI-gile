@@ -163,14 +163,37 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   prof('owner', '--reset');
   check('owner --reset: Setup\'s words again', !/full technical depth/.test(wb()) && (await webP()) === undefined, wb());
 
-  // 2. Setup: the select and the quiz question.
+  // 2. Setup, How agents work with you (AIG-422): one slider per owner scale, the step's line under it; and the quiz question.
   await s.ok('POST', '/api/setup', { prefs: { steps: 1, wizardSeen: true, helpLevel: '2' } });
   const page = await openPage(ctx, '#/setup');
-  await page.waitForSelector('#pf-steps');
-  check('Setup shows 5 steps, 1 picked', (await page.$$eval('#pf-steps option', os => os.length)) === 5 && (await page.inputValue('#pf-steps')) === '1');
-  await page.selectOption('#pf-steps', '4');
+  const slide = (sel, v) => page.$eval(sel, (e, v) => { e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, v);
+  await page.waitForSelector('#sc-steps');
+  check('Setup has a slider per owner scale: steps, chat, go, words, tidy, thrift, push', (await page.$$eval('#leadPrefs input[type=range]', is => is.map(i => i.id.slice(3) + i.max).join())) === 'steps5,chat5,go5,words5,tidy3,thrift5,push5');
+  check('the old switches are gone', !(await page.$('#pf-steps, #pf-plan, #pf-smPush')) && !(await page.$('#leadPrefs select:not(#pf-usageChecks)')));
+  check('steps slider at 1, its line under it', (await page.inputValue('#sc-steps')) === '1' && /One step, say what I should see/.test(await page.textContent('#sc-steps-line')) && (await page.textContent('#sc-steps-n')) === '1/5');
+  await page.$eval('#sc-steps', e => { e.value = 4; e.dispatchEvent(new Event('input', { bubbles: true })); });
+  check('moving it shows the new line before it is saved', /numbered list/.test(await page.textContent('#sc-steps-line')) && (await page.textContent('#sc-steps-n')) === '4/5');
+  await slide('#sc-steps', 4);
   await until(async () => (await prefs()).steps === 4);
-  check('choosing 4 in Setup saves it', (await prefs()).steps === 4);
+  check('letting go saves it', (await prefs()).steps === 4);
+  await slide('#sc-go', 4); await until(async () => (await prefs()).scales.go === 4);
+  check('go 4 is saved and briefed', /build whole cards without asking/.test(brief()), brief());
+  await page.waitForFunction(() => /Whole cards/.test(document.getElementById('sc-go-line').textContent));
+  await slide('#sc-go', 2); await until(async () => (await prefs()).scales.go === 2);
+  await slide('#sc-chat', 3); await until(async () => (await prefs()).chatty === true);
+  check('chat 3 switches the chatty lead on', (await prefs()).scales.chat === 3);
+  await slide('#sc-chat', 2); await until(async () => (await prefs()).chatty === false);
+  await slide('#sc-thrift', 4); await until(async () => (await prefs()).plan === 'careful');
+  check('thrift 4 is the careful plan', (await prefs()).maxRuns === 2, await prefs());
+  check('the detail fields sit under More', !(await page.isVisible('#pf-maxRuns')) && !!(await page.$('#pf-more #pf-maxRuns')));
+  await s.ok('POST', '/api/setup', { prefs: { maxRuns: 7 } }); await page.reload(); await page.waitForSelector('#sc-thrift');
+  check('a mix of your own has no thrift step', /A mix of your own/.test(await page.textContent('#sc-thrift-line')) && (await page.textContent('#sc-thrift-n')) === '–');
+  await sleep(500);
+  await page.focus('#sc-push'); await slide('#sc-push', 4);
+  await until(async () => (await prefs()).smPush === 4);
+  await page.waitForFunction(() => document.getElementById('lead-done').textContent.trim());
+  check('a slider saves and keeps the focus (for the keyboard)', (await prefs()).smPush === 4 && (await page.evaluate(() => document.activeElement.id)) === 'sc-push');
+  await s.ok('POST', '/api/setup', { prefs: { plan: 'normal', smPush: 3 } });
   await page.click('button[onclick="leadQuiz()"]');
   await page.waitForSelector('input[name="quiz-steps"]');
   check('the quiz asks about steps, 3 answers', (await page.locator('input[name="quiz-steps"]').count()) === 3);

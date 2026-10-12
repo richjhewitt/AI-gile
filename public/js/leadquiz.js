@@ -34,30 +34,43 @@ async function saveQuiz() {
   } catch (e) { setErr('quiz-err', e); }
 }
 
-/* ---------- "Your lead" on the Setup page: the questionnaire and each setting as its own switch ---------- */
-// Usage checks, token budget, parallel runs and helpers per model (AIG-353).
+/* ---------- "How agents work with you" on the Setup page (AIG-422): the questionnaire, one slider per owner scale ---------- */
+// The owner scales of docs/PROFILES.md, 1..max, higher = more of the thing named; the chosen step's line shows under each.
+// Saved as setup prefs scales (lib/setup.js keeps the old switches in step). thrift is the spend plan: a custom mix has no step.
+const OWNER_SCALES = [['steps', 5], ['chat', 5], ['go', 5], ['words', 5], ['tidy', 3], ['thrift', 5], ['push', 5]];
+const THRIFT_PLANS = ['nospare', 'generous', 'normal', 'careful', 'fly'];
+const scaleLine = (k, n) => k === 'steps' ? t('steps.' + n) : k === 'push' ? t('sm.push.' + n) : k === 'thrift' ? (n ? t('budget.plan.' + THRIFT_PLANS[n - 1]) : t('scale.thrift.custom')) : t('scale.' + k + '.' + n);
+// One slider: the name, n of max, the step's line, a help line. Shared with the 👥 Team dialog (id prefix, save call).
+function scaleSlider(k, max, n, save, idp = 'sc', help = t('scale.' + k + '.help')) {
+  const v = n || Math.ceil(max / 2);
+  return `<label class="f scale"><span>${esc(t('scale.' + k))} <b class="scale-n" id="${idp}-${k}-n">${n ? n + '/' + max : '–'}</b></span>
+    <input type="range" id="${idp}-${k}" min="1" max="${max}" step="1" value="${v}" aria-valuetext="${esc(scaleLine(k, n))}" oninput="scaleShow('${idp}', '${k}', ${max}, this.value)" onchange="${save}('${k}', Number(this.value))">
+    <small class="scale-line" id="${idp}-${k}-line">${esc(scaleLine(k, n))}</small>${help ? `<small class="muted">${esc(help)}</small>` : ''}</label>`;
+}
+function scaleShow(idp, k, max, n) {
+  n = Number(n); $(idp + '-' + k + '-n').textContent = n + '/' + max; $(idp + '-' + k + '-line').textContent = scaleLine(k, n);
+  $(idp + '-' + k).setAttribute('aria-valuetext', scaleLine(k, n));
+}
+const setScale = (k, n) => setLeadPref({ scales: { [k]: n } });
+// Usage checks, token budget, parallel runs and helpers per model (AIG-353): the detail under the thrift slider, folded under More.
 function budgetHtml(pr) {
   const row = (k, label, min, max) => `<label class="f"><span>${esc(t(label))}</span><input type="number" id="pf-${k}" min="${min}" max="${max}" value="${pr[k] ?? ''}" style="width:5em" onchange="setLeadPref({ ${k}: this.value === '' ? '' : Number(this.value) })"></label>`;
-  const plans = ['fly', 'careful', 'normal', 'generous', 'nospare'];
-  return `<div class="f"><span>${esc(t('budget.plan'))}</span><div class="quiz-opts" id="pf-plan">${plans.map(k => `<label class="quiz-opt"><input type="radio" name="pf-plan" value="${k}" ${pr.plan === k ? 'checked' : ''} onchange="setLeadPref({ plan: '${k}' })"> ${esc(t('budget.plan.' + k))}</label>`).join('')}</div><small class="muted">${esc(t('budget.plan.help'))}</small><small class="muted" id="pf-pace">${esc(t('budget.pace', { pct: pr.pace }))}</small></div>
+  return `<details class="scale-more" id="pf-more" ${ls('aigile.scaleMore') === '1' ? 'open' : ''} ontoggle="try { localStorage.setItem('aigile.scaleMore', this.open ? '1' : '') } catch {}"><summary>${esc(t('scale.more'))}</summary>
     <label class="f"><span>${esc(t('budget.usage'))}</span><select class="setup-theme" id="pf-usageChecks" onchange="setLeadPref({ usageChecks: this.value })">${['off', 'hand', 'auto'].map(v => `<option value="${v}" ${pr.usageChecks === v ? 'selected' : ''}>${esc(t('budget.usage.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('budget.usage.help'))}</small></label>
     ${row('budgetH5', 'budget.h5', 1, 100)}${row('budgetWk', 'budget.wk', 1, 100)}<small class="muted">${esc(t('budget.help'))}</small>
     ${row('maxRuns', 'budget.runs', 0, 50)}<small class="muted">${esc(t('budget.runs.help'))}</small>
-    <span>${esc(t('budget.helpers'))}</span>${['Opus', 'Sonnet', 'Haiku'].map(m => row('helpers' + m, 'budget.helpers.' + m.toLowerCase(), 0, 50)).join('')}<small class="muted">${esc(t('budget.helpers.help'))}</small>`;
+    <span>${esc(t('budget.helpers'))}</span>${['Opus', 'Sonnet', 'Haiku'].map(m => row('helpers' + m, 'budget.helpers.' + m.toLowerCase(), 0, 50)).join('')}<small class="muted">${esc(t('budget.helpers.help'))}</small></details>`;
 }
 function leadPrefsHtml(msg = '') {
-  const pr = leadPrefs();
+  const pr = leadPrefs(), sc = pr.scales || {};
   const sw = k => `<label class="f chk"><span><input type="checkbox" ${pr[k] ? 'checked' : ''} onchange="setLeadPref({ ${k}: this.checked })"> ${esc(t('lead.' + k))}</span><small class="muted">${esc(t('lead.' + k + '.help'))}</small></label>`;
-  return `<span>${esc(t('lead.h'))}</span><div><button type="button" onclick="leadQuiz()">${esc(t('quiz.btn'))}</button></div><small class="muted">${esc(t('quiz.help'))}</small>
-    ${sw('tidyCards')}${sw('chatty')}
-    <label class="f"><span>${esc(t('lead.go'))}</span><select class="setup-theme" onchange="setLeadPref({ go: this.value })">${['', 'ask', 'small'].map(v => `<option value="${v}" ${(pr.go || '') === v ? 'selected' : ''}>${esc(t('lead.go.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.go.help'))}</small></label>
-    <label class="f"><span>${esc(t('lead.steps'))}</span><select class="setup-theme" id="pf-steps" onchange="setLeadPref({ steps: Number(this.value) })">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${pr.steps === n ? 'selected' : ''}>${n} · ${esc(t('steps.' + n))}</option>`).join('')}</select><small class="muted">${esc(t('lead.steps.help'))}</small></label>
+  return `<span>${esc(t('scale.h'))}</span><small class="muted">${esc(t('scale.sub'))}</small><div><button type="button" onclick="leadQuiz()">${esc(t('quiz.btn'))}</button></div><small class="muted">${esc(t('quiz.help'))}</small>
+    ${OWNER_SCALES.map(([k, max]) => scaleSlider(k, max, sc[k], 'setScale') + (k === 'thrift' ? `<small class="muted" id="pf-pace">${esc(t('budget.pace', { pct: pr.pace }))}</small>${budgetHtml(pr)}` : '')).join('')}
     ${sw('smRole')}${sw('watchAll')}${sw('light')}
-    <label class="f"><span>${esc(t('lead.smPush'))}</span><select class="setup-theme" id="pf-smPush" onchange="setLeadPref({ smPush: Number(this.value) })">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${(pr.smPush || 3) === n ? 'selected' : ''}>${n} · ${esc(t('sm.push.' + n))}</option>`).join('')}</select><small class="muted">${esc(t('lead.smPush.help'))}</small></label>
-    ${budgetHtml(pr)}
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;
 }
-const paintLeadPrefs = msg => { if ($('leadPrefs')) $('leadPrefs').innerHTML = leadPrefsHtml(msg); };
+// Painted again after each save; a slider moved with the keyboard keeps the focus.
+const paintLeadPrefs = msg => { const f = document.activeElement && document.activeElement.id; if ($('leadPrefs')) $('leadPrefs').innerHTML = leadPrefsHtml(msg); if (f && $(f)) $(f).focus(); };
 async function setLeadPref(prefs) {
   try { state.setup = await api('POST', '/api/setup', { prefs }); paintLeadPrefs(t('setup.saved.short')); }
   catch (e) { paintLeadPrefs(); setErr('lead-err', e); }

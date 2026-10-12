@@ -154,6 +154,7 @@ One click "Add team" switches those roles on in `p.roles` (adds, keeps what's th
 
 ## 5. UI
 - **⚙️ Setup, "How agents work with you"** (replaces "Your lead"): one slider per owner scale, the chosen step's line shown under it. The quiz stays as a quick way to set them (one new question: steps). Spend plan buttons become the thrift slider; the detail fields stay under "More".
+  Built (AIG-422): `public/js/leadquiz.js` `scaleSlider`, saved as `prefs.scales` on release; push is the Scrum Master's slider; a custom spend mix shows thrift as "a mix of your own".
 - **👥 Team on a project** (moves the roles ticks out of 🎨 Look into its own dialog, opened from the project header and Look): the roles on this project as rows (name, level, model), "Add team" dropdown, "Add role" dropdown, ✏️ edit, ✕ remove. A "This project: how agents work with you" fold for owner overrides.
 - **Profile editor** (dialog): sliders for the agent scales, model and level selects, a "How I work" box, buttons **Save for all projects** / **Save for this project only** / **Reset to template**. A small "brief preview" shows the compiled lines and their rough token count.
 - **🧙 Wizard**: quick mode asks steps (1, 3, 5 as three pictures); advanced mode adds "Pick a starter team" for the first project.

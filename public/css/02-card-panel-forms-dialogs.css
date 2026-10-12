@@ -97,6 +97,12 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-right: 1
 .lead-prefs { margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); }
 .lead-prefs > span { font-size: 12px; color: var(--muted); }
 .lead-prefs label.f.chk { display: block; margin-top: 10px; }
+/* How agents work with you (AIG-422): a slider per scale, the chosen step's line under it */
+label.f.scale { margin-top: 12px; }
+label.f.scale input[type=range] { display: block; width: 100%; max-width: 420px; min-height: 32px; accent-color: var(--accent); }
+.scale-n { color: var(--text); font-weight: 600; margin-left: 4px; }
+.scale-line { display: block; color: var(--text); font-size: 13px; }
+.scale-more { margin: 10px 0 4px; } .scale-more > summary { cursor: pointer; font-size: 13px; min-height: 32px; display: flex; align-items: center; }
 label.f[hidden], .runin-blind[hidden] { display: none; }   /* where teams run (AIG-153) */
 #runInPrefs label.f { margin-top: 10px; } .runin-blind { display: block; margin-top: 8px; }
 .quiz-q { margin: 0 0 14px; }
