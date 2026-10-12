@@ -2091,5 +2091,10 @@
  "sec.auto.hours": {"one":"{count} uur","other":"{count} uur"},
   "nudge.title": "Geef het team een duwtje (gratis; alleen het wekken kost tokens)",
   "nudge.lit": "Lijkt vast te zitten: klik om het team een duwtje te geven",
-  "srv.dmr.goon": "- Ik ga ermee aan de slag: {list} staan in To do"
+  "srv.dmr.goon": "- Ik ga ermee aan de slag: {list} staan in To do",
+  "wn.back": "↩ Terug naar deze",
+  "wn.back.sure": "Terug naar deze versie? Je borden blijven bewaard. Je blijft erop tot je op Terug naar de nieuwste klikt.",
+  "wn.pinned": "Je gebruikt een eerdere versie: {name}",
+  "wn.latest": "Terug naar de nieuwste",
+  "wn.restarting": "Het bord herstart: de pagina laadt over een paar seconden opnieuw."
 }

@@ -1,21 +1,35 @@
 // ✨ What's new (#/whats-new, AIG-562): release notes from public/releases.json, newest first. The lead's release step writes
 // that file with `aigile release-notes <proj>` (new features and bugs fixed, from the done cards). After an update the page
 // shows a small note once, linking here; a new install marks the newest notes as seen without showing it.
+// ↩ Roll back (AIG-563): an earlier build can be chosen here (GET /api/rollback says which); you stay on it until you click
+// Back to the latest.
 const WhatsNew = (() => {
-  const W = { data: null, checked: false };
+  const W = { data: null, rb: null, checked: false };
   const KEY = 'aigile.seenRelease';
   W.load = async () => {
     try { const r = await fetch('releases.json', { cache: 'no-store' }); W.data = r.ok ? await r.json() : []; } catch { W.data = []; }
     if (!Array.isArray(W.data)) W.data = [];
+    try { W.rb = await api('GET', '/api/rollback'); } catch { W.rb = null; }
     return W.data;
   };
   const list = (head, items) => items && items.length
     ? `<h4>${esc(head)}</h4><ul>${items.map(i => `<li><span class="muted">${esc(i.id)}</span> ${esc(i.title)}</li>`).join('')}</ul>` : '';
+  const backBtn = r => W.rb && W.rb.can && r.commit && W.rb.builds.some(b => b.commit === r.commit)
+    ? ` <button class="wn-back" onclick="WhatsNew.goBack('${esc(r.commit)}')">${esc(t('wn.back'))}</button>` : '';
   W.render = () => {
-    const d = W.data || [];
-    if (!d.length) return `<div class="uz"><h2>${esc(t('wn.title'))}</h2><p class="muted">${esc(t('wn.empty'))}</p></div>`;
-    return `<div class="uz"><h2>${esc(t('wn.title'))}</h2>` + d.map(r => `<div class="uz-card wn-rel"><b>${esc(r.title || r.id)}</b> <span class="muted">· ${esc(String(r.at || '').slice(0, 10))}</span>`
+    const d = W.data || [], pin = W.rb && W.rb.pinned;
+    const banner = pin ? `<div class="uz-card wn-pinned"><b>${esc(t('wn.pinned', { name: pin.title || pin.commit.slice(0, 7) }))}</b> <button class="primary" id="wnLatest" onclick="WhatsNew.latest()">${esc(t('wn.latest'))}</button></div>` : '';
+    if (!d.length) return `<div class="uz"><h2>${esc(t('wn.title'))}</h2>${banner}<p class="muted">${esc(t('wn.empty'))}</p></div>`;
+    return `<div class="uz"><h2>${esc(t('wn.title'))}</h2>${banner}` + d.map(r => `<div class="uz-card wn-rel"><b>${esc(r.title || r.id)}</b> <span class="muted">· ${esc(String(r.at || '').slice(0, 10))}</span>${backBtn(r)}`
       + list(t('wn.features'), r.features) + list(t('wn.fixes'), r.fixes) + `</div>`).join('') + `</div>`;
+  };
+  const after = () => setTimeout(() => location.reload(), 5000);
+  W.goBack = async commit => {
+    if (!confirm(t('wn.back.sure'))) return;
+    try { await api('POST', '/api/rollback', { commit }); alert(t('wn.restarting')); after(); } catch (e) { alert(e.message); }
+  };
+  W.latest = async () => {
+    try { await api('POST', '/api/rollback/latest'); alert(t('wn.restarting')); after(); } catch (e) { alert(e.message); }
   };
   // Once per page load: a note after an update (the newest notes differ from the ones seen last).
   W.check = async () => {

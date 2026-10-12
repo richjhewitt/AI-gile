@@ -2091,5 +2091,10 @@
  "sec.auto.hours": {"one":"{count} hour","other":"{count} hours"},
   "nudge.title": "Nudge the team (free; only the wake uses tokens)",
   "nudge.lit": "Seems stuck: click to nudge the team",
-  "srv.dmr.goon": "- On it: {list} are in To do"
+  "srv.dmr.goon": "- On it: {list} are in To do",
+  "wn.back": "↩ Go back to this one",
+  "wn.back.sure": "Go back to this build? Your boards are kept. You stay on it until you click Back to the latest.",
+  "wn.pinned": "You're on an earlier build: {name}",
+  "wn.latest": "Back to the latest",
+  "wn.restarting": "Restarting the board: the page reloads in a few seconds."
 }

@@ -286,7 +286,7 @@ async function refresh(force) {
       sig = JSON.stringify([state.route, Assumptions.data]);
     } else if (state.route.view === 'whatsnew') {
       await WhatsNew.load();
-      sig = JSON.stringify([state.route, WhatsNew.data, i18n.lang]);
+      sig = JSON.stringify([state.route, WhatsNew.data, WhatsNew.rb, i18n.lang]);
     } else if (state.route.view === 'usage') {
       if (!uz.data) { state.lastSig = state.lastBoardSig = null; render(); }   // AIG-558: say "Loading" at once, not after the fetch
       await loadUsagePage(force);   // heavy, so at most every ~15s
