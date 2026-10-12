@@ -2300,5 +2300,9 @@
   "presence.ok": "Showing on Discord",
   "presence.wait": "Looking for the Discord app on this PC…",
   "presence.err.id": "Discord turned that application ID down: check it",
-  "presence.err.discord": "Discord app not found: is it open on this PC?"
+  "presence.err.discord": "Discord app not found: is it open on this PC?",
+ "twitch.btn": "💬 Twitch chat",
+ "twitch.title": "Your Twitch chat in a window that stays on top (Shift+click: change channel)",
+ "twitch.ask": "Which Twitch channel's chat? (the name from twitch.tv/name)",
+ "twitch.bad": "That doesn't look like a Twitch channel name."
 }

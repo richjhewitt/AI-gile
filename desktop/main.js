@@ -39,7 +39,7 @@ async function ensureServer() {
   return false;
 }
 
-let win = null;
+let win = null, twitchWin = null;
 /* ---------- popped-out cards survive a restart (AIG-144) ---------- */
 // Open pop-outs (address and position) are kept in the app's own folder; closing one yourself forgets it.
 const POPS = () => path.join(app.getPath('userData'), 'popouts.json');
@@ -95,6 +95,10 @@ function wire(w) {
       const n = k => Number((String(features).match(new RegExp('(?:^|,)\\s*' + k + '=(\\d+)')) || [])[1]) || undefined;
       return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), width: n('width') || 1200, height: n('height') || 800 } };
     }
+    // Twitch chat (AIG-666): its own window that stays on top, so clicking in AI-gile never hides it; same spot next time.
+    if (frameName === 'aigile-twitch' && /^https:\/\/www\.twitch\.tv\//.test(url)) {
+      return { action: 'allow', overrideBrowserWindowOptions: { autoHideMenuBar: true, icon: appIcon(), width: 380, height: 720, ...(placeFor('#/pop-twitch') || {}), alwaysOnTop: true } };
+    }
     if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop'), ...(url.includes('#/pop') ? placeFor(url) || {} : {}) } };
     shell.openExternal(url); return { action: 'deny' };
   });
@@ -113,7 +117,18 @@ function open(ok) {
   win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', backgroundColor: '#ffffff', ...chrome() });
   wire(win);
   // Popped-out cards (AIG-122) get the same handling as the main window.
-  win.webContents.on('did-create-window', (child, d) => { wire(child); trackPop(child, d.url); });
+  win.webContents.on('did-create-window', (child, d) => {
+    // Twitch chat keeps Twitch's own pages (sign-in too); other links open in the normal browser.
+    if (d.frameName === 'aigile-twitch') {
+      const twitch = u => /^https:\/\/([\w-]+\.)*twitch\.tv\//.test(u);
+      child.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
+      child.webContents.on('will-navigate', (e, url) => { if (!twitch(url)) { e.preventDefault(); shell.openExternal(url); } });
+      const keep = () => { try { if (!child.isDestroyed()) rememberPlace('#/pop-twitch', child.getBounds()); } catch {} };
+      child.on('moved', keep); child.on('resized', keep); child.on('close', keep);
+      return;
+    }
+    wire(child); trackPop(child, d.url);
+  });
   if (ok) { win.loadURL(BASE); reopenPops(); }
   else win.loadURL('data:text/html,' + encodeURIComponent(`<body style="font:15px system-ui;padding:24px"><h2>AI-gile didn't start</h2><p>Couldn't reach ${BASE}. Run <code>start-aigile.bat</code> in ${ROOT.replace(/</g, '')} and reopen this window.</p></body>`));
   // Taskbar badge: the page puts what's waiting on the owner in its title, "(3) AI-gile"; then the icon gets a purple diamond.
@@ -121,7 +136,7 @@ function open(ok) {
   // A missing or broken icon file must never show an error box (AIG-81): keep the current icon instead.
   win.on('page-title-updated', (e, title) => { try { win.setIcon(/^\(\d+\)/.test(title) ? custom('icon-waiting.png') || ICON_WAITING : appIcon()); } catch {} });
   // Closing the main window closes the app, pop-outs too, and remembers them for next time.
-  win.on('close', () => { quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); });
+  win.on('close', () => { quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); if (twitchWin && !twitchWin.isDestroyed()) twitchWin.close(); });
   win.on('closed', () => { win = null; });
 }
 

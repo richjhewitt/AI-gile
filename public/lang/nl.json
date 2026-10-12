@@ -2300,5 +2300,9 @@
   "presence.ok": "Zichtbaar op Discord",
   "presence.wait": "Zoekt de Discord-app op deze pc…",
   "presence.err.id": "Discord weigerde dat applicatie-ID: kijk het na",
-  "presence.err.discord": "Discord-app niet gevonden: staat hij open op deze pc?"
+  "presence.err.discord": "Discord-app niet gevonden: staat hij open op deze pc?",
+ "twitch.btn": "💬 Twitch-chat",
+ "twitch.title": "Je Twitch-chat in een venster dat bovenop blijft (Shift+klik: ander kanaal)",
+ "twitch.ask": "Van welk Twitch-kanaal wil je de chat? (de naam uit twitch.tv/naam)",
+ "twitch.bad": "Dat lijkt geen Twitch-kanaalnaam."
 }

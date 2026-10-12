@@ -184,8 +184,9 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
   check('an old iw (Hebrew) browser starts in he', (await startIn('en-US', null, { navLangs: ['iw'] }, extra)).lang === 'he');
   const us = await startIn('en-US', null, {}, extra);
   const fun = await startIn('eo', null, { timezoneId: 'Europe/London' }, extra);
+  const funCodes = new Set(JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'lang', 'languages.json'), 'utf8')).filter(l => l.fun).map(l => l.code));
   check('a fun language (Esperanto) is never picked by itself', fun.lang === 'en', fun.lang);
-  check('fun languages come last in the list, English second after the device language', fun.names[0] === 'en' && fun.names.slice(-2).sort().join() === 'eo,pirate', fun.names);
+  check('fun languages come last in the list, English second after the device language', fun.names[0] === 'en' && fun.names.includes('eo') && fun.names.includes('pirate') && fun.names.slice(fun.names.findIndex(c => funCodes.has(c))).every(c => funCodes.has(c)), fun.names);
   check('a stubbed language shows its file (marked), its locale and dir', (await startIn('en-US', 'pt-br', {}, extra)).newProject.startsWith('BR '));
   // Only the stubs that don't ship a real file yet (zh-tw does now), so this keeps meaning something as translations arrive (AIG-517).
   const stubOnly = extra.filter(c => !shipped.includes(c)), plain = (await startIn('en-US')).names;
