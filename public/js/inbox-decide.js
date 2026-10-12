@@ -26,14 +26,15 @@ function decideHtml(d, i, n) {
   const body = d.quiz
     ? `<div class="dc-topic">${esc(t('decide.topic', { topic: c.quiz.topic }))} · <span class="muted">${esc(t('decide.qn', { i: d.idx + 1, n: d.n }))}</span></div><div class="dc-sum dc-q">${esc(d.q)}</div>`
     : `<div class="dc-sum">${IB.linkify(decideSummary(d.text), c).replace(/\n/g, '<br>')}</div>`;
-  const reason = d.info || d.acts.some(a => a.ask != null) ? `<textarea id="dcText" rows="2" placeholder="${esc(t('decide.ph'))}"></textarea>` : '';
+  const other = d.quiz ? `<button data-dc="other">${esc(t('quiz.other'))}</button>` : '';
+  const reason = d.quiz ? `<textarea id="dcText" rows="1" hidden placeholder="${esc(t('quiz.other.ph'))}"></textarea>` : d.info || d.acts.some(a => a.ask != null) ? `<textarea id="dcText" rows="2" placeholder="${esc(t('decide.ph'))}"></textarea>` : '';
   return `<div class="fl-head"><b>${esc(t('decide.h', { i: i + 1, n }))}</b><span class="spacer"></span>
       <button data-dc="prev" ${n < 2 ? 'disabled' : ''} title="${esc(t('decide.back'))}">‹</button><button data-dc="next" ${n < 2 ? 'disabled' : ''} title="${esc(t('decide.skip'))}">${esc(t('decide.skip'))}</button>
       <button data-dc="exit">${esc(t('decide.exit'))}</button></div>
     <div class="ib-top"><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${checkChip(c)}</div>
     <div class="ib-title"><a href="#/p/${esc(c.project)}/${esc(c.id)}">${esc(c.title)}</a></div>
     ${body}
-    <div class="dc-btns">${btns}</div>${reason}
+    <div class="dc-btns">${btns}${other}</div>${reason}
     <div class="ib-err" id="dcErr"></div>
     <div class="actions"><button data-dc="open">${esc(t('decide.open'))}</button><span class="ib-hint">${esc(t('decide.keys'))}</span></div>`;
 }
@@ -42,8 +43,22 @@ function quizPanel(p, c) {
   const q = c.quiz;
   if (!q || q.done) return '';
   return `<div class="qz"><b>${esc(t('card.quiz.h', { topic: q.topic }))}</b> <span class="muted">${esc(t('card.quiz.sub', { n: q.items.length }))}</span>
-    ${q.items.map((x, i) => `<div class="qz-item"><div>${i + 1}. ${esc(x.q)}</div><div class="msg-acts">${x.options.map(o => `<button class="qz-opt ${x.answer === o ? 'good' : ''}" data-card="${esc(p.slug + '/' + c.id)}" data-i="${i}" data-a="${esc(o)}">${x.answer === o ? '✓ ' : ''}${esc(o)}</button>`).join('')}</div></div>`).join('')}</div>`;
+    ${q.items.map((x, i) => `<div class="qz-item"><div>${i + 1}. ${esc(x.q)}</div><div class="msg-acts">${x.options.map(o => `<button class="qz-opt ${x.answer === o ? 'good' : ''}" data-card="${esc(p.slug + '/' + c.id)}" data-i="${i}" data-a="${esc(o)}">${x.answer === o ? '✓ ' : ''}${esc(o)}</button>`).join('')}<button class="qz-other ${x.typed ? 'good' : ''}" data-i="${i}">${x.typed ? '✓ ' : ''}${esc(t('quiz.other'))}</button></div>
+      ${x.typed ? `<div class="muted">✏️ ${esc(x.answer)}</div>` : ''}<div class="qz-box" hidden><input class="qz-in" maxlength="200" placeholder="${esc(t('quiz.other.ph'))}" data-card="${esc(p.slug + '/' + c.id)}" data-i="${i}"></div></div>`).join('')}</div>`;
 }
+document.addEventListener('click', e => {
+  const o = e.target.closest('.qz-other'); if (!o) return;
+  e.preventDefault(); e.stopPropagation();
+  const box = o.closest('.qz-item').querySelector('.qz-box'); box.hidden = !box.hidden;
+  if (!box.hidden) box.querySelector('input').focus();
+}, true);
+document.addEventListener('keydown', async e => {
+  const inp = e.target.closest && e.target.closest('.qz-in'); if (!inp || e.key !== 'Enter' || e.isComposing) return;
+  e.preventDefault(); e.stopPropagation();
+  const v = inp.value.trim(); if (!v) return;
+  const [s, id] = inp.dataset.card.split('/');
+  try { await api('POST', `/api/projects/${s}/cards/${id}/quiz/answer`, { index: +inp.dataset.i, answer: v, typed: true }); refresh(true); } catch (err) { alert(err.message); }
+}, true);
 document.addEventListener('click', async e => {
   const b = e.target.closest('.qz-opt'); if (!b) return;
   e.preventDefault(); e.stopPropagation();
@@ -60,6 +75,7 @@ document.addEventListener('click', async e => {
     const list = decideList(shownNow()), cur = list[IB.decide];
     if (act === 'exit' || !cur) { IB.decide = -1; IB.paintPage(); return; }
     if (act === 'next' || act === 'prev') { IB.decide = (IB.decide + (act === 'next' ? 1 : -1) + list.length) % list.length; IB.paintPage(); return; }
+    if (act === 'other') { const ta = el('dcText'); if (ta) { ta.hidden = false; ta.focus(); } return; }
     if (act === 'open') { location.hash = `#/p/${cur.c.project}/${cur.c.id}`; return; }
     const a = cur.acts[n]; if (!a || busy) return;
     const ta = el('dcText');

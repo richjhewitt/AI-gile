@@ -79,5 +79,37 @@ def('decide', '⚡ Decide pile: keys answer / skip / open; a 3-question Topic po
   await sleep(800);
   const c2 = await getCard(s, 'alpha', q2.id);
   check('a topic is answerable on the card too, and posts one comment', c2.comments.filter(m => /^Topic: Look — Q1: Yes, Q2: No$/.test(m.text)).length === 1 && !c2.needsYou, c2.comments.at(-1));
+
+  // ✏️ Other… on the card (AIG-445): a typed answer is that question's answer.
+  const q3 = await mkCard(s, 'alpha', 'Third topic');
+  await s.ok('POST', `/api/projects/alpha/cards/${q3.id}/quiz`, { author: 'Lead', topic: 'Mix', items: [{ q: 'A?', options: 'Yes,No' }, { q: 'B?', options: 'Yes,No' }] });
+  await page.goto(BASE + `/#/p/alpha/${q3.id}`);
+  await page.waitForSelector('.qz .qz-other');
+  await page.locator('.qz .qz-item').nth(0).locator('.qz-other').click();
+  await page.locator('.qz .qz-item').nth(0).locator('.qz-in').fill('Only on Tuesdays');
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(() => document.querySelector('.qz .qz-other.good'));
+  let c3 = await getCard(s, 'alpha', q3.id);
+  check('Other box answer is stored as that question\'s answer, marked typed; topic stays open, shown ticked', c3.quiz.items[0].answer === 'Only on Tuesdays' && c3.quiz.items[0].typed && !c3.quiz.done && c3.needsYou, c3.quiz.items);
+  await page.locator('.qz .qz-item').nth(1).locator('.qz-opt', { hasText: 'No' }).click();
+  await sleep(800);
+  c3 = await getCard(s, 'alpha', q3.id);
+  check('Other + button closes the topic with one comment', c3.comments.filter(m => m.text === 'Topic: Mix — Q1: Only on Tuesdays, Q2: No').length === 1 && !c3.needsYou, c3.comments.at(-1));
+
+  // Mixed: 2 by button, then a normal reply fills the rest: one combined comment, one wake.
+  const q4 = await mkCard(s, 'alpha', 'Fourth topic');
+  await s.ok('POST', `/api/projects/alpha/cards/${q4.id}/quiz`, { author: 'Lead', topic: 'Four', items: ['1', '2', '3', '4'].map(n => ({ q: `Q${n}?`, options: 'Yes,No' })) });
+  await s.ok('POST', `/api/projects/alpha/cards/${q4.id}/quiz/answer`, { index: 0, answer: 'Yes' });
+  await s.ok('POST', `/api/projects/alpha/cards/${q4.id}/quiz/answer`, { index: 1, answer: 'No' });
+  await idle();
+  await page.goto(BASE + `/#/p/alpha/${q4.id}`);
+  await page.waitForSelector('.qz .qz-opt.good');
+  check('partial button answers are still ticked after a revisit', await page.locator('.qz .qz-opt.good').count() === 2);
+  await s.ok('POST', `/api/projects/alpha/cards/${q4.id}/comments`, { author: 'Owner', text: 'Go with blue, and skip the rest' });
+  await sleep(1500);
+  const c4 = await getCard(s, 'alpha', q4.id);
+  const tp = c4.comments.filter(m => /^Topic:/.test(m.text));
+  check('a reply closes the open topic: "Q1: Yes, Q2: No, Q3/Q4: see reply", answers stored typed', c4.quiz.done && !c4.needsYou && tp.length === 1 && tp[0].text === 'Topic: Four — Q1: Yes, Q2: No, Q3/Q4: see reply' && c4.quiz.items[2].answer === 'Go with blue, and skip the rest' && c4.quiz.items[3].typed, [tp, c4.quiz.items]);
+  check('the reply itself is kept as a comment, and the team was woken once (one dispatcher entry)', c4.comments.some(m => m.text === 'Go with blue, and skip the rest') && (await s.ok('GET', '/api/projects/alpha')).log.filter(l => l.author === 'Dispatcher' && l.text.startsWith(q4.id + ' ')).length === 1, 'dispatcher log');
   noErrors(page);
 }, true);
