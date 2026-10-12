@@ -9,7 +9,7 @@ import { check, sleep, until, tmp, mkProject, mkCard, getCard, say, openPage, no
 // sits silent; anything else is noted and ends at once.
 const dir = tmp('scrum'), calls = path.join(dir, 'calls.txt'), stub = path.join(dir, 'sm-stub.bat'), local = path.join(dir, 'local.json');
 fs.writeFileSync(path.join(dir, 'sm-stub.js'), `const fs = require('fs'), a = process.argv.slice(2), m = a[a.indexOf('--model') + 1] || '-', cwd = process.cwd();
-fs.appendFileSync(${JSON.stringify(calls)}, m + ' ' + cwd + '\\n');
+fs.appendFileSync(${JSON.stringify(calls)}, m + ' ' + cwd + '\\n'); fs.appendFileSync(${JSON.stringify(calls + '.p')}, a[a.indexOf('-p') + 1] + '\\n');
 if (/scrummaster/i.test(cwd)) { console.log('{"type":"system"}'); require('child_process').spawnSync(process.execPath, [${JSON.stringify(path.join(ROOT, 'aigile.js'))}, 'watchsay', 'Stub reply from ' + m], { stdio: 'inherit' }); }
 else if (/hang/i.test(cwd)) setTimeout(() => {}, 25000);`);
 fs.writeFileSync(stub, `@echo off\r\nnode "${path.join(dir, 'sm-stub.js')}" %*\r\nexit /b 0\r\n`);
@@ -30,6 +30,27 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   check('the stub answers in its chat', !!(await until(async () => (await chat()).some(m => m.text === 'Stub reply from opus'), 15000)), await chat());
   check('the run is on Opus, in data/scrummaster', callList().some(l => /^opus .*scrummaster/i.test(l)), callList());
   check('its folder has the brief as CLAUDE.md', /MAY NOT write code/.test(fs.readFileSync(path.join(s.data, 'scrummaster', 'CLAUDE.md'), 'utf8')));
+  await until(async () => !(await s.ok('GET', '/api/chats/_watchman')).busy, 10000);
+
+  // Attaching in its chat (AIG-474): attach, paste and drop add the file; the sent message shows it and the agent's prompt has its path.
+  const ap = await openPage(ctx, '#/');
+  await ap.waitForSelector('#dmRail [data-dms]'); await ap.click('#dmRail [data-dms]'); await ap.click('#dmPanel [data-dm="_watchman"]');
+  await ap.waitForSelector('#dmPanel .dm-compose .att');
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
+  await ap.setInputFiles('#dmPanel .att input[type=file]', { name: 'shot.png', mimeType: 'image/png', buffer: png });
+  await ap.waitForSelector('#dmPanel .att-chip');
+  await ap.evaluate(() => { const dt = new DataTransfer(); dt.items.add(new File(['x'], 'dropped.txt', { type: 'text/plain' })); document.getElementById('dmText').dispatchEvent(new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true })); });
+  await ap.evaluate(() => { const dt = new DataTransfer(); dt.items.add(new File(['y'], 'image.png', { type: 'image/png' })); document.getElementById('dmText').dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true })); });
+  await ap.waitForFunction(() => document.querySelectorAll('#dmPanel .att-chip').length === 3);
+  check('attach, drop and paste each add a file to the chat', true);
+  await ap.fill('#dmText', 'See my screenshot');
+  await ap.press('#dmText', 'Enter');
+  await ap.waitForSelector('#dmList .dm-msg.mine .att-shown img');
+  const sent = (await chat()).find(m => m.text === 'See my screenshot');
+  check('the sent message keeps all three files and shows the picture', sent && sent.attachments.length === 3 && await ap.locator('#dmList .dm-msg.mine .att-shown a').count() === 3, sent);
+  check('the saved image can be fetched', (await fetch(`${s.base}/api/projects/_watchman/attachments/${encodeURIComponent(sent.attachments[0].id)}`)).ok);
+  const prompts = () => { try { return fs.readFileSync(calls + '.p', 'utf8'); } catch { return ''; } };
+  check('the agent prompt carries the saved file paths', !!(await until(async () => sent.attachments.every(a => prompts().includes(a.path)), 10000)), prompts());
   await until(async () => !(await s.ok('GET', '/api/chats/_watchman')).busy, 10000);
 
   // 💡 The idea box can send to the 🧭 Lead Scrum Master, top of the list (AIG-388): it lands in its chat and starts a run.
