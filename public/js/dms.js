@@ -163,31 +163,20 @@ const Dms = (() => {
     paintSm();
   }
 
-  // 🧭 Launch Lead Scrum Master (AIG-359): on by day too, in VS Code (suggested), a terminal window or the background.
+  // 🧭 Lead Scrum Master (AIG-359, AIG-476): in the team it is always on; here a switch for the 🌙 night watch (the same
+  // setting as "Watchman ticks every project" in Setup) and the diligence scale. Not in the team: a link to add it.
   function paintSm() {
     const bar = el('smBar'), sm = thread && thread.sm; if (!bar || !sm) return;
     // The diligence scale (AIG-441): 1..5, on its own select; the same one is in Setup.
     const pick = `<select class="setup-theme" id="smPush" title="${esc(t('sm.push.title'))}" onchange="Dms.smPush(this.value)">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${sm.push === n ? 'selected' : ''}>${n} · ${esc(t('sm.push.' + n))}</option>`).join('')}</select>`;
     const html = sm.on
-      ? `<b>${esc(t('sm.on.push', { n: sm.everyMin, name: t('sm.push.' + sm.push) }))}</b> <span class="muted">${esc(t('sm.on', { where: t('sm.where.' + sm.where + '.short'), runs: sm.runsToday, cap: sm.cap }))}</span> ${pick} <button onclick="Dms.smStop()">${esc(t('sm.stop'))}</button>`
-      : `<button class="primary ai-only" id="smLaunch" onclick="Dms.smLaunch()" title="${esc(t('sm.launch.title'))}">${esc(t('sm.launch'))}</button> <span class="muted">${esc(t('sm.off'))}</span> ${pick}`;
+      ? `<b>${esc(t('sm.on.push', { n: sm.everyMin, name: t('sm.push.' + sm.push) }))}</b> <span class="muted">${esc(t('sm.runs', { runs: sm.runsToday, cap: sm.cap }))}</span> ${pick}
+        <button id="smNight" class="${sm.night ? 'primary' : ''}" onclick="Dms.smNight(${!sm.night})" title="${esc(t('sm.night.title'))}">${esc(t(sm.night ? 'sm.night.on' : 'sm.night.off'))}</button> <span class="muted">${esc(t('sm.night.what'))}</span>`
+      : `<span class="muted" id="smOut">${esc(t('sm.out'))}</span> <a href="#/setup" id="smAdd">${esc(t('sm.out.add'))}</a>`;
     if (bar.dataset.sig !== html) { bar.dataset.sig = html; bar.innerHTML = html; }
   }
-  function smLaunch() {
-    const opt = (v, on) => `<label class="chk"><input type="radio" name="smWhere" value="${v}" ${on ? 'checked' : ''}> ${esc(t('sm.where.' + v))}</label>`;
-    openDialog(`<h2>${esc(t('sm.launch'))}</h2><p class="muted">${esc(t('sm.launch.title'))}</p>
-      <fieldset class="f"><legend>${esc(t('sm.where'))}</legend>${opt('vscode', true)}${opt('terminal')}${opt('background')}</fieldset>
-      <div class="err" id="sm-err"></div>
-      <div class="actions"><button class="primary" id="smGo" onclick="Dms.smGo()">${esc(t('sm.go'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
-    const ov = document.querySelector('#dialog .overlay'); if (ov) ov.style.zIndex = '30';   // over the DM panel it was opened from
-  }
-  async function smGo() {
-    const w = (document.querySelector('input[name="smWhere"]:checked') || {}).value || 'vscode';
-    try { await api('POST', '/api/scrummaster/launch', { where: w }); closeDialog(); await loadThread(); }
-    catch (e) { el('sm-err').textContent = e.message || String(e); }
-  }
+  async function smNight(on) { try { await api('POST', '/api/setup', { prefs: { watchAll: !!on } }); await loadThread(); } catch (e) { el('dmErr').textContent = e.message || String(e); } }
   async function smPush(v) { try { await api('POST', '/api/scrummaster/push', { level: +v }); await loadThread(); } catch (e) { el('dmErr').textContent = e.message || String(e); } }
-  async function smStop() { try { await api('POST', '/api/scrummaster/stop'); await loadThread(); } catch (e) { el('dmErr').textContent = e.message || String(e); } }
 
   function show(slug) {
     open = slug; listOpen = true;
@@ -300,5 +289,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   setInterval(() => { if (!document.hidden) { loadRail(); if (open) loadThread(); } }, 3000);
   loadRail();
-  return { follow, show, back, close, send, ask, aim, reply, reload, smLaunch, smGo, smStop, smPush };
+  return { follow, show, back, close, send, ask, aim, reply, reload, smNight, smPush };
 })();

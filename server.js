@@ -111,5 +111,5 @@ require('./lib/timed').start();   // timed cards come back (AIG-385)
 require('./lib/join').applyInvite().catch(() => {});   // a friend's first start: invite.json from the zip (AIG-347)
 if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();
 require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anything while you are going quiet (AIG-199)
-require('./lib/scrummaster').startScrumMaster();   // 🧭 day rounds, only once launched (AIG-359)
+require('./lib/scrummaster').startScrumMaster();   // 🧭 day rounds, only when it is in the team (AIG-359)
 require('./lib/notokens').start();   // ⛔ No Token Mode turns itself on at the usage limit (AIG-338)

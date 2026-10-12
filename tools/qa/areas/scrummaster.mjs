@@ -1,6 +1,6 @@
 // QA area: scrummaster (AIG-359): the 🧭 Lead Scrum Master by day: its chat answers a daytime message (Opus, in its own
 // folder), sorts a 💡 decide-later idea into the right project by rules, wakes a team asleep with To do, keeps to the daily
-// AI-run cap and No Token Mode, the 🧭 Launch button and its where-it-runs choice, and the hang watchdog restarts a silent run.
+// AI-run cap and No Token Mode, the role in the team (no launching) with its 🌙 night watch switch (AIG-476), and the hang watchdog restarts a silent run.
 import fs from 'node:fs';
 import path from 'node:path';
 import { check, sleep, until, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def, ROOT } from '../lib.mjs';
@@ -16,7 +16,7 @@ fs.writeFileSync(stub, `@echo off\r\nnode "${path.join(dir, 'sm-stub.js')}" %*\r
 fs.writeFileSync(local, JSON.stringify({ owner: 'Owner', agent: { command: 'x', notesFile: 'CLAUDE.local.md', settingsFile: '.claude/settings.local.json' }, scrumMaster: { aiRunsPerDay: 3, digestAt: '23:59' } }));
 const callList = () => { try { return fs.readFileSync(calls, 'utf8').split('\n').filter(Boolean); } catch { return []; } };
 
-def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-later ideas by rules, wakes teams with To do, daily AI-run cap, No Token Mode, Launch choice, hang watchdog (AIG-359)', async (s, ctx) => {
+def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-later ideas by rules, wakes teams with To do, daily AI-run cap, No Token Mode, team role + night watch switch, hang watchdog (AIG-359)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP', { path: tmp('alpha') });
   await mkProject(s, 'Beta', 'BET', { path: tmp('beta') });
   await mkProject(s, 'Gamma', 'GAM', { path: tmp('gamma') });
@@ -76,10 +76,11 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   const vague = await mkCard(s, 'alpha', '💬 something vague to think about', { type: 'task', status: 'backlog', createdBy: 'Ideas', quick: true, needsYou: true });
   await mkCard(s, 'alpha', 'Real work', { status: 'todo' });
   const before = callList().length;
-  check('a round does nothing before launch', !(await s.ok('POST', '/api/scrummaster/round')).on);
-  const st = await s.ok('POST', '/api/scrummaster/launch', { where: 'background' });
-  check('launch in the background turns it on', st.on && st.where === 'background', st);
-  check('a bad place is refused', (await s.api('POST', '/api/scrummaster/launch', { where: 'moon' })).status === 400);
+  check('a round does nothing while it is not in the team', !(await s.ok('POST', '/api/scrummaster/round')).on);
+  const role = on => s.ok('POST', '/api/setup', { prefs: { smRole: on } });
+  check('not in the team by default, and the old launch route is gone', (await s.ok('GET', '/api/scrummaster')).on === false && (await s.api('POST', '/api/scrummaster/launch', {})).status === 404);
+  await role(true);
+  check('putting it in the team turns it on, with no launch step', (await s.ok('GET', '/api/scrummaster')).on === true);
   await s.ok('POST', '/api/scrummaster/round');
   const beta = (await s.ok('GET', '/api/projects/beta')).cards, alpha = (await s.ok('GET', '/api/projects/alpha')).cards;
   const moved = beta.find(c => c.title === idea.title);
@@ -108,21 +109,26 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   await s.ok('POST', '/api/scrummaster/round'); await sleep(1500);
   check('No Token Mode: the round starts nothing', callList().length === b2, callList().slice(b2));
   await s.ok('POST', '/api/notokens', { on: false });
-  await s.ok('POST', '/api/scrummaster/stop');
+  await role(false);
 
-  // 🧭 Launch on the page: VS Code is suggested; the bar then says it is on.
+  // 🧭 On the page (AIG-476): not in the team it says so with a link; in the team it is on, with a 🌙 night watch switch.
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('#dmRail [data-dms]');
-  await page.click('#dmRail [data-dms]');
-  await page.click('#dmPanel [data-dm="_watchman"]');
-  await page.waitForSelector('#smLaunch');
+  await page.click('#dmRail [data-dms]'); await page.click('#dmPanel [data-dm="_watchman"]');
+  await page.waitForSelector('#smAdd');
   check('the chat head shows its name', /Lead Scrum Master/.test(await page.textContent('#dmPanel .dm-head')));
-  await page.click('#smLaunch');
-  check('the dialog suggests VS Code', await page.locator('#dialog input[name="smWhere"][value="vscode"]').isChecked() && await page.locator('#dialog input[name="smWhere"]').count() === 3);
-  await page.click('#smGo');
-  await page.waitForFunction(() => /VS Code/.test((document.getElementById('smBar') || {}).textContent || ''), null, { timeout: 8000 });
-  const wlog = fs.readFileSync(path.join(s.data, 'logs', '_scrummaster.log'), 'utf8');
-  check('it opened VS Code on its folder', /opened \(vscode\): code ".*scrummaster"/.test(wlog), wlog);
+  check('not in the team: it says so, with a link to Setup and no Launch button', /not in your team/.test(await page.textContent('#smBar')) && (await page.getAttribute('#smAdd', 'href')) === '#/setup' && await page.locator('#smLaunch').count() === 0);
+  await role(true);
+  await page.reload(); await page.waitForSelector('#dmRail [data-dms]'); await page.click('#dmRail [data-dms]'); await page.click('#dmPanel [data-dm="_watchman"]');
+  await page.waitForSelector('#smNight', { timeout: 8000 });
+  check('in the team: no Launch button, and a night watch switch showing its state', await page.locator('#smLaunch').count() === 0 && /Night watch: on/.test(await page.textContent('#smNight')), await page.textContent('#smBar'));
+  await page.click('#smNight');
+  await page.waitForFunction(() => /Night watch: off/.test((document.getElementById('smNight') || {}).textContent || ''), null, { timeout: 8000 });
+  check('the switch changes the one night watch setting (Setup: Watchman ticks every project)', (await s.ok('GET', '/api/setup')).prefs.watchAll === false && (await s.ok('GET', '/api/scrummaster')).night === false);
+  await s.ok('POST', '/api/setup', { prefs: { watchAll: true } });
+  await page.reload(); await page.waitForSelector('#dmRail [data-dms]'); await page.click('#dmRail [data-dms]'); await page.click('#dmPanel [data-dm="_watchman"]');
+  await page.waitForFunction(() => /Night watch: on/.test((document.getElementById('smNight') || {}).textContent || ''), null, { timeout: 8000 });
+  check('a change made in Setup shows on the switch', true);
   // 🎚️ The diligence scale (AIG-441) in the chat header: "On: checking every N min (Steady)", changed with the select.
   check('the header says it is on, every 10 min, Steady', /On: checking every 10 min \(.*Steady\)/.test(await page.textContent('#smBar')), await page.textContent('#smBar'));
   await page.selectOption('#smPush', '5');
@@ -130,9 +136,8 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   check('level 5 is saved: every 2 min, Crack the whip', (await s.ok('GET', '/api/scrummaster')).push === 5 && /Crack the whip/.test(await page.textContent('#smBar')));
   await page.selectOption('#smPush', '3');
   await page.waitForFunction(() => /every 10 min/.test((document.getElementById('smBar') || {}).textContent || ''), null, { timeout: 8000 });
-  await page.click('#smBar button');
-  await page.waitForSelector('#smLaunch');
-  check('Stop turns it off', !(await s.ok('GET', '/api/scrummaster')).on);
+  await role(false);
+  check('taking it out of the team turns it off', !(await s.ok('GET', '/api/scrummaster')).on);
   noErrors(page);
 
   // The scale changes the interval and the thresholds; on runs day and night, off stops (AIG-441).
@@ -150,7 +155,7 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   const flagged = async () => (await s.ok('GET', '/api/scrummaster')).flagged;
   await s.ok('POST', '/api/setup', { prefs: { smPush: 1 } });
   check('off: a round does nothing (as today)', (await s.ok('POST', '/api/scrummaster/round')).on === false && await flagged() === 0);
-  await s.ok('POST', '/api/scrummaster/launch', { where: 'background' });
+  await role(true);
   await sleep(2500);   // its own first round
   const base = await flagged();
   check('on at level 1: nothing is stuck for a day', await flagged() === base, base);
@@ -202,7 +207,7 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   await s.ok('POST', '/api/notokens', { on: false });
 
   // Off stops it again.
-  await s.ok('POST', '/api/scrummaster/stop');
+  await role(false);
   const se = await mkCard(s, 'gamma', 'Stuck after off', { status: 'doing' });
   age('gamma', j => { j.cards.find(x => x.id === se.id).updated = hoursAgo(9); });
   const fl = await flagged();
