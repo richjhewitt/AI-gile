@@ -4,9 +4,9 @@
 // fields and prefs), once, when you leave screen 4. A guessed agent program is only a suggestion until "Use this" (AIG-334).
 // Team style = answers to the lead quiz questions (QUIZ in leadquiz.js).
 const WZ_STYLES = {
-  careful: { tidy: 'yes', chatty: 'quiet', go: 'ask', night: 'quiet', words: 'plain' },
-  balanced: { tidy: 'yes', chatty: 'chatty', go: 'small', night: 'quiet', words: 'plain' },
-  fast: { tidy: 'no', chatty: 'quiet', go: 'small', night: 'work', words: 'dev' },
+  careful: { tidy: 'yes', chatty: 'quiet', go: 'ask', night: 'quiet', words: 'plain', steps: 'one' },
+  balanced: { tidy: 'yes', chatty: 'chatty', go: 'small', night: 'quiet', words: 'plain', steps: 'stage' },
+  fast: { tidy: 'no', chatty: 'quiet', go: 'small', night: 'work', words: 'dev', steps: 'all' },
 };
 const WZ_PLANS = ['fly', 'careful', 'normal', 'generous', 'nospare'];
 const WZ_STEPS = 5;
@@ -87,7 +87,7 @@ async function wzSave() {
   if (WZ.style) Object.assign(body.prefs, wzPrefsOf(WZ.style));
   if (WZ.plan) body.prefs.plan = WZ.plan;
   if (WZ.help) body.prefs.helpLevel = WZ.help;
-  const explain = body.prefs.explain; delete body.prefs.explain;
+  const explain = body.prefs.explain;   // also sent: the server keeps it as the words scale (AIG-418)
   try {
     // Blank name or program with a name already set: the server keeps the old ones (it only takes keys that are sent).
     state.setup = await api('POST', '/api/setup', body);
