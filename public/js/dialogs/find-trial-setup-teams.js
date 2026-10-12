@@ -89,6 +89,7 @@ function renderSetup() {
     <div class="f lead-prefs" id="mainTeamBox">${mainTeamBoxHtml()}</div>
     <div class="f lead-prefs" id="runInPrefs">${runInHtml()}</div>
     <div class="f" id="serversBox">${(srvDraft = null, serversHtml())}</div>
+    <div class="f" id="secretsBox">${(SEC.list = null, secretsBoxHtml())}</div>
     <div class="f" id="discordBox">${(queueMicrotask(DiscordSetup.load), DiscordSetup.html())}</div>
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>

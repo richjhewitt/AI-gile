@@ -148,7 +148,7 @@ function renderCard(p, c) {
     <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2>
     <div class="meta">${metaHtml(c)}</div>
-    ${checklistUi(p, c)}${waitsUi(p, c)}
+    ${checklistUi(p, c)}${waitsUi(p, c)}${secretsUi(p, c)}
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
       ${Share.cardComments(p, c)}

@@ -214,3 +214,6 @@ textarea.grow { max-height: 85vh; resize: vertical; }
 .xt-roles, .xt-cards, .xt-done { margin: 4px 0 10px; padding-inline-start: 20px; font-size: 13px; } .xt-roles li { margin: 2px 0; }
 .xt-est { margin: 8px 0; padding: 8px 10px; border-radius: 8px; background: var(--col, #8881); font-size: 13px; } .xt-est small { display: block; }
 .xt input[type=range] { width: 100%; min-height: 32px; }
+.sec-box { margin: 10px 0; padding: 8px 10px; border: 1px solid var(--line, #8883); border-radius: 8px; } .sec-ask { margin: 6px 0; }
+.sec-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 2px; } .sec-row input { flex: 1 1 200px; min-height: 40px; } .sec-row button { min-height: 40px; }
+.sec-table { overflow-x: auto; max-width: 100%; } .sec-table table { border-collapse: collapse; font-size: 13px; } .sec-table th, .sec-table td { text-align: start; padding: 4px 8px; vertical-align: top; } .sec-table button { min-height: 36px; }

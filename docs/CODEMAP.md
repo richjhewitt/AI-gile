@@ -26,6 +26,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/dm.js`, `relay/relay.js`: private DMs and their relay; `lib/share.js`: sharing a project with a friend over them; `lib/ask.js`: ask a mate (a friend's question for my AI, AIG-210)
 - `lib/pack.js`: the AIGILE pack (AIG-357, `docs/HANDOFF.md`): a card for an outside chat AI and its reply pasted back
 - `lib/expertteams.js` + `profiles/expert-teams.json` (AIG-577..579): premade expert teams (8 templates, roles by profile id with model and job, starter cards, done bullets); usage estimate baseline from `_runs.jsonl`; `GET /api/expert-teams`, `POST /api/projects/:slug/expert-team`; page `js/dialogs/expert-teams.js` (in the 👥 Team dialog); QA `experts`
+- `lib/secrets.js` + `lib/cli/cmds-secrets.js` + page `js/dialogs/secrets.js` (AIG-585..587): 🔑 secrets an agent asks for on a card (`aigile secret ask|run`), pasted in a masked box, DPAPI-encrypted (AES key file with `AIGILE_SECRETS_DIR`) in `data/secrets/`, handed over as a one-use grant file, output masked; Setup > Secrets lists names only; QA `secrets`
 - `lib/limits.js`, `lib/usage.js`, `lib/usagecheck.js`: plan usage, tokens, check usage now
 - `lib/trial.js`, `tools/trial/pretend-team.js`: 🧪 try it as a new user
 - `lib/pretend.js`: 🧪 pretend friend (AIG-322): local relay + second board "Davy" (nl-BE) on free ports, invite swapped, stop keeps or wipes his data
