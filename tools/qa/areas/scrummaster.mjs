@@ -10,6 +10,7 @@ import { check, sleep, until, tmp, mkProject, mkCard, getCard, say, openPage, no
 const dir = tmp('scrum'), calls = path.join(dir, 'calls.txt'), stub = path.join(dir, 'sm-stub.bat'), local = path.join(dir, 'local.json');
 fs.writeFileSync(path.join(dir, 'sm-stub.js'), `const fs = require('fs'), a = process.argv.slice(2), m = a[a.indexOf('--model') + 1] || '-', cwd = process.cwd();
 fs.appendFileSync(${JSON.stringify(calls)}, m + ' ' + cwd + '\\n'); fs.appendFileSync(${JSON.stringify(calls + '.p')}, a[a.indexOf('-p') + 1] + '\\n');
+fs.appendFileSync(${JSON.stringify(calls + '.a')}, cwd.replace(/.*[\\\\/]/, '') + ' ' + a.filter((x, i) => /^--(session-id|resume)$/.test(x) || /^--(session-id|resume)$/.test(a[i - 1] || '')).join(' ') + '\\n');
 if (/scrummaster/i.test(cwd)) { console.log('{"type":"system"}'); require('child_process').spawnSync(process.execPath, [${JSON.stringify(path.join(ROOT, 'aigile.js'))}, 'watchsay', 'Stub reply from ' + m], { stdio: 'inherit' }); }
 else if (/hang/i.test(cwd)) setTimeout(() => {}, 25000);`);
 fs.writeFileSync(stub, `@echo off\r\nnode "${path.join(dir, 'sm-stub.js')}" %*\r\nexit /b 0\r\n`);
@@ -137,6 +138,46 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   await page.selectOption('#smPush', '3');
   await page.waitForFunction(() => /every 10 min/.test((document.getElementById('smBar') || {}).textContent || ''), null, { timeout: 8000 });
   await role(false);
+  // AIG-457: a small, same-each-time prompt on one shared session (--session-id, then --resume; fresh after an hour idle).
+  const conf = path.join(s.data, 'scrummaster.conf'), smConf = fn => { const j = JSON.parse(fs.readFileSync(conf, 'utf8')); fn(j); fs.writeFileSync(conf, JSON.stringify(j)); };
+  const smLines = f => { try { return fs.readFileSync(calls + f, 'utf8').split('\n').filter(l => /^scrummaster /i.test(l)); } catch { return []; } };
+  const idle = async () => { await until(async () => !(await s.ok('GET', '/api/chats/_watchman')).busy, 10000); await sleep(300); };
+  const ask = async text => { const n = smLines('.a').length; await s.ok('POST', '/api/chats/_watchman', { text }); await until(() => smLines('.a').length > n, 10000); await idle(); return smLines('.a').at(-1); };
+  await role(true); smConf(j => { j.runs = 0; delete j.session; });
+  const mdPath = path.join(s.data, 'scrummaster', 'CLAUDE.md'), md0 = fs.statSync(mdPath).mtimeMs;
+  const a1 = await ask('Plan A');
+  check('a first run starts a session under an id it chooses', /^scrummaster --session-id [0-9a-f-]{36}$/i.test(a1), a1);
+  const p1 = fs.readFileSync(calls + '.p', 'utf8').split('\n').filter(Boolean).at(-1);
+  check('its prompt is only the owner\'s words and what changed, not the role', /Owner wrote: .?Plan A/.test(p1) && !/MAY NOT/.test(p1), p1);
+  const a2 = await ask('Plan B');
+  check('the next run resumes that same session', a2 === a1.replace('--session-id', '--resume'), [a1, a2]);
+  const p2 = fs.readFileSync(calls + '.p', 'utf8').split('\n').filter(Boolean).at(-1);
+  check('and its prompt is just the new words (no chat replay)', /^Owner wrote: .?Plan B.?$/.test(p2), p2);
+  check('the role file was not rewritten', fs.statSync(mdPath).mtimeMs === md0);
+  smConf(j => { j.session.at = new Date(Date.now() - 2 * 3600e3).toISOString(); });
+  const a3 = await ask('Plan C');
+  check('after an hour idle it starts a fresh session', /--session-id/.test(a3) && a3.split(' ')[2] !== a1.split(' ')[2], [a1, a3]);
+
+  // AIG-456: with a window session around (smwait), messages sent while it is busy are queued for its next wait, and no
+  // hidden second run starts; once it has been gone a while, a background run takes over and the window isn't handed it twice.
+  const t0 = new Date().toISOString();
+  await s.ok('GET', '/api/scrummaster/wait?since=' + encodeURIComponent(t0));
+  const runs0 = smLines('.a').length;
+  const rq = await s.ok('POST', '/api/chats/_watchman', { text: 'Sent while you were busy' });
+  await sleep(1500);
+  check('a window session is around: the message waits for it, no second run starts', rq.waiting === true && smLines('.a').length === runs0, rq);
+  await sleep(1100);   // an smwait started after the message (a later "since") is still handed it
+  const w1 = await s.ok('GET', '/api/scrummaster/wait?since=' + encodeURIComponent(new Date().toISOString()));
+  check('its next smwait is handed the queued message', w1.messages.length === 1 && w1.messages[0].text === 'Sent while you were busy', w1);
+  check('and only once', (await s.ok('GET', '/api/scrummaster/wait?since=' + encodeURIComponent(new Date().toISOString()))).messages.length === 0);
+  smConf(j => { j.runs = 0; j.heardAt = new Date(Date.now() - 30 * 60e3).toISOString(); });
+  const rb = await s.ok('POST', '/api/chats/_watchman', { text: 'Window is gone' });
+  await until(() => smLines('.a').length > runs0, 10000); await idle();
+  check('the window gone for a while: one background run takes it', rb.working === true && smLines('.a').length === runs0 + 1, [rb, runs0, smLines('.a')]);
+  check('and a later smwait is not handed it again', (await s.ok('GET', '/api/scrummaster/wait?since=' + encodeURIComponent(new Date().toISOString()))).messages.length === 0);
+  smConf(j => { j.runs = 3; j.heardAt = new Date(Date.now() - 30 * 60e3).toISOString(); });
+  await role(false);
+
   check('taking it out of the team turns it off', !(await s.ok('GET', '/api/scrummaster')).on);
   noErrors(page);
 
