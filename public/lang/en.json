@@ -2290,5 +2290,15 @@
   "streamer.hide.secrets": "Secrets: passwords, keys, IP addresses, emails and server names as ••••",
   "streamer.setup.key": "Shortcut: Alt+Shift+S turns streamer mode on or off (handy before you go live on Discord)",
   "streamer.key.on": "🎥 Streamer mode on",
-  "streamer.key.off": "🎥 Streamer mode off"
+  "streamer.key.off": "🎥 Streamer mode off",
+  "presence.h": "Discord activity",
+  "presence.help": "Discord shows Using AI-gile on your profile, through the Discord app on this PC. No bot needed.",
+  "presence.on": "Show AI-gile as my Discord activity",
+  "presence.id": "Discord application ID",
+  "presence.id.help.html": "Once: go to <b>discord.com/developers/applications</b>, click <b>New Application</b>, name it <b>AI-gile</b>, and copy the <b>Application ID</b>.",
+  "presence.project": "Also show the 🌍 Public project I have open (never Private or Personal)",
+  "presence.ok": "Showing on Discord",
+  "presence.wait": "Looking for the Discord app on this PC…",
+  "presence.err.id": "Discord turned that application ID down: check it",
+  "presence.err.discord": "Discord app not found: is it open on this PC?"
 }

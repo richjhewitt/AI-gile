@@ -2290,5 +2290,15 @@
   "streamer.hide.secrets": "Geheimen: wachtwoorden, sleutels, IP-adressen, e-mailadressen en servernamen als ••••",
   "streamer.setup.key": "Sneltoets: Alt+Shift+S zet streamermodus aan of uit (handig voor je live gaat op Discord)",
   "streamer.key.on": "🎥 Streamermodus aan",
-  "streamer.key.off": "🎥 Streamermodus uit"
+  "streamer.key.off": "🎥 Streamermodus uit",
+  "presence.h": "Discord-activiteit",
+  "presence.help": "Discord toont Gebruikt AI-gile op je profiel, via de Discord-app op deze pc. Geen bot nodig.",
+  "presence.on": "Toon AI-gile als mijn Discord-activiteit",
+  "presence.id": "Discord-applicatie-ID",
+  "presence.id.help.html": "Eenmalig: ga naar <b>discord.com/developers/applications</b>, klik <b>New Application</b>, noem hem <b>AI-gile</b> en kopieer de <b>Application ID</b>.",
+  "presence.project": "Toon ook het 🌍 openbare project dat ik open heb (nooit privé of persoonlijk)",
+  "presence.ok": "Zichtbaar op Discord",
+  "presence.wait": "Zoekt de Discord-app op deze pc…",
+  "presence.err.id": "Discord weigerde dat applicatie-ID: kijk het na",
+  "presence.err.discord": "Discord-app niet gevonden: staat hij open op deze pc?"
 }
