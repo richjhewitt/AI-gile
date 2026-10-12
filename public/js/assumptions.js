@@ -31,8 +31,13 @@ const Assumptions = (() => {
     const card = list => { const a = list[0], sum = String(a.summary || '').slice(0, 100) + (String(a.summary || '').length > 100 ? '…' : '');
       return `<div class="uz-card as-card"><div class="as-head" style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline"><b><a href="#/p/${esc(a.slug)}/${esc(a.id)}">${esc(a.id)}</a> ${esc(a.title)}</b> <a class="as-open" href="#/p/${esc(a.slug)}/${esc(a.id)}">${esc(t('assume.open'))}</a></div>`
         + (sum ? `<div class="muted as-sum">${esc(sum)}</div>` : '') + list.map(entry).join('') + `</div>`; };
+    // AIG-533: a summary line per project (to review / OK / plugged); each name jumps to its section.
+    const count = pn => { const all = A.data.filter(a => a.project === pn); return { n: all.length, todo: all.filter(a => !a.state).length, ok: all.filter(a => a.state === 'ok').length, plug: all.filter(a => a.state === 'plug').length }; };
+    const names = Object.keys(by);
+    const sumLine = pn => { const c = count(pn); return `<li><a href="#" onclick="document.getElementById('as-p-${esc(pn.replace(/\W+/g, '-'))}').scrollIntoView();return false"><b>${esc(pn)}</b></a> <span class="muted">· ${esc(t('assume.sum', { n: c.n, todo: c.todo, ok: c.ok, plug: c.plug }))}</span></li>`; };
     return `<div class="uz"><h2>${esc(t('assume.title'))}</h2><p class="muted">${esc(t('assume.intro'))}</p>`
-      + Object.keys(by).map(pn => `<h3>${esc(pn)}</h3>` + Object.values(by[pn]).map(card).join('')).join('') + `</div>`;
+      + `<ul class="as-sum-list" style="list-style:none;padding:0">${names.map(sumLine).join('')}</ul>`
+      + names.map(pn => `<h3 id="as-p-${esc(pn.replace(/\W+/g, '-'))}">${esc(pn)} <span class="muted" style="font-weight:400">· ${esc(t('assume.sum', count(pn)))}</span></h3>` + Object.values(by[pn]).map(card).join('')).join('') + `</div>`;
   };
   A.act = async (k, state) => {
     const a = find(k); if (!a) return;
