@@ -1996,5 +1996,12 @@
  "srv.dmr.parked": "Parked {id} in the Backlog.",
  "srv.dmr.crucial": "{id} is now crucial: it still runs while the usage saver is on.",
  "srv.dmr.unknown": "I'm not running AI right now (usage saver or No Token Mode), so this waits until usage is back. Your message is kept and I'll read it then. Type help for what I can do now.",
- "srv.dmr.unknownsm": "I'm not running AI right now (usage saver or No Token Mode), so this waits until usage is back. Please send it again then. Type help for what I can do now."
+ "srv.dmr.unknownsm": "I'm not running AI right now (usage saver or No Token Mode), so this waits until usage is back. Please send it again then. Type help for what I can do now.",
+  "wn.title": "✨ What's new",
+  "wn.empty": "No release notes yet.",
+  "wn.features": "New",
+  "wn.fixes": "Fixed",
+  "wn.note": "AI-gile was updated.",
+  "wn.open": "See what's new",
+  "wn.close": "Close"
 }

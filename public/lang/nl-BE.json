@@ -1996,5 +1996,12 @@
  "saver.crucial": "⭐ Cruciaal",
  "saver.crucial.title": "Een cruciale kaart blijft draaien terwijl de verbruiksbespaarder aan staat",
  "saver.chip.title": "Cruciaal: draait nog terwijl de verbruiksbespaarder aan staat",
- "inbox.k.done.tell": "📣 Klaar, laat het team weten"
+ "inbox.k.done.tell": "📣 Klaar, laat het team weten",
+  "wn.title": "✨ Wat is er nieuw",
+  "wn.empty": "Nog geen releasenota's.",
+  "wn.features": "Nieuw",
+  "wn.fixes": "Opgelost",
+  "wn.note": "AI-gile is bijgewerkt.",
+  "wn.open": "Bekijk wat er nieuw is",
+  "wn.close": "Sluiten"
 }

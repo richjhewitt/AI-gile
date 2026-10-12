@@ -1996,5 +1996,12 @@
  "srv.dmr.parked": "{id} geparkeerd in de Backlog.",
  "srv.dmr.crucial": "{id} is nu cruciaal: de kaart draait nog terwijl de verbruiksbespaarder aan staat.",
  "srv.dmr.unknown": "Ik draai nu geen AI (verbruiksbespaarder of No Token Mode), dus dit wacht tot er weer verbruik is. Je bericht blijft bewaard en ik lees het dan. Typ help voor wat ik nu kan.",
- "srv.dmr.unknownsm": "Ik draai nu geen AI (verbruiksbespaarder of No Token Mode), dus dit wacht tot er weer verbruik is. Stuur het dan opnieuw. Typ help voor wat ik nu kan."
+ "srv.dmr.unknownsm": "Ik draai nu geen AI (verbruiksbespaarder of No Token Mode), dus dit wacht tot er weer verbruik is. Stuur het dan opnieuw. Typ help voor wat ik nu kan.",
+  "wn.title": "✨ Wat is er nieuw",
+  "wn.empty": "Nog geen releasenotes.",
+  "wn.features": "Nieuw",
+  "wn.fixes": "Opgelost",
+  "wn.note": "AI-gile is bijgewerkt.",
+  "wn.open": "Bekijk wat er nieuw is",
+  "wn.close": "Sluiten"
 }
