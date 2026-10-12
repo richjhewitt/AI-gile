@@ -5,7 +5,7 @@ import { check, sleep, tmp, openPage, noErrors, def } from '../lib.mjs';
 
 def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defaults, the wizard saves style and spend plan, running it again keeps values, Back works, a guessed agent is not saved (AIG-354)', async (s, ctx) => {
   const setup = async () => (await s.ok('GET', '/api/setup'));
-  const strip = p => { const { wizardSeen, ...r } = p; return JSON.stringify(r); };
+  const strip = p => { const { wizardSeen, lang, ...r } = p; return JSON.stringify(r); };   // lang: the page saves its language on load (AIG-488)
   const before = strip((await setup()).prefs);
   check('fresh data: setup needed, wizard not seen', (await setup()).needed === true && (await setup()).prefs.wizardSeen === false);
 

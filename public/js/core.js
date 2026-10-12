@@ -364,6 +364,7 @@ function render() {
     window.scrollTo(0, atEnd ? de.scrollHeight : y);
     return;
   }
+  if (!p) return;   // not loaded yet (a refresh can land before the project does)
   // 🪐 The spaces it sits in come first (AIG-434): / Idea Playground / JointPassingBot.
   $('crumb').textContent = '/ ' + ((p.space && p.space.up) || []).map(u => u.name + ' / ').join('') + (p.emoji ? p.emoji + ' ' : '') + p.name;
   $('crumb').style.color = p.color || '';
