@@ -5,9 +5,10 @@ Colours come from the board (`public/css/*.css`); re-copy them if the board's co
 
 ## Deploy
 
-Copy the folder contents to the web root, e.g.:
+Copy the folder to the server, then run the installer there (nginx site + certbot; safe to re-run to update):
 
-    rsync -a site/ server:/var/www/aigile-site/
+    sudo bash install-site.sh test.aigile.lol
+    sudo bash install-site.sh aigile.lol www.aigile.lol
 
 When there is a download or a public repo, edit its button in `index.html`
 (remove the `soon` class, `aria-disabled` and the "Coming soon" label, and set the link).
