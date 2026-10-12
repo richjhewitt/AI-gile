@@ -17,7 +17,8 @@ function cardFields(c, o = {}) {
     </div>
     ${o.flags ? `<div><label class="chk"><input type="checkbox" id="f-blocked" ${c.blocked ? 'checked' : ''}> ${esc(t('card.f.blocked'))}</label>
       <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> ${esc(t('card.f.needsyou'))}</label>
-      <label class="chk"><input type="checkbox" id="f-focus" ${c.focus ? 'checked' : ''}> ${esc(t('fx.f.focus'))}</label></div>` : ''}`;
+      <label class="chk"><input type="checkbox" id="f-focus" ${c.focus ? 'checked' : ''}> ${esc(t('fx.f.focus'))}</label>
+      <label class="chk"><input type="checkbox" id="f-hidepublic" ${c.hidePublic ? 'checked' : ''}> ${esc(t('pub.card.hide'))}</label></div>` : ''}`;
 }
 // Who a card goes to: a role (the lead launches that kind of agent; the model is shown so the cost is
 // visible), a named team member, or the owner himself (a task for him). Agents swap a role for their name on start.
@@ -84,7 +85,7 @@ function readFields(flags, testSteps) {
   const o = { title: $('f-title').value.trim(), description: $('f-description').value, type: $('f-type').value, priority: $('f-priority').value,
     status: $('f-status').value, assignee: $('f-assignee').value.trim(), sprint: $('f-sprint').value.trim(), group: $('f-group').value.trim() };
   if (testSteps) o.testSteps = $('f-testSteps').value;
-  if (flags) { o.blocked = $('f-blocked').checked; o.needsYou = $('f-needsYou').checked; o.focus = $('f-focus').checked; }
+  if (flags) { o.blocked = $('f-blocked').checked; o.needsYou = $('f-needsYou').checked; o.focus = $('f-focus').checked; o.hidePublic = $('f-hidepublic').checked; }
   return o;
 }
 
