@@ -171,7 +171,7 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
   const du = await startIn('nl-NL', null, { timezoneId: 'Europe/Amsterdam' });
   check('a nl-NL device with no pick starts in Dutch, with Dutch dates', du.lang === 'nl' && du.locale === 'nl-NL' && !du.names.includes('nl-BE'), du);
   check('plain nl in the Brussels time zone starts in Flemish', (await startIn('nl', null, { timezoneId: 'Europe/Brussels' })).lang === 'nl-BE');
-  check('a fr-BE device with no pick starts in English', (await startIn('fr-BE')).lang === 'en');
+  check('a fr-BE device with no pick starts in French, not Flemish', (await startIn('fr-BE')).lang === 'fr');
   const saved = await startIn('nl-BE', 'en');
   check('a saved en pick wins over a nl-BE device', saved.lang === 'en', saved.lang);
   check('no page errors in the device-language starts', saved.errors.length === 0, saved.errors);
