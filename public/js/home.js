@@ -32,6 +32,7 @@ function renderHome() {
   // 🪐 Spaces (AIG-434): the projects as a tree, a space's projects in an indented row under it.
   const cards = Spaces.homeGrid(Spaces.tree(state.projects), projCard);
   return `<div class="toolbar"><button class="primary" onclick="newProject()">${esc(t('home.newproject'))}</button>
+      <button onclick="openFileDialog()" title="${esc(t('ofl.btn.title'))}">${esc(t('ofl.btn'))}</button>
       <button onclick="findProjectsDialog()" title="${esc(t('home.find.title'))}">${esc(t('home.find'))}</button>
       <button onclick="tourDialog()" title="${esc(t('tour.btn.title'))}">${esc(t('tour.btn'))}</button>
       <button onclick="goQuiet()" title="${esc(t('home.quiet.title'))}">${esc(t('home.quiet'))}</button>

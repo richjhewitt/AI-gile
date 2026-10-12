@@ -76,8 +76,8 @@ const server = http.createServer(async (req, res) => {
       for (const [method, re, fn] of routes) {
         const m = pathname.match(re);
         if (m && method === req.method) {
-          // Attachment uploads are base64 files up to 10 MB, so they get a bigger body limit.
-          const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, (pathname.endsWith('/attachments') || /^\/api\/dms\/contacts\/[^/]+\/messages$/.test(pathname)) ? 15e6 : /\/((app-)?logo|me-picture)$/.test(pathname) ? 2e6 : 1e6) : {};
+          // Attachment uploads are base64 files up to 10 MB, so they get a bigger body limit; opening a project file (AIG-446) up to 20 MB of them.
+          const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, pathname === '/api/projects/import' ? 40e6 : (pathname.endsWith('/attachments') || /^\/api\/dms\/contacts\/[^/]+\/messages$/.test(pathname)) ? 15e6 : /\/((app-)?logo|me-picture)$/.test(pathname) ? 2e6 : 1e6) : {};
           const out = await fn(m.slice(1), body, url.searchParams, req);   // DM routes talk to the relay, so they may be async; req: who is asking (share.ownerOnly)
           // A route can answer with a file instead of JSON: { __file: absolute path }.
           if (out && out.__sse) return out.__sse(res, req);   // a live stream (the terminal, AIG-471): the route writes it

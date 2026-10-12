@@ -1752,5 +1752,18 @@
  "icon.main": "Hoofdkleur",
  "icon.waiting": "Wachtende ruit",
  "icon.reset": "Terug naar de standaard",
- "icon.help": "Kies een voorinstelling of een eigen kleur. Het icoon in het browsertabblad verandert meteen. Het taakbalkicoon van de desktop-app verandert zodra het opnieuw getekend wordt: start de app opnieuw als het hetzelfde blijft."
+ "icon.help": "Kies een voorinstelling of een eigen kleur. Het icoon in het browsertabblad verandert meteen. Het taakbalkicoon van de desktop-app verandert zodra het opnieuw getekend wordt: start de app opnieuw als het hetzelfde blijft.",
+ "ofl.btn": "📦 Projectbestand openen",
+ "ofl.btn.title": "Open een project dat iemand als .aigile-bestand heeft bewaard",
+ "ofl.save": "📦 Bewaar als bestand",
+ "ofl.save.title": "Download dit project als één .aigile-bestand: kaarten, reacties en afbeeldingen. Geen instellingen, sleutels, chats, deellinks of mappen.",
+ "ofl.title": "📦 Projectbestand openen",
+ "ofl.help": "Kies een .aigile-bestand. Het wordt een nieuw project; er verandert niets aan wat je al hebt.",
+ "ofl.pick": "Projectbestand",
+ "ofl.counts": "{cards} kaarten, {comments} reacties, {files} afbeeldingen en bestanden",
+ "ofl.renamed": "Die naam is al in gebruik, dus het opent als \"{slug}\".",
+ "ofl.nofolder": "Het is niet gekoppeld aan een map. Koppel er een in het project als een team eraan moet werken.",
+ "ofl.open": "Openen als nieuw project",
+ "ofl.toobig": "Dat bestand is te groot om te openen (meer dan 30 MB).",
+ "ofl.notfile": "Dat is geen AI-gile-projectbestand."
 }

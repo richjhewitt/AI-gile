@@ -1752,5 +1752,18 @@
  "icon.main": "Main colour",
  "icon.waiting": "Waiting diamond",
  "icon.reset": "Back to the defaults",
- "icon.help": "Pick a preset or any colour. The browser tab icon changes straight away. The desktop app's taskbar icon changes the next time it redraws, so restart the app if it stays the same."
+ "icon.help": "Pick a preset or any colour. The browser tab icon changes straight away. The desktop app's taskbar icon changes the next time it redraws, so restart the app if it stays the same.",
+ "ofl.btn": "📦 Open a project file",
+ "ofl.btn.title": "Open a project that someone saved as a .aigile file",
+ "ofl.save": "📦 Save as file",
+ "ofl.save.title": "Download this project as one .aigile file: cards, comments and pictures. No settings, keys, chats, share links or folders.",
+ "ofl.title": "📦 Open a project file",
+ "ofl.help": "Pick a .aigile file. It becomes a new project; nothing you have is changed.",
+ "ofl.pick": "Project file",
+ "ofl.counts": "{cards} cards, {comments} comments, {files} pictures and files",
+ "ofl.renamed": "That name is taken, so it opens as \"{slug}\".",
+ "ofl.nofolder": "It is not linked to a folder. Connect one on the project when you want a team to work on it.",
+ "ofl.open": "Open as new project",
+ "ofl.toobig": "That file is too big to open (more than 30 MB).",
+ "ofl.notfile": "That is not an AI-gile project file."
 }
