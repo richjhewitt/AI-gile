@@ -15,6 +15,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/presence.js`: team presence, background runs, where a team runs, verbose log, 👁 Watch
 - `lib/quiet.js`, `lib/watchman.js`: going quiet, 🌙 night watchman and the 🧭 Lead Scrum Master's chat and agent run
 - `lib/scrummaster.js`: 🧭 Lead Scrum Master by day (AIG-359, `docs/SCRUM-MASTER.md`): launch, plain-code day rounds, 💡 idea sorting, digest, daily AI-run cap
+- `lib/today.js`: 🎯 Today (AIG-595..597): a weight per project per day (high, normal, low, rest; `data/today.conf`, resets each morning, `today.stub` = test date); `order`/`factor` for the Scrum Master and watchman, `guard` in `presence.startTeam` (rest only wakes for the owner; past its share slows like the saver), `split` = the one function for the token shares (swap for AIG-607); `GET/POST /api/today`; not the 🎯 focus mode; QA `today`
 - `lib/notokens.js`: ⛔ No Token Mode (one switch; `guard()` in every AI starter: presence.startTeam, tester, ask, usagecheck, watchman; `data/notokens.conf`; turns on at the usage limit, never off by itself; `aigile notokens on|off`)
 - `lib/assumptions.js`: 🌙 Assumptions log (AIG-477): comments marked `assume` (or starting "Assumption:") across projects; `aigile assume`; page `js/assumptions.js` (`#/assumptions`); QA `assumptions`
 - `public/js/whatsnew.js` + `public/releases.json`: ✨ What's new (AIG-562): `#/whats-new` lists release notes; a note once after an update (localStorage `aigile.seenRelease`); notes written by `aigile release-notes` (cmds-team.js, `AIGILE_RELEASES` for tests); QA `whatsnew`
@@ -38,6 +39,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `css/01..05-*.css` (linked in order from index.html); `js/core.js` (state, api, router, render); `js/format.js` (card text, md); `js/i18n.js` (languages)
 - `js/home.js`, `js/board.js`, `js/card.js`, `js/dialogs/*.js`, `js/filters.js`, `js/attach.js`
 - `js/inbox*.js` (state, top, items, tabs, page, actions, style, queue, ai)
+- `js/today.js` (`TodayPage`: `#/today`, the badge on project cards, the share bars on the usage page)
 - `js/dms.js` (DM chats), `js/share.js` (🔗 Share dialog, link offers in the inbox), `js/share-board.js` (a friend's shared project as its own board, `#/shared/<link>`), `js/ask.js` (friends' questions in the inbox), `js/pack.js` (📤 Copy for another AI / 📥 Paste the reply on a card)
 - `js/notokens.js` + `css/06-notokens.css`: the top-bar ⛔ switch; body class `notokens` hides AI buttons by CSS (add `.ai-only` or an onclick prefix to the list)
 - `js/standup.js`, `js/usage-page.js`, `js/glossary.js`, `js/tour.js`, `js/help.js` (AIG-345: help levels, ❓ Help menu, first-run offer, 🎓 Agile intro slides from `GET /api/intro`; QA `helplevels`), `js/night.js`, `js/leadquiz.js`

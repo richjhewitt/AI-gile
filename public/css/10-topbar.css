@@ -15,3 +15,16 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .tb-sw.on { border: 2px solid var(--text); box-shadow: 0 0 0 2px var(--panel) inset; }
 .tb-mv { display: inline-flex; gap: 2px; }
 .tb-mv button { padding: 2px 8px; }
+/* 🎯 Today (AIG-595): weights per project, the badge on project cards, the share bars on the usage page */
+.today-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.today-row:last-child { border-bottom: 0; }
+.today-btns { display: flex; flex-wrap: wrap; gap: 4px; }
+.today-w.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.today-badge { font-size: 14px; vertical-align: 1px; }
+.today-bar { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: 6px 0; font-size: 12px; }
+.today-bn { flex: 0 0 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.today-track { flex: 1 1 120px; height: 8px; border-radius: 4px; background: var(--col); overflow: hidden; }
+.today-track i { display: block; height: 100%; background: var(--accent); }
+.today-track i.over { background: var(--danger); }
+.today-bv { flex: 1 0 100%; }
+@media (min-width: 700px) { .today-bv { flex: 0 0 auto; } }
