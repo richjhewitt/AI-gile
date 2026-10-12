@@ -1857,7 +1857,7 @@
  "srv.budget.wk": "week",
  "srv.budget.night": "- 🧭 **Tokenbudget bereikt**: dit team heeft vannacht {used} van zijn budget van {limit} gebruikt, dus ik heb de run gestopt. Morgen kan het verder, of verhoog het budget bij Instellingen.",
  "srv.notokens.guard": "⛔ Geen-tokensmodus staat aan: er start niets met AI tot je hem weer uitzet",
- "srv.sm.capped": "de {cap} AI-runs van vandaag zijn op (scrumMaster.aiRunsPerDay in aigile.local.json), dus ik wacht tot morgen",
+ "srv.sm.capped": "ik heb mijn {cap} AI-checks voor vandaag gedaan; jouw berichten komen nog steeds door",
  "srv.sm.unclear": "💡 Ik kon niet bepalen waar \"{title}\" heen moet: het wacht in je inbox",
  "srv.sm.status": "🏇 {doing} bezig, {todo} te doen, {verify} wachten op jouw test",
  "srv.sm.stalled": "🧭 {name} wakker gemaakt: {min} minuten niets bewogen.",

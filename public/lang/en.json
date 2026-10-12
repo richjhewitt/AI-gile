@@ -1859,7 +1859,7 @@
  "srv.budget.wk": "weekly",
  "srv.budget.night": "- 🧭 **Token budget reached**: this team has used {used} of its {limit} budget tonight, so I stopped the run. It can go on tomorrow, or raise the budget in Setup.",
  "srv.notokens.guard": "⛔ No Token Mode is on: nothing AI starts until you turn it back on",
- "srv.sm.capped": "today's {cap} AI runs are used up (scrumMaster.aiRunsPerDay in aigile.local.json), so I'll wait for tomorrow",
+ "srv.sm.capped": "I have done my {cap} AI checks for today; your messages still get through",
  "srv.sm.unclear": "💡 I couldn't tell where \"{title}\" goes: it waits in your inbox",
  "srv.sm.status": "🏇 {doing} in progress, {todo} to do, {verify} waiting for you to test",
  "srv.sm.stalled": "🧭 Woke {name}: nothing had moved for {min} minutes.",
