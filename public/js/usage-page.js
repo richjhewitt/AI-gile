@@ -92,6 +92,7 @@ async function loadUsagePage(force) {
     api('GET', '/api/usage/check').catch(() => null),
     api('GET', '/api/usage/runs').catch(() => []),   // AIG-266
   ]);
+  await TodayPage.load();
   uz.data = { usage, limits, check, runs, live, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
   uz.fetchedAt = Date.now();
 }
@@ -130,7 +131,7 @@ function renderUsagePage() {
     : `<div class="uz-tiles">${uzTile(t('usage.session'), t('usage.session.sub'), limits.latest, 'h5', hist)}${uzTile(t('usage.week'), t('usage.week.sub'), limits.latest, 'wk', hist)}</div>
        <p class="uz-note">${esc(t('usage.note'))}</p>`;
   return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}<p class="uz-explain">${esc(t('usage.explain'))}</p>
-    ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${noReading ? '' : uzBurn(limits) + uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}${uzRuns(uz.data.runs, uz.data.projects)}</div>`;
+    ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${noReading ? '' : uzBurn(limits)}${TodayPage.usageCard()}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}${uzRuns(uz.data.runs, uz.data.projects)}</div>`;
 }
 
 /* ---------- compact view (AIG-431) ---------- */

@@ -209,3 +209,18 @@ textarea.grow { max-height: 85vh; resize: vertical; }
 @media (max-width: 600px) { .langlist { position: fixed; inset-inline: 1rem; top: auto; bottom: calc(70px + env(safe-area-inset-bottom)); min-width: 0; max-width: none; max-height: 70vh; } }
 /* Right to left (AIG-487): the layout mirrors through logical properties; code, commands and the terminal stay left to right. */
 [dir=rtl] .codebox, [dir=rtl] pre, [dir=rtl] code, [dir=rtl] kbd, [dir=rtl] .term-body { direction: ltr; unicode-bidi: isolate; }
+
+.xt { margin: 14px 0 4px; padding-top: 10px; border-top: 1px solid var(--line, #8883); } .xt h3 { margin: 0 0 4px; font-size: 15px; }
+.xt-roles, .xt-cards, .xt-done { margin: 4px 0 10px; padding-inline-start: 20px; font-size: 13px; } .xt-roles li { margin: 2px 0; }
+.xt-est { margin: 8px 0; padding: 8px 10px; border-radius: 8px; background: var(--col, #8881); font-size: 13px; } .xt-est small { display: block; }
+.xt input[type=range] { width: 100%; min-height: 32px; }
+.sec-box { margin: 10px 0; padding: 8px 10px; border: 1px solid var(--line, #8883); border-radius: 8px; } .sec-ask { margin: 6px 0; }
+.sec-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 2px; } .sec-row input { flex: 1 1 200px; min-height: 40px; } .sec-row button { min-height: 40px; }
+.sec-table { overflow-x: auto; max-width: 100%; } .sec-table table { border-collapse: collapse; font-size: 13px; } .sec-table th, .sec-table td { text-align: start; padding: 4px 8px; vertical-align: top; } .sec-table button { min-height: 36px; }
+
+/* 🎥 streamer mode (AIG-590): the DM and friends parts go; the switch lights up; the notice sits bottom left */
+html[data-streamer] .dm-railbtn[data-dms], html[data-streamer] #dmPanel, html[data-streamer] #ibShare, html[data-streamer] #ibAsk, html[data-streamer] #dmsRelayBox, html[data-streamer] #dmsFriendsBox, html[data-streamer] #pretendBox { display: none !important; }
+#streamBtn.stream-on { background: var(--danger, #d33); color: #fff; border-radius: 6px; }
+#streamNote { position: fixed; inset-inline-start: 12px; bottom: 12px; z-index: 60; max-width: min(92vw, 420px); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--bg, #fff); color: var(--text, #111); border: 1px solid var(--line, #8886); box-shadow: var(--shadow, 0 4px 16px #0004); font-size: 13px; } #streamNote button { min-height: 36px; }
+html[data-streamer] #serversBox input[data-srv="name"], html[data-streamer] #serversBox input[data-srv="value"] { -webkit-text-security: disc; text-security: disc; }
+.pub-btn .muted { font-size: 12px; } .lic-row { border: 1px solid var(--line, #8883); border-radius: 8px; padding: 8px 10px; margin: 6px 0; } .lic-letter { width: 100%; box-sizing: border-box; font: 12px/1.4 ui-monospace, monospace; margin: 6px 0; } .lic-row button { min-height: 36px; }

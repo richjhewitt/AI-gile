@@ -3,7 +3,7 @@
 // Usage: node "<path>/aigile.js" help
 // The command code lives in lib/cli/: core.js (settings, http, text), help.js, and one file per group of commands.
 const { HELP, CliError, die, parse } = require('./lib/cli/core');
-const cmds = Object.assign({}, require('./lib/cli/cmds-read'), require('./lib/cli/cmds-cards'), require('./lib/cli/cmds-team'));
+const cmds = Object.assign({}, require('./lib/cli/cmds-read'), require('./lib/cli/cmds-cards'), require('./lib/cli/cmds-team'), require('./lib/cli/cmds-secrets'));
 
 (async () => {
   const [cmd, ...rest] = process.argv.slice(2);

@@ -55,6 +55,8 @@ const plural = (v, vars) => {
   return v[cat] ?? v.other ?? '';
 };
 function t(key, vars) {
+  // No AI, ever (AIG-583): a key with a .noai twin reads that one while the choice is on.
+  if (i18n.noai && key.slice(-5) !== '.noai') { const alt = i18n.dict[key + '.noai'] ?? i18n.en[key + '.noai']; if (alt != null) key += '.noai'; }
   let s = i18n.dict[key] ?? i18n.en[key] ?? key;
   if (s && typeof s === 'object') s = plural(s, vars);
   s = String(s);

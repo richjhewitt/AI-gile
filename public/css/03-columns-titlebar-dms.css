@@ -77,6 +77,9 @@ body.pop { padding-inline-start: 0; } body.pop #dmRail, body.pop #dmPanel { disp
 .dm-msg.mine { align-items: flex-end; }
 .dm-meta { font-size: 11px; color: var(--muted); margin: 0 4px 2px; }
 .dm-bubble { max-width: 88%; padding: 7px 11px; border-radius: 14px 14px 14px 4px; background: var(--col); white-space: pre-wrap; overflow-wrap: anywhere; }
+.dm-origin { display: inline-block; margin: 3px 4px 0; padding: 1px 8px; border-radius: 10px; font-size: 11px; border: 1px solid var(--line); color: var(--muted); }
+.dm-origin.ai { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
+.dm-legend { font-size: 11px; padding: 4px 10px 0; }
 .dm-msg.mine .dm-bubble { border-radius: 14px 14px 4px 14px; background: color-mix(in srgb, var(--accent) 22%, var(--panel)); }
 .dm-compose { border-top: 1px solid var(--line); padding: 8px 12px 12px; }
 .dm-compose textarea { width: 100%; }
@@ -191,3 +194,6 @@ body.space-dragging .space-out { display: block; }
 .dm-spacefold { border: 0; background: none; padding: 0 6px; margin: -6px 0 -2px; font-size: 11px; line-height: 14px; color: var(--muted); cursor: pointer; }
 .dm-spacefold:hover { color: var(--text); }
 .dm-railbtn.drop-into .dm-av { outline: 3px dashed var(--accent); outline-offset: 1px; }
+/* 👉 nudge by the typing line (AIG-593): quiet until the chat seems stuck, then it glows */
+.typing .nudge { border: 0; background: none; cursor: pointer; font-size: 1rem; opacity: .35; padding: 2px 6px; border-radius: 8px; }
+.typing .nudge.lit { opacity: 1; background: var(--warn-bg, #fde68a); box-shadow: 0 0 0 2px var(--warn, #f59e0b); }

@@ -62,7 +62,8 @@ async function advSave() {
   if (WA.screen === 'me') {
     if (!WZ.name && !WZ.hadOwner) { setErr('wz-err', t('wz.need.name')); return false; }
     if (WZ.name) body.owner = WZ.name;
-    if (WZ.agent) body['agent.command'] = WZ.agent;
+    if (WZ.agent && !WZ.noAi) body['agent.command'] = WZ.agent;
+    if (WZ.noAi) body.prefs.noAi = true;
   }
   try {
     state.setup = await api('POST', '/api/setup', body);
@@ -71,18 +72,21 @@ async function advSave() {
     return true;
   } catch (e) { setErr('wz-err', e); return false; }
 }
+// 🚫 No AI, ever (AIG-581): the screens about agents, spend and the night team are left out.
+const ADV_AI = ['lead', 'runs', 'budget', 'parallel', 'usage', 'dispatch', 'roles', 'night'];
+const advStep = (i, d) => { let j = i + d; while (WZ.noAi && ADV_AI.includes(ADV_SCREENS[j])) j += d; return ADV_SCREENS[j]; };
 async function advNext(skip) {
   advKeep();
   if (!skip && !(await advSave())) return;
   const i = ADV_SCREENS.indexOf(WA.screen);
-  WA.screen = WA.fromSummary ? 'summary' : ADV_SCREENS[i + 1]; WA.fromSummary = false;
+  WA.screen = WA.fromSummary ? 'summary' : advStep(i, 1); WA.fromSummary = false;
   advShow();
 }
 function advBack() {
   advKeep();
   if (WA.screen === 'me' && !WA.fromSummary) { WZ.step = 1; wizardShow(); return; }
   const i = ADV_SCREENS.indexOf(WA.screen);
-  WA.screen = WA.fromSummary ? 'summary' : ADV_SCREENS[i - 1]; WA.fromSummary = false;
+  WA.screen = WA.fromSummary ? 'summary' : advStep(i, -1); WA.fromSummary = false;
   advShow();
 }
 function advEdit(screen) { WA.screen = screen; WA.fromSummary = true; advShow(); }

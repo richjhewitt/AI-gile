@@ -1,9 +1,9 @@
 // QA area: dmrules (AIG-551): while the usage saver or No Token Mode is on, the owner's DM to a lead or to the Lead Scrum Master
 // gets a rule-based, automated reply (help, status, list, move, park, crucial) and no AI run starts.
 import fs from 'node:fs';
-import { check, sleep, tmp, mkProject, mkCard, getCard, def } from '../lib.mjs';
+import { check, sleep, tmp, mkProject, mkCard, getCard, openPage, def } from '../lib.mjs';
 
-def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park, crucial, unknown text, no run started (AIG-551)', async (s) => {
+def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park, crucial, unknown text, no run started (AIG-551)', async (s, ctx) => {
   await mkProject(s, 'Rules', 'RUL', { path: tmp('rules') });
   const doing = await mkCard(s, 'rules', 'building it', { status: 'doing' });
   const todo = await mkCard(s, 'rules', 'later thing', { status: 'todo' });
@@ -58,6 +58,18 @@ def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park,
   check('a reply inside the DM gets a rule reply', after.comments.filter(m => m.auto).length === 2 && /Doing/.test(after.comments.at(-1).text), JSON.stringify(after.comments.map(m => m.text)));
   check('no AI run started for any of it', await idle());
 
+  // AIG-566: a chip on each lead reply: ⚙ automated for rule replies, ✨ AI for a comment written through the CLI; legend in the view.
+  check('a CLI comment is stored as an AI one (auto false)', (s.cli(['comment', 'rules', c.id, 'Sure, on it', '--as', 'Lead']).code === 0) && (await getCard(s, 'rules', c.id)).comments.at(-1).auto === false);
+  const pg = await openPage(ctx, '#/');
+  await pg.click('#dmRail [data-dms]'); await pg.click('#dmPanel [data-dm="rules"]');
+  await pg.waitForSelector('#dmList .dm-origin.ai', { timeout: 6000 }).catch(() => {});
+  check('a rule reply shows the ⚙ Automated, free chip', /Automated, free/.test(await pg.textContent('#dmList .dm-origin.auto').catch(() => '')));
+  check('a CLI comment shows the ✨ AI, uses tokens chip', /AI, uses tokens/.test(await pg.textContent('#dmList .dm-origin.ai').catch(() => '')));
+  check('the owner\'s own message has no chip', await pg.evaluate(() => ![...document.querySelectorAll('#dmList .dm-msg.mine')].some(m => m.querySelector('.dm-origin'))));
+  const legend = await pg.textContent('.dm-legend').catch(() => '');
+  check('the DM view has the one-line legend', /automated, free/i.test(legend) && /AI, uses tokens/.test(legend), legend);
+  await pg.close();
+
   // The Lead Scrum Master.
   await s.ok('POST', '/api/chats/_watchman', { text: 'status' });
   await s.ok('POST', '/api/chats/_watchman', { text: 'tell the teams to hurry' });
@@ -78,4 +90,40 @@ def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park,
   check('No Token Mode gives rule replies too', r.reply && new RegExp(doing.id).test(r.reply.text), r.reply && r.reply.text);
   check('and starts no run', await idle());
   await s.ok('POST', '/api/notokens', { on: false });
-});
+
+  // AIG-609: GO on a 💬 card whose last lead comment names backlog cards: they move to To do, the lead says so (automated), the 💬 card is done.
+  await mkProject(s, 'Gos', 'GOS', { path: tmp('gos') });
+  await s.ok('POST', '/api/projects/gos/team', { name: 'Lead', role: 'Lead' }); await s.ok('POST', '/api/projects/gos/team', { name: 'Forge', role: 'Backend' });
+  const b1 = await mkCard(s, 'gos', 'first idea', { status: 'backlog' }), b2 = await mkCard(s, 'gos', 'second idea', { status: 'backlog' }), b3 = await mkCard(s, 'gos', 'third idea', { status: 'backlog' });
+  const talk = await s.ok('POST', '/api/projects/gos/cards', { title: '💬 what next', description: 'what next?', type: 'task', status: 'team', createdBy: 'Owner', quick: true });
+  await s.ok('POST', `/api/projects/gos/cards/${talk.id}/comments`, { author: 'Lead', text: `I suggest ${b1.id} and ${b2.id}. Shall I start them?` });
+  fs.rmSync(s.wakeOut, { force: true });
+  await s.ok('POST', `/api/projects/gos/cards/${talk.id}/comments`, { author: 'Owner', text: '👍 go' });
+  const gt = await getCard(s, 'gos', talk.id);
+  check('GO moves the named backlog cards to To do', (await getCard(s, 'gos', b1.id)).status === 'todo' && (await getCard(s, 'gos', b2.id)).status === 'todo' && (await getCard(s, 'gos', b3.id)).status === 'backlog');
+  check('the lead comments "On it" with the ids, flagged automated', gt.comments.at(-1).auto === true && gt.comments.at(-1).author === 'Lead' && new RegExp(`On it: ${b1.id}, ${b2.id} are in To do`).test(gt.comments.at(-1).text), gt.comments.at(-1));
+  check('the 💬 card is done and the lead was not woken for the GO', gt.status === 'done' && !fs.existsSync(s.wakeOut));
+  const talk2 = await s.ok('POST', '/api/projects/gos/cards', { title: '💬 again', description: 'x', type: 'task', status: 'team', createdBy: 'Owner', quick: true });
+  await s.ok('POST', `/api/projects/gos/cards/${talk2.id}/comments`, { author: 'Lead', text: `Should I do ${b3.id}?` });
+  await s.ok('POST', `/api/projects/gos/cards/${talk2.id}/comments`, { author: 'Owner', text: 'go ahead and also think about the colours' });
+  check('longer text is not a GO: the backlog card stays', (await getCard(s, 'gos', b3.id)).status === 'backlog' && (await getCard(s, 'gos', talk2.id)).status !== 'done');
+
+  // AIG-610: handing over the last part ("... 3/3") folds the earlier parts that wait in verify.
+  const p1 = await mkCard(s, 'gos', 'Big thing 1/3', { status: 'verify', testSteps: '1. a' }), p2 = await mkCard(s, 'gos', 'Big thing 2/3', { status: 'verify', testSteps: '1. b' });
+  const other = await mkCard(s, 'gos', 'Other 1/2', { status: 'verify', testSteps: '1. z' });
+  const p3 = await mkCard(s, 'gos', 'Big thing 3/3', { status: 'doing' });
+  const tr = s.cli(['test', 'gos', p3.id, '1. c', '--as', 'Lead']);
+  check('test on the last part succeeds', tr.code === 0, tr);
+  const q1 = await getCard(s, 'gos', p1.id), q3 = await getCard(s, 'gos', p3.id);
+  check('the earlier parts are folded into it', q1.status === 'done' && (await getCard(s, 'gos', p2.id)).status === 'done' && q3.status === 'verify' && /1\. a/.test(q3.testSteps) && /1\. b/.test(q3.testSteps), q3.testSteps);
+  check('a different title stem is left alone', (await getCard(s, 'gos', other.id)).status === 'verify');
+
+  // AIG-611: the last roster member answering closes the 📣 Stand-up.
+  await s.ok('POST', '/api/standup', { projects: ['gos'] });
+  const names = ((await s.ok('GET', '/api/projects/gos')).team || []).filter(m => !/retired/i.test(m.status || '')).map(m => m.name);
+  const stand = () => s.ok('GET', '/api/projects/gos').then(p => p.cards.find(c => c.standup));
+  for (const n of names.slice(0, -1)) s.cli(['standup', 'gos', '--done', 'x', '--next', 'y', '--as', n]);
+  check('with someone still to answer, the stand-up stays open', names.length > 0 && (await stand()).status !== 'done', names);
+  s.cli(['standup', 'gos', '--done', 'x', '--next', 'y', '--as', names.at(-1)]);
+  check('the last member answering moves the stand-up to done', (await stand()).status === 'done');
+}, true);

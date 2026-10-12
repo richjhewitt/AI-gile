@@ -81,12 +81,15 @@ async function lookDialog() {
     <div class="row"><label class="f"><span>${esc(t('cols.emoji'))}</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
     <label class="f"><span>${esc(t('cols.colour'))}</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
     <div class="f"><span>${esc(t('logo.title'))}</span>${logoEditor('look-logo', p.logo)}</div>
-    <label class="chk"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> ${esc(t('look.chatty'))} <span class="muted">${esc(t('look.chatty.cost'))}</span></label>
-    <label class="chk"><input type="checkbox" id="look-verbose" ${p.verbose ? 'checked' : ''}> ${esc(t('look.verbose'))}</label>
-    <label class="chk"><input type="checkbox" id="look-second" ${p.secondLead ? 'checked' : ''}> ${esc(t('look.second'))} <span class="muted">${esc(t('look.second.sub'))}</span></label>
+    <label class="chk ai-only"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> ${esc(t('look.chatty'))} <span class="muted">${esc(t('look.chatty.cost'))}</span></label>
+    <label class="chk"><input type="checkbox" id="look-private" ${p.private ? 'checked' : ''} onchange="Pub.tick('private')"> 🔒 ${esc(t('look.private'))} <span class="muted">${esc(t('look.private.sub'))}</span></label>
+    ${Pub.lookHtml(p)}
+    <label class="chk"><input type="checkbox" id="look-aioff" ${p.aiOff ? 'checked' : ''}> ⏸ ${esc(t('look.aioff'))} <span class="muted">${esc(t('look.aioff.sub'))}</span></label>
+    <label class="chk ai-only"><input type="checkbox" id="look-verbose" ${p.verbose ? 'checked' : ''}> ${esc(t('look.verbose'))}</label>
+    <label class="chk ai-only"><input type="checkbox" id="look-second" ${p.secondLead ? 'checked' : ''}> ${esc(t('look.second'))} <span class="muted">${esc(t('look.second.sub'))}</span></label>
     <label class="chk"><input type="checkbox" id="look-life" ${p.lifeBoard ? 'checked' : ''}> ${esc(t('look.life'))} <span class="muted">${esc(t('look.life.sub'))}</span></label>
-    <label class="f"><span>${esc(t('look.runin'))}</span>${runInSelect('look-runin', p.runIn || '', 'lookRunIn()', def)}${runInBlind(w)}</label>
-    <label class="f" id="look-runcmd-box" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="look-runcmd" value="${esc(p.runCmd || '')}" placeholder="${esc(leadPrefs().runCmd || 'cursor "{folder}"')}"><small class="muted">${esc(t('runin.cmd.look'))}</small></label>
+    <label class="f ai-only"><span>${esc(t('look.runin'))}</span>${runInSelect('look-runin', p.runIn || '', 'lookRunIn()', def)}${runInBlind(w)}</label>
+    <label class="f ai-only" id="look-runcmd-box" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="look-runcmd" value="${esc(p.runCmd || '')}" placeholder="${esc(leadPrefs().runCmd || 'cursor "{folder}"')}"><small class="muted">${esc(t('runin.cmd.look'))}</small></label>
     <div class="f" id="look-roles"><span>${esc(t('tm.h'))}</span><div><button type="button" onclick="teamDialog()">${esc(t('look.team.open'))}</button></div><small class="muted">${esc(t('look.team.moved'))}</small></div>
     <div class="err" id="look-err"></div>
     <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
@@ -94,7 +97,7 @@ async function lookDialog() {
 // 👥 The roles on this project moved to their own dialog (AIG-423, dialogs/team-profile.js); Look only opens it.
 async function saveLook(auto) {
   try {
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }

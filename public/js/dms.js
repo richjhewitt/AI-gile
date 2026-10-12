@@ -61,6 +61,7 @@ const Dms = (() => {
     let boards = [];
     try { boards = (await api('GET', '/api/shares')).filter(l => l.theirRole && !l.forgotten && ['live', 'ended'].includes(l.state)); } catch {}
     try { people = (await api('GET', '/api/dms/contacts')).filter(c => !c.blocked).map(c => ({ ...c, unread: c.lastIn && c.lastIn > dmSeen.get(c.id) && open !== 'dm:' + c.id ? 1 : 0 })); } catch { people = []; }
+    if (NoAi.on) chats = [];   // 🚫 no DMs to leads (AIG-581)
     const cur = here(), p = projects.find(x => x.slug === cur);
     if (p) seen.set(cur, p.updated);   // looking at it now counts as seen
     const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + people.reduce((n, c) => n + c.unread, 0);
@@ -82,7 +83,7 @@ const Dms = (() => {
   function railTree(list, cur, btn) {
     const T = Spaces.tree(list), needs = x => x.needsYou + T.of(x.slug).reduce((n, k) => n + needs(k), 0);
     const one = (x, n) => btn(`data-go="#/p/${esc(x.slug)}" data-slug="${esc(x.slug)}" data-parent="${esc(T.up(x.slug))}" draggable="true"`, avatar(x) + badge(n) + (x.updated > seen.get(x.slug) && x.slug !== cur && !n ? '<span class="dm-pip"></span>' : ''),
-      x.slug === cur, x.name + (n ? ' · ' + t('dms.waiting', { n }) : ''));
+      x.slug === cur, (x.private ? '🔒 ' : '') + x.name + (n ? ' · ' + t('dms.waiting', { n }) : ''));
     const item = (x, d) => {
       const kids = T.of(x.slug);
       if (!kids.length || d >= Spaces.MAX) return one(x, x.needsYou);
@@ -107,7 +108,11 @@ const Dms = (() => {
   }
 
   // acts: answer buttons under the message (AIG-176), only on the latest one still waiting on you.
-  const msgHtml = (m, acts = '') => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta">${face(m.author, thread.team)}<b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${acts}${pickHtml(m)}</div>`;
+  const msgHtml = (m, acts = '') => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta">${face(m.author, thread.team)}<b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${originHtml(m)}${acts}${pickHtml(m)}</div>`;
+  // AIG-566: a small chip on a reply: made by rules (free) or written by an AI (uses tokens). Old comments carry no marker, so no chip.
+  const originHtml = m => m.mine || typeof m.auto !== 'boolean' ? '' : m.auto
+    ? `<span class="dm-origin auto" title="${esc(t('dms.origin.auto.title'))}">${esc(t('dms.origin.auto'))}</span>`
+    : `<span class="dm-origin ai" title="${esc(t('dms.origin.ai.title'))}">${esc(t('dms.origin.ai'))}</span>`;
   // The 🌙 watchman asking which team a message is for (AIG-221): one button per team.
   const pickHtml = m => m.pick && m === thread.messages.at(-1) ? `<div class="actions">${m.pick.map((o, i) => `<button data-pick="${i}">${esc(o.label)}</button>`).join('')}</div>` : '';
   // One fold per card (AIG-157): a clear header (kind, id, title); only one fold open at a time, the rest show
@@ -209,6 +214,7 @@ const Dms = (() => {
     panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(chatName(c))}</div></div><span style="flex:1"></span>${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}
       <div class="dm-list" id="dmList"></div>
+      ${who ? '' : `<div class="dm-legend muted">${esc(t('dms.origin.legend'))}</div>`}
       <div id="dmFollow"></div>
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
         <textarea id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();Dms.send()}"></textarea>

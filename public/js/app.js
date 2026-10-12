@@ -32,7 +32,8 @@ window.addEventListener('hashchange', () => { state.editing = false; refresh(tru
   loadLang().then(() => api('GET', '/api/meta')).then(m => {
     if (!Boot.ok()) return;   // a script broke meanwhile: the page reloads instead
     state.servers = m.servers || []; state.terms = m.terms || [];
-    theme(); refresh(true); checkBuild(); NoTokens.start(); UsageGlance.start(); helpBoot();
+    NoAi.apply(m.noAi, m.noAiBuild);
+    theme(); refresh(true); checkBuild(); NoTokens.start(); Streamer.start(); UsageGlance.start(); helpBoot();
   }, e => Boot.again(start, e));
 })();
 setInterval(() => { if (!document.hidden) refresh(); }, 1000);
@@ -59,6 +60,7 @@ async function checkBuild() {
   if (!i18n.ready) return;
   try {
     const m = await api('GET', '/api/meta');
+    NoAi.apply(m.noAi, m.noAiBuild);   // 🚫 (AIG-581)
     if (m.owner && m.owner !== state.owner) { state.owner = m.owner; refresh(true); }
     // Quiet ended by itself at the wake-up time (AIG-232): show what happened overnight.
     if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});
@@ -69,6 +71,7 @@ async function checkBuild() {
     if ((m.ownerPic || '') !== (state.ownerPic || '')) { state.ownerPic = m.ownerPic || ''; refresh(true); }   // your picture (AIG-150)
     pokeBadge(await api('GET', '/api/projects'));
     Assumptions.watch();   // the count on the 🌙 Assumptions link (AIG-477)
+    WhatsNew.check();   // ✨ a note once after an update (AIG-562)
     // A new install opens Setup first (AIG-91).
     if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';
     if (loadedBuild === null) { loadedBuild = m.build; return; }

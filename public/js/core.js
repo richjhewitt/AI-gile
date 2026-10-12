@@ -179,7 +179,7 @@ const api = async (method, url, body) => {
   const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
   const j = await r.json();
   if (!r.ok) throw new Error(j.error || r.statusText);
-  return j;
+  return typeof Streamer !== 'undefined' && Streamer.on() ? Streamer.filter(method, url, j) : j;   // 🎥 streamer mode (AIG-590)
 };
 // A project's picture, or its emoji when it has none (AIG-175). Round, one em, so it sits where the emoji sat.
 function pic(logo, emoji) { return logo ? `<img class="pic" src="${esc(logo)}" alt="">` : esc(emoji || ''); }
@@ -208,6 +208,8 @@ function parseRoute() {
   if (popList) return { view: 'inbox', popList: popList[1] };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/assumptions') return { view: 'assumptions' };
+  if (location.hash === '#/today') return { view: 'today' };   // Today: Today's project weights (AIG-595)
+  if (location.hash === '#/whats-new') return { view: 'whatsnew' };   // ✨ release notes (AIG-562)
   if (location.hash === '#/setup') return { view: 'setup' };
   const suRoute = location.hash.match(/^#\/standups(?:\/([^/]+))?$/);   // AIG-539: #/standups/<project> shows one team
   if (suRoute) return { view: 'standups', ...(suRoute[1] ? { slug: decodeURIComponent(suRoute[1]) } : {}) };
@@ -256,8 +258,8 @@ async function refresh(force) {
   try {
     if (state.route.view === 'home') {
       const q = state.showArchived ? '?all=1' : '';
-      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([api('GET', '/api/projects' + q), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
-      sig = renderSig([state.route, state.projects, state.inbox, state.usage, state.sm && [state.sm.on, state.sm.where, state.sm.listening, state.sm.running, state.sm.lastRunAt, state.sm.lastRound]]);
+      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([TodayPage.load().then(() => api('GET', '/api/projects' + q)), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
+      sig = renderSig([state.route, state.projects, state.inbox, state.usage, TodayPage.data, state.sm && [state.sm.on, state.sm.where, state.sm.listening, state.sm.running, state.sm.lastRunAt, state.sm.lastRound]]);
     } else if (state.route.view === 'setup') {
       state.setup = await api('GET', '/api/setup');
       sig = JSON.stringify([state.route, state.setup]);
@@ -283,6 +285,12 @@ async function refresh(force) {
     } else if (state.route.view === 'assumptions') {
       await Assumptions.load();
       sig = JSON.stringify([state.route, Assumptions.data]);
+    } else if (state.route.view === 'today') {
+      await TodayPage.load();
+      sig = JSON.stringify([state.route, TodayPage.data, i18n.lang]);
+    } else if (state.route.view === 'whatsnew') {
+      await WhatsNew.load();
+      sig = JSON.stringify([state.route, WhatsNew.data, WhatsNew.rb, i18n.lang]);
     } else if (state.route.view === 'usage') {
       if (!uz.data) { state.lastSig = state.lastBoardSig = null; render(); }   // AIG-558: say "Loading" at once, not after the fetch
       await loadUsagePage(force);   // heavy, so at most every ~15s
@@ -333,6 +341,8 @@ function renderBoardOnly() {
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'usage') return;
   if (state.route.view === 'assumptions') { $('app').innerHTML = Assumptions.render(); return; }
+  if (state.route.view === 'today') { $('app').innerHTML = TodayPage.render(); return; }
+  if (state.route.view === 'whatsnew') { $('app').innerHTML = WhatsNew.render(); return; }
   if (state.route.view === 'standups') { $('app').innerHTML = renderStandups(); return; }
   if (state.route.view === 'shared') { $('app').innerHTML = ShareBoard.render(state.sboard); return; }
   // Only the home page and a board are painted here; Setup, the inbox and the rest paint themselves (AIG-335: no project yet on a fresh board).
@@ -362,6 +372,8 @@ function render() {
   if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'shared') { $('crumb').textContent = '/ 🔗 ' + (state.sboard ? state.sboard.theirName || state.sboard.friend : ''); $('crumb').style.color = ''; $('app').innerHTML = ShareBoard.render(state.sboard); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'assumptions') { $('crumb').textContent = '/ ' + t('assume.nav'); $('app').innerHTML = Assumptions.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'today') { $('crumb').textContent = '/ ' + t('today.title'); $('app').innerHTML = TodayPage.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'whatsnew') { $('crumb').textContent = '/ ' + t('wn.title'); $('app').innerHTML = WhatsNew.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ ' + t('crumb.usage'); $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
   const p = state.project;
   // A popped-out card (AIG-122): just the card, filling its own window; no header or board behind it.

@@ -83,11 +83,17 @@ function renderSetup() {
     <label class="f chk"><span><input type="checkbox" id="enSwitch" ${ls('aigile.enSwitch') === '1' ? 'checked' : ''} onchange="setEnSwitch(this.checked)"> ${esc(t('lang.en.switch'))}</span><small class="muted">${esc(t('lang.en.help'))}</small></label>
     <label class="f chk"><span><input type="checkbox" id="explainWords" ${glossOn() ? 'checked' : ''} onchange="setExplain(this.checked)"> ${esc(t('gloss.switch'))}</span><small class="muted">${esc(t('gloss.switch.help'))} <a href="#/glossary">${esc(t('gloss.open'))}</a></small></label>
     <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
-    <label class="f"><span>${esc(t('follow.setup'))}</span><select class="setup-theme" id="followMode" onchange="Follow.setMode(this.value)">${['auto', 'button'].map(v => `<option value="${v}" ${Follow.mode() === v ? 'selected' : ''}>${esc(t('follow.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('follow.setup.help'))}</small></label>
-    <div class="f lead-prefs" id="leadPrefs">${leadPrefsHtml()}</div>
-    <div class="f lead-prefs" id="mainTeamBox">${mainTeamBoxHtml()}</div>
-    <div class="f lead-prefs" id="runInPrefs">${runInHtml()}</div>
+    <label class="f ai-only"><span>${esc(t('follow.setup'))}</span><select class="setup-theme" id="followMode" onchange="Follow.setMode(this.value)">${['auto', 'button'].map(v => `<option value="${v}" ${Follow.mode() === v ? 'selected' : ''}>${esc(t('follow.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('follow.setup.help'))}</small></label>
+    <div class="f noai-box" id="noAiBox">${noAiBoxHtml()}</div>
+    <div class="f" id="topbarBox">${Topbar.html()}</div>
+    <div class="f" id="channelBox">${Channel.html()}</div>
+    <div class="f lead-prefs ai-only" id="leadPrefs">${leadPrefsHtml()}</div>
+    <div class="f lead-prefs ai-only" id="mainTeamBox">${mainTeamBoxHtml()}</div>
+    <div class="f lead-prefs ai-only" id="runInPrefs">${runInHtml()}</div>
     <div class="f" id="serversBox">${(srvDraft = null, serversHtml())}</div>
+    <div class="f" id="streamerBox">${Streamer.setupHtml()}</div>
+    <div class="f" id="licencesBox">${(Lic.reset(), Lic.html())}</div>
+    <div class="f" id="secretsBox">${(SEC.list = null, secretsBoxHtml())}</div>
     <div class="f" id="discordBox">${(queueMicrotask(DiscordSetup.load), DiscordSetup.html())}</div>
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
