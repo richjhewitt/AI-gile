@@ -1,9 +1,9 @@
 // QA area: dmrules (AIG-551): while the usage saver or No Token Mode is on, the owner's DM to a lead or to the Lead Scrum Master
 // gets a rule-based, automated reply (help, status, list, move, park, crucial) and no AI run starts.
 import fs from 'node:fs';
-import { check, sleep, tmp, mkProject, mkCard, getCard, def } from '../lib.mjs';
+import { check, sleep, tmp, mkProject, mkCard, getCard, openPage, def } from '../lib.mjs';
 
-def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park, crucial, unknown text, no run started (AIG-551)', async (s) => {
+def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park, crucial, unknown text, no run started (AIG-551)', async (s, ctx) => {
   await mkProject(s, 'Rules', 'RUL', { path: tmp('rules') });
   const doing = await mkCard(s, 'rules', 'building it', { status: 'doing' });
   const todo = await mkCard(s, 'rules', 'later thing', { status: 'todo' });
@@ -58,6 +58,18 @@ def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park,
   check('a reply inside the DM gets a rule reply', after.comments.filter(m => m.auto).length === 2 && /Doing/.test(after.comments.at(-1).text), JSON.stringify(after.comments.map(m => m.text)));
   check('no AI run started for any of it', await idle());
 
+  // AIG-566: a chip on each lead reply: ⚙ automated for rule replies, ✨ AI for a comment written through the CLI; legend in the view.
+  check('a CLI comment is stored as an AI one (auto false)', (s.cli(['comment', 'rules', c.id, 'Sure, on it', '--as', 'Lead']).code === 0) && (await getCard(s, 'rules', c.id)).comments.at(-1).auto === false);
+  const pg = await openPage(ctx, '#/');
+  await pg.click('#dmRail [data-dms]'); await pg.click('#dmPanel [data-dm="rules"]');
+  await pg.waitForSelector('#dmList .dm-origin.ai', { timeout: 6000 }).catch(() => {});
+  check('a rule reply shows the ⚙ Automated, free chip', /Automated, free/.test(await pg.textContent('#dmList .dm-origin.auto').catch(() => '')));
+  check('a CLI comment shows the ✨ AI, uses tokens chip', /AI, uses tokens/.test(await pg.textContent('#dmList .dm-origin.ai').catch(() => '')));
+  check('the owner\'s own message has no chip', await pg.evaluate(() => ![...document.querySelectorAll('#dmList .dm-msg.mine')].some(m => m.querySelector('.dm-origin'))));
+  const legend = await pg.textContent('.dm-legend').catch(() => '');
+  check('the DM view has the one-line legend', /automated, free/i.test(legend) && /AI, uses tokens/.test(legend), legend);
+  await pg.close();
+
   // The Lead Scrum Master.
   await s.ok('POST', '/api/chats/_watchman', { text: 'status' });
   await s.ok('POST', '/api/chats/_watchman', { text: 'tell the teams to hurry' });
@@ -78,4 +90,4 @@ def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park,
   check('No Token Mode gives rule replies too', r.reply && new RegExp(doing.id).test(r.reply.text), r.reply && r.reply.text);
   check('and starts no run', await idle());
   await s.ok('POST', '/api/notokens', { on: false });
-});
+}, true);

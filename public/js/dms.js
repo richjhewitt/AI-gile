@@ -107,7 +107,11 @@ const Dms = (() => {
   }
 
   // acts: answer buttons under the message (AIG-176), only on the latest one still waiting on you.
-  const msgHtml = (m, acts = '') => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta">${face(m.author, thread.team)}<b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${acts}${pickHtml(m)}</div>`;
+  const msgHtml = (m, acts = '') => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta">${face(m.author, thread.team)}<b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${originHtml(m)}${acts}${pickHtml(m)}</div>`;
+  // AIG-566: a small chip on a reply: made by rules (free) or written by an AI (uses tokens). Old comments carry no marker, so no chip.
+  const originHtml = m => m.mine || typeof m.auto !== 'boolean' ? '' : m.auto
+    ? `<span class="dm-origin auto" title="${esc(t('dms.origin.auto.title'))}">${esc(t('dms.origin.auto'))}</span>`
+    : `<span class="dm-origin ai" title="${esc(t('dms.origin.ai.title'))}">${esc(t('dms.origin.ai'))}</span>`;
   // The 🌙 watchman asking which team a message is for (AIG-221): one button per team.
   const pickHtml = m => m.pick && m === thread.messages.at(-1) ? `<div class="actions">${m.pick.map((o, i) => `<button data-pick="${i}">${esc(o.label)}</button>`).join('')}</div>` : '';
   // One fold per card (AIG-157): a clear header (kind, id, title); only one fold open at a time, the rest show
@@ -209,6 +213,7 @@ const Dms = (() => {
     panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(chatName(c))}</div></div><span style="flex:1"></span>${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}
       <div class="dm-list" id="dmList"></div>
+      ${who ? '' : `<div class="dm-legend muted">${esc(t('dms.origin.legend'))}</div>`}
       <div id="dmFollow"></div>
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
         <textarea id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();Dms.send()}"></textarea>

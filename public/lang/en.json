@@ -1996,5 +1996,10 @@
  "srv.dmr.parked": "Parked {id} in the Backlog.",
  "srv.dmr.crucial": "{id} is now crucial: it still runs while the usage saver is on.",
  "srv.dmr.unknown": "I'm not running AI right now (usage saver or No Token Mode), so this waits until usage is back. Your message is kept and I'll read it then. Type help for what I can do now.",
- "srv.dmr.unknownsm": "I'm not running AI right now (usage saver or No Token Mode), so this waits until usage is back. Please send it again then. Type help for what I can do now."
+ "srv.dmr.unknownsm": "I'm not running AI right now (usage saver or No Token Mode), so this waits until usage is back. Please send it again then. Type help for what I can do now.",
+ "dms.origin.auto": "⚙ Automated, free",
+ "dms.origin.auto.title": "Written by rules, no AI involved, costs nothing.",
+ "dms.origin.ai": "✨ AI, uses tokens",
+ "dms.origin.ai.title": "Written by an AI agent, which uses tokens.",
+ "dms.origin.legend": "Chips on replies: ⚙ automated, free · ✨ AI, uses tokens"
 }
