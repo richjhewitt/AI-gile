@@ -2300,5 +2300,21 @@
   "presence.ok": "Zichtbaar op Discord",
   "presence.wait": "Zoekt de Discord-app op deze pc…",
   "presence.err.id": "Discord weigerde dat applicatie-ID: kijk het na",
-  "presence.err.discord": "Discord-app niet gevonden: staat hij open op deze pc?"
+  "presence.err.discord": "Discord-app niet gevonden: staat hij open op deze pc?",
+  "streamer.obs.h": "Verbinden met OBS",
+  "streamer.obs.help": "Open in OBS Extra > WebSocket-serverinstellingen, vink WebSocket-server inschakelen aan en kopieer de poort en het wachtwoord hierheen. Dan weet het bord wanneer je echt streamt en kan het de stream voor je starten en stoppen.",
+  "streamer.obs.port": "Poort",
+  "streamer.obs.password": "Wachtwoord",
+  "streamer.obs.pw.saved": "(opgeslagen)",
+  "streamer.obs.connect": "Verbinden",
+  "streamer.obs.connected": "Verbonden",
+  "streamer.obs.connecting": "Verbinden...",
+  "streamer.obs.off": "Niet verbonden",
+  "streamer.obs.notrunning": "OBS draait niet",
+  "streamer.obs.serveroff": "OBS draait, maar de WebSocket-server staat uit (Extra > WebSocket-serverinstellingen)",
+  "streamer.obs.badpassword": "Verkeerd wachtwoord",
+  "streamer.live": "🔴 Live gaan",
+  "streamer.live.title": "Zet streamermodus aan en start de stream in OBS",
+  "streamer.stop": "⏹ Stop",
+  "streamer.stop.title": "Stop de stream in OBS"
 }

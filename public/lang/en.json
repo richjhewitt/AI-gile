@@ -2300,5 +2300,21 @@
   "presence.ok": "Showing on Discord",
   "presence.wait": "Looking for the Discord app on this PC…",
   "presence.err.id": "Discord turned that application ID down: check it",
-  "presence.err.discord": "Discord app not found: is it open on this PC?"
+  "presence.err.discord": "Discord app not found: is it open on this PC?",
+  "streamer.obs.h": "Connect to OBS",
+  "streamer.obs.help": "In OBS open Tools > WebSocket Server Settings, tick Enable WebSocket server, and copy the port and password here. Then the board knows when you really stream, and can start and stop the stream for you.",
+  "streamer.obs.port": "Port",
+  "streamer.obs.password": "Password",
+  "streamer.obs.pw.saved": "(saved)",
+  "streamer.obs.connect": "Connect",
+  "streamer.obs.connected": "Connected",
+  "streamer.obs.connecting": "Connecting...",
+  "streamer.obs.off": "Not connected",
+  "streamer.obs.notrunning": "OBS is not running",
+  "streamer.obs.serveroff": "OBS is running, but its WebSocket server is off (Tools > WebSocket Server Settings)",
+  "streamer.obs.badpassword": "Wrong password",
+  "streamer.live": "🔴 Go live",
+  "streamer.live.title": "Turn streamer mode on and start the stream in OBS",
+  "streamer.stop": "⏹ Stop",
+  "streamer.stop.title": "Stop the stream in OBS"
 }
