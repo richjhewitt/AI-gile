@@ -25,6 +25,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/attachments.js`, `lib/logos.js`, `lib/avatars.js`: reply files, project/app logos, profile pictures
 - `lib/dm.js`, `relay/relay.js`: private DMs and their relay; `lib/share.js`: sharing a project with a friend over them; `lib/ask.js`: ask a mate (a friend's question for my AI, AIG-210)
 - `lib/pack.js`: the AIGILE pack (AIG-357, `docs/HANDOFF.md`): a card for an outside chat AI and its reply pasted back
+- `lib/expertteams.js` + `profiles/expert-teams.json` (AIG-577..579): premade expert teams (8 templates, roles by profile id with model and job, starter cards, done bullets); usage estimate baseline from `_runs.jsonl`; `GET /api/expert-teams`, `POST /api/projects/:slug/expert-team`; page `js/dialogs/expert-teams.js` (in the 👥 Team dialog); QA `experts`
 - `lib/limits.js`, `lib/usage.js`, `lib/usagecheck.js`: plan usage, tokens, check usage now
 - `lib/trial.js`, `tools/trial/pretend-team.js`: 🧪 try it as a new user
 - `lib/pretend.js`: 🧪 pretend friend (AIG-322): local relay + second board "Davy" (nl-BE) on free ports, invite swapped, stop keeps or wipes his data

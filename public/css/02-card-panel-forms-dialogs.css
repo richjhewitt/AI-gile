@@ -209,3 +209,8 @@ textarea.grow { max-height: 85vh; resize: vertical; }
 @media (max-width: 600px) { .langlist { position: fixed; inset-inline: 1rem; top: auto; bottom: calc(70px + env(safe-area-inset-bottom)); min-width: 0; max-width: none; max-height: 70vh; } }
 /* Right to left (AIG-487): the layout mirrors through logical properties; code, commands and the terminal stay left to right. */
 [dir=rtl] .codebox, [dir=rtl] pre, [dir=rtl] code, [dir=rtl] kbd, [dir=rtl] .term-body { direction: ltr; unicode-bidi: isolate; }
+
+.xt { margin: 14px 0 4px; padding-top: 10px; border-top: 1px solid var(--line, #8883); } .xt h3 { margin: 0 0 4px; font-size: 15px; }
+.xt-roles, .xt-cards, .xt-done { margin: 4px 0 10px; padding-inline-start: 20px; font-size: 13px; } .xt-roles li { margin: 2px 0; }
+.xt-est { margin: 8px 0; padding: 8px 10px; border-radius: 8px; background: var(--col, #8881); font-size: 13px; } .xt-est small { display: block; }
+.xt input[type=range] { width: 100%; min-height: 32px; }

@@ -8,7 +8,8 @@ const LEAD_ID = 'lead-principal';
 const tmOn = () => TM.data.roles.map(r => r.id);
 
 async function teamDialog(msg = '') {
-  await loadProfiles();
+  await Promise.all([loadProfiles(), xtLoad()]);
+  XT.msg = '';
   try { TM.data = await api('GET', '/api/projects/' + slug() + '/profiles'); } catch (e) { alert(e.message); return; }
   TM.msg = msg;
   openDialog(`<div id="tm-box">${teamHtml()}</div>`, 'wide team-dlg');
@@ -43,6 +44,7 @@ function teamHtml() {
     <div class="tm-add"><select id="tm-team" aria-label="${esc(t('look.team.pick'))}"><option value="">${esc(t('look.team.pick'))}</option>${(state.profiles.teams || []).map(tm => `<option value="${esc(tm.id)}">${esc(t('prof.team.' + tm.id))}</option>`).join('')}</select>
       <button type="button" id="tm-team-add" onclick="teamApply('add')">${esc(t('tm.team.add'))}</button><button type="button" id="tm-team-replace" onclick="teamApply('replace')">${esc(t('tm.team.replace'))}</button></div>
     <small class="muted">${esc(t('tm.team.sub'))}</small>
+    ${xtHtml()}
     <div class="tm-msg" id="tm-msg" role="status">${TM.msg}</div>
     <details class="tm-owner" id="tm-owner"><summary>${esc(t('tm.owner.h'))}</summary><small class="muted">${esc(t('tm.owner.sub'))}</small>${['steps', 'go', 'words'].map(ownerRow).join('')}</details>
     <div class="err" id="tm-err"></div>
