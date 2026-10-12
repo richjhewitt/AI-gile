@@ -32,7 +32,8 @@ const IB = {
     const m = mark && [...(c.comments || [])].reverse().find(x => x.mark === mark && String(x.author).trim().toLowerCase() !== me().toLowerCase());
     // After the owner replied and the lead answered (AIG-472), the lead's newest message leads; the task itself folds under it (see `earlier`).
     const last = isTask(c) && lastAsk(c);
-    return last && m && last.at > m.at && !last.mark ? last : m || lastAsk(c);
+    const replied = m && (c.comments || []).some(x => x.at > m.at && last && x.at < last.at && String(x.author).trim().toLowerCase() === me().toLowerCase());
+    return replied && !last.mark ? last : m || lastAsk(c);
   };
   const earlier = c => { const a = shownAsk(c); const m = isTask(c) && [...(c.comments || [])].reverse().find(x => x.mark === 'task' && String(x.author).trim().toLowerCase() !== me().toLowerCase()); return m && m !== a ? m : null; };
   const keyOf = c => c.project + '/' + c.id;
