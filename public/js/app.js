@@ -32,7 +32,7 @@ window.addEventListener('hashchange', () => { state.editing = false; refresh(tru
   loadLang().then(() => api('GET', '/api/meta')).then(m => {
     if (!Boot.ok()) return;   // a script broke meanwhile: the page reloads instead
     state.servers = m.servers || []; state.terms = m.terms || [];
-    NoAi.apply(m.noAi);
+    NoAi.apply(m.noAi, m.noAiBuild);
     theme(); refresh(true); checkBuild(); NoTokens.start(); Streamer.start(); UsageGlance.start(); helpBoot();
   }, e => Boot.again(start, e));
 })();
@@ -60,7 +60,7 @@ async function checkBuild() {
   if (!i18n.ready) return;
   try {
     const m = await api('GET', '/api/meta');
-    NoAi.apply(m.noAi);   // 🚫 (AIG-581)
+    NoAi.apply(m.noAi, m.noAiBuild);   // 🚫 (AIG-581)
     if (m.owner && m.owner !== state.owner) { state.owner = m.owner; refresh(true); }
     // Quiet ended by itself at the wake-up time (AIG-232): show what happened overnight.
     if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});

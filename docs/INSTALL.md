@@ -105,6 +105,15 @@ This adds an **AI-gile** shortcut to your Desktop and Start menu. (Run it from P
 With a zip, see step 1. With a git clone, when there is a new version the board shows an **⬆ Update** pill. One click updates and restarts it.
 It never updates while a team is working, and never over changes you haven't saved.
 
+## The No-AI edition
+
+A download with no AI in it at all, for people who want the board, friends, sharing, the guide and people as team members, and nothing else.
+
+- Build it from a checkout: `node tools/build-noai.mjs` makes the folder `dist/aigile-noai/` (git-ignored). Add `--zip` for `dist/aigile-noai.zip` (uses the `tar` that comes with Windows 10 and later; if it is missing you still get the folder). `--out <folder>` puts it somewhere else.
+- It is the same code with the AI parts left out: the tester, Lead Scrum Master, night watchman, usage checks, ask a mate and token usage are replaced by empty stand-ins, and the model profiles, status line and their briefs are not copied.
+- A file called `NOAI` in the folder keeps "No AI, ever" on for good. The switch can't be turned off there. Setup's **OK, I give in: try AI** button only explains that you need the full download.
+- To move over to the full download, copy your `data` folder into it. Your boards carry over.
+
 ## If something goes wrong
 
 - **The page doesn't open:** run `start-aigile.bat` again. If something else uses port 4321, close that program.

@@ -48,7 +48,7 @@ export async function startRelay(extraEnv = {}) {
 export const until = async (fn, ms = 8000) => { const end = Date.now() + ms; let v; while (!(v = await fn()) && Date.now() < end) await sleep(100); return v; };
 
 // port: a second board for the dms area runs on another port.
-export async function startServer(extraEnv = {}, port = PORT) {   // a second board passes await freePort()
+export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   // root: another copy of the app, e.g. the No-AI build (AIG-617)   // a second board passes await freePort()
   // A busy QA_PORT means another process (a board, a relay, an old run) would answer our calls: stop the run at once.
   if (!(await portFree(port))) {
     if (port === PORT) { console.error(`QA_PORT ${port} is in use by another process: pick another QA_PORT`); process.exit(3); }
@@ -69,7 +69,7 @@ export async function startServer(extraEnv = {}, port = PORT) {   // a second bo
   fs.writeFileSync(local, JSON.stringify(Object.fromEntries(['usageDir', 'globalSettingsFile', 'agent', 'avatarsDir'].filter(k => k in ownerLocal).map(k => [k, ownerLocal[k]])), null, 2));
   const env = { ...process.env, AIGILE_LOCAL: local, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', AIGILE_UNDO_WAKE_MS: '0', AIGILE_QA_TOKEN: token, ...extraEnv };   // tests speak to "Owner", whatever your own name is
   delete env.AIGILE_DEV; delete env.AIGILE_ALLOW_DONE; delete env.AIGILE_AS;
-  const proc = spawn(process.execPath, [path.join(ROOT, 'server.js')], { env, stdio: 'ignore', cwd: ROOT });
+  const proc = spawn(process.execPath, [path.join(root, 'server.js')], { env, stdio: 'ignore', cwd: root });
   let mine = false;
   for (let i = 0; i < 100 && !mine; i++) {
     if (proc.exitCode !== null) break;   // it died (port taken?): do not mistake another run's server for ours
