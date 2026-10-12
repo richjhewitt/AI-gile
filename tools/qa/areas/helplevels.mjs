@@ -92,12 +92,12 @@ def('helplevels', '❓ help levels: each level\'s first run, the Help menu, the 
   await p1.evaluate(() => { window.__opened = []; window.open = u => { window.__opened.push(u); }; });
   await p1.click('#helpBtn'); await p1.click('#hmDemo'); await sleep(500);
   const o1 = await p1.evaluate(() => window.__opened);
-  check('demo mode with all the help starts with the intro', o1.length === 1 && /\?intro=1&lang=en$/.test(o1[0]), o1);
+  check('demo mode with all the help starts with the intro', o1.length === 1 && /[?&]intro=1(&|$)/.test(o1[0]) && /[?&]lang=en(&|$)/.test(o1[0]), o1);   // ?lang= too since AIG-488
   await s.ok('POST', '/api/setup', { prefs: { helpLevel: '2' } });
   await p1.click('#helpBtn'); await sleep(300); await p1.keyboard.press('Escape');   // the menu re-reads the level
   await p1.click('#helpBtn'); await p1.click('#hmDemo'); await sleep(500);
   const o2 = await p1.evaluate(() => window.__opened);
-  check('demo mode with some help is a plain window', o2.length === 2 && o2[1] === 'http://127.0.0.1:9/', o2);
+  check('demo mode with some help is a plain window', o2.length === 2 && o2[1] === 'http://127.0.0.1:9/?lang=en', o2);   // no intro; the language still goes along (AIG-488)
   noErrors(p1);
   await c1.close();
 
