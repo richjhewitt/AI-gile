@@ -209,6 +209,7 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   check('level 2: still nothing under 8 h', await flagged() === base);
   await s.ok('POST', '/api/scrummaster/push', { level: 3 }); await s.ok('POST', '/api/scrummaster/round');
   check('level 3 pokes the 5 h card only', await flagged() === base + 1, await flagged());
+  check('AIG-567: the stale card gets one free "any update?" (automated), the others none', (await getCard(s, 'gamma', sa.id)).comments.filter(m => m.poke && m.auto && /any update/.test(m.text)).length === 1 && !(await getCard(s, 'gamma', sb.id)).comments.some(m => m.poke));
   await s.ok('POST', '/api/scrummaster/push', { level: 4 }); await s.ok('POST', '/api/scrummaster/round');
   check('level 4 adds the 2 h card', await flagged() === base + 2, await flagged());
   await s.ok('POST', '/api/scrummaster/push', { level: 5 }); await s.ok('POST', '/api/scrummaster/round');

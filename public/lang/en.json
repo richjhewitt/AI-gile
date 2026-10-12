@@ -2090,5 +2090,6 @@
  "sec.auto.never": "never",
  "sec.auto.hours": {"one":"{count} hour","other":"{count} hours"},
   "nudge.title": "Nudge the team (free; only the wake uses tokens)",
-  "nudge.lit": "Seems stuck: click to nudge the team"
+  "nudge.lit": "Seems stuck: click to nudge the team",
+  "srv.dmr.goon": "- On it: {list} are in To do"
 }

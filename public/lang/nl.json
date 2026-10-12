@@ -2090,5 +2090,6 @@
  "sec.auto.never": "nooit",
  "sec.auto.hours": {"one":"{count} uur","other":"{count} uur"},
   "nudge.title": "Por het team (gratis; alleen het wekken kost tokens)",
-  "nudge.lit": "Lijkt vast te zitten: klik om het team te porren"
+  "nudge.lit": "Lijkt vast te zitten: klik om het team te porren",
+  "srv.dmr.goon": "- Ik ga ermee aan de slag: {list} staan in To do"
 }
