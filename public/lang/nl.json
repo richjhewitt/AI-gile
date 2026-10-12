@@ -2275,5 +2275,17 @@
   "enter.card": "Kaartreacties",
   "enter.dm": "Privéberichten",
   "enter.idea": "Ideeën",
-  "pile.left": "{n} van {total} over"
+  "pile.left": "{n} van {total} over",
+  "streamer.win": "Streamvenster openen",
+  "streamer.win.title": "Open een tweede venster van dit bord dat altijd in streamermodus staat: zet dit venster in je stream",
+  "pub.personal": "Persoonlijk project",
+  "pub.personal.sub": "Privéleven: nooit zichtbaar tijdens het streamen, wat je streamerinstellingen ook zeggen",
+  "streamer.hide.h": "Wat de streamermodus verbergt",
+  "streamer.hide.private": "Privéprojecten",
+  "streamer.hide.personal": "Persoonlijke projecten",
+  "streamer.hide.locked": "altijd verborgen",
+  "streamer.hide.dms": "Directe berichten (DM's)",
+  "streamer.hide.friends": "Vrienden en gedeelde borden",
+  "streamer.hide.life": "Privékaarten",
+  "streamer.hide.secrets": "Geheimen: wachtwoorden, sleutels, IP-adressen, e-mailadressen en servernamen als ••••"
 }

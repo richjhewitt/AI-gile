@@ -19,8 +19,7 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   await mkCard(s, 'secret-board', 'Private plan');
   await s.ok('POST', '/api/setup', { prefs: { servers: [{ name: 'Prodbox', kind: 'ssh', value: 'root@10.9.8.7' }] } });
 
-  const page = await openPage(ctx, '#/');
-  await page.evaluate(() => { window.__copied = []; navigator.clipboard.writeText = async t => { window.__copied.push(t); }; });
+  const page = await openPage(ctx, '#/');  await page.evaluate(() => { window.__copied = []; navigator.clipboard.writeText = async t => { window.__copied.push(t); }; });
   await page.waitForSelector('.proj');
   await page.waitForSelector('#dmRail [data-slug="secret-board"]', { timeout: 8000 }).catch(() => {});   // the rail paints a moment after home
   check('before streaming both projects show on home and in the sidebar', (await page.locator('a.proj').count()) === 2 && (await page.locator('#dmRail [data-slug="secret-board"]').count()) === 1, { home: await page.locator('a.proj').count(), rail: await page.locator('#dmRail [data-slug="secret-board"]').count() });
@@ -78,6 +77,66 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   check('switched off: the real text is back', (await page.locator('.panel').textContent()).includes(IP));
   await page.goto(`${BASE}/#/`); await page.reload(); await page.waitForSelector('a.proj');
   check('switched off: the private project is back', (await page.locator('a.proj').count()) === 2);
+
+  // The stream window (AIG-631): Setup > 🎥 Open stream window opens a second window that is always in streamer mode
+  await page.goto(`${BASE}/#/setup`); await page.reload(); await page.waitForSelector('#streamWin');
+  const [win] = await Promise.all([ctx.waitForEvent('page'), page.click('#streamWin')]);
+  await win.waitForSelector('html[data-streamer]');
+  check('the stream window is at /?stream=1 and in streamer mode', win.url().includes('stream=1') && (await win.evaluate(() => Streamer.on())));
+  await win.goto(`${BASE}/?stream=1#/`); await win.waitForSelector('a.proj');
+  await until(async () => (await win.locator('a.proj').count()) === 1);
+  check('the stream window shows only the open project', (await win.locator('a.proj').count()) === 1 && !(await win.locator('#app, main').first().textContent()).includes('Secret Board'));
+  check('the stream window cannot be switched off', (await win.evaluate(() => { Streamer.toggle(); return Streamer.on(); })) === true);
+  check('the normal window is not in streamer mode', !(await page.evaluate(() => document.documentElement.hasAttribute('data-streamer'))) && (await page.evaluate(() => Streamer.on())) === false);
+  await win.close();
+  await page.goto(`${BASE}/#/`); await page.waitForSelector('a.proj');
+
+  // Personal projects (AIG-637): ticked in Look, never shown while streaming
+  await mkProject(s, 'Life Board', 'LIF');
+  await mkCard(s, 'life-board', 'Dentist');
+  await page.goto(`${BASE}/#/p/life-board`); await page.waitForSelector('button:has-text("Look")');
+  await page.click('button:has-text("Look")'); await page.waitForSelector('#look-personal');
+  await page.check('#look-private'); await page.check('#look-personal');
+  check('ticking 🏡 Personal unticks Private', !(await page.isChecked('#look-private')));
+  await page.click('.actions .primary');
+  await until(async () => (await s.ok('GET', '/api/projects')).find(p => p.slug === 'life-board').personal === true);
+  const lb = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'life-board');
+  check('the project is now Personal (and not Private)', lb.personal === true && !lb.private && !lb.public, lb);
+  const sb = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'secret-board');
+  check('an old private project is still Private, not Personal', sb.private === true && !sb.personal);
+  await sleep(1500);
+  await page.goto(`${BASE}/#/`); await page.waitForSelector('a.proj');
+  check('home shows 🏡 on the Personal project', (await page.locator('a.proj:has-text("Life Board") .lock').textContent().catch(() => '')).includes('🏡') || (await page.locator('.lock:has-text("🏡")').count()) > 0);
+  const win2 = await ctx.newPage(); await win2.goto(`${BASE}/?stream=1#/`); await win2.waitForSelector('a.proj');
+  await until(async () => (await win2.locator('a.proj').count()) === 1);
+  check('streamer mode never shows the Personal project', !(await win2.locator('main, #app').first().textContent()).includes('Life Board') && !(await win2.evaluate(async () => JSON.stringify(await api('GET', '/api/projects')))).includes('life-board'));
+  await win2.goto(`${BASE}/?stream=1#/p/life-board`);
+  await until(async () => (await win2.evaluate(() => location.hash)) === '#/');
+  check('a link straight to the Personal project goes home', true);
+  await win2.close();
+
+  // The Setup tick list of what streamer mode hides (AIG-638)
+  await page.goto(`${BASE}/#/setup`); await page.reload(); await page.waitForSelector('#streamHide');
+  const ticks = await page.$$eval('#streamHide input[data-hide]', is => is.map(i => [i.dataset.hide, i.checked, i.disabled]));
+  check('Setup lists six things, all ticked (today), Personal ticked and locked', ticks.length === 6 && ticks.every(x => x[1]) && ticks.find(x => x[0] === 'personal')[2] === true && ticks.filter(x => x[2]).length === 1, ticks);
+  await page.click('#streamHide input[data-hide="private"]');
+  await page.click('#streamHide input[data-hide="secrets"]');
+  await page.click('#streamHide input[data-hide="dms"]');
+  await until(async () => { const h = (await s.ok('GET', '/api/streamer')).hide; return h.private === false && h.secrets === false && h.dms === false; });
+  const hh = (await s.ok('GET', '/api/streamer')).hide;
+  check('the ticks are saved on the board (personal always true, the rest as unticked)', hh.personal === true && hh.private === false && hh.secrets === false && hh.dms === false && hh.friends === true && hh.life === true, hh);
+  const win3 = await ctx.newPage(); await win3.goto(`${BASE}/?stream=1#/`); await win3.waitForSelector('a.proj');
+  await until(async () => (await win3.locator('a.proj').count()) === 2);
+  const home3 = await win3.locator('main, #app').first().textContent();
+  check('with Private unticked the private project shows, the Personal one still does not', home3.includes('Secret Board') && !home3.includes('Life Board'));
+  check('with DMs unticked the DM button is back', await win3.locator('.dm-railbtn[data-dms]').isVisible());
+  await win3.goto(`${BASE}/?stream=1#/p/open-board/${card.id}`); await win3.waitForSelector('.panel .codebox');
+  check('with Secrets unticked the comment shows the real text', (await win3.locator('.panel').textContent()).includes(IP));
+  await win3.close();
+  for (const k of ['private', 'secrets', 'dms']) await page.click(`#streamHide input[data-hide="${k}"]`);
+  await until(async () => { const h = (await s.ok('GET', '/api/streamer')).hide; return h.private && h.secrets && h.dms; });
+  check('ticking them again puts today\'s behaviour back', true);
+  await page.goto(`${BASE}/#/`); await page.waitForSelector('a.proj');
 
   // Auto (AIG-592): a stub file stands in for OBS in the process list
   check('the board reports nothing running at first', (await s.ok('GET', '/api/streamer')).running === false && (await s.ok('GET', '/api/streamer')).auto === true);

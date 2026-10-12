@@ -97,7 +97,7 @@ async function lookDialog() {
 // 👥 The roles on this project moved to their own dialog (AIG-423, dialogs/team-profile.js); Look only opens it.
 async function saveLook(auto) {
   try {
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, personal: $('look-personal').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }

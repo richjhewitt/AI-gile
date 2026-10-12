@@ -8,9 +8,14 @@
 // OBS or Streamlabs is running (GET /api/streamer, checked by lib/streamer.js every 30 s; the page asks every 5 s).
 const Streamer = (() => {
   const KEY = 'aigile.streamer', DOTS = '••••';
-  let manual = false, auto = false, st = { auto: true, running: false, program: '' }, hidden = new Set(), ready = null, note = null;
+  let manual = false, auto = false, st = { auto: true, running: false, program: '', hide: {} }, hidden = new Set(), ready = null, note = null;
   try { manual = localStorage.getItem(KEY) === '1'; } catch {}
-  const on = () => manual || auto;
+  // The stream window (AIG-631): opened by Setup's 🎥 Open stream window as /?stream=1; always in streamer mode, whatever the saved setting.
+  const forced = /[?&]stream=1(&|$)/.test(location.search);
+  const on = () => forced || manual || auto;
+  // What streamer mode hides (Setup tick list, AIG-638; saved on the board): all on unless unticked. Personal projects are always hidden.
+  const PARTS = ['private', 'dms', 'friends', 'life', 'secrets'];
+  const hides = k => k === 'personal' || !st.hide || st.hide[k] !== false;
 
   /* ---- the one masking function ---- */
   const oct = '(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)';
@@ -44,7 +49,7 @@ const Streamer = (() => {
     return serverRe.re;
   }
   function mask(s) {
-    if (typeof s !== 'string' || s.length < 4) return s;
+    if (typeof s !== 'string' || s.length < 4 || !hides('secrets')) return s;
     for (const [re, fn] of PATTERNS) s = s.replace(re, fn);
     const sr = serverRe(); if (sr) s = s.replace(sr, DOTS);
     return s;
@@ -93,30 +98,34 @@ const Streamer = (() => {
 
   /* ---- what is left out of the data ---- */
   // Called by api() with the answer; private projects, DMs, friends and life cards never reach the screens.
+  // Left out while streaming: Personal projects (🏡, AIG-637) and Private ones (🔒).
+  const out = p => !!(p && (p.personal || (p.private && hides('private'))));
   async function filter(method, url, j) {
     if (method !== 'GET' || !on()) return j;
     await ready;
     const path = url.split('?')[0];
-    if (path === '/api/projects' && Array.isArray(j)) { j.forEach(p => p.private && hidden.add(p.slug)); return j.filter(p => !p.private); }
-    if (path === '/api/inbox' && Array.isArray(j)) return j.filter(c => !hidden.has(c.project || c.slug) && !c.lifeType);
-    if (path === '/api/chats' || path === '/api/dms/contacts' || path === '/api/shares') return [];
+    if (path === '/api/projects' && Array.isArray(j)) { j.forEach(p => out(p) && hidden.add(p.slug)); return j.filter(p => !out(p)); }
+    if (path === '/api/inbox' && Array.isArray(j)) return j.filter(c => !hidden.has(c.project || c.slug) && !(c.lifeType && hides('life')));
+    if (path === '/api/chats') return hides('dms') ? [] : j;
+    if (path === '/api/dms/contacts' || path === '/api/shares') return hides('friends') ? [] : j;
     const m = path.match(/^\/api\/projects\/([^/]+)(\/.*)?$/);
-    if (m && (hidden.has(m[1]) || (j && j.private && !m[2]))) { hidden.add(m[1]); if (location.hash.includes(m[1])) location.hash = '#/'; throw new Error(t('streamer.private')); }
-    if (m && !m[2] && j && Array.isArray(j.cards)) return { ...j, cards: j.cards.filter(c => !c.lifeType) };
+    if (m && (hidden.has(m[1]) || (j && out(j) && !m[2]))) { hidden.add(m[1]); if (location.hash.includes(m[1])) location.hash = '#/'; throw new Error(t('streamer.private')); }
+    if (m && !m[2] && j && Array.isArray(j.cards)) return hides('life') ? { ...j, cards: j.cards.filter(c => !c.lifeType) } : j;
     return j;
   }
-  const prime = () => fetch('/api/projects?all=1').then(r => r.json()).then(l => { hidden = new Set(l.filter(p => p.private).map(p => p.slug)); }).catch(() => {});
+  const prime = () => fetch('/api/projects?all=1').then(r => r.json()).then(l => { hidden = new Set(l.filter(out).map(p => p.slug)); }).catch(() => {});
 
   /* ---- the switch ---- */
-  function apply(was) {
+  function apply(was, force) {
     const o = on();
     document.documentElement.toggleAttribute('data-streamer', o);
-    const b = $('streamBtn'); if (b) { b.classList.toggle('stream-on', o); b.setAttribute('aria-pressed', String(o)); b.title = t(o ? 'streamer.title.on' : 'streamer.title'); }
-    if (o) { ready = prime(); watch(); scan(document.body); if (!state.setup) api('GET', '/api/setup').then(s => { state.setup = s; scan(document.body); }).catch(() => {}); } else restore();
-    if (was !== o) { ready = o ? prime() : ready; Promise.resolve(ready).then(() => { if (typeof Dms !== 'undefined') Dms.reload(); if (typeof refresh === 'function') refresh(true); if (typeof Inbox !== 'undefined' && Inbox.show && state.route && state.route.view === 'inbox') Inbox.show(true); }); }
+    for (const k of ['dms', 'friends', 'secrets']) document.documentElement.toggleAttribute('data-stream-' + k, o && hides(k));   // CSS hides these parts
+    const b = $('streamBtn'); if (b) { b.disabled = forced; b.classList.toggle('stream-on', o); b.setAttribute('aria-pressed', String(o)); b.title = t(o ? 'streamer.title.on' : 'streamer.title'); }
+    if (o) { ready = prime(); watch(); restore(); scan(document.body); if (!state.setup) api('GET', '/api/setup').then(s => { state.setup = s; scan(document.body); }).catch(() => {}); } else restore();
+    if (was !== o || force) { ready = o ? prime() : ready; Promise.resolve(ready).then(() => { if (typeof Dms !== 'undefined') Dms.reload(); if (typeof refresh === 'function') refresh(true); if (typeof Inbox !== 'undefined' && Inbox.show && state.route && state.route.view === 'inbox') Inbox.show(true); }); }
     paintSetup();
   }
-  function toggle() { const was = on(); manual = !manual; if (!manual) auto = false; try { localStorage.setItem(KEY, manual ? '1' : '0'); } catch {} apply(was); }
+  function toggle() { if (forced) return; const was = on(); manual = !manual; if (!manual) auto = false; try { localStorage.setItem(KEY, manual ? '1' : '0'); } catch {} apply(was); }
   function toast(msg, offBtn) {
     if (note) note.remove();
     note = document.createElement('div'); note.id = 'streamNote'; note.setAttribute('role', 'status'); note.dataset.nomask = '1';
@@ -127,7 +136,8 @@ const Streamer = (() => {
   // The board's word on OBS / Streamlabs. On by itself when one starts, off again when it stops (only if the page turned it on).
   async function poll() {
     let s; try { s = await fetch('/api/streamer', { cache: 'no-store' }).then(r => r.json()); } catch { return; }
-    const was = on(); st = { ...st, ...s };
+    const was = on(), hideWas = JSON.stringify(st.hide); st = { ...st, ...s };
+    if (JSON.stringify(st.hide) !== hideWas && was === on()) apply(was, true);   // the tick list was changed (maybe in another window)
     if (!s.running) st.suppressed = '';
     const want = s.auto && s.running && !st.suppressed;
     if (want && !auto && !manual) { auto = true; apply(was); toast(t('streamer.note.on', { program: s.program || 'OBS' }), true); }
@@ -136,14 +146,23 @@ const Streamer = (() => {
   /* ---- Setup > Streamer ---- */
   function setupHtml() {
     return `<span>${esc(t('streamer.setup.h'))}</span><label class="chk"><input type="checkbox" id="streamAuto" ${st.auto ? 'checked' : ''} onchange="Streamer.setAuto(this.checked)"> ${esc(t('streamer.setup.auto'))}</label>
-      <small class="muted">${esc(t('streamer.setup.help'))}</small>${st.running ? `<small class="muted">${esc(t('streamer.setup.running', { program: st.program || 'OBS' }))}</small>` : ''}`;
+      <small class="muted">${esc(t('streamer.setup.help'))}</small>
+      <fieldset class="stream-hide" id="streamHide"><legend>${esc(t('streamer.hide.h'))}</legend>
+        ${['private', 'personal', 'dms', 'friends', 'life', 'secrets'].map(k => `<label class="chk"><input type="checkbox" data-hide="${k}" ${hides(k) ? 'checked' : ''} ${k === 'personal' ? 'disabled' : ''} onchange="Streamer.setHide('${k}', this.checked)"> ${esc(t('streamer.hide.' + k))}${k === 'personal' ? ` <span class="muted">${esc(t('streamer.hide.locked'))}</span>` : ''}</label>`).join('')}
+      </fieldset>${forced ? '' : `<div><button type="button" id="streamWin" onclick="Streamer.openWindow()" title="${esc(t('streamer.win.title'))}">🎥 ${esc(t('streamer.win'))}</button></div>`}${st.running ? `<small class="muted">${esc(t('streamer.setup.running', { program: st.program || 'OBS' }))}</small>` : ''}`;
   }
+  function openWindow() { window.open('/?stream=1', 'aigileStream', 'popup=yes,width=1280,height=800'); }
   function paintSetup() { const b = $('streamerBox'); if (b) b.innerHTML = setupHtml(); }
   async function setAuto(v) {
     try { st = { ...st, ...(await api('POST', '/api/streamer', { auto: !!v })) }; } catch (e) { alert(e.message); }
     if (!v && auto) { const was = on(); auto = false; apply(was); }
     paintSetup(); poll();
   }
+  async function setHide(k, v) {
+    if (!PARTS.includes(k)) return;
+    try { st = { ...st, ...(await api('POST', '/api/streamer', { hide: { [k]: !!v } })) }; } catch (e) { alert(e.message); }
+    apply(on(), true);
+  }
   function start() { apply(false); poll(); setInterval(poll, Number(window.AIGILE_STREAM_POLL) || 5000); }
-  return { on, mask, raw, filter, toggle, dismiss, setAuto, setupHtml, start, poll, get hidden() { return hidden; } };
+  return { on, forced, openWindow, mask, raw, filter, toggle, dismiss, setAuto, setHide, setupHtml, start, poll, get hidden() { return hidden; } };
 })();
