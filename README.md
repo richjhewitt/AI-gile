@@ -196,3 +196,11 @@ AGENTS.md          Guide for AI dev teams
 start-aigile.bat   Windows launcher
 data/              Board data (not in git)
 ```
+
+## Licence
+
+AI-gile is free for people, charities, schools, research and other noncommercial use, under the
+[PolyForm Noncommercial License 1.0.0](LICENSE).
+
+**Business use** needs a separate licence from Rich Hewitt. It is free for businesses that use their money to help the
+world: tell us what you do and how it helps, and ask for one. Contact: https://ai-gile.lol
