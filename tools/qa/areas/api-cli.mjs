@@ -10,6 +10,9 @@ def('api', 'projects/cards CRUD, comment/verdict/taskdone/poke, updates feed, in
   check('project created with slug and key', p.slug === 'alpha' && p.key === 'ALP', p);
   check('duplicate project is 409', (await s.api('POST', '/api/projects', { name: 'Alpha' })).status === 409);
   check('project list has it', (await s.ok('GET', '/api/projects')).some(x => x.slug === 'alpha'));
+  // Review fix: a %5C (backslash) or .. slug never reads a file outside data/ (the run folder holds aigile.local.json and agent-stub.*).
+  check('a slug with ..\\ is 404, not the settings file', (await s.api('GET', '/api/projects/..%5Caigile.local')).status === 404);
+  for (const f of ['agent-stub.bat', 'agent-stub.sh']) check('an attachment slug with ..\\ is 404: ' + f, (await s.api('GET', '/api/projects/..%5C..%5C/attachments/' + f)).status === 404 && (await s.api('GET', '/api/projects/..%5C../attachments/' + f)).status === 404);
   await s.ok('PATCH', '/api/projects/alpha', { description: 'desc' });
   check('project patched', (await s.ok('GET', '/api/projects/alpha')).description === 'desc');
   check('unknown project is 404', (await s.api('GET', '/api/projects/nope')).status === 404);
