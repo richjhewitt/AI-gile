@@ -71,7 +71,7 @@ def('pace', '🐢 usage forecast maths, burn-down chart on the Usage page, pace 
   const sp = await openPage(ctx, '#/setup');
   await sp.waitForSelector('#pf-pace', { timeout: 8000 });
   check('Setup shows the pace under the scale', /100%/.test(await sp.textContent('#pf-pace')), await sp.textContent('#pf-pace'));
-  await sp.locator('#pf-plan input[value="fly"]').check();
+  await sp.$eval('#sc-thrift', e => { e.value = 5; e.dispatchEvent(new Event('change', { bubbles: true })); });   // the thrift slider (AIG-422): 5 = slow and steady
   await sp.waitForFunction(() => /70%/.test(document.getElementById('pf-pace').textContent), null, { timeout: 5000 }).catch(() => {});
   check('picking slow and steady shows 70%', /70%/.test(await sp.textContent('#pf-pace')), await sp.textContent('#pf-pace'));
   noErrors(sp);

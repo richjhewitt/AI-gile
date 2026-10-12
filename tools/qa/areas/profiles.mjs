@@ -2,13 +2,16 @@
 // the Setup select, the quiz question and a task's checklist shown a few at a time. The scale table and the brief
 // compiler, lib/profiles.js (AIG-417). Today's settings read and written as the owner scales (AIG-418).
 // The built-in role templates in profiles/ (AIG-419). Team templates and Add team on a project (AIG-420).
-// aigile profile, your own copies in profiles.local and each project's numbers (AIG-421).
+// aigile profile, your own copies in profiles.local and each project's numbers (AIG-421). Setup sliders (AIG-422).
+// The 👥 Team dialog and the profile editor, roles from a team in the card's role picker (AIG-423). Add members or Replace
+// team, with the kept ones removed in one click and ↩ Undo or Restore (AIG-444). ⚙️ Setup, your main team (AIG-460).
+// The wizard's starter team (AIG-424).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421)', async (s, ctx) => {
+def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421); Setup sliders (AIG-422); 👥 Team dialog, profile editor, role picker (AIG-423); Add members or Replace team, ↩ undo (AIG-444); Setup main team (AIG-460); wizard starter team (AIG-424)', async (s, ctx) => {
   const file = path.join(s.dir, 'aigile.local.json');
   const local = () => JSON.parse(fs.readFileSync(file, 'utf8'));
   const prefs = async () => (await s.ok('GET', '/api/setup')).prefs;
@@ -163,14 +166,37 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   prof('owner', '--reset');
   check('owner --reset: Setup\'s words again', !/full technical depth/.test(wb()) && (await webP()) === undefined, wb());
 
-  // 2. Setup: the select and the quiz question.
+  // 2. Setup, How agents work with you (AIG-422): one slider per owner scale, the step's line under it; and the quiz question.
   await s.ok('POST', '/api/setup', { prefs: { steps: 1, wizardSeen: true, helpLevel: '2' } });
   const page = await openPage(ctx, '#/setup');
-  await page.waitForSelector('#pf-steps');
-  check('Setup shows 5 steps, 1 picked', (await page.$$eval('#pf-steps option', os => os.length)) === 5 && (await page.inputValue('#pf-steps')) === '1');
-  await page.selectOption('#pf-steps', '4');
+  const slide = (sel, v) => page.$eval(sel, (e, v) => { e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, v);
+  await page.waitForSelector('#sc-steps');
+  check('Setup has a slider per owner scale: steps, chat, go, words, tidy, thrift, push', (await page.$$eval('#leadPrefs input[type=range]', is => is.map(i => i.id.slice(3) + i.max).join())) === 'steps5,chat5,go5,words5,tidy3,thrift5,push5');
+  check('the old switches are gone', !(await page.$('#pf-steps, #pf-plan, #pf-smPush')) && !(await page.$('#leadPrefs select:not(#pf-usageChecks)')));
+  check('steps slider at 1, its line under it', (await page.inputValue('#sc-steps')) === '1' && /One step, say what I should see/.test(await page.textContent('#sc-steps-line')) && (await page.textContent('#sc-steps-n')) === '1/5');
+  await page.$eval('#sc-steps', e => { e.value = 4; e.dispatchEvent(new Event('input', { bubbles: true })); });
+  check('moving it shows the new line before it is saved', /numbered list/.test(await page.textContent('#sc-steps-line')) && (await page.textContent('#sc-steps-n')) === '4/5');
+  await slide('#sc-steps', 4);
   await until(async () => (await prefs()).steps === 4);
-  check('choosing 4 in Setup saves it', (await prefs()).steps === 4);
+  check('letting go saves it', (await prefs()).steps === 4);
+  await slide('#sc-go', 4); await until(async () => (await prefs()).scales.go === 4);
+  check('go 4 is saved and briefed', /build whole cards without asking/.test(brief()), brief());
+  await page.waitForFunction(() => /Whole cards/.test(document.getElementById('sc-go-line').textContent));
+  await slide('#sc-go', 2); await until(async () => (await prefs()).scales.go === 2);
+  await slide('#sc-chat', 3); await until(async () => (await prefs()).chatty === true);
+  check('chat 3 switches the chatty lead on', (await prefs()).scales.chat === 3);
+  await slide('#sc-chat', 2); await until(async () => (await prefs()).chatty === false);
+  await slide('#sc-thrift', 4); await until(async () => (await prefs()).plan === 'careful');
+  check('thrift 4 is the careful plan', (await prefs()).maxRuns === 2, await prefs());
+  check('the detail fields sit under More', !(await page.isVisible('#pf-maxRuns')) && !!(await page.$('#pf-more #pf-maxRuns')));
+  await s.ok('POST', '/api/setup', { prefs: { maxRuns: 7 } }); await page.reload(); await page.waitForSelector('#sc-thrift');
+  check('a mix of your own has no thrift step', /A mix of your own/.test(await page.textContent('#sc-thrift-line')) && (await page.textContent('#sc-thrift-n')) === '–');
+  await sleep(500);
+  await page.focus('#sc-push'); await slide('#sc-push', 4);
+  await until(async () => (await prefs()).smPush === 4);
+  await page.waitForFunction(() => document.getElementById('lead-done').textContent.trim());
+  check('a slider saves and keeps the focus (for the keyboard)', (await prefs()).smPush === 4 && (await page.evaluate(() => document.activeElement.id)) === 'sc-push');
+  await s.ok('POST', '/api/setup', { prefs: { plan: 'normal', smPush: 3 } });
   await page.click('button[onclick="leadQuiz()"]');
   await page.waitForSelector('input[name="quiz-steps"]');
   check('the quiz asks about steps, 3 answers', (await page.locator('input[name="quiz-steps"]').count()) === 3);
@@ -203,24 +229,146 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   await page.waitForSelector('#chk-box li');
   check('steps 5: the task shows every step too', (await page.locator('#chk-box li').count()) === 4);
 
-  // 4. ➕ Add team in 🎨 Look (AIG-420): the team's roles show as ticked rows at once, with what was added and swapped.
+  // 4. 👥 Team dialog (AIG-423): from 🎨 Look or the header; a row per role, Add team (AIG-420), Add role, ✕ remove.
   await s.ok('POST', '/api/setup', { prefs: { plan: 'nospare' } });   // no helper limits, so the count line is the roles on
   await page.goto(`${BASE}/#/p/web`); await page.reload();
   await page.click('button:has-text("Look")');
-  await page.waitForSelector('#look-team');
-  check('Look offers the 7 teams', (await page.$$eval('#look-team option', os => os.length)) === 8);
-  await page.selectOption('#look-team', 'webapp');
-  await page.click('#look-roles button:has-text("Add team")');
-  await page.waitForSelector('#look-roles input[data-role="reviewer-senior"]');
-  const row = await page.textContent('#look-roles label:has(input[data-role="reviewer-senior"])');
-  check('the new role is a ticked row with its name, level and model', /Code reviewer, senior \(Sonnet\)/.test(row) && (await page.isChecked('#look-roles input[data-role="reviewer-senior"]')), row);
-  check('Reviewer (Opus) is swapped out', !(await page.isChecked('#look-roles input[data-role="Reviewer (Opus)"]')));
-  const msg = await page.textContent('#look-team-msg');
+  await page.waitForSelector('#look-roles button');
+  check('Look has no role ticks any more, it opens 👥 Team', !(await page.$('#look-roles input[data-role]')));
+  await page.click('#look-roles button');
+  await page.waitForSelector('#tm-box .tm-row');
+  check('a row per role: today\'s 8, each with ✏️, all but the Lead with ✕', (await page.locator('.tm-row').count()) === 8 && (await page.locator('.tm-row .tm-edit').count()) === 8 && (await page.locator('.tm-row .tm-del').count()) === 7);
+  check('Team offers the 7 teams', (await page.$$eval('#tm-team option', os => os.length)) === 8);
+  await page.selectOption('#tm-team', 'webapp');
+  await page.click('#tm-team-add');
+  await page.waitForSelector('.tm-row[data-role-id="reviewer-senior"]');
+  const row = await page.textContent('.tm-row[data-role-id="reviewer-senior"]');
+  check('the new role is a row with its name, level and model', /Code reviewer/.test(row) && /senior · Sonnet/.test(row), row);
+  check('Reviewer (Opus) is swapped out', !(await page.$('.tm-row[data-role-id="reviewer-principal"]')));
+  const msg = await page.textContent('#tm-msg');
   check('it says what was added and swapped out', /Added: Code reviewer, senior \(Sonnet\)\. Swapped out: Code reviewer, principal \(Opus\)/.test(msg), msg);
-  check('the count line counts it', /Opus 1, Sonnet 4, Haiku 3/.test(await page.textContent('#look-rolecount')) && /up to 8 agents/.test(await page.textContent('#look-rolecount')), await page.textContent('#look-rolecount'));
-  await page.click('#look-roles input[data-role="Docs (Haiku)"]');
-  await page.click('#dialog button:has-text("Save")');
+  check('the count line counts it', /up to 8 agents: Opus 1, Sonnet 4, Haiku 3/.test(await page.textContent('#tm-count')), await page.textContent('#tm-count'));
+  await page.click('.tm-row[data-role-id="copywriter-junior"] .tm-del');
   await until(async () => !((await roles('web')) || []).includes('Docs (Haiku)'));
-  check('Save keeps the team and the ticks', (await roles('web')).join() === 'Lead (Opus),Frontend (Sonnet),Backend (Sonnet),QA (Haiku),Quick fix (Haiku),Tester (Sonnet),reviewer-senior', await roles('web'));
+  check('✕ removes a role at once', (await roles('web')).join() === 'Lead (Opus),Frontend (Sonnet),Backend (Sonnet),QA (Haiku),Quick fix (Haiku),Tester (Sonnet),reviewer-senior', await roles('web'));
+  await page.waitForSelector('.tm-row[data-role-id="copywriter-junior"]', { state: 'detached' });
+  await page.selectOption('#tm-add-role', 'frontend-senior');
+  await page.waitForSelector('.tm-row[data-role-id="frontend-senior"]');
+  check('Add role at another level swaps out the one on', !(await page.$('.tm-row[data-role-id="frontend-mid"]')) && /Swapped out: Frontend, mid/.test(await page.textContent('#tm-msg')), await page.textContent('#tm-msg'));
+  // The card's role picker names the roles added from a team (the gap left by AIG-420).
+  const pick = await page.evaluate(() => assigneeSelect(''));
+  check('the card\'s role picker lists roles added from a team, and not the ones taken off', pick.includes('value="Code reviewer, senior (Sonnet)"') && pick.includes('Frontend, senior (Sonnet)') && !pick.includes('Docs (Haiku)') && !pick.includes('value="Frontend (Sonnet)"'), pick);
+  const card = await mkCard(s, 'web', 'Review the login page', { assignee: 'Code reviewer, senior (Sonnet)' });
+  check('a card given to one shows it picked, not as someone else', (await page.evaluate(c => assigneeSelect(c), card.assignee)).includes('selected>🔍 Code reviewer, senior (Sonnet)'));
+
+  // This project: how agents work with you (owner steps, go, words for this project only).
+  await page.click('#tm-owner summary');
+  await slide('#tmo-words', 5);
+  await until(async () => (((await webP()) || {}).owner || {}).words === 5);
+  check('this project\'s own words, briefed here only', /full technical depth/.test(wb()) && !/full technical depth/.test(brief()), wb());
+  await page.waitForSelector('#tm-owner[open] .tm-from button');
+  check('it says it is this project\'s own, the fold stays open', /This project's own/.test(await page.textContent('#tm-owner')));
+  await page.click('#tm-owner .tm-from button');
+  await until(async () => (await webP()) === undefined);
+  check('Use Setup\'s clears it', !/full technical depth/.test(wb()) && /As in ⚙️ Setup/.test(await page.textContent('#tm-owner')));
+
+  // ✏️ The profile editor: sliders, model, level, How I work, a brief preview; three ways to save.
+  const rv = 'reviewer-senior', rvRow = `.tm-row[data-role-id="${rv}"]`, edit = async () => { await page.click(rvRow + ' .tm-edit'); await page.waitForSelector('#pe-lines'); await page.waitForFunction(() => /Your role:/.test(document.getElementById('pe-lines').textContent)); };
+  await edit();
+  check('the editor starts at the role\'s level, model and steps, with a preview and its token count', (await page.inputValue('#pe-level')) === rv && (await page.inputValue('#pe-model')) === 'sonnet' && (await page.inputValue('#pe-tests')) === '4' && (await page.inputValue('#pe-alone')) === '1' && /about \d+ tokens/.test(await page.textContent('#pe-tokens')), await page.textContent('#pe-tokens'));
+  await slide('#pe-tests', 5);
+  await page.waitForFunction(() => /full QA, an AI tester pass/.test(document.getElementById('pe-lines').textContent));
+  check('the preview follows a slider before anything is saved', !(((await webP()) || {})[rv]));
+  await page.click('#pe-here'); await page.waitForSelector('#tm-box');
+  check('Save for this project only: the number on this project, the row says so', ((await webP()) || {})[rv].tests === 5 && /this project's own/.test(await page.textContent(rvRow)), await webP());
+  check('another project keeps the template', !/full QA, an AI/.test(s.cli(['profile', 'alpha', rv]).out));
+  const ownR = path.join(s.dir, 'profiles.local', 'roles', rv + '.md'), ownT = () => fs.existsSync(ownR) ? fs.readFileSync(ownR, 'utf8') : '';
+  await edit();
+  check('the editor shows this project\'s number', (await page.inputValue('#pe-tests')) === '5');
+  await page.fill('#pe-how', 'Reads the diff\n- Runs the tests');
+  await page.selectOption('#pe-model', 'opus');
+  await page.waitForFunction(() => /- Runs the tests/.test(document.getElementById('pe-lines').textContent) && /Opus\)/.test(document.getElementById('pe-lines').textContent));
+  await page.click('#pe-all'); await page.waitForSelector('#tm-box');
+  check('Save for all projects: your copy keeps what differs, this project\'s number moves into it', /model: opus/.test(ownT()) && /tests: 5/.test(ownT()) && !/alone/.test(ownT()) && /- Reads the diff\n- Runs the tests/.test(ownT()) && (await webP()) === undefined, ownT());
+  check('another project gets it too', /full QA, an AI/.test(s.cli(['profile', 'alpha', rv]).out) && /Opus\)/.test(s.cli(['profile', 'alpha', rv]).out));
+  check('the row says your copy, with the model', /your copy/.test(await page.textContent(rvRow)) && /Opus/.test(await page.textContent(rvRow)));
+  await edit(); await page.click('#pe-reset'); await page.waitForSelector('#tm-box');
+  check('Reset to template: the copy goes', !fs.existsSync(ownR) && !/your copy/.test(await page.textContent(rvRow)));
+  await edit();
+  check('Reset to template is greyed when there is nothing to reset', await page.isDisabled('#pe-reset'));
+  await page.selectOption('#pe-level', 'reviewer-principal');
+  await page.waitForFunction(() => /principal/.test(document.querySelector('#pe-box h2').textContent));
+  check('another level takes this one\'s place on the project at once', (await roles('web')).includes('Reviewer (Opus)') && !(await roles('web')).includes(rv), await roles('web'));
+  check('a bad preview is refused', (await s.api('POST', '/api/projects/web/profiles/frontend/preview', { scales: { go: 3 } })).status === 400);
+  await page.click('#pe-box button:has-text("Back")'); await page.waitForSelector('#tm-box .tm-row');
+
+  // Applying a team (AIG-444): Add members keeps the rest, with one click to remove them; Replace team; ↩ puts it back.
+  const onIds = async () => (await s.ok('GET', '/api/projects/web/profiles')).roles.map(r => r.id).sort().join();
+  const msgT = () => page.textContent('#tm-msg');
+  await page.selectOption('#tm-team', 'ux'); await page.click('#tm-team-add');
+  await page.waitForSelector('.tm-row[data-role-id="ux-researcher-senior"]');
+  const afterAdd = await onIds();
+  check('Add members: the team joins, the rest are kept and named', /Added: UX researcher, senior \(Sonnet\)/.test(await msgT()) && /Kept: [^.]*Backend[^.]*Frontend, senior/.test(await msgT()) && afterAdd.includes('backend-mid'), await msgT());
+  await page.click('#tm-msg button:has-text("Remove the kept ones")');
+  await page.waitForSelector('.tm-row[data-role-id="backend-mid"]', { state: 'detached' });
+  check('one click removes the kept ones: the Lead and the team stay', (await onIds()) === 'accessibility-mid,copywriter-junior,lead-principal,ux-researcher-senior,uxui-mid', await onIds());
+  await page.click('#tm-msg button:has-text("Undo")');
+  await page.waitForFunction(() => /Back as it was/.test(document.getElementById('tm-msg').textContent));
+  check('↩ Undo puts the kept ones back', (await onIds()) === afterAdd, await onIds());
+  await page.selectOption('#tm-team', 'security'); await page.click('#tm-team-replace');
+  await page.waitForSelector('.tm-row[data-role-id="security-principal"]');
+  check('Replace team: only the team, and the Lead', (await onIds()) === 'devops-mid,lead-principal,reviewer-senior,security-principal', await onIds());
+  check('it says what was removed, with ↩ Restore them', /Removed: [^.]*UX researcher/.test(await msgT()) && !!(await page.$('#tm-msg button:has-text("Restore them")')), await msgT());
+  await page.click('#tm-msg button:has-text("Restore them")');
+  await page.waitForFunction(() => /Back as it was/.test(document.getElementById('tm-msg').textContent));
+  check('↩ Restore them brings the team back as it was', (await onIds()) === afterAdd, await onIds());
+  await page.click('.tm-row[data-role-id="reviewer-principal"] .tm-edit'); await page.waitForSelector('#pe-lines');
+
+  // At phone width the dialog and the editor fit, with no sideways scroll.
+  await page.setViewportSize({ width: 390, height: 844 }); await sleep(300);
+  const fitsPhone = () => page.evaluate(() => { const d = document.querySelector('#dialog .dialog'); return document.documentElement.scrollWidth <= document.documentElement.clientWidth && d.scrollWidth <= d.clientWidth + 1; });
+  check('the profile editor fits a phone', await fitsPhone());
+  check('the dialog sits above the DM bar, so its buttons can be tapped', await page.evaluate(() => { const b = document.querySelector('#dialog .dialog').getBoundingClientRect(), r = document.getElementById('dmRail').getBoundingClientRect(); return b.bottom <= r.top + 1; }));
+  await page.click('#pe-box button:has-text("Back")'); await page.waitForSelector('#tm-box .tm-row');
+  check('the Team dialog fits a phone', await fitsPhone());
+  await page.setViewportSize({ width: 1400, height: 900 });
+
+  // 5. ⚙️ Setup, your main team (AIG-460): start from a team or tick roles; every role optional but the Lead, the Scrum Master too.
+  await page.goto(`${BASE}/#/setup`); await page.reload();
+  await page.waitForSelector('#mainTeam input[data-role]');
+  const newRoles = async () => [].concat((await prefs()).newRoles).join();
+  check('Setup shows today\'s 8 ticked, the Lead locked, the Scrum Master a tick of its own', (await page.locator('#mainTeam input[data-role]:checked').count()) === 8 && await page.isDisabled('#mainTeam input[data-role="Lead (Opus)"]') && !(await page.isChecked('#mainTeam-sm')) && !(await page.$('#leadPrefs input[onchange*="smRole"]')));
+  await page.selectOption('#mainTeam-team', 'mobile');
+  await until(async () => (await newRoles()) === 'Lead (Opus),Backend (Sonnet),QA (Haiku),mobile-senior,accessibility-mid');
+  check('starting from the Mobile team ticks its roles and saves them', (await newRoles()) === 'Lead (Opus),Backend (Sonnet),QA (Haiku),mobile-senior,accessibility-mid' && (await page.locator('#mainTeam input[data-role]:checked').count()) === 5 && await page.isChecked('#mainTeam input[data-role="mobile-senior"]'), await newRoles());
+  await page.check('#mainTeam-sm'); await until(async () => (await prefs()).smRole === true);
+  check('the Scrum Master can be in the team', (await prefs()).smRole === true);
+  await page.uncheck('#mainTeam-sm'); await until(async () => (await prefs()).smRole === false);
+  check('and left out', (await prefs()).smRole === false);
+  await page.uncheck('#mainTeam input[data-role="QA (Haiku)"]'); await until(async () => !(await newRoles()).includes('QA'));
+  check('any other role can be unticked', (await newRoles()) === 'Lead (Opus),Backend (Sonnet),mobile-senior,accessibility-mid', await newRoles());
+  await page.selectOption('#mainTeam-add', 'mobile-mid'); await until(async () => (await newRoles()).includes('mobile-mid'));
+  check('Add a role at another level swaps it', (await newRoles()) === 'Lead (Opus),Backend (Sonnet),accessibility-mid,mobile-mid' && await page.isChecked('#mainTeam input[data-role="mobile-mid"]'), await newRoles());
+  const np = await s.ok('POST', '/api/projects', { name: 'Phone app' });
+  check('a new project starts with the main team', [].concat((await s.ok('GET', '/api/projects/' + np.slug)).roles).join() === (await newRoles()));
+  await page.reload(); await page.waitForSelector('#mainTeam input[data-role="mobile-mid"]');
+  check('it is still there after a reload', (await page.locator('#mainTeam input[data-role]:checked').count()) === 4);
+  await s.ok('POST', '/api/setup', { prefs: { newRoles: '' } });
+
+  // 6. 🧙 Wizard, advanced mode (AIG-424): the steps question, and a starter team in the same box as Setup's main team.
+  await page.reload(); await page.waitForSelector('#mainTeam');
+  await page.evaluate(() => { advStart(); advEdit('roles'); });
+  await page.waitForSelector('#wa-roles-team option[value="solo"]', { state: 'attached' });
+  check('the wizard offers a starter team: the 7 teams', (await page.$$eval('#wa-roles-team option', os => os.length)) === 8 && /starter team/i.test(await page.textContent('#wa-body')));
+  await page.selectOption('#wa-roles-team', 'solo');
+  check('a team ticks its roles; nothing is saved before Next', (await page.locator('#wa-roles input[data-role]:checked').count()) === 3 && (await newRoles()) === '');
+  await page.check('#wa-roles-sm');
+  await page.click('#wzNext'); await page.waitForSelector('.wz-sum');
+  check('Next saves the starter team and the Scrum Master', (await newRoles()) === 'Lead (Opus),QA (Haiku),Quick fix (Haiku)' && (await prefs()).smRole === true, await newRoles());
+  check('the summary names them', /Quick fix \(Haiku\)/.test(await page.textContent('[data-row=roles]')) && /Scrum Master/.test(await page.textContent('[data-row=roles]')), await page.textContent('[data-row=roles]'));
+  await page.click('[data-row=lead] button'); await page.waitForSelector('[name=wa-steps]');
+  check('the lead screen asks the steps question, 3 answers', (await page.locator('[name=wa-steps]').count()) === 3);
+  await page.evaluate(() => closeDialog());
+  await s.ok('POST', '/api/setup', { prefs: { newRoles: '', smRole: false } });
   noErrors(page);
 }, true);

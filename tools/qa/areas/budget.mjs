@@ -87,7 +87,8 @@ def('budget', '💰 token budget refuses a wake with a reason, the parallel cap 
   check('auto is saved', (await s.ok('GET', '/api/usage/check')).auto === true);
   // The Setup page shows the controls.
   const sp = await openPage(ctx, '#/setup');
-  await sp.waitForSelector('#pf-maxRuns', { timeout: 8000 });
+  await sp.waitForSelector('#pf-more summary', { timeout: 8000 });
+  if (!(await sp.$eval('#pf-more', d => d.open))) await sp.click('#pf-more summary');   // the detail sits under More (AIG-422)
   check('Setup shows the usage, budget, run cap and helper controls', (await sp.$$('#pf-usageChecks, #pf-budgetH5, #pf-budgetWk, #pf-maxRuns, #pf-helpersOpus, #pf-helpersSonnet, #pf-helpersHaiku')).length === 7);
   await sp.fill('#pf-maxRuns', '2'); await sp.press('#pf-maxRuns', 'Tab');
   await until(async () => (await s.ok('GET', '/api/setup')).prefs.maxRuns === 2, 4000);

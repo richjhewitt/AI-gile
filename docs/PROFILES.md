@@ -154,9 +154,14 @@ One click "Add team" switches those roles on in `p.roles` (adds, keeps what's th
 
 ## 5. UI
 - **⚙️ Setup, "How agents work with you"** (replaces "Your lead"): one slider per owner scale, the chosen step's line shown under it. The quiz stays as a quick way to set them (one new question: steps). Spend plan buttons become the thrift slider; the detail fields stay under "More".
+  Built (AIG-422): `public/js/leadquiz.js` `scaleSlider`, saved as `prefs.scales` on release; push is the Scrum Master's slider; a custom spend mix shows thrift as "a mix of your own".
 - **👥 Team on a project** (moves the roles ticks out of 🎨 Look into its own dialog, opened from the project header and Look): the roles on this project as rows (name, level, model), "Add team" dropdown, "Add role" dropdown, ✏️ edit, ✕ remove. A "This project: how agents work with you" fold for owner overrides.
 - **Profile editor** (dialog): sliders for the agent scales, model and level selects, a "How I work" box, buttons **Save for all projects** / **Save for this project only** / **Reset to template**. A small "brief preview" shows the compiled lines and their rough token count.
+  Built (AIG-423): `public/js/dialogs/team-profile.js`, 👥 Team in the project header and in 🎨 Look (the ticks left Look). Rows save at once; Add role at another level swaps like Add team. Editor: alone and tests as sliders, steps and words as "like you" or a step; a level change swaps the role on the project at once; Save for all = your copy (this project's numbers for the role are cleared); this project only = numbers only; Reset = both go. Preview: `POST /api/projects/<slug>/profiles/<role>/preview`. Roles added from a team are in the card's role picker by their label.
+  Built (AIG-444): a team is applied with **➕ Add members** (mode add: same role at another level swapped, the rest kept, named, with "✕ Remove the kept ones") or **🔁 Replace team** (mode replace); either way **↩ Undo** / **↩ Restore them** puts back the roles from before.
+- **⚙️ Setup, "👥 Your main team"** (AIG-460): new projects start with it (`lead.roles`, prefs `newRoles`). Start from a team template or tick roles; every role is optional except the Lead, which runs the team; the 🧭 Lead Scrum Master (`scrumMaster.role`, AIG-476) is a tick of its own. Saved at once; `mainTeamHtml` in `public/js/dialogs/team-profile.js`.
 - **🧙 Wizard**: quick mode asks steps (1, 3, 5 as three pictures); advanced mode adds "Pick a starter team" for the first project.
+  Built (AIG-424): the advanced roles screen is "Pick a starter team", the same box as Setup's main team (saved on Next as `newRoles` and `smRole`); steps stay a question on the lead screen (AIG-416), quick mode sets them through its team style.
 - Help level, dev words in the page and night stay where they are.
 
 ## 6. Build cards (in order)

@@ -8,6 +8,7 @@ const WA = { screen: 'me', p: {}, explain: true, fromSummary: false };
 
 function advStart() {
   const s = state.setup, pr = s.prefs || {}, first = !pr.wizardSeen;
+  loadProfiles();   // the team templates for the starter team screen (AIG-424)
   WZ.hadOwner = !!wzField('owner').value;
   WZ.name = wzField('owner').value; WZ.agent = wzField('agent.command').value;
   WA.p = { ...pr }; WA.explain = glossOn(); WA.fromSummary = false;
@@ -35,7 +36,7 @@ function advKeep() {
     case 'usage': take('usageChecks', radio('wa-usage')); break;
     case 'help': take('helpLevel', radio('wa-help')); break;
     case 'dispatch': take('dispatch', radio('wa-dispatch')); break;
-    case 'roles': if ($('wa-roles')) { const on = [...document.querySelectorAll('#wa-roles input[data-role]')].filter(i => i.checked).map(i => i.dataset.role); WA.p.newRoles = on.length === TEAM_ROLES.length ? '' : on; } break;
+    case 'roles': if ($('wa-roles')) Object.assign(WA.p, mainTeamRead('wa-roles')); break;   // the starter team: newRoles and smRole (AIG-424)
     case 'night': { const v = radio('wa-night'); if (v !== null) WA.p.watchAll = v === 'work'; break; }
   }
 }
@@ -50,7 +51,7 @@ function advBody() {
     case 'usage': return pick(['usageChecks']);
     case 'help': return pick(['helpLevel']);
     case 'dispatch': return pick(['dispatch']);
-    case 'roles': return pick(['newRoles']);
+    case 'roles': return pick(['newRoles', 'smRole']);
     case 'night': return pick(['watchAll']);
   }
   return {};
@@ -122,7 +123,10 @@ function advBodyHtml() {
     case 'usage': return `${h('wz.adv.usage.h')}${sub('wz.adv.usage.cost')}<div class="wz-opts">${['off', 'hand', 'auto'].map(v => opt('wa-usage', v, p.usageChecks, t('budget.usage.' + v), t('wz.adv.usage.' + v))).join('')}</div>`;
     case 'help': return `${h('wz.adv.help.h')}<div class="wz-opts">${['1', '2', '3'].map(v => opt('wa-help', v, p.helpLevel, t('wz.adv.help.' + v))).join('')}</div>`;
     case 'dispatch': return `${h('wz.adv.dispatch.h')}<div class="wz-opts">${['rules', 'haiku', 'lead'].map(v => opt('wa-dispatch', v, p.dispatch || 'haiku', t('dispatch.' + v), t('wz.adv.dispatch.' + v))).join('')}</div>`;
-    case 'roles': return `${h('wz.adv.roles.h')}${sub('wz.adv.roles.sub')}<div class="wz-opts" id="wa-roles">${TEAM_ROLES.map((r, i) => `<label class="chk"><input type="checkbox" data-role="${esc(r)}" ${!i || !Array.isArray(p.newRoles) || p.newRoles.includes(r) ? 'checked' : ''} ${i ? '' : 'disabled'}> ${esc(r)}</label>`).join('')}</div>`;
+    // A starter team (AIG-424): the same box as Setup's main team (AIG-460), kept until Next.
+    case 'roles':
+      if (!state.profiles) loadProfiles().then(() => { if (WA.screen === 'roles' && $('wa-body')) $('wa-body').innerHTML = advBodyHtml(); });
+      return `${h('wz.adv.roles.h')}${sub('wz.adv.roles.sub')}${mainTeamHtml('wa-roles', p.newRoles, p.smRole)}`;
     case 'night': return `${h('wz.adv.night.h')}${sub('wz.adv.night.sub')}<b>${esc(t('quiz.night'))}</b><div class="wz-opts">${opt('wa-night', 'quiet', p.watchAll ? 'work' : 'quiet', t('quiz.night.quiet'))}${opt('wa-night', 'work', p.watchAll ? 'work' : 'quiet', t('quiz.night.work'))}</div>`;
     case 'lang': return `${h('wz.adv.lang.h')}${sub('wz.adv.lang.sub')}<label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('wz-lang', 'advLang')}</label>`;
     case 'summary': {
@@ -137,7 +141,7 @@ function advBodyHtml() {
         usage: t('budget.usage.' + pr.usageChecks),
         help: t('wz.adv.help.' + (pr.helpLevel || '2')),
         dispatch: t('dispatch.' + (pr.dispatch || 'haiku')),
-        roles: Array.isArray(pr.newRoles) ? pr.newRoles.join(', ') : t('wz.adv.val.allroles'),
+        roles: (Array.isArray(pr.newRoles) ? pr.newRoles.map(r => TEAM_ROLES.includes(r) ? r : roleName(r)).join(', ') : t('wz.adv.val.allroles')) + (pr.smRole ? ', ' + t('lead.smRole') : ''),
         night: t('quiz.night.' + (pr.watchAll ? 'work' : 'quiet')),
         lang: LANGS[chosenLang()],
       };

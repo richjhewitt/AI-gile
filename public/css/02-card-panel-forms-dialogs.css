@@ -97,6 +97,30 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .lead-prefs { margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); }
 .lead-prefs > span { font-size: 12px; color: var(--muted); }
 .lead-prefs label.f.chk { display: block; margin-top: 10px; }
+/* How agents work with you (AIG-422): a slider per scale, the chosen step's line under it */
+label.f.scale { margin-top: 12px; }
+label.f.scale input[type=range] { display: block; width: 100%; max-width: 420px; min-height: 32px; accent-color: var(--accent); }
+.scale-n { color: var(--text); font-weight: 600; margin-left: 4px; }
+.scale-line { display: block; color: var(--text); font-size: 13px; }
+/* 👥 Team dialog and the profile editor (AIG-423): a row per role, big enough to tap */
+.tm-rows { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; }
+.tm-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid var(--line); border-radius: var(--radius); }
+.tm-row .tm-name { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+.tm-row button, .tm-lock { min-width: 40px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; }
+.tm-ic { font-size: 18px; width: 24px; text-align: center; }
+.tm-add { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; } .tm-add select { min-height: 40px; max-width: 100%; flex: 1 1 220px; }
+.tm-add button { min-height: 40px; }
+.tm-msg { margin: 8px 0; font-size: 13px; } .tm-msg:empty { display: none; } .tm-msg button { margin: 4px 6px 0 0; min-height: 36px; }
+.tm-owner { margin: 12px 0 4px; } .tm-owner > summary, .pe-preview > b { cursor: pointer; font-size: 13px; min-height: 36px; }
+.tm-owner > summary { display: flex; align-items: center; } .tm-from { display: block; } .tm-from button { margin-left: 6px; }
+.pe-row { flex-wrap: wrap; } .pe-row label.f { flex: 1 1 160px; }
+#pe-how { width: 100%; box-sizing: border-box; }
+.pe-preview { margin: 8px 0; padding: 8px 10px; border: 1px dashed var(--line); border-radius: var(--radius); }
+.pe-preview pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; margin: 6px 0 0; }
+/* 👥 your main team (AIG-460): a tick per role, wrapping on a phone */
+.mt-ticks { display: flex; flex-wrap: wrap; gap: 2px 16px; margin: 6px 0; }
+.mt-ticks label.chk, label.chk.mt-sm { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; }
+.scale-more { margin: 10px 0 4px; } .scale-more > summary { cursor: pointer; font-size: 13px; min-height: 32px; display: flex; align-items: center; }
 label.f[hidden], .runin-blind[hidden] { display: none; }   /* where teams run (AIG-153) */
 #runInPrefs label.f { margin-top: 10px; } .runin-blind { display: block; margin-top: 8px; }
 .quiz-q { margin: 0 0 14px; }

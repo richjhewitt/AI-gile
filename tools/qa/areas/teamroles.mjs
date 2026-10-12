@@ -23,15 +23,15 @@ def('teamroles', '👥 switching a role off drops it from the brief rule and the
   await page.waitForSelector('button:has-text("Look")');
   const opts = await page.evaluate(() => assigneeSelect(''));
   check('role picker hides Frontend, keeps Backend', !opts.includes('Frontend (Sonnet)') && opts.includes('Backend (Sonnet)'), opts.slice(0, 300));
-  await page.click('button:has-text("Look")');
-  await page.waitForSelector('#look-roles');
-  check('dialog: Frontend unticked, Lead locked', (await page.$eval('#look-roles input[data-role="Frontend (Sonnet)"]', e => e.checked)) === false && (await page.$eval('#look-roles input[data-role^="Lead"]', e => e.disabled)));
-  const line = await page.textContent('#look-rolecount');
+  // The roles live in the 👥 Team dialog (AIG-423): a row per role that is on.
+  await page.click('.toolbar button[onclick="teamDialog()"]');
+  await page.waitForSelector('#tm-box .tm-row');
+  check('dialog: no Frontend row, Lead locked', !(await page.$('.tm-row[data-role-id="frontend-mid"]')) && !!(await page.$('.tm-row[data-role-id="lead-principal"] .tm-lock')) && !(await page.$('.tm-row[data-role-id="lead-principal"] .tm-del')));
+  const line = await page.textContent('#tm-count');
   check('count line: Opus 2, Sonnet 1, Haiku 3', /up to 6 agents: Opus 2, Sonnet 1, Haiku 3/.test(line), line);
-  await page.click('#look-roles input[data-role="Frontend (Sonnet)"]');
-  check('count line follows a click', /Sonnet 2/.test(await page.textContent('#look-rolecount')), await page.textContent('#look-rolecount'));
-  await page.click('#dialog button:has-text("Save")');
-  await sleep(500);
+  await page.selectOption('#tm-add-role', 'frontend-mid');
+  await page.waitForSelector('.tm-row[data-role-id="frontend-mid"]');
+  check('count line follows', /Sonnet 2/.test(await page.textContent('#tm-count')), await page.textContent('#tm-count'));
   check('saved: Frontend back on', (await s.ok('GET', '/api/projects/crew')).roles.includes('Frontend (Sonnet)'));
   noErrors(page);
 }, true);
