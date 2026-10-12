@@ -2287,5 +2287,8 @@
   "streamer.hide.dms": "Directe berichten (DM's)",
   "streamer.hide.friends": "Vrienden en gedeelde borden",
   "streamer.hide.life": "Privékaarten",
-  "streamer.hide.secrets": "Geheimen: wachtwoorden, sleutels, IP-adressen, e-mailadressen en servernamen als ••••"
+  "streamer.hide.secrets": "Geheimen: wachtwoorden, sleutels, IP-adressen, e-mailadressen en servernamen als ••••",
+  "streamer.setup.key": "Sneltoets: Alt+Shift+S zet streamermodus aan of uit (handig voor je live gaat op Discord)",
+  "streamer.key.on": "🎥 Streamermodus aan",
+  "streamer.key.off": "🎥 Streamermodus uit"
 }

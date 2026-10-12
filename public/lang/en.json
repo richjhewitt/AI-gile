@@ -2287,5 +2287,8 @@
   "streamer.hide.dms": "Direct messages (DMs)",
   "streamer.hide.friends": "Friends and shared boards",
   "streamer.hide.life": "Life cards",
-  "streamer.hide.secrets": "Secrets: passwords, keys, IP addresses, emails and server names as ••••"
+  "streamer.hide.secrets": "Secrets: passwords, keys, IP addresses, emails and server names as ••••",
+  "streamer.setup.key": "Shortcut: Alt+Shift+S turns streamer mode on or off (handy before you go live on Discord)",
+  "streamer.key.on": "🎥 Streamer mode on",
+  "streamer.key.off": "🎥 Streamer mode off"
 }

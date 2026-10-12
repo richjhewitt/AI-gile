@@ -162,5 +162,12 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   await sleep(7000);
   check('with the auto switch off, a running program does not turn it on', !(await page.evaluate(() => document.documentElement.hasAttribute('data-streamer'))));
   fs.unlinkSync(STUB);
+
+  // Alt+Shift+S, for Discord streams the board can't see (AIG-640)
+  check('Setup names the Alt+Shift+S shortcut', (await page.textContent('#streamKey')).includes('Alt+Shift+S'));
+  await page.keyboard.press('Alt+Shift+S');
+  check('Alt+Shift+S turns streamer mode on', await page.evaluate(() => document.documentElement.hasAttribute('data-streamer') && /on|aan/.test(document.getElementById('streamNote').textContent)));
+  await page.keyboard.press('Alt+Shift+S');
+  check('and off again', !(await page.evaluate(() => document.documentElement.hasAttribute('data-streamer'))));
   noErrors(page);
 }, true, { AIGILE_STREAM_STUB: STUB, AIGILE_STREAM_MS: '300' });

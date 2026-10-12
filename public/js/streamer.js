@@ -147,6 +147,7 @@ const Streamer = (() => {
   function setupHtml() {
     return `<span>${esc(t('streamer.setup.h'))}</span><label class="chk"><input type="checkbox" id="streamAuto" ${st.auto ? 'checked' : ''} onchange="Streamer.setAuto(this.checked)"> ${esc(t('streamer.setup.auto'))}</label>
       <small class="muted">${esc(t('streamer.setup.help'))}</small>
+      <small class="muted" id="streamKey">${esc(t('streamer.setup.key'))}</small>
       <fieldset class="stream-hide" id="streamHide"><legend>${esc(t('streamer.hide.h'))}</legend>
         ${['private', 'personal', 'dms', 'friends', 'life', 'secrets'].map(k => `<label class="chk"><input type="checkbox" data-hide="${k}" ${hides(k) ? 'checked' : ''} ${k === 'personal' ? 'disabled' : ''} onchange="Streamer.setHide('${k}', this.checked)"> ${esc(t('streamer.hide.' + k))}${k === 'personal' ? ` <span class="muted">${esc(t('streamer.hide.locked'))}</span>` : ''}</label>`).join('')}
       </fieldset>${forced ? '' : `<div><button type="button" id="streamWin" onclick="Streamer.openWindow()" title="${esc(t('streamer.win.title'))}">🎥 ${esc(t('streamer.win'))}</button></div>`}${st.running ? `<small class="muted">${esc(t('streamer.setup.running', { program: st.program || 'OBS' }))}</small>` : ''}`;
@@ -163,6 +164,11 @@ const Streamer = (() => {
     try { st = { ...st, ...(await api('POST', '/api/streamer', { hide: { [k]: !!v } })) }; } catch (e) { alert(e.message); }
     apply(on(), true);
   }
-  function start() { apply(false); poll(); setInterval(poll, Number(window.AIGILE_STREAM_POLL) || 5000); }
+  // Alt+Shift+S: one press before you go live on Discord, which the board can't see (AIG-640)
+  function key(e) {
+    if (!e.altKey || !e.shiftKey || e.ctrlKey || e.metaKey || e.code !== 'KeyS' || forced) return;
+    e.preventDefault(); toggle(); toast(t(on() ? 'streamer.key.on' : 'streamer.key.off'));
+  }
+  function start() { apply(false); poll(); setInterval(poll, Number(window.AIGILE_STREAM_POLL) || 5000); document.addEventListener('keydown', key); }
   return { on, forced, openWindow, mask, raw, filter, toggle, dismiss, setAuto, setHide, setupHtml, start, poll, get hidden() { return hidden; } };
 })();
