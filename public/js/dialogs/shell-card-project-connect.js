@@ -18,15 +18,38 @@ async function newCard(preset = {}) {
   // The owner's new cards go straight to the team (AIG-51); the + on a column still picks that column.
   const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: 'team', assignee: '', sprint: '', ...preset };
   Attach.clear('new:' + slug());
+  // 🏡 Real life (AIG-394): the switch shows the life types; a Life board (🎨 Look) starts with it on.
+  const lifeOn = !bug && (preset.lifeType || (state.project && state.project.lifeBoard && !preset.type));
+  const lifeBox = bug ? '' : `<label class="chk life-switch" title="${esc(t('dlg.life.switch.title'))}"><input type="checkbox" id="nc-life" ${lifeOn ? 'checked' : ''} onchange="lifeToggle()"> ${esc(t('dlg.life.switch'))}</label>
+    <div id="nc-life-box" ${lifeOn ? '' : 'hidden'}><div class="row"><label class="f"><span>${esc(t('dlg.life.type'))}</span><select id="nc-lifetype" onchange="lifeToggle()">${Object.keys(LIFE_TYPES).map(k => `<option value="${k}" ${k === (preset.lifeType || 'housework') ? 'selected' : ''}>${LIFE_TYPES[k][0]} ${esc(t('life.' + k))}</option>`).join('')}</select></label></div>
+      <div class="row" id="nc-appt" hidden><label class="f"><span>${esc(t('dlg.life.when'))}</span><input type="datetime-local" id="nc-apptat"></label>
+        <label class="f"><span>${esc(t('dlg.life.remind'))}</span><select id="nc-remind">${[0, 15, 30, 60, 120, 1440].map(m => `<option value="${m}" ${m === 60 ? 'selected' : ''}>${esc(t('dlg.life.remind.' + m))}</option>`).join('')}</select></label></div>
+      <small class="muted" id="nc-appt-hint" hidden>${esc(t('dlg.life.hint'))}</small>
+      ${state.project && !state.project.lifeBoard ? `<small class="muted" id="nc-life-suggest">${esc(t('dlg.life.suggest'))} <a href="#" onclick="makeLifeBoard();return false">${esc(t('dlg.life.suggest.btn'))}</a></small>` : ''}</div>`;
   openDialog(`<h2>${esc(bug ? t('board.raisebug') : t('dlg.newcard'))}</h2>
-    <form onsubmit="return createCard(event)">${projects.length > 1 ? `<label class="f"><span>${esc(t('dlg.newcard.project'))}</span><select id="nc-project">${projectOptionsHtml(projects, leads, slug())}</select></label>` : ''}${cardFields(c, bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') })}
+    <form onsubmit="return createCard(event)">${projects.length > 1 ? `<label class="f"><span>${esc(t('dlg.newcard.project'))}</span><select id="nc-project">${projectOptionsHtml(projects, leads, slug())}</select></label>` : ''}${lifeBox}${cardFields(c, bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') })}
       <div class="err" id="d-err"></div>
       <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${esc(bug ? t('dlg.raisebug') : t('dlg.createcard'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');
+  if (lifeOn) lifeToggle();
+}
+function lifeToggle() {
+  const on = $('nc-life').checked, appt = on && $('nc-lifetype').value === 'appointment';
+  $('nc-life-box').hidden = !on; $('nc-appt').hidden = !appt; $('nc-appt-hint').hidden = !appt;
+}
+async function makeLifeBoard() {
+  try { await api('PATCH', '/api/projects/' + slug(), { lifeBoard: true }); const s = $('nc-life-suggest'); if (s) s.remove(); if (state.project) state.project.lifeBoard = true; } catch (e) { alert(e.message); }
 }
 async function createCard(e) {
   e.preventDefault();
   const body = readFields(false, false);
   if (!body.title) { setErr('d-err', t('dlg.err.title')); return false; }
+  if ($('nc-life') && $('nc-life').checked) {   // 🏡 Real life (AIG-394): the server makes it the owner's own task and sets the appointment's timer
+    body.lifeType = $('nc-lifetype').value;
+    if (body.lifeType === 'appointment') {
+      if (!$('nc-apptat').value) { setErr('d-err', t('dlg.life.err.when')); return false; }
+      body.apptAt = new Date($('nc-apptat').value).toISOString(); body.remindMins = Number($('nc-remind').value);
+    }
+  }
   try {
     const sel = $('nc-project'), target = sel && sel.value || slug();
     const attachments = await Attach.upload('new:' + slug(), target);
