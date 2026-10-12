@@ -1,12 +1,13 @@
 // QA area: profiles (AIG-415): how agents work with the owner. Steps at a time (AIG-416): the setting, the brief line,
 // the Setup select, the quiz question and a task's checklist shown a few at a time. The scale table and the brief
 // compiler, lib/profiles.js (AIG-417). Today's settings read and written as the owner scales (AIG-418).
+// The built-in role templates in profiles/ (AIG-419).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418)', async (s, ctx) => {
+def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419)', async (s, ctx) => {
   const file = path.join(s.dir, 'aigile.local.json');
   const local = () => JSON.parse(fs.readFileSync(file, 'utf8'));
   const prefs = async () => (await s.ok('GET', '/api/setup')).prefs;
@@ -34,6 +35,21 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   check('the go lines are as before', P.ownerLines({ steps: 1, go: 'ask' }, 'Owner')[0] === "Owner's rule: ask before every build, however small. Propose and wait for go." && P.ownerLines({ steps: 1, go: 'small' }, 'Owner')[0] === "Owner's rule: small things (a fix or tweak, under an hour) you may build without asking; log them as a decision. Bigger work: propose and wait for go.");
   check('the helpers line is as before', P.ownerLines({ steps: 1, helpersOpus: 1, helpersSonnet: '', helpersHaiku: 0 }, 'Owner')[0] === "Owner's rule: use at most Opus 1, Haiku 0 helpers at once.");
   check('the roles line is as before', P.rolesLine(['Lead (plans)', 'Frontend', 'Tester (AI)'], 'Owner') === "Owner's rule: You may delegate to: Frontend." && P.rolesLine(['Lead'], 'Owner') === "Owner's rule: You may delegate to: nobody (do it yourself)." && P.rolesLine(undefined, 'Owner') === '');
+
+  // 0b. The built-in role templates (AIG-419): 16 roles at the levels offered, plus Quick fix and the AI tester.
+  const T = P.templates(), ids = Object.keys(T), PR = path.join(ROOT, 'profiles');
+  const groups = [...new Set(ids.map(P.groupOf))];
+  check('16 roles plus Quick fix and Tester, 35 templates', groups.length === 18 && ids.length === 35 && groups.includes('quickfix') && groups.includes('tester'), groups);
+  check('each file is named by its id: <role>-<level>', ids.every(id => T[id].id === id && id === P.groupOf(id) + '-' + T[id].level), ids.filter(id => T[id].id !== id));
+  check('the level picks the model and alone', ids.every(id => T[id].model === P.LEVELS[T[id].level].model) && T['frontend-junior'].scales.alone === 1 && T['frontend-senior'].scales.alone === 3, T['frontend-junior']);
+  check('a role that changes alone keeps its own', T['lead-principal'].scales.alone === 4 && T['devops-senior'].scales.alone === 1 && T['security-principal'].scales.alone === 1);
+  check('every template has a name and 1 to 6 How I work bullets', ids.every(id => T[id].name && T[id].how.length >= 1 && T[id].how.length <= 6));
+  check('levels offered as in the design', ['lead-principal', 'frontend-junior', 'backend-senior', 'qa-junior', 'security-principal', 'reviewer-senior', 'i18n-mid'].every(id => T[id]) && !T['lead-junior'] && !T['security-junior'] && !T['qa-senior']);
+  check('the scales each role changes are in its file', T['qa-mid'].scales.tests === 5 && T['devops-mid'].scales.steps === 1 && T['ux-researcher-mid'].scales.words === 1 && T['pm-senior'].scales.tidy === 3);
+  check('every template compiles to at most 8 lines', ids.every(id => P.roleLines(T[id]).length <= 8));
+  check('every file parses with no warnings and round-trips', ids.every(id => { const f = fs.readFileSync(path.join(PR, 'roles', id + '.md'), 'utf8'); return P.format(P.parse(f)) === f; }));
+  const own = P.parse(fs.readFileSync(path.join(PR, 'owner.md'), 'utf8'));
+  check('owner.md holds the ways step of every owner scale', Object.keys(P.SCALES).filter(k => P.SCALES[k].who === 'owner').every(k => own.scales[k] === P.SCALES[k].ways), own.scales);
 
   // 1. Steps: a new install starts at 3 and keeps it once named; an install named before the setting keeps 1.
   check('a new install starts at 3 steps', (await prefs()).steps === 3, await prefs());

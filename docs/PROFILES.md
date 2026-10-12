@@ -132,7 +132,7 @@ Levels pick the model and default `alone`: **junior** Haiku, alone 1 · **mid** 
 | i18n / translator | junior, mid | words 3 | Every string through `t()`, all languages |
 | Code reviewer | senior, principal | alone 1, tests 4 | Reads the diff, runs tests, comments on the card |
 
-Today's 8 `TEAM_ROLES` become: lead-principal, reviewer-principal, frontend-mid, backend-mid, qa-junior, quickfix-junior, docs-junior, tester-mid. Old role strings in `p.roles` are read as these ids (no data rewrite needed).
+Today's 8 `TEAM_ROLES` become: lead-principal, reviewer-principal, frontend-mid, backend-mid, qa-junior, quickfix-junior, copywriter-junior (Docs), tester-mid. Quick fix and Tester (the AI tester) are the two templates outside the 16 (AIG-419). Old role strings in `p.roles` are read as these ids (no data rewrite needed).
 
 **Team templates** (`profiles/teams/*.md`: header `roles: a, b, c`, plus one line on when to use it)
 - **Small solo helper team**: lead, quickfix-junior, qa-junior (cheapest; good for side projects)
