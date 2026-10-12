@@ -76,8 +76,8 @@ function openServerBtn(c) {
   const names = state.servers; if (!names) return '';
   if (!names.length) return `<a class="q-chip srv-open" href="#/setup">${esc(t('server.setup'))}</a>`;
   const n = names.find(x => x.toLowerCase() === String(c.serverName || '').toLowerCase()) || (names.length === 1 ? names[0] : '');
-  return n ? `<button class="q-chip srv-open" data-open-server="${esc(n)}">${esc(t('server.open', { name: n }))}</button>`
-    : `<button class="q-chip srv-open" data-pick-server>${esc(t('server.open.pick'))}</button>`;
+  return (n ? `<button class="q-chip srv-open" data-open-server="${esc(n)}">${esc(t('server.open', { name: n }))}</button>`
+    : `<button class="q-chip srv-open" data-pick-server>${esc(t('server.open.pick'))}</button>`) + Term.btn(c);   // ⌨ Terminal (AIG-471)
 }
 async function openServerNamed(name, btn) {
   try { await api('POST', '/api/servers/open', { name }); if (btn) { const was = btn.textContent; btn.textContent = '✓'; setTimeout(() => { btn.textContent = was; }, 1500); } }
@@ -218,6 +218,8 @@ function parseRoute() {
   if (news) return { view: 'news', slug: news[1] };   // 📜 Team news in its own window (AIG-319)
   const shared = location.hash.match(/^#\/shared\/([A-Za-z0-9_-]{22})$/);
   if (shared) return { view: 'shared', link: shared[1] };   // a project a friend shares with me, as its own board (AIG-324)
+  const term = location.hash.match(/^#\/pop-term\/([^/]+)\/([^/]+)\/([^/]+)$/);
+  if (term) return { view: 'term', slug: decodeURIComponent(term[1]), card: decodeURIComponent(term[2]), name: decodeURIComponent(term[3]) };   // ⌨ a terminal in its own window (AIG-471)
   const pop = location.hash.match(/^#\/pop\/([^/]+)\/([^/]+)/);
   if (pop) return { view: 'project', slug: pop[1], card: pop[2], pop: true };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
@@ -267,6 +269,8 @@ async function refresh(force) {
     } else if (state.route.view === 'news') {
       state.news = await api('GET', `/api/projects/${state.route.slug}/news`);
       sig = JSON.stringify([state.route, state.news, Math.floor(Date.now() / 60e3)]);
+    } else if (state.route.view === 'term') {
+      sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'glossary') {
       sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'shared') {
@@ -331,6 +335,7 @@ function render() {
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; wizardMaybe(); return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'term') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Term.popView(state.route); return; }
   if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'news') { $('app').innerHTML = renderNews(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'watch') { renderWatch(); $('modal').innerHTML = ''; return; }

@@ -157,14 +157,15 @@ async function setRunIn(prefs) {
   catch (e) { setErr('runin-err', e); }
 }
 /* ---------- 🖥️ my servers (AIG-374) ---------- */
-// Name + how you open it (a shortcut/file path or a command). Saved to aigile.local.json; 🖥️ tasks get an Open button.
+// Name + how you open it (a shortcut/file path, a command, or an ssh address for the ⌨ terminal, AIG-471). Saved to
+// aigile.local.json; 🖥️ tasks get an Open button.
 let srvDraft = null, srvFound = null;
 function serversHtml(msg = '') {
   if (!srvDraft) srvDraft = (leadPrefs().servers || []).map(x => ({ ...x }));
   const rows = srvDraft.map((s, i) => `<div class="srv-row">
     <input type="text" data-srv="name" data-i="${i}" value="${esc(s.name)}" placeholder="${esc(t('servers.name'))}" onchange="srvEdit(this)">
-    <select data-srv="kind" data-i="${i}" onchange="srvEdit(this)"><option value="path" ${s.kind === 'cmd' ? '' : 'selected'}>${esc(t('servers.kind.path'))}</option><option value="cmd" ${s.kind === 'cmd' ? 'selected' : ''}>${esc(t('servers.kind.cmd'))}</option></select>
-    <input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t(s.kind === 'cmd' ? 'servers.cmd.ph' : 'servers.path.ph'))}" onchange="srvEdit(this)">
+    <select data-srv="kind" data-i="${i}" onchange="srvEdit(this)">${['path', 'cmd', 'ssh'].map(k => `<option value="${k}" ${(s.kind || 'path') === k ? 'selected' : ''}>${esc(t('servers.kind.' + k))}</option>`).join('')}</select>
+    <input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t('servers.' + (s.kind === 'cmd' || s.kind === 'ssh' ? s.kind : 'path') + '.ph'))}" onchange="srvEdit(this)">
     <button type="button" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">✕</button></div>`).join('');
   const found = (srvFound || []).filter(f => !srvDraft.some(s => s.value === f.path)).map(f => `<button type="button" class="srv-found" data-name="${esc(f.name)}" data-path="${esc(f.path)}" onclick="srvAddFound(this)">+ ${esc(f.name)}</button>`).join(' ');
   return `<span>${esc(t('servers.h'))}</span><small class="muted">${esc(t('servers.help'))}</small>${rows}

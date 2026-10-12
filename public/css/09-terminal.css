@@ -1,0 +1,26 @@
+/* ⌨ The built-in terminal (AIG-471): docked at the bottom, or filling its own window (body.popterm). */
+.term-dock { position: fixed; left: 60px; right: 0; bottom: 0; height: 38vh; min-height: 220px; z-index: 15; display: flex; flex-direction: column; background: #1e2430; color: #e6e9ef; border-top: 1px solid var(--line); box-shadow: 0 -6px 20px rgba(0,0,0,.25); }
+body.term-open { padding-bottom: max(38vh, 220px); }
+body.term-open #modal .overlay { bottom: max(38vh, 220px); }   /* the open card stays above the dock, all of it reachable */
+body.term-open:not(.pop) #modal .panel { max-height: 100%; }
+body.pop .term-dock { left: 0; }
+.term-head { display: flex; align-items: center; gap: 8px; padding: 4px 10px; background: #151a23; font-size: 13px; white-space: nowrap; overflow: hidden; }
+.term-head .muted { color: #8b93a7; }
+.term-head button { font-size: 12px; padding: 2px 8px; }
+.term-run { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.term-run.done { color: #4ade80; } .term-run.failed { color: #f87171; } .term-run.running, .term-run.ok { color: #facc15; }
+.term-body { flex: 1; min-height: 0; padding: 4px 6px; }
+.term-msg { padding: 14px 16px; font-size: 14px; }
+.term-msg pre, .term-confirm { background: #151a23; color: #e6e9ef; padding: 10px 12px; border-radius: 8px; max-height: 40vh; overflow: auto; white-space: pre-wrap; font-size: 13px; }
+body.popterm { padding: 0; }
+body.popterm .term-dock { top: 0; height: auto; border-top: 0; box-shadow: none; }
+body.desktop.popterm .term-head { padding-right: 150px; min-height: 30px; -webkit-app-region: drag; }
+body.desktop.popterm .term-head button { -webkit-app-region: no-drag; }
+/* ▶ on a server task's code blocks: the lit-up line runs next; ✓ / ✗ after a run. */
+.codebox.runs pre { padding-top: 36px; }
+.codebox .cl.cmd { cursor: pointer; }
+.codebox .cl.next { background: rgba(59,108,246,.35); border-radius: 3px; }
+.codebox .cl.running { background: rgba(234,179,8,.3); }
+.codebox .cl.ok::after { content: "  ✓"; color: #4ade80; }
+.codebox .cl.fail::after { content: "  ✗"; color: #f87171; }
+@media (max-width: 700px) { .term-dock { left: 0; } }
