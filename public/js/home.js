@@ -33,7 +33,7 @@ function renderHome() {
     `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></details>` : '';   // closed by default (AIG-105)
   // 🪐 Spaces (AIG-434): the projects as a tree, a space's projects in an indented row under it.
   const cards = Spaces.homeGrid(Spaces.tree(state.projects), projCard);
-  return `<div class="toolbar"><button class="primary" onclick="newProject()">${esc(t('home.newproject'))}</button> <button onclick="newProject({ space: true })" title="${esc(t('home.newspace.title'))}">${esc(t('home.newspace'))}</button>
+  return `<div class="toolbar"><button class="primary" onclick="newProject()">${esc(t('home.newproject'))}</button> <button onclick="refactorOffer()" title="${esc(t('rf.btn.title'))}">${esc(t('rf.btn'))}</button> <button onclick="newProject({ space: true })" title="${esc(t('home.newspace.title'))}">${esc(t('home.newspace'))}</button>
       <button onclick="openFileDialog()" title="${esc(t('ofl.btn.title'))}">${esc(t('ofl.btn'))}</button>
       <button onclick="findProjectsDialog()" title="${esc(t('home.find.title'))}">${esc(t('home.find'))}</button>
       <button onclick="tourDialog()" title="${esc(t('tour.btn.title'))}">${esc(t('tour.btn'))}</button>
