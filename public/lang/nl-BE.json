@@ -2096,5 +2096,11 @@
   "wn.back.sure": "Terug naar deze versie? Je borden blijven bewaard. Je blijft erop tot je op Terug naar de nieuwste klikt.",
   "wn.pinned": "Je gebruikt een eerdere versie: {name}",
   "wn.latest": "Terug naar de nieuwste",
-  "wn.restarting": "Het bord herstart: de pagina laadt over een paar seconden opnieuw."
+  "wn.restarting": "Het bord herstart: de pagina laadt over een paar seconden opnieuw.",
+  "ch.h": "Updates",
+  "ch.stable": "📦 Stabiel: een dagelijkse versie, alleen als alle controles slagen",
+  "ch.live": "🧪 Live: het nieuwste, voor testers",
+  "ch.help": "Stabiel is de veilige keuze. De ⬆ Bijwerken-knop volgt wat je kiest.",
+  "ch.live.warn": "Live krijgt nieuwe dingen eerst en kan af en toe stuk gaan. Prima om te testen; kies Stabiel voor elke dag.",
+  "ch.nostable": "(Nog geen stabiele versie: Live tot de eerste er is.)"
 }

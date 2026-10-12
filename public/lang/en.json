@@ -2096,5 +2096,11 @@
   "wn.back.sure": "Go back to this build? Your boards are kept. You stay on it until you click Back to the latest.",
   "wn.pinned": "You're on an earlier build: {name}",
   "wn.latest": "Back to the latest",
-  "wn.restarting": "Restarting the board: the page reloads in a few seconds."
+  "wn.restarting": "Restarting the board: the page reloads in a few seconds.",
+  "ch.h": "Updates",
+  "ch.stable": "📦 Stable: a daily build, only when every check passes",
+  "ch.live": "🧪 Live: the newest, for testers",
+  "ch.help": "Stable is the safe choice. The ⬆ Update pill follows what you pick.",
+  "ch.live.warn": "Live gets new things first and can break now and then. Fine for testing; pick Stable for everyday work.",
+  "ch.nostable": "(No Stable build yet: Live until the first one.)"
 }

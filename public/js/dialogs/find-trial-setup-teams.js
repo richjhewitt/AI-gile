@@ -85,6 +85,7 @@ function renderSetup() {
     <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
     <label class="f"><span>${esc(t('follow.setup'))}</span><select class="setup-theme" id="followMode" onchange="Follow.setMode(this.value)">${['auto', 'button'].map(v => `<option value="${v}" ${Follow.mode() === v ? 'selected' : ''}>${esc(t('follow.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('follow.setup.help'))}</small></label>
     <div class="f" id="topbarBox">${Topbar.html()}</div>
+    <div class="f" id="channelBox">${Channel.html()}</div>
     <div class="f lead-prefs" id="leadPrefs">${leadPrefsHtml()}</div>
     <div class="f lead-prefs" id="mainTeamBox">${mainTeamBoxHtml()}</div>
     <div class="f lead-prefs" id="runInPrefs">${runInHtml()}</div>

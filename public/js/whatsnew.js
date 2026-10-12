@@ -49,3 +49,24 @@ const WhatsNew = (() => {
   };
   return W;
 })();
+
+// 📦 Update channel in Setup (AIG-560): Stable (daily, only when QA is green) or Live (what the owner runs, for testers).
+// Only for installs cloned from GitHub; html() paints what it knows and fetches the rest once.
+const Channel = (() => {
+  const C = { st: undefined };
+  const paint = () => { const b = $('channelBox'); if (b) b.innerHTML = C.html(); };
+  C.load = async () => { try { C.st = await api('GET', '/api/channel'); } catch { C.st = null; } paint(); };
+  C.html = () => {
+    if (C.st === undefined) { C.st = null; C.load(); return ''; }
+    const s = C.st; if (!s || !s.can) return '';
+    const opt = v => `<option value="${v}" ${s.channel === v ? 'selected' : ''}>${esc(t('ch.' + v))}</option>`;
+    return `<span>${esc(t('ch.h'))}</span><select id="channelPick" onchange="Channel.set(this.value)">${s.channel === 'other' || !s.channel ? `<option selected disabled>${esc(s.upstream || '?')}</option>` : ''}${opt('stable')}${opt('live')}</select>`
+      + `<small class="muted" id="channelHelp">${esc(t(s.channel === 'live' ? 'ch.live.warn' : 'ch.help'))}${s.stableExists ? '' : ' ' + esc(t('ch.nostable'))}</small>`;
+  };
+  C.set = async v => {
+    if (v === 'live' && !confirm(t('ch.live.warn'))) { paint(); return; }
+    try { C.st = await api('PUT', '/api/channel', { channel: v }); } catch (e) { alert(e.message); }
+    paint();
+  };
+  return C;
+})();
