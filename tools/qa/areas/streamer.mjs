@@ -22,7 +22,8 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   const page = await openPage(ctx, '#/');
   await page.evaluate(() => { window.__copied = []; navigator.clipboard.writeText = async t => { window.__copied.push(t); }; });
   await page.waitForSelector('.proj');
-  check('before streaming both projects show on home and in the sidebar', (await page.locator('a.proj').count()) === 2 && (await page.locator('#dmRail [data-slug="secret-board"]').count()) === 1);
+  await page.waitForSelector('#dmRail [data-slug="secret-board"]', { timeout: 8000 }).catch(() => {});   // the rail paints a moment after home
+  check('before streaming both projects show on home and in the sidebar', (await page.locator('a.proj').count()) === 2 && (await page.locator('#dmRail [data-slug="secret-board"]').count()) === 1, { home: await page.locator('a.proj').count(), rail: await page.locator('#dmRail [data-slug="secret-board"]').count() });
 
   // The masking function on examples (conservative: ordinary text stays)
   const M = await page.evaluate(() => ['IP 10.0.0.1 here', 'to a@b.co now', 'sk-abcdefghijklmnopqrstuv', 'ghp_abcdefghijklmnopqrstuvwx', 'password=hunter2pw', 'token: abc12345', 'Bearer abcdefghijklmnopqrstuv', 'version 1.2.3.', 'build 999.1.1.1', 'a password is needed', 'the token budget', 'README.md and 2026-10-12', 'eyJhbGciOiJIUzI1.eyJzdWIiOiIxMjM0.SflKxwRJSMeKKF2QT4'].map(x => Streamer.mask(x)));
