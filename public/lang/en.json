@@ -489,6 +489,8 @@
  "look.chatty": "💬 Chatty lead: the odd nudge or light joke in your DMs",
  "look.chatty.cost": "(uses a few more tokens)",
  "look.verbose": "👁 Verbose: a background team shows each step and command as it works, so you can follow it live with 👁 Watch",
+ "look.second": "Allow a second lead when there's lots of work",
+ "look.second.sub": "Off: while the lead works in a session, the board starts no background run on top.",
  "look.auto": "Automatic",
  "look.auto.title": "Pick the colour and emoji automatically again",
  "perm.allow": "Allowed without asking",

@@ -9,17 +9,17 @@ def('light', '🪶 Pro-friendly runs: comment runs on the smaller model, every 5
   await mkProject(s, 'Lite', 'LIT', { path: tmp('lite') });
   const wake = async () => { await s.ok('POST', '/api/projects/lite/wake'); for (let i = 0; i < 60 && (await s.ok('GET', '/api/projects/lite')).presence.running; i++) await sleep(250); return fs.readFileSync(s.wakeOut, 'utf8'); };
   let out = await wake();
-  check('off: no model flag, --continue as before', !/--model/.test(out) && /--continue/.test(out), out);
+  check('off: no model flag, a conversation of its own under an id (never --continue)', !/--model/.test(out) && /--session-id/.test(out) && !/--continue/.test(out), out);
   await s.ok('POST', '/api/setup', { prefs: { light: true } });
   check('the switch is saved', (await s.ok('GET', '/api/setup')).prefs.light === true);
   out = await wake();
-  check('on: a comment run uses the smaller model', /--model"? "?sonnet/.test(out) && /--continue/.test(out), out);
+  check('on: a comment run uses the smaller model', /--model"? "?sonnet/.test(out) && /--resume/.test(out), out);
   for (let i = 0; i < 3; i++) out = await wake();
-  check('still carrying the conversation before the 5th run', /--continue/.test(out), out);
+  check('still carrying the conversation before the 5th run', /--resume/.test(out), out);
   out = await wake();
-  check('after 5 runs, a fresh conversation (no --continue)', !/--continue/.test(out) && /\(fresh\)/.test(fs.readFileSync(path.join(s.data, 'logs', 'lite.log'), 'utf8')), out);
+  check('after 5 runs, a fresh conversation (no --continue)', !/--resume/.test(out) && /--session-id/.test(out) && /\(fresh\)/.test(fs.readFileSync(path.join(s.data, 'logs', 'lite.log'), 'utf8')), out);
   out = await wake();
-  check('then it carries on with that conversation', /--continue/.test(out), out);
+  check('then it carries on with that conversation', /--resume/.test(out), out);
 }, false, (() => { const f = path.join(tmp('liteset'), 'local.json'); fs.writeFileSync(f, '{ "owner": "Owner" }'); return { AIGILE_LOCAL: f }; })());   // its own settings file: never the real one
 
 def('tester', '🤖 Test these for me: the button starts one AI tester run over unchecked tests; the watchman starts one at night (AIG-291, AIG-292)', async (s, ctx) => {

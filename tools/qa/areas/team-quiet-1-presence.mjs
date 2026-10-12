@@ -30,7 +30,7 @@ def('presence', 'asleep -> online; Wake/comment start a background run (log, one
   const ca = await mkCard(s, 'alpha', 'terminal card');
   await say(s, 'alpha', ca.id, 'Owner', 'hello');
   await sleep(600);
-  check('online (terminal) team gets no background run', !(await s.ok('GET', '/api/projects/alpha')).presence.running && !fs.existsSync(path.join(s.data, 'logs', 'alpha.log')));
+  check('online (terminal) team gets no background run', !(await s.ok('GET', '/api/projects/alpha')).presence.running && !(fs.existsSync(path.join(s.data, 'logs', 'alpha.log')) && / started/.test(fs.readFileSync(path.join(s.data, 'logs', 'alpha.log'), 'utf8'))));
 
   // Wake from the page.
   fs.mkdirSync(folder + '-c');
@@ -41,7 +41,7 @@ def('presence', 'asleep -> online; Wake/comment start a background run (log, one
   let out = '';
   for (let i = 0; i < 60 && !out.includes('Owner commented'); i++) { await sleep(250); try { out = fs.readFileSync(s.wakeOut, 'utf8'); } catch {} }
   const norm = x => x.replace(/\\/g, '/').toLowerCase();
-  check('stub got the prompt and --continue', /Owner commented on the AI-gile board/.test(out) && /project gamma/.test(out) && /"-p" /.test(out) && /--continue/.test(out), out);
+  check('stub got the prompt and its own session id', /Owner commented on the AI-gile board/.test(out) && /project gamma/.test(out) && /"-p" /.test(out) && /--session-id/.test(out), out);
   check('stub ran with the folder as cwd', norm(out.split(/\r?\n/)[0]).replace(/\/$/, '') === norm(folder + '-c'), out.split(/\r?\n/)[0]);
   await page.waitForFunction(() => /background/.test(document.getElementById('teamTop').textContent), null, { timeout: 4000 }).catch(() => {});
   const top = await page.textContent('#teamTop');

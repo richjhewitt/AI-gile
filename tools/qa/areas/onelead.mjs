@@ -1,0 +1,74 @@
+// QA area: one lead per project (AIG-447): no background run on top of a lead working in a session.
+import fs from 'node:fs';
+import path from 'node:path';
+import { check, sleep, tmp, mkProject, mkCard, say, def } from '../lib.mjs';
+
+def('onelead', 'one lead per project: a session in VS Code or aigile wait blocks the background run; second-lead switch; --resume not --continue (AIG-447)', async s => {
+  const log = slug => { try { return fs.readFileSync(path.join(s.data, 'logs', slug + '.log'), 'utf8'); } catch { return ''; } };
+  const starts = slug => (log(slug).match(/ started/g) || []).length;
+  const settle = async slug => { for (let i = 0; i < 60 && (await s.ok('GET', '/api/projects/' + slug)).presence.running; i++) await sleep(250); };
+  await mkProject(s, 'One', 'ONE', { path: tmp('one') });
+  const c = await mkCard(s, 'one', 'a card');
+  // 1. a session used the board a moment ago: the owner's comment does not start a run
+  s.cli(['show', 'one', 'ONE-1'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '' });
+  await say(s, 'one', c.id, 'Owner', 'hello');
+  await sleep(1200);
+  check('a comment while a session is active starts no run', starts('one') === 0 && !(await s.ok('GET', '/api/projects/one')).presence.running, log('one'));
+  check('the log says why', /lead active in a session: not starting a background run/.test(log('one')), log('one'));
+  // 2. the session goes quiet for long (AIGILE_ACTIVE_MS is 1.5s here): the next comment starts the run
+  await sleep(1800);
+  await say(s, 'one', c.id, 'Owner', 'anyone there?');
+  for (let i = 0; i < 40 && !starts('one'); i++) await sleep(250);
+  await settle('one');
+  check('after the session went quiet, a comment starts a run', starts('one') === 1, log('one'));
+  const out1 = fs.readFileSync(s.wakeOut, 'utf8');
+  check('the run starts its own conversation under an id, never --continue', /--session-id/.test(out1) && !/--continue/.test(out1), out1);
+  const sid = (await s.ok('GET', '/api/projects/one')).runSession;
+  check('the board remembers the id it started', /^[0-9a-f-]{36}$/.test(sid || ''), sid);
+  // 3. the next run resumes only that id
+  await sleep(300);
+  await say(s, 'one', c.id, 'Owner', 'and again');
+  for (let i = 0; i < 40 && starts('one') < 2; i++) await sleep(250);
+  await settle('one');
+  const out2 = fs.readFileSync(s.wakeOut, 'utf8');
+  check('the next run uses --resume with that id', starts('one') === 2 && out2.includes('--resume') && out2.includes(sid) && !/--continue/.test(out2), out2);
+  // 4. sitting in aigile wait counts as active, however long ago the last command was
+  await sleep(1800);
+  await s.ok('GET', '/api/projects/one/updates?wait=1');
+  await say(s, 'one', c.id, 'Owner', 'while you wait');
+  await sleep(1200);
+  check('a session sitting in wait blocks a run', starts('one') === 2 && /not starting a background run/.test(log('one')), log('one'));
+  // 5. the second-lead switch allows it
+  await s.ok('PATCH', '/api/projects/one', { secondLead: true });
+  check('the switch is saved', (await s.ok('GET', '/api/projects/one')).secondLead === true);
+  await say(s, 'one', c.id, 'Owner', 'lots of work now');
+  for (let i = 0; i < 40 && starts('one') < 3; i++) await sleep(250);
+  await settle('one');
+  check('with a second lead allowed, the run starts', starts('one') === 3, log('one'));
+  await s.ok('PATCH', '/api/projects/one', { secondLead: false });
+  check('the switch goes off again', !(await s.ok('GET', '/api/projects/one')).secondLead);
+  // 6. the wake button is the owner's own say-so
+  await s.ok('GET', '/api/projects/one/updates?wait=1');
+  const w = await s.ok('POST', '/api/projects/one/wake');
+  check('the owner\'s own Wake still starts a run', w.running === true, w);
+  await settle('one');
+  // 7. the night watchman and the Lead Scrum Master are automatic: they respect a live session too (force no longer overrides)
+  await mkProject(s, 'Night', 'NGT', { path: tmp('night') });
+  await mkCard(s, 'night', 'Waiting work', { status: 'todo' });
+  await s.ok('POST', '/api/quiet', { on: true, watch: ['night'] });
+  await sleep(800); await settle('night'); await sleep(2000);   // going quiet wakes it once; let that run end and the quiet window pass
+  const before = starts('night');
+  s.cli(['show', 'night', 'NGT-1'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '' });
+  await sleep(1000);   // heard 'minutes' ago: offline for presence (ONLINE 0.6s) yet still a live session (ACTIVE 3s)
+  await s.ok('POST', '/api/watchman/round');
+  await sleep(500);
+  check('a watchman round starts no run on a lead in a session', starts('night') === before && /not starting a background run/.test(log('night')), log('night'));
+  await sleep(2500);
+  await s.ok('POST', '/api/watchman/round');
+  for (let i = 0; i < 40 && starts('night') === before; i++) await sleep(250);
+  check('once the session is quiet, the watchman wakes it', starts('night') === before + 1, log('night'));
+  await settle('night');
+  // 8. the heartbeat hook keeps a busy session counted
+  const ping = s.cli(['ping', 'night'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '' });
+  check('ping is a known command and marks the session live', !/unknown/i.test(String(ping)) && (await s.ok('GET', '/api/projects/night')).presence.where === 'vscode', ping);
+}, false, { AIGILE_ACTIVE_MS: '1500', AIGILE_ONLINE_MS: '600', AIGILE_IDLE_MS: '1' });
