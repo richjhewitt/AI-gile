@@ -2067,5 +2067,6 @@
   "xt.name.docs": "Documentatie",
   "xt.purpose.docs": "Schrijf handleidingen die mensen echt lezen, en houd ze kloppend.",
   "xt.name.data": "Data",
-  "xt.purpose.data": "Maak de cijfers achter de app schoon, tel ze en leg ze uit."
+  "xt.purpose.data": "Maak de cijfers achter de app schoon, tel ze en leg ze uit.",
+ "srv.dmr.goon": "- Ik ga ermee aan de slag: {list} staan in To do"
 }

@@ -2067,5 +2067,6 @@
   "xt.name.docs": "Docs",
   "xt.purpose.docs": "Write guides people actually read, and keep them true.",
   "xt.name.data": "Data",
-  "xt.purpose.data": "Clean, count and explain the numbers behind the app."
+  "xt.purpose.data": "Clean, count and explain the numbers behind the app.",
+ "srv.dmr.goon": "- On it: {list} are in To do"
 }
