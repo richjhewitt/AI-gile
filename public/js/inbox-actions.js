@@ -107,5 +107,18 @@
     try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await IB.load(); IB.toast(t('inbox.toast.hidden', { id: n.dataset.id })); }
     catch (e) { fail(n, e); }
   }
-  Object.assign(IB, { send, taskDone, lifeDone, accept, gotIt, infoReply, waitAndSee, startTester, acceptAiPassed, flickAct });
+  // ✅ Done by the tester (AIG-467): what the AI tester closed today, each with a one-click Reopen back to verify.
+  let tdSig = "";
+  async function testerDone() {
+    if (!el("ibTd")) return;
+    let list = []; try { list = await (await fetch("/api/tester/done", { cache: "no-store" })).json(); } catch { return; }
+    list = list.filter(x => IB.tab === "all" || x.project === IB.tab);
+    const html = list.length ? `<h3>${IB.esc(t("trust.done.h"))} <span class="ib-badge t">${list.length}</span></h3>` + list.map(x => `<div class="ib-td-row" data-project="${IB.esc(x.project)}" data-id="${IB.esc(x.id)}"><a href="#/p/${IB.esc(x.project)}/${IB.esc(x.id)}">${IB.esc(x.id)}</a> ${IB.esc(x.title)} <span class="muted">${IB.esc(t(x.sure ? "trust.is.sure" : "trust.is.likely"))}</span> <button data-tdreopen>${IB.esc(t("trust.reopen"))}</button></div>`).join("") : "";
+    if (tdSig === html) return; tdSig = html; el("ibTd").hidden = !html; el("ibTd").innerHTML = html;
+  }
+  async function reopenTested(row) {
+    row.querySelectorAll("button").forEach(b => b.disabled = true);
+    try { await post("PATCH", `/api/projects/${row.dataset.project}/cards/${row.dataset.id}`, { status: "verify" }); IB.toast(t("trust.reopened", { id: row.dataset.id })); await IB.load(); IB.paintPage(); } catch (e) { IB.toast(e.message || String(e)); }
+  }
+  Object.assign(IB, { testerDone, reopenTested, send, taskDone, lifeDone, accept, gotIt, infoReply, waitAndSee, startTester, acceptAiPassed, flickAct });
 })();

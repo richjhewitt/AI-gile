@@ -1611,5 +1611,15 @@
  "pwa.ios.how": "Tik op de knop Deel en kies \"Zet op beginscherm\".",
  "pwa.android": "Android (Chrome)",
  "pwa.android.how": "Tik op het menu ⋮ en kies \"App installeren\" of \"Toevoegen aan startscherm\".",
- "pwa.note": "Het bord draait op je computer, dus je gsm moet erbij kunnen (bijvoorbeeld op hetzelfde wifi). Alleen het uiterlijk van de app blijft op de gsm, nooit je kaarten."
+ "pwa.note": "Het bord draait op je computer, dus je gsm moet erbij kunnen (bijvoorbeeld op hetzelfde wifi). Alleen het uiterlijk van de app blijft op de gsm, nooit je kaarten.",
+ "trust.h": "🧪 Vertrouw de AI-tester",
+ "trust.opt.check": "👀 Ik controleer elke test",
+ "trust.opt.sure": "🤝 Zekere geslaagde tests gaan naar klaar",
+ "trust.opt.all": "🤖 Elke geslaagde test gaat naar klaar",
+ "trust.help": "De AI-tester zegt of een geslaagde test zeker of alleen waarschijnlijk is. Bij de tweede keuze gaan zekere tests vanzelf naar klaar, bij de derde elke geslaagde test. Controles die alleen kijken, server- of buitentaken, kaarten over push, release, betalen of budget en bugs die je zelf meldde wachten altijd op jou.",
+ "trust.done.h": "✅ Vandaag klaar gezet door de tester",
+ "trust.is.sure": "zeker",
+ "trust.is.likely": "waarschijnlijk",
+ "trust.reopen": "↩ Heropenen",
+ "trust.reopened": "{id} staat weer bij Voor jou"
 }
