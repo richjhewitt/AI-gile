@@ -1,5 +1,5 @@
 // QA area: groups (AIG-386): cards in a named group are dealt with together: CLI, board chip + filter + picker, one item in For you.
-import { check, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { check, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 
 def('groups', 'card groups: aigile group add/remove/list/move, test on a group, chip, filter, Group field, one For you item (AIG-386)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -33,8 +33,14 @@ def('groups', 'card groups: aigile group add/remove/list/move, test on a group, 
   const e = cli('add', 'alpha', 'New one', '--group', 'Other group', '--sprint', 'Big sprint');
   check('add --group "two words" and --sprint (space)', e.code === 0 && (await s.ok('GET', '/api/projects/alpha')).cards.some(x => x.title === 'New one' && x.group === 'Other group' && x.sprint === 'Big sprint'), e);
 
+  // Review fix: a question (not a test) with a group name is an ordinary question item; it used to throw in the inbox.
+  const gq = await mkCard(s, 'alpha', 'Grouped question', { status: 'doing', group: 'Asks' });
+  await say(s, 'alpha', gq.id, 'Forge', 'which colour?', { needsYou: true });
   const page = await openPage(ctx, '#/inbox');
   await page.waitForSelector('#ibT .ib-item');
+  await page.waitForSelector(`#ibQ .ib-item[data-id="${gq.id}"]`, { timeout: 5000 }).catch(() => {});
+  check('a grouped question shows as a plain question item', (await page.$$eval(`#ibQ .ib-item[data-id="${gq.id}"]`, es => es.length === 1 && !es[0].dataset.group && /which colour/.test(es[0].textContent))));
+  await s.ok('PATCH', `/api/projects/alpha/cards/${gq.id}`, { status: 'done', needsYou: false });
   const items = await page.$$eval('#ibT .ib-item', es => es.map(e => ({ group: e.dataset.group, text: e.textContent })));
   check('For you shows the group as ONE item', items.length === 1 && items[0].group === 'Addon testing', items);
   check('the item names the cards inside', [a, b, c].every(x => items[0].text.includes(x.id)), items[0].text);

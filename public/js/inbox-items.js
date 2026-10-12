@@ -44,7 +44,9 @@
       <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">${esc(t('inbox.t.sendback'))}</a></div>`;
   }
   const checkSig = c => (c.checklist || []).map(x => x.done ? 1 : 0).join('');
-  const sigOf = c => c.group ? IB.sigOfGroup(c) : !isTest(c) ?[c.title, c.blocked, c.server, c.serverName, (state.servers || []).join(","), shownAsk(c).at, shownAsk(c).text, checkSig(c), i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.info, c.aiCheck && c.aiCheck.at, checkSig(c), i18n.lang].join('|');
+  // A folded group of tests is the made-up item from inbox-groups.js (group: true); a question or task card can carry a group name too.
+  const isGroup = c => c.group === true;
+  const sigOf = c => isGroup(c) ? IB.sigOfGroup(c) : !isTest(c) ?[c.title, c.blocked, c.server, c.serverName, (state.servers || []).join(","), shownAsk(c).at, shownAsk(c).text, checkSig(c), i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.info, c.aiCheck && c.aiCheck.at, checkSig(c), i18n.lang].join('|');
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">
@@ -94,11 +96,10 @@
         n = document.createElement('div');
         const kind = kindOf(c);
         n.className = 'ib-item ' + kind + (kind === 'q' && c.blocked ? ' blk' : '');
-        if (c.group) n.dataset.group = c.groupName;
-        if (c.group) n.dataset.group = c.groupName;
+        if (isGroup(c)) n.dataset.group = c.groupName;
         n.dataset.key = k; n.dataset.sig = sig; n.dataset.project = c.project; n.dataset.id = c.id;
         if (c.projectColor) n.style.setProperty('--proj', c.projectColor);   // project stripe and badge (AIG-86)
-        n.innerHTML = kind === 'q' ? qHtml(c) : kind === 'k' ? kHtml(c) : c.group ? IB.gHtml(c) : tHtml(c);
+        n.innerHTML = kind === 'q' ? qHtml(c) : kind === 'k' ? kHtml(c) : isGroup(c) ? IB.gHtml(c) : tHtml(c);
       }
       if (list.children[i] !== n) list.insertBefore(n, list.children[i] || null);
     });
