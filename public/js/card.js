@@ -125,7 +125,7 @@ function renderCard(p, c) {
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
       ${Share.cardComments(p, c)}
       ${quizPanel(p, c)}
-      ${pop ? chatHtml(p, c, msg) : replyHtml(p, c, msg, newest)}
+      ${pop ? chatHtml(p, c, msg) : followBar(p, c) + replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
       ${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${Attach.shown(c, p.slug)}
@@ -179,8 +179,10 @@ function chatHtml(p, c, msg) {
   const pr = p.presence || {}, typing = (pr.running || pr.online) && (c.status === 'doing' || c.status === 'team') && !c.needsYou;
   return `<div class="chat">${c.comments.length ? c.comments.map(m => msg(m, false)).join('') : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}</div>
       ${typing ? `<div class="typing muted" id="typing">${esc(t('card.typing'))}</div>` : ''}
-      ${replyBox(p, c)}`;
+      ${followBar(p, c)}${replyBox(p, c)}`;
 }
+// AIG-426: the lead carried on in another card: a button to go there (and, if set, going by itself).
+function followBar(p, c) { return c.followUp && p.cards.some(x => x.id === c.followUp) ? Follow.html('card', p.slug, c.id, c.followUp) : ''; }
 // While the owner types in a pop-out, only the messages and the typing line are swapped, never the reply box.
 function popChatLive() {
   const p = state.project, c = p && p.cards.find(x => x.id === state.route.card), chat = document.querySelector('#modal .chat');
@@ -191,6 +193,8 @@ function popChatLive() {
   if (chat.innerHTML !== nc.innerHTML) chat.innerHTML = nc.innerHTML;
   const ty = document.getElementById('typing'), nt = tmp.querySelector('#typing');
   if (ty && !nt) ty.remove(); else if (!ty && nt) chat.after(nt);
+  const fbar = document.querySelector('#modal .follow-bar'), nbar = tmp.querySelector('.follow-bar');
+  if (fbar && !nbar) fbar.remove(); else if (nbar && (!fbar || fbar.dataset.follow !== nbar.dataset.follow)) { if (fbar) fbar.remove(); (document.getElementById('typing') || chat).after(nbar); }
   if (atEnd) window.scrollTo(0, de.scrollHeight);
   return true;
 }
