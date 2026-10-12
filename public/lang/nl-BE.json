@@ -321,6 +321,8 @@
  "inbox.g.accept": "✅ Alle {n} goedkeuren",
  "inbox.g.wait.title": "Nog niet zeker: de hele groep een uur verbergen",
  "inbox.g.sendback": "Terugsturen vraagt een reden: open een kaart van de groep",
+ "inbox.g.ph": "Antwoord, of zeg wat er mis is om terug te sturen",
+ "inbox.g.reply": "💬 Antwoorden",
  "inbox.g.nosteps": "Nog geen {{dev:test}}stappen",
  "inbox.toast.gaccepted": "✅ Groep {name} goedgekeurd ({n} kaarten).",
  "inbox.toast.ghidden": "⏳ Groep {name} een uur verborgen.",

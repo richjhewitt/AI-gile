@@ -323,6 +323,8 @@
  "inbox.g.accept": "✅ Accept all {n}",
  "inbox.g.wait.title": "Not sure yet: hide the whole group for an hour",
  "inbox.g.sendback": "Send back needs a reason: open a card of the group",
+ "inbox.g.ph": "Reply, or say what is wrong to send it back",
+ "inbox.g.reply": "💬 Reply",
  "inbox.g.nosteps": "No {{dev:test}} steps yet",
  "inbox.toast.gaccepted": "✅ Group {name} accepted ({n} cards).",
  "inbox.toast.ghidden": "⏳ Group {name} hidden for an hour.",
