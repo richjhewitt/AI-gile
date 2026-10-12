@@ -42,7 +42,7 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   check('Balanced is the recommended one', (await page.locator('.wz-opt', { hasText: 'recommended' }).count()) === 1);
   await page.check('[name=wz-style][value=careful]');
   await page.click('#wzNext'); await page.waitForSelector('[name=wz-plan]');
-  check('the five spend steps', (await page.locator('[name=wz-plan]').count()) === 5 && (await page.locator('.wz-opt').first().textContent()).includes('🪰'));
+  check('the five spend steps', (await page.locator('[name=wz-plan]').count()) === 5 && (await page.locator('.wz-opt').first().textContent()).includes('🐢'));
   await page.check('[name=wz-plan][value=fly]');
   await page.click('#wzNext'); await page.waitForSelector('#wzDone');
   check('last screen points to Setup', (await page.textContent('.wizard')).includes('Setup'));

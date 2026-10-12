@@ -53,6 +53,9 @@ const uz = {
   .uz-tip .r { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
   .uz-tip .r i { width: 12px; height: 0; border-top: 3px solid var(--c); flex: none; border-radius: 2px; }
   .uz-tip .r b { margin-left: auto; padding-left: 10px; font-size: 13px; }
+  .uz-burn-svg { margin: 2px 0; }
+  .uz-burn-svg svg { display: block; width: 100%; height: auto; }
+  .uz-burn-svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
   .uz-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; margin: 8px 0 6px; }
   .uz-legend span { display: inline-flex; align-items: center; gap: 6px; }
   .uz-legend i { width: 12px; height: 12px; border-radius: 3px; background: var(--c); flex: none; }
@@ -126,7 +129,7 @@ function renderUsagePage() {
     : `<div class="uz-tiles">${uzTile(t('usage.session'), t('usage.session.sub'), limits.latest, 'h5', hist)}${uzTile(t('usage.week'), t('usage.week.sub'), limits.latest, 'wk', hist)}</div>
        <p class="uz-note">${esc(t('usage.note'))}</p>`;
   return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}<p class="uz-explain">${esc(t('usage.explain'))}</p>
-    ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}${uzRuns(uz.data.runs, uz.data.projects)}</div>`;
+    ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${noReading ? '' : uzBurn(limits) + uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}${uzRuns(uz.data.runs, uz.data.projects)}</div>`;
 }
 
 /* ---------- compact view (AIG-431) ---------- */
@@ -219,6 +222,32 @@ function uzTile(title, sub, latest, key, hist) {
     <div class="uz-meter" role="meter" aria-label="${esc(t('usage.meter', { title, left }))}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${left}"><span style="width:${left}%;background:${st.c}"></span></div>
     <div class="uz-status" style="--c:${st.c}">${st.icon} ${st.label}</div>
     <div class="uz-big">${esc(resetTxt || t('usage.resetunknown'))}</div><div class="uz-sub">${esc(read)}${stale ? '. ' + esc(t('usage.stale')) + ' ' + where : ''}</div></div>`;
+}
+
+/* ---------- burn-down (AIG-466) ---------- */
+// Per window: the used-so-far line, a dashed forecast, the reset, and one plain line. Small inline SVG; the numbers come from
+// lib/forecast.js (limits.forecast). Nothing is drawn for a window with no reading or one that has reset.
+function uzBurn(limits) {
+  const hist = limits.history || [], fc = limits.forecast || {};
+  const card = ([k, title, span]) => {
+    const f = fc[k]; if (!f || f.over || !f.resets) return '';
+    const t0 = f.resets - span, W = 300, H = 110, L = 28, R = 8, T = 8, B = 16, iw = W - L - R, ih = H - T - B;
+    const x = ms => L + Math.max(0, Math.min(1, (ms - t0) / span)) * iw, y = p => T + (1 - Math.min(100, p) / 100) * ih;
+    const pts = hist.filter(s => s[k] && uzTime(s[k].resets) === f.resets).map(s => `${x(Date.parse(s.at)).toFixed(1)},${y(s[k].pct).toFixed(1)}`).join(' ');
+    const endT = f.rate > 0 ? (f.beforeReset ? f.runOut : f.resets) : f.resets, endP = f.rate > 0 ? (f.beforeReset ? 100 : f.atReset) : f.pct;
+    const line = !f.rate && f.at - f.since < 600e3 ? t('usage.burn.few') : f.beforeReset ? t('usage.burn.runs', { when: uzDay(f.runOut) }) : t('usage.burn.lasts');
+    const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title + ': ' + line)}">
+      <line x1="${L}" x2="${W - R}" y1="${y(100)}" y2="${y(100)}" stroke="var(--grid)" stroke-dasharray="4 4"/><line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--grid)"/>
+      <text x="${L - 4}" y="${y(100) + 4}" text-anchor="end">100</text><text x="${L - 4}" y="${y(0) + 4}" text-anchor="end">0</text>
+      <line x1="${W - R}" x2="${W - R}" y1="${T}" y2="${T + ih}" stroke="var(--muted)"/><text x="${W - R}" y="${H - 2}" text-anchor="end">${esc(t('usage.burn.reset'))}</text>
+      ${pts ? `<polyline points="${pts}" fill="none" stroke="var(--s1)" stroke-width="2.5" stroke-linejoin="round"/>` : ''}
+      <line class="uz-fc" x1="${x(f.at)}" y1="${y(f.pct)}" x2="${x(endT)}" y2="${y(endP)}" stroke="var(--s2)" stroke-width="2.5" stroke-dasharray="5 4"/></svg>`;
+    return `<div class="uz-card uz-burn"><div class="uz-tile-h">${esc(title)}</div><div class="uz-burn-svg">${svg}</div>
+      <div class="uz-legend"><span><i class="ln" style="--c:var(--s1)"></i>${esc(t('usage.burn.used'))}</span><span><i class="ln" style="--c:var(--s2)"></i>${esc(t('usage.burn.forecast'))}</span></div>
+      <div class="uz-big uz-burn-line" data-key="${k}">${esc(line)}</div></div>`;
+  };
+  const html = [['h5', t('usage.session'), 5 * 3600e3], ['wk', t('usage.week'), 7 * 864e5]].map(card).join('');
+  return html ? `<div class="uz-tiles">${html}</div>` : '';
 }
 
 /* ---------- tooltip plumbing ---------- */
