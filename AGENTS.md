@@ -49,7 +49,7 @@ aigile test <proj> <id> "1. Open http://localhost:4321
 3. You should see Y" --as YourName
 ```
 
-This moves the card to `verify` ("For you to test"), stores the steps and adds a comment. Write steps they can follow cold in under a minute, with the expected result and the exact button text. They accept (done) or send it back with a reason (back to `doing` with their comment). Hand-overs with nothing to click use `aigile test ... --info` (📖 To read: the owner gets **Got it** instead of Accept / Send back).
+This moves the card to `verify` ("For you to test"), stores the steps and adds a comment. Write steps they can follow cold in under a minute, with the expected result and the exact button text. If you changed what the owner sees, update the page in docs/guide/outline (one bullet; status: changed). They accept (done) or send it back with a reason (back to `doing` with their comment). Hand-overs with nothing to click use `aigile test ... --info` (📖 To read: the owner gets **Got it** instead of Accept / Send back).
 
 **Proof** so they can accept at a glance: `--commit <sha>` (the board reads the commit itself and shows what changed: no tokens) and `--shot a.png,b.png`.
 
