@@ -2215,5 +2215,12 @@
   "lead.planBig": "🧩 Nachten: plan een grote kaart als Te doen leeg is",
   "lead.planBig.help": "Als er niets klaarstaat, zet de nachtwacht één grote backlogkaart in Te doen en de lead breekt die op in kleine kaarten met teststappen. Kost tokens; één kaart per nacht per project.",
   "srv.assume.planbig": "Aanname: Te doen raakte vannacht leeg en er stond niets klaar, dus ik heb deze kaart klaargezet om te plannen: breek hem op in kleine kaarten met teststappen (aigile add ... --status todo) en sluit deze dan of houd hem als ouder.",
-  "space.roll": "🪐 Toon de kaarten van de projecten hierin ({n} open)"
+  "space.roll": "🪐 Toon de kaarten van de projecten hierin ({n} open)",
+  "dms.filter.discord": "Discord",
+  "dc.notify": "Discord: {who}",
+  "dc.kind.dm": "Gesprek met {bot}",
+  "dc.via": "Antwoorden gaan via {bot}",
+  "dc.placeholder": "Antwoord op Discord",
+  "dc.none": "Nog geen berichten.",
+  "dc.nonone": "Nog geen Discord-gesprekken. Stuur je bot een bericht op Discord, of voeg hem toe aan een server."
 }

@@ -22,6 +22,7 @@ const Dms = (() => {
   const dmSeen = { get: id => { try { return localStorage.getItem('aigile.dmseen.' + id) || ''; } catch { return ''; } }, set: (id, v) => { try { localStorage.setItem('aigile.dmseen.' + id, v); } catch {} } };
   try { filter = localStorage.getItem('aigile.dmfilter') || 'all'; } catch {}
   const isPerson = k => String(k).startsWith('dm:');
+  const isDc = k => String(k).startsWith('dc:');   // 💬 the Discord tab (AIG-557, discord-tab.js)
   const personAv = '<span class="dm-av">🙋</span>';
   const here = () => (location.hash.match(/^#\/p\/([^/]+)/) || [])[1] || '';
 
@@ -64,7 +65,7 @@ const Dms = (() => {
     if (NoAi.on) chats = [];   // 🚫 no DMs to leads (AIG-581)
     const cur = here(), p = projects.find(x => x.slug === cur);
     if (p) seen.set(cur, p.updated);   // looking at it now counts as seen
-    const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + people.reduce((n, c) => n + c.unread, 0);
+    const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + people.reduce((n, c) => n + c.unread, 0) + DiscordTab.unread();
     const btn = (attrs, inner, on, title) => `<button class="dm-railbtn ${on ? 'on' : ''}" ${attrs} title="${esc(title)}">${inner}</button>`;
     const html = btn('data-go="#/"', '<span class="dm-av">🏠</span>', location.hash === '#/' || location.hash === '', t('dms.home'))
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
@@ -95,10 +96,11 @@ const Dms = (() => {
 
   // The DM list: one row per lead (🤖) and per friend (🙋), narrowed by the filter chips (All / Agents / People).
   function paintList() {
-    const rows = (filter === 'people' ? [] : chats.map(c => `<button class="dm-row" data-dm="${esc(c.slug)}">${leadAv(c)}<span class="dm-rowtext"><b>${esc(leadName(c))}</b><span class="muted">${esc(chatName(c))}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`))
+    if (filter === 'discord' && !DiscordTab.linked()) filter = 'all';
+    const rows = filter === 'discord' ? DiscordTab.rowsHtml() : (filter === 'people' ? [] : chats.map(c => `<button class="dm-row" data-dm="${esc(c.slug)}">${leadAv(c)}<span class="dm-rowtext"><b>${esc(leadName(c))}</b><span class="muted">${esc(chatName(c))}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`))
       .concat(filter === 'agents' ? [] : people.map(c => `<button class="dm-row" data-dm="dm:${esc(c.id)}">${personAv}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc(t('dms.person'))}${c.last ? ' · ' + ago(c.last) : ''}</span></span>${badge(c.unread)}</button>`));
-    const none = filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) ? t('dms.nonone') : t('dms.noleads');
-    const chips = ['all', 'agents', 'people'].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}</button>`).join('');
+    const none = filter === 'discord' ? t('dc.nonone') : filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) ? t('dms.nonone') : t('dms.noleads');
+    const chips = ['all', 'agents', 'people', ...(DiscordTab.linked() ? ['discord'] : [])].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}${f === 'discord' ? badge(DiscordTab.unread()) : ''}</button>`).join('');
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
       <div class="dm-list">${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}</div>`;
@@ -163,6 +165,7 @@ const Dms = (() => {
   }
   async function loadThread(scroll) {
     if (!open) return;
+    if (isDc(open)) return DiscordTab.load(scroll);
     if (isPerson(open)) return loadPerson(scroll);
     try { thread = await api('GET', '/api/chats/' + open); } catch { return; }
     const list = el('dmList'); if (!list) return;
@@ -206,6 +209,7 @@ const Dms = (() => {
   async function smPush(v) { try { await api('POST', '/api/scrummaster/push', { level: +v }); await loadThread(); } catch (e) { el('dmErr').textContent = e.message || String(e); } }
 
   function show(slug) {
+    if (isDc(slug)) { open = slug; listOpen = true; thread = null; DiscordTab.show(slug); loadRail(); return; }
     open = slug; listOpen = true;
     const who = isPerson(slug) ? people.find(x => 'dm:' + x.id === slug) || { id: slug.slice(3), name: t('dms.person') } : null;
     thread = who ? { person: true, id: who.id, slug, name: who.name, messages: [], open: [] } : null;
@@ -238,8 +242,8 @@ const Dms = (() => {
   }
   function reload() { if (open) loadThread(); loadRail(); }
   function aim(id) { target = id; if (id !== GENERAL) fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
-  function back() { open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
-  function close() { open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
+  function back() { DiscordTab.stop(); open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
+  function close() { DiscordTab.stop(); open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
 
   async function send(fixed) {
     if (busy || !thread) return;
