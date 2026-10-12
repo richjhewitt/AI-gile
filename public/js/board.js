@@ -114,7 +114,7 @@ function renderBoard(p) {
     ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? `${p.description ? ' · ' : ''}<code>${esc(p.path)}</code>` : ''}</p>` : ''}
     ${Share.laneHtml(p)}
     ${Spaces.boardHtml(p, projCard)}
-    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path ? t('board.empty.path', { wake: esc(t('pres.wake')) }) : t('board.empty.nopath', { connect: esc(t('board.connect')) })}</div>`}
+    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.nopath', { connect: esc(t('board.connect')) })}</div>`}
     ${board}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}${team.length ? `<button class="bm-btn" onclick="badgeDialog()" title="${esc(t('badge.title.hint'))}">${esc(t('badge.title'))}</button>` : ''}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>

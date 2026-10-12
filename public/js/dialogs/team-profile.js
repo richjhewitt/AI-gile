@@ -11,7 +11,7 @@ async function teamDialog(msg = '') {
   await Promise.all([loadProfiles(), xtLoad()]);
   XT.msg = '';
   try { TM.data = await api('GET', '/api/projects/' + slug() + '/profiles'); } catch (e) { alert(e.message); return; }
-  TM.msg = msg;
+  TM.msg = msg; TM.friends = await api('GET', '/api/dms/contacts').then(l => l.filter(c => !c.blocked), () => []);
   openDialog(`<div id="tm-box">${teamHtml()}</div>`, 'wide team-dlg');
 }
 // Painted again after each change; the fold stays as it was and the focus where it was.
@@ -25,6 +25,9 @@ async function teamPaint(msg) {
   if (f && $(f)) $(f).focus();
 }
 function teamHtml() {
+  // 🚫 No AI, ever (AIG-581/582): the roster is just the people.
+  if (NoAi.on) return `<h2>${esc(t('tm.h'))}</h2><p class="muted">${esc(t('tm.intro', { name: state.project.name }))}</p>${peopleHtml()}<div class="tm-msg" id="tm-msg" role="status">${TM.msg}</div><div class="err" id="tm-err"></div>
+    <div class="actions"><button class="primary" type="button" onclick="closeDialog(); rerender()">${esc(t('common.done'))}</button></div>`;
   const pr = leadPrefs(), on = tmOn(), all = (state.profiles.roles || []).filter(r => !on.includes(r.id));
   const row = r => { const g = (profileRole(r.id) || {}).group || '', mine = r.mine, here = Object.keys(r.project || {}).length;
     return `<div class="tm-row" data-role-id="${esc(r.id)}"><span class="tm-ic" aria-hidden="true">${roleIcon(r.id)}</span>
@@ -45,6 +48,7 @@ function teamHtml() {
       <button type="button" id="tm-team-add" onclick="teamApply('add')">${esc(t('tm.team.add'))}</button><button type="button" id="tm-team-replace" onclick="teamApply('replace')">${esc(t('tm.team.replace'))}</button></div>
     <small class="muted">${esc(t('tm.team.sub'))}</small>
     ${xtHtml()}
+    ${peopleHtml()}
     <div class="tm-msg" id="tm-msg" role="status">${TM.msg}</div>
     <details class="tm-owner" id="tm-owner"><summary>${esc(t('tm.owner.h'))}</summary><small class="muted">${esc(t('tm.owner.sub'))}</small>${['steps', 'go', 'words'].map(ownerRow).join('')}</details>
     <div class="err" id="tm-err"></div>

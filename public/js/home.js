@@ -9,6 +9,7 @@ function bar(counts, total) {
 const fmtTok = n => n >= 1e9 ? (n / 1e9).toFixed(1) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'k' : String(n);
 const usageLine = u => t('home.usageline', { h5: fmtTok(u.h5), today: fmtTok(u.today), d7: fmtTok(u.d7) });
 function usageStrip(u) {
+  if (NoAi.on) return '';
   if (!u?.enabled) return '';
   const total = Object.values(u.org.models7d).reduce((a, b) => a + b, 0) || 1;
   const models = Object.entries(u.org.models7d).filter(([, n]) => n).sort((a, b) => b[1] - a[1]).map(([m, n]) => `${m} ${Math.round(n / total * 100)}%`).join(' · ');
@@ -19,6 +20,7 @@ function usageStrip(u) {
 
 // The Lead Scrum Master, in the same style as a team's presence (AIG-463): running now (and where), idle (and when it last ran), or off.
 function smLine(sm) {
+  if (NoAi.on) return '';
   if (!sm) return '';
   const run = sm.lastRunAt || sm.lastRound, name = '<b>' + esc(t('smpres.name')) + '</b>';
   if (sm.running || sm.listening) return `<div class="smline">🧭 ${name} <span class="pres on">${esc(t(sm.running ? 'smpres.background' : sm.where === 'vscode' ? 'pres.vscode' : 'pres.terminal'))}</span></div>`;

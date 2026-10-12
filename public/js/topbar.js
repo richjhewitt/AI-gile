@@ -6,6 +6,7 @@ const Topbar = (() => {
   const KEY = 'aigile.topbar';
   const BTNS = [['helpBtn', 'help'], ['ideaBtn', 'idea'], ['bugBtn', 'bug'], ['teamTop', 'team'], ['inboxTop', 'inbox'], ['pokeTop', 'poke'], ['nightTop', 'night'], ['ntBtn', 'nt'], ['assumeNav', 'assume'], ['usageNav', 'usage'], ['setupNav', 'setup'], ['themeBtn', 'theme']];
   const IDS = BTNS.map(b => b[0]), KEEP = 'setupNav';
+  const AI_BTNS = ['ntBtn', 'usageNav', 'pokeTop', 'nightTop', 'teamTop'];   // hidden by No AI, ever (AIG-581)
   const COLOURS = ['accent', 'done', 'warn', 'danger', 'you'];
   const blank = () => ({ order: IDS.slice(), off: [], side: {}, colour: {} });
   const load = () => {
@@ -38,7 +39,7 @@ const Topbar = (() => {
   const step = (id, d) => move(id, cur.order.indexOf(id) + d);
   const reset = () => { cur = blank(); try { localStorage.removeItem(KEY); } catch {} apply(); paint(); };
   function html() {
-    const rows = cur.order.map((id, i) => {
+    const rows = cur.order.filter(id => !(NoAi.on && AI_BTNS.includes(id))).map((id, i) => {
       const nm = t('tb.b.' + BTNS.find(b => b[0] === id)[1]), on = !cur.off.includes(id), lk = id === KEEP, sd = cur.side[id] === 'l' ? 'l' : 'r', co = cur.colour[id] || '';
       const sw = ['', ...COLOURS].map(k => `<button type="button" class="tb-sw${co === k ? ' on' : ''}" data-tbc="${k}" aria-pressed="${co === k}" aria-label="${esc(t('tb.c.' + (k || 'none')))}" title="${esc(t('tb.c.' + (k || 'none')))}" onclick="Topbar.colour('${id}','${k}')"></button>`).join('');
       return `<li class="tb-row" draggable="true" data-tb="${id}">
