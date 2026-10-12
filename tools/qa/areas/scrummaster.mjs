@@ -101,6 +101,11 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   check('over the cap it says so', !!(await until(async () => (await chat()).some(m => /AI runs are used up/.test(m.text)), 8000)), await chat());
   await sleep(1500);
   check('and starts no run', callList().filter(l => /scrummaster/i.test(l)).length === n && (await s.ok('GET', '/api/scrummaster')).runsToday === 3, callList());
+  // AIG-488: the same refusal in Dutch once the owner's language is nl
+  await s.ok('POST', '/api/setup', { prefs: { lang: 'nl' } });
+  await s.ok('POST', '/api/chats/_watchman', { text: 'Fourth one' });
+  check('in Dutch the cap note is Dutch', !!(await until(async () => (await chat()).some(m => /AI-runs van vandaag zijn op/.test(m.text) && /Ik kan niet starten/.test(m.text)), 8000)), await chat());
+  await s.ok('POST', '/api/setup', { prefs: { lang: 'en' } });
 
   // ⛔ No Token Mode: messages are refused, a round wakes nobody.
   await s.ok('POST', '/api/notokens', { on: true });

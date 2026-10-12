@@ -102,6 +102,16 @@ def('pretend', '🧪 the trial\'s pretend team: fills a new project, answers an 
   await tj('POST', `/api/projects/pancake-shop/cards/${idea.id}/comments`, { author: who, text: 'GO' });
   const built = await until(async () => { const p = await tj('GET', '/api/projects/pancake-shop'); return p.cards.filter(c => c.status === 'verify').length > before && p; });
   check('after Go, the first card lands in For you with test steps', !!built && built.cards.some(c => c.status === 'verify' && /Gift cards/.test(c.title) && c.testSteps));
+  // AIG-488: with the owner's language on nl, a fresh trial has Dutch projects and a Dutch pretend team
+  await s.ok('POST', '/api/setup', { prefs: { lang: 'nl' } });
+  const nlTrial = await s.ok('POST', '/api/trial');
+  const names = fs.readdirSync(nlTrial.projects).sort();
+  check('the made-up projects are named in Dutch', names.join() === 'Bandwebsite,Pannenkoekenwinkel,Tuinplanner' && /Een webwinkel voor pannenkoekenmix/.test(fs.readFileSync(path.join(nlTrial.projects, 'Pannenkoekenwinkel', 'README.md'), 'utf8')), names);
+  await tj('POST', '/api/projects', { name: 'Pannenkoekenwinkel', key: 'PAN', path: path.join(nlTrial.projects, 'Pannenkoekenwinkel') });
+  await tj('POST', '/api/projects/pannenkoekenwinkel/wake');
+  const nlSeed = await until(async () => { const p = await tj('GET', '/api/projects/pannenkoekenwinkel'); return (p.team || []).some(m => m.name === 'Lead (pretend)') && p.cards.some(c => c.status === 'verify') && p; });
+  check('and the pretend team makes Dutch cards', !!nlSeed && nlSeed.cards.some(c => c.title === 'Donkere modus') && nlSeed.cards.some(c => c.title === 'Een contactpagina' && /Open de pagina \*\*Contact\*\*/.test(c.testSteps)), nlSeed && nlSeed.cards.map(c => c.title));
+  await s.ok('POST', '/api/setup', { prefs: { lang: 'en' } });
   await s.api('DELETE', '/api/trial');
 }, false);
 
