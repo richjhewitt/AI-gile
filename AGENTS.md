@@ -67,6 +67,9 @@ aigile ask <proj> <id> "Should exports include archived items? I'm assuming no."
 
 No card for it? `add` one first. This flags the card NEEDS-OWNER and puts it in their inbox with one-click answers: a plan ending in **GO?** gets Go / Not yet, a yes/no gets Yes / No, otherwise `--options "M3U,JSON"` (up to 4). Then move on with `next`. State your assumption so a "fine" is enough. For an external blocker (missing key, failing service) use `aigile block <proj> <id> "why" --as YourName`, and `unblock` when it clears; their reply clears the block too.
 
+**Owner away? Don't ask, assume.** Use your best judgement and log it: `aigile assume <proj> <id> "what I assumed and why" --as YourName` (or `comment ... --assume`). It lands on the owner's 🌙 Assumptions page, where he marks it 👍 fine or ✋ plugs it with a reply on the card.
+**To do ran dry?** The night watch refills it from urgent/high backlog cards that need no owner answer and logs why as an assumption; start them, and flag any you think is a wrong pick.
+
 **Several questions on the same subject?** Group them: `aigile quiz <proj> <id> --topic "Sharing" "Question one?|Opt A,Opt B" "Question two?|Yes,No" --as YourName`. Keep each question to one line (up to 4 short options); the owner answers them together in the ⚡ Decide pile and you get one comment back. When you ask Go, keep the plan to a 2-line summary.
 
 **Links, not directions.** When a step sends the owner to a website (a DNS provider, a dashboard, a store page), give the direct link to that exact page, e.g. the domain's DNS settings; if you can't know it, the provider's sign-in page. Never "go to X and find Y".

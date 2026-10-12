@@ -54,6 +54,7 @@ async function checkBuild() {
     if (JSON.stringify(m.servers || []) !== JSON.stringify(state.servers)) { state.servers = m.servers || []; refresh(true); }   // My servers (AIG-374)
     if ((m.ownerPic || '') !== (state.ownerPic || '')) { state.ownerPic = m.ownerPic || ''; refresh(true); }   // your picture (AIG-150)
     pokeBadge(await api('GET', '/api/projects'));
+    Assumptions.watch();   // the count on the 🌙 Assumptions link (AIG-477)
     // A new install opens Setup first (AIG-91).
     if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';
     if (loadedBuild === null) { loadedBuild = m.build; return; }
