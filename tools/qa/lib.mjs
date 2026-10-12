@@ -62,7 +62,12 @@ export async function startServer(extraEnv = {}, port = PORT) {   // a second bo
   const out = path.join(dir, 'wake-out.txt');
   const stub = path.join(dir, 'agent-stub.bat');
   fs.writeFileSync(stub, `@echo off\r\ncd > "${out}"\r\necho %* >> "${out}"\r\nping -n 4 127.0.0.1 >nul\r\nexit\r\n`);
-  const env = { ...process.env, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', AIGILE_QA_TOKEN: token, ...extraEnv };   // tests speak to "Owner", whatever your own name is
+  // The test server gets its own settings file (AIG-401): never the owner's aigile.local.json, which tests
+  // that save settings (wizard, budget, setup) used to change. Only the machine bits are carried over.
+  const local = path.join(dir, 'aigile.local.json');
+  let ownerLocal = {}; try { ownerLocal = JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')); } catch {}
+  fs.writeFileSync(local, JSON.stringify(Object.fromEntries(['usageDir', 'globalSettingsFile', 'agent', 'avatarsDir'].filter(k => k in ownerLocal).map(k => [k, ownerLocal[k]])), null, 2));
+  const env = { ...process.env, AIGILE_LOCAL: local, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', AIGILE_QA_TOKEN: token, ...extraEnv };   // tests speak to "Owner", whatever your own name is
   delete env.AIGILE_DEV; delete env.AIGILE_ALLOW_DONE; delete env.AIGILE_AS;
   const proc = spawn(process.execPath, [path.join(ROOT, 'server.js')], { env, stdio: 'ignore', cwd: ROOT });
   let mine = false;
