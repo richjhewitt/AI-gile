@@ -1,0 +1,26 @@
+// Run by the QA area "editor" (AIG-536): lib/editor.js against a temp project folder. Prints one JSON line.
+const fs = require('fs'), path = require('path');
+const root = process.argv[2], dir = process.argv[3];
+const proj = path.join(dir, 'proj').replace(/\\/g, '/');
+fs.mkdirSync(path.join(proj, '.claude'), { recursive: true });
+fs.writeFileSync(path.join(proj, '.claude/settings.local.json'), '{"permissions":{}}');
+fs.mkdirSync(path.join(proj, '.git'), { recursive: true });
+fs.writeFileSync(path.join(proj, '.git/config'), 'x');
+fs.mkdirSync(process.env.AIGILE_DATA, { recursive: true });
+const st = require(root + '/lib/store');
+st.save({ slug: 't', name: 'T', path: proj, cards: [], team: [], log: [] });
+const E = require(root + '/lib/editor');
+const tryit = f => { try { return { ok: f() }; } catch (e) { return { err: e.message, code: e.code }; } };
+const r = E.read({ project: 't', path: '.claude/settings.local.json' });
+const out = { read: r.exists && r.content };
+out.escape = tryit(() => E.read({ project: 't', path: '../x' }));
+out.abs = tryit(() => E.read({ project: 't', path: path.join(dir, 'outside.txt') }));
+out.git = tryit(() => E.read({ project: 't', path: '.git/config' }));
+out.badjson = tryit(() => E.save({ project: 't', path: '.claude/settings.local.json', content: '{oops', mtime: r.mtime }));
+out.save = tryit(() => E.save({ project: 't', path: '.claude/settings.local.json', content: '{"permissions":{"allow":["Bash(ls)"]}}', mtime: r.mtime }));
+out.stale = tryit(() => E.save({ project: 't', path: '.claude/settings.local.json', content: '{}', mtime: 1 }));
+out.newfile = tryit(() => E.save({ project: 't', path: 'notes/new.txt', content: 'hi' }));
+out.after = fs.readFileSync(path.join(proj, '.claude/settings.local.json'), 'utf8');
+out.backups = fs.readdirSync(path.join(st.DATA, 'editor-backups', 't')).length;
+out.quick = E.quick('t').map(q => q.path + ':' + q.exists);
+console.log(JSON.stringify(out));
