@@ -1,5 +1,7 @@
 // QA areas: board, filters, columns, cardview, wip, lanes, views, steps, quick.
-import { BASE, check, sleep, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+import fs from 'node:fs';
+import path from 'node:path';
+import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 
 def('board', 'columns, drag between columns, + New default, Raise bug', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -342,3 +344,36 @@ def('tidy', '🧹 Tidy my pile asks the lead; fold moves test steps across and c
   check('a second click while it is open does not make another', again.already === true && (await s.ok('GET', '/api/projects/alpha')).cards.filter(c => c.tidy).length === 1);
   noErrors(page);
 }, true);
+
+// AIG-399: with Tidy cards on, a New card with only a description gets its first line as a temporary title (tidyTitle marks it).
+def('tidynew', 'New card with only a description: with Tidy cards on it gets a temporary title from its first line (AIG-399)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await mkCard(s, 'alpha', 'Seed card');
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.click('.toolbar button.primary');
+  await page.waitForSelector('#f-description');
+  await page.fill('#f-description', 'Make the logo bigger on the start page\n- and check it on a phone');
+  await page.click('#dialog button[type=submit]');
+  await sleep(600);
+  const made = (await s.ok('GET', '/api/projects/alpha')).cards.find(c => c.description.startsWith('Make the logo'));
+  check('a description-only card is created', !!made, made);
+  check('its title is the first line', !!made && made.title === 'Make the logo bigger on the start page', made && made.title);
+  check('it is marked for the lead to retitle', !!made && made.tidyTitle === true);
+  check('the board shows the temporary title', (await page.locator('.card', { hasText: 'Make the logo bigger' }).count()) >= 1);
+  // A long first line is cut to about 60 characters; the words stay in the description.
+  const long = 'Word '.repeat(30).trim();
+  const lc = await s.ok('POST', '/api/projects/alpha/cards', { description: long + '\n- more' });
+  check('a long first line is trimmed to about 60 characters', lc.title.length <= 60 && lc.title.endsWith('…') && lc.description.startsWith(long), lc.title);
+  const titled = await s.api('POST', '/api/projects/alpha/cards', { title: 'Has a title', description: 'Body' });
+  check('a card with a title keeps it and is not marked', titled.status === 200 && titled.body.title === 'Has a title' && !titled.body.tidyTitle);
+  const none = await s.api('POST', '/api/projects/alpha/cards', { description: '   ' });
+  check('no title and no words is still refused', none.status === 400);
+  noErrors(page);
+}, true, (() => {
+  const dir = tmp('tidynew'), local = path.join(dir, 'local.json');
+  // The project's own local settings, with Tidy cards on (chatty off, as in the QA runs).
+  let base = {};
+  try { base = JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')); } catch {}
+  fs.writeFileSync(local, JSON.stringify({ ...base, lead: { ...(base.lead || {}), tidyCards: true, chatty: false } }));
+  return { AIGILE_LOCAL: local };
+})());

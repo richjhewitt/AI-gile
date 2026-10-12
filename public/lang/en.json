@@ -625,6 +625,8 @@
  "format.copy": "📋 Copy",
  "format.copied": "✅ Copied",
  "format.copymd": "Copy {name}",
+ "format.opendir": "Open the folder in Explorer",
+ "format.copypath": "Copy the path",
  "format.openfile": "Open {name}",
  "dms.kind.question": "❓ Question",
  "dms.kind.test": "🧪 To test",

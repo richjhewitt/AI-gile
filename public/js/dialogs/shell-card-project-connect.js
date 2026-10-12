@@ -42,7 +42,8 @@ async function makeLifeBoard() {
 async function createCard(e) {
   e.preventDefault();
   const body = readFields(false, false);
-  if (!body.title) { setErr('d-err', t('dlg.err.title')); return false; }
+  // No title is fine when there is a description: with Tidy cards on the server takes its first line (AIG-399).
+  if (!body.title && !body.description.trim()) { setErr('d-err', t('dlg.err.title')); return false; }
   if ($('nc-life') && $('nc-life').checked) {   // 🏡 Real life (AIG-394): the server makes it the owner's own task and sets the appointment's timer
     body.lifeType = $('nc-lifetype').value;
     if (body.lifeType === 'appointment') {
@@ -65,7 +66,7 @@ async function createCard(e) {
     }
     closeDialog();
     await rerender();
-  } catch (err) { setErr('d-err', err); }
+  } catch (err) { setErr('d-err', /title is required/.test(err.message) ? t('dlg.err.title') : err); }   // no title, and Tidy cards is off
   return false;
 }
 

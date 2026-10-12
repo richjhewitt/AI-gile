@@ -8,12 +8,12 @@ function withCode(text, fmt, slug) {
     if (i % 2) {
       const code = part.replace(/\n$/, ''), one = code.trim();
       const open = isMdPath(one) ? `<button class="copy open" data-p="${esc(one)}" data-s="${esc(slug || '')}" onclick="showDocPath(this.dataset.p,this.dataset.s)">${esc(t('format.open'))}</button>` : '';
-      const edit = isFilePath(one) ? editBtn(one, 'copy edit') : isFolderPath(one) ? folderBtn(one, 'copy edit') : '';
-      return `<div class="codebox"><button class="copy" onclick="copyCode(this)">${esc(t('format.copy'))}</button>${open}${edit}<pre><code>${esc(code)}</code></pre></div>`;
+      const paths = isFilePath(one) ? fileBtns(one, 'copy edit') : isFolderPath(one) ? folderBtn(one, 'copy edit') : '';
+      return `<div class="codebox${paths ? ' paths' : ''}"><div class="codebox-acts"><button class="copy" onclick="copyCode(this)">${esc(t('format.copy'))}</button>${open}${paths}</div><pre><code>${esc(code)}</code></pre></div>`;
     }
     const links = [];   // inline code that is a .md path is set aside so fmt leaves it whole
     part = (i ? part.replace(/^\n/, '') : part).replace(/`([^`\n]+)`/g, (m, c) => isMdPath(c) ? `\u0000${links.push(c.trim()) - 1}\u0000` : m);
-    return spaceBullets(editLinks(fmt(part)).replace(/`([^`\n]+)`/g, (m, c) => `<code>${c}</code>` + (isFilePath(unesc(c)) ? editBtn(unesc(c)) : isFolderPath(unesc(c)) ? folderBtn(unesc(c)) : ''))
+    return spaceBullets(editLinks(fmt(part)).replace(/`([^`\n]+)`/g, (m, c) => `<code>${c}</code>` + (isFilePath(unesc(c)) ? fileBtns(unesc(c)) : isFolderPath(unesc(c)) ? folderBtn(unesc(c)) : ''))
       .replace(/\u0000(\d+)\u0000/g, (m, n) => `<code>${mdLink(esc(links[n]), esc(links[n]), slug)}${mdCopyBtn(links[n], slug)}</code>`));
   }).join('');
 }
@@ -21,18 +21,28 @@ function withCode(text, fmt, slug) {
 const isFilePath = s => /^\s*(?:[A-Za-z]:[\\/]|\/|~[\\/])[^<>|?*\n`"]*\.\w{1,8}\s*$/.test(s) && !/^\s*https?:/i.test(s);
 // A full folder path (AIG-240): no extension at the end; it gets a 📂 button that opens the folder.
 const isFolderPath = s => /^\s*(?:[A-Za-z]:[\\/]|~[\\/])[^<>|?*\n`"]*[^<>|?*\n`"\\/.]\s*[\\/]?\s*$/.test(s) && !/\.\w{1,8}\s*$/.test(s);
-const folderBtn = (p, cls = 'edit-btn') => `<button class="${cls}" data-editor="${esc(p.trim())}" title="${esc(p.trim())}">📂</button>`;
+// AIG-398: 📂 opens a folder in Explorer (a file's button: the folder it is in); 📋 copies the path.
+const dirOf = p => { const d = p.trim().replace(/[\\/][^\\/]*$/, ''); return /^[A-Za-z]:$/.test(d) ? d + '/' : d; };
+const openDirBtn = (dir, cls) => `<button class="${cls}" data-open-dir="${esc(dir)}" title="${esc(t('format.opendir'))}">📂</button>`;
+const copyPathBtn = (p, cls) => `<button class="${cls}" data-copy-path="${esc(p.trim())}" title="${esc(t('format.copypath'))}">📋</button>`;
+const folderBtn = (p, cls = 'edit-btn') => openDirBtn(p.trim(), cls) + copyPathBtn(p, cls);
+const fileBtns = (p, cls = 'edit-btn') => editBtn(p, cls) + openDirBtn(dirOf(p), cls) + copyPathBtn(p, cls);
 const unesc = s => String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
 // A web page (.html) opens in the browser, not the editor (AIG-294).
 const isPage = p => /\.html?\s*$/i.test(p);
 const editBtn = (p, cls = 'edit-btn') => `<button class="${cls}" data-editor="${esc(p.trim())}" title="${esc(t(isPage(p) ? 'format.browser' : 'format.edit'))}">${isPage(p) ? '🌐' : '📝'}</button>`;
 // Bare full paths without spaces in escaped text (paths with spaces belong in `code`).
-const editLinks = html => html.replace(/(^|[\s(>])((?:[A-Za-z]:[\\/]|~[\\/])[^\s<>"`]*\.\w{1,8})(?=[\s<).,;:!?]|$)/g, (m, pre, p) => pre + p + editBtn(unesc(p)));
+const editLinks = html => html.replace(/(^|[\s(>])((?:[A-Za-z]:[\\/]|~[\\/])[^\s<>"`]*\.\w{1,8})(?=[\s<).,;:!?]|$)/g, (m, pre, p) => pre + p + fileBtns(unesc(p)));
 document.addEventListener('click', async e => {
-  const b = e.target.closest('[data-editor]'); if (!b) return;
+  const b = e.target.closest('[data-editor],[data-open-dir]'); if (!b) return;
   e.preventDefault(); e.stopPropagation();
-  try { await api('POST', '/api/open-file', { path: b.dataset.editor }); const was = b.textContent; b.textContent = '✓'; setTimeout(() => { b.textContent = was; }, 1500); }
+  try { await api('POST', '/api/open-file', { path: b.dataset.editor ?? b.dataset.openDir }); const was = b.textContent; b.textContent = '✓'; setTimeout(() => { b.textContent = was; }, 1500); }
   catch (err) { alert(err.message); }
+}, true);
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-copy-path]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  copyDocText(b, b.dataset.copyPath);
 }, true);
 // Copies text to the clipboard and shows a short "Copied" on the button (AIG-390); the button keeps its own label.
 async function copyDocText(btn, text) {
@@ -65,7 +75,7 @@ function spaceBullets(html) {
     pre + '<ul class="bl">' + block.split('\n').filter(l => l.trim()).map(l => `<li>${l.replace(/^[ \t]*[-•][ \t]+/, '')}</li>`).join('') + '</ul>');
 }
 function copyCode(btn) {
-  navigator.clipboard.writeText(btn.parentNode.querySelector('pre').textContent)
+  navigator.clipboard.writeText(btn.closest('.codebox').querySelector('pre').textContent)
     .then(() => { btn.textContent = t('format.copied'); setTimeout(() => { btn.textContent = t('format.copy'); }, 1500); });
 }
 // A pasted GIF link (AIG-343) shows under the link as a picture: https only, a .gif address or a giphy/tenor media address; the browser
