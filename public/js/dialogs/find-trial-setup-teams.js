@@ -92,6 +92,7 @@ function renderSetup() {
     <div class="f" id="pretendBox">${pretendBoxHtml()}</div>
     <div class="f"><span>${esc(t('trial.h'))}</span><div>${launchPickHtml()}<button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
+    <div class="f" id="iconBox">${iconHtml()}</div>
     <div class="f"><span>${esc(t('face.me'))}</span>${logoEditor('me-pic', s.mePic)}</div>
     <div class="f"><span>${esc(t('face.lib'))}</span>${libraryHtml(s.library)}</div>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">
@@ -156,6 +157,23 @@ function runInHtml(msg = '') {
 async function setRunIn(prefs) {
   try { state.setup = await api('POST', '/api/setup', { prefs }); $('runInPrefs').innerHTML = runInHtml(t('setup.saved.short')); }
   catch (e) { setErr('runin-err', e); }
+}
+/* ---------- 🎨 app icon colours (AIG-400) ---------- */
+// The tile's colour and the waiting diamond's: a few presets and a picker. Saved to aigile.local.json; the page's tab
+// icon follows at once, the desktop app's taskbar icon the next time it redraws (or after a restart).
+const ICON_PRESETS = { main: ['#3b6cf6', '#16a34a', '#ea580c', '#db2777', '#0f172a'], waiting: ['#a855f7', '#f59e0b', '#ef4444', '#06b6d4', '#22c55e'] };
+function iconHtml(msg = '') {
+  const pr = leadPrefs(), c = pr.iconColors || { main: ICON_PRESETS.main[0], waiting: ICON_PRESETS.waiting[0] };
+  const row = k => `<div class="logo-edit" id="icon-${k}"><span>${esc(t('icon.' + k))}</span>${ICON_PRESETS[k].map(p => `<button type="button" class="icon-sw" data-c="${p}" style="background:${p};width:26px;height:26px;border-radius:6px;border:2px solid ${p === c[k] ? 'var(--text, #000)' : 'transparent'}" title="${p}" aria-label="${p}" onclick="setIconColors({ ${k}: '${p}' })"></button>`).join('')}
+    <input type="color" id="icon-${k}-pick" value="${esc(c[k])}" aria-label="${esc(t('icon.' + k))}" onchange="setIconColors({ ${k}: this.value })"></div>`;
+  return `<span>${esc(t('icon.h'))}</span>${row('main')}${row('waiting')}
+    <div class="actions"><button type="button" id="iconReset" onclick="setIconColors(null)" ${pr.iconCustom ? '' : 'disabled'}>${esc(t('icon.reset'))}</button></div>
+    <small class="muted">${esc(t('icon.help'))}</small><div class="err" id="icon-err"></div><div class="muted">${esc(msg)}</div>`;
+}
+async function setIconColors(part) {
+  const c = (leadPrefs().iconColors) || {};
+  try { state.setup = await api('POST', '/api/setup', { prefs: { iconColors: part === null ? null : { ...c, ...part } } }); $('iconBox').innerHTML = iconHtml(t('setup.saved.short')); checkBuild(); }
+  catch (e) { setErr('icon-err', e); }
 }
 /* ---------- 🖥️ my servers (AIG-374) ---------- */
 // Name + how you open it (a shortcut/file path, a command, or an ssh address for the ⌨ terminal, AIG-471). Saved to

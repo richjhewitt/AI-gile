@@ -34,10 +34,15 @@ setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136
 let loadedBuild = null;
 // App logo (AIG-175): the tab icon and the header link use the picture from Setup, else the 🗂️ they start with.
 const FAVICON0 = document.getElementById('favicon').getAttribute('href');
-function applyAppLogo(url) {
-  const f = $('favicon'), b = $('brand');
-  if (f.dataset.logo === (url || '')) return;
-  f.dataset.logo = url || ''; f.setAttribute('href', url || FAVICON0);
+// App icon colours (AIG-400): with no picture but custom colours, the tab icon is the board mark in them, with the
+// waiting diamond while the title has a count (inbox-top.js).
+let appIcon = null;
+function applyAppLogo(url, icon) {
+  if (icon !== undefined) appIcon = icon;
+  const f = $('favicon'), b = $('brand'), w = /^\(\d+\)/.test(document.title) ? 1 : 0;
+  const href = url || (appIcon ? `/api/app-icon.svg?waiting=${w}&v=${appIcon.v}` : FAVICON0), key = href + '|' + (url || '');
+  if (f.dataset.logo === key) return;
+  f.dataset.logo = key; f.setAttribute('href', href);
   b.innerHTML = url ? `<img class="brand-logo" src="${esc(url)}" alt=""> AI-gile` : '🗂️ AI-gile';
 }
 let wasQuiet = null;   // was the board quiet at the last check (AIG-232)
@@ -50,7 +55,7 @@ async function checkBuild() {
     if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});
     wasQuiet = m.quiet; setNight(m.quiet);
     Focus.watch(m.focus);   // 🎯 focus mode (AIG-395)
-    applyAppLogo(m.appLogo);
+    applyAppLogo(m.appLogo, m.appIcon);
     if (JSON.stringify([m.servers || [], m.terms || []]) !== JSON.stringify([state.servers, state.terms])) { state.servers = m.servers || []; state.terms = m.terms || []; refresh(true); }   // ⌨ terms: the ones with an ssh address (AIG-471)   // My servers (AIG-374)
     if ((m.ownerPic || '') !== (state.ownerPic || '')) { state.ownerPic = m.ownerPic || ''; refresh(true); }   // your picture (AIG-150)
     pokeBadge(await api('GET', '/api/projects'));

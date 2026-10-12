@@ -1747,5 +1747,10 @@
  "space.grid.hint": "Elk heeft een eigen bord en team",
  "space.drop.out": "⬆ Laat hier los om het eruit te halen, een niveau hoger",
  "space.moved": "🪐 {name} staat nu in {space}",
- "space.movedtop": "🪐 {name} staat nu bovenaan"
+ "space.movedtop": "🪐 {name} staat nu bovenaan",
+ "icon.h": "Kleuren van het app-icoon",
+ "icon.main": "Hoofdkleur",
+ "icon.waiting": "Wachtende ruit",
+ "icon.reset": "Terug naar de standaard",
+ "icon.help": "Kies een voorinstelling of een eigen kleur. Het icoon in het browsertabblad verandert meteen. Het taakbalkicoon van de desktop-app verandert zodra het opnieuw getekend wordt: start de app opnieuw als het hetzelfde blijft."
 }
