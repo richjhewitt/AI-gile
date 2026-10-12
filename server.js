@@ -80,6 +80,7 @@ const server = http.createServer(async (req, res) => {
           const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, (pathname.endsWith('/attachments') || /^\/api\/dms\/contacts\/[^/]+\/messages$/.test(pathname)) ? 15e6 : /\/((app-)?logo|me-picture)$/.test(pathname) ? 2e6 : 1e6) : {};
           const out = await fn(m.slice(1), body, url.searchParams, req);   // DM routes talk to the relay, so they may be async; req: who is asking (share.ownerOnly)
           // A route can answer with a file instead of JSON: { __file: absolute path }.
+          if (out && out.__svg) { res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" }); return res.end(out.__svg); }
           if (out && out.__file) {
             // download: a friend's attachment (AIG-306), always saved, never shown or run by the browser.
             if (out.download) { res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="${String(out.download).replace(/[^\w.\- ]/g, '_')}"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'" }); return fs.createReadStream(out.__file).pipe(res); }

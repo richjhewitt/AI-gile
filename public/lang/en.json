@@ -1490,5 +1490,12 @@
  "info.reply.title": "Send your note to the team; the card stays here until you say Got it",
  "info.err": "Write a reply first",
  "info.toast.gotit": "👍 {id}: got it.",
- "info.toast.replied": "💬 Reply sent to the team ({id})."
+ "info.toast.replied": "💬 Reply sent to the team ({id}).",
+ "badge.title": "🎨 Badge maker",
+ "badge.title.hint": "Change a team member's badge picture",
+ "badge.intro": "A free picture drawn by the app: pick an animal, a colour and an accessory. Click a team member's picture to change theirs.",
+ "badge.for": "For",
+ "badge.animal": "Animal",
+ "badge.colour": "Colour",
+ "badge.accessory": "Accessory"
 }
