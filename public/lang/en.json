@@ -2161,5 +2161,10 @@
   "today.over.title": "This project used its share of today's tokens, so it only runs for ⭐ crucial cards or when you start it",
   "today.usage.h": "🎯 Today's share by project",
   "srv.today.rest": "{name} rests today: it only wakes for your own comments",
-  "srv.today.over": "{name} has used its share of today's tokens: only ⭐ crucial cards run until tomorrow"
+  "srv.today.over": "{name} has used its share of today's tokens: only ⭐ crucial cards run until tomorrow",
+  "dlg.np.kids": "🪐 Child projects (optional, one per line)",
+  "dlg.np.kids.ph": "Website\nApp\nMarketing",
+  "dlg.np.kids.help": "Makes this a space: each line becomes a project inside it, with its own folder inside this one.",
+  "dlg.np.kid.done": "Made {name} inside it",
+  "dlg.np.kid.err": "Could not make {name}: {msg}"
 }

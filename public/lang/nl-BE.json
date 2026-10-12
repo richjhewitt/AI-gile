@@ -2161,5 +2161,10 @@
   "today.over.title": "Dit project heeft zijn aandeel in de tokens van vandaag gebruikt en draait nu alleen voor ⭐ cruciale kaarten of als jij het start",
   "today.usage.h": "🎯 Aandeel van vandaag per project",
   "srv.today.rest": "{name} rust vandaag: wordt alleen wakker voor je eigen reacties",
-  "srv.today.over": "{name} heeft zijn aandeel in de tokens van vandaag gebruikt: tot morgen draaien alleen ⭐ cruciale kaarten"
+  "srv.today.over": "{name} heeft zijn aandeel in de tokens van vandaag gebruikt: tot morgen draaien alleen ⭐ cruciale kaarten",
+  "dlg.np.kids": "🪐 Subprojecten (optioneel, één per regel)",
+  "dlg.np.kids.ph": "Website\nApp\nMarketing",
+  "dlg.np.kids.help": "Maakt hier een ruimte van: elke regel wordt een project erin, met een eigen map in deze map.",
+  "dlg.np.kid.done": "{name} erin gemaakt",
+  "dlg.np.kid.err": "Kon {name} niet maken: {msg}"
 }

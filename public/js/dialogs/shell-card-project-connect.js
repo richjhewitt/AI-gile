@@ -80,6 +80,7 @@ async function newProject() {
       <div class="row"><label class="f"><span>${esc(t('dlg.np.key'))}</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
       <label class="f"><span>${esc(t('dlg.np.folder'))}</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="${esc(t('dlg.np.folder.ph'))}"></label>
       <label class="f"><span>${esc(t('dlg.np.desc'))}</span><textarea id="p-desc" rows="3"></textarea></label>
+      <label class="f"><span>${esc(t('dlg.np.kids'))}</span><textarea id="p-kids" rows="3" placeholder="${esc(t('dlg.np.kids.ph'))}"></textarea><small class="muted">${esc(t('dlg.np.kids.help'))}</small></label>
       <label class="f"><span>${esc(t('dlg.np.tpl'))}</span><select id="p-tpl" onchange="$('p-own').style.display = this.value === 'own' ? '' : 'none'">
         <option value="kanban">${esc(t('dlg.np.tpl.kanban'))}</option><option value="scrum">${esc(t('dlg.np.tpl.scrum'))}</option><option value="own">${esc(t('dlg.np.tpl.own'))}</option></select></label>
       <label class="f" id="p-own" style="display:none"><span>${esc(t('dlg.np.tpl.own.help'))}</span><input type="text" id="p-own-names" placeholder="${esc(t('dlg.np.tpl.own.ph'))}"></label>
@@ -110,13 +111,27 @@ async function createProject(e) {
     const names = boardTemplateNames($('p-tpl').value, $('p-own-names').value);
     if (names.some(Boolean)) await api('PATCH', '/api/projects/' + p.slug, { columns: STATUS_ORDER.map((status, i) => ({ status, name: names[i] || undefined })) });
   } catch (err) { setErr('d-err', err); return false; }
-  if (!folder) { closeDialog(); location.hash = '#/p/' + p.slug; return false; }
+  const kids = [...new Set($('p-kids').value.split(/\r?\n/).map(x => x.trim()).filter(Boolean))].slice(0, 20);
+  if (!folder && !kids.length) { closeDialog(); location.hash = '#/p/' + p.slug; return false; }
   $('p-acts').innerHTML = `<button type="button" class="primary" onclick="closeDialog(); location.hash = '#/p/${p.slug}'">${esc(t('dlg.np.open'))}</button>`;
-  try {
-    const r = await api('POST', `/api/projects/${p.slug}/connect`, { path: folder, create: true, wake: true });
-    $('d-err').textContent = '';
-    $('p-done').innerHTML = `<ul>${[t('dlg.np.created'), ...r.done].map(d => `<li>✅ ${esc(d)}</li>`).join('')}</ul>`;
-  } catch (err) { setErr('d-err', t('dlg.np.err.folder', { msg: err.message })); }
+  const done = [t('dlg.np.created')], fails = [];
+  const show = () => { $('p-done').innerHTML = `<ul>${done.map(d => `<li>✅ ${esc(d)}</li>`).join('')}${fails.map(d => `<li>⚠️ ${esc(d)}</li>`).join('')}</ul>`; };
+  if (folder) {
+    try { const r = await api('POST', `/api/projects/${p.slug}/connect`, { path: folder, create: true, wake: true }); done.push(...r.done); }
+    catch (err) { fails.push(t('dlg.np.err.folder', { msg: err.message })); }
+    show();
+  }
+  // 🪐 A space with child projects in one go (AIG-435): each child sits in the new project, gets its own folder inside the
+  // space's folder (notes and ways of working, like any new project) and the default team roles. Only the space's own team
+  // is woken: N first looks at once would burn tokens for nothing.
+  for (const name of kids) {
+    try {
+      const k = await api('POST', '/api/projects', { name, parent: p.slug });
+      if (folder) await api('POST', `/api/projects/${k.slug}/connect`, { path: folder + '\\' + name.replace(/[<>:"/\\|?*]/g, '').trim(), create: true });
+      done.push(t('dlg.np.kid.done', { name }));
+    } catch (err) { fails.push(t('dlg.np.kid.err', { name, msg: err.message })); }
+    show();
+  }
   return false;
 }
 async function setArchived(on) {
