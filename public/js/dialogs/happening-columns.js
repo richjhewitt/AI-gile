@@ -14,10 +14,14 @@ function happeningDialog() {
     <div class="actions"><button class="primary" onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
 }
 // ---- ask the team: a quick question card; it wakes the team and their answer comes back to Messages ----
-function askTeamDialog() {
+async function askTeamDialog() {
+  let projects = [];
+  try { projects = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
+  if (!projects.length) projects = [state.project];
   Attach.clear('ask:' + slug());
   openDialog(`<h2>${esc(t('board.ask'))}</h2>
     <form onsubmit="return sendAskTeam(event)"><label class="f"><span>${esc(t('ask.q'))}</span><textarea id="ask-text" class="grow" data-draft="ask/${esc(slug())}" rows="4" oninput="growBox(this)" placeholder="${esc(t('ask.ph'))}"></textarea></label>
+    <label class="f"><span>${esc(t('ask.to'))}</span><select id="ask-to">${projectOptionsHtml(projects, {}, slug())}</select></label>
     <div class="err" id="ask-err"></div>
     <div class="actions"><button class="primary" type="submit">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('ask:' + slug())}</div></form>`);
   const box = $('ask-text'); box.closest('.dialog').classList.add('wide'); growBox(box); box.focus();
@@ -31,12 +35,13 @@ function growBox(el) {
 }
 async function sendAskTeam(e) {
   e.preventDefault();
-  const text = $('ask-text').value.trim();
+  const text = $('ask-text').value.trim(), to = $('ask-to').value;
   if (!text) { setErr('ask-err', t('ask.err')); return false; }
   try {
-    const attachments = await Attach.upload('ask:' + slug(), slug());
+    // The team picker (AIG-414): the question lands in the picked project, the board you are on by default.
+    const attachments = await Attach.upload('ask:' + slug(), to);
     const title = '💬 ' + text.split('\n')[0].slice(0, 80);
-    await api('POST', `/api/projects/${slug()}/cards`, { title, description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
+    await api('POST', `/api/projects/${to}/cards`, { title, description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
     Attach.clear('ask:' + slug()); clearDraft('ask/' + slug());
     closeDialog(); await rerender();
   } catch (err) { setErr('ask-err', err); }

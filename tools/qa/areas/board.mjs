@@ -304,12 +304,14 @@ def('steps', 'your own steps inside a column: sub-columns, drag between them, st
 
 def('quick', '👀 What\'s happening? summarises the board; 💬 Ask the team sends a question whose answer lands in Messages (AIG-132)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
+  await mkProject(s, 'Beta', 'BET');
   await mkCard(s, 'alpha', 'Building the thing', { status: 'doing', assignee: 'Pixel' });
   const page = await openPage(ctx, '#/p/alpha');
   await page.click('button:has-text("What\'s happening?")');
   await page.waitForSelector('#dialog h2');
   check('summary shows what is in progress', (await page.textContent('#dialog')).includes('Building the thing'));
   await page.click('#dialog button:has-text("Ask the team")');
+  await page.waitForSelector('#ask-text');
   const h0 = await page.$eval('#ask-text', e => e.offsetHeight);
   await page.fill('#ask-text', 'A long thought\n'.repeat(12));
   await page.dispatchEvent('#ask-text', 'input');
@@ -321,6 +323,17 @@ def('quick', '👀 What\'s happening? summarises the board; 💬 Ask the team se
   check('question card goes to the team', q && q.status === 'team' && q.title === '💬 Where are we with the login page?', q);
   s.cli(['comment', 'alpha', q.id, 'Nearly done, testing now', '--as', 'Lead']);
   check('the answer lands in your Messages', (await getCard(s, 'alpha', q.id)).needsYou === true && (await s.ok('GET', '/api/inbox')).some(c => c.id === q.id));
+  // Team picker (AIG-414): defaults to this board; picking another project sends the question there.
+  await page.click('button:has-text("Ask the team")');
+  await page.waitForSelector('#ask-to');
+  check('the team picker defaults to this board', (await page.inputValue('#ask-to')) === 'alpha');
+  await page.selectOption('#ask-to', 'beta');
+  await page.fill('#ask-text', 'Is beta ready for review?');
+  await page.click('#dialog button[type=submit]');
+  await sleep(500);
+  const bq = (await s.ok('GET', '/api/projects/beta')).cards.find(c => c.quick);
+  check('picking another team sends the question there', bq && bq.status === 'team' && bq.title === '💬 Is beta ready for review?', bq);
+  check('and not to this board', !(await s.ok('GET', '/api/projects/alpha')).cards.some(c => c.title.includes('beta ready')));
   noErrors(page);
 }, true);
 
