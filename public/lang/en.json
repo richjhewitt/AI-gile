@@ -641,6 +641,7 @@
  "format.open": "📄 Open",
  "format.copy": "📋 Copy",
  "format.copied": "✅ Copied",
+ "format.copyvalue": "Copy this value",
  "format.copymd": "Copy {name}",
  "format.opendir": "Open the folder in Explorer",
  "format.copypath": "Copy the path",

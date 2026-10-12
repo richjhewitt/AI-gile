@@ -87,6 +87,21 @@ def('mdlinks', 'Any .md path in card text opens in the board', async (s, ctx) =>
   await page.locator('code button.md-copy').first().click();
   await page.waitForSelector('code button.md-copy:has-text("Copied")');
   check('📋 in inline code copies the file text', (await clip(page)) === '# Deep one\n');
+  // AIG-470: `inline code` copies on click; "**Label:** value" gets a ⧉ for one-token values only
+  const v = await mkCard(s, 'alpha', 'Values', { description: '- **Server Hostname:** mail.locoradio.live\n- **Port:** 993\n- **Note:** this is a whole sentence\n- **Key:** `ab cd`\n\nUse `npm start` now' });
+  await page.goto(BASE + '/#/p/alpha/' + v.id);
+  await page.waitForSelector('.desc li');
+  check('⧉ only after one-token values', (await page.locator('.desc li button.md-copy').count()) === 3);
+  check('⧉ not after a sentence', (await page.locator('.desc li:has-text("whole sentence") button').count()) === 0);
+  await page.locator('.desc li:has-text("Hostname") button.md-copy').click();
+  await page.waitForSelector('.desc li button.md-copy:has-text("Copied")');
+  check('⧉ copies only the value', (await clip(page)) === 'mail.locoradio.live', await clip(page));
+  check('host link still works', (await page.locator('.desc li a[href="https://mail.locoradio.live"]').count()) === 1);
+  await page.click('.desc code:has-text("npm start")');
+  await page.waitForSelector('.desc code:has-text("Copied")');
+  check('inline code click copies it', (await clip(page)) === 'npm start', await clip(page));
+  await page.goto(BASE + '/#/p/alpha/' + c.id);
+  await page.waitForSelector('.desc a[data-p="protocol/X.md"]');
   await page.click('.desc a[data-p="protocol/X.md"]');
   await page.waitForSelector('.md h1');
   check('bare path opens the file', (await page.textContent('.md h1')) === 'Protocol X' && (await page.textContent('#dialog .doctitle')) === 'protocol/X.md');
