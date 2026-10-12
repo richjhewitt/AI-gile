@@ -19,7 +19,7 @@ async function findProjectsDialog(dir) {
     const k = [L.slice(0, 3), ...[...L.slice(3)].map(l => L.slice(0, 2) + l), ...[2, 3, 4, 5, 6, 7, 8, 9].map(d => L.slice(0, 2) + d)].find(x => !used.has(x)) || L.slice(0, 2) + Date.now() % 100;
     used.add(k); return k;
   };
-  const info = f => [f.git ? t('dlg.find.commits', { n: f.git.commits }) + (f.git.lastAt ? t('dlg.find.last', { when: ago(f.git.lastAt) }) : '') : t('dlg.find.nogit'), f.sessions ? t('dlg.find.sessions', { n: f.sessions.count }) : '',
+  const info = f => [f.git ? t('dlg.find.commits', { count: f.git.commits, n: f.git.commits }) + (f.git.lastAt ? t('dlg.find.last', { when: ago(f.git.lastAt) }) : '') : t('dlg.find.nogit'), f.sessions ? t('dlg.find.sessions', { count: f.sessions.count, n: f.sessions.count }) : '',
     f.known ? t('dlg.find.known') : f.inside ? t('dlg.find.inside', { dir: f.inside }) : f.copy ? t('dlg.find.copy') : ''].filter(Boolean).join(' · ');
   $('fp-list').classList.remove('muted');
   $('fp-list').innerHTML = state.found.length ? state.found.map((f, i) => `<div class="fprow">

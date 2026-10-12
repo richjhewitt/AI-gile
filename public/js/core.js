@@ -55,7 +55,7 @@ function acceptSure(btn, c) {
   setTimeout(() => { if (btn.isConnected && btn.dataset.sure === '1') { btn.dataset.sure = ''; btn.textContent = btn.dataset.was; } }, 8000);
   return false;
 }
-const bumpTime = at => new Date(at).toLocaleString([], { hour: '2-digit', minute: '2-digit', ...(Date.now() - new Date(at) > 864e5 ? { day: 'numeric', month: 'short' } : {}) });
+const bumpTime = at => new Date(at).toLocaleString(i18n.locale, { hour: '2-digit', minute: '2-digit', ...(Date.now() - new Date(at) > 864e5 ? { day: 'numeric', month: 'short' } : {}) });
 function queueChips(c) {
   const k = kindOfItem(c), p = c.ownerPrio;
   const task = isOwnerTask(c);   // a task has a 🖥️ switch for a job on a server (AIG-320); the kind chip is its mark when on
@@ -67,7 +67,7 @@ function queueChips(c) {
     + `<button class="q-chip prio${p ? 'p-' + p : ''}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
     + checkChip(c) + waitChip(c)
     + ((c.holds || []).length ? `<span class="q-chip holds" title="${esc(c.holds.join(', '))}">⛓ ${esc(t('queue.holds', { n: c.holds.length }))}</span>` : '')
-    + (c.bumpedAt ? `<span class="q-chip bump" title="${esc(t('queue.bump.title', { n: c.bumps || 1 }))}">⏫ ${esc(t('queue.bump', { at: bumpTime(c.bumpedAt) }))}</span>` : '')
+    + (c.bumpedAt ? `<span class="q-chip bump" title="${esc(t('queue.bump.title', { count: c.bumps || 1, n: c.bumps || 1 }))}">⏫ ${esc(t('queue.bump', { at: bumpTime(c.bumpedAt) }))}</span>` : '')
     + (c.mins ? `<span class="q-chip">⏱ ${esc(t('queue.mins', { n: c.mins }))}</span>` : '') + '</span>';
 }
 // 🖥️ Open server (AIG-374): the names come from Setup > My servers (state.servers, via /api/meta). The card may name one

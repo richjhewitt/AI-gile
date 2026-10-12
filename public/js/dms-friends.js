@@ -24,7 +24,7 @@ function joinExpiry(c) {
   const ms = c.exp - Date.now();
   if (ms <= 0) return t('join.expired');
   const d = Math.floor(ms / 86400e3);
-  return d >= 2 ? t('join.exp.days', { n: d }) : d === 1 ? t('join.exp.day') : t('join.exp.soon');
+  return d >= 2 ? t('join.exp.days', { count: d, n: d }) : d === 1 ? t('join.exp.day') : t('join.exp.soon');
 }
 function joinHtml() {
   const d = JN.data, keep = { n: ($('joinName') || {}).value || '', h: ($('joinHelp') || {}).value || JN.help };

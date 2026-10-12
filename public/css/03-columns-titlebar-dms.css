@@ -18,7 +18,7 @@ body.desktop.pop .panel > .actions:first-child button { -webkit-app-region: no-d
 .att-lightbox img { max-width: 94vw; max-height: 94vh; border-radius: 6px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
 .viewrow { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
 .viewrow input[type=text] { flex: 1; }
-.viewrow .grow { flex: 1; text-align: left; }
+.viewrow .grow { flex: 1; text-align: start; }
 
 /* ---------- your own steps inside a column (AIG-117) ---------- */
 .colrow input.steps, .colrow span.steps { flex: 1.3; }
@@ -43,9 +43,9 @@ body.desktop #updateTop, body.desktop #updateTop button, body.desktop .overlay, 
 .lang-pick.setup-lang { font-size: 14px; max-width: none; border-radius: 6px; padding: 6px 8px; align-self: flex-start; }
 
 /* ---------- DMs with the team leads (AIG-137/138): rail on the left, chat panel next to it ---------- */
-body { padding-left: 60px; }
-body.pop { padding-left: 0; } body.pop #dmRail, body.pop #dmPanel { display: none; }
-#dmRail { position: fixed; left: 0; top: 0; bottom: 0; width: 60px; z-index: 25; background: var(--col); border-right: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0; overflow-y: auto; }
+body { padding-inline-start: 60px; }
+body.pop { padding-inline-start: 0; } body.pop #dmRail, body.pop #dmPanel { display: none; }
+#dmRail { position: fixed; inset-inline-start: 0; top: 0; bottom: 0; width: 60px; z-index: 25; background: var(--col); border-inline-end: 1px solid var(--line); display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0; overflow-y: auto; }
 .dm-railhead { font-size: 20px; opacity: .7; margin-bottom: 4px; }
 .dm-railbtn { position: relative; border: 0; background: none; padding: 0; cursor: pointer; }
 /* project picture (AIG-175) */
@@ -59,7 +59,7 @@ body.pop { padding-left: 0; } body.pop #dmRail, body.pop #dmPanel { display: non
 .logo-edit .brand-logo { width: 44px; height: 44px; }
 .logo-edit input[type=text] { flex: 1; min-width: 180px; }
 /* profile pictures (AIG-150): next to names in chats, comments and the team list; the library on Setup */
-.face { width: 1.5em; height: 1.5em; border-radius: 50%; object-fit: cover; vertical-align: -0.45em; margin-right: 5px; }
+.face { width: 1.5em; height: 1.5em; border-radius: 50%; object-fit: cover; vertical-align: -0.45em; margin-inline-end: 5px; }
 .dm-meta .face { width: 18px; height: 18px; vertical-align: -5px; }
 .face-lib { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0; }
 .face-lib figure { margin: 0; width: 64px; text-align: center; }
@@ -67,8 +67,8 @@ body.pop { padding-left: 0; } body.pop #dmRail, body.pop #dmPanel { display: non
 .face-lib figcaption { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dm-av { display: inline-flex; width: 42px; height: 42px; border-radius: 50%; align-items: center; justify-content: center; font-size: 21px; background: color-mix(in srgb, var(--proj, var(--accent)) 22%, var(--panel)); border: 2px solid transparent; transition: border-radius .15s; }
 .dm-railbtn:hover .dm-av, .dm-railbtn.on .dm-av { border-radius: 14px; border-color: var(--proj, var(--accent)); }
-.dm-unread { position: absolute; right: -2px; bottom: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
-#dmPanel { position: fixed; left: 60px; top: 0; bottom: 0; width: min(440px, calc(100vw - 60px)); z-index: 24; background: var(--panel); border-right: 1px solid var(--line); box-shadow: 4px 0 24px rgba(0,0,0,.2); display: flex; flex-direction: column; }
+.dm-unread { position: absolute; inset-inline-end: -2px; bottom: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
+#dmPanel { position: fixed; inset-inline-start: 60px; top: 0; bottom: 0; width: min(440px, calc(100vw - 60px)); z-index: 24; background: var(--panel); border-inline-end: 1px solid var(--line); box-shadow: 4px 0 24px rgba(0,0,0,.2); display: flex; flex-direction: column; }
 #dmPanel[hidden] { display: none; }
 .dm-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
 .dm-list { flex: 1; overflow-y: auto; padding: 10px 12px; }
@@ -94,8 +94,8 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .su { max-width: 900px; margin: 0 auto; }
 .su-blockers { border: 2px solid var(--danger); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 14px; background: var(--panel); }
 .su-blockers h3 { margin: 0 0 6px; color: var(--danger); }
-.su-blockers ul { margin: 0; padding-left: 18px; }
-.su-proj { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--proj, var(--accent)); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 12px; }
+.su-blockers ul { margin: 0; padding-inline-start: 18px; }
+.su-proj { background: var(--panel); border: 1px solid var(--line); border-inline-start: 4px solid var(--proj, var(--accent)); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 12px; }
 .su-proj h3 { margin: 0 0 6px; font-size: 16px; }
 .su-proj h3 .muted { font-size: 13px; font-weight: 400; }
 .su-person { padding: 8px 0; border-top: 1px solid var(--line); }
@@ -103,20 +103,20 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .su-k { display: inline-block; min-width: 96px; color: var(--muted); font-size: 13px; }
 .su-red { color: var(--danger); font-weight: 600; }
 .su-person.waiting { color: var(--muted); }
-#suPrompt { position: fixed; left: 12px; bottom: 12px; z-index: 25; max-width: calc(100vw - 24px); }
+#suPrompt { position: fixed; inset-inline-start: 12px; bottom: 12px; z-index: 25; max-width: calc(100vw - 24px); }
 #suPrompt .su-pill { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 8px 12px; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
 .su-pick label { display: block; padding: 4px 0; }
 
 /* ---------- the rail as Discord servers (AIG-147..149) ---------- */
 .dm-sep { width: 32px; height: 2px; border-radius: 1px; background: var(--line); margin: 2px 0; flex: none; }
 .dm-railbtn { flex: none; }
-.dm-railbtn.on::before { content: ''; position: absolute; left: -9px; top: 9px; width: 4px; height: 24px; border-radius: 0 4px 4px 0; background: var(--text); }
+.dm-railbtn.on::before { content: ''; position: absolute; inset-inline-start: -9px; top: 9px; width: 4px; height: 24px; border-radius: 0; border-start-end-radius: 4px; border-end-end-radius: 4px; background: var(--text); }
 .dm-railbtn.on .dm-av { border-radius: 14px; border-color: var(--proj, var(--accent)); }
-.dm-pip { position: absolute; left: -9px; top: 17px; width: 8px; height: 8px; border-radius: 0 4px 4px 0; background: var(--text); }
+.dm-pip { position: absolute; inset-inline-start: -9px; top: 17px; width: 8px; height: 8px; border-radius: 0; border-start-end-radius: 4px; border-end-end-radius: 4px; background: var(--text); }
 .dm-filter { display: flex; gap: 6px; padding: 8px 12px 0; }
 .dm-chip { padding: 4px 12px; border: 1px solid var(--line); border-radius: 14px; background: none; color: var(--text); cursor: pointer; font-size: 13px; }
 .dm-chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-.dm-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border: 0; border-radius: 10px; background: none; text-align: left; cursor: pointer; position: relative; }
+.dm-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border: 0; border-radius: 10px; background: none; text-align: start; cursor: pointer; position: relative; }
 .dm-row:hover { background: var(--col); }
 .dm-row .dm-rowtext { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .dm-row .dm-rowtext .muted { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -126,14 +126,14 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .share-safety { border: 1px dashed var(--line); border-radius: var(--radius); padding: 8px 12px; margin: 8px 0; }
 .share-words { font-size: 16px; letter-spacing: .02em; margin: 4px 0 8px; }
 .share-ticks { display: grid; gap: 2px; margin: 8px 0; }
-.share-what { margin: 6px 0; padding-left: 18px; }
+.share-what { margin: 6px 0; padding-inline-start: 18px; }
 .share-switch { font-weight: 600; }
 .share-offer input[data-share-new] { width: 100%; max-width: 320px; margin: 4px 0; }
 /* shared cards (AIG-305): the 📥 From {friend} row, the 🔗 preview, friend text shown plain */
 .share-lane { border: 1px dashed var(--you); border-radius: var(--radius); padding: 8px 12px; margin: 0 0 12px; background: var(--panel); }
 .share-lane h3 { margin: 0 0 2px; font-size: 14px; }
 .share-lane > p { margin: 0 0 6px; font-size: 12px; }
-.share-lcard { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; max-width: 260px; margin: 0 6px 6px 0; padding: 6px 10px; }
+.share-lcard { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: start; max-width: 260px; margin: 0 6px 6px 0; padding: 6px 10px; }
 .share-lcard .t { font-weight: 600; overflow-wrap: anywhere; }
 .share-lcard .muted { font-size: 12px; }
 .share-plain { white-space: pre-wrap; overflow-wrap: anywhere; margin: 6px 0; }
@@ -143,16 +143,16 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .sb-card .t { overflow-wrap: anywhere; }
 .sb-mine { border-color: var(--you); }
 .share-preview { width: 100%; border-collapse: collapse; margin: 8px 0; }
-.share-preview th { text-align: left; vertical-align: top; padding: 4px 8px 4px 0; width: 110px; color: var(--muted); font-weight: 600; }
+.share-preview th { text-align: start; vertical-align: top; padding: 4px 8px 4px 0; width: 110px; color: var(--muted); font-weight: 600; }
 .share-preview td { padding: 4px 0; border-top: 1px solid var(--line); }
 .share-flags { border: 1px solid var(--warn); border-radius: var(--radius); padding: 6px 12px; margin: 8px 0; }
-.share-flags ul { margin: 4px 0; padding-left: 18px; }
+.share-flags ul { margin: 4px 0; padding-inline-start: 18px; }
 .share-held { color: var(--warn); font-size: 12px; margin-top: 4px; }
 .share-sent { font-size: 12px; margin-top: 4px; }
-.share-friend { border-left: 3px solid var(--you); }
+.share-friend { border-inline-start: 3px solid var(--you); }
 .share-mark { font-size: 11px; }
 .share-status { margin: 4px 0; font-size: 12px; }
-.share-test { border-left: 3px solid var(--you); padding: 2px 0 2px 10px; margin: 8px 0; }
+.share-test { border-inline-start: 3px solid var(--you); padding: 2px 0 2px 10px; margin: 8px 0; }
 .share-test h4, .share-files h4, .share-cmts h4 { margin: 6px 0 2px; font-size: 13px; }
 .share-test textarea, #shareTestText { width: 100%; box-sizing: border-box; }
 .share-files { margin: 8px 0; }
@@ -161,13 +161,13 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 /* ---------- ask a mate (AIG-210) ---------- */
 .dm-asktag { font-size: 12px; font-weight: 600; margin: 0 0 2px; }
 .dm-msg.dm-ask .dm-bubble, .dm-msg.dm-answer .dm-bubble { border: 1px dashed var(--line); }
-.ask-q { white-space: pre-wrap; overflow-wrap: anywhere; border-left: 3px solid var(--line); padding: 4px 10px; margin: 6px 0; }
+.ask-q { white-space: pre-wrap; overflow-wrap: anywhere; border-inline-start: 3px solid var(--line); padding: 4px 10px; margin: 6px 0; }
 
 .sm-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 6px 12px; border-bottom: 1px solid var(--line); }   /* 🧭 Launch Lead Scrum Master (AIG-359) */
 
 /* ---------- 🪐 Spaces (AIG-434/464): projects inside projects, on home, a space's board and the rail ---------- */
 .space-tree { grid-auto-flow: row dense; }
-.space-kids { grid-column: 1 / -1; padding: 10px 0 2px 12px; margin: -4px 0 0 10px; border-left: 3px solid var(--proj, var(--line)); }
+.space-kids { grid-column: 1 / -1; padding: 10px 0 2px 12px; margin: -4px 0 0 10px; border-inline-start: 3px solid var(--proj, var(--line)); }
 .space-kids .grid, .space-box .grid { grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); }
 .space-fold, .space-menu { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; border-radius: 6px; color: var(--muted); cursor: pointer; flex: none; }
 .space-fold:hover, .space-menu:hover, .space-fold:focus-visible, .space-menu:focus-visible { background: var(--col); color: var(--text); }
@@ -178,7 +178,7 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .space-out { display: none; margin: 0 0 12px; padding: 12px; border: 2px dashed var(--line); border-radius: var(--radius); text-align: center; color: var(--muted); }
 body.space-dragging .space-out { display: block; }
 .space-out.drop-into { border-color: var(--accent); color: var(--text); }
-.space-box { margin: 0 0 14px; padding: 8px 12px 12px; border: 1px solid var(--line); border-left: 6px solid var(--proj, var(--line)); border-radius: var(--radius); background: var(--panel); }
+.space-box { margin: 0 0 14px; padding: 8px 12px 12px; border: 1px solid var(--line); border-inline-start: 6px solid var(--proj, var(--line)); border-radius: var(--radius); background: var(--panel); }
 .space-box > summary { cursor: pointer; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; list-style: none; }
 .space-box > summary::before { content: '▸'; color: var(--muted); } .space-box[open] > summary::before { content: '▾'; }
 .space-box > summary h3 { margin: 4px 0; font-size: 15px; }
@@ -186,7 +186,7 @@ body.space-dragging .space-out { display: block; }
 .space-into { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .space-into select { min-width: 0; max-width: 100%; }
 /* the rail: a space and its projects in one rounded folder, like Discord's server folders */
-.dm-space { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 6px; border-radius: 16px; padding-left: 3px; padding-right: 3px; background: color-mix(in srgb, var(--proj, var(--accent)) 14%, transparent); flex: none; }
+.dm-space { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 6px; border-radius: 16px; padding-inline-start: 3px; padding-inline-end: 3px; background: color-mix(in srgb, var(--proj, var(--accent)) 14%, transparent); flex: none; }
 .dm-space .dm-space { background: color-mix(in srgb, var(--proj, var(--accent)) 18%, transparent); }
 .dm-spacefold { border: 0; background: none; padding: 0 6px; margin: -6px 0 -2px; font-size: 11px; line-height: 14px; color: var(--muted); cursor: pointer; }
 .dm-spacefold:hover { color: var(--text); }

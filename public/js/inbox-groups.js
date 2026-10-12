@@ -25,7 +25,7 @@
   function gHtml(g) {
     const inner = g.cards.map(c => `<div class="ib-gcard"><a href="#/p/${g.project}/${c.id}"><b>${esc(c.id)}</b> ${esc(c.title)}</a> ${aiChip(c)}
       ${c.testSteps ? `<div class="body">${linkify(c.testSteps, c)}</div>` : `<div class="ib-hint">${esc(t('inbox.g.nosteps'))}</div>`}</div>`).join('');
-    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.g.tag'))}</span><span class="ib-proj">${pic(g.projectLogo, g.projectEmoji)} ${esc(g.projectName)}</span><span class="ib-id">${esc(t('inbox.g.count', { n: g.cards.length }))}</span><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(g.updated, true) }))}</span></div>
+    return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.g.tag'))}</span><span class="ib-proj">${pic(g.projectLogo, g.projectEmoji)} ${esc(g.projectName)}</span><span class="ib-id">${esc(t('inbox.g.count', { count: g.cards.length, n: g.cards.length }))}</span><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(g.updated, true) }))}</span></div>
       <div class="ib-title">🗂️ ${esc(g.groupName)}</div>
       <details class="ib-steps ib-group"><summary>${esc(t('inbox.t.how'))}: ${g.cards.map(c => esc(c.id)).join(', ')}</summary>${inner}</details>
       <div class="ib-err"></div>

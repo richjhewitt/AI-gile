@@ -124,7 +124,7 @@ function advBodyHtml() {
     case 'dispatch': return `${h('wz.adv.dispatch.h')}<div class="wz-opts">${['rules', 'haiku', 'lead'].map(v => opt('wa-dispatch', v, p.dispatch || 'haiku', t('dispatch.' + v), t('wz.adv.dispatch.' + v))).join('')}</div>`;
     case 'roles': return `${h('wz.adv.roles.h')}${sub('wz.adv.roles.sub')}<div class="wz-opts" id="wa-roles">${TEAM_ROLES.map((r, i) => `<label class="chk"><input type="checkbox" data-role="${esc(r)}" ${!i || !Array.isArray(p.newRoles) || p.newRoles.includes(r) ? 'checked' : ''} ${i ? '' : 'disabled'}> ${esc(r)}</label>`).join('')}</div>`;
     case 'night': return `${h('wz.adv.night.h')}${sub('wz.adv.night.sub')}<b>${esc(t('quiz.night'))}</b><div class="wz-opts">${opt('wa-night', 'quiet', p.watchAll ? 'work' : 'quiet', t('quiz.night.quiet'))}${opt('wa-night', 'work', p.watchAll ? 'work' : 'quiet', t('quiz.night.work'))}</div>`;
-    case 'lang': return `${h('wz.adv.lang.h')}${sub('wz.adv.lang.sub')}<label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('wz-lang').replace('onchange="setLang(this.value)"', 'onchange="advLang(this.value)"')}</label>`;
+    case 'lang': return `${h('wz.adv.lang.h')}${sub('wz.adv.lang.sub')}<label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('wz-lang', 'advLang')}</label>`;
     case 'summary': {
       const pr = state.setup.prefs || {}, lim = v => (v === '' || v === undefined ? t('wz.adv.val.nolimit') : v);
       const q = (k, a) => t('quiz.' + k + '.' + a);

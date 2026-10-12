@@ -8,7 +8,7 @@ const HELP_LEVELS = ['1', '2', '3'];
 // The demo window comes with ?lang= (its own browser storage has no language yet); read before the language loads.
 try {
   const q = new URLSearchParams(location.search), l = q.get('lang');
-  if (l && LANGS[l] && !localStorage.getItem('aigile.lang')) localStorage.setItem('aigile.lang', l);
+  if (l && /^[a-z0-9-]{2,15}$/i.test(l) && !localStorage.getItem('aigile.lang')) localStorage.setItem('aigile.lang', l);   // checked against the language list once it loads
 } catch {}
 
 async function helpLoad() {
