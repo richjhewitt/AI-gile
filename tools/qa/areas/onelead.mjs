@@ -91,4 +91,22 @@ def('onelead', 'one lead per project: a session in VS Code or aigile wait blocks
   check('an agent\'s wake with nothing new starts no run', starts('calm') === calm1 && /nothing new for the team/.test(log('calm')), log('calm'));
   await say(s, 'calm', cc.id, 'Owner', 'fresh news'); await sleep(2000); await settle('calm');
   check('a wake with news does start one', starts('calm') > calm1, log('calm'));
-}, false, { AIGILE_ACTIVE_MS: '1500', AIGILE_ONLINE_MS: '600', AIGILE_IDLE_MS: '1' });
+  // 10. a wait that returns with news keeps the lead active for a grace period (AIG-523); ordinary calls count, background and role calls don't
+  await mkProject(s, 'Grace', 'GRC', { path: tmp('grace') });
+  const gc = await mkCard(s, 'grace', 'g card');
+  await sleep(1800);
+  await s.ok('GET', '/api/projects/grace/updates?wait=1');
+  await say(s, 'grace', gc.id, 'Owner', 'wake up');
+  await s.ok('GET', '/api/projects/grace/updates?wait=0');   // the wait returned with news
+  await sleep(900);   // past ONLINE (0.6s), inside the grace
+  await say(s, 'grace', gc.id, 'Owner', 'one more');
+  await sleep(1200);
+  check('after a wait returned with news, a comment starts no run', starts('grace') === 0 && /not starting a background run/.test(log('grace')), log('grace'));
+  await mkProject(s, 'Bg', 'BGR', { path: tmp('bg') });
+  const bc = await mkCard(s, 'bg', 'bg card');
+  s.cli(['show', 'bg', 'BGR-1'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '1' });
+  s.cli(['show', 'bg', 'BGR-1'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '', AIGILE_ROLE: 'tester' });
+  check('background and role calls do not make a lead', (await s.ok('GET', '/api/projects/bg')).presence.where !== 'vscode');
+  s.cli(['show', 'bg', 'BGR-1'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '' });
+  check('an ordinary call from a session makes the lead active', (await s.ok('GET', '/api/projects/bg')).presence.where === 'vscode');
+}, false, { AIGILE_GRACE_MS: '2500', AIGILE_ACTIVE_MS: '1500', AIGILE_ONLINE_MS: '600', AIGILE_IDLE_MS: '1' });
