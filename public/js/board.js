@@ -157,6 +157,7 @@ function lanesOf(p, by) {
 }
 // The columns for a set of cards: the whole board, or one lane of it.
 function columnsHtml(p, pool) {
+  pool = pool.filter(c => !c.dm);   // AIG-544: a lead's DM lives in the chat, not as a card in the Done pile
   return colsOf(p).filter(c => !c.hidden && (!fyFocus(p.slug) || c.key === 'verify')).map(col => {
     const k = col.key, label = (col.emoji ? col.emoji + ' ' : '') + col.name, tint = col.color ? ` style="--colc:${esc(col.color)}"` : '';
     if (k === 'verify') return forYouColumn(p, label, tint, pool, col.wip);
