@@ -54,6 +54,10 @@ First pass by a model (AIG-493), for a native-speaker check. File: `public/lang/
 | Friends (DMs) | الأصدقاء | |
 | Tour | جولة | |
 | Go (answer) | موافق | `dms.go`, `act.go` |
+| refresh (page) | إعادة التحميل | not "إنعاش" |
+| plug (an assumption) | تصحيح | not "سدّ" |
+| code block | مقطع | not "كتلة" |
+| AI tester | مختبِر الذكاء الاصطناعي | an AI, so the masculine noun is fine |
 
 ## For the reviewer
 - **Gender**: check there is no leftover masculine default. Spots to look at: `prof.level.*` (مبتدئ، متوسط، متقدم، رئيسي), "القائد" / "الوكيل" as role nouns, and the first-person bot lines in `srv.*`, which are written with forms that carry no gender where possible.
@@ -63,3 +67,23 @@ First pass by a model (AIG-493), for a native-speaker check. File: `public/lang/
 - RTL: strings that mix Latin words (AI-gile, Claude, `aigile avatar`, keys) rely on bidi; check punctuation placement next to them.
 - "Poke" as "تنبيه" and "night watch" as "المناوبة الليلية" are choices to confirm.
 - The pretend friend's name Davy is kept; the friend is addressed by name only.
+
+## Review (AIG-493)
+Second pass by a model reviewing as a native speaker: every value read next to the English. 289 values changed.
+
+Answers to the questions above:
+- **Gender**: the first pass still had many masculine forms aimed at the reader: imperatives (اكتب، انقر، اضغط، اختر، أضف، افتح، الصق، حدّد، اسأل، راسل، ابدأ، فعّل، جرّب)، present-tense "you" verbs (تريد، ترى، تكتب، تشاركها، تحدد، تنقر، توافق) and adjectives (متأكدًا، غائبًا، جاهزًا، متصل). All are now gender-free: a masdar ("بدء الجولة"، "إضافة عنصر")، a passive ("لم يُكتب شيء بعد"، "يُلصق هنا")، "يلزم / يمكن + masdar"، "النقر يغيّره"، or past tense and "ك" forms, which are written the same for both genders. Lines the reader says to the app or to an agent ("رتّبها لي"، "استأذنني"، "أرني على أي حال") keep the imperative, as they are spoken to the lead.
+- `prof.level.*` (مبتدئ، متوسط، متقدم، رئيسي) describe an agent's role level, not the reader: kept. The lead, agents and the pretend friend Davy stay masculine; a real friend {name} also takes masculine verbs ("أنهى {name}"، "رفض {name}"), the usual Arabic default; "اسمه" in the add-friend form is now "الاسم".
+- Markers: all `{{dev:...}}` words are in `gloss.*.word` / `.also`; the inflected forms already listed there (اختبارك، للاختبار، السبرنتات، كوميتًا، كوميتان) cover every marker.
+- Counts outside plural objects now use "Label: {n}" ("أسئلة: {n}"، "للتنفيذ: {n}"، "الردود: {n}"، "بانتظارك: {n}"، "البطاقات: {cards}، التعليقات: {comments}…"), so no noun has to agree with the number. The eight plural objects were right and are unchanged.
+- "Poke" as "تنبيه" and the night watch as "المناوبة الليلية" / "المراقب الليلي": kept.
+
+Other changes:
+- RTL meaning: "left to right" for typed column names is now "من اليمين إلى اليسار" (the board mirrors), and the projects rail is "على اليمين".
+- Wrong or odd words: "إنعاش" for refresh, "كتلة" for a code block, "سدّ" for plug, "الأقدم (الأحدث أولًا)" for Earlier, "خلل" in an error message (it is the glossary word for bug), "ثم hooks" for "plus hooks".
+- Tour, wizard, usage, sharing and pack texts reworded around the gender rule; "تصبحون على خير" kept as a polite plural.
+
+For a human native speaker to check:
+- Whether the masdar and passive style reads naturally in long help texts, or a "يمكنك …" style would sound friendlier.
+- The day abbreviation "ي" in `ago.d` / `usage.unit.d` (د and س are common; ي is less so).
+- Transliterations (باكلوج، سبرنت، ستاند أب، كوميت، توكن) against the Arabic terms developers in your region use.
