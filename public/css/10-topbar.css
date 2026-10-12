@@ -37,3 +37,5 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .today-track i.over { background: var(--danger); }
 .today-bv { flex: 1 0 100%; }
 @media (min-width: 700px) { .today-bv { flex: 0 0 auto; } }
+/* ⏳ the chain across a space's projects (AIG-450) */
+.space-chain { margin-top: 10px; } .space-chain ul { margin: 4px 0; padding-left: 18px; } .space-chain li { margin: 3px 0; overflow-wrap: anywhere; }

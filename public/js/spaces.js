@@ -53,7 +53,15 @@ const Spaces = (() => {
     const open = isOpen('grid:' + p.slug);
     return `<details class="space-box" ${open ? 'open' : ''} ontoggle="Spaces.gridToggle('${esc(p.slug)}', this.open)" style="--proj:${esc(p.color)}">
       <summary><h3>${esc(t('space.grid', { n: kids.length }))}</h3> <span class="muted">${esc(t('space.grid.hint'))}</span></summary>
-      ${outStrip()}<div class="grid">${kids.map(k => card(k, { kids: k.kids, fold: '', up: p.parent || '' })).join('')}</div></details>`;
+      ${outStrip()}<div class="grid">${kids.map(k => card(k, { kids: k.kids, fold: '', up: p.parent || '' })).join('')}</div>${chainHtml(p)}</details>`;
+  }
+  // ⏳ The chain across the space's projects (AIG-450): what waits for what, and how far the card it waits for is.
+  function chainHtml(p) {
+    const ch = (p.space && p.space.chain) || [];
+    if (!ch.length) return '';
+    const link = (s, id, title) => `<a href="#/p/${esc(s)}/${esc(id)}"><b>${esc(id)}</b> ${esc(title)}</a>`;
+    return `<div class="space-chain"><h4>${esc(t('space.chain'))}</h4><ul>${ch.map(c => `<li>${link(c.slug, c.id, c.title)} <span class="muted">${esc(t('space.chain.waits'))}</span> `
+      + c.waits.map(w => `${link(w.slug, w.id, w.title)} <span class="pill${w.status === 'done' ? ' ok' : ''}">${esc(w.status === 'done' ? '✅' : '⏳ ' + t('col.' + w.status))}</span>`).join(', ') + `</li>`).join('')}</ul></div>`;
   }
   function gridToggle(s, open) {
     if (open === isOpen('grid:' + s)) return;

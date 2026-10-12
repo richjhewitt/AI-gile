@@ -2166,5 +2166,7 @@
   "dlg.np.kids.ph": "Website\nApp\nMarketing",
   "dlg.np.kids.help": "Makes this a space: each line becomes a project inside it, with its own folder inside this one.",
   "dlg.np.kid.done": "Made {name} inside it",
-  "dlg.np.kid.err": "Could not make {name}: {msg}"
+  "dlg.np.kid.err": "Could not make {name}: {msg}",
+  "space.chain": "⏳ Waiting across projects",
+  "space.chain.waits": "waits for"
 }

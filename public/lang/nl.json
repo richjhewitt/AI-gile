@@ -2166,5 +2166,7 @@
   "dlg.np.kids.ph": "Website\nApp\nMarketing",
   "dlg.np.kids.help": "Maakt hier een ruimte van: elke regel wordt een project erin, met een eigen map in deze map.",
   "dlg.np.kid.done": "{name} erin gemaakt",
-  "dlg.np.kid.err": "Kon {name} niet maken: {msg}"
+  "dlg.np.kid.err": "Kon {name} niet maken: {msg}",
+  "space.chain": "⏳ Wachten tussen projecten",
+  "space.chain.waits": "wacht op"
 }
