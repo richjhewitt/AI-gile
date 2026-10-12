@@ -235,7 +235,9 @@ function busy() {
   if (state.dragging || state.editing || $('dialog').firstChild) return true;
   const a = document.activeElement;
   if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && $('modal').contains(a)) return true;
-  return [...document.querySelectorAll('#modal textarea, #modal input[type=text]')].some(el => el.value !== el.defaultValue);
+  // An input with no type is a text box too (the checklist's "add a step"); an open ⏰ picker holds a half-made choice.
+  if (document.querySelector('#modal #tm-box:not([hidden])')) return true;
+  return [...document.querySelectorAll('#modal textarea, #modal input[type=text], #modal input:not([type])')].some(el => el.value !== el.defaultValue);
 }
 
 // The render signature (AIG-310): presence.waitingMs ticks on every request while a team sits in 'aigile wait', so it is

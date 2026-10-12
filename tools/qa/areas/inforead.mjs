@@ -63,6 +63,11 @@ def('inforead', '📖 To read: test --info / auto-detect, Got it + Reply on the 
   await item.locator('button[data-act="inforeply"]').click();
   await sleep(900);
   check('Reply from the inbox keeps the card in verify and posts the note', (await get(n.id)).status === 'verify' && (await get(n.id)).comments.at(-1).text === 'Ok, but why?');
+  // Review fix: Enter in the note is the same Reply (it used to send a plain comment and drop the item from the list).
+  await item.locator('textarea').fill('And Enter?');
+  await item.locator('textarea').press('Enter');
+  await sleep(900);
+  check('Enter in a To read note replies and the item stays', (await get(n.id)).status === 'verify' && (await get(n.id)).comments.at(-1).text === 'And Enter?' && (await item.count()) === 1);
   await item.locator('button[data-act="gotit"]').click();
   await sleep(900);
   check('Got it from the inbox moves it to done', (await get(n.id)).status === 'done');

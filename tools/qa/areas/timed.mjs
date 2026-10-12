@@ -55,6 +55,11 @@ def('timed', 'aigile snooze (time parsing, --clear), hidden from inbox/next, ⏰
   check('picker opens', await page.isVisible('#tm-box'));
   await page.selectOption('#tm-pre', 'tom');
   check('a preset fills the date and time', /T09:00$/.test(await page.inputValue('#tm-at')));
+  // Review fix: news on the card while the picker is open must not close it and drop the choice.
+  await page.click('#modal h2');
+  await say(s, 'alpha', a.id, 'Forge', 'a note while you pick');
+  await page.waitForTimeout(2000);
+  check('the open picker survives a live refresh', await page.isVisible('#tm-box') && /T09:00$/.test(await page.inputValue('#tm-at')));
   await page.click('#tm-box .primary');
   await page.waitForTimeout(800);
   c = await getCard(s, 'alpha', a.id);

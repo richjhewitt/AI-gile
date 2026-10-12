@@ -120,6 +120,7 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   r = await s.ok('POST', '/api/projects/web/apply-team', { team: 'security', mode: 'replace' });
   check('replace: only the team, Lead stays on', r.roles.join() === 'Lead (Opus),security-principal,reviewer-senior,devops-mid' && r.replaced.includes('ux-researcher-senior'), r);
   check('an unknown team is refused', (await s.api('POST', '/api/projects/web/apply-team', { team: 'pirates' })).status === 404);
+  check('a built-in object key is no team either (404, not a crash)', (await Promise.all(['constructor', '__proto__', 'toString'].map(async team => (await s.api('POST', '/api/projects/web/apply-team', { team })).status))).every(x => x === 404));
   check('an unknown mode is refused', (await s.api('POST', '/api/projects/web/apply-team', { team: 'ux', mode: 'merge' })).status === 400);
   await s.ok('PATCH', '/api/projects/web', { roles: ['frontend-mid', 'data-senior', 'nobody-mid', 'Docs (Haiku)'] });
   check('roles by id or old name; an id of today\'s 8 is kept by its old name; unknown dropped; Lead on', (await roles('web')).join() === 'Lead (Opus),Frontend (Sonnet),Docs (Haiku),data-senior', await roles('web'));

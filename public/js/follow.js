@@ -20,9 +20,11 @@ const Follow = (() => {
     if (kind === 'dm') Dms.follow(slug, to);
     else location.hash = (state.route && state.route.pop ? '#/pop/' : '#/p/') + slug + '/' + to;
   }
-  const typed = bar => { const b = bar.dataset.kind === 'dm' ? document.getElementById('dmText') : document.getElementById('r-text'); return !!(b && b.value.trim()); };
+  // Typed text anywhere you would answer (the reply box, or a test or To read note) keeps you here.
+  const typed = bar => (bar.dataset.kind === 'dm' ? ['dmText'] : ['r-text', 'v-text']).some(id => { const b = document.getElementById(id); return !!(b && b.value.trim()); });
   setInterval(() => {
-    const bars = [...document.querySelectorAll('.follow-bar[data-auto]')], keys = new Set(bars.map(b => b.dataset.follow));
+    // Only a bar you can see counts down: on a card open at its Test tab the Reply pane (and its bar) is hidden.
+    const bars = [...document.querySelectorAll('.follow-bar[data-auto]')].filter(b => b.getClientRects().length), keys = new Set(bars.map(b => b.dataset.follow));
     for (const k of [...started.keys()]) if (!keys.has(k)) started.delete(k);
     const now = Date.now();
     for (const b of bars) {
