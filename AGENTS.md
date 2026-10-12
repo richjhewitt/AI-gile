@@ -31,7 +31,7 @@ aigile team <proj> Pixel --role "Frontend" --model Sonnet --task "AIG-5 new card
 
 Status: 🔄 working · 👀 in review · ✅ accepted · 🔁 sent back · 💤 idle (set when you stop; `💤 retired` drops you off the board).
 
-Profile picture: you get one from the owner's library on joining. To choose: `aigile avatar <proj> --as NAME` lists them, then `aigile avatar <proj> <number or name> --as NAME`.
+Profile picture: pick a picture that suits you: `aigile avatar <proj> --as NAME` (library pictures, plus the free 🎨 badge maker: `aigile avatar <proj> badge fox teal glasses --as NAME`). On the cheapest plan or in ⛔ No Token Mode you are given a random badge: don't spend tokens on it. To choose from the library: `aigile avatar <proj> --as NAME` lists them, then `aigile avatar <proj> <number or name> --as NAME`.
 
 **3. Move cards as you go.** `aigile move <proj> <id> doing` (`assign` it to yourself if unassigned); `review` only while a teammate checks it. `comment` for progress and findings. Add cards for work you discover: `aigile add <proj> "title" --type bug --priority high --status todo --desc "..."`.
 

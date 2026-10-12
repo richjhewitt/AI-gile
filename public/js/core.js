@@ -151,7 +151,7 @@ const api = async (method, url, body) => {
 // A project's picture, or its emoji when it has none (AIG-175). Round, one em, so it sits where the emoji sat.
 function pic(logo, emoji) { return logo ? `<img class="pic" src="${esc(logo)}" alt="">` : esc(emoji || ''); }
 // Profile pictures (AIG-150): yours from Setup (meta.ownerPic), an agent's from the picture library (m.avatar on the team).
-const avatarUrl = f => f ? '/api/avatars/' + encodeURIComponent(f) : '';
+const avatarUrl = f => !f ? '' : /^badge:/.test(f) ? '/api/avatars/badge/' + f.slice(6) : '/api/avatars/' + encodeURIComponent(f);   // badge:fox/teal/glasses (AIG-396)
 function faceUrl(name, team) {
   if (isOwner(name)) return state.ownerPic || '';
   const m = (team || []).find(m => m.name.toLowerCase() === String(name || '').trim().toLowerCase());

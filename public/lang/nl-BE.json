@@ -1490,5 +1490,12 @@
  "info.reply.title": "Stuur je bericht naar het team; de kaart blijft hier staan tot je Begrepen zegt",
  "info.err": "Schrijf eerst een reactie",
  "info.toast.gotit": "👍 {id}: begrepen.",
- "info.toast.replied": "💬 Reactie naar het team gestuurd ({id})."
+ "info.toast.replied": "💬 Reactie naar het team gestuurd ({id}).",
+ "badge.title": "🎨 Badgemaker",
+ "badge.title.hint": "Verander de badge van een teamlid",
+ "badge.intro": "Een gratis plaatje, getekend door de app: kies een dier, een kleur en een accessoire. Klik op de foto van een teamlid om die te veranderen.",
+ "badge.for": "Voor",
+ "badge.animal": "Dier",
+ "badge.colour": "Kleur",
+ "badge.accessory": "Accessoire"
 }
