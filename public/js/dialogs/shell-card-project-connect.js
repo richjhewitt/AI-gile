@@ -26,7 +26,8 @@ async function newCard(preset = {}) {
 async function createCard(e) {
   e.preventDefault();
   const body = readFields(false, false);
-  if (!body.title) { setErr('d-err', t('dlg.err.title')); return false; }
+  // No title is fine when there is a description: with Tidy cards on the server takes its first line (AIG-399).
+  if (!body.title && !body.description.trim()) { setErr('d-err', t('dlg.err.title')); return false; }
   try {
     const sel = $('nc-project'), target = sel && sel.value || slug();
     const attachments = await Attach.upload('new:' + slug(), target);
@@ -42,7 +43,7 @@ async function createCard(e) {
     }
     closeDialog();
     await rerender();
-  } catch (err) { setErr('d-err', err); }
+  } catch (err) { setErr('d-err', /title is required/.test(err.message) ? t('dlg.err.title') : err); }   // no title, and Tidy cards is off
   return false;
 }
 
