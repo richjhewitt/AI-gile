@@ -2272,5 +2272,13 @@
   "streamer.win": "Open stream window",
   "streamer.win.title": "Open a second window of this board that is always in streamer mode: put this one on your stream",
   "pub.personal": "Personal project",
-  "pub.personal.sub": "Life stuff: never shown while streaming, whatever the streamer settings say"
+  "pub.personal.sub": "Life stuff: never shown while streaming, whatever the streamer settings say",
+  "streamer.hide.h": "What streamer mode hides",
+  "streamer.hide.private": "Private projects",
+  "streamer.hide.personal": "Personal projects",
+  "streamer.hide.locked": "always hidden",
+  "streamer.hide.dms": "Direct messages (DMs)",
+  "streamer.hide.friends": "Friends and shared boards",
+  "streamer.hide.life": "Life cards",
+  "streamer.hide.secrets": "Secrets: passwords, keys, IP addresses, emails and server names as ••••"
 }

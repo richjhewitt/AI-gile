@@ -115,6 +115,29 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   check('a link straight to the Personal project goes home', true);
   await win2.close();
 
+  // The Setup tick list of what streamer mode hides (AIG-638)
+  await page.goto(`${BASE}/#/setup`); await page.reload(); await page.waitForSelector('#streamHide');
+  const ticks = await page.$$eval('#streamHide input[data-hide]', is => is.map(i => [i.dataset.hide, i.checked, i.disabled]));
+  check('Setup lists six things, all ticked (today), Personal ticked and locked', ticks.length === 6 && ticks.every(x => x[1]) && ticks.find(x => x[0] === 'personal')[2] === true && ticks.filter(x => x[2]).length === 1, ticks);
+  await page.click('#streamHide input[data-hide="private"]');
+  await page.click('#streamHide input[data-hide="secrets"]');
+  await page.click('#streamHide input[data-hide="dms"]');
+  await until(async () => { const h = (await s.ok('GET', '/api/streamer')).hide; return h.private === false && h.secrets === false && h.dms === false; });
+  const hh = (await s.ok('GET', '/api/streamer')).hide;
+  check('the ticks are saved on the board (personal always true, the rest as unticked)', hh.personal === true && hh.private === false && hh.secrets === false && hh.dms === false && hh.friends === true && hh.life === true, hh);
+  const win3 = await ctx.newPage(); await win3.goto(`${BASE}/?stream=1#/`); await win3.waitForSelector('a.proj');
+  await until(async () => (await win3.locator('a.proj').count()) === 2);
+  const home3 = await win3.locator('main, #app').first().textContent();
+  check('with Private unticked the private project shows, the Personal one still does not', home3.includes('Secret Board') && !home3.includes('Life Board'));
+  check('with DMs unticked the DM button is back', await win3.locator('.dm-railbtn[data-dms]').isVisible());
+  await win3.goto(`${BASE}/?stream=1#/p/open-board/${card.id}`); await win3.waitForSelector('.panel .codebox');
+  check('with Secrets unticked the comment shows the real text', (await win3.locator('.panel').textContent()).includes(IP));
+  await win3.close();
+  for (const k of ['private', 'secrets', 'dms']) await page.click(`#streamHide input[data-hide="${k}"]`);
+  await until(async () => { const h = (await s.ok('GET', '/api/streamer')).hide; return h.private && h.secrets && h.dms; });
+  check('ticking them again puts today\'s behaviour back', true);
+  await page.goto(`${BASE}/#/`); await page.waitForSelector('a.proj');
+
   // Auto (AIG-592): a stub file stands in for OBS in the process list
   check('the board reports nothing running at first', (await s.ok('GET', '/api/streamer')).running === false && (await s.ok('GET', '/api/streamer')).auto === true);
   fs.writeFileSync(STUB, 'obs64.exe');
