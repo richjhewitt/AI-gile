@@ -53,4 +53,16 @@ def('tokenlimits', '🪙 helper cap by spend scale, nightly token budget stops a
   check('"budget": { "night": N } in the settings overrides the scale', JSON.parse(go().out || '{}').lim === 123456);
   const mark = s.cli(['brief', 'night']);
   check('a dead pid is never killed', JSON.parse(node(`const b = require(${B}); const k = []; b.checkNight({ runs: [{ slug: 'night', pid: 999999, startedAt: 1 }], kill: p => k.push(p), alive: () => false }); console.log(JSON.stringify(k));`).out) .length === 0 && mark.code === 0);
+
+  // #9 aigile i18n missing <lang>: only the English keys a language file lacks, as JSON.
+  const lang = f => JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'lang', f + '.json'), 'utf8'));
+  const en = lang('en'), fr = lang('fr'), wantFr = Object.keys(en).filter(k => !(k in fr));
+  const m = s.cli(['i18n', 'missing', 'fr']);
+  let got = {}; try { got = JSON.parse(m.out); } catch {}
+  check('i18n missing prints JSON of exactly the missing keys with their English text', m.code === 0 && Object.keys(got).join() === wantFr.join() && wantFr.every(k => JSON.stringify(got[k]) === JSON.stringify(en[k])), m.out.slice(0, 200));
+  check('and it is much smaller than en.json', m.out.length < JSON.stringify(en).length / 5 && wantFr.length > 0);
+  check('a complete language prints {}', s.cli(['i18n', 'missing', 'nl']).out === '{}');
+  check('English itself has nothing missing', s.cli(['i18n', 'missing', 'en']).out === '{}');
+  check('a language that does not exist is refused', s.cli(['i18n', 'missing', 'zz-nope']).code !== 0);
+  check('no language given is refused with usage', /usage: aigile i18n missing/.test(s.cli(['i18n', 'missing']).err));
 }, true);
