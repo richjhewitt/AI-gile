@@ -30,14 +30,14 @@ First pass by Babel for AIG-491, before the native-speaker check.
 | sprint | спринт | |
 | stand-up | стендап | |
 | inbox | Входящие | |
-| Setup | Настройка | |
+| Setup | Настройки | page name; «в настройках», «из настроек» in running text |
 | Usage | Расход | the plan-usage page |
 | test | тест / тестировать | |
 | test steps | шаги теста | |
 | bug | баг | |
-| commit / branch / merge / push | коммит / ветка / мёрж / пуш | |
+| commit / branch / merge / push | коммит / ветка / мерж / пуш | «мерж» without ё, as Russian teams write it |
 | pull request | пулл-реквест | |
-| AI tester passed / failed | прошла / не прошла | |
+| AI tester passed / failed | прошла / не прошла | trust options: «уверенно пройденные», «все пройденные» |
 | Send back | Вернуть | |
 | Accept | Принять | |
 | Wake (team) | Разбудить | |
@@ -45,7 +45,7 @@ First pass by Babel for AIG-491, before the native-speaker check.
 | night watch | ночной дозор | the watchman = ночной дозорный |
 | Going quiet | Уйти в тишину | |
 | idle | простаивает | |
-| assumption | допущение | "Plug this" = "Заткнуть" |
+| assumption | допущение | "Plug this" = «Поправить» |
 | No Token Mode | режим No Token | |
 | token | токен | |
 | agent | агент | |
@@ -54,6 +54,8 @@ First pass by Babel for AIG-491, before the native-speaker check.
 | Views | Виды | |
 | DM | личные сообщения | "DM" short form not used |
 | Pop out | Вынести | |
+| friend | друг / друзья | plural where it reads naturally; pretend friend = «друг понарошку» |
+| GO (reply word) | GO | the button says «Давай», but what it sends, and the GO? in pt.plan, stay GO: the board looks for that word |
 | Space | Пространство | |
 | Checklist | Чек-лист | |
 | Hook | хук | |
@@ -67,3 +69,28 @@ First pass by Babel for AIG-491, before the native-speaker check.
 - **Loanwords:** Бэклог, стендап, спринт, баг, коммит, пуш, мёрж, хук and "Scrum Master" are the real software-team words; check that "мёрж" and "пуш" are not too slangy in the glossary.
 - **`servers.ssh.ph`** keeps the example `rich@92.113.144.194` on purpose.
 - **Long values:** `usage.note`, `dlg.conn.intro`, `budget.*.help` and the `share.*` help texts are close translations and may run longer than English.
+
+## Answers to the questions above
+- **Gender of Lead Scrum Master:** the board's own voice is now neutral. `srv.*` no longer uses feminine past tense («остановила», «не поняла»): it uses impersonal and passive forms («перезапуски прекращены», «Непонятно, куда отнести…»). Lines about the Lead Scrum Master avoid «он» where a neutral wording works.
+- **`{name}` sentences with a person:** all «(а)» / «(ась)» forms are gone. The sentence is turned round so the verb does not need a gender («{name}: связь прервана с той стороны», «Тест принят: {name}»). This also avoids putting an undeclined `{name}` in a case that needs an ending.
+- **«Заткнуть»:** reads as "shut it up" and is rude next to a team's work. Now «✋ Поправить», «Поправлено», «Поправка к допущению».
+- **«Расход» for Usage:** works in all three places; kept.
+- **«Тебе» as the short For-you column:** fine as a column header and filter chip; kept.
+- **Loanwords:** бэклог, стендап, спринт, баг, коммит, пуш, хук are normal. «Мёрж» changed to «Мерж».
+
+## Review
+Native-speaker pass for AIG-491 (279 values changed).
+- Reader no longer gendered: removed «ты сам», «ты получил», «ты хотел», «Что ты увидел?», «Пока не уверен», «Я вернулся», «Ты выбрал», «как я написал», «будь краток» and similar; neutral forms instead («Нужно подумать», «Я снова здесь», «Выбрана вся помощь»).
+- Board voice and agents neutral: `srv.*`, pretend-team lines (`pt.*`), Lead Scrum Master help texts, «Понял» → «Ясно».
+- Friends: no «он/его» for a friend; «притворный друг» → «друг понарошку».
+- Wrong meaning fixed: `pres.since` and `night.since` got "5 min ago" after «с», now «старт {when}» / «включён {when}»; `inbox.aiall.title` (the tester passed the test, not the other way round); `cols.all.confirm` grammar; `update.what.*` lower case because they sit mid-sentence; GO titles say what is really sent; `pt.plan` ends in GO? again so the GO buttons appear.
+- `srv.restart.started` was missing its leading space.
+- Setup page is «Настройки» everywhere (was «Настройка», «в ⚙️ Настройке»).
+- Calques and stiff phrasing: «Строка на человека» → «По строке на человека», «Выше твоего бюджета» → «Бюджет токенов превышен», «Нет живой цифры» → «Нет актуальных данных», «Сегодня ночью никому ты не нужен» → «Этой ночью от тебя ничего не нужно», «Создатель значков» → «Конструктор значков», and more.
+- Undeclined `{name}` after a preposition needing a case: rephrased in most messages; short labels such as «Поделиться с {name}», «От {name}» kept.
+
+Still for a human native speaker:
+- Short labels with `{name}` after «с», «от», «у»: fine for foreign or undeclinable names, odd for Russian names that decline.
+- «Виды» for Views (alternative: «Представления»), «Друг» for a DM contact, «фича».
+- `usage.unit.m` is «м» (minutes); «мин» is clearer if the space allows.
+
