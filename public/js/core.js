@@ -16,18 +16,29 @@ new MutationObserver(() => document.querySelectorAll('textarea[data-draft]:not([
   if (v && !el.value) el.value = v;
 })).observe(document.documentElement, { childList: true, subtree: true });
 /* ---------- your queue (AIG-159..162): what holds things up, your priority, kind and time ---------- */
-const QKINDS = { decide: '❓', test: '🧪', server: '🖥️', outside: '🤝', keys: '🔑', read: '📖' };
+const QKINDS = { decide: '❓', test: '🧪', server: '🖥️', outside: '🤝', keys: '🔑', read: '📖', life: '🏡' };
+// 🏡 Real-life tasks (AIG-394): mirrors lib/life.js. A card with a lifeType is the owner's own task.
+const LIFE_TYPES = { housework: ['🧹', '#0d9488'], appointment: ['📅', '#3b82f6'], shopping: ['🛒', '#ea580c'], call: ['📞', '#7c3aed'], bills: ['💷', '#16a34a'], errand: ['🚗', '#ca8a04'], health: ['🩺', '#dc2626'], family: ['🎁', '#db2777'], pets: ['🐾', '#92400e'] };
+const lifeChip = c => LIFE_TYPES[c.lifeType] ? `<span class="pill life" style="background:${LIFE_TYPES[c.lifeType][1]};color:#fff" data-life="${esc(c.lifeType)}">${LIFE_TYPES[c.lifeType][0]} ${esc(t('life.' + c.lifeType))}</span>` : '';
+const lifeDoneBtn = c => `<button class="q-chip life-done" data-lifedone="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('life.done.title'))}">✅ ${esc(t('life.done'))}</button>`;
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-lifedone]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  const [s, id] = b.dataset.lifedone.split('/');
+  try { await api('POST', `/api/projects/${s}/cards/${id}/lifedone`); refresh(true); if (typeof Inbox !== 'undefined' && Inbox.reload) Inbox.reload(); } catch (err) { alert(err.message); }
+}, true);
 const isOwnerTask = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
 const PRIO_RANK = { now: 0, today: 1, whenever: 3 };   // no priority set sits between today and whenever
 // An item's kind: what the team set, else a sensible guess (tests are tests, the rest are decisions).
 const isInfo = c => !!c.info && c.status === 'verify' && !isOwnerTask(c);   // 📖 To read (AIG-392): an info-only hand-over
-const kindOfItem = c => isOwnerTask(c) && c.server ? 'server' : isOwnerTask(c) && c.outside ? 'outside' : isInfo(c) ? 'read' : c.kind || (c.status === 'verify' ? 'test' : 'decide');
+const kindOfItem = c => isOwnerTask(c) && c.lifeType ? 'life' : isOwnerTask(c) && c.server ? 'server' : isOwnerTask(c) && c.outside ? 'outside' : isInfo(c) ? 'read' : c.kind || (c.status === 'verify' ? 'test' : 'decide');
 // Queue order: your priority, then what it holds up most, then quickest first.
 const queueRank = (a, b) => (PRIO_RANK[a.ownerPrio] ?? 2) - (PRIO_RANK[b.ownerPrio] ?? 2) || (b.bumpedAt || '').localeCompare(a.bumpedAt || '') || (b.holds || []).length - (a.holds || []).length || (a.mins || 999) - (b.mins || 999);
 const bumpTime = at => new Date(at).toLocaleString([], { hour: '2-digit', minute: '2-digit', ...(Date.now() - new Date(at) > 864e5 ? { day: 'numeric', month: 'short' } : {}) });
 function queueChips(c) {
   const k = kindOfItem(c), p = c.ownerPrio;
   const task = isOwnerTask(c);   // a task has a 🖥️ switch for a job on a server (AIG-320); the kind chip is its mark when on
+  if (task && c.lifeType) return `<span class="q-chips"><span class="q-chip" title="${esc(t('queue.kind.life'))}">🏡 ${esc(t('queue.kind.life'))}</span>${lifeChip(c)}${c.apptAt ? `<span class="q-chip">📅 ${esc(timedWhen(c.apptAt))}</span>` : ''}${lifeDoneBtn(c)}</span>`;
   return `<span class="q-chips">` + (task && (c.server || c.outside) ? '' : `<span class="q-chip" title="${esc(t('queue.kind.' + k))}">${QKINDS[k]} ${esc(t('queue.kind.' + k))}</span>`)
     + (task ? `<button class="q-chip srv ${c.server ? 'on' : ''}" data-server="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.server ? 1 : 0}" title="${esc(t('queue.server.title'))}">🖥️${c.server ? ' ' + esc(t('queue.kind.server')) : ''}</button>` : '')
     + (task ? `<button class="q-chip srv ${c.outside ? 'on' : ''}" data-outside="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.outside ? 1 : 0}" title="${esc(t('queue.outside.title'))}">🤝${c.outside ? ' ' + esc(t('queue.kind.outside')) : ''}</button>` : '')

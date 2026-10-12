@@ -164,3 +164,9 @@ textarea.grow { max-height: 85vh; resize: vertical; }
 .intro-top { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; }
 .intro-slide { min-height: 220px; }
 .intro-slide p em, .intro-slide em { color: var(--muted); }
+
+/* 🏡 Real life (AIG-394) */
+#nc-appt[hidden], #nc-life-box[hidden] { display: none !important; }
+.life-switch { font-weight: 600; margin: .25rem 0; display: block; }
+.pill.life { font-weight: 600; }
+.q-chip.life-done { cursor: pointer; background: #16a34a; color: #fff; border-color: #16a34a; }

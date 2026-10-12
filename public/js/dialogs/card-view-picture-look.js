@@ -83,6 +83,7 @@ async function lookDialog() {
     <div class="f"><span>${esc(t('logo.title'))}</span>${logoEditor('look-logo', p.logo)}</div>
     <label class="chk"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> ${esc(t('look.chatty'))} <span class="muted">${esc(t('look.chatty.cost'))}</span></label>
     <label class="chk"><input type="checkbox" id="look-verbose" ${p.verbose ? 'checked' : ''}> ${esc(t('look.verbose'))}</label>
+    <label class="chk"><input type="checkbox" id="look-life" ${p.lifeBoard ? 'checked' : ''}> ${esc(t('look.life'))} <span class="muted">${esc(t('look.life.sub'))}</span></label>
     <label class="f"><span>${esc(t('look.runin'))}</span>${runInSelect('look-runin', p.runIn || '', 'lookRunIn()', def)}${runInBlind(w)}</label>
     <label class="f" id="look-runcmd-box" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="look-runcmd" value="${esc(p.runCmd || '')}" placeholder="${esc(leadPrefs().runCmd || 'cursor "{folder}"')}"><small class="muted">${esc(t('runin.cmd.look'))}</small></label>
     <div class="f" id="look-roles"><span>${esc(t('look.roles'))}</span>${TEAM_ROLES.map((r, i) => `<label class="chk"><input type="checkbox" data-role="${esc(r)}" ${projectRoleOn(r, p) ? 'checked' : ''} ${i ? '' : 'disabled'} onchange="lookRolesCount()"> ${esc(r)}</label>`).join('')}<small class="muted" id="look-rolecount">${esc(t('look.roles.count', rolesCount(TEAM_ROLES.filter(r => projectRoleOn(r, p)))))}</small></div>
@@ -93,7 +94,7 @@ const lookRolesOn = () => [...document.querySelectorAll('#look-roles input[data-
 function lookRolesCount() { $('look-rolecount').textContent = t('look.roles.count', rolesCount(lookRolesOn())); }
 async function saveLook(auto) {
   try {
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, roles: lookRolesOn() });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, lifeBoard: $('look-life').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, roles: lookRolesOn() });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }

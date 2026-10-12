@@ -36,6 +36,13 @@
     }
     catch (e) { fail(n, e); }
   }
+  // 🏡 Real life (AIG-394): one click, quiet: ticked done, nobody told.
+  async function lifeDone(n) {
+    if (n.dataset.sending) return;
+    lock(n);
+    try { await post('POST', base(n) + '/lifedone'); done(n, t('life.toast.done', { id: n.dataset.id })); }
+    catch (e) { fail(n, e); }
+  }
   async function accept(n) {
     lock(n);
     try { await post('POST', base(n) + '/verdict', { accept: true }); done(n, t('inbox.toast.accepted', { id: n.dataset.id })); }
@@ -99,5 +106,5 @@
     try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await IB.load(); IB.toast(t('inbox.toast.hidden', { id: n.dataset.id })); }
     catch (e) { fail(n, e); }
   }
-  Object.assign(IB, { send, taskDone, accept, gotIt, infoReply, waitAndSee, startTester, acceptAiPassed, flickAct });
+  Object.assign(IB, { send, taskDone, lifeDone, accept, gotIt, infoReply, waitAndSee, startTester, acceptAiPassed, flickAct });
 })();
