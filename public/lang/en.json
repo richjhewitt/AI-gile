@@ -1680,8 +1680,6 @@
  "assume.done.plug": "✋ Plugged: the team has your reply",
  "assume.plug.comment": "Plug this assumption: {note}\n\n({what})",
  "look.team.pick": "➕ Pick a team…",
- "look.team.add": "Add team",
- "look.team.sub": "Adds the team's roles and keeps yours; the same role at another level is swapped.",
  "look.team.done": "Added: {added}. Swapped out: {replaced}.",
  "look.team.done.none": "Added: {added}.",
  "look.team.nothing": "nothing new, they were all on",
@@ -1795,5 +1793,14 @@
  "pe.back": "← Back to the team",
  "pe.saved.all": "✅ {role}: saved for all projects.",
  "pe.saved.here": "✅ {role}: saved for this project.",
- "pe.reset.done": "↩ {role}: back to the template."
+ "pe.reset.done": "↩ {role}: back to the template.",
+ "tm.team.add": "➕ Add members",
+ "tm.team.replace": "🔁 Replace team",
+ "tm.team.sub": "Add members: the team's roles join; the same role at another level is swapped, the rest are kept. Replace team: only the team's roles stay (the Lead always does).",
+ "tm.team.kept": "Kept: {roles}.",
+ "tm.team.dropkept": "✕ Remove the kept ones",
+ "tm.team.removed": "Added: {added}. Removed: {removed}.",
+ "tm.undo": "↩ Undo",
+ "tm.restore": "↩ Restore them",
+ "tm.undone": "↩ Back as it was."
 }

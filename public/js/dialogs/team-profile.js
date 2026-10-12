@@ -41,8 +41,8 @@ function teamHtml() {
     <small class="muted" id="tm-count">${esc(t('look.roles.count', rolesCount(on)))}</small>
     <div class="tm-add">${addRole}</div>
     <div class="tm-add"><select id="tm-team" aria-label="${esc(t('look.team.pick'))}"><option value="">${esc(t('look.team.pick'))}</option>${(state.profiles.teams || []).map(tm => `<option value="${esc(tm.id)}">${esc(t('prof.team.' + tm.id))}</option>`).join('')}</select>
-      <button type="button" id="tm-team-add" onclick="teamApply('add')">${esc(t('look.team.add'))}</button></div>
-    <small class="muted">${esc(t('look.team.sub'))}</small>
+      <button type="button" id="tm-team-add" onclick="teamApply('add')">${esc(t('tm.team.add'))}</button><button type="button" id="tm-team-replace" onclick="teamApply('replace')">${esc(t('tm.team.replace'))}</button></div>
+    <small class="muted">${esc(t('tm.team.sub'))}</small>
     <div class="tm-msg" id="tm-msg" role="status">${TM.msg}</div>
     <details class="tm-owner" id="tm-owner"><summary>${esc(t('tm.owner.h'))}</summary><small class="muted">${esc(t('tm.owner.sub'))}</small>${['steps', 'go', 'words'].map(ownerRow).join('')}</details>
     <div class="err" id="tm-err"></div>
@@ -60,13 +60,26 @@ function teamAddRole(id) {
   const g = (profileRole(id) || {}).group, out = tmOn().filter(x => x !== LEAD_ID && (profileRole(x) || {}).group === g);
   teamSetRoles([...tmOn().filter(x => !out.includes(x)), id], esc(t(out.length ? 'look.team.done' : 'look.team.done.none', { added: roleName(id), replaced: out.map(roleName).join(', ') })));
 }
+// Applying a team (AIG-444): Add members = the team joins, the same role at another level is swapped out, the rest are kept
+// (with one click to remove the kept ones); Replace team = only the team (the Lead stays). Either way ↩ puts back what was there.
+const tmBtn = (fn, label) => ` <button type="button" class="tm-undo" onclick="${fn}">${esc(t(label))}</button>`;
 async function teamApply(mode) {
   const id = $('tm-team').value; if (!id) return;
+  const before = tmOn(), team = ((state.profiles.teams || []).find(x => x.id === id) || {}).roles || [];
   try {
     const r = await api('POST', '/api/projects/' + slug() + '/apply-team', { team: id, mode });
-    const added = r.added.map(roleName).join(', ') || t('look.team.nothing');
-    await teamPaint(esc(t(r.replaced.length ? 'look.team.done' : 'look.team.done.none', { added, replaced: r.replaced.map(roleName).join(', ') })));
+    const added = r.added.map(roleName).join(', ') || t('look.team.nothing'), gone = r.replaced.map(roleName).join(', ');
+    TM.before = before;
+    if (mode === 'replace') return await teamPaint(esc(t(r.replaced.length ? 'tm.team.removed' : 'look.team.done.none', { added, removed: gone })) + (r.replaced.length ? tmBtn('teamUndo()', 'tm.restore') : ''));
+    TM.kept = before.filter(x => x !== LEAD_ID && !team.includes(x) && !r.replaced.includes(x));
+    await teamPaint(esc(t(r.replaced.length ? 'look.team.done' : 'look.team.done.none', { added, replaced: gone }))
+      + (TM.kept.length ? ' ' + esc(t('tm.team.kept', { roles: TM.kept.map(roleName).join(', ') })) + tmBtn('teamDropKept()', 'tm.team.dropkept') : '') + tmBtn('teamUndo()', 'tm.undo'));
   } catch (e) { setErr('tm-err', e); }
+}
+const teamUndo = () => teamSetRoles(TM.before, esc(t('tm.undone')));
+function teamDropKept() {
+  const now = tmOn(); TM.before = now;
+  teamSetRoles(now.filter(x => !TM.kept.includes(x)), esc(t('tm.removed', { role: TM.kept.map(roleName).join(', ') })) + tmBtn('teamUndo()', 'tm.undo'));
 }
 // This project's own steps, go and words (p.profiles.owner, AIG-421); null = Setup's again.
 async function teamOwnerScale(k, n) {

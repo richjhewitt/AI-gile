@@ -3,13 +3,14 @@
 // compiler, lib/profiles.js (AIG-417). Today's settings read and written as the owner scales (AIG-418).
 // The built-in role templates in profiles/ (AIG-419). Team templates and Add team on a project (AIG-420).
 // aigile profile, your own copies in profiles.local and each project's numbers (AIG-421). Setup sliders (AIG-422).
-// The 👥 Team dialog and the profile editor, roles from a team in the card's role picker (AIG-423).
+// The 👥 Team dialog and the profile editor, roles from a team in the card's role picker (AIG-423). Add members or Replace
+// team, with the kept ones removed in one click and ↩ Undo or Restore (AIG-444).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421); Setup sliders (AIG-422); 👥 Team dialog, profile editor, role picker (AIG-423)', async (s, ctx) => {
+def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421); Setup sliders (AIG-422); 👥 Team dialog, profile editor, role picker (AIG-423); Add members or Replace team, ↩ undo (AIG-444)', async (s, ctx) => {
   const file = path.join(s.dir, 'aigile.local.json');
   const local = () => JSON.parse(fs.readFileSync(file, 'utf8'));
   const prefs = async () => (await s.ok('GET', '/api/setup')).prefs;
@@ -298,6 +299,29 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   await page.waitForFunction(() => /principal/.test(document.querySelector('#pe-box h2').textContent));
   check('another level takes this one\'s place on the project at once', (await roles('web')).includes('Reviewer (Opus)') && !(await roles('web')).includes(rv), await roles('web'));
   check('a bad preview is refused', (await s.api('POST', '/api/projects/web/profiles/frontend/preview', { scales: { go: 3 } })).status === 400);
+  await page.click('#pe-box button:has-text("Back")'); await page.waitForSelector('#tm-box .tm-row');
+
+  // Applying a team (AIG-444): Add members keeps the rest, with one click to remove them; Replace team; ↩ puts it back.
+  const onIds = async () => (await s.ok('GET', '/api/projects/web/profiles')).roles.map(r => r.id).sort().join();
+  const msgT = () => page.textContent('#tm-msg');
+  await page.selectOption('#tm-team', 'ux'); await page.click('#tm-team-add');
+  await page.waitForSelector('.tm-row[data-role-id="ux-researcher-senior"]');
+  const afterAdd = await onIds();
+  check('Add members: the team joins, the rest are kept and named', /Added: UX researcher, senior \(Sonnet\)/.test(await msgT()) && /Kept: [^.]*Backend[^.]*Frontend, senior/.test(await msgT()) && afterAdd.includes('backend-mid'), await msgT());
+  await page.click('#tm-msg button:has-text("Remove the kept ones")');
+  await page.waitForSelector('.tm-row[data-role-id="backend-mid"]', { state: 'detached' });
+  check('one click removes the kept ones: the Lead and the team stay', (await onIds()) === 'accessibility-mid,copywriter-junior,lead-principal,ux-researcher-senior,uxui-mid', await onIds());
+  await page.click('#tm-msg button:has-text("Undo")');
+  await page.waitForFunction(() => /Back as it was/.test(document.getElementById('tm-msg').textContent));
+  check('↩ Undo puts the kept ones back', (await onIds()) === afterAdd, await onIds());
+  await page.selectOption('#tm-team', 'security'); await page.click('#tm-team-replace');
+  await page.waitForSelector('.tm-row[data-role-id="security-principal"]');
+  check('Replace team: only the team, and the Lead', (await onIds()) === 'devops-mid,lead-principal,reviewer-senior,security-principal', await onIds());
+  check('it says what was removed, with ↩ Restore them', /Removed: [^.]*UX researcher/.test(await msgT()) && !!(await page.$('#tm-msg button:has-text("Restore them")')), await msgT());
+  await page.click('#tm-msg button:has-text("Restore them")');
+  await page.waitForFunction(() => /Back as it was/.test(document.getElementById('tm-msg').textContent));
+  check('↩ Restore them brings the team back as it was', (await onIds()) === afterAdd, await onIds());
+  await page.click('.tm-row[data-role-id="reviewer-principal"] .tm-edit'); await page.waitForSelector('#pe-lines');
 
   // At phone width the dialog and the editor fit, with no sideways scroll.
   await page.setViewportSize({ width: 390, height: 844 }); await sleep(300);

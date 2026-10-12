@@ -1680,8 +1680,6 @@
  "assume.done.plug": "✋ Opgelost: het team heeft je antwoord",
  "assume.plug.comment": "Los deze aanname op: {note}\n\n({what})",
  "look.team.pick": "➕ Kies een team…",
- "look.team.add": "Team toevoegen",
- "look.team.sub": "Voegt de rollen van het team toe en houdt de uwe; dezelfde rol op een ander niveau wordt gewisseld.",
  "look.team.done": "Toegevoegd: {added}. Gewisseld: {replaced}.",
  "look.team.done.none": "Toegevoegd: {added}.",
  "look.team.nothing": "niets nieuws, ze stonden al aan",
@@ -1795,5 +1793,14 @@
  "pe.back": "← Terug naar het team",
  "pe.saved.all": "✅ {role}: bewaard voor alle projecten.",
  "pe.saved.here": "✅ {role}: bewaard voor dit project.",
- "pe.reset.done": "↩ {role}: terug naar het sjabloon."
+ "pe.reset.done": "↩ {role}: terug naar het sjabloon.",
+ "tm.team.add": "➕ Leden toevoegen",
+ "tm.team.replace": "🔁 Team vervangen",
+ "tm.team.sub": "Leden toevoegen: de rollen van het team komen erbij; dezelfde rol op een ander niveau wordt gewisseld, de rest blijft. Team vervangen: enkel de rollen van het team blijven (de teamleider altijd).",
+ "tm.team.kept": "Gebleven: {roles}.",
+ "tm.team.dropkept": "✕ Haal de gebleven rollen weg",
+ "tm.team.removed": "Toegevoegd: {added}. Weggehaald: {removed}.",
+ "tm.undo": "↩ Ongedaan maken",
+ "tm.restore": "↩ Zet ze terug",
+ "tm.undone": "↩ Terug zoals het was."
 }
