@@ -368,6 +368,7 @@
  "card.tab.test": "🧪 {{dev:Test}}",
  "card.tab.yourcall": "jij beslist",
  "card.typing": "aan het typen…",
+ "card.working": "bezig…",
  "card.nomsgs": "Nog geen berichten.",
  "card.reply.ph": "Antwoord als {name}: de kaart gaat naar Voor het team… (Enter verstuurt, Shift+Enter voor een nieuwe regel)",
  "card.go.title": "Stuurt GO als je antwoord",

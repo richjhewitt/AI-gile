@@ -205,9 +205,11 @@ async function cardTaskDone() {
 // A popped-out card is a live chat (AIG-313): oldest first, newest at the bottom, a typing line while the team
 // works on the card, the reply box underneath. Sending never closes it.
 function chatHtml(p, c, msg) {
-  const pr = p.presence || {}, typing = (pr.running || pr.online) && (c.status === 'doing' || c.status === 'team') && !c.needsYou;
+  // AIG-639: "working…" only while a run is going, or a session is at work (not idle in its wait); a finished run says nothing.
+  const pr = p.presence || {}, atWork = pr.running || (pr.online && !pr.waitingMs && (pr.where === 'vscode' || pr.where === 'terminal'));
+  const typing = atWork && (c.status === 'doing' || c.status === 'team') && !c.needsYou;
   return `<div class="chat">${c.comments.length ? c.comments.map(m => msg(m, false)).join('') : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}</div>
-      ${typing || nudgeLit(p, c, false) ? `<div class="typing muted" id="typing">${typing ? esc(t('card.typing')) : ''} ${nudgeBtn(p, c, typing)}</div>` : ''}
+      ${typing || nudgeLit(p, c, false) ? `<div class="typing muted" id="typing">${typing ? esc(t('card.working')) : ''} ${nudgeBtn(p, c, typing)}</div>` : ''}
       ${followBar(p, c)}${replyBox(p, c)}`;
 }
 // 👉 Nudge (AIG-593): by the typing line, lit when your last message is still not seen after 3 min, or the team has been

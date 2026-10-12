@@ -30,9 +30,12 @@ def('popchat', '⧉ a pop-out stays open after Send and new team messages land a
   await main.evaluate(id => window.open('#/pop/alpha/' + id, 'aigile-alpha-' + id, 'width=560,height=780'), c.id);
   const pop = await popP;
   await pop.waitForSelector('#r-text');
-  await s.ok('GET', '/api/projects/alpha/updates');   // the team is heard from: online
+  await s.ok('GET', '/api/projects/alpha/updates');   // a hook call alone (a run that just ended) is not work: no line (AIG-639)
+  await pop.waitForTimeout(1500);
+  check('no "working" line from a hook call alone', !/working/.test((await pop.$('#typing')) ? await pop.textContent('#typing') : ''));
+  await fetch(s.base + '/api/projects/alpha/updates', { headers: { 'X-Aigile-Where': 'vscode' } });   // a session at work
   await pop.waitForSelector('#typing', { timeout: 5000 });
-  check('typing line while the team works on the card', /typing|typen/.test(await pop.textContent('#typing')));
+  check('working line while the team works on the card', /working|bezig/.test(await pop.textContent('#typing')));
   let closed = false; pop.on('close', () => { closed = true; });
   await pop.fill('#r-text', 'Done step 1');
   await pop.click('.reply .actions .primary');
