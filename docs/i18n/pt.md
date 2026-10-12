@@ -44,8 +44,23 @@ First pass by Babel for AIG-491, to be checked value by value by a native-speake
 | Wake | Acordar | |
 | Watch (👁) | Observar | |
 | night watch / watchman | vigilância noturna / vigilante noturno | |
-| Going quiet | Ficar offline | "quiet" has no natural short word; reviewer may prefer another |
-| assumption | suposição | "Plug this" = "Tapar o buraco" |
+| Going quiet | Ficar offline | kept after review |
+| assumption | suposição | "Plug this" = "Corrigir" (review) |
+| Watchman ticks every project | O vigilante cobre todos os projetos | same label in `lead.watchAll` and `sm.night.title` |
+| Stand-up all | Stand-up geral | |
+| raise (a bug) / raise (a card) | reportar / criar | not "levantar" |
+| ways of working | formas de trabalhar | |
+| where teams run | onde as equipas trabalham | "correr" only for commands and programs |
+| build (verb, noun) | construir / construção | |
+| status (card) | estado | |
+| log | registo | |
+| Undo | Anular | |
+| Pro-friendly | Ideal para o Pro | |
+| Steady (push level 3) | Constante | |
+| step (slider level) | nível | |
+| Reporter (share role) | Relator | |
+| passed / failed chip | 🤖 Aprovado / 🤖 Reprovado | |
+| mid (level) | intermédio | |
 | No Token Mode | Modo Sem Tokens | |
 | token | token | |
 | agent | agente | |
@@ -65,3 +80,31 @@ First pass by Babel for AIG-491, to be checked value by value by a native-speake
 - Hooks, relay, commit, branch and similar dev words are kept as English loanwords in the glossary entries.
 - `gloss.*.word` is the displayed term and `gloss.*.also` lists extra spellings the page should underline: check they match how the dotted words appear in this language's text.
 - Several strings run long (settings help texts, `wz.*`, `scale.*`); look for ones that overflow buttons.
+
+## Answers (native-speaker review)
+- "Ficar offline" stays: it is how people in Portugal say it, and it is short. "Dar um toque" for Poke sounds natural and stays.
+- "Tapar o buraco" was too figurative for a button: "Plug this" is now "✋ Corrigir", and the comment says "Corrigir esta suposição".
+- "Vistas" stays: Portuguese Office and Outlook use "Vista" for a saved view.
+- Dev loanwords (hook, relay, commit, branch, merge, push, deploy) are fine as they are.
+- `gloss.*.also` checked against every `{{dev:...}}` word: "testares" added to `gloss.test.also` (test has no tooltip, so this only matters for search).
+- No button overflow found: the longest button labels (for example "✅ Aceitar todos os aprovados pela IA ({n})") are about as long as the German ones.
+
+## Review
+Native-speaker review for AIG-491: 129 values changed, including 3 new keys (`boot.retry`, `boot.broke`, `boot.reload`) that came in with the latest en.json.
+- Added the three `boot.*` strings.
+- Calques and unnatural phrasing fixed: "tão longo quanto quiseres", "resposta enlatada", "Amigo do Pro", "Eis como te orientares", "É isto!", "O que está avariado?", "Muda o nome, a ordem, oculta e colore", "dá feedback".
+- Wrong meanings fixed: `quiz.words.dev` said "there is no shortage of dev words", now "Termos de programação, sem problema"; `srv.notokens.guard` said "until you switch it off again", now "until you switch the AI back on".
+- "correr" for teams (`runin.h`, `look.runin`, `wz.adv.runs.h`, `wz.adv.row.runs`) read as jogging: now "trabalhar".
+- "levantar bugs/cartões" (calque of raise) is now "reportar" for bugs and "criar" for cards.
+- `lead.watchAll` and `sm.night.title` named the same switch differently; both now "O vigilante cobre todos os projetos".
+- AO90 spelling: "Pára" / "pára" is now "Para" / "para" (`nt.title.off`, `wz.plan.*`, `term.run.all.title`).
+- `prof.level.mid` was the Brazilian "pleno": now "intermédio".
+- 🤖 chips now "Aprovado / Reprovado", matching "Aceitar todos os aprovados pela IA" and the glossary.
+- Agreement: role lists ("Adicionadas", "Trocadas", "Removida") follow "função"; an invite "ligação" is "usada"; "restam {h5}" with a percentage.
+- pt-PT countdowns: "daqui a {in}" instead of "dentro de {in}".
+- Smaller wording: "Stand-up geral", "Repor as predefinições", "Desfazer a ligação", "Nome do amigo", "O teu amigo permite:", "disse que agora não", "nível" for slider steps.
+
+Still worth a human look:
+- "🐞 Relator" for the Reporter share role: "Repórter" sounded like a journalist, but "Relator" may still read oddly.
+- "Conversa" for Chattiness (`scale.chat`), and "Impedimentos graves" for Showstoppers.
+- `prof.team.solo` is read as "a team for someone working alone"; check that matches the English intent.
