@@ -73,6 +73,13 @@ function onAssignee(sel) {
   sel.add(new Option('👤 ' + v, v, true, true), sel.options[1]);
 }
 
+// ⭐ Crucial (AIG-549): kept running while the usage saver is on.
+const crucialBtn = c => `<button class="crucial-btn${c.crucial ? ' on' : ''}" aria-pressed="${c.crucial ? 'true' : 'false'}" title="${esc(t('saver.crucial.title'))}" onclick="toggleCrucial()">${esc(t('saver.crucial'))}</button>`;
+async function toggleCrucial() {
+  const c = curCard(); if (!c) return;
+  try { await api('PATCH', `/api/projects/${slug()}/cards/${c.id}`, { crucial: !c.crucial }); refresh(true); } catch (e) { alert(e.message); }
+}
+
 function readFields(flags, testSteps) {
   const o = { title: $('f-title').value.trim(), description: $('f-description').value, type: $('f-type').value, priority: $('f-priority').value,
     status: $('f-status').value, assignee: $('f-assignee').value.trim(), sprint: $('f-sprint').value.trim(), group: $('f-group').value.trim() };
@@ -105,7 +112,7 @@ function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
   const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
-  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${state.editing ? '' : timerUi(c)}${state.editing ? '' : Focus.btn(p, c)}${state.editing ? '' : Term.btn(c, 'term-btn')}<span style="flex:1"></span>
+  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${state.editing ? '' : timerUi(c)}${state.editing ? '' : crucialBtn(c)}${state.editing ? '' : Focus.btn(p, c)}${state.editing ? '' : Term.btn(c, 'term-btn')}<span style="flex:1"></span>
       ${state.editing ? '' : moveUi(p, c)}
       ${state.editing ? '' : `<button onclick="editCard()">${esc(t('card.edit'))}</button> <button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button>`}</div>`;
   if (state.editing) {
