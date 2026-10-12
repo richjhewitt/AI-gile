@@ -16,7 +16,8 @@ function cardFields(c, o = {}) {
       <label class="f"><span>${esc(t('card.f.group'))}</span><input type="text" id="f-group" list="f-group-list" placeholder="${esc(t('card.f.group.ph'))}" value="${esc(c.group || '')}"><datalist id="f-group-list">${[...new Set((state.project ? state.project.cards : []).map(x => x.group).filter(Boolean))].sort().map(g => `<option value="${esc(g)}">`).join('')}</datalist></label>
     </div>
     ${o.flags ? `<div><label class="chk"><input type="checkbox" id="f-blocked" ${c.blocked ? 'checked' : ''}> ${esc(t('card.f.blocked'))}</label>
-      <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> ${esc(t('card.f.needsyou'))}</label></div>` : ''}`;
+      <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> ${esc(t('card.f.needsyou'))}</label>
+      <label class="chk"><input type="checkbox" id="f-focus" ${c.focus ? 'checked' : ''}> ${esc(t('fx.f.focus'))}</label></div>` : ''}`;
 }
 // Who a card goes to: a role (the lead launches that kind of agent; the model is shown so the cost is
 // visible), a named team member, or the owner himself (a task for him). Agents swap a role for their name on start.
@@ -64,7 +65,7 @@ function readFields(flags, testSteps) {
   const o = { title: $('f-title').value.trim(), description: $('f-description').value, type: $('f-type').value, priority: $('f-priority').value,
     status: $('f-status').value, assignee: $('f-assignee').value.trim(), sprint: $('f-sprint').value.trim(), group: $('f-group').value.trim() };
   if (testSteps) o.testSteps = $('f-testSteps').value;
-  if (flags) { o.blocked = $('f-blocked').checked; o.needsYou = $('f-needsYou').checked; }
+  if (flags) { o.blocked = $('f-blocked').checked; o.needsYou = $('f-needsYou').checked; o.focus = $('f-focus').checked; }
   return o;
 }
 
@@ -73,7 +74,7 @@ function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
   const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
-  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${state.editing ? '' : timerUi(c)}<span style="flex:1"></span>
+  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${state.editing ? '' : timerUi(c)}${state.editing ? '' : Focus.btn(p, c)}<span style="flex:1"></span>
       ${state.editing ? '' : `<button onclick="editCard()">${esc(t('card.edit'))}</button> <button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button>`}</div>`;
   if (state.editing) {
     return `<div class="overlay"><div class="panel">${head}

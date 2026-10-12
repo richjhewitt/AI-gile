@@ -47,7 +47,7 @@
     }
     // Everything waiting on the owner; the desktop app turns this count into its taskbar badge (AIG-76).
     // Going quiet (AIG-227): no count, so no purple diamond on the taskbar until the morning.
-    const title = q + k + te + f && !document.documentElement.hasAttribute('data-night') ? `(${q + k + te + f}) ${baseTitle}` : baseTitle;
+    const title = q + k + te + f && !document.documentElement.hasAttribute('data-night') && !document.documentElement.hasAttribute('data-focus') ? `(${q + k + te + f}) ${baseTitle}` : baseTitle;
     if (document.title !== title) document.title = title;
   }
 
@@ -70,7 +70,7 @@
     } catch {}
   }
   function announce(fresh) {
-    if (!alertsOn()) return;
+    if (!alertsOn() || document.documentElement.hasAttribute('data-focus')) return;   // 🎯 focus mode: no sound, no pop-ups (AIG-395)
     beep();
     const one = fresh.length === 1 ? fresh[0] : null;
     const a = one && lastAsk(one);
