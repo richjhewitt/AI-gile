@@ -81,4 +81,15 @@ def('follow', 'the chat follows the lead: followUp on the closed card, Go to but
   await p5.waitForFunction(id => document.querySelector(`#dmList .dm-fold.open [data-fold="${id}"]`), q2.id, { timeout: 7000 }).catch(() => {});
   check('after 3 s the chat opens the next card (button-only setting is per browser, so this page follows)', await p5.locator(`#dmList .dm-fold.open [data-fold="${q2.id}"]`).count() === 1);
   noErrors(p5);
+
+  // Review fix: a test opens on its Test tab; the follow bar sits in the hidden Reply pane and must not whisk you away.
+  const tv = await mkCard(s, 'alpha', 'Test me', { status: 'doing', assignee: 'Lead' });
+  await say(s, 'alpha', tv.id, 'Lead', 'Ready to test. Next step (ALP-2): the second job');
+  await s.ok('PATCH', `/api/projects/alpha/cards/${tv.id}`, { status: 'verify', testSteps: '1. Open it' });
+  check('a test card gets followUp too', (await getCard(s, 'alpha', tv.id)).followUp === 'ALP-2');
+  const p6 = await openPage(ctx, `#/p/alpha/${tv.id}`);
+  await p6.waitForSelector('#modal .ctab.on[data-ctab="test"]');
+  await sleep(4500);
+  check('a hidden follow bar (Test tab) does not move you off the test', p6.url().endsWith(`#/p/alpha/${tv.id}`), p6.url());
+  noErrors(p6);
 }, true);
