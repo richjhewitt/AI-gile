@@ -87,7 +87,7 @@ async function wzSave() {
   if (WZ.style) Object.assign(body.prefs, wzPrefsOf(WZ.style));
   if (WZ.plan) body.prefs.plan = WZ.plan;
   if (WZ.help) body.prefs.helpLevel = WZ.help;
-  const explain = body.prefs.explain; delete body.prefs.explain;
+  const explain = body.prefs.explain;   // also sent: the server keeps it as the words scale (AIG-418)
   try {
     // Blank name or program with a name already set: the server keeps the old ones (it only takes keys that are sent).
     state.setup = await api('POST', '/api/setup', body);

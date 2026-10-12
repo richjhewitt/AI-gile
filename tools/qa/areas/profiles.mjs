@@ -1,12 +1,12 @@
 // QA area: profiles (AIG-415): how agents work with the owner. Steps at a time (AIG-416): the setting, the brief line,
 // the Setup select, the quiz question and a task's checklist shown a few at a time. The scale table and the brief
-// compiler, lib/profiles.js (AIG-417).
+// compiler, lib/profiles.js (AIG-417). Today's settings read and written as the owner scales (AIG-418).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417)', async (s, ctx) => {
+def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418)', async (s, ctx) => {
   const file = path.join(s.dir, 'aigile.local.json');
   const local = () => JSON.parse(fs.readFileSync(file, 'utf8'));
   const prefs = async () => (await s.ok('GET', '/api/setup')).prefs;
@@ -54,6 +54,35 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   await s.ok('POST', '/api/setup', { prefs: { go: 'ask', helpersOpus: 1 } });
   check('the brief carries go, steps and helpers in that order', /rule: ask before every build[^\n]*\n[^\n]*everything at once[^\n]*\n[^\n]*at most Opus 1 helpers/.test(brief()), brief());
   await s.ok('POST', '/api/setup', { prefs: { go: '', helpersOpus: '' } });
+
+  // 1b. Today's settings read and written as the owner scales (AIG-418); the old keys still work.
+  const sc = async () => (await prefs()).scales;
+  const set = p => s.ok('POST', '/api/setup', { prefs: p });
+  const all = await sc();
+  check('prefs carry every owner scale', ['steps', 'chat', 'go', 'words', 'tidy', 'thrift', 'push'].every(k => k in all), all);
+  await set({ chatty: true, go: 'small', tidyCards: true, explain: false, plan: 'careful', smPush: 4 });
+  let v = await sc();
+  check('old keys read as scales: chatty 3, go small 3, tidy 3, dev words 4, careful = thrift 4, push 4', v.chat === 3 && v.go === 3 && v.tidy === 3 && v.words === 4 && v.thrift === 4 && v.push === 4, v);
+  await set({ chatty: false, go: 'ask', tidyCards: false, explain: true });
+  v = await sc();
+  check('and the other way: chat 2, go 1, tidy 1, plain words 1', v.chat === 2 && v.go === 1 && v.tidy === 1 && v.words === 1, v);
+  await set({ scales: { chat: 5, go: 4, tidy: 2, words: 5, thrift: 5, push: 2, steps: 2 } });
+  let p = await prefs(); v = p.scales;
+  check('scales are written', v.chat === 5 && v.go === 4 && v.tidy === 2 && v.words === 5 && v.thrift === 5 && v.push === 2 && v.steps === 2, v);
+  check('and the old keys follow: chatty on, go small, tidy cards on, plan fly, smPush 2', p.chatty === true && p.go === 'small' && p.tidyCards === true && p.plan === 'fly' && p.smPush === 2, p);
+  check('the brief says go 4 and words 5', /build whole cards without asking/.test(brief()) && /full technical depth/.test(brief()), brief());
+  await set({ chatty: true, go: 'small' });
+  check('an old key that says the same keeps the step', (await sc()).chat === 5 && (await sc()).go === 4);
+  await set({ chatty: false });
+  check('an old key that changes moves the step', (await sc()).chat === 2 && (await prefs()).chatty === false);
+  await set({ scales: { go: 2 } });
+  check('go 2 clears the old go rule', (await prefs()).go === '' && local().lead.go === undefined);
+  for (const bad of [{ alone: 2 }, { chat: 6 }, { tidy: 4 }, { go: 'x' }, { steps: 0 }]) check(`scales ${JSON.stringify(bad)} is refused`, (await s.api('POST', '/api/setup', { prefs: { scales: bad } })).status === 400);
+  check('scales as a list is refused', (await s.api('POST', '/api/setup', { prefs: { scales: [3] } })).status === 400);
+  const hand = local(); hand.scales.tidy = 2; hand.lead.tidyCards = false; fs.writeFileSync(file, JSON.stringify(hand, null, 2));
+  check('a switch changed by hand in the file wins over a stale step', (await sc()).tidy === 1);
+  await set({ scales: { words: 2, go: 2, steps: 5 } });
+  check('words 2 and go 2 cost no brief line', !/technical depth|without asking/.test(brief()), brief());
 
   // 2. Setup: the select and the quiz question.
   await s.ok('POST', '/api/setup', { prefs: { steps: 1, wizardSeen: true, helpLevel: '2' } });

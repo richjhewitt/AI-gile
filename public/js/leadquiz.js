@@ -26,7 +26,7 @@ async function saveQuiz() {
   const prefs = {};
   for (const [q, opts] of QUIZ) { const r = document.querySelector(`#dialog input[name="quiz-${q}"]:checked`); if (r) Object.assign(prefs, opts.find(o => o[0] === r.value)[1]); }
   if ('chatty' in prefs && $('quizChattyAll').checked) prefs.chattyAll = true;
-  const explain = prefs.explain; delete prefs.explain;
+  const explain = prefs.explain;   // also sent: the server keeps it as the words scale (AIG-418)
   try {
     state.setup = await api('POST', '/api/setup', { prefs });
     if (explain !== undefined) { setExplain(explain); if ($('explainWords')) $('explainWords').checked = explain; }

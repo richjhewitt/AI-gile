@@ -43,7 +43,7 @@ function advKeep() {
 function advBody() {
   const pick = ks => Object.fromEntries(ks.map(k => [k, WA.p[k]]));
   switch (WA.screen) {
-    case 'lead': return pick(['tidyCards', 'chatty', 'go', 'steps']);
+    case 'lead': return { ...pick(['tidyCards', 'chatty', 'go', 'steps']), explain: WA.explain };
     case 'runs': return pick(['runIn', 'runCmd']);
     case 'budget': return pick(['budgetH5', 'budgetWk', 'light']);
     case 'parallel': return pick(['maxRuns', 'helpersOpus', 'helpersSonnet', 'helpersHaiku']);
