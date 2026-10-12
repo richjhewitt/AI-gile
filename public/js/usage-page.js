@@ -70,7 +70,9 @@ const uz = {
   .uz-rank .nums b { color: var(--text); font-size: 14px; }
   .uz-rank .track { height: 8px; border-radius: 99px; background: var(--col); overflow: hidden; margin-top: 3px; }
   .uz-rank .track span { display: block; height: 100%; background: var(--c); border-radius: 99px; }
-  @media (max-width: 520px) { .uz-hero { font-size: 48px; } .uz-rank { grid-template-columns: 1fr; } }
+  .uz-viewtog { display: flex; gap: 6px; margin: 0 0 12px; }
+  .uz-compact { font-family: ui-monospace, Consolas, 'Courier New', monospace; font-size: 14px; line-height: 1.7; margin: 0 0 6px; padding: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); white-space: pre; overflow-x: auto; max-width: 100%; }
+  @media (max-width: 520px) { .uz-hero { font-size: 48px; } .uz-rank { grid-template-columns: 1fr; } .uz-compact { font-size: 12px; padding: 10px; } }
   `;
   document.head.appendChild(s);
 })();
@@ -78,14 +80,15 @@ const uz = {
 /* ---------- data ---------- */
 async function loadUsagePage(force) {
   if (!force && uz.data && Date.now() - uz.fetchedAt < 15e3) return;
-  const [usage, limits, projects] = await Promise.all([
+  const [usage, limits, projects, live] = await Promise.all([
     api('GET', '/api/usage').catch(() => ({ enabled: false })),
     api('GET', '/api/limits?days=30').catch(() => ({ latest: null, history: [] })),
     api('GET', '/api/projects?all=1').catch(() => []),
+    api('GET', '/api/limits/latest').catch(() => ({ latest: null })),   // AIG-431: the compact view
   ]);
   const check = await api('GET', '/api/usage/check').catch(() => null);
   const runs = await api('GET', '/api/usage/runs').catch(() => []);   // AIG-266
-  uz.data = { usage, limits, check, runs, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
+  uz.data = { usage, limits, check, runs, live, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
   uz.fetchedAt = Date.now();
 }
 const uzSig = () => JSON.stringify([uz.data, Math.floor(Date.now() / 60e3)]); // minute tick keeps "resets in" fresh
@@ -110,6 +113,10 @@ const uzDateLabel = s => uzDate(s).toLocaleDateString(i18n.lang, { month: 'short
 /* ---------- page ---------- */
 function renderUsagePage() {
   if (!uz.data) return `<p class="muted">${esc(t('common.loading'))}</p>`;
+  const view = uzView();
+  const toggle = `<div class="uz-viewtog" role="group">${[['compact', 'usage.view.compact'], ['full', 'usage.view.full']].map(([v, k]) =>
+    `<button class="${view === v ? 'primary' : ''}" aria-pressed="${view === v}" onclick="uzSetView('${v}')">${esc(t(k))}</button>`).join('')}</div>`;
+  if (view === 'compact') return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}${uzCompact(uz.data.live && uz.data.live.latest, uz.data.limits.history || [])}</div>`;
   const { usage, limits } = uz.data;
   const hist = limits.history || [];
   const width = Math.max(260, Math.min(960, ($('app').clientWidth || 360) - 40 - 30));
@@ -118,8 +125,35 @@ function renderUsagePage() {
     ? uzSetup(limits.setup)
     : `<div class="uz-tiles">${uzTile(t('usage.session'), t('usage.session.sub'), limits.latest, 'h5', hist)}${uzTile(t('usage.week'), t('usage.week.sub'), limits.latest, 'wk', hist)}</div>
        <p class="uz-note">${esc(t('usage.note'))}</p>`;
-  return `<div class="uz"><h2>${esc(t('usage.h'))}</h2><p class="uz-explain">${esc(t('usage.explain'))}</p>
+  return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}<p class="uz-explain">${esc(t('usage.explain'))}</p>
     ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}${uzRuns(uz.data.runs, uz.data.projects)}</div>`;
+}
+
+/* ---------- compact view (AIG-431) ---------- */
+// Full or compact, remembered per browser. Default: full (today's page).
+const UZ_VIEW_KEY = 'aigile.usageView';
+function uzView() { try { return localStorage.getItem(UZ_VIEW_KEY) === 'compact' ? 'compact' : 'full'; } catch { return 'full'; } }
+async function uzSetView(v) { try { localStorage.setItem(UZ_VIEW_KEY, v); } catch {} await loadUsagePage(true); render(); }
+// 8 cells, filled by % used: 48% -> [XXXX....]
+const uzBar = pct => { const n = Math.max(0, Math.min(8, Math.round(pct / 12.5))); return '[' + 'X'.repeat(n) + '.'.repeat(8 - n) + ']'; };
+// Two monospace lines, as in Mike's status line: "5h window:  0% [........] resets in 3h 33m".
+function uzCompact(latest, hist) {
+  const now = Date.now();
+  const snapFor = key => latest && latest[key] ? latest : [...hist].reverse().find(s => s[key]) || null;
+  const rows = [['h5', 'usage.compact.h5'], ['wk', 'usage.compact.wk']].map(([key, lbl]) => {
+    const snap = snapFor(key);
+    return { key, label: t(lbl) + ':', snap, w: snap && snap[key] };
+  });
+  const lw = Math.max(...rows.map(r => r.label.length));
+  const lines = rows.map(r => {
+    if (!r.w) return r.label.padEnd(lw) + ' ' + t('usage.noreading');
+    const resets = uzTime(r.w.resets);
+    const tail = !resets ? t('usage.resetunknown') : resets < now ? t('usage.compact.rolled') : t('usage.resetsin', { in: uzHM(resets - now) });
+    return r.label.padEnd(lw) + ' ' + (Math.round(r.w.pct) + '%').padStart(3) + ' ' + uzBar(r.w.pct) + ' ' + tail;
+  });
+  const at = latest && latest.at || (hist.length ? hist[hist.length - 1].at : null);
+  const last = at ? t('usage.compact.last', { n: Math.max(0, Math.floor((now - Date.parse(at)) / 60e3)) }) : t('usage.noreading');
+  return `<pre class="uz-compact">${esc(lines.join('\n'))}</pre><p class="uz-sub">${esc(last)}</p>`;
 }
 
 // Check usage now (AIG-151): when the last reading is from, a button that fetches a fresh one, and the auto switch.
