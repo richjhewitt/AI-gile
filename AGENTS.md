@@ -67,6 +67,8 @@ No card for it? `add` one first. This flags the card NEEDS-OWNER and puts it in 
 
 **Several questions on the same subject?** Group them: `aigile quiz <proj> <id> --topic "Sharing" "Question one?|Opt A,Opt B" "Question two?|Yes,No" --as YourName`. Keep each question to one line (up to 4 short options); the owner answers them together in the ⚡ Decide pile and you get one comment back. When you ask Go, keep the plan to a 2-line summary.
 
+**Links, not directions.** When a step sends the owner to a website (a DNS provider, a dashboard, a store page), give the direct link to that exact page, e.g. the domain's DNS settings; if you can't know it, the provider's sign-in page. Never "go to X and find Y".
+
 **Questions vs tasks.** `ask` is for questions. `aigile task <proj> <id> "exactly what to do, step by step" --as YourName` is for something only they can *do* (an API key, a login, a server command); add `--server` when it means running something on a server, so it is grouped at the top of their tasks; mark tasks that wait on another person or outside AI with `--outside` (grouped as 🤝 Outside help, after Server); it lands in "Tasks for you", and Done sends the card back through "For the team".
 **Server steps.** For a `--server [NAME]` task, start the steps at "on the server, run ..."; never write the ssh login or how to connect. The owner opens his server with the Open button the task shows (set up in Setup > My servers).
 
