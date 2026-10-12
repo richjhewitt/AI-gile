@@ -95,19 +95,21 @@ const Streamer = (() => {
 
   /* ---- what is left out of the data ---- */
   // Called by api() with the answer; private projects, DMs, friends and life cards never reach the screens.
+  // Left out while streaming: Personal projects (🏡, AIG-637) and Private ones (🔒).
+  const out = p => !!(p && (p.personal || p.private));
   async function filter(method, url, j) {
     if (method !== 'GET' || !on()) return j;
     await ready;
     const path = url.split('?')[0];
-    if (path === '/api/projects' && Array.isArray(j)) { j.forEach(p => p.private && hidden.add(p.slug)); return j.filter(p => !p.private); }
+    if (path === '/api/projects' && Array.isArray(j)) { j.forEach(p => out(p) && hidden.add(p.slug)); return j.filter(p => !out(p)); }
     if (path === '/api/inbox' && Array.isArray(j)) return j.filter(c => !hidden.has(c.project || c.slug) && !c.lifeType);
     if (path === '/api/chats' || path === '/api/dms/contacts' || path === '/api/shares') return [];
     const m = path.match(/^\/api\/projects\/([^/]+)(\/.*)?$/);
-    if (m && (hidden.has(m[1]) || (j && j.private && !m[2]))) { hidden.add(m[1]); if (location.hash.includes(m[1])) location.hash = '#/'; throw new Error(t('streamer.private')); }
+    if (m && (hidden.has(m[1]) || (j && out(j) && !m[2]))) { hidden.add(m[1]); if (location.hash.includes(m[1])) location.hash = '#/'; throw new Error(t('streamer.private')); }
     if (m && !m[2] && j && Array.isArray(j.cards)) return { ...j, cards: j.cards.filter(c => !c.lifeType) };
     return j;
   }
-  const prime = () => fetch('/api/projects?all=1').then(r => r.json()).then(l => { hidden = new Set(l.filter(p => p.private).map(p => p.slug)); }).catch(() => {});
+  const prime = () => fetch('/api/projects?all=1').then(r => r.json()).then(l => { hidden = new Set(l.filter(out).map(p => p.slug)); }).catch(() => {});
 
   /* ---- the switch ---- */
   function apply(was) {

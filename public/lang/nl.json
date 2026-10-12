@@ -2270,5 +2270,7 @@
   "rf.none": "Geen grote bestanden gevonden in je projectmappen. Niets op te ruimen.",
   "rf.cards": "{n} kaarten in de backlog",
   "streamer.win": "Streamvenster openen",
-  "streamer.win.title": "Open een tweede venster van dit bord dat altijd in streamermodus staat: zet dit venster in je stream"
+  "streamer.win.title": "Open een tweede venster van dit bord dat altijd in streamermodus staat: zet dit venster in je stream",
+  "pub.personal": "Persoonlijk project",
+  "pub.personal.sub": "Privéleven: nooit zichtbaar tijdens het streamen, wat je streamerinstellingen ook zeggen"
 }

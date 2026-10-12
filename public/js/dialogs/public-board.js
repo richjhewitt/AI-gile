@@ -7,14 +7,16 @@ const Pub = (() => {
   const copyBtn = p => p.public ? `<button type="button" id="pubBtn" class="pub-btn" onclick="Pub.copy()" title="${esc(t('pub.copy.title'))}">🌍 ${esc(t('pub.copy'))} <span class="muted" id="pubViewers"></span></button>` : '';
   // The Look dialog part: ticks that exclude each other, the name, and the link button.
   function lookHtml(p) {
-    return `<label class="chk"><input type="checkbox" id="look-public" ${p.public ? 'checked' : ''} onchange="Pub.tick('public')"> 🌍 ${esc(t('pub.public'))} <span class="muted">${esc(t('pub.public.sub'))}</span></label>
+    return `<label class="chk"><input type="checkbox" id="look-personal" ${p.personal ? 'checked' : ''} onchange="Pub.tick('personal')"> 🏡 ${esc(t('pub.personal'))} <span class="muted">${esc(t('pub.personal.sub'))}</span></label>
+      <label class="chk"><input type="checkbox" id="look-public" ${p.public ? 'checked' : ''} onchange="Pub.tick('public')"> 🌍 ${esc(t('pub.public'))} <span class="muted">${esc(t('pub.public.sub'))}</span></label>
       <label class="f" id="look-pubname-box" ${p.public ? '' : 'hidden'}><span>${esc(t('pub.name'))}</span><input type="text" id="look-pubname" value="${esc(p.publicName || '')}" placeholder="${esc(p.slug)}" maxlength="40" autocomplete="off"><small class="muted">${esc(t('pub.name.help'))}</small></label>
       ${p.public ? `<div><button type="button" id="look-pubcopy" onclick="Pub.copy(this)">🌍 ${esc(t('pub.copy'))}</button> <small class="muted" id="look-pubinfo"></small></div>` : ''}`;
   }
   function tick(which) {
-    const pu = $('look-public'), pr = $('look-private');
-    if (which === 'public' && pu.checked && pr) pr.checked = false;
-    if (which === 'private' && pr.checked && pu) pu.checked = false;
+    // Public, Private and Personal (AIG-637) exclude each other: the one just ticked wins.
+    const pu = $('look-public'), pr = $('look-private'), pe = $('look-personal');
+    const on = { public: pu, private: pr, personal: pe }[which];
+    if (on && on.checked) for (const el of [pu, pr, pe]) if (el && el !== on) el.checked = false;
     const box = $('look-pubname-box'); if (box) box.hidden = !pu.checked;
   }
   async function status() { try { info = await api('GET', '/api/projects/' + slug() + '/public'); } catch { info = null; } return info; }
