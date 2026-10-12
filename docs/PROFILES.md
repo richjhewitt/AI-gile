@@ -108,6 +108,7 @@ words: 3
 - `aigile brief` prints a **"How <owner> works"** block from the owner scales: one short sentence per scale that is **not** at its default (the step's line above). The default owner costs 0 extra lines; Rich today costs about 3.
 - The existing go / helpers / roles lines move into this compiler (same text, one place).
 - The lead's brief adds one line: `Brief helpers with: aigile profile <slug> <role>`. That prints the role's compiled lines (scales not at default + How I work), 3 to 8 lines, which the lead pastes at the top of the helper's prompt.
+- Built (AIG-421): `aigile profile <slug> [role] [--set k=n,... [--all]] [--reset [--all]]`; your copy at `PUT/DELETE /api/profiles/roles/<id>`, this project's numbers at `PUT /api/projects/<slug>/profiles/<owner|role>` (owner: steps, go, words; a role: alone, tests, steps, words; null clears one). A helper gets the owner's steps and words unless its role sets its own.
 - Ways of working keeps the prose. Where a scale is set off default, the brief line says "this overrides your ways of working".
 
 ## 3. Templates
@@ -132,7 +133,7 @@ Levels pick the model and default `alone`: **junior** Haiku, alone 1 · **mid** 
 | i18n / translator | junior, mid | words 3 | Every string through `t()`, all languages |
 | Code reviewer | senior, principal | alone 1, tests 4 | Reads the diff, runs tests, comments on the card |
 
-Today's 8 `TEAM_ROLES` become: lead-principal, reviewer-principal, frontend-mid, backend-mid, qa-junior, quickfix-junior, docs-junior, tester-mid. Old role strings in `p.roles` are read as these ids (no data rewrite needed).
+Today's 8 `TEAM_ROLES` become: lead-principal, reviewer-principal, frontend-mid, backend-mid, qa-junior, quickfix-junior, copywriter-junior (Docs), tester-mid. Quick fix and Tester (the AI tester) are the two templates outside the 16 (AIG-419). Old role strings in `p.roles` are read as these ids (no data rewrite needed).
 
 **Team templates** (`profiles/teams/*.md`: header `roles: a, b, c`, plus one line on when to use it)
 - **Small solo helper team**: lead, quickfix-junior, qa-junior (cheapest; good for side projects)
@@ -143,7 +144,7 @@ Today's 8 `TEAM_ROLES` become: lead-principal, reviewer-principal, frontend-mid,
 - **Docs and launch team**: copywriter-mid, i18n-junior, pm-mid
 - **Data team**: data-senior, backend-mid, qa-junior
 
-One click "Add team" switches those roles on in `p.roles` (adds, keeps what's there; Lead always on). The lead's brief "You may delegate to" line then lists them.
+One click "Add team" switches those roles on in `p.roles` (adds, keeps what's there; the same role at another level is swapped out; Lead always on). The lead's brief "You may delegate to" line then lists them. Built (AIG-420): `POST /api/projects/<slug>/apply-team { team, mode: add | replace }` answers with what was added and swapped out; today's 8 stay in `p.roles` by their old names, other roles by id; ➕ Add team sits under the roles in 🎨 Look until the 👥 Team dialog.
 
 ## 4. Owner-level vs agent-level
 - **Owner-level** (how agents treat the owner; one set for all agents, per project override allowed): **steps, chat, go, words, tidy, thrift**. Whoever talks to the owner uses them; helpers that don't talk to the owner still use `words` and `steps` in any test steps or task cards they write.

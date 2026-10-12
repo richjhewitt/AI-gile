@@ -33,11 +33,16 @@ const ROLES = [
 // Team roles per project (AIG-366): p.roles lists the roles that are on; none = all on. Lead is always on.
 const TEAM_ROLES = [...ROLES.map(r => r[0]), 'Tester (Sonnet)'];
 const projectRoleOn = (r, p = state.project) => r === TEAM_ROLES[0] || !p || !Array.isArray(p.roles) || p.roles.includes(r);
+// A role template on a project (AIG-420): kept by its id, e.g. ux-researcher-senior. state.profiles = GET /api/profiles.
+const profileRole = id => ((state.profiles || {}).roles || []).find(r => r.id === id);
+const Model = m => String(m || '').replace(/^./, c => c.toUpperCase());
+const roleModel = r => (/\((Opus|Sonnet|Haiku)\)$/.exec(r) || [])[1] || Model((profileRole(r) || {}).model);
+const roleName = id => { const r = profileRole(id); return r ? `${t('prof.role.' + r.group)}, ${t('prof.level.' + r.level)} (${Model(r.model)})` : id; };
 // Per model the helper limit when set, else the number of roles on: { total, list: "Opus 1, Sonnet 2, Haiku 3" }.
 function rolesCount(on) {
   const pr = leadPrefs(); let total = 0;
   const list = ['Opus', 'Sonnet', 'Haiku'].map(m => {
-    const n = TEAM_ROLES.filter(r => on.includes(r) && r.includes('(' + m + ')')).length, lim = pr['helpers' + m];
+    const n = [...new Set(on)].filter(r => roleModel(r) === m).length, lim = pr['helpers' + m];
     const k = lim !== '' && lim != null ? Math.min(n, lim) : n;
     total += k; return n ? m + ' ' + k : '';
   }).filter(Boolean).join(', ');
