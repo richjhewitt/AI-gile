@@ -163,9 +163,11 @@ const Dms = (() => {
   // 🧭 Launch Lead Scrum Master (AIG-359): on by day too, in VS Code (suggested), a terminal window or the background.
   function paintSm() {
     const bar = el('smBar'), sm = thread && thread.sm; if (!bar || !sm) return;
+    // The diligence scale (AIG-441): 1..5, on its own select; the same one is in Setup.
+    const pick = `<select class="setup-theme" id="smPush" title="${esc(t('sm.push.title'))}" onchange="Dms.smPush(this.value)">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${sm.push === n ? 'selected' : ''}>${n} · ${esc(t('sm.push.' + n))}</option>`).join('')}</select>`;
     const html = sm.on
-      ? `<span class="muted">${esc(t('sm.on', { where: t('sm.where.' + sm.where + '.short'), runs: sm.runsToday, cap: sm.cap }))}</span> <button onclick="Dms.smStop()">${esc(t('sm.stop'))}</button>`
-      : `<button class="primary ai-only" id="smLaunch" onclick="Dms.smLaunch()" title="${esc(t('sm.launch.title'))}">${esc(t('sm.launch'))}</button> <span class="muted">${esc(t('sm.off'))}</span>`;
+      ? `<b>${esc(t('sm.on.push', { n: sm.everyMin, name: t('sm.push.' + sm.push) }))}</b> <span class="muted">${esc(t('sm.on', { where: t('sm.where.' + sm.where + '.short'), runs: sm.runsToday, cap: sm.cap }))}</span> ${pick} <button onclick="Dms.smStop()">${esc(t('sm.stop'))}</button>`
+      : `<button class="primary ai-only" id="smLaunch" onclick="Dms.smLaunch()" title="${esc(t('sm.launch.title'))}">${esc(t('sm.launch'))}</button> <span class="muted">${esc(t('sm.off'))}</span> ${pick}`;
     if (bar.dataset.sig !== html) { bar.dataset.sig = html; bar.innerHTML = html; }
   }
   function smLaunch() {
@@ -181,6 +183,7 @@ const Dms = (() => {
     try { await api('POST', '/api/scrummaster/launch', { where: w }); closeDialog(); await loadThread(); }
     catch (e) { el('sm-err').textContent = e.message || String(e); }
   }
+  async function smPush(v) { try { await api('POST', '/api/scrummaster/push', { level: +v }); await loadThread(); } catch (e) { el('dmErr').textContent = e.message || String(e); } }
   async function smStop() { try { await api('POST', '/api/scrummaster/stop'); await loadThread(); } catch (e) { el('dmErr').textContent = e.message || String(e); } }
 
   function show(slug) {
@@ -275,5 +278,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   setInterval(() => { if (!document.hidden) { loadRail(); if (open) loadThread(); } }, 3000);
   loadRail();
-  return { show, back, close, send, ask, aim, reply, reload, smLaunch, smGo, smStop };
+  return { show, back, close, send, ask, aim, reply, reload, smLaunch, smGo, smStop, smPush };
 })();
