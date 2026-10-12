@@ -102,13 +102,11 @@ ul.bl li:last-child { margin-bottom: 0; }
 .codebox { position: relative; margin: 6px 0; white-space: normal; }
 .codebox pre { background: #1e2430; color: #e6e9ef; padding: 12px 14px; padding-right: 90px; border-radius: 8px; overflow-x: auto; margin: 0; white-space: pre; font-size: 13px; }
 .codebox pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
-.codebox .copy { position: absolute; top: 6px; right: 6px; font-size: 12px; padding: 3px 8px; }
-.codebox .copy.open { right: 92px; }
-.codebox .copy.open ~ pre { padding-right: 170px; }
-.codebox .copy.edit { right: 100px; }
-.codebox .copy.edit ~ pre { padding-right: 160px; }
-.codebox .copy.open ~ .copy.edit { right: 170px; }
-.codebox .copy.open ~ .copy.edit ~ pre { padding-right: 240px; }
+.codebox > .copy { position: absolute; top: 6px; right: 6px; font-size: 12px; padding: 3px 8px; }
+/* The buttons over a code box sit in one row (AIG-398: Copy, Open, 📝, 📂, 📋); a path box keeps its code below the row. */
+.codebox-acts { position: absolute; top: 6px; right: 6px; display: flex; gap: 4px; align-items: center; }
+.codebox-acts .copy { font-size: 12px; padding: 3px 8px; }
+.codebox.paths pre { padding-top: 36px; }
 .doctitle { margin-right: auto; align-self: center; }
 .md-copy { font-size: 11px; padding: 0 4px; margin-left: 2px; line-height: 1.4; vertical-align: baseline; }
 .desc code, .body code, .ib-question code { background: var(--col); padding: 1px 5px; border-radius: 4px; font-size: 0.92em; }

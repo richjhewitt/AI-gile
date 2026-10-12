@@ -615,6 +615,8 @@
  "format.copy": "📋 Kopiëren",
  "format.copied": "✅ Gekopieerd",
  "format.copymd": "{name} kopiëren",
+ "format.opendir": "De map openen in Verkenner",
+ "format.copypath": "Het pad kopiëren",
  "format.openfile": "{name} openen",
  "dms.kind.question": "❓ Vraag",
  "dms.kind.test": "🧪 {{dev:Test}}",

@@ -323,6 +323,26 @@ def('editor', '📝 file paths in card text open in your editor (AIG-156)', asyn
   check('it opens the file with your editor', fs.existsSync(rec) && fs.readFileSync(rec, 'utf8').includes('settings.json'));
   check('a missing file is refused', (await s.api('POST', '/api/open-file', { path: path.join(dir, 'nope.txt') })).status === 404);
   check('paths with shell characters are refused', (await s.api('POST', '/api/open-file', { path: dir + '/a%PATH%.txt' })).status === 400);
+  // AIG-398: 📂 opens the folder a file is in, 📋 copies the file's path (both beside 📝, in the code and in the code box).
+  await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: s.base });
+  check('a 📂 and a 📋 for the file', (await page.locator('[data-open-dir]').count()) === 2 && (await page.locator('[data-copy-path]').count()) === 2);
+  check('📂 on a file points at its folder', (await page.locator('[data-open-dir]').first().getAttribute('data-open-dir')) === dir);
+  await page.locator('[data-copy-path]').first().click();
+  await page.waitForSelector('[data-copy-path]:has-text("✅")');
+  check('📋 copies the file path', (await page.evaluate(() => navigator.clipboard.readText())) === target);
+  check('📂 on a file: the folder opens, not the editor', (await s.api('POST', '/api/open-file', { path: dir })).body.with === 'folder');
+  // A folder path (AIG-240): 📂 opens that folder itself, 📋 copies it, and the card has no 📝.
+  const sub = path.join(dir, 'icon-brief');
+  fs.mkdirSync(sub);
+  const fc = await mkCard(s, 'alpha', 'Open a folder', { description: 'Brief is in `' + sub + '`' });
+  const fp = await openPage(ctx, '#/p/alpha/' + fc.id);
+  await fp.click('[data-ctab="details"]');
+  await fp.waitForSelector('[data-open-dir]');
+  check('📂 on a folder opens that folder', (await fp.locator('[data-open-dir]').getAttribute('data-open-dir')) === sub && (await fp.locator('[data-editor]').count()) === 0);
+  check('📋 on a folder', (await fp.locator('[data-copy-path]').count()) === 1);
+  await fp.locator('[data-open-dir]').click();
+  await sleep(300);
+  check('📂 on a folder: no error', fp.errors.length === 0, fp.errors);
   noErrors(page);
 }, true, (() => {
   // A stand-in editor that just records which file it was asked to open.
@@ -330,7 +350,7 @@ def('editor', '📝 file paths in card text open in your editor (AIG-156)', asyn
   fs.writeFileSync(script, `require('fs').writeFileSync(${JSON.stringify(path.join(dir, 'opened.txt'))}, process.argv[2] || '')`);
   fs.writeFileSync(path.join(dir, 'local.json'), JSON.stringify({ ...(() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')); } catch { return {}; } })(), editor: `node "${script}"` }));
   process.env.QA_EDITOR_DIR = dir;
-  return { AIGILE_LOCAL: path.join(dir, 'local.json') };
+  return { AIGILE_LOCAL: path.join(dir, 'local.json'), AIGILE_NO_WINDOWS: '1' };   // 📂 opens a folder: stubbed, nothing pops up
 })());
 
 def('pagelink', '🌐 a local .html path opens in the browser, not the editor (AIG-294)', async (s, ctx) => {

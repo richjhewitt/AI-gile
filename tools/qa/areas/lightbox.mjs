@@ -25,6 +25,8 @@ def('lightbox', 'pictures open full size on click (inbox), arrows and Esc; Copy 
   await page.goto(BASE + '/#/p/alpha/' + c.id);
   await page.waitForSelector('.codebox .copy.edit');
   const boxes = await page.$$eval('.codebox .copy', els => els.map(e => { const r = e.getBoundingClientRect(); return [r.left, r.right]; }));
-  check('Copy and 📂 do not overlap', boxes.length === 2 && (boxes[0][1] <= boxes[1][0] || boxes[1][1] <= boxes[0][0]), boxes);
+  // Copy, 📂 and 📋 (AIG-398) side by side, none over another
+  const apart = (a, b) => a[1] <= b[0] || b[1] <= a[0];
+  check('Copy, 📂 and 📋 do not overlap', boxes.length === 3 && apart(boxes[0], boxes[1]) && apart(boxes[1], boxes[2]) && apart(boxes[0], boxes[2]), boxes);
   noErrors(page);
 }, true);
