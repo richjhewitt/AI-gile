@@ -540,6 +540,7 @@
  "inbox.k.ph": "Briefje voor het team (mag leeg). Enter zet het op klaar.",
  "inbox.k.aria": "Briefje voor {id}",
  "inbox.k.done": "✅ Klaar",
+ "inbox.k.earlier": "Eerdere stappen",
  "inbox.k.hint": "Laat het team weten dat het klaar is.",
  "inbox.t.tag": "🧪 {{dev:Test}}",
  "inbox.t.waiting": "wacht al {when}",

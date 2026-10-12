@@ -543,6 +543,7 @@
  "inbox.k.ph": "Nota voor het team (mag leeg blijven). Enter zet het op gedaan.",
  "inbox.k.aria": "Nota bij {id}",
  "inbox.k.done": "✅ Gedaan",
+ "inbox.k.earlier": "Eerdere stappen",
  "inbox.k.hint": "Laat het team weten dat het gedaan is.",
  "inbox.t.tag": "🧪 Klaar voor {{dev:test}}",
  "inbox.t.waiting": "wacht al {when}",

@@ -1,7 +1,7 @@
 // QA area: bump (AIG-373): a second task / question for the owner bumps the open one instead of adding a copy.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
 def('bump', 'task / ask on a card that already has an open one bumps it (chip, order, one Updated line); aigile bump; dedupe route (AIG-373)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP', { path: tmp('bp') });
@@ -49,7 +49,7 @@ def('bump', 'task / ask on a card that already has an open one bumps it (chip, o
   check('an owner comment keeps the open task assigned to the owner', kb.assignee === 'Owner', kb.assignee);
   const tpage = await openPage(ctx, '#/inbox');
   await tpage.waitForSelector('.ib-item');
-  check('the task still shows its Done button', (await tpage.$$eval(`#ibK .ib-item [data-act="taskdone"]`, es => es.length)) >= 2);
+  check('a replied task waits on the team (AIG-472); the other open task keeps its Done button', (await tpage.$$eval('#ibK .ib-item [data-act="taskdone"]', es => es.length)) === 1);
   await tpage.close();
 
   const page = await openPage(ctx, '#/inbox');
@@ -73,4 +73,27 @@ def('bump', 'task / ask on a card that already has an open one bumps it (chip, o
   const left = await marked();
   check('dedupe: exact copies collapse into the newest, different text stays', run.changes[0].removed === 2 && left.length === 2 && left[0].text === 'Do Y' && left[1].at === '2026-01-01T00:03:00.000Z', left);
   check('dedupe: other cards untouched', (await getCard(s, 'alpha', a.id)).comments.filter(m => m.mark === 'task').length === 2);
+}, true);
+
+def('taskreply', 'a task the owner replied to waits on the team; the lead\'s answer comes back on top with the steps folded; Done finishes it (AIG-472)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP', { path: tmp('tr') });
+  const a = await mkCard(s, 'alpha', 'Write the file');
+  const post = (author, text) => s.ok('POST', `/api/projects/alpha/cards/${a.id}/comments`, { author, text });
+  const inbox = async () => (await s.ok('GET', '/api/inbox')).filter(c => c.id === a.id).length;
+  s.cli(['task', 'alpha', a.id, '1. Open the file\n2. Write the line', '--as', 'Lead']);
+  check('an open task is in the inbox once', (await inbox()) === 1);
+  await post('Owner', 'there is no line Write');
+  check('after the owner replies it is waiting on the team', (await inbox()) === 0 && (await getCard(s, 'alpha', a.id)).assignee === 'Owner');
+  await sleep(20);
+  await post('Lead', 'Sorry, use the Add button instead');
+  check('the lead answering brings it back, once', (await inbox()) === 1);
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector(`.ib-item[data-id="${a.id}"] .ib-question`);
+  const q = await page.textContent(`.ib-item[data-id="${a.id}"] .ib-question`);
+  check('the lead\'s newest message is on top', q.includes('use the Add button'), q);
+  const fold = await page.textContent(`.ib-item[data-id="${a.id}"] details.ib-steps`);
+  check('the first steps are folded under Earlier steps', fold.includes('Earlier steps') && fold.includes('Write the line'), fold);
+  await s.ok('POST', `/api/projects/alpha/cards/${a.id}/taskdone`, { text: 'done' });
+  check('Done finishes it', (await inbox()) === 0);
+  noErrors(page);
 }, true);

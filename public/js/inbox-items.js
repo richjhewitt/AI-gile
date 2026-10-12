@@ -2,7 +2,7 @@
 // Classic script; shares the inbox's state and helpers through the IB object (js/inbox-state.js).
 (function () {
   'use strict';
-  const { el, esc, isTest, kindOf, lastAsk, shownAsk, keyOf, linkify } = IB;
+  const { el, esc, isTest, kindOf, lastAsk, shownAsk, earlier, keyOf, linkify } = IB;
   /* ---------- inbox page (AIG-33) ---------- */
   function qHtml(c) {
     const a = shownAsk(c), acts = c.blocked ? [] : askActions(a, 'question');
@@ -19,7 +19,7 @@
     return `<div class="ib-top"><span class="ib-tag">${c.lifeType ? '🏡 ' + esc(t('queue.kind.life')) : esc(t('inbox.k.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span><button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button></div>${queueChips(c)}
       <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       <div class="ib-who">${t('inbox.k.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
-      <div class="ib-question">${linkify(a.text, c)}</div>${Attach.shown(a, c.project)}
+      <div class="ib-question">${linkify(a.text, c)}</div>${Attach.shown(a, c.project)}${(e => e ? `<details class="ib-steps"><summary>${esc(t('inbox.k.earlier'))}</summary><div class="body">${linkify(e.text, c)}</div></details>` : '')(earlier(c))}
       <textarea rows="1" data-draft="${esc(c.project + '/' + c.id)}/task" placeholder="${esc(t('inbox.k.ph'))}" aria-label="${esc(t('inbox.k.aria', { id: c.id }))}"></textarea>
       <div class="ib-err"></div>
       <div class="actions">${c.lifeType ? `<button class="good" data-act="lifedone" title="${esc(t('life.done.title'))}">✅ ${esc(t('life.done'))}</button>` : ''}<button class="good" data-act="taskdone">${esc(t('inbox.k.done'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.k.hint'))}</span></div>`;
