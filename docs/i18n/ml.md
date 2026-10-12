@@ -1,4 +1,4 @@
-# Malayalam (ml) - first pass
+# Malayalam (ml) - first pass, native review done (AIG-493)
 
 Source of rules: LocoRadio docs/i18n.md (Malayalam is one of its languages; no special plural or script notes) and LocoRadio's ml.json for tone. Dates use `ml-IN`. Malayalam script, Arabic digits.
 
@@ -39,6 +39,14 @@ Source of rules: LocoRadio docs/i18n.md (Malayalam is one of its languages; no s
 | Send back | തിരിച്ചയയ്ക്കുക |
 | Wait and see | കാത്തിരുന്ന് കാണുക |
 | poke | തട്ടി വിളിക്കുക |
+| Go (button / "say go") | മുന്നോട്ട് (not `പോകൂ`, which reads as "go away"); "wait for my go" = `എന്റെ സമ്മതം` |
+| run (software) | പ്രവർത്തിക്കുക; run a command = റൺ ചെയ്യുക (never `ഓടുക` / `ഓടിക്കുക`) |
+| nudge (friendly) | ഓർമ്മപ്പെടുത്തൽ (not `തോണ്ടൽ`) |
+| Assignee | നിയോഗിക്കപ്പെട്ടയാൾ (`നിയോഗിച്ചയാൾ` = the one who assigned) |
+| Compact (cards) | ഒതുക്കം |
+| In / Out (tokens) | ഇൻപുട്ട് / ഔട്ട്പുട്ട് |
+| mix | മിശ്രിതം |
+| push (Scrum Master) | സമ്മർദ്ദം |
 | wake (a team) | ഉണർത്തുക |
 | assumption | അനുമാനം |
 | night watch | രാത്രി കാവൽ |
@@ -64,3 +72,27 @@ Source of rules: LocoRadio docs/i18n.md (Malayalam is one of its languages; no s
 - `സുഹൃത്ത്` is used for friend (neutral); `അംഗം` for member; `ടെസ്റ്റർ`, `ഡെവലപ്പർ` are loanwords with no gender marker.
 - A few long help paragraphs (usage, scale.push.help, budget.help) were translated closely; a native reader may want to shorten them.
 - "Davy" (the pretend friend's name) stays in Latin script.
+
+## Answers to the questions above (native review)
+- Glossary `.word` / `.also`: they match the screen; added `സ്പ്രിന്റുകളും` (used in the sprint filter) to `gloss.sprint.also`.
+- Case endings inside `{{dev:...}}` (`{{dev:സ്പ്രിന്റിനും}}`, `{{dev:ടെസ്റ്റ്}} ചെയ്യാൻ`) read naturally. Kept.
+- `തട്ടി വിളിക്കുക` for poke and `ഉണർത്തുക` for wake suit a casual board. Kept.
+- Hyphen before endings after Latin words and placeholders (`VS Code-ൽ`, `{name}-ന്`) is what readers expect; it is now used everywhere (`{n}-ൽ` instead of `{n} ൽ`).
+- `സുഹൃത്ത്`, `അംഗം`, `ടെസ്റ്റർ`, `ഡെവലപ്പർ`: fine and neutral.
+- Long help paragraphs (`scale.push.help`, `budget.help`, usage): kept close to English; `budget.help` was reworded because the word order made it say the opposite.
+
+## Review
+What changed (135 values):
+- "run" for software was `ഓടുക` / `ഓടിക്കുക` (run on foot, drive) in about 40 places; now `പ്രവർത്തിക്കുക`, or `റൺ ചെയ്യുക` for running a command.
+- "Go" buttons and "say go" were `പോകൂ` ("go away"); now `മുന്നോട്ട്` (`dms.go`, `act.go`, tour texts) and `എന്റെ സമ്മതം` in `scale.go.2`.
+- Wrong meaning fixed: `card.f.assignee` said "the one who assigned"; `filter.anyone` `ആരും` reads as "nobody"; `ago.now` `ഇപ്പോൾ തന്നെ` means "right away"; `ago.bare.h` `മണി` means "o'clock"; `തോണ്ടൽ` (teasing poke) for a friendly nudge; `പൊട്ടിയത്` (physically broken) for bugs; `ഇൻ / ഔട്ട്` for token columns; `വിശ്വസിക്കാൻ കൊള്ളില്ല` ("can't be trusted") for untrusted text; `വേലികെട്ടി` (fenced) for friend text; `ഇനി പോകൂ` ("now go away") in the tour; "Pause" was "Stop".
+- "Watchman ticks every project" was "checks every project"; now says the projects get ticked, and the `sm.night.title` tooltip quotes the new label.
+- Calques of "out of your way", "take the tour", "a lap", "busywork", "range" (`പരിധി` = limit) replaced with natural phrasing; "In 1 hour" is `1 മണിക്കൂർ കഴിഞ്ഞ്`.
+- `assignee.you.task` lost its leading `: `; restored to match English.
+- Smaller fixes: `sm.push.3/4` were nouns ("permanence", "enthusiasm"), now `സ്ഥിരതയോടെ` / `ഉത്സാഹത്തോടെ` (and the 3 in `scale.push.help` follows); `quiet.sent` plural; column names and button names quoted inside help text; `dms.nomsgs.watch` missing "and".
+
+Still worth a human look:
+- `സ്ഥലം` for 🪐 Space, `ലുക്ക്` for 🎨 Look, `കാഴ്ചകൾ` for Views (kept from the first pass).
+- `റിപ്പോർട്ടർ` for the Reporter role also means a journalist; understood in context.
+- "No Token Mode" and "Lead Scrum Master" stay in Latin as feature names.
+- `നിശ്ശബ്ദമാകുന്നു` for "Going quiet" is correct but formal.
