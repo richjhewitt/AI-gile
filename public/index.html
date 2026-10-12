@@ -50,6 +50,50 @@
 <aside id="dmPanel" hidden></aside>
 <div id="updateTop"><span id="upUpdate"></span><span id="upRefresh"></span><span id="upRestart"></span></div>
 
+<!-- Start-up guard (AIG-517): a script or language file that fails to load or parse (a half-written file, a restart
+     mid-load) shows "Updating… retrying" and tries again after 1s, 2s, 4s ... 30s, instead of leaving the page blank.
+     Inline, so it works whatever else failed. app.js sets Boot.done at its very end. -->
+<script>
+window.Boot = (() => {
+  const WAITS = [1, 2, 4, 8, 16, 30], KEY = 'aigile.bootTry';
+  const B = { done: false, started: false, failed: false };   // failed: a reload is on its way, so nothing else draws
+  // The next wait; the count lives in this tab's sessionStorage so reloads back off too (no storage: always the longest wait).
+  const wait = () => {
+    let n = WAITS.length - 1;
+    try { n = +sessionStorage.getItem(KEY) || 0; sessionStorage.setItem(KEY, n + 1); } catch {}
+    return WAITS[Math.min(n, WAITS.length - 1)];
+  };
+  const words = () => { try { const s = t('boot.retry'); if (s !== 'boot.retry') return s; } catch {} return '⏳ Updating… retrying'; };
+  B.note = () => {
+    const a = document.getElementById('app');
+    if (!a) return void document.addEventListener('DOMContentLoaded', B.note, { once: true });
+    if (a.querySelector('.boot-note')) return;
+    const p = document.createElement('p'); p.className = 'boot-note muted'; p.setAttribute('role', 'status'); p.style.padding = '24px'; p.textContent = words();
+    a.replaceChildren(p);
+  };
+  // A script that broke can only be run again by reloading the page.
+  B.fail = why => {
+    if (B.failed || B.started) return; B.failed = true;
+    console.error('AI-gile start-up failed, retrying:', why);
+    B.note(); setTimeout(() => location.reload(), wait() * 1000);
+  };
+  // A language file or the first API call: try again in the page; once the waits reach 30s, a full reload.
+  B.again = (fn, why) => {
+    console.warn('AI-gile start-up: retrying', why);
+    B.note(); const s = wait(); setTimeout(s < 30 ? fn : () => location.reload(), s * 1000);
+  };
+  // Started: later errors are the page's own business (render() shows its note), and the waits start from 1s again.
+  B.ok = () => { if (B.failed) return false; B.started = true; try { sessionStorage.removeItem(KEY); } catch {} return true; };
+  window.addEventListener('error', e => {
+    const el = e.target;
+    if (el && el.tagName) { if (el.tagName === 'SCRIPT' || (el.tagName === 'LINK' && el.rel === 'stylesheet')) B.fail('could not load ' + (el.src || el.href)); }   // 503 mid-update, server restarting; a broken picture is not ours
+    else if (!B.done) B.fail(e.error || e.message);   // a script that failed to parse or threw while loading
+  }, true);
+  document.addEventListener('DOMContentLoaded', () => { if (!B.done) B.fail('a script did not finish loading'); });
+  return B;
+})();
+</script>
+
 <!-- Classic scripts sharing one global scope; the order matters (see docs/CODEMAP.md). app.js starts everything and must stay last. -->
 <script src="js/usage-page.js"></script>
 <script src="js/assumptions.js"></script>

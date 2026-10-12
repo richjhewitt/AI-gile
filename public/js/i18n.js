@@ -59,6 +59,8 @@ function t(key, vars) {
   return s.replace(/\{\{dev:([^}]+)\}\}/g, '$1');
 }
 const getJson = async url => { try { const r = await fetch(url); return r.ok ? await r.json() : {}; } catch { return {}; } };
+// The files the page can't do without (AIG-517): a failed fetch, a 503 mid-update or a half-written file throws, so start-up retries.
+const needJson = async url => { const r = await fetch(url); if (!r.ok) throw new Error(url + ': ' + r.status); return r.json(); };
 // Whose file is in: the server lists the files that parse; an older server (before a restart) has no list, so the files that answer as JSON count.
 async function langFiles() {
   const r = await getJson('/api/langs');
@@ -68,13 +70,13 @@ async function langFiles() {
 }
 // Loads the language list, English (the fallback) and the chosen language; runs before the first render.
 async function loadLang() {
-  const list = await getJson('/lang/languages.json');
+  const list = await needJson('/lang/languages.json');
   if (Array.isArray(list) && list.some(l => l && l.code === 'en')) LANG_LIST = list.filter(l => l && /^[a-z0-9]{2,12}(-[a-z]{2,4})?$/i.test(l.code || ''));
   const files = await langFiles();
   for (const l of LANG_LIST) if (l.code === 'en' || files.includes(l.code)) LANGS[l.code] = l.name;
   i18n.lang = langCode();
-  i18n.en = await getJson('/lang/en.json');
-  i18n.dict = i18n.lang === 'en' ? i18n.en : await getJson('/lang/' + i18n.lang + '.json');
+  i18n.en = await needJson('/lang/en.json');
+  i18n.dict = i18n.lang === 'en' ? i18n.en : await needJson('/lang/' + i18n.lang + '.json');
   i18n.locale = localeOf(i18n.lang);
   i18n.dir = (langOf(i18n.lang) || {}).dir === 'rtl' ? 'rtl' : 'ltr';
   // <html lang>: the code, or the locale when it says more (pt-br -> pt-BR, no -> nb-NO); <html dir> mirrors the layout (the CSS uses logical properties).

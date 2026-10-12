@@ -26,8 +26,15 @@ if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', '
   window[k] = (...a) => { const r = native(...a); location.href = 'aigile://refocus'; return r; };
 }
 window.addEventListener('hashchange', () => { state.editing = false; refresh(true); });
-// The language file is in before the first render (AIG-124).
-loadLang().then(() => api('GET', '/api/meta').then(m => { state.servers = m.servers || []; state.terms = m.terms || []; }, () => {})).then(() => { theme(); refresh(true); checkBuild(); NoTokens.start(); UsageGlance.start(); helpBoot(); });
+// The language file is in before the first render (AIG-124). If it or the first /api/meta fails (a restart, a half-written
+// file mid-update), the page says "Updating… retrying" and starts again with backoff (AIG-517, see Boot in index.html).
+(function start() {
+  loadLang().then(() => api('GET', '/api/meta')).then(m => {
+    if (!Boot.ok()) return;   // a script broke meanwhile: the page reloads instead
+    state.servers = m.servers || []; state.terms = m.terms || [];
+    theme(); refresh(true); checkBuild(); NoTokens.start(); UsageGlance.start(); helpBoot();
+  }, e => Boot.again(start, e));
+})();
 setInterval(() => { if (!document.hidden) refresh(); }, 1000);
 setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136)
 
@@ -187,3 +194,5 @@ function showMorning(summary) {
 }
 setInterval(checkBuild, 5000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+// Last line of the last script (AIG-517): every script loaded and ran, so the start-up guard stands down.
+Boot.done = true;

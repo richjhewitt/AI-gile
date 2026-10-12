@@ -48,6 +48,18 @@ function guard(req) {
 // Attachments show inline only for these types; anything else downloads.
 const ATTACH_MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.pdf': 'application/pdf', '.txt': 'text/plain; charset=utf-8', '.md': 'text/plain; charset=utf-8', '.log': 'text/plain; charset=utf-8' };
 
+// A half-merged page file (AIG-517): a .js/.css/.json under public/ with a git conflict marker line is never served;
+// the page gets 503 + Retry-After and tries again a moment later. Only text files are read, once per change (mtime + size).
+const marked = new Map();   // file -> [mtimeMs, size, has a marker]
+function conflicted(file, st) {
+  if (!/\.(js|css|json)$/i.test(file)) return false;
+  const c = marked.get(file);
+  if (c && c[0] === st.mtimeMs && c[1] === st.size) return c[2];
+  let m = false; try { m = /^(<<<<<<<|>>>>>>>) /m.test(fs.readFileSync(file, 'utf8')); } catch {}
+  marked.set(file, [st.mtimeMs, st.size, m]);
+  return m;
+}
+
 function send(res, code, body) {
   res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
   res.end(JSON.stringify(body, null, 2));
@@ -97,6 +109,7 @@ const server = http.createServer(async (req, res) => {
     let file = path.normalize(path.join(PUBLIC, pathname));
     if (!file.startsWith(PUBLIC)) throw bad('nope', 403);
     if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) file = path.join(PUBLIC, 'index.html');
+    if (conflicted(file, fs.statSync(file))) { res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8', 'Retry-After': '2', 'Cache-Control': 'no-store' }); return res.end('mid-update: try again in a moment'); }
     res.writeHead(200, { 'Content-Type': (MIME[path.extname(file)] || 'application/octet-stream') + '; charset=utf-8', 'Cache-Control': 'no-store' });
     fs.createReadStream(file).pipe(res);
   } catch (e) {
