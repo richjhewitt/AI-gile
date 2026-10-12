@@ -8,7 +8,7 @@ const LEAD_ID = 'lead-principal';
 const tmOn = () => TM.data.roles.map(r => r.id);
 
 async function teamDialog(msg = '') {
-  await Promise.all([loadProfiles(), xtLoad()]);
+  await Promise.all([loadProfiles(), xtLoad(), ptLoad()]);
   XT.msg = '';
   try { TM.data = await api('GET', '/api/projects/' + slug() + '/profiles'); } catch (e) { alert(e.message); return; }
   TM.msg = msg; TM.friends = await api('GET', '/api/dms/contacts').then(l => l.filter(c => !c.blocked), () => []);
@@ -33,6 +33,7 @@ function teamHtml() {
     return `<div class="tm-row" data-role-id="${esc(r.id)}"><span class="tm-ic" aria-hidden="true">${roleIcon(r.id)}</span>
       <span class="tm-name"><b>${esc(t('prof.role.' + g))}</b> <span class="muted">${esc(t('prof.level.' + r.level))} · ${esc(Model(r.model))}</span>
       ${mine ? `<span class="pill">${esc(t('tm.mine'))}</span>` : ''}${here ? `<span class="pill">${esc(t('tm.here'))}</span>` : ''}</span>
+      ${loadTplHtml(r.id)}
       <button type="button" class="tm-edit" onclick="profileEditor('${esc(r.id)}')" title="${esc(t('tm.edit'))}" aria-label="${esc(t('tm.edit') + ': ' + roleName(r.id))}">✏️</button>
       ${r.id === LEAD_ID ? `<span class="tm-lock muted" title="${esc(t('tm.lead.lock'))}">🔒</span>` : `<button type="button" class="tm-del" onclick="teamRemove('${esc(r.id)}')" title="${esc(t('tm.remove'))}" aria-label="${esc(t('tm.remove') + ': ' + roleName(r.id))}">✕</button>`}</div>`; };
   // Add role: every template not on, by role then level.
@@ -41,6 +42,7 @@ function teamHtml() {
   const own = TM.data.owner || {}, sc = pr.scales || {};
   const ownerRow = k => scaleSlider(k, 5, own[k] || sc[k], 'teamOwnerScale', 'tmo', '') + `<small class="muted tm-from">${own[k] ? `${esc(t('tm.owner.own'))} <button type="button" onclick="teamOwnerScale('${k}', null)">${esc(t('tm.owner.reset'))}</button>` : esc(t('tm.owner.setup'))}</small>`;
   return `<h2>${esc(t('tm.h'))}</h2><p class="muted">${esc(t('tm.intro', { name: state.project.name }))}</p>
+    ${typeHtml()}
     <div class="tm-rows">${TM.data.roles.map(row).join('')}</div>
     <small class="muted" id="tm-count">${esc(t('look.roles.count', rolesCount(on)))}</small>
     <div class="tm-add">${addRole}</div>
