@@ -147,6 +147,7 @@ def('pack', 'AIGILE pack: a card copied for another AI (scrubbed), its reply pas
   await page.waitForSelector('#packCopy');
   check('the buttons speak Flemish', /Kopiëren voor een andere AI/.test(await page.textContent('#packCopy')) && /Antwoord plakken/.test(await page.textContent('#packPaste')));
   await page.evaluate(() => localStorage.setItem('aigile.lang', 'en'));
+  await s.ok('POST', '/api/setup', { prefs: { lang: 'en' } });   // the page told the server nl-BE (AIG-488); back to English for the error texts below
   // ✨ Copy with AI help (AIG-377): one tiny Haiku run on the scrubbed pack; the result is an edited pack.
   const owner = (await s.ok('GET', '/api/meta')).owner;
   const ai = await s.ok('POST', `/api/projects/packs/cards/${c.id}/pack/ai`, {});
