@@ -40,3 +40,7 @@ button.q-chip { cursor: pointer; } .q-chip.srv:not(.on) { color: var(--muted); o
 .dm-msg .msg-acts { margin-left: 4px; } .dm-fold > .msg-acts { margin: 0 12px 10px; }
 
 .q-chip.bump { border-color: var(--you); }
+
+/* the chat follows the lead to the next card (AIG-426) */
+.follow-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.follow-note { font-size: 12px; }
