@@ -2255,5 +2255,17 @@
   "ptype.changed": "{type}: {n} changed. {list}",
   "ptype.same": "{type}: nothing needed changing.",
   "tm.loadtpl": "Load another template",
-  "tm.loadtpl.done": "{role} now works like {tpl} on this project."
+  "tm.loadtpl.done": "{role} now works like {tpl} on this project.",
+  "rf.btn": "🧹 Refactor offer",
+  "rf.btn.title": "Big files cost tokens on every change: see what splitting them saves",
+  "rf.h": "🧹 Refactor offer",
+  "rf.looking": "Looking through your project folders…",
+  "rf.sub": "Files over 400 lines are read whole on every change. Rough numbers: what a split saves a week, and what it costs once.",
+  "rf.row": "{n} big files (biggest {big}, {lines} lines) · saves about {saved} tokens a week · costs about {cost} once",
+  "rf.mode": "Make the work as",
+  "rf.mode.each": "One refactor project inside each project",
+  "rf.mode.one": "One big Refactor project for all of them",
+  "rf.go": "Make the cards",
+  "rf.none": "No big files found in your project folders. Nothing to tidy.",
+  "rf.cards": "{n} cards in backlog"
 }

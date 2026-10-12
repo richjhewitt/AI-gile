@@ -56,3 +56,4 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 ## Other areas
 - Languages, `t()`, adding a string: [languages.md](codemap/languages.md)
 - Data files, columns, stand-up card shape: [data.md](codemap/data.md)
+- `lib/refactor.js` + `public/js/dialogs/refactor.js` (AIG-98): 🧹 refactor offer on home: files over 400 lines per project folder, rough tokens saved/cost, makes refactor projects (inside each, or one) with a card per file; QA `refactor`

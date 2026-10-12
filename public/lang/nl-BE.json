@@ -2255,5 +2255,17 @@
   "ptype.changed": "{type}: {n} aangepast. {list}",
   "ptype.same": "{type}: er hoefde niets te veranderen.",
   "tm.loadtpl": "Andere sjabloon laden",
-  "tm.loadtpl.done": "{role} werkt in dit project nu zoals {tpl}."
+  "tm.loadtpl.done": "{role} werkt in dit project nu zoals {tpl}.",
+  "rf.btn": "🧹 Opruimvoorstel",
+  "rf.btn.title": "Grote bestanden kosten tokens bij elke wijziging: zie wat opsplitsen bespaart",
+  "rf.h": "🧹 Opruimvoorstel",
+  "rf.looking": "Je projectmappen worden doorzocht…",
+  "rf.sub": "Bestanden boven 400 regels worden bij elke wijziging helemaal gelezen. Ruwe cijfers: wat opsplitsen per week bespaart en wat het eenmalig kost.",
+  "rf.row": "{n} grote bestanden (grootste {big}, {lines} regels) · bespaart zo'n {saved} tokens per week · kost zo'n {cost} eenmalig",
+  "rf.mode": "Maak het werk als",
+  "rf.mode.each": "Eén opruimproject in elk project",
+  "rf.mode.one": "Eén groot opruimproject voor allemaal",
+  "rf.go": "Maak de kaarten",
+  "rf.none": "Geen grote bestanden gevonden in je projectmappen. Niets op te ruimen.",
+  "rf.cards": "{n} kaarten in de backlog"
 }
