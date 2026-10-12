@@ -1574,5 +1574,13 @@
  "wait.h": "Waits for",
  "wait.pick": "⏳ Waits for…",
  "wait.remove": "Stop waiting for this one",
- "wait.chip.title": "Waits for {ids}: out of the way until it is done"
+ "wait.chip.title": "Waits for {ids}: out of the way until it is done",
+ "help.m.install": "📱 Add to home screen",
+ "pwa.h": "Add AI-gile to your phone",
+ "pwa.intro": "Open the board in your phone browser, then put it on the home screen so it opens like an app, full screen.",
+ "pwa.ios": "iPhone / iPad (Safari)",
+ "pwa.ios.how": "Tap the Share button, then \"Add to Home Screen\".",
+ "pwa.android": "Android (Chrome)",
+ "pwa.android.how": "Tap the ⋮ menu, then \"Install app\" or \"Add to Home screen\".",
+ "pwa.note": "The board runs on your computer, so your phone must be able to reach it (for example on the same Wi-Fi). Only the look of the app is kept on the phone, never your cards."
 }
