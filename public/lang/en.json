@@ -1982,5 +1982,6 @@
  "saver.banner": "💾 Usage saver: {pct}% of {name} (saver {save}%). Only ⭐ crucial cards run.",
  "saver.crucial": "⭐ Crucial",
  "saver.crucial.title": "A crucial card keeps running while the usage saver is on",
- "saver.chip.title": "Crucial: still runs while the usage saver is on"
+ "saver.chip.title": "Crucial: still runs while the usage saver is on",
+ "inbox.k.done.tell": "📣 Done, tell the team"
 }

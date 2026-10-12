@@ -1982,5 +1982,6 @@
  "saver.banner": "💾 Verbruiksbespaarder: {pct}% van {name} (bespaarder {save}%). Alleen ⭐ cruciale kaarten draaien.",
  "saver.crucial": "⭐ Cruciaal",
  "saver.crucial.title": "Een cruciale kaart blijft draaien terwijl de verbruiksbespaarder aan staat",
- "saver.chip.title": "Cruciaal: draait nog terwijl de verbruiksbespaarder aan staat"
+ "saver.chip.title": "Cruciaal: draait nog terwijl de verbruiksbespaarder aan staat",
+ "inbox.k.done.tell": "📣 Klaar, laat het team weten"
 }
