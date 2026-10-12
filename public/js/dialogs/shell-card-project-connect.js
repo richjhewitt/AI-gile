@@ -10,6 +10,12 @@ function closeDialog() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog').firstChild) closeDialog(); });
 
 /* ---------- new card ---------- */
+// 🐞 On the 🧪 Live channel a raised bug can also go to the AI-gile team (AIG-561): ticked by default, never for other channels.
+async function bugSendBox() {
+  let ch = null; try { ch = await api('GET', '/api/channel'); } catch {}
+  if (!ch || ch.channel !== 'live') return '';
+  return `<label class="chk" title="${esc(t('bug.send.title'))}"><input type="checkbox" id="nc-send" checked> ${esc(t('bug.send'))}</label>`;
+}
 async function newCard(preset = {}) {
   let projects = [], leads = {};
   try { projects = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
@@ -20,7 +26,7 @@ async function newCard(preset = {}) {
   Attach.clear('new:' + slug());
   // 🏡 Real life (AIG-394): the switch shows the life types; a Life board (🎨 Look) starts with it on.
   const lifeOn = !bug && (preset.lifeType || (state.project && state.project.lifeBoard && !preset.type));
-  const lifeBox = bug ? '' : `<label class="chk life-switch" title="${esc(t('dlg.life.switch.title'))}"><input type="checkbox" id="nc-life" ${lifeOn ? 'checked' : ''} onchange="lifeToggle()"> ${esc(t('dlg.life.switch'))}</label>
+  const lifeBox = bug ? await bugSendBox() : `<label class="chk life-switch" title="${esc(t('dlg.life.switch.title'))}"><input type="checkbox" id="nc-life" ${lifeOn ? 'checked' : ''} onchange="lifeToggle()"> ${esc(t('dlg.life.switch'))}</label>
     <div id="nc-life-box" ${lifeOn ? '' : 'hidden'}><div class="row"><label class="f"><span>${esc(t('dlg.life.type'))}</span><select id="nc-lifetype" onchange="lifeToggle()">${Object.keys(LIFE_TYPES).map(k => `<option value="${k}" ${k === (preset.lifeType || 'housework') ? 'selected' : ''}>${LIFE_TYPES[k][0]} ${esc(t('life.' + k))}</option>`).join('')}</select></label></div>
       <div class="row" id="nc-appt" hidden><label class="f"><span>${esc(t('dlg.life.when'))}</span><input type="datetime-local" id="nc-apptat"></label>
         <label class="f"><span>${esc(t('dlg.life.remind'))}</span><select id="nc-remind">${[0, 15, 30, 60, 120, 1440].map(m => `<option value="${m}" ${m === 60 ? 'selected' : ''}>${esc(t('dlg.life.remind.' + m))}</option>`).join('')}</select></label></div>
@@ -55,6 +61,7 @@ async function createCard(e) {
     const sel = $('nc-project'), target = sel && sel.value || slug();
     const attachments = await Attach.upload('new:' + slug(), target);
     const c = await api('POST', `/api/projects/${target}/cards`, { ...body, createdBy: me(), attachments });
+    if ($('nc-send') && $('nc-send').checked) api('POST', '/api/bugreport', { title: body.title, text: body.description }).catch(e => alert(t('bug.send.err', { msg: e.message })));   // 🐞 to the AI-gile team (AIG-561)
     Attach.clear('new:' + slug());
     if (target !== slug()) {   // another project: say where it went, with a link (AIG-316)
       const name = sel.options[sel.selectedIndex].textContent.replace(/\s*\([^)]*\)\s*$/, '').trim();

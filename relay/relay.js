@@ -24,6 +24,8 @@
 //   Business licence applications (AIG-601):
 //   POST /apply            { company, website, what, how, email }: one file in DATA/apply/ (5 per hour per address, 8 KB at most)
 //   GET  /apply            the applications, only if RELAY_STATS_KEY is set and the request is signed by it (the operator's board)
+//   POST /bug              { title, text, build, channel }: a Live tester's bug report (10 per hour per address, 8 KB at most)
+//   GET  /bug, POST /bug/ack { ids }: the operator's board collects reports and deletes them (signed by RELAY_STATS_KEY)
 //   GET  /stats            { envelopes, bytes }: only if RELAY_STATS_KEY (the operator's public signing key) is set, and signed by it
 const http = require('http');
 const fs = require('fs');
@@ -136,6 +138,7 @@ async function handle(req, res) {
   if (req.method === 'GET' && pathname === '/stats' && STATS_KEY) { owner(req, null, pathname, '', STATS_KEY); sweep(); return send(res, 200, { envelopes: count, bytes: used }); }
   if (pathname.startsWith('/b/')) return board(req, res, pathname, ip);
   if (pathname === '/apply') return apply(req, res, pathname, ip);
+  if (pathname === '/bug' || pathname === '/bug/ack') return bugs(req, res, pathname, ip);   // 🐞 Live testers (AIG-561)
   const m = pathname.match(/^\/m\/([^/]+)(\/ack)?$/);
   if (!m || !isBox(m[1])) throw fail('not found', 404);
   const box = m[1], ack = !!m[2];
@@ -352,6 +355,43 @@ async function apply(req, res, pathname, ip) {
   const id = Date.now() + '-' + crypto.randomBytes(8).toString('hex');
   fs.writeFileSync(path.join(APPLY, id + '.json'), JSON.stringify({ ...a, at: new Date().toISOString() }), { mode: 0o600 });
   recent.push(now); applyHits.set(ip, recent);
+  return send(res, 201, { ok: true });
+}
+
+// 🐞 Bug reports from Live testers (AIG-561): a tester's board posts one; the operator's board collects them (signed with
+// RELAY_STATS_KEY, like /apply), files each as a card on its own board and acks it, which deletes it here.
+const BUGS = path.join(DATA, 'bugs');
+const bugHits = new Map();   // ip -> times in the last hour
+const BUG_ID = /^\d{13}-[0-9a-f]{16}$/;
+async function bugs(req, res, pathname, ip) {
+  if (req.method === 'GET' || pathname === '/bug/ack') {
+    if (!STATS_KEY) throw fail('not found', 404);
+    const body = req.method === 'POST' ? await readBody(req, 64 * 1024) : '';
+    owner(req, null, pathname, body, STATS_KEY);
+    if (req.method === 'POST') {
+      let ids = []; try { ids = JSON.parse(body).ids || []; } catch {}
+      for (const id of [].concat(ids).slice(0, 500)) if (BUG_ID.test(String(id))) fs.rmSync(path.join(BUGS, id + '.json'), { force: true });
+      return send(res, 200, { ok: true });
+    }
+    let names = []; try { names = fs.readdirSync(BUGS).filter(f => BUG_ID.test(f.slice(0, -5)) && f.endsWith('.json')).sort(); } catch {}
+    const items = [];
+    for (const n of names.slice(0, 200)) { try { items.push({ id: n.slice(0, -5), ...JSON.parse(fs.readFileSync(path.join(BUGS, n), 'utf8')) }); } catch {} }
+    return send(res, 200, { bugs: items });
+  }
+  if (req.method !== 'POST' || pathname !== '/bug') throw fail('not found', 404);
+  const now = Date.now(), recent = (bugHits.get(ip) || []).filter(t => now - t < 3600e3);
+  if (recent.length >= 10) throw fail('too many reports from here: try again later', 429);
+  const body = await readBody(req, 8 * 1024);
+  let o; try { o = JSON.parse(body); } catch { throw fail('send the report as JSON', 400); }
+  if (!o || typeof o !== 'object' || Array.isArray(o)) throw fail('send the report as JSON', 400);
+  const b = { title: str(o.title, 140), text: String(o.text == null ? '' : o.text).slice(0, 4000), build: str(o.build, 40), channel: str(o.channel, 20) };
+  if (!b.title && !b.text) throw fail('a title or some text is needed', 400);
+  let have = 0; try { have = fs.readdirSync(BUGS).length; } catch {}
+  if (have >= 5000) throw fail('the list is full', 507);
+  fs.mkdirSync(BUGS, { recursive: true });
+  const id = Date.now() + '-' + crypto.randomBytes(8).toString('hex');
+  fs.writeFileSync(path.join(BUGS, id + '.json'), JSON.stringify({ ...b, at: new Date().toISOString() }), { mode: 0o600 });
+  recent.push(now); bugHits.set(ip, recent);
   return send(res, 201, { ok: true });
 }
 

@@ -2208,5 +2208,8 @@
   "lic.decline": "Decline",
   "lic.copy": "Copy the letter",
   "lic.approved": "Approved. The licence letter is below.",
-  "lic.declined": "Declined."
+  "lic.declined": "Declined.",
+  "bug.send": "Also send it to the AI-gile team",
+  "bug.send.title": "You're on the 🧪 Live channel: the title and text go to the people who make AI-gile (no names, no files)",
+  "bug.send.err": "The bug is on your board, but sending it to the AI-gile team failed: {msg}"
 }
