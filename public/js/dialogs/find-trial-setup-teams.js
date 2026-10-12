@@ -66,7 +66,7 @@ async function startTrial(btn) {
   const was = btn && btn.textContent, err = $('trial-err');
   if (btn) { btn.disabled = true; btn.textContent = t('trial.busy'); }
   if (err) err.textContent = '';
-  try { const r = await api('POST', '/api/trial'); window.open(r.url + (HELP.level === '1' ? '?intro=1&lang=' + encodeURIComponent(chosenLang()) : ''), 'aigile-trial'); }
+  try { const r = await api('POST', '/api/trial', { code: LP.code, window: LP.win }); launchOpen(r.url + (HELP.level === '1' ? '?intro=1&lang=' + encodeURIComponent(chosenLang()) : '')); }
   catch (e) { if (err) err.textContent = e.message; else alert(e.message); }
   if (btn) { btn.disabled = false; btn.textContent = was; }
 }
@@ -89,7 +89,7 @@ function renderSetup() {
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
     <div class="f" id="pretendBox">${pretendBoxHtml()}</div>
-    <div class="f"><span>${esc(t('trial.h'))}</span><div><button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
+    <div class="f"><span>${esc(t('trial.h'))}</span><div>${launchPickHtml()}<button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <div class="f"><span>${esc(t('face.me'))}</span>${logoEditor('me-pic', s.mePic)}</div>
     <div class="f"><span>${esc(t('face.lib'))}</span>${libraryHtml(s.library)}</div>

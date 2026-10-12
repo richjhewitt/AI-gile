@@ -82,9 +82,13 @@ nativeTheme.on('updated', () => BrowserWindow.getAllWindows().forEach(w => { try
 function wire(w) {
   // Board links to other sites open in the normal browser; the board's own open in a new app window.
   // A popped-out card stays on top, so its steps stay visible while you work in another app (AIG-122).
-  w.webContents.setWindowOpenHandler(({ url, frameName }) => {
+  w.webContents.setWindowOpenHandler(({ url, frameName, features }) => {
     // The pretend friend's board (AIG-323) opens in a window of its own: a localhost address named aigile-pretend.
-    if (frameName === 'aigile-pretend' && /^http:\/\/(localhost|127\.0\.0\.1):\d+\//.test(url)) return { action: 'allow', overrideBrowserWindowOptions: chrome() };
+    // The Setup picker's phone size (AIG-468) comes as width/height in the features, about 412 by 860.
+    if (frameName === 'aigile-pretend' && /^http:\/\/(localhost|127\.0\.0\.1):\d+\//.test(url)) {
+      const n = k => Number((String(features).match(new RegExp('(?:^|,)\\s*' + k + '=(\\d+)')) || [])[1]) || undefined;
+      return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), width: n('width') || 1200, height: n('height') || 800 } };
+    }
     if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop'), ...(url.includes('#/pop') ? placeFor(url) || {} : {}) } };
     shell.openExternal(url); return { action: 'deny' };
   });
