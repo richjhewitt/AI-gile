@@ -22,7 +22,7 @@ def('noai', 'No AI, ever: AI parts gone (top bar, Setup, roster, wizard), server
   check('no way back on the page: no off switch in the box', await page.locator('#noAiBox button, #noAiBox input').count() === 0);
   for (const [sel, name] of [['#ntBtn', 'No Token Mode'], ['#usageNav', 'Usage'], ['#pokeTop', 'pokes'], ['#teamTop', 'team presence'], ['#leadPrefs', 'Setup lead boxes'], ['#runInPrefs', 'Setup run-in box']]) check(`hidden: ${name}`, !(await vis(page, sel)));
   check('the ntBtn has no glow class', !(await page.evaluate(() => document.getElementById('ntBtn').classList.contains('back'))));
-  check('Top bar settings no longer list the AI buttons', await page.locator('#tbList .tb-row').count() === 7);
+  check('Top bar settings no longer list the AI buttons', await page.locator('#tbList .tb-row').count() === 8);
 
   // The home page has no usage strip and no Scrum Master line; the rail has no lead chats
   await page.goto(page.url().split('#')[0] + '#/'); await page.waitForSelector('#app > *');
