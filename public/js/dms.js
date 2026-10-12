@@ -26,26 +26,34 @@ const Dms = (() => {
   const here = () => (location.hash.match(/^#\/p\/([^/]+)/) || [])[1] || '';
 
   // Drag a project icon up or down to reorder (AIG-189), like servers in Discord. The rail doesn't redraw mid-drag.
-  let dragging = null;
+  // 🪐 Spaces (AIG-464): dropped on the middle of an icon it goes inside that project; above or below one, it sits next to
+  // it, in the same space (so dropping it beside a top-level icon takes it out). Right-click is the same as a menu.
+  let dragging = null, dragFrom = '';
   const railEl = () => el('dmRail');
-  document.addEventListener('dragstart', e => { const b = e.target.closest && e.target.closest('#dmRail [data-slug]'); if (!b) return; dragging = b.dataset.slug; b.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', dragging); } catch {} });
+  const zone = (b, e) => { const r = b.getBoundingClientRect(), y = (e.clientY - r.top) / r.height; return y < .3 ? 'before' : y > .7 ? 'after' : 'into'; };
+  const unmark = () => railEl().querySelectorAll('.drop-before,.drop-after,.drop-into').forEach(x => x.classList.remove('drop-before', 'drop-after', 'drop-into'));
+  document.addEventListener('dragstart', e => { const b = e.target.closest && e.target.closest('#dmRail [data-slug]'); if (!b) return; dragging = b.dataset.slug; dragFrom = b.dataset.parent || ''; b.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', dragging); } catch {} });
   document.addEventListener('dragover', e => {
     const b = dragging && e.target.closest && e.target.closest('#dmRail [data-slug]'); if (!b) return;
     e.preventDefault();
-    const r = b.getBoundingClientRect(), after = e.clientY > r.top + r.height / 2;
-    railEl().querySelectorAll('.drop-before,.drop-after').forEach(x => x.classList.remove('drop-before', 'drop-after'));
-    if (b.dataset.slug !== dragging) b.classList.add(after ? 'drop-after' : 'drop-before');
+    unmark();
+    if (b.dataset.slug !== dragging) b.classList.add('drop-' + zone(b, e));
   });
   document.addEventListener('drop', async e => {
     const b = dragging && e.target.closest && e.target.closest('#dmRail [data-slug]'); if (!b) return;
     e.preventDefault();
-    const order = [...railEl().querySelectorAll('[data-slug]')].map(x => x.dataset.slug).filter(s => s !== dragging);
-    const r = b.getBoundingClientRect(), after = e.clientY > r.top + r.height / 2, at = order.indexOf(b.dataset.slug);
-    if (b.dataset.slug !== dragging) order.splice(after ? at + 1 : at, 0, dragging); else return;
+    if (b.dataset.slug === dragging) return;
+    const z = zone(b, e), d = dragging, into = b.dataset.parent || '';
+    dragging = null;
+    if (z === 'into') { await Spaces.move(d, b.dataset.slug); railEl().dataset.sig = ''; return loadRail(); }
+    const order = [...railEl().querySelectorAll('[data-slug]')].map(x => x.dataset.slug).filter(s => s !== d), at = order.indexOf(b.dataset.slug);
+    order.splice(z === 'after' ? at + 1 : at, 0, d);
     try { await api('POST', '/api/projects/order', { slugs: order }); } catch (err) { alert(err.message); }
-    dragging = null; railEl().dataset.sig = ''; loadRail(); if (typeof refresh === 'function') refresh(true);
+    if (into !== dragFrom) await Spaces.move(d, into);
+    railEl().dataset.sig = ''; loadRail(); if (typeof refresh === 'function') refresh(true);
   });
-  document.addEventListener('dragend', () => { if (!dragging) return; dragging = null; const r = railEl(); if (r) { r.querySelectorAll('.dragging,.drop-before,.drop-after').forEach(x => x.classList.remove('dragging', 'drop-before', 'drop-after')); r.dataset.sig = ''; } loadRail(); });
+  document.addEventListener('dragend', () => { if (!dragging) return; dragging = null; const r = railEl(); if (r) { r.querySelectorAll('.dragging,.drop-before,.drop-after,.drop-into').forEach(x => x.classList.remove('dragging', 'drop-before', 'drop-after', 'drop-into')); r.dataset.sig = ''; } loadRail(); });
+  document.addEventListener('contextmenu', e => { const b = e.target.closest && e.target.closest('#dmRail [data-slug]'); if (!b) return; e.preventDefault(); Spaces.menu(b.dataset.slug); });
 
   async function loadRail() {
     if (!i18n.ready) return void setTimeout(loadRail, 100);
@@ -61,13 +69,27 @@ const Dms = (() => {
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
       + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, t('dms.rail.label'))
       + '<div class="dm-sep"></div>'
-      + projects.filter(x => !x.archived).map(x => btn(`data-go="#/p/${esc(x.slug)}" data-slug="${esc(x.slug)}" draggable="true"`, avatar(x) + badge(x.needsYou) + (x.updated > seen.get(x.slug) && x.slug !== cur && !x.needsYou ? '<span class="dm-pip"></span>' : ''),
-        x.slug === cur, x.name + (x.needsYou ? ' · ' + t('dms.waiting', { n: x.needsYou }) : ''))).join('')
+      + railTree(projects.filter(x => !x.archived), cur, btn)
       // AIG-324: each project a friend shares with me, as its own board.
       + (boards.length ? '<div class="dm-sep"></div>' + boards.map(l => btn(`data-go="#/shared/${esc(l.id)}" data-sboard="${esc(l.id)}"`, `<span class="dm-av">🔗</span>`, location.hash === '#/shared/' + l.id, t('sb.rail', { name: l.friend, project: l.theirName }))).join('') : '');
     const r = el('dmRail');
     if (r && r.dataset.sig !== html && !dragging) { r.dataset.sig = html; r.innerHTML = html; }
     if (listOpen && !open) paintList();
+  }
+
+  // 🪐 The projects as a tree (AIG-434): a space and its projects in a folder like Discord's, with a fold arrow; a folded
+  // space's red count adds up what waits on you inside it. Nested Spaces.MAX levels deep, like the home page.
+  function railTree(list, cur, btn) {
+    const T = Spaces.tree(list), needs = x => x.needsYou + T.of(x.slug).reduce((n, k) => n + needs(k), 0);
+    const one = (x, n) => btn(`data-go="#/p/${esc(x.slug)}" data-slug="${esc(x.slug)}" data-parent="${esc(T.up(x.slug))}" draggable="true"`, avatar(x) + badge(n) + (x.updated > seen.get(x.slug) && x.slug !== cur && !n ? '<span class="dm-pip"></span>' : ''),
+      x.slug === cur, x.name + (n ? ' · ' + t('dms.waiting', { n }) : ''));
+    const item = (x, d) => {
+      const kids = T.of(x.slug);
+      if (!kids.length || d >= Spaces.MAX) return one(x, x.needsYou);
+      const open = Spaces.isOpen(x.slug);
+      return `<div class="dm-space ${open ? 'open' : ''}" style="--proj:${esc(x.color || '')}">${one(x, open ? x.needsYou : needs(x))}<button class="dm-spacefold" data-spacefold="${esc(x.slug)}" aria-expanded="${open}" title="${esc(t(open ? 'space.fold.close' : 'space.fold.open'))}">${open ? '▾' : '▸'}</button>${open ? kids.map(k => item(k, d + 1)).join('') : ''}</div>`;
+    };
+    return T.roots.map(x => item(x, 1)).join('');
   }
 
   // The DM list: one row per lead (🤖) and per friend (🙋), narrowed by the filter chips (All / Agents / People).

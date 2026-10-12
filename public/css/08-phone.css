@@ -29,4 +29,10 @@
   .dialog { width: 100%; max-height: 92vh; overflow-y: auto; }
   pre, table { max-width: 100%; overflow-x: auto; }
   img, video { max-width: 100%; height: auto; }
+  /* 🪐 spaces (AIG-434): the rail's folders run sideways; the fold arrows and ⋯ are big enough for a finger */
+  .dm-space { flex-direction: row; padding: 0 6px 0 0; }
+  .dm-spacefold { margin: 0; min-height: 44px; min-width: 24px; }
+  .space-fold, .space-menu { min-width: 40px; height: 40px; }
+  .proj h2 { flex-wrap: wrap; }
+  .space-kids { margin-left: 4px; padding-left: 8px; }
 }
