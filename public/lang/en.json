@@ -2268,5 +2268,12 @@
   "rf.mode.one": "One big Refactor project for all of them",
   "rf.go": "Make the cards",
   "rf.none": "No big files found in your project folders. Nothing to tidy.",
-  "rf.cards": "{n} cards in backlog"
+  "rf.cards": "{n} cards in backlog",
+ "enter.title": "Enter sends",
+ "enter.help": "Ticked: Enter sends and Shift+Enter makes a new line. Unticked: Enter makes a new line and only the Send button (or Ctrl+Enter) sends.",
+ "enter.chat": "Chats",
+ "enter.card": "Card replies",
+ "enter.dm": "DMs",
+ "enter.idea": "Ideas",
+ "pile.left": "{n} of {total} left"
 }

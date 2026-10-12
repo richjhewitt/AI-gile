@@ -63,7 +63,7 @@ async function ideaDialog() {
   const pick = projects.some(p => p.slug === here) ? here : '_later';
   Attach.clear('idea');
   openDialog(`<h2>${esc(t('idea.h'))}</h2>
-    <form onsubmit="return sendIdea(event)"><label class="f"><span>${esc(t('idea.q'))}</span><textarea id="idea-text" class="grow" data-draft="idea" rows="4" oninput="growBox(this)" onkeydown="if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') sendIdea(event)" placeholder="${esc(t('idea.ph'))}"></textarea></label>
+    <form onsubmit="return sendIdea(event)"><label class="f"><span>${esc(t('idea.q'))}</span><textarea id="idea-text" class="grow" data-draft="idea" rows="4" oninput="growBox(this)" onkeydown="if (EnterSend.is(event, 'idea')) sendIdea(event)" placeholder="${esc(t('idea.ph'))}"></textarea></label>
     <label class="f"><span>${esc(t('idea.to'))}</span><select id="idea-to">
       <option value="_sm">${esc(t('idea.sm'))}</option>
       ${projectOptionsHtml(projects, leads, pick)}

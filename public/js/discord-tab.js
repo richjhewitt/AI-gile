@@ -33,7 +33,7 @@ const DiscordTab = (() => {
     const panel = document.getElementById('dmPanel'); panel.dataset.sig = '';
     panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button><span class="dm-av">${c.kind === 'dm' ? '💬' : '#'}</span><div><b>${esc(c.name)}</b><div class="muted">${esc(t('dc.via', { bot: c.bot }))}</div></div><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-list" id="dmList"></div>
-      <div class="dm-compose"><textarea id="dmText" rows="2" placeholder="${esc(t('dc.placeholder'))}" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();DiscordTab.send()}"></textarea>
+      <div class="dm-compose"><textarea id="dmText" rows="2" placeholder="${esc(t('dc.placeholder'))}" onkeydown="if(EnterSend.is(event,'dm')){event.preventDefault();DiscordTab.send()}"></textarea>
         <div class="err" id="dmErr"></div><div class="actions"><button class="primary" id="dcSend" onclick="DiscordTab.send()">${esc(t('dms.send'))}</button></div></div>`;
     panel.hidden = false; load(true);
   }

@@ -111,7 +111,7 @@ document.addEventListener('click', async e => {
   document.addEventListener('keydown', e => {
     if (IB.decide < 0 || !el('ibDc') || el('ibDc').hidden || e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.target.id === 'dcText') {
-      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); const v = e.target.value.trim(), cur = decideList(shownNow())[IB.decide]; if (v && cur) send(cur, v); }
+      if (EnterSend.is(e, 'card')) { e.preventDefault(); const v = e.target.value.trim(), cur = decideList(shownNow())[IB.decide]; if (v && cur) send(cur, v); }
       return;
     }
     if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;

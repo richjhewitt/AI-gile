@@ -38,5 +38,21 @@ def('ideabtn', 'idea button: on home and board; one project makes a card in For 
   await send(board, '_later', 'Idea for later');
   const l = (await cards('alpha')).filter(c => c.title.includes('for later'));
   check('Decide later: a card waiting on you, not in For the team, nobody woken', l.length === 1 && l[0].needsYou && l[0].status === 'backlog' && l[0].createdBy === 'Ideas', JSON.stringify(l));
+  // Enter sends (AIG-632): on by default, Shift+Enter is a new line, switched off in Setup Enter is a new line and Ctrl+Enter still sends
+  const typeIdea = async text => { await board.click('#ideaBtn'); await board.waitForSelector('#idea-text'); await board.selectOption('#idea-to', 'beta'); await board.click('#idea-text'); await board.keyboard.type(text); };
+  await typeIdea('Enter default idea'); await board.keyboard.press('Shift+Enter');
+  check('Shift+Enter is a new line, the box stays', (await board.isVisible('#idea-text')) && (await board.inputValue('#idea-text')).endsWith('\n'));
+  await board.keyboard.press('Enter'); await board.waitForSelector('#idea-text', { state: 'detached' }); await sleep(300);
+  check('Enter sends an idea by default', (await cards('beta')).filter(c => c.title.includes('Enter default idea')).length === 1);
+  const setup = await openPage(ctx, '#/setup');
+  await setup.waitForSelector('[data-enter-kind="idea"]');
+  check('Setup lists Enter sends for chats, card replies, DMs and ideas, all on', JSON.stringify(await setup.$$eval('[data-enter-kind]', l => l.map(x => x.dataset.enterKind + x.checked))) === JSON.stringify(['chattrue', 'cardtrue', 'dmtrue', 'ideatrue']));
+  await setup.uncheck('[data-enter-kind="idea"]');
+  await board.reload(); await board.waitForSelector('#ideaBtn'); await sleep(800);
+  check('the choice is kept after a reload', await board.evaluate(() => !EnterSend.on('idea') && EnterSend.on('card')));
+  await typeIdea('Enter off idea'); await board.keyboard.press('Enter'); await sleep(400);
+  check('with Enter sends off for ideas, Enter makes a new line', (await board.isVisible('#idea-text')) && (await board.inputValue('#idea-text')).endsWith('\n') && !(await cards('beta')).some(c => c.title.includes('Enter off idea')));
+  await board.keyboard.press('Control+Enter'); await board.waitForSelector('#idea-text', { state: 'detached' }); await sleep(300);
+  check('Ctrl+Enter still sends', (await cards('beta')).filter(c => c.title.includes('Enter off idea')).length === 1);
   noErrors(home); noErrors(board);
 }, true);

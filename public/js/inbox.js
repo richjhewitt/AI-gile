@@ -10,7 +10,7 @@
   document.head.appendChild(style);
 
   function onKey(e) {
-    if (e.target.tagName === 'TEXTAREA' && e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+    if (e.target.tagName === 'TEXTAREA' && EnterSend.is(e, 'card')) {
       const n = e.target.closest('.ib-item'); if (!n) return;   // ⚡ Decide's own box (#dcText) has its own Enter (AIG-445)
       e.preventDefault();
       if (n.classList.contains('k')) IB.taskDone(n); else if (n.querySelector('[data-act="inforeply"]')) IB.infoReply(n); else IB.send(n);   // 📖 To read: Enter is its Reply (AIG-392)

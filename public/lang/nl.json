@@ -2268,5 +2268,12 @@
   "rf.mode.one": "Eén groot opruimproject voor allemaal",
   "rf.go": "Maak de kaarten",
   "rf.none": "Geen grote bestanden gevonden in je projectmappen. Niets op te ruimen.",
-  "rf.cards": "{n} kaarten in de backlog"
+  "rf.cards": "{n} kaarten in de backlog",
+ "enter.title": "Enter verstuurt",
+ "enter.help": "Aangevinkt: Enter verstuurt en Shift+Enter geeft een nieuwe regel. Uit: Enter geeft een nieuwe regel en alleen de knop Versturen (of Ctrl+Enter) verstuurt.",
+ "enter.chat": "Chats",
+ "enter.card": "Kaartreacties",
+ "enter.dm": "Privéberichten",
+ "enter.idea": "Ideeën",
+ "pile.left": "{n} van {total} over"
 }
