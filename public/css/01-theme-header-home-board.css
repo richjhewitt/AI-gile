@@ -134,3 +134,20 @@ th { color: var(--muted); font-weight: 500; }
 .log li { padding: 5px 0; border-bottom: 1px solid var(--line); }
 .log li.decision { border-left: 3px solid var(--warn); padding-left: 8px; }
 
+
+/* ☑ checklist and ⏳ waits for (AIG-406) */
+.pill.chk { background: var(--chip, rgba(127,127,127,.18)); }
+.pill.chk.all { background: rgba(34,160,90,.25); }
+.pill.waits { background: rgba(217,140,20,.22); }
+.pill.waits.fin { background: rgba(34,160,90,.25); }
+.card.is-waiting { opacity: .5; filter: grayscale(.7); }
+.chk, .wf { margin: 8px 0; padding: 8px 10px; border: 1px solid var(--line, rgba(127,127,127,.3)); border-radius: 8px; }
+.wf { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chk-list { list-style: none; margin: 6px 0; padding: 0; }
+.chk-list li { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+.chk-list li label { flex: 1; cursor: pointer; }
+.chk-list li.on span { text-decoration: line-through; opacity: .65; }
+.chk-acts { display: inline-flex; gap: 2px; }
+.chk-b { padding: 0 6px; min-width: 0; line-height: 1.4; }
+.chk-add { display: flex; gap: 6px; }
+.chk-add input { flex: 1; }

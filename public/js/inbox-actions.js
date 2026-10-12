@@ -76,7 +76,7 @@
     setTimeout(look, 10e3);
   }
   async function acceptAiPassed(btn) {
-    const list = IB.items.filter(c => isTest(c) && c.aiCheck && c.aiCheck.result === 'pass' && (IB.tab === 'all' || c.project === IB.tab));
+    const list = IB.items.filter(c => isTest(c) && !checkLeft(c) && c.aiCheck && c.aiCheck.result === 'pass' && (IB.tab === 'all' || c.project === IB.tab));
     btn.disabled = true; let n = 0;
     for (const c of list) { try { await post('POST', `/api/projects/${c.project}/cards/${c.id}/verdict`, { accept: true }); n++; } catch {} }
     btn.disabled = false; IB.toast(t('inbox.toast.aiall', { n })); await IB.load(); IB.paintPage();
@@ -87,6 +87,7 @@
     const list = shown.filter(c => isTest(c) && c.aiCheck && c.aiCheck.result === 'pass'), n = list.length, cur = list[IB.flick];
     if (act === 'exit' || !cur) { IB.flick = -1; IB.paintPage(); return; }
     if (act === 'next' || act === 'prev') { IB.flick = (IB.flick + (act === 'next' ? 1 : -1) + n) % n; IB.paintPage(); return; }
+    if (act === 'accept' && !acceptSure(document.querySelector('#ibAi [data-fl=accept]'), cur)) return;
     const text = el('flText').value.trim();
     if (act === 'back' && !text) { el('flErr').textContent = t('verdict.err'); el('flText').focus(); return; }
     el('ibAi').querySelectorAll('button').forEach(b => b.disabled = true);
