@@ -43,11 +43,16 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
   check('Forge answers; Pixel still to answer', r1.code === 0 && /Still to answer: Pixel/.test(r1.out) && !/Old/.test(r1.out), r1);
   const r2 = rep('Pixel', ['--blockers', 'none']);
   check('everyone answered (retired member not needed)', r2.code === 0 && /Everyone has answered/.test(r2.out), r2);
+  check('the last answer closes the stand-up card (AIG-611)', (await getCard(s, 'alpha', id)).status === 'done');
+  await s.ok('PATCH', `/api/projects/alpha/cards/${id}`, { status: 'team' });   // reopened, so the later answers can replace and add
   const card = await getCard(s, 'alpha', id);
   check('reports stored on the card, with a comment each', card.standup.reports.length === 2 && card.standup.reports[1].blockers === 'none' && card.comments.length === 2, card.standup);
+  await s.ok('PATCH', `/api/projects/alpha/cards/${id}`, { status: 'team' });   // every answer from the last member closes it again
   rep('Pixel', ['--blockers', 'none']);
   check('answering twice replaces, not adds', (await getCard(s, 'alpha', id)).standup.reports.length === 2);
+  await s.ok('PATCH', `/api/projects/alpha/cards/${id}`, { status: 'team' });   // every answer from the last member closes it again
   check('blockers are optional (default none)', s.cli(['standup', 'alpha', '--done', 'x', '--next', 'y', '--as', 'Pixel']).code === 0 && (await getCard(s, 'alpha', id)).standup.reports.find(r => r.name === 'Pixel').blockers === 'none');
+  await s.ok('PATCH', `/api/projects/alpha/cards/${id}`, { status: 'team' });   // every answer from the last member closes it again
   rep('Pixel', ['--needs', 'Owner to test the export (AIG-9)', '--blockers', 'none (other work goes on)']);   // AIG-191
   check('--needs is stored apart from blockers', (await getCard(s, 'alpha', id)).standup.reports.find(r => r.name === 'Pixel').needs === 'Owner to test the export (AIG-9)');
   check('--as is required', s.cli(['standup', 'alpha', '--done', 'x', '--next', 'y']).code === 1);
@@ -111,6 +116,7 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
     await reset('2000-01-01');
     await mp.waitForSelector('#suPrompt', { timeout: 5000 });
     await s.ok('PATCH', `/api/projects/fresh/cards/${(await cardsOf('fresh'))[0].id}`, { status: 'done' });
+    await s.ok('PATCH', `/api/projects/alpha/cards/${id}`, { status: 'team' });   // alpha's answered stand-up closed itself (AIG-611): reopen, so it counts as already called
     await mp.click('#suPrompt button:has-text("All projects")');
     await mp.waitForFunction(() => location.hash === '#/standups');
     check('All projects calls every project without asking', (await cardsOf('fresh')).length === 2 && (await cardsOf('alpha')).length === 1);
