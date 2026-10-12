@@ -2161,5 +2161,13 @@
   "today.over.title": "Dit project heeft zijn aandeel in de tokens van vandaag gebruikt en draait nu alleen voor ⭐ cruciale kaarten of als jij het start",
   "today.usage.h": "🎯 Aandeel van vandaag per project",
   "srv.today.rest": "{name} rust vandaag: wordt alleen wakker voor je eigen reacties",
-  "srv.today.over": "{name} heeft zijn aandeel in de tokens van vandaag gebruikt: tot morgen draaien alleen ⭐ cruciale kaarten"
+  "srv.today.over": "{name} heeft zijn aandeel in de tokens van vandaag gebruikt: tot morgen draaien alleen ⭐ cruciale kaarten",
+ "srv.noai.build": "Dit is de Nooit-AI-uitgave: AI zit niet in deze download",
+ "noai.givein": "Oké, ik geef toe: probeer AI",
+ "noai.givein.help": "Toch benieuwd? Helemaal prima. Dit zet AI weer aan en brengt je bij het kiezen van je eerste AI-team. Je borden blijven zoals ze zijn.",
+ "noai.givein.help.build": "Toch benieuwd? Helemaal prima. AI zit niet in deze download, dus je hebt de volledige nodig. Je borden gaan mee.",
+ "noai.build.h": "Haal de volledige download",
+ "noai.build.text": "Dit is de Nooit-AI-uitgave, dus er is geen AI om aan te zetten. De volledige download heeft alles, en je kunt hem meteen gebruiken.",
+ "noai.build.data": "Je borden staan in de map data. Kopieer die map naar de volledige download en alles gaat mee.",
+ "noai.build.link": "Haal de volledige download"
 }

@@ -2161,5 +2161,13 @@
   "today.over.title": "This project used its share of today's tokens, so it only runs for ⭐ crucial cards or when you start it",
   "today.usage.h": "🎯 Today's share by project",
   "srv.today.rest": "{name} rests today: it only wakes for your own comments",
-  "srv.today.over": "{name} has used its share of today's tokens: only ⭐ crucial cards run until tomorrow"
+  "srv.today.over": "{name} has used its share of today's tokens: only ⭐ crucial cards run until tomorrow",
+ "srv.noai.build": "This is the No-AI edition: AI is not part of this download",
+ "noai.givein": "OK, I give in: try AI",
+ "noai.givein.help": "Curious after all? That is fine. This turns AI back on and takes you to choosing your first AI team. Your boards stay as they are.",
+ "noai.givein.help.build": "Curious after all? That is fine. AI is not part of this download, so you would need the full one. Your boards come with you.",
+ "noai.build.h": "Get the full download",
+ "noai.build.text": "This is the No-AI edition, so there is no AI in it to turn on. The full download has it all, and you can use it right away.",
+ "noai.build.data": "Your boards live in the data folder. Copy that folder into the full download and everything carries over.",
+ "noai.build.link": "Get the full download"
 }
