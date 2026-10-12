@@ -49,6 +49,7 @@ async function checkBuild() {
     // Quiet ended by itself at the wake-up time (AIG-232): show what happened overnight.
     if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});
     wasQuiet = m.quiet; setNight(m.quiet);
+    Focus.watch(m.focus);   // 🎯 focus mode (AIG-395)
     applyAppLogo(m.appLogo);
     if (JSON.stringify(m.servers || []) !== JSON.stringify(state.servers)) { state.servers = m.servers || []; refresh(true); }   // My servers (AIG-374)
     if ((m.ownerPic || '') !== (state.ownerPic || '')) { state.ownerPic = m.ownerPic || ''; refresh(true); }   // your picture (AIG-150)

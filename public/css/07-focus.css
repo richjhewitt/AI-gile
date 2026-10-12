@@ -1,0 +1,18 @@
+/* 🎯 Focus mode (AIG-395): nothing but the task. */
+#focusScreen[hidden] { display: none; }
+#focusScreen { position: fixed; inset: 0; z-index: 99999; background: var(--bg); color: var(--text); overflow: auto; }
+html[data-focus] body > *:not(#focusScreen):not(script) { display: none !important; }
+html[data-focus] body { overflow: hidden; }
+.fx { min-height: 100%; display: flex; flex-direction: column; padding: 28px 6vw 6vh; }
+.fx-stop { align-self: flex-start; font-size: 13px; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--danger) 16%, transparent); border: 1px solid var(--danger); }
+.fx-main { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 900px; margin: 0 auto; width: 100%; }
+.fx-kicker { font-size: 15px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+.fx-title { font-size: clamp(30px, 5vw, 56px); line-height: 1.15; margin: 10px 0 18px; font-weight: 600; }
+.fx-notes { font-size: clamp(17px, 2vw, 22px); line-height: 1.5; opacity: .85; white-space: pre-wrap; max-height: 40vh; overflow: auto; }
+.fx-time { margin-top: 26px; font-size: 18px; color: var(--muted); }
+.fx-btns { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 14px; }
+.fx-done { font-size: clamp(28px, 4vw, 44px); padding: 26px; border-radius: 18px; border: 0; cursor: pointer; background: var(--done); color: #fff; font-weight: 700; }
+.fx-done:hover { filter: brightness(1.1); }
+.fx-small { display: flex; justify-content: center; gap: 12px; }
+.fx-small button { font-size: 14px; padding: 6px 14px; opacity: .7; background: transparent; color: inherit; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.fx-small button:hover { opacity: 1; }

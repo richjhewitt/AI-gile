@@ -1490,5 +1490,21 @@
  "info.reply.title": "Send your note to the team; the card stays here until you say Got it",
  "info.err": "Write a reply first",
  "info.toast.gotit": "👍 {id}: got it.",
- "info.toast.replied": "💬 Reply sent to the team ({id})."
+ "info.toast.replied": "💬 Reply sent to the team ({id}).",
+ "fx.f.focus": "🎯 Needs focus",
+ "fx.start": "▶ Start focus",
+ "fx.start.title": "The window shrinks to just this task. Teams carry on quietly.",
+ "fx.h": "🎯 Focus",
+ "fx.paused": "⏸ Paused",
+ "fx.done": "✅ Done",
+ "fx.pause": "⏸ Pause",
+ "fx.resume": "▶ Resume",
+ "fx.leave": "Stop without finishing",
+ "fx.justnow": "just started",
+ "fx.min": "{n} min",
+ "fx.sum.done": "✅ {title}: done",
+ "fx.sum.left": "🎯 Focus stopped",
+ "fx.sum.h": "While you were busy",
+ "fx.sum.l1": "Hand-overs to test: {h} · Questions: {q}",
+ "fx.sum.l2": "Showstoppers: {n}"
 }
