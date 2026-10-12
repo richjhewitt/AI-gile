@@ -1802,5 +1802,8 @@
  "tm.team.removed": "Added: {added}. Removed: {removed}.",
  "tm.undo": "↩ Undo",
  "tm.restore": "↩ Restore them",
- "tm.undone": "↩ Back as it was."
+ "tm.undone": "↩ Back as it was.",
+ "mt.h": "👥 Your main team",
+ "mt.sub": "New projects start with this team; each project can change its own in 👥 Team. Every role is optional except the Lead, which runs the team.",
+ "mt.pick": "Start from a team…"
 }

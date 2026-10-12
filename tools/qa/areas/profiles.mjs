@@ -4,13 +4,13 @@
 // The built-in role templates in profiles/ (AIG-419). Team templates and Add team on a project (AIG-420).
 // aigile profile, your own copies in profiles.local and each project's numbers (AIG-421). Setup sliders (AIG-422).
 // The 👥 Team dialog and the profile editor, roles from a team in the card's role picker (AIG-423). Add members or Replace
-// team, with the kept ones removed in one click and ↩ Undo or Restore (AIG-444).
+// team, with the kept ones removed in one click and ↩ Undo or Restore (AIG-444). ⚙️ Setup, your main team (AIG-460).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421); Setup sliders (AIG-422); 👥 Team dialog, profile editor, role picker (AIG-423); Add members or Replace team, ↩ undo (AIG-444)', async (s, ctx) => {
+def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421); Setup sliders (AIG-422); 👥 Team dialog, profile editor, role picker (AIG-423); Add members or Replace team, ↩ undo (AIG-444); Setup main team (AIG-460)', async (s, ctx) => {
   const file = path.join(s.dir, 'aigile.local.json');
   const local = () => JSON.parse(fs.readFileSync(file, 'utf8'));
   const prefs = async () => (await s.ok('GET', '/api/setup')).prefs;
@@ -331,5 +331,27 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   await page.click('#pe-box button:has-text("Back")'); await page.waitForSelector('#tm-box .tm-row');
   check('the Team dialog fits a phone', await fitsPhone());
   await page.setViewportSize({ width: 1400, height: 900 });
+
+  // 5. ⚙️ Setup, your main team (AIG-460): start from a team or tick roles; every role optional but the Lead, the Scrum Master too.
+  await page.goto(`${BASE}/#/setup`); await page.reload();
+  await page.waitForSelector('#mainTeam input[data-role]');
+  const newRoles = async () => [].concat((await prefs()).newRoles).join();
+  check('Setup shows today\'s 8 ticked, the Lead locked, the Scrum Master a tick of its own', (await page.locator('#mainTeam input[data-role]:checked').count()) === 8 && await page.isDisabled('#mainTeam input[data-role="Lead (Opus)"]') && !(await page.isChecked('#mainTeam-sm')) && !(await page.$('#leadPrefs input[onchange*="smRole"]')));
+  await page.selectOption('#mainTeam-team', 'mobile');
+  await until(async () => (await newRoles()) === 'Lead (Opus),Backend (Sonnet),QA (Haiku),mobile-senior,accessibility-mid');
+  check('starting from the Mobile team ticks its roles and saves them', (await newRoles()) === 'Lead (Opus),Backend (Sonnet),QA (Haiku),mobile-senior,accessibility-mid' && (await page.locator('#mainTeam input[data-role]:checked').count()) === 5 && await page.isChecked('#mainTeam input[data-role="mobile-senior"]'), await newRoles());
+  await page.check('#mainTeam-sm'); await until(async () => (await prefs()).smRole === true);
+  check('the Scrum Master can be in the team', (await prefs()).smRole === true);
+  await page.uncheck('#mainTeam-sm'); await until(async () => (await prefs()).smRole === false);
+  check('and left out', (await prefs()).smRole === false);
+  await page.uncheck('#mainTeam input[data-role="QA (Haiku)"]'); await until(async () => !(await newRoles()).includes('QA'));
+  check('any other role can be unticked', (await newRoles()) === 'Lead (Opus),Backend (Sonnet),mobile-senior,accessibility-mid', await newRoles());
+  await page.selectOption('#mainTeam-add', 'mobile-mid'); await until(async () => (await newRoles()).includes('mobile-mid'));
+  check('Add a role at another level swaps it', (await newRoles()) === 'Lead (Opus),Backend (Sonnet),accessibility-mid,mobile-mid' && await page.isChecked('#mainTeam input[data-role="mobile-mid"]'), await newRoles());
+  const np = await s.ok('POST', '/api/projects', { name: 'Phone app' });
+  check('a new project starts with the main team', [].concat((await s.ok('GET', '/api/projects/' + np.slug)).roles).join() === (await newRoles()));
+  await page.reload(); await page.waitForSelector('#mainTeam input[data-role="mobile-mid"]');
+  check('it is still there after a reload', (await page.locator('#mainTeam input[data-role]:checked').count()) === 4);
+  await s.ok('POST', '/api/setup', { prefs: { newRoles: '' } });
   noErrors(page);
 }, true);

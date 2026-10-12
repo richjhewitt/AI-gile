@@ -117,6 +117,9 @@ label.f.scale input[type=range] { display: block; width: 100%; max-width: 420px;
 #pe-how { width: 100%; box-sizing: border-box; }
 .pe-preview { margin: 8px 0; padding: 8px 10px; border: 1px dashed var(--line); border-radius: var(--radius); }
 .pe-preview pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; margin: 6px 0 0; }
+/* 👥 your main team (AIG-460): a tick per role, wrapping on a phone */
+.mt-ticks { display: flex; flex-wrap: wrap; gap: 2px 16px; margin: 6px 0; }
+.mt-ticks label.chk, label.chk.mt-sm { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; }
 .scale-more { margin: 10px 0 4px; } .scale-more > summary { cursor: pointer; font-size: 13px; min-height: 32px; display: flex; align-items: center; }
 label.f[hidden], .runin-blind[hidden] { display: none; }   /* where teams run (AIG-153) */
 #runInPrefs label.f { margin-top: 10px; } .runin-blind { display: block; margin-top: 8px; }

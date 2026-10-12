@@ -1802,5 +1802,8 @@
  "tm.team.removed": "Toegevoegd: {added}. Weggehaald: {removed}.",
  "tm.undo": "↩ Ongedaan maken",
  "tm.restore": "↩ Zet ze terug",
- "tm.undone": "↩ Weer zoals het was."
+ "tm.undone": "↩ Weer zoals het was.",
+ "mt.h": "👥 Je vaste team",
+ "mt.sub": "Nieuwe projecten beginnen met dit team; elk project kan het zijne aanpassen in 👥 Team. Elke rol is optioneel, behalve de teamleider, die het team leidt.",
+ "mt.pick": "Begin met een team…"
 }

@@ -163,3 +163,49 @@ async function peLevel(id) {
     await profileEditor(id);
   } catch (e) { setErr('pe-err', e); }
 }
+
+/* ---------- 👥 your main team (AIG-460): in ⚙️ Setup, and the wizard's starter team ---------- */
+// New projects start with it (setup prefs newRoles; '' = today's 8). Start from a team or tick roles: every role is optional
+// but the Lead, which runs the team. The 🧭 Lead Scrum Master (setup prefs smRole, AIG-476) is a tick of its own.
+// Like p.roles, today's 8 are kept by their old names and any other role by its id. save = a function called with the choice.
+const oldOrId = id => { const r = profileRole(id); return r && TEAM_ROLES.includes(r.label) ? r.label : id; };
+const idOfRole = r => (((state.profiles || {}).roles || []).find(x => x.label === r) || {}).id || r;
+function mainTeamHtml(box, roles, sm, save = '') {
+  const on = Array.isArray(roles) ? roles : TEAM_ROLES, extra = on.filter(r => !TEAM_ROLES.includes(r) && profileRole(r));
+  const tick = (r, label, checked, lock) => `<label class="chk"><input type="checkbox" data-role="${esc(r)}" ${checked ? 'checked' : ''} ${lock ? 'disabled' : ''} onchange="mainTeamChanged('${box}')"> ${roleIcon(idOfRole(r))} ${esc(label)}</label>`;
+  const rest = ((state.profiles || {}).roles || []).filter(r => !TEAM_ROLES.includes(r.label) && !extra.includes(r.id)).sort((a, b) => roleName(a.id).localeCompare(roleName(b.id)));
+  return `<div id="${box}" class="main-team" data-save="${esc(save)}">
+    <div class="tm-add"><select id="${box}-team" onchange="mainTeamPick('${box}', this.value)" aria-label="${esc(t('mt.pick'))}"><option value="">${esc(t('mt.pick'))}</option>${((state.profiles || {}).teams || []).map(tm => `<option value="${esc(tm.id)}">${esc(t('prof.team.' + tm.id))}</option>`).join('')}</select></div>
+    <div class="mt-ticks">${TEAM_ROLES.map((r, i) => tick(r, r, !i || on.includes(r), !i)).join('')}${extra.map(id => tick(id, roleName(id), true)).join('')}</div>
+    <div class="tm-add"><select id="${box}-add" onchange="mainTeamAdd('${box}', this.value)" aria-label="${esc(t('tm.addrole'))}"><option value="">${esc(t('tm.addrole'))}</option>${rest.map(r => `<option value="${esc(r.id)}">${esc(roleName(r.id))}</option>`).join('')}</select></div>
+    <label class="chk mt-sm"><input type="checkbox" id="${box}-sm" ${sm ? 'checked' : ''} onchange="mainTeamChanged('${box}')"> ${esc(t('lead.smRole'))}</label><small class="muted">${esc(t('lead.smRole.help'))}</small></div>`;
+}
+// What the box says: { newRoles: [...] or '' (exactly today's 8), smRole }.
+function mainTeamRead(box) {
+  const on = [...document.querySelectorAll(`#${box} input[data-role]`)].filter(i => i.checked || i.disabled).map(i => i.dataset.role);
+  return { newRoles: on.length === TEAM_ROLES.length && on.every(r => TEAM_ROLES.includes(r)) ? '' : on, smRole: $(box + '-sm').checked };
+}
+function mainTeamChanged(box) { const f = $(box).dataset.save; if (f) window[f](mainTeamRead(box)); }
+function mainTeamPaint(box, roles) { const sm = $(box + '-sm').checked, save = $(box).dataset.save; $(box).outerHTML = mainTeamHtml(box, roles, sm, save); mainTeamChanged(box); }
+// A team to start from: its roles ticked (and the Lead), the rest unticked.
+function mainTeamPick(box, id) {
+  const tm = ((state.profiles || {}).teams || []).find(x => x.id === id); if (!tm) return;
+  mainTeamPaint(box, [TEAM_ROLES[0], ...tm.roles.map(oldOrId)]);
+}
+// One more role; the same role at another level is swapped out, as on a project.
+function mainTeamAdd(box, id) {
+  if (!id) return;
+  const g = (profileRole(id) || {}).group, cur = mainTeamRead(box).newRoles || TEAM_ROLES;
+  mainTeamPaint(box, [...cur.filter(r => r === TEAM_ROLES[0] || (profileRole(idOfRole(r)) || {}).group !== g), oldOrId(id)]);
+}
+// In ⚙️ Setup: saved at once. The templates load once; the box is painted again when they are in.
+function mainTeamBoxHtml(msg = '') {
+  if (!state.profiles) loadProfiles().then(() => paintMainTeam());
+  const pr = leadPrefs();
+  return `<span>${esc(t('mt.h'))}</span><small class="muted">${esc(t('mt.sub'))}</small>${mainTeamHtml('mainTeam', pr.newRoles, pr.smRole, 'mainTeamSave')}<div class="err" id="mt-err"></div><div class="muted" id="mt-done">${esc(msg)}</div>`;
+}
+const paintMainTeam = msg => { if ($('mainTeamBox')) $('mainTeamBox').innerHTML = mainTeamBoxHtml(msg); };
+async function mainTeamSave(v) {
+  try { state.setup = await api('POST', '/api/setup', { prefs: v }); $('mt-done').textContent = t('setup.saved.short'); setErr('mt-err', ''); }
+  catch (e) { setErr('mt-err', e); }
+}
