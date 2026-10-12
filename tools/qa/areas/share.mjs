@@ -198,7 +198,9 @@ def('share', 'sharing a project with a friend: offer / accept over the DMs, need
     check('the link offer is counted: top bar badge and rail 📥 (AIG-382)', /1/.test(await page.textContent('.ib-btn .ib-badge[data-friends]').catch(() => '')) && (await page.textContent('#dmRail [data-go="#/inbox"] .dm-unread').catch(() => '')).trim() === '1', await page.textContent('#inboxTop'));
     check('only projects without a link to pick from', !(await page.$$eval('.share-offer [data-share-into] option', os => os.map(o => o.value))).includes('delta'));
     await page.selectOption('.share-offer [data-share-into]', 'echo');
-    await page.click('.share-offer [data-share-yes]');
+    // The inbox can render before the checked contact reaches it: wait for the enabled button, not just the button.
+    await page.waitForSelector('.share-offer [data-share-yes]:not([disabled])', { timeout: 10000 }).catch(() => {});
+    await page.click('.share-offer [data-share-yes]', { timeout: 10000 });
     const le = await until(async () => (await sh(a, '?slug=echo'))[0]);
     check('✅ links it to the picked project', le && le.state === 'live' && le.theirName === 'Charlie', le);
     await page.waitForFunction(() => !document.querySelector('.share-offer'), null, { timeout: 5000 }).catch(() => {});
