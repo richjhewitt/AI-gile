@@ -2067,5 +2067,7 @@
   "xt.name.docs": "Documentatie",
   "xt.purpose.docs": "Schrijf handleidingen die mensen echt lezen, en houd ze kloppend.",
   "xt.name.data": "Data",
-  "xt.purpose.data": "Maak de cijfers achter de app schoon, tel ze en leg ze uit."
+  "xt.purpose.data": "Maak de cijfers achter de app schoon, tel ze en leg ze uit.",
+  "nudge.title": "Por het team (gratis; alleen het wekken kost tokens)",
+  "nudge.lit": "Lijkt vast te zitten: klik om het team te porren"
 }
