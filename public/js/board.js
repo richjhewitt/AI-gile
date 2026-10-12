@@ -102,6 +102,7 @@ function renderBoard(p) {
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path ? t('board.connected') : t('board.connect'))}</button>
       ${Share.button(p)}
+      ${Pub.copyBtn(p)}
       <button onclick="Spaces.menu('${esc(p.slug)}')" title="${esc(t('space.menu.title'))}">${esc(t('space.btn'))}</button>
       <button onclick="saveProjectFile()" title="${esc(t('ofl.save.title'))}">${esc(t('ofl.save'))}</button>
       <button onclick="teamDialog()" title="${esc(t('board.team.title'))}">${esc(t('board.team'))}</button>
