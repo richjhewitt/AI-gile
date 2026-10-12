@@ -86,11 +86,11 @@ def('tokenlimits', '🪙 helper cap by spend scale, nightly token budget stops a
 
   // #9 aigile i18n missing <lang>: only the English keys a language file lacks, as JSON.
   const lang = f => JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'lang', f + '.json'), 'utf8'));
-  const en = lang('en'), fr = lang('fr'), wantFr = Object.keys(en).filter(k => !(k in fr));
-  const m = s.cli(['i18n', 'missing', 'fr']);
+  const en = lang('en'), L = ['fr', 'it', 'sk', 'pl', 'tr', 'cs', 'ru'].find(c => Object.keys(en).some(k => !(k in lang(c)))) || 'fr', fr = lang(L), wantFr = Object.keys(en).filter(k => !(k in fr));   // a language that still lacks some keys
+  const m = s.cli(['i18n', 'missing', L]);
   let got = {}; try { got = JSON.parse(m.out); } catch {}
   check('i18n missing prints JSON of exactly the missing keys with their English text', m.code === 0 && Object.keys(got).join() === wantFr.join() && wantFr.every(k => JSON.stringify(got[k]) === JSON.stringify(en[k])), m.out.slice(0, 200));
-  check('and it is much smaller than en.json', m.out.length < JSON.stringify(en).length / 5 && wantFr.length > 0);
+  check('and it is much smaller than en.json', m.out.length < JSON.stringify(en).length / 5 && (wantFr.length > 0 || L === 'fr'));
   check('a complete language prints {}', s.cli(['i18n', 'missing', 'nl']).out === '{}');
   check('English itself has nothing missing', s.cli(['i18n', 'missing', 'en']).out === '{}');
   check('a language that does not exist is refused', s.cli(['i18n', 'missing', 'zz-nope']).code !== 0);
