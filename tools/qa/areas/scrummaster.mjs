@@ -92,20 +92,15 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   check('Alpha, asleep with To do, is woken', !!(await until(() => callList().slice(before).some(l => /alpha/i.test(l)), 8000)), callList());
   check('the rules spent no Opus or Sonnet run', !callList().slice(before).some(l => /^(opus|sonnet) /.test(l)), callList());
 
-  // The daily cap (3 here, one used by the idea): the second message runs, the third gets "used up" and no run.
+  // The daily cap (3 here, one used by the idea) stops routine runs only; the owner's own messages always get through (AIG-647).
   await s.ok('POST', '/api/chats/_watchman', { text: 'Second one' });
   await until(async () => (await chat()).filter(m => /Stub reply/.test(m.text)).length >= 3, 15000);
   await until(async () => !(await s.ok('GET', '/api/chats/_watchman')).busy, 10000);
   const n = callList().filter(l => /scrummaster/i.test(l)).length;
   await s.ok('POST', '/api/chats/_watchman', { text: 'Third one' });
-  check('over the cap it says so', !!(await until(async () => (await chat()).some(m => /AI runs are used up/.test(m.text)), 8000)), await chat());
-  await sleep(1500);
-  check('and starts no run', callList().filter(l => /scrummaster/i.test(l)).length === n && (await s.ok('GET', '/api/scrummaster')).runsToday === 3, callList());
-  // AIG-488: the same refusal in Dutch once the owner's language is nl
-  await s.ok('POST', '/api/setup', { prefs: { lang: 'nl' } });
-  await s.ok('POST', '/api/chats/_watchman', { text: 'Fourth one' });
-  check('in Dutch the cap note is Dutch', !!(await until(async () => (await chat()).some(m => /AI-runs van vandaag zijn op/.test(m.text) && /Ik kan niet starten/.test(m.text)), 8000)), await chat());
-  await s.ok('POST', '/api/setup', { prefs: { lang: 'en' } });
+  check('over the cap an owner message still gets its run (AIG-647)', !!(await until(() => callList().filter(l => /scrummaster/i.test(l)).length === n + 1, 8000)), callList());
+  await until(async () => !(await s.ok('GET', '/api/chats/_watchman')).busy, 10000);
+  check('and says nothing about being used up, the owner run not counted against the cap', !(await chat()).some(m => /AI runs are used up|AI-runs van vandaag zijn op/.test(m.text)) && (await s.ok('GET', '/api/scrummaster')).runsToday <= 3, await chat());
 
   // ⛔ No Token Mode: messages are refused, a round wakes nobody.
   await s.ok('POST', '/api/notokens', { on: true });
@@ -218,6 +213,7 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   check('the AI runs stayed inside the daily cap (3)', (await s.ok('GET', '/api/scrummaster')).runsToday <= 3);
 
   // The home screen shows the Lead Scrum Master like a team's presence (AIG-463): idle when on and between runs, off when stopped.
+  await until(async () => !(await s.ok('GET', '/api/scrummaster')).running, 20000);
   const home = await openPage(ctx, '#/');
   await home.waitForSelector('.smline');
   check('home: on and between runs it shows idle with when it last ran', /Lead Scrum Master/.test(await home.textContent('.smline')) && /Idle/.test(await home.textContent('.smline')) && /last ran/.test(await home.textContent('.smline')), await home.textContent('.smline'));
