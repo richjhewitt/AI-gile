@@ -55,7 +55,7 @@ const Share = (function () {
   // The card panel's 🔗 button: share it, see what is shared, or where it came from.
   function cardBtn(p, c) {
     const l = ofProject(p.slug);
-    if (c.share && c.share.theirs) return `<span class="pill share-pill">${esc(t('share.card.theirs', { name: l ? l.friend : '' }))}</span>`;
+    if (c.share && c.share.theirs) return `<span class="pill share-pill">${esc(t('share.card.theirs', { name: l ? l.friend : '' }))}</span>${c.forFriend ? ` <span class="pill share-pill">${esc(t('featreq.for', { name: c.forFriend }))}</span>` : ''}`;
     if (!l || l.state !== 'live' || (!c.share && !(l.effective && l.effective.sendCards && can(l, 'seeMine')))) return '';
     return `<button id="shareCardBtn" onclick="Share.previewCard('${esc(c.id)}')">${esc(t(c.share ? 'share.card.shared' : 'share.card.btn', { name: l.friend }))}${c.share && c.share.held ? ' ' + esc(t('share.card.held')) : ''}</button>`;
   }
