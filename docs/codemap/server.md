@@ -53,6 +53,7 @@ All in `lib/routes/*.js` (patterns are the regexes there). The list with payload
 - `agent.command`: program background runs start (one `*` path segment allowed; `AIGILE_AGENT_COMMAND` overrides).
 - `agent.notesFile`, `agent.settingsFile`: file names `onboard` writes in a project folder.
 - `avatarsDir`: the agents' picture library folder (AIG-150; empty: `data/avatars`).
+- `phone` (AIG-868): `hosts` (the phone host names, like mypc.tail1234.ts.net, let in only with a paired device cookie) and `devices` (`{id, name, host, hash, at, seen}`; `hash` = sha256 of the device key, the key itself is only in the phone's cookie). See lib/phone.js.
 - `dmRelay`: default DM relay address (`AIGILE_RELAY` overrides; `POST /api/dms/settings` can set one too).
 - `WAYS-OF-WORKING.md` (repo root) is the owner's private rules for every team, git-ignored; a new install gets `docs/starter/WAYS-OF-WORKING.md` with the name filled in (`ensureWays` in lib/setup.js).
 - `owner`: the board's human, whose comments wake teams and who gets questions and tests (default "Owner"; `AIGILE_OWNER` overrides). Code calls this person `isRich()` / `me()`.

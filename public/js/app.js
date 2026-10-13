@@ -37,7 +37,7 @@ window.addEventListener('hashchange', () => { state.editing = false; refresh(tru
 // The language file is in before the first render (AIG-124). If it or the first /api/meta fails (a restart, a half-written
 // file mid-update), the page says "Updating… retrying" and starts again with backoff (AIG-517, see Boot in index.html).
 (function start() {
-  loadLang().then(() => api('GET', '/api/meta')).then(m => {
+  loadLang().then(() => Phone.ready()).then(() => api('GET', '/api/meta')).then(m => {   // a phone pairs first (AIG-868)
     if (!Boot.ok()) return;   // a script broke meanwhile: the page reloads instead
     state.servers = m.servers || []; state.terms = m.terms || []; state.srvAccess = m.srvAccess || {};
     NoAi.apply(m.noAi, m.noAiBuild);

@@ -2680,5 +2680,21 @@
  "allhands.title": "📣 All hands: {text}",
  "allhands.help": "Send one message to every active project’s team.",
  "allhands.waiting": "No team reply yet",
- "allhands.none": "No all hands messages yet."
+ "allhands.none": "No all hands messages yet.",
+ "phone.h": "Phone",
+ "phone.help": "Read and answer your DMs on your phone, over your own Tailscale network. On this computer run the command below once, then pair your phone here.",
+ "phone.host": "Phone address (this computer on Tailscale)",
+ "phone.name": "Name",
+ "phone.name.ph": "My phone",
+ "phone.pair": "Pair a phone",
+ "phone.serve": "Once, on this computer:",
+ "phone.link.help": "Scan this with your phone camera, or open the link on your phone. It works once, for 10 minutes.",
+ "phone.qr": "QR code with the pairing link",
+ "phone.seen": "last seen {when}",
+ "phone.never": "never",
+ "phone.remove": "Remove",
+ "phone.none": "No phones paired yet.",
+ "phone.onpc": "Pair or remove phones in Setup on your computer.",
+ "phone.pair.bad": "This pairing link is used or out of date. In Setup on your computer, click Pair a phone again and scan the new code.",
+ "phone.unpaired": "This phone is not paired with the board. In Setup on your computer, click Pair a phone and scan the code."
 }

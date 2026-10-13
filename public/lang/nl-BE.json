@@ -2680,5 +2680,21 @@
  "allhands.title": "📣 Alle teams: {text}",
  "allhands.help": "Stuur één bericht naar het team van elk actief project.",
  "allhands.waiting": "Nog geen antwoord van het team",
- "allhands.none": "Nog geen berichten aan alle teams."
+ "allhands.none": "Nog geen berichten aan alle teams.",
+ "phone.h": "Gsm",
+ "phone.help": "Lees en beantwoord je DM's op je gsm, via je eigen Tailscale-netwerk. Voer op deze computer één keer het commando hieronder uit en koppel dan hier je gsm.",
+ "phone.host": "Gsm-adres (deze computer op Tailscale)",
+ "phone.name": "Naam",
+ "phone.name.ph": "Mijn gsm",
+ "phone.pair": "Gsm koppelen",
+ "phone.serve": "Eén keer, op deze computer:",
+ "phone.link.help": "Scan dit met de camera van je gsm, of open de link op je gsm. Hij werkt één keer, 10 minuten lang.",
+ "phone.qr": "QR-code met de koppellink",
+ "phone.seen": "laatst gezien {when}",
+ "phone.never": "nooit",
+ "phone.remove": "Verwijderen",
+ "phone.none": "Nog geen gsm's gekoppeld.",
+ "phone.onpc": "Koppel of verwijder gsm's in Instellingen op je computer.",
+ "phone.pair.bad": "Deze koppellink is al gebruikt of verlopen. Klik in Instellingen op je computer opnieuw op Gsm koppelen en scan de nieuwe code.",
+ "phone.unpaired": "Deze gsm is niet gekoppeld aan het bord. Klik in Instellingen op je computer op Gsm koppelen en scan de code."
 }
