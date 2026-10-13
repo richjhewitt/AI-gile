@@ -38,6 +38,7 @@ def('featreq', "featreq: a friend's feature request / custom build always waits 
     const c1 = await a.ok('POST', ap(r1.share)), c2 = await a.ok('POST', ap(r2.share));
     const p = await pa(), k1 = p.cards.find(c => c.id === c1.id), k2 = p.cards.find(c => c.id === c2.id);
     check('Approve: a feature card in To do', !!k1 && k1.type === 'feature' && k1.status === 'todo' && !k1.forFriend && /Charts in dark/.test(k1.description) && /Night work/.test(k1.description), k1);
+    check('Approve: the title is marked as friend text on one line, never a bare title', !!k1 && /^🔗 /.test(k1.title) && /<<friend-text/.test(k1.title) && /Dark charts/.test(k1.title) && !k1.title.includes(String.fromCharCode(10)), k1 && k1.title);
     const friend = (await a.ok('GET', '/api/shares?slug=nora'))[0].friend;
     check('Approve (custom build): the card is labelled for the friend', !!k2 && k2.type === 'feature' && !!k2.forFriend && k2.forFriend === friend, k2);
 
@@ -60,8 +61,8 @@ def('featreq', "featreq: a friend's feature request / custom build always waits 
     const lum = s => (s.match(/\d+/g) || [255, 255, 255]).slice(0, 3).reduce((x, y) => x + Number(y), 0) / 3;
     check('inbox phone + dark: fits, dark card, light text', bx.x >= 0 && bx.x + bx.width <= 390 && await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth) && lum(col.bg) < 110 && lum(col.fg) > 140, { bx, col });
     await page.click('#ibApprovals [data-appr-yes]');
-    await until(async () => (await pa()).cards.some(c => c.title === 'Page check' && c.forFriend));
-    check('inbox: Approve makes the custom card', (await pa()).cards.some(c => c.title === 'Page check' && c.forFriend));
+    await until(async () => (await pa()).cards.some(c => c.title.includes('Page check') && c.forFriend));
+    check('inbox: Approve makes the custom card', (await pa()).cards.some(c => c.title.includes('Page check') && c.forFriend));
 
     // The friend's dialog (this server is the friend on b's project).
     await mkProject(a, 'Quinn', 'QUI'); await mkProject(b, 'Pablo', 'PAB');
