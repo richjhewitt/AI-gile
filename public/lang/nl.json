@@ -2661,5 +2661,19 @@
  "rails.help.list": "Deze staan altijd aan. Zet je techniekniveau op Expert, of het hulpniveau op minst, om ze een voor een uit te zetten.",
  "rails.help.switches": "Haal een vinkje weg en het team wordt er niet meer door tegengehouden. Aangevinkt is de veilige manier.",
  "servers.sudo": "Mag sudo gebruiken via ssh",
- "servers.sudoWho": "Alleen deze agents (kommagescheiden); leeg = elke agent"
+ "servers.sudoWho": "Alleen deze agents (kommagescheiden); leeg = elke agent",
+ "idea.best": "✨ Beste agent hiervoor",
+ "inbox.aiown.switch": "Tests die AI liet slagen in een eigen lijst",
+ "inbox.aiown.help": "Tests die de AI-tester liet slagen verlaten Voor jou en wachten onder 🤖 Geslaagd bij AI in de inbox.",
+ "assume.summarise": "📋 Samenvatten",
+ "assume.summarise.ai": "✨ Samenvatten met AI",
+ "assume.summarising": "Bezig met samenvatten…",
+ "assume.summary.h": "Nog te bekijken ({n})",
+ "assume.summary.ai": "Nog te bekijken ({n}), samengevat door AI",
+ "assume.summary.none": "Niets meer te bekijken.",
+ "swarm.bar": "🚨 Zwerm: elk team werkt aan {name}; andere projecten wachten",
+ "swarm.open": "Openen",
+ "swarm.off": "Uitzetten",
+ "queue.kind.plan": "Klaar voor go",
+ "fy.kind.p": "🚦 Klaar voor go"
 }

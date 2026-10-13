@@ -252,6 +252,43 @@ def('aiflick', '🤖 AI passed view: one test at a time with the evidence, accep
   noErrors(page);
 }, true);
 
+def('aiownlist', 'Setup switch: AI-passed tests leave the tests list and wait under 🤖 AI passed, with their own Accept all (AIG-781)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Passed one'), b = await mkCard(s, 'alpha', 'Plain one');
+  s.cli(['test', 'alpha', a.id, 'click a', '--as', 'Lead']); s.cli(['test', 'alpha', b.id, 'click b', '--as', 'Lead']);
+  s.cli(['checked', 'alpha', a.id, 'pass', 'Saw it working', '--as', 'Tester']);
+  const page = await openPage(ctx, '#/setup');
+  await page.waitForSelector('#aiOwnList');
+  check('the switch is in Setup, off by default', !(await page.isChecked('#aiOwnList')));
+  await page.check('#aiOwnList');
+  await page.evaluate(() => { location.hash = '#/inbox'; });
+  await page.waitForSelector('#ibAiBar [data-aiall]');
+  const tests = await page.textContent('#ibT');
+  check('the passed test left the tests list; the other stays', !tests.includes(a.id) && tests.includes(b.id), tests);
+  await page.click('#ibAiBar [data-aiall]');
+  await page.waitForFunction(() => !document.querySelector('#ibAiBar [data-flick]'), null, { timeout: 5000 }).catch(() => {});
+  check('its Accept all accepts the passed one only', (await getCard(s, 'alpha', a.id)).status === 'done' && (await getCard(s, 'alpha', b.id)).status === 'verify');
+  noErrors(page);
+}, true);
+
+def('readyforgo', '🚦 Ready for go: a plan asking "Go?" (or --kind plan) gets its own kind in the inbox and the For you column (AIG-828)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Build the thing'), b = await mkCard(s, 'alpha', 'Pick a colour'), c = await mkCard(s, 'alpha', 'Other plan');
+  s.cli(['ask', 'alpha', a.id, 'Plan: two cards. Go?', '--as', 'Lead']);
+  s.cli(['ask', 'alpha', b.id, 'Blue or green?', '--as', 'Lead']);
+  check('--kind plan is accepted', s.cli(['ask', 'alpha', c.id, 'Ready when you are', '--as', 'Lead', '--kind', 'plan']).code === 0);
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('#ibKinds [data-kind="plan"]');
+  await page.click('#ibKinds [data-kind="plan"]');
+  await sleep(300);
+  const ids = await page.$$eval('.ib-item', els => els.filter(e => e.offsetParent).map(e => e.dataset.id));
+  check('the plan filter shows the two plans only', ids.includes(a.id) && ids.includes(c.id) && !ids.includes(b.id), ids);
+  await page.evaluate(() => { location.hash = '#/p/alpha'; });
+  await page.waitForSelector('[data-first="p"]');
+  check('the For you column has a 🚦 chip counting 2', /2/.test(await page.textContent('[data-first="p"]')), await page.textContent('[data-first="p"]'));
+  noErrors(page);
+}, true);
+
 def('poplist', '⧉ pop an inbox list out into its own window: only that list, no top bar (AIG-104)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const a = await mkCard(s, 'alpha', 'Try it'), b = await mkCard(s, 'alpha', 'Add the key');

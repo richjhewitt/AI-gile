@@ -35,13 +35,21 @@ const Assumptions = (() => {
     const count = pn => { const all = A.data.filter(a => a.project === pn); return { n: all.length, todo: all.filter(a => !a.state).length, ok: all.filter(a => a.state === 'ok').length, plug: all.filter(a => a.state === 'plug').length }; };
     const names = Object.keys(by);
     const sumLine = pn => { const c = count(pn); return `<li><a href="#" onclick="document.getElementById('as-p-${esc(pn.replace(/\W+/g, '-'))}').scrollIntoView();return false"><b>${esc(pn)}</b></a> <span class="muted">· ${esc(t('assume.sum', { n: c.n, todo: c.todo, ok: c.ok, plug: c.plug }))}</span></li>`; };
+    // AIG-781: 📋 Summarise (plain code) and ✨ with AI (one Haiku call; hidden in No Token Mode / No AI by .ai-only).
+    const sumBox = A.sum ? `<div class="uz-card as-summary"><b>${esc(t(A.sum.ai ? 'assume.summary.ai' : 'assume.summary.h', { n: A.sum.n }))}</b><div>${A.sum.text ? md(A.sum.text) : esc(t('assume.summary.none'))}</div></div>` : '';
     return `<div class="uz"><h2>${esc(t('assume.title'))}</h2><p class="muted">${esc(t('assume.intro'))}</p>`
+      + `<p><button class="as-sumbtn" onclick="Assumptions.summarise(false, this)">${esc(t('assume.summarise'))}</button> <button class="as-sumai ai-only" onclick="Assumptions.summarise(true, this)">${esc(t('assume.summarise.ai'))}</button></p>` + sumBox
       + `<ul class="as-sum-list" style="list-style:none;padding:0">${names.map(sumLine).join('')}</ul>`
       + names.map(pn => `<h3 id="as-p-${esc(pn.replace(/\W+/g, '-'))}">${esc(pn)} <span class="muted" style="font-weight:400">· ${esc(t('assume.sum', count(pn)))}</span></h3>` + Object.values(by[pn]).map(card).join('')).join('') + `</div>`;
   };
   A.act = async (k, state) => {
     const a = find(k); if (!a) return;
     try { await api('POST', '/api/assumptions/resolve', { slug: a.slug, id: a.id, at: a.at, state }); await repaint(); } catch (e) { alert(e.message); }
+  };
+  A.summarise = async (ai, btn) => {
+    btn.disabled = true; btn.textContent = t('assume.summarising');
+    try { A.sum = await api('GET', '/api/assumptions/summary' + (ai ? '?ai=1' : '')); } catch (e) { alert(e.message); }
+    $('app').innerHTML = A.render();
   };
   A.plug = k => { A.plugging = k; $('app').innerHTML = A.render(); const r = document.querySelector('.as-reply'); if (r) r.focus(); };
   // The reply goes to the card as an owner comment, so the team is woken; the entry is marked plugged.

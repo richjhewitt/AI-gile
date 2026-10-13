@@ -1,6 +1,6 @@
 // AI-gile desktop (AIG-76): the board in its own window. Starts the board server if it isn't running
 // (left running on quit, so teams keep their board), then shows http://localhost:<port>.
-const { app, BrowserWindow, shell, nativeTheme, nativeImage, screen } = require('electron');
+const { app, BrowserWindow, shell, nativeTheme, nativeImage, screen, Tray, Menu } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -39,7 +39,7 @@ async function ensureServer() {
   return false;
 }
 
-let win = null, twitchWin = null;
+let win = null, twitchWin = null, tray = null;
 /* ---------- popped-out cards survive a restart (AIG-144) ---------- */
 // Open pop-outs (address and position) are kept in the app's own folder; closing one yourself forgets it.
 const POPS = () => path.join(app.getPath('userData'), 'popouts.json');
@@ -134,10 +134,23 @@ function open(ok) {
   // Taskbar badge: the page puts what's waiting on the owner in its title, "(3) AI-gile"; then the icon gets a purple diamond.
   // It's the window icon, not an overlay: small taskbar buttons draw overlays as a dot, and a count is unreadable there.
   // A missing or broken icon file must never show an error box (AIG-81): keep the current icon instead.
-  win.on('page-title-updated', (e, title) => { try { win.setIcon(/^\(\d+\)/.test(title) ? custom('icon-waiting.png') || ICON_WAITING : appIcon()); } catch {} });
-  // Closing the main window closes the app, pop-outs too, and remembers them for next time.
-  win.on('close', () => { quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); if (twitchWin && !twitchWin.isDestroyed()) twitchWin.close(); });
+  win.on('page-title-updated', (e, title) => { try { const i = /^\(\d+\)/.test(title) ? custom('icon-waiting.png') || ICON_WAITING : appIcon(); win.setIcon(i); if (tray) tray.setImage(i); } catch {} });
+  // X hides the main window to the tray (AIG-849); pop-outs stay. Quit (tray menu) closes the app, pop-outs too, and remembers them for next time.
+  win.on('session-end', () => { quitting = true; savePops(); });
+  win.on('close', e => { if (!quitting) { e.preventDefault(); win.hide(); return; } quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); if (twitchWin && !twitchWin.isDestroyed()) twitchWin.close(); });
   win.on('closed', () => { win = null; });
+  makeTray();
+}
+/* ---------- tray (AIG-849) ---------- */
+function showMain() { if (!win) return; if (win.isMinimized()) win.restore(); win.show(); win.focus(); }
+function makeTray() {
+  if (tray) return;
+  try {
+    tray = new Tray(appIcon());
+    tray.setToolTip('AI-gile');
+    tray.setContextMenu(Menu.buildFromTemplate([{ label: 'Open', click: showMain }, { type: 'separator' }, { label: 'Quit', click: () => { quitting = true; savePops(); app.quit(); } }]));
+    tray.on('click', showMain);
+  } catch { tray = null; }
 }
 
 // New build of the app itself (AIG-83): when any of its own files is newer than at start, the page shows a
@@ -154,7 +167,8 @@ if (process.env.AIGILE_PROFILE) app.setPath('userData', process.env.AIGILE_PROFI
 if (!app.requestSingleInstanceLock()) app.quit();
 else {
   app.setAppUserModelId('AI-gile');
-  app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
+  app.on('second-instance', showMain);
   app.whenReady().then(async () => open(await ensureServer()));
+  app.on('before-quit', () => { quitting = true; });
   app.on('window-all-closed', () => app.quit());
 }

@@ -176,13 +176,13 @@ function columnsHtml(p, pool) {
 /* ---------- For you column (AIG-106) ---------- */
 // Everything waiting on the owner, whatever its status: tests, questions, tasks and blocks. Those cards show
 // here instead of in their own column (their status doesn't change). Chips pick which kind comes first.
-const KINDS = ['q', 't', 'r', 's', 'o', 'k', 'l'], kindLabel = k => t('fy.kind.' + k);
+const KINDS = ['q', 'p', 't', 'r', 's', 'o', 'k', 'l'], kindLabel = k => t('fy.kind.' + k);
 const isMine = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
 const timed = c => !!c.timedUntil && new Date(c.timedUntil) > Date.now();   // AIG-385
 const timedChip = c => timed(c) ? `<span class="pill timed" title="${esc(t('timed.title'))}">⏰ ${esc(timedWhen(c.timedUntil))}</span>` : '';
 const timedWhen = iso => { const d = new Date(iso), day = d.toDateString() === new Date().toDateString() ? '' : d.toLocaleDateString(i18n.locale, { weekday: 'short', day: 'numeric', month: 'short' }) + ' '; return day + d.toLocaleTimeString(i18n.locale, { hour: '2-digit', minute: '2-digit' }); };
 const forYou = c => c.status !== 'done' && !timed(c) && !isWaitingCard(c) && !taskReplied(c) && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
-const kindOf = c => isMine(c) ? (c.lifeType ? 'l' : c.server ? 's' : c.outside ? 'o' : 'k') : c.status === 'verify' && !c.needsYou && !c.blocked ? (c.info ? 'r' : 't') : 'q';   // r: 📖 To read (AIG-392)
+const kindOf = c => isMine(c) ? (c.lifeType ? 'l' : c.server ? 's' : c.outside ? 'o' : 'k') : c.status === 'verify' && !c.needsYou && !c.blocked ? (c.info ? 'r' : 't') : c.kind === 'plan' || (!c.kind && isGoAsk(c)) ? 'p' : 'q';   // p: 🚦 ready for go (AIG-828)   // r: 📖 To read (AIG-392)
 function forYouFirst(k) {
   if (k) { state.forYouFirst = k; try { localStorage.setItem('aigile.forYouFirst', k); } catch {} refresh(true); }
   if (!state.forYouFirst) { try { state.forYouFirst = localStorage.getItem('aigile.forYouFirst'); } catch {} }

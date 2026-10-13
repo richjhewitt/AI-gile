@@ -49,6 +49,11 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   s.cli(['comment', 'alpha', quick.id, 'Nice: made AIG-cards for it', '--as', 'Lead']);
   await page.waitForFunction(() => /made AIG-cards/.test(document.getElementById('dmList').textContent), null, { timeout: 6000 }).catch(() => {});
   check('the lead answer shows in the chat', /made AIG-cards/.test(await page.textContent('#dmList')));
+  // AIG-811: a tidied card's "Original:" comment is his message, not a second one after it.
+  s.cli(['edit', 'alpha', quick.id, '--desc', '- tidied bullet', '--as', 'Lead']);
+  s.cli(['comment', 'alpha', quick.id, 'Original: my own raw words', '--as', 'Lead']);
+  const msgs = (await s.ok('GET', '/api/chats/alpha')).messages.filter(m => m.card === quick.id);
+  check('Original: comment stands in for the tidied description, once', msgs.filter(m => /my own raw words/.test(m.text)).length === 1 && !msgs.some(m => /^Original:/.test(m.text)) && !msgs.some(m => /tidied bullet/.test(m.text)) && msgs.find(m => /raw words/.test(m.text)).mine, msgs.map(m => m.text));
   // Chatty lead (AIG-140): off by default; when on, the lead can start a DM without adding to the board.
   await s.ok('PATCH', '/api/projects/alpha', { chatty: false });   // not the owner's default for new projects
   check('a lead cannot start a DM while chatty is off', s.cli(['dm', 'alpha', 'hi!', '--as', 'Lead']).code !== 0);

@@ -41,7 +41,7 @@ window.addEventListener('hashchange', () => { state.editing = false; refresh(tru
     if (!Boot.ok()) return;   // a script broke meanwhile: the page reloads instead
     state.servers = m.servers || []; state.terms = m.terms || []; state.srvAccess = m.srvAccess || {};
     NoAi.apply(m.noAi, m.noAiBuild);
-    theme(); refresh(true); checkBuild(); NoTokens.start(); Tired.start(); Weed.start(); Streamer.start(); UsageGlance.start(); helpBoot();
+    theme(); refresh(true); checkBuild(); NoTokens.start(); Tired.start(); Swarm.start(); Weed.start(); Streamer.start(); UsageGlance.start(); helpBoot();
   }, e => Boot.again(start, e));
 })();
 setInterval(() => { if (!document.hidden) { refresh(); ScrumGlance.tick(); } OpenCard.tick(); }, 1000);

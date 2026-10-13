@@ -2661,5 +2661,19 @@
  "rails.help.list": "These are always on. Set your tech level to Expert, or the help level to least, to switch them off one by one.",
  "rails.help.switches": "Untick a rail and the team is no longer stopped by it. Ticked is the safe way.",
  "servers.sudo": "May use sudo over ssh",
- "servers.sudoWho": "Only these agents (comma-separated); empty = every agent"
+ "servers.sudoWho": "Only these agents (comma-separated); empty = every agent",
+ "idea.best": "✨ Best agent for this",
+ "inbox.aiown.switch": "AI-passed tests in their own list",
+ "inbox.aiown.help": "Tests the AI tester passed leave For you and wait under 🤖 AI passed in the inbox.",
+ "assume.summarise": "📋 Summarise",
+ "assume.summarise.ai": "✨ Summarise with AI",
+ "assume.summarising": "Summarising…",
+ "assume.summary.h": "Still to review ({n})",
+ "assume.summary.ai": "Still to review ({n}), summed up by AI",
+ "assume.summary.none": "Nothing left to review.",
+ "swarm.bar": "🚨 Swarm: every team is on {name}; other projects wait",
+ "swarm.open": "Open it",
+ "swarm.off": "Turn off",
+ "queue.kind.plan": "Ready for go",
+ "fy.kind.p": "🚦 Ready for go"
 }
