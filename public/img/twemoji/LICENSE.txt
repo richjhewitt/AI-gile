@@ -1,4 +1,0 @@
-Twemoji graphics (the .svg files in this folder), Copyright 2020 Twitter, Inc and other contributors,
-maintained by jdecked/twemoji (https://github.com/jdecked/twemoji). Licensed under CC-BY 4.0:
-https://creativecommons.org/licenses/by/4.0/
-Used here only for emoji that the system emoji font cannot draw. The files are unmodified.
