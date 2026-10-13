@@ -54,7 +54,7 @@ Every scale is 1..5 (tidy 1..3). Higher always means **more** of the thing named
 2. Every 20 min, stuck over 8 h, 6 runs
 3. **Steady** (today's night behaviour): every 10 min, stuck over 3 h, one gentle reminder for a question waiting 4 h, 8 runs
 4. Every 5 min, stuck over 1 h, reminder after 2 h, 12 runs
-5. **Crack the whip**: every 2 min, stuck over 30 min, reminder after 1 h, a status line each hour, 16 runs
+5. **Crack the whip**: every 2 min, stuck over 30 min, reminder after 1 h, 16 runs
 
 **tidy**: how tidy cards must be (owner's own quick cards)
 1. Leave cards as I wrote them

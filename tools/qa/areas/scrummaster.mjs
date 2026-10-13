@@ -238,12 +238,11 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   await s.ok('POST', '/api/scrummaster/push', { level: 4 }); await s.ok('POST', '/api/scrummaster/round');
   check('level 4 (2 h) bumps the other one, once', await bumps(qb) === 1 && await bumps(qa) === 1);
 
-  // Level 5: a status line each hour in its chat.
+  // Level 5 no longer DMs a periodic status line (AIG-689); ScrumGlance shows the numbers.
   const lines = async () => (await chat()).filter(m => /^🏇 /.test(m.text)).length;
   await s.ok('POST', '/api/scrummaster/push', { level: 5 });
-  const before5 = await lines();
   await s.ok('POST', '/api/scrummaster/round'); await s.ok('POST', '/api/scrummaster/round');
-  check('level 5 says a status line, and not another per round', await lines() >= 1 && await lines() === before5 + (before5 ? 0 : 1), [before5, await lines()]);
+  check('level 5 sends no status line in the chat any more', await lines() === 0, await chat());
 
   // ⛔ No Token Mode: a card newly stuck is noted but no AI run starts.
   await s.ok('POST', '/api/notokens', { on: true });
