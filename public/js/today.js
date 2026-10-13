@@ -6,7 +6,7 @@ const TodayPage = (() => {
   const T = { data: null };
   const ICON = { high: '🔥', normal: '', low: '🐢', rest: '💤' };
   T.icon = w => ICON[w] || '';
-  T.load = async () => { try { T.data = await api('GET', '/api/today'); } catch { T.data = null; } return T.data; };
+  T.load = async (options = {}) => { try { T.data = await api('GET', '/api/today', undefined, options); } catch { T.data = null; } return T.data; };
   // A small badge for the project cards: nothing for normal.
   T.badge = slug => {
     const p = T.data && T.data.projects.find(x => x.slug === slug);

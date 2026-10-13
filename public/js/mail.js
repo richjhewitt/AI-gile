@@ -9,15 +9,16 @@ const Mail = (() => {
   const box = () => (M.cfg && M.cfg.boxes && M.cfg.boxes[0]) || null;
   const hidden = () => typeof Streamer !== 'undefined' && Streamer.on && Streamer.on();
   const q = id => encodeURIComponent(id);
-  M.watch = async () => {
-    try { M.cfg = await api('GET', '/api/mail/config'); } catch { return; }
+  M.watch = async (options = {}) => {
+    try { M.cfg = await api('GET', '/api/mail/config', undefined, options); } catch { return; }
     const n = $('mailNav'); if (n) n.style.display = box() ? '' : 'none';
   };
   // Called by the 1s refresh while #/mail is open: cheap after the first time; a fresh fetch when the page is (re)opened.
-  M.load = async () => {
-    if (!M.cfg) await M.watch();
+  M.load = async (options = {}) => {
+    if (!M.cfg) await M.watch(options);
+    if (options.signal?.aborted) return;
     const b = box(); if (!b || hidden()) return;
-    if (!M.data || M.data.box.id !== b.id) { try { M.data = await api('GET', '/api/mail/inbox?box=' + q(b.id)); } catch (e) { M.data = { box: b, items: [], error: e.message }; } }
+    if (!M.data || M.data.box.id !== b.id) { try { M.data = await api('GET', '/api/mail/inbox?box=' + q(b.id), undefined, options); } catch (e) { if (options.signal?.aborted) return; M.data = { box: b, items: [], error: e.message }; } }
     const back = Date.now() - M.seen > 4000; M.seen = Date.now();
     if (back && !M.loading) M.refresh();
   };

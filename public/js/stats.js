@@ -5,9 +5,9 @@ const StatsPage = (() => {
   const S = { data: null, slug: '', text: '' };
   const num = n => Number(n || 0).toLocaleString(i18n.locale);
   const dayLabel = s => { if (!s) return ''; const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(i18n.locale, { year: 'numeric', month: 'short', day: 'numeric' }); };
-  S.load = async slug => {
+  S.load = async (slug, options = {}) => {
     if (S.slug !== slug) { S.slug = slug; S.data = null; }
-    try { S.data = await api('GET', `/api/projects/${slug}/stats`); } catch { S.data = { error: true }; }
+    try { S.data = await api('GET', `/api/projects/${slug}/stats`, undefined, { timeout: 30000, ...options }); } catch { if (!options.signal?.aborted) S.data = { error: true }; }
   };
   const tile = (k, v, cls) => `<div class="st-tile ${cls}"><div class="st-v">${esc(v)}</div><div class="st-k">${esc(t(k))}</div></div>`;
   const chart = weeks => {

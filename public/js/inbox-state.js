@@ -55,7 +55,7 @@ const IB = {
   /* ---------- data ---------- */
   function load() {
     if (inflight) return inflight;
-    inflight = fetch('/api/inbox', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error(r.statusText))).then(l => typeof Streamer !== 'undefined' && Streamer.on() ? Streamer.filter('GET', '/api/inbox', l) : l).then(l => typeof Swarm !== 'undefined' ? Swarm.only(l, true) : l)   // 🚨 swarm: only that project (AIG-877)
+    inflight = fetch('/api/inbox', { cache: 'no-store', signal: AbortSignal.timeout(15000) }).then(r => r.ok ? r.json() : Promise.reject(new Error(r.statusText))).then(l => typeof Streamer !== 'undefined' && Streamer.on() ? Streamer.filter('GET', '/api/inbox', l) : l).then(l => typeof Swarm !== 'undefined' ? Swarm.only(l, true) : l)   // 🚨 swarm: only that project (AIG-877)
       .then(list => { inflight = null; apply(list); IB.testerDone(); return true; })
       .catch(e => { inflight = null; throw e; });
     return inflight;

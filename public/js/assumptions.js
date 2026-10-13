@@ -7,7 +7,7 @@ const Assumptions = (() => {
   const strip = s => String(s || '').replace(/^[\s>*_-]*Assumption:\s*/i, '');
   const find = k => { const [slug, id, at] = k.split('|'); return A.data.find(a => a.slug === slug && a.id === id && a.at === at); };
   const repaint = async () => { await A.load(); $('app').innerHTML = A.render(); };
-  A.load = async () => { try { A.data = await api('GET', '/api/assumptions'); } catch { A.data = []; } A.badge(); };
+  A.load = async (options = {}) => { try { A.data = await api('GET', '/api/assumptions', undefined, options); } catch (e) { if (options.signal?.aborted) throw e; A.data = []; } A.badge(); };
   // The count of unreviewed entries on the top-bar link.
   A.badge = () => { const n = A.data.filter(a => !a.state).length, b = $('assumeBadge'); if (b) { b.textContent = n || ''; b.hidden = !n; } };
   A.watch = async () => { try { A.data = await api('GET', '/api/assumptions'); A.badge(); } catch {} };

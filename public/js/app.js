@@ -72,8 +72,10 @@ function applyAppLogo(url, icon) {
   b.innerHTML = url ? `<img class="brand-logo" src="${esc(url)}" alt=""> AI-gile` : '🗂️ AI-gile';
 }
 let wasQuiet = null;   // was the board quiet at the last check (AIG-232)
+let checkingBuild = false;
 async function checkBuild() {
-  if (!i18n.ready) return;
+  if (!i18n.ready || checkingBuild) return;
+  checkingBuild = true;
   try {
     const m = await api('GET', '/api/meta');
     NoAi.apply(m.noAi, m.noAiBuild);   // 🚫 (AIG-581)
@@ -106,6 +108,7 @@ async function checkBuild() {
     else if (m.dev && m.build !== loadedBuild && !$('upRefresh').firstChild)
       $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="${esc(t('update.refresh.title'))}">${esc(t('update.refresh'))}</button>`;
   } catch {}
+  finally { checkingBuild = false; }
 }
 // After a queued restart: reload as soon as a new board (a new start time in its build id) answers.
 function waitForNewBoard() {
