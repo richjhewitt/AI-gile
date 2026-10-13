@@ -2754,5 +2754,7 @@
  "swarm.workers.help": "Zolang de zwerm aan staat, laat het bord één werker per To do-kaart lopen, elk in een eigen git-worktree, tot zoveel tegelijk.",
   "dms.close.title": "Sluit dit gesprek (het komt terug bij een nieuw bericht)",
   "dms.closed.show": "Toon gesloten ({n})",
-  "dms.closed.reopen": "Dit gesprek terug openen"
+  "dms.closed.reopen": "Dit gesprek terug openen",
+ "urgent.mark": "Markeer als dringend",
+ "urgent.unmark": "Niet meer dringend"
 }

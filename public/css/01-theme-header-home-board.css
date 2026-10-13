@@ -128,6 +128,12 @@ code[data-copy-text] { cursor: pointer; }
 .qa-gate { margin: 0 0 8px; font-size: .92em; }   /* the merge gate (AIG-613) */
 .qa-gate.red { color: var(--danger, #dc2626); font-weight: 600; }
 .card.is-blocked { border-inline-start: 3px solid var(--danger); }
+.urg-btn { padding: 0 5px; font-size: 12px; line-height: 18px; filter: grayscale(1); opacity: .55; }
+.urg-btn.on { filter: none; opacity: 1; }
+.card .urg-btn { float: inline-end; margin-inline-start: 4px; opacity: 0; }
+.card:hover .urg-btn, .card .urg-btn.on, .card .urg-btn:focus-visible { opacity: 1; }
+@media (hover: none) { .card .urg-btn { opacity: .7; } .card .urg-btn.on { opacity: 1; } }
+.card.is-urgent { border-inline-start: 3px solid var(--danger); }
 .card .id { font-size: 11px; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
 .card .t { margin: 2px 0 6px; font-weight: 500; }
 .card .meta { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
