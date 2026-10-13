@@ -16,7 +16,9 @@ def('helplevels', '❓ help levels: each level\'s first run, the Help menu, the 
   let page = await openPage(ctx, '#/setup');
   await page.waitForSelector('#wzNo');
   await page.click('#wzNo');
-  await page.waitForSelector('#helpGoTour');
+  await sleep(500);
+  check('first run (Just let me in): no second popup', (await page.locator('#helpNo, #helpGoTour').count()) === 0);
+  await offer(page);
   check('some help: the tour is offered', await page.isVisible('#helpGoTour'));
   check('some help: no intro or demo button in the offer', (await page.locator('#helpGoIntro, #helpGoDemo').count()) === 0);
   await page.click('#helpNo');

@@ -3186,5 +3186,17 @@
  "dms.quiet.show.one": "Show 1 quiet chat",
  "dms.quiet.hide": "Hide quiet chats",
  "allhands.confirm": "Send to {n} teams?",
- "allhands.confirm.one": "Send to 1 team?"
+ "allhands.confirm.one": "Send to 1 team?",
+ "home.more": "More ▾",
+ "home.more.title": "Show or hide the other buttons",
+ "home.uz.html": "<b>⚡ Plan left:</b> this session <b>{h5}</b> · this week <b>{wk}</b>",
+ "wz.ask.pick": "Pick how you want to start.",
+ "wz.ask.b.wizard": "🧙 Wizard",
+ "wz.ask.b.wizard.help": "About a minute. Sets things up for you (recommended).",
+ "wz.ask.b.tour": "🎓 Tour",
+ "wz.ask.b.tour.help": "A short guided look round the board.",
+ "wz.ask.b.in": "Just let me in",
+ "wz.ask.b.in.help": "Skip all this. You can run the wizard or tour later.",
+ "wz.2.agent.ph": "e.g. claude",
+ "wz.2.use": "Use the one I found"
 }

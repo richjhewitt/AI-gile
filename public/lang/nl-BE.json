@@ -3186,5 +3186,17 @@
  "dms.quiet.show.one": "Toon 1 stille chat",
  "dms.quiet.hide": "Verberg stille chats",
  "allhands.confirm": "Naar {n} teams sturen?",
- "allhands.confirm.one": "Naar 1 team sturen?"
+ "allhands.confirm.one": "Naar 1 team sturen?",
+ "home.more": "Meer ▾",
+ "home.more.title": "De andere knoppen tonen of verbergen",
+ "home.uz.html": "<b>⚡ Plan over:</b> deze sessie <b>{h5}</b> · deze week <b>{wk}</b>",
+ "wz.ask.pick": "Kies hoe je wilt beginnen.",
+ "wz.ask.b.wizard": "🧙 Wizard",
+ "wz.ask.b.wizard.help": "Ongeveer een minuut. Stelt alles voor je in (aanbevolen).",
+ "wz.ask.b.tour": "🎓 Rondleiding",
+ "wz.ask.b.tour.help": "Een korte rondleiding over het bord.",
+ "wz.ask.b.in": "Laat me maar binnen",
+ "wz.ask.b.in.help": "Sla dit over. De wizard of rondleiding kan later nog.",
+ "wz.2.agent.ph": "bijv. claude",
+ "wz.2.use": "Gebruik degene die ik vond"
 }
