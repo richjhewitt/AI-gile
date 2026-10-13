@@ -2567,5 +2567,9 @@
  "imm.random.help": "The same one all day. A language day wins over random.",
  "imm.title": "Show the board in {name} (click again to go back)",
  "imm.back": "Back to {name}",
- "imm.menu": "Choose a learning language"
+ "imm.menu": "Choose a learning language",
+ "remind.sorry": "Sorry what?",
+ "remind.sorry.title": "Ask the team to explain this card again, from scratch",
+ "remind.sorry.text": "Sorry what? Explain this from scratch, in plain words: what it is, why it matters, what happens next.",
+ "remind.sorry.ok": "Asked the team"
 }
