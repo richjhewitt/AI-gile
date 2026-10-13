@@ -22,7 +22,7 @@ def('ideabtn', 'idea button: on home and board; one project makes a card in For 
   await home.evaluate(() => closeDialog());
   await home.click('#ideaBtn'); await home.waitForSelector('#idea-text');
   check('a closed draft comes back', (await home.inputValue('#idea-text')) === 'kept draft');
-  check('on home the picker defaults to Decide later', (await home.inputValue('#idea-to')) === '_later');
+  check('on home the picker defaults to the assistant (AIG-803)', (await home.inputValue('#idea-to')) === '_sm');
   await home.evaluate(() => { document.getElementById('idea-text').value = ''; document.getElementById('idea-text').dispatchEvent(new Event('input', { bubbles: true })); closeDialog(); });
   const board = await openPage(ctx, '#/p/alpha');
   check('idea button is on the board', await board.isVisible('#ideaBtn'));
