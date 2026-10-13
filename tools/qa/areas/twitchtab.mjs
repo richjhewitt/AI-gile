@@ -42,7 +42,35 @@ def('twitchtab', 'Twitch tab in the DM window: hidden with no channel, set in Se
   await pg.waitForFunction(() => /live one/.test(document.getElementById('dmList').textContent), null, { timeout: 10000 });
   const last = await pg.locator('#dmList .tw-name').last().textContent();
   check('a new message appears live at the bottom', last === 'Carol', last);
-  check('there is no reply box (read-only)', await pg.locator('#dmText').count() === 0);
+  check('no token: there is no reply box (read-only)', await pg.locator('#twText').count() === 0 && (await s.ok('GET', '/api/twitch/config')).canReply === false);
+  check('no token: sending is refused', (await s.api('POST', '/api/twitch/send', { text: 'hi' })).status === 400);
+  check('a bad token is refused', (await s.api('POST', '/api/twitch/token', { login: 'smizflark', token: 'short' })).status === 400);
+
+  // Sign in to reply (Setup box, real clicks), then the reply box shows and Enter sends
+  const su = await openPage(ctx, '#/setup'); await su.waitForSelector('#twSignIn');
+  await su.fill('#twLogin', 'SmizFlark'); await su.fill('#twToken', 'oauth:abcdefghijklmnopqrstuvwxyz0123'); await su.click('#twSignIn');
+  await su.waitForSelector('#twOut');
+  const c1 = await s.ok('GET', '/api/twitch/config');
+  check('signed in: canReply and the login, and the token is never sent to the page', c1.canReply === true && c1.login === 'smizflark' && !JSON.stringify(c1).includes('abcdefghijkl'), c1);
+  await su.close();
+  await pg.waitForSelector('#twText', { timeout: 10000 });
+  await pg.fill('#twText', 'hello from me'); await pg.press('#twText', 'Enter');
+  await pg.waitForFunction(() => /hello from me/.test(document.getElementById('dmList').textContent), null, { timeout: 10000 });
+  const sent = await s.ok('GET', '/api/twitch/stub-sent');
+  check('Enter sent it (recorded by the stub) and it shows in the list as me', sent.length === 1 && sent[0].text === 'hello from me' && sent[0].login === 'smizflark' && await pg.locator('#dmList .tw-name').last().textContent() === 'smizflark' && await pg.inputValue('#twText') === '', sent);
+
+  // Pop out
+  const popP = ctx.waitForEvent('page');
+  await pg.click('#twPopBtn');
+  const pop = await popP; await pop.waitForLoadState();
+  await pop.waitForSelector('#twPop .tw-msg', { timeout: 10000 });
+  check('the pop-out shows the chat with the reply box', /live one/.test(await pop.textContent('#dmList')) && await pop.locator('#twText').count() === 1);
+  await pop.fill('#twText', 'from the pop-out'); await pop.press('#twText', 'Enter');
+  await pop.waitForFunction(() => /from the pop-out/.test(document.getElementById('dmList').textContent), null, { timeout: 10000 });
+  check('replying from the pop-out sends', (await s.ok('GET', '/api/twitch/stub-sent')).length === 2);
+  await pop.close();
+  await s.ok('POST', '/api/twitch/token', { login: '', token: '' });
+  check('signing out removes the reply ability', (await s.ok('GET', '/api/twitch/config')).canReply === false);
 
   // Switch off
   await s.ok('POST', '/api/twitch/config', { channel: '' });
