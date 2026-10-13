@@ -2680,5 +2680,11 @@
  "allhands.title": "📣 Alle teams: {text}",
  "allhands.help": "Stuur één bericht naar het team van elk actief project.",
  "allhands.waiting": "Nog geen antwoord van het team",
- "allhands.none": "Nog geen berichten aan alle teams."
+ "allhands.none": "Nog geen berichten aan alle teams.",
+ "swarm.worker": "Zwermwerker",
+ "swarm.worker.title": "Zwermwerker op branch {branch}: {title}. Klik voor het logboek.",
+ "swarm.worker.log": "🐝 Zwermwerker {id} ({branch})",
+ "swarm.worker.stop": "⏹ Werker stoppen",
+ "swarm.workers": "Zwermwerkers tegelijk",
+ "swarm.workers.help": "Zolang de zwerm aan staat, laat het bord één werker per To do-kaart lopen, elk in een eigen git-worktree, tot zoveel tegelijk."
 }

@@ -2680,5 +2680,11 @@
  "allhands.title": "📣 All hands: {text}",
  "allhands.help": "Send one message to every active project’s team.",
  "allhands.waiting": "No team reply yet",
- "allhands.none": "No all hands messages yet."
+ "allhands.none": "No all hands messages yet.",
+ "swarm.worker": "Swarm worker",
+ "swarm.worker.title": "Swarm worker on branch {branch}: {title}. Click for its log.",
+ "swarm.worker.log": "🐝 Swarm worker {id} ({branch})",
+ "swarm.worker.stop": "⏹ Stop worker",
+ "swarm.workers": "Swarm workers at once",
+ "swarm.workers.help": "While swarm is on, the board runs one worker per To do card, each in its own git worktree, up to this many at a time."
 }
