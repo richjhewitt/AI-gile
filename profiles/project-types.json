@@ -8,6 +8,7 @@
     { "id": "game", "roles": { "frontend": { "tests": 3 }, "qa": { "tests": 4 }, "all": { "alone": 3 } } },
     { "id": "docs", "roles": { "all": { "tests": 2 }, "copywriter": { "words": 1, "tests": 2 }, "i18n": { "tests": 3 } } },
     { "id": "life", "owner": { "words": 1, "steps": 1 }, "roles": { "all": { "tests": 1, "words": 1, "alone": 2 } } },
+    { "id": "playground", "roles": {} },
     { "id": "custom", "roles": {} }
   ]
 }
