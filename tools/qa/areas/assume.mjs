@@ -31,6 +31,7 @@ def('assume', '🌙 assumptions log: assume + comment --assume, the page and its
   const last = (await getCard(s, 'beta', b.id)).comments.at(-1);
   check('✋ plug this sends the reply to the card as the owner', /Use v2 instead/.test(last.text) && last.author === (await s.ok('GET', '/api/meta')).owner, last);
   check('and marks it plugged', (await s.ok('GET', '/api/assumptions')).find(x => x.slug === 'beta').state === 'plug');
+  check('a just-marked entry keeps its undo for now (AIG-884)', (await page.locator('.as-item:has-text("API stays") button').count()) === 1);
   noErrors(page);
 
   // AIG-526: structured assumptions, grouped per card with a summary and an Open link.
@@ -44,6 +45,7 @@ def('assume', '🌙 assumptions log: assume + comment --assume, the page and its
   const p2 = await openPage(ctx, '#/assumptions');
   await p2.waitForSelector('.as-card');
   const cardEl = p2.locator('.as-card', { hasText: 'Holiday party lines' });
+  check('entries marked before are gone once the undo window has passed (AIG-884)', (await p2.locator('.as-item', { hasText: /Blue is fine|API stays/ }).count()) === 0 && (await p2.$$eval('.uz h3', e => e.length)) === 2);
   check('one card group holds its three entries, with summary and Open link', (await cardEl.locator('.as-item').count()) === 3 && /Hourly party lines only for the holiday card\./.test(await cardEl.locator('.as-sum').textContent()) && !/Second line/.test(await cardEl.textContent()) && /#\/p\/alpha\//.test(await cardEl.locator('.as-open').getAttribute('href')));
   const ft = await cardEl.textContent();
   check('entries read Had to decide / Options / We chose / Why / If you plug it', ['Had to decide:', 'Options:', 'We chose:', 'Why:', 'If you plug it:', 'all / hourly only', 'Add the rest back', 'A plain old line'].every(x => ft.includes(x)), ft);
