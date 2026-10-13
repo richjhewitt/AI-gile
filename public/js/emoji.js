@@ -4,6 +4,7 @@
    arrows move, Enter / Tab / click pick, Esc closes. A full ":smile:" typed (or pasted) becomes the emoji at once,
    so what is sent is already the emoji. Texts: emoji.hint. */
 (function () {
+  window.emojiMineSet = l => { MINE = l; };   // dms.js: after a friend's emoji was saved
   const EM = { box: null, ta: null, list: [], q: '', at: 0, from: 0 };
   let MAP = null, MINE = null, MINE_LOADING = false;   // MINE: your own emojis (AIG-648), loaded on first use
   const loadMine = () => {

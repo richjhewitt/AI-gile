@@ -2405,5 +2405,9 @@
  "tw.login.token": "Chattoken",
  "tw.login.save": "Inloggen",
  "tw.pop.title": "Chat in een eigen venster openen",
- "tw.reply.ph": "Zeg iets als {name}. Enter verstuurt."
+ "tw.reply.ph": "Zeg iets als {name}. Enter verstuurt.",
+ "emoji.save": "⭐ Bewaar",
+ "emoji.save.title": "Bewaar :{name}: bij je eigen emoji",
+ "emoji.save.ask": ":{name}: heb je al. Kies een nieuwe naam:",
+ "emoji.save.done": ":{name}: staat nu bij je eigen emoji."
 }

@@ -2405,5 +2405,9 @@
  "tw.login.token": "Chat token",
  "tw.login.save": "Sign in",
  "tw.pop.title": "Pop the chat out into its own window",
- "tw.reply.ph": "Say something as {name}. Enter sends."
+ "tw.reply.ph": "Say something as {name}. Enter sends.",
+ "emoji.save": "⭐ Save",
+ "emoji.save.title": "Save :{name}: to your own emojis",
+ "emoji.save.ask": ":{name}: is already one of yours. Pick a new name for it:",
+ "emoji.save.done": ":{name}: is now one of your emojis."
 }
