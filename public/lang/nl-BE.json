@@ -2320,5 +2320,20 @@
   "streamer.live": "🔴 Live gaan",
   "streamer.live.title": "Zet streamermodus aan en start de stream in OBS",
   "streamer.stop": "⏹ Stop",
-  "streamer.stop.title": "Stop de stream in OBS"
+  "streamer.stop.title": "Stop de stream in OBS",
+  "roles.h": "🧑‍🤝‍🧑 Rollen",
+  "roles.help": "Wie projecten mag maken en wie aan je servers kan. Jij mag altijd allebei.",
+  "roles.kind.owner": "jij",
+  "roles.kind.agent": "agent",
+  "roles.kind.person": "persoon",
+  "roles.make.h": "Mag projecten maken",
+  "roles.make.help": "Aan voor jou en voor leads; uit voor vrienden en helpers tenzij je ze aanvinkt. Wie het niet heeft, krijgt te horen dat hij het moet vragen aan iemand die het wel heeft.",
+  "roles.srv.h": "Toegang tot servers",
+  "roles.srv.help": "Kies per persoon een niveau voor elke server. Het bord bepaalt alleen de ▶ Uitvoeren-knoppen bij zijn servertaken.",
+  "roles.srv.none": "Bewaar eerst een server bij Mijn servers.",
+  "roles.srv.admin.note": "Bewaard. Volledige beheerder is hier enkel een notitie: voeg hun ssh-sleutel zelf toe op de server.",
+  "roles.none": "Er staat nog niemand anders in een team.",
+  "roles.level.none": "Geen",
+  "roles.level.run": "Servertaken van het bord uitvoeren",
+  "roles.level.admin": "Volledige beheerder (ssh)"
 }

@@ -2320,5 +2320,20 @@
   "streamer.live": "🔴 Go live",
   "streamer.live.title": "Turn streamer mode on and start the stream in OBS",
   "streamer.stop": "⏹ Stop",
-  "streamer.stop.title": "Stop the stream in OBS"
+  "streamer.stop.title": "Stop the stream in OBS",
+  "roles.h": "🧑‍🤝‍🧑 Roles",
+  "roles.help": "Who may make projects, and who gets into your servers. You can always do both.",
+  "roles.kind.owner": "you",
+  "roles.kind.agent": "agent",
+  "roles.kind.person": "person",
+  "roles.make.h": "Can make projects",
+  "roles.make.help": "On for you and for leads; off for friends and helpers unless you tick them. Anyone without it is told to ask someone who has it.",
+  "roles.srv.h": "Server access",
+  "roles.srv.help": "Pick a level per person on each server. The board only controls the ▶ Run buttons on its server tasks.",
+  "roles.srv.none": "Save a server in My servers first.",
+  "roles.srv.admin.note": "Saved. Full admin is only a note here: add their ssh key on the server yourself.",
+  "roles.none": "Nobody else is on a team yet.",
+  "roles.level.none": "None",
+  "roles.level.run": "Run board server tasks",
+  "roles.level.admin": "Full admin (ssh)"
 }
