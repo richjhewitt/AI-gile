@@ -89,6 +89,7 @@ function renderSetup() {
     <div class="f" id="enterSendBox">${EnterSend.html()}</div>
     <div class="f noai-box" id="noAiBox">${noAiBoxHtml()}</div>
     <div class="f" id="topbarBox">${Topbar.html()}</div>
+    <div class="f" id="selfcareBox">${SelfCare.html()}</div>
     <div class="f" id="channelBox">${Channel.html()}</div>
     <div class="f lead-prefs ai-only" id="leadPrefs">${leadPrefsHtml()}</div>
     <div class="f lead-prefs ai-only" id="mainTeamBox">${mainTeamBoxHtml()}</div>
