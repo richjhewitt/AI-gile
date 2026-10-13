@@ -25,6 +25,11 @@ def('dmtidy', '💬 DM tidy: done DM cards move into the Lead chat in time order
   const cf = path.join(s.data, 'tidy.chat'), ch = JSON.parse(fs.readFileSync(cf, 'utf8')); ch.msgs[0].at = t(3); fs.writeFileSync(cf, JSON.stringify(ch));
   const before = fs.readFileSync(cf, 'utf8');
 
+  const af = path.join(s.data, 'tidy.dm-archive.json');
+  fs.writeFileSync(af, '[ broken');
+  const ab = await s.api('POST', '/api/projects/tidy/dms/tidy', {});
+  check('a corrupt archive stops the tidy: nothing moved, archive untouched', ab.status >= 400 && fs.readFileSync(af, 'utf8') === '[ broken' && (await s.ok('GET', '/api/projects/tidy')).cards.length === 4 && fs.readFileSync(cf, 'utf8') === before, ab);
+  fs.unlinkSync(af);
   const dry = await s.ok('POST', '/api/projects/tidy/dms/tidy', { dryRun: true });
   check('dry run lists the two done DM cards, 4 messages', dry.dryRun && dry.cards === 2 && dry.messages === 4 && dry.moved.map(m => m.id).sort().join() === [a.id, b.id].sort().join(), dry);
   check('dry run changed nothing', (await s.ok('GET', '/api/projects/tidy')).cards.length === 4 && fs.readFileSync(cf, 'utf8') === before && !fs.existsSync(path.join(s.data, 'tidy.dm-archive.json')));

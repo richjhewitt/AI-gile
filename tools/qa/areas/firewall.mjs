@@ -45,7 +45,7 @@ def('firewall', 'message firewall: same text twice, Original: copies, empty poke
   const dupLead = fc.filter(c => c.fwCause === 'duplicate|Lead'), dupDev = fc.filter(c => c.fwCause === 'duplicate|Dev');
   check('one card per cause, not per message', dupLead.length === 1 && dupDev.length === 1 && fc.length === 4, fc.map(c => c.fwCause));
   check('card is a normal bug in the backlog with the plain title, not for the owner', dupLead[0].type === 'bug' && dupLead[0].priority === 'normal' && dupLead[0].status === 'backlog' && !dupLead[0].needsYou && dupLead[0].title === '🧱 Firewall: Lead sends duplicates', dupLead[0]);
-  check('repeats bump the count on that card (Dev was caught twice)', dupDev[0].fwCount === 2 && /kept 2 messages from Dev/.test(dupDev[0].description), dupDev[0]);
+  check('repeats bump the count in the field, the description stays as it was and the latest sample is a comment (AIG-841)', dupDev[0].fwCount === 2 && /kept 1 message from Dev/.test(dupDev[0].description) && dupDev[0].comments.at(-1).text.includes('Latest: Build is green'), dupDev[0]);
   await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Lead', text: 'Morning' });
   fc = await fwCards();
   check('a new repeat gives no new card', fc.length === 4 && fc.find(c => c.fwCause === 'duplicate|Lead').fwCount === 2, fc.map(c => [c.fwCause, c.fwCount]));
@@ -64,6 +64,23 @@ def('firewall', 'message firewall: same text twice, Original: copies, empty poke
   const chatMsg = bin.items.find(x => x.kind === 'chat');
   await s.ok('POST', `/api/firewall/${chatMsg.id}/release`);
   check('a Lead chat message is let through into the chat', (await s.ok('GET', '/api/projects/wall/leadchat')).messages.length === 2);
+
+  // Security: a team can neither release nor skip the firewall with a body flag; a file is never a duplicate.
+  const team = (method, url, body) => fetch(s.base + url, { method, headers: { 'Content-Type': 'application/json', 'x-aigile-where': 'cli', 'x-aigile-as': 'Dev' }, body: body === undefined ? undefined : JSON.stringify(body) }).then(async r => ({ status: r.status, body: await r.json().catch(() => ({})) }));   // a team call: not the owner (AIG-840)
+  const left = (await s.ok('GET', '/api/firewall')).items;
+  const tr = await team('POST', `/api/firewall/${left[0].id}/release`);
+  check('a team request to release is refused with 403 and the entry stays', tr.status === 403 && (await s.ok('GET', '/api/firewall')).items.length === left.length, tr);
+  await say(s, 'wall', a.id, 'Dev', 'Flag test');
+  const fl = await s.ok('POST', url(a.id), { author: 'Dev', text: 'Flag test', fwPass: true });
+  check('fwPass in a request body no longer skips the firewall', fl.firewalled && fl.reason === 'duplicate', fl);
+  const up = await s.ok('POST', '/api/projects/wall/attachments', { name: 'a.png', type: 'image/png', data: 'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVR4nGP8z8DwnwEIGBmgACZgYAAAKfEC/tW5j8QAAAAASUVORK5CYII=' });
+  const f1 = await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Dev', text: 'With a file', attachments: [up] });
+  const f2 = await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Dev', text: 'With a file', attachments: [up] });
+  check('a message with a file is never caught as a duplicate', !f1.firewalled && !f2.firewalled, [f1, f2]);
+  await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Dev', text: 'Ping 1' });
+  await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Owner', text: 'Ping 1' });
+  const rp = await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Dev', text: 'Ping 1' });
+  check('Lead chat: the whole thread is checked, an owner message in between reopens the topic', !rp.firewalled, rp);
 
   // The bin page: reached from the inbox link, phone width, dark mode.
   const page = await openPage(ctx, '#/inbox');

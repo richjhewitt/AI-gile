@@ -83,5 +83,8 @@ def('expertpick', '🎓 Request an expert: keyword routing table (no AI), picker
   const nr = await s.ok('POST', '/api/projects/expo/expert', { preset: 'dev' });
   check('No AI: requesting an expert still works', nr.member.name === 'Dex (Developer, Sonnet)', nr);
   await s.ok('POST', '/api/setup', { prefs: { noAi: false } });
+  const team = (method, url, body) => fetch(s.base + url, { method, headers: { 'Content-Type': 'application/json', 'x-aigile-where': 'cli', 'x-aigile-as': 'Dev' }, body: body === undefined ? undefined : JSON.stringify(body) }).then(async r => ({ status: r.status, body: await r.json().catch(() => ({})) }));   // a team call: not the owner (AIG-840)
+  const te = await team('POST', '/api/projects/expo/expert', { preset: 'dev' });
+  check('a team request for an expert is refused with 403', te.status === 403, te);
   noErrors(page);
 }, true);

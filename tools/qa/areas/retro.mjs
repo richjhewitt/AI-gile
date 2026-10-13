@@ -30,6 +30,10 @@ def('retro', '🔁 retros: route + CLI make one Go / Not yet card, Go adds the l
   check('it is asked as a plan: a Go? ask', !!ask && /\bgo\s*\?/i.test(ask.text) && ask.author === 'Lead', ask);
   check('the file is untouched so far', read() === START);
 
+  const team = (method, url, body) => fetch(s.base + url, { method, headers: { 'Content-Type': 'application/json', 'x-aigile-where': 'cli', 'x-aigile-as': 'Dev' }, body: body === undefined ? undefined : JSON.stringify(body) }).then(async r => ({ status: r.status, body: await r.json().catch(() => ({})) }));   // a team call: not the owner (AIG-840)
+  const tg = await team('POST', `/api/projects/retro/cards/${c.id}/comments`, { author: 'Owner', text: 'GO' });
+  check('a team request cannot decide a retro, even writing as the owner (403)', tg.status === 403 && read() === START && !(await getCard(s, 'retro', c.id)).retro.done, tg);
+
   // Go: under its section, same line endings
   await s.ok('POST', `/api/projects/retro/cards/${c.id}/comments`, { author: 'Owner', text: 'GO' });
   const after = read();

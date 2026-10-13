@@ -1,5 +1,7 @@
 // QA area: risks (AIG-863): the per-project risk register. API (GET/POST/PATCH), CLI (add, list, set), the brief's overdue line,
 // happened -> a 🔥 incident card, old projects untouched, and the Risks page (list order, overdue mark, phone width, dark mode).
+import fs from 'node:fs';
+import path from 'node:path';
 import { check, mkProject, mkCard, getCard, def, openPage, noErrors, until } from '../lib.mjs';
 
 def('risks', '⚠️ risk register: API, CLI add/list/set, brief overdue line, happened files an incident card, Risks page (AIG-863)', async (s, ctx) => {
@@ -45,6 +47,11 @@ def('risks', '⚠️ risk register: API, CLI add/list/set, brief overdue line, h
   check('a 🔥 incident card (bug, high) was made', !!inc && inc.type === 'bug' && inc.priority === 'high' && inc.riskId === 'R-3', inc);
   await s.ok('PATCH', '/api/projects/rego/risks/R-3', { status: 'happened', mitigation: 'again' });
   check('setting happened twice makes only one card', (await s.ok('GET', '/api/projects/rego')).cards.filter(c => /Incident: Vendor/.test(c.title)).length === 1);
+  const rf = path.join(s.data, 'rego.risks'), good = fs.readFileSync(rf, 'utf8');
+  fs.writeFileSync(rf, '{ broken');
+  const bad1 = await s.api('POST', '/api/projects/rego/risks', { risk: 'Must not wipe' });
+  check('a corrupt register raises an error and is left as it was', bad1.status >= 400 && fs.readFileSync(rf, 'utf8') === '{ broken', bad1);
+  fs.writeFileSync(rf, good);
   const direct = await s.ok('POST', '/api/projects/rego/risks', { risk: 'Already burning', status: 'happened' });
   check('a risk added as happened files its card too', !!direct.incident, direct);
 
