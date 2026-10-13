@@ -31,3 +31,11 @@
 .saver-bar { background: #fab219; color: #1a1a1a; font-size: 13px; padding: 3px 12px; text-align: center; }
 .saver-bar[hidden] { display: none; }
 .crucial-btn.on { background: #fab219; border-color: #fab219; color: #1a1a1a; }
+/* ScrumGlance (AIG-688) */
+.sg-panel { position: fixed; inset-inline-end: 14px; bottom: 14px; width: 300px; max-height: 70vh; overflow: auto; z-index: 40; background: var(--panel, #fff); color: inherit; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,.25); font-size: 13px; }
+.sg-bar { display: flex; gap: 6px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: inherit; }
+.sg-bar .spacer { flex: 1; } .sg-bar button { font-size: 12px; padding: 2px 8px; }
+.sg-body, .sg-pop { padding: 8px 12px 12px; } .sg-scope { font-weight: 600; margin-bottom: 4px; }
+.sg-grp h4 { margin: 10px 0 2px; font-size: 13px; } .sg-n { background: var(--line); border-radius: 99px; padding: 0 8px; margin-inline-start: 4px; }
+.sg-grp ul { margin: 0; padding-inline-start: 18px; } .sg-grp li { padding: 1px 0; } .sg-grp a { color: inherit; text-decoration: none; } .sg-grp a:hover { text-decoration: underline; }
+.sg-id { color: var(--muted, #888); font-size: 11px; } .sg-none, .sg-more { margin: 0; font-size: 12px; }

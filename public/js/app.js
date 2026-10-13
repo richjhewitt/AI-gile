@@ -36,7 +36,7 @@ window.addEventListener('hashchange', () => { state.editing = false; refresh(tru
     theme(); refresh(true); checkBuild(); NoTokens.start(); Streamer.start(); UsageGlance.start(); helpBoot();
   }, e => Boot.again(start, e));
 })();
-setInterval(() => { if (!document.hidden) refresh(); }, 1000);
+setInterval(() => { if (!document.hidden) { refresh(); ScrumGlance.tick(); } }, 1000);
 setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136)
 
 // Dev builds: when the server or page changes, a small 🆕 Refresh pill floats at the top (AIG-78), above any open
