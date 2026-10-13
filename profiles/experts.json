@@ -1,0 +1,37 @@
+{
+ "generalist": { "id": "generalist", "emoji": "🧭", "name": "Gen", "role": "pm-mid", "model": "sonnet", "keywords": [] },
+ "groups": [
+  { "id": "build", "emoji": "🛠️", "presets": [
+   { "id": "dev", "emoji": "💻", "name": "Dex", "role": "fullstack-mid", "model": "sonnet", "keywords": ["code", "coding", "bug", "feature", "app", "website", "api", "database", "script", "programmeren", "programma", "fout"] },
+   { "id": "ops", "emoji": "☁️", "name": "Opie", "role": "devops-mid", "model": "sonnet", "keywords": ["server", "hosting", "deploy", "docker", "domain", "dns", "backup", "pipeline", "domein"] }
+  ] },
+  { "id": "design", "emoji": "🎨", "presets": [
+   { "id": "ui", "emoji": "🖌️", "name": "Pixie", "role": "uxui-mid", "model": "sonnet", "keywords": ["design", "ui", "ux", "logo", "layout", "colour", "color", "screen", "mockup", "ontwerp", "kleur", "scherm", "huisstijl"] },
+   { "id": "a11y", "emoji": "♿", "name": "Axel", "role": "accessibility-mid", "model": "haiku", "keywords": ["accessibility", "accessible", "screen reader", "contrast", "wcag", "toegankelijk", "toegankelijkheid"] }
+  ] },
+  { "id": "business", "emoji": "📈", "presets": [
+   { "id": "strategy", "emoji": "🧠", "name": "Bea", "role": "pm-senior", "model": "opus", "keywords": ["strategy", "business plan", "market", "competitor", "startup", "growth", "strategie", "bedrijfsplan", "markt", "concurrent", "groei"] },
+   { "id": "pm", "emoji": "📋", "name": "Pam", "role": "pm-mid", "model": "sonnet", "keywords": ["plan", "planning", "roadmap", "schedule", "deadline", "milestone", "projectplan", "tijdlijn"] }
+  ] },
+  { "id": "legal", "emoji": "⚖️", "presets": [
+   { "id": "lawyer", "emoji": "📜", "name": "Lexi", "role": "reviewer-senior", "model": "sonnet", "keywords": ["legal", "law", "lawyer", "contract", "terms", "licence", "license", "trademark", "copyright", "liability", "juridisch", "advocaat", "wet", "voorwaarden", "licentie", "merkrecht", "auteursrecht"] },
+   { "id": "privacy", "emoji": "🔒", "name": "Gita", "role": "security-senior", "model": "sonnet", "keywords": ["privacy", "gdpr", "avg", "personal data", "cookie", "cookies", "consent", "persoonsgegevens", "toestemming"] }
+  ] },
+  { "id": "money", "emoji": "💰", "presets": [
+   { "id": "accounts", "emoji": "🧾", "name": "Penny", "role": "data-mid", "model": "haiku", "keywords": ["tax", "vat", "btw", "invoice", "accounts", "accounting", "bookkeeping", "expenses", "factuur", "belasting", "boekhouding", "kosten"] },
+   { "id": "pricing", "emoji": "💶", "name": "Fin", "role": "data-senior", "model": "opus", "keywords": ["pricing", "price", "budget", "revenue", "cash flow", "profit", "finance", "funding", "prijs", "prijzen", "omzet", "winst", "financiering"] }
+  ] },
+  { "id": "people", "emoji": "🤝", "presets": [
+   { "id": "hr", "emoji": "🧑‍💼", "name": "Hana", "role": "pm-mid", "model": "sonnet", "keywords": ["hiring", "hire", "recruit", "interview", "employee", "job ad", "team culture", "personeel", "aannemen", "vacature", "sollicitatie", "medewerker"] },
+   { "id": "coach", "emoji": "🌱", "name": "Coco", "role": "ux-researcher-mid", "model": "haiku", "keywords": ["coach", "coaching", "motivation", "wellbeing", "stress", "habit", "motivatie", "welzijn", "gewoonte"] }
+  ] },
+  { "id": "marketing", "emoji": "📣", "presets": [
+   { "id": "writer", "emoji": "✍️", "name": "Wren", "role": "copywriter-mid", "model": "sonnet", "keywords": ["copy", "text", "wording", "blog", "article", "newsletter", "slogan", "tekst", "artikel", "nieuwsbrief", "schrijven"] },
+   { "id": "social", "emoji": "📱", "name": "Mika", "role": "copywriter-junior", "model": "haiku", "keywords": ["social", "seo", "instagram", "tiktok", "twitter", "facebook", "linkedin", "advert", "ads", "campaign", "promotie", "reclame", "campagne", "adverteren"] }
+  ] },
+  { "id": "support", "emoji": "🎧", "presets": [
+   { "id": "helpdesk", "emoji": "💁", "name": "Sue", "role": "copywriter-junior", "model": "haiku", "keywords": ["customer", "support", "helpdesk", "faq", "complaint", "refund", "klant", "klantenservice", "klacht", "terugbetaling"] },
+   { "id": "tester", "emoji": "🧪", "name": "Tess", "role": "tester-mid", "model": "sonnet", "keywords": ["test", "tester", "testing", "qa", "regression", "testen", "testplan", "test plan"] }
+  ] }
+ ]
+}

@@ -1,0 +1,11 @@
+/* 🎓 Request an expert (AIG-844, AIG-845). Theme variables only, so dark mode follows. */
+.xp { display: grid; gap: 10px; }
+.xp-group h3 { margin: 4px 0; font-size: 13px; }
+.xp-presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.xp-preset { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--col); color: var(--text); cursor: pointer; }
+.xp-preset small { color: var(--muted); }
+.xp-preset:hover { border-color: var(--accent); }
+.xp-preset[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 22%, var(--panel)); font-weight: 600; }
+.xp-looks { min-height: 1.4em; overflow-wrap: anywhere; }
+#expertBtn { margin-inline-start: auto; }
+@media (max-width: 600px) { .xp-preset { flex: 1 1 140px; justify-content: center; } }

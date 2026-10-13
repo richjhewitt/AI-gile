@@ -79,7 +79,7 @@ async function ideaDialog() {
       ${ideaTeamOptionsHtml(projects, leads, pick)}
       <option value="_all">${esc(t('idea.all'))}</option><option value="_later">${esc(t('idea.later'))}</option></select></label>
     <div class="err" id="idea-err"></div>
-    <div class="actions"><button class="primary" type="submit" title="Ctrl+Enter">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('idea')}</div></form>`, 'wide');
+    <div class="actions"><button class="primary" type="submit" title="Ctrl+Enter">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button><button type="button" id="expertBtn" onclick="expertDialog()" title="${esc(t('expert.btn.title'))}">${esc(t('expert.btn'))}</button>${Attach.boxHtml('idea')}</div></form>`, 'wide');
   const box = $('idea-text'); box.closest('.dialog').classList.add('wide'); growBox(box); box.focus();
 }
 let ideaBusy = false;   // AIG-790: one send at a time; repeat clicks and Enters while it sends do nothing
