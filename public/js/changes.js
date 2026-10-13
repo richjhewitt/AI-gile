@@ -18,6 +18,7 @@ function changeHtml(p, c) {
   <p><b>${esc(t('chg.risk'))}</b> ${x.riskId ? `<a href="#/risks/${esc(p.slug)}">${esc(x.riskId)}</a>` : `<span class="muted">${esc(t('chg.norisk'))}</span>`}</p>
   <p><b>${esc(t('chg.when'))}</b> ${x.when ? esc(changeWhen(x.when)) : none}</p>
   <p><b>${esc(t('chg.undo'))}</b> ${x.undo ? esc(x.undo) : none}</p>
+  ${x.callUrl ? `<p class="chg-call">${callLink(x.callUrl)}</p>` : ''}
   ${x.from ? `<p><b>${esc(t('chg.from'))}</b> ${link(x.from)}</p>` : ''}${probs.length ? `<p><b>${esc(t('chg.problems'))}</b> ${probs.map(link).join(', ')}</p>` : ''}${goNoGoHtml(p, c)}</div>`;
 }
 /* ---------- 🚦 Go / no-go panel (AIG-858) ----------
