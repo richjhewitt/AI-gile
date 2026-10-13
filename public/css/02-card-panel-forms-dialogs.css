@@ -139,6 +139,9 @@ label.f[hidden], .runin-blind[hidden] { display: none; }   /* where teams run (A
 /* ---------- popped-out card (AIG-122): the card fills its own window ---------- */
 body.pop header, body.pop #filterbar, body.pop #updateTop { display: none; }
 body.pop .overlay { position: static; background: none; padding: 0; display: block; }
+/* ⧉ Pop out on every window (AIG-658): the button sits top right of a dialog; in its own window the dialog fills it */
+.dialog .dlg-pop { float: right; margin: 0 0 6px 8px; padding: 2px 9px; font-size: 12px; }
+body.popdlg .dialog, body.popdlg .dialog.wide { width: 100%; max-width: none; max-height: none; min-height: 100vh; border-radius: 0; box-sizing: border-box; resize: none; }
 body.pop .panel { max-width: none; max-height: none; width: 100%; min-height: 100vh; border-radius: 0; margin: 0; box-shadow: none; }
 
 /* ---------- board columns (AIG-116) ---------- */

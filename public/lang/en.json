@@ -2327,5 +2327,7 @@
   "tm.mates.help": "Click a name to rename it, or the face to pick another picture. Cards and the lead follow the new name.",
   "tm.rename": "Click to rename",
   "tm.pic": "Pick a picture",
-  "tm.renamed": "{from} is now called {to}."
+  "tm.renamed": "{from} is now called {to}.",
+  "popout.btn": "⧉ Pop out",
+  "popout.title": "Open this window on its own, to move and resize"
 }

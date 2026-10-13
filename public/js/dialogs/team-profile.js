@@ -12,7 +12,7 @@ async function teamDialog(msg = '') {
   XT.msg = '';
   try { TM.data = await api('GET', '/api/projects/' + slug() + '/profiles'); } catch (e) { alert(e.message); return; }
   TM.msg = msg; TM.friends = await api('GET', '/api/dms/contacts').then(l => l.filter(c => !c.blocked), () => []);
-  openDialog(`<div id="tm-box">${teamHtml()}</div>`, 'wide team-dlg');
+  popNext('team'); openDialog(`<div id="tm-box">${teamHtml()}</div>`, 'wide team-dlg');
 }
 // Painted again after each change; the fold stays as it was and the focus where it was.
 async function teamPaint(msg) {

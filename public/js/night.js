@@ -2,7 +2,7 @@
 // A small pop-out for a second screen while you wind down: near-black and red-tinted, no sound, never steals focus.
 // One quiet line per watched project. Urgent = a card stuck after 3 tries or a real 🚧 stand-up blocker: then a slow
 // amber glow breathes around the edge, with one line saying what. Everything else waits for the morning.
-function openNightGlance() { window.open('#/pop-night', 'aigile-night', 'width=360,height=440'); }
+function openNightGlance() { popOut('night', '#/pop-night', 'aigile-night', 360, 440); }
 
 function renderNight() {
   const w = state.watch, ps = state.projects || [], blockers = (state.standups && state.standups.blockers) || [];
