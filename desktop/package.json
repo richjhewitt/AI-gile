@@ -1,5 +1,6 @@
 {
   "name": "aigile-desktop",
+  "version": "1.0.0",
   "private": true,
   "description": "AI-gile in its own window: starts the board server if needed and opens it",
   "author": "AI-gile",
