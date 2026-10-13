@@ -2331,5 +2331,7 @@
   "assume.summary.none": "Niets meer te bekijken.",
   "swarm.bar": "🚨 Zwerm: elk team werkt aan {name}; andere projecten wachten",
   "swarm.open": "Openen",
-  "swarm.off": "Uitzetten"
+  "swarm.off": "Uitzetten",
+  "queue.kind.plan": "Klaar voor go",
+  "fy.kind.p": "🚦 Klaar voor go"
 }

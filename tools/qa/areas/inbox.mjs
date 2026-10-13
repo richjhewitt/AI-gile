@@ -271,6 +271,24 @@ def('aiownlist', 'Setup switch: AI-passed tests leave the tests list and wait un
   noErrors(page);
 }, true);
 
+def('readyforgo', '🚦 Ready for go: a plan asking "Go?" (or --kind plan) gets its own kind in the inbox and the For you column (AIG-828)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Build the thing'), b = await mkCard(s, 'alpha', 'Pick a colour'), c = await mkCard(s, 'alpha', 'Other plan');
+  s.cli(['ask', 'alpha', a.id, 'Plan: two cards. Go?', '--as', 'Lead']);
+  s.cli(['ask', 'alpha', b.id, 'Blue or green?', '--as', 'Lead']);
+  check('--kind plan is accepted', s.cli(['ask', 'alpha', c.id, 'Ready when you are', '--as', 'Lead', '--kind', 'plan']).code === 0);
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('#ibKinds [data-kind="plan"]');
+  await page.click('#ibKinds [data-kind="plan"]');
+  await sleep(300);
+  const ids = await page.$$eval('.ib-item', els => els.filter(e => e.offsetParent).map(e => e.dataset.id));
+  check('the plan filter shows the two plans only', ids.includes(a.id) && ids.includes(c.id) && !ids.includes(b.id), ids);
+  await page.evaluate(() => { location.hash = '#/p/alpha'; });
+  await page.waitForSelector('[data-first="p"]');
+  check('the For you column has a 🚦 chip counting 2', /2/.test(await page.textContent('[data-first="p"]')), await page.textContent('[data-first="p"]'));
+  noErrors(page);
+}, true);
+
 def('poplist', '⧉ pop an inbox list out into its own window: only that list, no top bar (AIG-104)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const a = await mkCard(s, 'alpha', 'Try it'), b = await mkCard(s, 'alpha', 'Add the key');
