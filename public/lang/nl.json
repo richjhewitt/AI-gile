@@ -2322,5 +2322,10 @@
   "streamer.stop": "⏹ Stop",
   "streamer.stop.title": "Stop de stream in OBS",
   "inbox.g.ph": "Antwoord, of zeg wat er mis is om terug te sturen",
-  "inbox.g.reply": "💬 Antwoorden"
+  "inbox.g.reply": "💬 Antwoorden",
+  "tm.mates.h": "Teamgenoten",
+  "tm.mates.help": "Klik op een naam om die te wijzigen, of op het gezicht voor een ander plaatje. Kaarten en de lead nemen de nieuwe naam over.",
+  "tm.rename": "Klik om te hernoemen",
+  "tm.pic": "Kies een plaatje",
+  "tm.renamed": "{from} heet nu {to}."
 }
