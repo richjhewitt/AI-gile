@@ -17,11 +17,11 @@ const NoTokens = (() => {
     b.textContent = st.reason === 'limit' && st.until ? t('nt.until', { time: hhmm(st.until) }) : t('nt.on');
     b.title = st.reason === 'limit' ? t('nt.title.limit') : t('nt.title.on');
   }
-  async function poll() { try { st = await api('GET', '/api/notokens'); } catch { return; } paint(); }
+  async function poll() { try { st = await PagePoll.get('/api/notokens'); } catch { return; } paint(); }
   async function toggle() {
     try { st = await api('POST', '/api/notokens', { on: !st.on }); } catch (e) { alert(e.message); return; }
     paint(); refresh(true);
   }
-  function start() { poll(); setInterval(poll, 2000); }
+  function start() { PagePoll.every(poll, 3000, { immediate: true }); }
   return { start, toggle, poll, get on() { return !!st.on; } };
 })();

@@ -7,7 +7,7 @@ const StatsPage = (() => {
   const dayLabel = s => { if (!s) return ''; const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(i18n.locale, { year: 'numeric', month: 'short', day: 'numeric' }); };
   S.load = async slug => {
     if (S.slug !== slug) { S.slug = slug; S.data = null; }
-    try { S.data = await api('GET', `/api/projects/${slug}/stats`); } catch { S.data = { error: true }; }
+    try { S.data = await PagePoll.get(`/api/projects/${slug}/stats`); } catch { S.data = { error: true }; }
   };
   const tile = (k, v, cls) => `<div class="st-tile ${cls}"><div class="st-v">${esc(v)}</div><div class="st-k">${esc(t(k))}</div></div>`;
   const chart = weeks => {

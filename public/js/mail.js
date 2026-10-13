@@ -10,7 +10,7 @@ const Mail = (() => {
   const hidden = () => typeof Streamer !== 'undefined' && Streamer.on && Streamer.on();
   const q = id => encodeURIComponent(id);
   M.watch = async () => {
-    try { M.cfg = await api('GET', '/api/mail/config'); } catch { return; }
+    try { M.cfg = await PagePoll.get('/api/mail/config'); } catch { return; }
     const n = $('mailNav'); if (n) n.style.display = box() ? '' : 'none';
   };
   // Called by the 1s refresh while #/mail is open: cheap after the first time; a fresh fetch when the page is (re)opened.

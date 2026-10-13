@@ -17,7 +17,7 @@ const DiscordTab = (() => {
       try { const n = new Notification(t('dc.notify', { who: c.from || 'Discord' }), { body: String(c.preview || '').slice(0, 160), tag: 'aigile-discord' }); n.onclick = () => { try { window.focus(); } catch {} n.close(); }; } catch {}
     }
     lastTotal = st.total;
-    if (typeof Dms !== 'undefined') Dms.reload && Dms.reload();
+    if (!document.hidden && typeof Dms !== 'undefined') Dms.reload && Dms.reload();
   }
   async function loadChats() { try { chats = await api('GET', '/api/discord/chats'); } catch { chats = []; } if (typeof Dms !== 'undefined') Dms.reload(); }
   const unreadOf = c => ((st.chats.find(x => x.key === c.bot + '|' + c.id)) || {}).n || 0;
@@ -54,6 +54,6 @@ const DiscordTab = (() => {
     busy = false;
   }
   function stop() { cur = null; }
-  poll(); setInterval(poll, 4000);
+  PagePoll.every(poll, 4000, { hidden: 30000, immediate: true });
   return { show, load, send, stop, rowsHtml, loadChats, linked: () => !!st.linked, unread: () => st.total || 0 };
 })();

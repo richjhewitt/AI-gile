@@ -12,8 +12,9 @@ const QUIZ = [
 ];
 const leadPrefs = () => (state.setup && state.setup.prefs) || {};
 
-async function leadQuiz() {
-  try { state.setup = await api('GET', '/api/setup'); } catch {}
+async function leadQuiz(setup) {
+  if (setup) state.setup = setup;
+  else try { state.setup = await api('GET', '/api/setup'); } catch {}
   const cur = { ...leadPrefs(), explain: glossOn() }, picked = set => Object.entries(set).every(([k, v]) => cur[k] === v);
   openDialog(`<h2>${esc(t('quiz.h'))}</h2><p class="muted">${esc(t('quiz.sub'))}</p>
     ${QUIZ.map(([q, opts]) => `<div class="quiz-q"><b>${esc(t('quiz.' + q))}</b><div class="quiz-opts">${opts.map(([a, set]) =>

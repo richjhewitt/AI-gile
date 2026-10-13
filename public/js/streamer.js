@@ -113,16 +113,17 @@ const Streamer = (() => {
     if (m && !m[2] && j && Array.isArray(j.cards)) return hides('life') ? { ...j, cards: j.cards.filter(c => !c.lifeType) } : j;
     return j;
   }
-  const prime = () => fetch('/api/projects?all=1').then(r => r.json()).then(l => { hidden = new Set(l.filter(out).map(p => p.slug)); }).catch(() => {});
+  const prime = () => PagePoll.request('GET', '/api/projects?all=1').then(l => { hidden = new Set(l.filter(out).map(p => p.slug)); }).catch(() => {});
 
   /* ---- the switch ---- */
   function apply(was, force) {
     const o = on();
+    if (was !== o || force) PagePoll.invalidate(false);
     document.documentElement.toggleAttribute('data-streamer', o);
     for (const k of ['dms', 'friends', 'secrets']) document.documentElement.toggleAttribute('data-stream-' + k, o && hides(k));   // CSS hides these parts
     const b = $('streamBtn'); if (b) { b.disabled = forced; b.classList.toggle('stream-on', o); b.setAttribute('aria-pressed', String(o)); b.title = t(o ? 'streamer.title.on' : 'streamer.title'); }
     if (o) { ready = prime(); watch(); restore(); scan(document.body); if (!state.setup) api('GET', '/api/setup').then(s => { state.setup = s; scan(document.body); }).catch(() => {}); } else restore();
-    if (was !== o || force) { ready = o ? prime() : ready; Promise.resolve(ready).then(() => { if (typeof Dms !== 'undefined') Dms.reload(); if (typeof refresh === 'function') refresh(true); if (typeof Inbox !== 'undefined' && Inbox.show && state.route && state.route.view === 'inbox') Inbox.show(true); }); }
+    if (was !== o || force) { ready = o ? prime() : ready; Promise.resolve(ready).then(async () => { if (typeof Dms !== 'undefined') await Dms.reload(); if (typeof refresh === 'function') refresh(true); if (typeof Inbox !== 'undefined' && Inbox.show && state.route && state.route.view === 'inbox') Inbox.show(true); }); }
     paintSetup(); paintLive();
   }
   function toggle() { if (forced) return; const was = on(); manual = !manual; if (!manual) auto = false; try { localStorage.setItem(KEY, manual ? '1' : '0'); } catch {} apply(was); }
@@ -202,6 +203,6 @@ const Streamer = (() => {
     if (!e.altKey || !e.shiftKey || e.ctrlKey || e.metaKey || e.code !== 'KeyS' || forced) return;
     e.preventDefault(); toggle(); toast(t(on() ? 'streamer.key.on' : 'streamer.key.off'));
   }
-  function start() { apply(false); poll(); setInterval(poll, Number(window.AIGILE_STREAM_POLL) || 5000); document.addEventListener('keydown', key); }
+  function start() { apply(false); const loading = poll(); PagePoll.every(poll, Number(window.AIGILE_STREAM_POLL) || 5000); document.addEventListener('keydown', key); return loading; }
   return { on, forced, obsConnect, goLive, openWindow, mask, raw, filter, toggle, dismiss, setAuto, setHide, setupHtml, start, poll, get hidden() { return hidden; } };
 })();

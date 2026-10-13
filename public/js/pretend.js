@@ -17,5 +17,5 @@
   document.body.appendChild(bar); document.body.style.paddingBottom = '34px';
   paint();
   const iv = setInterval(() => { if (typeof i18n !== 'undefined' && i18n.ready) { clearInterval(iv); paint(); } }, 150);
-  setInterval(() => { if (!document.title.startsWith('🧪')) paint(); }, 2000);
+  PagePoll.every(() => { if (!document.title.startsWith('🧪')) paint(); }, 30000, { hidden: 30000 });
 })();

@@ -28,6 +28,6 @@ const UsageGlance = (() => {
     a.title = tips.join('\n');
   }
   async function poll() { try { d = await api('GET', '/api/limits/latest'); } catch { return; } paint(); }
-  function start() { poll(); setInterval(poll, 60e3); setInterval(paint, 2000); }
+  function start() { PagePoll.every(poll, 60e3, { immediate: true }); PagePoll.every(paint, 5000); }
   return { start, poll, paint };
 })();

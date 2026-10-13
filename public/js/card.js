@@ -161,20 +161,20 @@ const reopenList = () => { try { return JSON.parse(localStorage.getItem(REOPEN_K
 const reopenSave = l => { try { localStorage.setItem(REOPEN_KEY, JSON.stringify(l)); } catch {} };
 function rememberPop(s, id) { if (!state.route.pop) return; const l = reopenList(); l[s + '/' + id] = new Date().toISOString(); reopenSave(l); }
 async function reopenPops() {
-  if (state.route.pop || document.hidden && !/Electron/.test(navigator.userAgent)) return;
+  if (!state.route || /^#\/pop/.test(location.hash) || document.hidden) return;
   const l = reopenList(), keys = Object.keys(l); if (!keys.length) return;
   const projects = {};
   for (const k of keys) {
     const [s, id] = k.split('/'), at = l[k];
     if (Date.now() - Date.parse(at) > REOPEN_MS) { delete l[k]; continue; }
-    try { projects[s] = projects[s] || await api('GET', '/api/projects/' + s); } catch { continue; }
+    try { projects[s] = projects[s] || await PagePoll.get('/api/projects/' + s); } catch { continue; }
     const c = projects[s].cards.find(x => x.id === id);
     if (!c || c.status === 'done') { delete l[k]; continue; }
     if (c.comments.some(m => m.at > at && !isOwner(m.author))) { delete l[k]; popOut('card', `#/pop/${s}/${id}`, 'aigile-' + s + '-' + id, 560, 780); }
   }
   reopenSave(l);
 }
-setInterval(reopenPops, 5000);
+PagePoll.every(reopenPops, 5000);
 
 // After dealing with a For you card, open the next one in the queue instead of closing (AIG-141).
 // "3 of 12 left" (AIG-633): while working through the For you to test pile, a small line on the card. The total is the

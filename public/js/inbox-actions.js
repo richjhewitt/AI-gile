@@ -72,7 +72,7 @@
   async function startTester() {
     try { await post('POST', '/api/tester', {}); } catch (e) { IB.toast(e.message || String(e)); return; }
     IB.testerOn = true; IB.toast(t('tester.started')); IB.paintPage();
-    const look = async () => { let st = null; try { st = await (await fetch('/api/tester')).json(); } catch {} if (st && st.running) return void setTimeout(look, 10e3); IB.testerOn = false; await IB.load(); IB.paintPage(); };
+    const look = async () => { if (document.hidden) return void setTimeout(look, 10e3); let st = null; try { st = await PagePoll.get('/api/tester', { revision: false }); } catch {} if (st && st.running) return void setTimeout(look, 10e3); IB.testerOn = false; await IB.load(); IB.paintPage(); };
     setTimeout(look, 10e3);
   }
   async function acceptAiPassed(btn) {
@@ -110,8 +110,8 @@
   // ✅ Done by the tester (AIG-467): what the AI tester closed today, each with a one-click Reopen back to verify.
   let tdSig = "";
   async function testerDone() {
-    if (!el("ibTd")) return;
-    let list = []; try { list = await (await fetch("/api/tester/done", { cache: "no-store" })).json(); } catch { return; }
+    if (document.hidden || !el("ibTd")) return;
+    let list = []; try { list = await PagePoll.get("/api/tester/done"); } catch { return; }
     list = list.filter(x => IB.tab === "all" || x.project === IB.tab);
     const html = list.length ? `<h3>${IB.esc(t("trust.done.h"))} <span class="ib-badge t">${list.length}</span></h3>` + list.map(x => `<div class="ib-td-row" data-project="${IB.esc(x.project)}" data-id="${IB.esc(x.id)}"><a href="#/p/${IB.esc(x.project)}/${IB.esc(x.id)}">${IB.esc(x.id)}</a> ${IB.esc(x.title)} <span class="muted">${IB.esc(t(x.sure ? "trust.is.sure" : "trust.is.likely"))}</span> <button data-tdreopen>${IB.esc(t("trust.reopen"))}</button></div>`).join("") : "";
     if (tdSig === html) return; tdSig = html; el("ibTd").hidden = !html; el("ibTd").innerHTML = html;

@@ -84,14 +84,14 @@ const Weed = (() => {
     const btn = document.getElementById('weedBtn'); if (btn) btn.classList.toggle('wd-off', level === 'off');
   }
   async function sync() {
-    try { const s = await api('GET', '/api/setup'); state.setup = s; applyPrefs(s.prefs || {}); } catch {}
+    try { const s = await PagePoll.get('/api/setup'); state.setup = s; applyPrefs(s.prefs || {}); } catch {}
     loadedAt = nowMs();
   }
   function tick() {
-    if (nowMs() - loadedAt > 10000) { loadedAt = nowMs(); sync(); }
-    check(); paintPop();
+    if (!document.hidden && nowMs() - loadedAt > 10000) { loadedAt = nowMs(); sync(); }
+    check(); if (!document.hidden) paintPop();
   }
-  function start() { if (started) return; started = true; sync(); setInterval(tick, 1000); }
+  function start() { if (started) return; started = true; sync(); PagePoll.every(tick, 1000, { hidden: 30000 }); }
 
   // WeedGlance: the countdown window.
   const clock = ms => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };

@@ -19,12 +19,13 @@ const Share = (function () {
   const curSlug = () => typeof state !== 'undefined' && state.route && state.route.slug;
   async function load() {
     try {
-      [links, people] = await Promise.all([api('GET', '/api/shares'), api('GET', '/api/dms/contacts')]);
-      projects = offers().length ? await api('GET', '/api/projects') : [];   // only an offer needs the project list
+      [links, people] = await Promise.all([PagePoll.get('/api/shares'), document.hidden ? Promise.resolve(people) : PagePoll.get('/api/dms/contacts')]);
+      projects = !document.hidden && offers().length ? await PagePoll.get('/api/projects') : [];   // only an offer needs the project list
       const l = curSlug() && ofProject(curSlug());
-      inb = l && !l.forgotten && l.state !== 'offered' && l.state !== 'incoming' ? await api('GET', `/api/shares/${l.id}/inbound`) : null;
+      inb = document.hidden ? inb : l && !l.forgotten && l.state !== 'offered' && l.state !== 'incoming' ? await PagePoll.get(`/api/shares/${l.id}/inbound`) : null;
     } catch { return; }
     if (typeof IB !== 'undefined') IB.setFriends('offers', offers().length);   // counted in the inbox and its badges even off the inbox page (AIG-382)
+    if (document.hidden) return;
     const s = JSON.stringify([links, people.map(p => [p.id, p.name, p.checked, p.blocked]), projects.map(p => [p.slug, p.name]), inb]);
     if (s === sig) return;
     sig = s;
@@ -138,7 +139,7 @@ const Share = (function () {
     const l = ofProject(slug());
     if (!l) return;
     let pv;
-    try { pv = await api('GET', `/api/shares/${l.id}/preview?card=${encodeURIComponent(cardId)}`); } catch (e) { alert(e.message); return; }
+    try { pv = await PagePoll.get(`/api/shares/${l.id}/preview?card=${encodeURIComponent(cardId)}`); } catch (e) { alert(e.message); return; }
     const sh = pv.shared, can = l.state === 'live' && l.on && l.effective && l.effective.sendCards;
     const rows = pv.fields.map(k => `<tr data-field="${k}"><th>${esc(t('share.prev.f.' + k))}</th><td>${k === 'description' ? plain(pv.payload[k] || '') : esc(pv.payload[k])}</td></tr>`).join('');
     const flags = pv.flags.length ? `<div class="share-flags"><p>${esc(t('share.prev.flags'))}</p><ul>${pv.flags.map(f => `<li>${esc(t('share.prev.f.' + f.field))}: ${esc(t('share.prev.kind.' + f.kind))} <code>${esc(f.text)}</code></li>`).join('')}</ul></div>` : '';
@@ -311,7 +312,7 @@ const Share = (function () {
     try { await api('POST', `/api/shares/${id}/decline`); sig = ''; await load(); } catch (e) { const x = document.querySelector(`[data-share="${id}"] [data-share-err]`); if (x) x.textContent = e.message; }
   }
 
-  setInterval(() => { if (!document.hidden && typeof i18n !== 'undefined' && i18n.ready) load(); }, 3000);
+  PagePoll.every(() => { if (typeof i18n !== 'undefined' && i18n.ready) return load(); }, 3000, { hidden: 30000 });
   return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setRole, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
     laneHtml, cardBtn, cardComments, commentMark, previewCard, sendCard, unshareCard, sendHeld, laneCard, laneReply, takeCard };
 })();

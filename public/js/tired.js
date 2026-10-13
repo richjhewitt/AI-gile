@@ -22,13 +22,13 @@ const Tired = (() => {
   async function poll() {
     try {
       const d = isDark();
-      take(d !== sentDark ? await api('POST', '/api/setup', { prefs: { tiredDark: d } }) : await api('GET', '/api/setup'));
+      take(d !== sentDark ? await api('POST', '/api/setup', { prefs: { tiredDark: d } }) : await PagePoll.get('/api/setup'));
       sentDark = d;
     } catch {}
   }
   async function toggle() {
     try { take(await api('POST', '/api/setup', { prefs: { tiredFlip: true } })); } catch (e) { alert(e.message); }
   }
-  function start() { poll(); setInterval(() => { if (isDark() !== sentDark) poll(); }, 2000); setInterval(poll, 20000); }
+  function start() { PagePoll.every(() => { if (isDark() !== sentDark) return poll(); }, 2000); PagePoll.every(poll, 20000, { immediate: true }); }
   return { start, toggle, poll, get now() { return now; } };
 })();

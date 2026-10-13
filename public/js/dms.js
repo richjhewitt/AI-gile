@@ -59,11 +59,11 @@ const Dms = (() => {
 
   async function loadRail() {
     if (!i18n.ready) return void setTimeout(loadRail, 100);
-    try { [projects, chats] = await Promise.all([api('GET', '/api/projects'), api('GET', '/api/chats')]); } catch { return; }
+    try { [projects, chats] = await Promise.all([PagePoll.get('/api/projects'), PagePoll.get('/api/chats')]); } catch { return; }
     let boards = [];
-    try { boards = (await api('GET', '/api/shares')).filter(l => l.theirRole && !l.forgotten && ['live', 'ended'].includes(l.state)); } catch {}
-    try { people = (await api('GET', '/api/dms/contacts')).filter(c => !c.blocked).map(c => ({ ...c, unread: c.lastIn && c.lastIn > dmSeen.get(c.id) && open !== 'dm:' + c.id ? 1 : 0 })); } catch { people = []; }
-    try { closed = await api('GET', '/api/dmclosed'); } catch { closed = {}; }
+    try { boards = (await PagePoll.get('/api/shares')).filter(l => l.theirRole && !l.forgotten && ['live', 'ended'].includes(l.state)); } catch {}
+    try { people = (await PagePoll.get('/api/dms/contacts')).filter(c => !c.blocked).map(c => ({ ...c, unread: c.lastIn && c.lastIn > dmSeen.get(c.id) && open !== 'dm:' + c.id ? 1 : 0 })); } catch { people = []; }
+    try { closed = await PagePoll.get('/api/dmclosed'); } catch { closed = {}; }
     if (Swarm.hiding) boards = [];   // 🚨 swarm: friends' boards wait too (AIG-880)
     if (NoAi.on) chats = chats.filter(c => c.noAi);   // 🚫 no DMs to leads (AIG-581); only the 🧭 Scrum Master (no AI) stays (AIG-729)
     const cur = here(), p = projects.find(x => x.slug === cur);
@@ -160,14 +160,14 @@ const Dms = (() => {
   }
   async function loadPerson(scroll) {
     let msgs;
-    try { msgs = await api('GET', `/api/dms/contacts/${open.slice(3)}/messages`); } catch { return; }
+    try { msgs = await PagePoll.get(`/api/dms/contacts/${open.slice(3)}/messages`); } catch { return; }
     const list = el('dmList'); if (!list || !thread || thread.id !== open.slice(3)) return;
     thread.messages = msgs;
     const lastIn = msgs.filter(m => m.dir === 'in').map(m => m.at).sort().pop();
     if (lastIn && lastIn > dmSeen.get(thread.id)) dmSeen.set(thread.id, lastIn);
     // AIG-650: the pictures this friend sent, shown inline in their messages (only asked for when one could use a :name:)
     let em = [];
-    if (msgs.some(m => m.dir === 'in' && /:[a-z0-9_]{1,32}:/.test(m.text || ''))) { try { em = await api('GET', `/api/dms/contacts/${thread.id}/emojis`); } catch {} }
+    if (msgs.some(m => m.dir === 'in' && /:[a-z0-9_]{1,32}:/.test(m.text || ''))) { try { em = await PagePoll.get(`/api/dms/contacts/${thread.id}/emojis`); } catch {} }
     if (!thread || thread.id !== open.slice(3)) return;
     const html = personHtml(msgs, thread.name, em) || `<p class="muted dm-empty">${esc(t('dms.nomsgperson', { name: thread.name }))}</p>`;
     if (list.dataset.sig !== html) {
@@ -180,7 +180,7 @@ const Dms = (() => {
   }
   // Token use this friend shares with me (AIG-686): per project, today and the last 7 days. Numbers only.
   async function usageGlance(id, name) {
-    let g; try { g = await api('GET', `/api/dms/contacts/${id}/usage`); } catch { return; }
+    let g; try { g = await PagePoll.get(`/api/dms/contacts/${id}/usage`); } catch { return; }
     const box = el('dmUsage'); if (!box || !thread || thread.id !== id) return;
     const n = v => typeof fmtTok === 'function' ? fmtTok(v) : String(v);
     const html = g.projects.length ? `<div class="dm-usage-h" title="${esc(t('dms.usage.title', { name }))}"><b>${esc(t('dms.usage.h'))}</b> <span class="muted">${esc(t('dms.usage.when', { when: ago(g.at) }))}</span></div>`
@@ -194,7 +194,7 @@ const Dms = (() => {
     if (isTw(open)) return TwitchTab.load(scroll);
     if (isDc(open)) return DiscordTab.load(scroll);
     if (isPerson(open)) return loadPerson(scroll);
-    try { thread = await api('GET', '/api/chats/' + open); } catch { return; }
+    try { thread = await PagePoll.get('/api/chats/' + open); } catch { return; }
     const list = el('dmList'); if (!list) return;
     // A card that newly starts waiting on you opens by itself, and the typing box answers it.
     const fresh = thread.open.find(o => !waitingSeen.has(o.id));
@@ -264,7 +264,7 @@ const Dms = (() => {
   }
 
   async function loadAllHands() {
-    const rows = await api('GET', '/api/chats/_allhands');
+    const rows = await PagePoll.get('/api/chats/_allhands');
     const list = el('dmList'); if (open !== '_allhands' || !list) return;
     const html = rows.map(c => `<a class="dm-row" href="#/p/${esc(c.slug)}/${esc(c.id)}"><span class="dm-rowtext"><b>${esc(c.project)} · ${esc(c.title)}</b><span class="muted">${c.reply ? esc(c.reply.author) + ': ' + esc(c.reply.text || '') : esc(t('allhands.waiting'))} · ${ago(c.at)}</span></span></a>`).join('') || `<p class="muted dm-empty">${esc(t('allhands.none'))}</p>`;
     if (list.dataset.sig !== html) { list.dataset.sig = html; list.innerHTML = html; }
@@ -322,11 +322,11 @@ const Dms = (() => {
   // Go to the card the lead carried on in (AIG-426): into its fold when it is in this chat, else to the card itself.
   async function follow(slug, id) {
     if (!thread || thread.slug !== slug) return;
-    if (!(thread.cards || {})[id]) { try { thread = await api('GET', '/api/chats/' + slug); } catch {} }
+    if (!(thread.cards || {})[id]) { try { thread = await PagePoll.get('/api/chats/' + slug); } catch {} }
     if ((thread.cards || {})[id]) { if (thread.open.some(o => o.id === id)) target = id; fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(true); }
     else location.hash = '#/p/' + slug + '/' + id;
   }
-  function reload() { if (open) loadThread(); loadRail(); }
+  function reload() { return Promise.all([loadRail(), open ? loadThread() : null]); }
   function aim(id) { target = id; if (id !== GENERAL) fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   function back() { DiscordTab.stop(); TwitchTab.stop(); open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
   function close() { DiscordTab.stop(); TwitchTab.stop(); open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
@@ -437,7 +437,7 @@ const Dms = (() => {
   });
   window.addEventListener('hashchange', () => setTimeout(loadRail, 50));
   // Live: the rail every few seconds; an open chat a little more often.
-  setInterval(() => { if (!document.hidden) { loadRail(); if (open) loadThread(); } }, 3000);
+  PagePoll.every(async () => { await loadRail(); if (open) await loadThread(); }, 3000);
   loadRail();
   return { follow, show, back, close, send, ask, aim, reply, reload, smNight, smPush, requestForm, requestSend };
 })();

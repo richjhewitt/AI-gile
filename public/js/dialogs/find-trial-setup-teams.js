@@ -150,7 +150,7 @@ async function saveSetupPage(e) {
     // What's next (AIG-254): a way on to the projects, and a warning if the agent program isn't there.
     $('setup-done').innerHTML = esc(state.setup.needed ? t('setup.saved.more') : t('setup.saved')) + (state.setup.needed ? '' : ` <a href="#/">${esc(t('setup.next'))}</a>`)
       + (state.setup.agentProblem ? `<div class="err">${esc(t('setup.agent.problem', { msg: state.setup.agentProblem }))}</div>` : '');
-    if (!named && body.owner) leadQuiz();   // first run: the name is in, so offer "What kind of lead?" once (AIG-235)
+    if (!named && body.owner) leadQuiz(state.setup);   // first run: the name is in, so offer "What kind of lead?" once (AIG-235)
   } catch (err) { setErr('setup-err', err); }
   return false;
 }
