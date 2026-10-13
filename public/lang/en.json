@@ -3057,5 +3057,15 @@
   "life.letsgo": "Right, let's do this",
   "life.letsgo.title": "Starts shower mode on a shower reminder, otherwise puts it off for an hour (not done)",
   "break.shower.h": "Enjoy your shower 🚿",
-  "break.shower.sub": "Alerts are paused. Your team keeps working."
+  "break.shower.sub": "Alerts are paused. Your team keeps working.",
+ "servers.host": "Host (name or IP)",
+ "servers.user": "User",
+ "servers.port": "Port (22)",
+ "servers.key": "Key file (optional)",
+ "servers.folder": "Default folder (optional)",
+ "look.server": "Server",
+ "look.server.sub": "Which of your servers this project's server tasks open (Setup > My servers). User and folder here replace the server's own.",
+ "look.server.none": "No server chosen",
+ "look.server.user": "User (optional)",
+ "look.server.folder": "Folder (optional)"
 }

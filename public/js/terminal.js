@@ -23,7 +23,8 @@ const Term = (() => {
   /* ---------- which server: the card's own, or the only one with an ssh address ---------- */
   function nameFor(c) {
     const names = state.terms || [];
-    return names.find(x => x.toLowerCase() === String(c.serverName || '').toLowerCase()) || (names.length === 1 ? names[0] : '');
+    const mine = projectServer(c);   // AIG-774: the card's own server, else the project's, else the only one
+    return names.find(x => x.toLowerCase() === String(c.serverName || '').toLowerCase()) || names.find(x => x.toLowerCase() === mine.toLowerCase()) || (names.length === 1 ? names[0] : '');
   }
   const can = c => c && c.server && (state.terms || []).length;
   // On the card's panel: the code blocks of a server task get ▶ buttons (decorated below).

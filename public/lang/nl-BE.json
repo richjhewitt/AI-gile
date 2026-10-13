@@ -3057,5 +3057,15 @@
   "life.letsgo": "Allez, we gaan eraan beginnen",
   "life.letsgo.title": "Start de douchemodus bij een doucheherinnering, anders een uur uitstellen (niet klaar)",
   "break.shower.h": "Geniet van je douche 🚿",
-  "break.shower.sub": "Meldingen staan op pauze. Je team werkt door."
+  "break.shower.sub": "Meldingen staan op pauze. Je team werkt door.",
+ "servers.host": "Host (naam of IP)",
+ "servers.user": "Gebruiker",
+ "servers.port": "Poort (22)",
+ "servers.key": "Sleutelbestand (optioneel)",
+ "servers.folder": "Standaardmap (optioneel)",
+ "look.server": "Server",
+ "look.server.sub": "Welke van je servers de servertaken van dit project openen (Setup > Mijn servers). Gebruiker en map hier vervangen die van de server zelf.",
+ "look.server.none": "Geen server gekozen",
+ "look.server.user": "Gebruiker (optioneel)",
+ "look.server.folder": "Map (optioneel)"
 }

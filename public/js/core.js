@@ -74,10 +74,16 @@ function queueChips(c) {
 }
 // 🖥️ Open server (AIG-374): the names come from Setup > My servers (state.servers, via /api/meta). The card may name one
 // (serverName); one saved server: that one; several: a small picker. The board opens only what Setup saved, by name.
+// AIG-774: the server chosen in the card's project settings ("" = none): the board's project, or its summary on the home page and inbox.
+function projectServer(c) {
+  if (c && c.projectServer) return c.projectServer;   // the inbox sends it with each card
+  const s = c && c.project || (state.route && state.route.slug), p = state.project && state.project.slug === s ? state.project : (state.projects || []).find(x => x.slug === s);
+  return (p && p.srv && p.srv.name) || '';
+}
 function openServerBtn(c) {
   const names = state.servers; if (!names) return '';
   if (!names.length) return `<a class="q-chip srv-open" href="#/setup">${esc(t('server.setup'))}</a>`;
-  const n = names.find(x => x.toLowerCase() === String(c.serverName || '').toLowerCase()) || (names.length === 1 ? names[0] : '');
+  const n = names.find(x => x.toLowerCase() === String(c.serverName || '').toLowerCase()) || names.find(x => x.toLowerCase() === projectServer(c).toLowerCase()) || (names.length === 1 ? names[0] : '');
   return (n ? `<button class="q-chip srv-open" data-open-server="${esc(n)}">${esc(t('server.open', { name: n }))}</button>`
     : `<button class="q-chip srv-open" data-pick-server>${esc(t('server.open.pick'))}</button>`) + Term.btn(c);   // ⌨ Terminal (AIG-471)
 }

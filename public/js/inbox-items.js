@@ -46,7 +46,7 @@
   const checkSig = c => (c.checklist || []).map(x => x.done ? 1 : 0).join('');
   // A folded group of tests is the made-up item from inbox-groups.js (group: true); a question or task card can carry a group name too.
   const isGroup = c => c.group === true;
-  const sigOf = c => isGroup(c) ? IB.sigOfGroup(c) : !isTest(c) ?[c.title, c.blocked, c.server, c.serverName, (state.servers || []).join(","), shownAsk(c).at, shownAsk(c).text, checkSig(c), i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.info, c.aiCheck && c.aiCheck.at, checkSig(c), i18n.lang].join('|');
+  const sigOf = c => isGroup(c) ? IB.sigOfGroup(c) : !isTest(c) ?[c.title, c.blocked, c.server, c.serverName, c.projectServer, (state.servers || []).join(","), shownAsk(c).at, shownAsk(c).text, checkSig(c), i18n.lang].join('|') : [c.title, c.updated, c.testSteps, c.info, c.aiCheck && c.aiCheck.at, checkSig(c), i18n.lang].join('|');
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">

@@ -202,13 +202,25 @@ function healthLine() {
   const p = v => v == null ? '?' : Math.round(v) + '%', gb = v => v == null ? '?' : v >= 1e9 ? (v / 1e9).toFixed(1) + ' GB' : Math.round(v / 1e6) + ' MB';
   return `<small class="muted" id="srv-health">${esc(t('servers.health', { name: h.server || '', cpu: p(h.cpu), mem: p(h.mem), disk: p(h.disk), size: gb(h.storage), days: h.uptime == null ? '?' : Math.floor(h.uptime / 86400), when: new Date(h.at).toLocaleString() }))}</small>`;
 }
+// AIG-773: an ssh server is host + user (saved together as value, user@host) with optional port, key file and default folder.
+const srvSplit = v => { const m = String(v || '').match(/^(ssh:\/\/)?(?:([^@/]+)@)?(.*)$/); return { uri: m[1] || '', user: m[2] || '', host: m[3] || '' }; };
+function srvSshInputs(s, i) {
+  const p = srvSplit(s.value);
+  return `<input type="text" data-srv="host" data-i="${i}" value="${esc(p.host)}" placeholder="${esc(t('servers.host'))}" onchange="srvEdit(this)">
+    <input type="text" data-srv="user" data-i="${i}" value="${esc(p.user)}" placeholder="${esc(t('servers.user'))}" size="10" onchange="srvEdit(this)">`;
+}
+const srvSshMore = (s, i) => `<div class="srv-more">
+    <input type="number" data-srv="port" data-i="${i}" min="1" max="65535" value="${esc(s.port || '')}" placeholder="${esc(t('servers.port'))}" onchange="srvEdit(this)">
+    <input type="text" data-srv="key" data-i="${i}" value="${esc(s.key || '')}" placeholder="${esc(t('servers.key'))}" onchange="srvEdit(this)">
+    <input type="text" data-srv="folder" data-i="${i}" value="${esc(s.folder || '')}" placeholder="${esc(t('servers.folder'))}" onchange="srvEdit(this)"></div>`;
 function serversHtml(msg = '') {
   if (!srvDraft) srvDraft = (leadPrefs().servers || []).map(x => ({ ...x }));
   const rows = srvDraft.map((s, i) => `<div class="srv-row">
     <input type="text" data-srv="name" data-i="${i}" value="${esc(s.name)}" placeholder="${esc(t('servers.name'))}" onchange="srvEdit(this)">
     <select data-srv="kind" data-i="${i}" onchange="srvEdit(this)">${['path', 'cmd', 'ssh'].map(k => `<option value="${k}" ${(s.kind || 'path') === k ? 'selected' : ''}>${esc(t('servers.kind.' + k))}</option>`).join('')}</select>
-    <input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t('servers.' + (s.kind === 'cmd' || s.kind === 'ssh' ? s.kind : 'path') + '.ph'))}" onchange="srvEdit(this)">
+    ${s.kind === 'ssh' ? srvSshInputs(s, i) : `<input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t('servers.' + (s.kind === 'cmd' ? 'cmd' : 'path') + '.ph'))}" onchange="srvEdit(this)">`}
     <button type="button" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">✕</button>
+    ${s.kind === 'ssh' ? srvSshMore(s, i) : ''}
     <label class="srv-sudo"><input type="checkbox" data-srv="sudo" data-i="${i}" ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? 'checked' : ''} onchange="srvEdit(this)"> ${esc(t('servers.sudo'))}</label>
     ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? `<input type="text" data-srv="sudoWho" data-i="${i}" value="${esc(Array.isArray(s.sudo) ? s.sudo.join(', ') : '')}" placeholder="${esc(t('servers.sudoWho'))}" onchange="srvEdit(this)">` : ''}</div>`).join('');
   const found = (srvFound || []).filter(f => !srvDraft.some(s => s.value === f.path)).map(f => `<button type="button" class="srv-found" data-name="${esc(f.name)}" data-path="${esc(f.path)}" onclick="srvAddFound(this)">+ ${esc(f.name)}</button>`).join(' ');
@@ -218,13 +230,15 @@ function serversHtml(msg = '') {
 }
 const srvPaint = msg => { if ($('serversBox')) $('serversBox').innerHTML = serversHtml(msg); };
 async function srvSave() {
-  try { state.setup = await api('POST', '/api/setup', { prefs: { servers: srvDraft.filter(s => s.name.trim() && s.value.trim()) } }); srvPaint(t('setup.saved.short')); }
+  try { state.setup = await api('POST', '/api/setup', { prefs: { servers: srvDraft.filter(s => s.name.trim() && s.value.trim() && (s.kind !== 'ssh' || srvSplit(s.value).host)) } }); srvPaint(t('setup.saved.short')); }
   catch (e) { setErr('servers-err', e); }
 }
 function srvEdit(el) {
   const s = srvDraft[+el.dataset.i], k = el.dataset.srv;
   if (k === 'sudo') { if (el.checked) s.sudo = true; else delete s.sudo; srvPaint(); }   // AIG-701
   else if (k === 'sudoWho') { const n = el.value.split(',').map(x => x.trim()).filter(Boolean); s.sudo = n.length ? n : true; }
+  else if (k === 'host' || k === 'user') { const p = srvSplit(s.value); p[k] = el.value.trim(); s.value = p.uri + (p.user ? p.user + '@' : '') + p.host; }   // AIG-773
+  else if (k === 'port' || k === 'key' || k === 'folder') { if (el.value.trim()) s[k] = k === 'port' ? +el.value : el.value.trim(); else delete s[k]; }
   else { s[k] = el.value; if (k === 'kind') srvPaint(); }
   srvSave();
 }
