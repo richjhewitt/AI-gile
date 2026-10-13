@@ -37,3 +37,30 @@ def('emoji', ':smi opens a popup, Enter inserts; :thumbsup: typed in full become
   check('the sent comment holds the emoji', c.comments.at(-1) && c.comments.at(-1).text === 'done 🎉', c.comments);
   noErrors(page);
 }, true);
+
+def('emojifallback', 'an emoji the font cannot draw (forced) shows as a Twemoji picture in the : list and in card text; the text stays the emoji', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await mkCard(s, 'alpha', 'Chatty', { status: 'verify', testSteps: 'Step one' });
+  const page = await openPage(ctx, '#/p/alpha/ALP-1');
+  await page.evaluate(() => { window.EMOJI_FORCE_IMG = true; });
+  await page.waitForSelector('#modal .panel');
+  await page.click('.ctab[data-ctab=reply]');
+  await page.click('#r-text');
+  await page.keyboard.type(':bags_under');
+  await page.waitForSelector('.emj');
+  const src = await page.getAttribute('.emj-row img.emoji-img', 'src');
+  const alt = await page.getAttribute('.emj-row img.emoji-img', 'alt');
+  check('the : list row for face_with_bags_under_eyes is a picture', /img\/twemoji\/1fae9\.svg$/.test(src || '') && alt === '🫩', [src, alt]);
+  const ok = await page.evaluate(u => fetch(u).then(r => r.ok && r.headers.get('content-type').includes('svg')), src);
+  check('the picture file is served', ok);
+  await page.keyboard.press('Enter');
+  check('the box holds the real emoji', (await page.inputValue('#r-text')) === '🫩', await page.inputValue('#r-text'));
+  await page.press('#r-text', 'Enter');
+  await sleep(700);
+  const c = await getCard(s, 'alpha', 'ALP-1');
+  check('the stored comment is the emoji text', c.comments.at(-1) && c.comments.at(-1).text === '🫩', c.comments);
+  const html = await page.evaluate(() => withCode('hi 🫩', x => x));
+  check('card text renders the picture', /<img class="emoji-img" src="img\/twemoji\/1fae9\.svg" alt="🫩">/.test(html), html);
+  await page.evaluate(() => { window.EMOJI_FORCE_IMG = false; });
+  noErrors(page);
+}, true);
