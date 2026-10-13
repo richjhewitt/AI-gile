@@ -2320,5 +2320,17 @@
   "streamer.live": "🔴 Go live",
   "streamer.live.title": "Turn streamer mode on and start the stream in OBS",
   "streamer.stop": "⏹ Stop",
-  "streamer.stop.title": "Stop the stream in OBS"
+  "streamer.stop.title": "Stop the stream in OBS",
+  "dms.filter.twitch": "Twitch",
+  "tw.row": "Live chat",
+  "tw.readonly": "Read-only Twitch chat",
+  "tw.none": "No chat yet. Messages show up here as they arrive.",
+  "tw.nonone": "Set your Twitch channel in Setup to see its chat here.",
+  "tw.setup.h": "🟣 Twitch",
+  "tw.setup.help": "Type your Twitch channel name to read its chat in the Twitch tab of the messages window. No login needed. Leave it empty to switch it off.",
+  "tw.setup.ph": "Your channel name",
+  "tw.setup.save": "Save",
+  "tw.setup.saved": "Saved.",
+  "tw.state.on": "Connected",
+  "tw.state.wait": "Connecting…"
 }
