@@ -14,6 +14,7 @@ def('swarm', '🚨 swarm: other projects wait, the swarm project gets no helper 
   check('the CLI starts it', /Swarm on Hive/.test(r.out), r);
   check('the swarm project has no helper cap', /Swarm on this project/.test(s.cli(['brief', 'hive']).out) && !/Helpers: at most/.test(s.cli(['brief', 'hive']).out));
   check('other projects are told to stop at a safe point', /Swarm on Hive: finish your current step/.test(s.cli(['brief', 'other']).out));
+  await s.ok('POST', '/api/projects/other/bye');   // the brief marked a lead as in a session (AIG-447); a closed window lets the background run be held instead
   await say(s, 'other', c.id, 'Owner', 'news while swarming');
   await sleep(600);
   check('an owner comment elsewhere starts no run', starts() === 0 && /swarm on another project/.test(fs.existsSync(log) ? fs.readFileSync(log, 'utf8') : ''), starts());

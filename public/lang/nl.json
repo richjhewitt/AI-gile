@@ -2745,5 +2745,11 @@
  "mail.setup.remove": "Mailbox verwijderen",
  "mail.setup.remove.sure": "Deze mailbox, het wachtwoord en de cache verwijderen?",
  "mail.setup.removed": "Verwijderd.",
- "mail.setup.open": "Open ✉️ Mail"
+ "mail.setup.open": "Open ✉️ Mail",
+ "swarm.worker": "Zwermwerker",
+ "swarm.worker.title": "Zwermwerker op branch {branch}: {title}. Klik voor het logboek.",
+ "swarm.worker.log": "🐝 Zwermwerker {id} ({branch})",
+ "swarm.worker.stop": "⏹ Werker stoppen",
+ "swarm.workers": "Zwermwerkers tegelijk",
+ "swarm.workers.help": "Zolang de zwerm aan staat, laat het bord één werker per To do-kaart lopen, elk in een eigen git-worktree, tot zoveel tegelijk."
 }

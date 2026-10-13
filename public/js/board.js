@@ -1,7 +1,17 @@
 /* ---------- team status: in flight, presence, wake ---------- */
 // "Pixel → AIG-5 (12m ago)". Quiet for 30+ minutes = stale (amber), so stalled agents stand out.
-function flightHtml(list) {
-  return list.map(c => `<span class="${Date.now() - new Date(c.updated) > 30 * 60e3 ? 'stale' : ''}" title="${esc(c.title)}">${esc(c.assignee || t('board.unassigned'))} → ${esc(c.id)} <span class="muted">(${ago(c.updated)})</span></span>`).join(' · ');
+// A 🐝 swarm worker (AIG-901, c.worker = its branch) opens its own log on click.
+function flightHtml(list, s) {
+  return list.map(c => c.worker
+    ? `<span class="flight-worker" data-worker="${esc(c.id)}" title="${esc(t('swarm.worker.title', { branch: c.worker, title: c.title }))}" style="cursor:pointer" onclick="agentLog(event, '${esc(s || slug())}', '${esc(c.id)}')">🐝 ${esc(c.assignee || t('swarm.worker'))} → ${esc(c.id)} <span class="muted">(${ago(c.updated)})</span></span>`
+    : `<span class="${Date.now() - new Date(c.updated) > 30 * 60e3 ? 'stale' : ''}" title="${esc(c.title)}">${esc(c.assignee || t('board.unassigned'))} → ${esc(c.id)} <span class="muted">(${ago(c.updated)})</span></span>`).join(' · ');
+}
+// The board's In flight list: cards in progress plus 🐝 swarm workers (AIG-901) whose card is still in To do.
+function flightList(p) {
+  const ws = (p.presence && p.presence.workers) || [], doing = p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated));
+  const list = doing.map(c => { const w = ws.find(x => x.id === c.id); return w ? { ...c, worker: w.branch } : c; });
+  for (const w of ws) { const c = !list.some(f => f.id === w.id) && p.cards.find(c => c.id === w.id); if (c) list.unshift({ ...c, updated: w.startedAt, worker: w.branch }); }
+  return list;
 }
 
 // Is the team working? Either a background run of ours, or a session heard from in the last 5 minutes (hooks, wait, status line).
@@ -33,13 +43,17 @@ async function restartTeam(e, s = slug()) {
   try { await api('POST', `/api/projects/${s}/restart`); refresh(true); }
   catch (err) { alert(err.message); b.disabled = false; b.textContent = t('pres.restart'); }
 }
-async function agentLog(e, s = slug()) {
+async function agentLog(e, s = slug(), worker = '') {   // worker: a 🐝 swarm worker's card id (AIG-901)
   e.preventDefault(); e.stopPropagation();
   try {
-    const r = await api('GET', `/api/projects/${s}/agentlog`);
-    openDialog(`<h2>${esc(t('pres.log.h'))}</h2><pre id="agentLog" style="max-height:60vh;overflow:auto;white-space:pre-wrap">${esc(r.text || t('pres.log.empty'))}</pre><div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
+    const r = await api('GET', `/api/projects/${s}/agentlog${worker ? '?worker=' + encodeURIComponent(worker) : ''}`);
+    const stop = worker && r.running ? `<button id="workerStop" onclick="stopWorker('${esc(s)}', '${esc(worker)}')">${esc(t('swarm.worker.stop'))}</button>` : '';
+    openDialog(`<h2>${esc(worker ? t('swarm.worker.log', { id: worker, branch: r.branch || '' }) : t('pres.log.h'))}</h2><pre id="agentLog" style="max-height:60vh;overflow:auto;white-space:pre-wrap">${esc(r.text || t('pres.log.empty'))}</pre><div class="actions">${stop}<button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
     const pre = $('agentLog'); if (pre) pre.scrollTop = pre.scrollHeight;
   } catch (err) { alert(err.message); }
+}
+async function stopWorker(s, id) {
+  try { await api('POST', `/api/projects/${s}/workers/${encodeURIComponent(id)}/stop`); closeDialog(); refresh(true); } catch (err) { alert(err.message); }
 }
 
 /* ---------- 👁 Watch (AIG-154) ---------- */
@@ -112,7 +126,7 @@ function renderBoard(p) {
       <button onclick="cardViewDialog()" title="${esc(t('board.cards.title'))}">${esc(t('board.cards'))}</button>
       ${p.path ? `<button onclick="permsDialog()" title="${esc(t('board.perms.title'))}">${esc(t('board.perms'))}</button>` : ''}
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${esc(p.archived ? t('board.unarchive') : t('board.archive'))}</button></div>
-    <div class="flight">${t('board.flight.html')} ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>
+    <div class="flight">${t('board.flight.html')} ${flightHtml(flightList(p), p.slug) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>
     ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? `${p.description ? ' · ' : ''}<code>${esc(p.path)}</code>` : ''}</p>` : ''}
     ${Share.laneHtml(p)}
     ${Spaces.boardHtml(p, projCard)}
