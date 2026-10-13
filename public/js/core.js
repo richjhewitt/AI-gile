@@ -185,16 +185,9 @@ const state = { route: null, projects: [], inbox: [], project: null, openCard: n
 try { state.showArchived = localStorage.getItem('aigile.showArchived') === '1'; } catch {}
 
 const api = async (method, url, body, options = {}) => {
-  // Read polls must finish so a stalled connection cannot hold the refresh queue forever.
-  // Writes may include slow installs/commands; preserve their existing completion semantics.
-  const timeout = options.timeout ?? (method === 'GET' ? 15000 : 0);
-  const timeoutSignal = timeout ? AbortSignal.timeout(timeout) : undefined;
-  const routeSignal = options.signal;
-  const signal = timeoutSignal && routeSignal ? AbortSignal.any([timeoutSignal, routeSignal]) : timeoutSignal || routeSignal;
-  const r = await fetch(url, { method, signal, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
-  const j = await r.json();
-  if (!r.ok) throw new Error(j.error || r.statusText);
-  return typeof Streamer !== 'undefined' && Streamer.on() ? Streamer.filter(method, url, j) : j;   // 🎥 streamer mode (AIG-590)
+  // PagePoll.request: shared GETs, a 15 s timeout on reads (a stalled connection cannot hold the refresh queue), the caller's signal.
+  const j = await PagePoll.request(method, url, body, options);
+  return typeof Streamer !== 'undefined' && Streamer.on() ? PagePoll.remember(await Streamer.filter(method, url, j)) : j;   // 🎥 streamer mode (AIG-590)
 };
 // A project's picture, or its emoji when it has none (AIG-175). Round, one em, so it sits where the emoji sat.
 function pic(logo, emoji) { return logo ? `<img class="pic" src="${esc(logo)}" alt="">` : esc(emoji || ''); }
@@ -259,10 +252,10 @@ function parseRoute() {
 }
 
 /* ---------- refresh and render loop ---------- */
-// The 1s poll must never wipe out what the owner is typing or a drag in progress.
+// Background refresh must never wipe out what the owner is typing or a drag in progress.
 // busy() = a dialog is open, a card is being edited, a drag is running, a field has focus,
 // or any field in the panel holds unsent text. While busy we skip re-rendering (data is re-fetched
-// each tick and renders as soon as the owner is done, because the signature differs).
+// when changed and renders as soon as the owner is done, because the signature differs).
 function busy() {
   if (state.dragging || state.editing || $('dialog').firstChild) return true;
   const a = document.activeElement;
@@ -274,10 +267,11 @@ function busy() {
 
 // The render signature (AIG-310): presence.waitingMs ticks on every request while a team sits in 'aigile wait', so it is
 // left out; with it in, the board and the open card were redrawn every second and the panel flickered.
-const renderSig = x => JSON.stringify(x, (k, v) => k === 'waitingMs' ? undefined : v);
+const renderSig = x => PagePoll.signature(x);   // downloaded data is fingerprinted once, never re-stringified per tick (AIG-920)
 // At most one refresh runs; repeated polls collapse into one follow-up (forced stays forced).
 let refreshPromise = null, refreshPending = null, refreshController = null, refreshRoute = null;
 function refresh(force) {
+  if (force) PagePoll.invalidate(false);   // an owner action: the next reads skip the cache
   // Inbox already owns a single-flight loader; it must not hold navigation in this queue.
   const target = parseRoute();
   if (target.view === 'inbox' && i18n.ready && !Boot.failed && !Phone.blocked) {
@@ -311,7 +305,8 @@ async function refreshOnce(force) {
   // Stage fetched values. Navigation during an await must not overwrite the active project.
   const stagedState = Object.create(liveState);
   const signal = refreshController.signal;
-  const refreshApi = (method, url, body, options = {}) => api(method, url, body, { ...options, signal });
+  // Reads go through PagePoll: fetched only when /api/rev (or the project's own stamp) moved, or forced (AIG-920).
+  const refreshApi = (method, url, body, options = {}) => method === 'GET' ? PagePoll.get(url, { force, revision: !/\/agentlog$/.test(url), ...options, signal }) : api(method, url, body, { ...options, signal });
   return refreshStaged(force, liveState, stagedState, refreshApi);
 }
 async function refreshStaged(force, liveState, state, api) {
@@ -326,70 +321,70 @@ async function refreshStaged(force, liveState, state, api) {
   try {
     if (state.route.view === 'home') {
       const q = state.showArchived ? '?all=1' : '';
-      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([TodayPage.load({ signal: refreshController.signal }).then(() => api('GET', '/api/projects' + q)), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
+      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([TodayPage.load({ signal: refreshController.signal }).then(() => api('GET', '/api/projects' + q)), IB.load(force).then(() => IB.raw), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
       state.projects = TodayPage.only(Swarm.only(state.projects)); state.inbox = Swarm.only(state.inbox, true);   // 🚨 swarm: only that project (AIG-877)
-      sig = renderSig([state.route, state.projects, state.inbox, state.usage, TodayPage.data, state.sm && [state.sm.on, state.sm.where, state.sm.listening, state.sm.running, state.sm.lastRunAt, state.sm.lastRound]]);
+      sig = renderSig([state.route, state.projects, IB.dataSig, state.usage, TodayPage.data, state.sm && [state.sm.on, state.sm.where, state.sm.listening, state.sm.running, state.sm.lastRunAt, state.sm.lastRound]]);
     } else if (state.route.view === 'setup') {
-      state.setup = await api('GET', '/api/setup');
-      sig = JSON.stringify([state.route, state.setup]);
+      state.setup = await get('/api/setup');
+      sig = renderSig([state.route, state.setup]);
     } else if (state.route.view === 'standups') {
-      state.standups = await api('GET', '/api/standups');
-      sig = JSON.stringify([state.route, state.standups]);
+      state.standups = await get('/api/standups');
+      sig = renderSig([state.route, state.standups]);
     } else if (state.route.view === 'night') {
-      [state.watch, state.projects, state.standups] = await Promise.all([api('GET', '/api/watchman').catch(() => null), api('GET', '/api/projects'), api('GET', '/api/standups').catch(() => null)]);
-      sig = JSON.stringify([state.route, state.watch, state.projects.map(p => [p.slug, p.presence && p.presence.online]), state.standups && state.standups.blockers, Math.floor(Date.now() / 60e3)]);
+      [state.watch, state.projects, state.standups] = await Promise.all([get('/api/watchman').catch(() => null), get('/api/projects'), get('/api/standups').catch(() => null)]);
+      sig = renderSig([state.route, state.watch, state.projects.map(p => [p.slug, p.presence && p.presence.online]), state.standups && state.standups.blockers, Math.floor(Date.now() / 60e3)]);
     } else if (state.route.view === 'watch') {
-      state.watchLog = await api('GET', `/api/projects/${state.route.slug}/agentlog`);
-      sig = JSON.stringify([state.route, state.watchLog, Math.floor(Date.now() / 60e3)]);
+      state.watchLog = await get(`/api/projects/${state.route.slug}/agentlog`);
+      sig = renderSig([state.route, state.watchLog, Math.floor(Date.now() / 60e3)]);
     } else if (state.route.view === 'news') {
-      state.news = await api('GET', `/api/projects/${state.route.slug}/news`);
-      sig = JSON.stringify([state.route, state.news, Math.floor(Date.now() / 60e3)]);
+      state.news = await get(`/api/projects/${state.route.slug}/news`);
+      sig = renderSig([state.route, state.news, Math.floor(Date.now() / 60e3)]);
     } else if (state.route.view === 'dlg') {
       if (state.route.slug) { state.project = await api('GET', '/api/projects/' + state.route.slug); await loadDocs(state.route.slug, { signal: refreshController.signal }); }
       await loadProfiles({ signal: refreshController.signal });
-      sig = JSON.stringify([state.route, i18n.lang]);
+      sig = renderSig([state.route, i18n.lang]);
     } else if (state.route.view === 'weed') {
-      sig = JSON.stringify([state.route, i18n.lang]);
+      sig = renderSig([state.route, i18n.lang]);
     } else if (state.route.view === 'glance') {
       await ScrumGlance.load(state.route.slug, { signal: refreshController.signal });
-      sig = JSON.stringify([state.route, ScrumGlance.data, i18n.lang]);
+      sig = renderSig([state.route, ScrumGlance.data, i18n.lang]);
     } else if (state.route.view === 'term' || state.route.view === 'twitch') {
-      sig = JSON.stringify([state.route, i18n.lang]);
+      sig = renderSig([state.route, i18n.lang]);
     } else if (state.route.view === 'glossary') {
-      sig = JSON.stringify([state.route, i18n.lang]);
+      sig = renderSig([state.route, i18n.lang]);
     } else if (state.route.view === 'shared') {
-      state.sboard = await api('GET', `/api/shares/${state.route.link}/board`).catch(() => null);
-      sig = JSON.stringify([state.route, state.sboard, i18n.lang]);
+      state.sboard = await get(`/api/shares/${state.route.link}/board`).catch(() => null);
+      sig = renderSig([state.route, state.sboard, i18n.lang]);
     } else if (state.route.view === 'mail') {
       await Mail.load({ signal: refreshController.signal });
-      sig = JSON.stringify([state.route, Mail.sig(), i18n.lang]);
+      sig = renderSig([state.route, Mail.sig(), i18n.lang]);
     } else if (state.route.view === 'bin') {
       await Bin.load();
-      sig = JSON.stringify([state.route, Bin.data, Bin.err, i18n.lang]);
+      sig = renderSig([state.route, Bin.data, Bin.err, i18n.lang]);
     } else if (state.route.view === 'assumptions') {
       await Assumptions.load({ signal: refreshController.signal });
-      sig = JSON.stringify([state.route, Assumptions.data]);
+      sig = renderSig([state.route, Assumptions.data]);
     } else if (state.route.view === 'stats') {
       // Say "Stats" and "Loading" at once (AIG-928): the git count can take a while, and the last page (and its crumb) stayed up meanwhile.
       if (StatsPage.slug !== state.route.slug || !StatsPage.data) { StatsPage.slug = state.route.slug; StatsPage.data = null; state.lastSig = state.lastBoardSig = null; liveState.route = state.route; render(); }
       await StatsPage.load(state.route.slug, { signal: refreshController.signal });
-      sig = JSON.stringify([state.route, StatsPage.data, i18n.lang]);
+      sig = renderSig([state.route, StatsPage.data, i18n.lang]);
     } else if (state.route.view === 'risks') {
       await RisksPage.load(state.route.slug);
-      sig = JSON.stringify([state.route, RisksPage.data, i18n.lang]);
+      sig = renderSig([state.route, RisksPage.data, i18n.lang]);
     } else if (state.route.view === 'life') {
       await LifeAdmin.load();
-      sig = JSON.stringify([state.route, LifeAdmin.data, LifeAdmin.err, i18n.lang]);
+      sig = renderSig([state.route, LifeAdmin.data, LifeAdmin.err, i18n.lang]);
     } else if (state.route.view === 'today') {
       await TodayPage.load({ signal: refreshController.signal });
-      sig = JSON.stringify([state.route, TodayPage.data, i18n.lang]);
+      sig = renderSig([state.route, TodayPage.data, i18n.lang]);
     } else if (state.route.view === 'whatsnew') {
       await WhatsNew.load({ signal: refreshController.signal });
-      sig = JSON.stringify([state.route, WhatsNew.data, WhatsNew.rb, i18n.lang]);
+      sig = renderSig([state.route, WhatsNew.data, WhatsNew.rb, i18n.lang]);
     } else if (state.route.view === 'usage') {
       if (!uz.data) { state.lastSig = state.lastBoardSig = null; liveState.route = state.route; render(); }   // AIG-558: say "Loading" at once, not after the fetch
       await loadUsagePage(force, { signal: refreshController.signal });   // heavy, so at most every ~15s
-      sig = JSON.stringify([state.route, uzSig()]);
+      sig = renderSig([state.route, uzSig()]);
     } else {
       state.project = await api('GET', '/api/projects/' + state.route.slug);
       await loadDocs(state.route.slug, { signal: refreshController.signal });

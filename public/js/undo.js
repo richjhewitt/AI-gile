@@ -36,9 +36,7 @@
     const { slug, id } = last; last = null; hide();
     const b = bar();
     try {
-      const r = await fetch(`/api/projects/${slug}/cards/${id}/undo`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
-      const j = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(j.error || r.statusText);
+      await api('POST', `/api/projects/${slug}/cards/${id}/undo`, {});
       b.querySelector('#undoMsg').textContent = t('undo.back', { id }); b.querySelector('#undoBtn').textContent = ''; b.hidden = false;
       clearTimeout(timer); timer = setTimeout(hide, 3e3);
       if (typeof refresh === 'function') refresh(true);

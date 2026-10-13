@@ -10,9 +10,9 @@ const Hyperfocus = (() => {
     b.innerHTML = st.on ? `<span class="hf-chip" role="status"><a href="#/p/${esc(st.slug)}" title="${esc(t('hf.chip.title'))}">${esc(t('hf.chip', { name: st.name }))}</a> <button onclick="Hyperfocus.off()" title="${esc(t('hf.off'))}" aria-label="${esc(t('hf.off'))}">✕</button></span>` : '';
   }
   function set(next) { const was = st.on ? st.slug : ''; st = next; paint(); if (was !== (st.on ? st.slug : '') && typeof Swarm !== 'undefined') Swarm.redraw(); }
-  async function poll() { try { set(await api('GET', '/api/hyperfocus')); } catch {} }
+  async function poll() { try { set(await PagePoll.get('/api/hyperfocus')); } catch {} }
   async function on(slug) { try { set(await api('POST', '/api/hyperfocus', { slug })); } catch (e) { alert(e.message); } }
   async function off() { try { set(await api('POST', '/api/hyperfocus', { off: true })); } catch (e) { alert(e.message); } }
-  function start() { poll(); setInterval(poll, 5000); }
+  function start() { PagePoll.every(poll, 3000, { immediate: true }); }
   return { start, on, off, poll, get slug() { return st.on ? st.slug : ''; } };
 })();

@@ -37,7 +37,7 @@ const Focus = (() => {
       </div></div>`;
   }
   function tick() { const x = document.getElementById('fxTime'); if (x && cur) x.textContent = '⏱ ' + timeText(); }
-  setInterval(tick, 15000);
+  PagePoll.every(tick, 15000);
 
   async function act(what) {
     try { const r = await api('POST', '/api/focus/' + what); if (what === 'leave') return ended(); apply(r); was = true; }

@@ -20,14 +20,16 @@ const standupButtons = p => `<button onclick="callStandup(['${p.slug}'])" title=
 const suDay = () => new Date().toLocaleDateString('sv');
 const suPromptGone = () => { const el = $('suPrompt'); if (el) el.remove(); };
 async function morningPrompt() {
+  if (document.hidden) return void setTimeout(morningPrompt, 60e3);
+  if (/^#\/pop/.test(location.hash)) return;
   if (!i18n.ready) return void setTimeout(morningPrompt, 500);
-  // Nothing to stand up about on a brand-new board with no cards anywhere (AIG-333).
-  try { if (!(await api('GET', '/api/projects')).some(p => p.total)) return void setTimeout(morningPrompt, 60e3); } catch { return; }
   // Never in a pop-out (AIG-281): in the small night glance it covered the projects.
   if ($('suPrompt') || !state.route || state.route.pop || state.route.popList || ['setup', 'night', 'watch', 'news'].includes(state.route.view)) return;
   try { if (localStorage.getItem('aigile.standupAsked') === suDay()) return; } catch { return; }   // no storage: never nag
   const a = document.activeElement;
   if (busy() || (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return void setTimeout(morningPrompt, 3000);
+  // Read the shared project list only when a prompt can actually be shown.
+  try { if (!(await PagePoll.get('/api/projects')).some(p => p.total)) return void setTimeout(morningPrompt, 60e3); } catch { return; }
   try { localStorage.setItem('aigile.standupAsked', suDay()); } catch { return; }
   const el = document.createElement('div'); el.id = 'suPrompt';
   el.innerHTML = `<div class="su-pill"><b>${esc(t('standup.prompt'))}</b>

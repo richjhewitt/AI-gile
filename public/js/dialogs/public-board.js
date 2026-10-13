@@ -33,6 +33,6 @@ const Pub = (() => {
     const s = await status(); if (!s || !$('pubViewers')) return;
     $('pubViewers').textContent = s.error ? '⚠ ' + s.error : s.live ? t('pub.viewers', { count: s.viewers }) : '';
   }
-  setInterval(() => { if ($('pubViewers')) paint(); }, 5000);   // the board header is redrawn often; this fills the count in again
+  PagePoll.every(() => { if ($('pubViewers')) return paint(); }, 5000);   // the board header is redrawn often; this fills the count in again
   return { copyBtn, lookHtml, tick, copy, paint };
 })();

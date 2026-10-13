@@ -45,14 +45,19 @@ window.addEventListener('hashchange', () => {
 // The language file is in before the first render (AIG-124). If it or the first /api/meta fails (a restart, a half-written
 // file mid-update), the page says "Updating… retrying" and starts again with backoff (AIG-517, see Boot in index.html).
 (function start() {
-  loadLang().then(() => Phone.ready()).then(() => api('GET', '/api/meta')).then(m => {   // a phone pairs first (AIG-868)
+  loadLang().then(() => Phone.ready()).then(() => api('GET', '/api/meta')).then(async m => {   // a phone pairs first (AIG-868)
     if (!Boot.ok()) return;   // a script broke meanwhile: the page reloads instead
     state.servers = m.servers || []; state.terms = m.terms || []; state.srvAccess = m.srvAccess || {};
     NoAi.apply(m.noAi, m.noAiBuild);
-    theme(); refresh(true); checkBuild(); NoTokens.start(); Tired.start(); Swarm.start(); Hyperfocus.start(); Weed.start(); Streamer.start(); UsageGlance.start(); helpBoot();
+    theme(); await Streamer.start(); await IB.load(true).catch(() => {}); await Dms.reload(); refresh(true); checkBuild(); NoTokens.start(); Tired.start(); Swarm.start(); Hyperfocus.start(); Weed.start(); UsageGlance.start(); helpBoot();
   }, e => Boot.again(start, e));
 })();
-setInterval(() => { if (!document.hidden) { refresh(); ScrumGlance.tick(); } OpenCard.tick(); }, 1000);
+let lastPageTick = 0;
+PagePoll.every(async () => {
+  const now = Date.now(), liveView = state.route && (state.route.view === 'inbox' || state.route.view === 'project' && state.route.card);
+  if (liveView || now - lastPageTick >= 3000) { lastPageTick = now; await refresh(); await ScrumGlance.tick(); }
+}, 1000);
+PagePoll.every(() => OpenCard.tick(), 1000);
 setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136)
 
 // Dev builds: when the server or page changes, a small 🆕 Refresh pill floats at the top (AIG-78), above any open
@@ -78,17 +83,23 @@ async function checkBuild() {
   checkingBuild = true;
   try {
     const m = await api('GET', '/api/meta');
+    // Quiet/focus flags affect the title and alerts in other windows too.
+    if (document.hidden) {
+      setNight(m.quiet);
+      document.documentElement.toggleAttribute('data-focus', !!(m.focus && m.focus.project) && location.hash !== '#/pop-night');
+      IB.paintTop(); return;
+    }
     NoAi.apply(m.noAi, m.noAiBuild);   // 🚫 (AIG-581)
     if (m.owner && m.owner !== state.owner) { state.owner = m.owner; refresh(true); }
     // Quiet ended by itself at the wake-up time (AIG-232): show what happened overnight.
     if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});
-    wasQuiet = m.quiet; setNight(m.quiet);
+    if (wasQuiet !== m.quiet) setNight(m.quiet); wasQuiet = m.quiet;
     quietTimeChip(m.quietTime);   // change calendar (AIG-615)
     Focus.watch(m.focus);   // 🎯 focus mode (AIG-395)
     applyAppLogo(m.appLogo, m.appIcon);
     if (JSON.stringify([m.servers || [], m.terms || [], m.srvAccess || {}]) !== JSON.stringify([state.servers, state.terms, state.srvAccess || {}])) { state.servers = m.servers || []; state.terms = m.terms || []; state.srvAccess = m.srvAccess || {}; refresh(true); }   // ⌨ terms: the ones with an ssh address (AIG-471)   // My servers (AIG-374)
     if ((m.ownerPic || '') !== (state.ownerPic || '')) { state.ownerPic = m.ownerPic || ''; refresh(true); }   // your picture (AIG-150)
-    pokeBadge(await api('GET', '/api/projects'));
+    pokeBadge(await PagePoll.get('/api/projects'));
     Assumptions.watch();   // the count on the 🌙 Assumptions link (AIG-477)
     Mail.watch();   // ✉️ the Mail link shows once a mailbox is set up (AIG-902)
     WhatsNew.check();   // ✨ a note once after an update (AIG-562)
@@ -113,7 +124,7 @@ async function checkBuild() {
 // After a queued restart: reload as soon as a new board (a new start time in its build id) answers.
 function waitForNewBoard() {
   const startedOf = b => String(b || "").split("-")[0], was = startedOf(loadedBuild);
-  const tick = setInterval(async () => { try { const m = await api("GET", "/api/meta"); if (startedOf(m.build) !== was) { clearInterval(tick); location.reload(); } } catch {} }, 3000);
+  const tick = PagePoll.every(async () => { try { const m = await api("GET", "/api/meta"); if (startedOf(m.build) !== was) { tick(); location.reload(); } } catch {} }, 3000);
 }
 async function restartBoard(btn) {
   const box = $('upRestart'); box.dataset.busy = '1'; btn.disabled = true; btn.textContent = t('restart.busy');
@@ -223,7 +234,8 @@ function showMorning(summary) {
   if (summary && summary.length) openDialog(`<h2>${esc(t('watch.morning'))}</h2><ul class="watch-sum">${summary.map(x => `<li><b>${esc(x.name)}</b>: ${esc(t('watch.line', { h: x.handedOver, d: x.done, w: x.woke }))}${x.restarted.length ? ' · ' + esc(t('watch.restarted', { ids: x.restarted.join(', ') })) : ''}${x.stuck.length ? ` · <span class="su-red">${esc(t('watch.stuck', { ids: x.stuck.join(', ') }))}</span>` : ''}</li>`).join('')}</ul>
       <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
 }
-setInterval(checkBuild, 5000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+PagePoll.every(checkBuild, 5000, { hidden: 30000 });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { PagePoll.invalidate(false); refresh(); morningPrompt(); } });
+
 // Last line of the last script (AIG-517): every script loaded and ran, so the start-up guard stands down.
 Boot.done = true;

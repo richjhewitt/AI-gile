@@ -72,8 +72,8 @@ async function watchTeam(e, s = slug()) {
   e.preventDefault(); e.stopPropagation();
   openDialog(`<h2>${esc(t('eye.h'))} <button class="watch-pop" title="${esc(t('eye.pop'))}" onclick="popOut('watch', '#/pop-watch/${s}', 'aigile-watch-${s}', 620, 720)">⧉</button></h2>
     ${watchBody()}<div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
-  const tick = async () => { if (!$('watchLog')) return clearInterval(timer); try { paintWatch(await api('GET', `/api/projects/${s}/agentlog`)); } catch {} };
-  const timer = setInterval(tick, 2500); tick();
+  const tick = async () => { if (!$('watchLog')) return timer(); try { paintWatch(await api('GET', `/api/projects/${s}/agentlog`)); } catch {} };
+  const timer = PagePoll.every(tick, 3000, { immediate: true });
 }
 // The pop-out (#/pop-watch/<slug>) rides the 1 s page poll; the shell is drawn once so scrolling up to read stays put.
 function renderWatch() {
@@ -227,7 +227,7 @@ async function tidyPile(s, btn) {
 async function testForMe(s) {
   try { await api('POST', '/api/tester', { projects: [s] }); } catch (e) { alert(e.message); return; }
   state.testerOn = true; note(t('tester.started')); refresh(true);
-  const look = async () => { let st = null; try { st = await api('GET', '/api/tester'); } catch {} if (st && st.running) return void setTimeout(look, 10e3); state.testerOn = false; refresh(true); };
+  const look = async () => { if (document.hidden) return void setTimeout(look, 10e3); let st = null; try { st = await api('GET', '/api/tester'); } catch {} if (st && st.running) return void setTimeout(look, 10e3); state.testerOn = false; refresh(true); };
   setTimeout(look, 10e3);
 }
 // Focus (AIG-141): click the For you header to see only that column; remembered per project.

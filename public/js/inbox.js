@@ -44,7 +44,9 @@
 
   /* ---------- hooks used by js/core.js ---------- */
   // Called from refresh() whenever the route is #/inbox. Takes over the page body.
+  let shownSig = null;
   async function show(force) {
+    const hadPage = !!el('ib');
     try { await IB.load(force); } catch (e) {   // force: e.g. the swarm's "show other projects" changes the list without moving the stamp
       if (parseRoute().view !== 'inbox') return;
       el('live').className = 'live off'; el('live').textContent = t('live.offline', { msg: e.message }); return;
@@ -55,11 +57,11 @@
     el('modal').innerHTML = '';
     if (typeof state !== 'undefined') state.lastSig = state.lastBoardSig = null;   // so other views redraw when the owner leaves
     if (force || !el('ib')) { if (!el('ib')) IB.skeleton(); IB.fromProject = (typeof state !== 'undefined' && state.lastProject) || null; IB.selectPinned = true; }
-    IB.paintTop(); IB.paintPage();
+    IB.paintTop(); if (force || !hadPage || shownSig !== IB.dataSig) { IB.paintPage(); shownSig = IB.dataSig; }
   }
 
   // Own poll so counts, tab title and alerts keep working on every page, even in a background tab.
-  setInterval(() => { IB.load().catch(() => {}); }, 1000);
+  PagePoll.every(() => IB.load(), 3000, { hidden: 30000 });
   window.addEventListener('hashchange', IB.paintTop);
   IB.load().catch(() => {});
   window.Inbox = { show, repaint: IB.repaint };

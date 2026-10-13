@@ -18,7 +18,7 @@ function popFeatures(kind, w, h) {
 function popOut(kind, hash, name, w, h) {
   return window.open(hash, name || 'aigile-' + kind, popFeatures(kind, w, h));
 }
-// In a pop window: remember where it sits and how big it is (checked every second, and as it closes).
+// In a pop window: remember where it sits and how big it is (checked every five seconds, and as it closes).
 function popRemember() {
   const kind = popKindOf(location.hash); if (!kind) return;
   let last = '';
@@ -27,7 +27,7 @@ function popRemember() {
     const s = JSON.stringify(g); if (s === last || g.w < 200 || g.h < 150) return;
     last = s; try { const all = popGeo(); all[kind] = g; localStorage.setItem(POPWIN_KEY, JSON.stringify(all)); } catch {}
   };
-  setInterval(save, 1000); window.addEventListener('resize', save); window.addEventListener('pagehide', save);
+  PagePoll.every(save, 5000); window.addEventListener('resize', save); window.addEventListener('pagehide', save);
 }
 popRemember();
 

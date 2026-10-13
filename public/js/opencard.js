@@ -14,7 +14,7 @@ const OpenCard = (() => {
     el.innerHTML = chips.map(e => `<div class="oc-chip" data-n="${e.n}"><button type="button" class="oc-go" data-go="${e.n}" title="${esc(t('oc.open'))}">${esc(t('oc.chip', { who: e.by || t('oc.someone'), id: e.id }))} <span class="muted">${esc(e.title)}</span></button><button type="button" class="oc-x" data-x="${e.n}" title="${esc(t('oc.dismiss'))}">✕</button></div>`).join('');
   }
   async function tick() {
-    if (busyNow || (state.route && state.route.pop)) return;
+    if (document.hidden || busyNow || /^#\/pop/.test(location.hash)) return;
     busyNow = true;
     try {
       const r = await api('GET', '/api/opencard?front=' + (front() && !document.documentElement.hasAttribute('data-break') ? 1 : 0));   // on a break nothing is "in front": requests stay chips

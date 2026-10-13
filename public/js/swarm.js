@@ -13,7 +13,7 @@ const Swarm = (() => {
   }
   function redraw() { if (typeof Dms !== 'undefined' && Dms.reload) Dms.reload(); if (typeof refresh === 'function') refresh(true); if (typeof Inbox !== 'undefined' && Inbox.show && state.route && state.route.view === 'inbox') Inbox.show(true); }
   function set(next) { const was = [st.on, st.slug].join(); st = next; paint(); if (was !== [st.on, st.slug].join()) redraw(); }
-  async function poll() { try { set(await api('GET', '/api/swarm')); } catch {} }
+  async function poll() { try { set(await PagePoll.get('/api/swarm')); } catch {} }
   async function off() { try { set(await api('POST', '/api/swarm', { off: true })); } catch (e) { alert(e.message); } }
   const focus = () => (st.on && !showAll) ? st.slug : (typeof Hyperfocus !== 'undefined' ? Hyperfocus.slug : '');   // swarm first, else 🎯 Hyperfocus (AIG-871)
   function toggle() { showAll = !showAll; paint(); redraw(); }
@@ -35,6 +35,6 @@ const Swarm = (() => {
     if (!confirm(t('swarm.confirm', { name: (state.project && state.project.slug === slug && state.project.name) || slug }))) return;
     try { set(await api('POST', '/api/swarm', { slug })); } catch (e) { alert(e.message); }
   }
-  function start() { poll(); setInterval(poll, 5000); }
+  function start() { PagePoll.every(poll, 3000, { immediate: true }); }
   return { start, off, btn, toggleFor, poll, toggle, only, redraw, get on() { return !!st.on; }, get hiding() { return !!focus(); } };
 })();

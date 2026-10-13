@@ -137,7 +137,7 @@ function conflicted(file, st) {
 function send(res, code, body) {
   if (res.destroyed) return;
   res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-  res.end(JSON.stringify(body, null, 2));
+  res.end(JSON.stringify(body));   // compact (AIG-920): pretty-printing added 20% to every poll
 }
 
 function readBody(req, max = 1e6) {
