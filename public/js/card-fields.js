@@ -76,6 +76,18 @@ function onAssignee(sel) {
 }
 
 // ⭐ Crucial (AIG-549): kept running while the usage saver is on.
+// 🔥 One click to mark a card urgent (AIG-899); click again to put the old priority back.
+const urgentBtn = (c, s) => { const on = c.priority === 'urgent'; return `<button type="button" class="urg-btn${on ? ' on' : ''}" data-urgent="${esc(s || (state.project && state.project.slug))}/${esc(c.id)}" aria-pressed="${on}" title="${esc(t(on ? 'urgent.unmark' : 'urgent.mark'))}">🔥</button>`; };
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-urgent]'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  const [s, id] = b.dataset.urgent.split('/');
+  try {
+    const c = (await api('GET', `/api/projects/${s}`)).cards.find(x => x.id === id); if (!c) return;
+    const body = c.priority === 'urgent' ? { priority: c.prevPriority && c.prevPriority !== 'urgent' ? c.prevPriority : 'normal', prevPriority: '' } : { priority: 'urgent', prevPriority: c.priority };
+    await api('PATCH', `/api/projects/${s}/cards/${id}`, body); refresh(true); if (typeof Inbox !== 'undefined' && Inbox.reload) Inbox.reload();
+  } catch (err) { alert(err.message); }
+}, true);
 const crucialBtn = c => `<button class="crucial-btn${c.crucial ? ' on' : ''}" aria-pressed="${c.crucial ? 'true' : 'false'}" title="${esc(t('saver.crucial.title'))}" onclick="toggleCrucial()">${esc(t('saver.crucial'))}</button>`;
 async function toggleCrucial() {
   const c = curCard(); if (!c) return;

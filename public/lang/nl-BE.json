@@ -2751,5 +2751,7 @@
  "swarm.worker.log": "🐝 Zwermwerker {id} ({branch})",
  "swarm.worker.stop": "⏹ Werker stoppen",
  "swarm.workers": "Zwermwerkers tegelijk",
- "swarm.workers.help": "Zolang de zwerm aan staat, laat het bord één werker per To do-kaart lopen, elk in een eigen git-worktree, tot zoveel tegelijk."
+ "swarm.workers.help": "Zolang de zwerm aan staat, laat het bord één werker per To do-kaart lopen, elk in een eigen git-worktree, tot zoveel tegelijk.",
+ "urgent.mark": "Markeer als dringend",
+ "urgent.unmark": "Niet meer dringend"
 }
