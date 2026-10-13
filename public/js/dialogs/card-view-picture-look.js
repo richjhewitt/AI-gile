@@ -6,7 +6,7 @@ function cardViewDialog() {
   const v = cardViewOf(state.project);
   const tile = d => `<label class="cv-size ${v.density === d ? 'on' : ''}"><input type="radio" name="cv-density" value="${d}" ${v.density === d ? 'checked' : ''}>
       <span class="cv-pic ${d}"><i></i><i></i><i></i></span><b>${esc(t('cv.' + d))}</b><small class="muted">${esc(t('cv.' + d + '.help'))}</small></label>`;
-  openDialog(`<div class="cv-dlg" onchange="previewCardView()"><h2>${esc(t('board.cards'))}</h2><p class="muted">${esc(t('cv.intro'))}</p>
+  popNext('cards'); openDialog(`<div class="cv-dlg" onchange="previewCardView()"><h2>${esc(t('board.cards'))}</h2><p class="muted">${esc(t('cv.intro'))}</p>
     <div class="cv-grid"><div>
       <h3>${esc(t('cv.size'))}</h3><div class="cv-sizes">${tile('roomy')}${tile('compact')}</div>
       <h3>${esc(t('cv.show'))}</h3><div class="cv-toggles">${CARD_DETAILS.map(k => `<label class="cv-toggle"><input type="checkbox" data-cv="${k}" ${v.show[k] ? 'checked' : ''}><span>${esc(t('cv.' + k))}</span></label>`).join('')}</div>
@@ -76,7 +76,7 @@ async function lookDialog() {
   const p = state.project;
   if (!state.setup) try { state.setup = await api('GET', '/api/setup'); } catch {}   // the default for where it runs (AIG-153)
   const def = leadPrefs().runIn || 'background', w = p.runIn || def;
-  openDialog(`<h2>${esc(t('board.look'))}</h2>
+  popNext('look'); openDialog(`<h2>${esc(t('board.look'))}</h2>
     <p class="muted">${esc(t('look.intro', { name: p.name }))}</p>
     <div class="row"><label class="f"><span>${esc(t('cols.emoji'))}</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
     <label class="f"><span>${esc(t('cols.colour'))}</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>

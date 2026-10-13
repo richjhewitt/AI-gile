@@ -18,9 +18,9 @@
   }
   function onClick(e) {
     const pc = e.target.closest('[data-popcard]');
-    if (pc) { const n = pc.closest('.ib-item'); window.open(`#/pop/${n.dataset.project}/${n.dataset.id}`, 'aigile-' + n.dataset.project + '-' + n.dataset.id, 'width=560,height=780'); return; }
+    if (pc) { const n = pc.closest('.ib-item'); popOut('card', `#/pop/${n.dataset.project}/${n.dataset.id}`, 'aigile-' + n.dataset.project + '-' + n.dataset.id, 560, 780); return; }
     const pl = e.target.closest('[data-poplist]');
-    if (pl) { window.open('#/pop-inbox/' + pl.dataset.poplist, 'aigile-inbox-' + pl.dataset.poplist, 'width=480,height=760'); return; }
+    if (pl) { popOut('inbox', '#/pop-inbox/' + pl.dataset.poplist, 'aigile-inbox-' + pl.dataset.poplist, 480, 760); return; }
     if (e.target.closest('[data-decide]')) { e.target.closest('[data-decide]').blur(); IB.decide = IB.decide >= 0 ? -1 : 0; IB.flick = -1; IB.paintPage(); return; }
     const dc = e.target.closest('[data-dc]'); if (dc) { IB.decideAct(dc.dataset.dc, +dc.dataset.n); return; }
     if (e.target.closest('[data-flick]')) { IB.decide = -1; IB.flick = IB.flick >= 0 ? -1 : 0; IB.paintPage(); return; }

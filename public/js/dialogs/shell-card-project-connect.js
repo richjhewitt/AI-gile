@@ -1,10 +1,12 @@
 /* ---------- dialog shell ---------- */
-function openDialog(html, cls = '') {
+function openDialog(html, cls = '', pop = '') {   // pop: the kind that gets the shared ⧉ Pop out button (popout.js, AIG-658)
   $('dialog').innerHTML = `<div class="overlay center"><div class="dialog ${cls}">${html}</div></div>`;
+  popAddBtn(pop || popTake());
   const f = $('dialog').querySelector('input[type=text]'); if (f) f.focus();
 }
 function closeDialog() {
   $('dialog').innerHTML = '';
+  if (state.route.view === 'dlg') { window.close(); return; }   // a dialog in its own window: closing it closes the window
   if (state.cvPreview) { state.cvPreview = null; renderBoardOnly(); }   // an unsaved card view preview goes away (AIG-119)
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog').firstChild) closeDialog(); });
@@ -32,7 +34,7 @@ async function newCard(preset = {}) {
         <label class="f"><span>${esc(t('dlg.life.remind'))}</span><select id="nc-remind">${[0, 15, 30, 60, 120, 1440].map(m => `<option value="${m}" ${m === 60 ? 'selected' : ''}>${esc(t('dlg.life.remind.' + m))}</option>`).join('')}</select></label></div>
       <small class="muted" id="nc-appt-hint" hidden>${esc(t('dlg.life.hint'))}</small>
       ${state.project && !state.project.lifeBoard ? `<small class="muted" id="nc-life-suggest">${esc(t('dlg.life.suggest'))} <a href="#" onclick="makeLifeBoard();return false">${esc(t('dlg.life.suggest.btn'))}</a></small>` : ''}</div>`;
-  openDialog(`<h2>${esc(bug ? t('board.raisebug') : t('dlg.newcard'))}</h2>
+  popNext(bug ? 'bug' : 'card'); openDialog(`<h2>${esc(bug ? t('board.raisebug') : t('dlg.newcard'))}</h2>
     <form onsubmit="return createCard(event)">${projects.length > 1 || !slug() ? `<label class="f"><span>${esc(t('dlg.newcard.project'))}</span><select id="nc-project">${projectOptionsHtml(projects, leads, slug())}</select></label>` : ''}${lifeBox}${cardFields(c, bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') })}
       <div class="err" id="d-err"></div>
       <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${esc(bug ? t('dlg.raisebug') : t('dlg.createcard'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');

@@ -5,7 +5,7 @@ async function permsDialog() {
   let r;
   try { r = await api('GET', `/api/projects/${slug()}/permissions`); } catch (e) { alert(e.message); return; }
   state.permPresets = r.presets;
-  openDialog(`<h2>${esc(t('board.perms'))}</h2>
+  popNext('perms'); openDialog(`<h2>${esc(t('board.perms'))}</h2>
     <p class="muted">${t('perm.intro.html', { file: esc(r.file) })}</p>
     <div id="perm-ticks">${Object.entries(r.presets).map(([k, v]) => `<label class="chk"><input type="checkbox" data-k="${k}" onchange="permTick(this)"> ${esc(tk('perm.p.' + k, v.label))}</label>`).join('')}</div>
     ${PERM_LISTS.map(([l, label]) => `<label class="f"><span>${esc(t('perm.rule', { label: t(label) }))}</span><textarea id="perm-${l}" rows="4" oninput="permSync()">${esc(r[l].join('\n'))}</textarea></label>`).join('')}
@@ -45,7 +45,7 @@ async function loadDocs(s) {
 async function openDocs() {
   try {
     state.docs = await api('GET', `/api/projects/${slug()}/docs`);
-    openDialog(`<h2>${esc(t('board.docs'))}</h2>${state.docs.length ? `<div class="doclist">${state.docs.map((n, i) => `<button onclick="showDoc(${i})">${esc(n)}</button>`).join('')}</div>`
+    popNext('docs'); openDialog(`<h2>${esc(t('board.docs'))}</h2>${state.docs.length ? `<div class="doclist">${state.docs.map((n, i) => `<button onclick="showDoc(${i})">${esc(n)}</button>`).join('')}</div>`
       : `<p class="muted">${state.project.path ? esc(t('docs.none.in', { path: state.project.path })) : esc(t('docs.none.nopath'))}</p>`}
       <div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
   } catch (e) { alert(e.message); }

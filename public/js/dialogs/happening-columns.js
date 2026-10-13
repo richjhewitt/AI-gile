@@ -4,7 +4,7 @@ function happeningDialog() {
   const p = state.project, open = p.cards.filter(c => c.status !== 'done');
   const list = (cs, empty) => cs.length ? `<ul>${cs.map(c => `<li><a href="#/p/${p.slug}/${c.id}" onclick="closeDialog()">${esc(c.id)}</a> ${esc(c.title)}${c.assignee ? ` <span class="muted">@${esc(c.assignee)}</span>` : ''}</li>`).join('')}</ul>` : `<p class="muted">${empty}</p>`;
   const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
-  openDialog(`<h2>${esc(t('happening.h', { name: p.name }))}</h2>
+  popNext('happening'); openDialog(`<h2>${esc(t('happening.h', { name: p.name }))}</h2>
     <div class="last">${presenceHtml(p, false)}</div>
     <h3>${esc(t('happening.doing'))}</h3>${list(open.filter(c => c.status === 'doing'), esc(t('happening.doing.none')))}
     <h3>${esc(t('happening.blocked'))}</h3>${list(open.filter(c => c.blocked), esc(t('happening.blocked.none')))}
@@ -19,7 +19,7 @@ async function askTeamDialog() {
   try { projects = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
   if (!projects.length) projects = [state.project];
   Attach.clear('ask:' + slug());
-  openDialog(`<h2>${esc(t('board.ask'))}</h2>
+  popNext('ask'); openDialog(`<h2>${esc(t('board.ask'))}</h2>
     <form onsubmit="return sendAskTeam(event)"><label class="f"><span>${esc(t('ask.q'))}</span><textarea id="ask-text" class="grow" data-draft="ask/${esc(slug())}" rows="4" oninput="growBox(this)" placeholder="${esc(t('ask.ph'))}"></textarea></label>
     <label class="f"><span>${esc(t('ask.to'))}</span><select id="ask-to">${projectOptionsHtml(projects, {}, slug())}</select></label>
     <div class="err" id="ask-err"></div>
@@ -62,7 +62,7 @@ async function ideaDialog() {
   const here = slug() || '';
   const pick = projects.some(p => p.slug === here) ? here : '_later';
   Attach.clear('idea');
-  openDialog(`<h2>${esc(t('idea.h'))}</h2>
+  popNext('idea'); openDialog(`<h2>${esc(t('idea.h'))}</h2>
     <form onsubmit="return sendIdea(event)"><label class="f"><span>${esc(t('idea.q'))}</span><textarea id="idea-text" class="grow" data-draft="idea" rows="4" oninput="growBox(this)" onkeydown="if (EnterSend.is(event, 'idea')) sendIdea(event)" placeholder="${esc(t('idea.ph'))}"></textarea></label>
     <label class="f"><span>${esc(t('idea.to'))}</span><select id="idea-to">
       <option value="_sm">${esc(t('idea.sm'))}</option>
@@ -104,7 +104,7 @@ async function sendIdea(e) {
 const KEY_COLS = { verify: 'cols.key.verify', team: 'cols.key.team' };
 function columnsDialog() {
   state.colDraft = colsOf(state.project).map(c => ({ ...c }));
-  openDialog(`<h2>${esc(t('board.columns'))}</h2><div id="colRows"></div><div class="err" id="col-err"></div>` +
+  popNext('columns'); openDialog(`<h2>${esc(t('board.columns'))}</h2><div id="colRows"></div><div class="err" id="col-err"></div>` +
     `<div class="actions"><button class="primary" onclick="saveColumns()">${esc(t('common.save'))}</button><button onclick="saveColumns(true)" title="${esc(t('cols.all.title'))}">${esc(t('cols.all'))}</button>` +
     `<button onclick="state.colDraft = colsOf({}); paintColRows()" title="${esc(t('cols.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`, 'wide');
   paintColRows();

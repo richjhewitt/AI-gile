@@ -308,7 +308,7 @@ const Dms = (() => {
     const oc = e.target.closest('#dmPanel [data-opencard]');
     if (oc && thread) { location.hash = '#/p/' + thread.slug + '/' + oc.dataset.opencard; return; }
     const pc = e.target.closest('#dmPanel [data-popcard]');
-    if (pc && thread) { const s = thread.slug, id = pc.dataset.popcard; window.open('#/pop/' + s + '/' + id, 'aigile-' + s + '-' + id, 'width=560,height=780'); return; }
+    if (pc && thread) { const s = thread.slug, id = pc.dataset.popcard; popOut('card', '#/pop/' + s + '/' + id, 'aigile-' + s + '-' + id, 560, 780); return; }
     const f = e.target.closest('#dmPanel [data-fold]');
     if (f) { if (!e.target.closest('a')) openFold(f.dataset.fold); return; }
     const row = e.target.closest('#dmPanel [data-dm]');

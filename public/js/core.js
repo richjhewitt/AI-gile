@@ -223,6 +223,8 @@ function parseRoute() {
   if (shared) return { view: 'shared', link: shared[1] };   // a project a friend shares with me, as its own board (AIG-324)
   const term = location.hash.match(/^#\/pop-term\/([^/]+)\/([^/]+)\/([^/]+)$/);
   if (term) return { view: 'term', slug: decodeURIComponent(term[1]), card: decodeURIComponent(term[2]), name: decodeURIComponent(term[3]) };   // ⌨ a terminal in its own window (AIG-471)
+  const dlg = location.hash.match(/^#\/pop-dlg\/([a-z]+)\/([^/]+)$/);
+  if (dlg) return { view: 'dlg', kind: dlg[1], ...(dlg[2] !== '-' ? { slug: dlg[2] } : {}) };   // any dialog in its own window (AIG-658)
   const pop = location.hash.match(/^#\/pop\/([^/]+)\/([^/]+)/);
   if (pop) return { view: 'project', slug: pop[1], card: pop[2], pop: true };
   const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
@@ -275,6 +277,10 @@ async function refresh(force) {
     } else if (state.route.view === 'news') {
       state.news = await api('GET', `/api/projects/${state.route.slug}/news`);
       sig = JSON.stringify([state.route, state.news, Math.floor(Date.now() / 60e3)]);
+    } else if (state.route.view === 'dlg') {
+      if (state.route.slug) { state.project = await api('GET', '/api/projects/' + state.route.slug); await loadDocs(state.route.slug); }
+      await loadProfiles();
+      sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'term') {
       sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'glossary') {
@@ -365,6 +371,7 @@ function render() {
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; wizardMaybe(); return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'dlg') { renderPopDlg(); return; }
   if (state.route.view === 'term') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Term.popView(state.route); return; }
   if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'news') { $('app').innerHTML = renderNews(); $('modal').innerHTML = ''; return; }

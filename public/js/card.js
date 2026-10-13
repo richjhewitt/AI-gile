@@ -318,7 +318,7 @@ async function deleteCard() {
 
 // Once the owner has replied or given a verdict he's done with the card: close the panel, back to the board.
 function popOutCard(s, id) {
-  window.open(`#/pop/${s}/${id}`, 'aigile-' + s + '-' + id, 'width=560,height=780');
+  popOut('card', `#/pop/${s}/${id}`, 'aigile-' + s + '-' + id, 560, 780);
   location.hash = '#/p/' + s;
 }
 function closeCard() {
@@ -362,7 +362,7 @@ async function reopenPops() {
     try { projects[s] = projects[s] || await api('GET', '/api/projects/' + s); } catch { continue; }
     const c = projects[s].cards.find(x => x.id === id);
     if (!c || c.status === 'done') { delete l[k]; continue; }
-    if (c.comments.some(m => m.at > at && !isOwner(m.author))) { delete l[k]; window.open(`#/pop/${s}/${id}`, 'aigile-' + s + '-' + id, 'width=560,height=780'); }
+    if (c.comments.some(m => m.at > at && !isOwner(m.author))) { delete l[k]; popOut('card', `#/pop/${s}/${id}`, 'aigile-' + s + '-' + id, 560, 780); }
   }
   reopenSave(l);
 }

@@ -56,7 +56,7 @@ function paintWatch(r) {
 }
 async function watchTeam(e, s = slug()) {
   e.preventDefault(); e.stopPropagation();
-  openDialog(`<h2>${esc(t('eye.h'))} <button class="watch-pop" title="${esc(t('eye.pop'))}" onclick="window.open('#/pop-watch/${s}', 'aigile-watch-${s}', 'width=620,height=720')">⧉</button></h2>
+  openDialog(`<h2>${esc(t('eye.h'))} <button class="watch-pop" title="${esc(t('eye.pop'))}" onclick="popOut('watch', '#/pop-watch/${s}', 'aigile-watch-${s}', 620, 720)">⧉</button></h2>
     ${watchBody()}<div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
   const tick = async () => { if (!$('watchLog')) return clearInterval(timer); try { paintWatch(await api('GET', `/api/projects/${s}/agentlog`)); } catch {} };
   const timer = setInterval(tick, 2500); tick();
@@ -70,7 +70,7 @@ function renderWatch() {
 
 /* ---------- 📜 Team news (AIG-319) ---------- */
 // Every team comment on the project's cards, newest first, in its own window (#/pop-news/<slug>), redrawn by the 1 s poll.
-function openNews(s) { window.open('#/pop-news/' + s, 'aigile-news-' + s, 'width=520,height=760'); }
+function openNews(s) { popOut('news', '#/pop-news/' + s, 'aigile-news-' + s, 520, 760); }
 function renderNews() {
   document.body.classList.add('poplist');
   const s = state.route.slug, list = state.news || [];
