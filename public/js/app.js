@@ -31,7 +31,7 @@ window.addEventListener('hashchange', () => { state.editing = false; refresh(tru
 (function start() {
   loadLang().then(() => api('GET', '/api/meta')).then(m => {
     if (!Boot.ok()) return;   // a script broke meanwhile: the page reloads instead
-    state.servers = m.servers || []; state.terms = m.terms || [];
+    state.servers = m.servers || []; state.terms = m.terms || []; state.srvAccess = m.srvAccess || {};
     NoAi.apply(m.noAi, m.noAiBuild);
     theme(); refresh(true); checkBuild(); NoTokens.start(); Streamer.start(); UsageGlance.start(); helpBoot();
   }, e => Boot.again(start, e));
@@ -67,7 +67,7 @@ async function checkBuild() {
     wasQuiet = m.quiet; setNight(m.quiet);
     Focus.watch(m.focus);   // 🎯 focus mode (AIG-395)
     applyAppLogo(m.appLogo, m.appIcon);
-    if (JSON.stringify([m.servers || [], m.terms || []]) !== JSON.stringify([state.servers, state.terms])) { state.servers = m.servers || []; state.terms = m.terms || []; refresh(true); }   // ⌨ terms: the ones with an ssh address (AIG-471)   // My servers (AIG-374)
+    if (JSON.stringify([m.servers || [], m.terms || [], m.srvAccess || {}]) !== JSON.stringify([state.servers, state.terms, state.srvAccess || {}])) { state.servers = m.servers || []; state.terms = m.terms || []; state.srvAccess = m.srvAccess || {}; refresh(true); }   // ⌨ terms: the ones with an ssh address (AIG-471)   // My servers (AIG-374)
     if ((m.ownerPic || '') !== (state.ownerPic || '')) { state.ownerPic = m.ownerPic || ''; refresh(true); }   // your picture (AIG-150)
     pokeBadge(await api('GET', '/api/projects'));
     Assumptions.watch();   // the count on the 🌙 Assumptions link (AIG-477)
