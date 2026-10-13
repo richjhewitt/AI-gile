@@ -90,6 +90,28 @@ def('noai', 'No AI, ever: AI parts gone (top bar, Setup, roster, wizard), server
   check('Raise bug and New card still show', await vis(page, '#bugBtn') && await vis(page, '[onclick="newCard()"]'));
   check('Ask the team (AI) is hidden', !(await vis(page, '[onclick^="askTeamDialog"]')));
 
+  // AIG-821: what makes no sense with no AI team is hidden
+  for (const [sel, name] of [['#glanceBtn', 'ScrumGlance'], ['#assumeNav', 'Assumptions'], ['#streamBtn', 'Streamer'], ['[onclick^="openNews"]', 'Team news'], ['[onclick^="callStandup"]', 'Stand-up'], ['.column[data-status="review"]', 'Team checking (empty)'], ['.column[data-status="team"]', 'For the team (empty)'], ['.fy-chip[data-first="t"]', 'Tests chip (empty)'], ['.fy-chip[data-first="p"]', 'Ready for go chip (empty)'], ['.fy-chip[data-first="o"]', 'Outside help chip (empty)']]) check(`821: ${name} is hidden`, !(await vis(page, sel)));
+  check('821: the board still has To do and For you', await vis(page, '.column[data-status="todo"]') && await vis(page, '.column[data-status="verify"]'));
+  await page.goto(page.url().split('#')[0] + '#/'); await page.waitForSelector('#app > *');
+  check('821: home has no Refactor, Going quiet or Stand-up all', !(await vis(page, '[onclick^="refactorOffer"]')) && !(await vis(page, '[onclick^="goQuiet"]')) && !(await vis(page, '[onclick^="callStandup"]')));
+  const c821 = await mkCard(s, 'alpha', 'Panel check', { status: 'todo' });
+  await page.goto(page.url().split('#')[0] + `#/p/alpha/${c821.id}`); await page.waitForSelector('[data-ctab="details"]'); await page.click('[data-ctab="details"]');
+  await page.waitForSelector('#packCopy', { state: 'attached' });
+  check('821: card panel has no Copy for another AI, Paste the reply, No QA yet, Edit file', !(await vis(page, '#packCopy')) && !(await vis(page, '#packPaste')) && !(await vis(page, '.qa-gate.none')) && !(await vis(page, '[onclick^="Editor.open"]')));
+  await page.evaluate(() => { location.hash = '#/glossary'; });
+  await page.waitForSelector('.gloss-item');
+  check('821: glossary has no agent word', !(await page.locator('.gloss-list dt').allInnerTexts()).includes('Agent'));
+  await page.evaluate(() => introOpen()); await page.waitForSelector('#introSlide');
+  const slides = await page.evaluate(() => INTRO.slides.map(x => x.h));
+  check('821: intro skips the team plan and going quiet slides, no numbers', slides.length === 6 && !slides.some(h => /^\d+\./.test(h) || /[🧭🌙]/u.test(h)), slides);
+  await page.evaluate(() => closeDialog());
+  await mkProject(s, 'Life', 'LIF'); await s.ok('PATCH', '/api/projects/life', { lifeBoard: true });
+  await page.goto(page.url().split('#')[0] + '#/p/life'); await page.waitForSelector('#emptyHint');
+  check('821: a life project does not say Connect', !/connect/i.test(await page.textContent('.toolbar')) && !/connect/i.test(await page.textContent('#emptyHint')));
+  fs.mkdirSync(path.join(process.env.TEMP || '.', 'medic-calm'), { recursive: true });
+  await page.screenshot({ path: path.join(process.env.TEMP || '.', 'medic-calm', 'noai-board.png') });
+
   // Phone width
   await page.setViewportSize({ width: 390, height: 844 });
   check('phone width: no sideways scroll', await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth));

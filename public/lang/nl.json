@@ -3133,5 +3133,6 @@
  "la.item.add": "Toevoegen",
  "la.item.none": "Leeg.",
  "la.err.text": "Typ waaraan we je moeten herinneren.",
- "la.note": "Geen AI nodig: deze pagina roept er nooit een aan."
+ "la.note": "Geen AI nodig: deze pagina roept er nooit een aan.",
+ "gloss.intro.noai": "De woorden die ontwikkelaars gebruiken, in gewone taal."
 }

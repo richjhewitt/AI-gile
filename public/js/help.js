@@ -74,7 +74,10 @@ async function introOpen() {
   let r; try { r = await api('GET', '/api/intro?lang=' + encodeURIComponent(i18n.lang)); } catch (e) { alert(e.message); return; }
   const parts = String(r.md).replace(/\r/g, '').split(/^## /m), head = parts.shift();
   INTRO.title = (head.match(/^#\s+(.*)$/m) || [, t('help.m.intro')])[1].replace(/^🎓\s*/, '');
-  INTRO.slides = parts.map(p => { const [h, ...rest] = p.split('\n'); return { h: h.trim(), body: rest.join('\n').replace(/^\s*---+\s*$/gm, '').trim() }; });
+  // No AI (AIG-821): the slides about the team's plan (🧭) and going quiet (🌙) are skipped; the rest is renumbered.
+  const skip = NoAi.on ? p => /^\s*(?:\d+\.\s*)?[🧭🌙]/u.test(p) : () => false;
+  const num = NoAi.on ? p => p.replace(/^(\s*)\d+\.\s*/, '$1') : p => p;
+  INTRO.slides = parts.filter(p => !skip(p)).map(num).map(p => { const [h, ...rest] = p.split('\n'); return { h: h.trim(), body: rest.join('\n').replace(/^\s*---+\s*$/gm, '').trim() }; });
   INTRO.i = 0; introShow();
 }
 function introShow() {

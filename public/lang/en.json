@@ -3133,5 +3133,6 @@
  "la.item.add": "Add",
  "la.item.none": "Empty.",
  "la.err.text": "Type what to remind you of.",
- "la.note": "No AI needed: this page never calls one."
+ "la.note": "No AI needed: this page never calls one.",
+ "gloss.intro.noai": "The words developers use, in plain English."
 }
