@@ -3057,5 +3057,10 @@
   "life.letsgo": "Goed, laten we gaan",
   "life.letsgo.title": "Start de douchemodus bij een doucheherinnering, anders een uur uitstellen (niet klaar)",
   "break.shower.h": "Geniet van je douche 🚿",
-  "break.shower.sub": "Meldingen staan op pauze. Je team werkt door."
+  "break.shower.sub": "Meldingen staan op pauze. Je team werkt door.",
+  "call.join": "📞 Bel mee",
+  "call.title": "Opent het gesprek in een nieuw tabblad (de belapp doet beeld en scherm delen)",
+  "call.h": "📞 Gesprekslink",
+  "call.ph": "https://meet.google.com/... of een Jitsi-, Discord- of Teams-link",
+  "call.intro": "Eén link voor stand-ups en gesprekken. AI-gile toont alleen een Bel mee-link; de belapp doet beeld en scherm delen."
 }

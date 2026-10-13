@@ -1,6 +1,8 @@
 /* ---------- 🔀 Change cards (AIG-857) ----------
    changeHtml(p, c): the fields of a change card on the open card (card.js calls it), or a "Raise a change" button on an incident or
    a problem. raiseChange(preset): the short form: what, why, risk (from the register), when, how to undo. */
+// 📞 Join call link (AIG-861): http(s) only, new tab, noopener; empty when the address is not one. Used by stand-ups, DMs and change cards.
+const callLink = (url, cls = '') => /^https?:[/][/]/i.test(url || '') ? `<a class="calllink ${cls}" href="${esc(url)}" target="_blank" rel="noopener noreferrer" title="${esc(t('call.title'))}">${esc(t('call.join'))}</a>` : '';
 const CHANGE_KINDS = ['change', 'feature', 'fix', 'other'];
 const changeWhen = w => w && w.from ? `${new Date(w.from).toLocaleString(i18n.locale, { dateStyle: 'medium', timeStyle: 'short' })} – ${new Date(w.to).toLocaleString(i18n.locale, { dateStyle: 'medium', timeStyle: 'short' })}` : '';
 function changeHtml(p, c) {
@@ -16,6 +18,7 @@ function changeHtml(p, c) {
   <p><b>${esc(t('chg.risk'))}</b> ${x.riskId ? `<a href="#/risks/${esc(p.slug)}">${esc(x.riskId)}</a>` : `<span class="muted">${esc(t('chg.norisk'))}</span>`}</p>
   <p><b>${esc(t('chg.when'))}</b> ${x.when ? esc(changeWhen(x.when)) : none}</p>
   <p><b>${esc(t('chg.undo'))}</b> ${x.undo ? esc(x.undo) : none}</p>
+  ${x.callUrl ? `<p class="chg-call">${callLink(x.callUrl)}</p>` : ''}
   ${x.from ? `<p><b>${esc(t('chg.from'))}</b> ${link(x.from)}</p>` : ''}${probs.length ? `<p><b>${esc(t('chg.problems'))}</b> ${probs.map(link).join(', ')}</p>` : ''}</div>`;
 }
 async function raiseChange(preset = {}) {
