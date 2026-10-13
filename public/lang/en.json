@@ -2707,7 +2707,7 @@
  "mail.nav.title": "Your mail inbox",
  "mail.title": "✉️ Mail",
  "mail.none": "No mailbox yet. Add one in Setup > ✉️ Mail.",
- "mail.none.setup": "Open Setup",
+ "mail.none.setup": "✉️ Set up a mailbox",
  "mail.refresh": "🔄 Refresh",
  "mail.loading": "Fetching mail…",
  "mail.forget": "🧹 Forget cache",
