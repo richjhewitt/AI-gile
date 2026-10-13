@@ -53,6 +53,24 @@ def('changewin', '🔀 change windows: GET/POST, CLI, done refused outside a win
   check('golive-ok --card is ok for an emergency change', s.cli(['golive-ok', 'win', '--card', em.id]).code === 0);
   check('an emergency change skips the window', (await s.ok('PATCH', `/api/projects/win/cards/${em.id}`, { status: 'done' })).status === 'done');
 
+  // review fixes: retyping a change to done is guarded too; the planned slot must fit a window; a window change flags slots
+  const sneak = await s.ok('POST', '/api/projects/win/changes', { title: 'Sneak', undo: 'revert' });
+  check('retyping a change card while moving it to done is still guarded', (await s.api('PATCH', '/api/projects/win/cards/' + sneak.id, { type: 'task', status: 'done' })).status === 400 && (await getCard(s, 'win', sneak.id)).status !== 'done');
+  const tm = new Date(); tm.setDate(tm.getDate() + 1);
+  const at2 = (h, m) => new Date(tm.getFullYear(), tm.getMonth(), tm.getDate(), h, m).toISOString();
+  const inSlot = await s.ok('PATCH', '/api/projects/win/changes/' + sneak.id, { when: { from: at2(9, 15), to: at2(9, 45) } });
+  check('a slot inside a window is saved', !!inSlot.when && !inSlot.slotMisfit);
+  const outSlot = await s.api('PATCH', '/api/projects/win/changes/' + sneak.id, { when: { from: at2(9, 30), to: at2(10, 30) } });
+  check('a slot running past the window is refused with the next window', outSlot.status === 400 && /next window/.test(JSON.stringify(outSlot.body || outSlot.data || outSlot)), outSlot);
+  check('an emergency change may plan any slot', !!(await s.ok('PATCH', '/api/projects/win/changes/' + em.id, { when: { from: at2(12, 0), to: at2(13, 0) } })).when);
+  await s.ok('POST', '/api/projects/win/change-windows', { set: tomorrow + ' 11:00-12:00' });
+  const fl = (await s.ok('GET', '/api/projects/win/changes')).changes.find(c => c.id === sneak.id);
+  check('a window change flags the slot that no longer fits and keeps it', fl.slotMisfit === true && !!fl.when);
+  await s.ok('POST', '/api/projects/win/change-windows', { set: tomorrow + ' 09:00-10:00' });
+  check('the flag clears when it fits again', !(await s.ok('GET', '/api/projects/win/changes')).changes.find(c => c.id === sneak.id).slotMisfit);
+  const dst = { changeWindows: [{ day: 'all', from: '02:30', to: '03:30' }] };
+  check('a start that does not exist on a spring DST day is never offered at the old time', (() => { const n = cw.next(dst, new Date(2026, 2, 28, 12, 0)); return !n || n.at.getHours() === 2; })());
+
   // inside a window: all day via two windows
   await s.ok('POST', '/api/projects/win/change-windows', { windows: [{ day: 'all', from: '00:00', to: '23:59' }, { day: 'all', from: '23:59', to: '00:00' }] });
   check('inside a window it is ok', s.cli(['golive-ok', 'win', '--card', ch.id]).code === 0);
