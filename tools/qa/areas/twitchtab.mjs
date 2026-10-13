@@ -72,6 +72,24 @@ def('twitchtab', 'Twitch tab in the DM window: hidden with no channel, set in Se
   await s.ok('POST', '/api/twitch/token', { login: '', token: '' });
   check('signing out removes the reply ability', (await s.ok('GET', '/api/twitch/config')).canReply === false);
 
+  // 💡 !idea (AIG-630): a viewer's idea lands as an unaccepted backlog card, with guards
+  await s.ok('POST', '/api/projects', { name: 'Idealand' });
+  const ideas = async () => (await s.ok('GET', '/api/projects/idealand')).cards.filter(c => c.createdBy === 'Ideas');
+  const say = (name, content) => s.ok('POST', '/api/twitch/stub-message', { name, content });
+  await say('Dana', '!idea');
+  await say('Dana', '!idea    ');
+  check('an empty !idea is ignored', (await ideas()).length === 0);
+  await say('Dana', '!idea a dark mode for the board');
+  let il = await ideas();
+  check('!idea makes a backlog idea card that needs the owner, not in To do', il.length === 1 && il[0].status === 'backlog' && il[0].needsYou === true && il[0].quick === true && /dark mode/.test(il[0].title) && /Dana/.test(il[0].description), il);
+  await say('Dana', '!idea a second one straight away');
+  check('one idea per viewer per minute', (await ideas()).length === 1);
+  await say('Eli', '!idea ' + 'x'.repeat(500));
+  il = await ideas();
+  check('a long idea is cut at 200 characters, from another viewer it still counts', il.length === 2 && il.every(c => c.description.split('\n')[0].length <= 200), il.map(c => c.description.length));
+  await say('Fay', 'idea without the bang');
+  check('plain chat is not an idea', (await ideas()).length === 2);
+
   // Switch off
   await s.ok('POST', '/api/twitch/config', { channel: '' });
   check('clearing the channel clears the chat', (await s.ok('GET', '/api/twitch/messages')).length === 0);
