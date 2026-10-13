@@ -62,6 +62,23 @@ def('noai', 'No AI, ever: AI parts gone (top bar, Setup, roster, wizard), server
   check('a stand-up is called without waking an agent', su.called.length === 1 && !(su.woke || []).length && !(su.failed || []).length, JSON.stringify(su));
   const rep = await s.ok('POST', '/api/projects/alpha/standup', { author: 'Sam', done: 'the intro', next: 'the outline' });
   check('Sam\'s stand-up report is taken', rep.report && rep.report.name === 'Sam' && rep.waiting.includes('Lead'), JSON.stringify(rep));
+  // AIG-821: nothing lands in "For the team", the assign list is people, no dispatcher lines
+  const n1 = await mkCard(s, 'alpha', 'Asked for the team', { status: 'team', createdBy: 'Owner' });
+  check('821: a new card meant for the team goes to To do', (await getCard(s, 'alpha', n1.id)).status === 'todo', (await getCard(s, 'alpha', n1.id)).status);
+  const n2 = await mkCard(s, 'alpha', 'Comment stays', { status: 'doing' });
+  await s.ok('POST', '/api/projects/alpha/cards/' + n2.id + '/comments', { author: 'Owner', text: 'a note to myself' });
+  check('821: a comment leaves the card where it is', (await getCard(s, 'alpha', n2.id)).status === 'doing');
+  const n3 = await mkCard(s, 'alpha', 'Sent back', { status: 'verify', testSteps: '- look' });
+  await s.ok('POST', '/api/projects/alpha/cards/' + n3.id + '/verdict', { text: 'not right' });
+  check('821: Send back goes to To do', (await getCard(s, 'alpha', n3.id)).status === 'todo', (await getCard(s, 'alpha', n3.id)).status);
+  await new Promise(r => setTimeout(r, 1500));
+  check('821: no Dispatcher lines in the log', !((await s.ok('GET', '/api/projects/alpha')).log || []).some(l => l.author === 'Dispatcher'));
+  await page.evaluate(() => newCard());
+  await page.waitForSelector('#f-assignee');
+  const opts = await page.$$eval('#f-assignee option', os => os.map(o => o.value));
+  check('821: Assign to lists the team people and the owner, no AI roles', opts.includes('Sam') && opts.includes('Owner') && !opts.includes('Frontend') && !opts.includes('Backend'), opts.join(','));
+  await page.evaluate(() => closeDialog());
+
 
   // Wording on an empty board
   await mkProject(s, 'Empty', 'EMP', { path: tmp('empty') });
