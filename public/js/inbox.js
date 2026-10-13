@@ -45,7 +45,7 @@
   /* ---------- hooks used by js/core.js ---------- */
   // Called from refresh() whenever the route is #/inbox. Takes over the page body.
   async function show(force) {
-    try { await IB.load(); } catch (e) {
+    try { await IB.load(force); } catch (e) {   // force: e.g. the swarm's "show other projects" changes the list without moving the stamp
       el('live').className = 'live off'; el('live').textContent = t('live.offline', { msg: e.message }); return;
     }
     el('live').className = 'live'; el('live').textContent = t('live.ok');
