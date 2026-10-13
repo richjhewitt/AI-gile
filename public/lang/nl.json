@@ -2638,5 +2638,9 @@
  "stats.wrap.comments": "💬 {n} reacties",
  "stats.wrap.streak": {"one":"🔥 Langste reeks: {count} dag","other":"🔥 Langste reeks: {count} dagen"},
  "stats.wrap.busy": "📅 Drukste dag: {day} ({n} klaar)",
- "stats.wrap.git": "🧱 {commits} commits, {lines} regels gewijzigd"
+ "stats.wrap.git": "🧱 {commits} commits, {lines} regels gewijzigd",
+ "oc.chip": "{who} opende {id}",
+ "oc.open": "Open deze kaart",
+ "oc.dismiss": "Weg ermee",
+ "oc.someone": "Een agent"
 }

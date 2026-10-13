@@ -2638,5 +2638,9 @@
  "stats.wrap.comments": "💬 {n} comments",
  "stats.wrap.streak": {"one":"🔥 Longest streak: {count} day","other":"🔥 Longest streak: {count} days"},
  "stats.wrap.busy": "📅 Busiest day: {day} ({n} done)",
- "stats.wrap.git": "🧱 {commits} commits, {lines} lines changed"
+ "stats.wrap.git": "🧱 {commits} commits, {lines} lines changed",
+ "oc.chip": "{who} opened {id}",
+ "oc.open": "Open this card",
+ "oc.dismiss": "Dismiss",
+ "oc.someone": "An agent"
 }
