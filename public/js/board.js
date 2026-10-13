@@ -252,7 +252,7 @@ function cardHtml(c) {
   const live = ['doing', 'review'].includes(c.status), heard = live && lastHeard(c);
   const stale = live && Date.now() - new Date(heard.at) > STALE_MS;
   const view = cardViewOf(state.project);
-  const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : '', isWaitingCard(c) ? 'is-waiting' : ''].join(' ');
+  const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : '', c.type === 'incident' && c.status !== 'done' ? 'is-incident' : '', isWaitingCard(c) ? 'is-waiting' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}" data-id="${c.id}" draggable="true" style="display:block">
     <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}${forYou(c) ? `<button class="ib-popone" title="${esc(t('inbox.popone'))}" onclick="event.preventDefault();event.stopPropagation();window.open('#/pop/${state.project.slug}/${c.id}', 'aigile-${state.project.slug}-${c.id}', 'width=560,height=780')">⤢</button>` : ''}</div>${forYou(c) ? queueChips(c) : ''}
     <div class="t">${esc(c.title)}</div>
@@ -302,6 +302,7 @@ app.addEventListener('drop', async e => {
   document.querySelectorAll('.dragging, .dragover').forEach(x => x.classList.remove('dragging', 'dragover'));
   const c = state.project.cards.find(c => c.id === id);
   if (!c || (c.status === status && (c.step || '') === step)) return;
+  if (c.type === 'incident' && status === 'done' && c.status !== 'done') { const pm = await postmortemAsk(); if (!pm) return rerender(); try { await api('PATCH', `/api/projects/${slug()}/cards/${id}`, { status, step, postmortem: pm }); } catch (err) { alert(t('board.movefail', { msg: err.message })); } return rerender(); }   // AIG-614
   c.status = status; c.step = step; c.updated = new Date().toISOString(); render();   // optimistic
   try { await api('PATCH', `/api/projects/${slug()}/cards/${id}`, { status, step }); }
   catch (err) { alert(t('board.movefail', { msg: err.message })); }

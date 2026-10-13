@@ -2423,5 +2423,14 @@
  "dmme.sent": "{who} gevraagd je een DM te sturen. De chat staat open in Berichten.",
  "dmme.sent.nowake": "De DM staat open in Berichten, maar niemand is gewekt: {why}",
  "dmme.open": "Open de DM",
- "srv.dmme.about": "Over {id}: {title}"
+ "srv.dmme.about": "Over {id}: {title}",
+ "type.incident": "🔥 incident",
+ "sb.raise.incident": "🔥 Meld een incident",
+ "pm.title": "🔥 Sluit dit incident",
+ "pm.intro": "Drie korte antwoorden voordat het klaar is.",
+ "pm.happened": "Wat is er gebeurd",
+ "pm.why": "Waarom",
+ "pm.change": "Wat gaan we veranderen",
+ "pm.done": "Klaar",
+ "pm.heading": "🔥 Nabespreking"
 }
