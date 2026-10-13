@@ -40,6 +40,7 @@
   <button id="streamBtn" class="navlink" onclick="Streamer.toggle()" aria-pressed="false" data-i18n="streamer.btn" title="Streamer mode">🎥 Streamer</button>
   <button id="liveBtn" class="navlink" onclick="Streamer.goLive()" hidden></button>
   <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" title="No Token Mode">⛔ No Token Mode</button>
+  <button id="tiredBtn" class="navlink" onclick="Tired.toggle()" aria-pressed="false" title="Tired mode">🔋</button>
   <a class="navlink" id="assumeNav" href="#/assumptions" data-i18n-title="assume.nav.title" title="Guesses the team made while you were away"><span data-i18n="assume.nav">🌙 Assumptions</span> <span id="assumeBadge" class="pill you" hidden></span></a>
   <a class="navlink" id="usageNav" href="#/usage"><span data-i18n="nav.usage">⚡ Usage</span><span id="ugBars"></span></a>
   <a class="navlink" id="setupNav" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer">⚙️</a>
@@ -175,6 +176,7 @@ window.Boot = (() => {
 <script src="js/ask.js"></script>
 <script src="js/pretend.js"></script>
 <script src="js/notokens.js"></script>
+<script src="js/tired.js"></script>
 <script src="js/undo.js"></script>
 <script src="js/emoji-data.js"></script>
 <script src="js/emoji.js"></script>
