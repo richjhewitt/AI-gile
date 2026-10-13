@@ -2423,5 +2423,10 @@
  "dmme.sent": "{who} gevraagd je een DM te sturen. De chat staat open in Berichten.",
  "dmme.sent.nowake": "De DM staat open in Berichten, maar niemand is gewekt: {why}",
  "dmme.open": "Open de DM",
- "srv.dmme.about": "Over {id}: {title}"
+ "srv.dmme.about": "Over {id}: {title}",
+  "card.act.thinking": "denkt na",
+  "card.act.working": "bezig",
+  "card.act.command": "wacht op een commando",
+  "card.act.min": "{n} min",
+  "card.act.stale": "geen teken van leven sinds {n} min"
 }

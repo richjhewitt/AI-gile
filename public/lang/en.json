@@ -2423,5 +2423,10 @@
  "dmme.sent": "Asked {who} to DM you. The chat is open in Messages.",
  "dmme.sent.nowake": "The DM is open in Messages, but nobody was woken: {why}",
  "dmme.open": "Open the DM",
- "srv.dmme.about": "About {id}: {title}"
+ "srv.dmme.about": "About {id}: {title}",
+  "card.act.thinking": "thinking",
+  "card.act.working": "working",
+  "card.act.command": "waiting on a command",
+  "card.act.min": "{n} min",
+  "card.act.stale": "no sign of life for {n} min"
 }
