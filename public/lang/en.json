@@ -2659,5 +2659,7 @@
  "rails.quietTimes": "Nothing goes live in your quiet times",
  "rails.postmortem": "An incident is closed with a post-mortem",
  "rails.help.list": "These are always on. Set your tech level to Expert, or the help level to least, to switch them off one by one.",
- "rails.help.switches": "Untick a rail and the team is no longer stopped by it. Ticked is the safe way."
+ "rails.help.switches": "Untick a rail and the team is no longer stopped by it. Ticked is the safe way.",
+ "servers.sudo": "May use sudo over ssh",
+ "servers.sudoWho": "Only these agents (comma-separated); empty = every agent"
 }
