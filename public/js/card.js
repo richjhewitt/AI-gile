@@ -149,7 +149,7 @@ function proofHtml(pr) {
 // ▶ Open it (AIG-146): ask the board to start the app if needed, then open the page. No OK popup (AIG-719).
 async function openIt(s, id, btn) {
   const was = btn.textContent; btn.disabled = true; btn.textContent = t('verdict.open.starting');
-  try { const r = await api('POST', `/api/projects/${s}/cards/${id}/open`); window.open(r.url, '_blank'); }
+  try { const r = await api('POST', `/api/projects/${s}/cards/${id}/openit`); window.open(r.url, '_blank'); }
   catch (e) { alert(e.message); }
   btn.disabled = false; btn.textContent = was;
 }

@@ -24,6 +24,7 @@ const OpenCard = (() => {
     } catch {} finally { busyNow = false; }
   }
   document.addEventListener('click', ev => {
+    const chip = ev.target.closest('#ocChips'); if (!chip) return;   // other parts of the board use data-go and data-x too
     const go = ev.target.closest('[data-go]'), x = ev.target.closest('[data-x]');
     if (!go && !x) return;
     const n = Number(go ? go.dataset.go : x.dataset.x), e = chips.find(c => c.n === n);
