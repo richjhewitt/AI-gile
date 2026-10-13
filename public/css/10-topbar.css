@@ -61,3 +61,7 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 @media (max-width: 600px) { .roll-col { flex-basis: 75vw; } }
 .dc-pic { display: block; max-width: 100%; max-height: 240px; margin-top: 6px; border-radius: 8px; }
 .tm-loadtpl { max-width: 11em; font-size: 12px; } .tm-type { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 6px 0; }
+/* AIG-871: 🎯 Hyperfocus chip */
+.hf-chip { font-size: 12px; padding: 2px 4px 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--accent, #6366f1) 22%, var(--panel)); color: var(--text); white-space: nowrap; }
+.hf-chip a { color: inherit; text-decoration: none; }
+.hf-chip button { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 0 4px; }

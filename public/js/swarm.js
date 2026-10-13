@@ -15,14 +15,16 @@ const Swarm = (() => {
   function set(next) { const was = [st.on, st.slug].join(); st = next; paint(); if (was !== [st.on, st.slug].join()) redraw(); }
   async function poll() { try { set(await api('GET', '/api/swarm')); } catch {} }
   async function off() { try { set(await api('POST', '/api/swarm', { off: true })); } catch (e) { alert(e.message); } }
+  const focus = () => (st.on && !showAll) ? st.slug : (typeof Hyperfocus !== 'undefined' ? Hyperfocus.slug : '');   // swarm first, else 🎯 Hyperfocus (AIG-871)
   function toggle() { showAll = !showAll; paint(); redraw(); }
   // Keeps only the swarmed project's items (inbox entries or projects); counts the inbox items left out for the bar.
   function only(list, inbox) {
-    if (!st.on || showAll || !Array.isArray(list)) return list;
-    const kept = list.filter(x => (inbox ? x.project || x.slug : x.slug) === st.slug);
-    if (inbox) { others = list.length - kept.length; paint(); }
+    const slug = focus();
+    if (!slug || !Array.isArray(list)) return list;
+    const kept = list.filter(x => (inbox ? x.project || x.slug : x.slug) === slug);
+    if (inbox && st.on) { others = list.length - kept.length; paint(); }
     return kept;
   }
   function start() { poll(); setInterval(poll, 5000); }
-  return { start, off, poll, toggle, only, get on() { return !!st.on; }, get hiding() { return !!st.on && !showAll; } };
+  return { start, off, poll, toggle, only, redraw, get on() { return !!st.on; }, get hiding() { return !!focus(); } };
 })();

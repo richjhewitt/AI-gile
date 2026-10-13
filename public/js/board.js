@@ -118,6 +118,7 @@ function renderBoard(p) {
       <button onclick="connectDialog()" title="${p.path && p.pathMissing ? esc(t('srv.folder.missing', { path: p.path })) : p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path && p.pathMissing ? t('board.connected.missing') : p.path ? t('board.connected') : t('board.connect'))}</button>
       ${Share.button(p)}
       ${Pub.copyBtn(p)}
+      <button id="hfBtn" onclick="Hyperfocus.on('${esc(p.slug)}')" title="${esc(t('hf.btn.title'))}">${esc(t('hf.btn'))}</button>
       <button onclick="Spaces.menu('${esc(p.slug)}')" title="${esc(t('space.menu.title'))}">${esc(t('space.btn'))}</button>
       <button onclick="saveProjectFile()" title="${esc(t('ofl.save.title'))}">${esc(t('ofl.save'))}</button>
       <button onclick="teamDialog()" title="${esc(t('board.team.title'))}">${esc(t('board.team'))}</button>

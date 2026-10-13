@@ -2756,5 +2756,10 @@
   "dms.closed.show": "Show closed ({n})",
   "dms.closed.reopen": "Open this chat again",
  "urgent.mark": "Mark urgent",
- "urgent.unmark": "Not urgent any more"
+ "urgent.unmark": "Not urgent any more",
+  "hf.btn": "🎯 Hyperfocus",
+  "hf.btn.title": "Show only this project and your DMs (nothing else changes for the teams)",
+  "hf.chip": "🎯 Hyperfocus: {name}",
+  "hf.chip.title": "Open the project you are hyperfocused on",
+  "hf.off": "Turn Hyperfocus off"
 }

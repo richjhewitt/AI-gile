@@ -2756,5 +2756,10 @@
   "dms.closed.show": "Toon gesloten ({n})",
   "dms.closed.reopen": "Dit gesprek terug openen",
  "urgent.mark": "Markeer als dringend",
- "urgent.unmark": "Niet meer dringend"
+ "urgent.unmark": "Niet meer dringend",
+  "hf.btn": "🎯 Hyperfocus",
+  "hf.btn.title": "Toon alleen dit project en je DM's (voor de teams verandert er niets)",
+  "hf.chip": "🎯 Hyperfocus: {name}",
+  "hf.chip.title": "Open het project waarop je hyperfocust",
+  "hf.off": "Hyperfocus uitzetten"
 }

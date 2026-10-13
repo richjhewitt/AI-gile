@@ -113,6 +113,7 @@ const Spaces = (() => {
       ${opts.length ? `<div class="space-into"><label for="spInto">${esc(t('space.into'))}</label> <select id="spInto">${opts.map(([x, d]) => `<option value="${esc(x.slug)}">${'  '.repeat(d)}${esc((x.emoji ? x.emoji + ' ' : '') + x.name)}</option>`).join('')}</select>
         <button class="primary" id="spMove" onclick="Spaces.menuMove('${esc(slug)}')">${esc(t('space.move'))}</button></div>` : `<p class="muted">${esc(t('space.none'))}</p>`}
       ${up ? `<p><button id="spOut" onclick="closeDialog(); Spaces.move('${esc(slug)}', '${esc(up.parent || '')}')" title="${esc(t('space.out.title', { name: up.name }))}">${esc(t('space.out'))}</button></p>` : ''}
+      <p><button id="spHf" onclick="closeDialog(); Hyperfocus.on('${esc(slug)}')" title="${esc(t('hf.btn.title'))}">${esc(t('hf.btn'))}</button></p>
       <p class="muted">${esc(t('space.hint'))}</p>
       <div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
   }
