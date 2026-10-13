@@ -57,6 +57,7 @@ def('swarm', '🚨 swarm: other projects wait, the swarm project gets no helper 
   check('Turn off swarm ends it with no confirm', asked.length === 1);
   await page.setViewportSize({ width: 390, height: 800 });
   await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+  if (await page.isVisible('#tbDots') && !(await page.isVisible('#swarmBtn'))) await page.click('#tbDots');   // the toolbar is behind ⋯ on a phone (AIG-933)
   const box = await page.$eval('#swarmBtn', e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.left >= 0 && r.right <= innerWidth + 1; });
   check('the button fits a phone width', box);
   await page.setViewportSize({ width: 1280, height: 800 });

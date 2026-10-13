@@ -3057,5 +3057,7 @@
   "life.letsgo": "Right, let's do this",
   "life.letsgo.title": "Starts shower mode on a shower reminder, otherwise puts it off for an hour (not done)",
   "break.shower.h": "Enjoy your shower 🚿",
-  "break.shower.sub": "Alerts are paused. Your team keeps working."
+  "break.shower.sub": "Alerts are paused. Your team keeps working.",
+ "board.more": "More",
+ "board.details": "Details"
 }
