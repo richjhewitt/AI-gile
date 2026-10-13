@@ -2328,5 +2328,8 @@
   "assume.summarising": "Bezig met samenvatten…",
   "assume.summary.h": "Nog te bekijken ({n})",
   "assume.summary.ai": "Nog te bekijken ({n}), samengevat door AI",
-  "assume.summary.none": "Niets meer te bekijken."
+  "assume.summary.none": "Niets meer te bekijken.",
+  "swarm.bar": "🚨 Zwerm: elk team werkt aan {name}; andere projecten wachten",
+  "swarm.open": "Openen",
+  "swarm.off": "Uitzetten"
 }

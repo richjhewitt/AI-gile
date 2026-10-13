@@ -2328,5 +2328,8 @@
   "assume.summarising": "Summarising…",
   "assume.summary.h": "Still to review ({n})",
   "assume.summary.ai": "Still to review ({n}), summed up by AI",
-  "assume.summary.none": "Nothing left to review."
+  "assume.summary.none": "Nothing left to review.",
+  "swarm.bar": "🚨 Swarm: every team is on {name}; other projects wait",
+  "swarm.open": "Open it",
+  "swarm.off": "Turn off"
 }
