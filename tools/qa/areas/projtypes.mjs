@@ -1,5 +1,5 @@
 // QA area: projtypes (AIG-442). A project picks its type; the team's own numbers follow, with a "what changed" line and Undo; one role can load another template.
-import { check, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { check, mkProject, openPage, noErrors, def, until } from '../lib.mjs';
 
 def('projtypes', 'Project types: pick web app, the team\'s scales change, Undo, load another template into one role and only that role changes (AIG-442)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -26,7 +26,7 @@ def('projtypes', 'Project types: pick web app, the team\'s scales change, Undo, 
   await page.waitForFunction(() => /before/.test(document.getElementById('tm-msg').textContent));
   const back = await roles();
   check('Undo puts every role back', Object.values(back).every(p => !Object.keys(p).length) && (await s.ok('GET', '/api/projects/alpha')).projectType === undefined);
-  check('and Undo is disabled again', await page.locator('#tm-type-undo').isDisabled());
+  check('and Undo is disabled again', !!(await until(() => page.locator('#tm-type-undo').isDisabled())));   // repainted a moment after the message (AIG-920)
 
   // One role loads another template: only that role changes
   await page.selectOption('#tm-type', 'webapp'); await page.waitForFunction(() => /Web app/.test(document.getElementById('tm-msg').textContent));

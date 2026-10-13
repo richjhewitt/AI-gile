@@ -6,7 +6,7 @@
 // Friends' private DMs (AIG-111, lib/dm.js) are chats too: the list has a filter All / Agents / People, and a
 // friend's chat has the same typing box, 👍 and attachments. A friend's chat key is 'dm:<contact id>'.
 const Dms = (() => {
-  let projects = [], chats = [], people = [], closed = {}, showClosed = false, filter = 'all', open = null, listOpen = false, thread = null, busy = false;
+  let projects = [], chats = [], people = [], closed = {}, showClosed = false, filter = 'all', open = null, listOpen = false, thread = null, threadSeq = 0, busy = false;
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
   const GENERAL = '_new';   // target: a new message to the lead instead of an answer (AIG-285)
   const el = id => document.getElementById(id);
@@ -194,7 +194,10 @@ const Dms = (() => {
     if (isTw(open)) return TwitchTab.load(scroll);
     if (isDc(open)) return DiscordTab.load(scroll);
     if (isPerson(open)) return loadPerson(scroll);
-    try { thread = await PagePoll.get('/api/chats/' + open); } catch { return; }
+    const want = open, seq = ++threadSeq;   // a slower, older read never paints over a newer one (AIG-920 review)
+    let got; try { got = await PagePoll.get('/api/chats/' + want); } catch { return; }
+    if (seq !== threadSeq || open !== want) return;
+    thread = got;
     const list = el('dmList'); if (!list) return;
     // A card that newly starts waiting on you opens by itself, and the typing box answers it.
     const fresh = thread.open.find(o => !waitingSeen.has(o.id));

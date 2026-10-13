@@ -70,6 +70,9 @@ const PagePoll = (() => {
     if (!force && old && old.epoch === generation && now - old.at < maxAge && ((token !== null && old.rev === token) || now - old.at < 1000)) return old.data;
     const entry = { epoch: generation, rev: token, at: now };
     entry.flight = api('GET', url).then(data => {
+      // An owner action landed while this read was on its way: its answer may be from before the change, so read again
+      // rather than paint old data over the new (projtypes QA: Undo greyed out, then a late refresh lit it up again).
+      if (epoch !== generation) { if (reads.get(url) === entry) reads.delete(url); return get(url, { force: true, revision: useRev, maxAge }); }
       entry.data = data; entry.at = Date.now(); delete entry.flight; return data;
     }, e => { if (reads.get(url) === entry) reads.delete(url); throw e; });
     reads.set(url, entry);
