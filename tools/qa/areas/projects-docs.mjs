@@ -114,6 +114,16 @@ def('mdlinks', 'Any .md path in card text opens in the board', async (s, ctx) =>
   await page.waitForSelector('.md h1');
   check('inline code path opens the file', (await page.textContent('.md h1')) === 'Deep one');
   await page.keyboard.press('Escape');
+  // AIG-732: comment links are clickable, and only http, https and vscode
+  const lc = await mkCard(s, 'alpha', 'Comment links', { description: 'x' });
+  await s.api('POST', '/api/projects/alpha/cards/' + lc.id + '/comments', { author: 'Rich', text: 'See [name](vscode://file/C:/x/y.js:12) and https://example.com/a?b=1 and [bad](javascript:alert(1))' });
+  await page.goto(BASE + '/#/p/alpha/' + lc.id);
+  await page.waitForSelector('.comment .body');
+  const cb = page.locator('.comment .body').last();
+  check('comment: markdown vscode link and bare https give two links', (await cb.locator('a').count()) === 2, await cb.innerHTML());
+  check('comment: vscode href', (await cb.locator('a[href="vscode://file/C:/x/y.js:12"]').count()) === 1);
+  check('comment: https href opens safely', (await cb.locator('a[href="https://example.com/a?b=1"][target=_blank][rel~=noopener]').count()) === 1);
+  check('comment: javascript link is not a link', (await cb.locator('a[href^="javascript"]').count()) === 0);
   noErrors(page);
 }, true);
 

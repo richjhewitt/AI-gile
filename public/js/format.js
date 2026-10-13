@@ -123,14 +123,22 @@ function linkify(text, p) { return withCode(text, t => linkifyText(t, p), p.slug
 function linkifyText(text, p) { return mdLinks(linkifyBase(text, p), p.slug); }
 function linkifyBase(text, p) {
   const key = String(p.key || '').replace(/[^A-Za-z0-9]/g, '');   // a DM thread carries its project's key (AIG-449); a friend's chat has none
-  return esc(text)
+  const keep = [];   // finished links are parked here so the bare-address rules below cannot link inside them (AIG-732)
+  const park = h => '\u0001' + (keep.push(h) - 1) + '\u0002';
+  const out = esc(text)
     .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')   // **bold**, used in bullet-point cards
+    // [text](url) and bare vscode:// links; only http, https and vscode are allowed (the text is already escaped)
+    .replace(/\[([^\]\n]+)\]\(((?:https?|vscode):\/\/[^\s<)]+)\)/gi, (m, label, u) => park(linkTag(u, label)))
+    .replace(/(^|[^\w"=\u0001])(vscode:\/\/[^\s<]+[^\s<.,;:!?)\]])/gi, (m, pre, u) => pre + park(linkTag(u, u)))
     .replace(/https?:\/\/[^\s<]+[^\s<.,;:!?)\]]/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>${gifLink(u)}`)
     // A bare web address like test.locoradio.live/?x (AIG-318); common endings only, so file names stay plain.
     .replace(/(^|[^\w@/.:"=-])((?:[a-z0-9-]+\.)+(?:com|net|org|io|live|dev|app|co|uk|nl|be|ai|me|tv|gg|xyz|info|site|online)(?::\d+)?(?:\/[^\s<]*[^\s<.,;:!?)\]])?)(?![\w-])/gi,
       (m, pre, u) => `${pre}<a href="https://${u}" target="_blank" rel="noopener">${u}</a>`)
     .replace(key ? new RegExp(`(^|[^\\w/#-])(${key}-\\d+)\\b`, 'gi') : /(?!)/g, (m, pre, id) => `${pre}<a href="#/p/${p.slug}/${id.toUpperCase()}">${id}</a>`);
+  return out.replace(/\u0001(\d+)\u0002/g, (m, i) => keep[i]);
 }
+// One safe link: http(s) opens in a new tab, vscode:// opens normally. The address is already escaped.
+const linkTag = (u, label) => /^https?:/i.test(u) ? `<a href="${u}" target="_blank" rel="noopener">${label}</a>` : `<a href="${u}">${label}</a>`;
 
 /* ---------- markdown renderer (Docs dialog) ---------- */
 // Small markdown renderer: headings, lists, tables, code blocks, links, bold/italic/code.
