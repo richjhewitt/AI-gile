@@ -62,6 +62,7 @@ function budgetHtml(pr) {
     ${row('saveH5', 'saver.h5', 1, 99)}${row('saveWk', 'saver.wk', 1, 99)}<small class="muted">${esc(t('saver.help'))}</small>
     <label class="f chk"><span><input type="checkbox" id="pf-maximise" ${pr.maximise ? 'checked' : ''} onchange="setLeadPref({ maximise: this.checked })"> ${esc(t('maxi.label'))}</span><small class="muted">${esc(t('maxi.help'))}</small></label>
     ${row('maxRuns', 'budget.runs', 0, 50)}<small class="muted">${esc(t('budget.runs.help'))}</small>
+    ${row('swarmWorkers', 'swarm.workers', 1, 20)}<small class="muted">${esc(t('swarm.workers.help'))}</small>
     <span>${esc(t('budget.helpers'))}</span>${['Opus', 'Sonnet', 'Haiku'].map(m => row('helpers' + m, 'budget.helpers.' + m.toLowerCase(), 0, 50)).join('')}<small class="muted">${esc(t('budget.helpers.help'))}</small></details>`;
 }
 // 😴 Tired mode (AIG-669): never / at bedtime / when the page is dark / always. The top bar's click switch sits in mode 'on'.
