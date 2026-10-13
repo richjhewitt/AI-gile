@@ -2675,5 +2675,10 @@
  "swarm.open": "Openen",
  "swarm.off": "Uitzetten",
  "queue.kind.plan": "Klaar voor go",
- "fy.kind.p": "🚦 Klaar voor go"
+ "fy.kind.p": "🚦 Klaar voor go",
+ "allhands.name": "📣 Alle teams",
+ "allhands.title": "📣 Alle teams: {text}",
+ "allhands.help": "Stuur één bericht naar het team van elk actief project.",
+ "allhands.waiting": "Nog geen antwoord van het team",
+ "allhands.none": "Nog geen berichten aan alle teams."
 }

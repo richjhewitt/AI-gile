@@ -105,7 +105,7 @@ const Dms = (() => {
     const chips = ['all', 'agents', 'people', ...(DiscordTab.linked() ? ['discord'] : []), ...(TwitchTab.linked() ? ['twitch'] : [])].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}${f === 'discord' ? badge(DiscordTab.unread()) : ''}</button>`).join('');
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
-      <div class="dm-list">${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}</div>`;
+      <div class="dm-list"><button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button>${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}</div>`;
     const panel = el('dmPanel');
     if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
     panel.hidden = false;
@@ -181,6 +181,7 @@ const Dms = (() => {
     box.hidden = !html;
   }
   async function loadThread(scroll) {
+    if (open === '_allhands') { try { await loadAllHands(); } catch {} return; }
     if (!open) return;
     if (isTw(open)) return TwitchTab.load(scroll);
     if (isDc(open)) return DiscordTab.load(scroll);
@@ -254,7 +255,36 @@ const Dms = (() => {
     catch (e) { el('smReqErr').textContent = e.message || String(e); }
   }
 
+  async function loadAllHands() {
+    const rows = await api('GET', '/api/chats/_allhands');
+    const list = el('dmList'); if (open !== '_allhands' || !list) return;
+    const html = rows.map(c => `<a class="dm-row" href="#/p/${esc(c.slug)}/${esc(c.id)}"><span class="dm-rowtext"><b>${esc(c.project)} · ${esc(c.title)}</b><span class="muted">${c.reply ? esc(c.reply.author) + ': ' + esc(c.reply.text || '') : esc(t('allhands.waiting'))} · ${ago(c.at)}</span></span></a>`).join('') || `<p class="muted dm-empty">${esc(t('allhands.none'))}</p>`;
+    if (list.dataset.sig !== html) { list.dataset.sig = html; list.innerHTML = html; }
+  }
+  function showAllHands() {
+    open = '_allhands'; listOpen = true; thread = { allhands: true };
+    const panel = el('dmPanel'); panel.dataset.sig = '';
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button><b>${esc(t('allhands.name'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+      <div class="dm-list" id="dmList"></div><div class="dm-compose"><div class="muted">${esc(t('allhands.help'))}</div>
+      <textarea id="dmText" data-draft="dm/_allhands" rows="2" placeholder="${esc(t('dms.placeholder'))}"></textarea><div class="err" id="dmErr"></div>
+      <div class="actions"><button id="allHandsSend" class="primary" onclick="Dms.send()" ${busy ? 'disabled' : ''}>${esc(t('dms.send'))}</button></div></div>`;
+    panel.hidden = false; loadThread(); loadRail(); el('dmText').focus();
+  }
+  async function sendAllHands() {
+    const ta = el('dmText'), err = el('dmErr'), btn = el('allHandsSend'), text = ta.value;
+    if (!text.trim()) { err.textContent = t('dms.empty'); return; }
+    busy = true; btn.disabled = true; err.textContent = '';
+    try {
+      await api('POST', '/api/allhands', { text });
+      ta.value = ''; clearDraft('dm/_allhands');
+      if (open === '_allhands') await loadAllHands();
+      loadRail();
+    } catch (e) { err.textContent = e.message || String(e); }
+    finally { busy = false; btn.disabled = false; const current = el('allHandsSend'); if (current) current.disabled = false; }
+  }
+
   function show(slug) {
+    if (slug === '_allhands') return showAllHands();
     if (isTw(slug)) { open = slug; listOpen = true; thread = null; TwitchTab.show(slug); loadRail(); return; }
     if (isDc(slug)) { open = slug; listOpen = true; thread = null; DiscordTab.show(slug); loadRail(); return; }
     open = slug; listOpen = true;
@@ -295,6 +325,7 @@ const Dms = (() => {
 
   async function send(fixed) {
     if (busy || !thread) return;
+    if (thread.allhands) return sendAllHands();
     if (thread.person) return sendPerson(fixed);
     const key = 'dm:' + thread.slug, text = fixed || el('dmText').value.trim(), q = (thread.answer || thread.open).find(o => o.id === target);
     if (!text && !Attach.has(key)) { el('dmErr').textContent = t('dms.empty'); return; }
