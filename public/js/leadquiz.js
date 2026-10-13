@@ -63,12 +63,19 @@ function budgetHtml(pr) {
     ${row('maxRuns', 'budget.runs', 0, 50)}<small class="muted">${esc(t('budget.runs.help'))}</small>
     <span>${esc(t('budget.helpers'))}</span>${['Opus', 'Sonnet', 'Haiku'].map(m => row('helpers' + m, 'budget.helpers.' + m.toLowerCase(), 0, 50)).join('')}<small class="muted">${esc(t('budget.helpers.help'))}</small></details>`;
 }
+// 😴 Tired mode (AIG-669): never / at bedtime / when the page is dark / always. The top bar's click switch sits in mode 'on'.
+function tiredHtml(pr) {
+  const c = pr.tired || { mode: 'off', bedtime: '22:00', wake: '07:00' }, m = c.mode === 'on' ? 'off' : c.mode;
+  const rd = (v, extra = '') => `<label class="chk"><input type="radio" name="pf-tired" value="${v}" ${m === v ? 'checked' : ''} onchange="setLeadPref({ tired: { mode: '${v}' } })"> ${esc(t('tired.mode.' + v))}${extra}</label>`;
+  const tm = k => `<input type="time" id="pf-tired-${k}" value="${esc(c[k])}" aria-label="${esc(t('tired.' + k))}" onchange="if (this.value) setLeadPref({ tired: { ${k}: this.value } })">`;
+  return `<div class="f"><span>${esc(t('tired.h'))}</span><div class="tired-box" id="pf-tired">${rd('off')}${rd('bedtime', ` ${tm('bedtime')} ${esc(t('tired.to'))} ${tm('wake')}`)}${rd('dark')}${rd('always')}<small class="muted">${esc(t('tired.help'))}</small></div></div>`;
+}
 function leadPrefsHtml(msg = '') {
   const pr = leadPrefs(), sc = pr.scales || {};
   const sw = k => `<label class="f chk"><span><input type="checkbox" ${pr[k] ? 'checked' : ''} onchange="setLeadPref({ ${k}: this.checked })"> ${esc(t('lead.' + k))}</span><small class="muted">${esc(t('lead.' + k + '.help'))}</small></label>`;
   return `<span>${esc(t('scale.h'))}</span><small class="muted">${esc(t('scale.sub'))}</small><div><button type="button" onclick="leadQuiz()">${esc(t('quiz.btn'))}</button></div><small class="muted">${esc(t('quiz.help'))}</small>
     ${OWNER_SCALES.map(([k, max]) => scaleSlider(k, max, sc[k], 'setScale') + (k === 'thrift' ? `<small class="muted" id="pf-pace">${esc(t('budget.pace', { pct: pr.pace }))}</small>${budgetHtml(pr)}` : '')).join('')}
-    ${sw('watchAll')}${sw('planBig')}${sw('light')}
+    ${sw('watchAll')}${sw('planBig')}${sw('light')}${tiredHtml(pr)}
     <label class="f"><span>${esc(t('lead.tech'))}</span><select class="setup-theme" onchange="setLeadPref({ techLevel: this.value })">${['', 'beginner', 'some', 'expert'].map(v => `<option value="${v}" ${(pr.techLevel || '') === v ? 'selected' : ''}>${esc(t('lead.tech.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.tech.help'))}</small></label>
     <label class="f"><span>${esc(t('lead.push'))}</span><select id="pushPref" class="setup-theme" onchange="setLeadPref({ push: this.value })">${['ask', 'auto'].map(v => `<option value="${v}" ${(pr.push || 'ask') === v ? 'selected' : ''}>${esc(t('lead.push.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('lead.push.help'))}</small></label>
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;

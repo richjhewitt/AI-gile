@@ -2435,5 +2435,18 @@
  "card.act.working": "working",
  "card.act.command": "waiting on a command",
  "card.act.min": "{n} min",
- "card.act.stale": "no sign of life for {n} min"
+ "card.act.stale": "no sign of life for {n} min",
+ "tb.b.tired": "Tired mode",
+ "tired.title.off": "Awake (click to switch Tired mode on)",
+ "tired.title.on": "Tired (click to switch Tired mode off)",
+ "tired.h": "😴 Tired mode",
+ "tired.mode.off": "Off",
+ "tired.mode.bedtime": "Bedtime:",
+ "tired.mode.dark": "Follow dark mode",
+ "tired.mode.always": "Always tired 🫩",
+ "tired.to": "to",
+ "tired.bedtime": "Bedtime",
+ "tired.wake": "Wake-up time",
+ "tired.help": "The top bar shows 😴 while this applies. Click it there to switch for now; it stays until things change.",
+ "card.morning": "😴 waits for morning"
 }

@@ -2435,5 +2435,18 @@
  "card.act.working": "bezig",
  "card.act.command": "wacht op een commando",
  "card.act.min": "{n} min",
- "card.act.stale": "geen teken van leven sinds {n} min"
+ "card.act.stale": "geen teken van leven sinds {n} min",
+ "tb.b.tired": "Moe-modus",
+ "tired.title.off": "Wakker (klik om de moe-modus aan te zetten)",
+ "tired.title.on": "Moe (klik om de moe-modus uit te zetten)",
+ "tired.h": "😴 Moe-modus",
+ "tired.mode.off": "Uit",
+ "tired.mode.bedtime": "Bedtijd:",
+ "tired.mode.dark": "Donkere modus volgen",
+ "tired.mode.always": "Altijd moe 🫩",
+ "tired.to": "tot",
+ "tired.bedtime": "Bedtijd",
+ "tired.wake": "Wektijd",
+ "tired.help": "De bovenbalk toont 😴 zolang dit geldt. Klik erop om het nu om te zetten; dat blijft zo tot er iets verandert.",
+ "card.morning": "😴 wacht tot morgen"
 }
