@@ -63,5 +63,26 @@ def('emojis', 'custom emojis: API add/list/serve/delete with bad names, duplicat
   await page.click('.emj-row[data-mine=qzblob] .emj-x');
   await sleep(500);
   check('the x deletes it', (await s.ok('GET', '/api/emojis')).length === 0 && !(await page.$('.emj-row[data-mine=qzblob]')));
+
+  // Shown in text (AIG-649): a comment and a DM; unknown names and code stay text.
+  await s.ok('POST', '/api/emojis', { name: 'qzblob', data: b64 });
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });
+  const card = await mkCard(s, 'alpha', 'Emoji text');
+  await s.ok('POST', `/api/projects/alpha/cards/${card.id}/comments`, { author: 'Owner', text: 'Hi :qzblob: and :nope: and `:qzblob:`' });
+  s.cli(['ask', 'alpha', card.id, 'Like it :qzblob: or :nope:? Assuming yes', '--as', 'Lead']);
+  const p2 = await openPage(ctx, `#/p/alpha/${card.id}`);
+  await p2.waitForSelector('#modal .panel');
+  await p2.waitForSelector('#modal img.cemoji', { timeout: 8000 }).catch(() => {});
+  const cm = await p2.evaluate(() => { const i = document.querySelector('#modal img.cemoji'); return { n: document.querySelectorAll('#modal img.cemoji').length, alt: i && i.alt, title: i && i.title, h: i && i.getBoundingClientRect().height, codeBad: [...document.querySelectorAll('#modal code')].some(c => c.querySelector('img')), codeText: [...document.querySelectorAll('#modal code')].some(c => c.textContent === ':qzblob:'), nope: document.querySelector('#modal').textContent.includes(':nope:') }; });
+  check('a comment shows :qzblob: as a picture, alt and title set', cm.n >= 1 && cm.alt === ':qzblob:' && cm.title === ':qzblob:' && cm.h > 10, cm);
+  check('unknown :nope: stays text; inline code stays text', cm.nope && cm.codeText && !cm.codeBad, cm);
+  await p2.goto(BASE + '/#/');
+  await p2.waitForSelector('#dmRail [data-dms]');
+  await p2.click('#dmRail [data-dms]');
+  await p2.click('#dmPanel [data-dm="alpha"]');
+  await p2.waitForSelector('#dmList .dm-msg');
+  await p2.waitForSelector('#dmList img.cemoji', { timeout: 8000 }).catch(() => {});
+  check('a DM shows the picture and keeps :nope: as text', !!(await p2.$('#dmList img.cemoji')) && /:nope:/.test(await p2.textContent('#dmList')));
+  noErrors(p2);
   noErrors(page);
 }, true);
