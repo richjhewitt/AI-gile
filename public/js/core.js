@@ -211,6 +211,7 @@ function parseRoute() {
   if (popList) return { view: 'inbox', popList: popList[1] };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/assumptions') return { view: 'assumptions' };
+  if (location.hash === '#/bin') return { view: 'bin' };   // the Assistant's bin (AIG-840)
   if (location.hash === '#/mail') return { view: 'mail' };   // ✉️ Mail inbox list (AIG-902)
   const stMatch = location.hash.match(/^#\/stats\/([a-z0-9-]+)$/);
   if (stMatch) return { view: 'stats', slug: stMatch[1] };   // project stats (AIG-726)
@@ -309,6 +310,9 @@ async function refresh(force) {
     } else if (state.route.view === 'mail') {
       await Mail.load();
       sig = JSON.stringify([state.route, Mail.sig(), i18n.lang]);
+    } else if (state.route.view === 'bin') {
+      await Bin.load();
+      sig = JSON.stringify([state.route, Bin.data, Bin.err, i18n.lang]);
     } else if (state.route.view === 'assumptions') {
       await Assumptions.load();
       sig = JSON.stringify([state.route, Assumptions.data]);
@@ -375,6 +379,7 @@ function renderBoardOnly() {
   queueMicrotask(paintFilterBar);
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'usage') return;
+  if (state.route.view === 'bin') { $('app').innerHTML = Bin.render(); return; }
   if (state.route.view === 'assumptions') { $('app').innerHTML = Assumptions.render(); return; }
   if (state.route.view === 'mail') { $('app').innerHTML = Mail.render(); return; }
   if (state.route.view === 'stats') { $('app').innerHTML = StatsPage.render(); return; }
@@ -414,6 +419,7 @@ function render() {
   if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'shared') { $('crumb').textContent = '/ 🔗 ' + (state.sboard ? state.sboard.theirName || state.sboard.friend : ''); $('crumb').style.color = ''; $('app').innerHTML = ShareBoard.render(state.sboard); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'mail') { $('crumb').textContent = '/ ' + t('mail.title'); $('app').innerHTML = Mail.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'bin') { $('crumb').textContent = '/ ' + t('bin.title'); $('app').innerHTML = Bin.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'assumptions') { $('crumb').textContent = '/ ' + t('assume.nav'); $('app').innerHTML = Assumptions.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'stats') { $('crumb').textContent = '/ ' + t('stats.title'); $('app').innerHTML = StatsPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'risks') { $('crumb').textContent = '/ ' + t('risks.title'); $('app').innerHTML = RisksPage.render(); $('modal').innerHTML = ''; return; }
