@@ -20,6 +20,12 @@ def('allhands', 'All hands: broadcast to active projects, lock Send, show latest
   const held = new Promise(r => { release = r; });
   await page.route('**/api/allhands', async route => { sends++; await held; await route.continue(); });
   await page.click('#allHandsSend');
+  check('Send asks first and sends nothing yet (AIG-943)', await page.locator('#allHandsAsk').isVisible() && /2/.test(await page.textContent('#allHandsAsk')) && sends === 0, sends);
+  await page.click('#allHandsNo');
+  check('Cancel sends nothing and keeps the text', sends === 0 && (await page.inputValue('#dmText')) === text);
+  await page.press('#dmText', 'Enter');
+  check('Enter asks too', await page.locator('#allHandsAsk').isVisible() && sends === 0);
+  await page.click('#allHandsYes');
   check('Send locks immediately', await page.locator('#allHandsSend').isDisabled());
   await page.evaluate(() => { Dms.send(); Dms.send(); });
   release();

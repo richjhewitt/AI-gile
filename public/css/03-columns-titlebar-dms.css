@@ -242,3 +242,6 @@ body.poptwitch { padding: 0; } body.poptwitch main { display: none; }
 .dm-closed { margin-top: 12px; border-top: 1px solid var(--col); padding-top: 8px; }
 .dm-closed .dm-rowwrap { }
 .dm-closedlink { border: 0; background: none; color: var(--muted, #888); font-size: 12px; text-decoration: underline; cursor: pointer; padding: 4px 10px; }
+.dm-askq { flex: 1 1 100%; font-size: 13px; }
+.dm-quiet { margin-top: 4px; border-top: 0; padding-top: 0; }
+.dm-compose .actions[hidden] { display: none; }
