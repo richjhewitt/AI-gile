@@ -81,6 +81,7 @@ def('topmenu', 'Top bar: Inbox/Help/Setup + More on desktop, one row with a ☰ 
   check('phone: the bar is one row (' + h + 'px)', h < 70);
   await page.locator('#tbMoreBtn').click();
   check('phone: the menu opens and holds Help, Setup and Theme', await page.locator('#tbMoreMenu').isVisible() && await page.evaluate(() => ['helpBtn', 'setupNav', 'themeBtn'].every(i => document.getElementById(i).closest('#tbMoreMenu'))));
+  check('phone: every visible menu item has a label (AIG-955)', await page.evaluate(() => [...document.querySelectorAll('#tbMoreMenu > *')].filter(e => getComputedStyle(e).display !== 'none').every(e => e.innerText.trim() !== '')), await page.evaluate(() => [...document.querySelectorAll('#tbMoreMenu > *')].filter(e => getComputedStyle(e).display !== 'none').map(e => e.id + '=' + JSON.stringify(e.innerText)).join(' | ')));
   check('phone: no sideways scroll', await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth));
   await page.screenshot({ path: 'R:/wt/shot-topbar-phone.png' });
   await page.locator('#tbMoreBtn').click();

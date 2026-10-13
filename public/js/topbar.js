@@ -39,6 +39,18 @@ const Topbar = (() => {
     const b = $('tbMoreBtn'), m = $('tbMoreMenu'); if (!b || !m) return;
     const on = open === undefined ? m.hidden : !!open;
     m.hidden = !on; b.setAttribute('aria-expanded', String(on));
+    if (on) labelMore();
+  }
+  // AIG-955: an icon-only item in the More menu gets a short word next to it (inside the menu only; the bar stays icon-only)
+  const MORE_LABEL = { ideaBtn: 'idea', tiredBtn: 'tired', setupNav: 'setup' };
+  function labelMore() {
+    for (const id of Object.keys(MORE_LABEL)) {
+      const e = $(id); if (!e) continue;
+      let s = e.querySelector(':scope > .tbm-label');
+      if (!e.closest('#tbMoreMenu')) { if (s) s.remove(); continue; }
+      if (!s) { s = document.createElement('span'); s.className = 'tbm-label'; e.appendChild(s); }
+      s.textContent = t('tb.b.' + MORE_LABEL[id]);
+    }
   }
   document.addEventListener('click', e => {
     const m = $('tbMoreMenu'); if (!m || m.hidden) return;
