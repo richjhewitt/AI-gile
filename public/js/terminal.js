@@ -171,6 +171,7 @@ const Term = (() => {
     box.dataset.key = key; box._cmds = cmds; box._lines = lines;
     code.innerHTML = lines.map((l, i) => `<span class="cl${cmds.some(g => g.includes(i)) ? ' cmd' : ''}" data-i="${i}">${esc(l)}</span>`).join('\n');
     const acts = box.querySelector('.codebox-acts'); if (!acts) return;
+    if (!Roles.canRun(panel.dataset.termName)) return;   // no access to this server: no ▶ buttons (AIG-677)
     acts.insertAdjacentHTML('afterbegin', cmds.length === 1 ? `<button class="copy run" data-run="this" title="${esc(t('term.run.this.title'))}">${esc(t('term.run.this'))}</button>`
       : `<button class="copy run" data-run="next" title="${esc(t('term.run.next.title'))}">${esc(t('term.run.next'))}</button><button class="copy run" data-run="all" title="${esc(t('term.run.all.title'))}">${esc(t('term.run.all'))}</button>`);
     box.classList.add('runs');
