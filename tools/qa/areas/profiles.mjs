@@ -35,6 +35,7 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   check('a role compiles its scales off the ways step, then How I work', P.roleLines(m).join('|') === 'Ask the lead (or the owner) about every choice.|Before handing over: run the full QA area and the edge cases.|- Page side only|- Phone width and dark mode', P.roleLines(m));
   const long = P.roleLines({ scales: {}, how: Array.from({ length: 9 }, (_, i) => String(i).repeat(150)) });
   check('How I work is capped at 6 bullets and 600 characters', long.length === 4 && long.join('').length <= 600 + 8, long.length);
+  check('a tired owner costs one short-messages line (AIG-670)', P.ownerLines({ steps: 1, go: '' }, 'Owner', {}, true).join('|') === 'Owner is tired: keep messages to Owner very short, no questions unless blocked, batch anything for them until morning.');
   check('the default owner costs no lines', P.ownerLines({ steps: 1, go: '' }, 'Owner').length === 0);
   check('the go lines are as before', P.ownerLines({ steps: 1, go: 'ask' }, 'Owner')[0] === "Owner's rule: ask before every build, however small. Propose and wait for go." && P.ownerLines({ steps: 1, go: 'small' }, 'Owner')[0] === "Owner's rule: small things (a fix or tweak, under an hour) you may build without asking; log them as a decision. Bigger work: propose and wait for go.");
   check('the helpers line is as before', P.ownerLines({ steps: 1, helpersOpus: 1, helpersSonnet: '', helpersHaiku: 0 }, 'Owner')[0] === "Owner's rule: use at most Opus 1, Haiku 0 helpers at once.");
