@@ -317,6 +317,7 @@ async function refreshStaged(force, liveState, state, api) {
   if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; $('filterbar').innerHTML = ''; $('filterbar').dataset.slug = ''; }
   // The inbox page renders itself; forget the last render so leaving it always redraws.
   if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; Object.assign(liveState, state); Inbox.show(force).catch(e => console.error(e)); return; }
+  const get = url => api('GET', url);   // reads go through refreshOnce's PagePoll wrapper (AIG-920); lost in the perf-page merge
   let sig;
   try {
     if (state.route.view === 'home') {
