@@ -170,7 +170,7 @@ function cardViewOf(p) {
   const v = (state.cvPreview && p && state.cvPreview.slug === p.slug ? state.cvPreview.view : p && p.cardView) || {};
   return { density: v.density === 'compact' ? 'compact' : 'roomy', show: { ...CARD_SHOW, ...(v.show || {}) } };
 }
-const TYPES =['feature', 'bug', 'task'];
+const TYPES =['feature', 'bug', 'task', 'incident'];
 const PRIORITIES = ['low', 'normal', 'high', 'urgent'];
 const state = { route: null, projects: [], inbox: [], project: null, openCard: null, showArchived: false, editing: false, dragging: false, lastSig: null };
 try { state.showArchived = localStorage.getItem('aigile.showArchived') === '1'; } catch {}

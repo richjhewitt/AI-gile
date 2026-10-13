@@ -2423,5 +2423,14 @@
  "dmme.sent": "Asked {who} to DM you. The chat is open in Messages.",
  "dmme.sent.nowake": "The DM is open in Messages, but nobody was woken: {why}",
  "dmme.open": "Open the DM",
- "srv.dmme.about": "About {id}: {title}"
+ "srv.dmme.about": "About {id}: {title}",
+ "type.incident": "🔥 incident",
+ "sb.raise.incident": "🔥 Report an incident",
+ "pm.title": "🔥 Close this incident",
+ "pm.intro": "Three short answers before it is done.",
+ "pm.happened": "What happened",
+ "pm.why": "Why",
+ "pm.change": "What we change",
+ "pm.done": "Done",
+ "pm.heading": "🔥 Post-mortem"
 }

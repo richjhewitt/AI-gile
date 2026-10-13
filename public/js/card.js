@@ -107,8 +107,27 @@ async function moveToProject(to) {
 }
 async function moveCard(status) {
   if (!status) return;
-  try { await api('PATCH', `/api/projects/${slug()}/cards/${cardId()}`, { status }); refresh(true); } catch (e) { alert(e.message); }
+  const body = { status };
+  if (status === 'done' && state.project) {   // 🔥 an incident is closed with its post-mortem (AIG-614)
+    const c = state.project.cards.find(x => x.id === cardId());
+    if (c && c.type === 'incident' && c.status !== 'done') { body.postmortem = await postmortemAsk(); if (!body.postmortem) { refresh(true); return; } }
+  }
+  try { await api('PATCH', `/api/projects/${slug()}/cards/${cardId()}`, body); refresh(true); } catch (e) { alert(e.message); }
 }
+// 🔥 The post-mortem dialog: what happened, why, what we change. Resolves to the three answers, or null if cancelled (AIG-614).
+function postmortemAsk() {
+  return new Promise(res => {
+    let sent = false;
+    const keys = ['happened', 'why', 'change'];
+    openDialog(`<h2>${esc(t('pm.title'))}</h2><p class="muted">${esc(t('pm.intro'))}</p><form id="pm-form">${keys.map(k => `<label class="f"><span>${esc(t('pm.' + k))}</span><textarea id="pm-${k}" rows="2" required></textarea></label>`).join('')}
+      <div class="actions"><button class="primary" type="submit">${esc(t('pm.done'))}</button><button type="button" id="pm-cancel">${esc(t('common.cancel'))}</button></div></form>`, 'postmortem');
+    $('pm-form').onsubmit = e => { e.preventDefault(); sent = true; const o = Object.fromEntries(keys.map(k => [k, $('pm-' + k).value.trim()])); closeDialog(); res(o); };
+    $('pm-cancel').onclick = () => { closeDialog(); res(null); };
+    const mo = new MutationObserver(() => { if (!document.getElementById('pm-form') && !sent) { mo.disconnect(); sent = true; res(null); } });
+    mo.observe(document.body, { childList: true, subtree: true });
+  });
+}
+const postmortemHtml = c => c.postmortem ? `<div class="postmortem"><h3>${esc(t('pm.heading'))}</h3>${['happened', 'why', 'change'].map(k => `<p><b>${esc(t('pm.' + k))}</b> ${esc(c.postmortem[k])}</p>`).join('')}</div>` : '';
 function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
@@ -158,7 +177,7 @@ function renderCard(p, c) {
       ${pop ? chatHtml(p, c, msg) : followBar(p, c) + replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
-      ${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${Attach.shown(c, p.slug)}
+      ${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${Attach.shown(c, p.slug)}
     </div>
     ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>${verdict}
       ${c.proof ? proofHtml(c.proof) : ''}
