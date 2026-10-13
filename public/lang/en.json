@@ -2389,7 +2389,7 @@
  "roles.level.run": "Run board server tasks",
  "roles.level.admin": "Full admin (ssh)",
  "eng.h": "Engine",
- "eng.help": "Which program runs each agent in the background: Claude (default) or Codex. The lead's engine runs the project. Codex must be installed on this PC and never pushes.",
+ "eng.help": "Which program runs each agent in the background: Claude (default), Codex or Gemini. The lead's engine runs the project. Codex or Gemini must be installed on this PC and never pushes.",
  "eng.claude": "Claude",
  "eng.codex": "Codex",
  "eng.model": "Codex model (empty = Codex's own default)",
@@ -2649,5 +2649,8 @@
  "remind.sorry": "Sorry what?",
  "remind.sorry.title": "Ask the team to explain this card again, from scratch",
  "remind.sorry.text": "Sorry what? Explain this from scratch, in plain words: what it is, why it matters, what happens next.",
- "remind.sorry.ok": "Asked the team"
+ "remind.sorry.ok": "Asked the team",
+ "eng.gemini": "Gemini",
+ "eng.model.gemini": "Gemini model (empty = Gemini's own default)",
+ "srv.engine.nogemini": "Gemini CLI isn't installed on this PC, so this run did not start."
 }
