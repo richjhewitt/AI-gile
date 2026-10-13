@@ -56,13 +56,13 @@ def('onelead', 'one lead per project: a session in VS Code or aigile wait blocks
   await mkProject(s, 'Night', 'NGT', { path: tmp('night') });
   await mkCard(s, 'night', 'Waiting work', { status: 'todo' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['night'] });
-  await sleep(800); await settle('night'); await sleep(2000);   // going quiet wakes it once; let that run end and the quiet window pass
+  await sleep(800); await settle('night'); await sleep(2000); await settle('night');   // going quiet wakes it (a go-round-again may follow); let both runs end and the quiet window pass
   const before = starts('night');
   s.cli(['show', 'night', 'NGT-1'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '' });
-  await sleep(1000);   // heard 'minutes' ago: offline for presence (ONLINE 0.6s) yet still a live session (ACTIVE 3s)
+  await sleep(700);   // heard 'minutes' ago: offline for presence (ONLINE 0.6s) yet still a live session (ACTIVE 1.5s)
   await s.ok('POST', '/api/watchman/round');
   await sleep(500);
-  check('a watchman round starts no run on a lead in a session', starts('night') === before && /not starting a background run/.test(log('night')), log('night'));
+  check('a watchman round starts no run on a lead in a session', starts('night') === before && /not starting a background run/.test(log('night')), before + ' ' + starts('night') + ' ' + log('night'));
   await sleep(2500);
   await s.ok('POST', '/api/watchman/round');
   for (let i = 0; i < 40 && starts('night') === before; i++) await sleep(250);
