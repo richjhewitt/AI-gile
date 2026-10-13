@@ -13,6 +13,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/store.js`: config, load/save of `data/<slug>.json`, card rules, project order
 - `lib/onboard.js`: connect a folder, permissions presets
 - `lib/presence.js`: team presence, background runs, where a team runs, verbose log, 👁 Watch
+- `lib/engines.js` + `public/js/dialogs/engines.js` (AIG-704/705): Claude or Codex per roster entry (`engine`, `codexModel`; none = Claude); a project's background run uses its lead's engine; the whole `codex exec` command line, output reader and not-installed check are in the one `ENGINES` table (flags marked "check on first real run"); `AIGILE_ENGINE_STUB` = a script standing in for codex (a path with no file = not installed); not installed = board comment, no run, never Claude; QA `engines`
 - `lib/quiet.js`, `lib/watchman.js`: going quiet, 🌙 night watchman and the 🧭 Lead Scrum Master's chat and agent run
 - `lib/scrummaster.js`: 🧭 Lead Scrum Master by day (AIG-359, `docs/SCRUM-MASTER.md`): launch, plain-code day rounds, 💡 idea sorting, digest, daily AI-run cap
 - `tools/build-noai.mjs` (AIG-617): the No-AI edition into `dist/aigile-noai/` (AI-only lib files become stand-ins, `NOAI` marker file in the root keeps it on for good; `noai.set(false)` and `POST /api/noai/off` refuse there); QA `noai` builds it into a tmp folder and starts it (`startServer(env, port, root)`)
