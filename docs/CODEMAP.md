@@ -60,6 +60,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `js/standup.js`, `js/usage-page.js`, `js/glossary.js`, `js/tour.js`, `js/help.js` (AIG-345: help levels, ❓ Help menu, first-run offer, 🎓 Agile intro slides from `GET /api/intro`; QA `helplevels`), `js/night.js`, `js/leadquiz.js`
 - `js/topbar.js` + `css/10-topbar.css`: Setup box and apply of the top bar buttons (AIG-575/576: on/off, order, left/right, theme colour, reset; localStorage `aigile.topbar`; QA `topbar`)
 - `lib/glance.js` + `js/scrumglance.js` (AIG-688): 📊 ScrumGlance, plain-code counts and short lists (doing, to do, to test, done today) for one project or all; `GET /api/glance[?project=]`; top-bar button `glanceBtn` (Setup top bar list), floating panel polled from app.js' 1s tick, ⧉ Pop out = `#/pop-glance[/slug]`; QA `scrumglance`
+- `lib/stats.js` + `lib/routes/stats.js` + `js/stats.js` + `css/11-stats.css` (AIG-726/727): 📈 project stats, plain code from the card store (a card is done on its `updated` day) and the folder's commit history (`log --shortstat`, cached 5 min, `windowsHide`); `GET /api/projects/:slug/stats`; page `#/stats/<slug>` (board toolbar button): tiles, 12-week SVG bar chart, records, the AI-gile Wrapped box with Copy as text; QA `stats`
 - `js/app.js`: start-up, 1s poll, going quiet
 
 ## Other areas
