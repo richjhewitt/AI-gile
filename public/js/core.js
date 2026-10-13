@@ -211,6 +211,7 @@ function parseRoute() {
   if (popList) return { view: 'inbox', popList: popList[1] };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/assumptions') return { view: 'assumptions' };
+  if (location.hash === '#/mail') return { view: 'mail' };   // ✉️ Mail inbox list (AIG-902)
   const stMatch = location.hash.match(/^#\/stats\/([a-z0-9-]+)$/);
   if (stMatch) return { view: 'stats', slug: stMatch[1] };   // project stats (AIG-726)
   if (location.hash === '#/today') return { view: 'today' };   // Today: Today's project weights (AIG-595)
@@ -302,6 +303,9 @@ async function refresh(force) {
     } else if (state.route.view === 'shared') {
       state.sboard = await api('GET', `/api/shares/${state.route.link}/board`).catch(() => null);
       sig = JSON.stringify([state.route, state.sboard, i18n.lang]);
+    } else if (state.route.view === 'mail') {
+      await Mail.load();
+      sig = JSON.stringify([state.route, Mail.sig(), i18n.lang]);
     } else if (state.route.view === 'assumptions') {
       await Assumptions.load();
       sig = JSON.stringify([state.route, Assumptions.data]);
@@ -364,6 +368,7 @@ function renderBoardOnly() {
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'usage') return;
   if (state.route.view === 'assumptions') { $('app').innerHTML = Assumptions.render(); return; }
+  if (state.route.view === 'mail') { $('app').innerHTML = Mail.render(); return; }
   if (state.route.view === 'stats') { $('app').innerHTML = StatsPage.render(); return; }
   if (state.route.view === 'today') { $('app').innerHTML = TodayPage.render(); return; }
   if (state.route.view === 'whatsnew') { $('app').innerHTML = WhatsNew.render(); return; }
@@ -399,6 +404,7 @@ function render() {
   if (state.route.view === 'watch') { renderWatch(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'shared') { $('crumb').textContent = '/ 🔗 ' + (state.sboard ? state.sboard.theirName || state.sboard.friend : ''); $('crumb').style.color = ''; $('app').innerHTML = ShareBoard.render(state.sboard); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'mail') { $('crumb').textContent = '/ ' + t('mail.title'); $('app').innerHTML = Mail.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'assumptions') { $('crumb').textContent = '/ ' + t('assume.nav'); $('app').innerHTML = Assumptions.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'stats') { $('crumb').textContent = '/ ' + t('stats.title'); $('app').innerHTML = StatsPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'today') { $('crumb').textContent = '/ ' + t('today.title'); $('app').innerHTML = TodayPage.render(); $('modal').innerHTML = ''; return; }

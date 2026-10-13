@@ -80,6 +80,7 @@ async function checkBuild() {
     if ((m.ownerPic || '') !== (state.ownerPic || '')) { state.ownerPic = m.ownerPic || ''; refresh(true); }   // your picture (AIG-150)
     pokeBadge(await api('GET', '/api/projects'));
     Assumptions.watch();   // the count on the 🌙 Assumptions link (AIG-477)
+    Mail.watch();   // ✉️ the Mail link shows once a mailbox is set up (AIG-902)
     WhatsNew.check();   // ✨ a note once after an update (AIG-562)
     // A new install opens Setup first (AIG-91).
     if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';

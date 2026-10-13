@@ -44,6 +44,7 @@
   <button id="liveBtn" class="navlink" onclick="Streamer.goLive()" hidden></button>
   <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" title="No Token Mode">⛔ No Token Mode</button>
   <button id="tiredBtn" class="navlink" onclick="Tired.toggle()" aria-pressed="false" title="Tired mode">🔋</button>
+  <a class="navlink" id="mailNav" href="#/mail" style="display:none" data-i18n="mail.nav" data-i18n-title="mail.nav.title" title="Your mail inbox">✉️ Mail</a>
   <a class="navlink" id="assumeNav" href="#/assumptions" data-i18n-title="assume.nav.title" title="Guesses the team made while you were away"><span data-i18n="assume.nav">🌙 Assumptions</span> <span id="assumeBadge" class="pill you" hidden></span></a>
   <a class="navlink" id="usageNav" href="#/usage"><span data-i18n="nav.usage">⚡ Usage</span><span id="ugBars"></span></a>
   <a class="navlink" id="setupNav" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer">⚙️</a>
@@ -110,6 +111,7 @@ window.Boot = (() => {
 <!-- Classic scripts sharing one global scope; the order matters (see docs/CODEMAP.md). app.js starts everything and must stay last. -->
 <script src="js/usage-page.js"></script>
 <script src="js/assumptions.js"></script>
+<script src="js/mail.js"></script>
 <script src="js/whatsnew.js"></script>
 <script src="js/today.js"></script>
 <script src="js/stats.js"></script>
