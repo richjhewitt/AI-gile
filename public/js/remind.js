@@ -26,6 +26,16 @@
   // The open state is kept per card id, so the board's polling re-render does not lose the box.
   const open = new Set();
   const curId = () => { try { const c = typeof curCard === 'function' ? curCard() : null; return c ? c.id : null; } catch (e) { return null; } };
+  // Sorry what? (AIG-765): posts an owner comment so the team re-explains the card from scratch.
+  const asked = {};
+  root.remindSorry = async function () {
+    const id = curId(), c = id && curCard(); if (!c || asked[id]) return;
+    asked[id] = 1; draw();
+    try { await api('POST', '/api/projects/' + slug() + '/cards/' + id + '/comments', { author: me(), text: t('remind.sorry.text') }); }
+    catch (e) { delete asked[id]; draw(); alert(e.message); return; }
+    setTimeout(() => { delete asked[id]; draw(); }, 5000);
+    try { refresh(true); } catch (e) {}
+  };
   function draw() {
     const id = curId(), btn = document.getElementById('remind-btn'), box = document.getElementById('remind-box');
     if (!id || !btn || !open.has(id)) { if (box) box.remove(); return; }
@@ -34,6 +44,10 @@
     fresh.id = 'remind-box'; fresh.setAttribute('role', 'status'); fresh.dataset.card = id;
     fresh.style.cssText = 'flex-basis:100%;margin:6px 0;padding:8px 10px;border:1px solid rgba(128,128,128,.5);border-radius:8px;background:rgba(128,128,128,.12);color:inherit;font-size:13px;line-height:1.4;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box';
     remindLines(c, { isOwner, t }).forEach(l => { const d = document.createElement('div'); d.textContent = l.text; fresh.appendChild(d); });
+    const sb = document.createElement('button'); sb.id = 'sorry-btn'; sb.type = 'button'; sb.style.cssText = 'margin-top:6px'; sb.textContent = t('remind.sorry'); sb.title = t('remind.sorry.title');
+    sb.disabled = !!asked[id]; sb.onclick = () => root.remindSorry();
+    fresh.appendChild(document.createElement('div')).appendChild(sb);
+    if (asked[id]) { const ok = document.createElement('div'); ok.id = 'sorry-ok'; ok.textContent = t('remind.sorry.ok'); ok.style.cssText = 'font-size:12px;opacity:.8'; fresh.appendChild(ok); }
     const bar = btn.closest('.actions');
     if (box) { if (box.dataset.card === id && box.textContent === fresh.textContent && box.previousElementSibling === bar) return; box.remove(); }
     bar.insertAdjacentElement('afterend', fresh);
