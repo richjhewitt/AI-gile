@@ -48,6 +48,7 @@
   <a class="navlink" id="setupNav" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer">⚙️</a>
   <button id="themeBtn" class="theme-pick" onclick="nextTheme()" title="Theme">🖥️ System</button>
   <button id="enBtn" class="theme-pick" hidden onclick="toggleEn()"></button>
+  <span id="immWrap" class="langwrap imm-wrap" hidden><button id="immBtn" class="theme-pick" onclick="toggleImm()"></button><button id="immMore" class="theme-pick imm-more" aria-haspopup="true" aria-expanded="false" onclick="immMenu()" hidden>▾</button><div id="immList" class="immlist" hidden></div></span>
   <span class="live" id="live" data-i18n="live.ok">live</span>
 </header>
 <div id="saverBar" class="saver-bar" role="status" hidden></div>
@@ -130,6 +131,7 @@ window.Boot = (() => {
 <script src="js/core.js"></script>
 <script src="js/popout.js"></script>
 <script src="js/i18n.js"></script>
+<script src="js/immersion.js"></script>
 <script src="js/format.js"></script>
 <script src="js/attach.js"></script>
 <script src="js/filters.js"></script>

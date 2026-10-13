@@ -2555,5 +2555,17 @@
  "quiettime.day.sun": "Zondag",
  "quiettime.chip": "🔕 {label} tot {until}",
  "quiettime.chip.nolabel": "🔕 Stil tot {until}",
- "quiettime.chip.title": "Een stille tijd uit Setup: niets gaat live tot hij voorbij is"
+ "quiettime.chip.title": "Een stille tijd uit Setup: niets gaat live tot hij voorbij is",
+ "imm.h": "Taalimmersie",
+ "imm.help": "Vink de talen aan die je leert. Een 🌍-knop in de bovenbalk zet het hele bord dan in een van die talen, en weer terug.",
+ "imm.learn": "Talen die ik leer",
+ "imm.days": "Taaldagen",
+ "imm.days.help": "Kies een taal voor een weekdag en het bord start die dag in die taal.",
+ "imm.days.empty": "Vink eerst hierboven een taal aan, dan kun je er een weekdag aan geven.",
+ "imm.day.none": "Mijn eigen taal",
+ "imm.random": "Willekeurig: kies elke ochtend een van mijn talen",
+ "imm.random.help": "Dezelfde de hele dag. Een taaldag gaat voor op willekeurig.",
+ "imm.title": "Toon het bord in {name} (klik nogmaals om terug te gaan)",
+ "imm.back": "Terug naar {name}",
+ "imm.menu": "Kies een taal om te leren"
 }

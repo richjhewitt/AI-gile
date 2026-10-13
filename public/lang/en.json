@@ -2555,5 +2555,17 @@
  "quiettime.day.sun": "Sunday",
  "quiettime.chip": "🔕 {label} until {until}",
  "quiettime.chip.nolabel": "🔕 Quiet until {until}",
- "quiettime.chip.title": "A quiet time from Setup: nothing goes live until it ends"
+ "quiettime.chip.title": "A quiet time from Setup: nothing goes live until it ends",
+ "imm.h": "Language immersion",
+ "imm.help": "Tick the languages you are learning. A 🌍 button in the top bar then flips the whole board into one of them, and back again.",
+ "imm.learn": "Languages I am learning",
+ "imm.days": "Language days",
+ "imm.days.help": "Pick a language for a weekday and the board starts in it that day.",
+ "imm.days.empty": "Tick a language above first, then you can give it a weekday.",
+ "imm.day.none": "My own language",
+ "imm.random": "Random: pick one of my learning languages each morning",
+ "imm.random.help": "The same one all day. A language day wins over random.",
+ "imm.title": "Show the board in {name} (click again to go back)",
+ "imm.back": "Back to {name}",
+ "imm.menu": "Choose a learning language"
 }
