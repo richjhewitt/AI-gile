@@ -206,4 +206,9 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   fs.rmSync(stub, { force: true });
   await s.ok('POST', '/api/setup', { prefs: { todayPick: false } });
   check('switched off, the setting is gone from the file', JSON.parse(fs.readFileSync(lf, 'utf8')).today === undefined);
+  // AIG-829/830 fix: a board already open picks up the switch being turned on, no reload needed
+  await s.ok('POST', '/api/setup', { prefs: { todayPick: true } });
+  check('turned on while the board is open: the picker appears without a reload', await pg.waitForSelector('#dialog .overlay', { timeout: 20000 }).then(() => true, () => false));
+  await pg.click('#dialog .actions button >> nth=0');
+  await s.ok('POST', '/api/setup', { prefs: { todayPick: false } });
 }, true);

@@ -77,6 +77,23 @@ def('breaks', '⏸ break modes: Break button on home, Vape / Shower, chip with I
   check('back from Shower: the line, no 💊 Taken', !/Taken/.test(await page.textContent('#breakBack')));
   await page.evaluate(() => Break.dismiss());
 
+  // comments on any project card count, not only the inbox ones
+  const plain = await mkCard(s, 'alpha', 'Plain work', { status: 'todo' });
+  await page.evaluate(() => Break.start('vape'));
+  await sleep(50);
+  await s.ok('POST', `/api/projects/alpha/cards/${plain.id}/comments`, { author: 'Lead', text: 'done a bit' });
+  await page.evaluate(() => Break.end());
+  await page.waitForFunction(() => /comment/.test(document.getElementById('brkAway')?.textContent || ''), null, { timeout: 8000 }).catch(() => {});
+  check('"while you were away" counts comments on cards that are not in the inbox', /1 comment/.test(await page.textContent('#breakBack')), await page.textContent('#breakBack'));
+  await page.evaluate(() => Break.dismiss());
+
+  // a break that ran out while the page was closed still gets its welcome-back line, then is cleared
+  await page.evaluate(() => { localStorage.setItem('aigile.break', JSON.stringify({ kind: 'vape', from: Date.now() - 120000, until: Date.now() - 60000 })); });
+  await page.reload();
+  await page.waitForSelector('#breakBack:not([hidden]) .brk-took', { timeout: 8000 }).catch(() => {});
+  check('expired while closed: the welcome-back line and 💊 Taken show, the break is cleared', await shown('#breakBack') && /While you were away/.test(await page.textContent('#breakBack')) && !(await on()) && (await page.evaluate(() => localStorage.getItem('aigile.break'))) === null);
+  await page.evaluate(() => Break.dismiss());
+
   // AIG-838: 🚿 Shower button on home; "Right, let's do this" on life reminders
   await page.click('text=🚿 Shower');
   await page.waitForSelector('#showerScreen:not([hidden])');

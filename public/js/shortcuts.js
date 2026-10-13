@@ -32,7 +32,8 @@ const Shortcuts = (() => {
     if (k === '?') { e.preventDefault(); if (!dlg) sheet(); else if ($('scClose')) closeDialog(); return; }
     const l = k.toLowerCase();
     if ((l === 'a' || l === 'b') && dlg) {   // the For you window: the unfolded row
-      const f = document.querySelector('#fyfList .fyf-row.open'), btn = f && f.querySelector(l === 'a' ? '[data-act="accept"]' : '[data-fyback]');
+      const open = [...document.querySelectorAll('#fyfList .fyf-row.open')], ae = document.activeElement, inRow = ae && ae.closest && ae.closest('#fyfList .fyf-row.open');
+      const f = inRow || (open.length === 1 ? open[0] : null), btn = f && f.querySelector(l === 'a' ? '[data-act="accept"]' : '[data-fyback]');
       if (btn && !btn.disabled) { e.preventDefault(); btn.click(); }
       return;
     }
@@ -49,7 +50,7 @@ const Shortcuts = (() => {
     if (k === '/') { const q = document.getElementById('f-q') || document.getElementById('glossQ'); if (vis(q)) { e.preventDefault(); q.focus(); q.select(); } return; }
     if (l === 'a' || l === 'b') {
       const ai = document.getElementById('ibAi'); if (ai && !ai.hidden) return;   // the inbox flick view has its own a
-      const btn = modal && modal.querySelector(`.verdict button[onclick^="verdict(${l === 'a'})"]`);
+      const btn = modal && modal.querySelector(`.verdict button[onclick*="verdict(${l === 'a'}"]`);
       if (btn) { e.preventDefault(); btn.click(); }
       return;
     }
