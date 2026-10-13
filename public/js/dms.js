@@ -6,8 +6,10 @@
 // Friends' private DMs (AIG-111, lib/dm.js) are chats too: the list has a filter All / Agents / People, and a
 // friend's chat has the same typing box, 👍 and attachments. A friend's chat key is 'dm:<contact id>'.
 const Dms = (() => {
-  let projects = [], chats = [], people = [], closed = {}, showClosed = false, filter = 'all', open = null, listOpen = false, thread = null, busy = false;
+  let projects = [], chats = [], people = [], closed = {}, showClosed = false, showQuiet = false, askAll = false, filter = 'all', open = null, listOpen = false, thread = null, busy = false;
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
+  const QUIET_DAYS = 3, QUIET_MS = QUIET_DAYS * 86400000;   // AIG-946: a chat with no message for this long hides until a new one
+  const plain = s => String(s || '').replace(/```/g, ' ').replace(/^\s*(?:[-*+•]|\d+[.)])\s+/gm, '').replace(/^\s*#+\s+/gm, '').replace(/\*\*|__|[*_`~]/g, '').replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\s+/g, ' ').trim();   // AIG-946: previews are plain text
   const GENERAL = '_new';   // target: a new message to the lead instead of an answer (AIG-285)
   const el = id => document.getElementById(id);
   const avatar = c => `<span class="dm-av" style="--proj:${esc(c.color || '')}">${pic(c.logo, c.emoji || '💬')}</span>`;
@@ -105,18 +107,19 @@ const Dms = (() => {
     if (filter === 'discord' && !DiscordTab.linked()) filter = 'all';
     if (filter === 'twitch' && !TwitchTab.linked()) filter = 'all';
     // AIG-917: newest message first (any side), unread rows stand out, a ✕ closes a chat (hidden, history kept, back on a newer message).
-    const entry = (key, last, unread, inner, waiting) => ({ key, last: last || '', unread, hidden: !!closed[key] && !waiting && (!last || last <= closed[key]), html: `<div class="dm-rowwrap ${unread ? 'unread' : ''}"><button class="dm-row" data-dm="${esc(key)}">${inner}</button><button class="dm-rowx" data-dmclose="${esc(key)}" title="${esc(t('dms.close.title'))}" aria-label="${esc(t('dms.close.title'))}">✕</button></div>` });
-    const all = (filter === 'people' || filter === 'twitch' || filter === 'discord' ? [] : chats.map(c => entry(c.slug, c.last, c.unread, `${c.watchman || c.noAi ? leadAv(c) : avatar(c)}<span class="dm-rowtext"><b>${esc(c.watchman || c.noAi ? leadName(c) : chatName(c))}</b><span class="muted">${esc([c.watchman || c.noAi ? '' : leadName(c), (c.lastText || '').slice(0, 60), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`, c.unread > 0)))
-      .concat(filter === 'agents' || filter === 'twitch' || filter === 'discord' ? [] : people.map(c => entry('dm:' + c.id, c.last, c.unread, `${personAv(c)}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc([(c.lastText || '').slice(0, 60) || t('dms.person'), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`)))
-      .sort((x, y) => y.last.localeCompare(x.last));
-    const shut = all.filter(r => r.hidden), shown = all.filter(r => !r.hidden);
+    const entry = (key, last, unread, inner, waiting) => ({ key, last: last || '', unread, hidden: !!closed[key] && !waiting && (!last || last <= closed[key]), quiet: !!last && !unread && !waiting && Date.now() - Date.parse(last) > QUIET_MS, html: `<div class="dm-rowwrap ${unread ? 'unread' : ''}"><button class="dm-row" data-dm="${esc(key)}">${inner}</button><button class="dm-rowx" data-dmclose="${esc(key)}" title="${esc(t('dms.close.title'))}" aria-label="${esc(t('dms.close.title'))}">✕</button></div>` });
+    const all = (filter === 'people' || filter === 'twitch' || filter === 'discord' ? [] : chats.map(c => entry(c.slug, c.last, c.unread, `${c.watchman || c.noAi ? leadAv(c) : avatar(c)}<span class="dm-rowtext"><b>${esc(c.watchman || c.noAi ? leadName(c) : chatName(c))}</b><span class="muted">${esc([c.watchman || c.noAi ? '' : leadName(c), plain(c.lastText).slice(0, 60), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`, c.unread > 0)))
+      .concat(filter === 'agents' || filter === 'twitch' || filter === 'discord' ? [] : people.map(c => entry('dm:' + c.id, c.last, c.unread, `${personAv(c)}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc([plain(c.lastText).slice(0, 60) || t('dms.person'), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`)))
+      .sort((x, y) => (Date.parse(y.last) || 0) - (Date.parse(x.last) || 0));   // newest activity first
+    const shut = all.filter(r => r.hidden), quietRows = all.filter(r => !r.hidden && r.quiet), shown = all.filter(r => !r.hidden && (showQuiet || !r.quiet));
     const rows = filter === 'twitch' ? TwitchTab.rowsHtml() : filter === 'discord' ? DiscordTab.rowsHtml() : shown.map(r => r.html);
     const closedBox = shut.length ? `<div class="dm-closed"><button class="dm-closedlink" data-dmshowclosed="1" aria-expanded="${showClosed}">${esc(t('dms.closed.show', { n: shut.length }))}</button>${showClosed ? shut.map(r => r.html.replace('data-dmclose=', 'data-dmreopen=').replace(/title="[^"]*" aria-label="[^"]*">✕/, `title="${esc(t('dms.closed.reopen'))}" aria-label="${esc(t('dms.closed.reopen'))}">↩`)).join('') : ''}</div>` : '';
-    const none = filter === 'twitch' ? t('tw.nonone') : filter === 'discord' ? t('dc.nonone') : filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) && !shut.length ? t('dms.nonone') : t('dms.noleads');
+    const quietBox = quietRows.length && filter !== 'twitch' && filter !== 'discord' ? `<div class="dm-closed dm-quiet"><button class="dm-closedlink" data-dmshowquiet="1" aria-expanded="${showQuiet}">${esc(showQuiet ? t('dms.quiet.hide') : t(quietRows.length === 1 ? 'dms.quiet.show.one' : 'dms.quiet.show', { n: quietRows.length }))}</button></div>` : '';
+    const none = filter === 'twitch' ? t('tw.nonone') : filter === 'discord' ? t('dc.nonone') : filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) && !shut.length && !quietRows.length ? t('dms.nonone') : t('dms.noleads');
     const chips = ['all', 'agents', 'people', ...(DiscordTab.linked() ? ['discord'] : []), ...(TwitchTab.linked() ? ['twitch'] : [])].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}${f === 'discord' ? badge(DiscordTab.unread()) : ''}</button>`).join('');
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
-      <div class="dm-list">${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button>` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${closedBox}</div>`;
+      <div class="dm-list">${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button>` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}</div>`;
     const panel = el('dmPanel');
     if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
     panel.hidden = false;
@@ -140,7 +143,7 @@ const Dms = (() => {
     return list.map(([id, msgs]) => {
       const c = (thread.cards || {})[id] || {}, last = msgs.at(-1), isOpen = id === fold;
       const acts = c.waiting && !last.mine ? actionsHtml(askActions(last, c.kind), thread.slug, id) : '';
-      const preview = String(last.text || '').replace(/^\s*[-*]\s+/gm, '').replace(/[*_`#>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 90);
+      const preview = plain(last.text).slice(0, 90);
       return `<div class="dm-fold ${isOpen ? 'open' : ''} ${c.waiting ? 'waiting' : ''}">
         <div class="dm-fold-h k-${esc(c.kind || 'other')}" data-fold="${esc(id)}" role="button" tabindex="0" aria-expanded="${isOpen}">
           ${thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : id === '_lead' ? `<span class="dm-tag">${esc(t('dms.kind.lead'))}</span>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><a class="dm-fold-id" href="#/p/${esc(thread.slug)}/${esc(id)}" title="${esc(t('dms.opencard'))}"><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span></a>`}
@@ -202,13 +205,13 @@ const Dms = (() => {
     // A card that newly starts waiting on you opens by itself, and the typing box answers it.
     const fresh = thread.open.find(o => !waitingSeen.has(o.id));
     thread.open.forEach(o => waitingSeen.add(o.id));
-    if (fresh && target !== GENERAL) { target = fresh.id; fold = fresh.id; }
+    if (fresh && target !== GENERAL) fold = fresh.id;   // AIG-936: a new question opens in the chat, but the typing box stays a plain message
     const html = foldsHtml() || `<p class="muted dm-empty">${esc(t(chats.some(x => x.slug === open && x.watchman) ? 'dms.nomsgs.watch' : 'dms.nomsgs'))}</p>`;
     // AIG-757: the card open in the chat can be answered too, not only cards waiting on you: a reply to a 💬 card the
     // lead had answered used to start a new card.
     const fc0 = (thread.cards || {})[fold];
     thread.answer = !thread.watchman && fc0 && !fc0.done && fc0.kind !== 'test' && fold !== '_lead' && !thread.open.some(o => o.id === fold) ? [...thread.open, { id: fold, title: fc0.title }] : thread.open;
-    if (target !== GENERAL && !thread.answer.some(o => o.id === target)) target = thread.open.length ? thread.open[0].id : thread.answer.length ? thread.answer[0].id : null;
+    if (target !== GENERAL && !thread.answer.some(o => o.id === target)) target = GENERAL;   // AIG-936: the Lead chat itself unless you pick a card
     if (list.dataset.sig !== html) {
       const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
       list.dataset.sig = html; list.innerHTML = html;
@@ -220,7 +223,8 @@ const Dms = (() => {
     const to = thread.answer.length && !thread.watchman ? `${esc(t('dms.replyto'))} <select id="dmTarget" onchange="Dms.aim(this.value)">${thread.answer.map(o => `<option value="${esc(o.id)}" ${o.id === target ? 'selected' : ''}>${esc(o.id)} ${esc(o.title)}</option>`).join('')}<option value="${GENERAL}" ${target === GENERAL ? 'selected' : ''}>💬 ${esc(t('dms.newmsg', { lead: thread.lead }))}</option></select>`
       : q ? t('dms.replying.html', { link: `<a href="#/p/${esc(thread.slug)}/${esc(q.id)}">${esc(q.id)}</a>`, title: esc(q.title) }) : esc(t('dms.newmsg', { lead: thread.lead }));
     if (el('dmTo').dataset.sig !== to && document.activeElement !== el('dmTarget')) { el('dmTo').dataset.sig = to; el('dmTo').innerHTML = to; }
-    el('dmGo').hidden = !q;
+    const qm = q && thread.messages.filter(m => m.card === q.id && !m.mine).pop();
+    el('dmGo').hidden = !(qm && askActions(qm, (thread.cards || {})[q.id] && thread.cards[q.id].kind).some(a => a.say === 'GO'));   // AIG-936: Go only answers a Go? question
     // AIG-426: the lead carried on in another card; the card now open in the chat points the way.
     const fc = (thread.cards || {})[fold] || {}, fh = fc.followUp ? Follow.html('dm', thread.slug, fold, fc.followUp.id) : '';
     if (el('dmFollow') && el('dmFollow').dataset.sig !== fh) { el('dmFollow').dataset.sig = fh; el('dmFollow').innerHTML = fh; }
@@ -274,17 +278,22 @@ const Dms = (() => {
     if (list.dataset.sig !== html) { list.dataset.sig = html; list.innerHTML = html; }
   }
   function showAllHands() {
-    open = '_allhands'; listOpen = true; thread = { allhands: true };
+    open = '_allhands'; listOpen = true; thread = { allhands: true }; askAll = false;
     const panel = el('dmPanel'); panel.dataset.sig = '';
     panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button><b>${esc(t('allhands.name'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-list" id="dmList"></div><div class="dm-compose"><div class="muted">${esc(t('allhands.help'))}</div>
-      <textarea id="dmText" data-draft="dm/_allhands" rows="2" placeholder="${esc(t('dms.placeholder'))}"></textarea><div class="err" id="dmErr"></div>
-      <div class="actions"><button id="allHandsSend" class="primary" onclick="Dms.send()" ${busy ? 'disabled' : ''}>${esc(t('dms.send'))}</button></div></div>`;
+      <textarea id="dmText" data-draft="dm/_allhands" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(EnterSend.is(event,'chat')){event.preventDefault();Dms.askTeams(true)}"></textarea><div class="err" id="dmErr"></div>
+      <div class="actions" id="allHandsAsk" hidden></div>
+      <div class="actions" id="allHandsActs"><button id="allHandsSend" class="primary" onclick="Dms.send()" ${busy ? 'disabled' : ''}>${esc(t('dms.send'))}</button></div></div>`;
     panel.hidden = false; loadThread(); loadRail(); el('dmText').focus();
   }
+  // AIG-943: Enter and the button first ask "Send to N teams?"; only Send in that question sends.
+  const askTeams = on => { const a = el('allHandsAsk'), b = el('allHandsActs'); if (!a) return; if (on && !el('dmText').value.trim()) { el('dmErr').textContent = t('dms.empty'); return; } if (on) el('dmErr').textContent = ''; askAll = on; a.hidden = !on; b.hidden = on; if (on) { const n = projects.filter(x => !x.archived).length; a.innerHTML = `<b class="dm-askq" role="alert">${esc(t(n === 1 ? 'allhands.confirm.one' : 'allhands.confirm', { n }))}</b><button id="allHandsYes" class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button><button id="allHandsNo" onclick="Dms.askTeams(false)">${esc(t('common.cancel'))}</button>`; el('allHandsYes').focus(); } else el('dmText').focus(); };
   async function sendAllHands() {
     const ta = el('dmText'), err = el('dmErr'), btn = el('allHandsSend'), text = ta.value;
     if (!text.trim()) { err.textContent = t('dms.empty'); return; }
+    if (!askAll) { err.textContent = ''; askTeams(true); return; }
+    askTeams(false);
     busy = true; btn.disabled = true; err.textContent = '';
     try {
       await api('POST', '/api/allhands', { text });
@@ -351,7 +360,6 @@ const Dms = (() => {
       else if (q && !(fold === '_lead' && target === GENERAL)) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
       else { await api('POST', `/api/projects/${thread.slug}/leadchat`, { author: me(), text, attachments }); fold = '_lead'; }   // AIG-872: the one Lead chat, not a 💬 card per message
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
-      if (target === GENERAL && fold !== '_lead') target = null;   // sent: back to answering what waits on you
       await loadThread(true); loadRail();
     } catch (e) { el('dmErr').textContent = e.message || String(e); }
     busy = false;
@@ -414,6 +422,7 @@ const Dms = (() => {
     if (sv) { e.preventDefault(); saveEmoji(sv.dataset.ecid, sv.dataset.esave); return; }
     const xc = e.target.closest('#dmPanel [data-dmclose],#dmPanel [data-dmreopen]');   // AIG-917
     if (xc) { e.preventDefault(); const k = xc.dataset.dmclose || xc.dataset.dmreopen, shut = !!xc.dataset.dmclose; api('POST', '/api/dmclosed', { key: k, closed: shut }).then(() => { if (shut) closed[k] = new Date().toISOString(); else delete closed[k]; return loadRail(); }).then(paintList).catch(() => {}); return; }
+    if (e.target.closest('#dmPanel [data-dmshowquiet]')) { showQuiet = !showQuiet; paintList(); return; }
     if (e.target.closest('#dmPanel [data-dmshowclosed]')) { showClosed = !showClosed; paintList(); return; }
     const fl = e.target.closest('#dmPanel [data-dmfilter]');
     if (fl) { filter = fl.dataset.dmfilter; try { localStorage.setItem('aigile.dmfilter', filter); } catch {} paintList(); return; }
@@ -442,5 +451,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   setInterval(() => { if (!document.hidden) { loadRail(); if (open) loadThread(); } }, 3000);
   loadRail();
-  return { follow, show, back, close, send, ask, aim, reply, reload, smNight, smPush, requestForm, requestSend };
+  return { follow, show, back, close, send, ask, askTeams, aim, reply, reload, smNight, smPush, requestForm, requestSend };
 })();

@@ -3181,5 +3181,10 @@
  "phone.step2.wait": "The QR code shows up here after step 1.",
  "phone.step3.help": "Your phone opens AI-gile and appears in the list below. You can remove it there at any time.",
  "phone.app.or": "Using the Android app instead?",
- "mail.setup.relay.link": "Check the relay address"
+ "mail.setup.relay.link": "Check the relay address",
+ "dms.quiet.show": "Show {n} quiet chats",
+ "dms.quiet.show.one": "Show 1 quiet chat",
+ "dms.quiet.hide": "Hide quiet chats",
+ "allhands.confirm": "Send to {n} teams?",
+ "allhands.confirm.one": "Send to 1 team?"
 }

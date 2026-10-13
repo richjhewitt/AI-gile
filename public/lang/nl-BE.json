@@ -3181,5 +3181,10 @@
  "phone.step2.wait": "De QR-code verschijnt hier na stap 1.",
  "phone.step3.help": "Je gsm opent AI-gile en staat daarna in de lijst hieronder. Daar kun je hem altijd weer verwijderen.",
  "phone.app.or": "Of gebruik je de Android-app?",
- "mail.setup.relay.link": "Controleer het relay-adres"
+ "mail.setup.relay.link": "Controleer het relay-adres",
+ "dms.quiet.show": "Toon {n} stille chats",
+ "dms.quiet.show.one": "Toon 1 stille chat",
+ "dms.quiet.hide": "Verberg stille chats",
+ "allhands.confirm": "Naar {n} teams sturen?",
+ "allhands.confirm.one": "Naar 1 team sturen?"
 }
