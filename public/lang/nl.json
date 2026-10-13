@@ -2387,5 +2387,13 @@
  "roles.none": "Er staat nog niemand anders in een team.",
  "roles.level.none": "Geen",
  "roles.level.run": "Servertaken van het bord uitvoeren",
- "roles.level.admin": "Volledige beheerder (ssh)"
+ "roles.level.admin": "Volledige beheerder (ssh)",
+ "eng.h": "Engine",
+ "eng.help": "Welk programma elke agent op de achtergrond draait: Claude (standaard) of Codex. De engine van de lead draait het project. Codex moet op deze pc geïnstalleerd zijn en pusht nooit.",
+ "eng.claude": "Claude",
+ "eng.codex": "Codex",
+ "eng.model": "Codex-model (leeg = standaard van Codex)",
+ "eng.pick": "Engine voor {name}",
+ "eng.lead.tag": "draait het project",
+ "srv.engine.nocodex": "Codex is niet geïnstalleerd op deze pc, dus deze run is niet gestart."
 }

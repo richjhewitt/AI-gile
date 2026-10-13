@@ -2387,5 +2387,13 @@
  "roles.none": "Nobody else is on a team yet.",
  "roles.level.none": "None",
  "roles.level.run": "Run board server tasks",
- "roles.level.admin": "Full admin (ssh)"
+ "roles.level.admin": "Full admin (ssh)",
+ "eng.h": "Engine",
+ "eng.help": "Which program runs each agent in the background: Claude (default) or Codex. The lead's engine runs the project. Codex must be installed on this PC and never pushes.",
+ "eng.claude": "Claude",
+ "eng.codex": "Codex",
+ "eng.model": "Codex model (empty = Codex's own default)",
+ "eng.pick": "Engine for {name}",
+ "eng.lead.tag": "runs the project",
+ "srv.engine.nocodex": "Codex isn't installed on this PC, so this run did not start."
 }

@@ -51,6 +51,7 @@ function teamHtml() {
     <small class="muted">${esc(t('tm.team.sub'))}</small>
     ${xtHtml()}
     ${matesHtml()}
+    ${enginesHtml()}
     ${peopleHtml()}
     <div class="tm-msg" id="tm-msg" role="status">${TM.msg}</div>
     <details class="tm-owner" id="tm-owner"><summary>${esc(t('tm.owner.h'))}</summary><small class="muted">${esc(t('tm.owner.sub'))}</small>${['steps', 'go', 'words'].map(ownerRow).join('')}</details>
