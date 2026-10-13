@@ -54,7 +54,8 @@ def('engines', 'engines: Engine pick per agent in the Team dialog, a Codex lead 
   for (let i = 0; i < 40 && !/exec/.test(fs.readFileSync(out, 'utf8')); i++) await sleep(250);
   const got = fs.readFileSync(out, 'utf8').replace(/\r/g, '').replace(/"/g, '');
   await settle();
-  check('codex exec --json with the sandbox, approvals never and the model', / ?exec --json --sandbox workspace-write -c approval_policy=never -c sandbox_workspace_write\.network_access=true --skip-git-repo-check -m gpt-test You are running/.test(got), got);
+  check('codex exec --json without the sandbox (AIG-402) and the model', / ?exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check -m gpt-test You are running/.test(got), got);
+  check('the prompt points at the same rules as Claude (AIG-402)', /WAYS-OF-WORKING\.md/.test(got) && /CLAUDE\.local\.md/.test(got) && /AI attribution/.test(got), got);
   check('it runs in the project folder', got.split('\n')[0].trim().toLowerCase().replace(/\\/g, '/') === proj.toLowerCase().replace(/\\/g, '/'), got.split('\n')[0]);
   check('the prompt says never push and runs the board brief', /Never run git push/.test(got) && /board brief for project eng/.test(got), got);
   check('Claude was not started for it', claudeRuns() === before);
