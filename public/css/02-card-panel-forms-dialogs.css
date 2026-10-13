@@ -16,6 +16,9 @@ button.good { background: var(--done); border-color: var(--done); color: #fff; f
 button.warn { background: var(--warn); border-color: var(--warn); color: #fff; font-weight: 600; }
 button.danger { color: var(--danger); }
 button:disabled { opacity: .5; cursor: default; }
+/* AIG-930: the file picker's button looks like ours in both themes; 'Alerts blocked' is a state, so it stays readable. */
+input[type=file]::file-selector-button { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; margin-inline-end: 8px; cursor: pointer; }
+.ib-alerts:disabled { opacity: 1; color: var(--muted); }
 input, select, textarea { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; }
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 input[type=checkbox], input[type=radio] { width: auto; }   /* a radio at 100% pushed its label aside (AIG-921) */

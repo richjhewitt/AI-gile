@@ -4,25 +4,29 @@
   --accent: #3b6cf6; --done: #1f9d61; --warn: #d97706; --danger: #dc2626; --you: #9333ea;
   --shadow: 0 1px 2px rgba(20,30,50,.08);
   --radius: 10px;
+  color-scheme: light;   /* native bits (file picker, scrollbars, date boxes) follow the theme (AIG-930) */
 }
 /* Dark: the system setting, unless the user picked Light; or the user picked Dark (AIG-143). */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme=light]) {
-    --bg: #12151b; --panel: #1b2029; --col: #161a22; --text: #e6e9ef; --muted: #8b93a7; --line: #2a303c;
+    --bg: #12151b; --panel: #1b2029; --col: #161a22; --text: #e6e9ef; --muted: #9da5b8; --line: #2a303c;
     --accent: #6d93ff; --done: #34c77b; --warn: #f0a33a; --danger: #f06262; --you: #b57cff;
     --shadow: 0 1px 2px rgba(0,0,0,.4);
+    color-scheme: dark;
   }
 }
 :root[data-theme=dark] {
-    --bg: #12151b; --panel: #1b2029; --col: #161a22; --text: #e6e9ef; --muted: #8b93a7; --line: #2a303c;
+    --bg: #12151b; --panel: #1b2029; --col: #161a22; --text: #e6e9ef; --muted: #9da5b8; --line: #2a303c;
     --accent: #6d93ff; --done: #34c77b; --warn: #f0a33a; --danger: #f06262; --you: #b57cff;
     --shadow: 0 1px 2px rgba(0,0,0,.4);
+    color-scheme: dark;
 }
 /* Night mode (the owner went quiet): dim, warm, no blue light. */
 :root[data-night] {
   --bg: #0d0906; --panel: #15100b; --col: #110c08; --text: #c9a27e; --muted: #7d6450; --line: #2a1f16;
   --accent: #a8622c; --done: #7f8a3a; --warn: #b8782e; --danger: #a8483a; --you: #8f5a4a;
   --shadow: none;
+  color-scheme: dark;
 }
 :root[data-night] img, :root[data-night] svg { filter: sepia(.6) brightness(.8); }
 * { box-sizing: border-box; }
