@@ -2437,5 +2437,10 @@
  "risk.small": "Klein",
  "risk.normal": "Normaal",
  "risk.risky": "Riskant (eerst plan)",
- "risk.chip.title": "Riskant: eerst een plan, dan bouwen"
+ "risk.chip.title": "Riskant: eerst een plan, dan bouwen",
+ "qa.none": "⚪ Nog geen QA",
+ "qa.green": "🟢 QA groen",
+ "qa.red": "🔴 QA rood: kan niet live",
+ "qa.full.pass": "hele suite groen",
+ "qa.full.fail": "hele suite rood"
 }

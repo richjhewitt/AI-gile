@@ -2437,5 +2437,10 @@
  "risk.small": "Small",
  "risk.normal": "Normal",
  "risk.risky": "Risky (plan first)",
- "risk.chip.title": "Risky: plan first, then build"
+ "risk.chip.title": "Risky: plan first, then build",
+ "qa.none": "⚪ No QA yet",
+ "qa.green": "🟢 QA green",
+ "qa.red": "🔴 QA red: can't go live",
+ "qa.full.pass": "full suite green",
+ "qa.full.fail": "full suite red"
 }
