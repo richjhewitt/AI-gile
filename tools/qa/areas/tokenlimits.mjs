@@ -18,6 +18,42 @@ def('tokenlimits', '🪙 helper cap by spend scale, nightly token budget stops a
   check('the brief asks for exact files or line ranges', /exact files or line ranges/.test(s.cli(['brief', 'cap']).out));
   check('AGENTS.md says at most 4 helpers, with exact files', /at most 4 helpers per run[^]*exact files or line ranges/.test(fs.readFileSync(path.join(ROOT, 'AGENTS.md'), 'utf8')));
 
+  // AIG-714 Usage maximiser: with room to spare in the 5-hour window the cap doubles (max 8); 10% reserve; the saver wins.
+  const h5Resets = Math.floor(Date.now() / 1000) + 3600;   // 80% of the window gone by
+  const reading = (h5, wk) => s.ok('POST', '/api/limits', { rate_limits: { five_hour: { used_percentage: h5, resets_at: h5Resets }, seven_day: { used_percentage: wk, resets_at: h5Resets + 86400 } } });
+  const brief = () => { const o = s.cli(['brief', 'cap']).out; return { cap: (/Helpers: at most (\d+) per run/.exec(o) || [])[1], maxi: /Usage maximiser: room to spare before the reset; pull more cards from backlog/.test(o) }; };
+  check('the maximiser is off by default', (await s.ok('GET', '/api/setup')).prefs.maximise === false);
+  await s.ok('POST', '/api/setup', { prefs: { plan: 'normal', maximise: true } });
+  check('the maximiser setting is saved', (await s.ok('GET', '/api/setup')).prefs.maximise === true);
+  let b = brief();
+  check('maximiser on, no reading: normal cap, no extra line', b.cap === '4' && !b.maxi, b);
+  await reading(20, 30); b = brief();
+  check('maximiser on, low reading: cap doubles to 8 and the brief says to pull more cards', b.cap === '8' && b.maxi, b);
+  const lat = await s.ok('GET', '/api/limits/latest');
+  check('/api/limits/latest reports the boost and the cap', lat.maximiser && lat.maximiser.boost === true && lat.maximiser.why === 'room' && lat.maximiser.cap === 8, lat.maximiser);
+  const up = await openPage(ctx, '#/usage');
+  await up.waitForSelector('.uz-maxi', { timeout: 8000 });
+  check('the Usage page shows the maximiser line', /Maximiser on: room to spare, up to 8 helpers/.test(await up.textContent('.uz-maxi')));
+  noErrors(up); await up.close();
+  await s.ok('POST', '/api/setup', { prefs: { plan: 'fly' } });
+  check('fly doubles 2 to 4', brief().cap === '4');
+  await s.ok('POST', '/api/setup', { prefs: { plan: 'nospare' } });
+  check('never more than 8', brief().cap === '8');
+  await s.ok('POST', '/api/setup', { prefs: { plan: 'normal' } });
+  await reading(85, 30); b = brief();
+  check('5-hour used ahead of the time gone by: normal cap', b.cap === '4' && !b.maxi, b);
+  await reading(10, 92); b = brief();
+  check('weekly at 92% (10% reserve): normal cap', b.cap === '4' && !b.maxi && (await s.ok('GET', '/api/limits/latest')).maximiser.why === 'reserve', b);
+  await reading(90, 10); b = brief();
+  check('5-hour at 90%: normal cap', b.cap === '4' && !b.maxi, b);
+  await s.ok('POST', '/api/setup', { prefs: { saveH5: 50 } });
+  await reading(60, 10); b = brief();
+  check('the usage saver wins: normal cap', b.cap === '4' && !b.maxi && (await s.ok('GET', '/api/limits/latest')).maximiser.why === 'saver', b);
+  await s.ok('POST', '/api/setup', { prefs: { saveH5: '' } });
+  await reading(20, 30);
+  await s.ok('POST', '/api/setup', { prefs: { maximise: false } }); b = brief();
+  check('maximiser off, low reading: normal cap', b.cap === '4' && !b.maxi && (await s.ok('GET', '/api/limits/latest')).maximiser === null, b);
+
   // #4 Nightly budget: a run's growing session log is read while it goes; past the limit it is stopped and the card told.
   const dir = tmp('night'); await mkProject(s, 'Night', 'NGT', { path: dir });
   const card = await mkCard(s, 'night', 'Busy card', { status: 'doing' });

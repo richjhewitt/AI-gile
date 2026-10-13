@@ -59,6 +59,7 @@ function budgetHtml(pr) {
     <label class="f"><span>${esc(t('budget.usage'))}</span><select class="setup-theme" id="pf-usageChecks" onchange="setLeadPref({ usageChecks: this.value })">${['off', 'hand', 'auto'].map(v => `<option value="${v}" ${pr.usageChecks === v ? 'selected' : ''}>${esc(t('budget.usage.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('budget.usage.help'))}</small></label>
     ${row('budgetH5', 'budget.h5', 1, 100)}${row('budgetWk', 'budget.wk', 1, 100)}<small class="muted">${esc(t('budget.help'))}</small>
     ${row('saveH5', 'saver.h5', 1, 99)}${row('saveWk', 'saver.wk', 1, 99)}<small class="muted">${esc(t('saver.help'))}</small>
+    <label class="f chk"><span><input type="checkbox" id="pf-maximise" ${pr.maximise ? 'checked' : ''} onchange="setLeadPref({ maximise: this.checked })"> ${esc(t('maxi.label'))}</span><small class="muted">${esc(t('maxi.help'))}</small></label>
     ${row('maxRuns', 'budget.runs', 0, 50)}<small class="muted">${esc(t('budget.runs.help'))}</small>
     <span>${esc(t('budget.helpers'))}</span>${['Opus', 'Sonnet', 'Haiku'].map(m => row('helpers' + m, 'budget.helpers.' + m.toLowerCase(), 0, 50)).join('')}<small class="muted">${esc(t('budget.helpers.help'))}</small></details>`;
 }
