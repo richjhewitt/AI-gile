@@ -189,7 +189,7 @@ function forYouFirst(k) {
 }
 // The For you queue in board order; the card panel uses it to open the next one (AIG-141).
 function forYouQueue(p, pool = p.cards) {
-  const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : kindOf(c) === 's' && first === 'k' ? 0.5 : kindOf(c) === 'o' && first === 'k' ? 0.7 : 1 + KINDS.indexOf(kindOf(c));   // server tasks lead the Tasks (AIG-320)
+  const first = forYouFirst(), rank = c => kindOf(c) === first ? 0 : kindOf(c) === 's' && first === 'k' ? -0.2 : kindOf(c) === 'o' && first === 'k' ? -0.1 : 1 + KINDS.indexOf(kindOf(c));   // server tasks lead the Tasks (AIG-320)
   // Within a kind, a queue: longest-waiting first, so "Wait and see" sends a test to the back.
   // Tests the AI tester passed come first, ready for a quick accept (AIG-300).
   const ai = c => c.aiCheck && c.aiCheck.result === 'pass' ? 0 : 1;
