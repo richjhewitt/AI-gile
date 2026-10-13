@@ -214,6 +214,8 @@ function parseRoute() {
   if (location.hash === '#/mail') return { view: 'mail' };   // ✉️ Mail inbox list (AIG-902)
   const stMatch = location.hash.match(/^#\/stats\/([a-z0-9-]+)$/);
   if (stMatch) return { view: 'stats', slug: stMatch[1] };   // project stats (AIG-726)
+  const rkMatch = location.hash.match(/^#\/risks\/([a-z0-9-]+)$/);
+  if (rkMatch) return { view: 'risks', slug: rkMatch[1] };   // risk register (AIG-863)
   if (location.hash === '#/today') return { view: 'today' };   // Today: Today's project weights (AIG-595)
   if (location.hash === '#/whats-new') return { view: 'whatsnew' };   // ✨ release notes (AIG-562)
   if (location.hash === '#/setup') return { view: 'setup' };
@@ -315,6 +317,9 @@ async function refresh(force) {
       if (StatsPage.slug !== state.route.slug || !StatsPage.data) { StatsPage.slug = state.route.slug; StatsPage.data = null; state.lastSig = state.lastBoardSig = null; render(); }
       await StatsPage.load(state.route.slug);
       sig = JSON.stringify([state.route, StatsPage.data, i18n.lang]);
+    } else if (state.route.view === 'risks') {
+      await RisksPage.load(state.route.slug);
+      sig = JSON.stringify([state.route, RisksPage.data, i18n.lang]);
     } else if (state.route.view === 'today') {
       await TodayPage.load();
       sig = JSON.stringify([state.route, TodayPage.data, i18n.lang]);
@@ -373,6 +378,7 @@ function renderBoardOnly() {
   if (state.route.view === 'assumptions') { $('app').innerHTML = Assumptions.render(); return; }
   if (state.route.view === 'mail') { $('app').innerHTML = Mail.render(); return; }
   if (state.route.view === 'stats') { $('app').innerHTML = StatsPage.render(); return; }
+  if (state.route.view === 'risks') { $('app').innerHTML = RisksPage.render(); return; }
   if (state.route.view === 'today') { $('app').innerHTML = TodayPage.render(); return; }
   if (state.route.view === 'whatsnew') { $('app').innerHTML = WhatsNew.render(); return; }
   if (state.route.view === 'standups') { $('app').innerHTML = renderStandups(); return; }
@@ -410,6 +416,7 @@ function render() {
   if (state.route.view === 'mail') { $('crumb').textContent = '/ ' + t('mail.title'); $('app').innerHTML = Mail.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'assumptions') { $('crumb').textContent = '/ ' + t('assume.nav'); $('app').innerHTML = Assumptions.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'stats') { $('crumb').textContent = '/ ' + t('stats.title'); $('app').innerHTML = StatsPage.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'risks') { $('crumb').textContent = '/ ' + t('risks.title'); $('app').innerHTML = RisksPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'today') { $('crumb').textContent = '/ ' + t('today.title'); $('app').innerHTML = TodayPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'whatsnew') { $('crumb').textContent = '/ ' + t('wn.title'); $('app').innerHTML = WhatsNew.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ ' + t('crumb.usage'); $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
