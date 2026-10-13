@@ -19,6 +19,15 @@ def('remind', '❓ Remind me: ask + plan + now from comments, bare card falls ba
   await page.emulateMedia({ colorScheme: 'dark' });
   check('dark mode: the box has readable text', await page.evaluate(() => { const e = document.getElementById('remind-box'); return e.offsetHeight > 20 && getComputedStyle(e).color !== getComputedStyle(e).backgroundColor; }));
   await page.setViewportSize({ width: 1280, height: 800 }); await page.emulateMedia({ colorScheme: 'light' });
+  await page.waitForTimeout(3200);   // the board polls: the card re-renders and the box must come back
+  check('the box survives the poll re-render', (await page.locator('#remind-box').count()) === 1 && /You asked/.test(await page.innerText('#remind-box')));
+  await page.evaluate(() => { const m = document.getElementById('modal'); m.innerHTML = m.innerHTML; });
+  await page.waitForTimeout(200);
+  check('the box is redrawn after a forced re-render', (await page.locator('#remind-box').count()) === 1);
+  await page.keyboard.press('Escape');
+  check('Escape closes the box', (await page.locator('#remind-box').count()) === 0);
+  await page.click('#remind-btn');
+  check('click opens it again', (await page.locator('#remind-box').count()) === 1);
   await page.click('#remind-btn');
   check('a second click hides the box', (await page.locator('#remind-box').count()) === 0);
 

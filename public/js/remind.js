@@ -22,15 +22,29 @@
     return out;
   }
   root.remindLines = remindLines;
+
+  // The open state is kept per card id, so the board's polling re-render does not lose the box.
+  const open = new Set();
+  const curId = () => { try { const c = typeof curCard === 'function' ? curCard() : null; return c ? c.id : null; } catch (e) { return null; } };
+  function draw() {
+    const id = curId(), btn = document.getElementById('remind-btn'), box = document.getElementById('remind-box');
+    if (!id || !btn || !open.has(id)) { if (box) box.remove(); return; }
+    const c = curCard(); if (!c) return;
+    const fresh = document.createElement('div');
+    fresh.id = 'remind-box'; fresh.setAttribute('role', 'status'); fresh.dataset.card = id;
+    fresh.style.cssText = 'flex-basis:100%;margin:6px 0;padding:8px 10px;border:1px solid rgba(128,128,128,.5);border-radius:8px;background:rgba(128,128,128,.12);color:inherit;font-size:13px;line-height:1.4;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box';
+    remindLines(c, { isOwner, t }).forEach(l => { const d = document.createElement('div'); d.textContent = l.text; fresh.appendChild(d); });
+    const bar = btn.closest('.actions');
+    if (box) { if (box.dataset.card === id && box.textContent === fresh.textContent && box.previousElementSibling === bar) return; box.remove(); }
+    bar.insertAdjacentElement('afterend', fresh);
+  }
   root.remindToggle = function () {
-    const old = document.getElementById('remind-box');
-    if (old) { old.remove(); return; }
-    const c = typeof curCard === 'function' ? curCard() : null, btn = document.getElementById('remind-btn');
-    if (!c || !btn) return;
-    const box = document.createElement('div');
-    box.id = 'remind-box'; box.setAttribute('role', 'status');
-    box.style.cssText = 'flex-basis:100%;margin:6px 0;padding:8px 10px;border:1px solid rgba(128,128,128,.5);border-radius:8px;background:rgba(128,128,128,.12);color:inherit;font-size:13px;line-height:1.4;overflow-wrap:anywhere;max-width:100%;box-sizing:border-box';
-    remindLines(c, { isOwner, t }).forEach(l => { const d = document.createElement('div'); d.textContent = l.text; box.appendChild(d); });
-    btn.closest('.actions').insertAdjacentElement('afterend', box);
+    const id = curId(); if (!id) return;
+    if (open.has(id)) open.delete(id); else open.add(id);
+    draw();
   };
+  if (typeof document !== 'undefined') {
+    new MutationObserver(() => { if (open.size) draw(); }).observe(document.body, { childList: true, subtree: true });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('remind-box')) { const id = curId(); if (id) open.delete(id); draw(); } });
+  }
 })(typeof window !== 'undefined' ? window : globalThis);
