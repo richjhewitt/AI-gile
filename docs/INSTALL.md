@@ -100,6 +100,17 @@ npm run shortcut
 
 This adds an **AI-gile** shortcut to your Desktop and Start menu. (Run it from PowerShell, not from a VS Code terminal.)
 
+## Optional: Linux
+
+Node 18 or later is all the board needs; the desktop window is optional.
+
+- Start the board: `node server.js`, then open <http://localhost:4321>
+- Launcher in your applications menu (no sudo): `sh tools/linux/install.sh`
+- Desktop app as one file: `cd desktop && npm install && npm run appimage` makes `desktop/dist/AI-gile-*.AppImage`; run `sh tools/linux/install.sh desktop/dist/AI-gile-*.AppImage` to add its launcher
+- The AppImage needs Node on your PATH (or `AIGILE_NODE`) and keeps its data in `~/.config/aigile-desktop/data` (or `AIGILE_DATA`)
+- On Ubuntu 22.04 and later an AppImage also needs FUSE 2 (`sudo apt install libfuse2`)
+- Tests: `node tools/qa/qa.mjs platform` (areas that need a browser need one installed)
+
 ## Updating
 
 With a zip, see step 1. With a git clone, when there is a new version the board shows an **⬆ Update** pill. One click updates and restarts it.

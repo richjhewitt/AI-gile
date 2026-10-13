@@ -5,7 +5,9 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const ROOT = path.resolve(__dirname, '..');
+// Packaged (AppImage): the board's files sit in resources/aigile and its data goes to the user's own folder (the AppImage is read-only).
+const ROOT = app.isPackaged ? path.join(process.resourcesPath, 'aigile') : path.resolve(__dirname, '..');
+if (app.isPackaged && !process.env.AIGILE_DATA) process.env.AIGILE_DATA = path.join(app.getPath('userData'), 'data');
 const PORT = Number(process.env.AIGILE_PORT) || 4321;
 const BASE = `http://localhost:${PORT}`;
 const ICON = path.join(__dirname, 'icon.png'), ICON_WAITING = path.join(__dirname, 'icon-waiting.png');
