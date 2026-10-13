@@ -219,6 +219,7 @@ function parseRoute() {
   if (glance) return { view: 'glance', slug: glance[1] ? decodeURIComponent(glance[1]) : '' };   // 📊 ScrumGlance in its own window (AIG-688)
   const watch = location.hash.match(/^#\/pop-watch\/([^/]+)$/);
   if (watch) return { view: 'watch', slug: watch[1] };   // 👁 Watch a verbose team in its own window (AIG-154)
+  if (location.hash === '#/pop-twitch') return { view: 'twitch' };   // 🟣 Twitch chat in its own window (AIG-629)
   const news = location.hash.match(/^#\/pop-news\/([^/]+)$/);
   if (news) return { view: 'news', slug: news[1] };   // 📜 Team news in its own window (AIG-319)
   const shared = location.hash.match(/^#\/shared\/([A-Za-z0-9_-]{22})$/);
@@ -286,7 +287,7 @@ async function refresh(force) {
     } else if (state.route.view === 'glance') {
       await ScrumGlance.load(state.route.slug);
       sig = JSON.stringify([state.route, ScrumGlance.data, i18n.lang]);
-    } else if (state.route.view === 'term') {
+    } else if (state.route.view === 'term' || state.route.view === 'twitch') {
       sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'glossary') {
       sig = JSON.stringify([state.route, i18n.lang]);
@@ -378,6 +379,7 @@ function render() {
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'dlg') { renderPopDlg(); return; }
   if (state.route.view === 'term') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Term.popView(state.route); return; }
+  if (state.route.view === 'twitch') { $('modal').innerHTML = ''; TwitchTab.popView(); return; }
   if (state.route.view === 'glance') { $('app').innerHTML = ScrumGlance.popHtml(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'news') { $('app').innerHTML = renderNews(); $('modal').innerHTML = ''; return; }
