@@ -4,7 +4,7 @@ function moveUi(p, c) {
   const cols = colsOf(p).filter(x => x.key !== c.status);
   // The other projects, for ➡️ Move to project (AIG-438): the home list if it is loaded, else fetched once.
   if (!state.projects && !state.projectList && !state.projectListAsked) { state.projectListAsked = true; api('GET', '/api/projects').then(l => { state.projectList = l; refresh(true); }).catch(() => {}); }
-  const others = (state.projects || state.projectList || []).filter(x => x.slug !== p.slug && !x.archived);
+  const others = TodayPage.only(state.projects || state.projectList || []).filter(x => x.slug !== p.slug && !x.archived);
   return (c.status === 'done' ? `<button data-reopen onclick="moveCard('${esc(c.reopenTo || 'todo')}')" title="${esc(t('card.reopen.title'))}">${esc(t('card.reopen'))}</button> ` : '')
     + `<select id="mv-to" data-moveto onchange="moveCard(this.value)" aria-label="${esc(t('card.moveto'))}"><option value="">${esc(t('card.moveto'))}</option>${cols.map(x => `<option value="${esc(x.key)}">${esc(((x.emoji ? x.emoji + ' ' : '') + x.name).trim())}</option>`).join('')}</select>`
     + (others.length ? ` <select id="mv-proj" onchange="moveToProject(this.value)" aria-label="${esc(t('card.moveproj'))}"><option value="">${esc(t('card.moveproj'))}</option>${others.map(x => `<option value="${esc(x.slug)}">${esc(x.name)}</option>`).join('')}</select>` : '');
