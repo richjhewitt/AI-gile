@@ -2320,5 +2320,7 @@
   "streamer.live": "🔴 Live gaan",
   "streamer.live.title": "Zet streamermodus aan en start de stream in OBS",
   "streamer.stop": "⏹ Stop",
-  "streamer.stop.title": "Stop de stream in OBS"
+  "streamer.stop.title": "Stop de stream in OBS",
+  "inbox.g.ph": "Antwoord, of zeg wat er mis is om terug te sturen",
+  "inbox.g.reply": "💬 Antwoorden"
 }

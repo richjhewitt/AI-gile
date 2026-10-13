@@ -23,14 +23,16 @@
   }
   const sigOfGroup = g => g.cards.map(c => [c.id, c.title, c.updated, c.testSteps, c.aiCheck && c.aiCheck.at].join('~')).join('|') + '|' + i18n.lang;
   function gHtml(g) {
-    const inner = g.cards.map(c => `<div class="ib-gcard"><a href="#/p/${g.project}/${c.id}"><b>${esc(c.id)}</b> ${esc(c.title)}</a> ${aiChip(c)}
-      ${c.testSteps ? `<div class="body">${linkify(c.testSteps, c)}</div>` : `<div class="ib-hint">${esc(t('inbox.g.nosteps'))}</div>`}</div>`).join('');
+    const inner = g.cards.map(c => `<div class="ib-gcard" data-cid="${esc(c.id)}"><a href="#/p/${g.project}/${c.id}"><b>${esc(c.id)}</b> ${esc(c.title)}</a> ${aiChip(c)}
+      ${c.testSteps ? `<div class="body">${linkify(c.testSteps, c)}</div>` : `<div class="ib-hint">${esc(t('inbox.g.nosteps'))}</div>`}
+      <textarea rows="1" data-draft="${esc(c.project + '/' + c.id)}/gcard" placeholder="${esc(t('inbox.g.ph'))}" aria-label="${esc(t('inbox.g.ph'))} ${esc(c.id)}"></textarea>
+      <div class="ib-err"></div>
+      <div class="actions"><button class="good" data-act="gcaccept">${esc(t('card.accept'))}</button><button data-act="gcreply">${esc(t('inbox.g.reply'))}</button><button class="warn" data-act="gcback">${esc(t('card.sendback'))}</button></div></div>`).join('');
     return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.g.tag'))}</span><span class="ib-proj">${pic(g.projectLogo, g.projectEmoji)} ${esc(g.projectName)}</span><span class="ib-id">${esc(t('inbox.g.count', { count: g.cards.length, n: g.cards.length }))}</span><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(g.updated, true) }))}</span></div>
       <div class="ib-title">🗂️ ${esc(g.groupName)}</div>
-      <details class="ib-steps ib-group"><summary>${esc(t('inbox.t.how'))}: ${g.cards.map(c => esc(c.id)).join(', ')}</summary>${inner}</details>
+      <details class="ib-steps ib-group" open><summary>${esc(t('inbox.t.how'))}: ${g.cards.map(c => esc(c.id)).join(', ')}</summary>${inner}</details>
       <div class="ib-err"></div>
-      <div class="actions"><button class="good" data-act="gaccept">${esc(t('inbox.g.accept', { n: g.cards.length }))}</button><button data-act="gwait" title="${esc(t('inbox.g.wait.title'))}">${esc(t('card.wait'))}</button>
-      <span class="ib-hint">${esc(t('inbox.g.sendback'))}</span></div>`;
+      <div class="actions"><button class="good" data-act="gaccept">${esc(t('inbox.g.accept', { n: g.cards.length }))}</button><button data-act="gwait" title="${esc(t('inbox.g.wait.title'))}">${esc(t('card.wait'))}</button></div>`;
   }
   // Accept all / Wait and see for the whole group: the same call for each card in it.
   async function groupAct(n, act) {
@@ -42,5 +44,23 @@
       n.dataset.sending = ''; await IB.load();
     } catch (e) { n.dataset.sending = ''; n.querySelector('.ib-err').textContent = e.message || String(e); n.querySelectorAll('button').forEach(b => b.disabled = false); }
   }
-  Object.assign(IB, { groupTests, sigOfGroup, gHtml, groupAct });
+  // One card of a group: Accept, Reply (comment, card stays) or Send back (needs a reason), same calls as a single card.
+  async function cardAct(b, act) {
+    const n = b.closest('.ib-item'), box = b.closest('.ib-gcard'), id = box.dataset.cid, c = IB.raw.find(x => x.project === n.dataset.project && x.id === id);
+    const err = box.querySelector('.ib-err'), ta = box.querySelector('textarea'), text = ta.value.trim(), url = `/api/projects/${n.dataset.project}/cards/${id}`;
+    if (!c || box.dataset.sending) return;
+    if (act === 'accept' && !acceptSure(b, c)) return;
+    if (act !== 'accept' && !text) { err.textContent = t(act === 'back' ? 'verdict.err' : 'dms.empty'); ta.focus(); return; }
+    box.dataset.sending = '1'; err.textContent = ''; box.querySelectorAll('button').forEach(x => x.disabled = true);
+    try {
+      if (act === 'accept') await post('POST', url + '/verdict', { accept: true });
+      else if (act === 'back') await post('POST', url + '/verdict', { accept: false, text });
+      else await post('POST', url + '/comments', { author: me(), text, attachments: [] });
+      ta.value = ''; clearDraft(n.dataset.project + '/' + id + '/gcard');
+      IB.toast(t(act === 'accept' ? 'inbox.toast.accepted' : act === 'back' ? 'inbox.toast.sentback' : 'inbox.toast.sent', { id }));
+      box.dataset.sending = ''; box.querySelectorAll('button').forEach(x => x.disabled = false);
+      await IB.load();
+    } catch (e) { box.dataset.sending = ''; err.textContent = e.message || String(e); box.querySelectorAll('button').forEach(x => x.disabled = false); }
+  }
+  Object.assign(IB, { groupTests, sigOfGroup, gHtml, groupAct, cardAct });
 })();
