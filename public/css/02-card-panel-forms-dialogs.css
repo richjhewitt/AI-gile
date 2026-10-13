@@ -244,3 +244,18 @@ html[data-stream-dms] .dm-railbtn[data-dms], html[data-stream-dms] #dmPanel, htm
 #streamNote { position: fixed; inset-inline-start: 12px; bottom: 12px; z-index: 60; max-width: min(92vw, 420px); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--bg, #fff); color: var(--text, #111); border: 1px solid var(--line, #8886); box-shadow: var(--shadow, 0 4px 16px #0004); font-size: 13px; } #streamNote button { min-height: 36px; }
 html[data-stream-secrets] #serversBox input[data-srv="name"], html[data-stream-secrets] #serversBox input[data-srv="value"] { -webkit-text-security: disc; text-security: disc; }
 .pub-btn .muted { font-size: 12px; } .lic-row { border: 1px solid var(--line, #8883); border-radius: 8px; padding: 8px 10px; margin: 6px 0; } .lic-letter { width: 100%; box-sizing: border-box; font: 12px/1.4 ui-monospace, monospace; margin: 6px 0; } .lic-row button { min-height: 36px; }
+
+/* ---------- For you fold window (AIG-738) ---------- */
+.fyf-dlg { max-height: 88vh; overflow-y: auto; }
+.fyf h2 { margin: 0 0 10px; }
+.fyf-x { float: right; margin: 0 0 6px 8px; padding: 2px 9px; font-size: 13px; }
+.fyf-row { border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 6px; background: var(--panel); }
+.fyf-h { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: 0; padding: 8px 10px; color: inherit; font: inherit; cursor: pointer; }
+.fyf-id { font-weight: 600; flex: none; }
+.fyf-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fyf-row.open .fyf-t { white-space: normal; }
+.fyf-b { padding: 0 8px 8px; }
+.fyf-b .ib-item { margin-bottom: 0; box-shadow: none; }
+.fyf-back { display: flex; gap: 8px; margin-top: 8px; align-items: flex-start; }
+.fyf-back textarea { flex: 1; min-width: 0; }
+@media (max-width: 640px) { .fyf-dlg { max-height: 94vh; } .fyf-h { flex-wrap: wrap; } .fyf-t { flex-basis: 100%; white-space: normal; } .fyf-back { flex-direction: column; } }

@@ -6,7 +6,7 @@
   const base = n => `/api/projects/${n.dataset.project}/cards/${n.dataset.id}`;
   const fail = (n, e) => { n.querySelector('.ib-err').textContent = e.message || String(e); n.dataset.sending = ''; n.querySelectorAll('button').forEach(b => b.disabled = false); };
   const lock = n => { n.dataset.sending = '1'; n.querySelector('.ib-err').textContent = ''; n.querySelectorAll('button').forEach(b => b.disabled = true); };
-  const done = (n, msg) => { n.remove(); IB.raw = IB.raw.filter(c => keyOf(c) !== n.dataset.key); IB.items = IB.view(); IB.paintTop(); IB.paintPage(); IB.toast(msg); IB.load().catch(() => {}); };
+  const done = (n, msg) => { n.remove(); IB.raw = IB.raw.filter(c => keyOf(c) !== n.dataset.key); IB.items = IB.view(); IB.paintTop(); if (IB.onInboxPage()) IB.paintPage(); IB.toast(msg); IB.load().catch(() => {}); if (typeof FyFold !== 'undefined') FyFold.after(n); };
 
   // fixed: a one-tap answer (👍 Go, AIG-75) instead of the typed one.
   async function send(n, fixed) {
@@ -104,7 +104,7 @@
   });
   async function waitAndSee(n) {
     lock(n);
-    try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await IB.load(); IB.toast(t('inbox.toast.hidden', { id: n.dataset.id })); }
+    try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await IB.load(); IB.toast(t('inbox.toast.hidden', { id: n.dataset.id })); if (typeof FyFold !== 'undefined') FyFold.after(n); }
     catch (e) { fail(n, e); }
   }
   // ✅ Done by the tester (AIG-467): what the AI tester closed today, each with a one-click Reopen back to verify.

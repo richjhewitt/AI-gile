@@ -104,5 +104,7 @@
       if (list.children[i] !== n) list.insertBefore(n, list.children[i] || null);
     });
   }
-  Object.assign(IB, { skeleton, syncList });
+  // One item's html by kind, for the For you fold window (AIG-738).
+  const itemHtml = c => { const k = kindOf(c); return k === 'q' ? qHtml(c) : k === 'k' ? kHtml(c) : tHtml(c); };
+  Object.assign(IB, { skeleton, syncList, itemHtml });
 })();
