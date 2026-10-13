@@ -252,6 +252,25 @@ def('aiflick', '🤖 AI passed view: one test at a time with the evidence, accep
   noErrors(page);
 }, true);
 
+def('aiownlist', 'Setup switch: AI-passed tests leave the tests list and wait under 🤖 AI passed, with their own Accept all (AIG-781)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Passed one'), b = await mkCard(s, 'alpha', 'Plain one');
+  s.cli(['test', 'alpha', a.id, 'click a', '--as', 'Lead']); s.cli(['test', 'alpha', b.id, 'click b', '--as', 'Lead']);
+  s.cli(['checked', 'alpha', a.id, 'pass', 'Saw it working', '--as', 'Tester']);
+  const page = await openPage(ctx, '#/setup');
+  await page.waitForSelector('#aiOwnList');
+  check('the switch is in Setup, off by default', !(await page.isChecked('#aiOwnList')));
+  await page.check('#aiOwnList');
+  await page.evaluate(() => { location.hash = '#/inbox'; });
+  await page.waitForSelector('#ibAiBar [data-aiall]');
+  const tests = await page.textContent('#ibT');
+  check('the passed test left the tests list; the other stays', !tests.includes(a.id) && tests.includes(b.id), tests);
+  await page.click('#ibAiBar [data-aiall]');
+  await page.waitForFunction(() => !document.querySelector('#ibAiBar [data-flick]'), null, { timeout: 5000 }).catch(() => {});
+  check('its Accept all accepts the passed one only', (await getCard(s, 'alpha', a.id)).status === 'done' && (await getCard(s, 'alpha', b.id)).status === 'verify');
+  noErrors(page);
+}, true);
+
 def('poplist', '⧉ pop an inbox list out into its own window: only that list, no top bar (AIG-104)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const a = await mkCard(s, 'alpha', 'Try it'), b = await mkCard(s, 'alpha', 'Add the key');

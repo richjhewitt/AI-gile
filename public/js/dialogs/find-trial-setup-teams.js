@@ -82,6 +82,7 @@ function renderSetup() {
     <label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('setup-lang')}<small class="muted">${esc(t('setup.lang.help'))}</small></label>
     <label class="f chk"><span><input type="checkbox" id="enSwitch" ${ls('aigile.enSwitch') === '1' ? 'checked' : ''} onchange="setEnSwitch(this.checked)"> ${esc(t('lang.en.switch'))}</span><small class="muted">${esc(t('lang.en.help'))}</small></label>
     <label class="f chk"><span><input type="checkbox" id="explainWords" ${glossOn() ? 'checked' : ''} onchange="setExplain(this.checked)"> ${esc(t('gloss.switch'))}</span><small class="muted">${esc(t('gloss.switch.help'))} <a href="#/glossary">${esc(t('gloss.open'))}</a></small></label>
+    <label class="f chk"><span><input type="checkbox" id="aiOwnList" ${IB.aiOwn() ? 'checked' : ''} onchange="IB.setAiOwn(this.checked)"> ${esc(t('inbox.aiown.switch'))}</span><small class="muted">${esc(t('inbox.aiown.help'))}</small></label>
     <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
     <label class="f ai-only"><span>${esc(t('follow.setup'))}</span><select class="setup-theme" id="followMode" onchange="Follow.setMode(this.value)">${['auto', 'button'].map(v => `<option value="${v}" ${Follow.mode() === v ? 'selected' : ''}>${esc(t('follow.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('follow.setup.help'))}</small></label>
     <div class="f" id="enterSendBox">${EnterSend.html()}</div>

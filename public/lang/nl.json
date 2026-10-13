@@ -2320,5 +2320,13 @@
   "streamer.live": "🔴 Live gaan",
   "streamer.live.title": "Zet streamermodus aan en start de stream in OBS",
   "streamer.stop": "⏹ Stop",
-  "streamer.stop.title": "Stop de stream in OBS"
+  "streamer.stop.title": "Stop de stream in OBS",
+  "inbox.aiown.switch": "Tests die AI liet slagen in een eigen lijst",
+  "inbox.aiown.help": "Tests die de AI-tester liet slagen verlaten Voor jou en wachten onder 🤖 Geslaagd bij AI in de inbox.",
+  "assume.summarise": "📋 Samenvatten",
+  "assume.summarise.ai": "✨ Samenvatten met AI",
+  "assume.summarising": "Bezig met samenvatten…",
+  "assume.summary.h": "Nog te bekijken ({n})",
+  "assume.summary.ai": "Nog te bekijken ({n}), samengevat door AI",
+  "assume.summary.none": "Niets meer te bekijken."
 }

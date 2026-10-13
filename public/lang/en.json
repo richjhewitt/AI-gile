@@ -2320,5 +2320,13 @@
   "streamer.live": "🔴 Go live",
   "streamer.live.title": "Turn streamer mode on and start the stream in OBS",
   "streamer.stop": "⏹ Stop",
-  "streamer.stop.title": "Stop the stream in OBS"
+  "streamer.stop.title": "Stop the stream in OBS",
+  "inbox.aiown.switch": "AI-passed tests in their own list",
+  "inbox.aiown.help": "Tests the AI tester passed leave For you and wait under 🤖 AI passed in the inbox.",
+  "assume.summarise": "📋 Summarise",
+  "assume.summarise.ai": "✨ Summarise with AI",
+  "assume.summarising": "Summarising…",
+  "assume.summary.h": "Still to review ({n})",
+  "assume.summary.ai": "Still to review ({n}), summed up by AI",
+  "assume.summary.none": "Nothing left to review."
 }

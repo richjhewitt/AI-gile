@@ -17,4 +17,7 @@ def('assumptions', 'aigile assume lists on /api/assumptions across projects, pic
   check('OK is remembered', l.find(y => y.slug === 'alpha').state === 'ok', l);
   const bad = await s.api('POST', '/api/assumptions/resolve', { slug: 'alpha', id: a.id, at: 'nope', state: 'ok' });
   check('an unknown assumption is refused', bad.status === 404 || bad.status === 400, bad);
+  // AIG-781: 📋 Summarise without tokens: only the ones still to review, one bullet per card.
+  const sum = await s.ok('GET', '/api/assumptions/summary');
+  check('the plain summary lists what is left', sum.n === 1 && !sum.ai && sum.text.includes(b.id) && sum.text.includes('the API stays v1') && !sum.text.includes(a.id), sum);
 });
