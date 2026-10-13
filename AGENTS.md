@@ -43,7 +43,7 @@ Profile picture: pick a picture that suits you: `aigile avatar <proj> --as NAME`
 
 **Roles on cards.** A card may be assigned to a role: `Lead (Opus)`, `Reviewer (Opus)`, `Frontend (Sonnet)`, `Backend (Sonnet)`, `QA (Haiku)`, `Quick fix (Haiku)`, `Docs (Haiku)`. The lead launches that kind of agent; its `start ... --as <name>` replaces the role with its name.
 
-**4. Hand features to the owner with `test`.** Don't move your own work to `done`; the owner accepts it. Once built and self-tested:
+**4. Hand features to the owner with `test`.** Don't move your own work to `done`; the owner (or, where the owner allows it, the lead once it works) accepts it. Add a screenshot wherever you can. Once built and self-tested:
 
 ```
 aigile test <proj> <id> "1. Open http://localhost:4321
