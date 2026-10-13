@@ -2423,5 +2423,12 @@
  "dmme.sent": "Asked {who} to DM you. The chat is open in Messages.",
  "dmme.sent.nowake": "The DM is open in Messages, but nobody was woken: {why}",
  "dmme.open": "Open the DM",
- "srv.dmme.about": "About {id}: {title}"
+ "srv.dmme.about": "About {id}: {title}",
+ "scale.tone": "🎭 How polite your team is",
+ "tone.1": "Super polite and silly",
+ "tone.2": "Friendly and warm",
+ "tone.3": "Normal",
+ "tone.4": "Brisk, to the point",
+ "tone.5": "No nonsense, just get it done",
+ "tone.help": "The tone the team uses when it writes to you. Short and plain, or warm and silly: your pick."
 }

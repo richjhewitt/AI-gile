@@ -2423,5 +2423,12 @@
  "dmme.sent": "{who} gevraagd om je een DM te sturen. De chat staat open in Berichten.",
  "dmme.sent.nowake": "De DM staat open in Berichten, maar niemand is gewekt: {why}",
  "dmme.open": "Open de DM",
- "srv.dmme.about": "Over {id}: {title}"
+ "srv.dmme.about": "Over {id}: {title}",
+ "scale.tone": "🎭 Hoe beleefd je team is",
+ "tone.1": "Superbeleefd en zot",
+ "tone.2": "Vriendelijk en warm",
+ "tone.3": "Gewoon",
+ "tone.4": "Kort en bondig",
+ "tone.5": "Geen gedoe, gewoon doen",
+ "tone.help": "De toon waarmee het team tegen je schrijft. Kort en zakelijk, of warm en zot: jij kiest."
 }

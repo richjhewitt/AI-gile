@@ -172,7 +172,7 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   const page = await openPage(ctx, '#/setup');
   const slide = (sel, v) => page.$eval(sel, (e, v) => { e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, v);
   await page.waitForSelector('#sc-steps');
-  check('Setup has a slider per owner scale: steps, chat, go, words, tidy, thrift, push', (await page.$$eval('#leadPrefs input[type=range]', is => is.map(i => i.id.slice(3) + i.max).join())) === 'steps5,chat5,go5,words5,tidy3,thrift5,push5');
+  check('Setup has a slider per owner scale: steps, chat, go, words, tidy, thrift, push', (await page.$$eval('#leadPrefs input[id^=sc-][type=range]', is => is.map(i => i.id.slice(3) + i.max).join())) === 'steps5,chat5,go5,words5,tidy3,thrift5,push5');
   check('the old switches are gone', !(await page.$('#pf-steps, #pf-plan, #pf-smPush')) && !(await page.$('#leadPrefs select:not(#pf-usageChecks):not(#pushPref):not([onchange*="techLevel"])')));
   check('steps slider at 1, its line under it', (await page.inputValue('#sc-steps')) === '1' && /One step, say what I should see/.test(await page.textContent('#sc-steps-line')) && (await page.textContent('#sc-steps-n')) === '1/5');
   await page.$eval('#sc-steps', e => { e.value = 4; e.dispatchEvent(new Event('input', { bubbles: true })); });
@@ -205,6 +205,21 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   await page.click('#dialog button.primary');
   await until(async () => (await prefs()).steps === 1);
   check('the quiz answer "one step" saves 1', (await prefs()).steps === 1);
+
+  // 2b. Tone (AIG-694): how polite the team is, a slider in Setup, one brief line unless it is the normal 3.
+  check('tone: nothing saved means 3, and no brief line', (await prefs()).tone === 3 && !/style:/.test(brief()), brief());
+  await page.reload(); await page.waitForSelector('#tn-tone');
+  check('tone slider is in Setup at 3, its line under it', (await page.inputValue('#tn-tone')) === '3' && (await page.textContent('#tn-tone-n')) === '3/5' && /Normal/.test(await page.textContent('#tn-tone-line')));
+  await slide('#tn-tone', 5);
+  await until(async () => (await prefs()).tone === 5);
+  check('tone slider saves 5 and the brief says no nonsense', (await prefs()).tone === 5 && /Owner's style: no nonsense\. Replies and questions as short as possible/.test(brief()), brief());
+  await slide('#tn-tone', 1);
+  await until(async () => (await prefs()).tone === 1);
+  check('tone 1 puts the playful line in the brief, not the old one', /Owner's style: playful\. Warm, silly and polite/.test(brief()) && !/no nonsense/.test(brief()), brief());
+  check('a bad tone is refused', (await s.api('POST', '/api/setup', { prefs: { tone: 9 } })).status === 400);
+  await slide('#tn-tone', 3);
+  await until(async () => (await prefs()).tone === 3);
+  check('tone back to 3: no brief line again', !/style:/.test(brief()), brief());
 
   // 3. A task for the owner shows its checklist a few at a time; a team card shows it all.
   const task = await mkCard(s, 'alpha', 'Set up the server', { assignee: 'Owner', status: 'todo' });
