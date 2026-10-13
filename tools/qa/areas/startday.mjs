@@ -94,6 +94,8 @@ def('startday', '🌅 Start my day: one morning check-in (tasks, tests, life adm
   check('no AI call and no card change: the owner\'s cards are as they were', (await s.ok('GET', '/api/projects/alpha')).cards.length === 2);
   noErrors(page);
   await page.keyboard.press('Escape');
+  await ctx.unroute('**/api/mail/config'); await ctx.unroute('**/api/mail/inbox?*');   // leave the shared browser as found
+  await page.evaluate(() => { localStorage.removeItem('aigile.selfcare'); });
   fs.rmSync(stub, { force: true });
   await s.ok('POST', '/api/setup', { prefs: { dayStart: false, todayPick: false } });
   check('switched off, the setting is gone from the file', !('dayStart' in JSON.parse(fs.readFileSync(lf, 'utf8'))));
