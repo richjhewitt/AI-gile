@@ -35,7 +35,7 @@ popRemember();
 const POP_DLG = {
   bug: () => newCard({ type: 'bug', priority: 'high', status: 'team' }), card: () => newCard(), team: () => teamDialog(), cards: () => cardViewDialog(),
   look: () => lookDialog(), perms: () => permsDialog(), columns: () => columnsDialog(), docs: () => openDocs(),
-  ask: () => askTeamDialog(), idea: () => ideaDialog(), happening: () => happeningDialog(), views: () => viewsDialog(),
+  ask: () => askTeamDialog(), idea: () => ideaDialog(), happening: () => happeningDialog(), views: () => viewsDialog(), fyfold: () => fyOpen(forYouFirst(), null),
 };
 const inPopDlg = () => state.route && state.route.view === 'dlg';
 function popDlg(kind) {

@@ -68,6 +68,6 @@
       if (n) { n.scrollIntoView({ block: 'center' }); n.classList.add('flash'); const t = n.querySelector('textarea'); if (t) t.focus({ preventScroll: true }); IB.flashKey = null; }
     }
   }
-  const toast = msg => { const t = el('ibToast'); if (t) t.textContent = msg; };
+  const toast = msg => { const t = el('ibToast'); if (t) t.textContent = msg; else if (typeof note === 'function') note(msg); };
   Object.assign(IB, { paintPage, toast });
 })();
