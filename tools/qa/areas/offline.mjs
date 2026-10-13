@@ -101,7 +101,7 @@ def('offline', '📦 share a project offline: save as .aigile and open it (round
 
   // AIG-887/863: problem fields and the risk register travel too, with card ids remapped
   await mkProject(s, 'Prob Pack', 'PPK');
-  const ch = await mkCard(s, 'prob-pack', 'Change it', { status: 'todo' });
+  const ch = await mkCard(s, 'prob-pack', 'Change it', { type: 'change', status: 'todo' });
   const rinc = await mkCard(s, 'prob-pack', 'Flights down', { type: 'incident' });
   const prob = await s.ok('POST', '/api/projects/prob-pack/problems', { title: 'Airline API', incidents: [rinc.id], rootCause: 'rate limit', workaround: 'retry', change: ch.id });
   const rk = await s.ok('POST', '/api/projects/prob-pack/risks', { risk: 'Visa late', card: ch.id, likelihood: 3, impact: 2, mitigation: 'apply early' });

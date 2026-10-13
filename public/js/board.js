@@ -114,6 +114,7 @@ function renderBoard(p) {
       ${standupButtons(p)}
       <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
       <button onclick="location.hash='#/stats/${esc(p.slug)}'" title="${esc(t('stats.btn.title'))}">${esc(t('stats.title'))}</button>
+      <button onclick="raiseChange()" title="${esc(t('chg.raise.title'))}">${esc(t('chg.raise'))}</button>
       <button onclick="location.hash='#/risks/${esc(p.slug)}'" title="${esc(t('risks.btn.title'))}">${esc(t('risks.title'))}</button>
       ${Swarm.btn(p.slug, 'swarmBtn')}
       <span class="grow"></span>

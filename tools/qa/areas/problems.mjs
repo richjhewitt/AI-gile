@@ -10,7 +10,7 @@ def('problems', '🧩 problem card: API + CLI add/set/link, incidents linked bot
   const i4 = await mkCard(s, 'prob', 'Cache full a', { type: 'incident', status: 'todo' });
   const i5 = await mkCard(s, 'prob', 'Cache full b', { type: 'incident', status: 'todo' });
   const bug = await mkCard(s, 'prob', 'A bug', { type: 'bug', status: 'todo' });
-  const chg = await mkCard(s, 'prob', 'Change: new deploy script', { status: 'todo' });
+  const chg = await mkCard(s, 'prob', 'Change: new deploy script', { type: 'change', status: 'todo' });
   check('problem is a card type', (await mkCard(s, 'prob', 'x', { type: 'problem' })).type === 'problem');
   check('no problems yet is an empty list, and an unknown project is a 404', (await s.ok('GET', '/api/projects/prob/problems')).problems.length === 1 && (await s.api('GET', '/api/projects/nope/problems')).status === 404);
 
@@ -31,6 +31,7 @@ def('problems', '🧩 problem card: API + CLI add/set/link, incidents linked bot
   check('link on a card that is not a problem is refused', (await s.api('POST', `/api/projects/prob/problems/${bug.id}/link`, { incident: i1.id })).status === 400);
   const up = await s.ok('PATCH', `/api/projects/prob/problems/${pr.id}`, { rootCause: 'the deploy script skips tests', change: chg.id });
   check('PATCH sets the cause and the change request link', up.rootCause === 'the deploy script skips tests' && up.changeId === chg.id, up);
+  check('PATCH a change link to a card that is not a change card is refused (AIG-857)', (await s.api('PATCH', `/api/projects/prob/problems/${pr.id}`, { change: bug.id })).status === 400);
   check('PATCH a change card that does not exist is a 404', (await s.api('PATCH', `/api/projects/prob/problems/${pr.id}`, { change: 'PRB-99' })).status === 404);
   check('PATCH an unknown card is a 404', (await s.api('PATCH', '/api/projects/prob/problems/PRB-99', { rootCause: 'x' })).status === 404);
   const other = await s.ok('POST', '/api/projects/prob/problems', { title: 'Second problem' });
@@ -45,7 +46,7 @@ def('problems', '🧩 problem card: API + CLI add/set/link, incidents linked bot
   const badId = await s.api('POST', '/api/projects/prob/problems', { title: 'P', incidents: [i1.id, 'not an id!'] });
   check('a bad incident id is refused with a clear error, not dropped', badId.status === 400 && /not a card id/.test(JSON.stringify(badId)), badId);
   check('a bad change id is refused too', (await s.api('PATCH', `/api/projects/prob/problems/${other.id}`, { change: 'x y' })).status === 400);
-  const chg2 = await mkCard(s, 'prob', 'Change: second', { status: 'todo' });
+  const chg2 = await mkCard(s, 'prob', 'Change: second', { type: 'change', status: 'todo' });
   await s.ok('PATCH', `/api/projects/prob/problems/${other.id}`, { change: chg2.id });
   const early = await s.api('PATCH', `/api/projects/prob/cards/${other.id}`, { status: 'done' });
   check('a problem cannot be done while its change request is not', early.status === 400 && /change request/.test(JSON.stringify(early)) && (await getCard(s, 'prob', other.id)).status !== 'done', early);
