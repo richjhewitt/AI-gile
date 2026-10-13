@@ -2336,5 +2336,6 @@
   "swarm.others": "{n} wachten in andere projecten: tonen",
   "swarm.hide": "Andere projecten verbergen",
   "queue.kind.plan": "Klaar voor go",
-  "fy.kind.p": "🚦 Klaar voor go"
+  "fy.kind.p": "🚦 Klaar voor go",
+  "dms.kind.lead": "💬 Leadchat"
 }

@@ -16,7 +16,7 @@
     lock(n);
     try {
       const attachments = fixed ? [] : await Attach.upload(key, n.dataset.project);
-      await post('POST', base(n) + '/comments', { author: me(), text, attachments });
+      await post('POST', n.dataset.id === 'chat' ? `/api/projects/${n.dataset.project}/leadchat` : base(n) + '/comments', { author: me(), text, attachments });   // 'chat': the card-free Lead chat (AIG-872)
       if (!fixed) Attach.clear(key);
       clearDraft(key + '/reply');
       done(n, t('inbox.toast.sent', { id: n.dataset.id }));

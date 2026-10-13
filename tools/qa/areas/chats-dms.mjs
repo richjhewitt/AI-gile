@@ -30,22 +30,24 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   await page.fill('#dmText', 'Unrelated: how is the week going?');
   await page.press('#dmText', 'Enter');
   await sleep(600);
-  const gen = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.quick);
-  check('"New message to" sends a general message; the question stays open', gen && /Unrelated/.test(gen.title) && (await getCard(s, 'alpha', c.id)).needsYou, gen);
-  await s.ok('PATCH', `/api/projects/alpha/cards/${gen.id}`, { status: 'done' });
-  await page.waitForFunction(id => document.getElementById('dmTarget') && document.getElementById('dmTarget').value === id, c.id, { timeout: 5000 }).catch(() => {});
-  check('after sending, the typing box answers the question again', (await page.inputValue('#dmTarget')) === c.id);
+  const gen = (await s.ok('GET', '/api/projects/alpha/leadchat')).messages.at(-1);   // AIG-872: the Lead chat, not a 💬 card
+  check('"New message to" sends a general message; the question stays open', gen && /Unrelated/.test(gen.text) && !(await s.ok('GET', '/api/projects/alpha')).cards.some(x => x.quick) && (await getCard(s, 'alpha', c.id)).needsYou, gen);
+  check('after sending, the Lead chat is open and the box carries on in it (AIG-872)', (await page.inputValue('#dmTarget')) === '_new' && /Unrelated/.test(await page.textContent('#dmList .dm-fold.open')));
+  await page.selectOption('#dmTarget', c.id);
   await page.fill('#dmText', 'JSON please');
   await page.press('#dmText', 'Enter');
   await page.waitForSelector('#dmList .dm-msg.mine');
   const after = await getCard(s, 'alpha', c.id);
   check('your reply lands on the card and clears the question', after.comments.at(-1).text === 'JSON please' && !after.needsYou && after.status === 'team', after.comments.at(-1));
   await page.waitForFunction(() => /New message to/.test(document.getElementById('dmTo').textContent), null, { timeout: 5000 }).catch(() => {});
+  await page.waitForSelector('#dmTarget');
+  await page.selectOption('#dmTarget', '_new');
   await page.fill('#dmText', 'Idea: dark mode for the player');
   await page.press('#dmText', 'Enter');
   await sleep(600);
-  const quick = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.quick && x.status !== 'done');
-  check('with nothing open, a new message becomes a quick question for the team', quick && quick.title === '💬 Idea: dark mode for the player' && quick.status === 'team', quick);
+  await sleep(300);
+  check('with nothing open, a new message goes to the Lead chat', (await s.ok('GET', '/api/projects/alpha/leadchat')).messages.at(-1).text === 'Idea: dark mode for the player');
+  const quick = await s.ok('POST', '/api/projects/alpha/cards', { title: '💬 Idea: dark mode for the player', description: 'Idea: dark mode for the player', type: 'task', status: 'team', createdBy: 'Owner', quick: true });   // an old-style 💬 card still works
   s.cli(['comment', 'alpha', quick.id, 'Nice: made AIG-cards for it', '--as', 'Lead']);
   await page.waitForFunction(() => /made AIG-cards/.test(document.getElementById('dmList').textContent), null, { timeout: 6000 }).catch(() => {});
   check('the lead answer shows in the chat', /made AIG-cards/.test(await page.textContent('#dmList')));
