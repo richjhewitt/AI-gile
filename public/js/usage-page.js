@@ -84,17 +84,22 @@ const uz = {
 async function loadUsagePage(force) {
   if (!force && uz.data && Date.now() - uz.fetchedAt < 15e3) return;
   // AIG-558: all at once (check and runs used to wait their turn, so the first click looked like it did nothing).
-  const [usage, limits, projects, live, check, runs] = await Promise.all([
+  const [usage, limits, projects, live, check] = await Promise.all([
     api('GET', '/api/usage').catch(() => ({ enabled: false })),
     api('GET', '/api/limits?days=30').catch(() => ({ latest: null, history: [] })),
     api('GET', '/api/projects?all=1').catch(() => []),
     api('GET', '/api/limits/latest').catch(() => ({ latest: null })),   // AIG-431: the compact view
     api('GET', '/api/usage/check').catch(() => null),
-    api('GET', '/api/usage/runs').catch(() => []),   // AIG-266
   ]);
   await TodayPage.load();
-  uz.data = { usage, limits, check, runs, live, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
+  uz.data = { usage, limits, check, runs: (uz.data && uz.data.runs) || [], live, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
   uz.fetchedAt = Date.now();
+  // AIG-712: the runs table can be slow (it scans the session logs), so it fills in when it arrives instead of holding up the first draw.
+  api('GET', '/api/usage/runs').catch(() => []).then(runs => {   // AIG-266
+    if (!uz.data) return;
+    uz.data.runs = runs;
+    if (state.route?.view === 'usage') render();
+  });
 }
 const uzSig = () => JSON.stringify([uz.data, Math.floor(Date.now() / 60e3)]); // minute tick keeps "resets in" fresh
 

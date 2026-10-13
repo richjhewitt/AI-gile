@@ -77,6 +77,11 @@ def('tokenlimits', '🪙 helper cap by spend scale, nightly token budget stops a
   const lead = runsApi.find(r => r.kind === 'lead' && r.slug === 'lead');
   check('VS Code lead sessions are attributed by folder, helper worktrees included', lead && lead.cache === 12000 && lead.out === 100, runsApi);
   check('a kind row is listed with the team runs', runsApi.some(r => r.kind === 'tester' && r.cache === 40000), runsApi);
+  // AIG-712: the per-file cache sees a log that grew (only the new bytes are read) and one rewritten smaller. Own folder, so the page totals below stay put.
+  const cdir = tmp('cachecheck'), csess = path.join(s.usageDir, folderOf(cdir)), cfile = path.join(csess, 'c.jsonl'); fs.mkdirSync(csess, { recursive: true });
+  fs.writeFileSync(cfile, msg(7, { input_tokens: 1, output_tokens: 40, cache_read_input_tokens: 0 }));
+  const cacheRun = node(`const fs=require('fs'),u=require(${U}),f=${JSON.stringify(cfile)},w=()=>{const t=u.runTokens(process.env.AIGILE_USAGE_DIR,${JSON.stringify(cdir)},Date.now()-36e5,Date.now()+36e5);return t&&t.out};const a=w();fs.appendFileSync(f,${JSON.stringify(msg(8, { input_tokens: 1, output_tokens: 11, cache_read_input_tokens: 0 }))});const b=w();fs.writeFileSync(f,${JSON.stringify(msg(9, { input_tokens: 1, output_tokens: 3, cache_read_input_tokens: 0 }))});console.log(JSON.stringify([a,b,w()]))`).out;
+  check('a session log that grew shows its new tokens, and a rewritten one is read afresh (cache invalidated)', cacheRun === '[40,51,3]', cacheRun);
   const upage = await openPage(ctx, '#/usage');
   await upage.waitForSelector('.uz-runtotal', { timeout: 8000 });
   const utext = await upage.textContent('.uz-runtotal'), table = await upage.textContent('.uz-tablewrap');
