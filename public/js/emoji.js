@@ -8,7 +8,7 @@
   let MAP = null, MINE = null, MINE_LOADING = false;   // MINE: your own emojis (AIG-648), loaded on first use
   const loadMine = () => {
     if (MINE_LOADING) return; MINE_LOADING = true;
-    api('GET', '/api/emojis').then(l => { MINE = l; if (EM.box && EM.ta) refind(); }).catch(() => { MINE = MINE || []; }).then(() => { MINE_LOADING = false; });
+    api('GET', '/api/emojis').then(l => { MINE = l; setCustomEmojis(l); if (EM.box && EM.ta) refind(); }).catch(() => { MINE = MINE || []; }).then(() => { MINE_LOADING = false; });
   };
   const map = () => MAP || (MAP = new Map(EMOJI_DATA));
   const isBox = n => n && !n.readOnly && !n.disabled && (n.tagName === 'TEXTAREA' || (n.tagName === 'INPUT' && n.type === 'text'));
@@ -85,7 +85,7 @@
   }
 
   async function delMine(name) {
-    try { MINE = await api('DELETE', '/api/emojis/' + encodeURIComponent(name)); } catch (x) { return; }
+    try { MINE = await api('DELETE', '/api/emojis/' + encodeURIComponent(name)); setCustomEmojis(MINE); } catch (x) { return; }
     if (EM.box && EM.ta) refind();
   }
 
@@ -122,7 +122,7 @@
       if (!data) return err('emoji.err.nofile');
       if (!/^[a-z0-9_]{1,32}$/.test(name)) return err('emoji.err.name');
       if (map().has(name) || (MINE || []).some(m => m.name === name)) return err('emoji.err.dup');
-      try { MINE = await api('POST', '/api/emojis', { name, data: data.b64 }); shut(); }
+      try { MINE = await api('POST', '/api/emojis', { name, data: data.b64 }); setCustomEmojis(MINE); shut(); }
       catch (x) { $e('emj-err').textContent = x.message; }
     };
     $e('emj-name').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $e('emj-go').click(); } });

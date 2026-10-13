@@ -3,6 +3,19 @@
 // Card text: ```fenced``` blocks become code boxes with a Copy button (plus Open when the block is one .md path),
 // `inline` becomes code (a lone .md path becomes a link), everything else goes through fmt (escape + links).
 // slug is the project the .md paths belong to. Also used by inbox.js.
+// Your own emojis (AIG-649): :name: for a known name becomes its picture in card and chat text. The list is loaded once and
+// refreshed by emoji.js after an add or delete; the img is built only from this list, never from the typed text.
+let CUSTOM_EMOJIS = new Map();
+function setCustomEmojis(list) { CUSTOM_EMOJIS = new Map((list || []).map(m => [m.name, m.url])); }
+fetch('/api/emojis').then(r => r.ok ? r.json() : []).then(setCustomEmojis).catch(() => {});
+function customEmojis(html) {
+  if (!CUSTOM_EMOJIS.size || html.indexOf(':') < 0) return html;
+  let inCode = 0;
+  return html.split(/(<[^>]*>)/).map(p => {
+    if (p[0] === '<' && p.length > 1) { if (/^<code[\s>]/i.test(p)) inCode++; else if (/^<\/code>/i.test(p)) inCode--; return p; }
+    return inCode > 0 ? p : p.replace(/:([a-z0-9_]{1,32}):/g, (m, n) => CUSTOM_EMOJIS.has(n) ? `<img class="cemoji" src="${esc(CUSTOM_EMOJIS.get(n))}" alt=":${n}:" title=":${n}:" style="height:1.4em;width:auto;vertical-align:middle">` : m);
+  }).join('');
+}
 function withCode(text, fmt, slug) {
   return String(text ?? '').split(/```[^\n]*\n?([\s\S]*?)```/g).map((part, i) => {
     if (i % 2) {
@@ -13,8 +26,8 @@ function withCode(text, fmt, slug) {
     }
     const links = [];   // inline code that is a .md path is set aside so fmt leaves it whole
     part = (i ? part.replace(/^\n/, '') : part).replace(/`([^`\n]+)`/g, (m, c) => isMdPath(c) ? `\u0000${links.push(c.trim()) - 1}\u0000` : m);
-    return spaceBullets(copyValues(editLinks(fmt(part)).replace(/`([^`\n]+)`/g, (m, c) => `<code data-copy-text="${esc(unesc(c))}" title="${esc(t('format.copyvalue'))}">${c}</code>` + (isFilePath(unesc(c)) ? fileBtns(unesc(c)) : isFolderPath(unesc(c)) ? folderBtn(unesc(c)) : ''))
-      .replace(/\u0000(\d+)\u0000/g, (m, n) => `<code>${mdLink(esc(links[n]), esc(links[n]), slug)}${mdCopyBtn(links[n], slug)}</code>`)));
+    return spaceBullets(customEmojis(copyValues(editLinks(fmt(part)).replace(/`([^`\n]+)`/g, (m, c) => `<code data-copy-text="${esc(unesc(c))}" title="${esc(t('format.copyvalue'))}">${c}</code>` + (isFilePath(unesc(c)) ? fileBtns(unesc(c)) : isFolderPath(unesc(c)) ? folderBtn(unesc(c)) : ''))
+      .replace(/\u0000(\d+)\u0000/g, (m, n) => `<code>${mdLink(esc(links[n]), esc(links[n]), slug)}${mdCopyBtn(links[n], slug)}</code>`))));
   }).join('');
 }
 // AIG-470: "**Label:** value" lines get a ⧉ after the value when it is one token (host, path, number, email, URL, key), a link or `code`.
