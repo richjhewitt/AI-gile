@@ -72,10 +72,14 @@ async function ideaDialog() {
     <div class="actions"><button class="primary" type="submit" title="Ctrl+Enter">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('idea')}</div></form>`, 'wide');
   const box = $('idea-text'); box.closest('.dialog').classList.add('wide'); growBox(box); box.focus();
 }
+let ideaBusy = false;   // AIG-790: one send at a time; repeat clicks and Enters while it sends do nothing
 async function sendIdea(e) {
   e.preventDefault();
+  if (ideaBusy) return false;
   const text = $('idea-text').value.trim(), to = $('idea-to').value;
   if (!text) { setErr('idea-err', t('idea.err')); return false; }
+  const btn = $('idea-text').closest('form').querySelector('button[type=submit]');
+  ideaBusy = true; btn.disabled = true;
   try {
     // 🧭 Lead Scrum Master (AIG-388): the idea goes to its own chat; it turns it into cards in the right project(s).
     if (to === '_sm') {
@@ -96,6 +100,7 @@ async function sendIdea(e) {
     Attach.clear('idea'); clearDraft('idea');
     closeDialog(); await rerender();
   } catch (err) { setErr('idea-err', err); }
+  finally { ideaBusy = false; btn.disabled = false; }
   return false;
 }
 
