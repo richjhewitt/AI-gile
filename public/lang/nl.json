@@ -3204,5 +3204,20 @@
  "card.menu.title": "Meer acties",
  "day.start": "Hoe laat begint je dag meestal?",
  "day.stop": "Hoe laat stop je meestal? (optioneel)",
- "day.help": "Stil worden eindigt standaard op je starttijd, en Tot morgen uitstellen wekt dingen dan weer."
+ "day.help": "Stil worden eindigt standaard op je starttijd, en Tot morgen uitstellen wekt dingen dan weer.",
+ "setup.sec.storage": "Opslag",
+ "storage.h": "Opslag",
+ "storage.loading": "Meten…",
+ "storage.total": "Totaal",
+ "storage.biggest": "grootste",
+ "storage.k.board": "Bordgegevens",
+ "storage.k.attachments": "Bijlagen",
+ "storage.k.screenshots": "Schermafbeeldingen",
+ "storage.k.logs": "Logboeken",
+ "storage.k.other": "Al het andere",
+ "storage.files": "{n} bestanden",
+ "storage.tidy": "Bijlagen bij gesloten (klaar) kaarten ouder dan {days} dagen: {n} bestanden, {size}",
+ "storage.delete": "Verwijderen",
+ "storage.confirm": "{n} bijlagen ({size}) van gesloten kaarten verwijderen? Er wordt verder niets verwijderd.",
+ "storage.nothing": "Geen bijlagen bij gesloten kaarten ouder dan {days} dagen om op te ruimen."
 }

@@ -76,7 +76,7 @@ async function startTrial(btn) {
 // ---- setup: your name and where the agent lives on this computer, saved to aigile.local.json ----
 function renderSetup() {
   const s = state.setup;
-  const secs = ["lang","look","plan","teams","discord","mail","servers","phone","you","more"];
+  const secs = ["lang","look","plan","teams","discord","mail","servers","phone","storage","you","more"];
   return `<div class="setup"><h2>${esc(t('setup.h'))}</h2>
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
     <nav class="set-index" id="setIndex" aria-label="${esc(t('setup.index'))}">${secs.map(k => `<a href="#/setup/${k}" data-sec="${k}" onclick="return setupJump('${k}')">${esc(t('setup.sec.' + k))}</a>`).join('')}</nav>
@@ -115,6 +115,9 @@ function renderSetup() {
     </section>
     <section class="set-sec" id="sec-phone"><h3 class="set-h">${esc(t('setup.sec.phone'))}</h3>
     <div class="f" id="phoneBox">${Phone.html()}</div>
+    </section>
+    <section class="set-sec" id="sec-storage"><h3 class="set-h">${esc(t('setup.sec.storage'))}</h3>
+    <div class="f" id="storageBox">${(Storage.d = undefined, Storage.html())}</div>
     </section>
     <section class="set-sec" id="sec-you"><h3 class="set-h">${esc(t('setup.sec.you'))}</h3>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">

@@ -3204,5 +3204,20 @@
  "card.menu.title": "More actions",
  "day.start": "When does your day usually start?",
  "day.stop": "When do you usually stop? (optional)",
- "day.help": "Going quiet ends at your start time unless you pick another, and Snooze to tomorrow wakes things then."
+ "day.help": "Going quiet ends at your start time unless you pick another, and Snooze to tomorrow wakes things then.",
+ "setup.sec.storage": "Storage",
+ "storage.h": "Storage",
+ "storage.loading": "Measuring…",
+ "storage.total": "Total",
+ "storage.biggest": "biggest",
+ "storage.k.board": "Board data",
+ "storage.k.attachments": "Attachments",
+ "storage.k.screenshots": "Screenshots",
+ "storage.k.logs": "Logs",
+ "storage.k.other": "Everything else",
+ "storage.files": "{n} files",
+ "storage.tidy": "Attachments on closed (done) cards older than {days} days: {n} files, {size}",
+ "storage.delete": "Delete",
+ "storage.confirm": "Delete {n} attachment files ({size}) from closed cards? Nothing else is removed.",
+ "storage.nothing": "No attachments on closed cards older than {days} days to tidy up."
 }
