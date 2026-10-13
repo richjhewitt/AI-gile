@@ -2423,5 +2423,12 @@
  "dmme.sent": "Asked {who} to DM you. The chat is open in Messages.",
  "dmme.sent.nowake": "The DM is open in Messages, but nobody was woken: {why}",
  "dmme.open": "Open the DM",
- "srv.dmme.about": "About {id}: {title}"
+ "srv.dmme.about": "About {id}: {title}",
+ "maxi.label": "Use everything available (usage maximiser)",
+ "maxi.help": "When the 5-hour window has room to spare before its reset, teams may run twice as many helpers (at most 8) and pull more cards from the backlog. Keeps a 10% reserve; the usage saver still wins.",
+ "usage.maxi.room": "Maximiser on: room to spare, up to {n} helpers",
+ "usage.maxi.busy": "Maximiser on: no spare room right now, up to {n} helpers",
+ "usage.maxi.reserve": "Maximiser on: keeping the 10% reserve, up to {n} helpers",
+ "usage.maxi.saver": "Maximiser on: the usage saver comes first, up to {n} helpers",
+ "usage.maxi.none": "Maximiser on: no usage reading yet, up to {n} helpers"
 }

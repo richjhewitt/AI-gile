@@ -2423,5 +2423,12 @@
  "dmme.sent": "{who} gevraagd je een DM te sturen. De chat staat open in Berichten.",
  "dmme.sent.nowake": "De DM staat open in Berichten, maar niemand is gewekt: {why}",
  "dmme.open": "Open de DM",
- "srv.dmme.about": "Over {id}: {title}"
+ "srv.dmme.about": "Over {id}: {title}",
+ "maxi.label": "Gebruik alles wat er is (verbruiksmaximalisator)",
+ "maxi.help": "Heeft het 5-uursvenster voor de reset nog ruimte over, dan mogen teams twee keer zoveel helpers inzetten (hoogstens 8) en meer kaarten uit de backlog halen. Houdt 10% achter de hand; de verbruiksbespaarder gaat altijd voor.",
+ "usage.maxi.room": "Maximalisator aan: ruimte over, tot {n} helpers",
+ "usage.maxi.busy": "Maximalisator aan: nu geen ruimte over, tot {n} helpers",
+ "usage.maxi.reserve": "Maximalisator aan: 10% blijft achter de hand, tot {n} helpers",
+ "usage.maxi.saver": "Maximalisator aan: de verbruiksbespaarder gaat voor, tot {n} helpers",
+ "usage.maxi.none": "Maximalisator aan: nog geen verbruiksmeting, tot {n} helpers"
 }

@@ -126,7 +126,8 @@ function renderUsagePage() {
   const view = uzView();
   const toggle = `<div class="uz-viewtog" role="group">${[['compact', 'usage.view.compact'], ['full', 'usage.view.full']].map(([v, k]) =>
     `<button class="${view === v ? 'primary' : ''}" aria-pressed="${view === v}" onclick="uzSetView('${v}')">${esc(t(k))}</button>`).join('')}</div>`;
-  if (view === 'compact') return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}${uzCompact(uz.data.live && uz.data.live.latest, uz.data.limits.history || [])}</div>`;
+  const mx = uz.data.live && uz.data.live.maximiser, maxi = mx ? `<p class="uz-maxi muted">${esc(t('usage.maxi.' + mx.why, { n: mx.cap }))}</p>` : '';   // usage maximiser (AIG-714)
+  if (view === 'compact') return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}${maxi}${uzCompact(uz.data.live && uz.data.live.latest, uz.data.limits.history || [])}</div>`;
   const { usage, limits } = uz.data;
   const hist = limits.history || [];
   const width = Math.max(260, Math.min(960, ($('app').clientWidth || 360) - 40 - 30));
@@ -135,7 +136,7 @@ function renderUsagePage() {
     ? uzSetup(limits.setup)
     : `<div class="uz-tiles">${uzTile(t('usage.session'), t('usage.session.sub'), limits.latest, 'h5', hist)}${uzTile(t('usage.week'), t('usage.week.sub'), limits.latest, 'wk', hist)}</div>
        <p class="uz-note">${esc(t('usage.note'))}</p>`;
-  return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}<p class="uz-explain">${esc(t('usage.explain'))}</p>
+  return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}<p class="uz-explain">${esc(t('usage.explain'))}</p>${maxi}
     ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${noReading ? '' : uzBurn(limits)}${TodayPage.usageCard()}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}${uzRuns(uz.data.runs, uz.data.projects)}</div>`;
 }
 
