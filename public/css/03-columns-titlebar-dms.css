@@ -9,8 +9,12 @@ body.desktop.pop .panel > .actions:first-child { -webkit-app-region: drag; paddi
 /* AIG-405: the bar you drag a pop-out by stays at the top while you scroll */
 body.pop .panel { overflow: visible; }
 body.pop .panel > .actions:first-child { position: sticky; top: 0; z-index: 30; background: var(--panel); margin-top: -10px; padding-top: 10px; }
-body.desktop.pop::before { content: ""; position: fixed; top: 0; left: 0; right: 140px; height: 8px; -webkit-app-region: drag; z-index: 40; }
-body.desktop.pop .panel > .actions:first-child button { -webkit-app-region: no-drag; padding: 3px 10px; font-size: 13px; }
+/* AIG-700: a real title bar (as tall as the window buttons) to drag by; the gaps between buttons were too small to grab */
+body.desktop.pop::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: 36px; background: var(--panel); border-bottom: 1px solid var(--border); -webkit-app-region: drag; z-index: 40; }
+body.desktop.pop { padding-top: 36px; }
+body.desktop.pop .panel > .actions:first-child { top: 36px; }
+body.desktop.pop .panel > .actions:first-child :is(button, select, a, input) { -webkit-app-region: no-drag; }
+body.desktop.pop .panel > .actions:first-child button { padding: 3px 10px; font-size: 13px; }
 
 /* ---------- attachment thumbnails and preview (AIG-129) ---------- */
 .att-thumb { height: 28px; width: auto; max-width: 56px; object-fit: cover; border-radius: 4px; cursor: zoom-in; vertical-align: middle; }
