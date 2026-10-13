@@ -39,7 +39,7 @@ async function saveQuiz() {
 // Saved as setup prefs scales (lib/setup.js keeps the old switches in step). thrift is the spend plan: a custom mix has no step.
 const OWNER_SCALES = [['steps', 5], ['chat', 5], ['go', 5], ['words', 5], ['tidy', 3], ['thrift', 5], ['push', 5]];
 const THRIFT_PLANS = ['nospare', 'generous', 'normal', 'careful', 'fly'];
-const scaleLine = (k, n) => k === 'steps' ? t('steps.' + n) : k === 'push' ? t('sm.push.' + n) : k === 'thrift' ? (n ? t('budget.plan.' + THRIFT_PLANS[n - 1]) : t('scale.thrift.custom')) : t('scale.' + k + '.' + n);
+const scaleLine = (k, n) => k === 'steps' ? t('steps.' + n) : k === 'push' ? t('sm.push.' + n) : k === 'tone' ? t('tone.' + n) : k === 'thrift' ? (n ? t('budget.plan.' + THRIFT_PLANS[n - 1]) : t('scale.thrift.custom')) : t('scale.' + k + '.' + n);
 // One slider: the name, n of max, the step's line, a help line. Shared with the 👥 Team dialog (id prefix, save call).
 function scaleSlider(k, max, n, save, idp = 'sc', help = t('scale.' + k + '.help')) {
   const v = n || Math.ceil(max / 2);
@@ -51,6 +51,7 @@ function scaleShow(idp, k, max, n) {
   n = Number(n); $(idp + '-' + k + '-n').textContent = n + '/' + max; $(idp + '-' + k + '-line').textContent = scaleLine(k, n);
   $(idp + '-' + k).setAttribute('aria-valuetext', scaleLine(k, n));
 }
+const setTone = (k, n) => setLeadPref({ tone: n });
 const setScale = (k, n) => setLeadPref({ scales: { [k]: n } });
 // Usage checks, token budget, parallel runs and helpers per model (AIG-353): the detail under the thrift slider, folded under More.
 function budgetHtml(pr) {
@@ -76,6 +77,7 @@ function leadPrefsHtml(msg = '') {
   return `<span>${esc(t('scale.h'))}</span><small class="muted">${esc(t('scale.sub'))}</small><div><button type="button" onclick="leadQuiz()">${esc(t('quiz.btn'))}</button></div><small class="muted">${esc(t('quiz.help'))}</small>
     ${OWNER_SCALES.map(([k, max]) => scaleSlider(k, max, sc[k], 'setScale') + (k === 'thrift' ? `<small class="muted" id="pf-pace">${esc(t('budget.pace', { pct: pr.pace }))}</small>${budgetHtml(pr)}` : '')).join('')}
     ${sw('watchAll')}${sw('planBig')}${sw('light')}${tiredHtml(pr)}
+    ${scaleSlider('tone', 5, pr.tone || 3, 'setTone', 'tn', t('tone.help'))}
     <label class="f"><span>${esc(t('lead.tech'))}</span><select class="setup-theme" onchange="setLeadPref({ techLevel: this.value })">${['', 'beginner', 'some', 'expert'].map(v => `<option value="${v}" ${(pr.techLevel || '') === v ? 'selected' : ''}>${esc(t('lead.tech.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.tech.help'))}</small></label>
     <label class="f"><span>${esc(t('lead.push'))}</span><select id="pushPref" class="setup-theme" onchange="setLeadPref({ push: this.value })">${['ask', 'auto'].map(v => `<option value="${v}" ${(pr.push || 'ask') === v ? 'selected' : ''}>${esc(t('lead.push.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('lead.push.help'))}</small></label>
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;
