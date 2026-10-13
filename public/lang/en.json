@@ -3201,5 +3201,8 @@
  "wz.2.use": "Use the one I found",
  "dlg.newcard.more": "More options",
  "card.menu": "⋯",
- "card.menu.title": "More actions"
+ "card.menu.title": "More actions",
+  "day.start": "When does your day usually start?",
+  "day.stop": "When do you usually stop? (optional)",
+  "day.help": "Going quiet ends at your start time unless you pick another, and Snooze to tomorrow wakes things then."
 }

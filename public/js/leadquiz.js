@@ -72,12 +72,18 @@ function tiredHtml(pr) {
   const tm = k => `<input type="time" id="pf-tired-${k}" value="${esc(c[k])}" aria-label="${esc(t('tired.' + k))}" onchange="if (this.value) setLeadPref({ tired: { ${k}: this.value } })">`;
   return `<div class="f"><span>${esc(t('tired.h'))}</span><div class="tired-box" id="pf-tired">${rd('off')}${rd('bedtime', ` ${tm('bedtime')} ${esc(t('tired.to'))} ${tm('wake')}`)}${rd('dark')}${rd('always')}<small class="muted">${esc(t('tired.help'))}</small></div></div>`;
 }
+// AIG-678: when your day starts and (optionally) stops; Going quiet, snooze-to-tomorrow and the morning use them.
+function dayTimesHtml(pr) {
+  const d = pr.day || { start: '09:00', stop: '' };
+  return `<div class="f" id="pf-day"><label>${esc(t('day.start'))} <input type="time" id="pf-day-start" value="${esc(d.start || '09:00')}" onchange="setLeadPref({ day: { start: this.value || '09:00' } })"></label>
+    <label>${esc(t('day.stop'))} <input type="time" id="pf-day-stop" value="${esc(d.stop || '')}" onchange="setLeadPref({ day: { stop: this.value } })"></label><small class="muted">${esc(t('day.help'))}</small></div>`;
+}
 function leadPrefsHtml(msg = '') {
   const pr = leadPrefs(), sc = pr.scales || {};
   const sw = k => `<label class="f chk"><span><input type="checkbox" ${pr[k] ? 'checked' : ''} onchange="setLeadPref({ ${k}: this.checked })"> ${esc(t('lead.' + k))}</span><small class="muted">${esc(t('lead.' + k + '.help'))}</small></label>`;
   return `<span>${esc(t('scale.h'))}</span><small class="muted">${esc(t('scale.sub'))}</small><div><button type="button" onclick="leadQuiz()">${esc(t('quiz.btn'))}</button></div><small class="muted">${esc(t('quiz.help'))}</small>
     ${OWNER_SCALES.map(([k, max]) => scaleSlider(k, max, sc[k], 'setScale') + (k === 'thrift' ? `<small class="muted" id="pf-pace">${esc(t('budget.pace', { pct: pr.pace }))}</small>${budgetHtml(pr)}` : '')).join('')}
-    ${sw('watchAll')}${sw('planBig')}${sw('light')}${sw('todayPick')}${sw('dayStart')}${tiredHtml(pr)}
+    ${sw('watchAll')}${sw('planBig')}${sw('light')}${sw('todayPick')}${sw('dayStart')}${dayTimesHtml(pr)}${tiredHtml(pr)}
     ${scaleSlider('tone', 5, pr.tone || 3, 'setTone', 'tn', t('tone.help'))}
     <label class="f"><span>${esc(t('lead.tech'))}</span><select class="setup-theme" onchange="setLeadPref({ techLevel: this.value })">${['', 'beginner', 'some', 'expert'].map(v => `<option value="${v}" ${(pr.techLevel || '') === v ? 'selected' : ''}>${esc(t('lead.tech.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.tech.help'))}</small></label>
     <label class="f"><span>${esc(t('lead.push'))}</span><select id="pushPref" class="setup-theme" onchange="setLeadPref({ push: this.value })">${['ask', 'auto'].map(v => `<option value="${v}" ${(pr.push || 'ask') === v ? 'selected' : ''}>${esc(t('lead.push.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('lead.push.help'))}</small></label>

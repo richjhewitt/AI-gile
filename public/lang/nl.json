@@ -3201,5 +3201,8 @@
  "wz.2.use": "Gebruik degene die ik vond",
  "dlg.newcard.more": "Meer opties",
  "card.menu": "⋯",
- "card.menu.title": "Meer acties"
+ "card.menu.title": "Meer acties",
+  "day.start": "Hoe laat begint je dag meestal?",
+  "day.stop": "Hoe laat stop je meestal? (optioneel)",
+  "day.help": "Stil worden eindigt standaard op je starttijd, en Tot morgen uitstellen wekt dingen dan weer."
 }
