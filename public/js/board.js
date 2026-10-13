@@ -229,6 +229,7 @@ function forYouColumn(p, label = t('col.verify.short'), tint = '', pool = p.card
 function metaHtml(c, show = CARD_SHOW) {
   return `${c.lifeType ? (forYou(c) && isMine(c) ? '' : lifeChip(c) + (c.apptAt ? `<span class="pill">📅 ${esc(timedWhen(c.apptAt))}</span>` : '')) : show.type ? `<span class="pill">${esc(t('type.' + c.type))}</span>` : ''}
       ${show.priority && c.priority !== 'normal' ? `<span class="pill ${c.priority}">${esc(t('priority.' + c.priority))}</span>` : ''}
+      ${c.risk === 'risky' ? `<span class="pill risky" title="${esc(t('risk.chip.title'))}">⚠️</span>` : ''}
       ${show.assignee && c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
       ${c.needsYou && c.status !== 'done' ? `<span class="pill you">${esc(t('card.needsyou'))}</span>` : ''}
       ${c.crucial ? `<span class="pill crucial" title="${esc(t('saver.chip.title'))}">⭐</span>` : ''}

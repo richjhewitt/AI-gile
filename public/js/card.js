@@ -8,6 +8,7 @@ function cardFields(c, o = {}) {
     <div class="row">
       <label class="f"><span>${esc(t('card.f.type'))}</span><select id="f-type">${opts(TYPES, c.type, Object.fromEntries(TYPES.map(k => [k, t('type.' + k)])))}</select></label>
       <label class="f"><span>${esc(t('card.f.priority'))}</span><select id="f-priority">${opts(PRIORITIES, c.priority, Object.fromEntries(PRIORITIES.map(k => [k, t('priority.' + k)])))}</select></label>
+      <label class="f"><span>${esc(t('card.f.risk'))}</span><select id="f-risk">${opts(RISKS, c.risk || 'normal', Object.fromEntries(RISKS.map(k => [k, t('risk.' + k)])))}</select></label>
       <label class="f"><span>${esc(t('card.f.status'))}</span><select id="f-status">${opts(Object.keys(COLS), c.status, Object.fromEntries(Object.keys(COLS).map(k => [k, colLabel(state.project, k)])))}</select></label>
     </div>
     <div class="row">
@@ -82,7 +83,7 @@ async function toggleCrucial() {
 }
 
 function readFields(flags, testSteps) {
-  const o = { title: $('f-title').value.trim(), description: $('f-description').value, type: $('f-type').value, priority: $('f-priority').value,
+  const o = { title: $('f-title').value.trim(), description: $('f-description').value, type: $('f-type').value, priority: $('f-priority').value, risk: $('f-risk').value,
     status: $('f-status').value, assignee: $('f-assignee').value.trim(), sprint: $('f-sprint').value.trim(), group: $('f-group').value.trim() };
   if (testSteps) o.testSteps = $('f-testSteps').value;
   if (flags) { o.blocked = $('f-blocked').checked; o.needsYou = $('f-needsYou').checked; o.focus = $('f-focus').checked; o.hidePublic = $('f-hidepublic').checked; }
@@ -317,7 +318,7 @@ async function saveCard(e) {
   e.preventDefault();
   const c = curCard(), now = readFields(true, true), body = {};
   if (!now.title) { setErr('f-err', t('card.err.title')); return false; }
-  for (const k in now) if (now[k] !== c[k]) body[k] = now[k];
+  for (const k in now) if (now[k] !== (k === 'risk' ? c.risk || 'normal' : c[k])) body[k] = now[k];
   try {
     if (Object.keys(body).length) await api('PATCH', `/api/projects/${slug()}/cards/${c.id}`, body);
     state.editing = false;

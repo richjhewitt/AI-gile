@@ -2432,5 +2432,10 @@
  "pm.why": "Waarom",
  "pm.change": "Wat gaan we veranderen",
  "pm.done": "Klaar",
- "pm.heading": "🔥 Nabespreking"
+ "pm.heading": "🔥 Nabespreking",
+ "card.f.risk": "Risico",
+ "risk.small": "Klein",
+ "risk.normal": "Normaal",
+ "risk.risky": "Riskant (eerst plan)",
+ "risk.chip.title": "Riskant: eerst een plan, dan bouwen"
 }

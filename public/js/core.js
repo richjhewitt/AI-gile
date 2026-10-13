@@ -172,6 +172,7 @@ function cardViewOf(p) {
 }
 const TYPES =['feature', 'bug', 'task', 'incident'];
 const PRIORITIES = ['low', 'normal', 'high', 'urgent'];
+const RISKS = ['small', 'normal', 'risky'];   // AIG-612
 const state = { route: null, projects: [], inbox: [], project: null, openCard: null, showArchived: false, editing: false, dragging: false, lastSig: null };
 try { state.showArchived = localStorage.getItem('aigile.showArchived') === '1'; } catch {}
 

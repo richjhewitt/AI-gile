@@ -2432,5 +2432,10 @@
  "pm.why": "Why",
  "pm.change": "What we change",
  "pm.done": "Done",
- "pm.heading": "🔥 Post-mortem"
+ "pm.heading": "🔥 Post-mortem",
+ "card.f.risk": "Risk",
+ "risk.small": "Small",
+ "risk.normal": "Normal",
+ "risk.risky": "Risky (plan first)",
+ "risk.chip.title": "Risky: plan first, then build"
 }
