@@ -77,6 +77,8 @@ async function lookDialog() {
   if (!state.setup) try { state.setup = await api('GET', '/api/setup'); } catch {}   // the default for where it runs (AIG-153)
   const def = leadPrefs().runIn || 'background', w = p.runIn || def;
   let dod = { ready: [], done: [] }; try { dod = await api('GET', '/api/projects/' + slug() + '/dod'); } catch {}   // AIG-864: the saved lists, else the defaults
+  let cwin = { windows: [] }; try { cwin = await api('GET', '/api/projects/' + slug() + '/change-windows'); } catch {}   // AIG-859: when changes may go live
+  const cwText = cwin.windows.map(x => `${x.day} ${x.from}-${x.to}${x.label ? ' ' + x.label : ''}`).join('\n');
   popNext('look'); openDialog(`<h2>${esc(t('board.look'))}</h2>
     <p class="muted">${esc(t('look.intro', { name: p.name }))}</p>
     <div class="row"><label class="f"><span>${esc(t('cols.emoji'))}</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
@@ -95,12 +97,16 @@ async function lookDialog() {
     <div class="f" id="look-dod"><span>${esc(t('dod.h'))}</span><small class="muted">${esc(t('dod.intro'))}</small>
       <label class="f"><span>${esc(t('dod.ready'))}</span><textarea id="look-dod-ready" rows="3">${esc(dod.ready.join('\n'))}</textarea></label>
       <label class="f"><span>${esc(t('dod.done'))}</span><textarea id="look-dod-done" rows="4">${esc(dod.done.join('\n'))}</textarea></label></div>
+    <div class="f" id="look-chgwin"><span>${esc(t('chgwin.h'))}</span><small class="muted">${esc(t('chgwin.intro'))}</small>
+      <label class="f"><span>${esc(t('chgwin.box'))}</span><textarea id="look-chgwin-box" rows="3" data-was="${esc(cwText)}" placeholder="${esc(t('chgwin.ph'))}">${esc(cwText)}</textarea></label>${cwin.next ? `<small class="muted">${esc(t('chgwin.next', { when: cwin.next.text }))}</small>` : ''}</div>
     <div class="err" id="look-err"></div>
     <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
 // 👥 The roles on this project moved to their own dialog (AIG-423, dialogs/team-profile.js); Look only opens it.
 async function saveLook(auto) {
   try {
+    const cwBox = $('look-chgwin-box');
+    if (!auto && cwBox && cwBox.value.trim() !== cwBox.dataset.was) await api('POST', '/api/projects/' + slug() + '/change-windows', { set: cwBox.value });   // owner only; a bad line shows its error
     await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, personal: $('look-personal').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, dod: { ready: $('look-dod-ready').value, done: $('look-dod-done').value } });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
