@@ -2642,5 +2642,8 @@
  "oc.chip": "{who} opened {id}",
  "oc.open": "Open this card",
  "oc.dismiss": "Dismiss",
- "oc.someone": "An agent"
+ "oc.someone": "An agent",
+ "srv.folder.missing": "folder not found: {path}",
+ "poke.held.foldermissing": "folder not found: {path}",
+ "board.connected.missing": "⚠️ Folder not found"
 }

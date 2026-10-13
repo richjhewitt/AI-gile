@@ -2642,5 +2642,8 @@
  "oc.chip": "{who} opende {id}",
  "oc.open": "Open deze kaart",
  "oc.dismiss": "Weg ermee",
- "oc.someone": "Een agent"
+ "oc.someone": "Een agent",
+ "srv.folder.missing": "map niet gevonden: {path}",
+ "poke.held.foldermissing": "map niet gevonden: {path}",
+ "board.connected.missing": "⚠️ Map niet gevonden"
 }

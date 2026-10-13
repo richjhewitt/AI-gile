@@ -14,7 +14,7 @@ function theme(set) {
 const themePickHtml = () => { const cur = theme(); return `<select class="setup-theme" onchange="theme(this.value)">${Object.keys(THEMES).map(k => `<option value="${k}" ${k === cur ? 'selected' : ''}>${esc(THEMES[k])}</option>`).join('')}</select>`; };
 // Why a team needs a poke, in your language (AIG-174); older servers only send the English text.
 // Night watch (AIG-516): a team the board pokes itself has auto set (no pill); one it can't poke has held, with the reason.
-const heldWhy = a => a.held ? t('poke.held.' + a.held.why, { n: a.held.n, cap: a.held.cap }) : '';
+const heldWhy = a => a.held ? t('poke.held.' + a.held.why, { n: a.held.n, cap: a.held.cap, path: a.held.path }) : '';
 const asleepWhy = a => a.n != null ? t(a.n === 1 ? 'poke.asleep.one' : 'poke.asleep.many', { n: a.n }) : a.why;
 const nextTheme = () => { const k = Object.keys(THEMES), cur = theme(); theme(k[(k.indexOf(cur) + 1) % k.length]); };
 theme();
@@ -142,7 +142,7 @@ async function pokeAll(b) {
     const act = p.attention.kind === 'stuck' && p.presence && p.presence.running ? 'restart' : 'wake';
     try { await api('POST', `/api/projects/${p.slug}/${act}`); } catch (e) { failed.push(p.name + ': ' + e.message); }
   }
-  if (failed.length) alert(t('poke.failed') + '\n' + failed.join('\n'));
+  if (failed.length) openDialog(`<h2>${esc(t('poke.failed'))}</h2><p style="white-space:pre-wrap">${esc(failed.join('\n'))}</p><div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
   location.hash = '#/'; refresh(true);
 }
 

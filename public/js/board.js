@@ -25,7 +25,7 @@ async function wakeTeam(e, s = slug()) {
   e.preventDefault(); e.stopPropagation();
   const b = e.target; b.disabled = true; b.textContent = t('pres.starting');
   try { await api('POST', `/api/projects/${s}/wake`); refresh(true); }
-  catch (err) { alert(err.message); b.disabled = false; b.textContent = t('pres.wake'); }
+  catch (err) { openDialog(`<h2>${esc(t('pres.wake'))}</h2><p style="white-space:pre-wrap">${esc(err.message)}</p><div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`); b.disabled = false; b.textContent = t('pres.wake'); }
 }
 async function restartTeam(e, s = slug()) {
   e.preventDefault(); e.stopPropagation();
@@ -101,7 +101,7 @@ function renderBoard(p) {
       <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
       <button onclick="location.hash='#/stats/${esc(p.slug)}'" title="${esc(t('stats.btn.title'))}">${esc(t('stats.title'))}</button>
       <span class="grow"></span>
-      <button onclick="connectDialog()" title="${p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path ? t('board.connected') : t('board.connect'))}</button>
+      <button onclick="connectDialog()" title="${p.path && p.pathMissing ? esc(t('srv.folder.missing', { path: p.path })) : p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path && p.pathMissing ? t('board.connected.missing') : p.path ? t('board.connected') : t('board.connect'))}</button>
       ${Share.button(p)}
       ${Pub.copyBtn(p)}
       <button onclick="Spaces.menu('${esc(p.slug)}')" title="${esc(t('space.menu.title'))}">${esc(t('space.btn'))}</button>

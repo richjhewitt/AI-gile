@@ -56,6 +56,10 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   check('online, comment unanswered 10+ min = stuck', attention(proj(old), { online: true })?.kind === 'stuck');
   check('online, fresh comment = fine', attention(proj(fresh), { online: true }) === null);
   check("no folder = nothing to wake (AIG-721)", attention({ ...proj(old), path: "" }, { online: false }) === null);
+  const gone = require('path').join(require('os').tmpdir(), 'aigile-qa-no-such-folder-740');
+  check("folder set but not on disk = nothing to wake (AIG-740)", attention({ ...proj(old), path: gone }, { online: false }) === null);
+  check("folder on disk still counts (AIG-740)", attention({ ...proj(old), path: "." }, { online: true })?.kind === 'stuck');
+  check("missing-folder text says folder not found: <path> (AIG-740)", /^folder not found: /.test(require('../../../lib/i18n.js').t('srv.folder.missing', { path: gone }, 'en')));
   noErrors(page);
 }, true);
 
