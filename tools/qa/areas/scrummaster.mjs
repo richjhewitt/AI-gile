@@ -65,7 +65,7 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   check('the idea is in its chat', (await chat()).some(m => m.mine && m.text === '💡 Idea: Create a new project for my recipes'));
   check('and it handles it (a run answers)', !!(await until(async () => (await chat()).filter(m => /Stub reply/.test(m.text)).length >= 2, 15000)));
   check('no card was made by the box itself', !(await s.ok('GET', '/api/projects/alpha')).cards.some(c => /recipes/.test(c.title)));
-  check('its brief says it cannot make projects and asks with quick buttons', /can't create projects or folders/.test(fs.readFileSync(path.join(s.data, 'scrummaster', 'CLAUDE.md'), 'utf8')));
+  check('its brief says it makes projects and spaces itself (AIG-706)', /You can create projects and spaces: .*new-project "Name" --folder/.test(fs.readFileSync(path.join(s.data, 'scrummaster', 'CLAUDE.md'), 'utf8')));
   s.cli(['watchsay', 'Where should the folder for Recipes go?', '--options', 'C:/Projects/recipes,I will pick']);
   const q = (await chat()).at(-1);
   check('watchsay --options gives quick-answer buttons', q.pick && q.pick.length === 2 && q.pick[0].text === 'C:/Projects/recipes', q);
