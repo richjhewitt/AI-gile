@@ -27,7 +27,7 @@ const ScrumGlance = (() => {
   async function load(slug) {
     try { data = await PagePoll.get('/api/glance' + (slug ? '?project=' + encodeURIComponent(slug) : '')); } catch { data = data || null; }
   }
-  // Called by the page poll by the page's poll; the pop-out view loads in refresh() instead.
+  // Called by the page poll (app.js); the pop-out view loads in refresh() instead.
   async function tick() {
     if (!open || busyNow || (state.route && state.route.view === 'glance')) return;
     busyNow = true; try { await load(scope()); } finally { busyNow = false; }

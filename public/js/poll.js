@@ -46,14 +46,24 @@ const PagePoll = (() => {
         if (!r.ok) throw new Error(r.statusText);
         const j = await r.json();
         if (typeof j.rev !== 'string') throw new Error('Invalid revision');
-        rev = j.rev; revAt = Date.now(); return rev;
+        rev = j.rev; stamps = j.projects || {}; revAt = Date.now(); return rev;
       } catch { rev = null; retryRevAt = Date.now() + REV_MS; return null; }
       finally { revFlight = null; }
     })();
     return revFlight;
   }
+  // DMs, shares, friends' questions and the all-hands chat live in data/ subfolders and relay memory, which /api/rev
+  // does not see: those keep polling at the caller's pace. A project page waits on that project's own stamp, so a
+  // swarm in another project doesn't re-download this one (AIG-920 review).
+  const VOLATILE = /^\/api\/(?:dms|shares|ask|chats\/_allhands|discord|twitch|mail)\b/;
+  let stamps = {};
+  async function tokenFor(url) {
+    const r = await revision();
+    const m = /^\/api\/projects\/([a-z0-9-]+)$/.exec(url);
+    return m && r !== null && stamps[m[1]] ? 'p:' + stamps[m[1]] : r;
+  }
   async function get(url, { force = false, revision: useRev = true, maxAge = SAFETY_MS } = {}) {
-    const token = useRev ? await revision() : null, generation = epoch, now = Date.now();
+    const token = useRev && !VOLATILE.test(url) ? await tokenFor(url) : null, generation = epoch, now = Date.now();
     const old = reads.get(url);
     if (old && old.flight && old.epoch === generation) return old.flight;
     // Old servers and volatile endpoints still poll at the caller's interval.
