@@ -22,6 +22,7 @@ One line each: verb the thing, then its page. Add a line when a new journey appe
 ## Cards
 - Raise a card: [Raise a card](outline/03-cards/new-card.md)
 - Raise a bug: [Raise a bug](outline/03-cards/raise-bug.md)
+- Handle an incident, find the cause of repeat incidents: [Incidents and problems](outline/03-cards/incidents-problems.md) (status: new)
 - Edit a card: [Edit a card](outline/03-cards/edit-card.md)
 - Reply on a card: [Card conversation and replies](outline/03-cards/conversation.md)
 - Attach a screenshot: [Attachments and screenshots](outline/03-cards/attachments.md)
