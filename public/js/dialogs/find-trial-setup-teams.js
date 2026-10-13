@@ -104,6 +104,7 @@ function renderSetup() {
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
     <div class="f" id="pretendBox">${pretendBoxHtml()}</div>
+    <div class="f" id="phoneBox">${Phone.html()}</div>
     <div class="f"><span>${esc(t('trial.h'))}</span><div>${launchPickHtml()}<button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <div class="f" id="iconBox">${iconHtml()}</div>

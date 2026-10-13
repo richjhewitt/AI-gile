@@ -258,7 +258,7 @@ function busy() {
 // left out; with it in, the board and the open card were redrawn every second and the panel flickered.
 const renderSig = x => JSON.stringify(x, (k, v) => k === 'waitingMs' ? undefined : v);
 async function refresh(force) {
-  if (!i18n.ready || Boot.failed) return;   // the language file comes first (AIG-124); a broken start-up reloads instead (AIG-517)
+  if (!i18n.ready || Boot.failed || Phone.blocked) return;   // (Phone.blocked: a phone not let in yet, AIG-868) the language file comes first (AIG-124); a broken start-up reloads instead (AIG-517)
   if (state.route && state.route.view === 'project') state.lastProject = state.route.slug; else if (state.route && state.route.view !== 'inbox') state.lastProject = null;
   state.route = parseRoute();
   const route = JSON.stringify(state.route);

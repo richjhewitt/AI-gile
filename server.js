@@ -9,6 +9,8 @@ const path = require('path');
 const { PORT, HOST, DATA, PUBLIC, bad, localSettings } = require('./lib/store');
 const makeRoutes = require('./lib/routes');
 const { heard } = require('./lib/presence');
+const phone = require('./lib/phone');
+const seal = require('./lib/phone-seal');
 
 fs.mkdirSync(DATA, { recursive: true });
 
@@ -37,8 +39,60 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css
 // - changes must come from the board's own page if a browser sends them (Origin), and as JSON, which a
 //   plain cross-site form or beacon can't send without a preflight that this server never allows.
 const LOCAL = new Set([`localhost:${PORT}`, `127.0.0.1:${PORT}`]);
-function guard(req) {
-  if (!LOCAL.has(String(req.headers.host || '').toLowerCase())) throw bad('wrong host', 403);
+// 📱 A phone over the owner's own network (AIG-868, lib/phone.js): a Host saved in Setup is let in only with a paired
+// device cookie (or the pairing call itself), and only from https://<that host>. tailscale serve connects from 127.0.0.1,
+// so the remote address proves nothing here: req.aigilePhone marks these requests for the checks that rely on it.
+function guardPhone(req, pathname) {
+  const host = phone.hostOf(req.headers.host);
+  if (!host) throw bad('wrong host', 403);
+  // The Android app (AIG-907) sends Authorization: Bearer <device key> and no Origin. A web page on another site can't
+  // send that header here: it needs a CORS preflight (OPTIONS), and this server never answers one with Access-Control-*.
+  const pairing = req.method === 'POST' && pathname === '/api/phone/pair';
+  // A sealed call (AII-18, docs/SEALED.md): no key in the request at all; lib/phone-seal.js checks the device and the seal.
+  if (req.method === 'POST' && pathname === '/api/phone/sealed') {
+    if (req.headers.authorization || !req.headers['x-aigile-device']) throw bad('sealed: send X-Aigile-Device and no Authorization', 403);
+    if (req.headers.origin && req.headers.origin.toLowerCase() !== 'https://' + host) throw bad('requests from other sites are not allowed', 403);
+    if (!/^application\/json\b/i.test(req.headers['content-type'] || '')) throw bad('send JSON (Content-Type: application/json)', 415);
+    req.aigileSealed = host;
+    return;
+  }
+  const d = pairing ? null : phone.deviceFor(req, host);
+  const origin = req.headers.origin;
+  if (origin ? origin.toLowerCase() !== 'https://' + host : req.method !== 'GET' && !(d && d.via === 'bearer')) throw bad('requests from other sites are not allowed', 403);
+  if (pairing) req.aigilePair = host;
+  else {
+    if (!d) throw bad('this phone is not paired: pair it from Setup on your computer', 403);
+    req.aigilePhone = d;
+    phone.denied(req, pathname);
+  }
+  if (req.method !== 'GET' && !/^application\/json\b/i.test(req.headers['content-type'] || '')) throw bad('send JSON (Content-Type: application/json)', 415);
+}
+// The opened sealed request runs through the same routes, as that device, with the same deny list (AII-18).
+// Its answer is sealed back: { s: status, b: JSON body, or { ct, data: base64 } for a file or picture }.
+async function runSealed(req, body) {
+  const d = phone.sealedDevice(req.headers['x-aigile-device'], req.aigileSealed);
+  if (!d) throw bad('sealed: unknown device', 403);
+  const r = seal.open(d, body);
+  const iu = new URL(r.p, 'http://x');
+  let ip; try { ip = decodeURIComponent(iu.pathname); } catch { throw bad('sealed: bad path', 403); }
+  const inner = { method: r.m, headers: { host: req.headers.host, 'content-type': 'application/json' }, socket: req.socket, aigilePhone: d };
+  const ib = ['POST', 'PATCH', 'PUT'].includes(r.m) && r.b && typeof r.b === 'object' ? r.b : {};
+  try { phone.denied(inner, ip); phone.deniedBody(ib); } catch { throw bad('sealed: not from a phone', 403); }
+  let s = 200, b = null;
+  try {
+    const hit = routes.find(([m, re]) => m === r.m && re.test(ip));
+    if (!hit) throw bad('no such endpoint: ' + r.m + ' ' + ip, 404);
+    const out = await hit[2](ip.match(hit[1]).slice(1), ib, iu.searchParams, inner);
+    if (out && out.__cookie) delete out.__cookie;
+    if (out && out.__sse) throw bad('a live stream is not sealed', 400);
+    if (out && out.__svg) b = { ct: 'image/svg+xml', data: Buffer.from(out.__svg).toString('base64') };
+    else if (out && out.__file) b = { ct: out.download ? 'application/octet-stream' : ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', data: fs.readFileSync(out.__file).toString('base64') };
+    else b = out === undefined ? null : JSON.parse(JSON.stringify(out));
+  } catch (e) { s = e.code >= 400 && e.code < 600 ? e.code : 500; b = { error: e.message }; }
+  return seal.close(d, s, b);
+}
+function guard(req, pathname) {
+  if (!LOCAL.has(String(req.headers.host || '').toLowerCase())) return guardPhone(req, pathname);
   if (req.method === 'GET') return;
   const origin = req.headers.origin;
   if (origin && !LOCAL.has(origin.replace(/^http:\/\//, '').toLowerCase())) throw bad('requests from other sites are not allowed', 403);
@@ -81,17 +135,20 @@ const server = http.createServer(async (req, res) => {
   let pathname; try { pathname = decodeURIComponent(url.pathname); } catch { res.writeHead(400); return res.end(); }   // a bad %-code no longer stops the board (AIG-150)
   try {
     if (pathname.startsWith('/api/')) {
-      guard(req);
+      guard(req, pathname);
       // Any CLI or hook call from a session you opened counts as that team being at work (AIG-107).
       const where = req.headers['x-aigile-where'], pm = pathname.match(/^\/api\/projects\/([^/]+)/);
       if (pm && (where === 'vscode' || where === 'terminal')) heard(pm[1], where);
+      if (req.aigileSealed) return send(res, 200, await runSealed(req, await readBody(req, 15e6)));   // AII-18
       for (const [method, re, fn] of routes) {
         const m = pathname.match(re);
         if (m && method === req.method) {
           // Attachment uploads are base64 files up to 10 MB, so they get a bigger body limit; opening a project file (AIG-446) up to 20 MB of them.
           const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, pathname === '/api/projects/import' ? 40e6 : (pathname.endsWith('/attachments') || /^\/api\/dms\/contacts\/[^/]+\/messages$/.test(pathname)) ? 15e6 : /\/((app-)?logo|me-picture)$/.test(pathname) ? 2e6 : 1e6) : {};
+          if (req.aigilePhone) phone.deniedBody(body);   // a phone sets no command for a team to run (AIG-868)
           const out = await fn(m.slice(1), body, url.searchParams, req);   // DM routes talk to the relay, so they may be async; req: who is asking (share.ownerOnly)
           // A route can answer with a file instead of JSON: { __file: absolute path }.
+          if (out && out.__cookie) { res.setHeader('Set-Cookie', out.__cookie); delete out.__cookie; }   // the phone's device key (AIG-868)
           if (out && out.__sse) return out.__sse(res, req);   // a live stream (the terminal, AIG-471): the route writes it
           if (out && out.__svg) { res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" }); return res.end(out.__svg); }
           if (out && out.__file) {
