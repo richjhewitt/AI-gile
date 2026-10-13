@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import http from 'node:http';
 import path from 'node:path';
-import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def, pinAllInit, clickBar } from '../lib.mjs';
 
 // The checker (AIG-487): its JSON report for a folder of language files.
 const runCheck = (...a) => { const r = spawnSync(process.execPath, [path.join(ROOT, 'tools', 'i18n', 'check.mjs'), '--json', ...a], { encoding: 'utf8' }); let j = null; try { j = JSON.parse(r.stdout); } catch {} return { code: r.status, j, out: r.stdout + r.stderr }; };
@@ -14,6 +14,7 @@ async function withLangs(b, opts, codes) {
   const files = fs.readdirSync(path.join(ROOT, 'public', 'lang')).filter(f => f !== 'languages.json').map(f => f.slice(0, -5));
   const c = await b.newContext({ viewport: { width: 1400, height: 900 }, ...opts });
   await c.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
+  await c.addInitScript(pinAllInit);
   await c.route('**/api/langs', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ codes: [...new Set([...files, ...codes])] }) }));
   for (const code of codes) {
     const m = MARK[code] || code.toUpperCase() + ' ';
@@ -75,6 +76,7 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
   page.errors = [];
   page.on('pageerror', e => page.errors.push('pageerror: ' + e.message));
   await page.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
+  await page.addInitScript(pinAllInit);
   await page.route('**/lang/nl.json', r => r.fulfill({ contentType: 'application/json', body: JSON.stringify(nl) }));
   await page.goto(BASE + '/#/');
   await page.waitForSelector('#app .toolbar');
@@ -91,7 +93,7 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
     check('no raw keys or markers on ' + hash, (await stray()).length === 0, await stray());
   }
   await page.goto(BASE + '/#/p/alpha'); await page.reload(); await page.waitForSelector('.board');
-  await page.click('button:has-text("Raise bug")'); await page.waitForSelector('.dialog');
+  await clickBar(page, '#bugBtn'); await page.waitForSelector('.dialog');
   check('no raw keys in the bug dialog', (await stray()).length === 0, await stray());
   await page.keyboard.press('Escape');
 
@@ -211,6 +213,7 @@ def('rtl', 'right to left (AIG-487): a stubbed Arabic file mirrors the board, ca
   for (const [w, h] of [[1400, 900], [390, 844]]) {
     const c = await withLangs(ctx.browser(), { viewport: { width: w, height: h }, locale: 'en-US' }, ['ar']);
     await c.addInitScript(() => { try { localStorage.setItem('aigile.lang', 'ar'); } catch {} });
+    await c.addInitScript(pinAllInit);
     const page = await c.newPage(), tag = w > 600 ? 'desktop' : 'phone';
     page.errors = []; page.on('pageerror', e => page.errors.push('pageerror: ' + e.message));
     const fits = async label => { const m = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]); check(`${tag} ${label}: nothing sticks out sideways (${m[0]} <= ${m[1]})`, m[0] <= m[1], m); };
@@ -229,7 +232,7 @@ def('rtl', 'right to left (AIG-487): a stubbed Arabic file mirrors the board, ca
     check(`${tag} card panel: open, code stays left to right`, pre === 'ltr', pre);
     await fits('card panel'); await shot('card');
     await page.goto(BASE + '/#/p/alpha'); await page.waitForSelector('.board');
-    await page.click('button:has-text("Raise bug")'); await page.waitForSelector('.dialog');
+    await clickBar(page, '#bugBtn'); await page.waitForSelector('.dialog');
     const dlg = await page.evaluate(() => { const r = document.querySelector('.dialog').getBoundingClientRect(); return r.left >= -1 && r.right <= innerWidth + 1; });
     check(`${tag} dialog: inside the window`, dlg);
     await fits('dialog'); await shot('dialog');

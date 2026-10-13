@@ -3057,5 +3057,12 @@
   "life.letsgo": "Goed, laten we gaan",
   "life.letsgo.title": "Start de douchemodus bij een doucheherinnering, anders een uur uitstellen (niet klaar)",
   "break.shower.h": "Geniet van je douche 🚿",
-  "break.shower.sub": "Meldingen staan op pauze. Je team werkt door."
+  "break.shower.sub": "Meldingen staan op pauze. Je team werkt door.",
+  "tb.more": "Meer ▾",
+  "tb.menu": "Menu",
+  "tb.pin.h": "Toon in de bovenbalk",
+  "tb.pin.help": "Vink aan wat in de balk blijft; de rest staat onder Meer. Instellingen blijft altijd staan.",
+  "tb.b.twitch": "Twitch-chat",
+  "tb.b.mail": "Mail",
+  "tb.b.imm": "Taal"
 }

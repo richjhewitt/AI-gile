@@ -3057,5 +3057,12 @@
   "life.letsgo": "Right, let's do this",
   "life.letsgo.title": "Starts shower mode on a shower reminder, otherwise puts it off for an hour (not done)",
   "break.shower.h": "Enjoy your shower 🚿",
-  "break.shower.sub": "Alerts are paused. Your team keeps working."
+  "break.shower.sub": "Alerts are paused. Your team keeps working.",
+  "tb.more": "More ▾",
+  "tb.menu": "Menu",
+  "tb.pin.h": "Show in top bar",
+  "tb.pin.help": "Tick what stays in the bar; the rest is under More. Setup always stays.",
+  "tb.b.twitch": "Twitch chat",
+  "tb.b.mail": "Mail",
+  "tb.b.imm": "Language"
 }
