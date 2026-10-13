@@ -2645,5 +2645,9 @@
  "oc.someone": "An agent",
  "srv.folder.missing": "folder not found: {path}",
  "poke.held.foldermissing": "folder not found: {path}",
- "board.connected.missing": "⚠️ Folder not found"
+ "board.connected.missing": "⚠️ Folder not found",
+ "remind.sorry": "Sorry what?",
+ "remind.sorry.title": "Ask the team to explain this card again, from scratch",
+ "remind.sorry.text": "Sorry what? Explain this from scratch, in plain words: what it is, why it matters, what happens next.",
+ "remind.sorry.ok": "Asked the team"
 }

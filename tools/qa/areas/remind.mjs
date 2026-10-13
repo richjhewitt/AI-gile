@@ -36,5 +36,17 @@ def('remind', '❓ Remind me: ask + plan + now from comments, bare card falls ba
   await page.click('#remind-btn');
   txt = await page.innerText('#remind-box');
   check('a bare card falls back to its description and first 2 bullets', /You asked: Just a plain description/.test(txt) && /Plan: first bullet; second bullet/.test(txt) && !/third bullet/.test(txt) && /Now: to do/.test(txt), txt);
+  await page.goto((await page.url()).replace('REM-2', 'REM-1'));
+  await page.waitForSelector('#remind-btn'); await page.click('#remind-btn');
+  check('Sorry what? button sits in the Remind me box', (await page.locator('#remind-box #sorry-btn').count()) === 1);
+  await page.click('#sorry-btn');
+  await page.waitForSelector('#sorry-ok');
+  check('click disables the button and shows Asked the team', await page.locator('#sorry-btn').isDisabled() && /Asked the team/.test(await page.innerText('#remind-box')));
+  const card = await page.evaluate(async () => ((await (await fetch('/api/projects/rem')).json()).cards.find(x => x.id === 'REM-1')));
+  const sorry = (card.comments || []).filter(m => m.text.startsWith('Sorry what? Explain this from scratch'));
+  check('exactly one Sorry what? owner comment was posted', sorry.length === 1, JSON.stringify((card.comments || []).map(m => m.text.slice(0, 20))));
+  check('the card moved to For the team', card.status === 'team', card.status);
+  await page.setViewportSize({ width: 390, height: 844 });
+  check('phone width: the box with the button fits', await page.evaluate(() => { const b = document.getElementById('remind-box').getBoundingClientRect(); return b.right <= window.innerWidth + 1 && document.documentElement.scrollWidth <= window.innerWidth + 1; }));
   await noErrors(page);
 }, true);

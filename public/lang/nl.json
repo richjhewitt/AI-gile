@@ -2645,5 +2645,9 @@
  "oc.someone": "Een agent",
  "srv.folder.missing": "map niet gevonden: {path}",
  "poke.held.foldermissing": "map niet gevonden: {path}",
- "board.connected.missing": "⚠️ Map niet gevonden"
+ "board.connected.missing": "⚠️ Map niet gevonden",
+ "remind.sorry": "Sorry, wat?",
+ "remind.sorry.title": "Vraag het team deze kaart opnieuw uit te leggen, van nul af aan",
+ "remind.sorry.text": "Sorry, wat? Leg dit van nul af uit, in gewone woorden: wat het is, waarom het ertoe doet, wat er hierna gebeurt.",
+ "remind.sorry.ok": "Het team is gevraagd"
 }
