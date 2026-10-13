@@ -34,7 +34,19 @@ try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark")d
   <p class="secondary">Agile, but the team never needs a stand-up coffee. (They do stand-ups anyway.)</p>
 </section>
 
-<section class="features" aria-label="What it does">
+<section class="pitch" id="pitch" aria-label="The pitch, one word at a time" hidden>
+  <h2>The pitch, one word at a time</h2>
+  <p class="lede small">Start with a single word. Drag the slider (or use the arrow keys) for more.</p>
+  <div class="pitch-text" id="pitch-text"></div>
+  <p class="pitch-quip" id="pitch-quip" aria-live="polite"></p>
+  <div class="pitch-ctl">
+    <input type="range" id="pitch-range" min="1" max="200" step="1" value="1" aria-label="Number of words" aria-describedby="pitch-count">
+    <div class="pitch-row"><output id="pitch-count" for="pitch-range">1 / 200</output><button type="button" class="btn-lite" id="pitch-dice">&#127922; another version</button></div>
+  </div>
+  <p class="board-count" id="board-count" hidden><b id="board-n">0</b> cards on the board right now</p>
+</section>
+
+<section class="features"aria-label="What it does">
   <article class="card"><span class="ic">🧪</span><h2>One pile for you</h2><p><b>For you</b> holds everything waiting on you, across every project: questions, things to test, tasks only a human can do. Your queue says what's next and how long it takes.</p></article>
   <article class="card"><span class="ic">🌙</span><h2>Teams that work while you sleep</h2><p>Each project has a lead and a team of AI agents. Comment on a card and the team wakes up, does the work, and hands it back with steps a tired human can follow.</p></article>
   <article class="card"><span class="ic">🤖</span><h2>An AI tester checks first</h2><p>Before anything reaches you, a tester follows the steps in a copy of the app and shows what it saw, with a screenshot. Flick through the passed ones and accept in a click.</p></article>
@@ -61,6 +73,7 @@ try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark")d
 
 <footer>AI-gile. No trackers, no cookies, no stand-up coffee.</footer>
 </div>
+<script src="teaser.js"></script>
 <script>
 (function(){
   var root=document.documentElement,b=document.getElementById("theme");

@@ -57,4 +57,5 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 ## Other areas
 - Languages, `t()`, adding a string: [languages.md](codemap/languages.md)
 - Data files, columns, stand-up card shape: [data.md](codemap/data.md)
+- `site/teaser.js` (AIG-695/697): aigile.lol word slider (1 to 200 words from `site/teaser-lines.json`, quips, another version) and the live card count from the relay's `/b/ai-gile.json` (constants at the top, polled every 30 s); QA `teaser`
 - `lib/refactor.js` + `public/js/dialogs/refactor.js` (AIG-98): 🧹 refactor offer on home: files over 400 lines per project folder, rough tokens saved/cost, makes refactor projects (inside each, or one) with a card per file; QA `refactor`
