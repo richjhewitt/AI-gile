@@ -51,7 +51,7 @@
     sb.disabled = !!asked[id]; sb.onclick = () => root.remindSorry();
     fresh.appendChild(document.createElement('div')).appendChild(sb);
     if (asked[id]) { const ok = document.createElement('div'); ok.id = 'sorry-ok'; ok.textContent = t('remind.sorry.ok'); ok.style.cssText = 'font-size:12px;opacity:.8'; fresh.appendChild(ok); }
-    const bar = btn.closest('.actions');
+    const bar = btn.closest('.card-head') || btn.closest('.actions');   // AIG-935: the open card's head row
     if (box) { if (box.dataset.card === id && box.textContent === fresh.textContent && box.previousElementSibling === bar) return; box.remove(); }
     bar.insertAdjacentElement('afterend', fresh);
   }

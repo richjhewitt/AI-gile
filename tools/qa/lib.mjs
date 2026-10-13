@@ -105,6 +105,8 @@ export async function openPage(ctx, hash) {
   page.on('console', m => { if (m.type() === 'error') page.errors.push('console: ' + m.text()); });
   // The morning "Call stand-ups?" pill (AIG-136) would sit over other areas' clicks: mark today as asked, except in the standup area.
   if (!openPage.morning) await page.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
+  // The open card's ⋯ menu (AIG-935) is laid out open for other areas, which click its buttons directly; the cardux area sets openPage.realMenu.
+  if (!openPage.realMenu) await page.context().addInitScript(() => { const on = () => document.documentElement && (document.documentElement.classList.add('qa-menu'), true); if (!on()) new MutationObserver((_, o) => { if (on()) o.disconnect(); }).observe(document, { childList: true }); });
   await page.goto(BASE + '/' + (hash || ''));
   await page.waitForSelector('#app > *', { timeout: 8000 });
   return page;

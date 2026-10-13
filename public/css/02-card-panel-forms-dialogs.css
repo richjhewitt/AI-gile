@@ -267,3 +267,16 @@ html[data-stream-secrets] #serversBox input[data-srv="name"], html[data-stream-s
 .mention-box { position: fixed; z-index: 1000; max-height: 250px; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.18); padding: 4px; }
 .mention-item { padding: 5px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
 .mention-item.on, .mention-item:hover { background: var(--col); }
+
+/* AIG-935: open card: title first, Close / Edit / ⋯ at the top right, every other action in the ⋯ menu */
+.card-head { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+.card-title { flex: 1 1 240px; min-width: 0; }
+.card-acts { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.card-menu-wrap { position: relative; display: inline-block; }
+.card-menu { position: absolute; inset-inline-end: 0; top: calc(100% + 4px); z-index: 30; min-width: 220px; max-width: min(360px, 86vw); max-height: 70vh; overflow: auto; display: flex; flex-direction: column; align-items: stretch; gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 8px 28px rgba(0,0,0,.3); padding: 8px; }
+.card-menu[hidden] { display: none; }
+.card-menu > button, .card-menu > select, .card-menu > span > button { text-align: start; }
+html.qa-menu .card-menu, html.qa-menu .card-menu[hidden] { display: flex; position: static; flex-direction: row; flex-wrap: wrap; box-shadow: none; max-width: none; max-height: none; width: 100%; padding: 0; border: 0; }
+html.qa-menu .card-menu-wrap, html.qa-menu .card-acts { display: contents; }   /* QA only: the other areas click these buttons directly */
+details.nc-more { margin: 8px 0; }
+details.nc-more > summary { cursor: pointer; font-weight: 600; color: var(--muted); padding: 6px 0; }
