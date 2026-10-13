@@ -41,7 +41,9 @@ const Approvals = (function () {
   async function act(key, what, body) {
     const item = node(key), err = item && item.querySelector('[data-appr-err]');
     item && item.querySelectorAll('button').forEach(b => { b.disabled = true; });
-    try { await api('POST', `/api/shares/${key.split('/')[0]}/inbound/${key.split('/')[1]}/${what}`, body); sig = ''; await load(); }
+    const [lk, id] = key.split('/'), url = lk.startsWith('chg~') ? `/api/projects/${lk.slice(4)}/changes/${id}/vote` : `/api/shares/${lk}/inbound/${id}/${what}`;   // AIG-858: a change card here is my go / no go
+    if (lk.startsWith('chg~')) body = { go: what === 'approve', note: (body || {}).note || '' };
+    try { await api('POST', url, body); sig = ''; await load(); }
     catch (e) { if (err) err.textContent = e.message; item && item.querySelectorAll('button').forEach(b => { b.disabled = false; }); }
   }
   const yes = key => act(key, 'approve');

@@ -141,6 +141,12 @@ code[data-copy-text] { cursor: pointer; }
 .change { margin-top: 10px; padding: 6px 10px; border-inline-start: 3px solid #2563eb; background: color-mix(in srgb, #2563eb 6%, var(--panel)); }
 .change p { margin: 4px 0; }
 .chg-raise { margin-top: 10px; }
+.gonogo { margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--line, #8884); }
+.gonogo h4 { margin: 0 0 4px; }
+.gonogo ul { margin: 4px 0; padding-inline-start: 18px; }
+.gonogo textarea { width: 100%; margin-top: 4px; }
+.gng-ok { color: #16a34a; }
+.gng-no { color: #dc2626; }
 .chg-when { flex-wrap: wrap; }
 .qa-gate { margin: 0 0 8px; font-size: .92em; }   /* the merge gate (AIG-613) */
 .qa-gate.red { color: var(--danger, #dc2626); font-weight: 600; }

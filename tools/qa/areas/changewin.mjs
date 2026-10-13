@@ -74,6 +74,7 @@ def('changewin', '🔀 change windows: GET/POST, CLI, done refused outside a win
   // inside a window: all day via two windows
   await s.ok('POST', '/api/projects/win/change-windows', { windows: [{ day: 'all', from: '00:00', to: '23:59' }, { day: 'all', from: '23:59', to: '00:00' }] });
   check('inside a window it is ok', s.cli(['golive-ok', 'win', '--card', ch.id]).code === 0);
+  await s.ok('POST', `/api/projects/win/changes/${ch.id}/go-anyway`, { note: 'qa' });   // AIG-858: going live also needs the OK
   check('inside a window done is allowed', (await s.ok('PATCH', `/api/projects/win/cards/${ch.id}`, { status: 'done' })).status === 'done');
 
   // CLI set / show / clear
