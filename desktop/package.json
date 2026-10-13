@@ -1,13 +1,27 @@
 {
   "name": "aigile-desktop",
+  "version": "1.0.0",
   "private": true,
   "description": "AI-gile in its own window: starts the board server if needed and opens it",
+  "author": "AI-gile",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "shortcut": "powershell -NoProfile -ExecutionPolicy Bypass -File make-shortcut.ps1"
+    "shortcut": "powershell -NoProfile -ExecutionPolicy Bypass -File make-shortcut.ps1",
+    "appimage": "electron-builder --linux AppImage"
   },
   "devDependencies": {
-    "electron": "^38.0.0"
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "lol.aigile.desktop",
+    "productName": "AI-gile",
+    "directories": { "output": "dist" },
+    "files": ["main.js", "icon.png", "icon-waiting.png", "package.json"],
+    "extraResources": [
+      { "from": "..", "to": "aigile", "filter": ["server.js", "aigile.js", "statusline.js", "package.json", "lib/**", "public/**", "profiles/**", "docs/starter/**"] }
+    ],
+    "linux": { "target": ["AppImage"], "icon": "icon.png", "category": "Development", "executableName": "aigile" }
   }
 }
