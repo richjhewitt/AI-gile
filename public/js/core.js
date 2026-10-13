@@ -178,8 +178,14 @@ const RISKS = ['small', 'normal', 'risky'];   // AIG-612
 const state = { route: null, projects: [], inbox: [], project: null, openCard: null, showArchived: false, editing: false, dragging: false, lastSig: null };
 try { state.showArchived = localStorage.getItem('aigile.showArchived') === '1'; } catch {}
 
-const api = async (method, url, body) => {
-  const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+const api = async (method, url, body, options = {}) => {
+  // Read polls must finish so a stalled connection cannot hold the refresh queue forever.
+  // Writes may include slow installs/commands; preserve their existing completion semantics.
+  const timeout = options.timeout ?? (method === 'GET' ? 15000 : 0);
+  const timeoutSignal = timeout ? AbortSignal.timeout(timeout) : undefined;
+  const routeSignal = options.signal;
+  const signal = timeoutSignal && routeSignal ? AbortSignal.any([timeoutSignal, routeSignal]) : timeoutSignal || routeSignal;
+  const r = await fetch(url, { method, signal, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
   const j = await r.json();
   if (!r.ok) throw new Error(j.error || r.statusText);
   return typeof Streamer !== 'undefined' && Streamer.on() ? Streamer.filter(method, url, j) : j;   // 🎥 streamer mode (AIG-590)
@@ -258,19 +264,58 @@ function busy() {
 // The render signature (AIG-310): presence.waitingMs ticks on every request while a team sits in 'aigile wait', so it is
 // left out; with it in, the board and the open card were redrawn every second and the panel flickered.
 const renderSig = x => JSON.stringify(x, (k, v) => k === 'waitingMs' ? undefined : v);
-async function refresh(force) {
+// At most one refresh runs; repeated polls collapse into one follow-up (forced stays forced).
+let refreshPromise = null, refreshPending = null, refreshController = null, refreshRoute = null;
+function refresh(force) {
+  // Inbox already owns a single-flight loader; it must not hold navigation in this queue.
+  const target = parseRoute();
+  if (target.view === 'inbox' && i18n.ready && !Boot.failed && !Phone.blocked) {
+    if (refreshController) refreshController.abort();
+    if (state.route?.view === 'project') state.lastProject = state.route.slug;
+    state.route = target; state.lastSig = state.lastBoardSig = null;
+    return Inbox.show(force);
+  }
+  if (refreshPromise) {
+    refreshPending = !!force || refreshPending === true;
+    // Navigation cancels stale reads, so slow Stats/Usage never hold up the next page.
+    if (JSON.stringify(parseRoute()) !== refreshRoute && refreshController) refreshController.abort();
+    return refreshPromise;
+  }
+  // Defer entry until refreshPromise is assigned, including early-returning refreshes.
+  refreshPromise = Promise.resolve().then(async () => {
+    let next = !!force;
+    do {
+      refreshPending = null;
+      refreshRoute = JSON.stringify(parseRoute());
+      refreshController = new AbortController();
+      try { await refreshOnce(next); }
+      catch (e) { console.error(e); Boot.note(); }
+      next = refreshPending;
+    } while (next !== null);
+  }).finally(() => { refreshPromise = null; refreshController = null; refreshRoute = null; });
+  return refreshPromise;
+}
+async function refreshOnce(force) {
+  const liveState = state;
+  // Stage fetched values. Navigation during an await must not overwrite the active project.
+  const stagedState = Object.create(liveState);
+  const signal = refreshController.signal;
+  const refreshApi = (method, url, body, options = {}) => api(method, url, body, { ...options, signal });
+  return refreshStaged(force, liveState, stagedState, refreshApi);
+}
+async function refreshStaged(force, liveState, state, api) {
   if (!i18n.ready || Boot.failed || Phone.blocked) return;   // (Phone.blocked: a phone not let in yet, AIG-868) the language file comes first (AIG-124); a broken start-up reloads instead (AIG-517)
   if (state.route && state.route.view === 'project') state.lastProject = state.route.slug; else if (state.route && state.route.view !== 'inbox') state.lastProject = null;
   state.route = parseRoute();
   const route = JSON.stringify(state.route);
   if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; $('filterbar').innerHTML = ''; $('filterbar').dataset.slug = ''; }
   // The inbox page renders itself; forget the last render so leaving it always redraws.
-  if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; return Inbox.show(force); }
+  if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; Object.assign(liveState, state); Inbox.show(force).catch(e => console.error(e)); return; }
   let sig;
   try {
     if (state.route.view === 'home') {
       const q = state.showArchived ? '?all=1' : '';
-      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([TodayPage.load().then(() => api('GET', '/api/projects' + q)), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
+      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([TodayPage.load({ signal: refreshController.signal }).then(() => api('GET', '/api/projects' + q)), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
       state.projects = Swarm.only(state.projects); state.inbox = Swarm.only(state.inbox, true);   // 🚨 swarm: only that project (AIG-877)
       sig = renderSig([state.route, state.projects, state.inbox, state.usage, TodayPage.data, state.sm && [state.sm.on, state.sm.where, state.sm.listening, state.sm.running, state.sm.lastRunAt, state.sm.lastRound]]);
     } else if (state.route.view === 'setup') {
@@ -289,13 +334,13 @@ async function refresh(force) {
       state.news = await api('GET', `/api/projects/${state.route.slug}/news`);
       sig = JSON.stringify([state.route, state.news, Math.floor(Date.now() / 60e3)]);
     } else if (state.route.view === 'dlg') {
-      if (state.route.slug) { state.project = await api('GET', '/api/projects/' + state.route.slug); await loadDocs(state.route.slug); }
-      await loadProfiles();
+      if (state.route.slug) { state.project = await api('GET', '/api/projects/' + state.route.slug); await loadDocs(state.route.slug, { signal: refreshController.signal }); }
+      await loadProfiles({ signal: refreshController.signal });
       sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'weed') {
       sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'glance') {
-      await ScrumGlance.load(state.route.slug);
+      await ScrumGlance.load(state.route.slug, { signal: refreshController.signal });
       sig = JSON.stringify([state.route, ScrumGlance.data, i18n.lang]);
     } else if (state.route.view === 'term' || state.route.view === 'twitch') {
       sig = JSON.stringify([state.route, i18n.lang]);
@@ -305,39 +350,42 @@ async function refresh(force) {
       state.sboard = await api('GET', `/api/shares/${state.route.link}/board`).catch(() => null);
       sig = JSON.stringify([state.route, state.sboard, i18n.lang]);
     } else if (state.route.view === 'mail') {
-      await Mail.load();
+      await Mail.load({ signal: refreshController.signal });
       sig = JSON.stringify([state.route, Mail.sig(), i18n.lang]);
     } else if (state.route.view === 'assumptions') {
-      await Assumptions.load();
+      await Assumptions.load({ signal: refreshController.signal });
       sig = JSON.stringify([state.route, Assumptions.data]);
     } else if (state.route.view === 'stats') {
       // Say "Stats" and "Loading" at once (AIG-928): the git count can take a while, and the last page (and its crumb) stayed up meanwhile.
-      if (StatsPage.slug !== state.route.slug || !StatsPage.data) { StatsPage.slug = state.route.slug; StatsPage.data = null; state.lastSig = state.lastBoardSig = null; render(); }
-      await StatsPage.load(state.route.slug);
+      if (StatsPage.slug !== state.route.slug || !StatsPage.data) { StatsPage.slug = state.route.slug; StatsPage.data = null; state.lastSig = state.lastBoardSig = null; liveState.route = state.route; render(); }
+      await StatsPage.load(state.route.slug, { signal: refreshController.signal });
       sig = JSON.stringify([state.route, StatsPage.data, i18n.lang]);
     } else if (state.route.view === 'today') {
-      await TodayPage.load();
+      await TodayPage.load({ signal: refreshController.signal });
       sig = JSON.stringify([state.route, TodayPage.data, i18n.lang]);
     } else if (state.route.view === 'whatsnew') {
-      await WhatsNew.load();
+      await WhatsNew.load({ signal: refreshController.signal });
       sig = JSON.stringify([state.route, WhatsNew.data, WhatsNew.rb, i18n.lang]);
     } else if (state.route.view === 'usage') {
-      if (!uz.data) { state.lastSig = state.lastBoardSig = null; render(); }   // AIG-558: say "Loading" at once, not after the fetch
-      await loadUsagePage(force);   // heavy, so at most every ~15s
+      if (!uz.data) { state.lastSig = state.lastBoardSig = null; liveState.route = state.route; render(); }   // AIG-558: say "Loading" at once, not after the fetch
+      await loadUsagePage(force, { signal: refreshController.signal });   // heavy, so at most every ~15s
       sig = JSON.stringify([state.route, uzSig()]);
     } else {
       state.project = await api('GET', '/api/projects/' + state.route.slug);
-      await loadDocs(state.route.slug);
-      await loadProfiles();   // the role templates, for roles added from a team (AIG-423)
+      await loadDocs(state.route.slug, { signal: refreshController.signal });
+      await loadProfiles({ signal: refreshController.signal });   // the role templates, for roles added from a team (AIG-423)
       sig = renderSig([state.route, state.project]);
     }
   } catch (e) {
+    if (JSON.stringify(parseRoute()) !== route) return;
     $('live').className = 'live off';
     $('live').textContent = t('live.offline', { msg: e.message });
     if (!$('app').firstElementChild) Boot.note();   // nothing drawn yet (AIG-517): say so; the 1s poll tries again
     return;
   }
-  if (JSON.stringify(parseRoute()) !== route) return;   // AIG-558: the page moved on while this fetched; a newer refresh draws it
+  if (JSON.stringify(parseRoute()) !== route) return;   // discard results for the page we left
+  Object.assign(liveState, state);
+  state = liveState;   // render signatures and editing flags below remain shared with event handlers
   if (!force && state.dragging) return;
   if (!force && busy()) {
     // Keep the board behind moving; only hold the panel/dialog the owner is using.

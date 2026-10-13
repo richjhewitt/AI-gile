@@ -24,8 +24,8 @@ const ScrumGlance = (() => {
     if (key === shown) return; shown = key;
     el.innerHTML = `<div class="sg-bar"><b>${esc(t('glance.h'))}</b><span class="spacer"></span><button type="button" id="sgPop" onclick="ScrumGlance.pop()">${esc(t('glance.pop'))}</button><button type="button" id="sgClose" aria-label="${esc(t('glance.close'))}" title="${esc(t('glance.close'))}" onclick="ScrumGlance.toggle()">✕</button></div><div class="sg-body">${body(data, true)}</div>`;
   }
-  async function load(slug) {
-    try { data = await api('GET', '/api/glance' + (slug ? '?project=' + encodeURIComponent(slug) : '')); } catch { data = data || null; }
+  async function load(slug, options = {}) {
+    try { data = await api('GET', '/api/glance' + (slug ? '?project=' + encodeURIComponent(slug) : ''), undefined, options); } catch { data = data || null; }
   }
   // Called every second by the page's poll; the pop-out view loads in refresh() instead.
   async function tick() {

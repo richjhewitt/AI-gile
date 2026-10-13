@@ -38,7 +38,7 @@ const projectRoleOn = (r, p = state.project) => r === TEAM_ROLES[0] || !p || !Ar
 // A role template on a project (AIG-420): kept by its id, e.g. ux-researcher-senior. state.profiles = GET /api/profiles.
 const profileRole = id => ((state.profiles || {}).roles || []).find(r => r.id === id);
 // Loaded once with the project (core.js), so the role picker can name roles added from a team.
-async function loadProfiles() { if (!state.profiles) try { state.profiles = await api('GET', '/api/profiles'); } catch { state.profiles = { roles: [], teams: [] }; } return state.profiles; }
+async function loadProfiles(options = {}) { if (!state.profiles) try { state.profiles = await api('GET', '/api/profiles', undefined, options); } catch (e) { if (options.signal?.aborted) throw e; state.profiles = { roles: [], teams: [] }; } return state.profiles; }
 const Model = m => String(m || '').replace(/^./, c => c.toUpperCase());
 const roleModel = r => (/\((Opus|Sonnet|Haiku)\)$/.exec(r) || [])[1] || Model((profileRole(r) || {}).model);
 const roleName = id => { const r = profileRole(id); return r ? `${t('prof.role.' + r.group)}, ${t('prof.level.' + r.level)} (${Model(r.model)})` : id; };
