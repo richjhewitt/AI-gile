@@ -71,7 +71,7 @@ def('foryou', 'For you column: tests, questions, tasks and blocks together; chip
   check('Tests chip puts the test first', (await ids())[0] === t.id, await ids());
   await page.reload(); await page.waitForSelector('.column.foryou .card');
   check('the pick is remembered', (await ids())[0] === t.id && await page.isVisible('.fy-chip.on[data-first="t"]'));
-  await page.click('.fy-chip[data-first="k"]');
+  await page.click('.fy-chip[data-first="k"]'); await page.click('.fyf-x'); await page.waitForSelector('.fyf', { state: 'detached' });   // a chip now opens the fold window (AIG-738); close it
   await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, k.id, { timeout: 3000 }).catch(() => {});
   check('Tasks chip puts the task first', (await ids())[0] === k.id, await ids());
   noErrors(page);
@@ -346,7 +346,7 @@ def('servertask', 'a task can be marked 🖥️ Server: CLI flag, grouped first 
   await page.waitForSelector('.column.foryou .card');
   const ids = async () => page.$$eval('.column.foryou .card', els => els.map(e => e.dataset.id));
   check('For you has a Server chip with its count', /Server 1/.test(await page.textContent('.fy-chip[data-first="s"]')), await page.textContent('.fy-chips'));
-  await page.click('.fy-chip[data-first="k"]');
+  await page.click('.fy-chip[data-first="k"]'); await page.click('.fyf-x'); await page.waitForSelector('.fyf', { state: 'detached' });   // a chip now opens the fold window (AIG-738); close it
   await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, b.id, { timeout: 3000 }).catch(() => {});
   check('server tasks lead the Tasks', (await ids())[0] === b.id, await ids());
   check('server task shows its 🖥️ mark', (await page.textContent(`.column.foryou .card[data-id="${b.id}"]`)).includes('🖥️'));
@@ -378,7 +378,7 @@ def('outsidetask', 'a task can be marked 🤝 Outside help: CLI flag, own group 
   await page.waitForSelector('.column.foryou .card');
   const ids = async () => page.$$eval('.column.foryou .card', els => els.map(e => e.dataset.id));
   check('For you has an Outside help chip with its count', /Outside help 1/.test(await page.textContent('.fy-chip[data-first="o"]')), await page.textContent('.fy-chips'));
-  await page.click('.fy-chip[data-first="k"]');
+  await page.click('.fy-chip[data-first="k"]'); await page.click('.fyf-x'); await page.waitForSelector('.fyf', { state: 'detached' });   // a chip now opens the fold window (AIG-738); close it
   await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, c.id, { timeout: 3000 }).catch(() => {});
   check('order is Server, Outside help, other tasks', (await ids()).join() === [c.id, b.id, a.id].join(), await ids());
   await page.click(`.column.foryou .card[data-id="${a.id}"] [data-outside]`);
