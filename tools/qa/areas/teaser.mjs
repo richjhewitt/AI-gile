@@ -13,6 +13,7 @@ def('teaser', 'site/index.html (file://, stubbed fetch): word slider from 1 to 2
   const errs = []; page.on('pageerror', e => errs.push(e.message));
   await page.addInitScript(([lines, board, tl]) => {
     window.__urls = [];
+    Object.defineProperty(window, 'TIMELINE', { get: () => tl, set: () => {} });   // the page's timeline.js must not replace the stub
     window.fetch = u => { window.__urls.push(String(u)); const body = /\/b\/ai-gile\.json$/.test(u) ? board : /teaser-lines\.json$/.test(u) ? lines : /timeline\.json$/.test(u) ? tl : null;
       return Promise.resolve(body ? { ok: true, json: () => Promise.resolve(body) } : { ok: false, json: () => Promise.reject(new Error('404')) }); };
   }, [LINES, BOARD, TL]);
@@ -64,6 +65,13 @@ def('teaser', 'site/index.html (file://, stubbed fetch): word slider from 1 to 2
   await p2.addInitScript(() => { window.fetch = () => Promise.resolve({ ok: false, json: () => Promise.reject(new Error('x')) }); });
   await p2.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
   await sleep(400);
-  check('on error the count line and the pitch stay hidden', await p2.evaluate(() => document.getElementById('board-count').hidden && document.getElementById('pitch').hidden && document.getElementById('timeline').hidden));
+  check('on error the count line and the pitch stay hidden', await p2.evaluate(() => document.getElementById('board-count').hidden && document.getElementById('pitch').hidden));
+  check('opened from a file with fetch failing, the timeline still shows (timeline.js)', await p2.evaluate(() => !document.getElementById('timeline').hidden && document.querySelectorAll('#tl-done .tl-item').length > 0));
+  const p3 = await ctx.newPage();
+  await p3.addInitScript(tl => { Object.defineProperty(window, 'TIMELINE', { get: () => undefined, set: () => {} }); window.fetch = u => /timeline.json$/.test(u) ? Promise.resolve({ ok: true, json: () => Promise.resolve(tl) }) : Promise.resolve({ ok: false, json: () => Promise.reject(new Error('x')) }); }, TL);
+  await p3.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
+  await p3.waitForSelector('#timeline:not([hidden])', { timeout: 5000 });
+  check('without window.TIMELINE the fetch fallback still fills the timeline', (await p3.$$eval('#tl-done .tl-item', e => e.length)) === 2);
+  await p3.close();
   await page.close(); await p2.close();
 }, true);
