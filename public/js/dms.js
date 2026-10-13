@@ -105,7 +105,7 @@ const Dms = (() => {
     const chips = ['all', 'agents', 'people', ...(DiscordTab.linked() ? ['discord'] : []), ...(TwitchTab.linked() ? ['twitch'] : [])].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}${f === 'discord' ? badge(DiscordTab.unread()) : ''}</button>`).join('');
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
-      <div class="dm-list"><button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button>${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}</div>`;
+      <div class="dm-list">${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button>` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}</div>`;
     const panel = el('dmPanel');
     if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
     panel.hidden = false;
