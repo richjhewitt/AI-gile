@@ -132,6 +132,8 @@ const SelfCare = (() => {
       <div class="sc-meds">💊 ${esc(t('sc.today.ticks', { n }))}</div>
       ${rows.length ? `<ul class="sc-list">${rows.join('')}</ul>` : `<p class="muted">${esc(t('sc.today.none'))}</p>`}`;
   }
+  // AIG-797: today's meds times with no tick or skip yet (Start my day lists them).
+  const medsLeft = () => { if (!cfg.meds.on) return []; const l = log(nowMs()), d = dayOf(nowMs()); return cfg.meds.times.filter(tm => !l.find(x => x.slot === d + ' ' + tm)); };
   function today() { const e = box('scToday'); if (!e.hidden) { e.hidden = true; return; } e.innerHTML = todayHtml(); e.hidden = false; }
   function todayClose() { box('scToday').hidden = true; }
   function todayPaint() { const e = box('scToday'); if (!e.hidden) e.innerHTML = todayHtml(); }
@@ -168,5 +170,5 @@ const SelfCare = (() => {
   window.addEventListener('storage', e => { if (e.key === KEY) { cfg = load(); paintBox(); } if (e.key === null || e.key === KEY || (e.key || '').startsWith(LOG)) { tick(); todayPaint(); } });
   setInterval(tick, 1000);
   tick();
-  return { html, paintBox, setOn, setMins, add, del, setMeds, addTime, delTime, setQuiet, setQuietTime, act, today, todayClose, tick, get cur() { return cur; } };
+  return { html, paintBox, setOn, setMins, add, del, setMeds, addTime, delTime, setQuiet, setQuietTime, act, today, medsLeft, todayClose, tick, get cur() { return cur; } };
 })();

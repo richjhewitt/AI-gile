@@ -57,21 +57,23 @@ const TodayPage = (() => {
   // AIG-829: the morning picker (setup switch "Pick today's projects at start-up"): a small dialog on the first open of the day.
   let askedDay = '';   // the day (as the server counts it) the picker was last shown for: a board left open overnight asks again next morning
   const localDay = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  T.pickRows = d => d.projects.map(p => `<label class="chk today-pickrow"><input type="checkbox" value="${esc(p.slug)}" ${p.weight === 'rest' ? '' : 'checked'}> ${esc(p.emoji)} ${esc(p.name)}</label>`).join('');
   T.maybePick = async () => {
     if (document.querySelector('#dialog .overlay')) return;
     const d = await T.load(); if (!d || !d.askPick || !d.projects.length || askedDay === d.day) return;
     if (document.querySelector('#dialog .overlay')) return;   // a dialog opened while the data loaded
+    if (typeof MyDay !== 'undefined' && await MyDay.owns()) return;   // AIG-797: Start my day is on: the picker is its step 1
     askedDay = d.day;
     openDialog(`<h2>${esc(t('today.pick.h'))}</h2><p class="muted">${esc(t('today.pick.intro'))}</p>
-      <div id="todayPickList">${d.projects.map(p => `<label class="chk today-pickrow"><input type="checkbox" value="${esc(p.slug)}" ${p.weight === 'rest' ? '' : 'checked'}> ${esc(p.emoji)} ${esc(p.name)}</label>`).join('')}</div>
+      <div id="todayPickList">${T.pickRows(d)}</div>
       <div class="err" id="todayPickErr"></div>
       <div class="actions"><button onclick="TodayPage.pickSkip()">${esc(t('today.pick.skip'))}</button><button class="primary" id="todayPickGo" onclick="TodayPage.pickGo()">${esc(t('today.pick.go'))}</button></div>`);
   };
-  T.pickGo = async () => {
+  T.pickGo = async keep => {   // keep: inside Start my day (AIG-797): stay in that dialog and redraw it
     const slugs = [...document.querySelectorAll('#todayPickList input:checked')].map(i => i.value);
-    try { T.data = await api('POST', '/api/today/pick', { slugs }); T.showAll(false); closeDialog(); if (typeof refresh === 'function') refresh(true); if (typeof Dms !== 'undefined' && Dms.reload) Dms.reload(); } catch (e) { $('todayPickErr').textContent = e.message; }
+    try { T.data = await api('POST', '/api/today/pick', { slugs }); T.showAll(false); if (keep === true && typeof MyDay !== 'undefined') MyDay.redraw(); else closeDialog(); if (typeof refresh === 'function') refresh(true); if (typeof Dms !== 'undefined' && Dms.reload) Dms.reload(); } catch (e) { $('todayPickErr').textContent = e.message; }
   };
-  T.pickSkip = async () => { try { T.data = await api('POST', '/api/today/pick', { skip: true }); } catch {} closeDialog(); };
+  T.pickSkip = async keep => { try { T.data = await api('POST', '/api/today/pick', { skip: true }); } catch {} if (keep === true && typeof MyDay !== 'undefined') MyDay.redraw(); else closeDialog(); };
   // AIG-830: unpicked projects are hidden on home and in the rail and project menus; "Show all" (this browser, today's date) brings them back.
   const KEY = 'aigile.todayAll';
   const flag = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
