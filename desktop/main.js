@@ -175,7 +175,12 @@ function open(ok) {
   makeTray();
 }
 /* ---------- tray (AIG-849) ---------- */
-function showMain() { if (!win) return; if (win.isMinimized()) win.restore(); win.show(); win.focus(); }
+function showMain() {
+  if (!win) return; if (win.isMinimized()) win.restore(); win.show(); win.focus();
+  // Still on "AI-gile didn't start" (the board was restarting when the app opened): X only hides to the tray, so opening
+  // the app again showed the same page for good. Try the board again and load it once it answers (AIG-920).
+  if (win.webContents.getURL().startsWith('data:')) ensureServer().then(ok => { if (ok && win && !win.isDestroyed()) { win.loadURL(BASE); reopenPops(); } }).catch(() => {});
+}
 function makeTray() {
   if (tray) return;
   try {
