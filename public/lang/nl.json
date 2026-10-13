@@ -2320,5 +2320,8 @@
   "streamer.live": "🔴 Live gaan",
   "streamer.live.title": "Zet streamermodus aan en start de stream in OBS",
   "streamer.stop": "⏹ Stop",
-  "streamer.stop.title": "Stop de stream in OBS"
+  "streamer.stop.title": "Stop de stream in OBS",
+  "srv.health.title": "Server: tijd om te upgraden ({why})",
+  "srv.health.body": "Smizflark Server 2.0 loopt warm: {why}. Dit is al een tijdje hoog, dus kijk naar een groter pakket of een opruimbeurt voordat de server vol raakt of traag wordt. De cijfers staan onder Instellingen > Mijn servers.",
+  "servers.health": "{name}: CPU {cpu}, geheugen {mem}, schijf {disk} vol, {size} opgeslagen, {days} dagen aan (gelezen {when})"
 }
