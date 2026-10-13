@@ -99,6 +99,7 @@ function renderBoard(p) {
       <button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>
       ${standupButtons(p)}
       <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
+      <button onclick="location.hash='#/stats/${esc(p.slug)}'" title="${esc(t('stats.btn.title'))}">${esc(t('stats.title'))}</button>
       <span class="grow"></span>
       <button onclick="connectDialog()" title="${p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path ? t('board.connected') : t('board.connect'))}</button>
       ${Share.button(p)}

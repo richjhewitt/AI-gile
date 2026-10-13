@@ -209,6 +209,8 @@ function parseRoute() {
   if (popList) return { view: 'inbox', popList: popList[1] };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/assumptions') return { view: 'assumptions' };
+  const stMatch = location.hash.match(/^#\/stats\/([a-z0-9-]+)$/);
+  if (stMatch) return { view: 'stats', slug: stMatch[1] };   // project stats (AIG-726)
   if (location.hash === '#/today') return { view: 'today' };   // Today: Today's project weights (AIG-595)
   if (location.hash === '#/whats-new') return { view: 'whatsnew' };   // ✨ release notes (AIG-562)
   if (location.hash === '#/setup') return { view: 'setup' };
@@ -301,6 +303,9 @@ async function refresh(force) {
     } else if (state.route.view === 'assumptions') {
       await Assumptions.load();
       sig = JSON.stringify([state.route, Assumptions.data]);
+    } else if (state.route.view === 'stats') {
+      await StatsPage.load(state.route.slug);
+      sig = JSON.stringify([state.route, StatsPage.data, i18n.lang]);
     } else if (state.route.view === 'today') {
       await TodayPage.load();
       sig = JSON.stringify([state.route, TodayPage.data, i18n.lang]);
@@ -357,6 +362,7 @@ function renderBoardOnly() {
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'usage') return;
   if (state.route.view === 'assumptions') { $('app').innerHTML = Assumptions.render(); return; }
+  if (state.route.view === 'stats') { $('app').innerHTML = StatsPage.render(); return; }
   if (state.route.view === 'today') { $('app').innerHTML = TodayPage.render(); return; }
   if (state.route.view === 'whatsnew') { $('app').innerHTML = WhatsNew.render(); return; }
   if (state.route.view === 'standups') { $('app').innerHTML = renderStandups(); return; }
@@ -392,6 +398,7 @@ function render() {
   if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'shared') { $('crumb').textContent = '/ 🔗 ' + (state.sboard ? state.sboard.theirName || state.sboard.friend : ''); $('crumb').style.color = ''; $('app').innerHTML = ShareBoard.render(state.sboard); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'assumptions') { $('crumb').textContent = '/ ' + t('assume.nav'); $('app').innerHTML = Assumptions.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'stats') { $('crumb').textContent = '/ ' + t('stats.title'); $('app').innerHTML = StatsPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'today') { $('crumb').textContent = '/ ' + t('today.title'); $('app').innerHTML = TodayPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'whatsnew') { $('crumb').textContent = '/ ' + t('wn.title'); $('app').innerHTML = WhatsNew.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ ' + t('crumb.usage'); $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }
