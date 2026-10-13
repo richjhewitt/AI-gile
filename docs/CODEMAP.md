@@ -48,7 +48,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `aigile.js` (CLI entry) + `lib/cli/*.js` (core, help, command groups), `statusline.js`, `desktop/` (Electron)
 
 ## Page ([page.md](codemap/page.md): `public/`, classic scripts in one global scope, `app.js` last)
-- `css/01..05-*.css` (linked in order from index.html); `js/core.js` (state, api, router, render); `js/format.js` (card text, md); `js/i18n.js` (languages)
+- `css/01..05-*.css` (linked in order from index.html); `js/core.js` (state, api, router, render); `js/format.js` (card text, md); `js/i18n.js` (languages, the 🌍 immersion button); `js/immersion.js` (Setup: learning languages, language days, random)
 - `js/home.js`, `js/board.js`, `js/card.js`, `js/dialogs/*.js`, `js/filters.js`, `js/attach.js`
 - `js/inbox*.js` (state, top, items, tabs, page, actions, style, queue, ai)
 - `js/today.js` (`TodayPage`: `#/today`, the badge on project cards, the share bars on the usage page)

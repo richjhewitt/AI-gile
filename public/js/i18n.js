@@ -42,7 +42,22 @@ const deviceLang = () => {
 // An explicit pick in Setup always wins over the device language.
 const chosenLang = () => { const saved = ls('aigile.lang'); return saved ? (LANGS[saved] ? saved : 'en') : deviceLang(); };
 const enSwitch = () => ls('aigile.enSwitch') === '1' && chosenLang() !== 'en';
-const langCode = () => enSwitch() && ls('aigile.enNow') === '1' ? 'en' : chosenLang();
+const langCode = () => immLang() || (enSwitch() && ls('aigile.enNow') === '1' ? 'en' : chosenLang());
+// Language immersion (AIG-722..725): the languages you are learning (aigile.learning), a language per weekday (aigile.langDays)
+// and a random pick per day (aigile.langRandom). aigile.immNow = '1' while the board is in aigile.immPick. immAuto picks once a day.
+const jsonLs = (k, d) => { try { const v = JSON.parse(ls(k)); return v == null ? d : v; } catch { return d; } };
+const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch {} };
+const dayKey = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const learning = () => { const a = jsonLs('aigile.learning', []); return Array.isArray(a) ? a.filter(c => LANGS[c] && c !== chosenLang()) : []; };
+const immLang = () => { const p = ls('aigile.immPick'); return ls('aigile.immNow') === '1' && p && LANGS[p] && p !== chosenLang() && learning().includes(p) ? p : null; };
+function immAuto() {
+  const today = dayKey(); if (ls('aigile.immDay') === today) return;
+  lsSet('aigile.immDay', today);
+  const L = learning(), days = jsonLs('aigile.langDays', {});
+  let pick = days[new Date().getDay()]; if (!L.includes(pick)) pick = null;
+  if (!pick && ls('aigile.langRandom') === '1' && L.length) { let h = 0; for (const c of today) h = (h * 31 + c.charCodeAt(0)) >>> 0; pick = L[h % L.length]; }
+  if (pick) { lsSet('aigile.immPick', pick); lsSet('aigile.immNow', '1'); lsSet('aigile.enNow', null); } else lsSet('aigile.immNow', null);
+}
 // Dates and times use the language's Intl locale (pass i18n.locale to toLocale*String); English follows the browser's English
 // region (en-US, en-AU...), else British.
 const localeOf = c => { if (c !== 'en') return (langOf(c) || {}).locale || c; const p = prefsList().find(x => /^en[-_][a-z]{2}$/i.test(x)); return p ? 'en-' + tagRegion(p) : 'en-GB'; };
@@ -79,6 +94,7 @@ async function loadLang() {
   if (Array.isArray(list) && list.some(l => l && l.code === 'en')) LANG_LIST = list.filter(l => l && /^[a-z0-9]{2,12}(-[a-z]{2,4})?$/i.test(l.code || ''));
   const files = await langFiles();
   for (const l of LANG_LIST) if (l.code === 'en' || files.includes(l.code)) LANGS[l.code] = l.name;
+  immAuto();
   i18n.lang = langCode();
   i18n.en = await needJson('/lang/en.json');
   i18n.dict = i18n.lang === 'en' ? i18n.en : await needJson('/lang/' + i18n.lang + '.json');
@@ -92,7 +108,7 @@ async function loadLang() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
   document.querySelectorAll('[data-i18n-label]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nLabel)); });
-  paintEnBtn();
+  paintEnBtn(); paintImm();
   i18n.ready = true;
   saveLang();
 }
@@ -111,9 +127,41 @@ function paintEnBtn() {
 }
 function toggleEn() {
   if (typeof okToLeave === 'function' && !okToLeave(t('lang.switch'))) return;
-  try { i18n.lang === 'en' ? localStorage.removeItem('aigile.enNow') : localStorage.setItem('aigile.enNow', '1'); } catch {}
+  try { i18n.lang === 'en' ? localStorage.removeItem('aigile.enNow') : localStorage.setItem('aigile.enNow', '1'); localStorage.removeItem('aigile.immNow'); } catch {}
   location.reload();
 }
+// The 🌍 button (AIG-723): one tap flips the board into your learning language, another goes back; with more than one, ▾ lists them.
+function paintImm() {
+  const w = document.getElementById('immWrap'), b = document.getElementById('immBtn'); if (!w || !b) return;
+  const L = learning(); w.hidden = !L.length; if (!L.length) return;
+  const on = immLang(), pick = ls('aigile.immPick'), tgt = on || (L.includes(pick) ? pick : L[0]);
+  const lab = c => (langOf(c) || { label: c.toUpperCase() }).label;
+  b.textContent = '🌍 ' + lab(on ? chosenLang() : tgt);
+  b.title = t(on ? 'imm.back' : 'imm.title', { name: on ? LANGS[chosenLang()] : LANGS[tgt] });
+  const more = document.getElementById('immMore'), list = document.getElementById('immList');
+  more.hidden = L.length < 2; more.title = more.ariaLabel = t('imm.menu');
+  list.setAttribute('aria-label', t('imm.menu'));
+  list.innerHTML = L.map(c => `<button type="button" lang="${esc(c)}" dir="auto" data-imm="${esc(c)}" ${c === on ? 'aria-current="true"' : ''}>${esc(LANGS[c])}</button>`).join('') + (on ? `<button type="button" data-imm="">${esc(t('imm.back', { name: LANGS[chosenLang()] }))}</button>` : '');
+}
+function immGo(code) {
+  if (typeof okToLeave === 'function' && !okToLeave(t('lang.switch'))) return;
+  lsSet('aigile.enNow', null);
+  if (code) { lsSet('aigile.immPick', code); lsSet('aigile.immNow', '1'); } else lsSet('aigile.immNow', null);
+  location.reload();
+}
+function toggleImm() { const L = learning(), p = ls('aigile.immPick'); immGo(immLang() ? '' : (L.includes(p) ? p : L[0])); }
+function immMenu(close) {
+  const list = document.getElementById('immList'), more = document.getElementById('immMore'); if (!list) return;
+  const open = close === true ? false : list.hidden;
+  list.hidden = !open; more.setAttribute('aria-expanded', String(open));
+  if (open) (list.querySelector('[aria-current]') || list.querySelector('button')).focus(); else if (close === 'focus') more.focus();
+}
+document.addEventListener('click', e => {
+  const list = document.getElementById('immList'); if (!list || list.hidden) return;
+  const pick = e.target.closest('#immList button');
+  if (pick) immGo(pick.dataset.imm); else if (!e.target.closest('#immMore')) immMenu(true);
+});
+document.addEventListener('keydown', e => { const l = document.getElementById('immList'); if (e.key === 'Escape' && l && !l.hidden) { e.stopPropagation(); immMenu('focus'); } }, true);
 function setEnSwitch(on) {
   try { if (on) localStorage.setItem('aigile.enSwitch', '1'); else { localStorage.removeItem('aigile.enSwitch'); localStorage.removeItem('aigile.enNow'); } } catch {}
   if (!on && i18n.lang !== chosenLang()) { location.reload(); return; }
