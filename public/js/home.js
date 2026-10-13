@@ -47,7 +47,7 @@ function renderHome() {
 // One project card: on home, and in a space's grid on its board. sp: { kids, fold, up } from spaces.js.
 function projCard(p, sp = {}) {
   const active = p.total - p.counts.backlog;
-  const at = p.attention;
+  const at = p.attention;   // home cards skip unassigned in-flight rows and Dispatcher log lines; the board keeps them (AIG-924)
   return `<a class="proj ${p.archived ? 'archived' : ''} ${at ? 'needs-poke' : ''} ${sp.kids ? 'is-space' : ''}" href="#/p/${p.slug}" style="--proj:${esc(p.color)}" ${Spaces.dragAttrs(p.slug, sp.up || '')}>
     ${at ? `<div class="pokeline ai-only">${at.kind === 'asleep' ? '💤' : '⚠️'} <b>${esc(t('home.poke'))}</b> ${at.kind === 'asleep' ? esc(asleepWhy(at)) : esc(t('home.unanswered', { when: ago(at.since, true) }))}${at.auto ? ` · ${esc(t('poke.auto'))}` : at.held ? ` · ${esc(heldWhy(at))}` : ''}</div>` : ''}
     <h2>${sp.fold || ''}${pic(p.logo, p.emoji)} ${esc(p.name)} ${p.private ? '<span class="lock" title="' + esc(t('look.private')) + '">🔒</span> ' : ''}${p.personal ? '<span class="lock" title="' + esc(t('pub.personal')) + '">🏡</span> ' : ''}${p.aiOff ? '<span class="aioff" title="' + esc(t('today.aioff.badge')) + '">⏸</span> ' : ''}${TodayPage.badge(p.slug)} ${Spaces.pillHtml(sp.kids)}${p.archived ? `<span class="pill">${esc(t('home.archived'))}</span>` : ''} ${p.needsYou ? `<span class="pill you">${esc(t('home.foryou', { n: p.needsYou }))}</span>` : ''} ${p.blocked ? `<span class="pill blocked">${esc(t('home.blocked', { n: p.blocked }))}</span>` : ''}<span class="space-grow"></span>${Spaces.menuHtml(p.slug)}</h2>
@@ -56,8 +56,8 @@ function projCard(p, sp = {}) {
     <div class="counts"><b>${esc(t('home.pctdone', { n: Math.round(p.progress * 100) }))}</b>${Object.entries(COLS).map(([k, v]) => `<span>${v} ${p.counts[k]}</span>`).join('')}</div>
     ${p.team.length ? `<div class="last">👥 ${p.team.map(m => esc(m.name)).join(', ')}</div>` : ''}
     <div class="last">${presenceHtml(p, at?.kind === 'asleep')}</div>
-    ${p.inFlight.length ? `<div class="last">🛠 ${flightHtml(p.inFlight, p.slug)}</div>` : ''}
+    ${(fl => fl.length ? `<div class="last">🛠 ${flightHtml(fl, p.slug)}</div>` : '')(p.inFlight.filter(c => c.worker || c.assignee))}
     ${state.usage?.enabled && state.usage.projects[p.slug] ? `<div class="last">⚡ ${usageLine(state.usage.projects[p.slug])}</div>` : ''}
-    ${p.lastLog ? `<div class="last">📝 ${esc(p.lastLog.text)} · ${ago(p.lastLog.at)}</div>` : ''}
+    ${p.lastLog && p.lastLog.author !== 'Dispatcher' ? `<div class="last">📝 ${esc(p.lastLog.text)} · ${ago(p.lastLog.at)}</div>` : ''}
   </a>`;
 }
