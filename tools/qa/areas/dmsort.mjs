@@ -38,6 +38,17 @@ def('dmsort', 'Messages: newest chat first, All hands pinned, ✕ Close hides a 
   check('closed chat is gone from the list', !(await order()).includes('sort-one'));
   check('it is stored on the server', !!(await s.ok('GET', '/api/dmclosed'))['sort-one']);
   check('Show closed (1) is at the bottom', /1/.test(await page.textContent('[data-dmshowclosed]')));
+  // The stand-ups pill floats bottom left: it must not cover Show closed (AIG-917), at desktop and phone width.
+  await page.evaluate(() => { const e = document.createElement('div'); e.id = 'suPrompt'; e.innerHTML = '<div class="su-pill"><b>📣 Call stand-ups?</b><button class="primary">Call all</button><button>Pick</button><button>No</button></div>'; document.body.appendChild(e); });
+  await page.evaluate(() => { const l = document.querySelector('#dmPanel .dm-list'), row = l.querySelector('.dm-rowwrap'), at = l.querySelector('.dm-closed'); for (let i = 0; i < 25; i++) l.insertBefore(row.cloneNode(true), at); });   // a long list, so the end of it sits at the bottom of the panel
+  for (const [w, h] of [[1400, 900], [390, 844]]) {
+    await page.setViewportSize({ width: w, height: h }); await sleep(200);
+    await page.evaluate(() => { const l = document.querySelector('#dmPanel .dm-list'); l.scrollTop = l.scrollHeight; }); await sleep(100);
+    const r = await page.evaluate(() => { const b = document.querySelector('[data-dmshowclosed]').getBoundingClientRect(), p = document.querySelector('#suPrompt .su-pill').getBoundingClientRect(); return { btnBottom: b.bottom, pillTop: p.top, overlap: !(b.bottom <= p.top || b.top >= p.bottom || b.right <= p.left || b.left >= p.right) }; });
+  check('the stand-ups pill does not cover Show closed at ' + w + 'px', !r.overlap, r);
+  }
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await page.evaluate(() => document.getElementById('suPrompt').remove());
   await page.click('[data-dmshowclosed]');
   check('Show closed lists it', await page.locator('.dm-closed [data-dm="sort-one"]').count() === 1);
   await page.click('.dm-closed [data-dm="sort-one"]');
