@@ -70,7 +70,26 @@ function leadPrefsHtml(msg = '') {
     ${sw('watchAll')}${sw('planBig')}${sw('light')}
     <label class="f"><span>${esc(t('lead.tech'))}</span><select class="setup-theme" onchange="setLeadPref({ techLevel: this.value })">${['', 'beginner', 'some', 'expert'].map(v => `<option value="${v}" ${(pr.techLevel || '') === v ? 'selected' : ''}>${esc(t('lead.tech.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.tech.help'))}</small></label>
     <label class="f"><span>${esc(t('lead.push'))}</span><select id="pushPref" class="setup-theme" onchange="setLeadPref({ push: this.value })">${['ask', 'auto'].map(v => `<option value="${v}" ${(pr.push || 'ask') === v ? 'selected' : ''}>${esc(t('lead.push.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('lead.push.help'))}</small></label>
+    ${quietTimesHtml(pr)}
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;
+}
+// Change calendar (AIG-615): quiet times (streams, demos, nights) when nothing goes live. Saved as prefs.quiet (lib/changecal.js).
+const QT_DAYS = ['all', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+function quietTimesHtml(pr) {
+  const row = (q, i) => `<div class="qt-row" data-qt="${i}">
+    <select id="qt-day-${i}" aria-label="${esc(t('quiettime.day'))}" onchange="quietTimeSave()">${QT_DAYS.map(d => `<option value="${d}" ${q.day === d ? 'selected' : ''}>${esc(t('quiettime.day.' + d))}</option>`).join('')}</select>
+    <input type="time" id="qt-from-${i}" aria-label="${esc(t('quiettime.from'))}" value="${esc(q.from)}" onchange="quietTimeSave()">–<input type="time" id="qt-to-${i}" aria-label="${esc(t('quiettime.to'))}" value="${esc(q.to)}" onchange="quietTimeSave()">
+    <input id="qt-label-${i}" maxlength="40" placeholder="${esc(t('quiettime.label.ph'))}" aria-label="${esc(t('quiettime.label'))}" value="${esc(q.label || '')}" onchange="quietTimeSave()">
+    <button type="button" class="qt-del" title="${esc(t('quiettime.del'))}" aria-label="${esc(t('quiettime.del'))}" onclick="quietTimeSave(${i})">✕</button></div>`;
+  return `<div class="f qt" id="quietTimes"><span>${esc(t('quiettime.h'))}</span>${(pr.quiet || []).map(row).join('')}
+    <div><button type="button" id="qtAdd" onclick="quietTimeSave(-1)">${esc(t('quiettime.add'))}</button></div><small class="muted">${esc(t('quiettime.help'))}</small></div>`;
+}
+// Reads the rows and saves them all; drop: a row to take out, or -1 to add a new one.
+function quietTimeSave(drop) {
+  const list = [...document.querySelectorAll('#quietTimes .qt-row')].map(r => r.dataset.qt).filter(i => Number(i) !== drop)
+    .map(i => ({ day: $('qt-day-' + i).value, from: $('qt-from-' + i).value, to: $('qt-to-' + i).value, label: $('qt-label-' + i).value.trim() }));
+  if (drop === -1) list.push({ day: 'all', from: '20:00', to: '22:00', label: '' });
+  setLeadPref({ quiet: list });
 }
 // Painted again after each save; a slider moved with the keyboard keeps the focus.
 const paintLeadPrefs = msg => { const f = document.activeElement && document.activeElement.id; if ($('leadPrefs')) $('leadPrefs').innerHTML = leadPrefsHtml(msg); if (f && $(f)) $(f).focus(); };
