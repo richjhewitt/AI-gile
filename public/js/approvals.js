@@ -18,7 +18,7 @@ const Approvals = (function () {
   function itemHtml(c) {
     const key = keyOf(c);
     return `<div class="ib-item appr-item" data-appr="${esc(key)}">
-      <div class="ib-top"><span class="ib-tag">${esc(t('approvals.tag'))}</span><span class="ib-proj">${esc(c.projectName)}</span> <span class="muted">${esc(t('approvals.from', { name: c.friend }))}</span></div>
+      <div class="ib-top"><span class="ib-tag">${esc(t(c.req === 'custom' ? 'featreq.tag.custom' : c.req ? 'featreq.tag' : 'approvals.tag'))}</span><span class="ib-proj">${esc(c.projectName)}</span> <span class="muted">${esc(t('approvals.from', { name: c.friend }))}</span></div>
       <div class="ib-title">${esc(c.title)}</div>
       ${c.description ? `<div class="ask-q">${esc(c.description)}</div>` : ''}
       <div class="ib-who">${esc(c.type)} · ${esc(c.priority)}</div>

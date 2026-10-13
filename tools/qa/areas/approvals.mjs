@@ -54,7 +54,7 @@ def('approvals', "approvals: a friend's raised card waits for the owner's OK (no
     // Approve -> To do, approval cleared; the team can now see it.
     const ok1 = await a.ok('POST', ap);
     const p1 = await pa(), c1 = p1.cards.find(c => c.id === ok1.id);
-    check('Approve: the card is in To do on the project', !!c1 && c1.status === 'todo' && c1.title === 'Wait for me one' && !c1.approval && p1.cards.length === 1, c1);
+    check('Approve: the card is in To do on the project', !!c1 && c1.status === 'todo' && c1.title.includes('Wait for me one') && /^🔗 .*<<friend-text/.test(c1.title) && !c1.approval && p1.cards.length === 1, c1);
     check('Approve: it is no longer waiting, and `next` lists it', (await lane()).length === 2 && /Wait for me one/.test(a.cli(['next', 'lima'], bg).out));
     check('approving twice is refused', (await a.api('POST', ap)).status === 409);
 
@@ -79,7 +79,7 @@ def('approvals', "approvals: a friend's raised card waits for the owner's OK (no
     check('Decline: the owner can send anyway with force', scf.status === 200 && scf.body.declined === true);
     const race = await Promise.all([a.api('POST', du(r5.share) + 'approve'), a.api('POST', du(r5.share) + 'decline', { note: 'race' })]);
     const wins = race.filter(r => r.status === 200).length, pr = await pa();
-    check('Approve and Decline racing: exactly one wins, the other is refused clearly', wins === 1 && race.some(r => r.status === 409) && (race[0].status === 200) === pr.cards.some(c => c.title === 'Race one'), race.map(r => r.status));
+    check('Approve and Decline racing: exactly one wins, the other is refused clearly', wins === 1 && race.some(r => r.status === 409) && (race[0].status === 200) === pr.cards.some(c => c.title.includes('Race one')), race.map(r => r.status));
     await a.ok('PATCH', `/api/shares/${id}`, { on: false });
     const off2 = await a.api('POST', du(r7.share) + 'decline', { note: 'link is off' });
     check('Decline works with the link switched off (the friend is told best-effort)', off2.status === 200 && off2.body.declined === true && !(await lane()).some(c => c.title === 'Link off one'), off2.body);
@@ -115,8 +115,8 @@ def('approvals', "approvals: a friend's raised card waits for the owner's OK (no
     await page.waitForSelector('#ibApprovals:not([hidden]) [data-appr-yes]', { timeout: 8000 });
     check('inbox: a new waiting card brings the top badge', await page.locator('.ib-btn .ib-badge[data-friends]').count() === 1);
     await page.click('#ibApprovals [data-appr-yes]');
-    await until(async () => (await pa()).cards.some(c => c.title === 'Wait for me four' && c.status === 'todo'));
-    check('inbox: Approve puts it in To do', (await pa()).cards.some(c => c.title === 'Wait for me four' && c.status === 'todo'));
+    await until(async () => (await pa()).cards.some(c => c.title.includes('Wait for me four') && c.status === 'todo'));
+    check('inbox: Approve puts it in To do', (await pa()).cards.some(c => c.title.includes('Wait for me four') && c.status === 'todo'));
     noErrors(page);
   } finally { b.stop(); relay.stop(); }
 }, true, { AIGILE_DM_POLL_MS: '300' });
