@@ -189,6 +189,12 @@ async function setIconColors(part) {
 // Name + how you open it (a shortcut/file path, a command, or an ssh address for the ⌨ terminal, AIG-471). Saved to
 // aigile.local.json; 🖥️ tasks get an Open button.
 let srvDraft = null, srvFound = null;
+// 🩺 The relay's latest numbers (AIG-660): one small line under the list.
+function healthLine() {
+  const h = (state.setup || {}).health; if (!h) return '';
+  const p = v => v == null ? '?' : Math.round(v) + '%', gb = v => v == null ? '?' : v >= 1e9 ? (v / 1e9).toFixed(1) + ' GB' : Math.round(v / 1e6) + ' MB';
+  return `<small class="muted" id="srv-health">${esc(t('servers.health', { name: h.server || '', cpu: p(h.cpu), mem: p(h.mem), disk: p(h.disk), size: gb(h.storage), days: h.uptime == null ? '?' : Math.floor(h.uptime / 86400), when: new Date(h.at).toLocaleString() }))}</small>`;
+}
 function serversHtml(msg = '') {
   if (!srvDraft) srvDraft = (leadPrefs().servers || []).map(x => ({ ...x }));
   const rows = srvDraft.map((s, i) => `<div class="srv-row">
@@ -199,7 +205,7 @@ function serversHtml(msg = '') {
   const found = (srvFound || []).filter(f => !srvDraft.some(s => s.value === f.path)).map(f => `<button type="button" class="srv-found" data-name="${esc(f.name)}" data-path="${esc(f.path)}" onclick="srvAddFound(this)">+ ${esc(f.name)}</button>`).join(' ');
   return `<span>${esc(t('servers.h'))}</span><small class="muted">${esc(t('servers.help'))}</small>${rows}
     <div><button type="button" onclick="srvAdd()">${esc(t('servers.add'))}</button> <button type="button" id="srvFind" onclick="srvFind()">${esc(t('servers.find'))}</button> ${found}</div>
-    ${srvFound && !srvFound.length ? `<small class="muted">${esc(t('servers.none'))}</small>` : ''}<div class="err" id="servers-err"></div><div class="muted">${esc(msg)}</div>`;
+    ${srvFound && !srvFound.length ? `<small class="muted">${esc(t('servers.none'))}</small>` : ''}${healthLine()}<div class="err" id="servers-err"></div><div class="muted">${esc(msg)}</div>`;
 }
 const srvPaint = msg => { if ($('serversBox')) $('serversBox').innerHTML = serversHtml(msg); };
 async function srvSave() {

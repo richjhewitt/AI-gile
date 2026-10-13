@@ -26,11 +26,13 @@
 //   GET  /apply            the applications, only if RELAY_STATS_KEY is set and the request is signed by it (the operator's board)
 //   POST /bug              { title, text, build, channel }: a Live tester's bug report (10 per hour per address, 8 KB at most)
 //   GET  /bug, POST /bug/ack { ids }: the operator's board collects reports and deletes them (signed by RELAY_STATS_KEY)
+//   GET  /health           { ok } for anyone; signed by RELAY_STATS_KEY it adds cpu, mem, disk, storage, uptime (AIG-660)
 //   GET  /stats            { envelopes, bytes }: only if RELAY_STATS_KEY (the operator's public signing key) is set, and signed by it
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const os = require('os');
 
 const PORT = Number(process.env.RELAY_PORT) || 4500;
 const HOST = process.env.RELAY_HOST || '0.0.0.0';
@@ -111,6 +113,26 @@ function owner(req, box, pathname, body, onlyKey) {
   }
 }
 
+/* ---------- health (AIG-660) ---------- */
+// The numbers the operator's board watches to warn before this server needs a bigger plan. Node built-ins only.
+function dirBytes(dir, budget = { n: 200000 }) {
+  let total = 0;
+  let list; try { list = fs.readdirSync(dir, { withFileTypes: true }); } catch { return 0; }
+  for (const e of list) {
+    if (budget.n-- <= 0) break;
+    const f = path.join(dir, e.name);
+    if (e.isDirectory()) total += dirBytes(f, budget); else if (e.isFile()) total += sizeOf(f);
+  }
+  return total;
+}
+async function health() {
+  const cpus = os.cpus().length || 1, load = os.loadavg()[0];
+  let disk = null, diskFree = null;
+  try { const st = await fs.promises.statfs(DATA); const tot = st.blocks * st.bsize; diskFree = st.bavail * st.bsize; disk = tot ? Math.round((1 - st.bavail / st.blocks) * 1000) / 10 : null; } catch {}
+  const mem = Math.round((1 - os.freemem() / os.totalmem()) * 1000) / 10;
+  return { ok: true, cpu: Math.round(load / cpus * 1000) / 10, load: Math.round(load * 100) / 100, cpus, mem, disk, diskFree, storage: dirBytes(DATA), uptime: Math.round(os.uptime()), relayUptime: Math.round(process.uptime()) };
+}
+
 /* ---------- http ---------- */
 function readBody(req, limit = MAX_BODY) {
   return new Promise((resolve, reject) => {
@@ -134,7 +156,11 @@ async function handle(req, res) {
   const ip = (TRUST_PROXY && String(req.headers['x-forwarded-for'] || '').split(',')[0].trim()) || req.socket.remoteAddress;
   if (limited(ip)) throw fail('slow down', 429);
   const { pathname } = new URL(req.url, 'http://relay');
-  if (req.method === 'GET' && pathname === '/health') return send(res, 200, { ok: true });
+  if (req.method === 'GET' && pathname === '/health') {
+    if (!STATS_KEY || !req.headers['x-relay-key']) return send(res, 200, { ok: true });
+    owner(req, null, pathname, '', STATS_KEY);
+    return send(res, 200, await health());
+  }
   if (req.method === 'GET' && pathname === '/stats' && STATS_KEY) { owner(req, null, pathname, '', STATS_KEY); sweep(); return send(res, 200, { envelopes: count, bytes: used }); }
   if (pathname.startsWith('/b/')) return board(req, res, pathname, ip);
   if (pathname === '/apply') return apply(req, res, pathname, ip);

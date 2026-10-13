@@ -128,6 +128,7 @@ require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anyt
 require('./lib/scrummaster').startScrumMaster();   // 🧭 day rounds, only when it is in the team (AIG-359)
 require('./lib/discord').start();   // 💬 only does anything once a bot is set up (AIG-481)
 require('./lib/bugreports').start();   // 🐞 files Live testers' reports, only with feedback.project set (AIG-561)
+require('./lib/serverhealth').start();   // 🩺 warns when Smizflark Server 2.0 needs upgrading (AIG-660)
 require('./lib/budget').startNightWatch();   // a run past its team's nightly token budget is stopped (AIG-522)
 require('./lib/streamer').start();   // 🎥 streamer mode turns itself on when OBS or Streamlabs runs (AIG-592)
 require('./lib/discord-presence').start();   // 🎮 Discord shows "Using AI-gile" as your activity, if switched on (AIG-642)
