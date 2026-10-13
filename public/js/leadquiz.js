@@ -82,7 +82,7 @@ function leadPrefsHtml(msg = '') {
     <label class="f"><span>${esc(t('lead.push'))}</span><select id="pushPref" class="setup-theme" onchange="setLeadPref({ push: this.value })">${['ask', 'auto'].map(v => `<option value="${v}" ${(pr.push || 'ask') === v ? 'selected' : ''}>${esc(t('lead.push.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('lead.push.help'))}</small></label>
     <label class="f"><span>${esc(t('fourtwenty.h'))}</span><select id="pf-420" class="setup-theme" onchange="setLeadPref({ fourTwenty: this.value })">${['off', 'day', 'ampm', 'every', 'world'].map(v => `<option value="${v}" ${(pr.fourTwenty || 'off') === v ? 'selected' : ''}>${esc(t('fourtwenty.lvl.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('fourtwenty.help'))}</small></label>
     ${(pr.fourTwenty || 'off') !== 'off' ? `<label class="f"><span>${esc(t('fourtwenty.before'))}</span><input type="number" id="pf-420b" min="0" max="15" value="${pr.fourTwentyBefore ?? 5}" style="width:5em" onchange="setLeadPref({ fourTwentyBefore: Number(this.value) })"><small class="muted">${esc(t('fourtwenty.before.help'))}</small></label>` : ''}
-    ${quietTimesHtml(pr)}
+    ${quietTimesHtml(pr)}${railsHtml(pr)}
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;
 }
 // Change calendar (AIG-615): quiet times (streams, demos, nights) when nothing goes live. Saved as prefs.quiet (lib/changecal.js).
@@ -96,6 +96,18 @@ function quietTimesHtml(pr) {
   return `<div class="f qt" id="quietTimes"><span>${esc(t('quiettime.h'))}</span>${(pr.quiet || []).map(row).join('')}
     <div><button type="button" id="qtAdd" onclick="quietTimeSave(-1)">${esc(t('quiettime.add'))}</button></div><small class="muted">${esc(t('quiettime.help'))}</small></div>`;
 }
+// Guard rails by skill level (AIG-616, lib/rails.js): beginner / help 1 hides them; some shows a read-only list; expert gets a switch each.
+const RAILS = ['riskPlan', 'qaGate', 'quietTimes', 'postmortem'];
+function railsHtml(pr) {
+  const m = pr.railsMode || 'list';
+  if (m === 'hidden') return '';
+  const off = pr.rails || {};
+  const row = k => m === 'switches'
+    ? `<label class="chk"><input type="checkbox" id="rail-${k}" ${off[k] === false ? '' : 'checked'} onchange="railSave()"> ${esc(t('rails.' + k))}</label>`
+    : `<div class="rail-row" data-rail="${k}">✔ ${esc(t('rails.' + k))}</div>`;
+  return `<div class="f" id="guardRails"><span>${esc(t('rails.h'))}</span>${RAILS.map(row).join('')}<small class="muted">${esc(t(m === 'switches' ? 'rails.help.switches' : 'rails.help.list'))}</small></div>`;
+}
+function railSave() { const r = {}; for (const k of RAILS) r[k] = $('rail-' + k).checked; setLeadPref({ rails: r }); }
 // Reads the rows and saves them all; drop: a row to take out, or -1 to add a new one.
 function quietTimeSave(drop) {
   const list = [...document.querySelectorAll('#quietTimes .qt-row')].map(r => r.dataset.qt).filter(i => Number(i) !== drop)

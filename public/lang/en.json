@@ -2555,5 +2555,12 @@
  "quiettime.day.sun": "Sunday",
  "quiettime.chip": "🔕 {label} until {until}",
  "quiettime.chip.nolabel": "🔕 Quiet until {until}",
- "quiettime.chip.title": "A quiet time from Setup: nothing goes live until it ends"
+ "quiettime.chip.title": "A quiet time from Setup: nothing goes live until it ends",
+ "rails.h": "🛡️ Guard rails",
+ "rails.riskPlan": "A risky card needs your OK on a plan before the team builds it",
+ "rails.qaGate": "A card with red QA is not handed over for testing",
+ "rails.quietTimes": "Nothing goes live in your quiet times",
+ "rails.postmortem": "An incident is closed with a post-mortem",
+ "rails.help.list": "These are always on. Set your tech level to Expert, or the help level to least, to switch them off one by one.",
+ "rails.help.switches": "Untick a rail and the team is no longer stopped by it. Ticked is the safe way."
 }
