@@ -53,7 +53,7 @@ def('popchat', 'â§‰ a pop-out stays open after Send and new team messages la
   // AIG-405: the bar a pop-out is dragged by stays at the top after scrolling down
   await pop.evaluate(() => { const p = document.querySelector('.panel'); const tall = document.createElement('div'); tall.style.height = '3000px'; p.appendChild(tall); window.scrollTo(0, 2000); });
   await sleep(200);
-  const bar = await pop.evaluate(() => { const p = document.querySelector('.panel'), a = p.querySelector(':scope > .actions'); return { top: a && Math.round(a.getBoundingClientRect().top), first: p.firstElementChild && p.firstElementChild.className, pos: a && getComputedStyle(a).position, sy: Math.round(scrollY), st: Math.round(document.scrollingElement.scrollTop), ov: getComputedStyle(p).overflowY, chain: (() => { const o = []; for (let e = a; e; e = e.parentElement) { const s = getComputedStyle(e); if (s.overflowX !== 'visible' || s.overflowY !== 'visible' || s.contain !== 'none') o.push((e.id || e.tagName) + ':' + s.overflowX + '/' + s.overflowY + '/' + s.contain); } return o.join(' '); })() }; });
+  const bar = await pop.evaluate(() => { const p = document.querySelector('.panel'), a = p.querySelector(':scope > .actions, :scope > .card-head'); return { top: a && Math.round(a.getBoundingClientRect().top), first: p.firstElementChild && p.firstElementChild.className, pos: a && getComputedStyle(a).position, sy: Math.round(scrollY), st: Math.round(document.scrollingElement.scrollTop), ov: getComputedStyle(p).overflowY, chain: (() => { const o = []; for (let e = a; e; e = e.parentElement) { const s = getComputedStyle(e); if (s.overflowX !== 'visible' || s.overflowY !== 'visible' || s.contain !== 'none') o.push((e.id || e.tagName) + ':' + s.overflowX + '/' + s.overflowY + '/' + s.contain); } return o.join(' '); })() }; });
   check('pop-out: the top bar stays in view when scrolled', bar.top !== null && Math.abs(bar.top) < 12, bar);
   // AIG-780: in the desktop app every pop-out has a real bar to drag the window by, last in the page and on top
   for (const h of ['#/pop/alpha/' + c.id, '#/pop-inbox/q', '#/pop-night']) {
@@ -96,7 +96,7 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   await page.waitForFunction(() => location.hash === '#/setup', null, { timeout: 8000 }).catch(() => {});
   await page.waitForSelector('#setupForm');
   check('board opens Setup first', page.url().endsWith('#/setup'));
-  await page.click('#wzNo'); await page.click('#helpNo'); await page.waitForSelector('#wzNo', { state: 'detached' });   // AIG-354: the wizard offer, waved off
+  await page.click('#wzNo'); await page.waitForSelector('#wzNo', { state: 'detached' });   // AIG-354: the wizard offer, waved off
   check('name is required', (await s.api('POST', '/api/setup', { owner: '' })).status === 400);
   await page.fill('input[data-key="owner"]', 'Sam');
   // AIG-334: a guessed agent program is only a suggestion; typing just a name must not save it.

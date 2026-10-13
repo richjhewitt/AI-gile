@@ -12,8 +12,8 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   // I'll wing it: the choice, then defaults untouched.
   const page = await openPage(ctx, '#/setup');
   await page.waitForSelector('#wzYes');
-  check('first run shows both choices', (await page.textContent('#wzYes')).includes('wizard') && (await page.textContent('#wzNo')).includes('wing it'));
-  await page.click('#wzNo'); await page.click('#helpNo');   // AIG-345: the help offer after the wizard
+  check('first run shows the three choices', (await page.textContent('#wzYes')).includes('Wizard') && (await page.textContent('#wzTour')).includes('Tour') && (await page.textContent('#wzNo')).includes('let me in'));
+  await page.click('#wzNo');   // AIG-940: no second popup after
   await page.waitForSelector('#wzYes', { state: 'detached' });
   await sleep(200);
   const after = await setup();
@@ -32,8 +32,8 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   check('without a name there is no Skip', !(await page.isVisible('#wzSkip')));
   await page.click('#wzNext'); await sleep(200);
   check('Next without a name stays and says so', await page.isVisible('#wz-name') && (await page.textContent('#wz-err')).length > 0);
-  const guess = await page.getAttribute('#wz-agent', 'placeholder');
-  check('the agent guess is only a placeholder, not typed in', (await page.inputValue('#wz-agent')) === '');
+  const guess = (await page.isVisible('#wzUse')) ? await page.textContent('.suggest code') : '';   // AIG-940: the found one is a button, the placeholder only a hint
+  check('the agent guess is not typed in; the placeholder is a short hint', (await page.inputValue('#wz-agent')) === '' && (await page.getAttribute('#wz-agent', 'placeholder')) !== guess);
   await page.fill('#wz-name', 'Wiz');
   await page.click('#wzNext'); await page.waitForSelector('[name=wz-style]');
   await page.click('#wzBack'); await page.waitForSelector('#wz-name');

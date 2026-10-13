@@ -25,6 +25,16 @@ const Swarm = (() => {
     if (inbox && st.on) { others = list.length - kept.length; paint(); }
     return kept;
   }
+  // 🚨 Swarm this / Turn off swarm (AIG-827): on a board's toolbar and in the Scrum Master panel. Starting asks first.
+  const mine = slug => st.on && st.slug === slug;
+  function btn(slug, id) {
+    return `<button type="button" id="${id}" class="${mine(slug) ? 'swarm-on' : 'swarm-this'}" onclick="Swarm.toggleFor('${esc(slug)}')" title="${esc(t(mine(slug) ? 'swarm.off.title' : 'swarm.this.title'))}">${esc(t(mine(slug) ? 'swarm.offbtn' : 'swarm.this'))}</button>`;
+  }
+  async function toggleFor(slug) {
+    if (mine(slug)) return off();
+    if (!confirm(t('swarm.confirm', { name: (state.project && state.project.slug === slug && state.project.name) || slug }))) return;
+    try { set(await api('POST', '/api/swarm', { slug })); } catch (e) { alert(e.message); }
+  }
   function start() { PagePoll.every(poll, 3000, { immediate: true }); }
-  return { start, off, poll, toggle, only, redraw, get on() { return !!st.on; }, get hiding() { return !!focus(); } };
+  return { start, off, btn, toggleFor, poll, toggle, only, redraw, get on() { return !!st.on; }, get hiding() { return !!focus(); } };
 })();

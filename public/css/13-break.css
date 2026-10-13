@@ -1,0 +1,17 @@
+/* ⏸ Break modes (AIG-824, AIG-837). */
+.brk-pick { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0; }
+.brk-pick button { flex: 1 1 140px; padding: 16px 12px; font-size: 16px; }
+#breakChip { position: fixed; inset-inline-end: 12px; bottom: 12px; z-index: 9998; display: flex; align-items: center; gap: 8px; max-width: calc(100vw - 24px); padding: 6px 8px 6px 12px; border-radius: 999px; background: var(--panel, var(--bg)); color: var(--text); border: 1px solid var(--line); box-shadow: 0 4px 16px rgba(0,0,0,.25); font-size: 14px; }
+#breakChip[hidden], #showerScreen[hidden] { display: none; }
+#breakChip button { border-radius: 999px; padding: 3px 12px; cursor: pointer; font-weight: 600; }
+#showerScreen { position: fixed; inset: 0; z-index: 100000; display: flex; align-items: center; justify-content: center; text-align: center; padding: 6vw; overflow: auto; background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--accent, #3b82f6) 22%, var(--bg)), var(--bg) 70%); color: var(--text); }
+.brk-main { display: flex; flex-direction: column; align-items: center; gap: 22px; max-width: 100%; }
+.brk-main h1 { font-size: clamp(34px, 8vw, 72px); line-height: 1.15; margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.brk-time { font-size: clamp(28px, 7vw, 56px); font-variant-numeric: tabular-nums; color: var(--muted); }
+.brk-sub { font-size: clamp(15px, 2.4vw, 20px); color: var(--muted); }
+.brk-back { font-size: clamp(22px, 4vw, 30px); padding: 18px 40px; border-radius: 16px; border: 0; cursor: pointer; background: var(--done, #16a34a); color: #fff; font-weight: 700; }
+.brk-back:hover { filter: brightness(1.1); }
+#breakBack { position: fixed; inset-inline: 12px; bottom: 12px; z-index: 9998; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: 640px; margin-inline: auto; padding: 8px 12px; border-radius: 14px; background: var(--panel, var(--bg)); color: var(--text); border: 1px solid var(--line); box-shadow: 0 4px 16px rgba(0,0,0,.25); font-size: 14px; }
+#breakBack[hidden] { display: none; }
+#breakBack #brkAway { flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; }
+#breakBack button { border-radius: 999px; padding: 4px 12px; cursor: pointer; font-weight: 600; }

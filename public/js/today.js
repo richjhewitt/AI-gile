@@ -6,7 +6,7 @@ const TodayPage = (() => {
   const T = { data: null };
   const ICON = { high: '🔥', normal: '', low: '🐢', rest: '💤' };
   T.icon = w => ICON[w] || '';
-  T.load = async () => { try { T.data = await PagePoll.get('/api/today'); } catch { T.data = null; } return T.data; };
+  T.load = async (options = {}) => { try { T.data = await PagePoll.get('/api/today', options); } catch { T.data = null; } return T.data; };
   // A small badge for the project cards: nothing for normal.
   T.badge = slug => {
     const p = T.data && T.data.projects.find(x => x.slug === slug);
@@ -54,5 +54,44 @@ const TodayPage = (() => {
     return `<div class="uz-card today-usage"><div class="uz-tile-h">${esc(t('today.usage.h'))}</div>${d.projects.map(p => `<div class="today-bar"><span class="today-bn">${T.icon(p.weight)} ${esc(p.name)}</span>
       <span class="today-track" title="${esc(T.line(p).replace(/<[^>]+>/g, ''))}"><i class="${p.over ? 'over' : ''}" style="width:${Math.min(100, p.pct)}%"></i></span><span class="muted today-bv">${T.line(p)}</span></div>`).join('')}</div>`;
   };
+  // AIG-829: the morning picker (setup switch "Pick today's projects at start-up"): a small dialog on the first open of the day.
+  let askedDay = '';   // the day (as the server counts it) the picker was last shown for: a board left open overnight asks again next morning
+  const localDay = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  T.pickRows = d => d.projects.map(p => `<label class="chk today-pickrow"><input type="checkbox" value="${esc(p.slug)}" ${p.weight === 'rest' ? '' : 'checked'}> ${esc(p.emoji)} ${esc(p.name)}</label>`).join('');
+  T.maybePick = async () => {
+    if (document.querySelector('#dialog .overlay')) return;
+    const d = await T.load(); if (!d || !d.askPick || !d.projects.length || askedDay === d.day) return;
+    if (document.querySelector('#dialog .overlay')) return;   // a dialog opened while the data loaded
+    if (typeof MyDay !== 'undefined' && await MyDay.owns()) return;   // AIG-797: Start my day is on: the picker is its step 1
+    askedDay = d.day;
+    openDialog(`<h2>${esc(t('today.pick.h'))}</h2><p class="muted">${esc(t('today.pick.intro'))}</p>
+      <div id="todayPickList">${T.pickRows(d)}</div>
+      <div class="err" id="todayPickErr"></div>
+      <div class="actions"><button onclick="TodayPage.pickSkip()">${esc(t('today.pick.skip'))}</button><button class="primary" id="todayPickGo" onclick="TodayPage.pickGo()">${esc(t('today.pick.go'))}</button></div>`);
+  };
+  T.pickGo = async keep => {   // keep: inside Start my day (AIG-797): stay in that dialog and redraw it
+    const slugs = [...document.querySelectorAll('#todayPickList input:checked')].map(i => i.value);
+    try { T.data = await api('POST', '/api/today/pick', { slugs }); T.showAll(false); if (keep === true && typeof MyDay !== 'undefined') MyDay.redraw(); else closeDialog(); if (typeof refresh === 'function') refresh(true); if (typeof Dms !== 'undefined' && Dms.reload) Dms.reload(); } catch (e) { $('todayPickErr').textContent = e.message; }
+  };
+  T.pickSkip = async keep => { try { T.data = await api('POST', '/api/today/pick', { skip: true }); } catch {} if (keep === true && typeof MyDay !== 'undefined') MyDay.redraw(); else closeDialog(); };
+  // AIG-830: unpicked projects are hidden on home and in the rail and project menus; "Show all" (this browser, today's date) brings them back.
+  const KEY = 'aigile.todayAll';
+  const flag = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
+  T.showing = () => !!(T.data && flag() === T.data.day);
+  T.showAll = on => { try { if (on && T.data) localStorage.setItem(KEY, T.data.day); else localStorage.removeItem(KEY); } catch {} };
+  T.hidden = () => (T.data && !T.showing() ? T.data.left || [] : []);
+  T.only = list => { const h = T.hidden(); return h.length && Array.isArray(list) ? list.filter(x => !h.includes(x.slug)) : list; };
+  T.showAllClick = () => { T.showAll(true); if (typeof refresh === 'function') refresh(true); if (typeof Dms !== 'undefined' && Dms.reload) Dms.reload(); };
+  // The line on home: how many are out of sight, and the link.
+  T.hiddenLine = () => { const n = T.hidden().length; return n ? `<p class="muted today-hidden">${esc(t('today.hidden', { n }))} <a href="#/" onclick="TodayPage.showAllClick();return false">${esc(t('today.showall'))}</a></p>` : ''; };
+  // The rail and menus do not load the page data: a short cache is enough.
+  let seen = 0;
+  T.fresh = async () => { if (Date.now() - seen < 10000 && T.data) return; seen = Date.now(); await T.load(); };
+  let polled = 0;
+  setInterval(async () => {
+    if (typeof i18n === 'undefined' || !i18n.ready || document.hidden || askedDay === localDay()) return;
+    if (Date.now() - polled < 10000) return;   // look again now and then, so turning the setting on (or a new morning) needs no reload
+    polled = Date.now(); await T.maybePick();
+  }, 3000);
   return T;
 })();

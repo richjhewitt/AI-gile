@@ -39,6 +39,16 @@ def('inbox', 'top-bar counts, project tabs, inline answer, task Done', async (s,
   const c1 = await getCard(s, 'alpha', 'ALP-1');
   check('inline answer sent to the team', c1.comments.at(-1).text === 'blue please' && c1.status === 'team' && !c1.needsYou, [c1.status, c1.needsYou]);
 
+  // AIG-867: Snooze on a task puts it off, never done, team not told; it comes back when the snooze ends.
+  const k0 = await getCard(s, 'alpha', 'ALP-2'), n0 = k0.comments.length;
+  await page.click('.ib-item.k[data-id="ALP-2"] button[data-act=wait]');
+  await page.waitForSelector('.ib-item.k[data-id="ALP-2"]', { state: 'detached' });
+  const ks = await getCard(s, 'alpha', 'ALP-2');
+  check('task Snooze hides it for about an hour, not done, nothing sent', ks.status === k0.status && ks.assignee === k0.assignee && ks.comments.length === n0 && Math.abs(new Date(ks.snoozedUntil) - Date.now() - 3600e3) < 60e3, ks);
+  await s.ok('DELETE', '/api/projects/alpha/cards/ALP-2/snooze');
+  await page.waitForSelector('.ib-item.k[data-id="ALP-2"]', { timeout: 8000 });
+  check('snoozed task is back when the snooze ends', true);
+
   await page.click('.ib-item.k[data-id="ALP-2"] button[data-act=taskdone]');
   await page.waitForSelector('.ib-item.k[data-id="ALP-2"]', { state: 'detached' });
   const c2 = await getCard(s, 'alpha', 'ALP-2');
@@ -118,6 +128,7 @@ def('queue', 'your queue: holds up, your priority, kind, time; sorted, filtered,
   await sleep(300);
   check('kind filter shows only server jobs', (await page.locator(`.ib-item[data-id="${b.id}"]`).count()) === 1 && (await page.locator('.ib-item.k, .ib-item.t').count()) === 1);
   await page.click('#ibKinds [data-kind=""]');
+  await page.hover('#ibNext .q-chips'); await sleep(300);   // an unset priority chip only shows on hover (AIG-939)
   await page.click(`#ibNext [data-prio]`);   // none -> now on the Next up item
   await sleep(600);
   check('clicking 🔥 sets your priority', (await getCard(s, 'alpha', b.id)).ownerPrio === 'now');

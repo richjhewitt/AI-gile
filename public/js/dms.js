@@ -6,8 +6,10 @@
 // Friends' private DMs (AIG-111, lib/dm.js) are chats too: the list has a filter All / Agents / People, and a
 // friend's chat has the same typing box, 👍 and attachments. A friend's chat key is 'dm:<contact id>'.
 const Dms = (() => {
-  let projects = [], chats = [], people = [], closed = {}, showClosed = false, filter = 'all', open = null, listOpen = false, thread = null, threadSeq = 0, busy = false;
+  let projects = [], chats = [], people = [], closed = {}, showClosed = false, showQuiet = false, askAll = false, filter = 'all', open = null, listOpen = false, thread = null, threadSeq = 0, busy = false;
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
+  const QUIET_DAYS = 3, QUIET_MS = QUIET_DAYS * 86400000;   // AIG-946: a chat with no message for this long hides until a new one
+  const plain = s => String(s || '').replace(/```/g, ' ').replace(/^\s*(?:[-*+•]|\d+[.)])\s+/gm, '').replace(/^\s*#+\s+/gm, '').replace(/\*\*|__|[*_`~]/g, '').replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\s+/g, ' ').trim();   // AIG-946: previews are plain text
   const GENERAL = '_new';   // target: a new message to the lead instead of an answer (AIG-285)
   const el = id => document.getElementById(id);
   const avatar = c => `<span class="dm-av" style="--proj:${esc(c.color || '')}">${pic(c.logo, c.emoji || '💬')}</span>`;
@@ -24,7 +26,8 @@ const Dms = (() => {
   const isPerson = k => String(k).startsWith('dm:');
   const isTw = k => String(k).startsWith('tw:');   // 🟣 the Twitch tab (AIG-628, twitch-tab.js)
   const isDc = k => String(k).startsWith('dc:');   // 💬 the Discord tab (AIG-557, discord-tab.js)
-  const personAv = '<span class="dm-av">🙋</span>';
+  // A friend's picture is the one I picked for them (AIG-883), else theirs, else the emoji.
+  const personAv = c => `<span class="dm-av">${c && c.pic ? `<img class="pic" src="${esc(c.pic)}" alt="">` : '🙋'}</span>`;
   const here = () => (location.hash.match(/^#\/p\/([^/]+)/) || [])[1] || '';
 
   // Drag a project icon up or down to reorder (AIG-189), like servers in Discord. The rail doesn't redraw mid-drag.
@@ -59,11 +62,13 @@ const Dms = (() => {
 
   async function loadRail() {
     if (!i18n.ready) return void setTimeout(loadRail, 100);
-    try { [projects, chats] = await Promise.all([PagePoll.get('/api/projects'), PagePoll.get('/api/chats')]); } catch { return; }
+    try { [projects, chats] = await Promise.all([PagePoll.get('/api/projects'), PagePoll.get('/api/chats'), TodayPage.fresh()]); } catch { return; }
     let boards = [];
     try { boards = (await PagePoll.get('/api/shares')).filter(l => l.theirRole && !l.forgotten && ['live', 'ended'].includes(l.state)); } catch {}
     try { people = (await PagePoll.get('/api/dms/contacts')).filter(c => !c.blocked).map(c => ({ ...c, unread: c.lastIn && c.lastIn > dmSeen.get(c.id) && open !== 'dm:' + c.id ? 1 : 0 })); } catch { people = []; }
     try { closed = await PagePoll.get('/api/dmclosed'); } catch { closed = {}; }
+    const fp = Object.fromEntries(people.filter(c => c.pic).map(c => [c.name.trim().toLowerCase(), c.pic]));   // friends' pictures for their comments and DMs (AIG-883)
+    if (JSON.stringify(fp) !== JSON.stringify(state.friendPics || {})) { state.friendPics = fp; if (typeof refresh === 'function') refresh(true); }
     if (Swarm.hiding) boards = [];   // 🚨 swarm: friends' boards wait too (AIG-880)
     if (NoAi.on) chats = chats.filter(c => c.noAi);   // 🚫 no DMs to leads (AIG-581); only the 🧭 Scrum Master (no AI) stays (AIG-729)
     const cur = here(), p = projects.find(x => x.slug === cur);
@@ -74,7 +79,7 @@ const Dms = (() => {
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
       + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, t('dms.rail.label'))
       + '<div class="dm-sep"></div>'
-      + railTree(Swarm.only(projects.filter(x => !x.archived)), cur, btn)   // 🚨 swarm: only that project (AIG-880)
+      + railTree(TodayPage.only(Swarm.only(projects.filter(x => !x.archived))), cur, btn)   // 🚨 swarm: only that project (AIG-880)
       // AIG-324: each project a friend shares with me, as its own board.
       + (boards.length ? '<div class="dm-sep"></div>' + boards.map(l => btn(`data-go="#/shared/${esc(l.id)}" data-sboard="${esc(l.id)}"`, `<span class="dm-av">🔗</span>`, location.hash === '#/shared/' + l.id, t('sb.rail', { name: l.friend, project: l.theirName }))).join('') : '');
     const r = el('dmRail');
@@ -102,18 +107,19 @@ const Dms = (() => {
     if (filter === 'discord' && !DiscordTab.linked()) filter = 'all';
     if (filter === 'twitch' && !TwitchTab.linked()) filter = 'all';
     // AIG-917: newest message first (any side), unread rows stand out, a ✕ closes a chat (hidden, history kept, back on a newer message).
-    const entry = (key, last, unread, inner, waiting) => ({ key, last: last || '', unread, hidden: !!closed[key] && !waiting && (!last || last <= closed[key]), html: `<div class="dm-rowwrap ${unread ? 'unread' : ''}"><button class="dm-row" data-dm="${esc(key)}">${inner}</button><button class="dm-rowx" data-dmclose="${esc(key)}" title="${esc(t('dms.close.title'))}" aria-label="${esc(t('dms.close.title'))}">✕</button></div>` });
-    const all = (filter === 'people' || filter === 'twitch' || filter === 'discord' ? [] : chats.map(c => entry(c.slug, c.last, c.unread, `${c.watchman || c.noAi ? leadAv(c) : avatar(c)}<span class="dm-rowtext"><b>${esc(c.watchman || c.noAi ? leadName(c) : chatName(c))}</b><span class="muted">${esc([c.watchman || c.noAi ? '' : leadName(c), (c.lastText || '').slice(0, 60), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`, c.unread > 0)))
-      .concat(filter === 'agents' || filter === 'twitch' || filter === 'discord' ? [] : people.map(c => entry('dm:' + c.id, c.last, c.unread, `${personAv}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc([(c.lastText || '').slice(0, 60) || t('dms.person'), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`)))
-      .sort((x, y) => y.last.localeCompare(x.last));
-    const shut = all.filter(r => r.hidden), shown = all.filter(r => !r.hidden);
+    const entry = (key, last, unread, inner, waiting) => ({ key, last: last || '', unread, hidden: !!closed[key] && !waiting && (!last || last <= closed[key]), quiet: !!last && !unread && !waiting && Date.now() - Date.parse(last) > QUIET_MS, html: `<div class="dm-rowwrap ${unread ? 'unread' : ''}"><button class="dm-row" data-dm="${esc(key)}">${inner}</button><button class="dm-rowx" data-dmclose="${esc(key)}" title="${esc(t('dms.close.title'))}" aria-label="${esc(t('dms.close.title'))}">✕</button></div>` });
+    const all = (filter === 'people' || filter === 'twitch' || filter === 'discord' ? [] : chats.map(c => entry(c.slug, c.last, c.unread, `${c.watchman || c.noAi ? leadAv(c) : avatar(c)}<span class="dm-rowtext"><b>${esc(c.watchman || c.noAi ? leadName(c) : chatName(c))}</b><span class="muted">${esc([c.watchman || c.noAi ? '' : leadName(c), plain(c.lastText).slice(0, 60), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`, c.unread > 0)))
+      .concat(filter === 'agents' || filter === 'twitch' || filter === 'discord' ? [] : people.map(c => entry('dm:' + c.id, c.last, c.unread, `${personAv(c)}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc([plain(c.lastText).slice(0, 60) || t('dms.person'), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`)))
+      .sort((x, y) => (Date.parse(y.last) || 0) - (Date.parse(x.last) || 0));   // newest activity first
+    const shut = all.filter(r => r.hidden), quietRows = all.filter(r => !r.hidden && r.quiet), shown = all.filter(r => !r.hidden && (showQuiet || !r.quiet));
     const rows = filter === 'twitch' ? TwitchTab.rowsHtml() : filter === 'discord' ? DiscordTab.rowsHtml() : shown.map(r => r.html);
     const closedBox = shut.length ? `<div class="dm-closed"><button class="dm-closedlink" data-dmshowclosed="1" aria-expanded="${showClosed}">${esc(t('dms.closed.show', { n: shut.length }))}</button>${showClosed ? shut.map(r => r.html.replace('data-dmclose=', 'data-dmreopen=').replace(/title="[^"]*" aria-label="[^"]*">✕/, `title="${esc(t('dms.closed.reopen'))}" aria-label="${esc(t('dms.closed.reopen'))}">↩`)).join('') : ''}</div>` : '';
-    const none = filter === 'twitch' ? t('tw.nonone') : filter === 'discord' ? t('dc.nonone') : filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) && !shut.length ? t('dms.nonone') : t('dms.noleads');
+    const quietBox = quietRows.length && filter !== 'twitch' && filter !== 'discord' ? `<div class="dm-closed dm-quiet"><button class="dm-closedlink" data-dmshowquiet="1" aria-expanded="${showQuiet}">${esc(showQuiet ? t('dms.quiet.hide') : t(quietRows.length === 1 ? 'dms.quiet.show.one' : 'dms.quiet.show', { n: quietRows.length }))}</button></div>` : '';
+    const none = filter === 'twitch' ? t('tw.nonone') : filter === 'discord' ? t('dc.nonone') : filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) && !shut.length && !quietRows.length ? t('dms.nonone') : t('dms.noleads');
     const chips = ['all', 'agents', 'people', ...(DiscordTab.linked() ? ['discord'] : []), ...(TwitchTab.linked() ? ['twitch'] : [])].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}${f === 'discord' ? badge(DiscordTab.unread()) : ''}</button>`).join('');
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
-      <div class="dm-list">${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button>` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${closedBox}</div>`;
+      <div class="dm-list">${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button>` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}</div>`;
     const panel = el('dmPanel');
     if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
     panel.hidden = false;
@@ -137,7 +143,7 @@ const Dms = (() => {
     return list.map(([id, msgs]) => {
       const c = (thread.cards || {})[id] || {}, last = msgs.at(-1), isOpen = id === fold;
       const acts = c.waiting && !last.mine ? actionsHtml(askActions(last, c.kind), thread.slug, id) : '';
-      const preview = String(last.text || '').replace(/^\s*[-*]\s+/gm, '').replace(/[*_`#>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 90);
+      const preview = plain(last.text).slice(0, 90);
       return `<div class="dm-fold ${isOpen ? 'open' : ''} ${c.waiting ? 'waiting' : ''}">
         <div class="dm-fold-h k-${esc(c.kind || 'other')}" data-fold="${esc(id)}" role="button" tabindex="0" aria-expanded="${isOpen}">
           ${thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : id === '_lead' ? `<span class="dm-tag">${esc(t('dms.kind.lead'))}</span>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><a class="dm-fold-id" href="#/p/${esc(thread.slug)}/${esc(id)}" title="${esc(t('dms.opencard'))}"><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span></a>`}
@@ -148,7 +154,7 @@ const Dms = (() => {
   }
   // A friend's chat: plain bubbles, no cards or folds.
   function personHtml(msgs, name, em) {
-    return msgs.map(m => `<div class="dm-msg ${m.dir === 'out' ? 'mine' : ''} ${m.kind ? 'dm-' + esc(m.kind) : ''}"><div class="dm-meta"><b>${esc(m.dir === 'out' ? me() : name)}</b> ${ago(m.at)}${m.status === 'failed' ? ' · ' + esc(m.reason || t('dms.failed')) : m.status === 'sending' ? ' · ' + esc(t('dms.sending')) : ''}</div>
+    return msgs.map(m => `<div class="dm-msg ${m.dir === 'out' ? 'mine' : ''} ${m.kind ? 'dm-' + esc(m.kind) : ''}"><div class="dm-meta">${face(m.dir === 'out' ? me() : name, [])}<b>${esc(m.dir === 'out' ? me() : name)}</b> ${ago(m.at)}${m.status === 'failed' ? ' · ' + esc(m.reason || t('dms.failed')) : m.status === 'sending' ? ' · ' + esc(t('dms.sending')) : ''}</div>
       ${askTag(m, name)}<div class="dm-bubble">${m.verified === false ? `<i class="muted">${esc(t('dms.unverified'))}</i>` : m.kind === 'answer' && m.no ? `<i>${esc(t(m.dir === 'out' ? 'ask.no.out' : 'ask.no.in', { name }))}</i>` : m.kind === 'ask' && m.dir === 'in' ? esc(m.text || '') : m.dir === 'in' ? withFriendEmojis(thread.id, em, () => linkify(m.text || '', thread)) : linkify(m.text || '', thread)}${Attach.shown(m, '', `/api/dms/contacts/${thread.id}/files`)}</div></div>`).join('');
   }
   // Ask a mate (AIG-210): a question for someone's AI, and its answer, get a small tag over the bubble. A question
@@ -202,13 +208,13 @@ const Dms = (() => {
     // A card that newly starts waiting on you opens by itself, and the typing box answers it.
     const fresh = thread.open.find(o => !waitingSeen.has(o.id));
     thread.open.forEach(o => waitingSeen.add(o.id));
-    if (fresh && target !== GENERAL) { target = fresh.id; fold = fresh.id; }
+    if (fresh && target !== GENERAL) fold = fresh.id;   // AIG-936: a new question opens in the chat, but the typing box stays a plain message
     const html = foldsHtml() || `<p class="muted dm-empty">${esc(t(chats.some(x => x.slug === open && x.watchman) ? 'dms.nomsgs.watch' : 'dms.nomsgs'))}</p>`;
     // AIG-757: the card open in the chat can be answered too, not only cards waiting on you: a reply to a 💬 card the
     // lead had answered used to start a new card.
     const fc0 = (thread.cards || {})[fold];
     thread.answer = !thread.watchman && fc0 && !fc0.done && fc0.kind !== 'test' && fold !== '_lead' && !thread.open.some(o => o.id === fold) ? [...thread.open, { id: fold, title: fc0.title }] : thread.open;
-    if (target !== GENERAL && !thread.answer.some(o => o.id === target)) target = thread.open.length ? thread.open[0].id : thread.answer.length ? thread.answer[0].id : null;
+    if (target !== GENERAL && !thread.answer.some(o => o.id === target)) target = GENERAL;   // AIG-936: the Lead chat itself unless you pick a card
     if (list.dataset.sig !== html) {
       const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
       list.dataset.sig = html; list.innerHTML = html;
@@ -220,7 +226,8 @@ const Dms = (() => {
     const to = thread.answer.length && !thread.watchman ? `${esc(t('dms.replyto'))} <select id="dmTarget" onchange="Dms.aim(this.value)">${thread.answer.map(o => `<option value="${esc(o.id)}" ${o.id === target ? 'selected' : ''}>${esc(o.id)} ${esc(o.title)}</option>`).join('')}<option value="${GENERAL}" ${target === GENERAL ? 'selected' : ''}>💬 ${esc(t('dms.newmsg', { lead: thread.lead }))}</option></select>`
       : q ? t('dms.replying.html', { link: `<a href="#/p/${esc(thread.slug)}/${esc(q.id)}">${esc(q.id)}</a>`, title: esc(q.title) }) : esc(t('dms.newmsg', { lead: thread.lead }));
     if (el('dmTo').dataset.sig !== to && document.activeElement !== el('dmTarget')) { el('dmTo').dataset.sig = to; el('dmTo').innerHTML = to; }
-    el('dmGo').hidden = !q;
+    const qm = q && thread.messages.filter(m => m.card === q.id && !m.mine).pop();
+    el('dmGo').hidden = !(qm && askActions(qm, (thread.cards || {})[q.id] && thread.cards[q.id].kind).some(a => a.say === 'GO'));   // AIG-936: Go only answers a Go? question
     // AIG-426: the lead carried on in another card; the card now open in the chat points the way.
     const fc = (thread.cards || {})[fold] || {}, fh = fc.followUp ? Follow.html('dm', thread.slug, fold, fc.followUp.id) : '';
     if (el('dmFollow') && el('dmFollow').dataset.sig !== fh) { el('dmFollow').dataset.sig = fh; el('dmFollow').innerHTML = fh; }
@@ -233,10 +240,11 @@ const Dms = (() => {
     const bar = el('smBar'), sm = thread && thread.sm; if (!bar || !sm) return;
     // The diligence scale (AIG-441): 1..5, on its own select; the same one is in Setup.
     const pick = `<select class="setup-theme" id="smPush" title="${esc(t('sm.push.title'))}" onchange="Dms.smPush(this.value)">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${sm.push === n ? 'selected' : ''}>${n} · ${esc(t('sm.push.' + n))}</option>`).join('')}</select>`;
-    const html = sm.on
+    const sw = here() ? ` ${Swarm.btn(here(), 'smSwarm')}` : '';
+    const html = (sm.on
       ? `<b>${esc(t('sm.on.push', { n: sm.everyMin, name: t('sm.push.' + sm.push) }))}</b> <span class="muted">${esc(t('sm.runs', { runs: sm.runsToday, cap: sm.cap }))}</span> ${pick}
         <button id="smNight" class="${sm.night ? 'primary' : ''}" onclick="Dms.smNight(${!sm.night})" title="${esc(t('sm.night.title'))}">${esc(t(sm.night ? 'sm.night.on' : 'sm.night.off'))}</button> <span class="muted">${esc(t('sm.night.what'))}</span>`
-      : `<span class="muted" id="smOut">${esc(t('sm.out'))}</span> <a href="#/setup" id="smAdd">${esc(t('sm.out.add'))}</a>`;
+      : `<span class="muted" id="smOut">${esc(t('sm.out'))}</span> <a href="#/setup" id="smAdd">${esc(t('sm.out.add'))}</a>`) + sw;
     if (bar.dataset.sig !== html) { bar.dataset.sig = html; bar.innerHTML = html; }
   }
   async function smNight(on) { try { await api('POST', '/api/setup', { prefs: { watchAll: !!on } }); await loadThread(); } catch (e) { el('dmErr').textContent = e.message || String(e); } }
@@ -273,17 +281,22 @@ const Dms = (() => {
     if (list.dataset.sig !== html) { list.dataset.sig = html; list.innerHTML = html; }
   }
   function showAllHands() {
-    open = '_allhands'; listOpen = true; thread = { allhands: true };
+    open = '_allhands'; listOpen = true; thread = { allhands: true }; askAll = false;
     const panel = el('dmPanel'); panel.dataset.sig = '';
     panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button><b>${esc(t('allhands.name'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-list" id="dmList"></div><div class="dm-compose"><div class="muted">${esc(t('allhands.help'))}</div>
-      <textarea id="dmText" data-draft="dm/_allhands" rows="2" placeholder="${esc(t('dms.placeholder'))}"></textarea><div class="err" id="dmErr"></div>
-      <div class="actions"><button id="allHandsSend" class="primary" onclick="Dms.send()" ${busy ? 'disabled' : ''}>${esc(t('dms.send'))}</button></div></div>`;
+      <textarea id="dmText" data-draft="dm/_allhands" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(EnterSend.is(event,'chat')){event.preventDefault();Dms.askTeams(true)}"></textarea><div class="err" id="dmErr"></div>
+      <div class="actions" id="allHandsAsk" hidden></div>
+      <div class="actions" id="allHandsActs"><button id="allHandsSend" class="primary" onclick="Dms.send()" ${busy ? 'disabled' : ''}>${esc(t('dms.send'))}</button></div></div>`;
     panel.hidden = false; loadThread(); loadRail(); el('dmText').focus();
   }
+  // AIG-943: Enter and the button first ask "Send to N teams?"; only Send in that question sends.
+  const askTeams = on => { const a = el('allHandsAsk'), b = el('allHandsActs'); if (!a) return; if (on && !el('dmText').value.trim()) { el('dmErr').textContent = t('dms.empty'); return; } if (on) el('dmErr').textContent = ''; askAll = on; a.hidden = !on; b.hidden = on; if (on) { const n = projects.filter(x => !x.archived).length; a.innerHTML = `<b class="dm-askq" role="alert">${esc(t(n === 1 ? 'allhands.confirm.one' : 'allhands.confirm', { n }))}</b><button id="allHandsYes" class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button><button id="allHandsNo" onclick="Dms.askTeams(false)">${esc(t('common.cancel'))}</button>`; el('allHandsYes').focus(); } else el('dmText').focus(); };
   async function sendAllHands() {
     const ta = el('dmText'), err = el('dmErr'), btn = el('allHandsSend'), text = ta.value;
     if (!text.trim()) { err.textContent = t('dms.empty'); return; }
+    if (!askAll) { err.textContent = ''; askTeams(true); return; }
+    askTeams(false);
     busy = true; btn.disabled = true; err.textContent = '';
     try {
       await api('POST', '/api/allhands', { text });
@@ -303,7 +316,7 @@ const Dms = (() => {
     thread = who ? { person: true, id: who.id, slug, name: who.name, messages: [], open: [] } : null;
     const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || { slug, name: slug };
     const panel = el('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(chatName(c))}</div></div><span style="flex:1"></span>${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv(who) : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(chatName(c))}</div></div><span style="flex:1"></span>${who ? '' : callLink(c.callUrl, 'dm-call')}${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}${who ? '<div class="dm-usage" id="dmUsage" hidden></div>' : ''}
       <div class="dm-list" id="dmList"></div>
       <div id="dmFollow"></div>
@@ -350,7 +363,6 @@ const Dms = (() => {
       else if (q && !(fold === '_lead' && target === GENERAL)) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
       else { await api('POST', `/api/projects/${thread.slug}/leadchat`, { author: me(), text, attachments }); fold = '_lead'; }   // AIG-872: the one Lead chat, not a 💬 card per message
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
-      if (target === GENERAL && fold !== '_lead') target = null;   // sent: back to answering what waits on you
       await loadThread(true); loadRail();
     } catch (e) { el('dmErr').textContent = e.message || String(e); }
     busy = false;
@@ -413,6 +425,7 @@ const Dms = (() => {
     if (sv) { e.preventDefault(); saveEmoji(sv.dataset.ecid, sv.dataset.esave); return; }
     const xc = e.target.closest('#dmPanel [data-dmclose],#dmPanel [data-dmreopen]');   // AIG-917
     if (xc) { e.preventDefault(); const k = xc.dataset.dmclose || xc.dataset.dmreopen, shut = !!xc.dataset.dmclose; api('POST', '/api/dmclosed', { key: k, closed: shut }).then(() => { if (shut) closed[k] = new Date().toISOString(); else delete closed[k]; return loadRail(); }).then(paintList).catch(() => {}); return; }
+    if (e.target.closest('#dmPanel [data-dmshowquiet]')) { showQuiet = !showQuiet; paintList(); return; }
     if (e.target.closest('#dmPanel [data-dmshowclosed]')) { showClosed = !showClosed; paintList(); return; }
     const fl = e.target.closest('#dmPanel [data-dmfilter]');
     if (fl) { filter = fl.dataset.dmfilter; try { localStorage.setItem('aigile.dmfilter', filter); } catch {} paintList(); return; }
@@ -441,5 +454,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   PagePoll.every(async () => { await loadRail(); if (open) await loadThread(); }, 3000);
   loadRail();
-  return { follow, show, back, close, send, ask, aim, reply, reload, smNight, smPush, requestForm, requestSend };
+  return { follow, show, back, close, send, ask, askTeams, aim, reply, reload, smNight, smPush, requestForm, requestSend };
 })();

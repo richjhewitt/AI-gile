@@ -21,6 +21,13 @@
     --shadow: 0 1px 2px rgba(0,0,0,.4);
     color-scheme: dark;
 }
+/* Black (AIG-916): true #000 for OLED, dim text, panels and columns the same black as the page (only thin lines set them apart). */
+:root[data-theme=black] {
+  --bg: #000; --panel: #000; --col: #000; --text: #b4b9c4; --muted: #7a8192; --line: #23262d;
+  --accent: #6d93ff; --done: #34c77b; --warn: #f0a33a; --danger: #f06262; --you: #b57cff;
+  --shadow: none;
+  color-scheme: dark;
+}
 /* Night mode (the owner went quiet): dim, warm, no blue light. */
 :root[data-night] {
   --bg: #0d0906; --panel: #15100b; --col: #110c08; --text: #c9a27e; --muted: #7d6450; --line: #2a1f16;
@@ -42,6 +49,7 @@ header .spacer { flex: 1; }
 .navlink:hover { border-color: var(--accent); }
 button.navlink { cursor: pointer; color: inherit; font-family: inherit; }
 a.usage { display: block; }
+a.usage[hidden] { display: none; }
 a.usage:hover { border-color: var(--accent); }
 .quiet-chip { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--warn) 18%, var(--panel)); color: var(--text); white-space: nowrap; }   /* AIG-615 */
 .quiet-chip[hidden] { display: none; }
@@ -129,6 +137,18 @@ code[data-copy-text] { cursor: pointer; }
 .card.is-incident { border-inline-start: 3px solid #dc2626; background: color-mix(in srgb, #dc2626 8%, var(--panel)); }
 .postmortem { margin-top: 10px; padding: 6px 10px; border-inline-start: 3px solid #dc2626; background: color-mix(in srgb, #dc2626 6%, var(--panel)); }
 .postmortem p { margin: 4px 0; }
+.problem { margin-top: 10px; padding: 6px 10px; border-inline-start: 3px solid #d97706; background: color-mix(in srgb, #d97706 6%, var(--panel)); }
+.problem p { margin: 4px 0; }
+.change { margin-top: 10px; padding: 6px 10px; border-inline-start: 3px solid #2563eb; background: color-mix(in srgb, #2563eb 6%, var(--panel)); }
+.change p { margin: 4px 0; }
+.chg-raise { margin-top: 10px; }
+.gonogo { margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--line, #8884); }
+.gonogo h4 { margin: 0 0 4px; }
+.gonogo ul { margin: 4px 0; padding-inline-start: 18px; }
+.gonogo textarea { width: 100%; margin-top: 4px; }
+.gng-ok { color: #16a34a; }
+.gng-no { color: #dc2626; }
+.chg-when { flex-wrap: wrap; }
 .qa-gate { margin: 0 0 8px; font-size: .92em; }   /* the merge gate (AIG-613) */
 .qa-gate.red { color: var(--danger, #dc2626); font-weight: 600; }
 .card.is-blocked { border-inline-start: 3px solid var(--danger); }
@@ -173,3 +193,15 @@ th { color: var(--muted); font-weight: 500; }
 .chk-b { padding: 0 6px; min-width: 0; line-height: 1.4; }
 .chk-add { display: flex; gap: 6px; }
 .chk-add input { flex: 1; }
+
+/* Board toolbar on a phone (AIG-933): cards first, the buttons behind one ⋯; details folded (AIG-938); empty priority chip (AIG-939) */
+.toolbar .tb-more { display: contents; } .toolbar .tb-dots { display: none; }
+@media (max-width: 600px) {
+  .toolbar .tb-dots { display: inline-block; min-width: 44px; min-height: 36px; font-size: 18px; line-height: 1; margin-left: auto; }
+  .toolbar .tb-more { display: none; flex-basis: 100%; flex-wrap: wrap; gap: 8px; }
+  .toolbar .tb-more.open { display: flex; }
+  .toolbar .tb-more .grow { display: none; }
+}
+.bdetails { margin: 0 0 10px; font-size: 13px; } .bdetails summary { cursor: pointer; color: var(--muted); } .bdetails .flight, .bdetails p { margin: 6px 0 0; }
+.q-chip.prio.unset { max-width: 0; margin-left: -4px; padding-left: 0; padding-right: 0; border-width: 0; overflow: hidden; opacity: 0; white-space: nowrap; }
+.q-chips:hover .q-chip.prio.unset, .q-chips:focus-within .q-chip.prio.unset { max-width: 220px; margin-left: 0; padding: 1px 7px; border-width: 1px; opacity: 1; }

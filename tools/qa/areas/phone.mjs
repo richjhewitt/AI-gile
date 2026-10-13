@@ -1,5 +1,5 @@
 // QA area: phone (AIG-410). Every page at phone size has no sideways scroll and big enough tap targets; the app installs (manifest + service worker).
-import { check, sleep, tmp, mkProject, mkCard, openPage, BASE, def } from '../lib.mjs';
+import { check, sleep, tmp, mkProject, mkCard, openPage, BASE, def, clickBar } from '../lib.mjs';
 
 const DEVICES = [{ name: 'iPhone 390x844', viewport: { width: 390, height: 844 } }, { name: 'Android 412x915', viewport: { width: 412, height: 915 } }];
 
@@ -19,8 +19,11 @@ const fits = async (page, label) => {
   check(`${label}: no sideways scroll (${m.sw} <= ${m.cw})`, m.sw <= m.cw, m.sw > m.cw ? await page.evaluate(sticking) : '');
 };
 const tapSize = async (page, sel, label) => {
+  const inMenu = await page.evaluate(q => { const e = document.querySelector(q), m = document.getElementById('tbMoreMenu'); return !!(e && m && m.contains(e) && m.hidden); }, sel);   // AIG-931: on a phone the bar buttons are in the ☰ menu
+  if (inMenu) await page.click('#tbMoreBtn');
   const r = await page.evaluate(q => { const e = document.querySelector(q); if (!e) return null; const b = e.getBoundingClientRect(); return { w: b.width, h: b.height, vis: b.width > 0 && b.right <= document.documentElement.clientWidth + 1 && b.left >= -1 }; }, sel);
   check(`${label}: visible and at least 40px`, !!r && r.vis && r.h >= 39.5 && r.w >= 39.5, JSON.stringify(r));
+  if (inMenu) await page.click('#tbMoreBtn');
 };
 
 def('phone', '📱 every page fits a phone (390x844, 412x915): no sideways scroll, big tap targets; manifest + service worker (AIG-410)', async (s, ctx0) => {
@@ -53,7 +56,7 @@ def('phone', '📱 every page fits a phone (390x844, 412x915): no sideways scrol
       check(D + ': service worker registers and is active', reg === true, reg);
       await fits(page, D + ' home');
       await tapSize(page, '#helpBtn', D + ' ❓ Help');
-      await page.click('#helpBtn');
+      await clickBar(page, '#helpBtn');
       await page.waitForSelector('#hmInstall', { timeout: 3000 }).catch(() => {});
       check(D + ': Help menu has the Add to home screen item, inside the window', await page.evaluate(() => { const e = document.getElementById('hmInstall'), m = document.getElementById('helpMenu'); if (!e || !m) return false; const r = m.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; }));
       await page.click('#hmInstall').catch(() => {});

@@ -96,7 +96,7 @@ const Phone = (() => {
   /* ---------- the Setup box (this computer only) ---------- */
   function html() {
     setTimeout(load, 0);
-    return `<span>📱 ${esc(t('phone.h'))}</span><div id="phBody" class="muted">…</div>`;
+    return `<div id="phBody" class="muted">…</div>`;
   }
   async function load() {
     if (!$('phBody')) return;
@@ -110,13 +110,17 @@ const Phone = (() => {
     const box = $('phBody'); if (!box) return;
     box.className = '';
     const d = P.data || { devices: [] }, when = s => s ? ago(s) : t('phone.never');
+    const step = (n, key, inner) => `<li class="ph-step"><b class="ph-n" aria-hidden="true">${n}</b><div class="ph-body"><h4 class="ph-h">${esc(t('phone.step' + n + '.h'))}</h4>${inner}</div></li>`;
     box.innerHTML = `<small class="muted">${esc(t('phone.help'))}</small>
-      <label>${esc(t('phone.host'))} <input id="phHost" placeholder="mypc.tail1234.ts.net" value="${esc(P.host)}" autocomplete="off" spellcheck="false"></label>
+      <ol class="ph-steps" id="phSteps">
+      ${step(1, '', `<label>${esc(t('phone.host'))} <input id="phHost" placeholder="mypc.tail1234.ts.net" value="${esc(P.host)}" autocomplete="off" spellcheck="false"></label>
       <label>${esc(t('phone.name'))} <input id="phName" placeholder="${esc(t('phone.name.ph'))}" maxlength="40"></label>
-      <div class="actions"><button type="button" id="phPair" ${P.busy ? 'disabled' : ''}>${esc(t('phone.pair'))}</button> <button type="button" id="phApp" ${P.busy ? 'disabled' : ''}>${esc(t('phone.app'))}</button></div>
       <small class="muted">${esc(t('phone.serve'))} <code>tailscale serve --bg ${esc(location.port || '4321')}</code></small>
-      ${P.link ? `<div class="phone-link">${qrSvg(P.link.url)}<p><a href="${esc(P.link.url)}" target="_blank" rel="noopener" id="phLink">${esc(P.link.url)}</a></p><small class="muted">${esc(t('phone.link.help'))}</small></div>` : ''}
-      ${P.app ? `<div class="phone-link">${qrSvg(P.app.qr)}<code id="phAppQr" class="phone-key">${esc(P.app.qr)}</code><small class="muted">${esc(t('phone.app.help'))}</small></div>` : ''}
+      <div class="actions"><button type="button" class="primary" id="phPair" ${P.busy ? 'disabled' : ''}>${esc(t('phone.pair'))}</button></div>
+      <small class="muted">${esc(t('phone.app.or'))} <button type="button" class="ph-alt" id="phApp" ${P.busy ? 'disabled' : ''}>${esc(t('phone.app'))}</button></small>`)}
+      ${step(2, '', (P.link ? `<div class="phone-link"><p class="ph-scan">${esc(t('phone.scan'))}</p>${qrSvg(P.link.url)}<p><a href="${esc(P.link.url)}" target="_blank" rel="noopener" id="phLink">${esc(P.link.url)}</a></p><small class="muted">${esc(t('phone.link.help'))}</small></div>` : '') + (P.app ? `<div class="phone-link"><p class="ph-scan">${esc(t('phone.scan'))}</p>${qrSvg(P.app.qr)}<code id="phAppQr" class="phone-key">${esc(P.app.qr)}</code><small class="muted">${esc(t('phone.app.help'))}</small></div>` : '') || `<small class="muted">${esc(t('phone.step2.wait'))}</small>`)}
+      ${step(3, '', `<small class="muted">${esc(t('phone.step3.help'))}</small>`)}
+      </ol>
       <div class="err" id="phErr">${esc(P.err)}</div>
       ${d.devices.length ? `<ul class="phone-list">${d.devices.map(x => `<li><b>${esc(x.name)}</b> <small class="muted">${esc(x.host)} · ${esc(t('phone.seen', { when: when(x.seen) }))}</small> <button type="button" class="ph-rm" data-id="${esc(x.id)}">${esc(t('phone.remove'))}</button></li>`).join('')}</ul>` : `<small class="muted">${esc(t('phone.none'))}</small>`}`;
   }

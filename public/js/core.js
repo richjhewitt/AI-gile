@@ -63,10 +63,10 @@ function queueChips(c) {
   const task = isOwnerTask(c);   // a task has a 🖥️ switch for a job on a server (AIG-320); the kind chip is its mark when on
   if (task && c.lifeType) return `<span class="q-chips"><span class="q-chip" title="${esc(t('queue.kind.life'))}">🏡 ${esc(t('queue.kind.life'))}</span>${lifeChip(c)}${c.apptAt ? `<span class="q-chip">📅 ${esc(timedWhen(c.apptAt))}</span>` : ''}${lifeDoneBtn(c)}</span>`;
   return `<span class="q-chips">` + (task && (c.server || c.outside) ? '' : `<span class="q-chip" title="${esc(t('queue.kind.' + k))}">${QKINDS[k]} ${esc(t('queue.kind.' + k))}</span>`)
-    + (task ? `<button class="q-chip srv ${c.server ? 'on' : ''}" data-server="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.server ? 1 : 0}" title="${esc(t('queue.server.title'))}">🖥️${c.server ? ' ' + esc(t('queue.kind.server')) : ''}</button>` : '')
-    + (task ? `<button class="q-chip srv ${c.outside ? 'on' : ''}" data-outside="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.outside ? 1 : 0}" title="${esc(t('queue.outside.title'))}">🤝${c.outside ? ' ' + esc(t('queue.kind.outside')) : ''}</button>` : '')
+    + (task ? `<button class="q-chip srv ${c.server ? 'on' : ''}" data-server="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.server ? 1 : 0}" title="${esc(t('queue.server.title'))}" aria-label="${esc(t('queue.server.title'))}">🖥️ ${esc(t('queue.kind.server'))}</button>` : '')
+    + (task ? `<button class="q-chip srv ${c.outside ? 'on' : ''}" data-outside="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.outside ? 1 : 0}" title="${esc(t('queue.outside.title'))}" aria-label="${esc(t('queue.outside.title'))}">🤝 ${esc(t('queue.kind.outside'))}</button>` : '')
     + (task && c.server ? openServerBtn(c) : '')
-    + `<button class="q-chip prio${p ? 'p-' + p : ''}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
+    + `<button class="q-chip prio${p ? 'p-' + p : ' unset'}" aria-label="${esc(t('queue.prio.title'))}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
     + checkChip(c) + waitChip(c)
     + ((c.holds || []).length ? `<span class="q-chip holds" title="${esc(c.holds.join(', '))}">⛓ ${esc(t('queue.holds', { n: c.holds.length }))}</span>` : '')
     + (c.bumpedAt ? `<span class="q-chip bump" title="${esc(t('queue.bump.title', { count: c.bumps || 1, n: c.bumps || 1 }))}">⏫ ${esc(t('queue.bump', { at: bumpTime(c.bumpedAt) }))}</span>` : '')
@@ -74,10 +74,16 @@ function queueChips(c) {
 }
 // 🖥️ Open server (AIG-374): the names come from Setup > My servers (state.servers, via /api/meta). The card may name one
 // (serverName); one saved server: that one; several: a small picker. The board opens only what Setup saved, by name.
+// AIG-774: the server chosen in the card's project settings ("" = none): the board's project, or its summary on the home page and inbox.
+function projectServer(c) {
+  if (c && c.projectServer) return c.projectServer;   // the inbox sends it with each card
+  const s = c && c.project || (state.route && state.route.slug), p = state.project && state.project.slug === s ? state.project : (state.projects || []).find(x => x.slug === s);
+  return (p && p.srv && p.srv.name) || '';
+}
 function openServerBtn(c) {
   const names = state.servers; if (!names) return '';
   if (!names.length) return `<a class="q-chip srv-open" href="#/setup">${esc(t('server.setup'))}</a>`;
-  const n = names.find(x => x.toLowerCase() === String(c.serverName || '').toLowerCase()) || (names.length === 1 ? names[0] : '');
+  const n = names.find(x => x.toLowerCase() === String(c.serverName || '').toLowerCase()) || names.find(x => x.toLowerCase() === projectServer(c).toLowerCase()) || (names.length === 1 ? names[0] : '');
   return (n ? `<button class="q-chip srv-open" data-open-server="${esc(n)}">${esc(t('server.open', { name: n }))}</button>`
     : `<button class="q-chip srv-open" data-pick-server>${esc(t('server.open.pick'))}</button>`) + Term.btn(c);   // ⌨ Terminal (AIG-471)
 }
@@ -172,14 +178,15 @@ function cardViewOf(p) {
   const v = (state.cvPreview && p && state.cvPreview.slug === p.slug ? state.cvPreview.view : p && p.cardView) || {};
   return { density: v.density === 'compact' ? 'compact' : 'roomy', show: { ...CARD_SHOW, ...(v.show || {}) } };
 }
-const TYPES =['feature', 'bug', 'task', 'incident'];
+const TYPES =['feature', 'bug', 'task', 'incident', 'problem', 'change'];
 const PRIORITIES = ['low', 'normal', 'high', 'urgent'];
 const RISKS = ['small', 'normal', 'risky'];   // AIG-612
 const state = { route: null, projects: [], inbox: [], project: null, openCard: null, showArchived: false, editing: false, dragging: false, lastSig: null };
 try { state.showArchived = localStorage.getItem('aigile.showArchived') === '1'; } catch {}
 
-const api = async (method, url, body) => {
-  const j = await PagePoll.request(method, url, body);
+const api = async (method, url, body, options = {}) => {
+  // PagePoll.request: shared GETs, a 15 s timeout on reads (a stalled connection cannot hold the refresh queue), the caller's signal.
+  const j = await PagePoll.request(method, url, body, options);
   return typeof Streamer !== 'undefined' && Streamer.on() ? PagePoll.remember(await Streamer.filter(method, url, j)) : j;   // 🎥 streamer mode (AIG-590)
 };
 // A project's picture, or its emoji when it has none (AIG-175). Round, one em, so it sits where the emoji sat.
@@ -189,7 +196,7 @@ const avatarUrl = f => !f ? '' : /^badge:/.test(f) ? '/api/avatars/badge/' + f.s
 function faceUrl(name, team) {
   if (isOwner(name)) return state.ownerPic || '';
   const m = (team || []).find(m => m.name.toLowerCase() === String(name || '').trim().toLowerCase());
-  return m ? avatarUrl(m.avatar) : '';
+  return m ? avatarUrl(m.avatar) : (state.friendPics || {})[String(name || '').trim().toLowerCase()] || '';   // my picture for a friend (AIG-883)
 }
 const face = (name, team) => { const u = faceUrl(name, team); return u ? `<img class="face" src="${esc(u)}" alt="" title="${esc(name)}">` : ''; };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -209,12 +216,17 @@ function parseRoute() {
   if (popList) return { view: 'inbox', popList: popList[1] };
   if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
   if (location.hash === '#/assumptions') return { view: 'assumptions' };
+  if (location.hash === '#/bin') return { view: 'bin' };   // the Assistant's bin (AIG-840)
   if (location.hash === '#/mail') return { view: 'mail' };   // ✉️ Mail inbox list (AIG-902)
   const stMatch = location.hash.match(/^#\/stats\/([a-z0-9-]+)$/);
   if (stMatch) return { view: 'stats', slug: stMatch[1] };   // project stats (AIG-726)
+  const rkMatch = location.hash.match(/^#\/risks\/([a-z0-9-]+)$/);
+  if (rkMatch) return { view: 'risks', slug: rkMatch[1] };   // risk register (AIG-863)
+  if (location.hash === '#/life') return { view: 'life' };   // 🏡 life admin without tokens (AIG-798)
   if (location.hash === '#/today') return { view: 'today' };   // Today: Today's project weights (AIG-595)
   if (location.hash === '#/whats-new') return { view: 'whatsnew' };   // ✨ release notes (AIG-562)
-  if (location.hash === '#/setup') return { view: 'setup' };
+  const setupRoute = location.hash.match(/^#\/setup(?:\/([A-Za-z0-9-]+))?$/);   // #/setup/<section> lands on that part of Setup (AIG-934)
+  if (setupRoute) return { view: 'setup', ...(setupRoute[1] ? { sec: setupRoute[1] } : {}) };
   const suRoute = location.hash.match(/^#\/standups(?:\/([^/]+))?$/);   // AIG-539: #/standups/<project> shows one team
   if (suRoute) return { view: 'standups', ...(suRoute[1] ? { slug: decodeURIComponent(suRoute[1]) } : {}) };
   if (location.hash === '#/glossary') return { view: 'glossary' };
@@ -255,31 +267,62 @@ function busy() {
 
 // The render signature (AIG-310): presence.waitingMs ticks on every request while a team sits in 'aigile wait', so it is
 // left out; with it in, the board and the open card were redrawn every second and the panel flickered.
-const renderSig = x => PagePoll.signature(x);
-let refreshFlight = null, refreshAgain = false;
+const renderSig = x => PagePoll.signature(x);   // downloaded data is fingerprinted once, never re-stringified per tick (AIG-920)
+// At most one refresh runs; repeated polls collapse into one follow-up (forced stays forced).
+let refreshPromise = null, refreshPending = null, refreshController = null, refreshRoute = null;
 function refresh(force) {
-  if (force) PagePoll.invalidate(false);
-  if (refreshFlight) { if (force) refreshAgain = true; return refreshFlight; }
-  refreshFlight = (async () => {
-    do { refreshAgain = false; await refreshNow(force); force = true; } while (refreshAgain);
-  })().finally(() => { refreshFlight = null; });
-  return refreshFlight;
+  if (force) PagePoll.invalidate(false);   // an owner action: the next reads skip the cache
+  // Inbox already owns a single-flight loader; it must not hold navigation in this queue.
+  const target = parseRoute();
+  if (target.view === 'inbox' && i18n.ready && !Boot.failed && !Phone.blocked) {
+    if (refreshController) refreshController.abort();
+    if (state.route?.view === 'project') state.lastProject = state.route.slug;
+    state.route = target; state.lastSig = state.lastBoardSig = null;
+    return Inbox.show(force);
+  }
+  if (refreshPromise) {
+    refreshPending = !!force || refreshPending === true;
+    // Navigation cancels stale reads, so slow Stats/Usage never hold up the next page.
+    if (JSON.stringify(parseRoute()) !== refreshRoute && refreshController) refreshController.abort();
+    return refreshPromise;
+  }
+  // Defer entry until refreshPromise is assigned, including early-returning refreshes.
+  refreshPromise = Promise.resolve().then(async () => {
+    let next = !!force;
+    do {
+      refreshPending = null;
+      refreshRoute = JSON.stringify(parseRoute());
+      refreshController = new AbortController();
+      try { await refreshOnce(next); }
+      catch (e) { console.error(e); Boot.note(); }
+      next = refreshPending;
+    } while (next !== null);
+  }).finally(() => { refreshPromise = null; refreshController = null; refreshRoute = null; });
+  return refreshPromise;
 }
-async function refreshNow(force) {
+async function refreshOnce(force) {
+  const liveState = state;
+  // Stage fetched values. Navigation during an await must not overwrite the active project.
+  const stagedState = Object.create(liveState);
+  const signal = refreshController.signal;
+  // Reads go through PagePoll: fetched only when /api/rev (or the project's own stamp) moved, or forced (AIG-920).
+  const refreshApi = (method, url, body, options = {}) => method === 'GET' ? PagePoll.get(url, { force, revision: !/\/agentlog$/.test(url), ...options, signal }) : api(method, url, body, { ...options, signal });
+  return refreshStaged(force, liveState, stagedState, refreshApi);
+}
+async function refreshStaged(force, liveState, state, api) {
   if (!i18n.ready || Boot.failed || Phone.blocked) return;   // (Phone.blocked: a phone not let in yet, AIG-868) the language file comes first (AIG-124); a broken start-up reloads instead (AIG-517)
   if (state.route && state.route.view === 'project') state.lastProject = state.route.slug; else if (state.route && state.route.view !== 'inbox') state.lastProject = null;
   state.route = parseRoute();
   const route = JSON.stringify(state.route);
   if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; $('filterbar').innerHTML = ''; $('filterbar').dataset.slug = ''; }
   // The inbox page renders itself; forget the last render so leaving it always redraws.
-  if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; return Inbox.show(force); }
-  const get = url => PagePoll.get(url, { force, revision: !/\/agentlog$/.test(url) });
+  if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; Object.assign(liveState, state); Inbox.show(force).catch(e => console.error(e)); return; }
   let sig;
   try {
     if (state.route.view === 'home') {
       const q = state.showArchived ? '?all=1' : '';
-      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([TodayPage.load().then(() => get('/api/projects' + q)), IB.load(force).then(() => IB.raw), get('/api/usage').catch(() => ({ enabled: false })), get('/api/scrummaster').catch(() => null)]);
-      state.projects = Swarm.only(state.projects); state.inbox = Swarm.only(state.inbox, true);   // 🚨 swarm: only that project (AIG-877)
+      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([TodayPage.load({ signal: refreshController.signal }).then(() => api('GET', '/api/projects' + q)), IB.load(force).then(() => IB.raw), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
+      state.projects = TodayPage.only(Swarm.only(state.projects)); state.inbox = Swarm.only(state.inbox, true);   // 🚨 swarm: only that project (AIG-877)
       sig = renderSig([state.route, state.projects, IB.dataSig, state.usage, TodayPage.data, state.sm && [state.sm.on, state.sm.where, state.sm.listening, state.sm.running, state.sm.lastRunAt, state.sm.lastRound]]);
     } else if (state.route.view === 'setup') {
       state.setup = await get('/api/setup');
@@ -297,13 +340,13 @@ async function refreshNow(force) {
       state.news = await get(`/api/projects/${state.route.slug}/news`);
       sig = renderSig([state.route, state.news, Math.floor(Date.now() / 60e3)]);
     } else if (state.route.view === 'dlg') {
-      if (state.route.slug) { state.project = await get('/api/projects/' + state.route.slug); await loadDocs(state.route.slug); }
-      await loadProfiles();
+      if (state.route.slug) { state.project = await api('GET', '/api/projects/' + state.route.slug); await loadDocs(state.route.slug, { signal: refreshController.signal }); }
+      await loadProfiles({ signal: refreshController.signal });
       sig = renderSig([state.route, i18n.lang]);
     } else if (state.route.view === 'weed') {
       sig = renderSig([state.route, i18n.lang]);
     } else if (state.route.view === 'glance') {
-      await ScrumGlance.load(state.route.slug);
+      await ScrumGlance.load(state.route.slug, { signal: refreshController.signal });
       sig = renderSig([state.route, ScrumGlance.data, i18n.lang]);
     } else if (state.route.view === 'term' || state.route.view === 'twitch') {
       sig = renderSig([state.route, i18n.lang]);
@@ -313,39 +356,51 @@ async function refreshNow(force) {
       state.sboard = await get(`/api/shares/${state.route.link}/board`).catch(() => null);
       sig = renderSig([state.route, state.sboard, i18n.lang]);
     } else if (state.route.view === 'mail') {
-      await Mail.load();
+      await Mail.load({ signal: refreshController.signal });
       sig = renderSig([state.route, Mail.sig(), i18n.lang]);
+    } else if (state.route.view === 'bin') {
+      await Bin.load();
+      sig = renderSig([state.route, Bin.data, Bin.err, i18n.lang]);
     } else if (state.route.view === 'assumptions') {
-      await Assumptions.load();
+      await Assumptions.load({ signal: refreshController.signal });
       sig = renderSig([state.route, Assumptions.data]);
     } else if (state.route.view === 'stats') {
       // Say "Stats" and "Loading" at once (AIG-928): the git count can take a while, and the last page (and its crumb) stayed up meanwhile.
-      if (StatsPage.slug !== state.route.slug || !StatsPage.data) { StatsPage.slug = state.route.slug; StatsPage.data = null; state.lastSig = state.lastBoardSig = null; render(); }
-      await StatsPage.load(state.route.slug);
+      if (StatsPage.slug !== state.route.slug || !StatsPage.data) { StatsPage.slug = state.route.slug; StatsPage.data = null; state.lastSig = state.lastBoardSig = null; liveState.route = state.route; render(); }
+      await StatsPage.load(state.route.slug, { signal: refreshController.signal });
       sig = renderSig([state.route, StatsPage.data, i18n.lang]);
+    } else if (state.route.view === 'risks') {
+      await RisksPage.load(state.route.slug);
+      sig = renderSig([state.route, RisksPage.data, i18n.lang]);
+    } else if (state.route.view === 'life') {
+      await LifeAdmin.load();
+      sig = renderSig([state.route, LifeAdmin.data, LifeAdmin.err, i18n.lang]);
     } else if (state.route.view === 'today') {
-      await TodayPage.load();
+      await TodayPage.load({ signal: refreshController.signal });
       sig = renderSig([state.route, TodayPage.data, i18n.lang]);
     } else if (state.route.view === 'whatsnew') {
-      await WhatsNew.load();
+      await WhatsNew.load({ signal: refreshController.signal });
       sig = renderSig([state.route, WhatsNew.data, WhatsNew.rb, i18n.lang]);
     } else if (state.route.view === 'usage') {
-      if (!uz.data) { state.lastSig = state.lastBoardSig = null; render(); }   // AIG-558: say "Loading" at once, not after the fetch
-      await loadUsagePage(force);   // heavy, so at most every ~15s
+      if (!uz.data) { state.lastSig = state.lastBoardSig = null; liveState.route = state.route; render(); }   // AIG-558: say "Loading" at once, not after the fetch
+      await loadUsagePage(force, { signal: refreshController.signal });   // heavy, so at most every ~15s
       sig = renderSig([state.route, uzSig()]);
     } else {
-      state.project = await get('/api/projects/' + state.route.slug);
-      await loadDocs(state.route.slug);
-      await loadProfiles();   // the role templates, for roles added from a team (AIG-423)
+      state.project = await api('GET', '/api/projects/' + state.route.slug);
+      await loadDocs(state.route.slug, { signal: refreshController.signal });
+      await loadProfiles({ signal: refreshController.signal });   // the role templates, for roles added from a team (AIG-423)
       sig = renderSig([state.route, state.project]);
     }
   } catch (e) {
+    if (JSON.stringify(parseRoute()) !== route) return;
     $('live').className = 'live off';
     $('live').textContent = t('live.offline', { msg: e.message });
     if (!$('app').firstElementChild) Boot.note();   // nothing drawn yet (AIG-517): say so; the 1s poll tries again
     return;
   }
-  if (JSON.stringify(parseRoute()) !== route) return;   // AIG-558: the page moved on while this fetched; a newer refresh draws it
+  if (JSON.stringify(parseRoute()) !== route) return;   // discard results for the page we left
+  Object.assign(liveState, state);
+  state = liveState;   // render signatures and editing flags below remain shared with event handlers
   if (!force && state.dragging) return;
   if (!force && busy()) {
     // Keep the board behind moving; only hold the panel/dialog the owner is using.
@@ -378,9 +433,12 @@ function renderBoardOnly() {
   queueMicrotask(paintFilterBar);
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'usage') return;
+  if (state.route.view === 'bin') { $('app').innerHTML = Bin.render(); return; }
   if (state.route.view === 'assumptions') { $('app').innerHTML = Assumptions.render(); return; }
   if (state.route.view === 'mail') { $('app').innerHTML = Mail.render(); return; }
   if (state.route.view === 'stats') { $('app').innerHTML = StatsPage.render(); return; }
+  if (state.route.view === 'risks') { $('app').innerHTML = RisksPage.render(); return; }
+  if (state.route.view === 'life') { $('app').innerHTML = LifeAdmin.render(); return; }
   if (state.route.view === 'today') { $('app').innerHTML = TodayPage.render(); return; }
   if (state.route.view === 'whatsnew') { $('app').innerHTML = WhatsNew.render(); return; }
   if (state.route.view === 'standups') { $('app').innerHTML = renderStandups(); return; }
@@ -403,7 +461,7 @@ function render() {
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
-  if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; wizardMaybe(); return; }
+  if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; setupLand(); wizardMaybe(); return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'dlg') { renderPopDlg(); return; }
   if (state.route.view === 'term') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Term.popView(state.route); return; }
@@ -416,8 +474,11 @@ function render() {
   if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'shared') { $('crumb').textContent = '/ 🔗 ' + (state.sboard ? state.sboard.theirName || state.sboard.friend : ''); $('crumb').style.color = ''; $('app').innerHTML = ShareBoard.render(state.sboard); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'mail') { $('crumb').textContent = '/ ' + t('mail.title'); $('app').innerHTML = Mail.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'bin') { $('crumb').textContent = '/ ' + t('bin.title'); $('app').innerHTML = Bin.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'assumptions') { $('crumb').textContent = '/ ' + t('assume.nav'); $('app').innerHTML = Assumptions.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'stats') { $('crumb').textContent = '/ ' + t('stats.title'); $('app').innerHTML = StatsPage.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'risks') { $('crumb').textContent = '/ ' + t('risks.title'); $('app').innerHTML = RisksPage.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'life') { $('crumb').textContent = '/ ' + t('la.title'); $('app').innerHTML = LifeAdmin.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'today') { $('crumb').textContent = '/ ' + t('today.title'); $('app').innerHTML = TodayPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'whatsnew') { $('crumb').textContent = '/ ' + t('wn.title'); $('app').innerHTML = WhatsNew.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'usage') { $('crumb').textContent = '/ ' + t('crumb.usage'); $('app').innerHTML = renderUsagePage(); $('modal').innerHTML = ''; return; }

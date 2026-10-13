@@ -34,8 +34,11 @@ async function newCard(preset = {}) {
         <label class="f"><span>${esc(t('dlg.life.remind'))}</span><select id="nc-remind">${[0, 15, 30, 60, 120, 1440].map(m => `<option value="${m}" ${m === 60 ? 'selected' : ''}>${esc(t('dlg.life.remind.' + m))}</option>`).join('')}</select></label></div>
       <small class="muted" id="nc-appt-hint" hidden>${esc(t('dlg.life.hint'))}</small>
       ${state.project && !state.project.lifeBoard ? `<small class="muted" id="nc-life-suggest">${esc(t('dlg.life.suggest'))} <a href="#" onclick="makeLifeBoard();return false">${esc(t('dlg.life.suggest.btn'))}</a></small>` : ''}</div>`;
+  // AIG-942: a quick idea needs a title and a description; everything else is under More options (open when something was pre-filled).
+  const moreOpen = !!(preset.type && preset.type !== 'feature' || preset.priority && preset.priority !== 'normal' || preset.risk && preset.risk !== 'normal' || preset.status && preset.status !== 'team' || preset.assignee || preset.sprint || preset.group || lifeOn || document.documentElement.classList.contains('qa-menu'));   // qa-menu: QA lays everything open
+  const pickProject = projects.length > 1 || !slug() ? `<label class="f"><span>${esc(t('dlg.newcard.project'))}</span><select id="nc-project">${projectOptionsHtml(projects, leads, slug())}</select></label>` : '';
   popNext(bug ? 'bug' : 'card'); openDialog(`<h2>${esc(bug ? t('board.raisebug') : t('dlg.newcard'))}</h2>
-    <form onsubmit="return createCard(event)">${projects.length > 1 || !slug() ? `<label class="f"><span>${esc(t('dlg.newcard.project'))}</span><select id="nc-project">${projectOptionsHtml(projects, leads, slug())}</select></label>` : ''}${lifeBox}${cardFields(c, bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') })}
+    <form onsubmit="return createCard(event)">${cardFields(c, { more: true, moreOpen, moreTop: pickProject + lifeBox, ...(bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') }) })}
       <div class="err" id="d-err"></div>
       <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${esc(bug ? t('dlg.raisebug') : t('dlg.createcard'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');
   if (bug) { const ov = $('dialog').querySelector('.overlay'); if (ov) ov.classList.add('top'); }   // above pop-outs, card view and other windows (AIG-733)
@@ -99,8 +102,32 @@ async function newProject(opts = {}) {
         <option value="kanban">${esc(t('dlg.np.tpl.kanban'))}</option><option value="scrum">${esc(t('dlg.np.tpl.scrum'))}</option><option value="own">${esc(t('dlg.np.tpl.own'))}</option></select></label>
       <label class="f" id="p-own" style="display:none"><span>${esc(t('dlg.np.tpl.own.help'))}</span><input type="text" id="p-own-names" placeholder="${esc(t('dlg.np.tpl.own.ph'))}"></label>
       <div class="err" id="d-err"></div><div id="p-done"></div>
-      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`);
+      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${opts.space ? '' : ` <button type="button" id="p-play" onclick="newPlayground()">${esc(t('dlg.np.play'))}</button>`}</div></form>`);
   if (opts.space) { $('p-spacetpl').value = SPACE_TPLS[0]; spaceTpl(SPACE_TPLS[0]); }
+}
+// New playground (AIG-818/819): one box with a friend's name; makes the project for them and shows the invite code to Copy.
+function newPlayground() {
+  openDialog(`<h2>${esc(t('play.h'))}</h2>
+    <form onsubmit="return createPlayground(event)">
+      <label class="f"><span>${esc(t('play.name'))}</span><input type="text" id="pg-name" maxlength="60" autofocus></label>
+      <p class="muted">${esc(t('play.help'))}</p>
+      <div class="err" id="d-err"></div><div id="pg-done"></div>
+      <div class="actions" id="pg-acts"><button class="primary" type="submit" id="pg-go">${esc(t('play.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`);
+  setTimeout(() => { const i = $('pg-name'); if (i) i.focus(); }, 0);
+}
+async function createPlayground(e) {
+  e.preventDefault();
+  const name = $('pg-name').value.trim();
+  if (!name) { setErr('d-err', t('play.err.name')); return false; }
+  try {
+    const r = await api('POST', '/api/playgrounds', { name });
+    $('d-err').textContent = '';
+    $('pg-name').readOnly = true;
+    $('pg-done').innerHTML = `<p>✅ ${esc(t('play.made', { name: r.name }))}</p>${r.code ? `<textarea id="pg-code" readonly rows="3" onclick="this.select()" style="width:100%">${esc(r.code)}</textarea><small class="muted">${esc(t('play.send', { name }))}</small>` : `<p class="muted">${esc(t('play.' + r.friend, { name }))}</p>`}<div id="pg-msg" class="muted"></div>`;
+    $('pg-acts').innerHTML = `${r.code ? `<button type="button" class="primary" id="pg-copy">${esc(t('dmf.copy'))}</button> ` : ''}<button type="button" onclick="closeDialog(); location.hash = '#/p/${r.slug}'">${esc(t('dlg.np.open'))}</button> <button type="button" onclick="closeDialog()">${esc(t('common.close'))}</button>`;
+    if (r.code) $('pg-copy').onclick = async () => { try { await navigator.clipboard.writeText(r.code); } catch { $('pg-code').select(); document.execCommand('copy'); } $('pg-msg').textContent = t('dmf.copied'); };
+  } catch (err) { setErr('d-err', err); }
+  return false;
 }
 function suggestKey() {
   const name = $('p-name').value, k = $('p-key'), f = $('p-path');

@@ -104,8 +104,14 @@
   });
   async function waitAndSee(n) {
     lock(n);
-    try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await IB.load(); IB.toast(t('inbox.toast.hidden', { id: n.dataset.id })); if (typeof FyFold !== 'undefined') FyFold.after(n); }
-    catch (e) { fail(n, e); }
+    try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await IB.load(); IB.toast(t('inbox.toast.hidden', { id: n.dataset.id })); if (typeof FyFold !== 'undefined') FyFold.after(n); return true; }
+    catch (e) { fail(n, e); return false; }
+  }
+  // "Right, let's do this" on a life reminder (AIG-838): a shower reminder starts shower mode, any other just puts it off like Snooze (never done).
+  async function letsGo(n) {
+    const c = IB.raw.find(x => IB.keyOf(x) === n.dataset.project + '/' + n.dataset.id), shower = /shower|🚿/i.test((c && c.title) || '');
+    const ok = await waitAndSee(n);
+    if (ok && shower && typeof Break !== 'undefined') Break.start('shower');
   }
   // ✅ Done by the tester (AIG-467): what the AI tester closed today, each with a one-click Reopen back to verify.
   let tdSig = "";
@@ -120,5 +126,5 @@
     row.querySelectorAll("button").forEach(b => b.disabled = true);
     try { await post("PATCH", `/api/projects/${row.dataset.project}/cards/${row.dataset.id}`, { status: "verify" }); IB.toast(t("trust.reopened", { id: row.dataset.id })); await IB.load(); IB.paintPage(); } catch (e) { IB.toast(e.message || String(e)); }
   }
-  Object.assign(IB, { testerDone, reopenTested, send, taskDone, lifeDone, accept, gotIt, infoReply, waitAndSee, startTester, acceptAiPassed, flickAct });
+  Object.assign(IB, { testerDone, reopenTested, send, taskDone, lifeDone, accept, gotIt, infoReply, waitAndSee, letsGo, startTester, acceptAiPassed, flickAct });
 })();

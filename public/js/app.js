@@ -2,7 +2,7 @@
 // Desktop app (Electron on Windows) loses keyboard focus after a native alert/confirm/prompt box, so text
 // boxes ignore typing for a while (AIG-84). After each box, ask the app to hand focus back.
 /* ---------- theme (AIG-143): follows the system, or the user's pick, remembered in this browser ---------- */
-const THEMES = { get system() { return t('theme.system'); }, get light() { return t('theme.light'); }, get dark() { return t('theme.dark'); } };
+const THEMES = { get system() { return t('theme.system'); }, get light() { return t('theme.light'); }, get dark() { return t('theme.dark'); }, get black() { return t('theme.black'); } };
 function theme(set) {
   let th; try { th = set || localStorage.getItem('aigile.theme') || 'system'; if (set) localStorage.setItem('aigile.theme', set); } catch { th = set || 'system'; }
   if (th === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = th;
@@ -35,10 +35,10 @@ if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', '
 }
 // A new page opens at the top (AIG-925): the inbox used to open as far down as the board had been scrolled.
 // Opening or closing a card on the same board keeps the board where it was.
-const pageOf = h => h.replace(/^(#\/p\/[^/]+)\/.*$/, '$1');
+const pageOf = h => h.replace(/^(#\/p\/[^/]+)\/.*$/, '$1').replace(/^(#\/setup)\/.*$/, '$1');
 let lastPage = pageOf(location.hash);
 window.addEventListener('hashchange', () => {
-  state.editing = false;
+  state.editing = false; state.setupLanded = null;
   const pg = pageOf(location.hash); if (pg !== lastPage) { lastPage = pg; window.scrollTo(0, 0); }
   refresh(true);
 });
@@ -77,8 +77,10 @@ function applyAppLogo(url, icon) {
   b.innerHTML = url ? `<img class="brand-logo" src="${esc(url)}" alt=""> AI-gile` : '🗂️ AI-gile';
 }
 let wasQuiet = null;   // was the board quiet at the last check (AIG-232)
+let checkingBuild = false;
 async function checkBuild() {
-  if (!i18n.ready) return;
+  if (!i18n.ready || checkingBuild) return;
+  checkingBuild = true;
   try {
     const m = await api('GET', '/api/meta');
     // Quiet/focus flags affect the title and alerts in other windows too.
@@ -102,7 +104,7 @@ async function checkBuild() {
     Mail.watch();   // ✉️ the Mail link shows once a mailbox is set up (AIG-902)
     WhatsNew.check();   // ✨ a note once after an update (AIG-562)
     // A new install opens Setup first (AIG-91).
-    if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';
+    if (loadedBuild === null && m.setupNeeded && !/^#\/setup/.test(location.hash)) location.hash = '#/setup';
     if (loadedBuild === null) { loadedBuild = m.build; return; }
     // While you're quiet (AIG-224): a new board or page code reloads by itself, unless something is half-typed.
     if (m.quiet && m.build !== loadedBuild && !hasUnsent()) { location.reload(); return; }
@@ -117,6 +119,7 @@ async function checkBuild() {
     else if (m.dev && m.build !== loadedBuild && !$('upRefresh').firstChild)
       $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="${esc(t('update.refresh.title'))}">${esc(t('update.refresh'))}</button>`;
   } catch {}
+  finally { checkingBuild = false; }
 }
 // After a queued restart: reload as soon as a new board (a new start time in its build id) answers.
 function waitForNewBoard() {

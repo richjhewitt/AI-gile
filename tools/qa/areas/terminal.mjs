@@ -29,9 +29,12 @@ def('terminal', '⌨ terminal on server tasks: ssh servers in Setup, the panel s
   await setup.dispatchEvent('#serversBox input[data-srv="name"]', 'change');
   await Promise.all([setup.waitForResponse(r => r.url().endsWith('/api/setup') && r.request().method() === 'POST'), setup.selectOption('#serversBox select[data-srv="kind"]', 'ssh')]);
   await sleep(200);   // the box is drawn again after each save
-  check('the ssh kind shows the address hint', (await setup.getAttribute('#serversBox input[data-srv="value"]', 'placeholder')) === 'rich@92.113.144.194');
-  await setup.fill('#serversBox input[data-srv="value"]', 'qa@127.0.0.1');
-  await setup.dispatchEvent('#serversBox input[data-srv="value"]', 'change');
+  check('the ssh kind shows host and user boxes (AIG-773)', (await setup.getAttribute('#serversBox input[data-srv="host"]', 'placeholder')) === 'Host (name or IP)' && !!(await setup.$('#serversBox input[data-srv="user"]')));
+  await setup.fill('#serversBox input[data-srv="user"]', 'qa');
+  await setup.dispatchEvent('#serversBox input[data-srv="user"]', 'change');
+  await sleep(500);
+  await setup.fill('#serversBox input[data-srv="host"]', '127.0.0.1');
+  await setup.dispatchEvent('#serversBox input[data-srv="host"]', 'change');
   const saved = await until(() => { try { const v = JSON.parse(fs.readFileSync(local, 'utf8')).servers; return v && v[0] && v[0].value === 'qa@127.0.0.1' && v; } catch { return null; } }, 5000);
   check('Setup saves name, kind ssh and the address', saved && saved[0].name === 'QA Box' && saved[0].kind === 'ssh', saved);
   check('an address that could be an ssh option is refused', (await s.api('POST', '/api/setup', { prefs: { servers: [{ name: 'x', kind: 'ssh', value: '-oProxyCommand=calc' }] } })).status === 400);

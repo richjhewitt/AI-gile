@@ -26,6 +26,8 @@ def('stats', '📈 project stats: API numbers on a seeded project, git commits a
   const when = [5, 3, 3, 2, 1];
   p.cards.filter(x => /^Done card/.test(x.title)).forEach((x, i) => { x.status = 'done'; x.updated = ago(when[i]).toISOString(); x.created = ago(when[i] + (i === 0 ? 5 : 0)).toISOString(); });
   fs.writeFileSync(file, JSON.stringify(p));
+  // The server may save a copy it read just before the edit above (dispatcher log): write again until it sees the 5 done cards.
+  await until(async () => (await s.ok('GET', '/api/projects/statty')).cards.filter(c => c.status === 'done').length === 5 || (fs.writeFileSync(file, JSON.stringify(p)), false), 5000);
 
   const d = await s.ok('GET', '/api/projects/statty/stats');
   check('cards done and made', d.done === 5 && d.made === 6, [d.done, d.made]);

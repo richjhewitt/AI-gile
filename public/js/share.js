@@ -56,7 +56,7 @@ const Share = (function () {
   // The card panel's 🔗 button: share it, see what is shared, or where it came from.
   function cardBtn(p, c) {
     const l = ofProject(p.slug);
-    if (c.share && c.share.theirs) return `<span class="pill share-pill">${esc(t('share.card.theirs', { name: l ? l.friend : '' }))}</span>`;
+    if (c.share && c.share.theirs) return `<span class="pill share-pill">${esc(t('share.card.theirs', { name: l ? l.friend : '' }))}</span>${c.forFriend ? ` <span class="pill share-pill">${esc(t('featreq.for', { name: c.forFriend }))}</span>` : ''}`;
     if (!l || l.state !== 'live' || (!c.share && !(l.effective && l.effective.sendCards && can(l, 'seeMine')))) return '';
     return `<button id="shareCardBtn" onclick="Share.previewCard('${esc(c.id)}')">${esc(t(c.share ? 'share.card.shared' : 'share.card.btn', { name: l.friend }))}${c.share && c.share.held ? ' ' + esc(t('share.card.held')) : ''}</button>`;
   }
@@ -208,6 +208,10 @@ const Share = (function () {
   const whatHtml = l => l.effective ? `<ul class="share-what">${[['sendCards', 'share.eff.send'], ['takeCards', 'share.eff.take'], ['comments', 'share.eff.comments'], ['status', 'share.eff.status'], ['files', 'share.eff.files'], ['teamRead', 'share.eff.teamRead']]
     .map(([k, key]) => `<li>${l.effective[k] ? '✅' : '⛔'} ${esc(t(key, { name: l.friend }))}</li>`).join('')}</ul>` : '';
 
+  // AIG-856: change roles, picked per friend per project by the owner (the API refuses anyone else); they sit on top of the share role.
+  const CHG = ['pm', 'testLead', 'devLead'];
+  const changeHtml = l => !l.slug || l.state !== 'live' ? '' : `<div class="share-chgrole" id="shareChgRole"><b>${esc(t('chgrole.label'))}</b>${CHG.map(k => `<label class="chk"><input type="checkbox" data-chg="${k}" ${(l.changeRoles || []).includes(k) ? 'checked' : ''} onchange="Share.setChange('${esc(l.contact)}', '${k}', this.checked)"> ${esc(t('chgrole.' + k))}</label>`).join('')}
+    <p class="muted">${esc(t('chgrole.help', { name: l.friend }))}</p>${(l.theirChange || []).length ? `<p class="muted" id="shareTheirChange">${esc(t('chgrole.theirs', { name: l.friend, roles: l.theirChange.map(k => t('chgrole.' + k)).join(', ') }))}</p>` : ''}</div>`;
   // Their role: one of the AIG-185 roles, for this project or all my projects with them; what it lets them do.
   function roleHtml(l) {
     const opts = ROLES.map(r => `<option value="${r}" ${l.role === r ? 'selected' : ''}>${esc(t('share.role.' + r))}</option>`).join('');
@@ -216,6 +220,7 @@ const Share = (function () {
         <option value="project" ${l.roleScope !== 'all' ? 'selected' : ''}>${esc(t('share.role.scope.project'))}</option>
         <option value="all" ${l.roleScope === 'all' ? 'selected' : ''}>${esc(t('share.role.scope.all', { name: l.friend }))}</option></select></label>
       <p class="muted" id="shareRoleHelp">${esc(t('share.role.help.' + l.role))} ${esc(t('share.role.never', { name: l.friend }))}</p>
+      ${changeHtml(l)}
       ${l.theirRole ? `<p class="muted" id="shareTheirRole">${esc(t('share.role.theirs', { name: l.friend, role: t('share.role.' + l.theirRole) }))}</p>` : ''}</div>`;
   }
   async function dialog() {
@@ -231,6 +236,8 @@ const Share = (function () {
         ${roleHtml(l)}
         <label class="chk"><input type="checkbox" id="shareBoard" ${l.board ? 'checked' : ''} ${can(l, 'seeMine') ? '' : 'disabled'} onchange="Share.setBoard('${l.id}', this.checked)"> ${esc(t('share.board', { name: l.friend }))}</label>
         <p class="muted" id="shareBoardHelp">${esc(t(!can(l, 'seeMine') ? 'share.board.no' : l.board ? 'share.board.on' : 'share.board.off', { name: l.friend }))}</p>
+        ${l.slug ? `<label class="chk"><input type="checkbox" id="shareApprovals" ${l.approvals ? 'checked' : ''} onchange="Share.setApprovals('${l.slug}', this.checked)"> ${esc(t('approvals.setting'))}</label>
+        <p class="muted">${esc(t('approvals.setting.hint'))}</p>` : ''}
         <label class="chk"><input type="checkbox" id="shareTeamRead" ${l.mine && l.mine.teamRead ? 'checked' : ''} onchange="Share.setTeamRead('${l.id}', this.checked)"> ${esc(t('share.allow.teamRead'))}</label>
         <p class="muted">${esc(t(l.mine && l.mine.teamRead ? 'share.teamRead.on' : 'share.teamRead.off', { name: l.friend }))}</p>
         <div class="actions"><button onclick="Share.ping('${l.id}')" ${l.on ? '' : 'disabled'}>${esc(t('share.ping'))}</button>
@@ -264,8 +271,10 @@ const Share = (function () {
   const offer = () => act(() => api('POST', '/api/shares', { slug: slug(), contact: $('shareWho').value, allow: readTicks('o-') }));
   const setOn = (id, on) => act(() => api('PATCH', '/api/shares/' + id, { on }));
   const setTeamRead = (id, teamRead) => act(() => api('PATCH', '/api/shares/' + id, { teamRead }));
+  const setApprovals = (slug, approvals) => act(() => api('PATCH', '/api/projects/' + slug, { approvals }));
   const setBoard = (id, board) => act(async () => { const r = await api('PATCH', '/api/shares/' + id, { board }); if (r.shared) note(t('share.board.sent', { n: r.shared.sent, held: r.shared.held })); });
   const setRole = id => act(() => api('PATCH', '/api/shares/' + id, { role: $('shareRole').value, scope: $('shareRoleScope').value }));
+  const setChange = (cid, key, on) => act(() => api('POST', '/api/projects/' + slug() + '/change-roles', key === 'pm' ? { pm: { [on ? 'add' : 'remove']: '@' + cid } } : { [key]: on ? '@' + cid : '' }));
   const ping = id => act(() => api('POST', `/api/shares/${id}/ping`));
   function unlink(id, forget) {
     if (forget && !confirm(t('share.forget.confirm'))) return;
@@ -313,6 +322,6 @@ const Share = (function () {
   }
 
   PagePoll.every(() => { if (typeof i18n !== 'undefined' && i18n.ready) return load(); }, 3000, { hidden: 30000 });
-  return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setRole, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
+  return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setApprovals, setRole, setChange, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
     laneHtml, cardBtn, cardComments, commentMark, previewCard, sendCard, unshareCard, sendHeld, laneCard, laneReply, takeCard };
 })();

@@ -50,7 +50,8 @@ export const until = async (fn, ms = 8000) => { const end = Date.now() + ms; let
 // port: a second board for the dms area runs on another port.
 export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   // root: another copy of the app, e.g. the No-AI build (AIG-617)   // a second board passes await freePort()
   // A busy QA_PORT means another process (a board, a relay, an old run) would answer our calls: stop the run at once.
-  if (!(await portFree(port))) {
+  // The last area's server may still be letting go of the port (kill does not wait): give it a few seconds first.
+  if (!(await until(() => portFree(port), 5000))) {
     if (port === PORT) { console.error(`QA_PORT ${port} is in use by another process: pick another QA_PORT`); process.exit(3); }
     throw new Error(`port ${port} is in use by another process`);
   }
@@ -98,6 +99,7 @@ export const getCard = async (s, slug, id) => (await s.ok('GET', `/api/projects/
 export const say = (s, slug, id, author, text, extra = {}) => s.ok('POST', `/api/projects/${slug}/cards/${id}/comments`, { author, text, ...extra });
 
 // A browser page that records page errors.
+export const pinAllInit = () => { try { if (!localStorage.getItem('aigile.topbar.pinned')) localStorage.setItem('aigile.topbar.pinned', JSON.stringify(['helpBtn','ideaBtn','bugBtn','teamTop','inboxTop','pokeTop','nightTop','glanceBtn','weedBtn','streamBtn','ntBtn','tiredBtn','assumeNav','usageNav','setupNav','themeBtn','twitchBtn','mailNav','immWrap'])); } catch {} };
 export async function openPage(ctx, hash) {
   const page = await ctx.newPage();
   page.errors = [];
@@ -105,6 +107,12 @@ export async function openPage(ctx, hash) {
   page.on('console', m => { if (m.type() === 'error') page.errors.push('console: ' + m.text()); });
   // The morning "Call stand-ups?" pill (AIG-136) would sit over other areas' clicks: mark today as asked, except in the standup area.
   if (!openPage.morning) await page.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
+  // AIG-932: the top bar shows only Inbox/Help/Setup and a More menu; the other areas click the buttons by selector, so they pin them all (the topbar area leaves it alone).
+  if (!openPage.firstrun) await page.addInitScript(pinAllInit);
+  // AIG-937: home keeps its More menu open here, so areas click the moved buttons by selector (the homeux area leaves it alone).
+  if (!openPage.homeMore) await page.addInitScript(() => { try { localStorage.setItem('aigile.homeMoreOpen', '1'); } catch {} });
+  // The open card's ⋯ menu (AIG-935) is laid out open for other areas, which click its buttons directly; the cardux area sets openPage.realMenu.
+  if (!openPage.realMenu) await page.context().addInitScript(() => { const on = () => document.documentElement && (document.documentElement.classList.add('qa-menu'), true); if (!on()) new MutationObserver((_, o) => { if (on()) o.disconnect(); }).observe(document, { childList: true }); });
   await page.goto(BASE + '/' + (hash || ''));
   await page.waitForSelector('#app > *', { timeout: 8000 });
   return page;
@@ -115,3 +123,9 @@ export const noErrors = page => check('no page errors', page.errors.length === 0
 /* ---------- area registry ---------- */
 export const areas = {};
 export const def = (name, doc, fn, needsBrowser = false, env = {}) => { areas[name] = { doc, fn, needsBrowser, env }; };
+// AIG-931/932: click a top bar button by selector; if it sits in the More / ☰ menu, open that first.
+export async function clickBar(page, sel) {
+  const hidden = await page.evaluate(s => { const e = document.querySelector(s); const m = document.getElementById('tbMoreMenu'); return !!(e && m && m.contains(e) && m.hidden); }, sel);
+  if (hidden) await page.click('#tbMoreBtn');
+  await page.click(sel);
+}

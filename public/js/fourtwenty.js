@@ -42,6 +42,7 @@ const Weed = (() => {
   const placeName = keys => keys.filter(Boolean).slice(0, 3).map(k => t('fourtwenty.place.' + k)).join(', ');
 
   function toast(msg) {
+    if (document.documentElement.hasAttribute('data-break')) return;   // ⏸ break (AIG-824): no reminders
     if (toastEl) toastEl.remove();
     toastEl = document.createElement('div'); toastEl.id = 'weedToast'; toastEl.className = 'weed-toast'; toastEl.setAttribute('role', 'status');
     toastEl.innerHTML = `<span>${esc(msg)}</span><button type="button" aria-label="${esc(t('common.close'))}" onclick="Weed.dismiss()">✕</button>`;
@@ -52,6 +53,7 @@ const Weed = (() => {
   // A desktop alert only when the Inbox alerts are switched on and allowed (the same switch as the Inbox uses).
   function desktop(msg) {
     try {
+      if (document.documentElement.hasAttribute('data-break')) return;
       if (typeof Notification === 'undefined' || Notification.permission !== 'granted' || localStorage.getItem('aigile.alerts') !== '1') return;
       const n = new Notification(msg, { tag: 'aigile-420' }); n.onclick = () => { try { window.focus(); } catch {} n.close(); };
     } catch {}

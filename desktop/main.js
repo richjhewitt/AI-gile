@@ -4,8 +4,11 @@ const { app, BrowserWindow, shell, nativeTheme, nativeImage, screen, Tray, Menu 
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
+const net = require('net');
 
-const ROOT = path.resolve(__dirname, '..');
+// Packaged (AppImage): the board's files sit in resources/aigile and its data goes to the user's own folder (the AppImage is read-only).
+const ROOT = app.isPackaged ? path.join(process.resourcesPath, 'aigile') : path.resolve(__dirname, '..');
+if (app.isPackaged && !process.env.AIGILE_DATA) process.env.AIGILE_DATA = path.join(app.getPath('userData'), 'data');
 const PORT = Number(process.env.AIGILE_PORT) || 4321;
 const BASE = `http://localhost:${PORT}`;
 const ICON = path.join(__dirname, 'icon.png'), ICON_WAITING = path.join(__dirname, 'icon-waiting.png');
@@ -27,15 +30,45 @@ function custom(name) {
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function up() { try { return (await fetch(BASE + '/api/meta')).ok; } catch { return false; } }
+async function up(timeout = 1000) {
+  const controller = new AbortController(), timer = setTimeout(() => controller.abort(), timeout);
+  try { const r = await fetch(BASE + '/api/meta', { signal: controller.signal }); if (r.body) await r.body.cancel(); return r.ok; }
+  catch { return false; }
+  finally { clearTimeout(timer); }
+}
+function portOccupied() {
+  return new Promise(resolve => {
+    const socket = net.connect({ host: '127.0.0.1', port: PORT });
+    let settled = false;
+    const finish = occupied => { if (settled) return; settled = true; socket.destroy(); resolve(occupied); };
+    socket.setTimeout(3000);
+    socket.once('connect', () => finish(true));
+    socket.once('error', error => finish(error.code !== 'ECONNREFUSED'));
+    socket.once('timeout', () => finish(true)); // uncertain: do not launch a duplicate
+  });
+}
 
 // Same as start-aigile.bat: node server.js in the AI-gile folder, detached and hidden.
 async function ensureServer() {
+  const deadline = Date.now() + 10000;
   if (await up()) return true;
+  // An unhealthy listener still owns the port; do not start a competing board.
+  if (await portOccupied()) return false;
   const node = process.env.AIGILE_NODE || 'node', env = { ...process.env };   // dev mode comes from aigile.local.json now (AIG-253)
   delete env.ELECTRON_RUN_AS_NODE;
-  spawn(node, ['server.js'], { cwd: ROOT, detached: true, stdio: 'ignore', windowsHide: true, env }).unref();
-  for (let i = 0; i < 50; i++) { await sleep(200); if (await up()) return true; }
+  let failed = false;
+  try {
+    const child = spawn(node, ['server.js'], { cwd: ROOT, detached: true, stdio: 'ignore', windowsHide: true, env });
+    child.once('error', () => { failed = true; });
+    child.once('exit', () => {}); // another starter may have won the port; keep probing until the deadline
+    child.unref();
+  } catch { return false; }
+  while (!failed && Date.now() < deadline) {
+    await sleep(Math.min(200, Math.max(0, deadline - Date.now())));
+    if (failed) return false;
+    const left = deadline - Date.now();
+    if (left > 0 && await up(Math.min(1000, left))) return true;
+  }
   return false;
 }
 
@@ -105,7 +138,7 @@ function wire(w) {
   w.webContents.on('will-navigate', (e, url) => {
     if (url === 'aigile://restart') { e.preventDefault(); quitting = true; savePops(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
     // The page's theme pick (AIG-143): the window buttons and every window follow it.
-    if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark'].includes(t)) nativeTheme.themeSource = t; return; }
+    if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark', 'black'].includes(t)) nativeTheme.themeSource = t === 'black' ? 'dark' : t; return; }
     // Goodnight (AIG-228): only the night glance stays on screen.
     if (url === 'aigile://minimize') { e.preventDefault(); w.minimize(); return; }
     // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).

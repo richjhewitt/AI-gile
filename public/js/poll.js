@@ -18,11 +18,17 @@ const PagePoll = (() => {
     if (broadcast) try { localStorage.setItem('aigile.pageChange', Date.now() + ':' + Math.random()); } catch {}
   }
   window.addEventListener('storage', e => { if (e.key === 'aigile.pageChange') invalidate(false); });
-  async function request(method, url, body) {
+  // A caller's signal stops that caller waiting; a shared read carries on for the others.
+  const until = (p, signal) => !signal ? p : signal.aborted ? Promise.reject(signal.reason || new DOMException('Aborted', 'AbortError'))
+    : Promise.race([p, new Promise((_, no) => signal.addEventListener('abort', () => no(signal.reason || new DOMException('Aborted', 'AbortError')), { once: true }))]);
+  async function request(method, url, body, options = {}) {
     const key = epoch + ':' + url;
-    if (method === 'GET' && flights.has(key)) return flights.get(key);
+    if (method === 'GET' && flights.has(key)) return until(flights.get(key), options.signal);
+    // Reads must finish so a stalled connection cannot hold the refresh queue; writes (slow installs, commands) keep no limit.
+    const timeout = options.timeout ?? (method === 'GET' ? 15000 : 0), tsig = timeout ? AbortSignal.timeout(timeout) : undefined;
+    const signal = method === 'GET' ? tsig : (tsig && options.signal ? AbortSignal.any([tsig, options.signal]) : tsig || options.signal);
     const work = (async () => {
-      const r = await fetch(url, { method, cache: 'no-store', headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
+      const r = await fetch(url, { method, signal, cache: 'no-store', headers: { 'Content-Type': 'application/json' }, body: body === undefined || body === null ? undefined : JSON.stringify(body) });
       const text = await r.text();
       let j; try { j = JSON.parse(text); } catch { throw new Error(r.statusText || 'Invalid response'); }
       if (!r.ok) throw new Error(j.error || r.statusText);
@@ -32,7 +38,8 @@ const PagePoll = (() => {
     })();
     if (method !== 'GET') return work;
     flights.set(key, work);
-    try { return await work; } finally { if (flights.get(key) === work) flights.delete(key); }
+    work.finally(() => { if (flights.get(key) === work) flights.delete(key); }).catch(() => {});
+    return until(work, options.signal);
   }
   async function revision() {
     const now = Date.now();
@@ -62,20 +69,20 @@ const PagePoll = (() => {
     const m = /^\/api\/projects\/([a-z0-9-]+)$/.exec(url);
     return m && r !== null && stamps[m[1]] ? 'p:' + stamps[m[1]] : r;
   }
-  async function get(url, { force = false, revision: useRev = true, maxAge = SAFETY_MS } = {}) {
+  async function get(url, { force = false, revision: useRev = true, maxAge = SAFETY_MS, signal, timeout } = {}) {
     const token = useRev && !VOLATILE.test(url) ? await tokenFor(url) : null, generation = epoch, now = Date.now();
     const old = reads.get(url);
-    if (old && old.flight && old.epoch === generation) return old.flight;
+    if (old && old.flight && old.epoch === generation) return until(old.flight, signal);
     // Old servers and volatile endpoints still poll at the caller's interval.
     if (!force && old && old.epoch === generation && now - old.at < maxAge && ((token !== null && old.rev === token) || now - old.at < 1000)) return old.data;
     const entry = { epoch: generation, rev: token, at: now };
-    entry.flight = api('GET', url).then(data => {
+    entry.flight = api('GET', url, undefined, { timeout }).then(data => {
       entry.data = data; entry.at = Date.now(); delete entry.flight; return data;
     }, e => { if (reads.get(url) === entry) reads.delete(url); throw e; });
     reads.set(url, entry);
     // Bound memory when the owner visits lots of projects/chats.
     if (reads.size > 80) reads.delete(reads.keys().next().value);
-    return entry.flight;
+    return until(entry.flight, signal);
   }
   function signature(value) {
     return JSON.stringify(value, (k, v) => k === 'waitingMs' ? undefined :

@@ -15,7 +15,7 @@ const uz = {
   .uz { --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s-other: #898781;
         --good: #0ca30c; --warning: #fab219; --critical: #d03b3b; --grid: var(--line); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme=light]) .uz { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; } }
-  :root[data-theme=dark] .uz { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; }
+  :root[data-theme=dark], :root[data-theme=black] .uz { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; }
   .uz { max-width: 1000px; margin: 0 auto; }
   .uz h2 { font-size: 18px; margin: 0 0 2px; }
   .uz .uz-explain { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
@@ -84,23 +84,26 @@ const uz = {
 })();
 
 /* ---------- data ---------- */
-async function loadUsagePage(force) {
+async function loadUsagePage(force, options = {}) {
+  const request = (method, url, body, extra = {}) => api(method, url, body, { ...extra, signal: options.signal });
   if (!force && uz.data && Date.now() - uz.fetchedAt < 15e3) return;
   // AIG-558: all at once (check and runs used to wait their turn, so the first click looked like it did nothing).
   const [usage, limits, projects, live, check, shares] = await Promise.all([
-    api('GET', '/api/usage').catch(() => ({ enabled: false })),
-    api('GET', '/api/limits?days=30').catch(() => ({ latest: null, history: [] })),
-    api('GET', '/api/projects?all=1').catch(() => []),
-    api('GET', '/api/limits/latest').catch(() => ({ latest: null })),   // AIG-431: the compact view
-    api('GET', '/api/usage/check').catch(() => null),
-    api('GET', '/api/usage/shares').catch(() => null),   // AIG-685/686: token use shared with friends
+    request('GET', '/api/usage', undefined, { timeout: 60000 }).catch(() => ({ enabled: false })),
+    request('GET', '/api/limits?days=30').catch(() => ({ latest: null, history: [] })),
+    request('GET', '/api/projects?all=1').catch(() => []),
+    request('GET', '/api/limits/latest').catch(() => ({ latest: null })),   // AIG-431: the compact view
+    request('GET', '/api/usage/check').catch(() => null),
+    request('GET', '/api/usage/shares').catch(() => null),   // AIG-685/686: token use shared with friends
   ]);
-  await TodayPage.load();
+  if (options.signal?.aborted) return;
+  await TodayPage.load(options);
+  if (options.signal?.aborted) return;
   uz.data = { usage, limits, check, runs: (uz.data && uz.data.runs) || [], live, shares, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
   uz.fetchedAt = Date.now();
   // AIG-712: the runs table can be slow (it scans the session logs), so it fills in when it arrives instead of holding up the first draw.
-  api('GET', '/api/usage/runs').catch(() => []).then(runs => {   // AIG-266
-    if (!uz.data) return;
+  request('GET', '/api/usage/runs', undefined, { timeout: 60000 }).catch(() => []).then(runs => {   // AIG-266
+    if (options.signal?.aborted || !uz.data) return;
     uz.data.runs = runs;
     if (state.route?.view === 'usage') render();
   });

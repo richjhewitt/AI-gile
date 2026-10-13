@@ -63,8 +63,8 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   await page.waitForSelector('#serversBox');
   await sleep(600);
   const srvInputs = await page.$$eval('#serversBox input[data-srv]', is => is.map(i => i.value));
-  check('Setup > My servers keeps the real value in the box (for editing)', srvInputs.includes('Prodbox') && srvInputs.includes('root@10.9.8.7'), srvInputs);
-  check('and covers them on screen', await page.evaluate(() => [...document.querySelectorAll('#serversBox input[data-srv="name"], #serversBox input[data-srv="value"]')].every(i => getComputedStyle(i).webkitTextSecurity === 'disc')));
+  check('Setup > My servers keeps the real value in the box (for editing)', srvInputs.includes('Prodbox') && (srvInputs.includes('root@10.9.8.7') || (srvInputs.includes('root') && srvInputs.includes('10.9.8.7'))), srvInputs);
+  check('and covers them on screen', await page.evaluate(() => [...document.querySelectorAll('#serversBox input[data-srv="name"], #serversBox input[data-srv="value"], #serversBox input[data-srv="host"], #serversBox input[data-srv="user"]')].every(i => getComputedStyle(i).webkitTextSecurity === 'disc')));
   check('Setup > friends and DM boxes are hidden', !(await page.locator('#dmsFriendsBox').isVisible()));
 
   // Phone width

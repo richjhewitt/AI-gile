@@ -94,6 +94,8 @@ function renderNews() {
 }
 
 /* ---------- board page ---------- */
+// Phone (AIG-933): the toolbar buttons sit behind one ⋯ button; the choice survives the 1 s redraw.
+function toggleTb() { state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), d = $('tbDots'); if (m) m.classList.toggle('open', state.tbOpen); if (d) d.setAttribute('aria-expanded', state.tbOpen ? 'true' : 'false'); }
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
@@ -106,6 +108,8 @@ function renderBoard(p) {
   const log = (p.log || []).slice().reverse().slice(0, 50);
   return `<div class="toolbar"><h2>${esc(p.name)}${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}</h2>
       <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
+      <button class="tb-dots" id="tbDots" aria-expanded="${state.tbOpen ? 'true' : 'false'}" aria-label="${esc(t('board.more'))}" title="${esc(t('board.more'))}" onclick="toggleTb()">⋯</button>
+      <div class="tb-more${state.tbOpen ? ' open' : ''}" id="boardTbMore">
       <button onclick="openDocs()">${esc(t('board.docs'))}</button>
       <button onclick="happeningDialog()" title="${esc(t('board.happening.title'))}">${esc(t('board.happening'))}</button>
       <button onclick="askTeamDialog()" title="${esc(t('board.ask.title'))}">${esc(t('board.ask'))}</button>
@@ -114,8 +118,11 @@ function renderBoard(p) {
       ${standupButtons(p)}
       <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
       <button onclick="location.hash='#/stats/${esc(p.slug)}'" title="${esc(t('stats.btn.title'))}">${esc(t('stats.title'))}</button>
+      <button onclick="raiseChange()" title="${esc(t('chg.raise.title'))}">${esc(t('chg.raise'))}</button>
+      <button onclick="location.hash='#/risks/${esc(p.slug)}'" title="${esc(t('risks.btn.title'))}">${esc(t('risks.title'))}</button>
+      ${Swarm.btn(p.slug, 'swarmBtn')}
       <span class="grow"></span>
-      <button onclick="connectDialog()" title="${p.path && p.pathMissing ? esc(t('srv.folder.missing', { path: p.path })) : p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path && p.pathMissing ? t('board.connected.missing') : p.path ? t('board.connected') : t('board.connect'))}</button>
+      ${NoAi.on && p.lifeBoard && !p.path ? '' : `<button onclick="connectDialog()" title="${p.path && p.pathMissing ? esc(t('srv.folder.missing', { path: p.path })) : p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path && p.pathMissing ? t('board.connected.missing') : p.path ? t('board.connected') : t('board.connect'))}</button>`}
       ${Share.button(p)}
       ${Pub.copyBtn(p)}
       <button id="hfBtn" onclick="Hyperfocus.on('${esc(p.slug)}')" title="${esc(t('hf.btn.title'))}">${esc(t('hf.btn'))}</button>
@@ -126,12 +133,12 @@ function renderBoard(p) {
       <button onclick="columnsDialog()" title="${esc(t('board.columns.title'))}">${esc(t('board.columns'))}</button>
       <button onclick="cardViewDialog()" title="${esc(t('board.cards.title'))}">${esc(t('board.cards'))}</button>
       ${p.path ? `<button onclick="permsDialog()" title="${esc(t('board.perms.title'))}">${esc(t('board.perms'))}</button>` : ''}
-      <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${esc(p.archived ? t('board.unarchive') : t('board.archive'))}</button></div>
-    <div class="flight">${t('board.flight.html')} ${flightHtml(flightList(p), p.slug) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>
-    ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? `${p.description ? ' · ' : ''}<code>${esc(p.path)}</code>` : ''}</p>` : ''}
+      <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${esc(p.archived ? t('board.unarchive') : t('board.archive'))}</button></div></div>
+    ${p.description ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}</p>` : ''}
+    <details class="bdetails" id="bDetails"${state.detailsOpen ? ' open' : ''} ontoggle="state.detailsOpen = this.open"><summary>${esc(t('board.details'))}</summary><div class="flight">${t('board.flight.html')} ${flightHtml(flightList(p), p.slug) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>${p.path ? `<p class="muted"><code>${esc(p.path)}</code></p>` : ''}</details>
     ${Share.laneHtml(p)}
     ${Spaces.boardHtml(p, projCard)}
-    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.nopath', { connect: esc(t('board.connect')) })}</div>`}
+    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path || (NoAi.on && p.lifeBoard) ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.nopath', { connect: esc(t('board.connect')) })}</div>`}
     ${board}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}${team.length ? `<button class="bm-btn" onclick="badgeDialog()" title="${esc(t('badge.title.hint'))}">${esc(t('badge.title'))}</button>` : ''}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>
@@ -234,7 +241,7 @@ function forYouColumn(p, label = t('col.verify.short'), tint = '', pool = p.card
   const first = forYouFirst();
   const cs = forYouQueue(p, pool);
   const n = k => cs.filter(c => kindOf(c) === k).length;
-  const chips = KINDS.map(k => `<button class="fy-chip ${k === first ? 'on' : ''}" data-first="${k}" title="${esc(t('fy.first'))}" onclick="${n(k) ? 'fyOpen' : 'forYouFirst'}('${k}'${n(k) ? ', null, true' : ''})">${esc(kindLabel(k))} ${n(k)}</button>`).join('');
+  const chips = KINDS.filter(k => n(k) > 0 || k === first).map(k => `<button class="fy-chip ${k === first ? 'on' : ''}${n(k) ? '' : ' fy-zero'}" data-first="${k}" title="${esc(t('fy.first'))}" onclick="${n(k) ? 'fyOpen' : 'forYouFirst'}('${k}'${n(k) ? ', null, true' : ''})">${esc(kindLabel(k))} ${n(k)}</button>`).join('');
   const all = p.cards.filter(forYou).length;
   const unchecked = cs.filter(c => c.testSteps && !c.info && !c.aiCheck).length, testing = !!state.testerOn;
   const robot = unchecked || testing ? `<button class="colbtn" id="fyTester-${p.slug}" ${testing ? 'disabled' : ''} title="${esc(testing ? t('tester.running') : t('fy.tester.title', { n: unchecked }))}" onclick="testForMe('${p.slug}')">🤖${testing ? '' : ' ' + unchecked}</button>` : '';
@@ -272,7 +279,7 @@ function cardHtml(c) {
   const view = cardViewOf(state.project);
   const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : '', c.priority === 'urgent' && c.status !== 'done' ? 'is-urgent' : '', c.type === 'incident' && c.status !== 'done' ? 'is-incident' : '', isWaitingCard(c) ? 'is-waiting' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}"${forYou(c) ? ` onclick="return fyCardClick(event, '${c.id}')"` : ''} data-id="${c.id}" draggable="true" style="display:block">
-    <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}${urgentBtn(c, state.project.slug)}${forYou(c) ? `<button class="ib-popone" title="${esc(t('inbox.popone'))}" onclick="event.preventDefault();event.stopPropagation();window.open('#/pop/${state.project.slug}/${c.id}', 'aigile-${state.project.slug}-${c.id}', 'width=560,height=780')">⤢</button>` : ''}</div>${forYou(c) ? queueChips(c) : ''}
+    <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${c.forFriend ? ` <span class="share-mark">${esc(t('featreq.for', { name: c.forFriend }))}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}${urgentBtn(c, state.project.slug)}${forYou(c) ? `<button class="ib-popone" title="${esc(t('inbox.popone'))}" onclick="event.preventDefault();event.stopPropagation();window.open('#/pop/${state.project.slug}/${c.id}', 'aigile-${state.project.slug}-${c.id}', 'width=560,height=780')">⤢</button>` : ''}</div>${forYou(c) ? queueChips(c) : ''}
     <div class="t">${esc(c.title)}</div>
     ${live ? `<div class="heard">💬 ${esc(heard.who)} ${ago(heard.at)}${heard.text ? ': ' + esc(heard.text.slice(0, 60).replace(/\n/g, ' ')) : ''}</div>` : ''}
     <div class="meta">${metaHtml(c, view.show)}${live ? `<button class="poke ai-only${stale ? ' hot' : ''}" title="${esc(t('card.poke.title'))}" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">${esc(t('card.poke'))}</button>` : ''}</div></a>`;

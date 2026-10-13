@@ -22,6 +22,11 @@
 <link rel="stylesheet" href="css/09-terminal.css">
 <link rel="stylesheet" href="css/10-topbar.css">
 <link rel="stylesheet" href="css/11-stats.css">
+<link rel="stylesheet" href="css/12-risks.css">
+<link rel="stylesheet" href="css/13-break.css">
+<link rel="stylesheet" href="css/14-selfcare.css">
+<link rel="stylesheet" href="css/15-experts.css">
+<link rel="stylesheet" href="css/16-lifeadmin.css">
 </head>
 <body>
 <header>
@@ -50,6 +55,7 @@
   <a class="navlink" id="usageNav" href="#/usage"><span data-i18n="nav.usage">⚡ Usage</span><span id="ugBars"></span></a>
   <a class="navlink" id="setupNav" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer">⚙️</a>
   <button id="themeBtn" class="theme-pick" onclick="nextTheme()" title="Theme">🖥️ System</button>
+  <span id="tbMore"><button type="button" id="tbMoreBtn" class="navlink" aria-haspopup="true" aria-expanded="false" data-i18n-label="tb.menu" aria-label="Menu" onclick="Topbar.menu()"><span class="tbm-d" data-i18n="tb.more">More ▾</span><span class="tbm-p">☰</span></button><div id="tbMoreMenu" role="menu" hidden></div></span>
   <button id="enBtn" class="theme-pick" hidden onclick="toggleEn()"></button>
   <span id="immWrap" class="langwrap imm-wrap" hidden><button id="immBtn" class="theme-pick" onclick="toggleImm()"></button><button id="immMore" class="theme-pick imm-more" aria-haspopup="true" aria-expanded="false" onclick="immMenu()" hidden>▾</button><div id="immList" class="immlist" hidden></div></span>
   <span class="live" id="live" data-i18n="live.ok">live</span>
@@ -113,10 +119,15 @@ window.Boot = (() => {
 <script src="js/poll.js"></script>
 <script src="js/usage-page.js"></script>
 <script src="js/assumptions.js"></script>
+<script src="js/bin.js"></script>
 <script src="js/mail.js"></script>
 <script src="js/whatsnew.js"></script>
 <script src="js/today.js"></script>
+<script src="js/lifeadmin.js"></script>
+<script src="js/myday.js"></script>
 <script src="js/stats.js"></script>
+<script src="js/risks.js"></script>
+<script src="js/changes.js"></script>
 <script src="js/discord-setup.js"></script>
 <script src="js/editor.js"></script>
 <script src="js/startday.js"></script>
@@ -170,6 +181,7 @@ window.Boot = (() => {
 <script src="js/dialogs/team-profile.js"></script>
 <script src="js/dialogs/engines.js"></script>
 <script src="js/dialogs/expert-teams.js"></script>
+<script src="js/dialogs/experts.js"></script>
 <script src="js/dialogs/secrets.js"></script>
 <script src="js/dialogs/public-board.js"></script>
 <script src="js/dialogs/licences.js"></script>
@@ -186,6 +198,7 @@ window.Boot = (() => {
 <script src="js/discord-tab.js"></script>
 <script src="js/twitch-tab.js"></script>
 <script src="js/dms.js"></script>
+<script src="js/features.js"></script>
 <script src="js/dms-friends.js"></script>
 <script src="js/pretend-setup.js"></script>
 <script src="js/phone.js"></script>
@@ -194,9 +207,13 @@ window.Boot = (() => {
 <script src="js/offline.js"></script>
 <script src="js/pack.js"></script>
 <script src="js/ask.js"></script>
+<script src="js/approvals.js"></script>
 <script src="js/pretend.js"></script>
+<script src="js/shortcuts.js"></script>
 <script src="js/notokens.js"></script>
 <script src="js/tired.js"></script>
+<script src="js/break.js"></script>
+<script src="js/selfcare.js"></script>
 <script src="js/hyperfocus.js"></script>
 <script src="js/swarm.js"></script>
 <script src="js/undo.js"></script>

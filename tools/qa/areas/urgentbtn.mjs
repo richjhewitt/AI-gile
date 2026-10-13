@@ -21,12 +21,12 @@ def('urgentbtn', '🔥 button: a tile click makes the card urgent, a second clic
   c = await getCard(s, 'alpha', a.id);
   check('second click: back to high, no dialog', c.priority === 'high' && !c.prevPriority, JSON.stringify([c.priority, c.prevPriority]));
   const open = await openPage(ctx, `#/p/alpha/${a.id}`);
-  await open.waitForSelector('.actions .urg-btn');
-  await open.click('.actions .urg-btn');
+  await open.waitForSelector('.panel .urg-btn');
+  await open.click('.panel .urg-btn');
   await sleep(500);
   c = await getCard(s, 'alpha', a.id);
   check('open card: urgent', c.priority === 'urgent' && c.prevPriority === 'high', JSON.stringify([c.priority, c.prevPriority]));
-  await open.click('.actions .urg-btn');
+  await open.click('.panel .urg-btn');
   await sleep(500);
   c = await getCard(s, 'alpha', a.id);
   check('open card: back again', c.priority === 'high', c.priority);

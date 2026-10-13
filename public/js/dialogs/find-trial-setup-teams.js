@@ -76,45 +76,91 @@ async function startTrial(btn) {
 // ---- setup: your name and where the agent lives on this computer, saved to aigile.local.json ----
 function renderSetup() {
   const s = state.setup;
+  const secs = ["lang","look","plan","teams","discord","mail","servers","phone","you","more"];
   return `<div class="setup"><h2>${esc(t('setup.h'))}</h2>
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
+    <nav class="set-index" id="setIndex" aria-label="${esc(t('setup.index'))}">${secs.map(k => `<a href="#/setup/${k}" data-sec="${k}" onclick="return setupJump('${k}')">${esc(t('setup.sec.' + k))}</a>`).join('')}</nav>
+    <section class="set-sec" id="sec-lang"><h3 class="set-h">${esc(t('setup.sec.lang'))}</h3>
     <div class="f"><span>${esc(t('wz.btn'))}</span><div><button type="button" id="wzRun" onclick="wizardStart()">${esc(t('wz.btn'))}</button></div><small class="muted">${esc(t('wz.btn.help'))}</small></div>
     <label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('setup-lang')}<small class="muted">${esc(t('setup.lang.help'))}</small></label>
     <div class="f imm-box" id="immBox">${Imm.html()}</div>
     <label class="f chk"><span><input type="checkbox" id="enSwitch" ${ls('aigile.enSwitch') === '1' ? 'checked' : ''} onchange="setEnSwitch(this.checked)"> ${esc(t('lang.en.switch'))}</span><small class="muted">${esc(t('lang.en.help'))}</small></label>
     <label class="f chk"><span><input type="checkbox" id="explainWords" ${glossOn() ? 'checked' : ''} onchange="setExplain(this.checked)"> ${esc(t('gloss.switch'))}</span><small class="muted">${esc(t('gloss.switch.help'))} <a href="#/glossary">${esc(t('gloss.open'))}</a></small></label>
-    <label class="f chk"><span><input type="checkbox" id="aiOwnList" ${IB.aiOwn() ? 'checked' : ''} onchange="IB.setAiOwn(this.checked)"> ${esc(t('inbox.aiown.switch'))}</span><small class="muted">${esc(t('inbox.aiown.help'))}</small></label>
+    </section>
+    <section class="set-sec" id="sec-look"><h3 class="set-h">${esc(t('setup.sec.look'))}</h3>
     <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
-    <label class="f ai-only"><span>${esc(t('follow.setup'))}</span><select class="setup-theme" id="followMode" onchange="Follow.setMode(this.value)">${['auto', 'button'].map(v => `<option value="${v}" ${Follow.mode() === v ? 'selected' : ''}>${esc(t('follow.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('follow.setup.help'))}</small></label>
-    <div class="f" id="enterSendBox">${EnterSend.html()}</div>
-    <div class="f noai-box" id="noAiBox">${noAiBoxHtml()}</div>
     <div class="f" id="topbarBox">${Topbar.html()}</div>
-    <div class="f" id="channelBox">${Channel.html()}</div>
-    <div class="f lead-prefs ai-only" id="leadPrefs">${leadPrefsHtml()}</div>
-    <div class="f lead-prefs ai-only" id="mainTeamBox">${mainTeamBoxHtml()}</div>
-    <div class="f lead-prefs ai-only" id="runInPrefs">${runInHtml()}</div>
-    <div class="f" id="serversBox">${(srvDraft = null, serversHtml())}</div>
-    <div class="f" id="rolesBox">${(Roles.reset(), Roles.html())}</div>
-    <div class="f" id="streamerBox">${Streamer.setupHtml()}</div>
-    <div class="f" id="presenceBox">${(queueMicrotask(Presence.load), Presence.html())}</div>
-    <div class="f" id="licencesBox">${(Lic.reset(), Lic.html())}</div>
-    <div class="f" id="secretsBox">${(SEC.list = null, secretsBoxHtml())}</div>
-    <div class="f" id="mailBox">${Mail.setupHtml()}</div>
-    <div class="f" id="twitchBox">${TwitchTab.setupHtml()}</div>
-    <div class="f" id="discordBox">${(queueMicrotask(DiscordSetup.load), DiscordSetup.html())}</div>
-    <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
-    <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
-    <div class="f" id="pretendBox">${pretendBoxHtml()}</div>
-    <div class="f" id="phoneBox">${Phone.html()}</div>
-    <div class="f"><span>${esc(t('trial.h'))}</span><div>${launchPickHtml()}<button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
-    <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <div class="f" id="iconBox">${iconHtml()}</div>
+    <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
     <div class="f"><span>${esc(t('face.me'))}</span>${logoEditor('me-pic', s.mePic)}</div>
     <div class="f"><span>${esc(t('face.lib'))}</span>${libraryHtml(s.library)}</div>
+    </section>
+    <section class="set-sec" id="sec-plan"><h3 class="set-h">${esc(t('setup.sec.plan'))}</h3>
+    <div class="f lead-prefs ai-only" id="leadPrefs">${leadPrefsHtml()}</div>
+    </section>
+    <section class="set-sec" id="sec-teams"><h3 class="set-h">${esc(t('setup.sec.teams'))}</h3>
+    <div class="f lead-prefs ai-only" id="mainTeamBox">${mainTeamBoxHtml()}</div>
+    <div class="f lead-prefs ai-only" id="runInPrefs">${runInHtml()}</div>
+    <div class="f" id="rolesBox">${(Roles.reset(), Roles.html())}</div>
+    <div class="f" id="presenceBox">${(queueMicrotask(Presence.load), Presence.html())}</div>
+    </section>
+    <section class="set-sec" id="sec-discord"><h3 class="set-h">${esc(t('setup.sec.discord'))}</h3>
+    <div class="f" id="discordBox">${(queueMicrotask(DiscordSetup.load), DiscordSetup.html())}</div>
+    </section>
+    <section class="set-sec" id="sec-mail"><h3 class="set-h">${esc(t('setup.sec.mail'))}</h3>
+    <div class="f" id="mailBox">${Mail.setupHtml()}</div>
+    </section>
+    <section class="set-sec" id="sec-servers"><h3 class="set-h">${esc(t('setup.sec.servers'))}</h3>
+    <div class="f" id="serversBox">${(srvDraft = null, serversHtml())}</div>
+    </section>
+    <section class="set-sec" id="sec-phone"><h3 class="set-h">${esc(t('setup.sec.phone'))}</h3>
+    <div class="f" id="phoneBox">${Phone.html()}</div>
+    </section>
+    <section class="set-sec" id="sec-you"><h3 class="set-h">${esc(t('setup.sec.you'))}</h3>
     <form id="setupForm" onsubmit="return saveSetupPage(event)">
       ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}" ${f.suggest ? `placeholder="${esc(f.suggest)}" data-suggest="${esc(f.suggest)}"` : ''}><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small>${f.suggest && !f.value ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(f.suggest)}</code> <button type="button" class="usesuggest" onclick="useSuggest(this)">${esc(t('setup.suggest.use'))}</button></small>` : ''}</label>`).join('')}
       <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
-      <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button></div></form></div>`;
+      <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button></div></form>
+    </section>
+    <section class="set-sec" id="sec-more"><h3 class="set-h">${esc(t('setup.sec.more'))}</h3>
+    <label class="f chk"><span><input type="checkbox" id="aiOwnList" ${IB.aiOwn() ? 'checked' : ''} onchange="IB.setAiOwn(this.checked)"> ${esc(t('inbox.aiown.switch'))}</span><small class="muted">${esc(t('inbox.aiown.help'))}</small></label>
+    <label class="f ai-only"><span>${esc(t('follow.setup'))}</span><select class="setup-theme" id="followMode" onchange="Follow.setMode(this.value)">${['auto', 'button'].map(v => `<option value="${v}" ${Follow.mode() === v ? 'selected' : ''}>${esc(t('follow.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('follow.setup.help'))}</small></label>
+    <div class="f" id="enterSendBox">${EnterSend.html()}</div>
+    <div class="f noai-box" id="noAiBox">${noAiBoxHtml()}</div>
+    <div class="f" id="selfcareBox">${SelfCare.html()}</div>
+    <div class="f" id="channelBox">${Channel.html()}</div>
+    <div class="f" id="streamerBox">${Streamer.setupHtml()}</div>
+    <div class="f" id="licencesBox">${(Lic.reset(), Lic.html())}</div>
+    <div class="f" id="secretsBox">${(SEC.list = null, secretsBoxHtml())}</div>
+    <div class="f" id="twitchBox">${TwitchTab.setupHtml()}</div>
+    <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
+    <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
+    <div class="f" id="pretendBox">${pretendBoxHtml()}</div>
+    <div class="f"><span>${esc(t('trial.h'))}</span><div>${launchPickHtml()}<button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
+    </section></div>`;
+}
+/* ---------- Setup index (AIG-934): links to the sections, #/setup/<section> deep links ---------- */
+// A deep link also takes any box id minus "Box" (#/setup/mail, #/setup/dmsRelay). Scrolls clear of the sticky top bar and index.
+function setupTarget(sec) { return $('sec-' + sec) || $(sec + 'Box') || $(sec); }
+function setupScrollTo(sec) {
+  const el = setupTarget(sec), ix = $('setIndex'); if (!el) return false;
+  const hdr = document.querySelector('body > header'), h = hdr && getComputedStyle(hdr).position !== 'static' ? hdr.offsetHeight : 0;
+  if (ix) ix.style.top = h + 'px';
+  window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - h - (ix ? ix.offsetHeight : 0) - 10);
+  return true;
+}
+function setupJump(sec) {
+  history.replaceState(null, '', '#/setup/' + sec); state.route = { view: 'setup', sec }; state.setupLanded = location.hash;
+  setupScrollTo(sec); return false;
+}
+// After a render of Setup: land on the section of the link (again once the async boxes have filled in), else stay at the top.
+function setupLand() {
+  const ix = $('setIndex'), hdr = document.querySelector('body > header');
+  if (ix) ix.style.top = (hdr && getComputedStyle(hdr).position !== 'static' ? hdr.offsetHeight : 0) + 'px';
+  const sec = state.route.sec; if (!sec || state.setupLanded === location.hash) return;
+  state.setupLanded = location.hash;
+  let n = 0; const go = () => { if (setupScrollTo(sec)) { setTimeout(() => setupScrollTo(sec), 400); setTimeout(() => setupScrollTo(sec), 1200); } else if (++n < 50) setTimeout(go, 100); };
+  go();
 }
 /* ---------- DMs relay address (AIG-309) ---------- */
 // Where DMs go through: save the address, or Check it (the board server fetches <relay>/health).
@@ -201,13 +247,25 @@ function healthLine() {
   const p = v => v == null ? '?' : Math.round(v) + '%', gb = v => v == null ? '?' : v >= 1e9 ? (v / 1e9).toFixed(1) + ' GB' : Math.round(v / 1e6) + ' MB';
   return `<small class="muted" id="srv-health">${esc(t('servers.health', { name: h.server || '', cpu: p(h.cpu), mem: p(h.mem), disk: p(h.disk), size: gb(h.storage), days: h.uptime == null ? '?' : Math.floor(h.uptime / 86400), when: new Date(h.at).toLocaleString() }))}</small>`;
 }
+// AIG-773: an ssh server is host + user (saved together as value, user@host) with optional port, key file and default folder.
+const srvSplit = v => { const m = String(v || '').match(/^(ssh:\/\/)?(?:([^@/]+)@)?(.*)$/); return { uri: m[1] || '', user: m[2] || '', host: m[3] || '' }; };
+function srvSshInputs(s, i) {
+  const p = srvSplit(s.value);
+  return `<input type="text" data-srv="host" data-i="${i}" value="${esc(p.host)}" placeholder="${esc(t('servers.host'))}" onchange="srvEdit(this)">
+    <input type="text" data-srv="user" data-i="${i}" value="${esc(p.user)}" placeholder="${esc(t('servers.user'))}" size="10" onchange="srvEdit(this)">`;
+}
+const srvSshMore = (s, i) => `<div class="srv-more">
+    <input type="number" data-srv="port" data-i="${i}" min="1" max="65535" value="${esc(s.port || '')}" placeholder="${esc(t('servers.port'))}" onchange="srvEdit(this)">
+    <input type="text" data-srv="key" data-i="${i}" value="${esc(s.key || '')}" placeholder="${esc(t('servers.key'))}" onchange="srvEdit(this)">
+    <input type="text" data-srv="folder" data-i="${i}" value="${esc(s.folder || '')}" placeholder="${esc(t('servers.folder'))}" onchange="srvEdit(this)"></div>`;
 function serversHtml(msg = '') {
   if (!srvDraft) srvDraft = (leadPrefs().servers || []).map(x => ({ ...x }));
   const rows = srvDraft.map((s, i) => `<div class="srv-row">
     <input type="text" data-srv="name" data-i="${i}" value="${esc(s.name)}" placeholder="${esc(t('servers.name'))}" onchange="srvEdit(this)">
     <select data-srv="kind" data-i="${i}" onchange="srvEdit(this)">${['path', 'cmd', 'ssh'].map(k => `<option value="${k}" ${(s.kind || 'path') === k ? 'selected' : ''}>${esc(t('servers.kind.' + k))}</option>`).join('')}</select>
-    <input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t('servers.' + (s.kind === 'cmd' || s.kind === 'ssh' ? s.kind : 'path') + '.ph'))}" onchange="srvEdit(this)">
+    ${s.kind === 'ssh' ? srvSshInputs(s, i) : `<input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t('servers.' + (s.kind === 'cmd' ? 'cmd' : 'path') + '.ph'))}" onchange="srvEdit(this)">`}
     <button type="button" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">✕</button>
+    ${s.kind === 'ssh' ? srvSshMore(s, i) : ''}
     <label class="srv-sudo"><input type="checkbox" data-srv="sudo" data-i="${i}" ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? 'checked' : ''} onchange="srvEdit(this)"> ${esc(t('servers.sudo'))}</label>
     ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? `<input type="text" data-srv="sudoWho" data-i="${i}" value="${esc(Array.isArray(s.sudo) ? s.sudo.join(', ') : '')}" placeholder="${esc(t('servers.sudoWho'))}" onchange="srvEdit(this)">` : ''}</div>`).join('');
   const found = (srvFound || []).filter(f => !srvDraft.some(s => s.value === f.path)).map(f => `<button type="button" class="srv-found" data-name="${esc(f.name)}" data-path="${esc(f.path)}" onclick="srvAddFound(this)">+ ${esc(f.name)}</button>`).join(' ');
@@ -217,13 +275,15 @@ function serversHtml(msg = '') {
 }
 const srvPaint = msg => { if ($('serversBox')) $('serversBox').innerHTML = serversHtml(msg); };
 async function srvSave() {
-  try { state.setup = await api('POST', '/api/setup', { prefs: { servers: srvDraft.filter(s => s.name.trim() && s.value.trim()) } }); srvPaint(t('setup.saved.short')); }
+  try { state.setup = await api('POST', '/api/setup', { prefs: { servers: srvDraft.filter(s => s.name.trim() && s.value.trim() && (s.kind !== 'ssh' || srvSplit(s.value).host)) } }); srvPaint(t('setup.saved.short')); }
   catch (e) { setErr('servers-err', e); }
 }
 function srvEdit(el) {
   const s = srvDraft[+el.dataset.i], k = el.dataset.srv;
   if (k === 'sudo') { if (el.checked) s.sudo = true; else delete s.sudo; srvPaint(); }   // AIG-701
   else if (k === 'sudoWho') { const n = el.value.split(',').map(x => x.trim()).filter(Boolean); s.sudo = n.length ? n : true; }
+  else if (k === 'host' || k === 'user') { const p = srvSplit(s.value); p[k] = el.value.trim(); s.value = p.uri + (p.user ? p.user + '@' : '') + p.host; }   // AIG-773
+  else if (k === 'port' || k === 'key' || k === 'folder') { if (el.value.trim()) s[k] = k === 'port' ? +el.value : el.value.trim(); else delete s[k]; }
   else { s[k] = el.value; if (k === 'kind') srvPaint(); }
   srvSave();
 }

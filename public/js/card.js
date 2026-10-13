@@ -1,13 +1,15 @@
 /* ---------- card detail panel ---------- */
 // ↩ Reopen and ⋯ Move to (AIG-403): a done card goes back to the column it came from; any card can be moved to a column.
-function moveUi(p, c) {
+function moveUi(p, c, part) {   // part: 'reopen' (the button) or 'selects' (the Move dropdowns); both when omitted
   const cols = colsOf(p).filter(x => x.key !== c.status);
   // The other projects, for ➡️ Move to project (AIG-438): the home list if it is loaded, else fetched once.
   if (!state.projects && !state.projectList && !state.projectListAsked) { state.projectListAsked = true; api('GET', '/api/projects').then(l => { state.projectList = l; refresh(true); }).catch(() => {}); }
-  const others = (state.projects || state.projectList || []).filter(x => x.slug !== p.slug && !x.archived);
-  return (c.status === 'done' ? `<button data-reopen onclick="moveCard('${esc(c.reopenTo || 'todo')}')" title="${esc(t('card.reopen.title'))}">${esc(t('card.reopen'))}</button> ` : '')
-    + `<select id="mv-to" data-moveto onchange="moveCard(this.value)" aria-label="${esc(t('card.moveto'))}"><option value="">${esc(t('card.moveto'))}</option>${cols.map(x => `<option value="${esc(x.key)}">${esc(((x.emoji ? x.emoji + ' ' : '') + x.name).trim())}</option>`).join('')}</select>`
+  const others = TodayPage.only(state.projects || state.projectList || []).filter(x => x.slug !== p.slug && !x.archived);
+  const reopen = (c.status === 'done' ? `<button data-reopen onclick="moveCard('${esc(c.reopenTo || 'todo')}')" title="${esc(t('card.reopen.title'))}">${esc(t('card.reopen'))}</button> ` : '');
+  if (part === 'reopen') return reopen;
+  const selects = `<select id="mv-to" data-moveto onchange="moveCard(this.value)" aria-label="${esc(t('card.moveto'))}"><option value="">${esc(t('card.moveto'))}</option>${cols.map(x => `<option value="${esc(x.key)}">${esc(((x.emoji ? x.emoji + ' ' : '') + x.name).trim())}</option>`).join('')}</select>`
     + (others.length ? ` <select id="mv-proj" onchange="moveToProject(this.value)" aria-label="${esc(t('card.moveproj'))}"><option value="">${esc(t('card.moveproj'))}</option>${others.map(x => `<option value="${esc(x.slug)}">${esc(x.name)}</option>`).join('')}</select>` : '');
+  return part === 'selects' ? selects : reopen + selects;
 }
 // ➡️ Move to another project (AIG-438): a copy lands there with a link back; this card closes with a link forward.
 async function moveToProject(to) {
@@ -16,6 +18,7 @@ async function moveToProject(to) {
 }
 async function moveCard(status) {
   if (!status) return;
+  state.cardMenu = false;
   const body = { status };
   if (status === 'done' && state.project) {   // 🔥 an incident is closed with its post-mortem (AIG-614)
     const c = state.project.cards.find(x => x.id === cardId());
@@ -37,6 +40,14 @@ function postmortemAsk() {
   });
 }
 const postmortemHtml = c => c.postmortem ? `<div class="postmortem"><h3>${esc(t('pm.heading'))}</h3>${['happened', 'why', 'change'].map(k => `<p><b>${esc(t('pm.' + k))}</b> ${esc(c.postmortem[k])}</p>`).join('')}</div>` : '';
+// 🧩 A problem card (AIG-887) shows its root cause, workaround, linked incidents and change request; an incident shows its problem.
+const cardLinkHtml = (p, id) => `<a href="#/p/${esc(p.slug)}/${esc(id)}">${esc(id)}</a>`;
+const problemHtml = (p, c) => c.type === 'problem' ? `<div class="problem"><h3>${esc(t('prob.heading'))}</h3>
+  <p><b>${esc(t('prob.cause'))}</b> ${c.rootCause ? esc(c.rootCause) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
+  <p><b>${esc(t('prob.workaround'))}</b> ${c.workaround ? esc(c.workaround) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
+  <p><b>${esc(t('prob.incidents'))}</b> ${(c.incidents || []).length ? c.incidents.map(i => cardLinkHtml(p, i)).join(', ') : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
+  <p><b>${esc(t('prob.change'))}</b> ${c.changeId ? cardLinkHtml(p, c.changeId) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p></div>`
+  : c.problemId ? `<div class="problem"><p><b>${esc(t('prob.of'))}</b> ${cardLinkHtml(p, c.problemId)}</p></div>` : '';
 // The merge gate (AIG-613): 🟢 QA green (areas, full suite) / 🔴 QA red / ⚪ no QA yet. Set with aigile qa.
 function qaGateHtml(c) {
   const q = c.qa; if (!q) return `<div class="qa-gate none">${esc(t('qa.none'))}</div>`;
@@ -47,9 +58,10 @@ function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
   const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
-  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}${state.editing ? '' : `<button id="remind-btn" onclick="remindToggle()" title="${esc(t('remind.title'))}">${esc(t('remind.btn'))}</button>`}${state.editing ? '' : timerUi(c)}${state.editing ? '' : crucialBtn(c)}${state.editing ? '' : urgentBtn(c, p.slug)}${state.editing ? '' : Focus.btn(p, c)}${state.editing ? '' : Term.btn(c, 'term-btn')}<span style="flex:1"></span>
-      ${state.editing ? '' : moveUi(p, c)}
-      ${state.editing ? '' : `<button onclick="editCard()">${esc(t('card.edit'))}</button> <button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button>`}</div>`;
+  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}</div>`;
+  // AIG-935: title first; Close, Edit (and Reopen) stay in view, every other action sits in the one ⋯ menu (same buttons, same ids).
+  const menu = `<div class="card-menu" id="card-menu" ${state.cardMenu ? '' : 'hidden'}>${popBtn}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}<button id="remind-btn" onclick="remindToggle()" title="${esc(t('remind.title'))}">${esc(t('remind.btn'))}</button>${timerUi(c)}${crucialBtn(c)}${urgentBtn(c, p.slug)}${Focus.btn(p, c)}${Term.btn(c, 'term-btn')}${moveUi(p, c, 'selects')}<button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button></div>`;
+  const topActs = `<div class="card-acts"><button onclick="${close}">${esc(t('card.close'))}</button>${moveUi(p, c, 'reopen')}<button onclick="editCard()">${esc(t('card.edit'))}</button><span class="card-menu-wrap"><button type="button" id="cm-btn" class="cm-btn" aria-haspopup="true" aria-expanded="${!!state.cardMenu}" title="${esc(t('card.menu.title'))}" aria-label="${esc(t('card.menu.title'))}" onclick="cardMenuToggle()">${esc(t('card.menu'))}</button>${menu}</span></div>`;
   if (state.editing) {
     return `<div class="overlay"><div class="panel">${head}
       <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(t('card.editing'))}</div>
@@ -80,10 +92,11 @@ function renderCard(p, c) {
   if (state.tabFor !== c.id) { state.tabFor = c.id; state.cardTab = c.status === 'verify' ? 'test' : c.comments.length ? 'reply' : 'details'; }
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
-  return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel" ${Term.panelAttr(p, c)}>${head}
-    <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
-    <h2>${esc(c.title)}</h2>
+  return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel" ${Term.panelAttr(p, c)}>
+    <div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    <h2>${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
+    ${c.status === 'verify' ? verdict : ''}
     ${checklistUi(p, c)}${waitsUi(p, c)}${secretsUi(p, c)}
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
@@ -92,14 +105,22 @@ function renderCard(p, c) {
       ${pop ? chatHtml(p, c, msg) : followBar(p, c) + replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
-      ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${Attach.shown(c, p.slug)}
+      ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${problemHtml(p, c)}${changeHtml(p, c)}${Attach.shown(c, p.slug)}
     </div>
-    ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>${verdict}
+    ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>
       ${c.proof ? proofHtml(c.proof) : ''}
       ${notes.length ? `<h3>${esc(t('card.fromteam'))}</h3>${notesHtml(notes, msg)}` : ''}
       ${c.testSteps ? `<h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
   </div></div>`;
 }
+
+/* ---------- the ⋯ actions menu (AIG-935) ---------- */
+function cardMenuToggle(on) {
+  state.cardMenu = on === undefined ? !state.cardMenu : on;
+  const m = $('card-menu'), b = $('cm-btn'); if (m) m.hidden = !state.cardMenu; if (b) b.setAttribute('aria-expanded', String(!!state.cardMenu));
+}
+document.addEventListener('click', e => { if (state.cardMenu && !e.target.closest('.card-menu-wrap')) cardMenuToggle(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.cardMenu) cardMenuToggle(false); });
 
 /* ---------- card actions: edit, delete, reply, verdict ---------- */
 function editCard() { state.editing = true; render(); const ti = $('f-title'); if (ti) ti.focus(); }

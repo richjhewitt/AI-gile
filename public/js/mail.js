@@ -9,15 +9,16 @@ const Mail = (() => {
   const box = () => (M.cfg && M.cfg.boxes && M.cfg.boxes[0]) || null;
   const hidden = () => typeof Streamer !== 'undefined' && Streamer.on && Streamer.on();
   const q = id => encodeURIComponent(id);
-  M.watch = async () => {
-    try { M.cfg = await PagePoll.get('/api/mail/config'); } catch { return; }
+  M.watch = async (options = {}) => {
+    try { M.cfg = await PagePoll.get('/api/mail/config', options); } catch { return; }
     const n = $('mailNav'); if (n) n.style.display = box() ? '' : 'none';
   };
   // Called by the 1s refresh while #/mail is open: cheap after the first time; a fresh fetch when the page is (re)opened.
-  M.load = async () => {
-    if (!M.cfg) await M.watch();
+  M.load = async (options = {}) => {
+    if (!M.cfg) await M.watch(options);
+    if (options.signal?.aborted) return;
     const b = box(); if (!b || hidden()) return;
-    if (!M.data || M.data.box.id !== b.id) { try { M.data = await api('GET', '/api/mail/inbox?box=' + q(b.id)); } catch (e) { M.data = { box: b, items: [], error: e.message }; } }
+    if (!M.data || M.data.box.id !== b.id) { try { M.data = await api('GET', '/api/mail/inbox?box=' + q(b.id), undefined, options); } catch (e) { if (options.signal?.aborted) return; M.data = { box: b, items: [], error: e.message }; } }
     const back = Date.now() - M.seen > 4000; M.seen = Date.now();
     if (back && !M.loading) M.refresh();
   };
@@ -85,7 +86,7 @@ const Mail = (() => {
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button type="button" id="mailTest" onclick="Mail.test()">${esc(t('mail.setup.test'))}</button>
         <button type="button" class="primary" id="mailSave" onclick="Mail.save()">${esc(t('mail.setup.save'))}</button>
         ${box() ? `<button type="button" id="mailRemove" onclick="Mail.remove()">${esc(t('mail.setup.remove'))}</button> <a href="#/mail" id="mailOpen">${esc(t('mail.setup.open'))}</a>` : ''}</div>
-      <div class="err" id="mailSetErr">${esc(b.lastError || '')}</div><small class="muted" id="mailSetState">${esc(M.setupMsg)}</small>`;
+      ${b.lastError ? `<small class="muted mail-note" id="mailSetErr">${esc(b.lastError)} <a href="#/setup/dmsRelay">${esc(t('mail.setup.relay.link'))}</a></small>` : '<div class="err" id="mailSetErr"></div>'}<small class="muted" id="mailSetState">${esc(M.setupMsg)}</small>`;
   };
   const form = () => ({ id: (box() || {}).id, name: v('mailName'), address: v('mailAddr'), host: v('mailHost'), port: Number(v('mailPort')) || 993, user: v('mailUser') || v('mailAddr'), password: ($('mailPass') || {}).value || '' });
   M.find = async () => {
@@ -115,7 +116,7 @@ const Mail = (() => {
   };
   // No mailbox yet: a real button to Setup, landing on its Mail box, not the top of the long page (AIG-927).
   M.toSetup = () => {
-    location.hash = '#/setup';
+    location.hash = '#/setup/mail';
     const hdr = () => { const h = document.querySelector('body > header'); return h && getComputedStyle(h).position !== 'static' ? h.offsetHeight : 0; };   // clear of a sticky top bar
     const to = () => { const box = document.getElementById('mailBox'); if (box) window.scrollTo(0, box.getBoundingClientRect().top + window.scrollY - hdr() - 12); return !!box; };
     let n = 0; const go = () => { if (to()) { setTimeout(to, 400); setTimeout(to, 1200); } else if (++n < 50) setTimeout(go, 100); };   // again once Setup has finished filling in

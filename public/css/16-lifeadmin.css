@@ -1,0 +1,20 @@
+/* 🏡 Life admin (AIG-798) and 🌅 Start my day (AIG-797). */
+.la-ul { list-style: none; margin: 8px 0; padding: 0; }
+.la-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.la-row .la-text { flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; display: flex; flex-direction: column; }
+.la-row.done .la-text { text-decoration: line-through; opacity: .6; }
+.la-row.asleep { opacity: .65; }
+.la-row.overdue .la-over { color: var(--bad, #dc2626); font-weight: 600; }
+.la-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.la-btns button, .la-add button { cursor: pointer; }
+.la-add { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.la-add input:not([type=datetime-local]) { flex: 1 1 180px; min-width: 0; }
+.la-add input, .la-add select { max-width: 100%; box-sizing: border-box; }
+.la-lh { display: flex; align-items: center; gap: 8px; }
+.la-note { margin-top: 14px; }
+.md-sec { padding: 8px 0; border-bottom: 1px solid var(--line); }
+.md-sec h3 { margin: 0 0 4px; font-size: 15px; }
+.md-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.md-row .md-what { flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; }
+#dialog .md-list { margin: 4px 0 0; padding-inline-start: 18px; }
+#dialog .md-pick label { display: block; padding: 2px 0; overflow-wrap: anywhere; }

@@ -33,6 +33,11 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .tm-face .face { width: 40px; height: 40px; border-radius: 50%; }
 .tm-nm-in { font: inherit; padding: 2px 6px; max-width: 220px; }
 .noai [onclick^="askTeamDialog"] { display: none !important; }
+/* AIG-821: what makes no sense with no AI team (top bar, board, card panel, DMs) */
+.noai #glanceBtn, .noai #assumeNav, .noai #streamBtn, .noai #liveBtn, .noai #quietTimeTop, .noai #packCopy, .noai #packPaste, .noai .qa-gate.none,
+.noai [onclick^="Editor.open"], .noai [onclick^="openNews"], .noai [onclick^="refactorOffer"], .noai [onclick^="goQuiet"], .noai [onclick^="callStandup"],
+.noai a[href^="#/standups"], .noai .dm-chip[data-dmfilter="agents"], .noai .fy-chip.fy-zero:is([data-first="t"], [data-first="p"], [data-first="o"]),
+.noai .column[data-status="review"]:not(:has(.card)), .noai .column[data-status="team"]:not(:has(.card)) { display: none !important; }
 /* 🎯 Today (AIG-595): weights per project, the badge on project cards, the share bars on the usage page */
 .today-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .today-row:last-child { border-bottom: 0; }
@@ -65,3 +70,25 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .hf-chip { font-size: 12px; padding: 2px 4px 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--accent, #6366f1) 22%, var(--panel)); color: var(--text); white-space: nowrap; }
 .hf-chip a { color: inherit; text-decoration: none; }
 .hf-chip button { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 0 4px; }
+
+/* ---------- More menu (AIG-931/932): the same buttons, moved under one button; on a phone it is the one ☰ menu ---------- */
+#tbMore { position: relative; display: inline-flex; }
+#tbMore .tbm-p { display: none; }
+#tbMoreMenu { position: absolute; inset-inline-end: 0; top: calc(100% + 6px); z-index: 30; min-width: 220px; max-width: 92vw; max-height: calc(100vh - 90px); overflow-y: auto; display: flex; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 28px rgba(0, 0, 0, .35); }
+#tbMoreMenu[hidden] { display: none; }
+.tbm-label { display: none; }
+#tbMoreMenu .tbm-label { display: inline; margin-inline-start: 8px; }
+#tbMoreMenu > * { max-width: 100%; }
+#tbMoreMenu > .navlink, #tbMoreMenu > .theme-pick, #tbMoreMenu > button { display: flex; align-items: center; justify-content: flex-start; text-align: start; }
+#tbMoreMenu > span:empty, #tbMoreMenu > [hidden] { display: none; }
+#tbMoreMenu > .imm-wrap:not([hidden]) { display: flex; }
+.tb-pins { margin-top: 12px; } .tb-pinlist { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; }
+.tb-pin { display: inline-flex; align-items: center; gap: 4px; }
+@media (max-width: 600px) {
+  header { flex-wrap: nowrap; padding: 8px 12px; overflow-x: clip; }
+  header .crumb, header .alpha-tag { display: none; }
+  header .spacer { flex: 1 1 auto; height: auto; }
+  #tbMore .tbm-d { display: none; } #tbMore .tbm-p { display: inline; font-size: 18px; line-height: 1; }
+  header > #inboxTop { flex: 0 1 auto; min-width: 0; overflow: hidden; } #inboxTop .ib-alerts, #inboxTop .navlink { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #tbMoreMenu { position: fixed; inset-inline: 8px; top: 56px; max-width: none; }
+}

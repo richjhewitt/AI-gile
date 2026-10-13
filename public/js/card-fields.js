@@ -5,7 +5,7 @@ function cardFields(c, o = {}) {
   return `<label class="f"><span>${esc(t('card.f.title'))}</span><input type="text" id="f-title" value="${esc(c.title)}" placeholder="${esc(o.titlePh || '')}" maxlength="200"></label>
     <label class="f"><span>${esc(o.descLabel || t('card.f.description'))}</span><textarea id="f-description" rows="4" placeholder="${esc(o.descPh || '')}">${esc(c.description)}</textarea></label>
     ${o.testSteps ? `<label class="f"><span>${esc(t('card.f.teststeps'))}</span><textarea id="f-testSteps" rows="4">${esc(c.testSteps)}</textarea></label>` : ''}
-    <div class="row">
+    ${o.more ? `<details class="nc-more" id="nc-more" ${o.moreOpen ? 'open' : ''}><summary>${esc(t('dlg.newcard.more'))}</summary>${o.moreTop || ''}` : ''}<div class="row">
       <label class="f"><span>${esc(t('card.f.type'))}</span><select id="f-type">${opts(TYPES, c.type, Object.fromEntries(TYPES.map(k => [k, t('type.' + k)])))}</select></label>
       <label class="f"><span>${esc(t('card.f.priority'))}</span><select id="f-priority">${opts(PRIORITIES, c.priority, Object.fromEntries(PRIORITIES.map(k => [k, t('priority.' + k)])))}</select></label>
       <label class="f"><span>${esc(t('card.f.risk'))}</span><select id="f-risk">${opts(RISKS, c.risk || 'normal', Object.fromEntries(RISKS.map(k => [k, t('risk.' + k)])))}</select></label>
@@ -19,7 +19,7 @@ function cardFields(c, o = {}) {
     ${o.flags ? `<div><label class="chk"><input type="checkbox" id="f-blocked" ${c.blocked ? 'checked' : ''}> ${esc(t('card.f.blocked'))}</label>
       <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> ${esc(t('card.f.needsyou'))}</label>
       <label class="chk"><input type="checkbox" id="f-focus" ${c.focus ? 'checked' : ''}> ${esc(t('fx.f.focus'))}</label>
-      <label class="chk"><input type="checkbox" id="f-hidepublic" ${c.hidePublic ? 'checked' : ''}> ${esc(t('pub.card.hide'))}</label></div>` : ''}`;
+      <label class="chk"><input type="checkbox" id="f-hidepublic" ${c.hidePublic ? 'checked' : ''}> ${esc(t('pub.card.hide'))}</label></div>` : ''}${o.more ? '</details>' : ''}`;
 }
 // Who a card goes to: a role (the lead launches that kind of agent; the model is shown so the cost is
 // visible), a named team member, or the owner himself (a task for him). Agents swap a role for their name on start.
@@ -38,7 +38,7 @@ const projectRoleOn = (r, p = state.project) => r === TEAM_ROLES[0] || !p || !Ar
 // A role template on a project (AIG-420): kept by its id, e.g. ux-researcher-senior. state.profiles = GET /api/profiles.
 const profileRole = id => ((state.profiles || {}).roles || []).find(r => r.id === id);
 // Loaded once with the project (core.js), so the role picker can name roles added from a team.
-async function loadProfiles() { if (!state.profiles) try { state.profiles = await api('GET', '/api/profiles'); } catch { state.profiles = { roles: [], teams: [] }; } return state.profiles; }
+async function loadProfiles(options = {}) { if (!state.profiles) try { state.profiles = await api('GET', '/api/profiles', undefined, options); } catch (e) { if (options.signal?.aborted) throw e; state.profiles = { roles: [], teams: [] }; } return state.profiles; }
 const Model = m => String(m || '').replace(/^./, c => c.toUpperCase());
 const roleModel = r => (/\((Opus|Sonnet|Haiku)\)$/.exec(r) || [])[1] || Model((profileRole(r) || {}).model);
 const roleName = id => { const r = profileRole(id); return r ? `${t('prof.role.' + r.group)}, ${t('prof.level.' + r.level)} (${Model(r.model)})` : id; };
@@ -58,12 +58,13 @@ function rolesCount(on) {
 }
 function assigneeSelect(cur) {
   const team = (state.project?.team || []).filter(m => !/retired/i.test(m.status || '') && m.name !== me()).map(m => m.name);
+  const noAi = document.body.classList.contains('noai');   // AIG-821: no AI, no roles: the people from the team (and you)
   const extra = extraRoles().map(id => [profileRole(id).label, id]);
   const known = new Set(['', me(), ...ROLES.map(r => r[0]), ...extra.map(x => x[0]), ...team]);
   const o = (v, label) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
   return `<select id="f-assignee" onchange="onAssignee(this)">
     ${o('', t('assignee.nobody'))}${cur && !known.has(cur) ? o(cur, '👤 ' + cur) : ''}
-    <optgroup label="${esc(t('assignee.roles'))}">${ROLES.filter(r => r[0] === cur || projectRoleOn(r[0])).map(([v, i, d]) => o(v, `${i} ${v}: ${t(d)}`)).join('')}${extra.map(([v, id]) => o(v, `${roleIcon(id)} ${roleName(id)}`)).join('')}</optgroup>
+    ${noAi ? (ROLES.some(r => r[0] === cur) ? o(cur, cur) : '') : `<optgroup label="${esc(t('assignee.roles'))}">${ROLES.filter(r => r[0] === cur || projectRoleOn(r[0])).map(([v, i, d]) => o(v, `${i} ${v}: ${t(d)}`)).join('')}${extra.map(([v, id]) => o(v, `${roleIcon(id)} ${roleName(id)}`)).join('')}</optgroup>`}
     ${team.length ? `<optgroup label="${esc(t('assignee.members'))}">${team.map(n => o(n, '👤 ' + n)).join('')}</optgroup>` : ''}
     <optgroup label="${esc(t('assignee.you'))}">${o(me(), '🙋 ' + me() + t('assignee.you.task'))}</optgroup>
     <option value="__other">${esc(t('assignee.other'))}</option></select>`;

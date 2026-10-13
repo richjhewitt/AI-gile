@@ -132,6 +132,7 @@ def('theme', 'theme: follows the system, or System / Light / Dark picked in the 
   check('Dark picked overrides a light system', (await page.evaluate(() => document.documentElement.dataset.theme)) === 'dark' && (await bg()) !== light);
   await page.reload(); await page.waitForSelector('#themeBtn');
   check('the pick is remembered', (await page.evaluate(() => document.documentElement.dataset.theme)) === 'dark');
+  await page.click('#themeBtn');   // -> Black (AIG-916)
   await page.click('#themeBtn');   // -> System
   check('back to System follows the system', !(await page.evaluate(() => document.documentElement.dataset.theme)) && (await bg()) === light);
   noErrors(page);

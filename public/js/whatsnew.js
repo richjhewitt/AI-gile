@@ -6,10 +6,10 @@
 const WhatsNew = (() => {
   const W = { data: null, rb: null, checked: false };
   const KEY = 'aigile.seenRelease';
-  W.load = async () => {
-    try { W.data = await PagePoll.get('releases.json', { revision: false }); } catch { W.data = []; }
+  W.load = async (options = {}) => {
+    try { W.data = await PagePoll.get('releases.json', { revision: false, ...options }); } catch (e) { if (options.signal?.aborted) throw e; W.data = []; }
     if (!Array.isArray(W.data)) W.data = [];
-    try { W.rb = await PagePoll.get('/api/rollback'); } catch { W.rb = null; }
+    try { W.rb = await PagePoll.get('/api/rollback', options); } catch (e) { if (options.signal?.aborted) throw e; W.rb = null; }
     return W.data;
   };
   const list = (head, items) => items && items.length

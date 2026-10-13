@@ -20,13 +20,33 @@ fs.mkdirSync(DATA, { recursive: true });
 // On for whoever builds AI-gile ("dev": true in aigile.local.json, or AIGILE_DEV=1), off for friends (AIG-253).
 const DEV = /^(1|true|yes)$/i.test(process.env.AIGILE_DEV || '') || localSettings().dev === true;
 const STARTED = Date.now();
-const pageFiles = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? pageFiles(path.join(dir, e.name)) : [path.join(dir, e.name)]);
-const build = () => STARTED + '-' + Math.max(...pageFiles(PUBLIC).map(f => fs.statSync(f).mtimeMs));
+// Scan asynchronously away from requests. Keep the last complete scan during an update.
+async function newest(dir, jsOnly = false) {
+  const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+  const times = await Promise.all(entries.filter(e => e.isDirectory() || !jsOnly || e.name.endsWith('.js')).map(async e => {
+    const file = path.join(dir, e.name);
+    try { return e.isDirectory() ? await newest(file, jsOnly) : (await fs.promises.stat(file)).mtimeMs; }
+    catch (error) { if (error.code === 'ENOENT') return 0; throw error; }
+  }));
+  return Math.max(0, ...times);
+}
+let buildId = STARTED + '-0', serverStale = false, scanningBuild = false;
+const build = () => buildId;
 
 // Server code newer than this running server (AIG-206): the page offers 🔄 Restart the board instead of failing on new routes.
-const libFiles = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? libFiles(path.join(d, e.name)) : e.name.endsWith('.js') ? [path.join(d, e.name)] : []);
-const serverFiles = () => [path.join(__dirname, 'server.js'), ...libFiles(path.join(__dirname, 'lib'))];
-const stale = () => { try { return Math.max(...serverFiles().map(f => fs.statSync(f).mtimeMs)) > STARTED; } catch { return false; } };
+const stale = () => serverStale;
+async function refreshBuild() {
+  if (scanningBuild) return;
+  scanningBuild = true;
+  try {
+    const [pageTime, libTime, serverStat] = await Promise.all([newest(PUBLIC), newest(path.join(__dirname, 'lib'), true), fs.promises.stat(__filename)]);
+    buildId = STARTED + '-' + pageTime;
+    serverStale = Math.max(libTime, serverStat.mtimeMs) > STARTED;
+  } catch { /* files can disappear mid-update; retry without losing the last good metadata */ }
+  finally { scanningBuild = false; }
+}
+const metadataReady = refreshBuild();
+setInterval(refreshBuild, 2000).unref();
 
 const routes = makeRoutes(() => ({ dev: DEV, build: build(), stale: stale() }));
 
@@ -115,19 +135,45 @@ function conflicted(file, st) {
 }
 
 function send(res, code, body) {
+  if (res.destroyed) return;
   res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
   res.end(JSON.stringify(body));   // compact (AIG-920): pretty-printing added 20% to every poll
 }
 
 function readBody(req, max = 1e6) {
   return new Promise((resolve, reject) => {
-    let s = '';
-    req.on('data', d => { s += d; if (s.length > max) req.destroy(); });
+    let chunks = [], size = 0, finished = false;
+    const fail = error => { if (finished) return; finished = true; chunks = []; reject(error); };
+    req.on('data', chunk => {
+      if (finished) return;
+      size += chunk.length;
+      if (size > max) { fail(bad('body too large', 413)); req.destroy(); return; }
+      chunks.push(chunk);
+    });
+    req.on('error', fail);
+    req.on('aborted', () => fail(bad('request aborted', 400)));
+    req.on('close', () => { if (!req.complete) fail(bad('request aborted', 400)); });
     req.on('end', () => {
-      if (!s) return resolve({});
-      try { resolve(JSON.parse(s)); } catch { reject(bad('body must be JSON')); }
+      if (finished) return;
+      const text = Buffer.concat(chunks).toString('utf8');
+      chunks = []; finished = true;
+      if (!text) return resolve({});
+      try { resolve(JSON.parse(text)); } catch { reject(bad('body must be JSON')); }
     });
   });
+}
+
+// Stream errors arrive after the route's try/catch. Handle them without killing the board.
+function streamFile(file, res, headers) {
+  const stream = fs.createReadStream(file);
+  stream.on('error', error => {
+    if (res.destroyed) return;
+    if (res.headersSent) return res.destroy();
+    send(res, error.code === 'ENOENT' ? 404 : 500, { error: 'Could not read file' });
+  });
+  res.on('close', () => stream.destroy());
+  stream.once('open', () => { if (res.destroyed) return stream.destroy(); res.writeHead(200, headers); stream.pipe(res); });
+  return stream;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -153,9 +199,8 @@ const server = http.createServer(async (req, res) => {
           if (out && out.__svg) { res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" }); return res.end(out.__svg); }
           if (out && out.__file) {
             // download: a friend's attachment (AIG-306), always saved, never shown or run by the browser.
-            if (out.download) { res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="${String(out.download).replace(/[^\w.\- ]/g, '_')}"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'" }); return fs.createReadStream(out.__file).pipe(res); }
-            res.writeHead(200, { 'Content-Type': ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...(out.__file.toLowerCase().endsWith('.svg') ? { 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" } : {}) });   // an svg opened on its own runs no script (AIG-175)
-            return fs.createReadStream(out.__file).pipe(res);
+            if (out.download) return streamFile(out.__file, res, { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="${String(out.download).replace(/[^\w.\- ]/g, '_')}"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'" });
+            return streamFile(out.__file, res, { 'Content-Type': ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...(out.__file.toLowerCase().endsWith('.svg') ? { 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" } : {}) });
           }
           return send(res, 200, out);
         }
@@ -167,15 +212,14 @@ const server = http.createServer(async (req, res) => {
     if (!file.startsWith(PUBLIC)) throw bad('nope', 403);
     if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) file = path.join(PUBLIC, 'index.html');
     if (conflicted(file, fs.statSync(file))) { res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8', 'Retry-After': '2', 'Cache-Control': 'no-store' }); return res.end('mid-update: try again in a moment'); }
-    res.writeHead(200, { 'Content-Type': (MIME[path.extname(file)] || 'application/octet-stream') + '; charset=utf-8', 'Cache-Control': 'no-store' });
-    fs.createReadStream(file).pipe(res);
+    streamFile(file, res, { 'Content-Type': (MIME[path.extname(file)] || 'application/octet-stream') + '; charset=utf-8', 'Cache-Control': 'no-store' });
   } catch (e) {
     send(res, e.code && e.code >= 400 && e.code < 600 ? e.code : 500, { error: e.message });
   }
 });
 
 // The port goes in a file next to the data (AIG-252), so the teams' commands find a board that isn't on 4321.
-server.listen(PORT, HOST, () => { console.log(`AI-gile running at http://localhost:${PORT}`); try { fs.writeFileSync(path.join(DATA, 'board.port'), String(PORT)); } catch {} });
+metadataReady.finally(() => server.listen(PORT, HOST, () => { console.log(`AI-gile running at http://localhost:${PORT}`); try { fs.writeFileSync(path.join(DATA, 'board.port'), String(PORT)); } catch {} }));
 // Private DMs: collect this board's relay mailbox every few seconds while DMs are on (lib/dm.js).
 require('./lib/dm').startDms();
 require('./lib/timed').start();   // timed cards come back (AIG-385)

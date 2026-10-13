@@ -5,7 +5,7 @@ def('projtypes', 'Project types: pick web app, the team\'s scales change, Undo, 
   await mkProject(s, 'Alpha', 'ALP');
   const roles = async () => Object.fromEntries((await s.ok('GET', '/api/projects/alpha/profiles')).roles.map(r => [r.id, r.project || {}]));
   const types = await s.ok('GET', '/api/project-types');
-  check('the eight types are there', ['webapp', 'mobile', 'server', 'data', 'game', 'docs', 'life', 'custom'].every(id => types.some(t => t.id === id)) && types.length === 8, types.map(t => t.id));
+  check('the nine types are there', ['webapp', 'mobile', 'server', 'data', 'game', 'docs', 'life', 'playground', 'custom'].every(id => types.some(t => t.id === id)) && types.length === 9, types.map(t => t.id));
   check('nothing is set before a type is picked', Object.values(await roles()).every(p => !Object.keys(p).length));
   check('a bad type is refused', (await s.api('POST', '/api/projects/alpha/project-type', { type: 'nope' })).status === 404);
 
