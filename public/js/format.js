@@ -8,12 +8,21 @@
 let CUSTOM_EMOJIS = new Map();
 function setCustomEmojis(list) { CUSTOM_EMOJIS = new Map((list || []).map(m => [m.name, m.url])); }
 fetch('/api/emojis').then(r => r.ok ? r.json() : []).then(setCustomEmojis).catch(() => {});
+// AIG-650: in a friend's chat, what that friend sent is looked up first (scoped to them) and gets a hover "Save"; set by withFriendEmojis.
+let FRIEND_EMOJIS = null;
+function withFriendEmojis(cid, list, fn) {
+  FRIEND_EMOJIS = list && list.length ? { cid, map: new Map(list.map(m => [m.name, m.url])) } : null;
+  try { return fn(); } finally { FRIEND_EMOJIS = null; }
+}
 function customEmojis(html) {
-  if (!CUSTOM_EMOJIS.size || html.indexOf(':') < 0) return html;
+  if ((!CUSTOM_EMOJIS.size && !FRIEND_EMOJIS) || html.indexOf(':') < 0) return html;
+  const fe = FRIEND_EMOJIS;
   let inCode = 0;
   return html.split(/(<[^>]*>)/).map(p => {
     if (p[0] === '<' && p.length > 1) { if (/^<code[\s>]/i.test(p)) inCode++; else if (/^<\/code>/i.test(p)) inCode--; return p; }
-    return inCode > 0 ? p : p.replace(/:([a-z0-9_]{1,32}):/g, (m, n) => CUSTOM_EMOJIS.has(n) ? `<img class="cemoji" src="${esc(CUSTOM_EMOJIS.get(n))}" alt=":${n}:" title=":${n}:" style="height:1.4em;width:auto;vertical-align:middle">` : m);
+    return inCode > 0 ? p : p.replace(/:([a-z0-9_]{1,32}):/g, (m, n) => fe && fe.map.has(n)
+      ? `<span class="cemoji-w"><img class="cemoji" src="${esc(fe.map.get(n))}" alt=":${n}:" title=":${n}:" style="height:1.4em;width:auto;vertical-align:middle"><button type="button" class="cemoji-save" data-esave="${n}" data-ecid="${esc(fe.cid)}" title="${esc(t('emoji.save.title', { name: n }))}">${esc(t('emoji.save'))}</button></span>`
+      : CUSTOM_EMOJIS.has(n) ?`<img class="cemoji" src="${esc(CUSTOM_EMOJIS.get(n))}" alt=":${n}:" title=":${n}:" style="height:1.4em;width:auto;vertical-align:middle">` : m);
   }).join('');
 }
 function withCode(text, fmt, slug) {

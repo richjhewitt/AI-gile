@@ -206,3 +206,7 @@ body.space-dragging .space-out { display: block; }
 body.poptwitch { padding: 0; } body.poptwitch main { display: none; }
 #twPop { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--panel); }
 #twCompose.dm-compose textarea { box-sizing: border-box; }
+/* AIG-650: a friend's custom emoji in their chat; a small Save shows on hover or keyboard focus */
+.cemoji-w { position: relative; display: inline-block; }
+.cemoji-save { display: none; position: absolute; top: 100%; inset-inline-start: 0; z-index: 5; padding: 1px 6px; font-size: 11px; line-height: 1.4; white-space: nowrap; cursor: pointer; }
+.cemoji-w:hover .cemoji-save, .cemoji-w:focus-within .cemoji-save { display: block; }

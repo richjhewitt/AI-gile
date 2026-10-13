@@ -139,9 +139,9 @@ const Dms = (() => {
     }).join('');
   }
   // A friend's chat: plain bubbles, no cards or folds.
-  function personHtml(msgs, name) {
+  function personHtml(msgs, name, em) {
     return msgs.map(m => `<div class="dm-msg ${m.dir === 'out' ? 'mine' : ''} ${m.kind ? 'dm-' + esc(m.kind) : ''}"><div class="dm-meta"><b>${esc(m.dir === 'out' ? me() : name)}</b> ${ago(m.at)}${m.status === 'failed' ? ' · ' + esc(m.reason || t('dms.failed')) : m.status === 'sending' ? ' · ' + esc(t('dms.sending')) : ''}</div>
-      ${askTag(m, name)}<div class="dm-bubble">${m.verified === false ? `<i class="muted">${esc(t('dms.unverified'))}</i>` : m.kind === 'answer' && m.no ? `<i>${esc(t(m.dir === 'out' ? 'ask.no.out' : 'ask.no.in', { name }))}</i>` : m.kind === 'ask' && m.dir === 'in' ? esc(m.text || '') : linkify(m.text || '', thread)}${Attach.shown(m, '', `/api/dms/contacts/${thread.id}/files`)}</div></div>`).join('');
+      ${askTag(m, name)}<div class="dm-bubble">${m.verified === false ? `<i class="muted">${esc(t('dms.unverified'))}</i>` : m.kind === 'answer' && m.no ? `<i>${esc(t(m.dir === 'out' ? 'ask.no.out' : 'ask.no.in', { name }))}</i>` : m.kind === 'ask' && m.dir === 'in' ? esc(m.text || '') : m.dir === 'in' ? withFriendEmojis(thread.id, em, () => linkify(m.text || '', thread)) : linkify(m.text || '', thread)}${Attach.shown(m, '', `/api/dms/contacts/${thread.id}/files`)}</div></div>`).join('');
   }
   // Ask a mate (AIG-210): a question for someone's AI, and its answer, get a small tag over the bubble. A question
   // a friend sent me is shown as plain text (no links) until I deal with it in the inbox.
@@ -157,7 +157,11 @@ const Dms = (() => {
     thread.messages = msgs;
     const lastIn = msgs.filter(m => m.dir === 'in').map(m => m.at).sort().pop();
     if (lastIn && lastIn > dmSeen.get(thread.id)) dmSeen.set(thread.id, lastIn);
-    const html = personHtml(msgs, thread.name) || `<p class="muted dm-empty">${esc(t('dms.nomsgperson', { name: thread.name }))}</p>`;
+    // AIG-650: the pictures this friend sent, shown inline in their messages (only asked for when one could use a :name:)
+    let em = [];
+    if (msgs.some(m => m.dir === 'in' && /:[a-z0-9_]{1,32}:/.test(m.text || ''))) { try { em = await api('GET', `/api/dms/contacts/${thread.id}/emojis`); } catch {} }
+    if (!thread || thread.id !== open.slice(3)) return;
+    const html = personHtml(msgs, thread.name, em) || `<p class="muted dm-empty">${esc(t('dms.nomsgperson', { name: thread.name }))}</p>`;
     if (list.dataset.sig !== html) {
       const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
       list.dataset.sig = html; list.innerHTML = html;
@@ -300,7 +304,27 @@ const Dms = (() => {
     busy = false;
   }
 
+  // ⭐ Save on a friend's emoji (AIG-650): into my own list; a name clash asks for a new name.
+  async function saveEmoji(cid, name) {
+    let as = name;
+    for (;;) {
+      try {
+        const l = await api('POST', `/api/dms/contacts/${cid}/emojis/${name}/save`, { as });
+        setCustomEmojis(l); if (window.emojiMineSet) emojiMineSet(l);
+        el('dmErr').textContent = t('emoji.save.done', { name: as }); const d = el('dmList'); if (d) d.dataset.sig = ''; loadThread();
+        return;
+      } catch (x) {
+        if (x.status !== 409 && !/already/.test(x.message || '')) { el('dmErr').textContent = x.message || String(x); return; }
+        const n = prompt(t('emoji.save.ask', { name: as }), as + '_2');
+        if (n === null) return;
+        as = n.trim().replace(/^:|:$/g, '');
+        if (!/^[a-z0-9_]{1,32}$/.test(as)) { el('dmErr').textContent = t('emoji.err.name'); return; }
+      }
+    }
+  }
   document.addEventListener('click', e => {
+    const sv = e.target.closest('#dmPanel .cemoji-save');
+    if (sv) { e.preventDefault(); saveEmoji(sv.dataset.ecid, sv.dataset.esave); return; }
     const fl = e.target.closest('#dmPanel [data-dmfilter]');
     if (fl) { filter = fl.dataset.dmfilter; try { localStorage.setItem('aigile.dmfilter', filter); } catch {} paintList(); return; }
     const go = e.target.closest('#dmRail [data-go]');
