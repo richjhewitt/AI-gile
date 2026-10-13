@@ -215,6 +215,8 @@ function parseRoute() {
   if (suRoute) return { view: 'standups', ...(suRoute[1] ? { slug: decodeURIComponent(suRoute[1]) } : {}) };
   if (location.hash === '#/glossary') return { view: 'glossary' };
   if (location.hash === '#/pop-night') return { view: 'night' };   // 🌙 night glance pop-out (AIG-209)   // dev words explained (AIG-102)
+  const glance = location.hash.match(/^#\/pop-glance(?:\/([^/]+))?$/);
+  if (glance) return { view: 'glance', slug: glance[1] ? decodeURIComponent(glance[1]) : '' };   // 📊 ScrumGlance in its own window (AIG-688)
   const watch = location.hash.match(/^#\/pop-watch\/([^/]+)$/);
   if (watch) return { view: 'watch', slug: watch[1] };   // 👁 Watch a verbose team in its own window (AIG-154)
   const news = location.hash.match(/^#\/pop-news\/([^/]+)$/);
@@ -281,6 +283,9 @@ async function refresh(force) {
       if (state.route.slug) { state.project = await api('GET', '/api/projects/' + state.route.slug); await loadDocs(state.route.slug); }
       await loadProfiles();
       sig = JSON.stringify([state.route, i18n.lang]);
+    } else if (state.route.view === 'glance') {
+      await ScrumGlance.load(state.route.slug);
+      sig = JSON.stringify([state.route, ScrumGlance.data, i18n.lang]);
     } else if (state.route.view === 'term') {
       sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'glossary') {
@@ -373,6 +378,7 @@ function render() {
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'dlg') { renderPopDlg(); return; }
   if (state.route.view === 'term') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Term.popView(state.route); return; }
+  if (state.route.view === 'glance') { $('app').innerHTML = ScrumGlance.popHtml(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'news') { $('app').innerHTML = renderNews(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'watch') { renderWatch(); $('modal').innerHTML = ''; return; }

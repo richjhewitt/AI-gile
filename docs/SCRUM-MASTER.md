@@ -27,7 +27,9 @@ The scale `push` 1..5 (chat header and ⚙️ Setup, saved as `scrumMaster.push`
 | 2 | 20 min | 8 h | never | 6 | |
 | 3 ⚖️ Steady (default) | 10 min | 3 h | 4 h | 8 | |
 | 4 | 5 min | 1 h | 2 h | 12 | |
-| 5 🏇 Crack the whip | 2 min | 30 min | 1 h | 16 | a status line in the chat each hour |
+| 5 🏇 Crack the whip | 2 min | 30 min | 1 h | 16 | |
+
+The Lead no longer DMs a periodic status line (AIG-689); it still DMs you for questions and blockers. For the numbers, open 📊 ScrumGlance in the top bar (AIG-688).
 
 A reminder is ONE bump of the open question (the AIG-373 bump, `bumpOne`), never repeated for the same question. `scrumMaster.aiRunsPerDay` still overrides the cap. `AIGILE_SM_MS` overrides the interval (tests).
 

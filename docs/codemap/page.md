@@ -6,6 +6,7 @@
 | `css/01-*.css` .. `css/05-*.css` | All styles, split on the section markers and linked in order from index.html (cascade order matters): tokens, header, Portfolio, Board; card panel, forms, dialogs, phones; columns, title bar, DMs; rail, chat folds, queue; AI tester evidence |
 | `js/usage-page.js` | The `#/usage` page (charts are hand-written SVG) |
 | `js/usage-glance.js` | ⚡ Usage at a glance (AIG-356): two mini bars, dash, ⛔ and budget dot in the nav link (`#ugBars`), polled once a minute; css in 06-notokens.css |
+| `js/scrumglance.js` | 📊 ScrumGlance (AIG-688): top-bar button `#glanceBtn`, floating `#sgPanel` and the pop-out view `#/pop-glance[/slug]`; data from `GET /api/glance` (`lib/glance.js`); css at the end of 06-notokens.css |
 | `js/inbox-style.js` | `INBOX_CSS`: the inbox styles, injected by inbox.js (loaded just before it) |
 | `js/inbox-queue.js` | `paintQueue(shown, kindFilter)`: the inbox kind chips and the Next up line (AIG-159..162); called by inbox.js |
 | `public/js/inbox-ai.js` | `aiFlickHtml`: the inbox's 🤖 AI passed view, one test at a time with the tester's evidence (AIG-192); inbox.js owns the list, clicks and keys |
