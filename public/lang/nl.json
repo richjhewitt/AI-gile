@@ -2523,5 +2523,12 @@
  "dms.usage.h": "Tokengebruik",
  "dms.usage.title": "{name} deelt deze getallen met je: tokens vandaag en in de laatste 7 dagen",
  "dms.usage.when": "bijgewerkt {when}",
- "dms.usage.nums.html": "vandaag <b>{today}</b> · deze week <b>{week}</b>"
+ "dms.usage.nums.html": "vandaag <b>{today}</b> · deze week <b>{week}</b>",
+ "scale.tone": "🎭 Hoe beleefd je team is",
+ "tone.1": "Superbeleefd en gek",
+ "tone.2": "Vriendelijk en warm",
+ "tone.3": "Normaal",
+ "tone.4": "Kort en bondig",
+ "tone.5": "Geen gedoe, gewoon doen",
+ "tone.help": "De toon waarmee het team tegen je schrijft. Kort en zakelijk, of warm en gek: jij kiest."
 }
