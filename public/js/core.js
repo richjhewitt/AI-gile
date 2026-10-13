@@ -311,6 +311,8 @@ async function refresh(force) {
       await Assumptions.load();
       sig = JSON.stringify([state.route, Assumptions.data]);
     } else if (state.route.view === 'stats') {
+      // Say "Stats" and "Loading" at once (AIG-928): the git count can take a while, and the last page (and its crumb) stayed up meanwhile.
+      if (StatsPage.slug !== state.route.slug || !StatsPage.data) { StatsPage.slug = state.route.slug; StatsPage.data = null; state.lastSig = state.lastBoardSig = null; render(); }
       await StatsPage.load(state.route.slug);
       sig = JSON.stringify([state.route, StatsPage.data, i18n.lang]);
     } else if (state.route.view === 'today') {
