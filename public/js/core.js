@@ -261,6 +261,7 @@ async function refresh(force) {
     if (state.route.view === 'home') {
       const q = state.showArchived ? '?all=1' : '';
       [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([TodayPage.load().then(() => api('GET', '/api/projects' + q)), api('GET', '/api/inbox'), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
+      state.projects = Swarm.only(state.projects); state.inbox = Swarm.only(state.inbox, true);   // 🚨 swarm: only that project (AIG-877)
       sig = renderSig([state.route, state.projects, state.inbox, state.usage, TodayPage.data, state.sm && [state.sm.on, state.sm.where, state.sm.listening, state.sm.running, state.sm.lastRunAt, state.sm.lastRound]]);
     } else if (state.route.view === 'setup') {
       state.setup = await api('GET', '/api/setup');

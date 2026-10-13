@@ -2333,6 +2333,8 @@
   "swarm.bar": "🚨 Swarm: every team is on {name}; other projects wait",
   "swarm.open": "Open it",
   "swarm.off": "Turn off",
+  "swarm.others": "{n} waiting in other projects: show",
+  "swarm.hide": "Hide other projects",
   "queue.kind.plan": "Ready for go",
   "fy.kind.p": "🚦 Ready for go"
 }
