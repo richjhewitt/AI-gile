@@ -81,6 +81,31 @@ def('features', 'personal builds: an owner-only switch list, tick a switch for o
     await until(async () => !(await mineOf(b)).includes('qa-example'));
     check('unticking takes it away (the other friend keeps it)', (await mineOf(c)).includes('qa-example'));
 
+    // changing Everyone / Nobody / deleting reaches the friends; Nobody forgets who was picked; a paused link catches up on resume
+    await a.ok('POST', '/api/features', { key: 'qa-example', who: 'everyone' });
+    await until(async () => (await mineOf(b)).includes('qa-example'));
+    check('Everyone reaches the friend who did not have it', (await mineOf(c)).includes('qa-example'));
+    await a.ok('POST', '/api/features', { key: 'qa-example', who: 'nobody' });
+    await until(async () => !(await mineOf(b)).includes('qa-example') && !(await mineOf(c)).includes('qa-example'));
+    check('Nobody takes it back from everyone', true);
+    await a.ok('POST', `/api/features/qa-example/friends/${cb.id}`, { on: true });
+    await until(async () => (await mineOf(b)).includes('qa-example'));
+    await new Promise(r => setTimeout(r, 800));
+    check('ticking one friend after Nobody gives it to only that friend', !(await mineOf(c)).includes('qa-example') && (await a.ok('GET', '/api/features')).switches[0].friends.length === 1);
+    const lk = (await a.ok('GET', '/api/shares')).find(l => l.contact === cb.id && l.state === 'live');
+    await a.ok('PATCH', `/api/shares/${lk.id}`, { on: false });
+    const off = await a.ok('POST', `/api/features/qa-example/friends/${cb.id}`, { on: false });
+    check('a change while the link is paused is not sent yet', off.pushed === false && (await mineOf(b)).includes('qa-example'));
+    await a.ok('PATCH', `/api/shares/${lk.id}`, { on: true });
+    await until(async () => !(await mineOf(b)).includes('qa-example'));
+    check('resuming the link sends what was missed', true);
+    await a.ok('POST', `/api/features/qa-example/friends/${cc.id}`, { on: true });
+    await until(async () => (await mineOf(c)).includes('qa-example'));
+    await a.ok('DELETE', '/api/features/qa-example');
+    await until(async () => !(await mineOf(c)).includes('qa-example'));
+    check('deleting a switch takes it from the friend', true);
+    await a.ok('POST', '/api/features', { key: 'qa-example', label: 'QA example' });
+
     // a card for a friend carries a featureKey
     const proj = await mkProject(a, 'Card Test', 'CRD'); const slug = proj.slug || (proj.project && proj.project.slug);
     const card = await mkCard(a, slug, 'Custom for Carla', { featureKey: 'qa-example' });
