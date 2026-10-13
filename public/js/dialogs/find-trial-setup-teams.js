@@ -96,6 +96,7 @@ function renderSetup() {
     <div class="f" id="presenceBox">${(queueMicrotask(Presence.load), Presence.html())}</div>
     <div class="f" id="licencesBox">${(Lic.reset(), Lic.html())}</div>
     <div class="f" id="secretsBox">${(SEC.list = null, secretsBoxHtml())}</div>
+    <div class="f" id="twitchBox">${TwitchTab.setupHtml()}</div>
     <div class="f" id="discordBox">${(queueMicrotask(DiscordSetup.load), DiscordSetup.html())}</div>
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
