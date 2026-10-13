@@ -31,20 +31,16 @@ function wizardMaybe() {
   if (back && s && !$('dialog').firstChild) { WZ.shown = true; advResume(ADV_SCREENS[ADV_SCREENS.indexOf(back) + 1] || 'summary'); return; }
   if (WZ.shown || !s || !s.needed || (s.prefs || {}).wizardSeen || $('dialog').firstChild) return;
   WZ.shown = true;
-  WZ.blank = true; $('app').innerHTML = '<div class="fr-blank"></div>';   // a blank page behind the dialog (render() leaves it alone meanwhile)
   const ch = (id, fn, k, pri) => `<button class="wz-choice${pri ? ' primary' : ''}" id="${id}" onclick="${fn}"><b>${esc(t('wz.ask.b.' + k))}</b><small class="muted">${esc(t('wz.ask.b.' + k + '.help'))}</small></button>`;
   openDialog(`<h2>${esc(t('wz.ask.h'))}</h2><p>${esc(t('wz.ask.pick'))}</p>
     <div class="wz-choices">${ch('wzYes', 'wizardStart()', 'wizard', true)}${ch('wzTour', 'wizardTour()', 'tour')}${ch('wzNo', 'wizardWing()', 'in')}</div>
-    <div class="err" id="wz-err"></div>`, 'wizard');
-  const iv = setInterval(() => { if ($('dialog').firstChild) return; clearInterval(iv); wzLand(); }, 300);   // closed some other way (Esc): still show the page
+    <div class="err" id="wz-err"></div>`, 'wizard wz-first');   // wz-first: an opaque backdrop, so the page behind is blank
 }
-// Back to a real page once the first-run dialog is done with.
-function wzLand() { WZ.blank = false; if (state.route.view === 'setup' && $('app') && !$('setupForm')) { $('app').innerHTML = renderSetup(); setupLand(); } }
 // Just let me in / Tour: the wizard counts as answered. Neither offers anything more afterwards.
 async function wzLeave() {
   state.setup = await api('POST', '/api/setup', { prefs: { wizardSeen: true } });
   try { localStorage.setItem('aigile.helpOffered', '1'); } catch {}
-  closeDialog(); wzLand();
+  closeDialog();
 }
 async function wizardWing() { try { await wzLeave(); } catch (e) { setErr('wz-err', e); } }
 async function wizardTour() { try { await wzLeave(); startTour('new'); } catch (e) { setErr('wz-err', e); } }
@@ -109,4 +105,4 @@ async function wzSave() {
     return true;
   } catch (e) { setErr('wz-err', e); return false; }
 }
-function wizardClose() { WZ.blank = false; closeDialog(); WZ.shown = true; helpMaybe(); state.route.view === 'setup' && $('app') && ($('app').innerHTML = renderSetup()); }
+function wizardClose() { closeDialog(); WZ.shown = true; helpMaybe(); state.route.view === 'setup' && $('app') && ($('app').innerHTML = renderSetup()); }

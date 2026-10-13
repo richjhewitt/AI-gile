@@ -18,13 +18,13 @@ def('homeux', 'Home: counts hide zeros and show % done, More holds the moved but
   };
   let page = await choose();
   check('one dialog with three choices', (await page.locator('#dialog .wz-choice').count()) === 3 && await page.isVisible('#wzYes') && await page.isVisible('#wzTour') && await page.isVisible('#wzNo'));
-  check('the page behind is blank', (await page.locator('#app').innerText()).trim() === '');
+  check('the page behind is blank (an opaque backdrop)', await page.evaluate(() => { const o = document.querySelector('#dialog .overlay'); const c = getComputedStyle(o).backgroundColor; return !c.includes("0.35") && o.getBoundingClientRect().width >= innerWidth - 1; }));
   check('the choices are named Wizard, Tour and Just let me in', /Wizard/.test(await page.textContent('#wzYes')) && /Tour/.test(await page.textContent('#wzTour')) && /Just let me in/.test(await page.textContent('#wzNo')));
   await shot(page, 'shot-firstrun-desk.png');
   await page.click('#wzYes'); await page.waitForSelector('.wz-dots');
   check('Wizard opens the wizard', (await page.locator('.wz-dot').count()) === 5);
   await page.evaluate(() => closeDialog()); await sleep(600);
-  check('closing it any other way still shows the page', await page.isVisible('#setupForm'));
+  check('closing it any other way still shows the page', await page.isVisible('#setupForm') && (await page.locator('#dialog > *').count()) === 0);
   await page.close();
 
   page = await choose();
@@ -35,8 +35,8 @@ def('homeux', 'Home: counts hide zeros and show % done, More holds the moved but
   await page.close();
 
   page = await choose();
-  await page.click('#wzNo'); await sleep(700);
-  check('Just let me in: Setup shows, no dialog and no second popup', await page.isVisible('#setupForm') && (await page.locator('#dialog .dialog, #dialog > *').count()) === 0 && (await setup()).prefs.wizardSeen === true);
+  await page.click("#wzNo"); await sleep(1500);
+  check('Just let me in: Setup shows, no dialog and no second popup', await page.isVisible('#setupForm') && (await page.locator('#dialog .dialog, #dialog > *').count()) === 0 && (await setup()).prefs.wizardSeen === true, [await page.isVisible("#setupForm"), await page.locator("#dialog > *").count(), (await setup()).prefs.wizardSeen].join());
   await page.reload(); await page.waitForSelector('#setupForm'); await sleep(500);
   check('it does not come back', (await page.locator('#wzYes').count()) === 0);
   noErrors(page); await page.close();

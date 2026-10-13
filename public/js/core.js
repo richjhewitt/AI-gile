@@ -466,7 +466,7 @@ function render() {
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
-  if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm') && !WZ.blank) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; setupLand(); wizardMaybe(); return; }
+  if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; setupLand(); wizardMaybe(); return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'dlg') { renderPopDlg(); return; }
   if (state.route.view === 'term') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Term.popView(state.route); return; }
