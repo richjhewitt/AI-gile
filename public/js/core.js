@@ -261,6 +261,20 @@ function busy() {
 // The render signature (AIG-310): presence.waitingMs ticks on every request while a team sits in 'aigile wait', so it is
 // left out; with it in, the board and the open card were redrawn every second and the panel flickered.
 const renderSig = x => JSON.stringify(x, (k, v) => k === 'waitingMs' ? undefined : v);
+// The change stamp (AIG-920): each second a window asks GET /api/stamp (a few bytes) and fetches the big board / inbox only when it
+// moved, plus a safety fetch every 30 s (a snooze running out, a folder gone). ask(key) gives a token, or null when nothing moved;
+// commit(token) after the page is drawn from that fetch. A server without /api/stamp (old) always fetches.
+const Stamp = {
+  seen: {}, SAFETY: 30e3,
+  async ask(key, force) {
+    const at = Date.now(); let s;
+    try { const r = await fetch('/api/stamp', { cache: 'no-store' }); s = r.ok ? (await r.json()).s : null; } catch { s = null; }
+    const g = this.seen[key];
+    if (!force && s && g && g.s === s && at - g.at < this.SAFETY) return null;
+    return { key, s, at };
+  },
+  commit(tok) { if (tok && tok.s) this.seen[tok.key] = { s: tok.s, at: tok.at }; },
+};
 async function refresh(force) {
   if (!i18n.ready || Boot.failed || Phone.blocked) return;   // (Phone.blocked: a phone not let in yet, AIG-868) the language file comes first (AIG-124); a broken start-up reloads instead (AIG-517)
   if (state.route && state.route.view === 'project') state.lastProject = state.route.slug; else if (state.route && state.route.view !== 'inbox') state.lastProject = null;
@@ -269,7 +283,7 @@ async function refresh(force) {
   if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; $('filterbar').innerHTML = ''; $('filterbar').dataset.slug = ''; }
   // The inbox page renders itself; forget the last render so leaving it always redraws.
   if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; return Inbox.show(force); }
-  let sig;
+  let sig, gate = null;
   try {
     if (state.route.view === 'home') {
       const q = state.showArchived ? '?all=1' : '';
@@ -335,6 +349,9 @@ async function refresh(force) {
       await loadUsagePage(force);   // heavy, so at most every ~15s
       sig = JSON.stringify([state.route, uzSig()]);
     } else {
+      // The board is fetched only when the change stamp moved (AIG-920); never while a redraw is owed (lastSig empty).
+      gate = await Stamp.ask('p:' + route, force || !state.lastSig);
+      if (!gate && JSON.stringify(parseRoute()) === route) return;
       state.project = await api('GET', '/api/projects/' + state.route.slug);
       await loadDocs(state.route.slug);
       await loadProfiles();   // the role templates, for roles added from a team (AIG-423)
@@ -358,7 +375,7 @@ async function refresh(force) {
   }
   $('live').className = 'live';
   $('live').textContent = t('live.ok');
-  if (!force && sig === state.lastSig) return;
+  if (!force && sig === state.lastSig) { Stamp.commit(gate); return; }
   state.lastSig = state.lastBoardSig = sig;
   // AIG-485: a render that throws (a script half-loaded while the app restarted) must not leave a blank page that
   // never redraws: forget the signature so the next tick tries again, and say so instead of showing nothing.
@@ -373,6 +390,7 @@ async function refresh(force) {
     return;
   }
   delete $('app').dataset.broke;
+  Stamp.commit(gate);
 }
 
 function renderBoardOnly() {
