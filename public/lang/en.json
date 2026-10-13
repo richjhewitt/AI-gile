@@ -2567,5 +2567,9 @@
  "imm.random.help": "The same one all day. A language day wins over random.",
  "imm.title": "Show the board in {name} (click again to go back)",
  "imm.back": "Back to {name}",
- "imm.menu": "Choose a learning language"
+ "imm.menu": "Choose a learning language",
+ "oc.chip": "{who} opened {id}",
+ "oc.open": "Open this card",
+ "oc.dismiss": "Dismiss",
+ "oc.someone": "An agent"
 }
