@@ -2347,5 +2347,17 @@
  "glance.more": "+{n} meer",
  "glance.pop": "⧉ Los venster",
  "glance.close": "Sluiten",
- "glance.loading": "Laden…"
+ "glance.loading": "Laden…",
+ "dms.filter.twitch": "Twitch",
+ "tw.row": "Live chat",
+ "tw.readonly": "Twitch-chat (alleen lezen)",
+ "tw.none": "Nog geen chat. Berichten verschijnen hier zodra ze binnenkomen.",
+ "tw.nonone": "Stel je Twitch-kanaal in bij Instellingen om de chat hier te zien.",
+ "tw.setup.h": "🟣 Twitch",
+ "tw.setup.help": "Typ de naam van je Twitch-kanaal om de chat te lezen in het Twitch-tabblad van het berichtenvenster. Inloggen is niet nodig. Laat leeg om het uit te zetten.",
+ "tw.setup.ph": "Naam van je kanaal",
+ "tw.setup.save": "Opslaan",
+ "tw.setup.saved": "Opgeslagen.",
+ "tw.state.on": "Verbonden",
+ "tw.state.wait": "Verbinden…"
 }
