@@ -1,6 +1,8 @@
 // QA area: spaces (AIG-433/434/464). A project can sit inside another (parent link, no loops); each stays a full project.
 // The page: the tree on home and the rail with fold arrows, a space's grid on its board, drag in and out, the ⋯ menu, phone width.
-import { check, sleep, mkProject, mkCard, openPage, noErrors, BASE, def } from '../lib.mjs';
+import fs from 'fs';
+import path from 'path';
+import { check, sleep, mkProject, mkCard, openPage, noErrors, BASE, def, tmp } from '../lib.mjs';
 
 def('spaces', '🪐 spaces: parent link, loops refused, CLI --parent; tree on home and rail, a space\'s grid, drag in/out, ⋯ menu, phone width (AIG-433/434/464)', async (s, ctx) => {
   await mkProject(s, 'Idea Playground', 'IDE');
@@ -38,6 +40,8 @@ def('spaces', '🪐 spaces: parent link, loops refused, CLI --parent; tree on ho
   check('an empty parent takes it out to the top level', !out.parent && !(await s.ok('GET', '/api/projects/deep')).parent);
   const cli = s.cli(['new-project', 'Side Quest', '--key', 'SQ', '--parent', 'idea-playground']);
   check('aigile new-project --parent makes it inside the space', cli.code === 0 && (await s.ok('GET', '/api/projects/side-quest')).parent === 'idea-playground', cli);
+  const dir = path.join(tmp('newfolder'), 'Side Two'), cli2 = s.cli(['new-project', 'Side Two', '--folder', dir]);
+  check('aigile new-project --folder makes and connects its folder (AIG-706)', cli2.code === 0 && fs.existsSync(dir) && (await s.ok('GET', '/api/projects/side-two')).path === dir.replace(/\\/g, '/'), cli2);
 
   /* ---------- the page (AIG-434/464) ---------- */
   await mkProject(s, 'Other', 'OTH');
