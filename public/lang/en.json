@@ -2320,5 +2320,16 @@
   "streamer.live": "🔴 Go live",
   "streamer.live.title": "Turn streamer mode on and start the stream in OBS",
   "streamer.stop": "⏹ Stop",
-  "streamer.stop.title": "Stop the stream in OBS"
+  "streamer.stop.title": "Stop the stream in OBS",
+  "dmme.btn": "💬 DM me about this",
+  "dmme.btn.title": "Ask an agent to start a DM with you about this card",
+  "dmme.h": "Who should DM you about {id}?",
+  "dmme.lead": "The lead ({name})",
+  "dmme.team": "Or a team by name",
+  "dmme.team.ph": "e.g. Comedy (Opus)",
+  "dmme.go": "Ask",
+  "dmme.sent": "Asked {who} to DM you. The chat is open in Messages.",
+  "dmme.sent.nowake": "The DM is open in Messages, but nobody was woken: {why}",
+  "dmme.open": "Open the DM",
+  "srv.dmme.about": "About {id}: {title}"
 }

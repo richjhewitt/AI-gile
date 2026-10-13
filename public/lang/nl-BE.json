@@ -2320,5 +2320,16 @@
   "streamer.live": "🔴 Live gaan",
   "streamer.live.title": "Zet streamermodus aan en start de stream in OBS",
   "streamer.stop": "⏹ Stop",
-  "streamer.stop.title": "Stop de stream in OBS"
+  "streamer.stop.title": "Stop de stream in OBS",
+  "dmme.btn": "💬 DM mij hierover",
+  "dmme.btn.title": "Vraag een agent om je hierover een DM te sturen",
+  "dmme.h": "Wie moet je een DM sturen over {id}?",
+  "dmme.lead": "De lead ({name})",
+  "dmme.team": "Of een team met naam",
+  "dmme.team.ph": "bv. Comedy (Opus)",
+  "dmme.go": "Vraag",
+  "dmme.sent": "{who} gevraagd om je een DM te sturen. De chat staat open in Berichten.",
+  "dmme.sent.nowake": "De DM staat open in Berichten, maar niemand is gewekt: {why}",
+  "dmme.open": "Open de DM",
+  "srv.dmme.about": "Over {id}: {title}"
 }

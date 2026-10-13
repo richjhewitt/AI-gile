@@ -58,3 +58,4 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - Languages, `t()`, adding a string: [languages.md](codemap/languages.md)
 - Data files, columns, stand-up card shape: [data.md](codemap/data.md)
 - `lib/refactor.js` + `public/js/dialogs/refactor.js` (AIG-98): 🧹 refactor offer on home: files over 400 lines per project folder, rough tokens saved/cost, makes refactor projects (inside each, or one) with a card per file; QA `refactor`
+- `js/dmme.js` + route `POST /api/projects/:slug/cards/:id/dmme` in `lib/routes/docs-inbox.js` (AIG-684): the card's 💬 DM me about this button; picks the lead, a teammate or a typed team, opens a quick "About AIG-1: title" chat card (`dmAbout`, `dmWith`) and wakes that agent through `dispatch.setHint` + `presence.startTeam`; the agent replies with `aigile comment`; QA `dmme`
