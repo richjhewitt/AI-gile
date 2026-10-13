@@ -2336,5 +2336,6 @@
   "swarm.others": "{n} waiting in other projects: show",
   "swarm.hide": "Hide other projects",
   "queue.kind.plan": "Ready for go",
-  "fy.kind.p": "🚦 Ready for go"
+  "fy.kind.p": "🚦 Ready for go",
+  "dms.kind.lead": "💬 Lead chat"
 }
