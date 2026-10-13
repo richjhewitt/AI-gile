@@ -5,16 +5,17 @@ import { check, sleep, loadPw, ROOT, def } from '../lib.mjs';
 
 const words = p => Array.from({ length: 200 }, (_, i) => p + (i + 1)).join(' ');
 const LINES = { versions: [{ id: 'a', title: 'A', words: words('a') }, { id: 'b', title: 'B', words: words('b') }], quips: { 1: 'one-quip', 10: 'ten-quip', 100: 'hundred-quip' } };
+const TL = { generated: '2026-10-13T00:00:00Z', stages: [{ id: 'a', name: 'Stage one', start: '2026-10-09T21:50:00Z', end: '2026-10-10T01:00:00Z', cards: 5, line: 'one line' }, { id: 'b', name: 'Stage two', start: '2026-10-10T02:00:00Z', end: '2026-10-11T01:00:00Z', cards: 1, line: 'two line' }], planned: [{ id: 'p', name: 'Plan one', cards: 3, line: 'plan line', planned: true }] };
 const BOARD = { title: 'AI-gile', cards: Array.from({ length: 37 }, (_, i) => ({ id: 'AIG-' + i })) };
 
 def('teaser', 'site/index.html (file://, stubbed fetch): word slider from 1 to 200, arrows, quips, another version, live card count (AIG-695/697)', async (s, ctx) => {
   const page = await ctx.newPage();
   const errs = []; page.on('pageerror', e => errs.push(e.message));
-  await page.addInitScript(([lines, board]) => {
+  await page.addInitScript(([lines, board, tl]) => {
     window.__urls = [];
-    window.fetch = u => { window.__urls.push(String(u)); const body = /\/b\/ai-gile\.json$/.test(u) ? board : /teaser-lines\.json$/.test(u) ? lines : null;
+    window.fetch = u => { window.__urls.push(String(u)); const body = /\/b\/ai-gile\.json$/.test(u) ? board : /teaser-lines\.json$/.test(u) ? lines : /timeline\.json$/.test(u) ? tl : null;
       return Promise.resolve(body ? { ok: true, json: () => Promise.resolve(body) } : { ok: false, json: () => Promise.reject(new Error('404')) }); };
-  }, [LINES, BOARD]);
+  }, [LINES, BOARD, TL]);
   await page.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
   await page.waitForSelector('#pitch:not([hidden])', { timeout: 5000 });
   const txt = () => page.$eval('#pitch-text', e => e.textContent);
@@ -49,12 +50,20 @@ def('teaser', 'site/index.html (file://, stubbed fetch): word slider from 1 to 2
   await sleep(1000);
   check('card count line shows the stubbed number', (await page.$eval('#board-count', e => e.textContent.trim())) === '37 cards on the board right now', await page.$eval('#board-count', e => e.textContent));
   check('count reads the relay board json', await page.evaluate(() => window.__urls.includes('https://relay.aigile.lol/b/ai-gile.json')), await page.evaluate(() => window.__urls));
+  await page.waitForSelector('#timeline:not([hidden])', { timeout: 5000 });
+  const items = await page.$$eval('#tl-done .tl-item', els => els.map(e => e.textContent));
+  check('timeline renders its stages in order', items.length === 2 && /Stage one/.test(items[0]) && /Stage two/.test(items[1]) && /5 cards/.test(items[0]) && /1 card\b/.test(items[1]), items);
+  check('stage dates are real, in the visitor locale', await page.$$eval('#tl-done time', ts => ts.length === 4 && ts.every(t => t.textContent.length > 3 && !isNaN(new Date(t.getAttribute('datetime'))))));
+  const planned = await page.$$eval('#tl-planned .tl-item', els => els.map(e => ({ t: e.textContent, tag: !!e.querySelector('.tl-tag'), times: e.querySelectorAll('time').length })));
+  check('planned part is marked planned and has no dates', planned.length === 1 && planned[0].tag && /planned/.test(planned[0].t) && planned[0].times === 0, planned);
+  check('Today marker sits between done and planned', await page.evaluate(() => { const y = id => document.getElementById(id).getBoundingClientRect().top; return y('tl-done') < y('tl-today') && y('tl-today') < y('tl-planned'); }));
+  check('timeline fits at phone width in dark mode', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && getComputedStyle(document.querySelector('.tl-item')).backgroundColor !== 'rgb(238, 240, 243)'));
   check('no page errors', errs.length === 0, errs);
 
   const p2 = await ctx.newPage();
   await p2.addInitScript(() => { window.fetch = () => Promise.resolve({ ok: false, json: () => Promise.reject(new Error('x')) }); });
   await p2.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
   await sleep(400);
-  check('on error the count line and the pitch stay hidden', await p2.evaluate(() => document.getElementById('board-count').hidden && document.getElementById('pitch').hidden));
+  check('on error the count line and the pitch stay hidden', await p2.evaluate(() => document.getElementById('board-count').hidden && document.getElementById('pitch').hidden && document.getElementById('timeline').hidden));
   await page.close(); await p2.close();
 }, true);
