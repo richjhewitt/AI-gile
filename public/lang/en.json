@@ -2567,5 +2567,8 @@
  "imm.random.help": "The same one all day. A language day wins over random.",
  "imm.title": "Show the board in {name} (click again to go back)",
  "imm.back": "Back to {name}",
- "imm.menu": "Choose a learning language"
+ "imm.menu": "Choose a learning language",
+  "srv.folder.missing": "folder not found: {path}",
+  "poke.held.foldermissing": "folder not found: {path}",
+  "board.connected.missing": "⚠️ Folder not found"
 }
