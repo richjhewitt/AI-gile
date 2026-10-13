@@ -31,10 +31,6 @@ def('tokenlimits', '🪙 helper cap by spend scale, nightly token budget stops a
   check('maximiser on, low reading: cap doubles to 8 and the brief says to pull more cards', b.cap === '8' && b.maxi, b);
   const lat = await s.ok('GET', '/api/limits/latest');
   check('/api/limits/latest reports the boost and the cap', lat.maximiser && lat.maximiser.boost === true && lat.maximiser.why === 'room' && lat.maximiser.cap === 8, lat.maximiser);
-  const up = await openPage(ctx, '#/usage');
-  await up.waitForSelector('.uz-maxi', { timeout: 8000 });
-  check('the Usage page shows the maximiser line', /Maximiser on: room to spare, up to 8 helpers/.test(await up.textContent('.uz-maxi')));
-  noErrors(up); await up.close();
   await s.ok('POST', '/api/setup', { prefs: { plan: 'fly' } });
   check('fly doubles 2 to 4', brief().cap === '4');
   await s.ok('POST', '/api/setup', { prefs: { plan: 'nospare' } });
@@ -113,8 +109,10 @@ def('tokenlimits', '🪙 helper cap by spend scale, nightly token budget stops a
   const lead = runsApi.find(r => r.kind === 'lead' && r.slug === 'lead');
   check('VS Code lead sessions are attributed by folder, helper worktrees included', lead && lead.cache === 12000 && lead.out === 100, runsApi);
   check('a kind row is listed with the team runs', runsApi.some(r => r.kind === 'tester' && r.cache === 40000), runsApi);
+  await s.ok('POST', '/api/setup', { prefs: { plan: 'normal', maximise: true } }); await reading(20, 30);   // AIG-714: the maximiser line on the Usage page
   const upage = await openPage(ctx, '#/usage');
   await upage.waitForSelector('.uz-runtotal', { timeout: 8000 });
+  check('the Usage page shows the maximiser line', /Maximiser on: room to spare, up to 8 helpers/.test(await upage.textContent('.uz-maxi').catch(() => '')));
   const utext = await upage.textContent('.uz-runtotal'), table = await upage.textContent('.uz-tablewrap');
   check('the Usage page totals the cache reads', /cache read/.test(utext) && /52k/.test(utext), utext);
   check('and names the AI tester and the lead sessions', /AI tester/.test(table) && /Lead session \(VS Code\): Lead/.test(table), table.slice(0, 300));
