@@ -2,7 +2,7 @@
 // projects folder, in the Playgrounds space, Playground type, approvals on) and shows the invite code with Copy; a team call gets 403; the CLI does the same.
 import fs from 'fs';
 import path from 'path';
-import { freePort, startRelay, check, sleep, openPage, noErrors, def, tmp } from '../lib.mjs';
+import { freePort, startRelay, startServer, until, check, sleep, openPage, noErrors, def, tmp } from '../lib.mjs';
 
 const HOME = tmp('playhome');   // the projects folder of this run: never the real one
 
@@ -59,6 +59,40 @@ def('playground', 'Playground: New playground button (friend name, folder, Playg
   noErrors(page);
   await page.close();
 
+  /* ---------- review fixes: no minting from the public invite route; the safety check stays; known friends ---------- */
+  const mint = await s.ok('POST', '/api/dms/invites', { name: 'Mallory', play: { slug: 'ana-playground', role: 'admin' } });
+  const invs = JSON.parse(fs.readFileSync(path.join(s.data, 'dms', 'invites.json'), 'utf8'));
+  check('a team call to the public invite route with play set gets a plain invite (no share)', mint.code && invs.filter(i => i.name === 'Mallory').every(i => !i.play), JSON.stringify(invs.map(i => i.play)));
+  const boards = [];   // one friend's board each (a board takes one invite from this owner)
+  const join = async code => { const x = await startServer({ AIGILE_DM_POLL_MS: '300' }, await freePort()); boards.push(x); await x.ok('POST', '/api/dms/settings', { relay: relay.base }); await x.ok('POST', '/api/dms/settings', { on: true }); await x.ok('POST', '/api/dms/accept', { code, name: 'Owner' }); };
+  try {
+    const cleo = await s.ok('POST', '/api/playgrounds', { name: 'Cleo' });
+    await join(cleo.code);
+    const find = async n => (await s.ok('GET', '/api/dms/contacts')).find(c => c.name === n);
+    const cc = await until(() => find('Cleo'));
+    check('the friend added the code: a contact, but no share yet (safety check not skipped)', !!cc && !cc.checked && (await s.ok('GET', '/api/shares?slug=cleo-playground')).length === 0);
+    await s.ok('PATCH', '/api/dms/contacts/' + cc.id, { checked: true });
+    const links = await until(async () => { const l = await s.ok('GET', '/api/shares?slug=cleo-playground'); return l.length ? l : null; });
+    check('ticking They match offers the playground as a Member', !!links && /member/.test(JSON.stringify(links[0])) && !/admin/.test(JSON.stringify(links[0])), JSON.stringify(links));
+    // a friend already known: no invite, the playground is offered (now if checked, after the check if not)
+    const inv2 = await s.ok('POST', '/api/dms/invites', { name: 'Dora' });
+    await join(inv2.code);
+    const dora = await until(() => find('Dora'));
+    const d1 = await s.ok('POST', '/api/playgrounds', { name: 'Dora' });
+    check('a known unchecked friend: no invite code, told to check', !d1.code && d1.friend === 'unchecked' && (await s.ok('GET', '/api/shares?slug=dora-playground')).length === 0, JSON.stringify(d1));
+    await s.ok('PATCH', '/api/dms/contacts/' + dora.id, { checked: true });
+    check('after the check the playground is offered', !!(await until(async () => (await s.ok('GET', '/api/shares?slug=dora-playground')).length)));
+    const inv3 = await s.ok('POST', '/api/dms/invites', { name: 'Eve' });
+    await join(inv3.code);
+    const eve = await until(() => find('Eve'));
+    await s.ok('PATCH', '/api/dms/contacts/' + eve.id, { checked: true });
+    const e1 = await s.ok('POST', '/api/playgrounds', { name: 'Eve' });
+    const el = await s.ok('GET', '/api/shares?slug=eve-playground');
+    check('a known checked friend: no invite code, offered straight away as a Member', !e1.code && e1.friend === 'checked' && el.length === 1 && /member/.test(JSON.stringify(el[0])), JSON.stringify([e1, el]));
+  } finally { boards.forEach(x => x.stop()); }
+  const lonely = await s.api('POST', '/api/playgrounds', { name: 'Ana' });
+  check('a refused playground leaves no half project and no stray invite', lonely.status === 409 && !(await s.ok('GET', '/api/projects')).some(x => x.slug === 'early-playground'));
+
   /* ---------- phone width, dark ---------- */
   for (const [label, scheme] of [['phone', 'light'], ['phone, dark', 'dark']]) {
     const c = await ctx.browser().newContext({ viewport: { width: 375, height: 700 }, colorScheme: scheme });
@@ -71,4 +105,4 @@ def('playground', 'Playground: New playground button (friend name, folder, Playg
     await c.close();
   }
   await relay.stop();
-}, true, { AIGILE_HOME: HOME });
+}, true, { AIGILE_HOME: HOME, AIGILE_DM_POLL_MS: '300' });

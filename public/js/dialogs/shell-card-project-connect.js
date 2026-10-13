@@ -120,9 +120,9 @@ async function createPlayground(e) {
     const r = await api('POST', '/api/playgrounds', { name });
     $('d-err').textContent = '';
     $('pg-name').readOnly = true;
-    $('pg-done').innerHTML = `<p>✅ ${esc(t('play.made', { name: r.name }))}</p><textarea id="pg-code" readonly rows="3" onclick="this.select()" style="width:100%">${esc(r.code)}</textarea><small class="muted">${esc(t('play.send', { name }))}</small><div id="pg-msg" class="muted"></div>`;
-    $('pg-acts').innerHTML = `<button type="button" class="primary" id="pg-copy">${esc(t('dmf.copy'))}</button> <button type="button" onclick="closeDialog(); location.hash = '#/p/${r.slug}'">${esc(t('dlg.np.open'))}</button> <button type="button" onclick="closeDialog()">${esc(t('common.close'))}</button>`;
-    $('pg-copy').onclick = async () => { try { await navigator.clipboard.writeText(r.code); } catch { $('pg-code').select(); document.execCommand('copy'); } $('pg-msg').textContent = t('dmf.copied'); };
+    $('pg-done').innerHTML = `<p>✅ ${esc(t('play.made', { name: r.name }))}</p>${r.code ? `<textarea id="pg-code" readonly rows="3" onclick="this.select()" style="width:100%">${esc(r.code)}</textarea><small class="muted">${esc(t('play.send', { name }))}</small>` : `<p class="muted">${esc(t('play.' + r.friend, { name }))}</p>`}<div id="pg-msg" class="muted"></div>`;
+    $('pg-acts').innerHTML = `${r.code ? `<button type="button" class="primary" id="pg-copy">${esc(t('dmf.copy'))}</button> ` : ''}<button type="button" onclick="closeDialog(); location.hash = '#/p/${r.slug}'">${esc(t('dlg.np.open'))}</button> <button type="button" onclick="closeDialog()">${esc(t('common.close'))}</button>`;
+    if (r.code) $('pg-copy').onclick = async () => { try { await navigator.clipboard.writeText(r.code); } catch { $('pg-code').select(); document.execCommand('copy'); } $('pg-msg').textContent = t('dmf.copied'); };
   } catch (err) { setErr('d-err', err); }
   return false;
 }
