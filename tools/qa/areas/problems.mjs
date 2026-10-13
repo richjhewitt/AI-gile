@@ -37,6 +37,21 @@ def('problems', '🧩 problem card: API + CLI add/set/link, incidents linked bot
   await s.ok('POST', `/api/projects/prob/problems/${other.id}/link`, { incident: i3.id });
   check('an incident moved to another problem leaves the first', !(await s.ok('GET', '/api/projects/prob/problems')).problems.find(p => p.id === pr.id).incidents.includes(i3.id) && (await getCard(s, 'prob', i3.id)).problemId === other.id);
 
+  // AIG-887: ids with digits in the key work, bad ids are refused with a clear error, a problem waits for its change request
+  await mkProject(s, 'Ab Two', 'AB2');
+  const di = await mkCard(s, 'ab-two', 'Down', { type: 'incident', status: 'todo' });
+  const dp = await s.ok('POST', '/api/projects/ab-two/problems', { title: 'Digit key', incidents: [di.id] });
+  check('a key with digits (AB2-5) links its incidents', di.id.startsWith('AB2-') && dp.incidents.join() === di.id, [di.id, dp]);
+  const badId = await s.api('POST', '/api/projects/prob/problems', { title: 'P', incidents: [i1.id, 'not an id!'] });
+  check('a bad incident id is refused with a clear error, not dropped', badId.status === 400 && /not a card id/.test(JSON.stringify(badId)), badId);
+  check('a bad change id is refused too', (await s.api('PATCH', `/api/projects/prob/problems/${other.id}`, { change: 'x y' })).status === 400);
+  const chg2 = await mkCard(s, 'prob', 'Change: second', { status: 'todo' });
+  await s.ok('PATCH', `/api/projects/prob/problems/${other.id}`, { change: chg2.id });
+  const early = await s.api('PATCH', `/api/projects/prob/cards/${other.id}`, { status: 'done' });
+  check('a problem cannot be done while its change request is not', early.status === 400 && /change request/.test(JSON.stringify(early)) && (await getCard(s, 'prob', other.id)).status !== 'done', early);
+  await s.ok('PATCH', `/api/projects/prob/cards/${chg2.id}`, { status: 'done' });
+  check('once the change request is done the problem can be done', (await s.api('PATCH', `/api/projects/prob/cards/${other.id}`, { status: 'done' })).status === 200);
+
   // CLI
   const add = s.cli(['problem', 'prob', 'add', 'Cache keeps filling', '--incidents', `${i4.id},${i5.id}`, '--cause', 'no expiry', '--as', 'Lead']);
   check('CLI add with --incidents', add.code === 0 && /added PRB-\d+/.test(add.out) && /cause: no expiry/.test(add.out), add);

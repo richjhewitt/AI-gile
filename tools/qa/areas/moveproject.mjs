@@ -15,4 +15,14 @@ def('moveproject', 'move a card to another project: copy with comments and link 
   check('same project is refused', same.status === 400, same);
   const doneMove = await s.api('POST', `/api/projects/alpha/cards/${a.id}/moveproject`, { to: 'beta' });
   check('a done card is refused', doneMove.status === 400, doneMove);
+
+  // AIG-863/887: board-local links do not travel, and the old board's cards stop pointing at the moved one
+  const inc = await mkCard(s, 'alpha', 'Down', { type: 'incident', status: 'todo' });
+  const pb = await s.ok('POST', '/api/projects/alpha/problems', { title: 'Cause', incidents: [inc.id] });
+  const mv = await s.ok('POST', `/api/projects/alpha/cards/${inc.id}/moveproject`, { to: 'beta' });
+  const mcopy = await getCard(s, 'beta', mv.id);
+  check('the moved copy has no board-local links', !mcopy.problemId && !mcopy.incidents && !mcopy.changeId && !mcopy.riskId, mcopy);
+  check('the problem on the old board no longer lists the moved incident', !(await getCard(s, 'alpha', pb.id)).incidents.includes(inc.id));
+  const mv2 = await s.ok('POST', `/api/projects/alpha/cards/${pb.id}/moveproject`, { to: 'beta' });
+  check('a moved problem leaves its incidents list behind', !(await getCard(s, 'beta', mv2.id)).incidents);
 });
