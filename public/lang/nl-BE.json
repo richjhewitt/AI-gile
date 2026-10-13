@@ -343,6 +343,8 @@
  "assignee.prompt": "Aan wie toewijzen?",
  "card.popout": "⧉ Apart venster",
  "card.popout.title": "Open deze kaart in een eigen venster",
+ "popout.btn": "⧉ Apart venster",
+ "popout.title": "Open dit venster apart, om te verplaatsen en te vergroten",
  "card.close": "✕ Sluiten",
  "card.edit": "✏️ Bewerken",
  "card.delete": "🗑 Verwijderen",

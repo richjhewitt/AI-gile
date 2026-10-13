@@ -345,6 +345,8 @@
  "assignee.prompt": "Assign to who?",
  "card.popout": "⧉ Pop out",
  "card.popout.title": "Open this card in its own window",
+ "popout.btn": "⧉ Pop out",
+ "popout.title": "Open this window on its own, to move and resize",
  "card.close": "✕ Close",
  "card.edit": "✏️ Edit",
  "card.delete": "🗑 Delete",
