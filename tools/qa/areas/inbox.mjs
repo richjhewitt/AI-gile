@@ -128,6 +128,7 @@ def('queue', 'your queue: holds up, your priority, kind, time; sorted, filtered,
   await sleep(300);
   check('kind filter shows only server jobs', (await page.locator(`.ib-item[data-id="${b.id}"]`).count()) === 1 && (await page.locator('.ib-item.k, .ib-item.t').count()) === 1);
   await page.click('#ibKinds [data-kind=""]');
+  await page.hover('#ibNext .q-chips'); await sleep(300);   // an unset priority chip only shows on hover (AIG-939)
   await page.click(`#ibNext [data-prio]`);   // none -> now on the Next up item
   await sleep(600);
   check('clicking 🔥 sets your priority', (await getCard(s, 'alpha', b.id)).ownerPrio === 'now');

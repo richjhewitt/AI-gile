@@ -60,6 +60,7 @@ def('swarmworkers', '🐝 swarm workers: one per To do card in its own worktree 
   const page = await openPage(ctx, '#/p/hive');
   await page.waitForSelector('.flight-worker', { timeout: 8000 }).catch(() => {});
   check('the board shows both workers in flight', (await page.$$('.flight-worker')).length === 2, await page.textContent('.flight').catch(() => ''));
+  await page.evaluate(() => { const d = document.getElementById('bDetails'); if (d) d.open = true; });   // In flight sits in Details (AIG-938)
   await page.click(`.flight-worker[data-worker="${c.id}"]`);
   await page.waitForSelector('#agentLog', { timeout: 4000 }).catch(() => {});
   check('a worker opens its own log', /swarm worker/.test(await page.textContent('#agentLog').catch(() => '')) && !!(await page.$('#workerStop')), await page.textContent('#agentLog').catch(() => ''));

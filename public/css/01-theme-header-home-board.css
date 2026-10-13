@@ -192,3 +192,15 @@ th { color: var(--muted); font-weight: 500; }
 .chk-b { padding: 0 6px; min-width: 0; line-height: 1.4; }
 .chk-add { display: flex; gap: 6px; }
 .chk-add input { flex: 1; }
+
+/* Board toolbar on a phone (AIG-933): cards first, the buttons behind one ⋯; details folded (AIG-938); empty priority chip (AIG-939) */
+.toolbar .tb-more { display: contents; } .toolbar .tb-dots { display: none; }
+@media (max-width: 600px) {
+  .toolbar .tb-dots { display: inline-block; min-width: 44px; min-height: 36px; font-size: 18px; line-height: 1; margin-left: auto; }
+  .toolbar .tb-more { display: none; flex-basis: 100%; flex-wrap: wrap; gap: 8px; }
+  .toolbar .tb-more.open { display: flex; }
+  .toolbar .tb-more .grow { display: none; }
+}
+.bdetails { margin: 0 0 10px; font-size: 13px; } .bdetails summary { cursor: pointer; color: var(--muted); } .bdetails .flight, .bdetails p { margin: 6px 0 0; }
+.q-chip.prio.unset { max-width: 0; margin-left: -4px; padding-left: 0; padding-right: 0; border-width: 0; overflow: hidden; opacity: 0; white-space: nowrap; }
+.q-chips:hover .q-chip.prio.unset, .q-chips:focus-within .q-chip.prio.unset { max-width: 220px; margin-left: 0; padding: 1px 7px; border-width: 1px; opacity: 1; }

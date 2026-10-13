@@ -3160,5 +3160,7 @@
  "tb.pin.help": "Vink aan wat in de balk blijft; de rest staat onder Meer. Instellingen blijft altijd staan.",
  "tb.b.twitch": "Twitch-chat",
  "tb.b.mail": "Mail",
- "tb.b.imm": "Taal"
+ "tb.b.imm": "Taal",
+ "board.more": "Meer",
+ "board.details": "Details"
 }

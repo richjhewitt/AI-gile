@@ -246,8 +246,8 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   const all = await s.ok('GET', '/api/projects');
   check('both suggested ones added with their own keys, no rename', all.length === 2 && new Set(all.map(x => x.key)).size === 2 && all.every(x => ks.includes(x.key)), all.map(x => x.key));
   await page.evaluate(sl => { location.hash = '#/p/' + sl; }, (all.find(x => x.name === 'Shopping') || {}).slug);
-  await page.waitForSelector('p.muted code');
-  check('board header puts a separator between description and folder path (AIG-332)', await page.$eval('p.muted:has(code)', e => / · $/.test(e.firstChild.textContent)), await page.$eval('p.muted:has(code)', e => e.textContent));
+  await page.waitForSelector('#bDetails');
+  check('the folder path sits in the folded Details on the board (AIG-938)', await page.$eval('#bDetails', e => !e.open && !!e.querySelector('code')));
   check('an empty imported board says what happens next (AIG-333)', /Wake the team/.test(await page.$eval('#emptyHint', e => e.textContent)));
   await page.evaluate(() => { localStorage.removeItem('aigile.standupAsked'); return morningPrompt(); });
   await page.waitForTimeout(500);

@@ -63,10 +63,10 @@ function queueChips(c) {
   const task = isOwnerTask(c);   // a task has a 🖥️ switch for a job on a server (AIG-320); the kind chip is its mark when on
   if (task && c.lifeType) return `<span class="q-chips"><span class="q-chip" title="${esc(t('queue.kind.life'))}">🏡 ${esc(t('queue.kind.life'))}</span>${lifeChip(c)}${c.apptAt ? `<span class="q-chip">📅 ${esc(timedWhen(c.apptAt))}</span>` : ''}${lifeDoneBtn(c)}</span>`;
   return `<span class="q-chips">` + (task && (c.server || c.outside) ? '' : `<span class="q-chip" title="${esc(t('queue.kind.' + k))}">${QKINDS[k]} ${esc(t('queue.kind.' + k))}</span>`)
-    + (task ? `<button class="q-chip srv ${c.server ? 'on' : ''}" data-server="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.server ? 1 : 0}" title="${esc(t('queue.server.title'))}">🖥️${c.server ? ' ' + esc(t('queue.kind.server')) : ''}</button>` : '')
-    + (task ? `<button class="q-chip srv ${c.outside ? 'on' : ''}" data-outside="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.outside ? 1 : 0}" title="${esc(t('queue.outside.title'))}">🤝${c.outside ? ' ' + esc(t('queue.kind.outside')) : ''}</button>` : '')
+    + (task ? `<button class="q-chip srv ${c.server ? 'on' : ''}" data-server="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.server ? 1 : 0}" title="${esc(t('queue.server.title'))}" aria-label="${esc(t('queue.server.title'))}">🖥️ ${esc(t('queue.kind.server'))}</button>` : '')
+    + (task ? `<button class="q-chip srv ${c.outside ? 'on' : ''}" data-outside="${esc(c.project || slug())}/${esc(c.id)}" data-on="${c.outside ? 1 : 0}" title="${esc(t('queue.outside.title'))}" aria-label="${esc(t('queue.outside.title'))}">🤝 ${esc(t('queue.kind.outside'))}</button>` : '')
     + (task && c.server ? openServerBtn(c) : '')
-    + `<button class="q-chip prio${p ? 'p-' + p : ''}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
+    + `<button class="q-chip prio${p ? 'p-' + p : ' unset'}" aria-label="${esc(t('queue.prio.title'))}" data-prio="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('queue.prio.title'))}">🔥 ${esc(t('queue.prio.' + (p || 'none')))}</button>`
     + checkChip(c) + waitChip(c)
     + ((c.holds || []).length ? `<span class="q-chip holds" title="${esc(c.holds.join(', '))}">⛓ ${esc(t('queue.holds', { n: c.holds.length }))}</span>` : '')
     + (c.bumpedAt ? `<span class="q-chip bump" title="${esc(t('queue.bump.title', { count: c.bumps || 1, n: c.bumps || 1 }))}">⏫ ${esc(t('queue.bump', { at: bumpTime(c.bumpedAt) }))}</span>` : '')
