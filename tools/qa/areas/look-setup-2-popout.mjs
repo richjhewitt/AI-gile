@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
-import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 
 def('popout', 'â§‰ Pop out opens a card on its own in a new window (AIG-122)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -24,7 +24,7 @@ def('popout', 'â§‰ Pop out opens a card on its own in a new window (AIG-122)
 def('popchat', 'â§‰ a pop-out stays open after Send and new team messages land at the bottom, like a chat (AIG-313)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const c = await mkCard(s, 'alpha', 'Server steps', { status: 'doing', assignee: 'Forge' });
-  s.cli(['comment', 'alpha', c.id, 'Step 1: run the setup', '--as', 'Forge']);
+  await say(s, 'alpha', c.id, 'Forge', 'Step 1: run the setup');   // through the API: a CLI call would mark a session at work (AIG-107)
   const main = await openPage(ctx, '#/p/alpha');
   const popP = ctx.waitForEvent('page');
   await main.evaluate(id => window.open('#/pop/alpha/' + id, 'aigile-alpha-' + id, 'width=560,height=780'), c.id);
