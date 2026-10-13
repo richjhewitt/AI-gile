@@ -44,7 +44,7 @@ const Break = (() => {
     return parts.length ? t('break.away', { parts: parts.join(', ') }) : t('break.away.none');
   }
   async function welcome(b) {
-    try { if (typeof IB !== 'undefined' && IB.load) await IB.load(); } catch {}
+    try { if (typeof IB !== 'undefined' && IB.load) await IB.load(true); } catch {}   // fresh: the cached read may predate the break (AIG-957)
     let notes = 0;
     try { notes = await allNotes(b.from || 0, ((typeof IB !== 'undefined' && IB.raw) || []).filter(c => !c.lifeType)); } catch {}
     backB = { kind: b.kind, line: summary(b.from || 0, notes) };
