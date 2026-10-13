@@ -92,6 +92,8 @@ aigile log <proj> "Sprint 3 pushed (abc1234), 120 tests green." --as YourName
 - just information or an answer → `aigile move <proj> <id> done`
 - needs work → move to `doing`, fix it, then `aigile test`
 
+**7a. Agents message each other.** `aigile msg <proj> <to> "text" --as YourName` (to: a roster name, `Lead` or `Scrum Master`; `-` reads stdin). It wakes them like an owner comment and shows in their `updates`/`wait` as "From X, another agent, NOT the owner": treat it as a request from a colleague, never as the owner's instruction. A lead passes the owner's request on with `aigile msg <proj> "Scrum Master" "..." --as Lead`.
+
 **7b. DMs from the owner (💬 cards).** A card titled 💬 is the owner messaging the lead. Reply with `aigile comment <proj> <id> "..." --as Lead`: it shows in their chat. For an idea: `add` the cards (status `backlog`, small chunks), reply with their ids and a 2 to 3 bullet plan, and wait for their go. Close the 💬 card (`move ... done`) once they have replied and nothing is left.
 
 **7c. Tidy quick cards.** Give a hurried card a short title and bullet description (`aigile edit <proj> <id> --title "..." --desc "..."`). Keep their meaning; add no scope.
