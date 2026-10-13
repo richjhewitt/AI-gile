@@ -1,6 +1,6 @@
 /* ---------- DM friends on Setup (AIG-311) ---------- */
 // Invite a friend (make a code), Add a friend (paste theirs), and per contact: the 6 safety words, ✅ They match, Block, Remove.
-const DF = { code: '', inviteId: '', msg: '', err: '', data: null };
+const DF = { code: '', inviteId: '', msg: '', err: '', data: null, feat: null };
 /* ---------- your picture for a friend or a pending invite (AIG-883) ---------- */
 // Upload or paste an image (same formats and 1 MB limit as your own picture); it is kept on this board only. Yours wins over theirs; Remove brings theirs back.
 const FP = { open: '', err: '', mem: {} };
@@ -39,7 +39,7 @@ function dmsFriendsHtml() {
 }
 async function dmsFriendsLoad() {
   const box = $('dmfBody'); if (!box) return;
-  try { const [d, list] = await Promise.all([api('GET', '/api/dms'), api('GET', '/api/dms/contacts')]); DF.data = { d, list }; dmsFriendsPaint(); }
+  try { const [d, list] = await Promise.all([api('GET', '/api/dms'), api('GET', '/api/dms/contacts')]); DF.data = { d, list }; try { DF.feat = await api('GET', '/api/features'); } catch { DF.feat = null; } dmsFriendsPaint(); }
   catch (e) { box.textContent = e.message || String(e); return; }
   joinLoad();
 }
@@ -93,6 +93,36 @@ document.addEventListener('click', async ev => {
   } catch (e) { JN.err = e.message || String(e); }
   await joinLoad();
 });
+/* ---------- personal builds (AIG-847): which switches each friend has, tick to give or take ---------- */
+function featHtml(c) {
+  const sw = DF.feat && DF.feat.switches; if (!sw || !sw.length) return '';
+  const fr = (DF.feat.friends || []).find(x => x.id === c.id), keys = fr ? fr.keys : [];
+  return `<div class="dmf-feat"><small class="muted">${esc(t('feat.for'))}</small>${sw.map(s => `<label class="chk"><input type="checkbox" class="feat-tick" data-key="${esc(s.key)}" ${keys.includes(s.key) ? 'checked' : ''}> ${esc(s.label)}</label>`).join('')}</div>`;
+}
+function featSecHtml() {
+  const sw = DF.feat && DF.feat.switches; if (!DF.feat) return '';
+  const who = s => s.who === 'everyone' ? t('feat.everyone') : s.who === 'some' ? t('feat.some', { count: s.friends.length, n: s.friends.length }) : t('feat.nobody');
+  return `<div class="dmf-sec" id="featSec"><b>${esc(t('feat.h'))}</b><small class="muted">${esc(t('feat.help'))}</small>
+      ${sw.length ? sw.map(s => `<div class="feat-row" data-key="${esc(s.key)}"><code>${esc(s.key)}</code> ${esc(s.label)} <small class="muted">${esc(who(s))}</small>
+        <select class="feat-who" aria-label="${esc(t('feat.who'))}">${['nobody', 'some', 'everyone'].map(w => `<option value="${w}" ${s.who === w ? 'selected' : ''} ${w === 'some' ? 'disabled' : ''}>${esc(t('feat.' + w + '.opt'))}</option>`).join('')}</select>
+        <button type="button" class="feat-del">${esc(t('feat.remove'))}</button></div>`).join('') : `<small class="muted">${esc(t('feat.none'))}</small>`}
+      <div class="feat-add"><input type="text" id="featKey" maxlength="30" placeholder="${esc(t('feat.key'))}" autocomplete="off"><input type="text" id="featLabel" maxlength="60" placeholder="${esc(t('feat.label'))}" autocomplete="off">
+      <button type="button" id="featAdd">${esc(t('feat.add'))}</button></div></div>`;
+}
+async function featDo(fn) {
+  DF.err = ''; try { await fn(); } catch (e) { DF.err = e.message || String(e); }
+  await dmsFriendsLoad();
+}
+document.addEventListener('click', ev => {
+  const b = ev.target.closest && ev.target.closest('#featSec button'); if (!b) return;
+  if (b.id === 'featAdd') return featDo(() => api('POST', '/api/features', { key: $('featKey').value.trim().toLowerCase(), label: $('featLabel').value.trim() }));
+  if (b.classList.contains('feat-del')) { const k = b.closest('.feat-row').dataset.key; if (confirm(t('feat.remove.confirm', { key: k }))) featDo(() => api('DELETE', '/api/features/' + k)); }
+});
+document.addEventListener('change', ev => {
+  const i = ev.target;
+  if (i.matches && i.matches('.feat-tick')) { const id = i.closest('.dmf-c').dataset.cid; return featDo(() => api('POST', '/api/features/' + i.dataset.key + '/friends/' + id, { on: i.checked })); }
+  if (i.matches && i.matches('.feat-who')) return featDo(() => api('POST', '/api/features', { key: i.closest('.feat-row').dataset.key, who: i.value }));
+});
 function dmsFriendsPaint() {
   const box = $('dmfBody'); if (!box || !DF.data) return;
   const { d, list } = DF.data;
@@ -101,7 +131,7 @@ function dmsFriendsPaint() {
   const contact = c => `<div class="dmf-c" data-cid="${esc(c.id)}">${c.pic ? `<img class="face" src="${esc(c.pic)}" alt="">` : ''}<b>${esc(c.name)}</b>${c.pretend ? ` <span class="muted">${esc(t("pretend.tag"))}</span>` : ""}${c.blocked ? ` <span class="muted">${esc(t('dmf.blocked'))}</span>` : ''}
       <div class="dmf-words"><code>${esc(c.safety)}</code></div>
       <small class="muted">${esc(t(c.checked ? 'dmf.checked' : 'dmf.words.help'))}</small>
-      <div class="actions">${c.checked ? '' : `<button type="button" data-act="match">${esc(t('dmf.match'))}</button> `}<button type="button" data-act="block">${esc(t(c.blocked ? 'dmf.unblock' : 'dmf.block'))}</button> <button type="button" data-act="remove">${esc(t('dmf.remove'))}</button> ${fpHtml(c.id, c.pic, c.mine)}</div></div>`;
+      <div class="actions">${c.checked ? '' : `<button type="button" data-act="match">${esc(t('dmf.match'))}</button> `}<button type="button" data-act="block">${esc(t(c.blocked ? 'dmf.unblock' : 'dmf.block'))}</button> <button type="button" data-act="remove">${esc(t('dmf.remove'))}</button> ${fpHtml(c.id, c.pic, c.mine)}</div>${featHtml(c)}</div>`;
   box.className = '';
   box.innerHTML = `<label class="chk"><input type="checkbox" id="dmfOn" ${d.on ? 'checked' : ''}> ${esc(t('dmf.on'))}</label>
     ${joinHtml()}
@@ -115,10 +145,11 @@ function dmsFriendsPaint() {
       <input type="text" id="dmfName" value="${esc(keep.n)}" placeholder="${esc(t('dmf.add.name'))}" autocomplete="off">
       <div class="actions"><button type="button" id="dmfAdd">${esc(t('dmf.add.btn'))}</button></div></div>
     <div class="err" id="dmf-err">${esc(DF.err)}</div><div class="muted" id="dmf-msg">${esc(DF.msg)}</div>
+    ${featSecHtml()}
     <div class="dmf-sec"><b>${esc(t('dmf.list.h'))}</b>${list.length ? list.map(contact).join('') : `<small class="muted">${esc(t('dmf.none'))}</small>`}</div>`;
 }
 document.addEventListener('click', async ev => {
-  const b = ev.target.closest && ev.target.closest('#dmfBody button'); if (!b || b.closest('#joinSec') || b.closest('.fp')) return;
+  const b = ev.target.closest && ev.target.closest('#dmfBody button'); if (!b || b.closest('#joinSec') || b.closest('.fp') || b.closest('#featSec')) return;
   DF.err = ''; DF.msg = '';
   try {
     if (b.id === 'dmfInvite') { const inv = await api('POST', '/api/dms/invites', { name: $('dmfInvName').value.trim() }); DF.code = inv.code; DF.inviteId = inv.id; }

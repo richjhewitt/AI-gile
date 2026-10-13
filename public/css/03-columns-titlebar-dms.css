@@ -73,6 +73,10 @@ body.pop { padding-inline-start: 0; } body.pop #dmRail, body.pop #dmPanel { disp
 .fp-edit { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
 .fp-edit input { min-width: 0; max-width: 100%; flex: 1 1 140px; }
 .dmf-c > .face { width: 28px; height: 28px; }
+/* personal builds (AIG-847) */
+.dmf-feat, .feat-row, .feat-add { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: 100%; margin-top: 6px; }
+.feat-add input { min-width: 0; flex: 1 1 120px; }
+.feat-row code { overflow-wrap: anywhere; }
 .face-lib { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0; }
 .face-lib figure { margin: 0; width: 64px; text-align: center; }
 .face-lib .face { width: 48px; height: 48px; margin: 0; }
