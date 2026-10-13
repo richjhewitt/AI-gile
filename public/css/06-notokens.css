@@ -39,3 +39,9 @@
 .sg-grp h4 { margin: 10px 0 2px; font-size: 13px; } .sg-n { background: var(--line); border-radius: 99px; padding: 0 8px; margin-inline-start: 4px; }
 .sg-grp ul { margin: 0; padding-inline-start: 18px; } .sg-grp li { padding: 1px 0; } .sg-grp a { color: inherit; text-decoration: none; } .sg-grp a:hover { text-decoration: underline; }
 .sg-id { color: var(--muted, #888); font-size: 11px; } .sg-none, .sg-more { margin: 0; font-size: 12px; }
+
+/* 😴 Tired mode (AIG-669): the 🔋 / 😴 switch in the top bar. */
+#tiredBtn { white-space: nowrap; }
+#tiredBtn.on { border-color: var(--accent); }
+.tired-box { display: flex; flex-direction: column; gap: 6px; }
+.tired-box input[type=time] { font: inherit; }
