@@ -2448,5 +2448,19 @@
  "tired.bedtime": "Bedtime",
  "tired.wake": "Wake-up time",
  "tired.help": "The top bar shows 😴 while this applies. Click it there to switch for now; it stays until things change.",
- "card.morning": "😴 waits for morning"
+ "card.morning": "😴 waits for morning",
+ "type.incident": "🔥 incident",
+ "sb.raise.incident": "🔥 Report an incident",
+ "pm.title": "🔥 Close this incident",
+ "pm.intro": "Three short answers before it is done.",
+ "pm.happened": "What happened",
+ "pm.why": "Why",
+ "pm.change": "What we change",
+ "pm.done": "Done",
+ "pm.heading": "🔥 Post-mortem",
+ "card.f.risk": "Risk",
+ "risk.small": "Small",
+ "risk.normal": "Normal",
+ "risk.risky": "Risky (plan first)",
+ "risk.chip.title": "Risky: plan first, then build"
 }

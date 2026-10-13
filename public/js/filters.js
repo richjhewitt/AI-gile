@@ -27,7 +27,7 @@ function paintFilterBar() {
   const opt = (v, label, cur) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
   const sel = (key, all, list) => `<select data-f="${key}">${opt('', all, f[key])}${list.map(v => opt(v, key === 'type' ? t('type.' + v) : v, f[key])).join('')}</select>`;
   const shown = p.cards.filter(c => matchesFilter(c, p.slug)).length, active = f.q || f.type || f.who || f.sprint || f.group;
-  const selects = sel('type', t('filter.types'), ['feature', 'bug', 'task']) + sel('who', t('filter.anyone'), uniq('assignee')) + sel('sprint', t('filter.sprints'), uniq('sprint')) + (uniq('group').length || f.group ? sel('group', t('filter.groups'), uniq('group')) : '');
+  const selects = sel('type', t('filter.types'), ['feature', 'bug', 'task', 'incident']) + sel('who', t('filter.anyone'), uniq('assignee')) + sel('sprint', t('filter.sprints'), uniq('sprint')) + (uniq('group').length || f.group ? sel('group', t('filter.groups'), uniq('group')) : '');
   if (bar.dataset.slug !== p.slug) {   // build once per project; afterwards only the selects and count update
     bar.dataset.slug = p.slug;
     bar.innerHTML = `<div class="fbar"><input type="search" id="f-q" placeholder="${esc(t('filter.search'))}" value="${esc(f.q)}" oninput="setFilter('q', this.value)">
