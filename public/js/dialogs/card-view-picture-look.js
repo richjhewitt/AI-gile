@@ -99,6 +99,7 @@ async function lookDialog() {
       <label class="f"><span>${esc(t('dod.done'))}</span><textarea id="look-dod-done" rows="4">${esc(dod.done.join('\n'))}</textarea></label></div>
     <div class="f" id="look-chgwin"><span>${esc(t('chgwin.h'))}</span><small class="muted">${esc(t('chgwin.intro'))}</small>
       <label class="f"><span>${esc(t('chgwin.box'))}</span><textarea id="look-chgwin-box" rows="3" data-was="${esc(cwText)}" placeholder="${esc(t('chgwin.ph'))}">${esc(cwText)}</textarea></label>${cwin.next ? `<small class="muted">${esc(t('chgwin.next', { when: cwin.next.text }))}</small>` : ''}</div>
+    <label class="f" id="look-call"><span>${esc(t('call.h'))}</span><input type="url" id="look-callurl" maxlength="500" value="${esc(p.callUrl || '')}" placeholder="${esc(t('call.ph'))}"><small class="muted">${esc(t('call.intro'))}</small></label>
     <div class="err" id="look-err"></div>
     <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
@@ -107,7 +108,7 @@ async function saveLook(auto) {
   try {
     const cwBox = $('look-chgwin-box');
     if (!auto && cwBox && cwBox.value.trim() !== cwBox.dataset.was) await api('POST', '/api/projects/' + slug() + '/change-windows', { set: cwBox.value });   // owner only; a bad line shows its error
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, personal: $('look-personal').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, dod: { ready: $('look-dod-ready').value, done: $('look-dod-done').value } });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, personal: $('look-personal').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, dod: { ready: $('look-dod-ready').value, done: $('look-dod-done').value }, callUrl: $('look-callurl').value.trim() });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }

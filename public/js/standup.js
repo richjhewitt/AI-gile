@@ -67,7 +67,7 @@ function renderStandups() {
   const needs = (d.needs || []).length ? `<div class="su-needs"><h3>${esc(t('standup.needs', { n: d.needs.length }))}</h3><ul>${d.needs.map(b =>
     `<li><a href="#/p/${esc(b.project)}/${esc(b.card)}"><b>${esc(b.projectName)}</b> · ${esc(b.name)}</a>: ${suLines(b.text)} <span class="muted">${ago(b.at)}</span></li>`).join('')}</ul></div>` : '';
   const projects = d.projects.map(p => `<div class="su-proj" style="--proj:${esc(p.color)}">
-      <h3>${pic(p.logo, p.emoji)} <a href="#/p/${esc(p.project)}">${esc(p.projectName)}</a> <span class="muted">${esc(t('standup.answered', { a: p.answered, n: p.people.length, when: ago(p.at) }))} · <a href="#/p/${esc(p.project)}/${esc(p.card)}">${esc(p.card)}</a>${p.status === 'done' ? ' · ' + esc(t('standup.closed')) : ''}</span></h3>
+      <h3>${pic(p.logo, p.emoji)} <a href="#/p/${esc(p.project)}">${esc(p.projectName)}</a> ${callLink(p.callUrl, 'su-call')} <span class="muted">${esc(t('standup.answered', { a: p.answered, n: p.people.length, when: ago(p.at) }))} · <a href="#/p/${esc(p.project)}/${esc(p.card)}">${esc(p.card)}</a>${p.status === 'done' ? ' · ' + esc(t('standup.closed')) : ''}</span></h3>
       ${p.people.map(r => r.waiting ? `<div class="su-person waiting"><b>${esc(r.name)}</b> <span class="muted">${esc(t('standup.waiting'))}</span></div>`
         : `<div class="su-person"><b>${esc(r.name)}</b> <span class="muted">${ago(r.at)}</span>
           <div><span class="su-k">${esc(t('standup.done'))}</span> ${suLines(r.done) || '-'}</div>

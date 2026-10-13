@@ -3071,5 +3071,10 @@
   "life.letsgo": "Right, let's do this",
   "life.letsgo.title": "Starts shower mode on a shower reminder, otherwise puts it off for an hour (not done)",
   "break.shower.h": "Enjoy your shower 🚿",
-  "break.shower.sub": "Alerts are paused. Your team keeps working."
+  "break.shower.sub": "Alerts are paused. Your team keeps working.",
+  "call.join": "📞 Join call",
+  "call.title": "Opens the call in a new tab (the call tool does the video and screen sharing)",
+  "call.h": "📞 Call link",
+  "call.ph": "https://meet.google.com/... or a Jitsi, Discord or Teams link",
+  "call.intro": "One link for stand-ups and calls. AI-gile only shows a Join call link; the call tool does the video and screen sharing."
 }

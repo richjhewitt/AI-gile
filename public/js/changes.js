@@ -1,6 +1,8 @@
 /* ---------- 🔀 Change cards (AIG-857) ----------
    changeHtml(p, c): the fields of a change card on the open card (card.js calls it), or a "Raise a change" button on an incident or
    a problem. raiseChange(preset): the short form: what, why, risk (from the register), when, how to undo. */
+// 📞 Join call link (AIG-861): http(s) only, new tab, noopener; empty when the address is not one. Used by stand-ups, DMs and change cards.
+const callLink = (url, cls = '') => /^https?:[/][/]/i.test(url || '') ? `<a class="calllink ${cls}" href="${esc(url)}" target="_blank" rel="noopener noreferrer" title="${esc(t('call.title'))}">${esc(t('call.join'))}</a>` : '';
 const CHANGE_KINDS = ['change', 'feature', 'fix', 'other'];
 const changeWhen = w => w && w.from ? `${new Date(w.from).toLocaleString(i18n.locale, { dateStyle: 'medium', timeStyle: 'short' })} – ${new Date(w.to).toLocaleString(i18n.locale, { dateStyle: 'medium', timeStyle: 'short' })}` : '';
 function changeHtml(p, c) {
