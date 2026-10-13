@@ -31,7 +31,6 @@ def('quietinbox', 'going quiet hides tests and tasks and caps questions at 3; I\
   await page.click('text=☀️ I\'m back');
   await page.waitForTimeout(500);
   check('back: everything shows again', (await page.locator('.ib-item.q').count()) === 5 && (await page.locator('.ib-item.k').count()) === 1 && (await page.locator('.ib-item.t').count()) === 1 && await page.isHidden('#ibMore'));
-  check("no folder = nothing to wake (AIG-721)", attention({ ...proj(old), path: "" }, { online: false }) === null);
   noErrors(page);
 }, true);
 
@@ -56,6 +55,7 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   const proj = at => ({ path: ".", cards: [{ status: 'team', createdBy: '', created: old, updated: old, comments: [{ author: 'Owner', text: 'x', at }] }] });
   check('online, comment unanswered 10+ min = stuck', attention(proj(old), { online: true })?.kind === 'stuck');
   check('online, fresh comment = fine', attention(proj(fresh), { online: true }) === null);
+  check("no folder = nothing to wake (AIG-721)", attention({ ...proj(old), path: "" }, { online: false }) === null);
   noErrors(page);
 }, true);
 

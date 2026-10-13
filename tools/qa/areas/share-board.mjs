@@ -94,7 +94,7 @@ def('shareboard', "a shared project as its own board on the friend's side, shape
     await page.waitForSelector('.sb-board', { timeout: 8000 });
     const colOf = async t => page.locator('.sb-col', { has: page.locator('.sb-card', { hasText: t }) }).getAttribute('data-sb-col').catch(() => '');
     check('page: their cards in their columns', await colOf('Lima one') === 'todo' && await colOf('Lima two') === 'done' && await colOf('Lima four') === 'backlog' && await colOf('Button is broken') === 'doing');
-    check('page: Tester can raise any type; the role shows', await page.locator('[data-sb-raise]').count() === 3 && /Tester/.test(await page.textContent('#sbRole')));
+    check('page: Tester can raise any type; the role shows', await page.locator('[data-sb-raise]').count() === 4 && await page.locator('[data-sb-raise="incident"]').count() === 1 && /Tester/.test(await page.textContent('#sbRole')), await page.$$eval('[data-sb-raise]', es => es.map(e => e.dataset.sbRaise).join()) + ' / ' + await page.textContent('#sbRole').catch(() => '-'));
 
     // Alpha tester on the page: bug and idea buttons only; on my card no reply box and no status.
     await a.ok('PATCH', `/api/shares/${id}`, { role: 'alpha', scope: 'all' });
