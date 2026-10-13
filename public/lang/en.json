@@ -2795,5 +2795,17 @@
   "hf.btn.title": "Show only this project and your DMs (nothing else changes for the teams)",
   "hf.chip": "🎯 Hyperfocus: {name}",
   "hf.chip.title": "Open the project you are hyperfocused on",
-  "hf.off": "Turn Hyperfocus off"
+  "hf.off": "Turn Hyperfocus off",
+  "break.btn": "⏸ Break",
+  "break.btn.title": "Take a break: alerts, sound and pop-ups pause, the team keeps working",
+  "break.h": "Take a break",
+  "break.sub": "Alerts and pop-ups pause until the time is up. Your team keeps working.",
+  "break.vape": "💨 Vape / meds (10 min)",
+  "break.shower": "🚿 Shower (30 min)",
+  "break.kind.vape": "Vape / meds",
+  "break.kind.shower": "Shower",
+  "break.back": "I'm back",
+  "break.left": "{left} left",
+  "break.shower.h": "Enjoy your shower 🚿",
+  "break.shower.sub": "Alerts are paused. Your team keeps working."
 }

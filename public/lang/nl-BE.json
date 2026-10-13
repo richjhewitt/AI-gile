@@ -2795,5 +2795,17 @@
   "hf.btn.title": "Toon alleen dit project en je DM's (voor de teams verandert er niets)",
   "hf.chip": "🎯 Hyperfocus: {name}",
   "hf.chip.title": "Open het project waarop je hyperfocust",
-  "hf.off": "Hyperfocus uitzetten"
+  "hf.off": "Hyperfocus uitzetten",
+  "break.btn": "⏸ Pauze",
+  "break.btn.title": "Even pauze: meldingen, geluid en pop-ups gaan op pauze, het team werkt door",
+  "break.h": "Even pauze",
+  "break.sub": "Meldingen en pop-ups wachten tot de tijd om is. Je team werkt door.",
+  "break.vape": "💨 Vape / medicijnen (10 min)",
+  "break.shower": "🚿 Douche (30 min)",
+  "break.kind.vape": "Vape / medicijnen",
+  "break.kind.shower": "Douche",
+  "break.back": "Ik ben terug",
+  "break.left": "nog {left}",
+  "break.shower.h": "Geniet van je douche 🚿",
+  "break.shower.sub": "Meldingen staan op pauze. Je team werkt door."
 }
