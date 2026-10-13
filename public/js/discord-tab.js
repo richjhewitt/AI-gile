@@ -24,7 +24,7 @@ const DiscordTab = (() => {
   function rowsHtml() {
     if (!chats.length) loadChats();
     const badge = n => n ? `<span class="dm-unread">${n > 99 ? '99+' : n}</span>` : '';
-    return chats.map(c => `<button class="dm-row" data-dm="${esc(keyOf(c))}"><span class="dm-av">${c.kind === 'dm' ? '💬' : '#'}</span><span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc(c.kind === 'dm' ? t('dc.kind.dm', { bot: c.bot }) : (c.guild || '') + ' · ' + c.bot)}</span></span>${badge(unreadOf(c))}</button>`);
+    return chats.slice().sort((a, b) => String(b.at || "").localeCompare(String(a.at || ""))).map(c => `<button class="dm-row" data-dm="${esc(keyOf(c))}"><span class="dm-av">${c.kind === 'dm' ? '💬' : '#'}</span><span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc(c.kind === 'dm' ? t('dc.kind.dm', { bot: c.bot }) : (c.guild || '') + ' · ' + c.bot)}</span></span>${badge(unreadOf(c))}</button>`);
   }
   const msgHtml = m => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${esc(m.text).replace(/\n/g, '<br>')}${(m.images || []).map(u => `<a href="${esc(u)}" target="_blank" rel="noopener"><img class="dc-pic att-shown" src="${esc(u)}" alt="" loading="lazy" referrerpolicy="no-referrer"></a>`).join('')}</div></div>`;
   function show(key) {

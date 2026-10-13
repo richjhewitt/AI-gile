@@ -219,3 +219,14 @@ body.poptwitch { padding: 0; } body.poptwitch main { display: none; }
 .cemoji-w { position: relative; display: inline-block; }
 .cemoji-save { display: none; position: absolute; top: 100%; inset-inline-start: 0; z-index: 5; padding: 1px 6px; font-size: 11px; line-height: 1.4; white-space: nowrap; cursor: pointer; }
 .cemoji-w:hover .cemoji-save, .cemoji-w:focus-within .cemoji-save { display: block; }
+/* AIG-917: a row with a small close button, unread rows bold with a bar, and the closed list at the bottom */
+.dm-rowwrap { position: relative; display: flex; align-items: center; border-radius: 10px; }
+.dm-rowwrap .dm-row { flex: 1; min-width: 0; }
+.dm-rowwrap.unread { background: color-mix(in srgb, var(--danger) 10%, transparent); box-shadow: inset 3px 0 0 var(--danger); }
+.dm-rowwrap.unread .dm-rowtext b { font-weight: 800; }
+.dm-rowx { border: 0; background: none; color: var(--muted, #888); font-size: 12px; padding: 4px 8px; cursor: pointer; opacity: .35; border-radius: 8px; }
+.dm-rowwrap:hover .dm-rowx, .dm-rowx:focus-visible { opacity: 1; }
+.dm-rowx:hover { background: var(--col); }
+.dm-closed { margin-top: 12px; border-top: 1px solid var(--col); padding-top: 8px; }
+.dm-closed .dm-rowwrap { }
+.dm-closedlink { border: 0; background: none; color: var(--muted, #888); font-size: 12px; text-decoration: underline; cursor: pointer; padding: 4px 10px; }

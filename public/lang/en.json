@@ -2751,5 +2751,8 @@
  "swarm.worker.log": "🐝 Swarm worker {id} ({branch})",
  "swarm.worker.stop": "⏹ Stop worker",
  "swarm.workers": "Swarm workers at once",
- "swarm.workers.help": "While swarm is on, the board runs one worker per To do card, each in its own git worktree, up to this many at a time."
+ "swarm.workers.help": "While swarm is on, the board runs one worker per To do card, each in its own git worktree, up to this many at a time.",
+  "dms.close.title": "Close this chat (it comes back when there is a new message)",
+  "dms.closed.show": "Show closed ({n})",
+  "dms.closed.reopen": "Open this chat again"
 }

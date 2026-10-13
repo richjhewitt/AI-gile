@@ -2751,5 +2751,8 @@
  "swarm.worker.log": "🐝 Zwermwerker {id} ({branch})",
  "swarm.worker.stop": "⏹ Werker stoppen",
  "swarm.workers": "Zwermwerkers tegelijk",
- "swarm.workers.help": "Zolang de zwerm aan staat, laat het bord één werker per To do-kaart lopen, elk in een eigen git-worktree, tot zoveel tegelijk."
+ "swarm.workers.help": "Zolang de zwerm aan staat, laat het bord één werker per To do-kaart lopen, elk in een eigen git-worktree, tot zoveel tegelijk.",
+  "dms.close.title": "Sluit dit gesprek (het komt terug bij een nieuw bericht)",
+  "dms.closed.show": "Toon gesloten ({n})",
+  "dms.closed.reopen": "Dit gesprek terug openen"
 }
