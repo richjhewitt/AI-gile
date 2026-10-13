@@ -55,11 +55,13 @@ const TodayPage = (() => {
       <span class="today-track" title="${esc(T.line(p).replace(/<[^>]+>/g, ''))}"><i class="${p.over ? 'over' : ''}" style="width:${Math.min(100, p.pct)}%"></i></span><span class="muted today-bv">${T.line(p)}</span></div>`).join('')}</div>`;
   };
   // AIG-829: the morning picker (setup switch "Pick today's projects at start-up"): a small dialog on the first open of the day.
-  let asked = false;
+  let askedDay = '';   // the day (as the server counts it) the picker was last shown for: a board left open overnight asks again next morning
+  const localDay = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   T.maybePick = async () => {
-    if (asked || document.querySelector('#dialog .overlay')) return;
-    const d = await T.load(); if (!d || !d.askPick || !d.projects.length) return;
-    asked = true;
+    if (document.querySelector('#dialog .overlay')) return;
+    const d = await T.load(); if (!d || !d.askPick || !d.projects.length || askedDay === d.day) return;
+    if (document.querySelector('#dialog .overlay')) return;   // a dialog opened while the data loaded
+    askedDay = d.day;
     openDialog(`<h2>${esc(t('today.pick.h'))}</h2><p class="muted">${esc(t('today.pick.intro'))}</p>
       <div id="todayPickList">${d.projects.map(p => `<label class="chk today-pickrow"><input type="checkbox" value="${esc(p.slug)}" ${p.weight === 'rest' ? '' : 'checked'}> ${esc(p.emoji)} ${esc(p.name)}</label>`).join('')}</div>
       <div class="err" id="todayPickErr"></div>
@@ -83,6 +85,11 @@ const TodayPage = (() => {
   // The rail and menus do not load the page data: a short cache is enough.
   let seen = 0;
   T.fresh = async () => { if (Date.now() - seen < 10000 && T.data) return; seen = Date.now(); await T.load(); };
-  const tick = setInterval(async () => { if (typeof i18n !== 'undefined' && i18n.ready && !document.hidden) { await T.maybePick(); if (asked || (T.data && !T.data.askPick)) clearInterval(tick); } }, 3000);
+  let polled = 0;
+  setInterval(async () => {
+    if (typeof i18n === 'undefined' || !i18n.ready || document.hidden || askedDay === localDay()) return;
+    if (Date.now() - polled < 10000) return;   // look again now and then, so turning the setting on (or a new morning) needs no reload
+    polled = Date.now(); await T.maybePick();
+  }, 3000);
   return T;
 })();

@@ -90,7 +90,14 @@ def('selfcare', '💚 self-care: Setup reminders + quiet hours + meds times, nud
   await clock(7, 0); await page.locator('.sc-meds-box .sc-name input').check();
   await sleep(1300);
   check('meds: nothing before the set time', !(await chip()));
+  // an undismissed ordinary reminder does not block meds: meds replace it
+  await page.locator('[data-sc="eyes"] .sc-name input').check();
+  const em = page.locator('[data-sc="eyes"] .sc-mins'); await em.fill('1'); await em.press('Tab');
+  await clock(7, 0); await sleep(1300); await clock(7, 5);
+  check('an ordinary reminder is showing before the meds time', await wait(async () => (await chip()) && (await page.getAttribute('#scChip', 'data-id')) === 'eyes'));
   await clock(8, 5);
+  check('meds due: they replace the undismissed ordinary reminder', await wait(async () => (await page.getAttribute('#scChip', 'data-id')) === 'meds'));
+  await page.locator('[data-sc="eyes"] .sc-name input').uncheck();
   check('meds: nudge at 08:00', await wait(chip) && /Meds time \(08:00\)/.test(await page.textContent('#scChip')));
   const n1 = await page.getAttribute('#scChip', 'data-n');
   await sleep(3500);
@@ -114,6 +121,29 @@ def('selfcare', '💚 self-care: Setup reminders + quiet hours + meds times, nud
   await page.evaluate(() => SelfCare.todayClose());
   await clock(20, 5);
   check('the 20:00 dose nudges later the same day', await wait(chip) && /20:00/.test(await page.textContent('#scChip')));
+  // removing the meds time drops its chip
+  await page.evaluate(() => SelfCare.delTime('20:00'));
+  check('removing the shown meds time drops the chip', await wait(async () => !(await chip()), 3000));
+  await page.evaluate(() => { document.getElementById('scNewTime').value = '20:00'; SelfCare.addTime(); });
+  check('adding it back brings the nudge again', await wait(chip));
+  // Done in another tab: the chip goes, and a late Done never counts the dose twice
+  const day2 = await stubDay(), slot = day2 + ' 20:00';
+  const other = (on) => page.evaluate(([d, slot, on]) => {
+    const k = 'aigile.selfcare.log.' + d, l = JSON.parse(localStorage.getItem(k) || '[]').filter(e => e.slot !== slot);
+    if (on) l.push({ id: 'meds', at: Date.now(), act: 'done', slot });
+    localStorage.setItem(k, JSON.stringify(l));
+    return k;
+  }, [day2, slot, on]);
+  const k2 = await other(true);
+  await page.evaluate(k => window.dispatchEvent(new StorageEvent('storage', { key: k })), k2);
+  check('Done in another tab clears the chip here', await wait(async () => !(await chip()), 3000));
+  await other(false); await wait(chip);
+  const before = await page.evaluate(d => localStorage.getItem('aigile.meds.' + d), day2);
+  await other(true);
+  await page.evaluate(() => SelfCare.act('done'));
+  check('Done after it was settled elsewhere does not count the dose twice', await page.evaluate(d => localStorage.getItem('aigile.meds.' + d), day2) === before && await page.evaluate(([k, slot]) => JSON.parse(localStorage.getItem(k)).filter(e => e.slot === slot).length, [k2, slot]) === 1);
+  await other(false);
+  await wait(chip);
 
   // phone width and dark mode
   await page.setViewportSize({ width: 390, height: 844 }); await page.emulateMedia({ colorScheme: 'dark' });

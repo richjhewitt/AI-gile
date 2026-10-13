@@ -25,11 +25,18 @@ const Break = (() => {
   function took() { try { localStorage.setItem('aigile.meds.' + day(), String(taken() + 1)); } catch {} paintBack(); }
   const plural = (k, n) => t(k + (n === 1 ? '.one' : '.many'), { n });
   let backB = null;
-  function summary(since) {
+  // Comments since the break started, on every project card the page can get (not only the inbox ones).
+  const notesIn = (cards, since) => { let n = 0; for (const c of cards || []) for (const m of c.comments || []) if (Date.parse(m.at) >= since && !/^(rich|owner)$/i.test(String(m.author || ''))) n++; return n; };
+  async function allNotes(since, raw) {
+    const slugs = (typeof state !== 'undefined' && state.projects || []).map(p => p.slug), got = new Set();
+    const ps = await Promise.all(slugs.map(s => api('GET', '/api/projects/' + s).then(p => { got.add(s); return p; }).catch(() => null)));
+    let n = 0;
+    for (const p of ps) if (p) n += notesIn(p.cards, since);
+    return n + notesIn(raw.filter(c => !got.has(c.project)), since);   // inbox cards of a project that could not be read
+  }
+  function summary(since, notes) {
     const raw = ((typeof IB !== 'undefined' && IB.raw) || []).filter(c => !c.lifeType), isT = c => c.status === 'verify';
     const tests = raw.filter(isT).length, qs = raw.filter(c => !isT(c) && IB.isQuestion(c)).length;
-    let notes = 0;
-    for (const c of raw) for (const m of c.comments || []) if (Date.parse(m.at) >= since && !/^(rich|owner)$/i.test(String(m.author || ''))) notes++;
     const parts = [];
     if (tests) parts.push(plural('break.away.test', tests));
     if (notes) parts.push(plural('break.away.note', notes));
@@ -38,7 +45,9 @@ const Break = (() => {
   }
   async function welcome(b) {
     try { if (typeof IB !== 'undefined' && IB.load) await IB.load(); } catch {}
-    backB = { kind: b.kind, line: summary(b.from || 0) };
+    let notes = 0;
+    try { notes = await allNotes(b.from || 0, ((typeof IB !== 'undefined' && IB.raw) || []).filter(c => !c.lifeType)); } catch {}
+    backB = { kind: b.kind, line: summary(b.from || 0, notes) };
     paintBack();
   }
   function paintBack() {
@@ -61,9 +70,15 @@ const Break = (() => {
     if (!e) { e = document.createElement('div'); e.id = id; e.hidden = true; document.body.appendChild(e); }
     return e;
   }
+  const stored = () => { try { const b = JSON.parse(localStorage.getItem(KEY) || 'null'); return b && MINS[b.kind] ? b : null; } catch { return null; } };
   function sync() {
     cur = read();
     document.documentElement.toggleAttribute('data-break', !!cur);
+    if (typeof i18n === 'undefined' || !i18n.ready) { setTimeout(sync, 100); return; }   // wait for the language files (reload during a break)
+    if (!cur) {   // a break that ran out while the page was closed still gets its welcome-back line
+      const old = stored();
+      if (old) { try { localStorage.removeItem(KEY); } catch {} welcome(old); }
+    }
     const chip = box('breakChip'), scr = box('showerScreen');
     chip.hidden = !cur; scr.hidden = !(cur && cur.kind === 'shower');
     if (!cur) { sig = ''; chip.innerHTML = ''; scr.innerHTML = ''; return; }

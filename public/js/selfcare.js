@@ -44,14 +44,20 @@ const SelfCare = (() => {
     const m = hm => +hm.slice(0, 2) * 60 + +hm.slice(3), d = new Date(ms), n = d.getHours() * 60 + d.getMinutes(), a = m(cfg.quiet.from), b = m(cfg.quiet.to);
     return a === b ? false : a < b ? n >= a && n < b : n >= a || n < b;
   }
-  const settled = (slot, ms) => log(ms).some(e => e.slot === slot);
-  // Pick what is due now: meds slots first (they ignore quiet hours), else the reminder longest overdue.
-  function pick(ms) {
+  const settled = slot => rd(LOG + slot.slice(0, 10), []).some(e => e.slot === slot);   // by the slot's own day, fresh from storage (other tabs write it too)
+  // Meds slot due now (they ignore quiet hours), or null.
+  function pickMeds(ms) {
     const r = run();
     if (cfg.meds.on) for (const tm of cfg.meds.times) {
       const slot = dayOf(ms) + ' ' + tm;
-      if (ms >= atToday(tm, ms) && !settled(slot, ms) && ms >= (r.medNext[slot] || 0)) return { id: 'meds', slot, time: tm };
+      if (ms >= atToday(tm, ms) && !settled(slot) && ms >= (r.medNext[slot] || 0)) return { id: 'meds', slot, time: tm };
     }
+    return null;
+  }
+  // Pick what is due now: meds first, else the reminder longest overdue.
+  function pick(ms) {
+    const r = run(), m = pickMeds(ms);
+    if (m) return m;
     if (inQuiet(ms)) return null;
     let best = null, bd = Infinity, dirty = false;
     for (const it of [...ITEMS.map(i => ({ id: i[0], ...cfg.items[i[0]] })), ...cfg.custom]) {
@@ -64,11 +70,21 @@ const SelfCare = (() => {
   }
   function tick() {
     const ms = nowMs();
-    const dead = !cfg.on || paused() || (cur && cur.id !== 'meds' && inQuiet(ms));
+    const off = !cfg.on || paused();
     if (!cfg.on) cur = null;
+    if (cur && !stillThere(cur)) cur = null;   // its reminder or meds time was switched off or removed (or settled in another tab)
+    if (!off && (!cur || cur.id !== 'meds')) {   // meds due now replace an ordinary reminder, even a hidden one
+      const m = pickMeds(ms);
+      if (m) { cur = m; shownAt = ms; nudges++; }
+    }
+    const dead = off || (cur && cur.id !== 'meds' && inQuiet(ms));
     if (!cur && !dead) { cur = pick(ms); if (cur) { shownAt = ms; nudges++; } }
     else if (cur && cur.id === 'meds' && !dead && ms - shownAt >= repeatMs()) { shownAt = ms; nudges++; }   // 777: nudge again every 10 min until Done
     paint(dead);
+  }
+  function stillThere(c) {
+    if (c.id === 'meds') return cfg.meds.on && cfg.meds.times.includes(c.time) && !settled(c.slot);
+    const i = find(c.id); return !!(i && i.on);
   }
   // 776: the chip.
   function box(id) { let e = document.getElementById(id); if (!e) { e = document.createElement('div'); e.id = id; e.hidden = true; document.body.appendChild(e); } return e; }
@@ -90,11 +106,12 @@ const SelfCare = (() => {
   function act(kind) {
     if (!cur) return;
     const ms = nowMs(), r = run(), n = cur; cur = null;
+    if (n.id === 'meds' && kind !== 'later' && settled(n.slot)) { paint(); todayPaint(); return; }   // already settled in another tab: never count a dose twice
     if (kind === 'later') { if (n.id === 'meds') r.medNext[n.slot] = ms + snoozeMs(); else r.due[n.id] = ms + snoozeMs(); wr(RUN, r); paint(); return; }
     const skip = kind === 'skip', l = log(ms), ent = { id: n.id, at: ms, act: skip ? 'skip' : 'done' };
     if (n.id === 'meds') ent.slot = n.slot;
     if (cfg.custom.some(x => x.id === n.id)) ent.text = label(n.id);
-    l.push(ent); wr(LOG + dayOf(ms), l);
+    if (n.id === 'meds') { const k = LOG + n.slot.slice(0, 10), sl = rd(k, []); sl.push(ent); wr(k, Array.isArray(sl) ? sl : [ent]); } else { l.push(ent); wr(LOG + dayOf(ms), l); }
     if (n.id === 'meds') { if (!skip) { try { localStorage.setItem(medsKey(ms), String(medsTaken(ms) + 1)); } catch {} } }
     else { r.due[n.id] = ms + n.mins * 60000; wr(RUN, r); }
     paint();
@@ -148,7 +165,7 @@ const SelfCare = (() => {
   const delTime = tm => change(() => { cfg.meds.times = cfg.meds.times.filter(x => x !== tm); });
   const setQuiet = v => change(() => { cfg.quiet.on = !!v; });
   const setQuietTime = (k, v) => change(() => { if (okTime(v)) cfg.quiet[k] = v; });
-  window.addEventListener('storage', e => { if (e.key === KEY) { cfg = load(); paintBox(); } });
+  window.addEventListener('storage', e => { if (e.key === KEY) { cfg = load(); paintBox(); } if (e.key === null || e.key === KEY || (e.key || '').startsWith(LOG)) { tick(); todayPaint(); } });
   setInterval(tick, 1000);
   tick();
   return { html, paintBox, setOn, setMins, add, del, setMeds, addTime, delTime, setQuiet, setQuietTime, act, today, todayClose, tick, get cur() { return cur; } };

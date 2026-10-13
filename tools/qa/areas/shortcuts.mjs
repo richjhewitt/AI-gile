@@ -6,6 +6,7 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   await mkCard(s, 'alpha', 'Verify me', { status: 'verify', testSteps: 'Step one' });
   await mkCard(s, 'alpha', 'Verify two', { status: 'verify', testSteps: 'Step two' });
   await mkCard(s, 'alpha', 'Plain card', { status: 'todo' });
+  await mkCard(s, 'alpha', 'Verify three', { status: 'verify', testSteps: 'Step three' });
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('a.card[data-id]');
   const hash = () => page.evaluate(() => location.hash);
@@ -78,7 +79,25 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   for (let i = 0; i < 20 && (await getCard(s, 'alpha', first)).status === 'verify'; i++) await sleep(250);
   check('a accepts the open card', (await getCard(s, 'alpha', first)).status === 'done');
 
+  // Several rows unfolded: a/b act on the focused row only, or do nothing when none is focused.
+  const rowOpen = async id => { if (!(await page.locator(`#fyfList .fyf-row.open[data-id="${id}"]`).count())) await page.click(`#fyfList .fyf-row[data-id="${id}"] [data-fyrow]`); };
+  await rowOpen('ALP-2'); await rowOpen('ALP-4');
+  await page.evaluate(() => document.activeElement.blur());
+  await page.keyboard.press('a'); await sleep(800);
+  check('two rows unfolded and none focused: a does nothing', (await getCard(s, 'alpha', 'ALP-2')).status === 'verify' && (await getCard(s, 'alpha', 'ALP-4')).status === 'verify');
+  await page.focus('#fyfList .fyf-row[data-id="ALP-4"] [data-act="accept"]');
+  await page.keyboard.press('a');
+  for (let i = 0; i < 20 && (await getCard(s, 'alpha', 'ALP-4')).status === 'verify'; i++) await sleep(250);
+  check('a acts on the focused row, not the first one', (await getCard(s, 'alpha', 'ALP-4')).status === 'done' && (await getCard(s, 'alpha', 'ALP-2')).status === 'verify');
+
   await page.keyboard.press('Escape');
+  // a in a normal card modal clicks Accept (the button is verdict(true, this))
+  await page.goto(page.url().split('#')[0] + '#/p/alpha/ALP-2');
+  await page.waitForSelector('#modal .panel .verdict');
+  await page.evaluate(() => document.activeElement && document.activeElement.blur());
+  await page.keyboard.press('a');
+  for (let i = 0; i < 20 && (await getCard(s, 'alpha', 'ALP-2')).status === 'verify'; i++) await sleep(250);
+  check('a accepts from the card modal', (await getCard(s, 'alpha', 'ALP-2')).status === 'done');
   // n: new card dialog; typing in it fires nothing.
   await page.goto(page.url().split('#')[0] + '#/p/alpha');
   await page.waitForSelector('a.card[data-id]');

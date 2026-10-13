@@ -17,7 +17,7 @@ const OpenCard = (() => {
     if (busyNow || (state.route && state.route.pop)) return;
     busyNow = true;
     try {
-      const r = await api('GET', '/api/opencard?front=' + (front() ? 1 : 0));
+      const r = await api('GET', '/api/opencard?front=' + (front() && !document.documentElement.hasAttribute('data-break') ? 1 : 0));   // on a break nothing is "in front": requests stay chips
       const list = r.chips.slice();
       for (const e of r.auto) { if (document.documentElement.hasAttribute('data-break') || !pop(e)) list.push(e); }   // ⏸ break (AIG-824): no pop-outs, a chip   // a blocked pop-out falls back to a chip
       chips = list; paint();
