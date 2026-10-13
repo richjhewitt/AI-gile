@@ -42,7 +42,7 @@ function renderHome() {
       <button onclick="callStandup()" title="${esc(t('standup.all.title'))}">${esc(t('standup.all'))}</button>
       <a class="navlink" href="#/today" title="${esc(t('today.link.title'))}">${esc(t('today.link'))}</a> <a class="navlink" href="#/standups" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a><span class="grow"></span>
       <label class="chk"><input type="checkbox" ${state.showArchived ? 'checked' : ''} onchange="toggleArchived(this.checked)"> ${esc(t('home.showarchived'))}</label></div>`
-    + usageStrip(state.usage) + inbox + Spaces.outStrip() + `<div class="grid space-tree">${cards || `<p class="muted">${esc(t('projects.none'))}</p>`}</div>` + smLine(state.sm);
+    + usageStrip(state.usage) + inbox + Spaces.outStrip() + TodayPage.hiddenLine() + `<div class="grid space-tree">${cards || `<p class="muted">${esc(t('projects.none'))}</p>`}</div>` + smLine(state.sm);
 }
 
 // One project card: on home, and in a space's grid on its board. sp: { kids, fold, up } from spaces.js.

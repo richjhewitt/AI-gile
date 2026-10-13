@@ -54,5 +54,35 @@ const TodayPage = (() => {
     return `<div class="uz-card today-usage"><div class="uz-tile-h">${esc(t('today.usage.h'))}</div>${d.projects.map(p => `<div class="today-bar"><span class="today-bn">${T.icon(p.weight)} ${esc(p.name)}</span>
       <span class="today-track" title="${esc(T.line(p).replace(/<[^>]+>/g, ''))}"><i class="${p.over ? 'over' : ''}" style="width:${Math.min(100, p.pct)}%"></i></span><span class="muted today-bv">${T.line(p)}</span></div>`).join('')}</div>`;
   };
+  // AIG-829: the morning picker (setup switch "Pick today's projects at start-up"): a small dialog on the first open of the day.
+  let asked = false;
+  T.maybePick = async () => {
+    if (asked || document.querySelector('#dialog .overlay')) return;
+    const d = await T.load(); if (!d || !d.askPick || !d.projects.length) return;
+    asked = true;
+    openDialog(`<h2>${esc(t('today.pick.h'))}</h2><p class="muted">${esc(t('today.pick.intro'))}</p>
+      <div id="todayPickList">${d.projects.map(p => `<label class="chk today-pickrow"><input type="checkbox" value="${esc(p.slug)}" ${p.weight === 'rest' ? '' : 'checked'}> ${esc(p.emoji)} ${esc(p.name)}</label>`).join('')}</div>
+      <div class="err" id="todayPickErr"></div>
+      <div class="actions"><button onclick="TodayPage.pickSkip()">${esc(t('today.pick.skip'))}</button><button class="primary" id="todayPickGo" onclick="TodayPage.pickGo()">${esc(t('today.pick.go'))}</button></div>`);
+  };
+  T.pickGo = async () => {
+    const slugs = [...document.querySelectorAll('#todayPickList input:checked')].map(i => i.value);
+    try { T.data = await api('POST', '/api/today/pick', { slugs }); T.showAll(false); closeDialog(); if (typeof refresh === 'function') refresh(true); if (typeof Dms !== 'undefined' && Dms.reload) Dms.reload(); } catch (e) { $('todayPickErr').textContent = e.message; }
+  };
+  T.pickSkip = async () => { try { T.data = await api('POST', '/api/today/pick', { skip: true }); } catch {} closeDialog(); };
+  // AIG-830: unpicked projects are hidden on home and in the rail and project menus; "Show all" (this browser, today's date) brings them back.
+  const KEY = 'aigile.todayAll';
+  const flag = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
+  T.showing = () => !!(T.data && flag() === T.data.day);
+  T.showAll = on => { try { if (on && T.data) localStorage.setItem(KEY, T.data.day); else localStorage.removeItem(KEY); } catch {} };
+  T.hidden = () => (T.data && !T.showing() ? T.data.left || [] : []);
+  T.only = list => { const h = T.hidden(); return h.length && Array.isArray(list) ? list.filter(x => !h.includes(x.slug)) : list; };
+  T.showAllClick = () => { T.showAll(true); if (typeof refresh === 'function') refresh(true); if (typeof Dms !== 'undefined' && Dms.reload) Dms.reload(); };
+  // The line on home: how many are out of sight, and the link.
+  T.hiddenLine = () => { const n = T.hidden().length; return n ? `<p class="muted today-hidden">${esc(t('today.hidden', { n }))} <a href="#/" onclick="TodayPage.showAllClick();return false">${esc(t('today.showall'))}</a></p>` : ''; };
+  // The rail and menus do not load the page data: a short cache is enough.
+  let seen = 0;
+  T.fresh = async () => { if (Date.now() - seen < 10000 && T.data) return; seen = Date.now(); await T.load(); };
+  const tick = setInterval(async () => { if (typeof i18n !== 'undefined' && i18n.ready && !document.hidden) { await T.maybePick(); if (asked || (T.data && !T.data.askPick)) clearInterval(tick); } }, 3000);
   return T;
 })();
