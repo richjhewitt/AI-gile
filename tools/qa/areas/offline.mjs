@@ -98,4 +98,19 @@ def('offline', '📦 share a project offline: save as .aigile and open it (round
   await page.waitForFunction(() => document.getElementById('d-err').textContent.length > 0);
   check('a bad file shows an error and stays closed', /not an AI-gile project file/.test(await page.textContent('#d-err')) && await page.isDisabled('#ofl-go'));
   noErrors(page);
+
+  // AIG-887/863: problem fields and the risk register travel too, with card ids remapped
+  await mkProject(s, 'Prob Pack', 'PPK');
+  const ch = await mkCard(s, 'prob-pack', 'Change it', { status: 'todo' });
+  const rinc = await mkCard(s, 'prob-pack', 'Flights down', { type: 'incident' });
+  const prob = await s.ok('POST', '/api/projects/prob-pack/problems', { title: 'Airline API', incidents: [rinc.id], rootCause: 'rate limit', workaround: 'retry', change: ch.id });
+  const rk = await s.ok('POST', '/api/projects/prob-pack/risks', { risk: 'Visa late', card: ch.id, likelihood: 3, impact: 2, mitigation: 'apply early' });
+  const pf = await s.ok('GET', '/api/projects/prob-pack/export');
+  check('file holds the problem fields and the risk register', pf.project.cards.find(c => c.id === prob.id).rootCause === 'rate limit' && pf.project.risks.length === 1 && pf.project.risks[0].card === ch.id, pf.project.risks);
+  const pm = await s.ok('POST', '/api/projects/import', { file: pf });
+  const pb = await s.ok('GET', '/api/projects/' + pm.slug), nk = pb.key, remap = id => nk + id.slice(id.indexOf('-'));
+  const bp = pb.cards.find(c => c.type === 'problem'), bi = pb.cards.find(c => c.type === 'incident');
+  check('imported problem keeps cause, workaround, links and remaps card ids', nk !== 'PPK' && bp.rootCause === 'rate limit' && bp.workaround === 'retry' && bp.incidents.join() === remap(rinc.id) && bp.changeId === remap(ch.id) && bi.problemId === bp.id, [bp, nk]);
+  const br = await s.ok('GET', '/api/projects/' + pm.slug + '/risks');
+  check('imported risk register is restored with the card ref remapped', br.risks.length === 1 && br.risks[0].id === rk.id && br.risks[0].card === remap(ch.id) && br.risks[0].mitigation === 'apply early' && br.risks[0].score === 6, br);
 }, true);
