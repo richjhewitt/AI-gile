@@ -2329,5 +2329,9 @@
   "tm.pic": "Kies een plaatje",
   "tm.renamed": "{from} heet nu {to}.",
   "popout.btn": "⧉ Apart venster",
-  "popout.title": "Open dit venster apart, om te verplaatsen en te vergroten"
+  "popout.title": "Open dit venster apart, om te verplaatsen en te vergroten",
+  "lead.push": "Pushen naar GitHub",
+  "lead.push.ask": "Eerst vragen",
+  "lead.push.auto": "Gewoon pushen",
+  "lead.push.help": "Eerst vragen: het team vraagt op het bord en pusht na jouw ja. Gewoon pushen: het pusht na elke geteste batch en logt het. Nooit een force push."
 }

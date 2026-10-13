@@ -69,6 +69,7 @@ function leadPrefsHtml(msg = '') {
     ${OWNER_SCALES.map(([k, max]) => scaleSlider(k, max, sc[k], 'setScale') + (k === 'thrift' ? `<small class="muted" id="pf-pace">${esc(t('budget.pace', { pct: pr.pace }))}</small>${budgetHtml(pr)}` : '')).join('')}
     ${sw('watchAll')}${sw('planBig')}${sw('light')}
     <label class="f"><span>${esc(t('lead.tech'))}</span><select class="setup-theme" onchange="setLeadPref({ techLevel: this.value })">${['', 'beginner', 'some', 'expert'].map(v => `<option value="${v}" ${(pr.techLevel || '') === v ? 'selected' : ''}>${esc(t('lead.tech.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.tech.help'))}</small></label>
+    <label class="f"><span>${esc(t('lead.push'))}</span><select id="pushPref" class="setup-theme" onchange="setLeadPref({ push: this.value })">${['ask', 'auto'].map(v => `<option value="${v}" ${(pr.push || 'ask') === v ? 'selected' : ''}>${esc(t('lead.push.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('lead.push.help'))}</small></label>
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;
 }
 // Painted again after each save; a slider moved with the keyboard keeps the focus.

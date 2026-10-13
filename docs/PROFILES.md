@@ -3,7 +3,7 @@
 Design only. Lets the owner set how agents work with them on plain numbered scales, gives ready-made profiles for every role and level, and lets a whole team be added to a project in one click.
 
 ## What exists today (and where it moves)
-- **Your lead** quiz and switches (`public/js/leadquiz.js`, saved by `lib/setup.js` in `aigile.local.json`): `lead.tidyCards`, `lead.chatty` (+ per project `p.chatty`), `lead.go` ('' | ask | small), `night.watchAll`, dev words (`aigile.explain` in the browser).
+- **Your lead** quiz and switches (`public/js/leadquiz.js`, saved by `lib/setup.js` in `aigile.local.json`): `lead.tidyCards`, `lead.chatty` (+ per project `p.chatty`), `lead.go` ('' | ask | small), `night.watchAll`, `push` (AIG-673: "ask" | "auto", git push ask first or just push; a line in `aigile brief` and every background prompt, `Bash(git push:*)` allowed in auto, force pushes always denied), dev words (`aigile.explain` in the browser).
 - **Help level** `helpLevel` 1..3 (`public/js/help.js`): how much the *app* explains. Stays an app setting, not an agent scale.
 - **Spend scale** `PLANS` (fly, careful, normal, generous, nospare) in `lib/setup.js`: usage checks, budget %, run cap, helpers per model.
 - **Team roles per project** `p.roles` (AIG-366): 8 fixed strings in `lib/store.js` `TEAM_ROLES`, ticked in 🎨 Look; default for new projects `lead.roles`.

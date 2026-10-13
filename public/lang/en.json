@@ -2329,5 +2329,9 @@
   "tm.pic": "Pick a picture",
   "tm.renamed": "{from} is now called {to}.",
   "popout.btn": "⧉ Pop out",
-  "popout.title": "Open this window on its own, to move and resize"
+  "popout.title": "Open this window on its own, to move and resize",
+  "lead.push": "Pushing to GitHub",
+  "lead.push.ask": "Ask me first",
+  "lead.push.auto": "Just push",
+  "lead.push.help": "Ask me first: the team asks on the board and pushes after your yes. Just push: it pushes after each tested batch and logs it. Never a force push."
 }

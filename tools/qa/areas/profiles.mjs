@@ -173,7 +173,7 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   const slide = (sel, v) => page.$eval(sel, (e, v) => { e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, v);
   await page.waitForSelector('#sc-steps');
   check('Setup has a slider per owner scale: steps, chat, go, words, tidy, thrift, push', (await page.$$eval('#leadPrefs input[type=range]', is => is.map(i => i.id.slice(3) + i.max).join())) === 'steps5,chat5,go5,words5,tidy3,thrift5,push5');
-  check('the old switches are gone', !(await page.$('#pf-steps, #pf-plan, #pf-smPush')) && !(await page.$('#leadPrefs select:not(#pf-usageChecks):not([onchange*="techLevel"])')));
+  check('the old switches are gone', !(await page.$('#pf-steps, #pf-plan, #pf-smPush')) && !(await page.$('#leadPrefs select:not(#pf-usageChecks):not(#pushPref):not([onchange*="techLevel"])')));
   check('steps slider at 1, its line under it', (await page.inputValue('#sc-steps')) === '1' && /One step, say what I should see/.test(await page.textContent('#sc-steps-line')) && (await page.textContent('#sc-steps-n')) === '1/5');
   await page.$eval('#sc-steps', e => { e.value = 4; e.dispatchEvent(new Event('input', { bubbles: true })); });
   check('moving it shows the new line before it is saved', /numbered list/.test(await page.textContent('#sc-steps-line')) && (await page.textContent('#sc-steps-n')) === '4/5');
