@@ -5,7 +5,7 @@
 const Phone = (() => {
   const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
   const PAIR = /^#\/pair\/([A-Za-z0-9_-]{10,100})$/;
-  const P = { data: null, host: '', link: null, err: '', busy: false };
+  const P = { data: null, host: '', link: null, app: null, err: '', busy: false };   // app: the Android app's QR, shown once (AIG-907)
   let blocked = !LOCAL;   // core.js refresh() waits while this phone is not (yet) let in
 
   function stop(msg) {
@@ -23,13 +23,13 @@ const Phone = (() => {
     blocked = false;
   }
 
-  /* ---------- a small QR code (byte mode, error level M, versions 1-6) ---------- */
-  function qr(text) {
+  /* ---------- a small QR code (byte mode, error level M, or L when M won't fit; versions 1-6) ---------- */
+  function qr(text, low) {
     const data = Array.from(new TextEncoder().encode(text));
-    const ECC = [0, 10, 16, 26, 18, 24, 16], BLOCKS = [0, 1, 1, 1, 2, 2, 4];
+    const ECC = low ? [0, 7, 10, 15, 20, 26, 18] : [0, 10, 16, 26, 18, 24, 16], BLOCKS = low ? [0, 1, 1, 1, 1, 1, 2] : [0, 1, 1, 1, 2, 2, 4];
     const raw = v => { let r = (16 * v + 128) * v + 64; if (v >= 2) { const n = Math.floor(v / 7) + 2; r -= (25 * n - 10) * n - 55; } return r; };
     let ver = 1; while (ver <= 6 && Math.floor(raw(ver) / 8) - ECC[ver] * BLOCKS[ver] < data.length + 2) ver++;
-    if (ver > 6) return null;
+    if (ver > 6) return low ? null : qr(text, true);
     const total = Math.floor(raw(ver) / 8), cap = total - ECC[ver] * BLOCKS[ver];
     const bits = []; const put = (v, n) => { for (let i = n - 1; i >= 0; i--) bits.push((v >>> i) & 1); };
     put(4, 4); put(data.length, 8); data.forEach(b => put(b, 8));
@@ -54,7 +54,7 @@ const Phone = (() => {
     }
     if (ver > 1) { const a = [6, size - 7]; for (const ax of a) for (const ay of a) if (!(ax === 6 && ay === 6) && !(ax === 6 && ay === size - 7) && !(ax === size - 7 && ay === 6)) for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(ax + dx, ay + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1); }
     const format = mask => {
-      const d = mask; let r = d; for (let i = 0; i < 10; i++) r = (r << 1) ^ ((r >>> 9) * 0x537);   // level M = 00
+      const d = (low ? 8 : 0) | mask; let r = d; for (let i = 0; i < 10; i++) r = (r << 1) ^ ((r >>> 9) * 0x537);   // level M = 00, L = 01
       const b = ((d << 10) | r) ^ 0x5412, g = i => ((b >>> i) & 1) === 1;
       for (let i = 0; i <= 5; i++) set(8, i, g(i));
       set(8, 7, g(6)); set(8, 8, g(7)); set(7, 8, g(8));
@@ -81,8 +81,8 @@ const Phone = (() => {
       M.forEach(r => r.forEach(c => { if (c) dark++; }));
       return p + (Math.ceil(Math.abs(dark * 20 - size * size * 10) / (size * size)) - 1) * 10;
     };
-    let best = 0, low = Infinity;
-    for (let m = 0; m < 8; m++) { flip(m); format(m); const s = penalty(); if (s < low) { low = s; best = m; } flip(m); }
+    let best = 0, least = Infinity;
+    for (let m = 0; m < 8; m++) { flip(m); format(m); const s = penalty(); if (s < least) { least = s; best = m; } flip(m); }
     flip(best); format(best);
     return M;
   }
@@ -113,17 +113,23 @@ const Phone = (() => {
     box.innerHTML = `<small class="muted">${esc(t('phone.help'))}</small>
       <label>${esc(t('phone.host'))} <input id="phHost" placeholder="mypc.tail1234.ts.net" value="${esc(P.host)}" autocomplete="off" spellcheck="false"></label>
       <label>${esc(t('phone.name'))} <input id="phName" placeholder="${esc(t('phone.name.ph'))}" maxlength="40"></label>
-      <div class="actions"><button type="button" id="phPair" ${P.busy ? 'disabled' : ''}>${esc(t('phone.pair'))}</button></div>
+      <div class="actions"><button type="button" id="phPair" ${P.busy ? 'disabled' : ''}>${esc(t('phone.pair'))}</button> <button type="button" id="phApp" ${P.busy ? 'disabled' : ''}>${esc(t('phone.app'))}</button></div>
       <small class="muted">${esc(t('phone.serve'))} <code>tailscale serve --bg ${esc(location.port || '4321')}</code></small>
       ${P.link ? `<div class="phone-link">${qrSvg(P.link.url)}<p><a href="${esc(P.link.url)}" target="_blank" rel="noopener" id="phLink">${esc(P.link.url)}</a></p><small class="muted">${esc(t('phone.link.help'))}</small></div>` : ''}
+      ${P.app ? `<div class="phone-link">${qrSvg(P.app.qr)}<code id="phAppQr" class="phone-key">${esc(P.app.qr)}</code><small class="muted">${esc(t('phone.app.help'))}</small></div>` : ''}
       <div class="err" id="phErr">${esc(P.err)}</div>
       ${d.devices.length ? `<ul class="phone-list">${d.devices.map(x => `<li><b>${esc(x.name)}</b> <small class="muted">${esc(x.host)} · ${esc(t('phone.seen', { when: when(x.seen) }))}</small> <button type="button" class="ph-rm" data-id="${esc(x.id)}">${esc(t('phone.remove'))}</button></li>`).join('')}</ul>` : `<small class="muted">${esc(t('phone.none'))}</small>`}`;
   }
   document.addEventListener('click', async ev => {
-    const b = ev.target.closest && ev.target.closest('#phPair, .ph-rm'); if (!b) return;
+    const b = ev.target.closest && ev.target.closest('#phPair, #phApp, .ph-rm'); if (!b) return;
     P.err = '';
     try {
-      if (b.id === 'phPair') {
+      if (b.id === 'phApp') {
+        P.host = $('phHost').value.trim(); P.link = null; P.busy = true; paint();
+        P.app = await api('POST', '/api/phone/app', { host: P.host });
+        P.data = await api('GET', '/api/phone');
+      } else if (b.id === 'phPair') {
+        P.app = null;
         const name = $('phName').value.trim(); P.host = $('phHost').value.trim(); P.busy = true; paint();
         P.link = await api('POST', '/api/phone/start', { host: P.host, name });
         P.data = await api('GET', '/api/phone');

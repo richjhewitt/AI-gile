@@ -43,6 +43,7 @@
 .phone-link { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 8px 0; }
 .phone-qr { background: #fff; border-radius: 6px; max-width: 100%; height: auto; }
 .phone-link a { font-size: 1.05em; word-break: break-all; }
+.phone-key { word-break: break-all; font-size: .85em; user-select: all; }
 .phone-list { list-style: none; padding: 0; margin: 8px 0 0; }
 .phone-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 4px 0; }
 .phone-stop { padding: 24px; max-width: 520px; }

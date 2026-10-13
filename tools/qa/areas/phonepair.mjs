@@ -130,5 +130,37 @@ def('phonepair', 'phone over Tailscale: Setup pairs a phone (QR + one-time link)
   await page.waitForFunction(() => !document.querySelector('.ph-rm'));
   check('Remove: the list is empty', (await s.ok('GET', '/api/phone')).devices.length === 0);
   check('Remove: the cookie no longer works', (await raw('GET', '/api/chats', ph)).status === 403);
+
+  // Pair the app (AIG-907): a device key at once, in a QR code aigile://pair?url=https://<host>&key=<key>; the app sends it as Bearer, with no Origin.
+  await page.click('#phApp');
+  await page.waitForSelector('#phAppQr');
+  const qrText = await page.textContent('#phAppQr');
+  const am = qrText.match(/^aigile:\/\/pair\?url=https:\/\/([a-z0-9.-]+)&key=([A-Za-z0-9_-]{40,})$/);
+  check('Pair the app: QR text aigile://pair?url=https://<host>&key=<key>', !!am && am[1] === HOST, qrText);
+  check('Pair the app: a QR code is drawn', !!(await page.$('#phBody .phone-link svg.phone-qr path')));
+  check('Pair the app: listed as Android app with Remove', /Android app/.test(await page.textContent('#phBody')) && (await page.$$('.ph-rm')).length === 1);
+  const appKey = am ? am[2] : '', file2 = fs.readFileSync(path.join(s.dir, 'aigile.local.json'), 'utf8');
+  check('Pair the app: only the hash is saved', appKey && !file2.includes(appKey));
+  const ba = { Host: HOST, Authorization: 'Bearer ' + appKey };
+  for (const p of ['/api/meta', '/api/chats', '/api/chats/alpha', '/api/dms/contacts', '/api/avatars'])
+    check('Bearer: GET ' + p + ' works', (await raw('GET', p, ba)).status === 200);
+  const wm = await raw('GET', '/api/chats/_watchman', ba), dmm = await raw('GET', '/api/dms/contacts/nobody/messages', ba);
+  check('Bearer: GET /api/chats/_watchman and a contact\'s messages reach their routes', wm.status !== 403 && dmm.status !== 403, [wm.status, dmm.status]);
+  const quick = await raw('POST', '/api/projects/alpha/cards', ba, { title: '💬 from the app', description: 'from the app', type: 'task', status: 'team', createdBy: 'Owner', quick: true });
+  check('Bearer: POST a quick card with no Origin works', quick.status === 200, quick);
+  check('Bearer: POST a comment with no Origin works', (await raw('POST', '/api/projects/alpha/cards/ALP-1/comments', ba, { author: 'Owner', text: 'from the app' })).status === 200);
+  const smp = await raw('POST', '/api/chats/_watchman', ba, { text: 'hello from the app' });
+  check('Bearer: POST /api/chats/_watchman reaches its route', smp.status !== 403 && smp.status !== 415, smp);
+  check('Bearer with another site\'s Origin: 403', (await raw('POST', '/api/projects/alpha/cards/ALP-1/comments', { ...ba, Origin: 'https://evil.example' }, { author: 'Owner', text: 'evil' })).status === 403);
+  check('Bearer: a wrong key is 403', (await raw('GET', '/api/chats', { Host: HOST, Authorization: 'Bearer ' + 'B'.repeat(43) })).status === 403);
+  check('Bearer: a wrong key is 403 on POST with no Origin', (await raw('POST', '/api/projects/alpha/cards', { Host: HOST, Authorization: 'Bearer ' + 'B'.repeat(43) }, { title: 'evil' })).status === 403);
+  check('Bearer: not on another host name', (await raw('GET', '/api/chats', { ...ba, Host: 'other.tail1234.ts.net' })).status === 403);
+  check('Bearer: no terminal', (await raw('GET', '/api/terminal/token', ba)).status === 403);
+  check('Bearer: no secrets', (await raw('GET', '/api/secrets/token', ba)).status === 403);
+  check('Bearer: no pairing more phones', (await raw('POST', '/api/phone/app', ba, { host: HOST })).status === 403);
+  check('Bearer on localhost is not needed and changes nothing', (await raw('GET', '/api/chats', { Authorization: 'Bearer x' })).status === 200);
+  await page.click('.ph-rm');
+  await page.waitForFunction(() => !document.querySelector('.ph-rm'));
+  check('Bearer: a removed app key is 403', (await raw('GET', '/api/chats', ba)).status === 403);
   noErrors(page);
 }, true, { AIGILE_NO_TAILSCALE: '1' });

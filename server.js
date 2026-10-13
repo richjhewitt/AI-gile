@@ -44,11 +44,14 @@ const LOCAL = new Set([`localhost:${PORT}`, `127.0.0.1:${PORT}`]);
 function guardPhone(req, pathname) {
   const host = phone.hostOf(req.headers.host);
   if (!host) throw bad('wrong host', 403);
+  // The Android app (AIG-907) sends Authorization: Bearer <device key> and no Origin. A web page on another site can't
+  // send that header here: it needs a CORS preflight (OPTIONS), and this server never answers one with Access-Control-*.
+  const pairing = req.method === 'POST' && pathname === '/api/phone/pair';
+  const d = pairing ? null : phone.deviceFor(req, host);
   const origin = req.headers.origin;
-  if (origin ? origin.toLowerCase() !== 'https://' + host : req.method !== 'GET') throw bad('requests from other sites are not allowed', 403);
-  if (req.method === 'POST' && pathname === '/api/phone/pair') req.aigilePair = host;
+  if (origin ? origin.toLowerCase() !== 'https://' + host : req.method !== 'GET' && !(d && d.via === 'bearer')) throw bad('requests from other sites are not allowed', 403);
+  if (pairing) req.aigilePair = host;
   else {
-    const d = phone.deviceFor(req, host);
     if (!d) throw bad('this phone is not paired: pair it from Setup on your computer', 403);
     req.aigilePhone = d;
     phone.denied(req, pathname);
