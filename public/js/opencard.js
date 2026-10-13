@@ -19,7 +19,7 @@ const OpenCard = (() => {
     try {
       const r = await api('GET', '/api/opencard?front=' + (front() ? 1 : 0));
       const list = r.chips.slice();
-      for (const e of r.auto) { if (!pop(e)) list.push(e); }   // a blocked pop-out falls back to a chip
+      for (const e of r.auto) { if (document.documentElement.hasAttribute('data-break') || !pop(e)) list.push(e); }   // ⏸ break (AIG-824): no pop-outs, a chip   // a blocked pop-out falls back to a chip
       chips = list; paint();
     } catch {} finally { busyNow = false; }
   }

@@ -12,7 +12,7 @@ const DiscordTab = (() => {
   const alertsOn = () => typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('aigile.alerts') === '1';
   async function poll() {
     try { st = await api('GET', '/api/discord/unread'); } catch { return; }
-    if (st.total > lastTotal && document.hidden && alertsOn() && !document.documentElement.hasAttribute('data-focus')) {
+    if (st.total > lastTotal && document.hidden && alertsOn() && !document.documentElement.hasAttribute('data-focus') && !document.documentElement.hasAttribute('data-break')) {
       const c = st.chats.slice().sort((a, b) => String(b.at).localeCompare(String(a.at)))[0] || {};
       try { const n = new Notification(t('dc.notify', { who: c.from || 'Discord' }), { body: String(c.preview || '').slice(0, 160), tag: 'aigile-discord' }); n.onclick = () => { try { window.focus(); } catch {} n.close(); }; } catch {}
     }

@@ -70,7 +70,7 @@
     } catch {}
   }
   function announce(fresh) {
-    if (!alertsOn() || document.documentElement.hasAttribute('data-focus')) return;   // 🎯 focus mode: no sound, no pop-ups (AIG-395)
+    if (!alertsOn() || document.documentElement.hasAttribute('data-focus') || document.documentElement.hasAttribute('data-break')) return;   // 🎯 focus mode and ⏸ break (AIG-824): no sound, no pop-ups (AIG-395)
     beep();
     const one = fresh.length === 1 ? fresh[0] : null;
     const a = one && lastAsk(one);
