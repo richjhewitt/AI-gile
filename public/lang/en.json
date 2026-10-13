@@ -2555,5 +2555,7 @@
  "quiettime.day.sun": "Sunday",
  "quiettime.chip": "🔕 {label} until {until}",
  "quiettime.chip.nolabel": "🔕 Quiet until {until}",
- "quiettime.chip.title": "A quiet time from Setup: nothing goes live until it ends"
+ "quiettime.chip.title": "A quiet time from Setup: nothing goes live until it ends",
+ "servers.sudo": "May use sudo over ssh",
+ "servers.sudoWho": "Only these agents (comma-separated); empty = every agent"
 }

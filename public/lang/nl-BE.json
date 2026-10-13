@@ -2555,5 +2555,7 @@
  "quiettime.day.sun": "Zondag",
  "quiettime.chip": "🔕 {label} tot {until}",
  "quiettime.chip.nolabel": "🔕 Stil tot {until}",
- "quiettime.chip.title": "Een stil moment uit Setup: niets gaat live tot het voorbij is"
+ "quiettime.chip.title": "Een stil moment uit Setup: niets gaat live tot het voorbij is",
+ "servers.sudo": "Mag sudo gebruiken via ssh",
+ "servers.sudoWho": "Alleen deze agents (kommagescheiden); leeg = elke agent"
 }

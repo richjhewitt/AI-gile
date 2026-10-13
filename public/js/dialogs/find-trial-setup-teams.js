@@ -203,7 +203,9 @@ function serversHtml(msg = '') {
     <input type="text" data-srv="name" data-i="${i}" value="${esc(s.name)}" placeholder="${esc(t('servers.name'))}" onchange="srvEdit(this)">
     <select data-srv="kind" data-i="${i}" onchange="srvEdit(this)">${['path', 'cmd', 'ssh'].map(k => `<option value="${k}" ${(s.kind || 'path') === k ? 'selected' : ''}>${esc(t('servers.kind.' + k))}</option>`).join('')}</select>
     <input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t('servers.' + (s.kind === 'cmd' || s.kind === 'ssh' ? s.kind : 'path') + '.ph'))}" onchange="srvEdit(this)">
-    <button type="button" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">✕</button></div>`).join('');
+    <button type="button" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">✕</button>
+    <label class="srv-sudo"><input type="checkbox" data-srv="sudo" data-i="${i}" ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? 'checked' : ''} onchange="srvEdit(this)"> ${esc(t('servers.sudo'))}</label>
+    ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? `<input type="text" data-srv="sudoWho" data-i="${i}" value="${esc(Array.isArray(s.sudo) ? s.sudo.join(', ') : '')}" placeholder="${esc(t('servers.sudoWho'))}" onchange="srvEdit(this)">` : ''}</div>`).join('');
   const found = (srvFound || []).filter(f => !srvDraft.some(s => s.value === f.path)).map(f => `<button type="button" class="srv-found" data-name="${esc(f.name)}" data-path="${esc(f.path)}" onclick="srvAddFound(this)">+ ${esc(f.name)}</button>`).join(' ');
   return `<span>${esc(t('servers.h'))}</span><small class="muted">${esc(t('servers.help'))}</small>${rows}
     <div><button type="button" onclick="srvAdd()">${esc(t('servers.add'))}</button> <button type="button" id="srvFind" onclick="srvFind()">${esc(t('servers.find'))}</button> ${found}</div>
@@ -214,7 +216,13 @@ async function srvSave() {
   try { state.setup = await api('POST', '/api/setup', { prefs: { servers: srvDraft.filter(s => s.name.trim() && s.value.trim()) } }); srvPaint(t('setup.saved.short')); }
   catch (e) { setErr('servers-err', e); }
 }
-function srvEdit(el) { srvDraft[+el.dataset.i][el.dataset.srv] = el.value; if (el.dataset.srv === 'kind') srvPaint(); srvSave(); }
+function srvEdit(el) {
+  const s = srvDraft[+el.dataset.i], k = el.dataset.srv;
+  if (k === 'sudo') { if (el.checked) s.sudo = true; else delete s.sudo; srvPaint(); }   // AIG-701
+  else if (k === 'sudoWho') { const n = el.value.split(',').map(x => x.trim()).filter(Boolean); s.sudo = n.length ? n : true; }
+  else { s[k] = el.value; if (k === 'kind') srvPaint(); }
+  srvSave();
+}
 function srvAdd() { srvDraft.push({ name: '', kind: 'path', value: '' }); srvPaint(); }
 function srvDel(i) { srvDraft.splice(i, 1); srvPaint(); srvSave(); }
 function srvAddFound(b) { srvDraft.push({ name: b.dataset.name, kind: 'path', value: b.dataset.path }); srvPaint(); srvSave(); }
