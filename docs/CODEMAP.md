@@ -10,6 +10,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 ## Server ([server.md](codemap/server.md): files, API routes, local-only settings)
 - `server.js`: http plumbing, `/api/*` dispatch, static files from `public/`
 - `lib/routes.js` + `lib/routes/*.js`: every API route as `[method, regex, handler]`, grouped (shared requires in `ctx.js`)
+- `lib/emojis.js` + `lib/routes/emojis.js` (AIG-648): your own emojis in `data/emojis/` (`GET/POST /api/emojis`, `GET/DELETE /api/emojis/:name`); the :emoji: popup (`public/js/emoji.js`) has the "Yours" section, ➕ Add your own (shrunk to 64x64 in the browser) and the ✕ delete; QA `emojis`
 - `lib/store.js`: config, load/save of `data/<slug>.json`, card rules, project order
 - `lib/onboard.js`: connect a folder, permissions presets
 - `lib/presence.js`: team presence, background runs, where a team runs, verbose log, 👁 Watch
