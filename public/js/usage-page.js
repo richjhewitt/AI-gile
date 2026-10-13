@@ -73,6 +73,9 @@ const uz = {
   .uz-rank .nums b { color: var(--text); font-size: 14px; }
   .uz-rank .track { height: 8px; border-radius: 99px; background: var(--col); overflow: hidden; margin-top: 3px; }
   .uz-rank .track span { display: block; height: 100%; background: var(--c); border-radius: 99px; }
+  .uz-share { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 12px; margin-top: 4px; }
+  .uz-share label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+  .uz-share .uz-who { display: inline-flex; flex-wrap: wrap; gap: 4px 10px; padding-left: 10px; border-left: 2px solid var(--line); }
   .uz-viewtog { display: flex; gap: 6px; margin: 0 0 12px; }
   .uz-compact { font-family: ui-monospace, Consolas, 'Courier New', monospace; font-size: 14px; line-height: 1.7; margin: 0 0 6px; padding: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); white-space: pre; overflow-x: auto; max-width: 100%; }
   @media (max-width: 520px) { .uz-hero { font-size: 48px; } .uz-rank { grid-template-columns: 1fr; } .uz-compact { font-size: 12px; padding: 10px; } }
@@ -84,15 +87,16 @@ const uz = {
 async function loadUsagePage(force) {
   if (!force && uz.data && Date.now() - uz.fetchedAt < 15e3) return;
   // AIG-558: all at once (check and runs used to wait their turn, so the first click looked like it did nothing).
-  const [usage, limits, projects, live, check] = await Promise.all([
+  const [usage, limits, projects, live, check, shares] = await Promise.all([
     api('GET', '/api/usage').catch(() => ({ enabled: false })),
     api('GET', '/api/limits?days=30').catch(() => ({ latest: null, history: [] })),
     api('GET', '/api/projects?all=1').catch(() => []),
     api('GET', '/api/limits/latest').catch(() => ({ latest: null })),   // AIG-431: the compact view
     api('GET', '/api/usage/check').catch(() => null),
+    api('GET', '/api/usage/shares').catch(() => null),   // AIG-685/686: token use shared with friends
   ]);
   await TodayPage.load();
-  uz.data = { usage, limits, check, runs: (uz.data && uz.data.runs) || [], live, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
+  uz.data = { usage, limits, check, runs: (uz.data && uz.data.runs) || [], live, shares, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
   uz.fetchedAt = Date.now();
   // AIG-712: the runs table can be slow (it scans the session logs), so it fills in when it arrives instead of holding up the first draw.
   api('GET', '/api/usage/runs').catch(() => []).then(runs => {   // AIG-266
@@ -386,16 +390,37 @@ function uzProjects(u, projects, W) {
   const table = `<div class="uz-tablewrap"><table><thead><tr><th>${esc(t('usage.th.day'))}</th>${shown.map(s => `<th>${esc(s.name)}</th>`).join('')}<th>${esc(t('usage.th.total'))}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 
   // ranked list: today and the last 7 days, per project
-  const rank = [...slugs.map(s => ({ name: names[s] || s, col: slugs.indexOf(s) < 6 ? `var(--s${slugs.indexOf(s) + 1})` : 'var(--s-other)', t: u.projects[s] })), { name: t('usage.other'), col: 'var(--s-other)', t: u.other }]
+  const rank = [...slugs.map(s => ({ slug: s, name: names[s] || s, col: slugs.indexOf(s) < 6 ? `var(--s${slugs.indexOf(s) + 1})` : 'var(--s-other)', t: u.projects[s] })), { name: t('usage.other'), col: 'var(--s-other)', t: u.other }]
     .filter(r => r.t && (r.t.d7 || r.t.today)).sort((a, b) => b.t.d7 - a.t.d7);
   const m7 = Math.max(...rank.map(r => r.t.d7), 1);
   const ranked = rank.length ? `<div class="uz-card"><h2>${esc(t('usage.rank.h'))}</h2><p class="uz-explain">${esc(t('usage.rank.explain'))}</p>
-    <div class="uz-rank">${rank.map(r => `<div class="nm">${esc(r.name)}</div><div><div class="nums">${t('usage.rank.nums.html', { today: uzShort(r.t.today), d7: uzShort(r.t.d7) })}</div><div class="track" style="--c:${r.col}"><span style="width:${Math.max(2, r.t.d7 / m7 * 100)}%"></span></div></div>`).join('')}</div></div>` : '';
+    <div class="uz-rank">${rank.map(r => `<div class="nm">${esc(r.name)}</div><div><div class="nums">${t('usage.rank.nums.html', { today: uzShort(r.t.today), d7: uzShort(r.t.d7) })}</div><div class="track" style="--c:${r.col}"><span style="width:${Math.max(2, r.t.d7 / m7 * 100)}%"></span></div>${r.slug ? uzShareRow(r.slug) : ''}</div>`).join('')}</div></div>` : '';
   return `<div class="uz-card"><h2>${esc(t('usage.bars.h'))}</h2><div class="uz-head">${headline}</div>
     <p class="uz-explain">${esc(t('usage.bars.explain'))}</p>
     ${uz.table.bars ? table : chart}${legend}
     <button class="uz-toggle" onclick="uzToggle('bars')">${esc(uz.table.bars ? t('usage.showchart') : t('usage.showtable'))}</button></div>${ranked}`;
 }
+
+// Token use, shared with friends (AIG-685/686): a switch per project (off by default), then All friends or one by one
+// (none picked at first, so the owner chooses). Only the numbers go: today and the last 7 days, never card text or logs.
+function uzShareRow(slug) {
+  const sh = uz.data.shares; if (!sh) return '';
+  const cur = sh.projects[slug] || { on: false, with: [] }, all = cur.with === 'all', picked = all ? [] : cur.with;
+  const sw = `<label title="${esc(t('usage.share.title'))}"><input type="checkbox" data-uzshare="${esc(slug)}" ${cur.on ? 'checked' : ''}> ${esc(t('usage.share.on'))}</label>`;
+  if (!cur.on) return `<div class="uz-share">${sw}</div>`;
+  const friends = sh.friends.map(f => `<label><input type="checkbox" data-uzfriend="${esc(slug)}" value="${esc(f.id)}" ${picked.includes(f.id) ? 'checked' : ''}> ${esc(f.name)}</label>`).join('');
+  const note = !sh.friends.length ? t('usage.share.nofriends') : !sh.dms ? t('usage.share.dmsoff') : !all && !picked.length ? t('usage.share.pick') : '';
+  return `<div class="uz-share">${sw}<span class="uz-who"><label><input type="checkbox" data-uzall="${esc(slug)}" ${all ? 'checked' : ''}> ${esc(t('usage.share.all'))}</label>${all ? '' : friends}</span>${note ? `<span class="muted uz-share-note">${esc(note)}</span>` : ''}</div>`;
+}
+document.addEventListener('change', async e => {
+  const x = e.target; if (!x.closest || !x.closest('.uz-share')) return;
+  const slug = x.dataset.uzshare || x.dataset.uzall || x.dataset.uzfriend; if (!slug) return;
+  const cur = (uz.data.shares.projects[slug] || {}).with, list = Array.isArray(cur) ? cur : [];
+  const body = x.dataset.uzshare ? { shareUsage: x.checked } : x.dataset.uzall ? { shareUsageWith: x.checked ? 'all' : [] }
+    : { shareUsageWith: x.checked ? [...list, x.value] : list.filter(id => id !== x.value) };
+  try { await api('PATCH', '/api/projects/' + encodeURIComponent(slug), body); } catch (err) { alert(err.message || String(err)); }
+  await loadUsagePage(true); render();
+});
 
 // What the biggest background runs of the last 24 hours cost (AIG-266).
 function uzRuns(runs, projects) {

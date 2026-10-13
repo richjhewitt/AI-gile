@@ -2513,5 +2513,15 @@
  "remind.st.todo": "te doen",
  "remind.st.doing": "bezig",
  "remind.st.verify": "wacht tot jij test",
- "remind.st.done": "klaar"
+ "remind.st.done": "klaar",
+ "usage.share.on": "Delen met vrienden",
+ "usage.share.title": "Laat vrienden het tokengebruik van dit project zien: alleen de getallen voor vandaag en deze week, nooit kaarttekst of logs",
+ "usage.share.all": "Alle vrienden",
+ "usage.share.pick": "Kies wie het ziet",
+ "usage.share.nofriends": "Nog geen vrienden: voeg er een toe in de DM's",
+ "usage.share.dmsoff": "DM's staan uit: er wordt niets verstuurd tot ze aan staan",
+ "dms.usage.h": "Tokengebruik",
+ "dms.usage.title": "{name} deelt deze getallen met je: tokens vandaag en in de laatste 7 dagen",
+ "dms.usage.when": "bijgewerkt {when}",
+ "dms.usage.nums.html": "vandaag <b>{today}</b> · deze week <b>{week}</b>"
 }

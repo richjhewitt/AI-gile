@@ -2513,5 +2513,15 @@
  "remind.st.todo": "to do",
  "remind.st.doing": "in progress",
  "remind.st.verify": "waiting for you to test",
- "remind.st.done": "done"
+ "remind.st.done": "done",
+ "usage.share.on": "Share with friends",
+ "usage.share.title": "Let friends see this project's token use: only the numbers for today and this week, never card text or logs",
+ "usage.share.all": "All friends",
+ "usage.share.pick": "Pick who sees it",
+ "usage.share.nofriends": "No friends yet: add one in the DMs",
+ "usage.share.dmsoff": "DMs are off: nothing is sent until they are on",
+ "dms.usage.h": "Token use",
+ "dms.usage.title": "{name} shares these numbers with you: tokens today and in the last 7 days",
+ "dms.usage.when": "updated {when}",
+ "dms.usage.nums.html": "today <b>{today}</b> · this week <b>{week}</b>"
 }

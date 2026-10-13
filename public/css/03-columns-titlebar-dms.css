@@ -165,6 +165,10 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .share-files { margin: 8px 0; }
 .share-file { display: block; overflow-wrap: anywhere; margin: 2px 0; }
 
+/* ---------- a friend's token use (AIG-686) ---------- */
+.dm-usage { padding: 6px 12px; border-bottom: 1px solid var(--line); font-size: 12px; }
+.dm-usage-h { margin-bottom: 2px; }
+.dm-usage-row { display: flex; justify-content: space-between; gap: 10px; }
 /* ---------- ask a mate (AIG-210) ---------- */
 .dm-asktag { font-size: 12px; font-weight: 600; margin: 0 0 2px; }
 .dm-msg.dm-ask .dm-bubble, .dm-msg.dm-answer .dm-bubble { border: 1px dashed var(--line); }
