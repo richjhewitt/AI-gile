@@ -24,7 +24,8 @@ const IB = {
   const isQuestion = c => !isTask(c) && c.status !== 'verify';
   const isTest = c => !isTask(c) && c.status === 'verify';
   const kindOf = c => isTask(c) ? 'k' : isQuestion(c) ? 'q' : 't';
-  const lastAsk = c => [...(c.comments || [])].reverse().find(m => String(m.author).trim().toLowerCase() !== me().toLowerCase())
+  // A 👉 poke is the Scrum Master nudging the team, never a question for the owner (AIG-717).
+  const lastAsk = c => [...(c.comments || [])].reverse().find(m => !m.poke && String(m.author).trim().toLowerCase() !== me().toLowerCase())
     || { author: c.assignee || 'The team', at: c.updated, text: c.description || c.title };
   // The item shows the task / question itself (AIG-367), not whatever the team said last: the newest comment marked by `aigile task` / `ask`.
   const shownAsk = c => {
