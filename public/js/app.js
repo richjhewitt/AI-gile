@@ -35,10 +35,10 @@ if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', '
 }
 // A new page opens at the top (AIG-925): the inbox used to open as far down as the board had been scrolled.
 // Opening or closing a card on the same board keeps the board where it was.
-const pageOf = h => h.replace(/^(#\/p\/[^/]+)\/.*$/, '$1');
+const pageOf = h => h.replace(/^(#\/p\/[^/]+)\/.*$/, '$1').replace(/^(#\/setup)\/.*$/, '$1');
 let lastPage = pageOf(location.hash);
 window.addEventListener('hashchange', () => {
-  state.editing = false;
+  state.editing = false; state.setupLanded = null;
   const pg = pageOf(location.hash); if (pg !== lastPage) { lastPage = pg; window.scrollTo(0, 0); }
   refresh(true);
 });
@@ -91,7 +91,7 @@ async function checkBuild() {
     Mail.watch();   // ✉️ the Mail link shows once a mailbox is set up (AIG-902)
     WhatsNew.check();   // ✨ a note once after an update (AIG-562)
     // A new install opens Setup first (AIG-91).
-    if (loadedBuild === null && m.setupNeeded && location.hash !== '#/setup') location.hash = '#/setup';
+    if (loadedBuild === null && m.setupNeeded && !/^#\/setup/.test(location.hash)) location.hash = '#/setup';
     if (loadedBuild === null) { loadedBuild = m.build; return; }
     // While you're quiet (AIG-224): a new board or page code reloads by itself, unless something is half-typed.
     if (m.quiet && m.build !== loadedBuild && !hasUnsent()) { location.reload(); return; }
