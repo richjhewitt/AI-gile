@@ -287,7 +287,7 @@ def('openit', '▶ Open it: starts the app with the card\'s command if needed, w
   let asked = '';
   page.once('dialog', d => { asked = d.message(); d.accept(); });
   const [opened] = await Promise.all([ctx.waitForEvent('page', { timeout: 30000 }), page.click('button:has-text("Open it")')]);
-  check('asks before running the start command', asked.includes('createServer'), asked);
+  check('runs the start command without an OK popup (AIG-719)', asked === '', asked);
   await opened.waitForLoadState().catch(() => {});
   check('opens the page once the app answers', opened.url() === `http://127.0.0.1:${port}/settings` && (await opened.textContent('body')).includes('app here'), opened.url());
   await page.goto(BASE + '/#/inbox');

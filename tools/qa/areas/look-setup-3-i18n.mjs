@@ -196,7 +196,7 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
   check('English goes back to dir=ltr', saved.dir === 'ltr');
   // The closed alpha label (AIG-348) in the top bar, in each language.
   const flem = await startIn('nl-BE'), engl = await startIn('en-US');
-  check('the alpha label reads Gesloten alfa in Flemish, with its tooltip', flem.alpha === '🐣 Gesloten alfa' && flem.tip === 'Vroeg en nog niet af: bedankt om het uit te proberen!', flem.alpha + ' / ' + flem.tip);
+  check('the alpha label reads Gesloten pre-alfa in Flemish, with its tooltip', flem.alpha === '🐣 Gesloten pre-alfa' && flem.tip === 'Vroeg en nog niet af: bedankt om het uit te proberen!', flem.alpha + ' / ' + flem.tip);
   check('the alpha label reads Closed pre-alpha in English, with its tooltip', engl.alpha === '🐣 Closed pre-alpha' && engl.tip === 'Early and unfinished: thanks for trying it!', engl.alpha + ' / ' + engl.tip);
   check('the alpha label is on the board page in the main context', (await page.locator('header .alpha-tag').count()) === 1);
   await pctx.close();
