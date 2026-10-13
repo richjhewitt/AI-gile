@@ -67,6 +67,24 @@ def('approvals', "approvals: a friend's raised card waits for the owner's OK (no
     check('the friend sees the note and the card closed on their side', !!seen, seen && seen.comments[r2.share]);
     check('a declined card cannot be taken or approved later', (await a.api('POST', `/api/shares/${id}/inbound/${r2.share}/take`)).status === 409 && (await a.api('POST', `/api/shares/${id}/inbound/${r2.share}/approve`)).status === 409);
 
+    // Review fixes: the note is scrubbed (override needs force), a race has one winner, and Decline works with the link off.
+    const r5 = await b.ok('POST', `/api/shares/${id}/raise`, { type: 'bug', title: 'Race one' });
+    const r6 = await b.ok('POST', `/api/shares/${id}/raise`, { type: 'bug', title: 'Scrub one' });
+    const r7 = await b.ok('POST', `/api/shares/${id}/raise`, { type: 'bug', title: 'Link off one' });
+    await until(async () => (await lane()).filter(c => /Race one|Scrub one|Link off one/.test(c.title)).length === 3);
+    const du = s => `/api/shares/${id}/inbound/${s}/`;
+    const sc = await a.api('POST', du(r6.share) + 'decline', { note: 'password: hunter2hunter2' });
+    check('Decline: a secret in the note is stopped by the scrub, nothing changed', sc.status === 409 && (await lane()).some(c => c.title === 'Scrub one'), sc.body);
+    const scf = await a.api('POST', du(r6.share) + 'decline', { note: 'password: hunter2hunter2', force: true });
+    check('Decline: the owner can send anyway with force', scf.status === 200 && scf.body.declined === true);
+    const race = await Promise.all([a.api('POST', du(r5.share) + 'approve'), a.api('POST', du(r5.share) + 'decline', { note: 'race' })]);
+    const wins = race.filter(r => r.status === 200).length, pr = await pa();
+    check('Approve and Decline racing: exactly one wins, the other is refused clearly', wins === 1 && race.some(r => r.status === 409) && (race[0].status === 200) === pr.cards.some(c => c.title === 'Race one'), race.map(r => r.status));
+    await a.ok('PATCH', `/api/shares/${id}`, { on: false });
+    const off2 = await a.api('POST', du(r7.share) + 'decline', { note: 'link is off' });
+    check('Decline works with the link switched off (the friend is told best-effort)', off2.status === 200 && off2.body.declined === true && !(await lane()).some(c => c.title === 'Link off one'), off2.body);
+    await a.ok('PATCH', `/api/shares/${id}`, { on: true });
+
     // The inbox: section with a count; Decline asks for a note; nothing when none.
     const page = await openPage(ctx, '#/inbox');
     await page.waitForSelector('#ibApprovals:not([hidden]) .appr-item', { timeout: 8000 });
