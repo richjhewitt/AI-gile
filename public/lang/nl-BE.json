@@ -2504,5 +2504,14 @@
  "fourtwenty.place.chicago": "Chicago",
  "fourtwenty.place.denver": "Denver",
  "fourtwenty.place.losangeles": "Los Angeles",
- "fourtwenty.place.honolulu": "Honolulu"
+ "fourtwenty.place.honolulu": "Honolulu",
+ "remind.btn": "❓ Herinner me",
+ "remind.title": "Een korte samenvatting van deze kaart",
+ "remind.ask": "Je vroeg: ",
+ "remind.plan": "Plan: ",
+ "remind.now": "Nu: ",
+ "remind.st.todo": "te doen",
+ "remind.st.doing": "bezig",
+ "remind.st.verify": "wacht tot jij test",
+ "remind.st.done": "klaar"
 }

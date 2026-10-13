@@ -2504,5 +2504,14 @@
  "fourtwenty.place.chicago": "Chicago",
  "fourtwenty.place.denver": "Denver",
  "fourtwenty.place.losangeles": "Los Angeles",
- "fourtwenty.place.honolulu": "Honolulu"
+ "fourtwenty.place.honolulu": "Honolulu",
+ "remind.btn": "❓ Remind me",
+ "remind.title": "A quick recap of this card",
+ "remind.ask": "You asked: ",
+ "remind.plan": "Plan: ",
+ "remind.now": "Now: ",
+ "remind.st.todo": "to do",
+ "remind.st.doing": "in progress",
+ "remind.st.verify": "waiting for you to test",
+ "remind.st.done": "done"
 }
