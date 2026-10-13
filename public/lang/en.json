@@ -2359,5 +2359,18 @@
  "tw.setup.save": "Save",
  "tw.setup.saved": "Saved.",
  "tw.state.on": "Connected",
- "tw.state.wait": "Connecting…"
+ "tw.state.wait": "Connecting…",
+ "emoji.yours": "Yours",
+ "emoji.add": "Add your own",
+ "emoji.add.file": "Picture (png, gif, webp or jpg)",
+ "emoji.add.name": "Name",
+ "emoji.add.help": "Lowercase letters, digits and _ . The picture is shrunk to 64x64 and stays on this PC.",
+ "emoji.add.go": "Add",
+ "emoji.add.cancel": "Cancel",
+ "emoji.del": "Delete this emoji",
+ "emoji.err.file": "That file is not a picture I can read.",
+ "emoji.err.big": "Still over 32 KB after shrinking; try a simpler picture.",
+ "emoji.err.nofile": "Pick a picture first.",
+ "emoji.err.name": "The name can use lowercase letters, digits and _ (up to 32).",
+ "emoji.err.dup": "That name is already taken."
 }

@@ -2359,5 +2359,18 @@
  "tw.setup.save": "Opslaan",
  "tw.setup.saved": "Opgeslagen.",
  "tw.state.on": "Verbonden",
- "tw.state.wait": "Verbinden…"
+ "tw.state.wait": "Verbinden…",
+ "emoji.yours": "Van jou",
+ "emoji.add": "Eigen emoji toevoegen",
+ "emoji.add.file": "Plaatje (png, gif, webp of jpg)",
+ "emoji.add.name": "Naam",
+ "emoji.add.help": "Kleine letters, cijfers en _ . Het plaatje wordt verkleind naar 64x64 en blijft op deze pc.",
+ "emoji.add.go": "Toevoegen",
+ "emoji.add.cancel": "Annuleren",
+ "emoji.del": "Deze emoji verwijderen",
+ "emoji.err.file": "Dat bestand is geen plaatje dat ik kan lezen.",
+ "emoji.err.big": "Na het verkleinen nog steeds groter dan 32 KB; kies een eenvoudiger plaatje.",
+ "emoji.err.nofile": "Kies eerst een plaatje.",
+ "emoji.err.name": "De naam mag kleine letters, cijfers en _ bevatten (maximaal 32).",
+ "emoji.err.dup": "Die naam is al in gebruik."
 }
