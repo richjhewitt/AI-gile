@@ -109,6 +109,8 @@ export async function openPage(ctx, hash) {
   if (!openPage.morning) await page.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
   // AIG-932: the top bar shows only Inbox/Help/Setup and a More menu; the other areas click the buttons by selector, so they pin them all (the topbar area leaves it alone).
   if (!openPage.firstrun) await page.addInitScript(pinAllInit);
+  // AIG-937: home keeps its More menu open here, so areas click the moved buttons by selector (the homeux area leaves it alone).
+  if (!openPage.homeMore) await page.addInitScript(() => { try { localStorage.setItem('aigile.homeMoreOpen', '1'); } catch {} });
   await page.goto(BASE + '/' + (hash || ''));
   await page.waitForSelector('#app > *', { timeout: 8000 });
   return page;

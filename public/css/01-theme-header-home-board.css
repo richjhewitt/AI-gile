@@ -49,6 +49,7 @@ header .spacer { flex: 1; }
 .navlink:hover { border-color: var(--accent); }
 button.navlink { cursor: pointer; color: inherit; font-family: inherit; }
 a.usage { display: block; }
+a.usage[hidden] { display: none; }
 a.usage:hover { border-color: var(--accent); }
 .quiet-chip { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--warn) 18%, var(--panel)); color: var(--text); white-space: nowrap; }   /* AIG-615 */
 .quiet-chip[hidden] { display: none; }
