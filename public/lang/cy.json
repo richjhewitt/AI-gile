@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "Dangos 1 sgwrs dawel",
   "dms.quiet.hide": "Cuddio sgyrsiau tawel",
   "allhands.confirm": "Anfon at {n} tîm?",
-  "allhands.confirm.one": "Anfon at 1 tîm?"
+  "allhands.confirm.one": "Anfon at 1 tîm?",
+  "home.more": "Mwy ▾",
+  "home.more.title": "Dangos neu guddio'r botymau eraill",
+  "home.uz.html": "<b>⚡ Cynllun ar ôl:</b> y sesiwn hon <b>{h5}</b> · yr wythnos hon <b>{wk}</b>",
+  "wz.ask.pick": "Dewiswch sut hoffech chi ddechrau.",
+  "wz.ask.b.wizard": "🧙 Dewin",
+  "wz.ask.b.wizard.help": "Tua munud. Yn gosod popeth i chi (argymhellir).",
+  "wz.ask.b.tour": "🎓 Taith",
+  "wz.ask.b.tour.help": "Cipolwg byr dan arweiniad ar y bwrdd.",
+  "wz.ask.b.in": "Gadewch fi i mewn",
+  "wz.ask.b.in.help": "Hepgor hyn i gyd. Gallwch redeg y dewin neu'r daith yn nes ymlaen.",
+  "wz.2.agent.ph": "e.e. claude",
+  "wz.2.use": "Defnyddio'r un a ganfûm",
+  "dlg.newcard.more": "Mwy o ddewisiadau",
+  "card.menu": "⋯",
+  "card.menu.title": "Mwy o gamau gweithredu"
 }

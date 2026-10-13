@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "แสดงแชตเงียบ 1 แชต",
   "dms.quiet.hide": "ซ่อนแชตเงียบ",
   "allhands.confirm": "ส่งให้ {n} ทีมไหม?",
-  "allhands.confirm.one": "ส่งให้ 1 ทีมไหม?"
+  "allhands.confirm.one": "ส่งให้ 1 ทีมไหม?",
+  "home.more": "เพิ่มเติม ▾",
+  "home.more.title": "แสดงหรือซ่อนปุ่มอื่น ๆ",
+  "home.uz.html": "<b>⚡ แพลนที่เหลือ:</b> เซสชันนี้ <b>{h5}</b> · สัปดาห์นี้ <b>{wk}</b>",
+  "wz.ask.pick": "เลือกวิธีที่คุณอยากเริ่ม",
+  "wz.ask.b.wizard": "🧙 ตัวช่วย",
+  "wz.ask.b.wizard.help": "ประมาณหนึ่งนาที ตั้งค่าให้คุณ (แนะนำ)",
+  "wz.ask.b.tour": "🎓 ทัวร์",
+  "wz.ask.b.tour.help": "ชมบอร์ดแบบมีผู้นำทางสั้น ๆ",
+  "wz.ask.b.in": "ขอเข้าเลย",
+  "wz.ask.b.in.help": "ข้ามทั้งหมดนี้ คุณเปิดตัวช่วยหรือทัวร์ทีหลังได้",
+  "wz.2.agent.ph": "เช่น claude",
+  "wz.2.use": "ใช้อันที่พบ",
+  "dlg.newcard.more": "ตัวเลือกเพิ่มเติม",
+  "card.menu": "⋯",
+  "card.menu.title": "การทำงานเพิ่มเติม"
 }

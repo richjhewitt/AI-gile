@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "Hiện 1 cuộc trò chuyện yên ắng",
   "dms.quiet.hide": "Ẩn các cuộc trò chuyện yên ắng",
   "allhands.confirm": "Gửi cho {n} nhóm?",
-  "allhands.confirm.one": "Gửi cho 1 nhóm?"
+  "allhands.confirm.one": "Gửi cho 1 nhóm?",
+  "home.more": "Thêm ▾",
+  "home.more.title": "Hiện hoặc ẩn các nút khác",
+  "home.uz.html": "<b>⚡ Gói còn lại:</b> phiên này <b>{h5}</b> · tuần này <b>{wk}</b>",
+  "wz.ask.pick": "Chọn cách bạn muốn bắt đầu.",
+  "wz.ask.b.wizard": "🧙 Trình hướng dẫn",
+  "wz.ask.b.wizard.help": "Khoảng một phút. Thiết lập mọi thứ giúp bạn (khuyên dùng).",
+  "wz.ask.b.tour": "🎓 Tham quan",
+  "wz.ask.b.tour.help": "Một vòng tham quan ngắn quanh bảng.",
+  "wz.ask.b.in": "Cho tôi vào luôn",
+  "wz.ask.b.in.help": "Bỏ qua tất cả. Bạn có thể chạy trình hướng dẫn hoặc tham quan sau.",
+  "wz.2.agent.ph": "vd. claude",
+  "wz.2.use": "Dùng cái đã tìm thấy",
+  "dlg.newcard.more": "Thêm tùy chọn",
+  "card.menu": "⋯",
+  "card.menu.title": "Thêm thao tác"
 }

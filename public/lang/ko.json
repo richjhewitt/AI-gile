@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "조용한 채팅 1개 보기",
   "dms.quiet.hide": "조용한 채팅 숨기기",
   "allhands.confirm": "{n}개 팀에 보낼까요?",
-  "allhands.confirm.one": "1개 팀에 보낼까요?"
+  "allhands.confirm.one": "1개 팀에 보낼까요?",
+  "home.more": "더보기 ▾",
+  "home.more.title": "다른 버튼 보이기 또는 숨기기",
+  "home.uz.html": "<b>⚡ 남은 플랜:</b> 이번 세션 <b>{h5}</b> · 이번 주 <b>{wk}</b>",
+  "wz.ask.pick": "시작 방법을 골라 주세요.",
+  "wz.ask.b.wizard": "🧙 마법사",
+  "wz.ask.b.wizard.help": "약 1분. 알아서 설정해 드려요 (권장).",
+  "wz.ask.b.tour": "🎓 둘러보기",
+  "wz.ask.b.tour.help": "보드를 짧게 안내해 드려요.",
+  "wz.ask.b.in": "그냥 들어갈게요",
+  "wz.ask.b.in.help": "이 모든 과정을 건너뜁니다. 마법사나 둘러보기는 나중에 실행할 수 있어요.",
+  "wz.2.agent.ph": "예: claude",
+  "wz.2.use": "찾은 것 사용",
+  "dlg.newcard.more": "추가 옵션",
+  "card.menu": "⋯",
+  "card.menu.title": "더 많은 작업"
 }

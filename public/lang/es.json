@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "Mostrar 1 chat tranquilo",
   "dms.quiet.hide": "Ocultar los chats tranquilos",
   "allhands.confirm": "¿Enviar a {n} equipos?",
-  "allhands.confirm.one": "¿Enviar a 1 equipo?"
+  "allhands.confirm.one": "¿Enviar a 1 equipo?",
+  "home.more": "Más ▾",
+  "home.more.title": "Mostrar u ocultar los otros botones",
+  "home.uz.html": "<b>⚡ Plan restante:</b> esta sesión <b>{h5}</b> · esta semana <b>{wk}</b>",
+  "wz.ask.pick": "Elige cómo quieres empezar.",
+  "wz.ask.b.wizard": "🧙 Asistente",
+  "wz.ask.b.wizard.help": "Cerca de un minuto. Lo configura todo por ti (recomendado).",
+  "wz.ask.b.tour": "🎓 Recorrido",
+  "wz.ask.b.tour.help": "Un breve recorrido guiado por el tablero.",
+  "wz.ask.b.in": "Solo déjame entrar",
+  "wz.ask.b.in.help": "Sáltate todo esto. Puedes usar el asistente o el recorrido más tarde.",
+  "wz.2.agent.ph": "p. ej. claude",
+  "wz.2.use": "Usar el que encontré",
+  "dlg.newcard.more": "Más opciones",
+  "card.menu": "⋯",
+  "card.menu.title": "Más acciones"
 }

@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "Näytä 1 hiljainen chat",
   "dms.quiet.hide": "Piilota hiljaiset chatit",
   "allhands.confirm": "Lähetetäänkö {n} tiimille?",
-  "allhands.confirm.one": "Lähetetäänkö 1 tiimille?"
+  "allhands.confirm.one": "Lähetetäänkö 1 tiimille?",
+  "home.more": "Lisää ▾",
+  "home.more.title": "Näytä tai piilota muut painikkeet",
+  "home.uz.html": "<b>⚡ Suunnitelmaa jäljellä:</b> tämä istunto <b>{h5}</b> · tämä viikko <b>{wk}</b>",
+  "wz.ask.pick": "Valitse, miten haluat aloittaa.",
+  "wz.ask.b.wizard": "🧙 Ohjattu asennus",
+  "wz.ask.b.wizard.help": "Noin minuutti. Asettaa kaiken puolestasi (suositeltu).",
+  "wz.ask.b.tour": "🎓 Esittely",
+  "wz.ask.b.tour.help": "Lyhyt opastettu katsaus taulun ympärille.",
+  "wz.ask.b.in": "Päästä minut vain sisään",
+  "wz.ask.b.in.help": "Ohita kaikki tämä. Voit käynnistää ohjatun asennuksen tai esittelyn myöhemmin.",
+  "wz.2.agent.ph": "esim. claude",
+  "wz.2.use": "Käytä löytämääni",
+  "dlg.newcard.more": "Lisää asetuksia",
+  "card.menu": "⋯",
+  "card.menu.title": "Lisää toimintoja"
 }

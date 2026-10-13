@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "1 शांत चैट दिखाओ",
   "dms.quiet.hide": "शांत चैट छिपाओ",
   "allhands.confirm": "{n} टीमों को भेजें?",
-  "allhands.confirm.one": "1 टीम को भेजें?"
+  "allhands.confirm.one": "1 टीम को भेजें?",
+  "home.more": "और ▾",
+  "home.more.title": "अन्य बटन दिखाएँ या छिपाएँ",
+  "home.uz.html": "<b>⚡ बचा हुआ प्लान:</b> यह सत्र <b>{h5}</b> · इस सप्ताह <b>{wk}</b>",
+  "wz.ask.pick": "चुनें कि आप कैसे शुरू करना चाहते हैं।",
+  "wz.ask.b.wizard": "🧙 विज़ार्ड",
+  "wz.ask.b.wizard.help": "लगभग एक मिनट। आपके लिए सब सेट कर देता है (अनुशंसित)।",
+  "wz.ask.b.tour": "🎓 टूर",
+  "wz.ask.b.tour.help": "बोर्ड की एक छोटी निर्देशित झलक।",
+  "wz.ask.b.in": "बस अंदर आने दें",
+  "wz.ask.b.in.help": "यह सब छोड़ें। विज़ार्ड या टूर आप बाद में चला सकते हैं।",
+  "wz.2.agent.ph": "जैसे claude",
+  "wz.2.use": "जो मिला उसे उपयोग करें",
+  "dlg.newcard.more": "अधिक विकल्प",
+  "card.menu": "⋯",
+  "card.menu.title": "और कार्रवाइयाँ"
 }

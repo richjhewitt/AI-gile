@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "Taispeáin 1 chomhrá ciúin",
   "dms.quiet.hide": "Folaigh comhráite ciúine",
   "allhands.confirm": "An bhfuil tú ag iarraidh a sheoladh chuig {n} fhoireann?",
-  "allhands.confirm.one": "An bhfuil tú ag iarraidh a sheoladh chuig 1 fhoireann?"
+  "allhands.confirm.one": "An bhfuil tú ag iarraidh a sheoladh chuig 1 fhoireann?",
+  "home.more": "Tuilleadh ▾",
+  "home.more.title": "Taispeáin nó folaigh na cnaipí eile",
+  "home.uz.html": "<b>⚡ Plean fágtha:</b> an seisiún seo <b>{h5}</b> · an tseachtain seo <b>{wk}</b>",
+  "wz.ask.pick": "Roghnaigh conas ba mhaith leat tosú.",
+  "wz.ask.b.wizard": "🧙 Draoi",
+  "wz.ask.b.wizard.help": "Thart ar nóiméad. Socraíonn sé gach rud duit (molta).",
+  "wz.ask.b.tour": "🎓 Camchuairt",
+  "wz.ask.b.tour.help": "Súil ghearr threoraithe timpeall an bhoird.",
+  "wz.ask.b.in": "Lig isteach mé",
+  "wz.ask.b.in.help": "Léim thar seo ar fad. Is féidir leat an draoi nó an chamchuairt a rith níos déanaí.",
+  "wz.2.agent.ph": "m.sh. claude",
+  "wz.2.use": "Úsáid an ceann a fuair mé",
+  "dlg.newcard.more": "Tuilleadh roghanna",
+  "card.menu": "⋯",
+  "card.menu.title": "Tuilleadh gníomhartha"
 }

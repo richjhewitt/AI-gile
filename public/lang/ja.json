@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "静かなチャット1件を表示",
   "dms.quiet.hide": "静かなチャットを隠す",
   "allhands.confirm": "{n}チームに送りますか?",
-  "allhands.confirm.one": "1チームに送りますか?"
+  "allhands.confirm.one": "1チームに送りますか?",
+  "home.more": "その他 ▾",
+  "home.more.title": "ほかのボタンを表示または非表示にします",
+  "home.uz.html": "<b>⚡ プラン残量:</b> このセッション <b>{h5}</b> · 今週 <b>{wk}</b>",
+  "wz.ask.pick": "始め方を選んでください。",
+  "wz.ask.b.wizard": "🧙 ウィザード",
+  "wz.ask.b.wizard.help": "約1分。自動で設定します（おすすめ）。",
+  "wz.ask.b.tour": "🎓 ツアー",
+  "wz.ask.b.tour.help": "ボードを簡単にご案内します。",
+  "wz.ask.b.in": "そのまま入る",
+  "wz.ask.b.in.help": "すべてスキップします。ウィザードやツアーは後でも実行できます。",
+  "wz.2.agent.ph": "例: claude",
+  "wz.2.use": "見つかったものを使う",
+  "dlg.newcard.more": "その他のオプション",
+  "card.menu": "⋯",
+  "card.menu.title": "その他の操作"
 }

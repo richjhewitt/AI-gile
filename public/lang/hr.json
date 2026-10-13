@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "Prikaži 1 tihi razgovor",
   "dms.quiet.hide": "Sakrij tihe razgovore",
   "allhands.confirm": "Poslati na {n} timova?",
-  "allhands.confirm.one": "Poslati na 1 tim?"
+  "allhands.confirm.one": "Poslati na 1 tim?",
+  "home.more": "Više ▾",
+  "home.more.title": "Prikaži ili sakrij ostale gumbe",
+  "home.uz.html": "<b>⚡ Preostali plan:</b> ova sesija <b>{h5}</b> · ovaj tjedan <b>{wk}</b>",
+  "wz.ask.pick": "Odaberi kako želiš započeti.",
+  "wz.ask.b.wizard": "🧙 Čarobnjak",
+  "wz.ask.b.wizard.help": "Otprilike minuta. Sve postavlja umjesto tebe (preporučeno).",
+  "wz.ask.b.tour": "🎓 Obilazak",
+  "wz.ask.b.tour.help": "Kratak vođeni pogled po ploči.",
+  "wz.ask.b.in": "Samo me pusti unutra",
+  "wz.ask.b.in.help": "Preskoči sve ovo. Čarobnjaka ili obilazak možeš pokrenuti kasnije.",
+  "wz.2.agent.ph": "npr. claude",
+  "wz.2.use": "Upotrijebi pronađeno",
+  "dlg.newcard.more": "Više opcija",
+  "card.menu": "⋯",
+  "card.menu.title": "Više radnji"
 }

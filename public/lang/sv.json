@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "Visa 1 tyst chatt",
   "dms.quiet.hide": "Dölj tysta chattar",
   "allhands.confirm": "Skicka till {n} team?",
-  "allhands.confirm.one": "Skicka till 1 team?"
+  "allhands.confirm.one": "Skicka till 1 team?",
+  "home.more": "Mer ▾",
+  "home.more.title": "Visa eller dölj de andra knapparna",
+  "home.uz.html": "<b>⚡ Plan kvar:</b> denna session <b>{h5}</b> · denna vecka <b>{wk}</b>",
+  "wz.ask.pick": "Välj hur du vill börja.",
+  "wz.ask.b.wizard": "🧙 Guide",
+  "wz.ask.b.wizard.help": "Ungefär en minut. Ställer in allt åt dig (rekommenderas).",
+  "wz.ask.b.tour": "🎓 Rundtur",
+  "wz.ask.b.tour.help": "En kort guidad titt runt tavlan.",
+  "wz.ask.b.in": "Släpp bara in mig",
+  "wz.ask.b.in.help": "Hoppa över allt detta. Du kan köra guiden eller rundturen senare.",
+  "wz.2.agent.ph": "t.ex. claude",
+  "wz.2.use": "Använd den jag hittade",
+  "dlg.newcard.more": "Fler alternativ",
+  "card.menu": "⋯",
+  "card.menu.title": "Fler åtgärder"
 }

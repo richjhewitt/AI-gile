@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "Seall 1 chabadaich shàmhach",
   "dms.quiet.hide": "Falaich cabadaich shàmhach",
   "allhands.confirm": "A bheil thu airson a chur gu {n} sgioba?",
-  "allhands.confirm.one": "A bheil thu airson a chur gu 1 sgioba?"
+  "allhands.confirm.one": "A bheil thu airson a chur gu 1 sgioba?",
+  "home.more": "Barrachd ▾",
+  "home.more.title": "Seall no falaich na putanan eile",
+  "home.uz.html": "<b>⚡ Plana air fhàgail:</b> an seisean seo <b>{h5}</b> · an t-seachdain seo <b>{wk}</b>",
+  "wz.ask.pick": "Tagh mar a tha thu airson tòiseachadh.",
+  "wz.ask.b.wizard": "🧙 Draoidh",
+  "wz.ask.b.wizard.help": "Mu mhionaid. Cuiridh e na h-uile rud air dòigh dhut (molta).",
+  "wz.ask.b.tour": "🎓 Cuairt",
+  "wz.ask.b.tour.help": "Sùil ghoirid air a’ bhòrd le stiùireadh.",
+  "wz.ask.b.in": "Leig a-steach mi",
+  "wz.ask.b.in.help": "Leum thairis air seo uile. Faodaidh tu an draoidh no a’ chuairt a ruith an dèidh làimhe.",
+  "wz.2.agent.ph": "m.e. claude",
+  "wz.2.use": "Cleachd am fear a lorg mi",
+  "dlg.newcard.more": "Barrachd roghainnean",
+  "card.menu": "⋯",
+  "card.menu.title": "Barrachd gnìomhan"
 }

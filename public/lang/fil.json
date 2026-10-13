@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "Ipakita ang 1 tahimik na chat",
   "dms.quiet.hide": "Itago ang mga tahimik na chat",
   "allhands.confirm": "Ipadala sa {n} team?",
-  "allhands.confirm.one": "Ipadala sa 1 team?"
+  "allhands.confirm.one": "Ipadala sa 1 team?",
+  "home.more": "Higit pa ▾",
+  "home.more.title": "Ipakita o itago ang iba pang mga button",
+  "home.uz.html": "<b>⚡ Natitirang plano:</b> sesyong ito <b>{h5}</b> · linggong ito <b>{wk}</b>",
+  "wz.ask.pick": "Piliin kung paano mo gustong magsimula.",
+  "wz.ask.b.wizard": "🧙 Wizard",
+  "wz.ask.b.wizard.help": "Mga isang minuto. Ise-set up ang lahat para sa iyo (inirerekomenda).",
+  "wz.ask.b.tour": "🎓 Tour",
+  "wz.ask.b.tour.help": "Maikling gabay na pasyal sa board.",
+  "wz.ask.b.in": "Papasukin mo na lang ako",
+  "wz.ask.b.in.help": "Laktawan ang lahat ng ito. Maaari mong patakbuhin ang wizard o tour mamaya.",
+  "wz.2.agent.ph": "hal. claude",
+  "wz.2.use": "Gamitin ang nahanap ko",
+  "dlg.newcard.more": "Higit pang opsyon",
+  "card.menu": "⋯",
+  "card.menu.title": "Higit pang aksyon"
 }

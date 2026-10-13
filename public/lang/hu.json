@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "1 csendes chat megjelenítése",
   "dms.quiet.hide": "Csendes chatek elrejtése",
   "allhands.confirm": "Elküldöd {n} csapatnak?",
-  "allhands.confirm.one": "Elküldöd 1 csapatnak?"
+  "allhands.confirm.one": "Elküldöd 1 csapatnak?",
+  "home.more": "Több ▾",
+  "home.more.title": "A többi gomb megjelenítése vagy elrejtése",
+  "home.uz.html": "<b>⚡ Hátralévő keret:</b> ez a munkamenet <b>{h5}</b> · ez a hét <b>{wk}</b>",
+  "wz.ask.pick": "Válaszd ki, hogyan kezdenél.",
+  "wz.ask.b.wizard": "🧙 Varázsló",
+  "wz.ask.b.wizard.help": "Körülbelül egy perc. Mindent beállít helyetted (ajánlott).",
+  "wz.ask.b.tour": "🎓 Bemutató",
+  "wz.ask.b.tour.help": "Rövid vezetett körút a táblán.",
+  "wz.ask.b.in": "Csak engedj be",
+  "wz.ask.b.in.help": "Kihagyja az egészet. A varázslót vagy a bemutatót később is elindíthatod.",
+  "wz.2.agent.ph": "pl. claude",
+  "wz.2.use": "A talált használata",
+  "dlg.newcard.more": "További beállítások",
+  "card.menu": "⋯",
+  "card.menu.title": "További műveletek"
 }

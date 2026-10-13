@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "顯示 1 個安靜的聊天",
   "dms.quiet.hide": "隱藏安靜的聊天",
   "allhands.confirm": "傳送給 {n} 個團隊?",
-  "allhands.confirm.one": "傳送給 1 個團隊?"
+  "allhands.confirm.one": "傳送給 1 個團隊?",
+  "home.more": "更多 ▾",
+  "home.more.title": "顯示或隱藏其他按鈕",
+  "home.uz.html": "<b>⚡ 剩餘額度：</b> 本次工作階段 <b>{h5}</b> · 本週 <b>{wk}</b>",
+  "wz.ask.pick": "選擇你想怎麼開始。",
+  "wz.ask.b.wizard": "🧙 精靈",
+  "wz.ask.b.wizard.help": "大約一分鐘。幫你完成設定（建議）。",
+  "wz.ask.b.tour": "🎓 導覽",
+  "wz.ask.b.tour.help": "帶你快速瀏覽看板。",
+  "wz.ask.b.in": "直接進入",
+  "wz.ask.b.in.help": "全部略過。你之後也可以執行精靈或導覽。",
+  "wz.2.agent.ph": "例如 claude",
+  "wz.2.use": "使用我找到的",
+  "dlg.newcard.more": "更多選項",
+  "card.menu": "⋯",
+  "card.menu.title": "更多操作"
 }

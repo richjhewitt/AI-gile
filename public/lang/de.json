@@ -3184,5 +3184,20 @@
   "dms.quiet.show.one": "1 ruhigen Chat zeigen",
   "dms.quiet.hide": "Ruhige Chats ausblenden",
   "allhands.confirm": "An {n} Teams senden?",
-  "allhands.confirm.one": "An 1 Team senden?"
+  "allhands.confirm.one": "An 1 Team senden?",
+  "home.more": "Mehr ▾",
+  "home.more.title": "Die anderen Schaltflächen ein- oder ausblenden",
+  "home.uz.html": "<b>⚡ Verbleibender Plan:</b> diese Sitzung <b>{h5}</b> · diese Woche <b>{wk}</b>",
+  "wz.ask.pick": "Wähle, wie du starten möchtest.",
+  "wz.ask.b.wizard": "🧙 Assistent",
+  "wz.ask.b.wizard.help": "Etwa eine Minute. Richtet alles für dich ein (empfohlen).",
+  "wz.ask.b.tour": "🎓 Rundgang",
+  "wz.ask.b.tour.help": "Ein kurzer geführter Blick über das Board.",
+  "wz.ask.b.in": "Einfach reinlassen",
+  "wz.ask.b.in.help": "Alles überspringen. Assistent oder Rundgang kannst du später starten.",
+  "wz.2.agent.ph": "z. B. claude",
+  "wz.2.use": "Den gefundenen verwenden",
+  "dlg.newcard.more": "Weitere Optionen",
+  "card.menu": "⋯",
+  "card.menu.title": "Weitere Aktionen"
 }
