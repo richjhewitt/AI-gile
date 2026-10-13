@@ -1,6 +1,38 @@
 /* ---------- DM friends on Setup (AIG-311) ---------- */
 // Invite a friend (make a code), Add a friend (paste theirs), and per contact: the 6 safety words, ✅ They match, Block, Remove.
-const DF = { code: '', msg: '', err: '', data: null };
+const DF = { code: '', inviteId: '', msg: '', err: '', data: null };
+/* ---------- your picture for a friend or a pending invite (AIG-883) ---------- */
+// Upload or paste an image (same formats and 1 MB limit as your own picture); it is kept on this board only. Yours wins over theirs; Remove brings theirs back.
+const FP = { open: '', err: '', mem: {} };
+function fpHtml(id, pic, mine) {
+  const info = FP.mem[id] || { pic, mine };
+  return `<span class="fp" data-fp="${esc(id)}">${info.pic ? `<img class="face" src="${esc(info.pic)}" alt="">` : ''}<button type="button" data-fp-do="pick" aria-expanded="${FP.open === id}">${esc(t('fp.btn'))}</button>${info.mine ? ` <button type="button" data-fp-do="remove">${esc(t('fp.remove'))}</button>` : ''}${FP.open === id ? `<span class="fp-edit"><input type="file" data-fp-file accept=".png,.jpg,.jpeg,.svg,.ico,.webp" aria-label="${esc(t('logo.pick'))}"><input type="text" data-fp-paste placeholder="${esc(t('fp.paste'))}" aria-label="${esc(t('fp.paste'))}" autocomplete="off"></span><small class="muted">${esc(t('fp.help'))}</small>` : ''}${FP.err && FP.open === id ? `<span class="err">${esc(FP.err)}</span>` : ''}</span>`;
+}
+async function fpSend(id, method, body) {
+  FP.err = '';
+  try { const r = await api(method, '/api/friend-pics/' + id, body); FP.mem[id] = { pic: r.pic, mine: r.mine }; if (method !== 'DELETE') FP.open = ''; }
+  catch (e) { FP.err = e.message || String(e); }
+  await dmsFriendsLoad();
+}
+function fpUpload(id, f) {
+  if (!f) return;
+  if (f.size > 1024 * 1024) { FP.err = t('logo.toobig'); return dmsFriendsPaint(), joinPaint(); }
+  const rd = new FileReader();
+  rd.onload = () => fpSend(id, 'POST', { name: f.name || '', type: f.type, data: String(rd.result).split(',')[1] });
+  rd.readAsDataURL(f);
+}
+document.addEventListener('click', ev => {
+  const b = ev.target.closest && ev.target.closest('.fp [data-fp-do]'); if (!b) return;
+  const id = b.closest('.fp').dataset.fp;
+  if (b.dataset.fpDo === 'remove') return void fpSend(id, 'DELETE');
+  FP.open = FP.open === id ? '' : id; FP.err = ''; dmsFriendsPaint(); joinPaint();
+});
+document.addEventListener('change', ev => { const i = ev.target; if (i.matches && i.matches('.fp [data-fp-file]')) fpUpload(i.closest('.fp').dataset.fp, i.files[0]); });
+document.addEventListener('paste', ev => {
+  const i = ev.target; if (!i.matches || !i.matches('.fp [data-fp-paste]')) return;
+  const it = [...(ev.clipboardData ? ev.clipboardData.items : [])].find(x => x.type.startsWith("image/")); if (!it) return;
+  ev.preventDefault(); fpUpload(i.closest('.fp').dataset.fp, it.getAsFile());
+});
 function dmsFriendsHtml() {
   setTimeout(dmsFriendsLoad, 0);
   return `<span>${esc(t('dmf.h'))}</span><div id="dmfBody" class="muted">…</div>`;
@@ -29,7 +61,7 @@ function joinExpiry(c) {
 function joinHtml() {
   const d = JN.data, keep = { n: ($('joinName') || {}).value || '', h: ($('joinHelp') || {}).value || JN.help };
   const row = c => `<div class="join-c" data-code="${esc(c.code)}"><b>${esc(['', '🐣', '🙂', '😎'][c.help] || '')} ${esc(c.name || c.code)}</b> <code>${esc(c.code)}</code>
-      <small class="muted">${esc(joinExpiry(c))}</small></div>`;
+      <small class="muted">${esc(joinExpiry(c))}</small>${c.inv ? ' ' + fpHtml(c.inv, c.pic && c.pic.pic, c.pic && c.pic.mine) : ''}</div>`;
   return `<div class="dmf-sec" id="joinSec"><b>${esc(t('join.h'))}</b><small class="muted">${esc(t('join.help'))}</small>
       <select id="joinHelp">${['1', '2', '3'].map(n => `<option value="${n}" ${keep.h === n ? 'selected' : ''}>${esc(['', '🐣', '🙂', '😎'][n] + ' ' + t('join.level.' + n))}</option>`).join('')}</select>
       <input type="text" id="joinName" value="${esc(keep.n)}" placeholder="${esc(t('dmf.invite.name'))}" autocomplete="off">
@@ -48,7 +80,7 @@ function joinPaint() {
   sec.outerHTML = joinHtml();
 }
 document.addEventListener('click', async ev => {
-  const b = ev.target.closest && ev.target.closest('#joinSec button'); if (!b) return;
+  const b = ev.target.closest && ev.target.closest('#joinSec button'); if (!b || b.closest('.fp')) return;
   JN.err = ''; JN.msg = '';
   try {
     if (b.id === 'joinMake') {
@@ -66,10 +98,10 @@ function dmsFriendsPaint() {
   const { d, list } = DF.data;
   // keep what is being typed across repaints
   const keep = { c: ($('dmfCode') || {}).value || '', n: ($('dmfName') || {}).value || '', i: ($('dmfInvName') || {}).value || '' };
-  const contact = c => `<div class="dmf-c" data-cid="${esc(c.id)}"><b>${esc(c.name)}</b>${c.pretend ? ` <span class="muted">${esc(t("pretend.tag"))}</span>` : ""}${c.blocked ? ` <span class="muted">${esc(t('dmf.blocked'))}</span>` : ''}
+  const contact = c => `<div class="dmf-c" data-cid="${esc(c.id)}">${c.pic ? `<img class="face" src="${esc(c.pic)}" alt="">` : ''}<b>${esc(c.name)}</b>${c.pretend ? ` <span class="muted">${esc(t("pretend.tag"))}</span>` : ""}${c.blocked ? ` <span class="muted">${esc(t('dmf.blocked'))}</span>` : ''}
       <div class="dmf-words"><code>${esc(c.safety)}</code></div>
       <small class="muted">${esc(t(c.checked ? 'dmf.checked' : 'dmf.words.help'))}</small>
-      <div class="actions">${c.checked ? '' : `<button type="button" data-act="match">${esc(t('dmf.match'))}</button> `}<button type="button" data-act="block">${esc(t(c.blocked ? 'dmf.unblock' : 'dmf.block'))}</button> <button type="button" data-act="remove">${esc(t('dmf.remove'))}</button></div></div>`;
+      <div class="actions">${c.checked ? '' : `<button type="button" data-act="match">${esc(t('dmf.match'))}</button> `}<button type="button" data-act="block">${esc(t(c.blocked ? 'dmf.unblock' : 'dmf.block'))}</button> <button type="button" data-act="remove">${esc(t('dmf.remove'))}</button> ${fpHtml(c.id, c.pic, c.mine)}</div></div>`;
   box.className = '';
   box.innerHTML = `<label class="chk"><input type="checkbox" id="dmfOn" ${d.on ? 'checked' : ''}> ${esc(t('dmf.on'))}</label>
     ${joinHtml()}
@@ -77,7 +109,7 @@ function dmsFriendsPaint() {
       <input type="text" id="dmfInvName" value="${esc(keep.i)}" placeholder="${esc(t('dmf.invite.name'))}" autocomplete="off">
       <div class="actions"><button type="button" id="dmfInvite">${esc(t('dmf.invite.btn'))}</button></div>
       ${DF.code ? `<textarea id="dmfMade" readonly rows="3" onclick="this.select()">${esc(DF.code)}</textarea><small class="muted">${esc(t('dmf.invite.send'))}</small>
-      <div class="actions"><button type="button" id="dmfCopy">${esc(t('dmf.copy'))}</button></div>` : ''}</div>
+      <div class="actions"><button type="button" id="dmfCopy">${esc(t('dmf.copy'))}</button> ${DF.inviteId ? fpHtml(DF.inviteId) : ''}</div>` : ''}</div>
     <div class="dmf-sec"><b>${esc(t('dmf.add.h'))}</b><small class="muted">${esc(t('dmf.add.help'))}</small>
       <textarea id="dmfCode" rows="2" placeholder="${esc(t('dmf.add.code'))}" spellcheck="false">${esc(keep.c)}</textarea>
       <input type="text" id="dmfName" value="${esc(keep.n)}" placeholder="${esc(t('dmf.add.name'))}" autocomplete="off">
@@ -86,10 +118,10 @@ function dmsFriendsPaint() {
     <div class="dmf-sec"><b>${esc(t('dmf.list.h'))}</b>${list.length ? list.map(contact).join('') : `<small class="muted">${esc(t('dmf.none'))}</small>`}</div>`;
 }
 document.addEventListener('click', async ev => {
-  const b = ev.target.closest && ev.target.closest('#dmfBody button'); if (!b || b.closest('#joinSec')) return;
+  const b = ev.target.closest && ev.target.closest('#dmfBody button'); if (!b || b.closest('#joinSec') || b.closest('.fp')) return;
   DF.err = ''; DF.msg = '';
   try {
-    if (b.id === 'dmfInvite') { DF.code = (await api('POST', '/api/dms/invites', { name: $('dmfInvName').value.trim() })).code; }
+    if (b.id === 'dmfInvite') { const inv = await api('POST', '/api/dms/invites', { name: $('dmfInvName').value.trim() }); DF.code = inv.code; DF.inviteId = inv.id; }
     else if (b.id === 'dmfCopy') { try { await navigator.clipboard.writeText(DF.code); } catch { $('dmfMade').select(); document.execCommand('copy'); } DF.msg = t('dmf.copied'); }
     else if (b.id === 'dmfAdd') {
       const c = await api('POST', '/api/dms/accept', { code: $('dmfCode').value.trim(), name: $('dmfName').value.trim() });

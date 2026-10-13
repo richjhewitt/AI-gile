@@ -191,7 +191,7 @@ const avatarUrl = f => !f ? '' : /^badge:/.test(f) ? '/api/avatars/badge/' + f.s
 function faceUrl(name, team) {
   if (isOwner(name)) return state.ownerPic || '';
   const m = (team || []).find(m => m.name.toLowerCase() === String(name || '').trim().toLowerCase());
-  return m ? avatarUrl(m.avatar) : '';
+  return m ? avatarUrl(m.avatar) : (state.friendPics || {})[String(name || '').trim().toLowerCase()] || '';   // my picture for a friend (AIG-883)
 }
 const face = (name, team) => { const u = faceUrl(name, team); return u ? `<img class="face" src="${esc(u)}" alt="" title="${esc(name)}">` : ''; };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
