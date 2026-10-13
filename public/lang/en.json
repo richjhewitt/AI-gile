@@ -2762,5 +2762,6 @@
   "hf.btn.title": "Show only this project and your DMs (nothing else changes for the teams)",
   "hf.chip": "🎯 Hyperfocus: {name}",
   "hf.chip.title": "Open the project you are hyperfocused on",
-  "hf.off": "Turn Hyperfocus off"
+  "hf.off": "Turn Hyperfocus off",
+  "gloss.intro.noai": "The words developers use, in plain English."
 }

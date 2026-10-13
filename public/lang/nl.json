@@ -2762,5 +2762,6 @@
   "hf.btn.title": "Toon alleen dit project en je DM's (voor de teams verandert er niets)",
   "hf.chip": "🎯 Hyperfocus: {name}",
   "hf.chip.title": "Open het project waarop je hyperfocust",
-  "hf.off": "Hyperfocus uitzetten"
+  "hf.off": "Hyperfocus uitzetten",
+  "gloss.intro.noai": "De woorden die ontwikkelaars gebruiken, in gewone taal."
 }
