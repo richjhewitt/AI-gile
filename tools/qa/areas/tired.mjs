@@ -1,6 +1,6 @@
 // QA area: tired (AIG-669). The top bar 🔋 / 😴 switch, the Setup "Tired mode" pref, and tiredNow in GET /api/setup.
 // The server clock is faked to 23:30 (AIGILE_TIRED_NOW), so a bedtime of 22:00-07:00 applies and 08:00-09:00 does not.
-import { check, sleep, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, openPage, noErrors, def, mkProject, mkCard, getCard } from '../lib.mjs';
 
 def('tired', '🔋 / 😴 Tired mode: top bar switch, saved pref, bedtime (faked clock), follow dark mode, always, old data = off (AIG-669)', async (s, ctx) => {
   const setup = () => s.ok('GET', '/api/setup');
@@ -67,4 +67,24 @@ def('tired', '🔋 / 😴 Tired mode: top bar switch, saved pref, bedtime (faked
   check('phone width, dark: button visible, Tired mode section fits', fit.btn && fit.boxFits, JSON.stringify(fit));
   noErrors(pp);
   await pp.close(); await ph.close();
+  // Tired mode 2/3 and 3/3 (AIG-670, AIG-671): the brief line, and tests that wait for morning
+  await mkProject(s, 'Tiredy', 'TRD');
+  const line = /is tired: keep messages to \S+ very short, no questions unless blocked, batch anything for them until morning\./;
+  await s.ok('POST', '/api/setup', { prefs: { tired: { mode: 'off' } } });
+  check('brief: no tired line when awake', !line.test(s.cli(['brief', 'tiredy']).out));
+  await s.ok('POST', '/api/setup', { prefs: { tired: { mode: 'always' } } });
+  check('brief: the tired line when tired', line.test(s.cli(['brief', 'tiredy']).out), s.cli(['brief', 'tiredy']).out.slice(0, 1500));
+  const n1 = await mkCard(s, 'tiredy', 'Normal one'), n2 = await mkCard(s, 'tiredy', 'Urgent one', { priority: 'urgent' });
+  const tr = [s.cli(['test', 'tiredy', n1.id, 'Look at it.', '--as', 'Tester']), s.cli(['test', 'tiredy', n2.id, 'Look at it.', '--as', 'Tester'])]; check('the CLI test command worked', tr.every(r => r.code === 0), JSON.stringify(tr));
+  const inbox = async () => (await s.ok('GET', '/api/inbox')).filter(x => x.project === 'tiredy').map(x => x.id);
+  const toTest = async () => (await s.ok('GET', '/api/projects')).find(x => x.slug === 'tiredy').toTest;
+  const c1 = await getCard(s, 'tiredy', n1.id), c2 = await getCard(s, 'tiredy', n2.id);
+  check('tired: both are in verify, the normal one marked morning, the urgent one not', c1.status === 'verify' && c1.morning === true && c2.status === 'verify' && !c2.morning, JSON.stringify([c1.morning, c2.morning]));
+  const ib = await inbox();
+  check('tired: the normal test is hidden, the urgent one shows', !ib.includes(n1.id) && ib.includes(n2.id), ib);
+  check('tired: the to test count is 1', await toTest() === 1, await toTest());
+  await s.ok('POST', '/api/setup', { prefs: { tired: { mode: 'off' } } });
+  const ib2 = await inbox();
+  check('awake: both show', ib2.includes(n1.id) && ib2.includes(n2.id), ib2);
+  check('awake: the to test count is 2 and the morning flag is cleared', await toTest() === 2 && !(await getCard(s, 'tiredy', n1.id)).morning);
 }, true, { AIGILE_TIRED_NOW: '23:30' });

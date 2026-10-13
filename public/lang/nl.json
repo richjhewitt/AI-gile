@@ -2435,5 +2435,6 @@
   "tired.to": "tot",
   "tired.bedtime": "Bedtijd",
   "tired.wake": "Wektijd",
-  "tired.help": "De bovenbalk toont 😴 zolang dit geldt. Klik erop om het nu om te zetten; dat blijft zo tot er iets verandert."
+  "tired.help": "De bovenbalk toont 😴 zolang dit geldt. Klik erop om het nu om te zetten; dat blijft zo tot er iets verandert.",
+ "card.morning": "😴 wacht tot morgen"
 }

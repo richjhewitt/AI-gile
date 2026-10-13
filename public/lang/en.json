@@ -2435,5 +2435,6 @@
   "tired.to": "to",
   "tired.bedtime": "Bedtime",
   "tired.wake": "Wake-up time",
-  "tired.help": "The top bar shows 😴 while this applies. Click it there to switch for now; it stays until things change."
+  "tired.help": "The top bar shows 😴 while this applies. Click it there to switch for now; it stays until things change.",
+ "card.morning": "😴 waits for morning"
 }
