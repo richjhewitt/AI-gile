@@ -15,7 +15,7 @@ const uz = {
   .uz { --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s-other: #898781;
         --good: #0ca30c; --warning: #fab219; --critical: #d03b3b; --grid: var(--line); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme=light]) .uz { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; } }
-  :root[data-theme=dark] .uz { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; }
+  :root[data-theme=dark], :root[data-theme=black] .uz { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; }
   .uz { max-width: 1000px; margin: 0 auto; }
   .uz h2 { font-size: 18px; margin: 0 0 2px; }
   .uz .uz-explain { color: var(--muted); font-size: 13px; margin: 0 0 12px; }

@@ -2,7 +2,7 @@
 // Desktop app (Electron on Windows) loses keyboard focus after a native alert/confirm/prompt box, so text
 // boxes ignore typing for a while (AIG-84). After each box, ask the app to hand focus back.
 /* ---------- theme (AIG-143): follows the system, or the user's pick, remembered in this browser ---------- */
-const THEMES = { get system() { return t('theme.system'); }, get light() { return t('theme.light'); }, get dark() { return t('theme.dark'); } };
+const THEMES = { get system() { return t('theme.system'); }, get light() { return t('theme.light'); }, get dark() { return t('theme.dark'); }, get black() { return t('theme.black'); } };
 function theme(set) {
   let th; try { th = set || localStorage.getItem('aigile.theme') || 'system'; if (set) localStorage.setItem('aigile.theme', set); } catch { th = set || 'system'; }
   if (th === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = th;
