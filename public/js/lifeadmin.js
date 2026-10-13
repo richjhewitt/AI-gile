@@ -7,9 +7,10 @@ const LifeAdmin = (() => {
   const fmt = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString(i18n.locale || undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); };
   const pad = n => String(n).padStart(2, '0');
   const local = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
-  L.load = async () => { try { L.data = await api('GET', '/api/lifeadmin'); } catch { L.data = null; } return L.data; };
+  let ver = 0;   // a poll that started before a change finished must not paint old data over it (it would wipe what is being typed)
+  L.load = async () => { const v = ver; try { const d = await api('GET', '/api/lifeadmin'); if (v === ver) L.data = d; } catch { if (v === ver) L.data = null; } return L.data; };
   const redraw = () => { if (state.route.view === 'life') $('app').innerHTML = L.render(); };
-  const call = async (m, u, b) => { L.err = ''; try { await api(m, u, b); await L.load(); } catch (e) { L.err = e.message; } redraw(); };
+  const call = async (m, u, b) => { L.err = ''; ver++; try { await api(m, u, b); ver++; await L.load(); } catch (e) { ver++; L.err = e.message; } redraw(); };
   L.addReminder = () => {
     const text = $('laText').value, due = $('laDue').value, repeat = $('laRepeat').value;
     if (!text.trim()) { L.err = t('la.err.text'); redraw(); return; }
