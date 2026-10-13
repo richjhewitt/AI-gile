@@ -41,3 +41,17 @@ What a professional tech team does to ship safely, and how AI-gile could do each
 - 🔥 Incident card type with a three-line note on close
 - Change calendar: quiet times with no going live
 - Rails by skill level, linked to help levels
+
+## Incidents and problems (AIG-886, spec for AIG-614, AIG-887, AIG-888)
+
+Three kinds of card, one chain: an incident says "live is broken", a problem says "this keeps breaking and here is why", a change request carries the fix (AIG-855/857).
+
+- **Incident card (exists, AIG-614):** card type `incident`, 🔥. It tops Next up and the brief, has a red edge on the board, and cannot be done without the post-mortem (`postmortem`: happened, why, change). The `postmortem` rail turns the check off.
+- **Risk that happens:** setting a risk (AIG-863) to `happened` files an incident card; the card holds `riskId`, the risk holds `incident`.
+- **Problem card (AIG-887):** card type `problem`, 🧩, high priority. Fields: `rootCause`, `workaround` (what to do until it is fixed), `incidents` (ids) and `changeId` (the change request card with the fix). Stored on the card, so old projects need no change.
+- **Incident to problem:** one incident belongs to at most one problem. Linking is both ways: `incidents` on the problem, `problemId` on each incident. Linking an incident to a second problem moves it.
+- **Problem to change request:** `changeId` points at the change card that fixes it. The problem stays open until that change is done; closing the incident does not close the problem.
+- **Order of work:** incident first (stop the damage, use the workaround), then the post-mortem, then group repeats into a problem, then raise a change request for the root cause.
+- **Where:** `lib/problems.js`, routes `GET|POST /api/projects/:slug/problems`, `PATCH .../problems/:id`, `POST .../problems/:id/link {incident}`; CLI `aigile problem`; the open card shows root cause, workaround, incidents and the change request.
+- **Guide:** `docs/guide/outline/03-cards/incidents-problems.md`, in three levels that follow the Setup help level (highlights, step by step, full course).
+- **Not done:** the change card type itself (AIG-857) is separate, so `changeId` takes any card on the board for now. A friend on a shared board cannot raise a problem.

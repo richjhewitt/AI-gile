@@ -37,6 +37,14 @@ function postmortemAsk() {
   });
 }
 const postmortemHtml = c => c.postmortem ? `<div class="postmortem"><h3>${esc(t('pm.heading'))}</h3>${['happened', 'why', 'change'].map(k => `<p><b>${esc(t('pm.' + k))}</b> ${esc(c.postmortem[k])}</p>`).join('')}</div>` : '';
+// 🧩 A problem card (AIG-887) shows its root cause, workaround, linked incidents and change request; an incident shows its problem.
+const cardLinkHtml = (p, id) => `<a href="#/p/${esc(p.slug)}/${esc(id)}">${esc(id)}</a>`;
+const problemHtml = (p, c) => c.type === 'problem' ? `<div class="problem"><h3>${esc(t('prob.heading'))}</h3>
+  <p><b>${esc(t('prob.cause'))}</b> ${c.rootCause ? esc(c.rootCause) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
+  <p><b>${esc(t('prob.workaround'))}</b> ${c.workaround ? esc(c.workaround) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
+  <p><b>${esc(t('prob.incidents'))}</b> ${(c.incidents || []).length ? c.incidents.map(i => cardLinkHtml(p, i)).join(', ') : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
+  <p><b>${esc(t('prob.change'))}</b> ${c.changeId ? cardLinkHtml(p, c.changeId) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p></div>`
+  : c.problemId ? `<div class="problem"><p><b>${esc(t('prob.of'))}</b> ${cardLinkHtml(p, c.problemId)}</p></div>` : '';
 // The merge gate (AIG-613): 🟢 QA green (areas, full suite) / 🔴 QA red / ⚪ no QA yet. Set with aigile qa.
 function qaGateHtml(c) {
   const q = c.qa; if (!q) return `<div class="qa-gate none">${esc(t('qa.none'))}</div>`;
@@ -92,7 +100,7 @@ function renderCard(p, c) {
       ${pop ? chatHtml(p, c, msg) : followBar(p, c) + replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
-      ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${Attach.shown(c, p.slug)}
+      ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${problemHtml(p, c)}${Attach.shown(c, p.slug)}
     </div>
     ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>${verdict}
       ${c.proof ? proofHtml(c.proof) : ''}
