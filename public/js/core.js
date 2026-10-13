@@ -232,7 +232,8 @@ function parseRoute() {
   if (location.hash === '#/life') return { view: 'life' };   // 🏡 life admin without tokens (AIG-798)
   if (location.hash === '#/today') return { view: 'today' };   // Today: Today's project weights (AIG-595)
   if (location.hash === '#/whats-new') return { view: 'whatsnew' };   // ✨ release notes (AIG-562)
-  if (location.hash === '#/setup') return { view: 'setup' };
+  const setupRoute = location.hash.match(/^#\/setup(?:\/([A-Za-z0-9-]+))?$/);   // #/setup/<section> lands on that part of Setup (AIG-934)
+  if (setupRoute) return { view: 'setup', ...(setupRoute[1] ? { sec: setupRoute[1] } : {}) };
   const suRoute = location.hash.match(/^#\/standups(?:\/([^/]+))?$/);   // AIG-539: #/standups/<project> shows one team
   if (suRoute) return { view: 'standups', ...(suRoute[1] ? { slug: decodeURIComponent(suRoute[1]) } : {}) };
   if (location.hash === '#/glossary') return { view: 'glossary' };
@@ -465,7 +466,7 @@ function render() {
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
-  if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; wizardMaybe(); return; }
+  if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; setupLand(); wizardMaybe(); return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'dlg') { renderPopDlg(); return; }
   if (state.route.view === 'term') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Term.popView(state.route); return; }

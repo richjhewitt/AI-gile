@@ -23,6 +23,11 @@
   .pill, .att-chip button { min-height: 0; }
   main { padding: 10px; overflow-wrap: anywhere; }
   .setup { margin: 12px auto; }
+  .set-index { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .set-sec { padding: 4px 12px 8px; }
+  .set-h { font-size: 19px; }
+  .ph-body input { width: 100%; box-sizing: border-box; }
+  .set-index a { padding: 8px 12px; }
   #updateTop { max-width: 94vw; flex-wrap: wrap; justify-content: center; }
   #helpMenu { top: 8px !important; inset-inline-start: 8px; inset-inline-end: 8px !important; max-width: none; max-height: calc(100vh - 80px); overflow-y: auto; }
   #helpMenu button { padding: 11px 12px; font-size: 14px; }
