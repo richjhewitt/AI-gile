@@ -13,16 +13,48 @@ const Break = (() => {
   };
   function start(kind) {
     const ms = Number(localStorage.getItem('aigile.breakMs')) || MINS[kind] * 60000;
-    try { localStorage.setItem(KEY, JSON.stringify({ kind, until: Date.now() + ms })); } catch {}
+    try { localStorage.setItem(KEY, JSON.stringify({ kind, from: Date.now(), until: Date.now() + ms })); } catch {}
     if (typeof closeDialog === 'function') closeDialog();
     sync();
   }
-  function end() { try { localStorage.removeItem(KEY); } catch {} sync(); }
+  function end() { const was = cur; try { localStorage.removeItem(KEY); } catch {} sync(); if (was) welcome(was); }
+  // Back from a break (AIG-825): one line of what the team did meanwhile, from the inbox the page already loads (no AI).
+  // A Vape / meds break also offers 💊 Taken; the day's ticks live in localStorage (aigile.meds.<date>), there is no Today place for ticks.
+  const day = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  const taken = () => { try { return Number(localStorage.getItem('aigile.meds.' + day())) || 0; } catch { return 0; } };
+  function took() { try { localStorage.setItem('aigile.meds.' + day(), String(taken() + 1)); } catch {} paintBack(); }
+  const plural = (k, n) => t(k + (n === 1 ? '.one' : '.many'), { n });
+  let backB = null;
+  function summary(since) {
+    const raw = ((typeof IB !== 'undefined' && IB.raw) || []).filter(c => !c.lifeType), isT = c => c.status === 'verify';
+    const tests = raw.filter(isT).length, qs = raw.filter(c => !isT(c) && IB.isQuestion(c)).length;
+    let notes = 0;
+    for (const c of raw) for (const m of c.comments || []) if (Date.parse(m.at) >= since && !/^(rich|owner)$/i.test(String(m.author || ''))) notes++;
+    const parts = [];
+    if (tests) parts.push(plural('break.away.test', tests));
+    if (notes) parts.push(plural('break.away.note', notes));
+    if (qs) parts.push(plural('break.away.q', qs));
+    return parts.length ? t('break.away', { parts: parts.join(', ') }) : t('break.away.none');
+  }
+  async function welcome(b) {
+    try { if (typeof IB !== 'undefined' && IB.load) await IB.load(); } catch {}
+    backB = { kind: b.kind, line: summary(b.from || 0) };
+    paintBack();
+  }
+  function paintBack() {
+    const e = box('breakBack');
+    if (!backB) { e.hidden = true; e.innerHTML = ''; return; }
+    const n = taken();
+    e.hidden = false;
+    e.innerHTML = `<span id="brkAway">${esc(backB.line)}</span>${backB.kind === 'vape' ? ` <button type="button" class="brk-took" onclick="Break.took()">${esc(t('break.taken'))}${n ? ' · ' + n : ''}</button>` : ''} <button type="button" onclick="Break.dismiss()" aria-label="${esc(t('break.dismiss'))}">✕</button>`;
+  }
+  function dismiss() { backB = null; paintBack(); }
   function menu() {
     openDialog(`<h2>${esc(t('break.h'))}</h2><p class="muted">${esc(t('break.sub'))}</p>
       <div class="brk-pick"><button class="primary" onclick="Break.start('vape')">${esc(t('break.vape'))}</button><button class="primary" onclick="Break.start('shower')">${esc(t('break.shower'))}</button></div>
       <div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
   }
+  const showerBtn = () => `<button onclick="Break.start('shower')" title="${esc(t('break.shower.btn.title'))}">${esc(t('break.shower.btn'))}</button>`;
   const btn = () => `<button onclick="Break.menu()" title="${esc(t('break.btn.title'))}">${esc(t('break.btn'))}</button>`;
   function box(id) {
     let e = document.getElementById(id);
@@ -55,5 +87,5 @@ const Break = (() => {
   window.addEventListener('storage', e => { if (e.key === KEY) sync(); });
   setInterval(() => { if (cur) tick(); else if (read()) sync(); }, 1000);
   sync();
-  return { start, end, menu, btn, sync, get on() { return !!cur; } };
+  return { start, end, menu, btn, showerBtn, took, dismiss, sync, get on() { return !!cur; } };
 })();

@@ -1,7 +1,7 @@
 // QA area: breaks (AIG-824, AIG-837). ⏸ Break on the home page: Vape / meds or Shower pauses the owner's alerts (html[data-break]), a timer chip with
 // "I'm back", it ends by itself and survives a reload; Shower fills the window with "Enjoy your shower" (Esc or I'm back ends it). A short stub time
 // (localStorage aigile.breakMs) keeps the run independent of date and time.
-import { check, sleep, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
 
 def('breaks', '⏸ break modes: Break button on home, Vape / Shower, chip with I\'m back, ends by itself, survives reload, full-screen shower, phone + dark (AIG-824/837)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -55,5 +55,46 @@ def('breaks', '⏸ break modes: Break button on home, Vape / Shower, chip with I
   await page.click('#brkBack');
   check('I\'m back closes the shower screen too', !(await on()) && !(await shown('#showerScreen')));
   await sleep(200);
+
+  // AIG-825: back from a break, one line of what happened meanwhile; Vape / meds offers 💊 Taken
+  await mkCard(s, 'alpha', 'Check the export', { status: 'verify', testSteps: 'Click it' });
+  await page.evaluate(() => Break.dismiss());
+  await page.evaluate(() => { localStorage.removeItem('aigile.meds.' + (d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'))(new Date())); Break.start('vape'); });
+  await page.click('#breakChip button');
+  await page.waitForSelector('#breakBack:not([hidden]) .brk-took');
+  const away = await page.textContent('#breakBack');
+  check('back from Vape: "While you were away" line with the card to test, and 💊 Taken', /While you were away: .*1 card to test/.test(away) && /💊 Taken/.test(away), away);
+  await page.click('.brk-took');
+  check('💊 Taken counts the tick for today (localStorage)', /Taken · 1/.test(await page.textContent('#breakBack')) && await page.evaluate(() => Object.keys(localStorage).some(k => /^aigile\.meds\.\d{4}-\d\d-\d\d$/.test(k) && localStorage.getItem(k) === '1')));
+  await page.setViewportSize({ width: 390, height: 844 }); await page.emulateMedia({ colorScheme: 'dark' });
+  const bb = await page.locator('#breakBack').boundingBox();
+  check('phone + dark: the line fits the screen', bb.x >= 0 && bb.x + bb.width <= 390 && await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), bb);
+  await page.setViewportSize({ width: 1280, height: 800 }); await page.emulateMedia({ colorScheme: 'light' });
+  await page.click('#breakBack button >> nth=-1');
+  check('the line can be closed', !(await shown('#breakBack')));
+  await page.evaluate(() => Break.start('shower')); await page.click('#brkBack');
+  await page.waitForSelector('#breakBack:not([hidden])');
+  check('back from Shower: the line, no 💊 Taken', !/Taken/.test(await page.textContent('#breakBack')));
+  await page.evaluate(() => Break.dismiss());
+
+  // AIG-838: 🚿 Shower button on home; "Right, let's do this" on life reminders
+  await page.click('text=🚿 Shower');
+  await page.waitForSelector('#showerScreen:not([hidden])');
+  check('🚿 Shower on home starts shower mode', await on() && /Enjoy your shower/.test(await page.textContent('#showerScreen')));
+  await page.click('#brkBack');
+  await mkCard(s, 'alpha', 'Take a shower', { lifeType: 'health', remindEvery: 60 });
+  await mkCard(s, 'alpha', 'Drink water', { lifeType: 'health', remindEvery: 60 });
+  await page.goto(page.url().split('#')[0] + '#/inbox'); await page.reload();
+  await page.waitForSelector('.ib-item [data-act="letsgo"]');
+  check('life reminders have Snooze and Right, let\'s do this', (await page.locator('.ib-item [data-act="letsgo"]').count()) === 2 && (await page.locator('.ib-item .ib-top ~ .actions [data-act="wait"]').count()) >= 2, [await page.locator('.ib-item [data-act="letsgo"]').count(), await page.locator('.ib-item .actions [data-act="wait"]').count()]);
+  await page.locator('.ib-item', { hasText: 'Drink water' }).locator('[data-act="letsgo"]').click();
+  await sleep(600);
+  const water = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.title === 'Drink water');
+  check('on another reminder it only puts it off: no shower mode, not done', !(await on()) && water.status !== 'done' && !!water.snoozedUntil, water);
+  await page.locator('.ib-item', { hasText: 'Take a shower' }).locator('[data-act="letsgo"]').click();
+  await page.waitForSelector('#showerScreen:not([hidden])');
+  const sh = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.title === 'Take a shower');
+  check('on a shower reminder it starts shower mode (card not done)', await on() && sh.status !== 'done', sh);
+  await page.keyboard.press('Escape');
   noErrors(page);
 }, true);

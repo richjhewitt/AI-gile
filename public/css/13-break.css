@@ -11,3 +11,7 @@
 .brk-sub { font-size: clamp(15px, 2.4vw, 20px); color: var(--muted); }
 .brk-back { font-size: clamp(22px, 4vw, 30px); padding: 18px 40px; border-radius: 16px; border: 0; cursor: pointer; background: var(--done, #16a34a); color: #fff; font-weight: 700; }
 .brk-back:hover { filter: brightness(1.1); }
+#breakBack { position: fixed; inset-inline: 12px; bottom: 12px; z-index: 9998; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; max-width: 640px; margin-inline: auto; padding: 8px 12px; border-radius: 14px; background: var(--panel, var(--bg)); color: var(--text); border: 1px solid var(--line); box-shadow: 0 4px 16px rgba(0,0,0,.25); font-size: 14px; }
+#breakBack[hidden] { display: none; }
+#breakBack #brkAway { flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; }
+#breakBack button { border-radius: 999px; padding: 4px 12px; cursor: pointer; font-weight: 600; }

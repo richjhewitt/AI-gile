@@ -39,7 +39,7 @@
     const b = e.target.closest('button[data-act]'); if (!b) return;
     const n = b.closest('.ib-item'), act = b.dataset.act;
     if (act === 'open') { openIt(n.dataset.project, n.dataset.id, b); return; }
-    if (act === 'send') IB.send(n); else if (act === 'go') IB.send(n, 'GO'); else if (act === 'accept') { if (acceptSure(b, IB.raw.find(c => IB.keyOf(c) === n.dataset.project + '/' + n.dataset.id))) IB.accept(n); } else if (act === 'gotit') IB.gotIt(n); else if (act === 'inforeply') IB.infoReply(n); else if (act === 'wait') IB.waitAndSee(n); else if (act === 'taskdone') IB.taskDone(n); else if (act === 'lifedone') IB.lifeDone(n); else if (act === 'gaccept') IB.groupAct(n, 'accept'); else if (act === 'gwait') IB.groupAct(n, 'wait'); else if (act === 'gcaccept') IB.cardAct(b, 'accept'); else if (act === 'gcreply') IB.cardAct(b, 'reply'); else if (act === 'gcback') IB.cardAct(b, 'back');
+    if (act === 'send') IB.send(n); else if (act === 'go') IB.send(n, 'GO'); else if (act === 'accept') { if (acceptSure(b, IB.raw.find(c => IB.keyOf(c) === n.dataset.project + '/' + n.dataset.id))) IB.accept(n); } else if (act === 'gotit') IB.gotIt(n); else if (act === 'inforeply') IB.infoReply(n); else if (act === 'wait') IB.waitAndSee(n); else if (act === 'letsgo') IB.letsGo(n); else if (act === 'taskdone') IB.taskDone(n); else if (act === 'lifedone') IB.lifeDone(n); else if (act === 'gaccept') IB.groupAct(n, 'accept'); else if (act === 'gwait') IB.groupAct(n, 'wait'); else if (act === 'gcaccept') IB.cardAct(b, 'accept'); else if (act === 'gcreply') IB.cardAct(b, 'reply'); else if (act === 'gcback') IB.cardAct(b, 'back');
   }
 
   /* ---------- hooks used by js/core.js ---------- */
