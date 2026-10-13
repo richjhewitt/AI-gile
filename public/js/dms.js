@@ -168,6 +168,17 @@ const Dms = (() => {
       if (scroll || atBottom) list.scrollTop = list.scrollHeight;
     }
     el('dmTo').textContent = t('dms.newperson', { name: thread.name });
+    usageGlance(thread.id, thread.name);
+  }
+  // Token use this friend shares with me (AIG-686): per project, today and the last 7 days. Numbers only.
+  async function usageGlance(id, name) {
+    let g; try { g = await api('GET', `/api/dms/contacts/${id}/usage`); } catch { return; }
+    const box = el('dmUsage'); if (!box || !thread || thread.id !== id) return;
+    const n = v => typeof fmtTok === 'function' ? fmtTok(v) : String(v);
+    const html = g.projects.length ? `<div class="dm-usage-h" title="${esc(t('dms.usage.title', { name }))}"><b>${esc(t('dms.usage.h'))}</b> <span class="muted">${esc(t('dms.usage.when', { when: ago(g.at) }))}</span></div>`
+      + g.projects.map(p => `<div class="dm-usage-row"><span>${esc(p.name)}</span> <span class="muted">${t('dms.usage.nums.html', { today: esc(n(p.today)), week: esc(n(p.week)) })}</span></div>`).join('') : '';
+    if (box.dataset.sig !== html) { box.dataset.sig = html; box.innerHTML = html; }
+    box.hidden = !html;
   }
   async function loadThread(scroll) {
     if (!open) return;
@@ -224,7 +235,7 @@ const Dms = (() => {
     const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || { slug, name: slug };
     const panel = el('dmPanel'); panel.dataset.sig = '';
     panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(chatName(c))}</div></div><span style="flex:1"></span>${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
-      ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}
+      ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}${who ? '<div class="dm-usage" id="dmUsage" hidden></div>' : ''}
       <div class="dm-list" id="dmList"></div>
       ${who ? '' : `<div class="dm-legend muted">${esc(t('dms.origin.legend'))}</div>`}
       <div id="dmFollow"></div>
