@@ -15,6 +15,7 @@ function withFriendEmojis(cid, list, fn) {
   try { return fn(); } finally { FRIEND_EMOJIS = null; }
 }
 function customEmojis(html) {
+  if (typeof emojiFallback === "function") html = emojiFallback(html);
   if ((!CUSTOM_EMOJIS.size && !FRIEND_EMOJIS) || html.indexOf(':') < 0) return html;
   const fe = FRIEND_EMOJIS;
   let inCode = 0;

@@ -1,3 +1,36 @@
+/* ---------- Twemoji pictures for emoji the system font cannot draw (AIG-691) ----------
+   Only Emoji 15+ glyphs have a picture (public/img/twemoji, CC-BY 4.0, see LICENSE.txt there). Whether the font draws a glyph is
+   tested once per glyph on a canvas (tofu box or blank = no) and cached. The text stays the real character; only the display changes.
+   window.EMOJI_FORCE_IMG = true (test hook) behaves as if the font draws none of them. */
+(function () {
+  const FILES = new Set(["1f6dc","1fa75","1fa76","1fa77","1fa87","1fa88","1fa89","1fa8f","1faad","1faae","1faaf","1fabb","1fabc","1fabd","1fabe","1fabf","1fac6","1face","1facf","1fada","1fadb","1fadc","1fadf","1fae8","1fae9","1faf7","1faf8"]), cache = new Map();
+  const file = g => [...g].map(c => c.codePointAt(0)).filter(c => c !== 0xfe0f).map(c => c.toString(16)).join("-");
+  let cv = null, tofu = null;
+  const px = g => { cv.getContext("2d").clearRect(0, 0, 40, 40); const x = cv.getContext("2d"); x.font = "28px \"Segoe UI Emoji\",\"Apple Color Emoji\",\"Noto Color Emoji\",sans-serif"; x.textBaseline = "top"; x.fillText(g, 2, 2); return x.getImageData(0, 0, 40, 40).data; };
+  const same = (a, b) => { for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false; return true; };
+  const blank = a => { for (let i = 3; i < a.length; i += 4) if (a[i]) return false; return true; };
+  function drawn(g) {
+    try {
+      if (!cv) { cv = document.createElement("canvas"); cv.width = cv.height = 40; tofu = px("􏿾"); }
+      const a = px(g); return !blank(a) && !same(a, tofu);
+    } catch (x) { return true; }
+  }
+  // the picture file name when g (a glyph, optional fe0f) needs one, else ""
+  function need(g) {
+    const f = file(g); if (!FILES.has(f)) return "";
+    if (window.EMOJI_FORCE_IMG) return f;
+    if (!cache.has(f)) cache.set(f, !drawn(g));
+    return cache.get(f) ? f : "";
+  }
+  const re = new RegExp("(?:" + [...FILES].filter(f => f.indexOf("-") < 0).map(f => "\\u{" + f + "}").join("|") + ")\\uFE0F?", "gu");
+  // g as html: the real glyph, or an <img> of it when the font cannot draw it
+  window.emojiGlyphHtml = g => { const f = need(g); return f ? `<img class="emoji-img" src="img/twemoji/${f}.svg" alt="${g}">` : g; };
+  // html text (already escaped): glyphs the font cannot draw become pictures; tags are left alone
+  window.emojiFallback = html => html.split(/(<[^>]*>)/).map(p => p[0] === "<" && p.length > 1 ? p : p.replace(re, window.emojiGlyphHtml)).join("");
+  const st = document.createElement("style");
+  st.textContent = ".emoji-img{height:1.2em;width:1.2em;vertical-align:-.2em;display:inline-block}";
+  document.head.appendChild(st);
+})();
 /* ---------- :emoji: shortcodes (AIG-342) ----------
    One helper for every text box (event delegation on document, no per-box wiring).
    Typing ":" plus 2+ letters opens a small popup of matching emoji (EMOJI_DATA, js/emoji-data.js);
@@ -69,7 +102,7 @@
     let sec = false;
     EM.box.innerHTML = EM.list.map((x, i) => {
       const on = i === EM.at ? ' on' : '';
-      if (x.k === 'std') return `<div class="emj-row${on}" data-i="${i}"><b>${x.r[1]}</b>:${esc(x.r[0])}:</div>`;
+      if (x.k === 'std') return `<div class="emj-row${on}" data-i="${i}"><b>${emojiGlyphHtml(x.r[1])}</b>:${esc(x.r[0])}:</div>`;
       if (x.k === 'add') return `<div class="emj-row emj-add${on}" data-i="${i}"><b>➕</b>${esc(t('emoji.add'))}</div>`;
       const head = sec ? '' : `<div class="emj-sec">${esc(t('emoji.yours'))}</div>`; sec = true;
       return head + `<div class="emj-row${on}" data-i="${i}" data-mine="${esc(x.m.name)}"><img src="${esc(x.m.url)}" alt="">:${esc(x.m.name)}:<span class="emj-x" data-del="${esc(x.m.name)}" title="${esc(t('emoji.del'))}" role="button" aria-label="${esc(t('emoji.del'))}">✕</span></div>`;
