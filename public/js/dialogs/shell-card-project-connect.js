@@ -38,6 +38,7 @@ async function newCard(preset = {}) {
     <form onsubmit="return createCard(event)">${projects.length > 1 || !slug() ? `<label class="f"><span>${esc(t('dlg.newcard.project'))}</span><select id="nc-project">${projectOptionsHtml(projects, leads, slug())}</select></label>` : ''}${lifeBox}${cardFields(c, bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') })}
       <div class="err" id="d-err"></div>
       <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${esc(bug ? t('dlg.raisebug') : t('dlg.createcard'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');
+  if (bug) { const ov = $('dialog').querySelector('.overlay'); if (ov) ov.classList.add('top'); }   // above pop-outs, card view and other windows (AIG-733)
   if (lifeOn) lifeToggle();
 }
 function lifeToggle() {

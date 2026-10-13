@@ -7,6 +7,8 @@ const Topbar = (() => {
   const BTNS = [['helpBtn', 'help'], ['ideaBtn', 'idea'], ['bugBtn', 'bug'], ['teamTop', 'team'], ['inboxTop', 'inbox'], ['pokeTop', 'poke'], ['nightTop', 'night'], ['glanceBtn', 'glance'], ['weedBtn', 'weed'], ['streamBtn', 'stream'], ['ntBtn', 'nt'], ['tiredBtn', 'tired'], ['assumeNav', 'assume'], ['usageNav', 'usage'], ['setupNav', 'setup'], ['themeBtn', 'theme']];
   const IDS = BTNS.map(b => b[0]), KEEP = 'setupNav';
   const AI_BTNS = ['ntBtn', 'usageNav', 'pokeTop', 'nightTop', 'teamTop'];   // hidden by No AI, ever (AIG-581)
+  const DEF_SIDE = { bugBtn: 'l' };   // AIG-733: Raise bug sits next to the project name unless a saved layout says otherwise
+  const sideOf = (c, id) => c.side[id] || DEF_SIDE[id] || 'r';
   const COLOURS = ['accent', 'done', 'warn', 'danger', 'you'];
   const blank = () => ({ order: IDS.slice(), off: [], side: {}, colour: {} });
   const load = () => {
@@ -15,7 +17,7 @@ const Topbar = (() => {
     const ord = (Array.isArray(o.order) ? o.order : []).filter(i => IDS.includes(i));
     d.order = [...new Set([...ord, ...IDS])];
     d.off = (Array.isArray(o.off) ? o.off : []).filter(i => IDS.includes(i) && i !== KEEP);
-    for (const i of IDS) { if (o.side && o.side[i] === 'l') d.side[i] = 'l'; if (o.colour && COLOURS.includes(o.colour[i])) d.colour[i] = o.colour[i]; }
+    for (const i of IDS) { if (o.side && (o.side[i] === 'l' || o.side[i] === 'r') && o.side[i] !== (DEF_SIDE[i] || 'r')) d.side[i] = o.side[i]; if (o.colour && COLOURS.includes(o.colour[i])) d.colour[i] = o.colour[i]; }
     return d;
   };
   const save = c => { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch {} };
@@ -26,21 +28,21 @@ const Topbar = (() => {
     const sp = document.querySelector('header .spacer'), end = $('enBtn'); if (!sp || !end) return;
     for (const id of cur.order) {
       const e = $(id); if (!e) continue;
-      e.parentNode.insertBefore(e, cur.side[id] === 'l' ? sp : end);
+      e.parentNode.insertBefore(e, sideOf(cur, id) === 'l' ? sp : end);
       e.classList.toggle('tb-off', cur.off.includes(id));
       if (cur.colour[id]) e.dataset.tbc = cur.colour[id]; else delete e.dataset.tbc;
     }
   }
   function change(fn) { fn(cur); save(cur); apply(); paint(); }
   const toggle = id => change(c => { if (id === KEEP) return; c.off = c.off.includes(id) ? c.off.filter(x => x !== id) : [...c.off, id]; });
-  const side = (id, s) => change(c => { if (s === 'l') c.side[id] = 'l'; else delete c.side[id]; });
+  const side = (id, s) => change(c => { if (s === (DEF_SIDE[id] || 'r')) delete c.side[id]; else c.side[id] = s; });
   const colour = (id, k) => change(c => { if (k) c.colour[id] = k; else delete c.colour[id]; });
   const move = (id, to) => change(c => { const o = c.order.filter(x => x !== id); o.splice(Math.max(0, Math.min(o.length, to)), 0, id); c.order = o; });
   const step = (id, d) => move(id, cur.order.indexOf(id) + d);
   const reset = () => { cur = blank(); try { localStorage.removeItem(KEY); } catch {} apply(); paint(); };
   function html() {
     const rows = cur.order.filter(id => !(NoAi.on && AI_BTNS.includes(id))).map((id, i) => {
-      const nm = t('tb.b.' + BTNS.find(b => b[0] === id)[1]), on = !cur.off.includes(id), lk = id === KEEP, sd = cur.side[id] === 'l' ? 'l' : 'r', co = cur.colour[id] || '';
+      const nm = t('tb.b.' + BTNS.find(b => b[0] === id)[1]), on = !cur.off.includes(id), lk = id === KEEP, sd = sideOf(cur, id), co = cur.colour[id] || '';
       const sw = ['', ...COLOURS].map(k => `<button type="button" class="tb-sw${co === k ? ' on' : ''}" data-tbc="${k}" aria-pressed="${co === k}" aria-label="${esc(t('tb.c.' + (k || 'none')))}" title="${esc(t('tb.c.' + (k || 'none')))}" onclick="Topbar.colour('${id}','${k}')"></button>`).join('');
       return `<li class="tb-row" draggable="true" data-tb="${id}">
         <span class="tb-grip" aria-hidden="true">⋮⋮</span>
