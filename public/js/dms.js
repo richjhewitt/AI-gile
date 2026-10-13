@@ -62,6 +62,7 @@ const Dms = (() => {
     let boards = [];
     try { boards = (await api('GET', '/api/shares')).filter(l => l.theirRole && !l.forgotten && ['live', 'ended'].includes(l.state)); } catch {}
     try { people = (await api('GET', '/api/dms/contacts')).filter(c => !c.blocked).map(c => ({ ...c, unread: c.lastIn && c.lastIn > dmSeen.get(c.id) && open !== 'dm:' + c.id ? 1 : 0 })); } catch { people = []; }
+    if (Swarm.hiding) boards = [];   // 🚨 swarm: friends' boards wait too (AIG-880)
     if (NoAi.on) chats = [];   // 🚫 no DMs to leads (AIG-581)
     const cur = here(), p = projects.find(x => x.slug === cur);
     if (p) seen.set(cur, p.updated);   // looking at it now counts as seen
@@ -71,7 +72,7 @@ const Dms = (() => {
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
       + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, t('dms.rail.label'))
       + '<div class="dm-sep"></div>'
-      + railTree(projects.filter(x => !x.archived), cur, btn)
+      + railTree(Swarm.only(projects.filter(x => !x.archived)), cur, btn)   // 🚨 swarm: only that project (AIG-880)
       // AIG-324: each project a friend shares with me, as its own board.
       + (boards.length ? '<div class="dm-sep"></div>' + boards.map(l => btn(`data-go="#/shared/${esc(l.id)}" data-sboard="${esc(l.id)}"`, `<span class="dm-av">🔗</span>`, location.hash === '#/shared/' + l.id, t('sb.rail', { name: l.friend, project: l.theirName }))).join('') : '');
     const r = el('dmRail');
