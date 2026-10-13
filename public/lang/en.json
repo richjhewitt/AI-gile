@@ -2423,5 +2423,14 @@
  "dmme.sent": "Asked {who} to DM you. The chat is open in Messages.",
  "dmme.sent.nowake": "The DM is open in Messages, but nobody was woken: {why}",
  "dmme.open": "Open the DM",
- "srv.dmme.about": "About {id}: {title}"
+ "srv.dmme.about": "About {id}: {title}",
+ "remind.btn": "❓ Remind me",
+ "remind.title": "A quick recap of this card",
+ "remind.ask": "You asked: ",
+ "remind.plan": "Plan: ",
+ "remind.now": "Now: ",
+ "remind.st.todo": "to do",
+ "remind.st.doing": "in progress",
+ "remind.st.verify": "waiting for you to test",
+ "remind.st.done": "done"
 }
