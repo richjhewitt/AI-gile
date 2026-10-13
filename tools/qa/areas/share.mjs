@@ -187,6 +187,7 @@ def('share', 'sharing a project with a friend: offer / accept over the DMs, need
     await page.uncheck('#shareOn');
     await until(async () => (await sh(a, '?slug=delta'))[0].on === false);
     check('dialog: the switch turns the link off', (await sh(a, '?slug=delta'))[0].on === false);
+    await page.waitForTimeout(800);   // let the dialog's own reload finish, or it reopens after the close (AIG-856: a race the test always had)
     await page.click('#dialog button[onclick="closeDialog()"]');
 
     await mkProject(b, 'Charlie', 'CHA');

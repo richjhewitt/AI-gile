@@ -1,6 +1,6 @@
 // QA area changeroles (AIG-856): Project manager / Test lead / Dev lead on a friend, per project. GET|POST /api/projects/:slug/change-roles
 // (owner only), CLI change-roles, what the share role says (can.change, raise, verdict), the friend is told, old projects unchanged.
-import { freePort, check, startServer, mkProject, def } from '../lib.mjs';
+import { freePort, check, startServer, mkProject, mkCard, def } from '../lib.mjs';
 import { startRelay, pair, until } from './share.mjs';
 import { BASE } from '../lib.mjs';
 
@@ -44,10 +44,40 @@ def('changeroles', 'change roles: a friend made Project manager / Test lead / De
     check('the friend is told (a label)', !!(await until(async () => (await b.ok('GET', '/api/shares?slug=other'))[0].theirChange.join() === 'pm')));
     check('only this project: another project has none', (await a.ok('GET', '/api/projects/plain/change-roles')).pm.length === 0);
     const r2 = await a.ok('POST', url, { testLead: '@' + cb.id, devLead: '@' + cb.id });
-    check('one friend can hold all three; verdict is on for the Test lead', r2.testLead === '@' + cb.id && r2.devLead === '@' + cb.id && (await live()).changeRoles.join() === 'pm,testLead,devLead' && (await live()).can.verdict === true, r2);
+    check('one friend can hold all three; the Test lead verdict right is for change cards only (verdictChange), not can.verdict', r2.testLead === '@' + cb.id && r2.devLead === '@' + cb.id && (await live()).changeRoles.join() === 'pm,testLead,devLead' && (await live()).can.verdict === false && (await live()).can.verdictChange === true, r2);
     check('the project file keeps it as p.changeRoles', (await a.ok('GET', '/api/projects/roles')).changeRoles.pm[0] === '@' + cb.id);
     await a.ok('PATCH', `/api/shares/${off.id}`, { role: 'viewer' });
     check('a viewer who is PM keeps the share role and gains the change role', (await live()).role === 'viewer' && (await live()).can.change.includes('pm'));
+
+    // Test lead: not a tester on ordinary cards (a member who is Test lead is still refused a test on a feature card)
+    const feat = await mkCard(a, 'roles', 'A feature', { type: 'feature' });
+    await a.ok('POST', `/api/shares/${off.id}/cards`, { card: feat.id });
+    await a.ok('PATCH', `/api/shares/${off.id}`, { role: 'member' });
+    const ht = await a.api('POST', `/api/shares/${off.id}/test`, { card: feat.id, text: 'please test' });
+    check('a Test lead (member) cannot be handed a test on a non-change card', ht.status === 409 && /Tester/.test(JSON.stringify(ht)), ht);
+
+    // what B sees: the change roles A gave it reach theirCan, validated
+    const seenB = await until(async () => { const l = (await b.ok('GET', '/api/shares?slug=other'))[0]; return l.theirChange.length === 3 && l; });
+    check('B: theirChange and theirCan.change carry the roles, verdict not widened', seenB && seenB.theirCan.change.join() === 'pm,testLead,devLead' && seenB.theirCan.verdict === false && seenB.theirCan.verdictChange === true, seenB);
+
+    // paused link: roles set meanwhile reach B on resume
+    await a.ok('PATCH', `/api/shares/${off.id}`, { on: false });
+    await a.ok('POST', url, { pm: [], testLead: '', devLead: '' });
+    await new Promise(r => setTimeout(r, 800));
+    check('while paused B still has the old roles', (await b.ok('GET', '/api/shares?slug=other'))[0].theirChange.length === 3);
+    await a.ok('PATCH', `/api/shares/${off.id}`, { on: true });
+    check('on resume B is sent the current roles', !!(await until(async () => (await b.ok('GET', '/api/shares?slug=other'))[0].theirChange.length === 0)));
+    await a.ok('POST', url, { pm: { add: '@' + cb.id } });
+    await until(async () => (await b.ok('GET', '/api/shares?slug=other'))[0].theirChange.join() === 'pm');
+
+    // first link: roles set before the offer arrive with the offer and the accept
+    await mkProject(a, 'Late', 'LAT'); await mkProject(b, 'Later', 'LTR');
+    await a.ok('POST', '/api/projects/late/change-roles', { devLead: '@' + cb.id });
+    const off2 = await a.ok('POST', '/api/shares', { slug: 'late', contact: cb.id, allow: all });
+    const inc = await until(async () => (await b.ok('GET', '/api/shares')).find(l => l.id === off2.id && l.state === 'incoming'));
+    check('the offer carries the change roles', inc && inc.theirChange.join() === 'devLead', inc);
+    await b.ok('POST', `/api/shares/${off2.id}/accept`, { slug: 'later', allow: all });
+    check('after accept B still has them', !!(await until(async () => (await b.ok('GET', '/api/shares?slug=later'))[0].theirChange.join() === 'devLead')));
 
     // CLI
     const ls = a.cli(['change-roles', 'roles', '--as', 'Owner'], { AIGILE_BACKGROUND: '' });
