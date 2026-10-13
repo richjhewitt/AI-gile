@@ -129,6 +129,12 @@ function postmortemAsk() {
   });
 }
 const postmortemHtml = c => c.postmortem ? `<div class="postmortem"><h3>${esc(t('pm.heading'))}</h3>${['happened', 'why', 'change'].map(k => `<p><b>${esc(t('pm.' + k))}</b> ${esc(c.postmortem[k])}</p>`).join('')}</div>` : '';
+// The merge gate (AIG-613): 🟢 QA green (areas, full suite) / 🔴 QA red / ⚪ no QA yet. Set with aigile qa.
+function qaGateHtml(c) {
+  const q = c.qa; if (!q) return `<div class="qa-gate none">${esc(t('qa.none'))}</div>`;
+  const red = q.result === 'fail' || q.full === 'fail', bits = [(q.areas || []).join(', '), q.full ? t('qa.full.' + q.full) : ''].filter(Boolean).join('; ');
+  return `<div class="qa-gate ${red ? 'red' : 'green'}" title="${esc([q.by, q.at && ago(q.at)].filter(Boolean).join(' · '))}">${esc(t(red ? 'qa.red' : 'qa.green'))}${bits ? ` <span class="muted">(${esc(bits)})</span>` : ''}${q.note ? ` <span class="muted">${esc(q.note)}</span>` : ''}</div>`;
+}
 function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
@@ -178,7 +184,7 @@ function renderCard(p, c) {
       ${pop ? chatHtml(p, c, msg) : followBar(p, c) + replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
-      ${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${Attach.shown(c, p.slug)}
+      ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${Attach.shown(c, p.slug)}
     </div>
     ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>${verdict}
       ${c.proof ? proofHtml(c.proof) : ''}

@@ -65,6 +65,7 @@ async function checkBuild() {
     // Quiet ended by itself at the wake-up time (AIG-232): show what happened overnight.
     if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});
     wasQuiet = m.quiet; setNight(m.quiet);
+    quietTimeChip(m.quietTime);   // change calendar (AIG-615)
     Focus.watch(m.focus);   // 🎯 focus mode (AIG-395)
     applyAppLogo(m.appLogo, m.appIcon);
     if (JSON.stringify([m.servers || [], m.terms || [], m.srvAccess || {}]) !== JSON.stringify([state.servers, state.terms, state.srvAccess || {}])) { state.servers = m.servers || []; state.terms = m.terms || []; state.srvAccess = m.srvAccess || {}; refresh(true); }   // ⌨ terms: the ones with an ssh address (AIG-471)   // My servers (AIG-374)
@@ -145,6 +146,13 @@ async function pokeAll(b) {
   location.hash = '#/'; refresh(true);
 }
 
+// A quiet time from the change calendar (AIG-615, set in Setup): a small chip, only while it lasts.
+function quietTimeChip(q) {
+  const e = $('quietTimeTop'); if (!e) return;
+  e.hidden = !q;
+  e.textContent = q ? t(q.label ? 'quiettime.chip' : 'quiettime.chip.nolabel', { label: q.label, until: q.until }) : '';
+  e.title = q ? t('quiettime.chip.title') : '';
+}
 /* ---------- going quiet: night theme ---------- */
 function setNight(since) {
   document.documentElement.toggleAttribute('data-night', !!since);
