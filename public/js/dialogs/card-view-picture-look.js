@@ -76,6 +76,7 @@ async function lookDialog() {
   const p = state.project;
   if (!state.setup) try { state.setup = await api('GET', '/api/setup'); } catch {}   // the default for where it runs (AIG-153)
   const def = leadPrefs().runIn || 'background', w = p.runIn || def;
+  let dod = { ready: [], done: [] }; try { dod = await api('GET', '/api/projects/' + slug() + '/dod'); } catch {}   // AIG-864: the saved lists, else the defaults
   popNext('look'); openDialog(`<h2>${esc(t('board.look'))}</h2>
     <p class="muted">${esc(t('look.intro', { name: p.name }))}</p>
     <div class="row"><label class="f"><span>${esc(t('cols.emoji'))}</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
@@ -91,13 +92,16 @@ async function lookDialog() {
     <label class="f ai-only"><span>${esc(t('look.runin'))}</span>${runInSelect('look-runin', p.runIn || '', 'lookRunIn()', def)}${runInBlind(w)}</label>
     <label class="f ai-only" id="look-runcmd-box" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="look-runcmd" value="${esc(p.runCmd || '')}" placeholder="${esc(leadPrefs().runCmd || 'cursor "{folder}"')}"><small class="muted">${esc(t('runin.cmd.look'))}</small></label>
     <div class="f" id="look-roles"><span>${esc(t('tm.h'))}</span><div><button type="button" onclick="teamDialog()">${esc(t('look.team.open'))}</button></div><small class="muted">${esc(t('look.team.moved'))}</small></div>
+    <div class="f" id="look-dod"><span>${esc(t('dod.h'))}</span><small class="muted">${esc(t('dod.intro'))}</small>
+      <label class="f"><span>${esc(t('dod.ready'))}</span><textarea id="look-dod-ready" rows="3">${esc(dod.ready.join('\n'))}</textarea></label>
+      <label class="f"><span>${esc(t('dod.done'))}</span><textarea id="look-dod-done" rows="4">${esc(dod.done.join('\n'))}</textarea></label></div>
     <div class="err" id="look-err"></div>
     <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
 // 👥 The roles on this project moved to their own dialog (AIG-423, dialogs/team-profile.js); Look only opens it.
 async function saveLook(auto) {
   try {
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, personal: $('look-personal').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, personal: $('look-personal').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, dod: { ready: $('look-dod-ready').value, done: $('look-dod-done').value } });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }
