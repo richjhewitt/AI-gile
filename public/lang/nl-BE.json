@@ -2389,7 +2389,7 @@
  "roles.level.run": "Servertaken van het bord uitvoeren",
  "roles.level.admin": "Volledige beheerder (ssh)",
  "eng.h": "Engine",
- "eng.help": "Welk programma elke agent op de achtergrond draait: Claude (standaard) of Codex. De engine van de lead draait het project. Codex moet op deze pc geïnstalleerd zijn en pusht nooit.",
+ "eng.help": "Welk programma elke agent op de achtergrond draait: Claude (standaard), Codex of Gemini. De engine van de lead draait het project. Codex of Gemini moet op deze pc geïnstalleerd zijn en pusht nooit.",
  "eng.claude": "Claude",
  "eng.codex": "Codex",
  "eng.model": "Codex-model (leeg = standaard van Codex)",
