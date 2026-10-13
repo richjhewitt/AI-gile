@@ -9,9 +9,12 @@
     o = o || {}; const t = o.t || (k => k), isOwner = o.isOwner || (() => false);
     const cs = (c && c.comments) || [], out = [];
     const orig = cs.find(m => isLead(m.author) && /^\s*(?:\*\*)?Original:/i.test(m.text || ''));
-    const own = cs.find(m => isOwner(m.author) && String(m.text || '').trim());
+    // The owner's ORIGINAL request, never Sorry what? / pokes / test replies (AIG-693): the Original: comment, else the description,
+    // else the owner's first real comment.
+    const noise = /^\s*(?:sorry what\b|poke\b|ping\b|test\b)/i, sorry = String(t('remind.sorry.text') || '').trim();
+    const own = cs.find(m => isOwner(m.author) && String(m.text || '').trim() && !noise.test(m.text) && String(m.text).trim() !== sorry);
     const descLine = String((c && c.description) || '').split('\n').map(l => l.trim()).find(Boolean) || '';
-    const ask = own ? own.text : orig ? String(orig.text).replace(/^\s*(?:\*\*)?Original:(?:\*\*)?\s*/i, '') : descLine || (c && c.title) || '';
+    const ask = orig ? String(orig.text).replace(/^\s*(?:\*\*)?Original:(?:\*\*)?\s*/i, '') : descLine || (own && own.text) || (c && c.title) || '';
     out.push({ k: 'ask', text: t('remind.ask') + clip(strip(ask), 160) });
     const planC = cs.slice().reverse().find(m => isLead(m.author) && /^\s*\*\*Go on this plan\?\*\*|Fix plan|Plan/.test(m.text || ''));
     let pl = planC ? bullets(planC.text) : [];
