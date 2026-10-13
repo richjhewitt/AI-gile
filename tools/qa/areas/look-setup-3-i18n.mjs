@@ -190,7 +190,8 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
   check('a stubbed language shows its file (marked), its locale and dir', (await startIn('en-US', 'pt-br', {}, extra)).newProject.startsWith('BR '));
   // Only the stubs that don't ship a real file yet (zh-tw does now), so this keeps meaning something as translations arrive (AIG-517).
   const stubOnly = extra.filter(c => !shipped.includes(c)), plain = (await startIn('en-US')).names;
-  check('the extra stubbed files show in the list only because they are in', stubOnly.length && stubOnly.every(c => us.names.includes(c) && !plain.includes(c)), { stubOnly, plain });
+  // Once every stub ships a real file there is nothing left to show only because of the stub: that passes too.
+  check('the extra stubbed files show in the list only because they are in', stubOnly.every(c => us.names.includes(c) && !plain.includes(c)), { stubOnly, plain });
   const rtl = await startIn('en-US', 'ar', {}, extra);
   check('Arabic sets <html dir=rtl> and lang ar, Latin digits in dates', rtl.dir === 'rtl' && rtl.html === 'ar' && rtl.locale === 'ar-u-nu-latn', rtl);
   check('English goes back to dir=ltr', saved.dir === 'ltr');

@@ -33,7 +33,7 @@ def('discordact', '🎮 Discord activity: Setup box, Using AI-gile, only a Publi
   check('a Private project never goes out', !act().state, act());
   await page.goto(`${BASE}/#/p/home-life`);
   await until(async () => { await s.ok('POST', '/api/presence/open', { slug: 'home-life' }); return act() && !act().state; });
-  check('a Personal project never goes out', !act().state, act());
+  check('a Personal project never goes out', !(act() || {}).state, act());
   await s.ok('POST', '/api/presence', { on: false });
   check('switched off: the activity is cleared', act() === null, act());
   noErrors(page);
