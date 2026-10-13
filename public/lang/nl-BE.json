@@ -3153,5 +3153,12 @@
  "call.title": "Opent het gesprek in een nieuw tabblad (de belapp doet beeld en scherm delen)",
  "call.h": "📞 Gesprekslink",
  "call.ph": "https://meet.google.com/... of een Jitsi-, Discord- of Teams-link",
- "call.intro": "Eén link voor stand-ups en gesprekken. AI-gile toont alleen een Bel mee-link; de belapp doet beeld en scherm delen."
+ "call.intro": "Eén link voor stand-ups en gesprekken. AI-gile toont alleen een Bel mee-link; de belapp doet beeld en scherm delen.",
+ "tb.more": "Meer ▾",
+ "tb.menu": "Menu",
+ "tb.pin.h": "Toon in de bovenbalk",
+ "tb.pin.help": "Vink aan wat in de balk blijft; de rest staat onder Meer. Instellingen blijft altijd staan.",
+ "tb.b.twitch": "Twitch-chat",
+ "tb.b.mail": "Mail",
+ "tb.b.imm": "Taal"
 }

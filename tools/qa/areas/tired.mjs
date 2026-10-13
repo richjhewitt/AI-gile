@@ -63,6 +63,7 @@ def('tired', '🔋 / 😴 Tired mode: top bar switch, saved pref, bedtime (faked
   const ph = await ctx.browser().newContext({ viewport: { width: 390, height: 800 }, colorScheme: 'dark' });
   const pp = await openPage(ph, '#/setup');
   await pp.waitForSelector('#pf-tired'); await sleep(400);
+  await pp.click('#tbMoreBtn');   // AIG-931: on a phone the button is in the ☰ menu
   const fit = await pp.evaluate(() => { const b = document.getElementById('tiredBtn').getBoundingClientRect(), box = document.getElementById('pf-tired').getBoundingClientRect(); return { btn: b.width > 0 && b.height > 0, boxFits: box.right <= innerWidth + 1, noScroll: document.documentElement.scrollWidth <= innerWidth + 1 }; });
   check('phone width, dark: button visible, Tired mode section fits', fit.btn && fit.boxFits, JSON.stringify(fit));
   noErrors(pp);

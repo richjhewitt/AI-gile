@@ -23,14 +23,47 @@ const Topbar = (() => {
   const save = c => { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch {} };
   const isDefault = c => JSON.stringify(c) === JSON.stringify(blank());
   let cur = load();
+  // AIG-931/932: only Inbox, Help and Setup (and the things that appear when there is something to act on) stay in the bar;
+  // the rest sit under "More" (on a phone, one menu for everything but the logo and Inbox). The same elements are moved, so ids and handlers stay.
+  const PKEY = 'aigile.topbar.pinned';
+  const MORE_EXTRA = ['twitchBtn', 'mailNav', 'immWrap'];
+  const PINNABLE = [...IDS, ...MORE_EXTRA];
+  const PIN_DEF = ['helpBtn', 'inboxTop', 'setupNav', 'pokeTop', 'nightTop', 'teamTop'];
+  const loadPins = () => { let a; try { a = JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch { a = null; } return Array.isArray(a) ? a.filter(i => PINNABLE.includes(i)) : PIN_DEF.slice(); };
+  let pins = loadPins();
+  const phoneMq = window.matchMedia ? matchMedia('(max-width: 600px)') : { matches: false };
+  const isPhone = () => phoneMq.matches;
+  const inBar = id => isPhone() ? id === 'inboxTop' : pins.includes(id);
+  const savePins = () => { try { localStorage.setItem(PKEY, JSON.stringify(pins)); } catch {} };
+  function menu(open) {
+    const b = $('tbMoreBtn'), m = $('tbMoreMenu'); if (!b || !m) return;
+    const on = open === undefined ? m.hidden : !!open;
+    m.hidden = !on; b.setAttribute('aria-expanded', String(on));
+  }
+  document.addEventListener('click', e => {
+    const m = $('tbMoreMenu'); if (!m || m.hidden) return;
+    if (e.target.closest('#tbMoreBtn')) return;
+    if (!e.target.closest('#tbMoreMenu') || (e.target.closest('a,button') && !e.target.closest('#themeBtn,#immWrap,#tbMoreBtn'))) menu(false);
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') menu(false); });
   // Put the buttons where the saved layout says. Safe to call again and again.
   function apply() {
-    const sp = document.querySelector('header .spacer'), end = $('enBtn'); if (!sp || !end) return;
+    const sp = document.querySelector('header .spacer'), end = $('tbMore'); if (!sp || !end) return;
+    const more = end, mm = $('tbMoreMenu');
     for (const id of cur.order) {
       const e = $(id); if (!e) continue;
-      e.parentNode.insertBefore(e, sideOf(cur, id) === 'l' ? sp : end);
+      if (mm && !inBar(id)) mm.appendChild(e); else end.parentNode.insertBefore(e, sideOf(cur, id) === 'l' ? sp : end);
       e.classList.toggle('tb-off', cur.off.includes(id));
-      if (cur.colour[id]) e.dataset.tbc = cur.colour[id]; else delete e.dataset.tbc;
+      if (e.closest('#tbMoreMenu')) delete e.dataset.tbc; else if (cur.colour[id]) e.dataset.tbc = cur.colour[id]; else delete e.dataset.tbc;
+    }
+    if (mm) {
+      for (const id of MORE_EXTRA) { const e = $(id); if (e && !inBar(id)) mm.appendChild(e); else if (e && e.closest('#tbMoreMenu')) end.parentNode.insertBefore(e, end); }
+      if (isPhone()) for (const e of [...document.querySelector('header').children]) { if (e.matches('h1,.spacer,#inboxTop,#tbMore,.alpha-tag,.crumb')) continue; mm.appendChild(e); }
+      else {
+        for (const id of ['hfTop', 'quietTimeTop', 'liveBtn']) { const e = $(id); if (e && e.closest('#tbMoreMenu')) end.parentNode.insertBefore(e, end); }
+        const en = $('enBtn'); if (en && en.closest('#tbMoreMenu')) more.after(en);
+        const lv = $('live'); if (lv && lv.closest('#tbMoreMenu')) lv.closest('header').appendChild(lv);
+      }
     }
   }
   function change(fn) { fn(cur); save(cur); apply(); paint(); }
@@ -40,6 +73,8 @@ const Topbar = (() => {
   const move = (id, to) => change(c => { const o = c.order.filter(x => x !== id); o.splice(Math.max(0, Math.min(o.length, to)), 0, id); c.order = o; });
   const step = (id, d) => move(id, cur.order.indexOf(id) + d);
   const reset = () => { cur = blank(); try { localStorage.removeItem(KEY); } catch {} apply(); paint(); };
+  const pin = id => { pins = pins.includes(id) ? pins.filter(x => x !== id) : [...pins, id]; if (!pins.includes('setupNav')) pins.push('setupNav'); savePins(); apply(); paint(); };
+  if (phoneMq.addEventListener) phoneMq.addEventListener('change', () => { apply(); menu(false); });
   function html() {
     const rows = cur.order.filter(id => !(NoAi.on && AI_BTNS.includes(id))).map((id, i) => {
       const nm = t('tb.b.' + BTNS.find(b => b[0] === id)[1]), on = !cur.off.includes(id), lk = id === KEEP, sd = sideOf(cur, id), co = cur.colour[id] || '';
@@ -52,7 +87,8 @@ const Topbar = (() => {
         <span class="tb-mv"><button type="button" class="tb-up" aria-label="${esc(t('tb.up', { name: nm }))}" title="${esc(t('tb.up', { name: nm }))}" ${i === 0 ? 'disabled' : ''} onclick="Topbar.step('${id}',-1)">↑</button><button type="button" class="tb-down" aria-label="${esc(t('tb.down', { name: nm }))}" title="${esc(t('tb.down', { name: nm }))}" ${i === cur.order.length - 1 ? 'disabled' : ''} onclick="Topbar.step('${id}',1)">↓</button></span></li>`;
     }).join('');
     return `<span>${esc(t('tb.h'))}</span><div><ul class="tb-list" id="tbList">${rows}</ul>
-      <div class="actions"><button type="button" id="tbReset" onclick="Topbar.reset()" ${isDefault(cur) ? 'disabled' : ''}>${esc(t('tb.reset'))}</button></div></div><small class="muted">${esc(t('tb.help'))}</small>`;
+      <div class="actions"><button type="button" id="tbReset" onclick="Topbar.reset()" ${isDefault(cur) ? 'disabled' : ''}>${esc(t('tb.reset'))}</button></div></div><small class="muted">${esc(t('tb.help'))}</small>
+      <div class="tb-pins" id="tbPins"><b>${esc(t('tb.pin.h'))}</b> <small class="muted">${esc(t('tb.pin.help'))}</small><div class="tb-pinlist">${PINNABLE.filter(id => !(NoAi.on && AI_BTNS.includes(id))).map(id => `<label class="tb-pin"><input type="checkbox" data-pin="${id}" ${pins.includes(id) ? 'checked' : ''} ${id === KEEP ? 'disabled' : ''} onchange="Topbar.pin('${id}')"> ${esc(t('tb.b.' + (BTNS.find(b => b[0] === id) || [0, id.replace(/Btn|Nav|Wrap/, '')])[1]))}</label>`).join('')}</div></div>`;
   }
   function paint() { const b = $('topbarBox'); if (b) b.innerHTML = html(); }
   // Drag a row onto another to move it there.
@@ -61,6 +97,6 @@ const Topbar = (() => {
   document.addEventListener('dragover', e => { if (drag && e.target.closest && e.target.closest('.tb-row')) e.preventDefault(); });
   document.addEventListener('drop', e => { const r = e.target.closest && e.target.closest('.tb-row'); if (!drag || !r) return; e.preventDefault(); const to = cur.order.indexOf(r.dataset.tb), id = drag; drag = null; if (id !== r.dataset.tb) move(id, to); });
   document.addEventListener('dragend', () => { drag = null; });
-  return { html, apply, toggle, side, colour, step, move, reset, state: () => cur };
+  return { html, apply, menu, pin, pins: () => pins,  toggle, side, colour, step, move, reset, state: () => cur };
 })();
 Topbar.apply();

@@ -3153,5 +3153,12 @@
  "call.title": "Opens the call in a new tab (the call tool does the video and screen sharing)",
  "call.h": "📞 Call link",
  "call.ph": "https://meet.google.com/... or a Jitsi, Discord or Teams link",
- "call.intro": "One link for stand-ups and calls. AI-gile only shows a Join call link; the call tool does the video and screen sharing."
+ "call.intro": "One link for stand-ups and calls. AI-gile only shows a Join call link; the call tool does the video and screen sharing.",
+ "tb.more": "More ▾",
+ "tb.menu": "Menu",
+ "tb.pin.h": "Show in top bar",
+ "tb.pin.help": "Tick what stays in the bar; the rest is under More. Setup always stays.",
+ "tb.b.twitch": "Twitch chat",
+ "tb.b.mail": "Mail",
+ "tb.b.imm": "Language"
 }
