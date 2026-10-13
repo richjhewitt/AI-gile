@@ -2567,5 +2567,8 @@
  "imm.random.help": "Dezelfde de hele dag. Een taaldag gaat voor op willekeurig.",
  "imm.title": "Toon het bord in {name} (klik nogmaals om terug te gaan)",
  "imm.back": "Terug naar {name}",
- "imm.menu": "Kies een taal om te leren"
+ "imm.menu": "Kies een taal om te leren",
+ "eng.gemini": "Gemini",
+ "eng.model.gemini": "Gemini-model (leeg = standaard van Gemini)",
+ "srv.engine.nogemini": "Gemini CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart."
 }

@@ -38,7 +38,7 @@ def('engines', 'engines: Engine pick per agent in the Team dialog, a Codex lead 
   check('Codex and its model are stored on the lead', lead.engine === 'codex' && lead.codexModel === 'gpt-test', lead);
   check('the other agent is untouched', dev.engine === undefined);
   noErrors(page);
-  check('a bad engine is refused', (await s.api('POST', '/api/projects/eng/team', { name: 'Dev', engine: 'gemini' })).status === 400);
+  check('a bad engine is refused', (await s.api('POST', '/api/projects/eng/team', { name: 'Dev', engine: 'bogus' })).status === 400);
   // 3. Codex is not installed (the stub file does not exist yet): a comment, no run, no Claude
   const before = claudeRuns();
   const r = await s.ok('POST', '/api/projects/eng/wake');
@@ -67,6 +67,28 @@ def('engines', 'engines: Engine pick per agent in the Team dialog, a Codex lead 
   const got2 = fs.readFileSync(out, 'utf8').replace(/"/g, '');
   check('an empty model leaves out -m', !/ -m /.test(got2) && /exec --json/.test(got2), got2);
   await settle();
+  // 5b. Gemini (AIG-761/762): gemini --yolo --output-format stream-json -m <model> -p <prompt>, the AGENTS.md preamble
+  await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', engine: 'gemini', geminiModel: 'gem-test' });
+  const lead2 = (await s.ok('GET', '/api/projects/eng')).team.find(m => m.name === 'Lead');
+  check('Gemini and its model are stored on the lead', lead2.engine === 'gemini' && lead2.geminiModel === 'gem-test', lead2);
+  fs.writeFileSync(out, '');
+  await s.ok('POST', '/api/projects/eng/wake');
+  for (let i = 0; i < 40 && !/yolo/.test(fs.readFileSync(out, 'utf8')); i++) await sleep(250);
+  const got3 = fs.readFileSync(out, 'utf8').replace(/\r/g, '').replace(/"/g, '');
+  check('gemini --yolo with stream-json, the model and -p', /--yolo --output-format stream-json -m gem-test -p You are running through Gemini CLI/.test(got3), got3);
+  check('the Gemini prompt names AGENTS.md, never push and the board brief', /AGENTS\.md/.test(got3) && /Never run git push/.test(got3) && /board brief for project eng/.test(got3), got3);
+  check('the log says gemini', /started \(gemini\)/.test(log()), log());
+  await settle();
+  await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', geminiModel: '' });
+  fs.writeFileSync(out, '');
+  await s.ok('POST', '/api/projects/eng/wake');
+  for (let i = 0; i < 40 && !/yolo/.test(fs.readFileSync(out, 'utf8')); i++) await sleep(250);
+  check('Gemini with no model leaves out -m', !/ -m /.test(fs.readFileSync(out, 'utf8')));
+  await settle();
+  const G = require('../../../lib/engines').ENGINES.gemini;
+  check('read(): init, assistant text, tool use, plain text, unknown ignored',
+    G.read('{"type":"init"}')[0].includes('gemini') && G.read('{"type":"message","role":"assistant","content":"hi"}')[0].includes('hi') && G.read('{"type":"message","role":"user","content":"x"}').length === 0
+    && G.read('{"type":"tool_use","tool_name":"run_shell_command","parameters":{"command":"ls"}}')[0].includes('ls') && G.read('plain words')[0] === 'plain words' && G.read('{"type":"zzz"}').length === 0);
   // 6. back to Claude
   await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', engine: 'claude' });
   await s.ok('POST', '/api/projects/eng/wake');
