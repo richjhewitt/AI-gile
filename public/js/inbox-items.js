@@ -50,7 +50,7 @@
 
   function skeleton() {
     el('app').innerHTML = `<div class="ib" id="ib">
-      <div class="ib-head"><h2>${esc(t('inbox.h'))}</h2><span class="ib-hint">${esc(t('inbox.sub'))}</span></div>
+      <div class="ib-head"><h2>${esc(t('inbox.h'))}</h2><span class="ib-hint">${esc(t('inbox.sub'))}</span> <a class="ib-bin" id="ibBin" href="#/bin" title="${esc(t('bin.link.title'))}" style="font-size:.85em;white-space:nowrap">${esc(t('bin.link', { n: 0 }))}</a></div>
       <div class="ib-tabs" id="ibTabs" role="tablist"></div>
       <div class="ib-next" id="ibNext"></div>
       <div class="ib-kinds" id="ibKinds"></div>
@@ -67,6 +67,7 @@
       <section class="ib-sec k" id="ibK"><h3><button class="ib-popbtn" data-poplist="k" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.tasks'))} <span class="ib-badge k" id="ibKn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.tasks.sub'))}</span></h3><div class="list"></div></section>
       <section class="ib-sec t" id="ibT"><h3><button class="ib-popbtn" data-poplist="t" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.t.tag'))} <span class="ib-badge t" id="ibTn"></span><span class="ib-hint" style="font-weight:400">${esc(t('inbox.t.sub'))}</span><button class="ib-tidy" id="ibTidy" title="${esc(t('tidy.title'))}">🧹 ${esc(t('tidy.btn'))}</button><button class="ib-tidy" id="ibTester" hidden title="${esc(t('tester.title'))}"></button><button class="good ib-aiall" id="ibAiAll" hidden title="${esc(t('inbox.aiall.title'))}"></button></h3><div class="list"></div></section>
     </div>`;
+    if (typeof Bin !== 'undefined') Bin.paintLink();   // AIG-840
     el('ib').addEventListener('click', IB.onClick);
     el('ib').addEventListener('keydown', IB.onKey);
   }
