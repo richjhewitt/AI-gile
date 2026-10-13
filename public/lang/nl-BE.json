@@ -2395,5 +2395,15 @@
  "eng.model": "Codex-model (leeg = standaard van Codex)",
  "eng.pick": "Engine voor {name}",
  "eng.lead.tag": "draait het project",
- "srv.engine.nocodex": "Codex is niet geïnstalleerd op deze pc, dus deze run is niet gestart."
+ "srv.engine.nocodex": "Codex is niet geïnstalleerd op deze pc, dus deze run is niet gestart.",
+ "tw.login.h": "🟣 Inloggen om te antwoorden",
+ "tw.login.help": "Om in de chat te antwoorden plak je een Twitch-chattoken (rechten chat:read en chat:edit) en de bijbehorende login. Het blijft op deze pc staan en wordt nooit meer getoond.",
+ "tw.login.get": "Token ophalen",
+ "tw.login.on": "Ingelogd als {name}",
+ "tw.login.out": "Uitloggen",
+ "tw.login.ph": "Je Twitch-login",
+ "tw.login.token": "Chattoken",
+ "tw.login.save": "Inloggen",
+ "tw.pop.title": "Chat in een eigen venster openen",
+ "tw.reply.ph": "Zeg iets als {name}. Enter verstuurt."
 }

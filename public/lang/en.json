@@ -2395,5 +2395,15 @@
  "eng.model": "Codex model (empty = Codex's own default)",
  "eng.pick": "Engine for {name}",
  "eng.lead.tag": "runs the project",
- "srv.engine.nocodex": "Codex isn't installed on this PC, so this run did not start."
+ "srv.engine.nocodex": "Codex isn't installed on this PC, so this run did not start.",
+ "tw.login.h": "🟣 Sign in to reply",
+ "tw.login.help": "To answer in chat, paste a Twitch chat token (scopes chat:read and chat:edit) and the login it belongs to. It stays on this PC and is never shown again.",
+ "tw.login.get": "Get a token",
+ "tw.login.on": "Signed in as {name}",
+ "tw.login.out": "Sign out",
+ "tw.login.ph": "Your Twitch login",
+ "tw.login.token": "Chat token",
+ "tw.login.save": "Sign in",
+ "tw.pop.title": "Pop the chat out into its own window",
+ "tw.reply.ph": "Say something as {name}. Enter sends."
 }
