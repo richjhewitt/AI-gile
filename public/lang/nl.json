@@ -2652,5 +2652,12 @@
  "remind.sorry.ok": "Het team is gevraagd",
  "eng.gemini": "Gemini",
  "eng.model.gemini": "Gemini-model (leeg = standaard van Gemini)",
- "srv.engine.nogemini": "Gemini CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart."
+ "srv.engine.nogemini": "Gemini CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart.",
+ "rails.h": "🛡️ Vangrails",
+ "rails.riskPlan": "Een riskante kaart heeft jouw akkoord op een plan nodig voordat het team bouwt",
+ "rails.qaGate": "Een kaart met rode QA wordt niet ter test overgedragen",
+ "rails.quietTimes": "Tijdens je stille tijden gaat niets live",
+ "rails.postmortem": "Een incident wordt afgesloten met een postmortem",
+ "rails.help.list": "Deze staan altijd aan. Zet je techniekniveau op Expert, of het hulpniveau op minst, om ze een voor een uit te zetten.",
+ "rails.help.switches": "Haal een vinkje weg en het team wordt er niet meer door tegengehouden. Aangevinkt is de veilige manier."
 }
