@@ -132,7 +132,7 @@ body.desktop #updateTop { top: 44px; }
 /* 🧙 Setup wizard (AIG-354) */
 .wz-dots { display: flex; gap: 6px; margin-bottom: 12px; } .wz-dot { width: 22px; height: 6px; border-radius: 3px; background: var(--line, #8884); } .wz-dot.on { background: var(--accent); } .wz-dot.past { background: var(--accent); opacity: .5; }
 .wz-sum { width: 100%; border-collapse: collapse; } .wz-sum th { text-align: start; font-weight: 600; padding: 4px 8px 4px 0; vertical-align: top; white-space: nowrap; } .wz-sum td { padding: 4px 8px 4px 0; vertical-align: top; } .wz-sum tr + tr { border-top: 1px solid var(--line, #8884); }
-.wz-opts { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; } .wz-opt { display: flex; align-items: baseline; gap: 6px; }
+.wz-opts { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; } .wz-opt { display: flex; align-items: flex-start; gap: 8px; border-radius: 10px; text-align: start; } .wz-opt input { margin-top: 3px; flex: none; } .wz-opt small { display: block; margin-top: 2px; }   /* radio left, name, hint underneath (AIG-921) */
 /* Badge maker (AIG-396) */
 .bm-top { display: flex; align-items: center; gap: 14px; margin: 8px 0; }
 .bm-prev { width: 84px; height: 84px; border-radius: 50%; }
