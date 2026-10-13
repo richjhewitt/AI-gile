@@ -111,6 +111,8 @@ export async function openPage(ctx, hash) {
   if (!openPage.firstrun) await page.addInitScript(pinAllInit);
   // AIG-937: home keeps its More menu open here, so areas click the moved buttons by selector (the homeux area leaves it alone).
   if (!openPage.homeMore) await page.addInitScript(() => { try { localStorage.setItem('aigile.homeMoreOpen', '1'); } catch {} });
+  // The open card's ⋯ menu (AIG-935) is laid out open for other areas, which click its buttons directly; the cardux area sets openPage.realMenu.
+  if (!openPage.realMenu) await page.context().addInitScript(() => { const on = () => document.documentElement && (document.documentElement.classList.add('qa-menu'), true); if (!on()) new MutationObserver((_, o) => { if (on()) o.disconnect(); }).observe(document, { childList: true }); });
   await page.goto(BASE + '/' + (hash || ''));
   await page.waitForSelector('#app > *', { timeout: 8000 });
   return page;

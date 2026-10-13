@@ -8,7 +8,7 @@ body.pop .panel { padding: 10px 16px 16px; }
 body.desktop.pop .panel > .actions:first-child { -webkit-app-region: drag; padding-right: 140px; min-height: 32px; }
 /* AIG-405: the bar you drag a pop-out by stays at the top while you scroll */
 body.pop .panel { overflow: visible; }
-body.pop .panel > .actions:first-child { position: sticky; top: 0; z-index: 30; background: var(--panel); margin-top: -10px; padding-top: 10px; }
+body.pop .panel > .actions:first-child, body.pop .panel > .card-head:first-child { position: sticky; top: 0; z-index: 30; background: var(--panel); margin-top: -10px; padding-top: 10px; }
 /* AIG-700: a real title bar (as tall as the window buttons) to drag by; the gaps between buttons were too small to grab */
 /* AIG-780: a real element (#popDrag, added by app.js) in every pop-out window; the ::before bar didn't drag in the app */
 body.desktop.popwin #popDrag { position: fixed; top: 0; left: 0; right: 0; height: 36px; background: var(--panel); border-bottom: 1px solid var(--border); -webkit-app-region: drag; z-index: 40; }

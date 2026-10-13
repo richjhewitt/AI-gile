@@ -5,7 +5,7 @@ function cardFields(c, o = {}) {
   return `<label class="f"><span>${esc(t('card.f.title'))}</span><input type="text" id="f-title" value="${esc(c.title)}" placeholder="${esc(o.titlePh || '')}" maxlength="200"></label>
     <label class="f"><span>${esc(o.descLabel || t('card.f.description'))}</span><textarea id="f-description" rows="4" placeholder="${esc(o.descPh || '')}">${esc(c.description)}</textarea></label>
     ${o.testSteps ? `<label class="f"><span>${esc(t('card.f.teststeps'))}</span><textarea id="f-testSteps" rows="4">${esc(c.testSteps)}</textarea></label>` : ''}
-    <div class="row">
+    ${o.more ? `<details class="nc-more" id="nc-more" ${o.moreOpen ? 'open' : ''}><summary>${esc(t('dlg.newcard.more'))}</summary>${o.moreTop || ''}` : ''}<div class="row">
       <label class="f"><span>${esc(t('card.f.type'))}</span><select id="f-type">${opts(TYPES, c.type, Object.fromEntries(TYPES.map(k => [k, t('type.' + k)])))}</select></label>
       <label class="f"><span>${esc(t('card.f.priority'))}</span><select id="f-priority">${opts(PRIORITIES, c.priority, Object.fromEntries(PRIORITIES.map(k => [k, t('priority.' + k)])))}</select></label>
       <label class="f"><span>${esc(t('card.f.risk'))}</span><select id="f-risk">${opts(RISKS, c.risk || 'normal', Object.fromEntries(RISKS.map(k => [k, t('risk.' + k)])))}</select></label>
@@ -19,7 +19,7 @@ function cardFields(c, o = {}) {
     ${o.flags ? `<div><label class="chk"><input type="checkbox" id="f-blocked" ${c.blocked ? 'checked' : ''}> ${esc(t('card.f.blocked'))}</label>
       <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> ${esc(t('card.f.needsyou'))}</label>
       <label class="chk"><input type="checkbox" id="f-focus" ${c.focus ? 'checked' : ''}> ${esc(t('fx.f.focus'))}</label>
-      <label class="chk"><input type="checkbox" id="f-hidepublic" ${c.hidePublic ? 'checked' : ''}> ${esc(t('pub.card.hide'))}</label></div>` : ''}`;
+      <label class="chk"><input type="checkbox" id="f-hidepublic" ${c.hidePublic ? 'checked' : ''}> ${esc(t('pub.card.hide'))}</label></div>` : ''}${o.more ? '</details>' : ''}`;
 }
 // Who a card goes to: a role (the lead launches that kind of agent; the model is shown so the cost is
 // visible), a named team member, or the owner himself (a task for him). Agents swap a role for their name on start.
