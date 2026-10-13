@@ -173,8 +173,12 @@ const Dms = (() => {
     const fresh = thread.open.find(o => !waitingSeen.has(o.id));
     thread.open.forEach(o => waitingSeen.add(o.id));
     if (fresh && target !== GENERAL) { target = fresh.id; fold = fresh.id; }
-    if (target !== GENERAL && !thread.open.some(o => o.id === target)) target = thread.open.length ? thread.open[0].id : null;
     const html = foldsHtml() || `<p class="muted dm-empty">${esc(t(chats.some(x => x.slug === open && x.watchman) ? 'dms.nomsgs.watch' : 'dms.nomsgs'))}</p>`;
+    // AIG-757: the card open in the chat can be answered too, not only cards waiting on you: a reply to a 💬 card the
+    // lead had answered used to start a new card.
+    const fc0 = (thread.cards || {})[fold];
+    thread.answer = !thread.watchman && fc0 && !fc0.done && fc0.kind !== 'test' && !thread.open.some(o => o.id === fold) ? [...thread.open, { id: fold, title: fc0.title }] : thread.open;
+    if (target !== GENERAL && !thread.answer.some(o => o.id === target)) target = thread.open.length ? thread.open[0].id : thread.answer.length ? thread.answer[0].id : null;
     if (list.dataset.sig !== html) {
       const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
       list.dataset.sig = html; list.innerHTML = html;
@@ -182,8 +186,8 @@ const Dms = (() => {
     }
     // Which card the typing box answers: the one waiting on you, or pick when several are (AIG-157). The list also
     // offers a new message to the lead, about nothing waiting (AIG-285).
-    const q = thread.open.find(o => o.id === target);
-    const to = thread.open.length && !thread.watchman ? `${esc(t('dms.replyto'))} <select id="dmTarget" onchange="Dms.aim(this.value)">${thread.open.map(o => `<option value="${esc(o.id)}" ${o.id === target ? 'selected' : ''}>${esc(o.id)} ${esc(o.title)}</option>`).join('')}<option value="${GENERAL}" ${target === GENERAL ? 'selected' : ''}>💬 ${esc(t('dms.newmsg', { lead: thread.lead }))}</option></select>`
+    const q = thread.answer.find(o => o.id === target);
+    const to = thread.answer.length && !thread.watchman ? `${esc(t('dms.replyto'))} <select id="dmTarget" onchange="Dms.aim(this.value)">${thread.answer.map(o => `<option value="${esc(o.id)}" ${o.id === target ? 'selected' : ''}>${esc(o.id)} ${esc(o.title)}</option>`).join('')}<option value="${GENERAL}" ${target === GENERAL ? 'selected' : ''}>💬 ${esc(t('dms.newmsg', { lead: thread.lead }))}</option></select>`
       : q ? t('dms.replying.html', { link: `<a href="#/p/${esc(thread.slug)}/${esc(q.id)}">${esc(q.id)}</a>`, title: esc(q.title) }) : esc(t('dms.newmsg', { lead: thread.lead }));
     if (el('dmTo').dataset.sig !== to && document.activeElement !== el('dmTarget')) { el('dmTo').dataset.sig = to; el('dmTo').innerHTML = to; }
     el('dmGo').hidden = !q;
@@ -230,7 +234,7 @@ const Dms = (() => {
     el('dmText').focus();
   }
   // Open a fold; if that card is waiting on you, the typing box answers it.
-  function openFold(id) { fold = id; if (thread && thread.open.some(o => o.id === id)) target = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
+  function openFold(id) { fold = id; const c = thread && (thread.cards || {})[id]; if (thread && (thread.open.some(o => o.id === id) || (!thread.watchman && c && !c.done && c.kind !== 'test'))) target = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   // An answer button that needs a reason (AIG-176): aim the typing box at that card and start the reply.
   function reply(id, text) { aim(id); const ta = el('dmText'); if (ta) { if (text) ta.value = text; ta.focus(); ta.setSelectionRange(text.length, text.length); } }
   // Go to the card the lead carried on in (AIG-426): into its fold when it is in this chat, else to the card itself.
@@ -248,7 +252,7 @@ const Dms = (() => {
   async function send(fixed) {
     if (busy || !thread) return;
     if (thread.person) return sendPerson(fixed);
-    const key = 'dm:' + thread.slug, text = fixed || el('dmText').value.trim(), q = thread.open.find(o => o.id === target);
+    const key = 'dm:' + thread.slug, text = fixed || el('dmText').value.trim(), q = (thread.answer || thread.open).find(o => o.id === target);
     if (!text && !Attach.has(key)) { el('dmErr').textContent = t('dms.empty'); return; }
     busy = true; el('dmErr').textContent = '';
     try {
@@ -258,7 +262,8 @@ const Dms = (() => {
         catch (e) { if (/No Token Mode|budget/i.test(e.message || '') && confirm(e.message + ' ' + t('dms.sendanyway'))) await api('POST', '/api/chats/_watchman', { text, attachments, anyway: true }); else throw e; }
       }   // the watchman passes it on (AIG-221)
       else if (q) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
-      else await api('POST', `/api/projects/${thread.slug}/cards`, { title: '💬 ' + text.split('\n')[0].slice(0, 80), description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
+      else { const c = await api('POST', `/api/projects/${thread.slug}/cards`, { title: '💬 ' + text.split('\n')[0].slice(0, 80), description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
+        if (c && c.id) { fold = c.id; target = c.id; } }   // AIG-757: the next message carries on in the new card
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
       if (target === GENERAL) target = null;   // sent: back to answering what waits on you
       await loadThread(true); loadRail();
