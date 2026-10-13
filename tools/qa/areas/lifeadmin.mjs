@@ -3,7 +3,8 @@
 // mode. Date-proof: every date is made from "now". Old or broken saved data never breaks the page.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, sleep, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { createRequire } from 'node:module';
+import { ROOT, check, sleep, mkProject, openPage, noErrors, def } from '../lib.mjs';
 
 def('lifeadmin', '🏡 life admin without tokens: reminders (once or repeating), lists, tick / snooze / delete, no card and no wake, broken file safe, No AI, phone + dark (AIG-798)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -63,8 +64,35 @@ def('lifeadmin', '🏡 life admin without tokens: reminders (once or repeating),
   check('no card was made and no agent woken', (await s.ok('GET', '/api/projects/alpha')).cards.length === 0 && fs.existsSync(s.wakeOut) === wakeBefore);
   check('the data is a plain file, not a project (.conf)', fs.existsSync(file) && !(await s.ok('GET', '/api/projects')).some(p => /life/i.test(p.slug)));
 
+  // Review fixes: owner only, damaged file, repeat maths, ids
+  const team = (m, u, b) => fetch(s.base + u, { method: m, headers: { 'Content-Type': 'application/json', 'X-Aigile-Where': 'terminal', 'X-Aigile-As': 'Lead' }, body: b ? JSON.stringify(b) : undefined }).then(r => r.status);
+  check('a team call gets 403 on every life admin and day start route', (await Promise.all([team('GET', '/api/lifeadmin'), team('POST', '/api/lifeadmin/reminders', { text: 'x' }), team('POST', '/api/lifeadmin/lists', { name: 'x' }), team('POST', '/api/lifeadmin/l1/items', { text: 'x' }), team('POST', '/api/lifeadmin/r1/tick'), team('POST', '/api/lifeadmin/r1/snooze', { mins: 5 }), team('DELETE', '/api/lifeadmin/r1'), team('GET', '/api/daystart'), team('POST', '/api/daystart/seen')])).every(c => c === 403));
+  const { _advance: adv } = createRequire(import.meta.url)(path.join(ROOT, 'lib', 'lifeadmin.js'));
+  const loc = (y, m, d, h = 9) => new Date(y, m, d, h, 0, 0).toISOString();
+  let r = { repeat: 'monthly', due: loc(2031, 0, 31), dom: 31 };
+  adv(r, new Date(2031, 0, 31, 12).getTime());
+  check('monthly from 31 Jan lands on 28 Feb, not 3 Mar', new Date(r.due).getMonth() === 1 && new Date(r.due).getDate() === 28, r.due);
+  adv(r, new Date(2031, 1, 28, 12).getTime());
+  check('and goes back to the 31st in March', new Date(r.due).getMonth() === 2 && new Date(r.due).getDate() === 31, r.due);
+  r = { repeat: 'daily', due: loc(2031, 5, 10) };
+  adv(r, new Date(2031, 5, 9).getTime());
+  check('ticking early still moves it on at least one occurrence', new Date(r.due).getDate() === 11, r.due);
+  r = { repeat: 'daily', due: loc(2015, 0, 1) };
+  adv(r, new Date(2031, 5, 10, 12).getTime());
+  check('a reminder years old goes straight to the next future time', new Date(r.due).getTime() > new Date(2031, 5, 10, 12).getTime() && new Date(r.due).getTime() - new Date(2031, 5, 10, 12).getTime() <= 864e5 + 3600e3, r.due);
+  r = { repeat: 'weekly', due: loc(2015, 0, 1) };
+  adv(r, new Date(2031, 5, 10, 12).getTime());
+  check('weekly the same, within a week', new Date(r.due).getTime() - new Date(2031, 5, 10, 12).getTime() <= 7 * 864e5 + 3600e3 && new Date(r.due).getTime() > new Date(2031, 5, 10, 12).getTime());
+  fs.writeFileSync(file, JSON.stringify({ reminders: [{ id: 'r7', text: 'Old', due: new Date().toISOString(), repeat: '' }], lists: [] }));
+  const nr = await s.ok('POST', '/api/lifeadmin/reminders', { text: 'New' });
+  check('a missing id counter never repeats an id', nr.id !== 'r7' && (await api()).reminders.length === 2, nr.id);
+  fs.writeFileSync(file, '{damaged');
+  const dmg = await s.api('POST', '/api/lifeadmin/reminders', { text: 'x' });
+  check('a damaged file refuses a write and is left as it was', dmg.status === 409 && fs.readFileSync(file, 'utf8') === '{damaged' && (await s.api('POST', '/api/daystart/seen')).status === 409);
+  check('but reading it still works (empty)', (await s.api('GET', '/api/lifeadmin')).status === 200);
+  fs.rmSync(file, { force: true });
+
   // The page
-  await s.ok('DELETE', `/api/lifeadmin/${r2.id}`); await s.ok('DELETE', `/api/lifeadmin/${r3.id}`); await s.ok('DELETE', `/api/lifeadmin/${r4.id}`); await s.ok('DELETE', `/api/lifeadmin/${l1.id}`); await s.ok('DELETE', `/api/lifeadmin/${r1.id}`);
   const page = await openPage(ctx, '#/');
   check('home has a Life admin link', await page.locator('a.navlink[href="#/life"]').count() === 1);
   await page.click('a.navlink[href="#/life"]');
