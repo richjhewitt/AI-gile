@@ -30,7 +30,7 @@ const Assumptions = (() => {
           : `<p><button class="good as-ok" onclick="Assumptions.act('${k}','ok')">${esc(t('assume.ok'))}</button> <button class="as-plug" onclick="Assumptions.plug('${k}')">${esc(t('assume.plug'))}</button></p>`)
         + `</div>`;
     };
-    const card = list => { const a = list[0], sum = String(a.summary || '').slice(0, 100) + (String(a.summary || '').length > 100 ? '…' : '');
+    const card = list => { const a = list[0], plain = String(a.summary || '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\*\*|__|`/g, '').replace(/^#+\s*/gm, ''), sum = plain.slice(0, 100) + (plain.length > 100 ? '…' : '');   // no raw markdown in the one-line summary (AIG-929)
       return `<div class="uz-card as-card"><div class="as-head" style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline"><b><a href="#/p/${esc(a.slug)}/${esc(a.id)}">${esc(a.id)}</a> ${esc(a.title)}</b> <a class="as-open" href="#/p/${esc(a.slug)}/${esc(a.id)}">${esc(t('assume.open'))}</a></div>`
         + (sum ? `<div class="muted as-sum">${esc(sum)}</div>` : '') + list.map(entry).join('') + `</div>`; };
     // AIG-533: a summary line per project (to review / OK / plugged); each name jumps to its section.
@@ -41,7 +41,7 @@ const Assumptions = (() => {
     const sumBox = A.sum ? `<div class="uz-card as-summary"><b>${esc(t(A.sum.ai ? 'assume.summary.ai' : 'assume.summary.h', { n: A.sum.n }))}</b><div>${A.sum.text ? md(A.sum.text) : esc(t('assume.summary.none'))}</div></div>` : '';
     return `<div class="uz"><h2>${esc(t('assume.title'))}</h2><p class="muted">${esc(t('assume.intro'))}</p>`
       + `<p><button class="as-sumbtn" onclick="Assumptions.summarise(false, this)">${esc(t('assume.summarise'))}</button> <button class="as-sumai ai-only" onclick="Assumptions.summarise(true, this)">${esc(t('assume.summarise.ai'))}</button></p>` + sumBox
-      + `<ul class="as-sum-list" style="list-style:none;padding:0">${names.map(sumLine).join('')}</ul>`
+      + (names.length > 1 ? `<ul class="as-sum-list" style="list-style:none;padding:0">${names.map(sumLine).join('')}</ul>` : '')   // the jump list only helps with 2+ projects; with one it repeated the header below (AIG-929)
       + names.map(pn => `<h3 id="as-p-${esc(pn.replace(/\W+/g, '-'))}">${esc(pn)} <span class="muted" style="font-weight:400">· ${esc(t('assume.sum', count(pn)))}</span></h3>` + Object.values(by[pn] || {}).map(card).join('')).join('') + `</div>`;
   };
   // AIG-884: remember when it was marked, and repaint once the undo window has passed so it drops off.
