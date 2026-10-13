@@ -20,6 +20,7 @@ def('leadchat', '💬 Lead chat: DMs go to one chat per project, not a card each
   check('the DM made no card (the old 💬 card is still the only one)', cards.length === 1 && cards[0].id === old.id, cards.map(c => c.title));
   const chat = await s.ok('GET', '/api/projects/chatty/leadchat');
   check('it is in the Lead chat, unanswered', chat.messages.length === 1 && chat.unanswered === 1 && /dark mode/.test(chat.messages[0].text), chat);
+  await page.waitForFunction(() => /Lead chat/.test((document.querySelector('#dmList .dm-fold:first-child .dm-fold-h') || {}).textContent || ''));   // the page redraws after its own POST + reload, a moment after the API has the message
   check('the chat shows it in a pinned Lead chat fold', /Lead chat/.test(await page.textContent('#dmList .dm-fold:first-child .dm-fold-h')) && !(await page.$('#dmList .dm-fold:first-child .dm-fold-id')));
   const up = await s.ok('GET', '/api/projects/chatty/updates?peek=1');
   check('updates tells the lead (a wake like a new card)', up.cards.some(c => c.chat && c.items[0].text.includes('dark mode')) && up.chat === 1, up);
