@@ -74,7 +74,7 @@ async function ideaDialog() {
   Attach.clear('idea');
   popNext('idea'); openDialog(`<h2>${esc(t('idea.h'))}</h2>
     <form onsubmit="return sendIdea(event)"><label class="f"><span>${esc(t('idea.q'))}</span><textarea id="idea-text" class="grow" data-draft="idea" rows="4" oninput="growBox(this)" onkeydown="if (EnterSend.is(event, 'idea')) sendIdea(event)" placeholder="${esc(t('idea.ph'))}"></textarea></label>
-    <label class="f"><span>${esc(t('idea.to'))}</span><select id="idea-to">
+    <label class="f"><span>${esc(t('idea.to'))}</span><select id="idea-to" onkeydown="if (EnterSend.is(event, 'idea')) sendIdea(event)">
       <option value="_sm" ${pick === '_sm' ? 'selected' : ''}>${esc(t('idea.sm'))}</option>
       ${ideaTeamOptionsHtml(projects, leads, pick)}
       <option value="_all">${esc(t('idea.all'))}</option><option value="_later">${esc(t('idea.later'))}</option></select></label>

@@ -54,5 +54,23 @@ def('ideabtn', 'idea button: on home and board; one project makes a card in For 
   check('with Enter sends off for ideas, Enter makes a new line', (await board.isVisible('#idea-text')) && (await board.inputValue('#idea-text')).endsWith('\n') && !(await cards('beta')).some(c => c.title.includes('Enter off idea')));
   await board.keyboard.press('Control+Enter'); await board.waitForSelector('#idea-text', { state: 'detached' }); await sleep(300);
   check('Ctrl+Enter still sends', (await cards('beta')).filter(c => c.title.includes('Enter off idea')).length === 1);
+  // AIG-919: Enter sends from the Ask the team box, also a second time right after a send, and to the Lead Scrum Master
+  const sm = async () => (await s.ok('GET', '/api/chats/_watchman')).messages || [];
+  const enterSend = async (to, text) => { await board.click('#ideaBtn'); await board.waitForSelector('#idea-text'); await board.selectOption('#idea-to', to); await board.click('#idea-text'); await board.keyboard.type(text); await board.keyboard.press('Enter'); await board.waitForSelector('#idea-text', { state: 'detached', timeout: 5000 }).catch(() => {}); };
+  await setup.check('[data-enter-kind="idea"]');
+  await board.reload(); await board.waitForSelector('#ideaBtn'); await sleep(800);
+  await enterSend('beta', 'Enter again one');
+  check('AIG-919: Enter sends and the box closes', !(await board.isVisible('#idea-text').catch(() => false)) && (await cards('beta')).filter(c => c.title.includes('Enter again one')).length === 1);
+  await enterSend('beta', 'Enter again two');
+  check('AIG-919: opened again right after a send, Enter sends again', !(await board.isVisible('#idea-text').catch(() => false)) && (await cards('beta')).filter(c => c.title.includes('Enter again two')).length === 1);
+  await enterSend('_sm', 'Enter to the lead');
+  check('AIG-919: Enter sends to the Lead Scrum Master', JSON.stringify(await sm()).includes('Enter to the lead'));
+  await enterSend('_sm', 'Enter to the lead again');
+  check('AIG-919: and again right after', JSON.stringify(await sm()).includes('Enter to the lead again'));
+  // AIG-919: after picking "Send to" the focus sits in the dropdown; Enter there sends too
+  await board.click('#ideaBtn'); await board.waitForSelector('#idea-text'); await board.fill('#idea-text', 'Enter from the dropdown');
+  await board.selectOption('#idea-to', '_sm'); await board.focus('#idea-to'); await board.keyboard.press('Enter');
+  await board.waitForSelector('#idea-text', { state: 'detached', timeout: 5000 }).catch(() => {});
+  check('AIG-919: Enter in the Send to dropdown sends', !(await board.isVisible('#idea-text').catch(() => false)) && JSON.stringify(await sm()).includes('Enter from the dropdown'));
   noErrors(home); noErrors(board);
 }, true);
