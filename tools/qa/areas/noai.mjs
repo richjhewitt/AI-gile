@@ -43,6 +43,7 @@ def('noai', 'No AI, ever: AI parts gone (top bar, Setup, roster, wizard), server
 
   // A person on the roster, with a card
   await page.goto(page.url().split('#')[0] + '#/p/alpha'); await page.waitForSelector('.toolbar');
+  await page.waitForFunction(() => state.route.view === 'project' && state.route.slug === 'alpha');   // teamDialog needs the project route to have landed (AIG-956)
   await page.evaluate(() => teamDialog());
   await page.waitForSelector('#ppl-name');
   check('the roster dialog is just people (no role rows)', await page.locator('.tm-row').count() === 0);
