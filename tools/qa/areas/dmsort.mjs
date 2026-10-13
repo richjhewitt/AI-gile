@@ -18,7 +18,9 @@ def('dmsort', 'Messages: newest chat first, All hands pinned, ✕ Close hides a 
   check('All hands first, then newest chat first', o.join() === '_allhands,sort-one,sort-three,sort-two', o);
   check('an unread chat has an obvious mark', await page.locator('#dmPanel .dm-rowwrap.unread [data-dm="sort-one"]').count() === 1 && await page.locator('#dmPanel [data-dm="sort-one"] .dm-unread').count() === 1);
   const row = await page.textContent('#dmPanel [data-dm="sort-one"]');
-  check("row shows the project name first, then lead and the message preview", /Sort OneLead . third/.test(row) && !/^W*Lead/.test(row), row);
+  check("row shows the project name first, then lead and the message preview", /Sort OneLead . third/.test(row) && !/^\W*Lead/.test(row), row);
+  const row3 = await page.textContent('#dmPanel [data-dm="sort-three"]');
+  check('the preview keeps every letter (no lost s)', /Lead . second/.test(row3), row3);
   const dir = process.env.QA_SHOTS || process.env.TEMP || '.';
   try { await page.screenshot({ path: dir + '/dmsort-list2.png' }); } catch {}
   await say('sort-two', 'newest now');
