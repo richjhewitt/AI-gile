@@ -14,8 +14,8 @@ const Dms = (() => {
   // A lead's own picture when it has one (AIG-150), else the project's.
   const leadAv = c => c.leadPic ? `<span class="dm-av" style="--proj:${esc(c.color || '')}"><img class="pic" src="${esc(c.leadPic)}" alt=""></span>` : avatar(c);
   // 🧭 The Lead Scrum Master's chat (AIG-359): its name in the chosen language.
-  const leadName = c => c.watchman ? t('sm.lead') : c.lead;
-  const chatName = c => c.watchman ? t('sm.name') : c.name;
+  const leadName = c => c.noAi ? t('sm.noai.lead') : c.watchman ? t('sm.lead') : c.lead;
+  const chatName = c => c.noAi ? t('sm.noai.name') : c.watchman ? t('sm.name') : c.name;
   const badge = n => n ? `<span class="dm-unread">${n > 99 ? '99+' : n}</span>` : '';
   // "Seen" per project: the project's last update when you last opened its board (this browser only).
   const seen = { get: s => { try { return localStorage.getItem('aigile.seen.' + s) || ''; } catch { return ''; } }, set: (s, v) => { try { localStorage.setItem('aigile.seen.' + s, v); } catch {} } };
@@ -63,7 +63,7 @@ const Dms = (() => {
     let boards = [];
     try { boards = (await api('GET', '/api/shares')).filter(l => l.theirRole && !l.forgotten && ['live', 'ended'].includes(l.state)); } catch {}
     try { people = (await api('GET', '/api/dms/contacts')).filter(c => !c.blocked).map(c => ({ ...c, unread: c.lastIn && c.lastIn > dmSeen.get(c.id) && open !== 'dm:' + c.id ? 1 : 0 })); } catch { people = []; }
-    if (NoAi.on) chats = [];   // 🚫 no DMs to leads (AIG-581)
+    if (NoAi.on) chats = chats.filter(c => c.noAi);   // 🚫 no DMs to leads (AIG-581); only the 🧭 Scrum Master (no AI) stays (AIG-729)
     const cur = here(), p = projects.find(x => x.slug === cur);
     if (p) seen.set(cur, p.updated);   // looking at it now counts as seen
     const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + people.reduce((n, c) => n + c.unread, 0) + DiscordTab.unread();
@@ -230,6 +230,30 @@ const Dms = (() => {
   async function smNight(on) { try { await api('POST', '/api/setup', { prefs: { watchAll: !!on } }); await loadThread(); } catch (e) { el('dmErr').textContent = e.message || String(e); } }
   async function smPush(v) { try { await api('POST', '/api/scrummaster/push', { level: +v }); await loadThread(); } catch (e) { el('dmErr').textContent = e.message || String(e); } }
 
+  // 🧭 Scrum Master (no AI) (AIG-730/731): command buttons above the reply box. Typed `/sort`, `/new project`, `/move`, `/request` do the same;
+  // plain code on the server (lib/smcmd.js), the current project is sent with each message.
+  function smCmdsHtml() {
+    const sorts = ['priority', 'age', 'type', 'who'].map(k => `<button type="button" data-smcmd="/sort ${k}" title="${esc(t('sm.noai.sort.title', { key: t('sm.noai.sort.' + k) }))}">${esc(t('sm.noai.sort.' + k))}</button>`).join('');
+    return `<div class="actions sm-cmds" id="smCmds"><span class="muted">${esc(t('sm.noai.sort'))}</span>${sorts}
+      <button type="button" data-smfill="/new project " title="${esc(t('sm.noai.new.title'))}">${esc(t('sm.noai.new'))}</button>
+      <button type="button" data-smfill="/move AIG-" title="${esc(t('sm.noai.move.title'))}">${esc(t('sm.noai.move'))}</button>
+      <button type="button" id="smRequest" onclick="Dms.requestForm()" title="${esc(t('sm.noai.request.title'))}">${esc(t('sm.noai.request'))}</button></div>`;
+  }
+  function requestForm() {
+    openDialog(`<h2>${esc(t('sm.noai.req.h'))}</h2><p class="muted">${esc(t('sm.noai.req.help'))}</p>
+      <label>${esc(t('sm.noai.req.name'))}<input id="smReqName" maxlength="80" autocomplete="off"></label>
+      <label>${esc(t('sm.noai.req.why'))}<textarea id="smReqWhy" rows="3" maxlength="500"></textarea></label>
+      <div class="err" id="smReqErr"></div>
+      <div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button><button type="button" class="primary" id="smReqGo" onclick="Dms.requestSend()">${esc(t('sm.noai.req.go'))}</button></div>`);
+    const n = el('smReqName'); if (n) n.focus();
+  }
+  async function requestSend() {
+    const name = el('smReqName').value.trim(), why = el('smReqWhy').value.trim();
+    if (!name || !why) { el('smReqErr').textContent = t('sm.noai.req.missing'); return; }
+    try { await api('POST', '/api/chats/_watchman/request', { kind: 'server', name, why, project: here() }); closeDialog(); await loadThread(true); loadRail(); }
+    catch (e) { el('smReqErr').textContent = e.message || String(e); }
+  }
+
   function show(slug) {
     if (isTw(slug)) { open = slug; listOpen = true; thread = null; TwitchTab.show(slug); loadRail(); return; }
     if (isDc(slug)) { open = slug; listOpen = true; thread = null; DiscordTab.show(slug); loadRail(); return; }
@@ -241,8 +265,9 @@ const Dms = (() => {
     panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(chatName(c))}</div></div><span style="flex:1"></span>${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}${who ? '<div class="dm-usage" id="dmUsage" hidden></div>' : ''}
       <div class="dm-list" id="dmList"></div>
-      ${who ? '' : `<div class="dm-legend muted">${esc(t('dms.origin.legend'))}</div>`}
+      ${who || c.noAi ? '' : `<div class="dm-legend muted">${esc(t('dms.origin.legend'))}</div>`}
       <div id="dmFollow"></div>
+      ${c.noAi ? smCmdsHtml() : ''}
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
         <textarea id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(EnterSend.is(event,'${who ? 'dm' : 'chat'}')){event.preventDefault();Dms.send()}"></textarea>
         <div class="err" id="dmErr"></div>
@@ -276,7 +301,8 @@ const Dms = (() => {
     busy = true; el('dmErr').textContent = '';
     try {
       const attachments = fixed ? [] : await Attach.upload(key, thread.slug);
-      if (thread.watchman) {   // Send anyway (AIG-531): No Token Mode / budget refuse it, but it is the owner's call
+      if (thread.noAi) await api('POST', '/api/chats/_watchman', { text, project: here() });   // 🧭 no AI: plain code answers at once (AIG-729)
+      else if (thread.watchman) {   // Send anyway (AIG-531): No Token Mode / budget refuse it, but it is the owner's call
         try { await api('POST', '/api/chats/_watchman', { text, attachments }); }
         catch (e) { if (/No Token Mode|budget/i.test(e.message || '') && confirm(e.message + ' ' + t('dms.sendanyway'))) await api('POST', '/api/chats/_watchman', { text, attachments, anyway: true }); else throw e; }
       }   // the watchman passes it on (AIG-221)
@@ -339,6 +365,10 @@ const Dms = (() => {
     }
   }
   document.addEventListener('click', e => {
+    const sc = e.target.closest('#smCmds [data-smcmd]');
+    if (sc) { send(sc.dataset.smcmd); return; }
+    const sf = e.target.closest('#smCmds [data-smfill]');
+    if (sf) { const ta = el('dmText'); if (ta) { ta.value = sf.dataset.smfill; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } return; }
     const sv = e.target.closest('#dmPanel .cemoji-save');
     if (sv) { e.preventDefault(); saveEmoji(sv.dataset.ecid, sv.dataset.esave); return; }
     const fl = e.target.closest('#dmPanel [data-dmfilter]');
@@ -368,5 +398,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   setInterval(() => { if (!document.hidden) { loadRail(); if (open) loadThread(); } }, 3000);
   loadRail();
-  return { follow, show, back, close, send, ask, aim, reply, reload, smNight, smPush };
+  return { follow, show, back, close, send, ask, aim, reply, reload, smNight, smPush, requestForm, requestSend };
 })();

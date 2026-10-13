@@ -161,7 +161,7 @@ function columnsHtml(p, pool) {
   return colsOf(p).filter(c => !c.hidden && (!fyFocus(p.slug) || c.key === 'verify')).map(col => {
     const k = col.key, label = (col.emoji ? col.emoji + ' ' : '') + col.name, tint = col.color ? ` style="--colc:${esc(col.color)}"` : '';
     if (k === 'verify') return forYouColumn(p, label, tint, pool, col.wip);
-    const cs = pool.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => b.updated.localeCompare(a.updated));
+    const cs = pool.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => (a.sortPos || 1e9) - (b.sortPos || 1e9) || b.updated.localeCompare(a.updated));   // sortPos: 🧭 Scrum Master /sort (AIG-730)
     const all = p.cards.filter(c => c.status === k && !forYou(c)).length;   // the limit counts the whole column (AIG-118)
     // Your own steps (AIG-117): one sub-column per step; cards with no or an old step sit in the first.
     if (col.steps.length) return col.steps.map((st, i) => {
