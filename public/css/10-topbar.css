@@ -76,10 +76,12 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 #tbMore .tbm-p { display: none; }
 #tbMoreMenu { position: absolute; inset-inline-end: 0; top: calc(100% + 6px); z-index: 30; min-width: 220px; max-width: 92vw; max-height: calc(100vh - 90px); overflow-y: auto; display: flex; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 28px rgba(0, 0, 0, .35); }
 #tbMoreMenu[hidden] { display: none; }
+.tbm-label { display: none; }
+#tbMoreMenu .tbm-label { display: inline; margin-inline-start: 8px; }
 #tbMoreMenu > * { max-width: 100%; }
 #tbMoreMenu > .navlink, #tbMoreMenu > .theme-pick, #tbMoreMenu > button { display: flex; align-items: center; justify-content: flex-start; text-align: start; }
 #tbMoreMenu > span:empty, #tbMoreMenu > [hidden] { display: none; }
-#tbMoreMenu > .imm-wrap { display: flex; }
+#tbMoreMenu > .imm-wrap:not([hidden]) { display: flex; }
 .tb-pins { margin-top: 12px; } .tb-pinlist { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; }
 .tb-pin { display: inline-flex; align-items: center; gap: 4px; }
 @media (max-width: 600px) {
