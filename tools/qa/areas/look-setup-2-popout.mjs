@@ -4,7 +4,7 @@ import http from 'node:http';
 import path from 'node:path';
 import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('popout', '⧉ Pop out opens a card on its own in a new window (AIG-122)', async (s, ctx) => {
+def('popout', 'â§‰ Pop out opens a card on its own in a new window (AIG-122)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const c = await mkCard(s, 'alpha', 'Follow these steps', { status: 'verify', testSteps: '1. Do the thing\n2. See the result' });
   const page = await openPage(ctx, '#/p/alpha/' + c.id);
@@ -21,7 +21,7 @@ def('popout', '⧉ Pop out opens a card on its own in a new window (AIG-122)', a
   noErrors(page);
 }, true);
 
-def('popchat', '⧉ a pop-out stays open after Send and new team messages land at the bottom, like a chat (AIG-313)', async (s, ctx) => {
+def('popchat', 'â§‰ a pop-out stays open after Send and new team messages land at the bottom, like a chat (AIG-313)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const c = await mkCard(s, 'alpha', 'Server steps', { status: 'doing', assignee: 'Forge' });
   s.cli(['comment', 'alpha', c.id, 'Step 1: run the setup', '--as', 'Forge']);
@@ -55,6 +55,16 @@ def('popchat', '⧉ a pop-out stays open after Send and new team messages land a
   await sleep(200);
   const bar = await pop.evaluate(() => { const p = document.querySelector('.panel'), a = p.querySelector(':scope > .actions'); return { top: a && Math.round(a.getBoundingClientRect().top), first: p.firstElementChild && p.firstElementChild.className, pos: a && getComputedStyle(a).position, sy: Math.round(scrollY), st: Math.round(document.scrollingElement.scrollTop), ov: getComputedStyle(p).overflowY, chain: (() => { const o = []; for (let e = a; e; e = e.parentElement) { const s = getComputedStyle(e); if (s.overflowX !== 'visible' || s.overflowY !== 'visible' || s.contain !== 'none') o.push((e.id || e.tagName) + ':' + s.overflowX + '/' + s.overflowY + '/' + s.contain); } return o.join(' '); })() }; });
   check('pop-out: the top bar stays in view when scrolled', bar.top !== null && Math.abs(bar.top) < 12, bar);
+  // AIG-780: in the desktop app every pop-out has a real bar to drag the window by, last in the page and on top
+  for (const h of ['#/pop/alpha/' + c.id, '#/pop-inbox/q', '#/pop-night']) {
+    const d = await ctx.newPage();
+    await d.addInitScript(() => Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 Electron/30.0.0' }));
+    await d.goto(BASE + '/' + h, { waitUntil: 'commit' });   // the Electron page asks for aigile://theme, which a test browser never finishes
+    await d.waitForSelector('#popDrag', { state: 'attached', timeout: 8000 }).catch(() => {});
+    const r = await d.evaluate(() => { const b = document.getElementById('popDrag'); if (!b) return null; const st = getComputedStyle(b), box = b.getBoundingClientRect(); return { region: st.webkitAppRegion || st.getPropertyValue('-webkit-app-region'), top: box.top, h: box.height, w: box.width, z: st.zIndex, hit: document.elementFromPoint(innerWidth / 2, 10) === b }; });
+    check('desktop pop-out ' + h.split('/')[1] + ': a drag bar across the top', r && r.region === 'drag' && r.top === 0 && r.h === 36 && r.hit, r);
+    await d.close();
+  }
   noErrors(main);
 }, true);
 

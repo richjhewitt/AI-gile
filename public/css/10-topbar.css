@@ -1,6 +1,8 @@
 /* ---------- top bar buttons (AIG-575/576) ---------- */
 #bugBtn:not([data-tbc]) { color: var(--danger); border-color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, var(--col)); }
 @media (min-width: 761px) { body:has(#modal .overlay) header { z-index: 15; } }   /* the bar stays usable over an open card (AIG-733); dialogs (20) still cover it */
+/* ...so the open card starts below the bar, however many rows it wraps to (--hdr-h from app.js), or the bar hides its top buttons */
+@media (min-width: 761px) { body:not(.pop):not(.poplist) #modal .overlay:not(.center) { top: var(--hdr-h, 0px); } }
 .overlay.top { z-index: 100000; }
 header .tb-off { display: none !important; }
 [data-tbc="accent"] { --tbc: var(--accent); } [data-tbc="done"] { --tbc: var(--done); } [data-tbc="warn"] { --tbc: var(--warn); }

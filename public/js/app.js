@@ -21,6 +21,14 @@ theme();
 
 // The desktop app has no title bar (AIG-128): the page's own top bar is where you drag the window.
 if (/Electron/.test(navigator.userAgent)) document.body.classList.add('desktop');
+// Every pop-out window (card, list, glance, terminal, dialog) gets a real bar to drag it by (AIG-780): the ::before bar
+// didn't move the window. Last in the page, so no full-window overlay's no-drag covers it.
+if (/Electron/.test(navigator.userAgent) && /^#\/pop/.test(location.hash)) {
+  document.body.classList.add('popwin');
+  const bar = document.createElement('div'); bar.id = 'popDrag'; document.body.appendChild(bar);
+}
+// The top bar sits over an open card (AIG-733): the card starts below it (10-topbar.css), so it needs the bar's height.
+{ const hdr = document.querySelector('body > header'); if (hdr && window.ResizeObserver) new ResizeObserver(() => document.documentElement.style.setProperty('--hdr-h', hdr.offsetHeight + 'px')).observe(hdr); }
 if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', 'prompt']) {
   const native = window[k].bind(window);
   window[k] = (...a) => { const r = native(...a); location.href = 'aigile://refocus'; return r; };
