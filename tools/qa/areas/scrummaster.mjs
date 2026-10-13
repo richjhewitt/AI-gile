@@ -215,6 +215,11 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   check('level 4 adds the 2 h card', await flagged() === base + 2, await flagged());
   await s.ok('POST', '/api/scrummaster/push', { level: 5 }); await s.ok('POST', '/api/scrummaster/round');
   check('level 5 adds the 40 min card', await flagged() === base + 3, await flagged());
+  // AIG-711: a card in progress that waits on the owner is not stuck: no 👉 lands in his questions.
+  const sw = await mkCard(s, 'gamma', 'Waiting on you', { status: 'doing', needsYou: true });
+  age('gamma', j => { j.cards.find(x => x.id === sw.id).updated = hoursAgo(9); });
+  await s.ok('POST', '/api/scrummaster/round');
+  check('AIG-711: a card waiting on the owner gets no poke', await flagged() === base + 3 && !(await getCard(s, 'gamma', sw.id)).comments.some(m => m.poke), await flagged());
   check('the AI runs stayed inside the daily cap (3)', (await s.ok('GET', '/api/scrummaster')).runsToday <= 3);
 
   // The home screen shows the Lead Scrum Master like a team's presence (AIG-463): idle when on and between runs, off when stopped.
