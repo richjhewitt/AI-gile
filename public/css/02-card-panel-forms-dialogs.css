@@ -225,3 +225,7 @@ html[data-stream-dms] .dm-railbtn[data-dms], html[data-stream-dms] #dmPanel, htm
 #streamNote { position: fixed; inset-inline-start: 12px; bottom: 12px; z-index: 60; max-width: min(92vw, 420px); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--bg, #fff); color: var(--text, #111); border: 1px solid var(--line, #8886); box-shadow: var(--shadow, 0 4px 16px #0004); font-size: 13px; } #streamNote button { min-height: 36px; }
 html[data-stream-secrets] #serversBox input[data-srv="name"], html[data-stream-secrets] #serversBox input[data-srv="value"] { -webkit-text-security: disc; text-security: disc; }
 .pub-btn .muted { font-size: 12px; } .lic-row { border: 1px solid var(--line, #8883); border-radius: 8px; padding: 8px 10px; margin: 6px 0; } .lic-letter { width: 100%; box-sizing: border-box; font: 12px/1.4 ui-monospace, monospace; margin: 6px 0; } .lic-row button { min-height: 36px; }
+/* @ tags (AIG-851) */
+.mention-box { position: fixed; z-index: 1000; max-height: 250px; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.18); padding: 4px; }
+.mention-item { padding: 5px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+.mention-item.on, .mention-item:hover { background: var(--col); }

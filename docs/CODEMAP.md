@@ -45,7 +45,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 
 ## Page ([page.md](codemap/page.md): `public/`, classic scripts in one global scope, `app.js` last)
 - `css/01..05-*.css` (linked in order from index.html); `js/core.js` (state, api, router, render); `js/format.js` (card text, md); `js/i18n.js` (languages)
-- `js/home.js`, `js/board.js`, `js/card.js`, `js/dialogs/*.js`, `js/filters.js`, `js/attach.js`
+- `js/home.js`, `js/board.js`, `js/card.js`, `js/dialogs/*.js`, `js/filters.js`, `js/attach.js`, `js/mention.js` (@ tags picker, AIG-851)
 - `js/inbox*.js` (state, top, items, tabs, page, actions, style, queue, ai)
 - `js/today.js` (`TodayPage`: `#/today`, the badge on project cards, the share bars on the usage page)
 - `js/dms.js` (DM chats), `js/share.js` (🔗 Share dialog, link offers in the inbox), `js/share-board.js` (a friend's shared project as its own board, `#/shared/<link>`), `js/ask.js` (friends' questions in the inbox), `js/pack.js` (📤 Copy for another AI / 📥 Paste the reply on a card)
