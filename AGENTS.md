@@ -69,6 +69,8 @@ aigile ask <proj> <id> "Should exports include archived items? I'm assuming no."
 
 No card for it? `add` one first. This flags the card NEEDS-OWNER and puts it in their inbox with one-click answers: a plan ending in **GO?** gets Go / Not yet and shows as **🚦 Ready for go** (or mark it with `--kind plan`), a yes/no gets Yes / No, otherwise `--options "M3U,JSON"` (up to 4). Then move on with `next`. State your assumption so a "fine" is enough. For an external blocker (missing key, failing service) use `aigile block <proj> <id> "why" --as YourName`, and `unblock` when it clears; their reply clears the block too.
 
+**Retro:** after a sprint go/no-go or a closed incident (the brief says "Run a retro"), suggest a working-agreement change: `aigile retro <proj> "suggested change" --why "what happened" [--section "Git"] [--card AIG-x] --as YourName` makes one 🚦 Ready for go card; on Go the board adds the line to WAYS-OF-WORKING.md.
+
 **Owner away? Don't ask, assume.** Log it so he can judge it cold, half-asleep, without the card in his head: `aigile assume <proj> <id> --decided "what had to be decided" --chose "what we chose" --why "why" --if-plugged "what changes if he says no" [--options "A|B|C"] --as YourName` (also `comment ... --assume` with the same flags). Not a bare one-liner. It lands on his 🌙 Assumptions page, grouped by card, where he marks it 👍 fine or ✋ plugs it with a reply on the card.
 **To do ran dry?** The night watch refills it from urgent/high backlog cards that need no owner answer and logs why as an assumption; start them, and flag any you think is a wrong pick.
 
