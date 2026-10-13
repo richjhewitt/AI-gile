@@ -30,5 +30,19 @@ def('urgentbtn', '🔥 button: a tile click makes the card urgent, a second clic
   await sleep(500);
   c = await getCard(s, 'alpha', a.id);
   check('open card: back again', c.priority === 'high', c.priority);
-  await noErrors(page); await noErrors(open);
+  // inbox rows: a real card row has the button and it works; the Lead chat row (not a card) has none
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });
+  const q = await mkCard(s, 'alpha', 'Question card', { status: 'doing' });
+  s.cli(['ask', 'alpha', q.id, 'Go?', '--as', 'Lead']);
+  await s.ok('POST', '/api/projects/alpha/leadchat', { text: 'hello lead' });
+  s.cli(['chat', 'alpha', 'Reply for you', '--as', 'Lead']);
+  const ib = await openPage(ctx, '#/inbox');
+  await ib.waitForSelector(`.ib-item[data-id="${q.id}"]`);
+  await ib.waitForSelector('.ib-item[data-id="chat"]');
+  check('Lead chat inbox row has no fire button', (await ib.locator('.ib-item[data-id="chat"] .urg-btn').count()) === 0);
+  await ib.click(`.ib-item[data-id="${q.id}"] .urg-btn`);
+  await sleep(600);
+  c = await getCard(s, 'alpha', q.id);
+  check('inbox card row: click makes it urgent', c.priority === 'urgent', c.priority);
+  await noErrors(page); await noErrors(open); await noErrors(ib);
 }, true);
