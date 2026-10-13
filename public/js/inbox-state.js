@@ -53,21 +53,11 @@ const IB = {
   let loaded = false, inflight = null, seen = new Set();
 
   /* ---------- data ---------- */
-  // The change stamp (AIG-920) decides whether the list is fetched at all; load(true) always fetches. ?lite=1: no commit file lists.
-  function load(force) {
+  function load() {
     if (inflight) return inflight;
-    const key = 'inbox' + (typeof Streamer !== 'undefined' && Streamer.on() ? ':s' : '') + (typeof Swarm !== 'undefined' && Swarm.on ? ':w' : '');
-    inflight = (async () => {
-      const tok = typeof Stamp === 'undefined' ? { key } : await Stamp.ask(key, force || !loaded);
-      if (!tok) return true;   // nothing moved: keep what is drawn
-      const r = await fetch('/api/inbox?lite=1', { cache: 'no-store' });
-      if (!r.ok) throw new Error(r.statusText);
-      let l = await r.json();
-      if (typeof Streamer !== 'undefined' && Streamer.on()) l = Streamer.filter('GET', '/api/inbox', l);
-      if (typeof Swarm !== 'undefined') l = Swarm.only(l, true);   // 🚨 swarm: only that project (AIG-877)
-      if (typeof Stamp !== 'undefined') Stamp.commit(tok);
-      apply(l); IB.testerDone(); return true;
-    })().then(v => { inflight = null; return v; }, e => { inflight = null; throw e; });
+    inflight = fetch('/api/inbox', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error(r.statusText))).then(l => typeof Streamer !== 'undefined' && Streamer.on() ? Streamer.filter('GET', '/api/inbox', l) : l).then(l => typeof Swarm !== 'undefined' ? Swarm.only(l, true) : l)   // 🚨 swarm: only that project (AIG-877)
+      .then(list => { inflight = null; apply(list); IB.testerDone(); return true; })
+      .catch(e => { inflight = null; throw e; });
     return inflight;
   }
   // Going quiet (night mode): no tests or tasks, and only the 3 newest questions.
