@@ -210,8 +210,18 @@ function chatHtml(p, c, msg) {
   const pr = p.presence || {}, atWork = pr.running || (pr.online && !pr.waitingMs && (pr.where === 'vscode' || pr.where === 'terminal'));
   const typing = atWork && (c.status === 'doing' || c.status === 'team') && !c.needsYou;
   return `<div class="chat">${c.comments.length ? c.comments.map(m => msg(m, false)).join('') : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}</div>
-      ${typing || nudgeLit(p, c, false) ? `<div class="typing muted" id="typing">${typing ? esc(t('card.working')) : ''} ${nudgeBtn(p, c, typing)}</div>` : ''}
+      ${typing || nudgeLit(p, c, false) ? `<div class="typing muted" id="typing">${typing ? stateLine(pr) : ''} ${nudgeBtn(p, c, typing)}</div>` : ''}
       ${followBar(p, c)}${replyBox(p, c)}`;
+}
+// AIG-636: what the team is doing and for how long ("working · 12 min"), so busy and hung look different. presence.activity
+// comes from the board: thinking (model output), working (tools), command (a long shell command). A run whose log has
+// not grown for 15 min shows "no sign of life" in the warning colour.
+const NOLIFE_MS = 15 * 60e3;
+function stateLine(pr) {
+  const a = pr.activity; if (!a) return esc(t('card.working'));
+  const min = iso => Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / 60e3)), stale = a.watch && Date.now() - Date.parse(a.signAt) >= NOLIFE_MS;
+  const line = esc(t('card.act.' + a.state)) + ' · ' + esc(t('card.act.min', { n: min(a.since) }));
+  return `<span class="act">${line}</span>` + (stale ? ` <b class="act-stale">⚠ ${esc(t('card.act.stale', { n: min(a.signAt) }))}</b>` : '');
 }
 // 👉 Nudge (AIG-593): by the typing line, lit when your last message is still not seen after 3 min, or the team has been
 // typing for 5 min with nothing new. A click is the card's normal poke (free; only the wake run uses tokens). A run that

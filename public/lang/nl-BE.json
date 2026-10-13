@@ -2430,5 +2430,10 @@
  "usage.maxi.busy": "Maximalisator aan: nu geen ruimte over, tot {n} helpers",
  "usage.maxi.reserve": "Maximalisator aan: 10% blijft achter de hand, tot {n} helpers",
  "usage.maxi.saver": "Maximalisator aan: de verbruiksbespaarder gaat voor, tot {n} helpers",
- "usage.maxi.none": "Maximalisator aan: nog geen verbruiksmeting, tot {n} helpers"
+ "usage.maxi.none": "Maximalisator aan: nog geen verbruiksmeting, tot {n} helpers",
+ "card.act.thinking": "denkt na",
+ "card.act.working": "bezig",
+ "card.act.command": "wacht op een commando",
+ "card.act.min": "{n} min",
+ "card.act.stale": "geen teken van leven sinds {n} min"
 }

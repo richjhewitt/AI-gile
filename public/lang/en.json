@@ -2430,5 +2430,10 @@
  "usage.maxi.busy": "Maximiser on: no spare room right now, up to {n} helpers",
  "usage.maxi.reserve": "Maximiser on: keeping the 10% reserve, up to {n} helpers",
  "usage.maxi.saver": "Maximiser on: the usage saver comes first, up to {n} helpers",
- "usage.maxi.none": "Maximiser on: no usage reading yet, up to {n} helpers"
+ "usage.maxi.none": "Maximiser on: no usage reading yet, up to {n} helpers",
+ "card.act.thinking": "thinking",
+ "card.act.working": "working",
+ "card.act.command": "waiting on a command",
+ "card.act.min": "{n} min",
+ "card.act.stale": "no sign of life for {n} min"
 }
