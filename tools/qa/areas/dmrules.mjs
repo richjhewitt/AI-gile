@@ -66,8 +66,8 @@ def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park,
   check('a rule reply shows the ⚙ Automated, free chip', /Automated, free/.test(await pg.textContent('#dmList .dm-origin.auto').catch(() => '')));
   check('a CLI comment shows the ✨ AI, uses tokens chip', /AI, uses tokens/.test(await pg.textContent('#dmList .dm-origin.ai').catch(() => '')));
   check('the owner\'s own message has no chip', await pg.evaluate(() => ![...document.querySelectorAll('#dmList .dm-msg.mine')].some(m => m.querySelector('.dm-origin'))));
-  const legend = await pg.textContent('.dm-legend').catch(() => '');
-  check('the DM view has the one-line legend', /automated, free/i.test(legend) && /AI, uses tokens/.test(legend), legend);
+  // AIG-926: no legend line above the composer any more; each chip says what it means itself.
+  check('no jargon legend line in the DM view', !(await pg.$('.dm-legend')));
   await pg.close();
 
   // The Lead Scrum Master.

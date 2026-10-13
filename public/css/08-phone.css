@@ -19,6 +19,7 @@
   .ib-alerts { white-space: normal; }
   .navlink, button, select, .theme-pick, .tab, [role=tab] { min-height: 40px; }
   .navlink { display: inline-flex; align-items: center; padding: 6px 12px; }
+  .navlink[hidden] { display: none; }   /* a hidden top-bar link (e.g. the 🔴 Live button) showed as a blank pill (AIG-923) */
   .pill, .att-chip button { min-height: 0; }
   main { padding: 10px; overflow-wrap: anywhere; }
   .setup { margin: 12px auto; }

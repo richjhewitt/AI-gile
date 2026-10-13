@@ -29,7 +29,7 @@ const StatsPage = (() => {
   S.render = () => {
     const d = S.data;
     const back = `<a href="#/p/${esc(S.slug)}">${esc(t('stats.back'))}</a>`;
-    if (!d) return `<div class="uz st-page"><p class="muted">${esc(t('common.loading'))}</p></div>`;
+    if (!d) return `<div class="uz st-page"><p>${back}</p><p class="muted">${esc(t('common.loading'))}</p></div>`;
     if (d.error) return `<div class="uz st-page"><p>${back}</p><p class="muted">${esc(t('stats.error'))}</p></div>`;
     S.text = wrapped(d);
     const r = d.records || {};

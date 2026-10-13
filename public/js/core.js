@@ -16,7 +16,7 @@ new MutationObserver(() => document.querySelectorAll('textarea[data-draft]:not([
   if (v && !el.value) el.value = v;
 })).observe(document.documentElement, { childList: true, subtree: true });
 /* ---------- your queue (AIG-159..162): what holds things up, your priority, kind and time ---------- */
-const QKINDS = { decide: '❓', plan: '🚦', test: '🧪', server: '🖥️', outside: '🤝', keys: '🔑', read: '📖', life: '🏡' };
+const QKINDS = { decide: '❓', task: '📋', plan: '🚦', test: '🧪', server: '🖥️', outside: '🤝', keys: '🔑', read: '📖', life: '🏡' };
 // 🏡 Real-life tasks (AIG-394): mirrors lib/life.js. A card with a lifeType is the owner's own task.
 const LIFE_TYPES = { housework: ['🧹', '#0d9488'], appointment: ['📅', '#3b82f6'], shopping: ['🛒', '#ea580c'], call: ['📞', '#7c3aed'], bills: ['💷', '#16a34a'], errand: ['🚗', '#ca8a04'], health: ['🩺', '#dc2626'], family: ['🎁', '#db2777'], pets: ['🐾', '#92400e'] };
 const lifeChip = c => LIFE_TYPES[c.lifeType] ? `<span class="pill life" style="background:${LIFE_TYPES[c.lifeType][1]};color:#fff" data-life="${esc(c.lifeType)}">${LIFE_TYPES[c.lifeType][0]} ${esc(t('life.' + c.lifeType))}</span>` : '';
@@ -40,7 +40,7 @@ const PRIO_RANK = { now: 0, today: 1, whenever: 3 };   // no priority set sits b
 const isInfo = c => !!c.info && c.status === 'verify' && !isOwnerTask(c);   // 📖 To read (AIG-392): an info-only hand-over
 // 🚦 Ready for go (AIG-828): planned work waiting on a go / no-go: kind plan, or an open question that asks "Go?" (the same test as its Go / Not yet buttons).
 const isGoAsk = c => !!c.needsYou && c.status !== 'verify' && /\bgo\s*\?/i.test(((c.comments || []).filter(m => m.mark === 'ask').pop() || {}).text || '');
-const kindOfItem = c => isOwnerTask(c) && c.lifeType ? 'life' : isOwnerTask(c) && c.server ? 'server' : isOwnerTask(c) && c.outside ? 'outside' : isInfo(c) ? 'read' : c.kind || (c.status === 'verify' ? 'test' : isGoAsk(c) ? 'plan' : 'decide');
+const kindOfItem = c => isOwnerTask(c) && c.lifeType ? 'life' : isOwnerTask(c) && c.server ? 'server' : isOwnerTask(c) && c.outside ? 'outside' : isInfo(c) ? 'read' : c.kind || (c.status === 'verify' ? 'test' : isGoAsk(c) ? 'plan' : isOwnerTask(c) ? 'task' : 'decide');   // a task is not a question (AIG-922)
 // Queue order: your priority, then what it holds up most, then quickest first.
 const queueRank = (a, b) => (PRIO_RANK[a.ownerPrio] ?? 2) - (PRIO_RANK[b.ownerPrio] ?? 2) || (b.bumpedAt || '').localeCompare(a.bumpedAt || '') || (b.holds || []).length - (a.holds || []).length || (a.mins || 999) - (b.mins || 999);
 /* ---------- ☑ checklist and ⏳ waits for (AIG-406) ---------- */
@@ -319,6 +319,8 @@ async function refreshNow(force) {
       await Assumptions.load();
       sig = renderSig([state.route, Assumptions.data]);
     } else if (state.route.view === 'stats') {
+      // Say "Stats" and "Loading" at once (AIG-928): the git count can take a while, and the last page (and its crumb) stayed up meanwhile.
+      if (StatsPage.slug !== state.route.slug || !StatsPage.data) { StatsPage.slug = state.route.slug; StatsPage.data = null; state.lastSig = state.lastBoardSig = null; render(); }
       await StatsPage.load(state.route.slug);
       sig = renderSig([state.route, StatsPage.data, i18n.lang]);
     } else if (state.route.view === 'today') {

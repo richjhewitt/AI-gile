@@ -48,5 +48,11 @@ def('remind', '❓ Remind me: ask + plan + now from comments, bare card falls ba
   check('the card moved to For the team', card.status === 'team', card.status);
   await page.setViewportSize({ width: 390, height: 844 });
   check('phone width: the box with the button fits', await page.evaluate(() => { const b = document.getElementById('remind-box').getBoundingClientRect(); return b.right <= window.innerWidth + 1 && document.documentElement.scrollWidth <= window.innerWidth + 1; }));
+  // The ask is the ORIGINAL request, never a later Sorry what? / poke / test reply (AIG-693).
+  const ask = o => page.evaluate(o => remindLines(o.c, { isOwner: a => a === 'Owner', t: k => ({ 'remind.ask': 'You asked: ', 'remind.sorry.text': 'Sorry what? Explain this from scratch' }[k] || k) })[0].text, o);
+  const owner = text => ({ author: 'Owner', text });
+  check('ask: the card description, not the owner\'s later comments', (await ask({ c: { status: 'todo', title: 'T', description: 'Make exports work', comments: [owner('Sorry what? Explain this from scratch'), owner('poke, any news?')] } })) === 'You asked: Make exports work');
+  check('ask: the Original: comment wins over the description and later comments', (await ask({ c: { status: 'todo', title: 'T', description: 'Rewritten', comments: [{ author: '🧭 Lead', text: 'Original: the real request' }, owner('Sorry what? again')] } })) === 'You asked: the real request');
+  check('ask: no description, the owner\'s FIRST real comment', (await ask({ c: { status: 'todo', title: 'T', comments: [owner('Sorry what? first'), owner('first real ask'), owner('second ask')] } })) === 'You asked: first real ask');
   await noErrors(page);
 }, true);

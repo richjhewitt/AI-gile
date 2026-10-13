@@ -52,7 +52,7 @@ const Mail = (() => {
     const head = `<h2>${esc(t('mail.title'))}</h2>`;
     if (hidden()) return `<div class="uz">${head}<p class="muted">${esc(t('mail.streamer'))}</p></div>`;
     const b = box();
-    if (!b) return `<div class="uz">${head}<p class="muted">${esc(t('mail.none'))}</p><p><a href="#/setup">${esc(t('mail.none.setup'))}</a></p></div>`;
+    if (!b) return `<div class="uz">${head}<p class="muted">${esc(t('mail.none'))}</p><p><button class="primary" onclick="Mail.toSetup()">${esc(t('mail.none.setup'))}</button></p></div>`;
     const d = M.data || { items: [] }, items = d.items || [];
     const when = d.at ? ago(d.at) : '';
     const state_ = M.loading ? t('mail.loading') : M.msg || (d.at ? t(d.cached ? 'mail.cached' : 'mail.fresh', { when }) : '');
@@ -112,6 +112,14 @@ const Mail = (() => {
     const b = box(); if (!b || !confirm(t('mail.setup.remove.sure'))) return;
     try { M.cfg = await api('POST', '/api/mail/config', { token: await secToken(), id: b.id, remove: true }); } catch (e) { return say(e.message, true); }
     M.data = null; M.setupMsg = t('mail.setup.removed'); paintBox(); M.setupMsg = ''; M.watch();
+  };
+  // No mailbox yet: a real button to Setup, landing on its Mail box, not the top of the long page (AIG-927).
+  M.toSetup = () => {
+    location.hash = '#/setup';
+    const hdr = () => { const h = document.querySelector('body > header'); return h && getComputedStyle(h).position !== 'static' ? h.offsetHeight : 0; };   // clear of a sticky top bar
+    const to = () => { const box = document.getElementById('mailBox'); if (box) window.scrollTo(0, box.getBoundingClientRect().top + window.scrollY - hdr() - 12); return !!box; };
+    let n = 0; const go = () => { if (to()) { setTimeout(to, 400); setTimeout(to, 1200); } else if (++n < 50) setTimeout(go, 100); };   // again once Setup has finished filling in
+    setTimeout(go, 50);
   };
   return M;
 })();

@@ -72,7 +72,10 @@
     if(s.cards){var n=document.createElement("p");n.className="tl-cards";n.textContent=s.cards+(s.cards===1?" card":" cards");li.appendChild(n)}
     return li;
   }
-  fetch("timeline.json").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
+  // window.TIMELINE comes from timeline.js (works from file://, where fetch is blocked); timeline.json is the fallback.
+  var tlData=window.TIMELINE&&Array.isArray(window.TIMELINE.stages)?Promise.resolve(window.TIMELINE)
+    :fetch("timeline.json").then(function(r){if(!r.ok)throw 0;return r.json()});
+  tlData.then(function(d){
     if(!d||!Array.isArray(d.stages)||!d.stages.length)return;
     var a=$("tl-done"),b=$("tl-planned");
     d.stages.forEach(function(s){a.appendChild(item(s,false))});

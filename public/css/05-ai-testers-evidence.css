@@ -123,7 +123,7 @@ body.desktop #updateTop { top: 44px; }
 #note { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 12px); z-index: 60; max-width: min(520px, calc(100vw - 32px)); padding: 10px 16px; border-radius: 999px; background: var(--panel); color: var(--text); border: 1px solid var(--line); box-shadow: 0 6px 20px rgba(0,0,0,.25); font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
 #note.on { opacity: 1; transform: translate(-50%, 0); }
 /* ⚡ Decide pile and 🗂️ Topics (AIG-361) */
-.ib-dc .dc-topic { font-weight: 600; margin-top: 6px; } .ib-dc .dc-sum { margin: 8px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; } .ib-dc .dc-q { font-size: 17px; font-weight: 600; -webkit-line-clamp: 4; }
+.ib-dc .dc-topic { font-weight: 600; margin-top: 6px; } .ib-dc .dc-sum { margin: 8px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; } .ib-dc .dc-q { font-size: 17px; font-weight: 600; -webkit-line-clamp: 4; } .ib-dc .dc-ask { font-weight: 600; margin: 4px 0 8px; } .ib-dc .dc-ask p { margin: 0; }   /* the question line, always shown (AIG-922) */
 .ib-dc .dc-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; } .ib-dc .dc-btns button { padding: 8px 16px; font-size: 15px; } .ib-dc .dc-btns b { opacity: .6; margin-inline-end: 4px; }
 .ib-decide { font-weight: 600; }
 .qz { border: 1px solid var(--accent); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; } .qz-item { margin-top: 8px; }
@@ -132,7 +132,7 @@ body.desktop #updateTop { top: 44px; }
 /* 🧙 Setup wizard (AIG-354) */
 .wz-dots { display: flex; gap: 6px; margin-bottom: 12px; } .wz-dot { width: 22px; height: 6px; border-radius: 3px; background: var(--line, #8884); } .wz-dot.on { background: var(--accent); } .wz-dot.past { background: var(--accent); opacity: .5; }
 .wz-sum { width: 100%; border-collapse: collapse; } .wz-sum th { text-align: start; font-weight: 600; padding: 4px 8px 4px 0; vertical-align: top; white-space: nowrap; } .wz-sum td { padding: 4px 8px 4px 0; vertical-align: top; } .wz-sum tr + tr { border-top: 1px solid var(--line, #8884); }
-.wz-opts { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; } .wz-opt { display: flex; align-items: baseline; gap: 6px; }
+.wz-opts { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; } .wz-opt { display: flex; align-items: flex-start; gap: 8px; border-radius: 10px; text-align: start; } .wz-opt input { margin-top: 3px; flex: none; } .wz-opt small { display: block; margin-top: 2px; }   /* radio left, name, hint underneath (AIG-921) */
 /* Badge maker (AIG-396) */
 .bm-top { display: flex; align-items: center; gap: 14px; margin: 8px 0; }
 .bm-prev { width: 84px; height: 84px; border-radius: 50%; }
