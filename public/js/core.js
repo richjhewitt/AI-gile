@@ -215,6 +215,7 @@ function parseRoute() {
   const suRoute = location.hash.match(/^#\/standups(?:\/([^/]+))?$/);   // AIG-539: #/standups/<project> shows one team
   if (suRoute) return { view: 'standups', ...(suRoute[1] ? { slug: decodeURIComponent(suRoute[1]) } : {}) };
   if (location.hash === '#/glossary') return { view: 'glossary' };
+  if (location.hash === '#/pop-weed') return { view: 'weed' };   // 🌿 WeedGlance in its own window (AIG-665)
   if (location.hash === '#/pop-night') return { view: 'night' };   // 🌙 night glance pop-out (AIG-209)   // dev words explained (AIG-102)
   const glance = location.hash.match(/^#\/pop-glance(?:\/([^/]+))?$/);
   if (glance) return { view: 'glance', slug: glance[1] ? decodeURIComponent(glance[1]) : '' };   // 📊 ScrumGlance in its own window (AIG-688)
@@ -284,6 +285,8 @@ async function refresh(force) {
     } else if (state.route.view === 'dlg') {
       if (state.route.slug) { state.project = await api('GET', '/api/projects/' + state.route.slug); await loadDocs(state.route.slug); }
       await loadProfiles();
+      sig = JSON.stringify([state.route, i18n.lang]);
+    } else if (state.route.view === 'weed') {
       sig = JSON.stringify([state.route, i18n.lang]);
     } else if (state.route.view === 'glance') {
       await ScrumGlance.load(state.route.slug);
@@ -381,6 +384,7 @@ function render() {
   if (state.route.view === 'dlg') { renderPopDlg(); return; }
   if (state.route.view === 'term') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Term.popView(state.route); return; }
   if (state.route.view === 'twitch') { $('modal').innerHTML = ''; TwitchTab.popView(); return; }
+  if (state.route.view === 'weed') { $('app').innerHTML = Weed.popHtml(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'glance') { $('app').innerHTML = ScrumGlance.popHtml(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'news') { $('app').innerHTML = renderNews(); $('modal').innerHTML = ''; return; }

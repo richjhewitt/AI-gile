@@ -4,7 +4,7 @@
 // Default = the layout in index.html. The Setup gear can't be switched off, so Setup is always reachable.
 const Topbar = (() => {
   const KEY = 'aigile.topbar';
-  const BTNS = [['helpBtn', 'help'], ['ideaBtn', 'idea'], ['bugBtn', 'bug'], ['teamTop', 'team'], ['inboxTop', 'inbox'], ['pokeTop', 'poke'], ['nightTop', 'night'], ['glanceBtn', 'glance'], ['streamBtn', 'stream'], ['ntBtn', 'nt'], ['tiredBtn', 'tired'], ['assumeNav', 'assume'], ['usageNav', 'usage'], ['setupNav', 'setup'], ['themeBtn', 'theme']];
+  const BTNS = [['helpBtn', 'help'], ['ideaBtn', 'idea'], ['bugBtn', 'bug'], ['teamTop', 'team'], ['inboxTop', 'inbox'], ['pokeTop', 'poke'], ['nightTop', 'night'], ['glanceBtn', 'glance'], ['weedBtn', 'weed'], ['streamBtn', 'stream'], ['ntBtn', 'nt'], ['tiredBtn', 'tired'], ['assumeNav', 'assume'], ['usageNav', 'usage'], ['setupNav', 'setup'], ['themeBtn', 'theme']];
   const IDS = BTNS.map(b => b[0]), KEEP = 'setupNav';
   const AI_BTNS = ['ntBtn', 'usageNav', 'pokeTop', 'nightTop', 'teamTop'];   // hidden by No AI, ever (AIG-581)
   const COLOURS = ['accent', 'done', 'warn', 'danger', 'you'];

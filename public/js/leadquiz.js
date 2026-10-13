@@ -80,11 +80,13 @@ function leadPrefsHtml(msg = '') {
     ${scaleSlider('tone', 5, pr.tone || 3, 'setTone', 'tn', t('tone.help'))}
     <label class="f"><span>${esc(t('lead.tech'))}</span><select class="setup-theme" onchange="setLeadPref({ techLevel: this.value })">${['', 'beginner', 'some', 'expert'].map(v => `<option value="${v}" ${(pr.techLevel || '') === v ? 'selected' : ''}>${esc(t('lead.tech.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.tech.help'))}</small></label>
     <label class="f"><span>${esc(t('lead.push'))}</span><select id="pushPref" class="setup-theme" onchange="setLeadPref({ push: this.value })">${['ask', 'auto'].map(v => `<option value="${v}" ${(pr.push || 'ask') === v ? 'selected' : ''}>${esc(t('lead.push.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('lead.push.help'))}</small></label>
+    <label class="f"><span>${esc(t('fourtwenty.h'))}</span><select id="pf-420" class="setup-theme" onchange="setLeadPref({ fourTwenty: this.value })">${['off', 'day', 'ampm', 'every', 'world'].map(v => `<option value="${v}" ${(pr.fourTwenty || 'off') === v ? 'selected' : ''}>${esc(t('fourtwenty.lvl.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('fourtwenty.help'))}</small></label>
+    ${(pr.fourTwenty || 'off') !== 'off' ? `<label class="f"><span>${esc(t('fourtwenty.before'))}</span><input type="number" id="pf-420b" min="0" max="15" value="${pr.fourTwentyBefore ?? 5}" style="width:5em" onchange="setLeadPref({ fourTwentyBefore: Number(this.value) })"><small class="muted">${esc(t('fourtwenty.before.help'))}</small></label>` : ''}
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;
 }
 // Painted again after each save; a slider moved with the keyboard keeps the focus.
 const paintLeadPrefs = msg => { const f = document.activeElement && document.activeElement.id; if ($('leadPrefs')) $('leadPrefs').innerHTML = leadPrefsHtml(msg); if (f && $(f)) $(f).focus(); };
 async function setLeadPref(prefs) {
-  try { state.setup = await api('POST', '/api/setup', { prefs }); paintLeadPrefs(t('setup.saved.short')); }
+  try { state.setup = await api('POST', '/api/setup', { prefs }); if (typeof Weed !== 'undefined') Weed.applyPrefs(state.setup.prefs || {}); paintLeadPrefs(t('setup.saved.short')); }
   catch (e) { paintLeadPrefs(); setErr('lead-err', e); }
 }

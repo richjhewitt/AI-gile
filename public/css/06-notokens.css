@@ -45,3 +45,10 @@
 #tiredBtn.on { border-color: var(--accent); }
 .tired-box { display: flex; flex-direction: column; gap: 6px; }
 .tired-box input[type=time] { font: inherit; }
+/* 🌿 4:20 alarm toast and WeedGlance (AIG-663..665) */
+.wd-off { display: none !important; }
+.weed-toast { position: fixed; inset-inline-start: 14px; bottom: 14px; max-width: min(360px, calc(100vw - 28px)); z-index: 60; display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--panel, #fff); color: inherit; border: 1px solid var(--done, #2a9d4a); box-shadow: 0 6px 24px rgba(0,0,0,.25); font-size: 14px; }
+.weed-toast button { margin-inline-start: auto; }
+.weed-pop { text-align: center; padding: 6px; } .weed-pop h4 { margin: 0 0 8px; }
+.weed-count { font-size: 40px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--done, #2a9d4a); line-height: 1.1; }
+.weed-where, .weed-lvl { margin-top: 6px; font-size: 13px; }
