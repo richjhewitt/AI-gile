@@ -372,10 +372,8 @@ function proofHtml(pr) {
     <ul class="proof-files">${pr.files.map(f => `<li><code>${esc(f.file)}</code> <span class="add">+${f.add ?? '?'}</span> <span class="del">−${f.del ?? '?'}</span></li>`).join('')}</ul>
     <details><summary>${esc(t('proof.show'))}</summary><pre class="diff">${diff}${pr.cut ? '\n…' : ''}</pre></details></div>`;
 }
-// ▶ Open it (AIG-146): ask the board to start the app if needed (confirming the command), then open the page.
+// ▶ Open it (AIG-146): ask the board to start the app if needed, then open the page. No OK popup (AIG-719).
 async function openIt(s, id, btn) {
-  const c = (state.project && state.project.cards.find(x => x.id === id)) || { startCmd: btn.dataset.cmd };
-  if (c.startCmd && !confirm(t('verdict.open.confirm', { cmd: c.startCmd }))) return;
   const was = btn.textContent; btn.disabled = true; btn.textContent = t('verdict.open.starting');
   try { const r = await api('POST', `/api/projects/${s}/cards/${id}/open`); window.open(r.url, '_blank'); }
   catch (e) { alert(e.message); }

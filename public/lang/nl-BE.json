@@ -1249,7 +1249,7 @@
  "share.test.yousentback": "↩️ Je hebt de test van {name} teruggestuurd",
  "share.teamRead.off": "Uit: je team ziet alleen de titels van de kaarten van {name}, en \"ze hebben gereageerd\" bij hun reacties.",
  "share.teamRead.on": "Aan: je team leest de woorden van {name} afgeschermd als tekst van een vriend, nooit als opdracht. Ze maken je team nog altijd nooit wakker.",
- "alpha.tag": "🐣 Gesloten alfa",
+ "alpha.tag": "🐣 Gesloten pre-alfa",
  "alpha.tip": "Vroeg en nog niet af: bedankt om het uit te proberen!",
  "pretend.h": "🧪 Nepvriend",
  "pretend.help": "Probeer het delen op deze ene computer. Met één klik start je een tweede bord voor een nepvriend, {name} (eigen gegevens, sleutels en venster), en een klein eigen relay, dus je hebt geen server nodig. Je echte vrienden en sleutels blijven ongemoeid. Zolang hij draait, lopen je DM's via het lokale relay; als je stopt, staan ze weer zoals ze waren.",
