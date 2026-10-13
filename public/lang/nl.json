@@ -2680,5 +2680,8 @@
  "allhands.title": "📣 Alle teams: {text}",
  "allhands.help": "Stuur één bericht naar het team van elk actief project.",
  "allhands.waiting": "Nog geen antwoord van het team",
- "allhands.none": "Nog geen berichten aan alle teams."
+ "allhands.none": "Nog geen berichten aan alle teams.",
+  "dms.kind.lead": "💬 Leadchat",
+  "swarm.others": "{n} wachten in andere projecten: tonen",
+  "swarm.hide": "Andere projecten verbergen"
 }

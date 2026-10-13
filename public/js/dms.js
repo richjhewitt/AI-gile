@@ -63,6 +63,7 @@ const Dms = (() => {
     let boards = [];
     try { boards = (await api('GET', '/api/shares')).filter(l => l.theirRole && !l.forgotten && ['live', 'ended'].includes(l.state)); } catch {}
     try { people = (await api('GET', '/api/dms/contacts')).filter(c => !c.blocked).map(c => ({ ...c, unread: c.lastIn && c.lastIn > dmSeen.get(c.id) && open !== 'dm:' + c.id ? 1 : 0 })); } catch { people = []; }
+    if (Swarm.hiding) boards = [];   // 🚨 swarm: friends' boards wait too (AIG-880)
     if (NoAi.on) chats = chats.filter(c => c.noAi);   // 🚫 no DMs to leads (AIG-581); only the 🧭 Scrum Master (no AI) stays (AIG-729)
     const cur = here(), p = projects.find(x => x.slug === cur);
     if (p) seen.set(cur, p.updated);   // looking at it now counts as seen
@@ -72,7 +73,7 @@ const Dms = (() => {
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
       + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, t('dms.rail.label'))
       + '<div class="dm-sep"></div>'
-      + railTree(projects.filter(x => !x.archived), cur, btn)
+      + railTree(Swarm.only(projects.filter(x => !x.archived)), cur, btn)   // 🚨 swarm: only that project (AIG-880)
       // AIG-324: each project a friend shares with me, as its own board.
       + (boards.length ? '<div class="dm-sep"></div>' + boards.map(l => btn(`data-go="#/shared/${esc(l.id)}" data-sboard="${esc(l.id)}"`, `<span class="dm-av">🔗</span>`, location.hash === '#/shared/' + l.id, t('sb.rail', { name: l.friend, project: l.theirName }))).join('') : '');
     const r = el('dmRail');
@@ -124,7 +125,7 @@ const Dms = (() => {
   function foldsHtml() {
     const groups = new Map();
     for (const m of thread.messages) { if (!groups.has(m.card)) groups.set(m.card, []); groups.get(m.card).push(m); }
-    const list = [...groups].sort((a, b) => a[1].at(-1).at.localeCompare(b[1].at(-1).at));
+    const list = [...groups].sort((a, b) => (b[0] === '_lead') - (a[0] === '_lead') || a[1].at(-1).at.localeCompare(b[1].at(-1).at));   // AIG-872: the Lead chat is pinned at the top
     if (!list.some(([id]) => id === fold)) fold = (target && groups.has(target) ? target : null) || (list.length ? list.at(-1)[0] : null);
     return list.map(([id, msgs]) => {
       const c = (thread.cards || {})[id] || {}, last = msgs.at(-1), isOpen = id === fold;
@@ -132,9 +133,9 @@ const Dms = (() => {
       const preview = String(last.text || '').replace(/^\s*[-*]\s+/gm, '').replace(/[*_`#>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 90);
       return `<div class="dm-fold ${isOpen ? 'open' : ''} ${c.waiting ? 'waiting' : ''}">
         <div class="dm-fold-h k-${esc(c.kind || 'other')}" data-fold="${esc(id)}" role="button" tabindex="0" aria-expanded="${isOpen}">
-          ${thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><a class="dm-fold-id" href="#/p/${esc(thread.slug)}/${esc(id)}" title="${esc(t('dms.opencard'))}"><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span></a>`}
+          ${thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : id === '_lead' ? `<span class="dm-tag">${esc(t('dms.kind.lead'))}</span>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><a class="dm-fold-id" href="#/p/${esc(thread.slug)}/${esc(id)}" title="${esc(t('dms.opencard'))}"><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span></a>`}
           <span class="muted dm-fold-n">${esc(t(msgs.length === 1 ? 'dms.count.one' : 'dms.count.many', { n: msgs.length }))} · ${ago(last.at)}</span></div>
-        ${isOpen ? `<div class="dm-fold-b">${thread.watchman ? '' : `<div class="actions dm-cardacts"><button class="dm-opencard" data-opencard="${esc(id)}" title="${esc(t('dms.opencard'))}">${esc(t('dms.opencard'))}</button><button data-popcard="${esc(id)}" title="${esc(t('dms.popout.title'))}">${esc(t('dms.popout'))}</button></div>`}${msgs.map(m => msgHtml(m, m === last ? acts : '')).join('')}</div>`
+        ${isOpen ? `<div class="dm-fold-b">${thread.watchman || id === '_lead' ? '' : `<div class="actions dm-cardacts"><button class="dm-opencard" data-opencard="${esc(id)}" title="${esc(t('dms.opencard'))}">${esc(t('dms.opencard'))}</button><button data-popcard="${esc(id)}" title="${esc(t('dms.popout.title'))}">${esc(t('dms.popout'))}</button></div>`}${msgs.map(m => msgHtml(m, m === last ? acts : '')).join('')}</div>`
           : `<div class="dm-fold-p muted"><b>${esc(last.author)}:</b> ${esc(preview)}</div>${acts}`}</div>`;
     }).join('');
   }
@@ -196,7 +197,7 @@ const Dms = (() => {
     // AIG-757: the card open in the chat can be answered too, not only cards waiting on you: a reply to a 💬 card the
     // lead had answered used to start a new card.
     const fc0 = (thread.cards || {})[fold];
-    thread.answer = !thread.watchman && fc0 && !fc0.done && fc0.kind !== 'test' && !thread.open.some(o => o.id === fold) ? [...thread.open, { id: fold, title: fc0.title }] : thread.open;
+    thread.answer = !thread.watchman && fc0 && !fc0.done && fc0.kind !== 'test' && fold !== '_lead' && !thread.open.some(o => o.id === fold) ? [...thread.open, { id: fold, title: fc0.title }] : thread.open;
     if (target !== GENERAL && !thread.answer.some(o => o.id === target)) target = thread.open.length ? thread.open[0].id : thread.answer.length ? thread.answer[0].id : null;
     if (list.dataset.sig !== html) {
       const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
@@ -308,7 +309,7 @@ const Dms = (() => {
     el('dmText').focus();
   }
   // Open a fold; if that card is waiting on you, the typing box answers it.
-  function openFold(id) { fold = id; const c = thread && (thread.cards || {})[id]; if (thread && (thread.open.some(o => o.id === id) || (!thread.watchman && c && !c.done && c.kind !== 'test'))) target = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
+  function openFold(id) { fold = id; const c = thread && (thread.cards || {})[id]; if (id === '_lead') target = GENERAL; else if (thread && (thread.open.some(o => o.id === id) || (!thread.watchman && c && !c.done && c.kind !== 'test'))) target = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   // An answer button that needs a reason (AIG-176): aim the typing box at that card and start the reply.
   function reply(id, text) { aim(id); const ta = el('dmText'); if (ta) { if (text) ta.value = text; ta.focus(); ta.setSelectionRange(text.length, text.length); } }
   // Go to the card the lead carried on in (AIG-426): into its fold when it is in this chat, else to the card itself.
@@ -337,11 +338,10 @@ const Dms = (() => {
         try { await api('POST', '/api/chats/_watchman', { text, attachments }); }
         catch (e) { if (/No Token Mode|budget/i.test(e.message || '') && confirm(e.message + ' ' + t('dms.sendanyway'))) await api('POST', '/api/chats/_watchman', { text, attachments, anyway: true }); else throw e; }
       }   // the watchman passes it on (AIG-221)
-      else if (q) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
-      else { const c = await api('POST', `/api/projects/${thread.slug}/cards`, { title: '💬 ' + text.split('\n')[0].slice(0, 80), description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
-        if (c && c.id) { fold = c.id; target = c.id; } }   // AIG-757: the next message carries on in the new card
+      else if (q && !(fold === '_lead' && target === GENERAL)) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
+      else { await api('POST', `/api/projects/${thread.slug}/leadchat`, { author: me(), text, attachments }); fold = '_lead'; }   // AIG-872: the one Lead chat, not a 💬 card per message
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
-      if (target === GENERAL) target = null;   // sent: back to answering what waits on you
+      if (target === GENERAL && fold !== '_lead') target = null;   // sent: back to answering what waits on you
       await loadThread(true); loadRail();
     } catch (e) { el('dmErr').textContent = e.message || String(e); }
     busy = false;

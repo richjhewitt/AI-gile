@@ -2680,5 +2680,8 @@
  "allhands.title": "📣 All hands: {text}",
  "allhands.help": "Send one message to every active project’s team.",
  "allhands.waiting": "No team reply yet",
- "allhands.none": "No all hands messages yet."
+ "allhands.none": "No all hands messages yet.",
+  "dms.kind.lead": "💬 Lead chat",
+  "swarm.others": "{n} waiting in other projects: show",
+  "swarm.hide": "Hide other projects"
 }
