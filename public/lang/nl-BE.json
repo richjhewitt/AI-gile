@@ -2320,5 +2320,18 @@
   "streamer.live": "🔴 Live gaan",
   "streamer.live.title": "Zet streamermodus aan en start de stream in OBS",
   "streamer.stop": "⏹ Stop",
-  "streamer.stop.title": "Stop de stream in OBS"
+  "streamer.stop.title": "Stop de stream in OBS",
+ "emoji.yours": "Van jou",
+ "emoji.add": "Eigen emoji toevoegen",
+ "emoji.add.file": "Afbeelding (png, gif, webp of jpg)",
+ "emoji.add.name": "Naam",
+ "emoji.add.help": "Kleine letters, cijfers en _ . De afbeelding wordt verkleind naar 64x64 en blijft op deze pc.",
+ "emoji.add.go": "Toevoegen",
+ "emoji.add.cancel": "Annuleren",
+ "emoji.del": "Deze emoji verwijderen",
+ "emoji.err.file": "Dat bestand is geen afbeelding die ik kan lezen.",
+ "emoji.err.big": "Na het verkleinen nog altijd groter dan 32 KB; kies een eenvoudigere afbeelding.",
+ "emoji.err.nofile": "Kies eerst een afbeelding.",
+ "emoji.err.name": "De naam mag kleine letters, cijfers en _ bevatten (maximaal 32).",
+ "emoji.err.dup": "Die naam is al in gebruik."
 }
