@@ -230,6 +230,8 @@ const Share = (function () {
         ${roleHtml(l)}
         <label class="chk"><input type="checkbox" id="shareBoard" ${l.board ? 'checked' : ''} ${can(l, 'seeMine') ? '' : 'disabled'} onchange="Share.setBoard('${l.id}', this.checked)"> ${esc(t('share.board', { name: l.friend }))}</label>
         <p class="muted" id="shareBoardHelp">${esc(t(!can(l, 'seeMine') ? 'share.board.no' : l.board ? 'share.board.on' : 'share.board.off', { name: l.friend }))}</p>
+        ${l.slug ? `<label class="chk"><input type="checkbox" id="shareApprovals" ${l.approvals ? 'checked' : ''} onchange="Share.setApprovals('${l.slug}', this.checked)"> ${esc(t('approvals.setting'))}</label>
+        <p class="muted">${esc(t('approvals.setting.hint'))}</p>` : ''}
         <label class="chk"><input type="checkbox" id="shareTeamRead" ${l.mine && l.mine.teamRead ? 'checked' : ''} onchange="Share.setTeamRead('${l.id}', this.checked)"> ${esc(t('share.allow.teamRead'))}</label>
         <p class="muted">${esc(t(l.mine && l.mine.teamRead ? 'share.teamRead.on' : 'share.teamRead.off', { name: l.friend }))}</p>
         <div class="actions"><button onclick="Share.ping('${l.id}')" ${l.on ? '' : 'disabled'}>${esc(t('share.ping'))}</button>
@@ -263,6 +265,7 @@ const Share = (function () {
   const offer = () => act(() => api('POST', '/api/shares', { slug: slug(), contact: $('shareWho').value, allow: readTicks('o-') }));
   const setOn = (id, on) => act(() => api('PATCH', '/api/shares/' + id, { on }));
   const setTeamRead = (id, teamRead) => act(() => api('PATCH', '/api/shares/' + id, { teamRead }));
+  const setApprovals = (slug, approvals) => act(() => api('PATCH', '/api/projects/' + slug, { approvals }));
   const setBoard = (id, board) => act(async () => { const r = await api('PATCH', '/api/shares/' + id, { board }); if (r.shared) note(t('share.board.sent', { n: r.shared.sent, held: r.shared.held })); });
   const setRole = id => act(() => api('PATCH', '/api/shares/' + id, { role: $('shareRole').value, scope: $('shareRoleScope').value }));
   const ping = id => act(() => api('POST', `/api/shares/${id}/ping`));
@@ -312,6 +315,6 @@ const Share = (function () {
   }
 
   setInterval(() => { if (!document.hidden && typeof i18n !== 'undefined' && i18n.ready) load(); }, 3000);
-  return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setRole, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
+  return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setApprovals, setRole, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
     laneHtml, cardBtn, cardComments, commentMark, previewCard, sendCard, unshareCard, sendHeld, laneCard, laneReply, takeCard };
 })();

@@ -2,7 +2,7 @@
 // Classic script; shares the inbox's state and helpers through the IB object (js/inbox-state.js).
 // The inbox's shared mutable state. Every inbox-*.js file reads and writes it through IB.
 const IB = {
-  items: [], raw: [], hidden: 0, flashKey: null, offers: 0, asks: 0,   // offers / asks: friends' link offers and questions waiting (AIG-382)
+  items: [], raw: [], hidden: 0, flashKey: null, offers: 0, asks: 0, approvals: 0,   // offers / asks: friends' link offers and questions waiting (AIG-382)
     // what is shown, what the server sent, how many quiet mode hides
   tab: 'all', chat: null, fromProject: null, selectPinned: false, tabOrder: [],   // project tabs and the Messages chat (AIG-37, AIG-87)
   flick: -1, decide: -1, kindFilter: '', only: '', testerOn: false,   // flick: the 🤖 view (-1 closed); only: q, k or t from a top bar chip (AIG-187)
@@ -88,7 +88,7 @@ const IB = {
   function repaint() { if (!loaded) return; IB.items = view(); IB.paintTop(); if (onInboxPage() && el('ib')) IB.paintPage(); }
   const onInboxPage = () => location.hash === '#/inbox';
   // Link offers and friends' questions are waiting on the owner too: counted in All, the top bar, the rail and the title.
-  const friends = () => (IB.offers || 0) + (IB.asks || 0);
+  const friends = () => (IB.offers || 0) + (IB.asks || 0) + (IB.approvals || 0);
   const setFriends = (key, n) => { if (IB[key] === n) return; IB[key] = n; if (typeof IB.paintTop === 'function') IB.paintTop(); if (onInboxPage() && el('ib') && IB.paintTabs) IB.paintTabs(); };
   Object.assign(IB, { friends, setFriends, el, esc, post, isTask, isQuestion, isTest, kindOf, lastAsk, shownAsk, earlier, keyOf, linkify, onInboxPage, tabPref, load, apply, repaint, view });
 })();
