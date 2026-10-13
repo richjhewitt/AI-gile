@@ -138,6 +138,10 @@ code[data-copy-text] { cursor: pointer; }
 .postmortem p { margin: 4px 0; }
 .problem { margin-top: 10px; padding: 6px 10px; border-inline-start: 3px solid #d97706; background: color-mix(in srgb, #d97706 6%, var(--panel)); }
 .problem p { margin: 4px 0; }
+.change { margin-top: 10px; padding: 6px 10px; border-inline-start: 3px solid #2563eb; background: color-mix(in srgb, #2563eb 6%, var(--panel)); }
+.change p { margin: 4px 0; }
+.chg-raise { margin-top: 10px; }
+.chg-when { flex-wrap: wrap; }
 .qa-gate { margin: 0 0 8px; font-size: .92em; }   /* the merge gate (AIG-613) */
 .qa-gate.red { color: var(--danger, #dc2626); font-weight: 600; }
 .card.is-blocked { border-inline-start: 3px solid var(--danger); }
