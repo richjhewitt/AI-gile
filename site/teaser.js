@@ -50,4 +50,34 @@
     }).catch(function(){line.hidden=true});
   }
   poll();setInterval(poll,POLL_MS);
+
+  // The timeline (AIG-778/779): site/timeline.json from tools/gen/timeline.mjs. Dates in the visitor's own locale.
+  var tl=$("timeline");
+  function when(iso){
+    var d=new Date(iso);if(isNaN(d))return "";
+    try{return d.toLocaleString(undefined,{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}catch(e){return d.toString()}
+  }
+  function item(s,planned){
+    var li=document.createElement("li");li.className="tl-item"+(planned?" planned":"");
+    var h=document.createElement("h3");h.textContent=s.name;
+    if(planned){var tag=document.createElement("span");tag.className="tl-tag";tag.textContent="planned";h.appendChild(document.createTextNode(" "));h.appendChild(tag)}
+    li.appendChild(h);
+    if(!planned&&s.start){
+      var t=document.createElement("p");t.className="tl-when";
+      var a=document.createElement("time");a.setAttribute("datetime",s.start);a.textContent=when(s.start);t.appendChild(a);
+      if(s.end&&s.end!==s.start){var b=document.createElement("time");b.setAttribute("datetime",s.end);b.textContent=when(s.end);t.appendChild(document.createTextNode(" → "));t.appendChild(b)}
+      li.appendChild(t);
+    }
+    var p=document.createElement("p");p.className="tl-line";p.textContent=s.line||"";li.appendChild(p);
+    if(s.cards){var n=document.createElement("p");n.className="tl-cards";n.textContent=s.cards+(s.cards===1?" card":" cards");li.appendChild(n)}
+    return li;
+  }
+  fetch("timeline.json").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
+    if(!d||!Array.isArray(d.stages)||!d.stages.length)return;
+    var a=$("tl-done"),b=$("tl-planned");
+    d.stages.forEach(function(s){a.appendChild(item(s,false))});
+    (d.planned||[]).forEach(function(s){b.appendChild(item(s,true))});
+    if(!b.children.length){b.hidden=true;$("tl-today").hidden=true}
+    tl.hidden=false;
+  }).catch(function(){});
 })();
