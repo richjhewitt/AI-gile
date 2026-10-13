@@ -2409,5 +2409,8 @@
  "emoji.save": "⭐ Save",
  "emoji.save.title": "Save :{name}: to your own emojis",
  "emoji.save.ask": ":{name}: is already one of yours. Pick a new name for it:",
- "emoji.save.done": ":{name}: is now one of your emojis."
+ "emoji.save.done": ":{name}: is now one of your emojis.",
+ "srv.health.title": "Server: time to upgrade ({why})",
+ "srv.health.body": "Smizflark Server 2.0 is running hot: {why}. It has been high for a while, so it is time to look at a bigger plan or a clean-up before it fills up or slows down. The numbers are under Setup > My servers.",
+ "servers.health": "{name}: CPU {cpu}, memory {mem}, disk {disk} full, {size} stored, up {days} days (read {when})"
 }
