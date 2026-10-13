@@ -16,7 +16,29 @@ function changeHtml(p, c) {
   <p><b>${esc(t('chg.risk'))}</b> ${x.riskId ? `<a href="#/risks/${esc(p.slug)}">${esc(x.riskId)}</a>` : `<span class="muted">${esc(t('chg.norisk'))}</span>`}</p>
   <p><b>${esc(t('chg.when'))}</b> ${x.when ? esc(changeWhen(x.when)) : none}</p>
   <p><b>${esc(t('chg.undo'))}</b> ${x.undo ? esc(x.undo) : none}</p>
-  ${x.from ? `<p><b>${esc(t('chg.from'))}</b> ${link(x.from)}</p>` : ''}${probs.length ? `<p><b>${esc(t('chg.problems'))}</b> ${probs.map(link).join(', ')}</p>` : ''}</div>`;
+  ${x.from ? `<p><b>${esc(t('chg.from'))}</b> ${link(x.from)}</p>` : ''}${probs.length ? `<p><b>${esc(t('chg.problems'))}</b> ${probs.map(link).join(', ')}</p>` : ''}${goNoGoHtml(p, c)}</div>`;
+}
+/* ---------- 🚦 Go / no-go panel (AIG-858) ----------
+   goNoGoHtml(p, c): the approvers and their votes, Submit for go, Go / No go with a note, Go anyway. gonogoAct(slug, id, what) posts it. */
+function goNoGoHtml(p, c) {
+  const x = c.change || {}, waiting = c.approval === 'waiting', votes = x.votes || {}, ap = x.approvers || [];
+  const state = x.approved ? `<span class="gng-ok">${esc(t('gonogo.approved'))}</span>` : waiting ? esc(t('gonogo.waiting')) : c.approval === 'declined' ? `<span class="gng-no">${esc(t('gonogo.declined'))}</span>` : esc(t('gonogo.notsubmitted'));
+  const rows = ap.map(w => { const v = votes[w]; return `<li>${esc(w)}: ${v ? `<b class="${v.go ? 'gng-ok' : 'gng-no'}">${esc(t(v.go ? 'gonogo.go' : 'gonogo.nogo'))}</b>${v.note ? ' ' + esc(v.note) : ''}` : `<span class="muted">${esc(t('gonogo.novote'))}</span>`}</li>`; }).join('');
+  const id = esc(c.id), sl = esc(p.slug);
+  const btn = (what, key, cls = '') => `<button type="button" class="${cls}" onclick="gonogoAct('${sl}', '${id}', '${what}')">${esc(t(key))}</button>`;
+  const acts = x.approved ? '' : waiting
+    ? `<textarea id="gng-note" rows="2" maxlength="500" placeholder="${esc(t('gonogo.note.ph'))}" aria-label="${esc(t('gonogo.note.ph'))}"></textarea><div class="actions">${btn('go', 'gonogo.go', 'good')}${btn('nogo', 'gonogo.nogo')}${btn('anyway', 'gonogo.anyway')}</div>`
+    : `<div class="actions">${btn('submit', 'gonogo.submit', 'primary')}${btn('anyway', 'gonogo.anyway')}</div>`;
+  return `<div class="gonogo"><h4>${esc(t('gonogo.heading'))}${x.round ? ` <span class="muted">${esc(t('gonogo.round', { n: x.round }))}</span>` : ''}</h4><p>${state}</p>${rows ? `<ul>${rows}</ul>` : ''}${acts}<div class="err" id="gng-err"></div></div>`;
+}
+async function gonogoAct(slug, id, what) {
+  const note = ($('gng-note') || {}).value || '';
+  try {
+    if (what === 'submit') await api('POST', `/api/projects/${slug}/changes/${id}/submit`, {});
+    else if (what === 'anyway') await api('POST', `/api/projects/${slug}/changes/${id}/go-anyway`, { note });
+    else await api('POST', `/api/projects/${slug}/changes/${id}/vote`, { go: what === 'go', note });
+    refresh(true);
+  } catch (err) { const e = $('gng-err'); if (e) e.textContent = err.message; }
 }
 async function raiseChange(preset = {}) {
   const src = preset.from && state.project && state.project.cards.find(x => x.id === preset.from);
