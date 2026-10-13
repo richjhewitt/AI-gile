@@ -131,12 +131,12 @@ def('phonepair', 'phone over Tailscale: Setup pairs a phone (QR + one-time link)
   check('Remove: the list is empty', (await s.ok('GET', '/api/phone')).devices.length === 0);
   check('Remove: the cookie no longer works', (await raw('GET', '/api/chats', ph)).status === 403);
 
-  // Pair the app (AIG-907): a device key at once, in a QR code aigile://pair?url=https://<host>&key=<key>; the app sends it as Bearer, with no Origin.
+  // Pair the app (AIG-907): a device key at once, in a QR code aigile://pair?url=https://<host>&id=<id>&key=<key>; the app sends it as Bearer, with no Origin.
   await page.click('#phApp');
   await page.waitForSelector('#phAppQr');
   const qrText = await page.textContent('#phAppQr');
-  const am = qrText.match(/^aigile:\/\/pair\?url=https:\/\/([a-z0-9.-]+)&key=([A-Za-z0-9_-]{40,})$/);
-  check('Pair the app: QR text aigile://pair?url=https://<host>&key=<key>', !!am && am[1] === HOST, qrText);
+  const am = qrText.match(/^aigile:\/\/pair\?url=https:\/\/([a-z0-9.-]+)&id=[a-f0-9]{12}&key=([A-Za-z0-9_-]{40,})$/);
+  check('Pair the app: QR text aigile://pair?url=https://<host>&id=<id>&key=<key>', !!am && am[1] === HOST, qrText);
   check('Pair the app: a QR code is drawn', !!(await page.$('#phBody .phone-link svg.phone-qr path')));
   check('Pair the app: listed as Android app with Remove', /Android app/.test(await page.textContent('#phBody')) && (await page.$$('.ph-rm')).length === 1);
   const appKey = am ? am[2] : '', file2 = fs.readFileSync(path.join(s.dir, 'aigile.local.json'), 'utf8');

@@ -10,6 +10,7 @@ const { PORT, HOST, DATA, PUBLIC, bad, localSettings } = require('./lib/store');
 const makeRoutes = require('./lib/routes');
 const { heard } = require('./lib/presence');
 const phone = require('./lib/phone');
+const seal = require('./lib/phone-seal');
 
 fs.mkdirSync(DATA, { recursive: true });
 
@@ -47,6 +48,14 @@ function guardPhone(req, pathname) {
   // The Android app (AIG-907) sends Authorization: Bearer <device key> and no Origin. A web page on another site can't
   // send that header here: it needs a CORS preflight (OPTIONS), and this server never answers one with Access-Control-*.
   const pairing = req.method === 'POST' && pathname === '/api/phone/pair';
+  // A sealed call (AII-18, docs/SEALED.md): no key in the request at all; lib/phone-seal.js checks the device and the seal.
+  if (req.method === 'POST' && pathname === '/api/phone/sealed') {
+    if (req.headers.authorization || !req.headers['x-aigile-device']) throw bad('sealed: send X-Aigile-Device and no Authorization', 403);
+    if (req.headers.origin && req.headers.origin.toLowerCase() !== 'https://' + host) throw bad('requests from other sites are not allowed', 403);
+    if (!/^application\/json\b/i.test(req.headers['content-type'] || '')) throw bad('send JSON (Content-Type: application/json)', 415);
+    req.aigileSealed = host;
+    return;
+  }
   const d = pairing ? null : phone.deviceFor(req, host);
   const origin = req.headers.origin;
   if (origin ? origin.toLowerCase() !== 'https://' + host : req.method !== 'GET' && !(d && d.via === 'bearer')) throw bad('requests from other sites are not allowed', 403);
@@ -57,6 +66,30 @@ function guardPhone(req, pathname) {
     phone.denied(req, pathname);
   }
   if (req.method !== 'GET' && !/^application\/json\b/i.test(req.headers['content-type'] || '')) throw bad('send JSON (Content-Type: application/json)', 415);
+}
+// The opened sealed request runs through the same routes, as that device, with the same deny list (AII-18).
+// Its answer is sealed back: { s: status, b: JSON body, or { ct, data: base64 } for a file or picture }.
+async function runSealed(req, body) {
+  const d = phone.sealedDevice(req.headers['x-aigile-device'], req.aigileSealed);
+  if (!d) throw bad('sealed: unknown device', 403);
+  const r = seal.open(d, body);
+  const iu = new URL(r.p, 'http://x');
+  let ip; try { ip = decodeURIComponent(iu.pathname); } catch { throw bad('sealed: bad path', 403); }
+  const inner = { method: r.m, headers: { host: req.headers.host, 'content-type': 'application/json' }, socket: req.socket, aigilePhone: d };
+  const ib = ['POST', 'PATCH', 'PUT'].includes(r.m) && r.b && typeof r.b === 'object' ? r.b : {};
+  try { phone.denied(inner, ip); phone.deniedBody(ib); } catch { throw bad('sealed: not from a phone', 403); }
+  let s = 200, b = null;
+  try {
+    const hit = routes.find(([m, re]) => m === r.m && re.test(ip));
+    if (!hit) throw bad('no such endpoint: ' + r.m + ' ' + ip, 404);
+    const out = await hit[2](ip.match(hit[1]).slice(1), ib, iu.searchParams, inner);
+    if (out && out.__cookie) delete out.__cookie;
+    if (out && out.__sse) throw bad('a live stream is not sealed', 400);
+    if (out && out.__svg) b = { ct: 'image/svg+xml', data: Buffer.from(out.__svg).toString('base64') };
+    else if (out && out.__file) b = { ct: out.download ? 'application/octet-stream' : ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', data: fs.readFileSync(out.__file).toString('base64') };
+    else b = out === undefined ? null : JSON.parse(JSON.stringify(out));
+  } catch (e) { s = e.code >= 400 && e.code < 600 ? e.code : 500; b = { error: e.message }; }
+  return seal.close(d, s, b);
 }
 function guard(req, pathname) {
   if (!LOCAL.has(String(req.headers.host || '').toLowerCase())) return guardPhone(req, pathname);
@@ -106,6 +139,7 @@ const server = http.createServer(async (req, res) => {
       // Any CLI or hook call from a session you opened counts as that team being at work (AIG-107).
       const where = req.headers['x-aigile-where'], pm = pathname.match(/^\/api\/projects\/([^/]+)/);
       if (pm && (where === 'vscode' || where === 'terminal')) heard(pm[1], where);
+      if (req.aigileSealed) return send(res, 200, await runSealed(req, await readBody(req, 15e6)));   // AII-18
       for (const [method, re, fn] of routes) {
         const m = pathname.match(re);
         if (m && method === req.method) {
