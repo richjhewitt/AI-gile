@@ -2,7 +2,7 @@
 // data/<slug>.dm-archive.json, leave the board and stats; open DM cards stay; dry run changes nothing; a second run changes nothing.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, mkProject, mkCard, say, def } from '../lib.mjs';
+import { check, mkProject, mkCard, say, def, until } from '../lib.mjs';
 
 def('dmtidy', '💬 DM tidy: done DM cards move into the Lead chat in time order, archived, off the board and stats; dry run; idempotent (AIG-873)', async (s) => {
   await mkProject(s, 'Tidy', 'TDY');
@@ -22,6 +22,8 @@ def('dmtidy', '💬 DM tidy: done DM cards move into the Lead chat in time order
     if (c.id === plain.id) c.status = 'done';
   }
   fs.writeFileSync(file, JSON.stringify(p));
+  // A late save from the server (wake, dispatch) can overwrite the edit above: write again until the server sees the 3 done cards.
+  await until(async () => (await s.ok('GET', '/api/projects/tidy')).cards.filter(c => c.status === 'done').length === 3 || (fs.writeFileSync(file, JSON.stringify(p)), false), 5000);
   const cf = path.join(s.data, 'tidy.chat'), ch = JSON.parse(fs.readFileSync(cf, 'utf8')); ch.msgs[0].at = t(3); fs.writeFileSync(cf, JSON.stringify(ch));
   const before = fs.readFileSync(cf, 'utf8');
 
@@ -60,6 +62,7 @@ def('dmtidy', '💬 DM tidy: done DM cards move into the Lead chat in time order
   // a later done DM card appends to the archive, never overwrites it
   const c2 = await mkCard(s, 'tidy', '💬 later', { status: 'team', quick: true, createdBy: 'Owner', description: 'later one' });
   const p3 = JSON.parse(fs.readFileSync(file, 'utf8')); p3.cards.find(c => c.id === c2.id).status = 'done'; fs.writeFileSync(file, JSON.stringify(p3));
+  await until(async () => (await s.ok('GET', '/api/projects/tidy')).cards.find(c => c.id === c2.id)?.status === 'done' || (fs.writeFileSync(file, JSON.stringify(p3)), false), 5000);
   await s.ok('POST', '/api/projects/tidy/dms/tidy', {});
   check('archive appended (3 cards), thread has 6', JSON.parse(fs.readFileSync(path.join(s.data, 'tidy.dm-archive.json'), 'utf8')).length === 3 && (await s.ok('GET', '/api/projects/tidy/leadchat')).messages.length === 6);
   const nope = await s.api('POST', '/api/projects/nonesuch/dms/tidy', {});
