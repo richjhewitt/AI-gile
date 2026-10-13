@@ -33,7 +33,15 @@ if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', '
   const native = window[k].bind(window);
   window[k] = (...a) => { const r = native(...a); location.href = 'aigile://refocus'; return r; };
 }
-window.addEventListener('hashchange', () => { state.editing = false; refresh(true); });
+// A new page opens at the top (AIG-925): the inbox used to open as far down as the board had been scrolled.
+// Opening or closing a card on the same board keeps the board where it was.
+const pageOf = h => h.replace(/^(#\/p\/[^/]+)\/.*$/, '$1');
+let lastPage = pageOf(location.hash);
+window.addEventListener('hashchange', () => {
+  state.editing = false;
+  const pg = pageOf(location.hash); if (pg !== lastPage) { lastPage = pg; window.scrollTo(0, 0); }
+  refresh(true);
+});
 // The language file is in before the first render (AIG-124). If it or the first /api/meta fails (a restart, a half-written
 // file mid-update), the page says "Updating… retrying" and starts again with backoff (AIG-517, see Boot in index.html).
 (function start() {
