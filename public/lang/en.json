@@ -2762,5 +2762,15 @@
   "hf.btn.title": "Show only this project and your DMs (nothing else changes for the teams)",
   "hf.chip": "🎯 Hyperfocus: {name}",
   "hf.chip.title": "Open the project you are hyperfocused on",
-  "hf.off": "Turn Hyperfocus off"
+  "hf.off": "Turn Hyperfocus off",
+ "servers.host": "Host (name or IP)",
+ "servers.user": "User",
+ "servers.port": "Port (22)",
+ "servers.key": "Key file (optional)",
+ "servers.folder": "Default folder (optional)",
+ "look.server": "Server",
+ "look.server.sub": "Which of your servers this project's server tasks open (Setup > My servers). User and folder here replace the server's own.",
+ "look.server.none": "No server chosen",
+ "look.server.user": "User (optional)",
+ "look.server.folder": "Folder (optional)"
 }
