@@ -3201,5 +3201,20 @@
  "wz.2.use": "Use the one I found",
  "dlg.newcard.more": "More options",
  "card.menu": "⋯",
- "card.menu.title": "More actions"
+ "card.menu.title": "More actions",
+ "setup.sec.storage": "Storage",
+ "storage.h": "Storage",
+ "storage.loading": "Measuring…",
+ "storage.total": "Total",
+ "storage.biggest": "biggest",
+ "storage.k.board": "Board data",
+ "storage.k.attachments": "Attachments",
+ "storage.k.screenshots": "Screenshots",
+ "storage.k.logs": "Logs",
+ "storage.k.other": "Everything else",
+ "storage.files": "{n} files",
+ "storage.tidy": "Attachments on closed (done) cards older than {days} days: {n} files, {size}",
+ "storage.delete": "Delete",
+ "storage.confirm": "Delete {n} attachment files ({size}) from closed cards? Nothing else is removed.",
+ "storage.nothing": "No attachments on closed cards older than {days} days to tidy up."
 }
