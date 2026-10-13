@@ -37,6 +37,7 @@
   <span id="nightTop"></span>
   <button id="twitchBtn" class="navlink" onclick="Twitch.open(event)" data-i18n="twitch.btn" data-i18n-title="twitch.title" title="Your Twitch chat in a window that stays on top (Shift+click: change channel)">💬 Twitch chat</button>
   <button id="glanceBtn" class="navlink" onclick="ScrumGlance.toggle()" data-i18n="glance.btn" data-i18n-title="glance.btn.title" title="What is in progress, to do, waiting for you and done today">📊 ScrumGlance</button>
+  <button id="weedBtn" class="navlink wd-off" onclick="Weed.pop()" data-i18n="weed.btn" data-i18n-title="weed.btn.title" title="Countdown to the next 4:20">🌿 WeedGlance</button>
   <button id="streamBtn" class="navlink" onclick="Streamer.toggle()" aria-pressed="false" data-i18n="streamer.btn" title="Streamer mode">🎥 Streamer</button>
   <button id="liveBtn" class="navlink" onclick="Streamer.goLive()" hidden></button>
   <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" title="No Token Mode">⛔ No Token Mode</button>
@@ -111,6 +112,7 @@ window.Boot = (() => {
 <script src="js/startday.js"></script>
 <script src="js/usage-glance.js"></script>
 <script src="js/scrumglance.js"></script>
+<script src="js/fourtwenty.js"></script>
 <script src="js/inbox-style.js"></script>
 <script src="js/inbox-queue.js"></script>
 <script src="js/inbox-ai.js"></script>
