@@ -50,7 +50,8 @@ export const until = async (fn, ms = 8000) => { const end = Date.now() + ms; let
 // port: a second board for the dms area runs on another port.
 export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   // root: another copy of the app, e.g. the No-AI build (AIG-617)   // a second board passes await freePort()
   // A busy QA_PORT means another process (a board, a relay, an old run) would answer our calls: stop the run at once.
-  if (!(await portFree(port))) {
+  // The last area's server may still be letting go of the port (kill does not wait): give it a few seconds first.
+  if (!(await until(() => portFree(port), 5000))) {
     if (port === PORT) { console.error(`QA_PORT ${port} is in use by another process: pick another QA_PORT`); process.exit(3); }
     throw new Error(`port ${port} is in use by another process`);
   }
