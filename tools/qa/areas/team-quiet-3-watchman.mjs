@@ -5,6 +5,16 @@ import { createRequire } from 'node:module';
 import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 const require = createRequire(import.meta.url);
 
+// AIG-1001: wait until the stand-in team runs have really ended (a fixed 4.5 s was flaky on a busy PC)
+async function runsEnd(s, slugs) {
+  await sleep(1000);
+  for (let i = 0; i < 80; i++) {
+    const ps = await s.ok('GET', '/api/projects');
+    if (!slugs.some(x => { const p = ps.find(q => q.slug === x); return p && p.presence && p.presence.running; })) return;
+    await sleep(250);
+  }
+}
+
 def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuck after 3 tries, wakes idle teams, morning summary (AIG-199)', async (s, ctx) => {
   await mkProject(s, 'Cut', 'CUT', { path: tmp('cut') });
   await mkProject(s, 'Nap', 'NAP', { path: tmp('nap') });
@@ -13,14 +23,14 @@ def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuc
   await mkCard(s, 'nap', 'Waiting work', { status: 'todo' });
   await mkCard(s, 'skip', 'Not watched', { status: 'todo' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['cut', 'nap'] });
-  await sleep(4500);   // going quiet wakes the teams; wait until those runs end
+  await runsEnd(s, ['cut', 'nap']);   // going quiet wakes the teams; wait until those runs end
   await s.ok('POST', '/api/watchman/round');
   let c = await getCard(s, 'cut', mid.id);
   check('a team that stopped mid-card is started again, with a note', /Picked back up/.test(c.comments.at(-1).text));
   let st = await s.ok('GET', '/api/watchman');
   check('an idle team with work is woken; an unwatched one is left alone', st.summary.find(x => x.project === 'nap').woke === 1 && !st.summary.find(x => x.project === 'skip'));
-  await sleep(4500);   // the stand-in agent ends; the team is asleep again
-  await s.ok('POST', '/api/watchman/round'); await sleep(4500); await s.ok('POST', '/api/watchman/round');
+  await runsEnd(s, ['cut', 'nap']);   // the stand-in agent ends; the team is asleep again
+  await s.ok('POST', '/api/watchman/round'); await runsEnd(s, ['cut', 'nap']); await s.ok('POST', '/api/watchman/round');
   c = await getCard(s, 'cut', mid.id);
   check('third time on the same card: stuck, and in your pile', /Stuck/.test(c.comments.at(-1).text) && c.needsYou === true, c.comments.at(-1).text);
   const back = await s.ok('POST', '/api/quiet', { on: false });
