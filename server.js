@@ -232,6 +232,7 @@ metadataReady.finally(() => server.listen(PORT, HOST, () => { console.log(`AI-gi
 // Private DMs: collect this board's relay mailbox every few seconds while DMs are on (lib/dm.js).
 require('./lib/dm').startDms();
 require('./lib/timed').start();   // timed cards come back (AIG-385)
+require('./lib/major').start();   // 🚨 a status line every 30 min while a major incident is open (AIG-1049)
 require('./lib/join').applyInvite().catch(() => {});   // a friend's first start: invite.json from the zip (AIG-347)
 if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();
 require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anything while you are going quiet (AIG-199)

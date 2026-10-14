@@ -48,6 +48,11 @@ const problemHtml = (p, c) => c.type === 'problem' ? `<div class="problem"><h3>$
   <p><b>${esc(t('prob.incidents'))}</b> ${(c.incidents || []).length ? c.incidents.map(i => cardLinkHtml(p, i)).join(', ') : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
   <p><b>${esc(t('prob.change'))}</b> ${c.changeId ? cardLinkHtml(p, c.changeId) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p></div>`
   : c.problemId ? `<div class="problem"><p><b>${esc(t('prob.of'))}</b> ${cardLinkHtml(p, c.problemId)}</p></div>` : '';
+// 🚨 Major incident button (AIG-1049): on an open incident card; pressed again it ends the major incident.
+const majorHtml = c => c.type !== 'incident' || c.status === 'done' ? '' : `<div class="major">${c.major ? `<span class="major-on">${esc(t('major.on', { by: c.major.by || '', when: ago(c.major.at) }))}</span> ` : ''}<button type="button" class="${c.major ? '' : 'danger'}" onclick="pressMajor('${esc(c.id)}')" title="${esc(t('major.title'))}">${esc(t(c.major ? 'major.end' : 'major.btn'))}</button></div>`;
+async function pressMajor(id) {
+  try { await api('POST', `/api/projects/${slug()}/cards/${id}/major`, {}); refresh(true); } catch (e) { alert(e.message); }
+}
 // The merge gate (AIG-613): 🟢 QA green (areas, full suite) / 🔴 QA red / ⚪ no QA yet. Set with aigile qa.
 function qaGateHtml(c) {
   const q = c.qa; if (!q) return `<div class="qa-gate none">${esc(t('qa.none'))}</div>`;
@@ -97,6 +102,7 @@ function renderCard(p, c) {
     <div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
+    ${majorHtml(c)}
     ${c.status === 'verify' ? verdict : ''}
     ${checklistUi(p, c)}${waitsUi(p, c)}${secretsUi(p, c)}
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
