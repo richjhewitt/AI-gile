@@ -83,7 +83,7 @@ NGINX
 # AI-gile board proxy (AIG-1008): the PC's tunnel end on 127.0.0.1. Included by the three board locations.
 proxy_pass http://127.0.0.1:__PORT__;
 proxy_http_version 1.1;
-proxy_set_header Host $host;
+proxy_set_header Host __DOMAIN__;
 proxy_set_header X-Forwarded-Proto $scheme;
 proxy_set_header Upgrade $http_upgrade;
 proxy_set_header Connection $aigile_board_conn___SLUG__;
@@ -95,7 +95,7 @@ proxy_read_timeout 3600s;
 client_max_body_size 40m;
 error_page 502 503 504 = @aigile_offline;
 NGINX
-  sed -i "s#__PORT__#$BOARD#g" "/etc/nginx/snippets/$SITE-board.conf"
+  sed -i "s#__PORT__#$BOARD#g; s#__DOMAIN__#$DOMAIN#g" "/etc/nginx/snippets/$SITE-board.conf"   # the board only ever sees this site's name as Host
   sed "s#__SLUG__#$SLUG#g" > "/etc/nginx/snippets/$SITE.conf" <<'NGINX'
 # AI-gile site with the board (AIG-1008): a browser with the aigile_phone cookie gets the board, everyone else the static teaser.
 location /_pair/ {
