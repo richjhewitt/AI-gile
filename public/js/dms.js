@@ -6,7 +6,7 @@
 // Friends' private DMs (AIG-111, lib/dm.js) are chats too: the list has a filter All / Agents / People, and a
 // friend's chat has the same typing box, 👍 and attachments. A friend's chat key is 'dm:<contact id>'.
 const Dms = (() => {
-  let projects = [], chats = [], people = [], closed = {}, showClosed = false, showQuiet = false, askAll = false, filter = 'all', open = null, listOpen = false, thread = null, threadSeq = 0, busy = false;
+  let projects = [], chats = [], people = [], closed = {}, showClosed = false, showQuiet = false, showDone = false, askAll = false, filter = 'all', open = null, listOpen = false, thread = null, threadSeq = 0, busy = false;
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
   const QUIET_MS = 6 * 3600000;   // AIG-946, AIG-1021: a chat with nothing unread and no message for 6 hours hides until a new one
   const plain = s => String(s || '').replace(/```/g, ' ').replace(/^\s*(?:[-*+•]|\d+[.)])\s+/gm, '').replace(/^\s*#+\s+/gm, '').replace(/\*\*|__|[*_`~]/g, '').replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\s+/g, ' ').trim();   // AIG-946: previews are plain text
@@ -151,8 +151,12 @@ const Dms = (() => {
     const groups = new Map();
     for (const m of thread.messages) { if (!groups.has(m.card)) groups.set(m.card, []); groups.get(m.card).push(m); }
     const list = [...groups].sort((a, b) => (b[0] === '_lead') - (a[0] === '_lead') || a[1].at(-1).at.localeCompare(b[1].at(-1).at));   // AIG-872: the Lead chat is pinned at the top
-    if (!list.some(([id]) => id === fold)) fold = (target && groups.has(target) ? target : null) || (list.length ? list.at(-1)[0] : null);
-    return list.map(([id, msgs]) => {
+    // AIG-1025: folds of cards that are done/accepted sit under a collapsed "Done (N)" toggle; unread, waiting and in-progress ones stay.
+    const isDone = id => id !== '_lead' && !thread.watchman && !!((thread.cards || {})[id] || {}).done && !thread.open.some(o => o.id === id) && groups.get(id).some(m => m.mine);   // a done card you never answered (a lead's note) still counts as unread
+    const doneN = list.filter(([id]) => isDone(id)).length, vis = showDone ? list : list.filter(([id]) => !isDone(id));
+    if (!vis.some(([id]) => id === fold)) fold = (target && vis.some(([id]) => id === target) ? target : null) || (vis.length ? vis.at(-1)[0] : null);
+    const doneBox = doneN ? `<div class="dm-closed dm-donebox"><button class="dm-closedlink" data-dmshowdone="1" aria-expanded="${showDone}">${esc(t(showDone ? 'dms.done.hide' : 'dms.done.show', { n: doneN }))}</button></div>` : '';
+    return doneBox + vis.map(([id, msgs]) => {
       const c = (thread.cards || {})[id] || {}, last = msgs.at(-1), isOpen = id === fold;
       const acts = c.waiting && !last.mine ? actionsHtml(askActions(last, c.kind), thread.slug, id) : '';
       const preview = plain(last.text).slice(0, 90);
@@ -442,6 +446,7 @@ const Dms = (() => {
     if (dd) { e.preventDefault(); const k = dd.dataset.dmdraft; if (k.startsWith('dm/')) show(k.slice(3)); else { const [s, id] = k.split('/'); location.hash = '#/p/' + s + '/' + id; close(); } return; }
     const xc = e.target.closest('#dmPanel [data-dmclose],#dmPanel [data-dmreopen]');   // AIG-917
     if (xc) { e.preventDefault(); const k = xc.dataset.dmclose || xc.dataset.dmreopen, shut = !!xc.dataset.dmclose; api('POST', '/api/dmclosed', { key: k, closed: shut }).then(() => { if (shut) closed[k] = new Date().toISOString(); else delete closed[k]; return loadRail(); }).then(paintList).catch(() => {}); return; }
+    if (e.target.closest('#dmPanel [data-dmshowdone]')) { showDone = !showDone; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); return; }
     if (e.target.closest('#dmPanel [data-dmshowquiet]')) { showQuiet = !showQuiet; paintList(); return; }
     if (e.target.closest('#dmPanel [data-dmshowclosed]')) { showClosed = !showClosed; paintList(); return; }
     const fl = e.target.closest('#dmPanel [data-dmfilter]');
