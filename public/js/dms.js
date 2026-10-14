@@ -244,7 +244,8 @@ const Dms = (() => {
     let got; try { got = await PagePoll.get(isGrp(want) ? '/api/chats/_groups/' + want.slice(4) : '/api/chats/' + want); } catch { return; }
     if (seq !== threadSeq || open !== want) return;
     thread = got;
-    if (thread.group && thread.messages.length) dmSeen.set(want, thread.messages.at(-1).at);   // 👥 opening the group reads it
+    if (pendingSend) { const ps = pendingSend; pendingSend = null; if (ps.slug === want) setTimeout(() => send(ps.fixed), 0); }
+    if (thread.group &&thread.messages.length) dmSeen.set(want, thread.messages.at(-1).at);   // 👥 opening the group reads it
     const list = el('dmList'); if (!list) return;
     // A card that newly starts waiting on you opens by itself, and the typing box answers it.
     const fresh = thread.open.find(o => !waitingSeen.has(o.id));
@@ -387,7 +388,9 @@ const Dms = (() => {
   function back() { DiscordTab.stop(); TwitchTab.stop(); open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
   function close() { DiscordTab.stop(); TwitchTab.stop(); open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
 
+  let pendingSend = null;
   async function send(fixed) {
+    if (!thread && open) { pendingSend = { slug: open, fixed }; return; }   // the chat is still loading: keep the text, send once it has loaded (loadThread)
     if (busy || !thread) return;
     if (thread.allhands) return sendAllHands();
     if (thread.person) return sendPerson(fixed);
