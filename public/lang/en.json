@@ -3386,5 +3386,17 @@
  "status.rest": "Rest day",
  "status.rest.help": "Rest day: the night watch takes over, only urgent things reach you, and the teams ask the Lead Scrum Master instead of you",
  "status.rest.confirm": "Start a rest day? The night watch takes over, only urgent cards stay in your inbox, and every team is told to ask the Lead Scrum Master instead of you.",
- "status.rest.go": "Start rest day"
+ "status.rest.go": "Start rest day",
+ "mail.setup.auth.google": "Google (Gmail)",
+ "mail.setup.g.client": "Client ID",
+ "mail.setup.g.secret": "Client secret",
+ "mail.setup.g.help1": "Google needs a free OAuth client of your own: in Google Cloud Console make a project and set up the OAuth consent screen (add yourself as a test user).",
+ "mail.setup.g.help2": "Then Credentials > Create credentials > OAuth client ID, type Desktop app.",
+ "mail.setup.g.help3": "Paste its Client ID and Client secret here, then press Sign in with Google.",
+ "mail.setup.g.link": "Open Google Cloud Console",
+ "mail.setup.g.signin": "Sign in with Google",
+ "mail.setup.g.done": "✅ Signed in to Google",
+ "mail.setup.g.not": "Not signed in to Google yet",
+ "mail.setup.g.go": "Open Google's sign-in page",
+ "mail.setup.g.waiting": "Waiting for you to sign in at Google…"
 }
