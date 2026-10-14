@@ -12,15 +12,52 @@ const USER = 'admin@locoradio.test';
 const PASS_A = 'q"uo\\te pw';          // plain ASCII with a quote and a backslash: sent as a quoted string
 const PASS_U = 'Gëheim-wachtwoord1';     // not ASCII: sent as a literal {n}
 const HOUR = 3600e3;
+// Two hostile mails (card 2, AIG-903): 103 is multipart (text + HTML with scripts, a form, tracking pictures, plus a PDF attachment);
+// 102 is HTML only. Lines end in CRLF.
+const crlf = s => s.replace(/\n/g, '\r\n');
+const BODY_103 = crlf(`From: Jorg <jorg@example.org>
+Subject: hello
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="B1"
+
+--B1
+Content-Type: multipart/alternative; boundary="B2"
+
+--B2
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello J=C3=B6rg <script>window.pwned=3</script>
+Second line of the mail
+Third line with a long url https://example.org/a
+--B2
+Content-Type: text/html; charset=utf-8
+
+<p onclick="window.pwned=4">Hi <b>there</b></p><script>window.pwned=5</script><form action="http://evil.test/post"><input name=x></form><img src="http://tracker.test/p.gif"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><div style="background:url(http://tracker.test/b.png)">styled</div><iframe src="http://evil.test/f"></iframe>
+--B2--
+--B1
+Content-Type: application/pdf; name="bill.pdf"
+Content-Disposition: attachment; filename="bill.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQK
+--B1--
+`);
+const BODY_102 = crlf(`From: news@letters.example
+Subject: Weekly news
+Content-Type: text/html; charset=utf-8
+
+<h1>Big news</h1><img src="https://tracker.test/open.gif" width=1 height=1><p>Only HTML here.</p>
+`);
 
 // A fake IMAP server: greeting, LOGIN (quoted or literal), SELECT, UID SEARCH, UID FETCH, LOGOUT. Mail text is hostile on purpose.
 function fakeImap() {
-  const seen = { logins: 0, lines: [] };
+  const seen = { logins: 0, peeks: 0, lines: [] };
   const imapDate = d => d.toUTCString().replace(/^\w+, /, '').replace(/ GMT$/, ' +0000').replace(/^(\d+) (\w+) (\d+)/, '$1-$2-$3');
   const lit = s => { const b = Buffer.from(s, 'utf8'); return `{${b.length}}\r\n` + s; };
   const msgs = () => [
-    { uid: 103, flags: '', date: new Date(Date.now() - 2 * HOUR), subject: lit('<script>window.pwned=1</script> <img src=x onerror="window.pwned=2"> {5}'), from: '(("=?UTF-8?B?SsO2cmcgw5xucmVhZA==?=" NIL "jorg" "example.org"))' },
-    { uid: 102, flags: '\\Seen', date: new Date(Date.now() - 5 * HOUR), subject: '"Weekly \\"news\\""', from: '((NIL NIL "news" "letters.example"))' },
+    { uid: 103, body: BODY_103, flags: '', date: new Date(Date.now() - 2 * HOUR), subject: lit('<script>window.pwned=1</script> <img src=x onerror="window.pwned=2"> {5}'), from: '(("=?UTF-8?B?SsO2cmcgw5xucmVhZA==?=" NIL "jorg" "example.org"))' },
+    { uid: 102, body: BODY_102, flags: '\\Seen', date: new Date(Date.now() - 5 * HOUR), subject: '"Weekly \\"news\\""', from: '((NIL NIL "news" "letters.example"))' },
     { uid: 101, flags: '', date: new Date(Date.now() - 40 * 24 * HOUR), subject: 'NIL', from: '(("Old Sender" NIL "old" "example.net"))' },
   ];
   const srv = net.createServer(sock => {
@@ -37,9 +74,16 @@ function fakeImap() {
       if (cmd === 'LOGIN') { seen.logins++; const ok = a[2] === USER && (a[3] === PASS_A || a[3] === PASS_U); return sock.write(ok ? `${tag} OK logged in\r\n` : `${tag} NO [AUTHENTICATIONFAILED] Invalid credentials\r\n`); }
       if (cmd === 'SELECT') return sock.write(`* 3 EXISTS\r\n* 0 RECENT\r\n* OK [UIDVALIDITY 77] ok\r\n${tag} OK [READ-WRITE] done\r\n`);
       if (cmd === 'UID' && /^SEARCH$/i.test(a[2])) return sock.write(`* SEARCH 101 102 103\r\n${tag} OK search done\r\n`);
+      if (cmd === 'EXAMINE') return sock.write(`* 3 EXISTS\r\n* OK [UIDVALIDITY 77] ok\r\n${tag} OK [READ-ONLY] done\r\n`);
       if (cmd === 'UID' && /^FETCH$/i.test(a[2])) {
-        const want = String(a[3]).split(',').map(Number);
-        const out = msgs().filter(m => want.includes(m.uid)).map((m, i) => `* ${i + 1} FETCH (UID ${m.uid} FLAGS (${m.flags}) INTERNALDATE "${imapDate(m.date)}" ENVELOPE ("${m.date.toUTCString()}" ${m.subject} ${m.from} NIL NIL NIL NIL NIL NIL "<${m.uid}@x>"))\r\n`).join('');
+        const want = String(a[3]).split(',').map(Number), peek = line.includes('BODY.PEEK[]');
+        const env = m => `ENVELOPE ("${m.date.toUTCString()}" ${m.subject} ${m.from} NIL NIL (("Me" NIL "admin" "locoradio.test")) NIL NIL NIL "<${m.uid}@x>")`;
+        if (peek) {   // the whole mail as one literal, as BODY[]<0>; the flags stay as they are (nothing here can set \Seen)
+          seen.peeks++;
+          const parts = msgs().filter(m => want.includes(m.uid)).map(m => Buffer.concat([Buffer.from(`* 1 FETCH (UID ${m.uid} FLAGS (${m.flags}) INTERNALDATE "${imapDate(m.date)}" ${env(m)} BODY[]<0> {${Buffer.byteLength(m.body)}}\r\n`), Buffer.from(m.body), Buffer.from(')\r\n')]));
+          return sock.write(Buffer.concat([...parts, Buffer.from(`${tag} OK fetch done\r\n`)]));
+        }
+        const out = msgs().filter(m => want.includes(m.uid)).map((m, i) => `* ${i + 1} FETCH (UID ${m.uid} FLAGS (${m.flags}) INTERNALDATE "${imapDate(m.date)}" ${env(m)})\r\n`).join('');
         return sock.write(out + `${tag} OK fetch done\r\n`);
       }
       if (cmd === 'LOGOUT') { sock.write(`* BYE bye\r\n${tag} OK\r\n`); return sock.end(); }
@@ -126,6 +170,37 @@ def('mail', 'Mail card 1: add an IMAP mailbox in Setup (find, test, save), passw
     check('mail text is escaped: shown as text, nothing runs', /<script>window\.pwned=1<\/script>/.test(rows[0]) && /\{5\}/.test(rows[0]) && await page.evaluate(() => !window.pwned && !document.querySelector('#app script, #app img[onerror]')));
     check('dates show', (await page.locator('.mail-date').first().textContent()).trim().length > 0);
 
+    // Card 2 (AIG-903): open one mail and read it safely
+    const requests = []; page.on('request', r => requests.push(r.url()));
+    const api103 = await s.ok('GET', `/api/mail/message?box=${b.id}&uid=103`);
+    check('message API: text decoded (quoted-printable, UTF-8), HTML cleaned, attachment listed, still unread', /Hello Jörg <script>window\.pwned=3<\/script>/.test(api103.text) && api103.unread === true && api103.attachments.length === 1 && api103.attachments[0].name === 'bill.pdf' && api103.attachments[0].type === 'application/pdf', api103);
+    check('message API: the HTML has no script, form, frame, handler or remote picture, and counts what it blocked', !/<script|<form|<iframe|<input|onclick|tracker\.test|evil\.test/i.test(api103.html) && /data:image\/gif/.test(api103.html) && api103.blockedImages === 2 && /Hi <b>there<\/b>/.test(api103.html), api103);
+    check('message API: from, to and subject come back', api103.from.address === 'jorg@example.org' && api103.to[0].address === 'admin@locoradio.test' && /pwned=1/.test(api103.subject), api103);
+    check('message API: a bad uid is a 400, an unknown mail a 404', (await s.api('GET', `/api/mail/message?box=${b.id}&uid=abc`)).status === 400 && (await s.api('GET', `/api/mail/message?box=${b.id}&uid=999`)).status === 404);
+    check('reading uses BODY.PEEK on a read-only EXAMINE and never sets a flag', seen.peeks >= 1 && seen.lines.some(l => /EXAMINE/.test(l)) && !seen.lines.some(l => /STORE/i.test(l)) && seen.lines.filter(l => /BODY/.test(l)).every(l => l.includes('BODY.PEEK[')));
+    await page.locator('.mail-open').first().click();
+    await page.waitForSelector('#mailText');
+    check('click a mail: it opens with subject, sender and plain text shown as text', /pwned=1/.test(await page.textContent('#mailSubject')) && /Jörg Ünread/.test(await page.textContent('#mailFromFull')) && /Hello Jörg <script>window\.pwned=3<\/script>/.test(await page.textContent('#mailText')));
+    check('mail text runs nothing and creates no elements', await page.evaluate(() => !window.pwned && !document.querySelector('#mailText script, #mailText img, #mailText *')));
+    check('the attachment is listed, not opened', /bill\.pdf/.test(await page.textContent('#mailAttach')) && /Second line of the mail/.test(await page.textContent('#mailText')));
+    check('text view: no iframe yet', await page.locator('#mailFrame').count() === 0);
+    await page.click('#mailToggle');
+    await page.waitForSelector('#mailFrame');
+    const sandbox = await page.getAttribute('#mailFrame', 'sandbox'), doc = await page.getAttribute('#mailFrame', 'srcdoc');
+    check('HTML goes only in an iframe with an empty sandbox (no scripts, no forms, no same-origin)', sandbox === '' && !/allow-/.test(await page.evaluate(() => document.getElementById('mailFrame').outerHTML)));
+    check('the iframe document carries a policy that allows no remote loads and holds no script, form or tracker', /Content-Security-Policy/.test(doc) && /default-src 'none'/.test(doc) && !/<script|<form|tracker\.test|onclick/i.test(doc) && /there/.test(doc));
+    check('the "remote images blocked" line shows with the count', /blocked/i.test(await page.textContent('#mailBlocked')) && /2/.test(await page.textContent('#mailBlocked')));
+    await sleep(500);
+    check('nothing ran in the page and the browser asked no remote host for anything', await page.evaluate(() => !window.pwned) && !requests.some(u => /tracker\.test|evil\.test/.test(u)), requests.filter(u => /test/.test(u)));
+    await page.click('#mailBack');
+    await page.waitForSelector('.mail-list .mail-row');
+    check('Back returns to the list, and opening did not mark the mail read (still 2 unread)', await page.locator('.mail-dot').count() === 2);
+    await page.locator('.mail-open').nth(1).click();
+    await page.waitForSelector('#mailFrame');
+    check('an HTML-only mail opens straight in the sandboxed frame, with the picture blocked', await page.getAttribute('#mailFrame', 'sandbox') === '' && !/tracker\.test/.test(await page.getAttribute('#mailFrame', 'srcdoc')) && /1/.test(await page.textContent('#mailBlocked')) && await page.locator('#mailToggle').count() === 0);
+    await page.click('#mailBack');
+    await page.waitForSelector('.mail-list .mail-row');
+
     const cache = path.join(s.data, 'mail', b.id, 'inbox.json');
     const c = JSON.parse(fs.readFileSync(cache, 'utf8'));
     check('the cache keeps headers of the last 30 days only (the 40-day-old one is left out)', c.items.length === 2 && c.items.every(x => x.uid !== 101), c.items.map(x => x.uid));
@@ -161,6 +236,7 @@ def('mail', 'Mail card 1: add an IMAP mailbox in Setup (find, test, save), passw
     await page.waitForFunction(() => /Removed/.test((document.getElementById('mailSetState') || {}).textContent || ''));
     check('Remove mailbox drops the config, the password and the cache', (await s.ok('GET', '/api/mail/config')).boxes.length === 0 && !fs.readFileSync(sec, 'utf8').includes('mail:') && !fs.existsSync(cache));
     await sleep(200);
+    page.errors = page.errors.filter(e => !/^console: Blocked script execution in 'about:srcdoc'/.test(e));   // the sandbox saying no (the test runner's own helper script also lands there); the srcdoc is checked above to hold no script
     noErrors(page);
   } finally { srv.close(); }
 }, true, { AIGILE_SECRETS_DIR: SECDIR, AIGILE_MAIL_PLAIN: '1', AIGILE_MAIL_FIND_STUB: JSON.stringify({ mx: ['mail.locoradio.test'], answers: ['mail.locoradio.test'] }) });

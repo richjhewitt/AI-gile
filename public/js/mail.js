@@ -34,7 +34,17 @@ const Mail = (() => {
     try { await api('POST', '/api/mail/forget', { box: b.id }); M.msg = t('mail.forgot'); M.data = { box: b, items: [], at: null, cached: false, error: '' }; } catch (e) { M.msg = e.message; }
     paint();
   };
-  M.sig = () => JSON.stringify([M.cfg, M.data, M.loading, M.msg, hidden()]);
+  // Open one mail (AIG-903): GET /api/mail/message?box=&uid= reads it with BODY.PEEK (it stays unread on the server).
+  M.open = async uid => {
+    const b = box(); if (!b) return;
+    M.cur = { uid, loading: true, html: false }; paint();
+    try { const d = await api('GET', '/api/mail/message?box=' + q(b.id) + '&uid=' + encodeURIComponent(uid)); if (M.cur && M.cur.uid === uid) M.cur = { uid, d, html: !d.text && !!d.html }; }
+    catch (e) { if (M.cur && M.cur.uid === uid) M.cur = { uid, error: e.message }; }
+    paint();
+  };
+  M.back = () => { M.cur = null; paint(); };
+  M.toggleHtml = () => { if (M.cur) M.cur.html = !M.cur.html; paint(); };
+  M.sig = () => JSON.stringify([M.cfg, M.data, M.loading, M.msg, M.cur && [M.cur.uid, M.cur.loading, M.cur.html, M.cur.error, !!M.cur.d], hidden()]);
   const fmt = d => {
     if (!d) return '';
     const x = new Date(d); if (isNaN(x)) return '';
@@ -46,7 +56,7 @@ const Mail = (() => {
     return `<tr class="mail-row${m.unread ? ' unread' : ''}" style="border-top:1px solid var(--border,#8884)">
       <td style="width:18px;text-align:center">${m.unread ? `<span class="mail-dot" title="${esc(t('mail.unread'))}" aria-label="${esc(t('mail.unread'))}" style="color:var(--accent)">●</span>` : ''}</td>
       <td class="mail-from" title="${esc(who.address)}" style="${bold};max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(who.name || who.address || '?')}</td>
-      <td class="mail-subj" style="${bold};overflow-wrap:anywhere">${esc(m.subject || t('mail.nosubject'))}</td>
+      <td class="mail-subj" style="${bold};overflow-wrap:anywhere"><a href="#/mail" class="mail-open" onclick="Mail.open(${Number(m.uid) || 0});return false" style="color:inherit;text-decoration:none">${esc(m.subject || t('mail.nosubject'))}</a></td>
       <td class="mail-date muted" style="white-space:nowrap;text-align:end">${esc(fmt(m.date))}</td></tr>`;
   };
   M.render = () => {
@@ -54,6 +64,7 @@ const Mail = (() => {
     if (hidden()) return `<div class="uz">${head}<p class="muted">${esc(t('mail.streamer'))}</p></div>`;
     const b = box();
     if (!b) return `<div class="uz">${head}<p class="muted">${esc(t('mail.none'))}</p><p><button class="primary" onclick="Mail.toSetup()">${esc(t('mail.none.setup'))}</button></p></div>`;
+    if (M.cur) return M.renderOne(b);
     const d = M.data || { items: [] }, items = d.items || [];
     const when = d.at ? ago(d.at) : '';
     const state_ = M.loading ? t('mail.loading') : M.msg || (d.at ? t(d.cached ? 'mail.cached' : 'mail.fresh', { when }) : '');
@@ -65,6 +76,31 @@ const Mail = (() => {
       ${d.error ? `<div class="err" id="mailErr">${esc(t('mail.err', { msg: d.error }))}</div>` : ''}
       ${items.length ? `<table class="mail-list" style="width:100%;border-collapse:collapse"><thead><tr class="muted"><th></th><th style="text-align:start">${esc(t('mail.col.from'))}</th><th style="text-align:start">${esc(t('mail.col.subject'))}</th><th style="text-align:end">${esc(t('mail.col.date'))}</th></tr></thead>
         <tbody>${items.map(row).join('')}</tbody></table>` : `<p class="muted" id="mailEmpty">${esc(M.loading ? t('mail.loading') : t('mail.empty'))}</p>`}</div>`;
+  };
+
+  // One open mail. Plain text goes in a <pre> as text. HTML (already cleaned on the server) goes only in an iframe with an empty
+  // sandbox (no scripts, no forms, no same-origin, no popups) under a policy that allows no remote loads, so nothing is fetched.
+  const CSP = "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; img-src data:; style-src 'unsafe-inline'\"><base target=\"_blank\">";
+  M.renderOne = b => {
+    const c = M.cur, d = c.d, head = `<h2>${esc(t('mail.title'))} <span class="muted" style="font-size:14px;font-weight:normal">${esc(b.name)} · ${esc(b.address)}</span></h2>
+      <p><button type="button" id="mailBack" onclick="Mail.back()">${esc(t('mail.back'))}</button></p>`;
+    if (c.loading) return `<div class="uz mail-page">${head}<p class="muted" id="mailOpening">${esc(t('mail.opening'))}</p></div>`;
+    if (c.error) return `<div class="uz mail-page">${head}<div class="err" id="mailErr">${esc(t('mail.err.open', { msg: c.error }))}</div></div>`;
+    const who = d.from || {}, to = (d.to || []).map(x => x.name || x.address).join(', ');
+    const body = c.html && d.html
+      ? `<iframe id="mailFrame" class="mail-frame" sandbox="" referrerpolicy="no-referrer" title="${esc(t('mail.frame'))}" srcdoc="${esc(CSP + d.html)}" style="width:100%;height:480px;border:1px solid var(--border,#8884);background:#fff;resize:vertical"></iframe>`
+      : d.text ? `<pre id="mailText" class="mail-text" style="white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:8px 0">${esc(d.text)}</pre>`
+      : `<p class="muted" id="mailNoText">${esc(t('mail.notext'))}</p>`;
+    return `<div class="uz mail-page">${head}
+      <h3 id="mailSubject" style="overflow-wrap:anywhere">${esc(d.subject || t('mail.nosubject'))}</h3>
+      <div class="muted mail-meta" style="font-size:13px"><div><b>${esc(t('mail.col.from'))}</b> <span id="mailFromFull">${esc(who.name ? who.name + ' <' + who.address + '>' : who.address || '?')}</span></div>
+        ${to ? `<div><b>${esc(t('mail.to'))}</b> ${esc(to)}</div>` : ''}<div><b>${esc(t('mail.col.date'))}</b> ${esc(fmt(d.date))}</div></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0">
+        ${d.text && d.html ? `<button type="button" id="mailToggle" onclick="Mail.toggleHtml()">${esc(t(c.html ? 'mail.showtext' : 'mail.showhtml'))}</button>` : ''}
+        ${c.html && d.blockedImages ? `<span class="muted" id="mailBlocked">${esc(t('mail.images.blocked', { n: d.blockedImages }))}</span>` : ''}
+        ${d.truncated ? `<span class="muted">${esc(t('mail.truncated'))}</span>` : ''}</div>
+      ${body}
+      ${(d.attachments || []).length ? `<div class="mail-attach" id="mailAttach"><b>${esc(t('mail.attach'))}</b><ul>${d.attachments.map(a => `<li>${esc(a.name)} <span class="muted">(${esc(a.type)}, ${esc(Math.max(1, Math.round(a.size / 1024)) + ' KB')})</span></li>`).join('')}</ul></div>` : ''}</div>`;
   };
 
   /* ---------- Setup > ✉️ Mail ---------- */
