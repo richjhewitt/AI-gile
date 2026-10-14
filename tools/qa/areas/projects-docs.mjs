@@ -1,4 +1,4 @@
-// QA areas: docs, mdlinks, newproject, perms, discover.
+// QA areas: docs, mdlinks, newproject, perms, discover, filtertypes.
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -258,4 +258,17 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   check('no stand-up prompt on a board with no cards anywhere', !(await page.$('#suPrompt')));
   noErrors(page);
 }, true);
-
+
+def('filtertypes', 'The type filter offers incident, problem and change only on a project that has such a card (AIG-1081)', async (s, ctx) => {
+  await mkProject(s, 'Plain Types', 'PLT');
+  await mkCard(s, 'plain-types', 'A thing', { type: 'task', status: 'todo' });
+  const page = await openPage(ctx, '#/p/plain-types');
+  await page.waitForSelector('select[data-f=type]');
+  const opts = () => page.$$eval('select[data-f=type] option', os => os.map(o => o.value));
+  check('no service types on a plain project', JSON.stringify(await opts()) === JSON.stringify(['', 'feature', 'bug', 'task']), await opts());
+  await mkCard(s, 'plain-types', 'Down', { type: 'incident', status: 'todo' });
+  await page.goto(BASE + '#/p/plain-types'); await page.reload();
+  await page.waitForSelector('select[data-f=type]');
+  check('incident appears once a card has it', (await opts()).includes('incident') && !(await opts()).includes('problem'), await opts());
+  noErrors(page); await page.close();
+}, true);
