@@ -31,8 +31,9 @@ def('status', '🟢 Your status: Online / Idle / DND / Offline, and 🛌 Rest da
   const inbox = async () => (await s.ok('GET', '/api/inbox')).filter(x => x.project === 'resty').map(x => x.id);
   check('online: both asks in the inbox', (await inbox()).length === 2, await inbox());
   await s.ok('POST', '/api/setup', { prefs: { status: 'online' } });
-  page.once('dialog', d => d.accept());
-  await page.click('#statusBtn'); await page.waitForSelector('#statusMenu'); await page.click('#st-rest'); await sleep(800);
+  page.once('dialog', () => check('rest day: no browser confirm box (AIG-992)', false));
+  await page.click('#statusBtn'); await page.waitForSelector('#statusMenu'); await page.click('#st-rest');
+  await page.waitForSelector('.dialog.sure #sureOk'); check("rest day: asks in the app's own dialog (AIG-992)", true); await page.click('#sureOk'); await sleep(800);
   const meta = await s.ok('GET', '/api/meta');
   check('rest day: saved, 🛌 on the button, and quiet (night watch) is on', (await setup()).status === 'rest' && (await page.textContent('#statusBtn')).trim() === '🛌' && !!meta.quiet, JSON.stringify({ q: meta.quiet }));
   const p = await s.ok('GET', '/api/projects/resty');

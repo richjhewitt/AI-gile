@@ -9,6 +9,15 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 // Tests speak to "Owner" whatever your own name is, here and in the servers they start (setup clears it to test naming).
 process.env.AIGILE_OWNER = 'Owner';
+// AIG-1002: QA's scratch git repos must never reach a real one. A scratch clone that failed (a sandboxed run, 10-13) left git
+// walking up into the enclosing worktree, where an area committed and pushed "HEAD:main" to the real GitHub. So: git never
+// climbs above the temp folder, and every push to a web address fails (scratch remotes are local folders).
+process.env.GIT_CEILING_DIRECTORIES = [os.tmpdir(), process.env.GIT_CEILING_DIRECTORIES].filter(Boolean).join(path.delimiter);
+for (const pre of ['https://', 'http://', 'git@', 'ssh://']) {
+  const n = +(process.env.GIT_CONFIG_COUNT || 0);
+  process.env['GIT_CONFIG_KEY_' + n] = 'url.qa-no-push-' + pre.replace(/\W/g, '') + '://blocked/.pushInsteadOf'; process.env['GIT_CONFIG_VALUE_' + n] = pre;
+  process.env.GIT_CONFIG_COUNT = String(n + 1);
+}
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const PORT = Number(process.env.QA_PORT) || 4390;

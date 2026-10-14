@@ -17,7 +17,10 @@ const Roles = (() => {
   function html() {
     if (!data) { load(); return `<span>${esc(t('roles.h'))}</span>`; }
     const srvs = leadPrefs().servers || [];
-    const make = (data.people || []).map(p => `<label class="chk roles-make" data-who="${esc(p.name)}"><input type="checkbox" ${p.canMake ? 'checked' : ''} ${p.fixed ? 'disabled' : ''} onchange="Roles.make(this)"> <b>${esc(p.name)}</b> <span class="muted">${esc(t('roles.kind.' + p.kind))}</span></label>`).join('');
+    // Where each one works (AIG-1004): first project · role, "+N" for the rest (all of them in the tooltip).
+    const place = x => x.project + (x.role ? ' · ' + x.role : '');
+    const where = p => { const pl = p.places || []; return pl.length ? place(pl[0]) + (pl.length > 1 ? ` +${pl.length - 1}` : '') : t('roles.kind.' + p.kind); };
+    const make = (data.people || []).map(p => `<label class="chk roles-make" data-who="${esc(p.name)}" title="${esc((p.places || []).map(place).join('\n'))}"><input type="checkbox" ${p.canMake ? 'checked' : ''} ${p.fixed ? 'disabled' : ''} onchange="Roles.make(this)"> <b>${esc(p.name)}</b> <span class="muted">${esc(where(p))}</span></label>`).join('');
     const acc = srvs.map((s, i) => `<div class="roles-srv" data-srv-i="${i}"><b>${esc(s.name)}</b>${others().map(p => {
       const cur = (s.access && Object.keys(s.access).find(k => k.toLowerCase() === p.name.toLowerCase())) ? s.access[Object.keys(s.access).find(k => k.toLowerCase() === p.name.toLowerCase())] : 'none';
       return `<label class="roles-lvl"><span>${esc(p.name)}</span><select data-i="${i}" data-who="${esc(p.name)}" onchange="Roles.level(this)">${LEVELS.map(l => `<option value="${l}" ${cur === l ? 'selected' : ''}>${esc(t('roles.level.' + l))}</option>`).join('')}</select></label>`;

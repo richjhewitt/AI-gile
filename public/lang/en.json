@@ -527,6 +527,11 @@
  "look.verbose": "👁 Verbose: a background team shows each step and command as it works, so you can follow it live with 👁 Watch",
  "look.second": "Allow a second lead when there's lots of work",
  "look.second.sub": "Off: while the lead works in a session, the board starts no background run on top.",
+ "look.spacelead": "Space lead",
+ "look.spacelead.sub": "One lead for the whole space: its new cards, Lead chat and stand-ups go to that lead, who can start work in any of its projects. Off: each project keeps its own lead.",
+ "look.spacelead.off": "Off (each project its own lead)",
+ "look.spacelead.own": "This space's own lead",
+ "look.spacelead.kid": "The lead of {name}",
  "look.auto": "Automatic",
  "look.auto.title": "Pick the colour and emoji automatically again",
  "perm.allow": "Allowed without asking",
@@ -2053,6 +2058,7 @@
  "mt.h": "👥 Your main team",
  "mt.sub": "New projects start with this team; each project can change its own in 👥 Team. Every role is optional except the Lead, which runs the team.",
  "mt.pick": "Start from a team…",
+ "mt.engine": "Models for",
  "srv.saver.hold": "usage saver: the {name} limit is at {pct}% (saver {save}%), so only projects with a ⭐ crucial card run",
  "srv.saver.say": "💾 Usage saver: the {name} limit is at {pct}% (saver {save}%). Teams, the AI tester and my own AI runs are down tools except for ⭐ crucial cards. Work restarts by itself when usage drops or resets.",
  "srv.saver.tester": "usage saver is on and no ⭐ crucial test is waiting for the AI tester",
@@ -2287,6 +2293,7 @@
   "approvals.note.need": "Write a short note first: your friend will see it.",
   "approvals.setting": "Approvals: cards a friend raises wait for my OK",
   "approvals.setting.hint": "With this on, a friend's card sits in the Approvals tab of the inbox. No team picks it up until you approve it.",
+  "peerreview.setting": "🔍 Peer review: another AI checks each card before it reaches you",
   "srv.approvals.declined": "Declined: {note}",
   "featreq.btn": "🙋 Request a feature",
   "featreq.intro": "Tell {name} what you would like. It always waits for {name}'s OK before it becomes a card.",
@@ -3328,5 +3335,6 @@
  "status.offline": "Offline",
  "status.rest": "Rest day",
  "status.rest.help": "Rest day: the night watch takes over, only urgent things reach you, and the teams ask the Lead Scrum Master instead of you",
- "status.rest.confirm": "Start a rest day? The night watch takes over, only urgent cards stay in your inbox, and every team is told to ask the Lead Scrum Master instead of you."
+ "status.rest.confirm": "Start a rest day? The night watch takes over, only urgent cards stay in your inbox, and every team is told to ask the Lead Scrum Master instead of you.",
+ "status.rest.go": "Start rest day"
 }

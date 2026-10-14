@@ -525,6 +525,11 @@
  "look.verbose": "👁 Uitgebreid: een team op de achtergrond laat elke stap en elk commando zien terwijl het werkt, zodat je live kunt meekijken met 👁 Meekijken",
  "look.second": "Sta een tweede lead toe als er veel werk is",
  "look.second.sub": "Uit: zolang de lead in een sessie werkt, start het bord er geen achtergrondrun bovenop.",
+ "look.spacelead": "Lead van de space",
+ "look.spacelead.sub": "Eén lead voor de hele space: nieuwe kaarten, de Lead-chat en stand-ups van de space gaan naar die lead, die in elk project ervan aan het werk kan. Uit: elk project houdt zijn eigen lead.",
+ "look.spacelead.off": "Uit (elk project zijn eigen lead)",
+ "look.spacelead.own": "De eigen lead van deze space",
+ "look.spacelead.kid": "De lead van {name}",
  "look.auto": "Automatisch",
  "look.auto.title": "Kies de kleur en emoji weer automatisch",
  "perm.allow": "Mag zonder te vragen",
@@ -2051,6 +2056,7 @@
  "mt.h": "👥 Je vaste team",
  "mt.sub": "Nieuwe projecten beginnen met dit team; elk project kan het zijne aanpassen in 👥 Team. Elke rol is optioneel, behalve de teamleider, die het team leidt.",
  "mt.pick": "Begin met een team…",
+ "mt.engine": "Modellen voor",
  "board.pokeall": "Geef elke kaart in deze kolom een duwtje: nog nieuws?",
  "dms.sendanyway": "Toch versturen? (Het kan het beetje plan gebruiken dat je nog hebt.)",
  "srv.saver.hold": "verbruiksbespaarder: de {name}-limiet staat op {pct}% (bespaarder {save}%), dus alleen projecten met een ⭐ cruciale kaart draaien",
@@ -2287,6 +2293,7 @@
   "approvals.note.need": "Schrijf eerst een korte opmerking, je vriend ziet die.",
   "approvals.setting": "Goedkeuringen: kaarten van een vriend wachten op mijn OK",
   "approvals.setting.hint": "Staat dit aan, dan staat de kaart van een vriend in het tabblad Goedkeuringen van de inbox. Geen team pakt hem op voor jij hem goedkeurt.",
+  "peerreview.setting": "🔍 Peer review: een andere AI controleert elke kaart voor hij bij jou komt",
   "srv.approvals.declined": "Afgewezen: {note}",
   "featreq.btn": "🙋 Vraag een functie aan",
   "featreq.intro": "Vertel {name} wat je graag wilt. Het wacht altijd op de OK van {name} voor het een kaart wordt.",
@@ -3328,5 +3335,6 @@
  "status.offline": "Offline",
  "status.rest": "Rustdag",
  "status.rest.help": "Rustdag: de nachtwacht neemt het over, alleen dringende dingen bereiken je, en de teams vragen het de Lead Scrum Master in plaats van jou",
- "status.rest.confirm": "Een rustdag beginnen? De nachtwacht neemt het over, alleen dringende kaarten blijven in je inbox, en elk team hoort dat het de Lead Scrum Master moet vragen in plaats van jou."
+ "status.rest.confirm": "Een rustdag beginnen? De nachtwacht neemt het over, alleen dringende kaarten blijven in je inbox, en elk team hoort dat het de Lead Scrum Master moet vragen in plaats van jou.",
+ "status.rest.go": "Rustdag starten"
 }

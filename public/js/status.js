@@ -25,7 +25,7 @@ const Status = (() => {
   }
   async function set(k) {
     close();
-    if (k === 'rest' && cur() !== 'rest' && !confirm(t('status.rest.confirm'))) return;
+    if (k === 'rest' && cur() !== 'rest' && !(await askSure('🛌 ' + t('status.rest'), t('status.rest.confirm'), t('status.rest.go')))) return;
     try { state.setup = await api('POST', '/api/setup', { prefs: { status: k } }); } catch (e) { return alert(e.message); }
     paint(); if (typeof refresh === 'function') refresh();
   }

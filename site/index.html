@@ -69,6 +69,12 @@ try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark")d
   <ol class="tl" id="tl-done"></ol>
   <div class="tl-today" id="tl-today"><span>Today</span></div>
   <ol class="tl planned" id="tl-planned"></ol>
+  <div class="famous" id="famous" hidden>
+    <h3>How long others took</h3>
+    <p class="famous-us" id="famous-us" hidden>AI-gile: <b id="famous-n"></b> cards since the first chat on 9 Oct 2026.</p>
+    <ul id="famous-list"></ul>
+    <details class="famous-src"><summary>Sources</summary><ul id="famous-sources"></ul></details>
+  </div>
 </section>
 
 <section class="community">
@@ -83,6 +89,7 @@ try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark")d
 <footer>AI-gile. No trackers, no cookies, no stand-up coffee. · <a href="licence.html">Business licence</a></footer>
 </div>
 <script src="timeline.js"></script>
+<script src="famous-apps.js"></script>
 <script src="teaser-lines.js"></script>
 <script src="teaser.js"></script>
 <script>

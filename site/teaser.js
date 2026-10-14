@@ -40,6 +40,7 @@
   // The live card count: cards in the relay's public board JSON
   var line=$("board-count"),num=$("board-n"),cur=null,raf=0;
   function show(to){
+    var fn=$("famous-n");if(fn){fn.textContent=to;$("famous-us").hidden=false}
     if(cur===null||reduce||cur===to){num.textContent=to;cur=to;return}
     var from=cur,t0=performance.now();cur=to;cancelAnimationFrame(raf);
     (function tick(t){var p=Math.min(1,(t-t0)/700);num.textContent=Math.round(from+(to-from)*p);if(p<1)raf=requestAnimationFrame(tick)})(t0);
@@ -83,5 +84,25 @@
     (d.planned||[]).forEach(function(s){b.appendChild(item(s,true))});
     if(!b.children.length){b.hidden=true;$("tl-today").hidden=true}
     tl.hidden=false;
+  }).catch(function(){});
+
+  // Famous apps (AIG-842): site/famous-apps.json (famous-apps.js from a file), every line has its source links.
+  var faData=window.FAMOUS_APPS&&Array.isArray(window.FAMOUS_APPS.apps)?Promise.resolve(window.FAMOUS_APPS)
+    :fetch("famous-apps.json").then(function(r){if(!r.ok)throw 0;return r.json()});
+  faData.then(function(d){
+    if(!d||!Array.isArray(d.apps)||!d.apps.length)return;
+    var ul=$("famous-list"),src=$("famous-sources");
+    d.apps.forEach(function(a){
+      var li=document.createElement("li"),b=document.createElement("b");
+      b.textContent=a.name+": ";li.appendChild(b);li.appendChild(document.createTextNode(a.line||""));ul.appendChild(li);
+      var s=document.createElement("li");s.appendChild(document.createTextNode(a.name+": "));
+      (a.sources||[]).forEach(function(u,i){
+        if(!/^https:\/\//.test(u))return;
+        if(i)s.appendChild(document.createTextNode(", "));
+        var l=document.createElement("a");l.href=u;l.rel="noopener";l.textContent=u.replace(/^https:\/\/(www\.)?/,"").split("/")[0];s.appendChild(l);
+      });
+      src.appendChild(s);
+    });
+    $("famous").hidden=false;
   }).catch(function(){});
 })();

@@ -30,7 +30,8 @@ const IB = {
     const mark = isTask(c) ? 'task' : c.blocked ? '' : 'ask';
     const m = mark && [...(c.comments || [])].reverse().find(x => x.mark === mark && String(x.author).trim().toLowerCase() !== me().toLowerCase());
     // After the owner replied and the lead answered (AIG-472), the lead's newest message leads; the task itself folds under it (see `earlier`).
-    const last = isTask(c) && lastAsk(c);
+    // A question too (AIG-999): once answered, the old "GO?" never comes back as if new.
+    const last = lastAsk(c);
     const replied = m && (c.comments || []).some(x => x.at > m.at && last && x.at < last.at && String(x.author).trim().toLowerCase() === me().toLowerCase());
     return replied && !last.mark ? last : m || lastAsk(c);
   };

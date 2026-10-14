@@ -99,6 +99,17 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 .tl-cards{margin:4px 0 0;font-size:13px;color:var(--muted)}
 .tl-today{display:flex;align-items:center;gap:12px;margin:8px 0 16px;color:var(--diamond);font-weight:700}
 .tl-today::before,.tl-today::after{content:"";flex:1;height:2px;background:var(--diamond)}
+/* Famous apps beside our own card count (AIG-842) */
+.famous{margin:32px 0 0;text-align:left}
+.famous h3{margin:0 0 8px;font-size:20px;text-align:center}
+.famous ul{list-style:none;margin:0;padding:0}
+.famous li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 14px;margin:0 0 8px;overflow-wrap:anywhere}
+.famous-us{margin:0 0 12px;text-align:center;color:var(--muted)}
+.famous-us b{color:var(--diamond);font-variant-numeric:tabular-nums}
+.famous-src{margin-top:8px;font-size:13px;color:var(--muted)}
+.famous-src summary{cursor:pointer;min-height:24px}
+.famous-src li{background:transparent;border:0;padding:2px 0;margin:0}
+.famous-src a{color:var(--accent)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 /* Forms: interest and business licence pages (AIG-754, AIG-619) */

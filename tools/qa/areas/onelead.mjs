@@ -7,6 +7,16 @@ def('onelead', 'one lead per project: a session in VS Code or aigile wait blocks
   const log = slug => { try { return fs.readFileSync(path.join(s.data, 'logs', slug + '.log'), 'utf8'); } catch { return ''; } };
   const starts = slug => (log(slug).match(/ started/g) || []).length;
   const settle = async slug => { for (let i = 0; i < 60 && (await s.ok('GET', '/api/projects/' + slug)).presence.running; i++) await sleep(250); };
+  // AIG-998: the Scrum Master can run in the project's folder. A usage reading alone is not a lead heartbeat.
+  const sharedFolder = tmp('shared-role');
+  await mkProject(s, 'Shared role', 'SHR', { path: sharedFolder });
+  const sharedCard = await mkCard(s, 'shared-role', 'work after a Scrum Master reading');
+  await s.ok('POST', '/api/limits', { cwd: sharedFolder, rate_limits: { five_hour: { used_percentage: 1 } } });
+  check('folder usage still marks the project online', (await s.ok('GET', '/api/projects/shared-role')).presence.online);
+  const sharedWake = await s.ok('POST', '/api/projects/shared-role/wake', { sprint: true });
+  for (let i = 0; i < 40 && !starts('shared-role'); i++) await sleep(250);
+  check('a folder usage reading does not block a team run', sharedWake.running === true && starts('shared-role') === 1, JSON.stringify(sharedWake) + log('shared-role'));
+  await settle('shared-role');
   await mkProject(s, 'One', 'ONE', { path: tmp('one') });
   const c = await mkCard(s, 'one', 'a card');
   // 1. a session used the board a moment ago: the owner's comment does not start a run

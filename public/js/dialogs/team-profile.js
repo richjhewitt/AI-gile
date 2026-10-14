@@ -182,10 +182,11 @@ const oldOrId = id => { const r = profileRole(id); return r && TEAM_ROLES.includ
 const idOfRole = r => (((state.profiles || {}).roles || []).find(x => x.label === r) || {}).id || r;
 function mainTeamHtml(box, roles, sm, save = '') {
   const on = Array.isArray(roles) ? roles : TEAM_ROLES, extra = on.filter(r => !TEAM_ROLES.includes(r) && profileRole(r));
-  const tick = (r, label, checked, lock) => `<label class="chk"><input type="checkbox" data-role="${esc(r)}" ${checked ? 'checked' : ''} ${lock ? 'disabled' : ''} onchange="mainTeamChanged('${box}')"> ${roleIcon(idOfRole(r))} ${esc(label)}</label>`;
+  const tick = (r, label, checked, lock) => `<label class="chk"><input type="checkbox" data-role="${esc(r)}" ${checked ? 'checked' : ''} ${lock ? 'disabled' : ''} onchange="mainTeamChanged('${box}')"> ${roleIcon(idOfRole(r))} ${esc(label)}${mtModelHtml(r)}</label>`;
   const rest = ((state.profiles || {}).roles || []).filter(r => !TEAM_ROLES.includes(r.label) && !extra.includes(r.id)).sort((a, b) => roleName(a.id).localeCompare(roleName(b.id)));
   return `<div id="${box}" class="main-team" data-save="${esc(save)}">
     <div class="tm-add"><select id="${box}-team" onchange="mainTeamPick('${box}', this.value)" aria-label="${esc(t('mt.pick'))}"><option value="">${esc(t('mt.pick'))}</option>${((state.profiles || {}).teams || []).map(tm => `<option value="${esc(tm.id)}">${esc(t('prof.team.' + tm.id))}</option>`).join('')}</select></div>
+    <div class="tm-add"><select id="${box}-eng" onchange="mainTeamEngine('${box}', this.value)" aria-label="${esc(t('mt.engine'))}">${['claude', 'codex', 'gemini'].map(e => `<option value="${e}" ${e === mtEngine ? 'selected' : ''}>${esc(t('mt.engine') + ' ' + t('eng.' + e))}</option>`).join('')}</select></div>
     <div class="mt-ticks">${TEAM_ROLES.map((r, i) => tick(r, r, !i || on.includes(r), !i)).join('')}${extra.map(id => tick(id, roleName(id), true)).join('')}</div>
     <div class="tm-add"><select id="${box}-add" onchange="mainTeamAdd('${box}', this.value)" aria-label="${esc(t('tm.addrole'))}"><option value="">${esc(t('tm.addrole'))}</option>${rest.map(r => `<option value="${esc(r.id)}">${esc(roleName(r.id))}</option>`).join('')}</select></div>
     <label class="chk mt-sm"><input type="checkbox" id="${box}-sm" ${sm ? 'checked' : ''} onchange="mainTeamChanged('${box}')"> ${esc(t('lead.smRole'))}</label><small class="muted">${esc(t('lead.smRole.help'))}</small></div>`;
@@ -197,6 +198,11 @@ function mainTeamRead(box) {
 }
 function mainTeamChanged(box) { const f = $(box).dataset.save; if (f) window[f](mainTeamRead(box)); }
 function mainTeamPaint(box, roles) { const sm = $(box + '-sm').checked, save = $(box).dataset.save; $(box).outerHTML = mainTeamHtml(box, roles, sm, save); mainTeamChanged(box); }
+// The engine whose ready-made models show next to the roles (AIG-1007): only a view, nothing is saved.
+function mainTeamEngine(box, e) {
+  mtEngine = e; const sm = $(box + '-sm').checked, save = $(box).dataset.save;
+  $(box).outerHTML = mainTeamHtml(box, mainTeamRead(box).newRoles, sm, save);
+}
 // A team to start from: its roles ticked (and the Lead), the rest unticked.
 function mainTeamPick(box, id) {
   const tm = ((state.profiles || {}).teams || []).find(x => x.id === id); if (!tm) return;
