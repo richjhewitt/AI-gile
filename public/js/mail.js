@@ -38,13 +38,27 @@ const Mail = (() => {
   M.open = async uid => {
     const b = box(); if (!b) return;
     M.cur = { uid, loading: true, html: false }; paint();
+    api('GET', '/api/projects').then(l => { M.projs = l; paint(); }).catch(() => {});
     try { const d = await api('GET', '/api/mail/message?box=' + q(b.id) + '&uid=' + encodeURIComponent(uid)); if (M.cur && M.cur.uid === uid) M.cur = { uid, d, html: !d.text && !!d.html }; }
     catch (e) { if (M.cur && M.cur.uid === uid) M.cur = { uid, error: e.message }; }
     paint();
   };
   M.back = () => { M.cur = null; paint(); };
+  // 📋 Make a card from the open mail (AIG-905): subject as title, sender, date and the first lines as bullets; no AI. Lands in
+  // backlog so no team is woken by it.
+  const projects = () => (M.projs || []).filter(p => !p.archived);   // fetched fresh each time a mail opens
+  M.makeCard = async () => {
+    const c = M.cur, d = c && c.d, slug = ($('mailCardProj') || {}).value; if (!d || !slug) return;
+    const who = d.from || {}, lines = String(d.text || '').split(/\r?\n/).map(l => l.trim()).filter(l => l && !/^>/.test(l)).slice(0, 5);
+    const description = [`- 📧 ${who.name ? who.name + ' <' + who.address + '>' : who.address || '?'}, ${fmt(d.date)}`, ...lines.map(l => '- ' + l.slice(0, 200))].join('\n\n');
+    try {
+      const card = await api('POST', `/api/projects/${slug}/cards`, { title: (d.subject || t('mail.nosubject')).slice(0, 200), description, type: 'task', status: 'backlog', createdBy: me() });
+      c.made = t('mail.card.made', { id: card.id, project: (projects().find(p => p.slug === slug) || {}).name || slug });
+    } catch (e) { c.made = e.message; }
+    paint();
+  };
   M.toggleHtml = () => { if (M.cur) M.cur.html = !M.cur.html; paint(); };
-  M.sig = () => JSON.stringify([M.cfg, M.data, M.loading, M.msg, M.cur && [M.cur.uid, M.cur.loading, M.cur.html, M.cur.error, !!M.cur.d], hidden()]);
+  M.sig = () => JSON.stringify([M.cfg, M.data, M.loading, M.msg, M.cur && [M.cur.uid, M.cur.loading, M.cur.html, M.cur.error, !!M.cur.d, M.cur.made], (M.projs || []).length, hidden()]);
   const fmt = d => {
     if (!d) return '';
     const x = new Date(d); if (isNaN(x)) return '';
@@ -99,6 +113,10 @@ const Mail = (() => {
         ${d.text && d.html ? `<button type="button" id="mailToggle" onclick="Mail.toggleHtml()">${esc(t(c.html ? 'mail.showtext' : 'mail.showhtml'))}</button>` : ''}
         ${c.html && d.blockedImages ? `<span class="muted" id="mailBlocked">${esc(t('mail.images.blocked', { n: d.blockedImages }))}</span>` : ''}
         ${d.truncated ? `<span class="muted">${esc(t('mail.truncated'))}</span>` : ''}</div>
+      <div class="mail-card" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0">
+        <select id="mailCardProj" aria-label="${esc(t('mail.card.pick'))}">${projects().map(p => `<option value="${esc(p.slug)}">${esc(p.name)}</option>`).join('')}</select>
+        <button type="button" id="mailMakeCard" onclick="Mail.makeCard()">${esc(t('mail.card.make'))}</button>
+        ${c.made ? `<span class="muted" id="mailCardMade">${esc(c.made)}</span>` : ''}</div>
       ${body}
       ${(d.attachments || []).length ? `<div class="mail-attach" id="mailAttach"><b>${esc(t('mail.attach'))}</b><ul>${d.attachments.map(a => `<li>${esc(a.name)} <span class="muted">(${esc(a.type)}, ${esc(Math.max(1, Math.round(a.size / 1024)) + ' KB')})</span></li>`).join('')}</ul></div>` : ''}</div>`;
   };

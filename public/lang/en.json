@@ -3230,5 +3230,8 @@
  "storage.tidy": "Attachments on closed (done) cards older than {days} days: {n} files, {size}",
  "storage.delete": "Delete",
  "storage.confirm": "Delete {n} attachment files ({size}) from closed cards? Nothing else is removed.",
- "storage.nothing": "No attachments on closed cards older than {days} days to tidy up."
+ "storage.nothing": "No attachments on closed cards older than {days} days to tidy up.",
+  "mail.card.pick": "Project for the card",
+  "mail.card.make": "📋 Make a card",
+  "mail.card.made": "Made {id} in {project} (backlog)"
 }

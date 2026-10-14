@@ -178,8 +178,16 @@ def('mail', 'Mail card 1: add an IMAP mailbox in Setup (find, test, save), passw
     check('message API: from, to and subject come back', api103.from.address === 'jorg@example.org' && api103.to[0].address === 'admin@locoradio.test' && /pwned=1/.test(api103.subject), api103);
     check('message API: a bad uid is a 400, an unknown mail a 404', (await s.api('GET', `/api/mail/message?box=${b.id}&uid=abc`)).status === 400 && (await s.api('GET', `/api/mail/message?box=${b.id}&uid=999`)).status === 404);
     check('reading uses BODY.PEEK on a read-only EXAMINE and never sets a flag', seen.peeks >= 1 && seen.lines.some(l => /EXAMINE/.test(l)) && !seen.lines.some(l => /STORE/i.test(l)) && seen.lines.filter(l => /BODY/.test(l)).every(l => l.includes('BODY.PEEK[')));
+    await s.ok('POST', '/api/projects', { name: 'Mailcards', key: 'MLC' });
     await page.locator('.mail-open').first().click();
     await page.waitForSelector('#mailText');
+    // 📋 Make a card from the open mail (AIG-905)
+    await page.waitForSelector('#mailCardProj option[value="mailcards"]', { state: 'attached' });
+    await page.selectOption('#mailCardProj', 'mailcards');
+    await page.click('#mailMakeCard');
+    await page.waitForSelector('#mailCardMade');
+    const made = (await s.ok('GET', '/api/projects/mailcards')).cards.find(c => /pwned=1/.test(c.title));
+    check('📋 Make a card: subject as title, sender and first lines as bullets, in backlog', !!made && made.status === 'backlog' && /📧 .*jorg@example\.org/.test(made.description) && /Second line of the mail/.test(made.description) && /MLC-1/.test(await page.textContent('#mailCardMade')), made);
     check('click a mail: it opens with subject, sender and plain text shown as text', /pwned=1/.test(await page.textContent('#mailSubject')) && /Jörg Ünread/.test(await page.textContent('#mailFromFull')) && /Hello Jörg <script>window\.pwned=3<\/script>/.test(await page.textContent('#mailText')));
     check('mail text runs nothing and creates no elements', await page.evaluate(() => !window.pwned && !document.querySelector('#mailText script, #mailText img, #mailText *')));
     check('the attachment is listed, not opened', /bill\.pdf/.test(await page.textContent('#mailAttach')) && /Second line of the mail/.test(await page.textContent('#mailText')));
