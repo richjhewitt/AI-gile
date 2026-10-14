@@ -49,7 +49,7 @@ def('engines', 'engines: Engine pick per agent in the Team dialog, a Codex lead 
   check('not installed: Claude was not used instead', claudeRuns() === before);
   // 4. installed (the stub appears): the exact command line
   fs.writeFileSync(out, '');
-  require('../../../lib/platform').writeStub(fs, stub, 'log', out);
+  require('../../../lib/platform').writeStub(fs, stub, 'logenv', out);
   await s.ok('POST', '/api/projects/eng/wake');
   for (let i = 0; i < 40 && !/exec/.test(fs.readFileSync(out, 'utf8')); i++) await sleep(250);
   const got = fs.readFileSync(out, 'utf8').replace(/\r/g, '').replace(/"/g, '');
@@ -60,6 +60,7 @@ def('engines', 'engines: Engine pick per agent in the Team dialog, a Codex lead 
   check('the prompt says never push and runs the board brief', /Never run git push/.test(got) && /board brief for project eng/.test(got), got);
   check('Claude was not started for it', claudeRuns() === before);
   check('the log says codex', /started \(codex\)/.test(log()), log());
+  check('a Codex run gets no Gemini key or home (AIG-1015)', !/GEMINI/.test(got), got);
   // 5. no model: no -m
   await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', codexModel: '' });
   fs.writeFileSync(out, '');
@@ -72,6 +73,23 @@ def('engines', 'engines: Engine pick per agent in the Team dialog, a Codex lead 
   await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', engine: 'gemini', geminiModel: 'gem-test' });
   const lead2 = (await s.ok('GET', '/api/projects/eng')).team.find(m => m.name === 'Lead');
   check('Gemini and its model are stored on the lead', lead2.engine === 'gemini' && lead2.geminiModel === 'gem-test', lead2);
+  // 5a. no Gemini API key (AIG-1015): no run, one plain comment, nothing else started
+  const gk0 = await s.ok('GET', '/api/gemini-key');
+  check('GET /api/gemini-key says not set', gk0.set === false && Object.keys(gk0).join() === 'set', gk0);
+  fs.writeFileSync(out, '');
+  const rk = await s.ok('POST', '/api/projects/eng/wake');
+  await sleep(500);
+  const cardK = (await s.ok('GET', '/api/projects/eng')).cards.find(x => x.id === c.id);
+  check('no key: the wake says gemini is missing and nothing runs', rk.engineMissing === 'gemini' && !(await s.ok('GET', '/api/projects/eng')).presence.running && fs.readFileSync(out, 'utf8') === '', rk);
+  check('no key: a comment says to set the Gemini API key', cardK.comments.some(m => /Gemini needs an API key: Setup → Gemini API key/.test(m.text)), cardK.comments.map(m => m.text));
+  check('saving a key without the page token is refused', (await s.api('POST', '/api/gemini-key', { key: 'x' })).status === 403);
+  const tok = (await s.ok('GET', '/api/secrets/token')).token, SECRET = 'AIzaQA-secret-key-123';
+  const gk1 = await s.ok('POST', '/api/gemini-key', { key: SECRET, token: tok });
+  check('saved: set is true and the answer never holds the key', gk1.set === true && !JSON.stringify(gk1).includes(SECRET), gk1);
+  const gk2 = await s.ok('GET', '/api/gemini-key');
+  check('GET returns only {set:true}', JSON.stringify(gk2) === '{"set":true}', gk2);
+  const gHtml = await page.evaluate(async () => { GKEY.set = null; await geminiKeyLoad(); return geminiKeyHtml(); });
+  check('Setup box: masked input, Saved, AI Studio link, no key in the page', /type="password"/.test(gHtml) && />Saved</.test(gHtml) && gHtml.includes('https://aistudio.google.com/apikey') && !gHtml.includes(SECRET), gHtml);
   fs.writeFileSync(out, '');
   await s.ok('POST', '/api/projects/eng/wake');
   for (let i = 0; i < 40 && !/yolo/.test(fs.readFileSync(out, 'utf8')); i++) await sleep(250);
@@ -79,6 +97,10 @@ def('engines', 'engines: Engine pick per agent in the Team dialog, a Codex lead 
   check('gemini --yolo with stream-json, the model and -p', /--yolo --output-format stream-json -m gem-test -p You are running through Gemini CLI/.test(got3), got3);
   check('the Gemini prompt names AGENTS.md, never push and the board brief', /AGENTS\.md/.test(got3) && /Never run git push/.test(got3) && /board brief for project eng/.test(got3), got3);
   check('the log says gemini', /started \(gemini\)/.test(log()), log());
+  const homeDir = path.join(s.data, 'gemini-home');
+  check('a Gemini run gets GEMINI_CLI_HOME and GEMINI_API_KEY', got3.includes('GEMINI_API_KEY=' + SECRET) && got3.replace(/\\/g, '/').toLowerCase().includes('gemini_cli_home=' + homeDir.replace(/\\/g, '/').toLowerCase()), got3);
+  check('the board-owned home picks the API key', JSON.parse(fs.readFileSync(path.join(homeDir, '.gemini', 'settings.json'), 'utf8')).security.auth.selectedType === 'gemini-api-key');
+  check('the key is not in the log or the project answer', !log().includes(SECRET) && !JSON.stringify(await s.ok('GET', '/api/projects/eng')).includes(SECRET));
   await settle();
   await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', geminiModel: '' });
   fs.writeFileSync(out, '');
