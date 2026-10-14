@@ -41,7 +41,7 @@ function renderHome() {
       ${Break.btn()} ${Break.showerBtn()} ${MyDay.btn()}
       <button onclick="callStandup()" title="${esc(t('standup.all.title'))}">${esc(t('standup.all'))}</button>
       <a class="navlink" href="#/today" title="${esc(t('today.link.title'))}">${esc(t('today.link'))}</a> <a class="navlink" href="#/life" title="${esc(t('la.link.title'))}">${esc(t('la.link'))}</a> <a class="navlink" href="#/standups" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a></div></div>`
-    + usageStrip(state.usage) + inbox + Spaces.outStrip() + TodayPage.hiddenLine() + `<div class="grid space-tree">${cards || `<p class="muted">${esc(t('projects.none'))}</p>`}</div>` + smLine(state.sm);
+    + (state.setupNeeded ? `<p class="muted finish-setup" id="finishSetup">🧰 ${esc(t('home.finishsetup'))} <a class="navlink" href="#/setup/you">${esc(t('home.finishsetup.go'))}</a></p>` : '') + usageStrip(state.usage) + inbox + Spaces.outStrip() + TodayPage.hiddenLine() + `<div class="grid space-tree">${cards || `<p class="muted">${esc(t('projects.none'))}</p>`}</div>` + smLine(state.sm);
 }
 
 function homeMore() {

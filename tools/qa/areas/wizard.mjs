@@ -21,6 +21,17 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   await page.reload(); await page.waitForSelector('#setupForm'); await sleep(500);
   check('it does not come back by itself', !(await page.isVisible('#wzYes')));
 
+  // AIG-1068: only the first load of the home page goes to Setup; then Home shows a Finish setup line and deep links stay put.
+  await page.goto(s.base + '/'); await sleep(800);
+  check('the first home load goes to Setup once', /#\/setup/.test(page.url()), page.url());
+  await page.goto(s.base + '/#/'); await page.reload(); await page.waitForSelector('#finishSetup'); await sleep(300);
+  check('after that Home stays and shows Finish setup', !/#\/setup/.test(page.url()) && (await page.textContent('#finishSetup')).includes('Finish setup'), page.url());
+  await page.goto(s.base + '/#/standups'); await page.reload(); await sleep(800);
+  check('a deep link opens where it points', /#\/standups/.test(page.url()), page.url());
+  await page.goto(s.base + '/#/'); await page.waitForSelector('#finishSetup'); await page.click('#finishSetup a'); await page.waitForSelector('#setupForm');
+  check('Finish setup goes to the boxes', /#\/setup\/you/.test(page.url()));
+  await page.goto(s.base + '/#/setup'); await page.waitForSelector('#setupForm');
+
   // The wizard from Setup.
   await page.click('#wzRun');
   await page.waitForSelector('.wz-dots');
