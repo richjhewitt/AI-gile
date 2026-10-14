@@ -94,6 +94,11 @@ main { padding: 20px; }
 .column[data-status=verify] { outline: 2px dashed var(--you); outline-offset: -2px; }
 .column[data-status=team] { outline: 2px dashed #e11d74; outline-offset: -2px; }
 .flight { margin: 0 0 10px; font-size: 13px; }
+.welcome { grid-column: 1 / -1; max-width: 520px; padding: 18px 20px; border: 1px dashed var(--accent); border-radius: var(--radius); background: var(--panel); }
+.welcome h2 { margin: 0 0 6px; font-size: 18px; }
+.welcome p { margin: 0 0 14px; color: var(--muted); }
+.welcome-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.welcome-actions .big { font-size: 16px; padding: 10px 18px; }
 .emptyhint { margin: 0 0 12px; padding: 10px 12px; border: 1px dashed var(--accent); border-radius: 8px; font-size: 13px; }
 .stale { color: var(--warn); }
 .heard { font-size: 12px; color: var(--muted); margin: -2px 0 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

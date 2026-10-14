@@ -29,10 +29,11 @@ function renderHome() {
     `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></details>` : '';   // closed by default (AIG-105)
   // 🪐 Spaces (AIG-434): the projects as a tree, a space's projects in an indented row under it.
   const cards = Spaces.homeGrid(Spaces.tree(state.projects), projCard);
+  const fresh = !state.projects.length && !state.showArchived;   // AIG-1073: nothing yet, so no Show archived and no Scrum Master line
   // AIG-937: one + New project button; the rest sit under More (same elements, same ids and handlers). QA keeps it open with localStorage aigile.homeMoreOpen=1.
   let moreOpen = state.homeMore; if (moreOpen === undefined) { try { moreOpen = localStorage.getItem('aigile.homeMoreOpen') === '1'; } catch { moreOpen = false; } }
   return `<div class="toolbar"><button class="primary" onclick="newProject()">${esc(t('home.newproject'))}</button> <button id="homeMoreBtn" aria-expanded="${!!moreOpen}" aria-controls="homeMenu" onclick="homeMore()" title="${esc(t('home.more.title'))}">${esc(t('home.more'))}</button><span class="grow"></span>
-      <label class="chk"><input type="checkbox" ${state.showArchived ? 'checked' : ''} onchange="toggleArchived(this.checked)"> ${esc(t('home.showarchived'))}</label>
+      ${fresh ? '' : `<label class="chk"><input type="checkbox" ${state.showArchived ? 'checked' : ''} onchange="toggleArchived(this.checked)"> ${esc(t('home.showarchived'))}</label>`}
       <div class="hm-menu" id="homeMenu" ${moreOpen ? '' : 'hidden'}><button onclick="refactorOffer()" title="${esc(t('rf.btn.title'))}">${esc(t('rf.btn'))}</button> <button onclick="newProject({ space: true })" title="${esc(t('home.newspace.title'))}">${esc(t('home.newspace'))}</button>
       <button onclick="openFileDialog()" title="${esc(t('ofl.btn.title'))}">${esc(t('ofl.btn'))}</button>
       <button onclick="findProjectsDialog()" title="${esc(t('home.find.title'))}">${esc(t('home.find'))}</button>
@@ -41,7 +42,13 @@ function renderHome() {
       ${Break.btn()} ${Break.showerBtn()} ${MyDay.btn()}
       <button onclick="callStandup()" title="${esc(t('standup.all.title'))}">${esc(t('standup.all'))}</button>
       <a class="navlink" href="#/today" title="${esc(t('today.link.title'))}">${esc(t('today.link'))}</a> <a class="navlink" href="#/life" title="${esc(t('la.link.title'))}">${esc(t('la.link'))}</a> <a class="navlink" href="#/standups" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a></div></div>`
-    + usageStrip(state.usage) + inbox + Spaces.outStrip() + TodayPage.hiddenLine() + `<div class="grid space-tree">${cards || `<p class="muted">${esc(t('projects.none'))}</p>`}</div>` + smLine(state.sm);
+    + usageStrip(state.usage) + inbox + Spaces.outStrip() + TodayPage.hiddenLine() + `<div class="grid space-tree">${cards || welcomeCard()}</div>` + (fresh ? '' : smLine(state.sm));
+}
+
+// AIG-1073: empty home. #homeWelcomeActions is where more starting buttons go (the sample project, AIG-1072).
+function welcomeCard() {
+  return `<div class="welcome" id="homeWelcome"><h2>${esc(t('home.welcome.h'))}</h2><p>${esc(t('home.welcome.p'))}</p>
+    <div class="welcome-actions" id="homeWelcomeActions"><button class="primary big" id="homeWelcomeNew" onclick="newProject()">${esc(t('home.newproject'))}</button></div></div>`;
 }
 
 function homeMore() {

@@ -84,6 +84,8 @@
  "home.quiet": "🌙 Going quiet",
  "home.quiet.title": "Tell every working team you're switching off for a few hours",
  "home.showarchived": "Show archived",
+ "home.welcome.h": "Welcome to AI-gile",
+ "home.welcome.p": "A project is a board for something you want to get done, with or without code: an app, a garden shed, a trip. Make your first one and add cards to it.",
  "projects.none": "No projects yet.",
  "standup.all": "📣 Stand-up all",
  "standup.all.title": "Ask every team for done / next / blockers",

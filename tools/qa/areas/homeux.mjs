@@ -43,6 +43,13 @@ def('homeux', 'Home: counts hide zeros and show % done, More holds the moved but
 
   // ---- home (AIG-937)
   await s.ok('POST', '/api/setup', { owner: 'Rich', 'agent.command': 'echo', 'agent.notesFile': 'CLAUDE.md', 'agent.settingsFile': '.claude/settings.json' });   // set up: home, not Setup
+  // ---- empty home (AIG-1073): a welcome card, no Show archived or Scrum Master line, room for one more button
+  const eh = await openPage(ctx, '#/'); await eh.waitForSelector('#homeWelcome');
+  check('empty home: a welcome card with a big + New project', /project/i.test(await eh.textContent('#homeWelcome p')) && await eh.isVisible('#homeWelcomeNew'));
+  check('empty home: no Show archived and no Scrum Master line', (await eh.locator('.toolbar .chk').count()) === 0 && (await eh.locator('.smline').count()) === 0 && !/No projects yet/.test(await eh.textContent('#app')));
+  check('empty home: the actions row is there for more buttons', await eh.locator('#homeWelcomeActions').count() === 1);
+  await eh.close();
+
   const al = await mkProject(s, 'Alpha', 'ALP');
   await mkCard(s, al.slug, 'One', { status: 'doing' });
   await mkCard(s, al.slug, 'Two', { status: 'done' });
