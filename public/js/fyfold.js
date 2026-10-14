@@ -51,6 +51,7 @@ const FyFold = (() => {
     const row = n && document.querySelector('#fyfList .fyf-row[data-id="' + n.dataset.id + '"]'); if (!row) return;   // n itself may be gone already
     const list = row.parentNode, k = list.parentNode.dataset.kind;
     row.remove();
+    try { refresh(true); } catch {}   // the board's For you count follows (AIG-1067)
     if (!list.children.length) { closeDialog(); return; }
     head(k, list.children.length);
   }

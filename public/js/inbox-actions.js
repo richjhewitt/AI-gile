@@ -65,6 +65,7 @@
       Attach.clear(key); clearDraft(key + '/info'); ta.value = '';
       n.dataset.sending = ''; n.querySelectorAll('button').forEach(b => b.disabled = false);
       n.querySelector('.ib-err').textContent = ''; IB.toast(t('info.toast.replied', { id: n.dataset.id }));
+      if (typeof FyFold !== 'undefined') FyFold.after(n);   // in the For you fold the answered card leaves it (AIG-1067)
     }
     catch (e) { fail(n, e); }
   }
