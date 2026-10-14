@@ -56,6 +56,8 @@ async function ensureServer() {
   if (await portOccupied()) return false;
   const node = process.env.AIGILE_NODE || 'node', env = { ...process.env };   // dev mode comes from aigile.local.json now (AIG-253)
   delete env.ELECTRON_RUN_AS_NODE;
+  // AIG-995: an app opened from the macOS Finder gets a bare PATH, so look where Homebrew and the node installer put node
+  if (process.platform === 'darwin') env.PATH = [env.PATH, '/opt/homebrew/bin', '/usr/local/bin'].filter(Boolean).join(':');
   let failed = false;
   try {
     const child = spawn(node, ['server.js'], { cwd: ROOT, detached: true, stdio: 'ignore', windowsHide: true, env });

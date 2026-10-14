@@ -16,7 +16,7 @@ const Tired = (() => {
   }
   function take(s) {
     const was = state.setup && state.setup.prefs && state.setup.prefs.tired && state.setup.prefs.tired.mode;
-    state.setup = s; now = !!s.tiredNow; paint();
+    state.setup = s; now = !!s.tiredNow; paint(); if (typeof Status !== 'undefined') Status.paint();   // AIG-984
     if (was && s.prefs.tired.mode !== was && document.getElementById('leadPrefs') && typeof paintLeadPrefs === 'function') paintLeadPrefs();
   }
   async function poll() {

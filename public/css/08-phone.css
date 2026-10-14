@@ -29,8 +29,8 @@
   .ph-body input { width: 100%; box-sizing: border-box; }
   .set-index a { padding: 8px 12px; }
   #updateTop { max-width: 94vw; flex-wrap: wrap; justify-content: center; }
-  #helpMenu { top: 8px !important; inset-inline-start: 8px; inset-inline-end: 8px !important; max-width: none; max-height: calc(100vh - 80px); overflow-y: auto; }
-  #helpMenu button { padding: 11px 12px; font-size: 14px; }
+  #helpMenu, #statusMenu { top: 8px !important; inset-inline-start: 8px; inset-inline-end: 8px !important; max-width: none; max-height: calc(100vh - 80px); overflow-y: auto; }
+  #helpMenu button, #statusMenu button { padding: 11px 12px; font-size: 14px; }
   .dialog, .panel { max-width: 100vw; overflow-wrap: anywhere; }
   .dialog { width: 100%; max-height: 92vh; overflow-y: auto; }
   .overlay.center { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }   /* a dialog's buttons sit above the DM bar, not under it (AIG-423) */
