@@ -116,7 +116,7 @@ async function newProject(opts = {}) {
         <option value="kanban">${esc(t('dlg.np.tpl.kanban'))}</option><option value="scrum">${esc(t('dlg.np.tpl.scrum'))}</option><option value="own">${esc(t('dlg.np.tpl.own'))}</option></select></label>
       <label class="f" id="p-own" style="display:none"><span>${esc(t('dlg.np.tpl.own.help'))}</span><input type="text" id="p-own-names" placeholder="${esc(t('dlg.np.tpl.own.ph'))}"></label>
       <div class="err" id="d-err"></div><div id="p-done"></div>
-      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${opts.space ? '' : ` <button type="button" id="p-play" onclick="newPlayground()">${esc(t('dlg.np.play'))}</button>`}</div></form>`);
+      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${opts.space ? '' : ` <button type="button" id="p-sample" onclick="addSample()" title="${esc(t('sample.add.title'))}">${esc(t('sample.add'))}</button> <button type="button" id="p-play" onclick="newPlayground()">${esc(t('dlg.np.play'))}</button>`}</div></form>`);
   if (opts.space) { $('p-spacetpl').value = SPACE_TPLS[0]; spaceTpl(SPACE_TPLS[0]); }
 }
 // New playground (AIG-818/819): one box with a friend's name; makes the project for them and shows the invite code to Copy.
@@ -142,6 +142,16 @@ async function createPlayground(e) {
     if (r.code) $('pg-copy').onclick = async () => { try { await navigator.clipboard.writeText(r.code); } catch { $('pg-code').select(); document.execCommand('copy'); } $('pg-msg').textContent = t('dmf.copied'); };
   } catch (err) { setErr('d-err', err); }
   return false;
+}
+// Sample project (AIG-1072): one click makes it (once), one click removes it.
+async function addSample() {
+  try { await api('POST', '/api/sample-project'); } catch (err) { if (!/already/.test(String((err && err.message) || err))) { alert(String((err && err.message) || err)); return; } }
+  closeDialog(); location.hash = '#/p/sample-project'; refresh(true);
+}
+async function removeSample() {
+  if (!confirm(t('sample.remove.ask'))) return;
+  try { await api('DELETE', '/api/sample-project'); } catch (err) { alert(String((err && err.message) || err)); return; }
+  location.hash = '#/'; refresh(true);
 }
 function suggestKey() {
   const name = $('p-name').value, k = $('p-key'), f = $('p-path');
