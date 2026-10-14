@@ -3208,6 +3208,8 @@
  "dms.quiet.show": "Show {n} quiet chats",
  "dms.quiet.show.one": "Show 1 quiet chat",
  "dms.quiet.hide": "Hide quiet chats",
+ "dms.done.show": "Done ({n})",
+ "dms.done.hide": "Hide done ({n})",
  "dms.drafts": "📝 Drafts",
  "dms.drafts.discard": "Discard this draft",
  "allhands.confirm": "Send to {n} teams?",
