@@ -2058,6 +2058,7 @@
  "mt.h": "👥 Your main team",
  "mt.sub": "New projects start with this team; each project can change its own in 👥 Team. Every role is optional except the Lead, which runs the team.",
  "mt.pick": "Start from a team…",
+ "mt.engine": "Models for",
  "srv.saver.hold": "usage saver: the {name} limit is at {pct}% (saver {save}%), so only projects with a ⭐ crucial card run",
  "srv.saver.say": "💾 Usage saver: the {name} limit is at {pct}% (saver {save}%). Teams, the AI tester and my own AI runs are down tools except for ⭐ crucial cards. Work restarts by itself when usage drops or resets.",
  "srv.saver.tester": "usage saver is on and no ⭐ crucial test is waiting for the AI tester",
