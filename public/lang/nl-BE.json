@@ -1,5 +1,7 @@
 {
  "col.backlog": "{{dev:Backlog}}",
+ "dlg.np.more": "Meer opties",
+ "dlg.np.play.hint": "Nieuwe speeltuin: een kant-en-klaar project voor een vriend, met een uitnodigingscode om door te sturen.",
  "col.todo": "Te doen",
  "col.doing": "Bezig",
  "col.review": "Team kijkt na",

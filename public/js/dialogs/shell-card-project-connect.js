@@ -107,6 +107,7 @@ async function newProject(opts = {}) {
   openDialog(`<h2>${esc(t(opts.space ? 'dlg.newspace' : 'dlg.newproject'))}</h2>
     <form onsubmit="return createProject(event)">
       <label class="f"><span>${esc(t('dlg.np.name'))}</span><input type="text" id="p-name" oninput="suggestKey()" maxlength="80"></label>
+      <details id="p-more"${opts.space ? ' open' : ''}><summary>${esc(t('dlg.np.more'))}</summary>
       <div class="row"><label class="f"><span>${esc(t('dlg.np.key'))}</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
       <label class="f"><span>${esc(t('dlg.np.folder'))}</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="${esc(t('dlg.np.folder.ph'))}"></label>
       <label class="f"><span>${esc(t('dlg.np.desc'))}</span><textarea id="p-desc" rows="3"></textarea></label>
@@ -115,8 +116,9 @@ async function newProject(opts = {}) {
       <label class="f"><span>${esc(t('dlg.np.tpl'))}</span><select id="p-tpl" onchange="$('p-own').style.display = this.value === 'own' ? '' : 'none'">
         <option value="kanban">${esc(t('dlg.np.tpl.kanban'))}</option><option value="scrum">${esc(t('dlg.np.tpl.scrum'))}</option><option value="own">${esc(t('dlg.np.tpl.own'))}</option></select></label>
       <label class="f" id="p-own" style="display:none"><span>${esc(t('dlg.np.tpl.own.help'))}</span><input type="text" id="p-own-names" placeholder="${esc(t('dlg.np.tpl.own.ph'))}"></label>
+      </details>
       <div class="err" id="d-err"></div><div id="p-done"></div>
-      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${opts.space ? '' : ` <button type="button" id="p-play" onclick="newPlayground()">${esc(t('dlg.np.play'))}</button>`}</div></form>`);
+      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${opts.space ? '' : ` <button type="button" id="p-play" onclick="newPlayground()">${esc(t('dlg.np.play'))}</button>`}</div>${opts.space ? '' : `<p class="muted"><small>${esc(t('dlg.np.play.hint'))}</small></p>`}</form>`);
   if (opts.space) { $('p-spacetpl').value = SPACE_TPLS[0]; spaceTpl(SPACE_TPLS[0]); }
 }
 // New playground (AIG-818/819): one box with a friend's name; makes the project for them and shows the invite code to Copy.

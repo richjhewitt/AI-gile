@@ -420,6 +420,8 @@
  "dlg.np.open": "Open project",
  "dlg.np.created": "Created the project",
  "dlg.np.play": "New playground",
+ "dlg.np.more": "More options",
+ "dlg.np.play.hint": "New playground: a ready-made project for a friend, with an invite code to send them.",
  "play.h": "New playground",
  "play.name": "Friend's name",
  "play.help": "Makes a project just for them, in the Playgrounds space, with a folder and approvals on, and an invite code for them. They can raise and comment, nothing more.",

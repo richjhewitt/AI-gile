@@ -132,6 +132,8 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
   const page = await openPage(ctx, '#/');
   await page.click('button:has-text("+ New project")');
   await page.fill('#p-name', 'Fresh One');
+  check('only the name shows up front; the rest sits under More options (AIG-1079)', !(await page.isVisible('#p-path')) && !(await page.isVisible('#p-key')) && (await page.isVisible('#p-more summary')) && (await page.isVisible('#p-play')));
+  await page.evaluate(() => { $('p-more').open = true; });
   check('folder suggested from the name', /[\\/]Fresh One$/.test(await page.inputValue('#p-path')), await page.inputValue('#p-path'));
   await page.fill('#p-path', folder);
   await page.click('#dialog button[type=submit]');
@@ -156,6 +158,7 @@ def('newscrum', 'New project from the Scrum or own-columns template names the co
   const heads = () => page.$$eval('.column h3 span:first-child', els => els.map(e => e.textContent));
   await page.click('button:has-text("+ New project")');
   await page.fill('#p-name', 'Scrum Team');
+  await page.evaluate(() => { $('p-more').open = true; });
   await page.fill('#p-path', '');
   await page.selectOption('#p-tpl', 'scrum');
   await page.click('#dialog button[type=submit]');
@@ -168,6 +171,7 @@ def('newscrum', 'New project from the Scrum or own-columns template names the co
   await page.goto(BASE + '#/');
   await page.click('button:has-text("+ New project")');
   await page.fill('#p-name', 'Own Team');
+  await page.evaluate(() => { $('p-more').open = true; });
   await page.fill('#p-path', '');
   await page.selectOption('#p-tpl', 'own');
   await page.fill('#p-own-names', 'Ideas, Next');
