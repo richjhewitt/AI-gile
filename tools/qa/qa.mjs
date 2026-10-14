@@ -16,7 +16,7 @@ for (const n of ORDER) if (!areas[n]) throw new Error('area in ORDER but not def
 
 /* ---------- runner ---------- */
 const args = process.argv.slice(2);
-if (args.includes('--list')) { for (const n of ORDER) console.log(n.padEnd(10) + areas[n].doc); process.exit(0); }
+if (args.includes('--list')) { for (const n of ORDER) console.log(n.padEnd(10) + ' ' + areas[n].doc); process.exit(0); }
 const wanted = args.length ? args : ORDER;
 for (const w of wanted) if (!areas[w]) { console.error('unknown area: ' + w + '  (try --list)'); process.exit(2); }
 
