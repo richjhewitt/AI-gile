@@ -7,6 +7,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - CLI: `node aigile.js help` (`AIGILE_URL` points it at another server; `AIGILE_AS` sets the author).
 - QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT`, default 4390). Own server on a temp folder, live board untouched. Runner, helpers, area files, AI tester: [qa.md](codemap/qa.md).
 - Session modes: `node tools/session-modes.cjs [--days 7] [--json]` (AIG-461): cost and speed per way of running a lead (VS Code, terminal, background), from ~/.claude/projects usage numbers only; findings in [SESSION-MODES.md](SESSION-MODES.md).
+- Feature crawl: `node tools/crawl/crawl.mjs [--only <text>] [--json]` (AIG-981): re-checks every feature on `docs/features/features.json` (api, ui, cli on one QA server on `CRAWL_PORT`, default 4988; qa areas in one `qa.mjs` call) and writes `docs/reports/crawl-YYYY-MM-DD.md`. See [qa.md](codemap/qa.md).
 
 ## Server ([server.md](codemap/server.md): files, API routes, local-only settings)
 - `server.js`: http plumbing, `/api/*` dispatch, static files from `public/`
