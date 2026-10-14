@@ -66,5 +66,16 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
   await sleep(300);
   await page.screenshot({ path: 'R:/wt/shot-board-phone-dark.png' }).catch(() => {});
   await page.emulateMedia({ colorScheme: 'light' });
+
+  // AIG-1076: an empty project on a desktop shows few buttons, the rest behind ⋯ More
+  await mkProject(s, 'Empty', 'EMP');
+  const ep = await openPage(ctx, '#/p/empty');
+  await ep.waitForSelector('.toolbar.compact');
+  check('empty project: New, Docs, Ask the team and Views stay on the bar', await ep.isVisible('.toolbar .primary') && await ep.isVisible('.toolbar button[onclick="openDocs()"]') && await ep.isVisible('.toolbar button[onclick="askTeamDialog()"]') && await ep.isVisible('.toolbar button[onclick="viewsDialog()"]'));
+  check('empty project: ⋯ More shows and the other buttons are folded away', await ep.isVisible('#tbDots') && !(await ep.isVisible('#hfBtn')));
+  await ep.click('#tbDots');
+  check('empty project: ⋯ More opens the rest', await ep.isVisible('#hfBtn'));
+  check('empty project: the bar is one row', await ep.$eval('.toolbar', e => e.getBoundingClientRect().height < 70));
+  await ep.close();
   noErrors(page);
 }, true);
