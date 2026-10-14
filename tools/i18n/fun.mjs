@@ -1,5 +1,5 @@
-// Fun languages made by script from en.json (AIG-499): leet and Morse. Re-run after English changes:
-//   node tools/i18n/fun.mjs            (both)
+// Fun languages made by script from en.json (AIG-499): leet, Morse and Aussie English (AIG-330). Re-run after English changes:
+//   node tools/i18n/fun.mjs            (all)
 //   node tools/i18n/fun.mjs leet
 // Only plain words change. Kept as they are: {placeholders}, the {{dev:...}} marker (its word is converted), HTML tags and
 // entities, `code`, URLs, card ids, emoji, **bold** markers and the names docs/i18n.md says never to translate.
@@ -22,7 +22,14 @@ const MORSE = {
 const morse = s => s.replace(/(?<=[A-Za-z0-9]) (?=[A-Za-z0-9])/g, ' / ')
   .replace(/[A-Za-z0-9]+/g, w => [...w.toLowerCase()].map(c => MORSE[c]).join(' '));
 
-const FUN = { leet, morse };
+// Aussie English (AIG-330): plain English with a light twist, a few whole-word swaps (capitals kept).
+const AUSSIE = [['Hello', "G'day"], ['Hi', "G'day"], ['friends', 'mates'], ['friend', 'mate'], ['afternoon', 'arvo'], ['breakfast', 'brekkie'],
+  ['Thank you', 'Cheers'], ['Thanks', 'Cheers'], ['great', 'ripper'], ['very good', 'bonzer'], ['excellent', 'bonzer'], ['complain', 'whinge'],
+  ['tired', 'knackered'], ['presents', 'pressies'], ['sunglasses', 'sunnies'], ['barbecue', 'barbie'], ['mosquito', 'mozzie']];
+const cap = (from, to) => (from[0] === from[0].toUpperCase() ? to[0].toUpperCase() + to.slice(1) : to);
+const aussie = s => AUSSIE.reduce((t, [a, b]) => t.replace(new RegExp(`\\b${a}\\b`, 'gi'), m => cap(m, b)), s);
+
+const FUN = { leet, morse, aussie };
 
 function convert(text, fn) {
   return text.split(KEEP).map((part, i) => {
