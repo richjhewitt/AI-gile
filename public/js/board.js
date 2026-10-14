@@ -111,7 +111,7 @@ function renderBoard(p) {
   const keep = `<button onclick="openDocs()">${esc(t('board.docs'))}</button>
       <button onclick="askTeamDialog()" title="${esc(t('board.ask.title'))}">${esc(t('board.ask'))}</button>
       <button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>`;
-  return `<div class="toolbar${compact ? ' compact' : ''}"><h2>${esc(p.name)}${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}</h2>
+  return `<div class="toolbar${compact ? ' compact' : ''}"><h2>${esc(p.name)}${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}${p.sample ? ` <span class="pill sample-pill">${esc(t('sample.pill'))}</span> <button id="sampleRemove" onclick="removeSample()" title="${esc(t('sample.remove.title'))}">${esc(t('sample.remove'))}</button>` : ''}</h2>
       <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
       ${compact ? keep : ''}
       <button class="tb-dots" id="tbDots" aria-expanded="${state.tbOpen ? 'true' : 'false'}" aria-label="${esc(t('board.more'))}" title="${esc(t('board.more'))}" onclick="toggleTb()">⋯${compact ? ' ' + esc(t('board.more')) : ''}</button>
