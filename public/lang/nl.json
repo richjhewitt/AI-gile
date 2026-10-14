@@ -1,5 +1,8 @@
 {
  "col.backlog": "{{dev:Backlog}}",
+ "dms.hint.allhands": "Alle teams tegelijk",
+ "dms.hint.assistant": "Je helper voor je dag en alledaagse dingen",
+ "dms.hint.lead": "Praat met de Lead van dit team",
  "help.m.start": "👋 Aan de slag",
  "help.start.h": "👋 Aan de slag",
  "help.start.p": "AI-gile is een bord voor je projecten. Elk project heeft een klein team van AI-helpers: jij geeft ze kaarten, zij doen het werk en jij controleert het.",
