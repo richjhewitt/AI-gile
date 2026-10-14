@@ -5,6 +5,9 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+// Read-only git calls (status, log, diff) never take index.lock, so a board stopped mid-call (QA, restarts) can't leave a stale
+// lock in a project folder that blocks the next commit there (AIG-965). Children (git, agents) inherit it; required locks stay.
+process.env.GIT_OPTIONAL_LOCKS = '0';
 
 const { PORT, HOST, DATA, PUBLIC, bad, localSettings } = require('./lib/store');
 const makeRoutes = require('./lib/routes');
