@@ -3336,5 +3336,11 @@
  "status.rest": "Rustdag",
  "status.rest.help": "Rustdag: de nachtwacht neemt het over, alleen dringende dingen bereiken je, en de teams vragen het de Lead Scrum Master in plaats van jou",
  "status.rest.confirm": "Een rustdag beginnen? De nachtwacht neemt het over, alleen dringende kaarten blijven in je inbox, en elk team hoort dat het de Lead Scrum Master moet vragen in plaats van jou.",
- "status.rest.go": "Rustdag starten"
+ "status.rest.go": "Rustdag starten",
+ "eng.copilot": "GitHub Copilot",
+ "eng.cursor": "Cursor",
+ "eng.model.copilot": "Copilot-model (leeg = standaard van Copilot)",
+ "eng.model.cursor": "Cursor-model (leeg = standaard van Cursor)",
+ "srv.engine.nocopilot": "GitHub Copilot CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart.",
+ "srv.engine.nocursor": "Cursor CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart."
 }

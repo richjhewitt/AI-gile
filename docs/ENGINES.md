@@ -1,6 +1,6 @@
 # Engines: onboarding other AI providers
 
-Claude, Codex and Gemini can all run board work (lib/engines.js). Every engine gets the same rules: the prompt preamble (`RULES`) points it at WAYS-OF-WORKING.md, CLAUDE.md / CLAUDE.local.md and AGENTS.md.
+Claude, Codex, Gemini, GitHub Copilot and Cursor can all run board work (lib/engines.js). Every engine gets the same rules: the prompt preamble (`RULES`) points it at WAYS-OF-WORKING.md, CLAUDE.md / CLAUDE.local.md and AGENTS.md.
 
 ## Onboarding (the handshake)
 
@@ -20,10 +20,25 @@ On its first run on a board, a new engine's lead:
 
 | | Claude | Codex | Gemini |
 |---|---|---|---|
-| Background run | `claude -p` | `codex exec --json` | `gemini -p --yolo` |
-| Reads by itself | CLAUDE.md | AGENTS.md | GEMINI.md |
-| Sub-agents | Agent tool | none in `exec`: the board starts each member as its own run | none: same as Codex |
-| Asks before acting | no (permission mode) | no (sandbox off, AIG-402) | no (`--yolo`) |
+| Background run | `claude -p` | `codex exec --json` | `gemini -p --yolo` | `copilot -p --allow-all --no-ask-user --output-format=json` | `agent --print --force --trust --output-format stream-json` |
+| Reads by itself | CLAUDE.md | AGENTS.md | GEMINI.md | not relied on: the prompt names the rules | not relied on: the prompt names the rules |
+| Sub-agents | Agent tool | none in `exec`: the board starts each member as its own run | none: same as Codex | none: same | none: same |
+| Asks before acting | no (permission mode) | no (sandbox off, AIG-402) | no (`--yolo`) | no (`--allow-all`, `--no-ask-user`) | no (`--force`; `--trust` skips the workspace prompt) |
+
+## Copilot and Cursor (AIG-971, AIG-973)
+
+Checked 2026-10-14. Engine `copilot` (exe `copilot`) and `cursor` (exe `agent`, else `cursor-agent`); the model per roster entry is `copilotModel` / `cursorModel`, empty = the engine default. Neither is installed on the dev PC, so none of this has run for real.
+
+Confirmed in the docs:
+- Copilot: `-p` runs a prompt non-interactively; `--allow-all` (alias `--yolo`) = all tools, paths and URLs; `--allow-all-tools`; `--no-ask-user`; `--model=MODEL`; `--output-format=json` (JSONL, one record per line); `-s` silences stats. Sources: docs.github.com/en/copilot/reference/copilot-cli-reference/cli-programmatic-reference and .../how-tos/copilot-cli/automate-copilot-cli/run-cli-programmatically.
+- Cursor: `-p, --print`; `--output-format text|json|stream-json` (print only); `-f, --force` (alias `--yolo`): without it changes are only proposed; `--trust` (headless only); `--model <model>` (long form only); `--list-models` / `agent models`. Stream-json events: system init, user, assistant, tool_call started/completed, result. Sources: cursor.com/docs/cli/reference/parameters, /docs/cli/reference/output-format, /docs/cli/headless.
+
+Check on first real run:
+- Copilot: the JSON event types of a `-p` run are not documented (only the workflow result is), so the reader is tolerant and shows plain text, assistant text, tool names and errors; that `-p` accepts `--output-format=json` together with `--allow-all`; and the exact exe name on Windows.
+- Cursor: whether the exe is `agent` or `cursor-agent` on this PC (both are tried); login (`agent login` or `CURSOR_API_KEY`).
+- Role models: the docs name no ids to map per role (Copilot only shows `gpt-5.4`, `claude-haiku-4.5`, `gpt-5.3-codex` as examples; Cursor says run `agent models`), so ROLE_MODELS has no copilot / cursor column and the engine default is used.
+
+Cursor terms: the CLI docs present print mode as meant for "scripts, CI pipelines, or automation" (cursor.com/docs/cli/overview, cursor.com/help/integrations/cli) and recommend `CURSOR_API_KEY` for non-interactive use (cursor.com/docs/account/enterprise/service-accounts; service accounts are an Enterprise feature). Use through the official CLI or SDK is the supported route; calling Cursor's private endpoints another way, or giving third parties use of your account, is not (Use Restrictions in cursor.com/terms-of-service, section 1.5 as cited by Cursor staff on forum.cursor.com). Read the terms before running it unattended on a shared or business account.
 
 ## A ready-made model per team role (AIG-1007)
 

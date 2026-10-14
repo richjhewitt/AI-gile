@@ -22,5 +22,26 @@ const d = require(root + '/lib/discord'), bot = d.bots()[0];
   st.save(p);
   r.sent = await d.sendReplies(bot); r.sentCalls = sent; r.again = await d.sendReplies(bot); r.calls = calls;
   r.status = d.status(); r.chunks = d.chunks('x'.repeat(4000)).map(c => c.length);
+  // Link my Discord (AIG-1011)
+  const lk = d.linkStart('lead'), users = () => JSON.parse(fs.readFileSync(process.env.AIGILE_LOCAL, 'utf8')).discord.bots[0].users;
+  r.code = lk.code; r.wait = d.linkStatus('lead');
+  r.rand = await d.handleMessage(bot, { author: { id: '777777' }, content: 'hello' });
+  r.wrong = await d.handleMessage(bot, { author: { id: '777777' }, content: lk.code === 'AAAAAA' ? 'BBBBBB' : 'AAAAAA' });
+  r.guildCode = await d.handleMessage(bot, { author: { id: '777777' }, guild_id: '1', content: lk.code });
+  r.botCode = await d.handleMessage(bot, { author: { id: '777777', bot: true }, content: lk.code });
+  r.usersBefore = users();
+  const mark = sent.length;
+  r.good = await d.handleMessage(bot, { author: { id: '777777', username: 'Rich' }, content: ' ' + lk.code.toLowerCase() + ' ' });
+  await new Promise(x => setTimeout(x, 100));
+  r.usersAfter = users(); r.done = d.linkStatus('lead'); r.thanks = JSON.stringify(sent.slice(mark));
+  r.reuse = await d.handleMessage(d.bots()[0], { author: { id: '888888' }, content: lk.code });
+  r.usersFinal = users();
+  const lk2 = d.linkStart('lead'), real = Date.now; Date.now = () => real() + 11 * 60e3;
+  r.late = await d.handleMessage(d.bots()[0], { author: { id: '888888' }, content: lk2.code }); r.exp = d.linkStatus('lead'); Date.now = real;
+  r.usersEnd = users();
+  r.words = [[400, 50033], [404, 10013], [403, 50007], [401, 0], [400, 0]].map(([a, c]) => d.restWords(a, c));
+  global.fetch = async () => ({ ok: false, status: 400, json: async () => ({ code: 50033, message: 'Invalid Recipient(s)' }) });
+  console.warn = () => {};
+  try { await d.test('lead'); r.err = 'none'; } catch (e) { r.err = e.message; }
   console.log(JSON.stringify(r));
 })();

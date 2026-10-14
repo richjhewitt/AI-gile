@@ -15,4 +15,9 @@ def('discord', 'Discord bridge with a stubbed Discord: allowed users only, DM be
   check('the lead\'s reply goes to the user once, the owner\'s own comment never', o.sent === 1 && o.again === 0 && o.sentCalls[1][1].content.includes('Done it') && !JSON.stringify(o.sentCalls).includes('mine'), o);
   check('status never carries the token', !JSON.stringify(o.status).includes('TKN') && o.status[0].users === 1, o.status);
   check('long text is cut under 2000', o.chunks.length === 3 && o.chunks.every(n => n <= 1900), o.chunks);
+  check('Link my Discord: a stranger or wrong code, in a server or by a bot, links nobody', o.rand === null && o.wrong === null && o.guildCode === null && o.botCode === null && o.usersBefore.join() === '123456789' && o.wait.waiting, o);
+  check('the right code (any case) links the sender, saved in the config, and the bot says so', o.good && o.good.linked && o.usersAfter.join() === '777777,123456789' && o.done.linked && o.done.username === 'Rich' && o.thanks.includes('Linked'), o);
+  check('a code works once', o.reuse === null && o.usersFinal.join() === '777777,123456789', o);
+  check('an expired code links nobody', o.late === null && o.exp.expired && o.usersEnd.join() === '777777,123456789', o);
+  check('Discord errors come as plain words', o.words[0].includes("isn't a Discord user") && o.words[1].includes("isn't a Discord user") && o.words[2].includes('share a server') && o.words[3].includes('token is wrong') && o.err.includes("isn't a Discord user") && !/400/.test(o.err), [o.words, o.err]);
 });
