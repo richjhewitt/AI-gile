@@ -78,10 +78,12 @@ def('limit', '🌙 usage limit: no restarts counted while out, carry on after th
   const th = await s.ok('GET', '/api/chats/_watchman');
   check('one message says when teams start again', th.messages.filter(m => /usage limit/.test(m.text)).length === 1, th.messages);
   // Morning: the chat stays, with what got done, until cleared.
+  await s.ok('PATCH', `/api/projects/out/cards/${mid.id}`, { status: 'done' });   // the team finished the card in the night (AIG-1051: the summary lists only projects where something got done)
   await s.ok('POST', '/api/quiet', { on: false });
   const w = (await s.ok('GET', '/api/chats')).find(c => c.slug === '_watchman');
   check('awake again: the night\'s chat is still listed, with something new', w && w.unread >= 1, w);
-  check('its last message says what got done', /The night[\s\S]*Out/.test((await s.ok('GET', '/api/chats/_watchman')).messages.at(-1).text));
+  const lm = (await s.ok('GET', '/api/chats/_watchman')).messages;
+  check('its last message says what got done', /The night[\s\S]*Out/.test(lm.at(-1).text), lm.slice(-2));
   await s.ok('POST', '/api/chats/_watchman', { text: 'clear chat' });
   check('clearing it empties it; it stays listed so you can write to it by day (AIG-359)', (await s.ok('GET', '/api/chats/_watchman')).messages.length === 0 && (await s.ok('GET', '/api/chats')).some(c => c.slug === '_watchman'));
 }, false);
