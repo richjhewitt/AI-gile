@@ -77,7 +77,7 @@ async function startTrial(btn) {
 function renderSetup() {
   const s = state.setup;
   const secs = ["lang","look","plan","teams","discord","mail","servers","phone","storage","you","more"];
-  return `<div class="setup"><h2>${esc(t('setup.h'))}</h2>
+  return `<div class="setup">${state.route && state.route.pop ? '' : `<button type="button" class="dlg-pop" id="setupPop" title="${esc(t('popout.title'))}" onclick="popOutSetup()">${esc(t('popout.btn'))}</button>`}<h2>${esc(t('setup.h'))}</h2>
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
     <nav class="set-index" id="setIndex" aria-label="${esc(t('setup.index'))}">${secs.map(k => `<a href="#/setup/${k}" data-sec="${k}" onclick="return setupJump('${k}')">${esc(t('setup.sec.' + k))}</a>`).join('')}</nav>
     <section class="set-sec" id="sec-lang"><h3 class="set-h">${esc(t('setup.sec.lang'))}</h3>
@@ -153,8 +153,11 @@ function setupScrollTo(sec) {
   window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - h - (ix ? ix.offsetHeight : 0) - 10);
   return true;
 }
+// ⧉ Pop out (AIG-1030): Setup in its own window (#/pop-setup); this window goes back to the home page.
+function popOutSetup() { popOut('setup', '#/pop-setup', 'aigile-setup', 760, 820); location.hash = '#/'; }
 function setupJump(sec) {
-  history.replaceState(null, '', '#/setup/' + sec); state.route = { view: 'setup', sec }; state.setupLanded = location.hash;
+  const pop = state.route && state.route.pop;
+  history.replaceState(null, '', pop ? '#/pop-setup' : '#/setup/' + sec); state.route = { view: 'setup', sec, ...(pop ? { pop: true } : {}) }; state.setupLanded = location.hash;
   setupScrollTo(sec); return false;
 }
 // After a render of Setup: land on the section of the link (again once the async boxes have filled in), else stay at the top.

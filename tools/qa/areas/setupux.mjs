@@ -50,5 +50,14 @@ def('setupux', 'Setup index: section links scroll to their section, #/setup/<sec
   const fit = await pp.evaluate(() => ({ w: document.documentElement.scrollWidth, top: window.scrollY, i: document.getElementById('setIndex').getBoundingClientRect().height }));
   check('phone width: no sideways scroll, at the top, index visible', fit.w <= 390 && fit.top < 5 && fit.i > 0, JSON.stringify(fit));
   noErrors(pp);
+  // ⧉ Pop out (AIG-1030): Setup in its own window, filling it; no button there
+  const sp = await openPage(ctx, '#/setup'); await sp.waitForSelector('#setIndex');
+  check('Setup has a Pop out button', (await sp.locator('#setupPop').count()) === 1);
+  const [pw] = await Promise.all([ctx.waitForEvent('page'), sp.click('#setupPop')]);
+  await pw.waitForSelector('#setIndex');
+  check('#/pop-setup renders Setup alone, no header, no Pop out button', /pop-setup/.test(pw.url()) && !(await pw.isVisible('header')) && (await pw.locator('#setupPop').count()) === 0 && (await pw.locator('#sec-phone').count()) === 1, pw.url());
+  await pw.click('#setIndex a[data-sec="mail"]'); await sleep(300);
+  check('a section link in the pop-out stays in the pop-out', /pop-setup/.test(pw.url()), pw.url());
+  await pw.close(); await sp.close();
   await ph.close();
 }, true);
