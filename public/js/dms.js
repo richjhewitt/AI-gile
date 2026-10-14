@@ -245,7 +245,7 @@ const Dms = (() => {
     if (seq !== threadSeq || open !== want) return;
     thread = got;
     if (pendingSend) { const ps = pendingSend; pendingSend = null; if (ps.slug === want) setTimeout(() => send(ps.fixed), 0); }
-    if (thread.group &&thread.messages.length) dmSeen.set(want, thread.messages.at(-1).at);   // 👥 opening the group reads it
+    if (thread.group && thread.messages.length) dmSeen.set(want, thread.messages.at(-1).at);   // 👥 opening the group reads it
     const list = el('dmList'); if (!list) return;
     // A card that newly starts waiting on you opens by itself, and the typing box answers it.
     const fresh = thread.open.find(o => !waitingSeen.has(o.id));
