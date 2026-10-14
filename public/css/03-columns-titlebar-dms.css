@@ -243,6 +243,12 @@ body.poptwitch { padding: 0; } body.poptwitch main { display: none; }
 .dm-rowx { border: 0; background: none; color: var(--muted, #888); font-size: 12px; padding: 4px 8px; cursor: pointer; opacity: .35; border-radius: 8px; }
 .dm-rowwrap:hover .dm-rowx, .dm-rowx:focus-visible { opacity: 1; }
 .dm-rowx:hover { background: var(--col); }
+/* 👥 group chats (AIG-1027) */
+.dm-groups { margin: 6px 0; border-top: 1px solid var(--col); padding-top: 6px; }
+.dm-groups-h { display: flex; align-items: center; justify-content: space-between; padding: 2px 10px; font-size: 12px; }
+.dm-newgroup { border: 0; background: none; cursor: pointer; font-size: 12px; color: inherit; padding: 2px 4px; }
+.grp-pick { max-height: 45vh; overflow: auto; margin: 8px 0; }
+.grp-cand { display: block; font-weight: normal; margin: 4px 0; }
 .dm-closed { margin-top: 12px; border-top: 1px solid var(--col); padding-top: 8px; }
 .dm-closed .dm-rowwrap { }
 .dm-closedlink { border: 0; background: none; color: var(--muted, #888); font-size: 12px; text-decoration: underline; cursor: pointer; padding: 4px 10px; }

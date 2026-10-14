@@ -54,7 +54,9 @@ const IB = {
   function load(force) {
     if (inflight && loadEpoch === PagePoll.generation && !force) return inflight;
     loadEpoch = PagePoll.generation; const seq = ++loadSeq;
-    inflight = PagePoll.get('/api/inbox', { force }).then(l => { const filtered = typeof Swarm !== 'undefined' ? Swarm.only(l, true) : l; return { list: filtered, sig: renderSig(l) + ':' + filtered.map(keyOf).join(',') }; })   // 🚨 swarm: only that project (AIG-877)
+    inflight = PagePoll.get('/api/inbox', { force }).then(l => { const sw = typeof Swarm !== 'undefined' ? Swarm.only(l, true) : l, off = typeof TodayPage !== 'undefined' ? TodayPage.hidden() : [];
+      const filtered = off.length ? sw.filter(c => !off.includes(c.project)) : sw;   // 🎯 AIG-1032: only today's picked projects (Show all brings the rest back)
+      return { list: filtered, sig: renderSig(l) + ':' + filtered.map(keyOf).join(',') }; })   // 🚨 swarm: only that project (AIG-877)
       .then(({ list, sig }) => { if (seq === loadSeq) { inflight = null; if (loadEpoch === PagePoll.generation) { apply(list, sig); IB.testerDone(); } } return true; })
       .catch(e => { if (seq === loadSeq) inflight = null; throw e; });
     return inflight;
