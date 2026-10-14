@@ -54,7 +54,7 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
 
   // languages.json: LocoRadio's 121, Flemish as nl-BE, the right-to-left ones, the fun ones, plus Aussie English (AIG-330).
   const list = read('languages.json'), codeSet = new Set(list.map(l => l.code));
-  check('languages.json lists 122 languages, each with code, label, own name and locale', list.length === 122 && list.every(l => l.code && l.label && l.name && l.locale), list.length);
+  check('languages.json lists 122+ languages, each with code, label, own name and locale', list.length >= 122 && list.every(l => l.code && l.label && l.name && l.locale), list.length);   // AIG-1038: new languages keep coming
   check('Flemish is nl-BE (not vls), for Belgium, based on nl', !codeSet.has('vls') && list.some(l => l.code === 'nl-BE' && l.region === 'BE' && l.base === 'nl'));
   check('LocoRadio codes for the rest (pt-br, zh-tw, fil, no)', ['pt-br', 'zh-tw', 'fil', 'no', 'ckb'].every(c => codeSet.has(c)));
   check('right to left: ar ur fa he ps sd yi ckb', list.filter(l => l.dir === 'rtl').map(l => l.code).sort().join(' ') === 'ar ckb fa he ps sd ur yi', list.filter(l => l.dir === 'rtl').map(l => l.code));
