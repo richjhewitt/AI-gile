@@ -52,6 +52,7 @@ async function joinLoad() {
   joinPaint();
 }
 function joinExpiry(c) {
+  if (c.kind === 'site' && c.used) return c.passes === null ? t('join.used') : c.passes ? t('join.site.inuse') : t('join.site.ended');   // AIG-699
   if (c.used) return t('join.used');
   const ms = c.exp - Date.now();
   if (ms <= 0) return t('join.expired');
@@ -60,19 +61,21 @@ function joinExpiry(c) {
 }
 function joinHtml() {
   const d = JN.data, keep = { n: ($('joinName') || {}).value || '', h: ($('joinHelp') || {}).value || JN.help };
-  const row = c => `<div class="join-c" data-code="${esc(c.code)}"><b>${esc(['', '🐣', '🙂', '😎'][c.help] || '')} ${esc(c.name || c.code)}</b> <code>${esc(c.code)}</code>
-      <small class="muted">${esc(joinExpiry(c))}</small>${c.inv ? ' ' + fpHtml(c.inv, c.pic && c.pic.pic, c.pic && c.pic.mine) : ''}</div>`;
+  const row = c => `<div class="join-c" data-code="${esc(c.code)}"><b>${esc(c.kind === 'site' ? '🌐' : ['', '🐣', '🙂', '😎'][c.help] || '')} ${esc(c.name || c.code)}</b> <code>${esc(c.code)}</code>
+      <small class="muted">${esc(joinExpiry(c))}</small>${c.inv ? ' ' + fpHtml(c.inv, c.pic && c.pic.pic, c.pic && c.pic.mine) : ''}
+      ${c.kind === 'site' && (c.passes || (!c.used && c.exp > Date.now())) ? `<button type="button" class="join-end" data-code="${esc(c.code)}">${esc(t('join.site.end'))}</button>` : ''}</div>`;
   return `<div class="dmf-sec" id="joinSec"><b>${esc(t('join.h'))}</b><small class="muted">${esc(t('join.help'))}</small>
       <select id="joinHelp">${['1', '2', '3'].map(n => `<option value="${n}" ${keep.h === n ? 'selected' : ''}>${esc(['', '🐣', '🙂', '😎'][n] + ' ' + t('join.level.' + n))}</option>`).join('')}</select>
       <input type="text" id="joinName" value="${esc(keep.n)}" placeholder="${esc(t('dmf.invite.name'))}" autocomplete="off">
-      <div class="actions"><button type="button" id="joinMake">${esc(t('join.btn'))}</button></div>
+      <div class="actions"><button type="button" id="joinMake">${esc(t('join.btn'))}</button> <button type="button" id="joinSite" title="${esc(t('join.site.help'))}">${esc(t('join.site.btn'))}</button></div>
       ${JN.link ? `<input type="text" id="joinLink" readonly value="${esc(JN.link)}" onclick="this.select()"><small class="muted">${esc(t('join.send'))}</small>
       <div class="actions"><button type="button" id="joinCopy">${esc(t('dmf.copy'))}</button></div>` : ''}
       <div class="err" id="join-err">${esc(JN.err)}</div><div class="muted" id="join-msg">${esc(JN.msg)}</div>
       ${d && d.codes.length ? `<b>${esc(t('join.open'))}</b>${d.codes.map(row).join('')}` : ''}
       ${d && d.error ? `<small class="muted">${esc(t('join.noStatus'))}</small>` : ''}
       <details><summary class="muted">${esc(t('join.server'))}</summary>
-        <input type="text" id="joinUrl" value="${esc(d ? d.url : '')}" autocomplete="off"><div class="actions"><button type="button" id="joinSave">${esc(t('join.save'))}</button></div>
+        <input type="text" id="joinUrl" value="${esc(d ? d.url : '')}" autocomplete="off">
+        <small class="muted">${esc(t('join.site.url'))}</small><input type="text" id="joinSiteUrl" value="${esc(d ? d.site || '' : '')}" autocomplete="off"><div class="actions"><button type="button" id="joinSave">${esc(t('join.save'))}</button></div>
         <small class="muted">${esc(t('join.key'))}</small><input type="text" id="joinKey" readonly value="${esc(d ? d.ownerKey : '')}" onclick="this.select()"></details></div>`;
 }
 function joinPaint() {
@@ -88,8 +91,15 @@ document.addEventListener('click', async ev => {
       JN.help = $('joinHelp').value;
       JN.link = (await api('POST', '/api/join/codes', { help: JN.help, name: $('joinName').value.trim() })).link;
       $('joinName').value = ''; JN.msg = t('join.made');
+    } else if (b.id === 'joinSite') {   // 🌐 test site pass (AIG-699)
+      b.disabled = true;
+      JN.link = (await api('POST', '/api/join/site', { name: $('joinName').value.trim() })).link;
+      $('joinName').value = ''; JN.msg = t('join.site.made');
+    } else if (b.classList.contains('join-end')) {
+      if (!confirm(t('join.site.end.sure'))) return;
+      await api('POST', '/api/join/revoke', { code: b.dataset.code }); JN.msg = t('join.site.ended.msg');
     } else if (b.id === 'joinCopy') { try { await navigator.clipboard.writeText(JN.link); } catch { $('joinLink').select(); document.execCommand('copy'); } JN.msg = t('join.copied'); }
-    else if (b.id === 'joinSave') { await api('POST', '/api/join/settings', { url: $('joinUrl').value.trim() }); JN.msg = t('join.saved'); }
+    else if (b.id === 'joinSave') { await api('POST', '/api/join/settings', { url: $('joinUrl').value.trim(), site: $('joinSiteUrl').value.trim() }); JN.msg = t('join.saved'); }
   } catch (e) { JN.err = e.message || String(e); }
   await joinLoad();
 });

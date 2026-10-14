@@ -3235,5 +3235,14 @@
  "pub.feedback": "Public feedback form",
  "pub.feedback.sub": "Visitors to your own website can report a problem; each report becomes a bug card in To do.",
  "pub.feedback.group": "Put the cards in this group (optional)",
- "pub.feedback.snippet": "Add this line to your website"
+ "pub.feedback.snippet": "Add this line to your website",
+  "join.site.btn": "🌐 Make a test site pass",
+  "join.site.help": "A link that works once and lets one browser into the private test site for 90 days",
+  "join.site.made": "Pass link made. Send it: it lets one browser into the test site for 90 days.",
+  "join.site.inuse": "in use",
+  "join.site.ended": "ended",
+  "join.site.end": "End pass",
+  "join.site.end.sure": "End this pass? That browser can't open the test site any more.",
+  "join.site.ended.msg": "Pass ended.",
+  "join.site.url": "Test site address (for test site passes)"
 }
