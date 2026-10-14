@@ -3217,5 +3217,21 @@
   "storage.tidy": "Mga attachment sa mga saradong (tapos na) card na mas matanda sa {days} araw: {n} file, {size}",
   "storage.delete": "Burahin",
   "storage.confirm": "Burahin ang {n} attachment file ({size}) mula sa mga saradong card? Walang ibang tatanggalin.",
-  "storage.nothing": "Walang attachment sa mga saradong card na mas matanda sa {days} araw na lilinisin."
+  "storage.nothing": "Walang attachment sa mga saradong card na mas matanda sa {days} araw na lilinisin.",
+ "srv.remind.set": "⏰ Naitakda ang paalala: {text}, {when}",
+ "srv.remind.today": "ngayong araw {time}",
+ "srv.remind.tomorrow": "bukas {time}",
+ "share.title.label": "Pamagat",
+ "share.title.ph": "hal. Jetstream consultant",
+ "share.preview.label": "Link ng preview",
+ "share.title.help": "Label lang ang pamagat: lumalabas ito sa tabi ni {name} sa panig mo at sa header ng board nila.",
+ "share.preview.help": "Ang preview link (http o https) ay nagbibigay kay {name} ng Preview button; iwanang blangko kung wala.",
+ "share.simple": "Kaibigang hindi techie",
+ "share.simple.help": "Alpha tester, naka-on ang mga komento, naka-on ang Approvals",
+ "share.simple.hint": "Ino-on ang Alpha tester, mga komento at Approvals para sa proyektong ito. Napupunta sa ✅ Approvals ang mga hiling nila.",
+ "sb.preview": "▶ Preview",
+ "pub.feedback": "Pampublikong feedback form",
+ "pub.feedback.sub": "Maaaring mag-ulat ng problema ang mga bisita ng sarili mong website; ang bawat ulat ay nagiging bug card sa Gagawin.",
+ "pub.feedback.group": "Ilagay ang mga card sa grupong ito (opsyonal)",
+ "pub.feedback.snippet": "Idagdag ang linyang ito sa website mo"
 }

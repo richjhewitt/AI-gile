@@ -3217,5 +3217,21 @@
  "storage.tidy": "Annessi fuq kards magħluqin (magħmulin) eqdem minn {days} jum: fajls {n}, {size}",
  "storage.delete": "Ħassar",
  "storage.confirm": "Tħassar il-fajls annessi ({n}, {size}) minn kards magħluqin? Xejn aktar ma jitneħħa.",
- "storage.nothing": "L-ebda anness fuq kards magħluqin eqdem minn {days} jum biex jitnaddaf."
+ "storage.nothing": "L-ebda anness fuq kards magħluqin eqdem minn {days} jum biex jitnaddaf.",
+ "srv.remind.set": "⏰ Tfakkira ssettjata: {text}, {when}",
+ "srv.remind.today": "illum {time}",
+ "srv.remind.tomorrow": "għada {time}",
+ "share.title.label": "Titlu",
+ "share.title.ph": "eż. konsulent ta' Jetstream",
+ "share.preview.label": "Link tal-previżjoni",
+ "share.title.help": "It-titlu huwa tikketta biss: jidher ħdejn {name} min-naħa tiegħek u fuq l-intestatura tal-bord tagħhom.",
+ "share.preview.help": "Link tal-previżjoni (http jew https) jagħti lil {name} buttuna Previżjoni; ħallih vojt jekk ma tridx.",
+ "share.simple": "Ħabib mhux tekniku",
+ "share.simple.help": "Ittestjar Alpha, kummenti mixgħula, Approvazzjonijiet mixgħula",
+ "share.simple.hint": "Jissettja Ittestjar Alpha, kummenti u Approvazzjonijiet għal dan il-proġett. Ix-xewqat tagħhom jgħaddu f'✅ Approvazzjonijiet.",
+ "sb.preview": "▶ Previżjoni",
+ "pub.feedback": "Formola pubblika tal-feedback",
+ "pub.feedback.sub": "Il-viżitaturi tas-sit tiegħek jistgħu jirrapportaw problema; kull rapport isir karta tal-bug f'Biex isir.",
+ "pub.feedback.group": "Poġġi l-karti f'dan il-grupp (mhux obbligatorju)",
+ "pub.feedback.snippet": "Żid din il-linja mas-sit tiegħek"
 }

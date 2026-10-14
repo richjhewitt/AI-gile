@@ -3217,5 +3217,21 @@
  "storage.tidy": "Allegati su schede chiuse (fatte) più vecchie di {days} giorni: {n} file, {size}",
  "storage.delete": "Elimina",
  "storage.confirm": "Eliminare {n} file allegati ({size}) dalle schede chiuse? Non viene rimosso altro.",
- "storage.nothing": "Nessun allegato su schede chiuse più vecchie di {days} giorni da ripulire."
+ "storage.nothing": "Nessun allegato su schede chiuse più vecchie di {days} giorni da ripulire.",
+ "srv.remind.set": "⏰ Promemoria impostato: {text}, {when}",
+ "srv.remind.today": "oggi {time}",
+ "srv.remind.tomorrow": "domani {time}",
+ "share.title.label": "Titolo",
+ "share.title.ph": "es. consulente Jetstream",
+ "share.preview.label": "Link di anteprima",
+ "share.title.help": "Il titolo è solo un'etichetta: appare accanto a {name} dal tuo lato e nell'intestazione della loro bacheca.",
+ "share.preview.help": "Un link di anteprima (http o https) dà a {name} un pulsante Anteprima; lascia vuoto se non serve.",
+ "share.simple": "Amico non tecnico",
+ "share.simple.help": "Tester alpha, commenti attivi, Approvazioni attive",
+ "share.simple.hint": "Attiva Tester alpha, commenti e Approvazioni per questo progetto. I loro desideri arrivano in ✅ Approvazioni.",
+ "sb.preview": "▶ Anteprima",
+ "pub.feedback": "Modulo di feedback pubblico",
+ "pub.feedback.sub": "I visitatori del tuo sito web possono segnalare un problema; ogni segnalazione diventa una scheda bug in Da fare.",
+ "pub.feedback.group": "Metti le schede in questo gruppo (facoltativo)",
+ "pub.feedback.snippet": "Aggiungi questa riga al tuo sito web"
 }

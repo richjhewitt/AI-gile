@@ -3217,5 +3217,21 @@
   "storage.tidy": "{days}일이 지난 닫힌(완료) 카드의 첨부 파일: 파일 {n}개, {size}",
   "storage.delete": "삭제",
   "storage.confirm": "닫힌 카드의 첨부 파일 {n}개({size})를 삭제할까요? 다른 것은 삭제되지 않습니다.",
-  "storage.nothing": "정리할 {days}일 지난 닫힌 카드의 첨부 파일이 없습니다."
+  "storage.nothing": "정리할 {days}일 지난 닫힌 카드의 첨부 파일이 없습니다.",
+ "srv.remind.set": "⏰ 알림 설정됨: {text}, {when}",
+ "srv.remind.today": "오늘 {time}",
+ "srv.remind.tomorrow": "내일 {time}",
+ "share.title.label": "제목",
+ "share.title.ph": "예: Jetstream 컨설턴트",
+ "share.preview.label": "미리보기 링크",
+ "share.title.help": "제목은 라벨일 뿐입니다. 내 쪽에서는 {name} 옆에, 상대방 보드 헤더에 표시됩니다.",
+ "share.preview.help": "미리보기 링크(http 또는 https)를 넣으면 {name}에게 미리보기 버튼이 생깁니다. 필요 없으면 비워 두세요.",
+ "share.simple": "비전문가 친구",
+ "share.simple.help": "알파 테스터, 댓글 켜짐, 승인 켜짐",
+ "share.simple.hint": "이 프로젝트에서 알파 테스터, 댓글, 승인을 켭니다. 상대방의 요청은 ✅ 승인에 들어옵니다.",
+ "sb.preview": "▶ 미리보기",
+ "pub.feedback": "공개 피드백 양식",
+ "pub.feedback.sub": "내 웹사이트 방문자가 문제를 신고할 수 있으며, 신고마다 할 일에 버그 카드가 생성됩니다.",
+ "pub.feedback.group": "카드를 이 그룹에 넣기 (선택)",
+ "pub.feedback.snippet": "이 줄을 웹사이트에 추가하세요"
 }

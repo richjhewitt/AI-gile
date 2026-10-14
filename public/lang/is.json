@@ -3217,5 +3217,21 @@
  "storage.tidy": "Viðhengi á lokuðum (kláruðum) spjöldum eldri en {days} daga: skrár {n}, {size}",
  "storage.delete": "Eyða",
  "storage.confirm": "Eyða viðhengisskrám ({n}, {size}) af lokuðum spjöldum? Engu öðru er eytt.",
- "storage.nothing": "Engin viðhengi á lokuðum spjöldum eldri en {days} daga til að taka til."
+ "storage.nothing": "Engin viðhengi á lokuðum spjöldum eldri en {days} daga til að taka til.",
+ "srv.remind.set": "⏰ Áminning stillt: {text}, {when}",
+ "srv.remind.today": "í dag {time}",
+ "srv.remind.tomorrow": "á morgun {time}",
+ "share.title.label": "Titill",
+ "share.title.ph": "t.d. Jetstream-ráðgjafi",
+ "share.preview.label": "Forskoðunartengill",
+ "share.title.help": "Titillinn er aðeins merkimiði: hann birtist við hlið {name} hjá þér og í haus borðsins þeirra.",
+ "share.preview.help": "Forskoðunartengill (http eða https) gefur {name} Forskoðun-hnapp; hafðu tómt ef þú vilt engan.",
+ "share.simple": "Ótæknilegur vinur",
+ "share.simple.help": "Alfa-prófari, athugasemdir á, Samþykktir á",
+ "share.simple.hint": "Kveikir á Alfa-prófara, athugasemdum og Samþykktum fyrir þetta verkefni. Óskir þeirra lenda í ✅ Samþykktir.",
+ "sb.preview": "▶ Forskoðun",
+ "pub.feedback": "Opið endurgjafareyðublað",
+ "pub.feedback.sub": "Gestir á þinni eigin vefsíðu geta tilkynnt vandamál; hver tilkynning verður villuspjald í Á dagskrá.",
+ "pub.feedback.group": "Settu spjöldin í þennan hóp (valfrjálst)",
+ "pub.feedback.snippet": "Bættu þessari línu við vefsíðuna þína"
 }

@@ -3217,5 +3217,21 @@
   "storage.tidy": "Anhänge an geschlossenen (erledigten) Karten, älter als {days} Tage: {n} Dateien, {size}",
   "storage.delete": "Löschen",
   "storage.confirm": "{n} Anhangdateien ({size}) von geschlossenen Karten löschen? Sonst wird nichts entfernt.",
-  "storage.nothing": "Keine Anhänge an geschlossenen Karten, die älter als {days} Tage sind, zum Aufräumen."
+  "storage.nothing": "Keine Anhänge an geschlossenen Karten, die älter als {days} Tage sind, zum Aufräumen.",
+ "srv.remind.set": "⏰ Erinnerung gesetzt: {text}, {when}",
+ "srv.remind.today": "heute {time}",
+ "srv.remind.tomorrow": "morgen {time}",
+ "share.title.label": "Titel",
+ "share.title.ph": "z. B. Jetstream-Berater",
+ "share.preview.label": "Vorschau-Link",
+ "share.title.help": "Der Titel ist nur eine Bezeichnung: Er erscheint bei dir neben {name} und in der Kopfzeile des Boards.",
+ "share.preview.help": "Ein Vorschau-Link (http oder https) gibt {name} eine Vorschau-Schaltfläche; leer lassen für keine.",
+ "share.simple": "Nicht-technischer Freund",
+ "share.simple.help": "Alpha-Tester, Kommentare an, Freigaben an",
+ "share.simple.hint": "Schaltet Alpha-Tester, Kommentare und Freigaben für dieses Projekt ein. Ihre Wünsche landen in ✅ Freigaben.",
+ "sb.preview": "▶ Vorschau",
+ "pub.feedback": "Öffentliches Feedback-Formular",
+ "pub.feedback.sub": "Besucher deiner eigenen Website können ein Problem melden; jede Meldung wird eine Bug-Karte in Zu tun.",
+ "pub.feedback.group": "Karten in diese Gruppe legen (optional)",
+ "pub.feedback.snippet": "Füge diese Zeile deiner Website hinzu"
 }

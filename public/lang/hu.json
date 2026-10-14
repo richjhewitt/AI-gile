@@ -3217,5 +3217,21 @@
   "storage.tidy": "Lezárt (kész) kártyák mellékletei, {days} napnál régebbiek: {n} fájl, {size}",
   "storage.delete": "Törlés",
   "storage.confirm": "Törölsz {n} mellékletfájlt ({size}) a lezárt kártyákról? Más nem törlődik.",
-  "storage.nothing": "Nincs {days} napnál régebbi melléklet lezárt kártyákon, amit rendezni kellene."
+  "storage.nothing": "Nincs {days} napnál régebbi melléklet lezárt kártyákon, amit rendezni kellene.",
+ "srv.remind.set": "⏰ Emlékeztető beállítva: {text}, {when}",
+ "srv.remind.today": "ma {time}",
+ "srv.remind.tomorrow": "holnap {time}",
+ "share.title.label": "Cím",
+ "share.title.ph": "pl. Jetstream tanácsadó",
+ "share.preview.label": "Előnézeti link",
+ "share.title.help": "A cím csak címke: nálad {name} mellett, náluk a tábla fejlécében jelenik meg.",
+ "share.preview.help": "Az előnézeti link (http vagy https) Előnézet gombot ad {name} számára; hagyd üresen, ha nem kell.",
+ "share.simple": "Nem műszaki barát",
+ "share.simple.help": "Alfa tesztelő, megjegyzések be, Jóváhagyások be",
+ "share.simple.hint": "Bekapcsolja az Alfa tesztelőt, a megjegyzéseket és a Jóváhagyásokat ennél a projektnél. Kéréseik a ✅ Jóváhagyásokba érkeznek.",
+ "sb.preview": "▶ Előnézet",
+ "pub.feedback": "Nyilvános visszajelzési űrlap",
+ "pub.feedback.sub": "A saját weboldalad látogatói jelezhetnek problémát; minden jelzésből hibakártya lesz a Teendő oszlopban.",
+ "pub.feedback.group": "A kártyák ebbe a csoportba kerüljenek (nem kötelező)",
+ "pub.feedback.snippet": "Add hozzá ezt a sort a weboldaladhoz"
 }

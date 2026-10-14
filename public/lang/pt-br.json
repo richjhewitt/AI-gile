@@ -3249,5 +3249,21 @@
  "storage.tidy": "Anexos em cartões fechados (concluídos) com mais de {days} dias: {n} arquivos, {size}",
  "storage.delete": "Excluir",
  "storage.confirm": "Excluir {n} arquivos anexos ({size}) de cartões fechados? Nada mais é removido.",
- "storage.nothing": "Não há anexos em cartões fechados com mais de {days} dias para limpar."
+ "storage.nothing": "Não há anexos em cartões fechados com mais de {days} dias para limpar.",
+ "srv.remind.set": "⏰ Lembrete definido: {text}, {when}",
+ "srv.remind.today": "hoje {time}",
+ "srv.remind.tomorrow": "amanhã {time}",
+ "share.title.label": "Título",
+ "share.title.ph": "ex.: consultor Jetstream",
+ "share.preview.label": "Link de prévia",
+ "share.title.help": "O título é só um rótulo: aparece ao lado de {name} do seu lado e no cabeçalho do quadro deles.",
+ "share.preview.help": "Um link de prévia (http ou https) dá a {name} um botão Prévia; deixe vazio para não ter.",
+ "share.simple": "Amigo não técnico",
+ "share.simple.help": "Testador alfa, comentários ativados, Aprovações ativadas",
+ "share.simple.hint": "Define Testador alfa, comentários e Aprovações ativados neste projeto. Os desejos dele caem em ✅ Aprovações.",
+ "sb.preview": "▶ Prévia",
+ "pub.feedback": "Formulário público de feedback",
+ "pub.feedback.sub": "Visitantes do seu próprio site podem relatar um problema; cada relato vira um card de bug em A fazer.",
+ "pub.feedback.group": "Colocar os cards neste grupo (opcional)",
+ "pub.feedback.snippet": "Adicione esta linha ao seu site"
 }

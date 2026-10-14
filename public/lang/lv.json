@@ -3249,5 +3249,21 @@
  "storage.tidy": "Pielikumi slēgtajās (pabeigtajās) kartītēs, kas vecākas par {days} dienām: faili {n}, {size}",
  "storage.delete": "Dzēst",
  "storage.confirm": "Dzēst pielikumu failus ({n}, {size}) no slēgtajām kartītēm? Nekas cits netiek noņemts.",
- "storage.nothing": "Nav pielikumu slēgtajās kartītēs, kas vecākas par {days} dienām, ko sakārtot."
+ "storage.nothing": "Nav pielikumu slēgtajās kartītēs, kas vecākas par {days} dienām, ko sakārtot.",
+ "srv.remind.set": "⏰ Atgādinājums iestatīts: {text}, {when}",
+ "srv.remind.today": "šodien {time}",
+ "srv.remind.tomorrow": "rīt {time}",
+ "share.title.label": "Nosaukums",
+ "share.title.ph": "piem., Jetstream konsultants",
+ "share.preview.label": "Priekšskatījuma saite",
+ "share.title.help": "Nosaukums ir tikai etiķete: tas parādās blakus {name} jūsu pusē un viņu dēļa galvenē.",
+ "share.preview.help": "Priekšskatījuma saite (http vai https) dod {name} pogu Priekšskatīt; atstājiet tukšu, ja nevajag.",
+ "share.simple": "Netehnisks draugs",
+ "share.simple.help": "Alfa testētājs, komentāri ieslēgti, apstiprinājumi ieslēgti",
+ "share.simple.hint": "Iestata Alfa testētāju, ieslēdz komentārus un apstiprinājumus šim projektam. Viņu vēlmes nonāk ✅ Apstiprinājumos.",
+ "sb.preview": "▶ Priekšskatīt",
+ "pub.feedback": "Publiska atsauksmju veidlapa",
+ "pub.feedback.sub": "Jūsu vietnes apmeklētāji var ziņot par problēmu; katrs ziņojums kļūst par kļūdas kartīti sadaļā Darāmais.",
+ "pub.feedback.group": "Ievietot kartītes šajā grupā (nav obligāti)",
+ "pub.feedback.snippet": "Pievienojiet šo rindu savai vietnei"
 }

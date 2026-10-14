@@ -3217,5 +3217,21 @@
   "storage.tidy": "Atodiadau ar gardiau caeedig (wedi'u gwneud) hŷn na {days} diwrnod: {n} ffeil, {size}",
   "storage.delete": "Dileu",
   "storage.confirm": "Dileu {n} ffeil atodiad ({size}) o gardiau caeedig? Does dim byd arall yn cael ei dynnu.",
-  "storage.nothing": "Dim atodiadau ar gardiau caeedig hŷn na {days} diwrnod i'w clirio."
+  "storage.nothing": "Dim atodiadau ar gardiau caeedig hŷn na {days} diwrnod i'w clirio.",
+ "srv.remind.set": "⏰ Nodyn atgoffa wedi'i osod: {text}, {when}",
+ "srv.remind.today": "heddiw {time}",
+ "srv.remind.tomorrow": "yfory {time}",
+ "share.title.label": "Teitl",
+ "share.title.ph": "e.e. ymgynghorydd Jetstream",
+ "share.preview.label": "Dolen rhagolwg",
+ "share.title.help": "Label yn unig yw'r teitl: mae'n ymddangos wrth ymyl {name} ar eich ochr chi ac ym mhennyn eu bwrdd.",
+ "share.preview.help": "Mae dolen rhagolwg (http neu https) yn rhoi botwm Rhagolwg i {name}; gadewch yn wag am ddim.",
+ "share.simple": "Ffrind nad yw'n dechnegol",
+ "share.simple.help": "Profwr alffa, sylwadau ymlaen, Cymeradwyaethau ymlaen",
+ "share.simple.hint": "Yn gosod Profwr alffa, sylwadau a Chymeradwyaethau ar gyfer y prosiect hwn. Mae eu dymuniadau'n glanio yn ✅ Cymeradwyaethau.",
+ "sb.preview": "▶ Rhagolwg",
+ "pub.feedback": "Ffurflen adborth gyhoeddus",
+ "pub.feedback.sub": "Gall ymwelwyr â'ch gwefan eich hun adrodd problem; mae pob adroddiad yn dod yn gerdyn nam yn I'w wneud.",
+ "pub.feedback.group": "Rhowch y cardiau yn y grŵp hwn (dewisol)",
+ "pub.feedback.snippet": "Ychwanegwch y llinell hon at eich gwefan"
 }

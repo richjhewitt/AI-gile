@@ -3217,5 +3217,21 @@
  "storage.tidy": "Haɗe-haɗe a katunan da aka rufe (an gama) da suka girmi kwanaki {days}: fayiloli {n}, {size}",
  "storage.delete": "Goge",
  "storage.confirm": "A goge fayilolin haɗe-haɗe ({n}, {size}) daga katunan da aka rufe? Ba za a cire wani abu ba.",
- "storage.nothing": "Babu haɗe-haɗe a katunan da aka rufe da suka girmi kwanaki {days} da za a tsaftace."
+ "storage.nothing": "Babu haɗe-haɗe a katunan da aka rufe da suka girmi kwanaki {days} da za a tsaftace.",
+ "srv.remind.set": "⏰ An saita tunatarwa: {text}, {when}",
+ "srv.remind.today": "yau {time}",
+ "srv.remind.tomorrow": "gobe {time}",
+ "share.title.label": "Take",
+ "share.title.ph": "misali mai ba da shawara na Jetstream",
+ "share.preview.label": "Mahaɗin samfoti",
+ "share.title.help": "Take lakabi ne kawai: yana bayyana kusa da {name} a gefenka da kuma a kan allonsu.",
+ "share.preview.help": "Mahaɗin samfoti (http ko https) yana ba {name} maɓallin Samfoti; bar shi babu komai idan ba a so.",
+ "share.simple": "Aboki wanda ba na fasaha ba",
+ "share.simple.help": "Mai gwajin alpha, sharhi a kunne, Amincewa a kunne",
+ "share.simple.hint": "Yana kunna Mai gwajin alpha, sharhi da Amincewa don wannan aikin. Buƙatunsu suna sauka a ✅ Amincewa.",
+ "sb.preview": "▶ Samfoti",
+ "pub.feedback": "Fom ɗin ra'ayi na jama'a",
+ "pub.feedback.sub": "Baƙi zuwa shafin yanar gizonka za su iya bayar da rahoton matsala; kowane rahoto yana zama katin kuskure a A yi.",
+ "pub.feedback.group": "Sa katunan a wannan ƙungiyar (zaɓi)",
+ "pub.feedback.snippet": "Ƙara wannan layi a shafin yanar gizonka"
 }

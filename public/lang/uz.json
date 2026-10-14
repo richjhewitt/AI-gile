@@ -3217,5 +3217,21 @@
  "storage.tidy": "{days} kundan eski yopilgan (bajarilgan) kartalardagi ilovalar: {n} fayl, {size}",
  "storage.delete": "O'chirish",
  "storage.confirm": "Yopilgan kartalardagi {n} ta ilova faylini ({size}) o'chirasanmi? Boshqa hech narsa olib tashlanmaydi.",
- "storage.nothing": "{days} kundan eski yopilgan kartalarda tozalash uchun ilovalar yo'q."
+ "storage.nothing": "{days} kundan eski yopilgan kartalarda tozalash uchun ilovalar yo'q.",
+ "srv.remind.set": "⏰ Eslatma o'rnatildi: {text}, {when}",
+ "srv.remind.today": "bugun {time}",
+ "srv.remind.tomorrow": "ertaga {time}",
+ "share.title.label": "Sarlavha",
+ "share.title.ph": "masalan, Jetstream maslahatchisi",
+ "share.preview.label": "Oldindan ko'rish havolasi",
+ "share.title.help": "Sarlavha faqat yorliq: u sizda {name} yonida va ularning doska sarlavhasida ko'rinadi.",
+ "share.preview.help": "Oldindan ko'rish havolasi (http yoki https) {name}ga Ko'rish tugmasini beradi; kerak bo'lmasa bo'sh qoldiring.",
+ "share.simple": "Texnik bo'lmagan do'st",
+ "share.simple.help": "Alfa tester, izohlar yoqilgan, Tasdiqlar yoqilgan",
+ "share.simple.hint": "Bu loyiha uchun Alfa tester, izohlar va Tasdiqlarni yoqadi. Ularning istaklari ✅ Tasdiqlar bo'limiga tushadi.",
+ "sb.preview": "▶ Ko'rish",
+ "pub.feedback": "Ommaviy fikr-mulohaza shakli",
+ "pub.feedback.sub": "O'z veb-saytingiz tashrifchilari muammo haqida xabar bera oladi; har bir xabar Bajarilishi kerak'da xato kartasiga aylanadi.",
+ "pub.feedback.group": "Kartalarni shu guruhga joylash (ixtiyoriy)",
+ "pub.feedback.snippet": "Bu qatorni veb-saytingizga qo'shing"
 }

@@ -3241,5 +3241,21 @@
  "storage.tidy": "Manused suletud (tehtud) kaartidel, mis on vanemad kui {days} päeva: faile {n}, {size}",
  "storage.delete": "Kustuta",
  "storage.confirm": "Kas kustutada suletud kaartidelt manusefailid ({n}, {size})? Muud midagi ei eemaldata.",
- "storage.nothing": "Suletud kaartidel pole üle {days} päeva vanuseid manuseid, mida koristada."
+ "storage.nothing": "Suletud kaartidel pole üle {days} päeva vanuseid manuseid, mida koristada.",
+ "srv.remind.set": "⏰ Meeldetuletus seatud: {text}, {when}",
+ "srv.remind.today": "täna {time}",
+ "srv.remind.tomorrow": "homme {time}",
+ "share.title.label": "Pealkiri",
+ "share.title.ph": "nt Jetstreami konsultant",
+ "share.preview.label": "Eelvaate link",
+ "share.title.help": "Pealkiri on vaid silt: see kuvatakse sinu poolel nime {name} kõrval ja nende tahvli päises.",
+ "share.preview.help": "Eelvaate link (http või https) annab kasutajale {name} nupu Eelvaade; jäta tühjaks, kui pole vaja.",
+ "share.simple": "Mittetehniline sõber",
+ "share.simple.help": "Alfatestija, kommentaarid sees, Kinnitused sees",
+ "share.simple.hint": "Lülitab selles projektis sisse Alfatestija, kommentaarid ja Kinnitused. Nende soovid jõuavad ✅ Kinnitustesse.",
+ "sb.preview": "▶ Eelvaade",
+ "pub.feedback": "Avalik tagasisidevorm",
+ "pub.feedback.sub": "Sinu enda veebilehe külastajad saavad probleemist teada anda; iga teade muutub veakaardiks veerus Tegemata.",
+ "pub.feedback.group": "Pane kaardid sellesse gruppi (valikuline)",
+ "pub.feedback.snippet": "Lisa see rida oma veebilehele"
 }

@@ -3217,5 +3217,21 @@
  "storage.tidy": "Prílohy na uzavretých (hotových) kartách starších ako {days} dní: súborov {n}, {size}",
  "storage.delete": "Vymazať",
  "storage.confirm": "Vymazať súbory príloh z uzavretých kariet ({n}, {size})? Nič ďalšie sa neodstráni.",
- "storage.nothing": "Žiadne prílohy na uzavretých kartách starších ako {days} dní na upratanie."
+ "storage.nothing": "Žiadne prílohy na uzavretých kartách starších ako {days} dní na upratanie.",
+ "srv.remind.set": "⏰ Pripomienka nastavená: {text}, {when}",
+ "srv.remind.today": "dnes {time}",
+ "srv.remind.tomorrow": "zajtra {time}",
+ "share.title.label": "Názov",
+ "share.title.ph": "napr. konzultant Jetstream",
+ "share.preview.label": "Odkaz na ukážku",
+ "share.title.help": "Názov je len štítok: zobrazuje sa vedľa {name} u vás a v hlavičke ich tabule.",
+ "share.preview.help": "Odkaz na ukážku (http alebo https) dá {name} tlačidlo Ukážka; nechajte prázdne, ak nie je potrebný.",
+ "share.simple": "Netechnický priateľ",
+ "share.simple.help": "Alfa tester, komentáre zapnuté, Schválenia zapnuté",
+ "share.simple.hint": "Nastaví Alfa testera, zapne komentáre a Schválenia pre tento projekt. Ich priania pristanú v ✅ Schválenia.",
+ "sb.preview": "▶ Ukážka",
+ "pub.feedback": "Verejný formulár spätnej väzby",
+ "pub.feedback.sub": "Návštevníci vášho webu môžu nahlásiť problém; každé hlásenie sa stane kartou chyby v Na urobenie.",
+ "pub.feedback.group": "Vložiť karty do tejto skupiny (voliteľné)",
+ "pub.feedback.snippet": "Pridajte tento riadok na svoj web"
 }

@@ -3217,5 +3217,21 @@
   "storage.tidy": "Lampiran pada kartu tertutup (selesai) yang lebih lama dari {days} hari: {n} berkas, {size}",
   "storage.delete": "Hapus",
   "storage.confirm": "Hapus {n} berkas lampiran ({size}) dari kartu tertutup? Tidak ada yang lain dihapus.",
-  "storage.nothing": "Tidak ada lampiran pada kartu tertutup yang lebih lama dari {days} hari untuk dirapikan."
+  "storage.nothing": "Tidak ada lampiran pada kartu tertutup yang lebih lama dari {days} hari untuk dirapikan.",
+ "srv.remind.set": "⏰ Pengingat diatur: {text}, {when}",
+ "srv.remind.today": "hari ini {time}",
+ "srv.remind.tomorrow": "besok {time}",
+ "share.title.label": "Judul",
+ "share.title.ph": "mis. konsultan Jetstream",
+ "share.preview.label": "Tautan pratinjau",
+ "share.title.help": "Judul hanyalah label: tampil di samping {name} di sisi Anda dan di header papan mereka.",
+ "share.preview.help": "Tautan pratinjau (http atau https) memberi {name} tombol Pratinjau; kosongkan jika tidak perlu.",
+ "share.simple": "Teman non-teknis",
+ "share.simple.help": "Penguji alfa, komentar aktif, Persetujuan aktif",
+ "share.simple.hint": "Mengaktifkan Penguji alfa, komentar, dan Persetujuan untuk proyek ini. Permintaan mereka masuk ke ✅ Persetujuan.",
+ "sb.preview": "▶ Pratinjau",
+ "pub.feedback": "Formulir masukan publik",
+ "pub.feedback.sub": "Pengunjung situs web Anda sendiri dapat melaporkan masalah; setiap laporan menjadi kartu bug di Akan dikerjakan.",
+ "pub.feedback.group": "Taruh kartu di grup ini (opsional)",
+ "pub.feedback.snippet": "Tambahkan baris ini ke situs web Anda"
 }

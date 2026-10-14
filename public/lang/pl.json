@@ -3217,5 +3217,21 @@
  "storage.tidy": "Załączniki w zamkniętych (zrobionych) kartach starszych niż {days} dni: pliki: {n}, {size}",
  "storage.delete": "Usuń",
  "storage.confirm": "Usunąć pliki załączników ({n}, {size}) z zamkniętych kart? Nic więcej nie zostanie usunięte.",
- "storage.nothing": "Brak załączników w zamkniętych kartach starszych niż {days} dni do posprzątania."
+ "storage.nothing": "Brak załączników w zamkniętych kartach starszych niż {days} dni do posprzątania.",
+ "srv.remind.set": "⏰ Przypomnienie ustawione: {text}, {when}",
+ "srv.remind.today": "dziś {time}",
+ "srv.remind.tomorrow": "jutro {time}",
+ "share.title.label": "Tytuł",
+ "share.title.ph": "np. konsultant Jetstream",
+ "share.preview.label": "Link do podglądu",
+ "share.title.help": "Tytuł to tylko etykieta: widać go obok {name} u Ciebie oraz w nagłówku ich tablicy.",
+ "share.preview.help": "Link do podglądu (http lub https) daje {name} przycisk Podgląd; zostaw puste, jeśli niepotrzebny.",
+ "share.simple": "Znajomy nietechniczny",
+ "share.simple.help": "Tester alfa, komentarze włączone, Zatwierdzenia włączone",
+ "share.simple.hint": "Ustawia Testera alfa, włącza komentarze i Zatwierdzenia dla tego projektu. Ich życzenia trafiają do ✅ Zatwierdzeń.",
+ "sb.preview": "▶ Podgląd",
+ "pub.feedback": "Publiczny formularz opinii",
+ "pub.feedback.sub": "Odwiedzający Twoją stronę mogą zgłosić problem; każde zgłoszenie staje się kartą błędu w Do zrobienia.",
+ "pub.feedback.group": "Umieszczaj karty w tej grupie (opcjonalnie)",
+ "pub.feedback.snippet": "Dodaj tę linię do swojej strony"
 }

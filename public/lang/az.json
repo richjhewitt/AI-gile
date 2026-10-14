@@ -3217,5 +3217,21 @@
  "storage.tidy": "{days} gündən köhnə bağlı (tamamlanmış) kartlardakı qoşmalar: fayllar {n}, {size}",
  "storage.delete": "Sil",
  "storage.confirm": "Bağlı kartlardakı qoşma faylları ({n}, {size}) silinsin? Başqa heç nə silinmir.",
- "storage.nothing": "{days} gündən köhnə bağlı kartlarda təmizlənəcək qoşma yoxdur."
+ "storage.nothing": "{days} gündən köhnə bağlı kartlarda təmizlənəcək qoşma yoxdur.",
+ "srv.remind.set": "⏰ Xatırlatma quruldu: {text}, {when}",
+ "srv.remind.today": "bu gün {time}",
+ "srv.remind.tomorrow": "sabah {time}",
+ "share.title.label": "Başlıq",
+ "share.title.ph": "məs. Jetstream məsləhətçisi",
+ "share.preview.label": "Önbaxış linki",
+ "share.title.help": "Başlıq yalnız etiketdir: sizin tərəfdə {name} yanında və onların lövhə başlığında göstərilir.",
+ "share.preview.help": "Önbaxış linki (http və ya https) {name} üçün Önbaxış düyməsi yaradır; istəmirsinizsə boş buraxın.",
+ "share.simple": "Texniki olmayan dost",
+ "share.simple.help": "Alfa test edən, şərhlər açıq, Təsdiqlər açıq",
+ "share.simple.hint": "Bu layihə üçün Alfa test edəni, şərhləri və Təsdiqləri aktiv edir. Onların istəkləri ✅ Təsdiqlər bölməsinə düşür.",
+ "sb.preview": "▶ Önbaxış",
+ "pub.feedback": "Ümumi rəy forması",
+ "pub.feedback.sub": "Öz saytınızın ziyarətçiləri problem bildirə bilər; hər hesabat Görüləcək işlərdə xəta kartına çevrilir.",
+ "pub.feedback.group": "Kartları bu qrupa qoyun (ixtiyari)",
+ "pub.feedback.snippet": "Bu sətri saytınıza əlavə edin"
 }

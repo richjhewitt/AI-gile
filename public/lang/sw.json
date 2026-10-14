@@ -3217,5 +3217,21 @@
  "storage.tidy": "Viambatisho kwenye kadi zilizofungwa (zilizokamilika) za zaidi ya siku {days}: faili {n}, {size}",
  "storage.delete": "Futa",
  "storage.confirm": "Futa faili {n} za viambatisho ({size}) kutoka kadi zilizofungwa? Hakuna kingine kitakachoondolewa.",
- "storage.nothing": "Hakuna viambatisho kwenye kadi zilizofungwa za zaidi ya siku {days} vya kusafisha."
+ "storage.nothing": "Hakuna viambatisho kwenye kadi zilizofungwa za zaidi ya siku {days} vya kusafisha.",
+ "srv.remind.set": "⏰ Kikumbusho kimewekwa: {text}, {when}",
+ "srv.remind.today": "leo {time}",
+ "srv.remind.tomorrow": "kesho {time}",
+ "share.title.label": "Kichwa",
+ "share.title.ph": "mf. mshauri wa Jetstream",
+ "share.preview.label": "Kiungo cha onyesho la kukagua",
+ "share.title.help": "Kichwa ni lebo tu: kinaonekana kando ya {name} upande wako na kwenye kichwa cha ubao wao.",
+ "share.preview.help": "Kiungo cha onyesho (http au https) humpa {name} kitufe cha Kagua; kiache wazi kama hakihitajiki.",
+ "share.simple": "Rafiki asiye wa kiufundi",
+ "share.simple.help": "Mjaribu wa Alpha, maoni yamewashwa, Idhini zimewashwa",
+ "share.simple.hint": "Huweka Mjaribu wa Alpha, maoni na Idhini zimewashwa kwa mradi huu. Maombi yao hufika kwenye ✅ Idhini.",
+ "sb.preview": "▶ Kagua",
+ "pub.feedback": "Fomu ya maoni ya umma",
+ "pub.feedback.sub": "Wageni wa tovuti yako wanaweza kuripoti tatizo; kila ripoti inakuwa kadi ya hitilafu katika Za kufanya.",
+ "pub.feedback.group": "Weka kadi katika kikundi hiki (hiari)",
+ "pub.feedback.snippet": "Ongeza mstari huu kwenye tovuti yako"
 }

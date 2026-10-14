@@ -3217,5 +3217,21 @@
  "storage.tidy": "Priloge na zaprtih (opravljenih) karticah, starejših od {days} dni: datotek {n}, {size}",
  "storage.delete": "Izbriši",
  "storage.confirm": "Izbrišem datoteke prilog ({n}, {size}) z zaprtih kartic? Nič drugega se ne odstrani.",
- "storage.nothing": "Ni prilog na zaprtih karticah, starejših od {days} dni, za pospravljanje."
+ "storage.nothing": "Ni prilog na zaprtih karticah, starejših od {days} dni, za pospravljanje.",
+ "srv.remind.set": "⏰ Opomnik nastavljen: {text}, {when}",
+ "srv.remind.today": "danes {time}",
+ "srv.remind.tomorrow": "jutri {time}",
+ "share.title.label": "Naslov",
+ "share.title.ph": "npr. svetovalec za Jetstream",
+ "share.preview.label": "Povezava za predogled",
+ "share.title.help": "Naslov je le oznaka: prikazan je ob {name} pri vas in v glavi njihove table.",
+ "share.preview.help": "Povezava za predogled (http ali https) da {name} gumb Predogled; pustite prazno, če ni potrebna.",
+ "share.simple": "Netehnični prijatelj",
+ "share.simple.help": "Alfa testni uporabnik, komentarji vklopljeni, Potrditve vklopljene",
+ "share.simple.hint": "Nastavi Alfa testnega uporabnika, vklopi komentarje in Potrditve za ta projekt. Njihove želje pristanejo v ✅ Potrditve.",
+ "sb.preview": "▶ Predogled",
+ "pub.feedback": "Javni obrazec za povratne informacije",
+ "pub.feedback.sub": "Obiskovalci vašega spletnega mesta lahko prijavijo težavo; vsaka prijava postane kartica napake v Na vrsti.",
+ "pub.feedback.group": "Kartice dodaj v to skupino (neobvezno)",
+ "pub.feedback.snippet": "Dodajte to vrstico na svoje spletno mesto"
 }

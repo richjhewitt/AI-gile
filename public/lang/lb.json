@@ -3217,5 +3217,21 @@
  "storage.tidy": "Unhäng op zouene (fäerdege) Kaarten eeler wéi {days} Deeg: {n} Dateien, {size}",
  "storage.delete": "Läschen",
  "storage.confirm": "{n} Unhangsdateien ({size}) vun zouene Kaarten läschen? Soss gëtt näischt ewechgeholl.",
- "storage.nothing": "Keng Unhäng op zouene Kaarten eeler wéi {days} Deeg zum Opraumen."
+ "storage.nothing": "Keng Unhäng op zouene Kaarten eeler wéi {days} Deeg zum Opraumen.",
+ "srv.remind.set": "⏰ Erënnerung gesat: {text}, {when}",
+ "srv.remind.today": "haut {time}",
+ "srv.remind.tomorrow": "muer {time}",
+ "share.title.label": "Titel",
+ "share.title.ph": "z. B. Jetstream-Beroder",
+ "share.preview.label": "Preview-Link",
+ "share.title.help": "den Titel ass just e Label: en erschéngt nniewent {name} bei dir an am Board-Header vun hinnen.",
+ "share.preview.help": "E Preview-Link (http oder https) gëtt {name} e Preview-Knäppchen; eidel loossen fir keen.",
+ "share.simple": "Net-technesche Frënd",
+ "share.simple.help": "Alpha-Tester, Kommentarer un, Genehmegungen un",
+ "share.simple.hint": "Setzt Alpha-Tester, Kommentarer an Genehmegungen u fir dëse Projet. Hir Wënsch landen an ✅ Genehmegungen.",
+ "sb.preview": "▶ Preview",
+ "pub.feedback": "Ëffentlecht Feedback-Formulaire",
+ "pub.feedback.sub": "Besucher vun denger eegener Websäit kënnen e Problem mellen; all Meldung gëtt eng Bug-Kaart an Ze maachen.",
+ "pub.feedback.group": "Kaarten an dës Grupp setzen (optional)",
+ "pub.feedback.snippet": "Füügt dës Zeil op Är Websäit derbäi"
 }

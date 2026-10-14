@@ -3217,5 +3217,21 @@
   "storage.tidy": "Tệp đính kèm trên thẻ đã đóng (xong) cũ hơn {days} ngày: {n} tệp, {size}",
   "storage.delete": "Xóa",
   "storage.confirm": "Xóa {n} tệp đính kèm ({size}) khỏi các thẻ đã đóng? Không xóa gì khác.",
-  "storage.nothing": "Không có tệp đính kèm nào trên thẻ đã đóng cũ hơn {days} ngày cần dọn."
+  "storage.nothing": "Không có tệp đính kèm nào trên thẻ đã đóng cũ hơn {days} ngày cần dọn.",
+ "srv.remind.set": "⏰ Đã đặt nhắc nhở: {text}, {when}",
+ "srv.remind.today": "hôm nay {time}",
+ "srv.remind.tomorrow": "ngày mai {time}",
+ "share.title.label": "Tiêu đề",
+ "share.title.ph": "VD: cố vấn Jetstream",
+ "share.preview.label": "Liên kết xem trước",
+ "share.title.help": "Tiêu đề chỉ là nhãn: hiển thị cạnh {name} phía bạn và trên tiêu đề bảng của họ.",
+ "share.preview.help": "Liên kết xem trước (http hoặc https) cho {name} nút Xem trước; để trống nếu không cần.",
+ "share.simple": "Bạn không rành kỹ thuật",
+ "share.simple.help": "Người thử nghiệm Alpha, bật bình luận, bật Phê duyệt",
+ "share.simple.hint": "Đặt Người thử nghiệm Alpha, bật bình luận và Phê duyệt cho dự án này. Mong muốn của họ sẽ vào ✅ Phê duyệt.",
+ "sb.preview": "▶ Xem trước",
+ "pub.feedback": "Biểu mẫu phản hồi công khai",
+ "pub.feedback.sub": "Khách truy cập trang web của bạn có thể báo lỗi; mỗi báo cáo trở thành một thẻ lỗi trong Cần làm.",
+ "pub.feedback.group": "Đặt các thẻ vào nhóm này (tùy chọn)",
+ "pub.feedback.snippet": "Thêm dòng này vào trang web của bạn"
 }

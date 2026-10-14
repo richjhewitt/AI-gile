@@ -3217,5 +3217,21 @@
   "storage.tidy": "已關閉（已完成）且超過 {days} 天的卡片附件：{n} 個檔案，{size}",
   "storage.delete": "刪除",
   "storage.confirm": "要刪除已關閉卡片中的 {n} 個附件檔案（{size}）嗎？其他內容不會被刪除。",
-  "storage.nothing": "沒有超過 {days} 天的已關閉卡片附件需要清理。"
+  "storage.nothing": "沒有超過 {days} 天的已關閉卡片附件需要清理。",
+ "srv.remind.set": "⏰ 已設定提醒：{text}，{when}",
+ "srv.remind.today": "今天 {time}",
+ "srv.remind.tomorrow": "明天 {time}",
+ "share.title.label": "標題",
+ "share.title.ph": "例如 Jetstream 顧問",
+ "share.preview.label": "預覽連結",
+ "share.title.help": "標題只是標籤：會顯示在你這邊的 {name} 旁，以及對方看板的標頭。",
+ "share.preview.help": "預覽連結（http 或 https）會讓 {name} 看到預覽按鈕；留空則不顯示。",
+ "share.simple": "非技術背景的朋友",
+ "share.simple.help": "Alpha 測試者、開啟留言、開啟核准",
+ "share.simple.hint": "為此專案設定 Alpha 測試者、開啟留言與核准。他們的願望會進入 ✅ 核准。",
+ "sb.preview": "▶ 預覽",
+ "pub.feedback": "公開意見表單",
+ "pub.feedback.sub": "你自己網站的訪客可以回報問題；每則回報都會成為 待辦 中的錯誤卡片。",
+ "pub.feedback.group": "將卡片放入此群組（選填）",
+ "pub.feedback.snippet": "將這一行加到你的網站"
 }

@@ -3217,5 +3217,21 @@
   "storage.tidy": "Ceanglaichean air cairtean dùinte (deiseil) nas sine na {days} latha: {n} faidhle, {size}",
   "storage.delete": "Sguab às",
   "storage.confirm": "A bheil thu airson {n} faidhle cheangail ({size}) a sguabadh às o chairtean dùinte? Chan atharraich càil eile.",
-  "storage.nothing": "Chan eil ceanglaichean air cairtean dùinte nas sine na {days} latha ri sgioblachadh."
+  "storage.nothing": "Chan eil ceanglaichean air cairtean dùinte nas sine na {days} latha ri sgioblachadh.",
+ "srv.remind.set": "⏰ Cuimhneachan air a shuidheachadh: {text}, {when}",
+ "srv.remind.today": "an-diugh {time}",
+ "srv.remind.tomorrow": "a-màireach {time}",
+ "share.title.label": "Tiotal",
+ "share.title.ph": "m.e. comhairliche Jetstream",
+ "share.preview.label": "Ceangal ro-shealladh",
+ "share.title.help": "Is e leubail a-mhàin a th' anns an tiotal: tha e ri fhaicinn ri taobh {name} air do thaobh-sa agus ann an cinn-bhrath a bhùird.",
+ "share.preview.help": "Bheir ceangal ro-shealladh (http no https) putan Ro-shealladh do {name}; fàg falamh mura h-eil thu ga iarraidh.",
+ "share.simple": "Caraid neo-theicnigeach",
+ "share.simple.help": "Deuchainniche alfa, beachdan air, Aontaidhean air",
+ "share.simple.hint": "Cuiridh e Deuchainniche alfa, beachdan agus Aontaidhean air airson a' phròiseict seo. Thig na miannan aca gu ✅ Aontaidhean.",
+ "sb.preview": "▶ Ro-shealladh",
+ "pub.feedback": "Foirm fios-air-ais poblach",
+ "pub.feedback.sub": "’S urrainn do luchd-tadhail air an làrach-lìn agad fhèin duilgheadas aithris; bidh gach aithisg na cairt buga ann an Ri dhèanamh.",
+ "pub.feedback.group": "Cuir na cairtean sa bhuidheann seo (roghainneil)",
+ "pub.feedback.snippet": "Cuir an loidhne seo ris an làrach-lìn agad"
 }

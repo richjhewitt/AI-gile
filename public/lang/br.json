@@ -3220,5 +3220,18 @@
  "storage.nothing": "Kevreadenn ebet war kartennoù serret kozh eget {days} deiz da netaat.",
  "srv.remind.set": "⏰ Tuchadenn lakaet: {text}, {when}",
  "srv.remind.today": "hiziv {time}",
- "srv.remind.tomorrow": "warc'hoazh {time}"
+ "srv.remind.tomorrow": "warc'hoazh {time}",
+ "share.title.label": "Titl",
+ "share.title.ph": "d.s. kuzulier Jetstream",
+ "share.preview.label": "Liamm rakgwel",
+ "share.title.help": "Un anv hepken eo an titl: diskouezet e vez e-kichen {name} ouzhit-te hag e talbenn o zablez.",
+ "share.preview.help": "Ur liamm rakgwel (http pe https) a ro ur bouton Rakgwel da {name}; lez goullo ma n'eo ket ilit.",
+ "share.simple": "Mignon n'eo ket teknikel",
+ "share.simple.help": "Amprouer alfa, evezhiadennoù war, Aprouadurioù war",
+ "share.simple.hint": "Lakaat a ra Amprouer alfa, evezhiadennoù hag Aprouadurioù evit ar raktres-mañ. Ar pezh a c'hoantaont a ya da ✅ Aprouadurioù.",
+ "sb.preview": "▶ Rakgwel",
+ "pub.feedback": "Furmskrid evezhiadennoù foran",
+ "pub.feedback.sub": "Gweladennerien ho lec'hienn a c'hall menegiñ ur gudenn; pep danevell a zeu da vezañ ur gartenn drubuilh e Da ober.",
+ "pub.feedback.group": "Lakait ar c'harteennoù er strollad-mañ (diret)",
+ "pub.feedback.snippet": "Ouzhpennit al linenn-mañ d'ho lec'hienn"
 }

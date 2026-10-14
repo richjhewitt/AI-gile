@@ -3217,5 +3217,21 @@
  "storage.tidy": "Anexos en tarxetas pechadas (feitas) de máis de {days} días: ficheiros {n}, {size}",
  "storage.delete": "Eliminar",
  "storage.confirm": "Eliminar os ficheiros anexos ({n}, {size}) das tarxetas pechadas? Non se quita nada máis.",
- "storage.nothing": "Non hai anexos en tarxetas pechadas de máis de {days} días para limpar."
+ "storage.nothing": "Non hai anexos en tarxetas pechadas de máis de {days} días para limpar.",
+ "srv.remind.set": "⏰ Recordatorio definido: {text}, {when}",
+ "srv.remind.today": "hoxe {time}",
+ "srv.remind.tomorrow": "mañá {time}",
+ "share.title.label": "Título",
+ "share.title.ph": "p. ex. consultor de Jetstream",
+ "share.preview.label": "Ligazón de vista previa",
+ "share.title.help": "O título é só unha etiqueta: aparece xunto a {name} do teu lado e na cabeceira do seu taboleiro.",
+ "share.preview.help": "Unha ligazón de vista previa (http ou https) dálle a {name} un botón Vista previa; déixaa baleira se non a queres.",
+ "share.simple": "Amigo non técnico",
+ "share.simple.help": "Probador alfa, comentarios activados, Aprobacións activadas",
+ "share.simple.hint": "Activa Probador alfa, comentarios e Aprobacións neste proxecto. Os seus desexos chegan a ✅ Aprobacións.",
+ "sb.preview": "▶ Vista previa",
+ "pub.feedback": "Formulario público de comentarios",
+ "pub.feedback.sub": "Os visitantes do teu propio sitio web poden informar dun problema; cada informe convértese nunha tarxeta de erro en Por facer.",
+ "pub.feedback.group": "Poñer as tarxetas neste grupo (opcional)",
+ "pub.feedback.snippet": "Engade esta liña ao teu sitio web"
 }

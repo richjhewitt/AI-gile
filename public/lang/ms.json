@@ -3217,5 +3217,21 @@
   "storage.tidy": "Lampiran pada kad tertutup (selesai) yang lebih lama daripada {days} hari: {n} fail, {size}",
   "storage.delete": "Padam",
   "storage.confirm": "Padam {n} fail lampiran ({size}) daripada kad tertutup? Tiada yang lain dibuang.",
-  "storage.nothing": "Tiada lampiran pada kad tertutup yang lebih lama daripada {days} hari untuk dibersihkan."
+  "storage.nothing": "Tiada lampiran pada kad tertutup yang lebih lama daripada {days} hari untuk dibersihkan.",
+ "srv.remind.set": "⏰ Peringatan ditetapkan: {text}, {when}",
+ "srv.remind.today": "hari ini {time}",
+ "srv.remind.tomorrow": "esok {time}",
+ "share.title.label": "Tajuk",
+ "share.title.ph": "cth. perunding Jetstream",
+ "share.preview.label": "Pautan pratonton",
+ "share.title.help": "Tajuk hanyalah label: ia dipaparkan di sebelah {name} di pihak anda dan pada pengepala papan mereka.",
+ "share.preview.help": "Pautan pratonton (http atau https) memberi {name} butang Pratonton; biarkan kosong jika tidak mahu.",
+ "share.simple": "Rakan bukan teknikal",
+ "share.simple.help": "Penguji Alfa, komen dihidupkan, Kelulusan dihidupkan",
+ "share.simple.hint": "Menetapkan Penguji Alfa, komen dan Kelulusan untuk projek ini. Permintaan mereka masuk ke ✅ Kelulusan.",
+ "sb.preview": "▶ Pratonton",
+ "pub.feedback": "Borang maklum balas awam",
+ "pub.feedback.sub": "Pelawat laman web anda boleh melaporkan masalah; setiap laporan menjadi kad pepijat dalam Untuk dibuat.",
+ "pub.feedback.group": "Letakkan kad dalam kumpulan ini (pilihan)",
+ "pub.feedback.snippet": "Tambahkan baris ini pada laman web anda"
 }

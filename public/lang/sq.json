@@ -3217,5 +3217,21 @@
  "storage.tidy": "Bashkëngjitje në karta të mbyllura (të përfunduara) më të vjetra se {days} ditë: skedarë {n}, {size}",
  "storage.delete": "Fshi",
  "storage.confirm": "Të fshij skedarët e bashkëngjitur ({n}, {size}) nga kartat e mbyllura? Asgjë tjetër nuk hiqet.",
- "storage.nothing": "Nuk ka bashkëngjitje në karta të mbyllura më të vjetra se {days} ditë për t'u pastruar."
+ "storage.nothing": "Nuk ka bashkëngjitje në karta të mbyllura më të vjetra se {days} ditë për t'u pastruar.",
+ "srv.remind.set": "⏰ Kujtesa u vendos: {text}, {when}",
+ "srv.remind.today": "sot {time}",
+ "srv.remind.tomorrow": "nesër {time}",
+ "share.title.label": "Titulli",
+ "share.title.ph": "p.sh. konsulent Jetstream",
+ "share.preview.label": "Lidhja e parashikimit",
+ "share.title.help": "Titulli është vetëm një etiketë: shfaqet pranë {name} në anën tënde dhe në kokën e tabelës së tyre.",
+ "share.preview.help": "Një lidhje parashikimi (http ose https) i jep {name} butonin Parashiko; lëre bosh nëse nuk e dëshiron.",
+ "share.simple": "Shok jo-teknik",
+ "share.simple.help": "Testues Alfa, komentet aktive, Miratimet aktive",
+ "share.simple.hint": "Vendos Testues Alfa, komentet dhe Miratimet aktive për këtë projekt. Dëshirat e tyre bien te ✅ Miratimet.",
+ "sb.preview": "▶ Parashiko",
+ "pub.feedback": "Formular publik komentesh",
+ "pub.feedback.sub": "Vizitorët e faqes tënde mund të raportojnë një problem; çdo raport bëhet kartë gabimi te Për t'u bërë.",
+ "pub.feedback.group": "Vendosi kartat në këtë grup (opsionale)",
+ "pub.feedback.snippet": "Shto këtë rresht te faqja jote"
 }

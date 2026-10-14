@@ -3250,5 +3250,21 @@
   "storage.tidy": "Bylagen op sletten (klear) kaarten âlder as {days} dagen: {n} bestannen, {size}",
   "storage.delete": "Wiskje",
   "storage.confirm": "{n} bylagebestannen ({size}) fan sletten kaarten wiskje? Der wurdt neat oars fuortsmiten.",
-  "storage.nothing": "Gjin bylagen op sletten kaarten âlder as {days} dagen om op te romjen."
+  "storage.nothing": "Gjin bylagen op sletten kaarten âlder as {days} dagen om op te romjen.",
+  "srv.remind.set": "⏰ Herinnering ynsteld: {text}, {when}",
+  "srv.remind.today": "hjoed {time}",
+  "srv.remind.tomorrow": "moarn {time}",
+  "share.title.label": "Titel",
+  "share.title.ph": "bygelyks Jetstream-adviseur",
+  "share.preview.label": "Foarbyldlink",
+  "share.title.help": "De titel is mar in label: it stiet by jo neist {name} en yn de koptekst fan harren bord.",
+  "share.preview.help": "In foarbyldlink (http of https) jout {name} in Foarbyld-knop; lit leech foar gjin.",
+  "share.simple": "Net-technyske freon",
+  "share.simple.help": "Alfatester, kommentaar oan, Goedkarrings oan",
+  "share.simple.hint": "Set Alfatester, kommentaar en Goedkarrings oan foar dit projekt. Harren winsken komme yn ✅ Goedkarrings telâne.",
+  "sb.preview": "▶ Foarbyld",
+  "pub.feedback": "Iepenbier weromkopplingsformulier",
+  "pub.feedback.sub": "Besikers fan jo eigen webside kinne in probleem melde; elke melding wurdt in bugkaart yn Te dwaan.",
+  "pub.feedback.group": "Set de kaarten yn dizze groep (opsjoneel)",
+  "pub.feedback.snippet": "Foegje dizze rigel ta oan jo webside"
 }

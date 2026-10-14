@@ -3217,5 +3217,21 @@
   "storage.tidy": "Adjuntos en tarjetas cerradas (hechas) de más de {days} días: {n} archivos, {size}",
   "storage.delete": "Eliminar",
   "storage.confirm": "¿Eliminar {n} archivos adjuntos ({size}) de tarjetas cerradas? No se elimina nada más.",
-  "storage.nothing": "No hay adjuntos en tarjetas cerradas de más de {days} días que limpiar."
+  "storage.nothing": "No hay adjuntos en tarjetas cerradas de más de {days} días que limpiar.",
+ "srv.remind.set": "⏰ Recordatorio fijado: {text}, {when}",
+ "srv.remind.today": "hoy {time}",
+ "srv.remind.tomorrow": "mañana {time}",
+ "share.title.label": "Título",
+ "share.title.ph": "p. ej. consultor de Jetstream",
+ "share.preview.label": "Enlace de vista previa",
+ "share.title.help": "El título es solo una etiqueta: aparece junto a {name} en tu lado y en la cabecera de su tablero.",
+ "share.preview.help": "Un enlace de vista previa (http o https) da a {name} un botón Vista previa; déjalo vacío si no hace falta.",
+ "share.simple": "Amigo no técnico",
+ "share.simple.help": "Probador alfa, comentarios activados, Aprobaciones activadas",
+ "share.simple.hint": "Activa Probador alfa, comentarios y Aprobaciones en este proyecto. Sus deseos llegan a ✅ Aprobaciones.",
+ "sb.preview": "▶ Vista previa",
+ "pub.feedback": "Formulario público de comentarios",
+ "pub.feedback.sub": "Los visitantes de tu propio sitio web pueden informar de un problema; cada informe se convierte en una tarjeta de error en Por hacer.",
+ "pub.feedback.group": "Poner las tarjetas en este grupo (opcional)",
+ "pub.feedback.snippet": "Añade esta línea a tu sitio web"
 }

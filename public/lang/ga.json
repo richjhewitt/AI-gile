@@ -3217,5 +3217,21 @@
   "storage.tidy": "Ceangaltáin ar chártaí dúnta (déanta) níos sine ná {days} lá: {n} comhad, {size}",
   "storage.delete": "Scrios",
   "storage.confirm": "Scrios {n} comhad ceangail ({size}) ó chártaí dúnta? Ní bhaintear aon rud eile.",
-  "storage.nothing": "Gan aon cheangaltáin ar chártaí dúnta níos sine ná {days} lá le glanadh."
+  "storage.nothing": "Gan aon cheangaltáin ar chártaí dúnta níos sine ná {days} lá le glanadh.",
+ "srv.remind.set": "⏰ Meabhrúchán socraithe: {text}, {when}",
+ "srv.remind.today": "inniu {time}",
+ "srv.remind.tomorrow": "amárach {time}",
+ "share.title.label": "Teideal",
+ "share.title.ph": "m.sh. comhairleoir Jetstream",
+ "share.preview.label": "Nasc réamhamhairc",
+ "share.title.help": "Lipéad amháin is ea an teideal: taispeántar é in aice le {name} ar do thaobh féin agus i gceanntásc a gclár.",
+ "share.preview.help": "Tugann nasc réamhamhairc (http nó https) cnaipe Réamhamharc do {name}; fág folamh mura bhfuil sé uait.",
+ "share.simple": "Cara neamhtheicniúil",
+ "share.simple.help": "Tástálaí alfa, tuairimí ar siúl, Formheasanna ar siúl",
+ "share.simple.hint": "Cuireann sé Tástálaí alfa, tuairimí agus Formheasanna ar siúl don tionscadal seo. Tagann a gcuid mianta isteach in ✅ Formheasanna.",
+ "sb.preview": "▶ Réamhamharc",
+ "pub.feedback": "Foirm phoiblí aiseolais",
+ "pub.feedback.sub": "Is féidir le cuairteoirí do shuíomh gréasáin féin fadhb a thuairisciú; éiríonn gach tuairisc ina cárta fabht in Le déanamh.",
+ "pub.feedback.group": "Cuir na cártaí sa ghrúpa seo (roghnach)",
+ "pub.feedback.snippet": "Cuir an líne seo le do shuíomh gréasáin"
 }

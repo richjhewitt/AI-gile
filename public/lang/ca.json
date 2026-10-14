@@ -3217,5 +3217,21 @@
  "storage.tidy": "Adjunts de targetes tancades (fetes) de més de {days} dies: fitxers {n}, {size}",
  "storage.delete": "Suprimeix",
  "storage.confirm": "Vols suprimir els fitxers adjunts ({n}, {size}) de targetes tancades? No se n'elimina res més.",
- "storage.nothing": "No hi ha adjunts a targetes tancades de més de {days} dies per netejar."
+ "storage.nothing": "No hi ha adjunts a targetes tancades de més de {days} dies per netejar.",
+ "srv.remind.set": "⏰ Recordatori establert: {text}, {when}",
+ "srv.remind.today": "avui {time}",
+ "srv.remind.tomorrow": "demà {time}",
+ "share.title.label": "Títol",
+ "share.title.ph": "p. ex. consultor de Jetstream",
+ "share.preview.label": "Enllaç de previsualització",
+ "share.title.help": "El títol és només una etiqueta: es mostra al costat de {name} al teu costat i a la capçalera del seu tauler.",
+ "share.preview.help": "Un enllaç de previsualització (http o https) dona a {name} un botó Previsualitza; deixa'l buit si no cal.",
+ "share.simple": "Amic no tècnic",
+ "share.simple.help": "Provador alfa, comentaris activats, Aprovacions activades",
+ "share.simple.hint": "Activa Provador alfa, comentaris i Aprovacions per a aquest projecte. Els seus desitjos van a ✅ Aprovacions.",
+ "sb.preview": "▶ Previsualitza",
+ "pub.feedback": "Formulari públic de comentaris",
+ "pub.feedback.sub": "Els visitants del teu lloc web poden informar d'un problema; cada informe esdevé una targeta d'error a Per fer.",
+ "pub.feedback.group": "Posa les targetes en aquest grup (opcional)",
+ "pub.feedback.snippet": "Afegeix aquesta línia al teu lloc web"
 }

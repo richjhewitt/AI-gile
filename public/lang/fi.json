@@ -3217,5 +3217,21 @@
   "storage.tidy": "Suljettujen (valmiiden) korttien liitteet, jotka ovat yli {days} päivää vanhoja: {n} tiedostoa, {size}",
   "storage.delete": "Poista",
   "storage.confirm": "Poistetaanko {n} liitetiedostoa ({size}) suljetuista korteista? Mitään muuta ei poisteta.",
-  "storage.nothing": "Ei yli {days} päivää vanhoja liitteitä suljetuissa korteissa siivottavaksi."
+  "storage.nothing": "Ei yli {days} päivää vanhoja liitteitä suljetuissa korteissa siivottavaksi.",
+ "srv.remind.set": "⏰ Muistutus asetettu: {text}, {when}",
+ "srv.remind.today": "tänään {time}",
+ "srv.remind.tomorrow": "huomenna {time}",
+ "share.title.label": "Otsikko",
+ "share.title.ph": "esim. Jetstream-konsultti",
+ "share.preview.label": "Esikatselulinkki",
+ "share.title.help": "Otsikko on vain nimiö: se näkyy sinulla nimen {name} vieressä ja heidän taulunsa otsikossa.",
+ "share.preview.help": "Esikatselulinkki (http tai https) antaa henkilölle {name} Esikatselu-painikkeen; jätä tyhjäksi, jos et halua.",
+ "share.simple": "Ei-tekninen ystävä",
+ "share.simple.help": "Alfatestaaja, kommentit päällä, Hyväksynnät päällä",
+ "share.simple.hint": "Ottaa käyttöön Alfatestaajan, kommentit ja Hyväksynnät tässä projektissa. Heidän toiveensa päätyvät kohtaan ✅ Hyväksynnät.",
+ "sb.preview": "▶ Esikatselu",
+ "pub.feedback": "Julkinen palautelomake",
+ "pub.feedback.sub": "Oman verkkosivustosi kävijät voivat ilmoittaa ongelmasta; jokaisesta ilmoituksesta tulee virhekortti sarakkeeseen Tehtävänä.",
+ "pub.feedback.group": "Laita kortit tähän ryhmään (valinnainen)",
+ "pub.feedback.snippet": "Lisää tämä rivi verkkosivustollesi"
 }

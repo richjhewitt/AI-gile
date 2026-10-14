@@ -3217,5 +3217,21 @@
   "storage.tidy": "Bilagor på stängda (klara) kort äldre än {days} dagar: {n} filer, {size}",
   "storage.delete": "Ta bort",
   "storage.confirm": "Ta bort {n} bilagefiler ({size}) från stängda kort? Inget annat tas bort.",
-  "storage.nothing": "Inga bilagor på stängda kort äldre än {days} dagar att städa bort."
+  "storage.nothing": "Inga bilagor på stängda kort äldre än {days} dagar att städa bort.",
+ "srv.remind.set": "⏰ Påminnelse inställd: {text}, {when}",
+ "srv.remind.today": "idag {time}",
+ "srv.remind.tomorrow": "imorgon {time}",
+ "share.title.label": "Titel",
+ "share.title.ph": "t.ex. Jetstream-konsult",
+ "share.preview.label": "Förhandsgranskningslänk",
+ "share.title.help": "Titeln är bara en etikett: den visas bredvid {name} hos dig och i deras tavelrubrik.",
+ "share.preview.help": "En förhandsgranskningslänk (http eller https) ger {name} en Förhandsgranska-knapp; lämna tomt för ingen.",
+ "share.simple": "Icke-teknisk vän",
+ "share.simple.help": "Alfatestare, kommentarer på, Godkännanden på",
+ "share.simple.hint": "Ställer in Alfatestare, kommentarer och Godkännanden på för detta projekt. Deras önskemål hamnar i ✅ Godkännanden.",
+ "sb.preview": "▶ Förhandsgranska",
+ "pub.feedback": "Offentligt feedbackformulär",
+ "pub.feedback.sub": "Besökare på din egen webbplats kan rapportera ett problem; varje rapport blir ett buggkort i To do.",
+ "pub.feedback.group": "Lägg korten i den här gruppen (valfritt)",
+ "pub.feedback.snippet": "Lägg till den här raden på din webbplats"
 }

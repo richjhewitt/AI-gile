@@ -3250,5 +3250,21 @@
   "storage.tidy": "Attachments on shut (duin) cairds aulder than {days} days: {n} files, {size}",
   "storage.delete": "Delete",
   "storage.confirm": "Delete {n} attachment files ({size}) frae shut cairds? Naethin else is taen awa.",
-  "storage.nothing": "Nae attachments on shut cairds aulder than {days} days tae tidy up."
+  "storage.nothing": "Nae attachments on shut cairds aulder than {days} days tae tidy up.",
+  "srv.remind.set": "⏰ Mynd set: {text}, {when}",
+  "srv.remind.today": "the day {time}",
+  "srv.remind.tomorrow": "the morn {time}",
+  "share.title.label": "Title",
+  "share.title.ph": "e.g. Jetstream advisor",
+  "share.preview.label": "Keek link",
+  "share.title.help": "The title is jist a label: it shaws aside {name} on yer side an on their board heid.",
+  "share.preview.help": "A keek link (http or https) gies {name} a Keek button; leave it toom for nane.",
+  "share.simple": "Non-technical freend",
+  "share.simple.help": "Alpha tester, comments on, Approvals on",
+  "share.simple.hint": "Sets Alpha tester, comments on an Approvals on for this project. Their wishes land in ✅ Approvals.",
+  "sb.preview": "▶ Keek",
+  "pub.feedback": "Public feedback form",
+  "pub.feedback.sub": "Visitors tae yer ain website can report a problem; each report becomes a bug caird in Tae dae.",
+  "pub.feedback.group": "Pit the cairds in this group (optional)",
+  "pub.feedback.snippet": "Add this line tae yer website"
 }

@@ -3217,5 +3217,21 @@
  "storage.tidy": "{days} egun baino zaharragoak diren txartel itxien (eginak) eranskinak: fitxategiak {n}, {size}",
  "storage.delete": "Ezabatu",
  "storage.confirm": "Txartel itxietako eranskin-fitxategiak ({n}, {size}) ezabatu? Ez da beste ezer kenduko.",
- "storage.nothing": "Ez dago {days} egun baino zaharragoak diren txartel itxietan garbitzeko eranskinik."
+ "storage.nothing": "Ez dago {days} egun baino zaharragoak diren txartel itxietan garbitzeko eranskinik.",
+ "srv.remind.set": "⏰ Gogorarazpena ezarrita: {text}, {when}",
+ "srv.remind.today": "gaur {time}",
+ "srv.remind.tomorrow": "bihar {time}",
+ "share.title.label": "Izenburua",
+ "share.title.ph": "adib. Jetstream aholkularia",
+ "share.preview.label": "Aurrebistaren esteka",
+ "share.title.help": "Izenburua etiketa bat besterik ez da: zure aldean {name}(r)en ondoan eta haien arbelaren goiburuan agertzen da.",
+ "share.preview.help": "Aurrebista-esteka batek (http edo https) Aurrebista botoia ematen dio {name}(r)i; utzi hutsik bat ez nahi bada.",
+ "share.simple": "Lagun ez-teknikoa",
+ "share.simple.help": "Alfa probatzailea, iruzkinak aktibo, Onarpenak aktibo",
+ "share.simple.hint": "Alfa probatzailea, iruzkinak eta Onarpenak aktibatzen ditu proiektu honetan. Haien nahiak ✅ Onarpenak atalera iristen dira.",
+ "sb.preview": "▶ Aurrebista",
+ "pub.feedback": "Iritzi-inprimaki publikoa",
+ "pub.feedback.sub": "Zure webgunearen bisitariek arazo bat jakinaraz dezakete; txosten bakoitza akats-txartel bihurtzen da Egiteko atalean.",
+ "pub.feedback.group": "Jarri txartelak talde honetan (aukerakoa)",
+ "pub.feedback.snippet": "Gehitu lerro hau zure webgunean"
 }

@@ -3217,5 +3217,21 @@
  "storage.tidy": "Àwọn àsopọ̀ lórí àwọn káàdì tí a pa (ti parí) tí ó dàgbà ju ọjọ́ {days} lọ: àwọn fáìlì {n}, {size}",
  "storage.delete": "Parẹ́",
  "storage.confirm": "Pa àwọn fáìlì àsopọ̀ ({n}, {size}) rẹ́ kúrò lórí àwọn káàdì tí a pa? A kò ní yọ ohun míràn kúrò.",
- "storage.nothing": "Kò sí àsopọ̀ lórí àwọn káàdì tí a pa tí ó dàgbà ju ọjọ́ {days} lọ láti dọ̀tún."
+ "storage.nothing": "Kò sí àsopọ̀ lórí àwọn káàdì tí a pa tí ó dàgbà ju ọjọ́ {days} lọ láti dọ̀tún.",
+ "srv.remind.set": "⏰ A ti ṣeto ìránnilétí: {text}, {when}",
+ "srv.remind.today": "òní {time}",
+ "srv.remind.tomorrow": "ọ̀la {time}",
+ "share.title.label": "Àkọ́lé",
+ "share.title.ph": "fún àpẹẹrẹ, olùgbaninímọ̀ràn Jetstream",
+ "share.preview.label": "Ọ̀nà àsopọ̀ àyẹ̀wò ṣáájú",
+ "share.title.help": "Àkọ́lé jẹ́ àmì lásán: ó hàn lẹ́gbẹ̀ẹ́ {name} ní ìhà tìrẹ àti lórí àkọ́lé pátákó wọn.",
+ "share.preview.help": "Ọ̀nà àsopọ̀ àyẹ̀wò ṣáájú (http tàbí https) fún {name} ní bọ́tìnì Àyẹ̀wò ṣáájú; fi sílẹ̀ ní òfo tí o kò bá fẹ́.",
+ "share.simple": "Ọ̀rẹ́ tí kì í ṣe onímọ̀ ẹ̀rọ",
+ "share.simple.help": "Olùdánwò Alpha, ọ̀rọ̀ ìwòye wà, Ìfọwọ́sí wà",
+ "share.simple.hint": "Ó ṣètò Olùdánwò Alpha, ọ̀rọ̀ ìwòye àti Ìfọwọ́sí fún iṣẹ́ àkànṣe yìí. Àwọn ìfẹ́ wọn máa dé ✅ Ìfọwọ́sí.",
+ "sb.preview": "▶ Àyẹ̀wò ṣáájú",
+ "pub.feedback": "Fọ́ọ̀mù èsì gbogbo ènìyàn",
+ "pub.feedback.sub": "Àwọn àlejò sí ojú-òpó wẹ́ẹ̀bù rẹ lè ròyìn ìṣòro; ìròyìn kọ̀ọ̀kan di kaadi àṣìṣe ní Láti ṣe.",
+ "pub.feedback.group": "Fi àwọn kaadi sí ẹgbẹ́ yìí (àṣàyàn)",
+ "pub.feedback.snippet": "Fi ìlà yìí kún ojú-òpó wẹ́ẹ̀bù rẹ"
 }

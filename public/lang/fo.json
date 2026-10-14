@@ -3250,5 +3250,21 @@
   "storage.tidy": "Viðfestingar á lukkaðum (liðugum) kortum eldri enn {days} dagar: {n} fílur, {size}",
   "storage.delete": "Strika",
   "storage.confirm": "Strika {n} viðfestingarfílur ({size}) frá lukkaðum kortum? Einki annað verður tikið burtur.",
-  "storage.nothing": "Eingar viðfestingar á lukkaðum kortum eldri enn {days} dagar at rudda."
+  "storage.nothing": "Eingar viðfestingar á lukkaðum kortum eldri enn {days} dagar at rudda.",
+  "srv.remind.set": "⏰ Áminning sett: {text}, {when}",
+  "srv.remind.today": "í dag {time}",
+  "srv.remind.tomorrow": "í morgin {time}",
+  "share.title.label": "Heiti",
+  "share.title.ph": "t.d. Jetstream ráðgevi",
+  "share.preview.label": "Forsýningarleinkja",
+  "share.title.help": "Heitið er bara eitt merki: tað sæst við síðuna av {name} hjá tær og í yvirskriftini á teirra borði.",
+  "share.preview.help": "Ein forsýningarleinkja (http ella https) gevur {name} ein Forsýning-knøtt; læt tóma, um tú ikki vilt hava eina.",
+  "share.simple": "Ikki-tekniskur vinur",
+  "share.simple.help": "Alfa-royndari, viðmerkingar á, Góðkenningar á",
+  "share.simple.hint": "Setir Alfa-royndara, viðmerkingar og Góðkenningar á fyri hetta verkætlanin. Ynski teirra koma í ✅ Góðkenningar.",
+  "sb.preview": "▶ Forsýning",
+  "pub.feedback": "Almenn afturmeldingarskjal",
+  "pub.feedback.sub": "Vitjandi á tínari egnu heimasíðu kunnu fráboða ein trupulleika; hvør fráboðan gerst eitt feilkort í At gera.",
+  "pub.feedback.group": "Set kortini í hendan bólkin (valfrítt)",
+  "pub.feedback.snippet": "Legg hesa linjuna til heimasíðuna hjá tær"
 }

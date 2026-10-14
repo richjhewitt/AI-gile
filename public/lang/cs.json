@@ -3217,5 +3217,21 @@
  "storage.tidy": "Přílohy na uzavřených (hotových) kartách starších než {days} dní: souborů {n}, {size}",
  "storage.delete": "Smazat",
  "storage.confirm": "Smazat soubory příloh z uzavřených karet ({n}, {size})? Nic dalšího se neodstraní.",
- "storage.nothing": "Žádné přílohy na uzavřených kartách starších než {days} dní k úklidu."
+ "storage.nothing": "Žádné přílohy na uzavřených kartách starších než {days} dní k úklidu.",
+ "srv.remind.set": "⏰ Připomínka nastavena: {text}, {when}",
+ "srv.remind.today": "dnes {time}",
+ "srv.remind.tomorrow": "zítra {time}",
+ "share.title.label": "Název",
+ "share.title.ph": "např. konzultant pro Jetstream",
+ "share.preview.label": "Odkaz na náhled",
+ "share.title.help": "Název je jen popisek: zobrazí se u {name} u vás a v záhlaví jejich tabule.",
+ "share.preview.help": "Odkaz na náhled (http nebo https) dá {name} tlačítko Náhled; nechte prázdné, pokud nechcete.",
+ "share.simple": "Netechnický přítel",
+ "share.simple.help": "Alfa tester, komentáře zapnuty, Schvalování zapnuto",
+ "share.simple.hint": "Zapne pro tento projekt Alfa testera, komentáře a Schvalování. Jejich přání skončí v ✅ Schvalování.",
+ "sb.preview": "▶ Náhled",
+ "pub.feedback": "Veřejný formulář zpětné vazby",
+ "pub.feedback.sub": "Návštěvníci vašeho webu mohou nahlásit problém; každé hlášení se stane kartou chyby v Úkolech.",
+ "pub.feedback.group": "Vložit karty do této skupiny (volitelné)",
+ "pub.feedback.snippet": "Přidejte tento řádek na svůj web"
 }

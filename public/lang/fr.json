@@ -3217,5 +3217,21 @@
   "storage.tidy": "Pièces jointes des cartes fermées (terminées) de plus de {days} jours : {n} fichiers, {size}",
   "storage.delete": "Supprimer",
   "storage.confirm": "Supprimer {n} fichiers joints ({size}) des cartes fermées ? Rien d'autre n'est supprimé.",
-  "storage.nothing": "Aucune pièce jointe de cartes fermées de plus de {days} jours à nettoyer."
+  "storage.nothing": "Aucune pièce jointe de cartes fermées de plus de {days} jours à nettoyer.",
+ "srv.remind.set": "⏰ Rappel défini : {text}, {when}",
+ "srv.remind.today": "aujourd'hui {time}",
+ "srv.remind.tomorrow": "demain {time}",
+ "share.title.label": "Titre",
+ "share.title.ph": "p. ex. consultant Jetstream",
+ "share.preview.label": "Lien d'aperçu",
+ "share.title.help": "Le titre est juste une étiquette : il s'affiche à côté de {name} chez vous et dans l'en-tête de son tableau.",
+ "share.preview.help": "Un lien d'aperçu (http ou https) donne à {name} un bouton Aperçu ; laissez vide pour aucun.",
+ "share.simple": "Ami non technique",
+ "share.simple.help": "Testeur alpha, commentaires activés, Approbations activées",
+ "share.simple.hint": "Active Testeur alpha, commentaires et Approbations pour ce projet. Leurs souhaits arrivent dans ✅ Approbations.",
+ "sb.preview": "▶ Aperçu",
+ "pub.feedback": "Formulaire de retour public",
+ "pub.feedback.sub": "Les visiteurs de votre propre site web peuvent signaler un problème ; chaque signalement devient une carte de bug dans À faire.",
+ "pub.feedback.group": "Mettre les cartes dans ce groupe (facultatif)",
+ "pub.feedback.snippet": "Ajoutez cette ligne à votre site web"
 }

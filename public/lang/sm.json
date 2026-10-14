@@ -3220,5 +3220,18 @@
  "storage.nothing": "E leai ni mea faapipii i kata ua tapunia e sili atu i le {days} aso e tasi ai.",
  "srv.remind.set": "⏰ Ua seti le faamanatu: {text}, {when}",
  "srv.remind.today": "i le aso nei {time}",
- "srv.remind.tomorrow": "taeao {time}"
+ "srv.remind.tomorrow": "taeao {time}",
+ "share.title.label": "Ulutala",
+ "share.title.ph": "e.g. faufautua Jetstream",
+ "share.preview.label": "Ositaulaga o le va'ai muamua",
+ "share.title.help": "O le ulutala e na'o se igoa: e iloa i tafatafa o {name} i lou itu ma le pito i luga o lo latou laupapa.",
+ "share.preview.help": "O se so'otaga va'ai muamua (http po'o https) e tuuina atu ai ia {name} se faamau Va'ai muamua; tuu avanoa pe a le manaomia.",
+ "share.simple": "Uo e le o se tagata tekinolosi",
+ "share.simple.help": "Tagata tofotofo Alpha, fa'amatalaga ua tatalaina, Faamaoniga ua tatalaina",
+ "share.simple.hint": "E seti ai le tagata tofotofo Alpha, faamatalaga ma Faamaoniga mo lenei poloketi. O a latou manaoga e alu i ✅ Faamaoniga.",
+ "sb.preview": "▶ Va'ai muamua",
+ "pub.feedback": "Pepa tuuina mai manatu lautele",
+ "pub.feedback.sub": "E mafai e tagata asiasi i lau uepisaite ona lipotia se faafitauli; o lipoti taitasi e avea ma kata bug i E fai.",
+ "pub.feedback.group": "Tuu kata i lenei vaega (e le faatauanau)",
+ "pub.feedback.snippet": "Faaopoopo lenei laina i lau uepisaite"
 }

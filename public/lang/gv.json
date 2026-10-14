@@ -3217,5 +3217,21 @@
  "storage.tidy": "Currit stiagh er carteyn dooint (jeant) s'liauyr na {days} laa: {n} coadanyn, {size}",
  "storage.delete": "Scrios",
  "storage.confirm": "Scrios {n} coadanyn currit stiagh ({size}) veih carteyn dooint? Cha vel red elley scarrit.",
- "storage.nothing": "Cha vel currit stiagh er carteyn dooint s'liauyr na {days} laa dy ghlenney."
+ "storage.nothing": "Cha vel currit stiagh er carteyn dooint s'liauyr na {days} laa dy ghlenney.",
+ "srv.remind.set": "⏰ Cooinaghtyn currit: {text}, {when}",
+ "srv.remind.today": "jea {time}",
+ "srv.remind.tomorrow": "jea-mairagh {time}",
+ "share.title.label": "Ard-ennym",
+ "share.title.ph": "e.g. coonseilagh Jetstream",
+ "share.preview.label": "Kiangley roshaghyn",
+ "share.title.help": "Cowrey ynrick te'n ard-ennym: t'eh jeeaghyn marish {name} er dty heu hene as ayns bun-ard y clairey oc.",
+ "share.preview.help": "Cur kiangley roshaghyn (http ny https) bwattan Roshaghyn da {name}; faag yn faaie mannagh vel eh feme.",
+ "share.simple": "Carrey nagh vel teknickagh",
+ "share.simple.help": "Prowaltagh alpha, ripsyn er, Ynnydyn er",
+ "share.simple.hint": "Cur eh Prowaltagh alpha, ripsyn as Ynnydyn er son y pisheen shoh. Nee nyn ngeearree cheet gys ✅ Ynnydyn.",
+ "sb.preview": "▶ Roshaghyn",
+ "pub.feedback": "Fo-lioar ymmyrçhagh follaghtagh",
+ "pub.feedback.sub": "Foddee fir-yeeaghyn dty voayl-ghunney hene gaccan y insh; bee dagh insh ny chaart bug ayns Dy yannoo.",
+ "pub.feedback.group": "Cur ny cairtyn ayns y possan shoh (fo-reih)",
+ "pub.feedback.snippet": "Cur y linney shoh gys dty voayl-ghunney"
 }

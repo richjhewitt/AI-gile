@@ -3220,5 +3220,18 @@
  "storage.nothing": "Nyns eus kesyunyow war gartennow degeys hen es {days} dedh dhe skubya.",
  "srv.remind.set": "⏰ Kovhevyans settys: {text}, {when}",
  "srv.remind.today": "hedhyw {time}",
- "srv.remind.tomorrow": "avorow {time}"
+ "srv.remind.tomorrow": "avorow {time}",
+ "share.title.label": "Titel",
+ "share.title.ph": "ex. Kussulyer Jetstream",
+ "share.preview.label": "Kevren previu",
+ "share.title.help": "An titel yw label hepken: ev a dhiskwedh next dhe {name} orth agas tu hag y'n bann bord anedha.",
+ "share.preview.help": "Kevren previu (http po https) a re budhon Previu dhe {name}; gasewgh gwag rag nagonan.",
+ "share.simple": "Kar nag yw teknegel",
+ "share.simple.help": "Previer alfa, kewsynnow warlergh, Alowansow warlergh",
+ "share.simple.hint": "A settya Previer alfa, kewsynnow ha Alowansow warlergh rag an folen ma. Aga hwansow a dheu y'n ✅ Alowansow.",
+ "sb.preview": "▶ Previu",
+ "pub.feedback": "Furvlen kenerhyans poblek",
+ "pub.feedback.sub": "Godhoghyon dhe'gas gwiasva agas honan a yll derivas kudyn; pub derivas a dhe kerdh bug y'n Dhe wul.",
+ "pub.feedback.group": "Gorrewgh an kerdhow y'n bagas ma (dewisys)",
+ "pub.feedback.snippet": "Keworrewgh an linen ma dhe'gas gwiasva"
 }

@@ -3220,5 +3220,18 @@
  "storage.nothing": "{days} punchawmanta yalliq wisq'asqa kartillakunapi pichanapaq mast'asqakuna mana kanchu.",
  "srv.remind.set": "⏰ Yuyarichiy churasqa: {text}, {when}",
  "srv.remind.today": "kunan {time}",
- "srv.remind.tomorrow": "paqarin {time}"
+ "srv.remind.tomorrow": "paqarin {time}",
+ "share.title.label": "Sutichay",
+ "share.title.ph": "ñawpaqman Jetstream yachachiq",
+ "share.preview.label": "Ñawpaqta qhawana tinki",
+ "share.title.help": "Sutichayqa rikchaylla: qanpa ladoykipi {name}-pa ladonpi, paykunapa tablero umanpi rikukun.",
+ "share.preview.help": "Ñawpaqta qhawana tinki (http utaq https) {name}-man Qhaway botonta qun; mana munaspaqa ch'usaqta saqiy.",
+ "share.simple": "Mana teknikuq amigu",
+ "share.simple.help": "Alfa pruebaq, willaykuna kichasqa, Chaskiykuna kichasqa",
+ "share.simple.hint": "Kay proyectopaq Alfa pruebaqta, willaykunata, Chaskiykunata churan. Munasqankuna ✅ Chaskiykunaman chayan.",
+ "sb.preview": "▶ Qhaway",
+ "pub.feedback": "Llapa runapaq willakuy formulario",
+ "pub.feedback.sub": "Kikin web sitiykiman hamuqkuna sasachakuyta willayta atinku; sapa willakuyqa Ruranaykuna-pi bug karta kachkan.",
+ "pub.feedback.group": "Kartakunata kay huñupi churay (munaspa)",
+ "pub.feedback.snippet": "Kay siqita web sitiykiman yapay"
 }

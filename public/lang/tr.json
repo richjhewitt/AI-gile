@@ -3217,5 +3217,21 @@
  "storage.tidy": "{days} günden eski kapalı (bitmiş) kartlardaki ekler: {n} dosya, {size}",
  "storage.delete": "Sil",
  "storage.confirm": "Kapalı kartlardaki {n} ek dosyası ({size}) silinsin mi? Başka hiçbir şey silinmez.",
- "storage.nothing": "{days} günden eski kapalı kartlarda temizlenecek ek yok."
+ "storage.nothing": "{days} günden eski kapalı kartlarda temizlenecek ek yok.",
+ "srv.remind.set": "⏰ Hatırlatıcı ayarlandı: {text}, {when}",
+ "srv.remind.today": "bugün {time}",
+ "srv.remind.tomorrow": "yarın {time}",
+ "share.title.label": "Başlık",
+ "share.title.ph": "örn. Jetstream danışmanı",
+ "share.preview.label": "Önizleme bağlantısı",
+ "share.title.help": "Başlık yalnızca bir etikettir: sizde {name} yanında, onlarda pano başlığında görünür.",
+ "share.preview.help": "Önizleme bağlantısı (http veya https) {name} için Önizleme düğmesi sağlar; istemiyorsanız boş bırakın.",
+ "share.simple": "Teknik olmayan arkadaş",
+ "share.simple.help": "Alfa test kullanıcısı, yorumlar açık, Onaylar açık",
+ "share.simple.hint": "Bu proje için Alfa test kullanıcısını, yorumları ve Onayları açar. Dilekleri ✅ Onaylar'a düşer.",
+ "sb.preview": "▶ Önizleme",
+ "pub.feedback": "Herkese açık geri bildirim formu",
+ "pub.feedback.sub": "Kendi web sitenizin ziyaretçileri sorun bildirebilir; her bildirim Yapılacak içinde bir hata kartı olur.",
+ "pub.feedback.group": "Kartları bu gruba koy (isteğe bağlı)",
+ "pub.feedback.snippet": "Bu satırı web sitenize ekleyin"
 }

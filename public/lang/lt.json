@@ -3217,5 +3217,21 @@
  "storage.tidy": "Priedai uždarytose (atliktose) kortelėse, senesnėse nei {days} d.: failų {n}, {size}",
  "storage.delete": "Ištrinti",
  "storage.confirm": "Ištrinti priedų failus ({n}, {size}) iš uždarytų kortelių? Nieko daugiau nepašalinama.",
- "storage.nothing": "Nėra priedų uždarytose kortelėse, senesnėse nei {days} d., kuriuos reikėtų išvalyti."
+ "storage.nothing": "Nėra priedų uždarytose kortelėse, senesnėse nei {days} d., kuriuos reikėtų išvalyti.",
+ "srv.remind.set": "⏰ Priminimas nustatytas: {text}, {when}",
+ "srv.remind.today": "šiandien {time}",
+ "srv.remind.tomorrow": "rytoj {time}",
+ "share.title.label": "Pavadinimas",
+ "share.title.ph": "pvz., Jetstream konsultantas",
+ "share.preview.label": "Peržiūros nuoroda",
+ "share.title.help": "Pavadinimas yra tik etiketė: jis rodomas šalia {name} jūsų pusėje ir jų lentos antraštėje.",
+ "share.preview.help": "Peržiūros nuoroda (http arba https) suteikia {name} mygtuką Peržiūra; palikite tuščią, jei nereikia.",
+ "share.simple": "Netechniškas draugas",
+ "share.simple.help": "Alfa testuotojas, komentarai įjungti, patvirtinimai įjungti",
+ "share.simple.hint": "Nustato Alfa testuotoją, įjungia komentarus ir patvirtinimus šiam projektui. Jų norai patenka į ✅ Patvirtinimai.",
+ "sb.preview": "▶ Peržiūra",
+ "pub.feedback": "Viešoji atsiliepimų forma",
+ "pub.feedback.sub": "Jūsų svetainės lankytojai gali pranešti apie problemą; kiekvienas pranešimas tampa klaidos kortele skiltyje Reikia padaryti.",
+ "pub.feedback.group": "Dėti korteles į šią grupę (neprivaloma)",
+ "pub.feedback.snippet": "Įdėkite šią eilutę į savo svetainę"
 }

@@ -3220,5 +3220,18 @@
  "storage.nothing": "Pa gen atachman sou kat fèmen ki gen plis pase {days} jou pou netwaye.",
  "srv.remind.set": "⏰ Rapèl mete: {text}, {when}",
  "srv.remind.today": "jodi a {time}",
- "srv.remind.tomorrow": "demen {time}"
+ "srv.remind.tomorrow": "demen {time}",
+ "share.title.label": "Tit",
+ "share.title.ph": "egz. konsiltan Jetstream",
+ "share.preview.label": "Lyen aperçu",
+ "share.title.help": "Tit la se jis yon etikèt: li parèt bò {name} sou bò pa w la ak nan tèt tablo pa yo a.",
+ "share.preview.help": "Yon lyen aperçu (http oswa https) bay {name} yon bouton Aperçu; kite l vid si ou pa vle youn.",
+ "share.simple": "Zanmi ki pa teknik",
+ "share.simple.help": "Testè alfa, kòmantè aktive, Apwobasyon aktive",
+ "share.simple.hint": "Aktive Testè alfa, kòmantè ak Apwobasyon pou pwojè sa a. Dezi yo tonbe nan ✅ Apwobasyon.",
+ "sb.preview": "▶ Aperçu",
+ "pub.feedback": "Fòm feedback piblik",
+ "pub.feedback.sub": "Vizitè sou sit entènèt pa w la ka rapòte yon pwoblèm; chak rapò vin yon kat bòg nan Pou fè.",
+ "pub.feedback.group": "Mete kat yo nan gwoup sa a (opsyonèl)",
+ "pub.feedback.snippet": "Ajoute liy sa a sou sit entènèt ou"
 }

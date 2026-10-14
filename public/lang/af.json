@@ -3217,5 +3217,21 @@
  "storage.tidy": "Aanhangsels op geslote (klaar) kaarte ouer as {days} dae: {n} lêers, {size}",
  "storage.delete": "Vee uit",
  "storage.confirm": "Vee {n} aanhangsellêers ({size}) van geslote kaarte uit? Niks anders word verwyder nie.",
- "storage.nothing": "Geen aanhangsels op geslote kaarte ouer as {days} dae om op te ruim nie."
+ "storage.nothing": "Geen aanhangsels op geslote kaarte ouer as {days} dae om op te ruim nie.",
+ "srv.remind.set": "⏰ Herinnering gestel: {text}, {when}",
+ "srv.remind.today": "vandag {time}",
+ "srv.remind.tomorrow": "môre {time}",
+ "share.title.label": "Titel",
+ "share.title.ph": "bv. Jetstream-konsultant",
+ "share.preview.label": "Voorskouskakel",
+ "share.title.help": "Die titel is net 'n etiket: dit wys langs {name} aan jou kant en op hul bordopskrif.",
+ "share.preview.help": "'n Voorskouskakel (http of https) gee {name} 'n Voorskou-knoppie; los leeg vir geen.",
+ "share.simple": "Nie-tegniese vriend",
+ "share.simple.help": "Alfatoetser, kommentaar aan, Goedkeurings aan",
+ "share.simple.hint": "Stel Alfatoetser, kommentaar en Goedkeurings aan vir hierdie projek. Hul wense beland in ✅ Goedkeurings.",
+ "sb.preview": "▶ Voorskou",
+ "pub.feedback": "Openbare terugvoervorm",
+ "pub.feedback.sub": "Besoekers aan jou eie webwerf kan 'n probleem meld; elke verslag word 'n foutkaart in Te doen.",
+ "pub.feedback.group": "Sit die kaarte in hierdie groep (opsioneel)",
+ "pub.feedback.snippet": "Voeg hierdie reël by jou webwerf"
 }

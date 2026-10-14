@@ -3217,5 +3217,21 @@
   "storage.tidy": "Privitci na zatvorenim (gotovim) karticama starijima od {days} dana: {n} datoteka, {size}",
   "storage.delete": "Izbriši",
   "storage.confirm": "Izbrisati {n} datoteka privitaka ({size}) sa zatvorenih kartica? Ništa drugo se ne briše.",
-  "storage.nothing": "Nema privitaka na zatvorenim karticama starijima od {days} dana za čišćenje."
+  "storage.nothing": "Nema privitaka na zatvorenim karticama starijima od {days} dana za čišćenje.",
+ "srv.remind.set": "⏰ Podsjetnik postavljen: {text}, {when}",
+ "srv.remind.today": "danas {time}",
+ "srv.remind.tomorrow": "sutra {time}",
+ "share.title.label": "Naslov",
+ "share.title.ph": "npr. Jetstream konzultant",
+ "share.preview.label": "Poveznica za pregled",
+ "share.title.help": "Naslov je samo oznaka: prikazuje se uz {name} kod vas i u zaglavlju njihove ploče.",
+ "share.preview.help": "Poveznica za pregled (http ili https) daje {name} gumb Pregled; ostavite prazno ako ne treba.",
+ "share.simple": "Netehnički prijatelj",
+ "share.simple.help": "Alfa tester, komentari uključeni, Odobrenja uključena",
+ "share.simple.hint": "Uključuje Alfa testera, komentare i Odobrenja za ovaj projekt. Njihove želje stižu u ✅ Odobrenja.",
+ "sb.preview": "▶ Pregled",
+ "pub.feedback": "Javni obrazac za povratne informacije",
+ "pub.feedback.sub": "Posjetitelji vaše web-stranice mogu prijaviti problem; svaka prijava postaje kartica greške u Za učiniti.",
+ "pub.feedback.group": "Stavi kartice u ovu grupu (neobavezno)",
+ "pub.feedback.snippet": "Dodajte ovaj redak na svoju web-stranicu"
 }

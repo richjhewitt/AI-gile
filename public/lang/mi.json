@@ -3220,5 +3220,18 @@
  "storage.nothing": "Kāore he āpitihanga i ngā kāri kua kati neke atu i te {days} rā hei whakapai.",
  "srv.remind.set": "⏰ Kua tautuhia te whakamahara: {text}, {when}",
  "srv.remind.today": "i tēnei rā {time}",
- "srv.remind.tomorrow": "āpōpō {time}"
+ "srv.remind.tomorrow": "āpōpō {time}",
+ "share.title.label": "Taitara",
+ "share.title.ph": "hei tauira, Kaitohutohu Jetstream",
+ "share.preview.label": "Hono arokite",
+ "share.title.help": "He tapanga anake te taitara: ka kitea ki te taha o {name} i tou taha me tana pane papa.",
+ "share.preview.help": "Mā te hono arokite (http, https rānei) ka whai paatene Arokite a {name}; waiho kia kau mēnā kāore.",
+ "share.simple": "Hoa kore hangarau",
+ "share.simple.help": "Kaiwhakamātau Alpha, kua whakahohea ngā kōrero, kua whakahohea ngā Whakaaetanga",
+ "share.simple.hint": "Ka tautuhi i te Kaiwhakamātau Alpha, ngā kōrero me ngā Whakaaetanga mō tēnei kaupapa. Ka tau ō rātou hiahia ki ✅ Whakaaetanga.",
+ "sb.preview": "▶ Arokite",
+ "pub.feedback": "Puka urupare tūmatanui",
+ "pub.feedback.sub": "Ka taea e ngā manuhiri ki tō paetukutuku te whakamōhio i tētahi raru; ka noho ia pūrongo hei kāri pārurenga i Hei mahi.",
+ "pub.feedback.group": "Waiho ngā kāri ki tēnei rōpū (kōwhiringa)",
+ "pub.feedback.snippet": "Tāpiri i tēnei rārangi ki tō paetukutuku"
 }

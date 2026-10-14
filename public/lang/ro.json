@@ -3217,5 +3217,21 @@
  "storage.tidy": "Atașamente la carduri închise (terminate) mai vechi de {days} zile: fișiere {n}, {size}",
  "storage.delete": "Șterge",
  "storage.confirm": "Ștergi fișierele atașate ({n}, {size}) de la cardurile închise? Nu se elimină nimic altceva.",
- "storage.nothing": "Nu există atașamente la carduri închise mai vechi de {days} zile de curățat."
+ "storage.nothing": "Nu există atașamente la carduri închise mai vechi de {days} zile de curățat.",
+ "srv.remind.set": "⏰ Memento setat: {text}, {when}",
+ "srv.remind.today": "azi {time}",
+ "srv.remind.tomorrow": "mâine {time}",
+ "share.title.label": "Titlu",
+ "share.title.ph": "ex. consultant Jetstream",
+ "share.preview.label": "Link de previzualizare",
+ "share.title.help": "Titlul este doar o etichetă: apare lângă {name} la tine și în antetul tablei lor.",
+ "share.preview.help": "Un link de previzualizare (http sau https) îi dă lui {name} un buton Previzualizare; lasă gol dacă nu vrei.",
+ "share.simple": "Prieten non-tehnic",
+ "share.simple.help": "Tester alfa, comentarii activate, Aprobări activate",
+ "share.simple.hint": "Setează Tester alfa, comentarii și Aprobări activate pentru acest proiect. Dorințele lor ajung în ✅ Aprobări.",
+ "sb.preview": "▶ Previzualizare",
+ "pub.feedback": "Formular public de feedback",
+ "pub.feedback.sub": "Vizitatorii site-ului tău pot raporta o problemă; fiecare raport devine un card de bug în De făcut.",
+ "pub.feedback.group": "Pune cardurile în acest grup (opțional)",
+ "pub.feedback.snippet": "Adaugă această linie pe site-ul tău"
 }

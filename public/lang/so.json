@@ -3217,5 +3217,21 @@
  "storage.tidy": "Lifaaqyada kaararka xidhan (la dhammeeyay) ee ka duqoobay {days} maalmood: faylal {n}, {size}",
  "storage.delete": "Tirtir",
  "storage.confirm": "Tirtir faylasha lifaaqyada ({n}, {size}) ee kaararka xidhan? Waxba kale lama saarayo.",
- "storage.nothing": "Kaararka xidhan ee ka duqoobay {days} maalmood lifaaqyo la nadiifiyo ma jiraan."
+ "storage.nothing": "Kaararka xidhan ee ka duqoobay {days} maalmood lifaaqyo la nadiifiyo ma jiraan.",
+ "srv.remind.set": "⏰ Xasuusin la dhigay: {text}, {when}",
+ "srv.remind.today": "maanta {time}",
+ "srv.remind.tomorrow": "berri {time}",
+ "share.title.label": "Cinwaan",
+ "share.title.ph": "tusaale la-taliye Jetstream",
+ "share.preview.label": "Linkiga horu-eegista",
+ "share.title.help": "Cinwaanku waa summad kaliya: wuxuu ka muuqdaa {name} dhinaca aad joogto iyo madaxa guddigooda.",
+ "share.preview.help": "Linki horu-eegis ah (http ama https) wuxuu siinayaa {name} badhanka Horu-eeg; ka dhaaf madhan haddii aadan rabin.",
+ "share.simple": "Saaxiib aan farsamo aqoon",
+ "share.simple.help": "Tijaabiye Alpha, faallooyin shid, Ogolaanshaha shid",
+ "share.simple.hint": "Wuxuu u dejiyaa Tijaabiye Alpha, faallooyin iyo Ogolaansho mashruucan. Dalabkooda wuxuu galayaa ✅ Ogolaanshaha.",
+ "sb.preview": "▶ Horu-eeg",
+ "pub.feedback": "Foomka jawaab-celinta dadweynaha",
+ "pub.feedback.sub": "Booqdayaasha bartaada waxay soo sheegi karaan dhibaato; warbixin kasta waxay noqonaysaa kaarka bug ee Waxa la sameeyo.",
+ "pub.feedback.group": "Kaararka ku rid kooxdan (ikhtiyaar)",
+ "pub.feedback.snippet": "Ku dar xariiqdan bartaada"
 }

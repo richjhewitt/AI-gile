@@ -3261,5 +3261,21 @@
   "storage.tidy": "Mielddusat giddejuvvon (gárvvistuvvon) korttain boarrásut go {days} beaivvi: {n} fiilla, {size}",
   "storage.delete": "Sihko",
   "storage.confirm": "Sihkot {n} mielddusfiilla ({size}) giddejuvvon korttain? Eará ii váldojuvvo eret.",
-  "storage.nothing": "Eai leat mielddusat giddejuvvon korttain boarrásut go {days} beaivvi mat galget čoalmmaduvvot."
+  "storage.nothing": "Eai leat mielddusat giddejuvvon korttain boarrásut go {days} beaivvi mat galget čoalmmaduvvot.",
+  "srv.remind.set": "⏰ Muittuhus biddjojuvvon: {text}, {when}",
+  "srv.remind.today": "otne {time}",
+  "srv.remind.tomorrow": "ihttin {time}",
+  "share.title.label": "Namma",
+  "share.title.ph": "ee. Jetstream-rávvejeaddji",
+  "share.preview.label": "Ovdačájehusboallu",
+  "share.title.help": "Namma lea dušše mearka: dat čájehuvvo {name} bokte du bealde ja sin bretta bajilčállagis.",
+  "share.preview.help": "Ovdačájehusboallu (http dahje https) addá {name}:ii Ovdačájehus-boalu; guođe guorbmái jos it dárbbaš.",
+  "share.simple": "Ii-teknihkalaš ustit",
+  "share.simple.help": "Alfa-geahččaleaddji, kommeantta bealde, Dohkkehusat bealde",
+  "share.simple.hint": "Bidjá Alfa-geahččaleaddji, kommeanttaid ja Dohkkehusaid dán prošektii. Sin sávaldagat boahtet ✅ Dohkkehusaide.",
+  "sb.preview": "▶ Ovdačájehus",
+  "pub.feedback": "Almmolaš máhcahatformulára",
+  "pub.feedback.sub": "Iežat neahttasiiddu guossit sáhttet dieđihit váttisvuođa; juohke dieđáhus šaddá bug-kortan Dahkat:i.",
+  "pub.feedback.group": "Biddje kortaid dán joavkui (valljivuohta)",
+  "pub.feedback.snippet": "Lasit dán linjjá neahttasiidduidasat"
 }

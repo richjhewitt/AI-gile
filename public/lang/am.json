@@ -3217,5 +3217,21 @@
  "storage.tidy": "ከ{days} ቀናት በላይ በቆዩ የተዘጉ (የተጠናቀቁ) ካርዶች ላይ ያሉ አባሪዎች፦ ፋይሎች {n}፣ {size}",
  "storage.delete": "ሰርዝ",
  "storage.confirm": "ከተዘጉ ካርዶች የአባሪ ፋይሎች ({n}፣ {size}) ይሰረዙ? ሌላ ምንም አይወገድም።",
- "storage.nothing": "ከ{days} ቀናት በላይ በቆዩ የተዘጉ ካርዶች ላይ የሚጸዱ አባሪዎች የሉም።"
+ "storage.nothing": "ከ{days} ቀናት በላይ በቆዩ የተዘጉ ካርዶች ላይ የሚጸዱ አባሪዎች የሉም።",
+ "srv.remind.set": "⏰ ማስታወሻ ተቀምጧል፦ {text}፣ {when}",
+ "srv.remind.today": "ዛሬ {time}",
+ "srv.remind.tomorrow": "ነገ {time}",
+ "share.title.label": "ርዕስ",
+ "share.title.ph": "ለምሳሌ Jetstream አማካሪ",
+ "share.preview.label": "የቅድመ እይታ አገናኝ",
+ "share.title.help": "ርዕሱ መለያ ብቻ ነው፦ በእርስዎ በኩል ከ{name} ጎን እና በእነርሱ ቦርድ ራስጌ ላይ ይታያል።",
+ "share.preview.help": "የቅድመ እይታ አገናኝ (http ወይም https) ለ{name} የቅድመ እይታ አዝራር ይሰጣል፤ ካልፈለጉ ባዶ ይተዉት።",
+ "share.simple": "ቴክኒካዊ ያልሆነ ጓደኛ",
+ "share.simple.help": "የአልፋ ሞካሪ፣ አስተያየቶች በርተዋል፣ ማጽደቆች በርተዋል",
+ "share.simple.hint": "ለዚህ ፕሮጀክት የአልፋ ሞካሪ፣ አስተያየቶችን እና ማጽደቆችን ያበራል። ምኞቶቻቸው ወደ ✅ ማጽደቆች ይገባሉ።",
+ "sb.preview": "▶ ቅድመ እይታ",
+ "pub.feedback": "ይፋዊ የአስተያየት ቅጽ",
+ "pub.feedback.sub": "የራስዎ ድር ጣቢያ ጎብኚዎች ችግር ሪፖርት ማድረግ ይችላሉ፤ እያንዳንዱ ሪፖርት በ የሚደረግ ውስጥ የስህተት ካርድ ይሆናል።",
+ "pub.feedback.group": "ካርዶቹን በዚህ ቡድን ውስጥ ያስቀምጡ (አማራጭ)",
+ "pub.feedback.snippet": "ይህን መስመር ወደ ድር ጣቢያዎ ያክሉ"
 }

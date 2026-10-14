@@ -3220,5 +3220,18 @@
  "storage.nothing": "Akukho okunamathiselwe emakhadini avaliwe angaphezu kwezinsuku ezingu-{days} okufanele kuhlanzwe.",
  "srv.remind.set": "⏰ Isikhumbuzo sibekiwe: {text}, {when}",
  "srv.remind.today": "namuhla {time}",
- "srv.remind.tomorrow": "kusasa {time}"
+ "srv.remind.tomorrow": "kusasa {time}",
+ "share.title.label": "Isihloko",
+ "share.title.ph": "isb. umxhumanisi we-Jetstream",
+ "share.preview.label": "Isixhumanisi sokubuka kuqala",
+ "share.title.help": "Isihloko siyilebula kuphela: sivela eduze kuka-{name} ohlangothini lwakho nasekhanda lebhodi labo.",
+ "share.preview.help": "Isixhumanisi sokubuka kuqala (http noma https) siniketha u-{name} inkinobho yokuBuka kuqala; shiya kungenalutho uma ungasifuni.",
+ "share.simple": "Umngane ongewona owobuchwepheshe",
+ "share.simple.help": "Umhloli we-Alpha, amazwana avuliwe, Izimvume zivuliwe",
+ "share.simple.hint": "Isetha Umhloli we-Alpha, amazwana nezimvume kule phrojekthi. Izifiso zabo ziwela ku-✅ Izimvume.",
+ "sb.preview": "▶ Buka kuqala",
+ "pub.feedback": "Ifomu yempendulo yomphakathi",
+ "pub.feedback.sub": "Izivakashi zesiza sakho zingabika inkinga; umbiko ngamunye uba ikhadi lesiphazamiso ku-Okufanele kwenziwe.",
+ "pub.feedback.group": "Faka amakhadi kuleli qembu (akubalulekile)",
+ "pub.feedback.snippet": "Engeza leli zinga kusiza sakho"
 }

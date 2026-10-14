@@ -3220,5 +3220,18 @@
  "storage.nothing": "ʻAʻohe mea hoʻopili ma nā kāleka pani ʻia ma mua o {days} lā e hoʻomaʻemaʻe ai.",
  "srv.remind.set": "⏰ Ua hoʻonoho ʻia ka hoʻomanaʻo: {text}, {when}",
  "srv.remind.today": "i kēia lā {time}",
- "srv.remind.tomorrow": "ka lā ʻapōpō {time}"
+ "srv.remind.tomorrow": "ka lā ʻapōpō {time}",
+ "share.title.label": "Poʻo inoa",
+ "share.title.ph": "e laʻa he kākāʻōlelo Jetstream",
+ "share.preview.label": "Loulou nānā mua",
+ "share.title.help": "He lepili wale nō ke poʻo inoa: ʻike ʻia ma ka ʻaoʻao o {name} ma kou ʻaoʻao a ma ke poʻo o kā lākou papa.",
+ "share.preview.help": "Hāʻawi ka loulou nānā mua (http a i ʻole https) iā {name} i pihi Nānā mua; waiho hakahaka inā ʻaʻole makemake.",
+ "share.simple": "Hoaaloha ʻaʻole loea ʻenehana",
+ "share.simple.help": "Mea hoʻāʻo alpha, ʻā nā manaʻo, ʻā nā Ke ʻae ʻana",
+ "share.simple.hint": "Hoʻā i ka mea hoʻāʻo alpha, nā manaʻo a me nā Ke ʻae ʻana no kēia papahana. Hiki mai kā lākou makemake i ✅ Ke ʻae ʻana.",
+ "sb.preview": "▶ Nānā mua",
+ "pub.feedback": "Palapala manaʻo ākea",
+ "pub.feedback.sub": "Hiki i ka poʻe kipa i kāu pūnaewele ponoʻī ke hōʻike i kekahi pilikia; lilo kēlā hōʻike kēlā hōʻike i kāleka pōpoki ma E hana.",
+ "pub.feedback.group": "Waiho i nā kāleka ma kēia hui (koho)",
+ "pub.feedback.snippet": "Hoʻohui i kēia laina i kāu pūnaewele"
 }

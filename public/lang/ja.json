@@ -3217,5 +3217,21 @@
   "storage.tidy": "{days}日より古い完了済みカードの添付ファイル：{n}ファイル、{size}",
   "storage.delete": "削除",
   "storage.confirm": "完了済みカードの添付ファイル{n}件（{size}）を削除しますか？ほかは削除されません。",
-  "storage.nothing": "整理できる、{days}日より古い完了済みカードの添付ファイルはありません。"
+  "storage.nothing": "整理できる、{days}日より古い完了済みカードの添付ファイルはありません。",
+ "srv.remind.set": "⏰ リマインダーを設定しました: {text}、{when}",
+ "srv.remind.today": "今日 {time}",
+ "srv.remind.tomorrow": "明日 {time}",
+ "share.title.label": "タイトル",
+ "share.title.ph": "例: Jetstream コンサルタント",
+ "share.preview.label": "プレビューリンク",
+ "share.title.help": "タイトルはラベルにすぎません。あなた側では {name} の横に、相手側ではボードのヘッダーに表示されます。",
+ "share.preview.help": "プレビューリンク（http または https）を入れると、{name} にプレビューボタンが表示されます。不要なら空のままにしてください。",
+ "share.simple": "非技術系の友人",
+ "share.simple.help": "アルファテスター、コメントオン、承認オン",
+ "share.simple.hint": "このプロジェクトでアルファテスター、コメント、承認をオンにします。相手の要望は ✅ 承認 に届きます。",
+ "sb.preview": "▶ プレビュー",
+ "pub.feedback": "公開フィードバックフォーム",
+ "pub.feedback.sub": "ご自身のウェブサイトの訪問者が問題を報告できます。報告は やること のバグカードになります。",
+ "pub.feedback.group": "カードをこのグループに入れる（任意）",
+ "pub.feedback.snippet": "この行をウェブサイトに追加してください"
 }

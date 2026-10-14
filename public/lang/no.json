@@ -3217,5 +3217,21 @@
  "storage.tidy": "Vedlegg på lukkede (ferdige) kort eldre enn {days} dager: filer {n}, {size}",
  "storage.delete": "Slett",
  "storage.confirm": "Slette vedleggsfilene ({n}, {size}) fra lukkede kort? Ingenting annet fjernes.",
- "storage.nothing": "Ingen vedlegg på lukkede kort eldre enn {days} dager å rydde bort."
+ "storage.nothing": "Ingen vedlegg på lukkede kort eldre enn {days} dager å rydde bort.",
+ "srv.remind.set": "⏰ Påminnelse satt: {text}, {when}",
+ "srv.remind.today": "i dag {time}",
+ "srv.remind.tomorrow": "i morgen {time}",
+ "share.title.label": "Tittel",
+ "share.title.ph": "f.eks. Jetstream-konsulent",
+ "share.preview.label": "Forhåndsvisningslenke",
+ "share.title.help": "Tittelen er bare en merkelapp: den vises ved siden av {name} hos deg og i deres tavleoverskrift.",
+ "share.preview.help": "En forhåndsvisningslenke (http eller https) gir {name} en Forhåndsvis-knapp; la stå tom for ingen.",
+ "share.simple": "Ikke-teknisk venn",
+ "share.simple.help": "Alfatester, kommentarer på, Godkjenninger på",
+ "share.simple.hint": "Setter Alfatester, kommentarer og Godkjenninger på for dette prosjektet. Ønskene deres havner i ✅ Godkjenninger.",
+ "sb.preview": "▶ Forhåndsvis",
+ "pub.feedback": "Offentlig tilbakemeldingsskjema",
+ "pub.feedback.sub": "Besøkende på din egen nettside kan melde et problem; hver melding blir et feilkort i Å gjøre.",
+ "pub.feedback.group": "Legg kortene i denne gruppen (valgfritt)",
+ "pub.feedback.snippet": "Legg til denne linjen på nettsiden din"
 }
