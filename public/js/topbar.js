@@ -28,7 +28,7 @@ const Topbar = (() => {
   const PKEY = 'aigile.topbar.pinned';
   const MORE_EXTRA = ['twitchBtn', 'mailNav', 'immWrap'];
   const PINNABLE = [...IDS, ...MORE_EXTRA];
-  const PIN_DEF = ['helpBtn', 'inboxTop', 'setupNav', 'pokeTop', 'nightTop', 'teamTop'];
+  const PIN_DEF = ['bugBtn', 'helpBtn', 'inboxTop', 'setupNav', 'pokeTop', 'nightTop', 'teamTop'];
   const loadPins = () => { let a; try { a = JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch { a = null; } return Array.isArray(a) ? a.filter(i => PINNABLE.includes(i)) : PIN_DEF.slice(); };
   let pins = loadPins();
   const phoneMq = window.matchMedia ? matchMedia('(max-width: 600px)') : { matches: false };
