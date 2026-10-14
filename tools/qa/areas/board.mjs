@@ -61,6 +61,8 @@ def('newcard-project', 'New card: Project picker defaults to this board; another
   const cards = async slug => (await s.ok('GET', `/api/projects/${slug}`)).cards;
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('.column');
+  const eh = await page.textContent('#emptyHint');   // AIG-1074: a project with no folder says you can just add a card, Connect folder second
+  check('empty board with no folder: add a card first, Connect folder second', /add your first card/i.test(eh) && eh.indexOf('+ New') < eh.indexOf('Connect folder'), eh);
   await page.click('.toolbar button.primary');
   await page.waitForSelector('#nc-project');
   check('Project picker defaults to the board you are on', (await page.inputValue('#nc-project')) === 'alpha');
