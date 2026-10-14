@@ -60,6 +60,12 @@ def('homeux', 'Home: counts hide zeros and show % done, More holds the moved but
   const counts = await page.$$eval('a.proj .counts span', e => e.map(x => x.textContent.trim()));
   check('counts show no zero columns', counts.length > 0 && counts.every(x => !/\b0$/.test(x)), counts.join('|'));
   check('the card says % done', /\d+%/.test(await page.textContent('a.proj .counts b')));
+  // AIG-1080: 0% done with only waiting cards: a small segment on the track, never the full bar
+  const zr = await mkProject(s, 'Zero', 'ZER'); await mkCard(s, zr.slug, 'Wait A', { status: 'team' }); await mkCard(s, zr.slug, 'Wait B', { status: 'todo' });
+  await page.reload(); await page.waitForSelector(`a.proj[href="#/p/${zr.slug}"] .bar span`);
+  const zw = await page.$eval(`a.proj[href="#/p/${zr.slug}"] .bar`, b => ({ w: b.firstElementChild.getBoundingClientRect().width, all: b.getBoundingClientRect().width }));
+  check('0% done: waiting cards are a small segment, not the full bar', zw.w > 0 && zw.w < zw.all * 0.3, JSON.stringify(zw));
+  check('a started project still fills by its share', await page.$eval('a.proj .bar', b => { const x = [...b.children].reduce((a, c) => a + c.getBoundingClientRect().width, 0); return x > b.getBoundingClientRect().width * 0.9; }));
   const vis = await page.$$eval('.toolbar > button', b => b.filter(x => x.getClientRects().length).map(x => x.id || x.className));
   check('the toolbar shows New project and More only', vis.length === 2 && vis.includes('homeMoreBtn'), vis.join());
   check('More starts closed', await page.locator('#homeMenu').isHidden());

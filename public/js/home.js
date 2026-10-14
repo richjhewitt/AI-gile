@@ -1,8 +1,10 @@
 /* ---------- home page: project cards, usage strip ---------- */
 function bar(counts, total) {
   if (!total) return '<div class="bar"></div>';
+  // AIG-1080: nothing started or done yet (0%): the waiting cards are a small segment, not the whole track.
+  const cap = ['done', 'verify', 'review', 'doing'].some(k => counts[k]) ? 1 : 0.15;
   return '<div class="bar">' + ['done', 'verify', 'review', 'doing', 'team', 'todo'].map(s =>
-    counts[s] ? `<span title="${COLS[s]}: ${counts[s]}" style="width:${counts[s] / total * 100}%;background:${COL_COLORS[s]}"></span>` : '').join('') + '</div>';
+    counts[s] ? `<span title="${COLS[s]}: ${counts[s]}" style="width:${counts[s] / total * 100 * cap}%;background:${COL_COLORS[s]}"></span>` : '').join('') + '</div>';
 }
 
 // Plan left (AIG-937): the same "% left" figures as the Usage page (UsageGlance reads them); hidden while there is no reading.
