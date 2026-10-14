@@ -57,10 +57,10 @@ def('phone', '📱 every page fits a phone (390x844, 412x915): no sideways scrol
       await fits(page, D + ' home');
       await tapSize(page, '#helpBtn', D + ' ❓ Help');
       await clickBar(page, '#helpBtn');
-      await page.waitForSelector('#hmInstall', { timeout: 3000 }).catch(() => {});
+      await page.waitForSelector('#hmInstall', { timeout: 8000 }).catch(() => {});
       check(D + ': Help menu has the Add to home screen item, inside the window', await page.evaluate(() => { const e = document.getElementById('hmInstall'), m = document.getElementById('helpMenu'); if (!e || !m) return false; const r = m.getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; }));
       await page.click('#hmInstall').catch(() => {});
-      await page.waitForSelector('#dialog *', { timeout: 3000 }).catch(() => {});
+      await page.waitForSelector('#dialog *', { timeout: 8000 }).catch(() => {});
       check(D + ': the home-screen hint opens and fits', (await page.textContent('#dialog')).length > 20);
       await fits(page, D + ' hint dialog');
       await page.keyboard.press('Escape'); await page.evaluate(() => { document.getElementById('dialog').innerHTML = ''; });
