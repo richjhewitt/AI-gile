@@ -129,6 +129,10 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
     await tp.evaluate(() => document.activeElement.blur());
     await tp.waitForSelector('#suPrompt', { timeout: 6000 });
     check('shown once the field is left', true);
+    // AIG-1078: on a phone it sits above the bottom bar and its buttons share one line.
+    await tp.setViewportSize({ width: 390, height: 800 }); await sleep(300);
+    const geo = await tp.evaluate(() => { const r = e => e.getBoundingClientRect(), p = r(document.querySelector('#suPrompt .su-pill')), rail = document.getElementById('dmRail'), bs = [...document.querySelectorAll('#suPrompt button')].map(e => Math.round(r(e).top)); return { pillBottom: p.bottom, railTop: rail ? r(rail).top : 9999, oneLine: new Set(bs).size === 1 }; });
+    check('on a phone the prompt sits above the bottom bar, buttons on one line', geo.pillBottom <= geo.railTop && geo.oneLine, geo);
     noErrors(mp); noErrors(tp);
     await mp.close(); await tp.close();
   } finally { openPage.morning = false; }
