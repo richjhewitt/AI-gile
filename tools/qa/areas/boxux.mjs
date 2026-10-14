@@ -76,6 +76,30 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
   await ep.click('#tbDots');
   check('empty project: ⋯ More opens the rest', await ep.isVisible('#hfBtn'));
   check('empty project: the bar is one row', await ep.$eval('.toolbar', e => e.getBoundingClientRect().height < 70));
+  // AIG-1083: column headers stay on one line and all 7 columns fit at 1366
+  await ep.setViewportSize({ width: 1366, height: 800 });
+  await sleep(400);
+  check('1366px: all columns fit without sideways scroll', await ep.$eval('.board', e => e.scrollWidth <= e.clientWidth + 1));
+  check('column headers are one line each (name, count and buttons)', await ep.$$eval('.column h3', hs => hs.length >= 6 && hs.every(h => h.getBoundingClientRect().height < 30)));
+  check('the For you buttons stay right of the name', await ep.$eval('.column.foryou h3', h => { const [a, b] = h.children; return b.getBoundingClientRect().left >= a.getBoundingClientRect().right - 1; }));
+  // AIG-1082: a phone shows search plus a ⚙ Filters button, the dropdowns open under it
+  await ep.setViewportSize({ width: 390, height: 844 });
+  await sleep(400);
+  check('phone: the dropdowns are folded behind ⚙ Filters', await ep.isVisible('#f-q') && await ep.isVisible('#f-tog') && !(await ep.isVisible('#f-sel')));
+  check('phone: the search and Filters share one row', await ep.$eval('#filterbar', e => e.getBoundingClientRect().height < 60));
+  await ep.click('#f-tog');
+  check('phone: ⚙ Filters opens the dropdowns', await ep.isVisible('#f-sel select'));
+  await ep.click('#f-tog');
+  check('phone: the top bar stays on one line', await ep.$eval('header', e => e.getBoundingClientRect().height < 70));
+  // AIG-1086: the new card labels its GIF button and has no Pop out on a phone
+  await ep.click('.toolbar .primary');
+  await ep.waitForSelector('.att-gif');
+  check('new card: the GIF button has a visible label', /GIF/.test(await ep.textContent('.att-gif')) && !!(await ep.getAttribute('.att-gif', 'aria-label')));
+  check('phone: no Pop out in the new card', await ep.$$eval('.dlg-pop, .card-pop', els => els.every(e => getComputedStyle(e).display === 'none')));
+  await ep.keyboard.press('Escape');
+  await ep.setViewportSize({ width: 1280, height: 800 });
+  await sleep(300);
+  check('desktop: no Filters button, the dropdowns show', !(await ep.isVisible('#f-tog')) && await ep.isVisible('#f-sel select'));
   await ep.close();
   noErrors(page);
 }, true);

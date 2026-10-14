@@ -1641,6 +1641,7 @@
  "wz.adv.val.light": "Pro-friendly",
  "wz.adv.val.lead": "{tidy}, {chatty}, {go}, {words}, {steps}",
  "gif.title": "Find a GIF (Giphy)",
+ "gif.btn": "🎞️ GIF",
  "gif.nokey": "Add a free Giphy key in Setup",
  "gif.search": "Search GIFs (empty: trending)",
  "gif.powered": "Powered by GIPHY",
