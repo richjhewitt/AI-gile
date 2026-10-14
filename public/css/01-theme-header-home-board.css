@@ -83,11 +83,14 @@ main { padding: 20px; }
 .inbox li { margin: 3px 0; }
 
 /* ---------- Board ---------- */
-.board { display: grid; grid-template-columns: repeat(7, minmax(180px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+.board { display: grid; grid-template-columns: repeat(7, minmax(160px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 8px; }
 .lane { margin-bottom: 14px; }
 .lane-h { margin: 0 0 6px; font-size: 14px; }
 .column { background: var(--col); border-radius: var(--radius); padding: 10px; min-height: 120px; }
 .column h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: flex; justify-content: space-between; }
+.column h3 { gap: 6px; align-items: center; }   /* AIG-1083: the name takes one line with an ellipsis, the count and buttons stay on the right */
+.column h3 > span:first-child { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.column h3 > span:last-child { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; box-shadow: var(--shadow); cursor: pointer; }
 .card:hover { border-color: var(--accent); }
 .card.needs-you { border-inline-start: 3px solid var(--you); }
