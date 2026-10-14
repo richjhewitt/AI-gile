@@ -3226,7 +3226,7 @@
  "share.title.help": "De titel is alleen een label: hij staat bij {name} aan jouw kant en in de kop van hun bord.",
  "share.preview.help": "Met een voorbeeldlink (http of https) krijgt {name} een Voorbeeld-knop; laat leeg voor geen knop.",
  "share.simple": "Niet-technische vriend",
- "share.simple.help": "Kijker, reacties aan, Goedkeuringen aan",
- "share.simple.hint": "Zet Kijker, reacties en Goedkeuringen aan voor dit project. Hun wensen komen in ✅ Goedkeuringen.",
+ "share.simple.help": "Alfatester, reacties aan, Goedkeuringen aan",
+ "share.simple.hint": "Zet Alfatester, reacties en Goedkeuringen aan voor dit project. Hun wensen komen in ✅ Goedkeuringen.",
  "sb.preview": "▶ Voorbeeld"
 }

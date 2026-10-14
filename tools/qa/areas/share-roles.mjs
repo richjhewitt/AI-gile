@@ -151,7 +151,7 @@ export async function shareRoles({ a, b, ca, cb, until, ctx }) {
   await a.ok('PATCH', `/api/shares/${id}`, { role: 'member', comments: false });
   await a.ok('PATCH', '/api/projects/juliet', { approvals: false });
   await page.click('#shareSimple');
-  check('🔗 dialog: Non-technical friend sets Viewer, comments on, Approvals on', !!(await until(async () => { const l = (await a.ok('GET', '/api/shares?slug=juliet'))[0]; return l.role === 'viewer' && l.mine.comments === true && l.approvals === true; })));
+  check('🔗 dialog: Non-technical friend sets Alpha tester, comments on, Approvals on', !!(await until(async () => { const l = (await a.ok('GET', '/api/shares?slug=juliet'))[0]; return l.role === 'alpha' && l.mine.comments === true && l.approvals === true; })));
   check('🔗 dialog: the preset hint points to Approvals', /Approvals/.test(await page.textContent('#dialog')));
   const narrow = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
   check('🔗 dialog: no sideways scroll', narrow);

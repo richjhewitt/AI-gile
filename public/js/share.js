@@ -281,7 +281,7 @@ const Share = (function () {
   const setRole = id => act(() => api('PATCH', '/api/shares/' + id, { role: $('shareRole').value, scope: $('shareRoleScope').value }));
   const setLabels = id => act(() => api('PATCH', '/api/shares/' + id, { title: $('shareTitle').value, preview: $('sharePreview').value }));
   // AIG-962: Non-technical friend = Viewer, comments on, project Approvals on (their wishes wait in ✅ Approvals)
-  const simplePreset = id => act(async () => { await api('PATCH', '/api/shares/' + id, { role: 'viewer', scope: 'project', comments: true }); await api('PATCH', '/api/projects/' + slug(), { approvals: true }); });
+  const simplePreset = id => act(async () => { await api('PATCH', '/api/shares/' + id, { role: 'alpha', scope: 'project', comments: true }); await api('PATCH', '/api/projects/' + slug(), { approvals: true }); });
   const setChange = (cid, key, on) => act(() => api('POST', '/api/projects/' + slug() + '/change-roles', key === 'pm' ? { pm: { [on ? 'add' : 'remove']: '@' + cid } } : { [key]: on ? '@' + cid : '' }));
   const ping = id => act(() => api('POST', `/api/shares/${id}/ping`));
   function unlink(id, forget) {
