@@ -5,10 +5,12 @@ const me = () => (typeof state !== 'undefined' && state.owner) || 'Owner';
 // Any textarea with data-draft="<key>" is saved to this browser as you type and filled back in when it
 // appears again (also after the page is redrawn). Sending calls clearDraft(key).
 const draftKey = k => 'aigile.draft.' + k;
-const clearDraft = k => { try { localStorage.removeItem(draftKey(k)); } catch {} };
+const clearDraft = k => { try { localStorage.removeItem(draftKey(k)); localStorage.removeItem('aigile.draftat.' + k); } catch {} };
+// AIG-1022: every kept draft, newest first: [{ key, text, at }]. Messages lists them under 📝 Drafts.
+const listDrafts = () => { const out = []; try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k.startsWith('aigile.draft.')) continue; const key = k.slice(13), text = localStorage.getItem(k); if (text && text.trim() && (key.startsWith('dm/') || key.split('/').length === 3 && /^(reply|task|info|verdict|gcard)$/.test(key.split('/')[2]))) out.push({ key, text, at: +localStorage.getItem('aigile.draftat.' + key) || 0 }); } } catch {} return out.sort((a, b) => b.at - a.at); };
 document.addEventListener('input', e => {
   const k = e.target && e.target.dataset && e.target.dataset.draft; if (!k) return;
-  try { e.target.value.trim() ? localStorage.setItem(draftKey(k), e.target.value) : localStorage.removeItem(draftKey(k)); } catch {}
+  try { if (e.target.value.trim()) { localStorage.setItem(draftKey(k), e.target.value); localStorage.setItem('aigile.draftat.' + k, String(Date.now())); } else clearDraft(k); } catch {}
 });
 new MutationObserver(() => document.querySelectorAll('textarea[data-draft]:not([data-drafted])').forEach(el => {
   el.dataset.drafted = '1';

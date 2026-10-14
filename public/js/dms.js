@@ -102,6 +102,15 @@ const Dms = (() => {
     return T.roots.map(x => item(x, 1)).join('');
   }
 
+  // 📝 Drafts (AIG-1022): unsent replies kept in this browser (core.js). One row each: where it is for, the first words, when; click opens it, ✕ discards.
+  function draftRows() {
+    const list = listDrafts(); if (!list.length) return '';
+    const where = key => {
+      if (key.startsWith('dm/')) { const k = key.slice(3), c = chats.find(x => x.slug === k), p = people.find(x => 'dm:' + x.id === k); return k === '_allhands' ? t('allhands.name') : k === '_assistant' ? t('pa.name') : c ? chatName(c) : p ? p.name : k; }
+      const [s, id] = key.split('/'); return s + ' · ' + id;
+    };
+    return `<div class="dm-drafts"><div class="muted dm-draft-h">${esc(t('dms.drafts'))}</div>${list.map(d => `<div class="dm-rowwrap"><button class="dm-row" data-dmdraft="${esc(d.key)}"><span class="dm-rowtext"><b>${esc(where(d.key))}</b><span class="muted">${esc(plain(d.text).slice(0, 50))}${d.at ? ' · ' + ago(new Date(d.at).toISOString()) : ''}</span></span></button><button class="dm-rowx" data-dmdraftx="${esc(d.key)}" title="${esc(t('dms.drafts.discard'))}" aria-label="${esc(t('dms.drafts.discard'))}">✕</button></div>`).join('')}</div>`;
+  }
   // The DM list: one row per lead (🤖) and per friend (🙋), narrowed by the filter chips (All / Agents / People).
   function paintList() {
     if (filter === 'discord' && !DiscordTab.linked()) filter = 'all';
@@ -115,11 +124,12 @@ const Dms = (() => {
     const rows = filter === 'twitch' ? TwitchTab.rowsHtml() : filter === 'discord' ? DiscordTab.rowsHtml() : shown.map(r => r.html);
     const closedBox = shut.length ? `<div class="dm-closed"><button class="dm-closedlink" data-dmshowclosed="1" aria-expanded="${showClosed}">${esc(t('dms.closed.show', { n: shut.length }))}</button>${showClosed ? shut.map(r => r.html.replace('data-dmclose=', 'data-dmreopen=').replace(/title="[^"]*" aria-label="[^"]*">✕/, `title="${esc(t('dms.closed.reopen'))}" aria-label="${esc(t('dms.closed.reopen'))}">↩`)).join('') : ''}</div>` : '';
     const quietBox = quietRows.length && filter !== 'twitch' && filter !== 'discord' ? `<div class="dm-closed dm-quiet"><button class="dm-closedlink" data-dmshowquiet="1" aria-expanded="${showQuiet}">${esc(showQuiet ? t('dms.quiet.hide') : t(quietRows.length === 1 ? 'dms.quiet.show.one' : 'dms.quiet.show', { n: quietRows.length }))}</button></div>` : '';
+    const drafts = filter === 'all' ? draftRows() : '';
     const none = filter === 'twitch' ? t('tw.nonone') : filter === 'discord' ? t('dc.nonone') : filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) && !shut.length && !quietRows.length ? t('dms.nonone') : t('dms.noleads');
     const chips = ['all', 'agents', 'people', ...(DiscordTab.linked() ? ['discord'] : []), ...(TwitchTab.linked() ? ['twitch'] : [])].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}${f === 'discord' ? badge(DiscordTab.unread()) : ''}</button>`).join('');
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
-      <div class="dm-list">${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button><button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(t('pa.name'))}</b></span></button>` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}</div>`;
+      <div class="dm-list">${drafts}${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button><button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(t('pa.name'))}</b></span></button>` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}</div>`;
     const panel = el('dmPanel');
     if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
     panel.hidden = false;
@@ -426,6 +436,10 @@ const Dms = (() => {
     if (sf) { const ta = el('dmText'); if (ta) { ta.value = sf.dataset.smfill; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } return; }
     const sv = e.target.closest('#dmPanel .cemoji-save');
     if (sv) { e.preventDefault(); saveEmoji(sv.dataset.ecid, sv.dataset.esave); return; }
+    const dx = e.target.closest('#dmPanel [data-dmdraftx]');
+    if (dx) { e.preventDefault(); clearDraft(dx.dataset.dmdraftx); paintList(); return; }
+    const dd = e.target.closest('#dmPanel [data-dmdraft]');
+    if (dd) { e.preventDefault(); const k = dd.dataset.dmdraft; if (k.startsWith('dm/')) show(k.slice(3)); else { const [s, id] = k.split('/'); location.hash = '#/p/' + s + '/' + id; close(); } return; }
     const xc = e.target.closest('#dmPanel [data-dmclose],#dmPanel [data-dmreopen]');   // AIG-917
     if (xc) { e.preventDefault(); const k = xc.dataset.dmclose || xc.dataset.dmreopen, shut = !!xc.dataset.dmclose; api('POST', '/api/dmclosed', { key: k, closed: shut }).then(() => { if (shut) closed[k] = new Date().toISOString(); else delete closed[k]; return loadRail(); }).then(paintList).catch(() => {}); return; }
     if (e.target.closest('#dmPanel [data-dmshowquiet]')) { showQuiet = !showQuiet; paintList(); return; }

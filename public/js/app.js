@@ -139,7 +139,7 @@ async function restartBoard(btn) {
 // Unsent text anywhere (a reply, an answer, a dialog) or pending attachments: ask before losing it.
 const hasUnsent = () => [...document.querySelectorAll('textarea, input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
   || !!document.querySelector('.att-chip');
-const okToLeave = what => !hasUnsent() || confirm(t('leave.confirm', { what }));
+const okToLeave = what => true;   // AIG-1022: unsent replies are kept as drafts (core.js, Messages > 📝 Drafts), so no "lose it?" box
 // Applies the update; the server restarts itself, so wait a few seconds and reload.
 async function applyUpdatePage() {
   if (!okToLeave(t('update.what.update'))) return;
