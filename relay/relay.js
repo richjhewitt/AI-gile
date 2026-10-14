@@ -231,9 +231,9 @@ function cleanSnap(o) {
   if (!o || typeof o !== 'object' || Array.isArray(o)) throw fail('send a snapshot as JSON', 400);
   const list = (v, n) => (Array.isArray(v) ? v : []).slice(0, n).filter(x => x && typeof x === 'object');
   return {
-    v: 1, title: str(o.title, 80), at: new Date().toISOString(),
+    v: 1, title: str(o.title, 80), at: new Date().toISOString(), titlesHidden: o.titlesHidden === true || undefined,
     columns: list(o.columns, 12).map(c => ({ id: str(c.id, 30), label: str(c.label, 40) })),
-    cards: list(o.cards, 3000).map(c => ({ id: str(c.id, 20), title: str(c.title, 200), type: str(c.type, 12), priority: str(c.priority, 12), status: str(c.status, 30), assignee: str(c.assignee, 60) })),
+    cards: list(o.cards, 3000).map(c => ({ id: str(c.id, 20), title: o.titlesHidden === true ? '' : str(c.title, 200), len: Math.max(0, Math.min(8, Math.round(Number(c.len) || 0))) || undefined, type: str(c.type, 12), priority: str(c.priority, 12), status: str(c.status, 30), assignee: str(c.assignee, 60) })),
     team: list(o.team, 50).map(m => ({ name: str(m.name, 60), role: str(m.role, 60), avatar: /^https:\/\/[^\s"'<>]{1,300}$/.test(String(m.avatar || '')) ? String(m.avatar) : '' })),
   };
 }
@@ -310,7 +310,7 @@ h1{font-size:18px;margin:0}.muted{color:var(--muted);font-size:13px}.team{displa
 .col h2{font-size:13px;margin:2px 4px 8px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 .c{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:14px}
 .c.bug{border-left-color:#ef4444}.c.feature{border-left-color:var(--accent)}.c.task{border-left-color:#8b5cf6}
-.c .id{font-size:11px;color:var(--muted)}.c .m{font-size:12px;color:var(--muted);margin-top:4px}.c.new{animation:pop .9s ease}
+.c .id{font-size:11px;color:var(--muted)}.c .bar{height:10px;border-radius:5px;background:var(--line);margin:6px 0 2px}.c .m{font-size:12px;color:var(--muted);margin-top:4px}.c.new{animation:pop .9s ease}
 @keyframes pop{0%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 0 transparent}}
 #msg{padding:40px 16px;text-align:center;font-size:18px}[hidden]{display:none!important}
 @media (max-width:600px){.col{flex-basis:80vw}}
@@ -331,7 +331,7 @@ function draw(s){
   (s.columns||[]).forEach(function(col){
     var d=el("section","col");d.appendChild(el("h2",null,col.label));
     (s.cards||[]).filter(function(c){return c.status===col.id}).forEach(function(c){
-      var e=el("div","c "+c.type);e.dataset.id=c.id;e.dataset.col=col.id;e.appendChild(el("div","id",c.id));e.appendChild(el("div",null,c.title));
+      var e=el("div","c "+c.type);e.dataset.id=c.id;e.dataset.col=col.id;e.appendChild(el("div","id",c.id));if(c.title)e.appendChild(el("div",null,c.title));else{var bar=el("div","bar");bar.style.width=Math.max(15,(c.len||3)*12)+"%";e.appendChild(bar)}
       var m=[c.priority!=="normal"?c.priority:"",c.assignee].filter(Boolean).join(" · ");if(m)e.appendChild(el("div","m",m));
       d.appendChild(e);now[c.id]=col.id});
     main.appendChild(d)});

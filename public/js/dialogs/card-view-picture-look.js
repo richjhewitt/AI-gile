@@ -117,7 +117,7 @@ async function saveLook(auto) {
   try {
     const cwBox = $('look-chgwin-box');
     if (!auto && cwBox && cwBox.value.trim() !== cwBox.dataset.was) await api('POST', '/api/projects/' + slug() + '/change-windows', { set: cwBox.value });   // owner only; a bad line shows its error
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, personal: $('look-personal').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, dod: { ready: $('look-dod-ready').value, done: $('look-dod-done').value }, srv: lookServerValue(), callUrl: $('look-callurl').value.trim() });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, personal: $('look-personal').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), publicHideTitles: !!($('look-pubhide') || {}).checked, aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, dod: { ready: $('look-dod-ready').value, done: $('look-dod-done').value }, srv: lookServerValue(), callUrl: $('look-callurl').value.trim() });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }
