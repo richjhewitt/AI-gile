@@ -100,3 +100,17 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 .tl-today{display:flex;align-items:center;gap:12px;margin:8px 0 16px;color:var(--diamond);font-weight:700}
 .tl-today::before,.tl-today::after{content:"";flex:1;height:2px;background:var(--diamond)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Forms: interest and business licence pages (AIG-754, AIG-619) */
+.form-page{max-width:560px;margin:32px auto}
+.form-page form{display:flex;flex-direction:column;gap:14px;margin:20px 0}
+.form-page label{display:flex;flex-direction:column;gap:6px;font-weight:600}
+.form-page label.pick{flex-direction:row;align-items:center;gap:8px;font-weight:400}
+.form-page input:not([type=radio]),.form-page textarea{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--raised);color:var(--text)}
+.form-page fieldset{border:1px solid var(--line);border-radius:8px;padding:8px 14px;display:flex;flex-direction:column;gap:8px}
+.form-page .btn{align-self:flex-start;cursor:pointer;font:inherit;font-weight:600}
+.form-page .btn:disabled{opacity:.6;cursor:default}
+.form-msg{min-height:1.4em;margin:0}
+.form-msg.ok{color:#1a8f4a}
+.form-msg.bad{color:#d4433b}
+.muted{color:var(--muted)}

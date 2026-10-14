@@ -26,6 +26,8 @@
 //   Business licence applications (AIG-601):
 //   POST /apply            { company, website, what, how, email }: one file in DATA/apply/ (5 per hour per address, 8 KB at most)
 //   GET  /apply            the applications, only if RELAY_STATS_KEY is set and the request is signed by it (the operator's board)
+//   POST /interest         { email, which: alpha|beta|both }: register interest from the website (AIG-754); one file per email
+//                          in DATA/interest/ (a repeat replaces it), 5 per hour per address; GET /interest signed like GET /apply
 //   POST /bug              { title, text, build, channel }: a Live tester's bug report (10 per hour per address, 8 KB at most)
 //   GET  /bug, POST /bug/ack { ids }: the operator's board collects reports and deletes them (signed by RELAY_STATS_KEY)
 //   GET  /health           { ok } for anyone; signed by RELAY_STATS_KEY it adds cpu, mem, disk, storage, uptime (AIG-660)
@@ -167,6 +169,7 @@ async function handle(req, res) {
   if (pathname.startsWith('/b/')) return board(req, res, pathname, ip);
   if (pathname.startsWith('/f/')) return feedback(req, res, pathname, ip);   // public feedback (AIG-968)
   if (pathname === '/apply') return apply(req, res, pathname, ip);
+  if (pathname === '/interest') return interest(req, res, pathname, ip);   // 📝 alpha / beta interest (AIG-754)
   if (pathname === '/bug' || pathname === '/bug/ack') return bugs(req, res, pathname, ip);   // 🐞 Live testers (AIG-561)
   const m = pathname.match(/^\/m\/([^/]+)(\/ack)?$/);
   if (!m || !isBox(m[1])) throw fail('not found', 404);
@@ -510,6 +513,39 @@ async function apply(req, res, pathname, ip) {
   const id = Date.now() + '-' + crypto.randomBytes(8).toString('hex');
   fs.writeFileSync(path.join(APPLY, id + '.json'), JSON.stringify({ ...a, at: new Date().toISOString() }), { mode: 0o600 });
   recent.push(now); applyHits.set(ip, recent);
+  return send(res, 201, { ok: true });
+}
+
+// 📝 Interest in the alpha and beta (AIG-754): the website form posts an email and which test. One file per email (named by
+// its hash, so a second sign-up replaces the first and the list holds no duplicates). Read only by the operator's board.
+const INTEREST = path.join(DATA, 'interest');
+const interestHits = new Map();   // ip -> times in the last hour
+async function interest(req, res, pathname, ip) {
+  res.setHeader('Access-Control-Allow-Origin', '*');   // the form lives on the website, not on the relay
+  if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' }); return res.end(); }
+  if (req.method === 'GET') {
+    if (!STATS_KEY) throw fail('not found', 404);
+    owner(req, null, pathname, '', STATS_KEY);
+    let names = []; try { names = fs.readdirSync(INTEREST).filter(f => /^[0-9a-f]{32}\.json$/.test(f)); } catch {}
+    const items = [];
+    for (const n of names) { try { items.push(JSON.parse(fs.readFileSync(path.join(INTEREST, n), 'utf8'))); } catch {} }
+    return send(res, 200, { interest: items.sort((a, b) => String(a.at).localeCompare(String(b.at))) });
+  }
+  if (req.method !== 'POST') throw fail('not found', 404);
+  const now = Date.now(), recent = (interestHits.get(ip) || []).filter(t => now - t < 3600e3);
+  if (recent.length >= 5) throw fail('too many sign-ups from here: try again later', 429);
+  const body = await readBody(req, 2 * 1024);
+  let o; try { o = JSON.parse(body); } catch { throw fail('send it as JSON', 400); }
+  if (!o || typeof o !== 'object' || Array.isArray(o)) throw fail('send it as JSON', 400);
+  const email = str(o.email, 160).trim().toLowerCase(), which = str(o.which, 10);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw fail('a valid email is needed', 400);
+  if (!['alpha', 'beta', 'both'].includes(which)) throw fail('pick alpha, beta or both', 400);
+  const name = crypto.createHash('sha256').update(email).digest('hex').slice(0, 32) + '.json';
+  let have = 0; try { have = fs.readdirSync(INTEREST).length; } catch {}
+  if (have >= 5000 && !fs.existsSync(path.join(INTEREST, name))) throw fail('the list is full', 507);
+  fs.mkdirSync(INTEREST, { recursive: true });
+  fs.writeFileSync(path.join(INTEREST, name), JSON.stringify({ email, which, at: new Date().toISOString() }), { mode: 0o600 });
+  recent.push(now); interestHits.set(ip, recent);
   return send(res, 201, { ok: true });
 }
 

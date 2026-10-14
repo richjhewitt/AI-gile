@@ -3311,5 +3311,11 @@
  "mail.setup.ms.failed": "Aanmelden mislukt: {msg}",
  "sc.keyhelp": "Deze lijst tonen of verbergen",
  "help.m.incidents": "🔥 Incidenten en problemen",
- "help.close": "Sluiten"
+ "help.close": "Sluiten",
+ "int.h": "📝 Interesse in alfa / bèta ({n})",
+ "int.which.alpha": "alfa",
+ "int.which.beta": "bèta",
+ "int.which.both": "alfa + bèta",
+ "int.copy": "📋 Alle e-mails kopiëren",
+ "int.none": "Nog niemand: het formulier staat op aigile.lol/interest.html"
 }

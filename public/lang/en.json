@@ -3311,5 +3311,11 @@
  "mail.setup.ms.failed": "Sign-in failed: {msg}",
  "sc.keyhelp": "Show or hide this list",
  "help.m.incidents": "🔥 Incidents and problems",
- "help.close": "Close"
+ "help.close": "Close",
+ "int.h": "📝 Alpha / beta interest ({n})",
+ "int.which.alpha": "alpha",
+ "int.which.beta": "beta",
+ "int.which.both": "alpha + beta",
+ "int.copy": "📋 Copy all emails",
+ "int.none": "Nobody yet: the form is at aigile.lol/interest.html"
 }
