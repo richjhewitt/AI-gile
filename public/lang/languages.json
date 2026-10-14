@@ -123,5 +123,6 @@
   { "code": "morse", "label": "MORSE", "name": "−−− ·−· ··· ·", "locale": "en-GB", "fun": true },
   { "code": "runes", "label": "ᚱ", "name": "ᚱᚢᚾᛅᛦ Runes", "locale": "en-GB", "fun": true },
   { "code": "egy", "label": "EGY", "name": "𓂀 Hieroglyphs", "locale": "en-GB", "fun": true },
-  { "code": "non", "label": "NON", "name": "Norrœnt mál", "locale": "is-IS" }
+  { "code": "non", "label": "NON", "name": "Norrœnt mál", "locale": "is-IS" },
+  { "code": "grc", "label": "GRC", "name": "Ἑλληνική (ἀρχαία)", "locale": "el-GR" }
 ]
