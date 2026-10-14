@@ -117,6 +117,32 @@ function owner(req, box, pathname, body, onlyKey) {
   }
 }
 
+/* ---------- public status page (AIG-1050) ---------- */
+// The board posts { services: [{ name, offers, state, line, at }] } (signed, the first key claims it); anyone reads /status.json (CORS *, cached 30 s).
+const STATUS_DIR = path.join(DATA, 'statuspage');
+let statusCache = { at: 0, text: '{"services":[]}' };
+async function statusPage(req, res, pathname) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' }); return res.end(); }
+  if (req.method === 'GET' && pathname === '/status.json') {
+    if (Date.now() - statusCache.at > 30e3) { let text = '{"services":[]}'; try { text = fs.readFileSync(path.join(STATUS_DIR, 'status.json'), 'utf8'); } catch {} statusCache = { at: Date.now(), text }; }
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=30', 'X-Content-Type-Options': 'nosniff' });
+    return res.end(statusCache.text);
+  }
+  if (req.method === 'POST' && pathname === '/status') {
+    const body = await readBody(req, 64 * 1024);
+    owner(req, { dir: STATUS_DIR }, pathname, body);
+    let o; try { o = JSON.parse(body); } catch { throw fail('send JSON', 400); }
+    const services = (Array.isArray(o && o.services) ? o.services : []).slice(0, 50).filter(x => x && typeof x === 'object').map(x => ({
+      name: str(x.name, 80), offers: str(x.offers, 200), state: ['green', 'amber', 'red'].includes(x.state) ? x.state : 'green', line: str(x.line, 200), at: str(x.at, 40) }));
+    const text = JSON.stringify({ services }), file = path.join(STATUS_DIR, 'status.json');
+    fs.writeFileSync(file + '.tmp', text); fs.renameSync(file + '.tmp', file);
+    statusCache = { at: 0, text };
+    return send(res, 201, { ok: true });
+  }
+  throw fail('not found', 404);
+}
+
 /* ---------- health (AIG-660) ---------- */
 // The numbers the operator's board watches to warn before this server needs a bigger plan. Node built-ins only.
 function dirBytes(dir, budget = { n: 200000 }) {
@@ -166,6 +192,7 @@ async function handle(req, res) {
     return send(res, 200, await health());
   }
   if (req.method === 'GET' && pathname === '/stats' && STATS_KEY) { owner(req, null, pathname, '', STATS_KEY); sweep(); return send(res, 200, { envelopes: count, bytes: used }); }
+  if (pathname === '/status' || pathname === '/status.json') return statusPage(req, res, pathname);   // 🟢 public status page (AIG-1050)
   if (pathname.startsWith('/b/')) return board(req, res, pathname, ip);
   if (pathname.startsWith('/f/')) return feedback(req, res, pathname, ip);   // public feedback (AIG-968)
   if (pathname === '/apply') return apply(req, res, pathname, ip);
