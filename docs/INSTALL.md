@@ -1,0 +1,123 @@
+# Installing AI-gile
+
+A step-by-step guide for a first install on Windows. About 15 minutes.
+
+## Already using Claude Code? (5 minutes)
+
+You have Node and Claude Code, and your projects already have folders, git and Claude sessions. Then:
+
+1. **Get AI-gile** (step 1 below) next to your projects, and double-click **start-aigile.bat**.
+2. **Setup** opens by itself: type your name, check **Agent program** (Setup suggests the `claude.exe` it finds: click **Use this** to take it; if there is
+   no suggestion, see step 3 below), take the suggested file names the same way and click **Save**. Only what you type or take is saved.
+3. **🔎 Find my projects**: tick your project folders and add them. For each one AI-gile:
+   - adds a short board section to `CLAUDE.local.md` (your own `CLAUDE.md` is left alone)
+   - adds its hooks and team permissions to `.claude/settings.local.json`, keeping your own settings and hooks
+   - the new board starts empty: press **▶ Wake the team** and it reads your git history and past sessions and makes the first cards, so the team starts where you left off
+4. **Carry on as you do now.** Open a project in VS Code or a terminal as usual: the hooks show you the board's news.
+   When you close it, the board wakes the team in the background for your next comment, carrying on your last
+   conversation.
+
+Things to know:
+- `git push` always asks you first, also for a team working in the background
+- background runs use your own Claude plan, the same as your sessions
+- to undo it for a project, remove the AI-gile section from `CLAUDE.local.md` and the `aigile.js` hooks from
+  `.claude/settings.local.json`
+
+New to Claude Code? Start at **What you need** below.
+
+## What you need
+
+- **Windows 10 or 11**
+- **Node.js** (version 18 or later). Download the LTS version from <https://nodejs.org> and install it with the defaults.
+  To check, open PowerShell and type `node -v`: it should print something like `v22.x`. (If it says the command is not
+  found, close PowerShell and open it again.)
+- **Claude Code**, the AI agent that does the work for each project. Install it from <https://claude.com/claude-code> and sign in once (open PowerShell, type `claude`, and follow the steps).
+  AI-gile starts it for a team when there is work to do.
+- **Git** (optional but recommended): from <https://git-scm.com>. AI-gile works without it, but then teams can't commit,
+  and **Find my projects** can't show your history.
+
+## 1. Get AI-gile
+
+You get AI-gile as a zip from the person who shared it with you.
+
+1. Save the zip, right-click it and choose **Extract All**. Put the result next to your projects, e.g.
+   `C:\Users\you\Projects\AI-gile` (a folder name with spaces is fine).
+2. Check that the folder you open has `start-aigile.bat` directly inside it, not one more folder down.
+
+A zip doesn't update itself: ask for a new zip when you want the latest version. Copy it over the old folder; your
+settings (`aigile.local.json`) and board data (`data` folder) stay.
+
+If you are invited to the private GitHub repo instead, run `git clone https://github.com/<you>/AI-gile.git` (a placeholder: use the repo URL you were given) in
+your projects folder; then the board can update itself (see **Updating**).
+
+## 2. Start it
+
+Double-click **start-aigile.bat** in the AI-gile folder. The board starts and opens in your browser at <http://localhost:4321>.
+
+It only listens on your own computer: nobody else on your network can reach it.
+
+## 3. First-run Setup
+
+The first time, the board opens **⚙️ Setup**:
+
+- **Language**: English, Nederlands or Vlaams
+- **Your name**: the teams call you by it
+- **Agent program**: the full path to Claude Code's `claude.exe`. Setup suggests one when it finds it; check that it is
+  right. With the VS Code extension it is usually
+  `C:/Users/you/.vscode/extensions/anthropic.claude-code-*-win32-x64/resources/native-binary/claude.exe`
+  (the `*` is fine: the board picks the newest version)
+- **Agent notes file** and **Agent settings file**: leave the suggested names (`CLAUDE.local.md`, `.claude/settings.local.json`)
+- **Session logs folder**: `C:/Users/you/.claude/projects` (for the ⚡ Usage page; suggested when it exists)
+
+Click **Save**; the page says "Saved. The board is ready." (If it says what is still needed, fill that in.) Your settings stay on your computer in `aigile.local.json`; they are never shared.
+
+## 4. Add your projects
+
+On the home page:
+
+- **🔎 Find my projects** lists the project folders it finds; tick the ones you want and add them
+- or **+ New project**, then **🔌 Connect folder** on its board
+
+Connecting a folder sets the project up for its AI team: their notes, the board's hooks and sensible permissions
+(`git push` always asks you first).
+
+## 5. Let a team work
+
+Open a project, raise a card (**+ New**, or **💬** to message its lead with an idea), and comment on it.
+Your comment wakes the team. They hand work back to you in **For you** with steps to test.
+
+## Optional: the desktop app
+
+The board in its own window, with a taskbar icon that shows a purple diamond when something waits on you.
+
+In PowerShell, in the AI-gile folder:
+
+```
+cd desktop
+npm install
+npm run shortcut
+```
+
+This adds an **AI-gile** shortcut to your Desktop and Start menu. (Run it from PowerShell, not from a VS Code terminal.)
+
+## Updating
+
+With a zip, see step 1. With a git clone, when there is a new version the board shows an **⬆ Update** pill. One click updates and restarts it.
+It never updates while a team is working, and never over changes you haven't saved.
+
+## The No-AI edition
+
+A download with no AI in it at all, for people who want the board, friends, sharing, the guide and people as team members, and nothing else.
+
+- Build it from a checkout: `node tools/build-noai.mjs` makes the folder `dist/aigile-noai/` (git-ignored). Add `--zip` for `dist/aigile-noai.zip` (uses the `tar` that comes with Windows 10 and later; if it is missing you still get the folder). `--out <folder>` puts it somewhere else.
+- It is the same code with the AI parts left out: the tester, Lead Scrum Master, night watchman, usage checks, ask a mate and token usage are replaced by empty stand-ins, and the model profiles, status line and their briefs are not copied.
+- A file called `NOAI` in the folder keeps "No AI, ever" on for good. The switch can't be turned off there. Setup's **OK, I give in: try AI** button only explains that you need the full download.
+- To move over to the full download, copy your `data` folder into it. Your boards carry over.
+
+## If something goes wrong
+
+- **The page doesn't open:** run `start-aigile.bat` again. If something else uses port 4321, close that program.
+  (Another port works for the board and the desktop app, but the teams' commands expect 4321 for now.)
+- **"Node.js was not found":** install Node (see **What you need**), then run `start-aigile.bat` again.
+- **A team never wakes:** check **Agent program** in ⚙️ Setup points at a `claude.exe` that exists.
+- **Usage page is empty:** it fills in once a terminal Claude session has run, or click **🔄 Check usage now**.

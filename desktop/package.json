@@ -1,0 +1,13 @@
+{
+  "name": "aigile-desktop",
+  "private": true,
+  "description": "AI-gile in its own window: starts the board server if needed and opens it",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "shortcut": "powershell -NoProfile -ExecutionPolicy Bypass -File make-shortcut.ps1"
+  },
+  "devDependencies": {
+    "electron": "^38.0.0"
+  }
+}

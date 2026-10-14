@@ -1,0 +1,13 @@
+{
+  "_": "Project types (AIG-442): default scale tweaks. 'all' = every role, a role group (frontend, backend, ...) = that role at any level, 'owner' = how agents talk to the owner here. Scales: alone, tests, steps, words (1..5). Picking a type writes these as the project's own numbers (p.profiles).",
+  "types": [
+    { "id": "webapp", "roles": { "frontend": { "tests": 4 }, "accessibility": { "tests": 5 }, "backend": { "tests": 4 }, "fullstack": { "tests": 4 }, "qa": { "tests": 5 } } },
+    { "id": "mobile", "roles": { "mobile": { "tests": 5 }, "accessibility": { "tests": 5 }, "frontend": { "tests": 4 }, "qa": { "tests": 5 } } },
+    { "id": "server", "roles": { "security": { "alone": 1, "tests": 5 }, "devops": { "alone": 1, "tests": 5 }, "backend": { "tests": 5 }, "reviewer": { "tests": 4 } } },
+    { "id": "data", "roles": { "data": { "tests": 5, "alone": 2 }, "backend": { "tests": 4 }, "qa": { "tests": 5 } } },
+    { "id": "game", "roles": { "frontend": { "tests": 3 }, "qa": { "tests": 4 }, "all": { "alone": 3 } } },
+    { "id": "docs", "roles": { "all": { "tests": 2 }, "copywriter": { "words": 1, "tests": 2 }, "i18n": { "tests": 3 } } },
+    { "id": "life", "owner": { "words": 1, "steps": 1 }, "roles": { "all": { "tests": 1, "words": 1, "alone": 2 } } },
+    { "id": "custom", "roles": {} }
+  ]
+}

@@ -1,0 +1,398 @@
+{
+ "sprintHours": 6,
+ "defaultPerSonnetHour": 150000,
+ "weights": {
+  "haiku": 0.3,
+  "sonnet": 1,
+  "opus": 3
+ },
+ "teams": [
+  {
+   "id": "dev",
+   "name": "General dev team",
+   "purpose": "Build, test and ship features day to day.",
+   "roles": [
+    {
+     "role": "lead-principal",
+     "model": "opus",
+     "job": "Plans the sprint, splits work and keeps the board honest."
+    },
+    {
+     "role": "fullstack-senior",
+     "model": "sonnet",
+     "job": "Builds features end to end."
+    },
+    {
+     "role": "qa-junior",
+     "model": "haiku",
+     "job": "Checks each card against its test steps."
+    },
+    {
+     "role": "reviewer-senior",
+     "model": "sonnet",
+     "job": "Reads every change before it is accepted."
+    },
+    {
+     "role": "devops-mid",
+     "model": "sonnet",
+     "job": "Keeps builds, deploys and scripts working."
+    },
+    {
+     "role": "copywriter-junior",
+     "model": "haiku",
+     "job": "Tidies wording, help text and the changelog."
+    }
+   ],
+   "cards": [
+    "Agree the sprint goal and sizes",
+    "Pick the top three features from the backlog",
+    "Add test steps to every open card",
+    "Review last sprint and note what to change"
+   ],
+   "done": [
+    "Every card in Done has been tested",
+    "Nothing half-merged is left on a branch",
+    "Rich has seen a demo of what shipped"
+   ]
+  },
+  {
+   "id": "ux",
+   "name": "UX overhaul",
+   "purpose": "Find what confuses people and make the screens clearer.",
+   "roles": [
+    {
+     "role": "lead-principal",
+     "model": "opus",
+     "job": "Sets the UX goals and decides what is in scope."
+    },
+    {
+     "role": "ux-researcher-mid",
+     "model": "sonnet",
+     "job": "Watches how people use it and lists the pain points."
+    },
+    {
+     "role": "uxui-senior",
+     "model": "sonnet",
+     "job": "Designs the fixes: layout, spacing and flow."
+    },
+    {
+     "role": "frontend-mid",
+     "model": "sonnet",
+     "job": "Builds the screens as designed."
+    },
+    {
+     "role": "accessibility-mid",
+     "model": "sonnet",
+     "job": "Checks contrast, keyboard use and screen readers."
+    },
+    {
+     "role": "qa-junior",
+     "model": "haiku",
+     "job": "Tests every screen at phone and desktop width."
+    }
+   ],
+   "cards": [
+    "List the five most confusing screens",
+    "Sketch a simpler flow for the first-run path",
+    "Fix spacing and alignment on the main board",
+    "Check every screen at phone width",
+    "Re-test the top tasks with fresh eyes"
+   ],
+   "done": [
+    "The top tasks take fewer clicks than before",
+    "Every screen works on a phone and in dark mode",
+    "No new confusing spots were found in the re-test"
+   ]
+  },
+  {
+   "id": "security",
+   "name": "Security and pen test",
+   "purpose": "Hunt for holes before someone else finds them.",
+   "roles": [
+    {
+     "role": "lead-principal",
+     "model": "opus",
+     "job": "Sets the scope and ranks findings by risk."
+    },
+    {
+     "role": "security-principal",
+     "model": "opus",
+     "job": "Plans the attacks and judges how serious each hole is."
+    },
+    {
+     "role": "security-senior",
+     "model": "sonnet",
+     "job": "Probes inputs, logins and file handling."
+    },
+    {
+     "role": "reviewer-senior",
+     "model": "sonnet",
+     "job": "Reviews fixes so they do not open new holes."
+    },
+    {
+     "role": "devops-mid",
+     "model": "sonnet",
+     "job": "Checks secrets, ports, dependencies and config."
+    },
+    {
+     "role": "qa-junior",
+     "model": "haiku",
+     "job": "Writes a test that proves each fix."
+    }
+   ],
+   "cards": [
+    "Map every place user input enters the app",
+    "Try the login and session paths for weak spots",
+    "Scan dependencies for known problems",
+    "Check that secrets never reach logs or git",
+    "Write up findings ranked by risk"
+   ],
+   "done": [
+    "Every high-risk finding is fixed or accepted in writing",
+    "Each fix has a test that fails without it",
+    "A short report lists what was checked"
+   ]
+  },
+  {
+   "id": "perf",
+   "name": "Performance",
+   "purpose": "Find what is slow and make it fast, with numbers.",
+   "roles": [
+    {
+     "role": "lead-principal",
+     "model": "opus",
+     "job": "Picks the slowest paths worth fixing first."
+    },
+    {
+     "role": "backend-senior",
+     "model": "sonnet",
+     "job": "Fixes slow queries, loops and file reads."
+    },
+    {
+     "role": "frontend-mid",
+     "model": "sonnet",
+     "job": "Trims page weight and slow redraws."
+    },
+    {
+     "role": "data-mid",
+     "model": "sonnet",
+     "job": "Measures before and after with real timings."
+    },
+    {
+     "role": "reviewer-senior",
+     "model": "sonnet",
+     "job": "Makes sure speed-ups do not break behaviour."
+    },
+    {
+     "role": "qa-junior",
+     "model": "haiku",
+     "job": "Re-runs the checks on every fix."
+    }
+   ],
+   "cards": [
+    "Measure start-up and page load times",
+    "Find the five slowest API calls",
+    "Cut the biggest page-weight offender",
+    "Add a quick timing check to QA"
+   ],
+   "done": [
+    "Before and after numbers are written down",
+    "The slowest paths are clearly faster",
+    "Nothing that worked before is broken"
+   ]
+  },
+  {
+   "id": "a11y",
+   "name": "Accessibility",
+   "purpose": "Make the app usable with a keyboard, a screen reader and low vision.",
+   "roles": [
+    {
+     "role": "lead-principal",
+     "model": "opus",
+     "job": "Sets the target and decides what to fix first."
+    },
+    {
+     "role": "accessibility-mid",
+     "model": "sonnet",
+     "job": "Audits every screen against the checklist."
+    },
+    {
+     "role": "frontend-mid",
+     "model": "sonnet",
+     "job": "Fixes labels, focus order and markup."
+    },
+    {
+     "role": "uxui-senior",
+     "model": "sonnet",
+     "job": "Fixes contrast, sizes and spacing."
+    },
+    {
+     "role": "qa-junior",
+     "model": "haiku",
+     "job": "Tests with keyboard only and zoom at 200%."
+    },
+    {
+     "role": "copywriter-junior",
+     "model": "haiku",
+     "job": "Writes clear alt text and button labels."
+    }
+   ],
+   "cards": [
+    "Tab through every screen and note the traps",
+    "Check colour contrast in light and dark mode",
+    "Add labels to every unlabelled button",
+    "Make dialogs trap and return focus"
+   ],
+   "done": [
+    "Every screen works with the keyboard alone",
+    "Text passes contrast checks in both themes",
+    "Icons and pictures have proper labels"
+   ]
+  },
+  {
+   "id": "launch",
+   "name": "Launch readiness",
+   "purpose": "Get everything tidy, tested and explained before going live.",
+   "roles": [
+    {
+     "role": "lead-principal",
+     "model": "opus",
+     "job": "Owns the launch checklist and the go or no-go call."
+    },
+    {
+     "role": "pm-mid",
+     "model": "sonnet",
+     "job": "Tracks open items and keeps the board clean."
+    },
+    {
+     "role": "qa-mid",
+     "model": "sonnet",
+     "job": "Runs the full test pass on a clean install."
+    },
+    {
+     "role": "devops-mid",
+     "model": "sonnet",
+     "job": "Prepares the release build and a way back."
+    },
+    {
+     "role": "copywriter-mid",
+     "model": "sonnet",
+     "job": "Writes the release notes and first-run help."
+    },
+    {
+     "role": "reviewer-senior",
+     "model": "sonnet",
+     "job": "Does a last read for loose ends."
+    }
+   ],
+   "cards": [
+    "Write the launch checklist",
+    "Test a clean install from scratch",
+    "Prepare release notes",
+    "Plan how to roll back if it goes wrong",
+    "Close or move every open card"
+   ],
+   "done": [
+    "The checklist is fully ticked",
+    "A clean install works start to finish",
+    "Release notes are written and checked"
+   ]
+  },
+  {
+   "id": "docs",
+   "name": "Docs",
+   "purpose": "Write guides people actually read, and keep them true.",
+   "roles": [
+    {
+     "role": "lead-principal",
+     "model": "opus",
+     "job": "Decides what needs documenting and for whom."
+    },
+    {
+     "role": "copywriter-mid",
+     "model": "sonnet",
+     "job": "Writes the guides in plain words."
+    },
+    {
+     "role": "fullstack-senior",
+     "model": "sonnet",
+     "job": "Checks every step against the real app."
+    },
+    {
+     "role": "i18n-junior",
+     "model": "haiku",
+     "job": "Keeps the translations in step."
+    },
+    {
+     "role": "qa-junior",
+     "model": "haiku",
+     "job": "Follows each guide as a new user would."
+    },
+    {
+     "role": "copywriter-junior",
+     "model": "haiku",
+     "job": "Fixes typos, links and headings."
+    }
+   ],
+   "cards": [
+    "List the guides a new user needs",
+    "Write the getting-started page",
+    "Check every screenshot and command is current",
+    "Add a short troubleshooting page"
+   ],
+   "done": [
+    "A new user can get going using the docs alone",
+    "Every command and screenshot is current",
+    "Links and translations are checked"
+   ]
+  },
+  {
+   "id": "data",
+   "name": "Data",
+   "purpose": "Clean, count and explain the numbers behind the app.",
+   "roles": [
+    {
+     "role": "lead-principal",
+     "model": "opus",
+     "job": "Frames the questions the data must answer."
+    },
+    {
+     "role": "data-senior",
+     "model": "sonnet",
+     "job": "Designs the queries and the report."
+    },
+    {
+     "role": "backend-mid",
+     "model": "sonnet",
+     "job": "Builds the pipes that move and store the data."
+    },
+    {
+     "role": "data-mid",
+     "model": "sonnet",
+     "job": "Cleans the data and checks totals."
+    },
+    {
+     "role": "qa-junior",
+     "model": "haiku",
+     "job": "Spot-checks results against known cases."
+    },
+    {
+     "role": "copywriter-junior",
+     "model": "haiku",
+     "job": "Writes plain-words captions for each chart."
+    }
+   ],
+   "cards": [
+    "List the questions the numbers must answer",
+    "Check the data for gaps and duplicates",
+    "Build the first summary report",
+    "Compare totals against a known source"
+   ],
+   "done": [
+    "Each question has a number and a source",
+    "Totals match a second source",
+    "A short plain-words summary is written"
+   ]
+  }
+ ]
+}

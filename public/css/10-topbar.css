@@ -1,0 +1,61 @@
+/* ---------- top bar buttons (AIG-575/576) ---------- */
+#bugBtn:not([data-tbc]) { color: var(--danger); border-color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, var(--col)); }
+@media (min-width: 761px) { body:has(#modal .overlay) header { z-index: 15; } }   /* the bar stays usable over an open card (AIG-733); dialogs (20) still cover it */
+.overlay.top { z-index: 100000; }
+header .tb-off { display: none !important; }
+[data-tbc="accent"] { --tbc: var(--accent); } [data-tbc="done"] { --tbc: var(--done); } [data-tbc="warn"] { --tbc: var(--warn); }
+[data-tbc="danger"] { --tbc: var(--danger); } [data-tbc="you"] { --tbc: var(--you); }
+header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > button, header [data-tbc] > a { color: var(--tbc); border-color: var(--tbc); background: color-mix(in srgb, var(--tbc) 14%, var(--col)); }
+.tb-list { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 4px; }
+.tb-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--col); }
+.tb-row[draggable="true"] { cursor: grab; }
+.tb-grip { color: var(--muted); letter-spacing: -2px; user-select: none; }
+.tb-name { flex: 1 1 140px; display: flex; align-items: center; gap: 6px; }
+.tb-side { font-size: 13px; }
+.tb-sws { display: inline-flex; gap: 4px; }
+.tb-sw { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid transparent; background: var(--tbc); cursor: pointer; }
+.tb-sw[data-tbc=""] { background: var(--panel); border: 2px dashed var(--muted); }
+.tb-sw.on { border: 2px solid var(--text); box-shadow: 0 0 0 2px var(--panel) inset; }
+.tb-mv { display: inline-flex; gap: 2px; }
+.tb-mv button { padding: 2px 8px; }
+
+/* ---------- 🚫 No AI, ever (AIG-581): every AI part is hidden; no glow, no switch (js/noai.js) ---------- */
+.noai [onclick^="wakeTeam"], .noai [onclick^="restartTeam"], .noai [onclick^="watchTeam"], .noai [onclick^="testForMe"], .noai [onclick^="uzCheckNow"],
+.noai [onclick^="pokeColumn"], .noai [data-ask-yes], .noai #ibTester, .noai #pokeTop, .noai #pokeBadge,
+.noai #ntBtn, .noai #usageNav, .noai #ugBars, .noai #nightTop, .noai #teamTop, .noai .ai-only { display: none !important; }
+.noai-box { border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; background: var(--col); }
+.tm-person { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 4px; }
+.tm-person .tm-name { flex: 1 1 140px; }
+.tm-nm { background: none; border: 0; padding: 2px 4px; cursor: text; font: inherit; color: inherit; border-bottom: 1px dashed var(--line); }
+.tm-face { background: none; border: 0; padding: 0; cursor: pointer; min-width: 40px; min-height: 40px; }
+.tm-face .face { width: 40px; height: 40px; border-radius: 50%; }
+.tm-nm-in { font: inherit; padding: 2px 6px; max-width: 220px; }
+.noai [onclick^="askTeamDialog"] { display: none !important; }
+/* 🎯 Today (AIG-595): weights per project, the badge on project cards, the share bars on the usage page */
+.today-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.today-row:last-child { border-bottom: 0; }
+.today-btns { display: flex; flex-wrap: wrap; gap: 4px; }
+.today-w.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.today-badge { font-size: 14px; vertical-align: 1px; }
+.today-bar { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: 6px 0; font-size: 12px; }
+.today-bn { flex: 0 0 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.today-track { flex: 1 1 120px; height: 8px; border-radius: 4px; background: var(--col); overflow: hidden; }
+.today-track i { display: block; height: 100%; background: var(--accent); }
+.today-track i.over { background: var(--danger); }
+.today-bv { flex: 1 0 100%; }
+@media (min-width: 700px) { .today-bv { flex: 0 0 auto; } }
+/* ⏳ the chain across a space's projects (AIG-450) */
+.space-chain { margin-top: 10px; } .space-chain ul { margin: 4px 0; padding-left: 18px; } .space-chain li { margin: 3px 0; overflow-wrap: anywhere; }
+.today-ai.on { background: var(--danger); color: #fff; border-color: var(--danger); }
+.aioff { font-size: 14px; vertical-align: 1px; }
+.today-pctrow { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+.today-pctrow span { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }
+.today-pctrow input { width: 80px; }
+/* 🪐 children's cards on a space board (AIG-436) */
+.space-roll { margin-top: 10px; } .roll-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.roll-chip { border: 2px solid var(--proj, var(--line)); border-radius: 999px; padding: 2px 10px; background: none; cursor: pointer; } .roll-chip.off { opacity: .45; text-decoration: line-through; }
+.roll-board { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; } .roll-col { flex: 0 0 220px; } .roll-col h4 { margin: 4px 0; }
+.roll-card { display: block; margin-bottom: 6px; } .roll-from { font-size: 11px; border-left: 3px solid var(--proj, var(--line)); padding-left: 4px; margin-left: 4px; }
+@media (max-width: 600px) { .roll-col { flex-basis: 75vw; } }
+.dc-pic { display: block; max-width: 100%; max-height: 240px; margin-top: 6px; border-radius: 8px; }
+.tm-loadtpl { max-width: 11em; font-size: 12px; } .tm-type { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 6px 0; }

@@ -1,0 +1,19 @@
+data/
+*.tmp
+node_modules/
+*.local.json
+*.local.md
+
+# The owner's own ways of working: private, made from docs/starter on a new install (AIG-96)
+/WAYS-OF-WORKING.md
+.claude/
+
+# Friends' zips (AIG-248)
+dist/
+
+# A friend invite from the join link, read once on first start (AIG-347)
+/invite.json
+/invite.applied.json
+
+# Your own edited copies of the agent profiles (AIG-421)
+/profiles.local/
