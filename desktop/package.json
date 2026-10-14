@@ -8,7 +8,8 @@
   "scripts": {
     "start": "electron .",
     "shortcut": "powershell -NoProfile -ExecutionPolicy Bypass -File make-shortcut.ps1",
-    "appimage": "electron-builder --linux AppImage"
+    "appimage": "electron-builder --linux AppImage",
+    "mac": "electron-builder --mac dmg zip"
   },
   "devDependencies": {
     "electron": "^38.0.0",
@@ -22,6 +23,7 @@
     "extraResources": [
       { "from": "..", "to": "aigile", "filter": ["server.js", "aigile.js", "statusline.js", "package.json", "lib/**", "public/**", "profiles/**", "docs/starter/**"] }
     ],
-    "linux": { "target": ["AppImage"], "icon": "icon.png", "category": "Development", "executableName": "aigile" }
+    "linux": { "target": ["AppImage"], "icon": "icon.png", "category": "Development", "executableName": "aigile" },
+    "mac": { "target": ["dmg", "zip"], "icon": "../public/icons/icon-512.png", "category": "public.app-category.developer-tools", "identity": null }
   }
 }
