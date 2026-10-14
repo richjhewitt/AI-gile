@@ -8,6 +8,7 @@ const Attach = (() => {
   const isImg = a => /^image\//.test(a.type || '') || /\.(png|jpe?g|gif|webp)$/i.test(a.name || '');
   // Images show a thumbnail; clicking it opens a full-size preview, to check it's the right one (AIG-129).
   const urls = new WeakMap(), urlOf = f => { if (!urls.has(f)) urls.set(f, URL.createObjectURL(f)); return urls.get(f); };
+  const revoke = f => { const u = urls.get(f); if (u) { URL.revokeObjectURL(u); urls.delete(f); } };   // a removed or sent file frees its preview (AIG-1090)
   const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="${esc(t('attach.preview'))}">` : '📎'} <span class="att-name" title="${esc(f.name)}">${esc(f.name)}</span><button type="button" data-att-del="${i}" title="${esc(t('attach.remove'))}">✕</button></span>`).join('');
   function preview(src) {
     const lb = document.createElement('div');
@@ -51,7 +52,7 @@ const Attach = (() => {
     const view = e.target.closest('[data-att-view]');
     if (view) preview(view.src);
     const del = e.target.closest('[data-att-del]');
-    if (del) { const k = box.dataset.attKey, l = list(k); l.splice(+del.dataset.attDel, 1); pending.set(k, l); paint(k); }
+    if (del) { const k = box.dataset.attKey, l = list(k); l.splice(+del.dataset.attDel, 1).forEach(revoke); pending.set(k, l); paint(k); }
   });
   document.addEventListener('change', e => {
     const box = e.target.closest && e.target.closest('.att');
@@ -138,7 +139,7 @@ const Attach = (() => {
     }
     return out;
   }
-  const clear = key => { pending.delete(key); paint(key); };
+  const clear = key => { list(key).forEach(revoke); pending.delete(key); paint(key); };
   const has = key => list(key).length > 0;
   // Under a comment: thumbnails for images (click for full size), links for other files.
   const shown = (m, slug, base = `/api/projects/${slug}/attachments`) => m.attachments && m.attachments.length ? `<div class="att-shown">${m.attachments.map(a => {
