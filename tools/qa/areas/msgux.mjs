@@ -1,5 +1,5 @@
 // QA area: msgux (AIG-936, AIG-943, AIG-946): the Lead chat answers the chat itself (a plain message) unless you pick a card, and
-// Go shows only for a Go? question; All hands asks "Send to N teams?" first; quiet chats (3 days) hide with a link, a new message
+// Go shows only for a Go? question; All hands asks "Send to N teams?" first; quiet chats (6 hours) hide with a link, a new message
 // brings one back, newest first, plain-text previews. Dates are set relative to now.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,9 +13,9 @@ def('msgux', 'Messages: Lead chat defaults to a plain message, Go only on a Go? 
   const yn = await mkCard(s, 'mux-chat', 'Colour', { status: 'team' });
   await s.ok('POST', `/api/projects/mux-chat/cards/${yn.id}/comments`, { author: 'Lead', text: 'Which colour do you want?', needsYou: true, mark: 'ask' });
   const say = (slug, text) => s.ok('POST', `/api/projects/${slug}/leadchat`, { text, author: 'Lead' });
-  await say('mux-old', 'ancient news'); await say('mux-mid', 'a day old'); await say('mux-new', '- **Bold plan** for `today`\n- second bullet');
+  await say('mux-old', 'ancient news'); await say('mux-mid', 'two hours old'); await say('mux-new', '- **Bold plan** for `today`\n- second bullet');
   const back = (slug, ms) => { const f = path.join(s.data, slug + '.chat'), j = JSON.parse(fs.readFileSync(f, 'utf8')); j.msgs.forEach(m => { m.at = ago(ms); }); j.readAt = ago(ms - 1000); fs.writeFileSync(f, JSON.stringify(j)); };
-  back('mux-old', 5 * day); back('mux-mid', day);
+  back('mux-old', 5 * day); back('mux-mid', 2 * 3600000);
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('#dmRail [data-dms]');
   await page.click('#dmRail [data-dms]');
@@ -25,7 +25,7 @@ def('msgux', 'Messages: Lead chat defaults to a plain message, Go only on a Go? 
   const row = await page.textContent('#dmPanel [data-dm="mux-new"]');
   check('preview is plain text: no ** or leading bullet', /Mux NewLead . Bold plan for today/.test(row) && !/\*\*|`|Lead . -/.test(row), row);
   check('a chat quiet for 5 days is hidden', !(await order()).includes('mux-old'));
-  check('a chat from a day ago stays', (await order()).includes('mux-mid'));
+  check('a chat from two hours ago stays', (await order()).includes('mux-mid'));
   const q = page.locator('[data-dmshowquiet]');
   check('Show quiet chats link says how many', /1/.test(await q.textContent()), await q.textContent());
   await q.click();

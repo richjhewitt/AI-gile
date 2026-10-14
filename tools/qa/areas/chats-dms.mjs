@@ -365,7 +365,7 @@ def('dmchats', 'friends\' private DMs show as chats next to the team leads, with
     await page.click('#dmPanel [data-dmfilter="people"]');
     check('People shows only the friend', await page.locator('#dmPanel [data-dm="alpha"]').count() === 0 && await page.locator(`#dmPanel [data-dm="dm:${ca.id}"]`).count() === 1);
     await page.click('#dmPanel [data-dmfilter="all"]');
-    check('All brings both back (and the 🧭 Lead Scrum Master, AIG-359)', await page.locator('#dmPanel .dm-row:not([data-dm="_allhands"])').count() === 3);
+    check('All brings both back (and the 🧭 Lead Scrum Master, AIG-359)', await page.locator('#dmPanel .dm-row:not([data-dm="_allhands"]):not([data-dm="_assistant"])').count() === 3);
 
     await page.click(`#dmPanel [data-dm="dm:${ca.id}"]`);
     await page.waitForSelector('#dmList .dm-msg');
