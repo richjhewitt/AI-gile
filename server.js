@@ -199,6 +199,7 @@ const server = http.createServer(async (req, res) => {
           // A route can answer with a file instead of JSON: { __file: absolute path }.
           if (out && out.__cookie) { res.setHeader('Set-Cookie', out.__cookie); delete out.__cookie; }   // the phone's device key (AIG-868)
           if (out && out.__sse) return out.__sse(res, req);   // a live stream (the terminal, AIG-471): the route writes it
+          if (out && out.__html) { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'" }); return res.end(out.__html); }   // a small page for a browser landing here (the Google sign-in callback, AIG-910)
           if (out && out.__svg) { res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" }); return res.end(out.__svg); }
           if (out && out.__file) {
             // download: a friend's attachment (AIG-306), always saved, never shown or run by the browser.
