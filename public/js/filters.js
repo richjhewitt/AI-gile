@@ -54,7 +54,9 @@ function applyView(i) {
 async function saveViews(views) {
   const p = state.project;
   await api('PATCH', '/api/projects/' + p.slug, { views });
-  p.views = views.length ? views : undefined;   // show it now, before the next poll
+  const keep = views.length ? views : undefined;
+  p.views = keep;   // show it now, before the next poll
+  if (state.project && state.project.slug === p.slug) state.project.views = keep;   // a poll during the save may have swapped the project object for a stale one
 }
 async function saveView() {
   const name = $('view-name').value.trim(), p = state.project, f = curFilter(p.slug);
