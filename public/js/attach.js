@@ -40,7 +40,7 @@ const Attach = (() => {
     const imgs = [...scope.querySelectorAll('.att-shown a > img, img.gif-inline')];
     gallery(imgs, Math.max(0, imgs.indexOf(img)));
   }, true);
-  const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="${esc(t('attach.title'))}">${esc(t('attach.btn'))}</button><button type="button" class="att-gif" title="${esc(t('gif.title'))}">🎞️</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span></span>`;
+  const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="${esc(t('attach.title'))}">${esc(t('attach.btn'))}</button><button type="button" class="att-gif" title="${esc(t('gif.title'))}" aria-label="${esc(t('gif.title'))}">${esc(t('gif.btn'))}</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span></span>`;
   const paint = key => document.querySelectorAll('.att').forEach(b => { if (b.dataset.attKey === key) b.querySelector('.att-list').innerHTML = chips(key); });
   const add = (key, files) => { pending.set(key, [...list(key), ...files.filter(f => f.size)]); paint(key); };
   const stamp = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');

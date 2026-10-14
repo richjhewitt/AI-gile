@@ -128,6 +128,7 @@ function renderSetup() {
     </section>
     <section class="set-sec" id="sec-more"><h3 class="set-h">${esc(t('setup.sec.more'))}</h3>
     <label class="f chk"><span><input type="checkbox" id="aiOwnList" ${IB.aiOwn() ? 'checked' : ''} onchange="IB.setAiOwn(this.checked)"> ${esc(t('inbox.aiown.switch'))}</span><small class="muted">${esc(t('inbox.aiown.help'))}</small></label>
+    <label class="f chk"><span><input type="checkbox" id="powerTools" ${Topbar.power() ? 'checked' : ''} onchange="Topbar.setPower(this.checked)"> ${esc(t('tb.power'))}</span><small class="muted">${esc(t('tb.power.help'))}</small></label>
     <label class="f ai-only"><span>${esc(t('follow.setup'))}</span><select class="setup-theme" id="followMode" onchange="Follow.setMode(this.value)">${['auto', 'button'].map(v => `<option value="${v}" ${Follow.mode() === v ? 'selected' : ''}>${esc(t('follow.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('follow.setup.help'))}</small></label>
     <div class="f" id="enterSendBox">${EnterSend.html()}</div>
     <div class="f noai-box" id="noAiBox">${noAiBoxHtml()}</div>

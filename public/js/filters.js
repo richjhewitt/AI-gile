@@ -30,13 +30,17 @@ function paintFilterBar() {
   const selects = sel('type', t('filter.types'), ['feature', 'bug', 'task', 'incident', 'problem', 'change']) + sel('who', t('filter.anyone'), uniq('assignee')) + sel('sprint', t('filter.sprints'), uniq('sprint')) + (uniq('group').length || f.group ? sel('group', t('filter.groups'), uniq('group')) : '');
   if (bar.dataset.slug !== p.slug) {   // build once per project; afterwards only the selects and count update
     bar.dataset.slug = p.slug;
-    bar.innerHTML = `<div class="fbar"><input type="search" id="f-q" placeholder="${esc(t('filter.search'))}" value="${esc(f.q)}" oninput="setFilter('q', this.value)">
+    bar.innerHTML = `<div class="fbar${state.filtersOpen ? ' open' : ''}"><input type="search" id="f-q" placeholder="${esc(t('filter.search'))}" value="${esc(f.q)}" oninput="setFilter('q', this.value)">
+      <button type="button" class="f-tog" id="f-tog" aria-expanded="${state.filtersOpen ? 'true' : 'false'}" onclick="toggleFilters()"></button>
       <span id="f-sel">${selects}</span><span id="f-count" class="muted"></span></div>`;
     bar.querySelector('#f-sel').onchange = e => setFilter(e.target.dataset.f, e.target.value);
   } else if ($('f-sel').dataset.sig !== selects && !$('f-sel').contains(document.activeElement)) { $('f-sel').innerHTML = selects; }
   $('f-sel').dataset.sig = selects;
+  const nAct = ['type', 'who', 'sprint', 'group'].filter(k => f[k]).length;   // AIG-1082: on a phone the dropdowns sit behind this button
+  $('f-tog').textContent = t('filter.btn') + (nAct ? ' · ' + nAct : '');
   $('f-count').innerHTML = active ? t('filter.count.html', { shown, n: p.cards.length }) : '';
 }
+function toggleFilters() { state.filtersOpen = !state.filtersOpen; const b = document.querySelector('#filterbar .fbar'); if (b) b.classList.toggle('open', state.filtersOpen); const g = $('f-tog'); if (g) g.setAttribute('aria-expanded', state.filtersOpen ? 'true' : 'false'); }
 function setFilter(key, v) { curFilter(state.project.slug)[key] = v; renderBoardOnly(); paintFilterBar(); }
 function clearFilter() { setLastView(state.project.slug, ''); state.filters[state.project.slug] = blankFilter(); $('filterbar').dataset.slug = ''; renderBoardOnly(); paintFilterBar(); }
 

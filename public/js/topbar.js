@@ -23,6 +23,11 @@ const Topbar = (() => {
   const save = c => { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch {} };
   const isDefault = c => JSON.stringify(c) === JSON.stringify(blank());
   let cur = load();
+  // AIG-1077: the personal power tools (Streamer, Twitch chat, No Token Mode, Tired mode, Assumptions, ScrumGlance, WeedGlance) stay out of
+  // the menus until switched on in Setup > More settings. A browser that already has its own top bar layout keeps what it has.
+  const PWKEY = 'aigile.powertools';
+  const power = () => { try { const v = localStorage.getItem(PWKEY); if (v === '1' || v === '0') return v === '1'; return !!(localStorage.getItem(KEY) || localStorage.getItem('aigile.topbar.pinned')); } catch { return true; } };
+  const setPower = on => { try { localStorage.setItem(PWKEY, on ? '1' : '0'); } catch {} document.body.classList.toggle('no-power', !on); };
   // AIG-931/932: only Inbox, Help and Setup (and the things that appear when there is something to act on) stay in the bar;
   // the rest sit under "More" (on a phone, one menu for everything but the logo and Inbox). The same elements are moved, so ids and handlers stay.
   const PKEY = 'aigile.topbar.pinned';
@@ -61,6 +66,7 @@ const Topbar = (() => {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') menu(false); });
   // Put the buttons where the saved layout says. Safe to call again and again.
   function apply() {
+    document.body.classList.toggle('no-power', !power());
     const sp = document.querySelector('header .spacer'), end = $('tbMore'); if (!sp || !end) return;
     const more = end, mm = $('tbMoreMenu');
     for (const id of cur.order) {
@@ -110,6 +116,6 @@ const Topbar = (() => {
   document.addEventListener('dragover', e => { if (drag && e.target.closest && e.target.closest('.tb-row')) e.preventDefault(); });
   document.addEventListener('drop', e => { const r = e.target.closest && e.target.closest('.tb-row'); if (!drag || !r) return; e.preventDefault(); const to = cur.order.indexOf(r.dataset.tb), id = drag; drag = null; if (id !== r.dataset.tb) move(id, to); });
   document.addEventListener('dragend', () => { drag = null; });
-  return { html, apply, menu, pin, pins: () => pins,  toggle, side, colour, step, move, reset, state: () => cur };
+  return { html, apply, menu, power, setPower, pin, pins: () => pins,  toggle, side, colour, step, move, reset, state: () => cur };
 })();
 Topbar.apply();
