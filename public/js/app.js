@@ -63,7 +63,7 @@ setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136
 // Dev builds: when the server or page changes, a small 🆕 Refresh pill floats at the top (AIG-78), above any open
 // card so he can reach it mid-reply. It never covers what he's typing and stays until he clicks it.
 let loadedBuild = null;
-// App logo (AIG-175): the tab icon and the header link use the picture from Setup, else the 🗂️ they start with.
+// App logo (AIG-175): the tab icon and the header link use the picture from Setup, else the app icon they start with (AIG-1017).
 const FAVICON0 = document.getElementById('favicon').getAttribute('href');
 // App icon colours (AIG-400): with no picture but custom colours, the tab icon is the board mark in them, with the
 // waiting diamond while the title has a count (inbox-top.js).
@@ -74,7 +74,7 @@ function applyAppLogo(url, icon) {
   const href = url || (appIcon ? `/api/app-icon.svg?waiting=${w}&v=${appIcon.v}` : FAVICON0), key = href + '|' + (url || '');
   if (f.dataset.logo === key) return;
   f.dataset.logo = key; f.setAttribute('href', href);
-  b.innerHTML = url ? `<img class="brand-logo" src="${esc(url)}" alt=""> AI-gile` : '🗂️ AI-gile';
+  b.innerHTML = url ? `<img class="brand-logo" src="${esc(url)}" alt=""> AI-gile` : '<img class="brand-logo" src="icons/icon-192.png" alt=""> AI-gile';
 }
 let wasQuiet = null;   // was the board quiet at the last check (AIG-232)
 let checkingBuild = false;
