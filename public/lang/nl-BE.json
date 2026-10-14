@@ -3308,5 +3308,8 @@
  "mail.setup.ms.type": "en typ deze code:",
  "mail.setup.ms.copy": "Code kopiëren",
  "mail.setup.ms.waiting": "Wachten tot je je aanmeldt…",
- "mail.setup.ms.failed": "Aanmelden mislukt: {msg}"
+ "mail.setup.ms.failed": "Aanmelden mislukt: {msg}",
+ "sc.keyhelp": "Deze lijst tonen of verbergen",
+ "help.m.incidents": "🔥 Incidenten en problemen",
+ "help.close": "Sluiten"
 }

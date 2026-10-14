@@ -126,6 +126,9 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 #suPrompt .su-pill { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 8px 12px; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
 /* The "Call stand-ups?" pill floats over the bottom left: leave room under the Messages list so Show closed stays clickable (AIG-917). */
 body:has(#suPrompt) .dm-list { padding-bottom: 76px; }
+/* AIG-967: never over a dialog, and room under the page so buttons at the bottom (All hands Send, Request) stay clickable */
+body:has(#dialog:not(:empty)) #suPrompt { display: none; }
+body:has(#suPrompt) #app { padding-bottom: 76px; }
 @media (max-width: 600px) { body:has(#suPrompt) .dm-list { padding-bottom: 130px; } }
 .su-pick label { display: block; padding: 4px 0; }
 

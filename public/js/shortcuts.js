@@ -6,7 +6,7 @@ const Shortcuts = (() => {
   const LIST = [
     [['j', 'k'], 'or', 'sc.move'], [['Enter', 'o'], 'or', 'sc.open'], [['a'], '', 'sc.accept'], [['b'], '', 'sc.back'], [['n'], '', 'sc.new'],
     [['g', 'h'], 'then', 'sc.home'], [['g', 'i'], 'then', 'sc.inbox'], [['g', 'm'], 'then', 'sc.messages'], [['g', 's'], 'then', 'sc.setup'],
-    [['/'], '', 'sc.search'], [['?'], '', 'sc.help'], [['Esc'], '', 'sc.close']];
+    [['/'], '', 'sc.search'], [['?'], '', 'sc.keyhelp'], [['Esc'], '', 'sc.close']];
   let gAt = 0;
   const typing = e => { const x = e.target, tag = x && x.tagName; return /^(INPUT|TEXTAREA|SELECT)$/.test(tag) || !!(x && x.isContentEditable); };
   const vis = x => !!x && !x.hidden && x.getClientRects().length > 0;

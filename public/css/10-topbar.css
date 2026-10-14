@@ -37,7 +37,9 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .noai #glanceBtn, .noai #assumeNav, .noai #streamBtn, .noai #liveBtn, .noai #quietTimeTop, .noai #packCopy, .noai #packPaste, .noai .qa-gate.none,
 .noai [onclick^="Editor.open"], .noai [onclick^="openNews"], .noai [onclick^="refactorOffer"], .noai [onclick^="goQuiet"], .noai [onclick^="callStandup"],
 .noai a[href^="#/standups"], .noai .dm-chip[data-dmfilter="agents"], .noai .fy-chip.fy-zero:is([data-first="t"], [data-first="p"], [data-first="o"]),
-.noai .column[data-status="review"]:not(:has(.card)), .noai .column[data-status="team"]:not(:has(.card)) { display: none !important; }
+.noai .column[data-status="review"]:not(:has(.card)), .noai .column[data-status="team"] { display: none !important; }
+/* No AI (AIG-821): For the team is an AI lane (nothing lands there), and 🚨 Swarm starts agents */
+.noai [onclick^="Swarm.toggleFor"], .noai #swarmBar { display: none !important; }
 /* 🎯 Today (AIG-595): weights per project, the badge on project cards, the share bars on the usage page */
 .today-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .today-row:last-child { border-bottom: 0; }

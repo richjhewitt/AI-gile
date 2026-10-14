@@ -31,7 +31,8 @@
     var j;do{j=Math.floor(Math.random()*data.versions.length)}while(j===vi);
     var keep=+range.value;setVersion(j);range.value=Math.min(keep,+range.max);draw(false);
   });
-  fetch(LINES).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
+  // Opened from a file (double-click) the browser blocks fetch: teaser-lines.js (window.TEASER_LINES) is the fallback (AIG-697).
+  fetch(LINES).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){if(window.TEASER_LINES)return window.TEASER_LINES;throw 0}).then(function(d){
     if(!d||!d.versions||!d.versions.length)return;
     data=d;sec.hidden=false;setVersion(Math.floor(Math.random()*d.versions.length));range.value=1;draw(false);
   }).catch(function(){});

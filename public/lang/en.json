@@ -3308,5 +3308,8 @@
  "mail.setup.ms.type": "and type this code:",
  "mail.setup.ms.copy": "Copy code",
  "mail.setup.ms.waiting": "Waiting for you to sign in…",
- "mail.setup.ms.failed": "Sign-in failed: {msg}"
+ "mail.setup.ms.failed": "Sign-in failed: {msg}",
+ "sc.keyhelp": "Show or hide this list",
+ "help.m.incidents": "🔥 Incidents and problems",
+ "help.close": "Close"
 }
