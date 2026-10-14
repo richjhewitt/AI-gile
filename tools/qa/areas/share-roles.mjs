@@ -77,6 +77,17 @@ export async function shareRoles({ a, b, ca, cb, until, ctx }) {
   check('member: no tests handed to them (needs a Tester)', (await a.api('POST', `/api/shares/${id}/test`, { card: j1.id, text: 'try it' })).status === 409);
   check('a role that is not on the list is refused', (await a.api('PATCH', `/api/shares/${id}`, { role: 'owner' })).status === 400);
 
+  // AIG-961/962/963: a title and a preview link on the share (labels only), and the Non-technical friend preset.
+  const lt = await a.ok('PATCH', `/api/shares/${id}`, { title: '  Jetstream   consultant  ', preview: 'https://example.com/demo' });
+  check('title: trimmed and saved on the link; preview saved', lt.title === 'Jetstream consultant' && lt.preview === 'https://example.com/demo', lt);
+  check('title: B is told (theirTitle, theirPreview on its board)', !!(await until(async () => { const x = await b.ok('GET', `/api/shares/${id}/board`); return x.theirTitle === 'Jetstream consultant' && x.theirPreview === 'https://example.com/demo'; })));
+  check('title: capped at 40 characters', (await a.ok('PATCH', `/api/shares/${id}`, { title: 'x'.repeat(90) })).title.length === 40);
+  check('preview: only http and https', (await a.api('PATCH', `/api/shares/${id}`, { preview: 'javascript:alert(1)' })).status === 400 && (await a.api('PATCH', `/api/shares/${id}`, { preview: 'ftp://example.com/x' })).status === 400 && (await a.api('PATCH', `/api/shares/${id}`, { preview: 'not a url' })).status === 400);
+  check('title and preview: a team is refused (403)', await asWho('terminal', 'Bastion', 'PATCH', `/api/shares/${id}`, { title: 'Boss', preview: 'https://example.com' }) === 403 && (await a.ok('GET', '/api/shares?slug=juliet'))[0].title.length === 40);
+  const lc = await a.ok('PATCH', `/api/shares/${id}`, { title: '', preview: '' });
+  check('title and preview: empty clears them, B is told', !lc.title && !lc.preview && !!(await until(async () => { const x = await b.ok('GET', `/api/shares/${id}/board`); return !x.theirTitle && !x.theirPreview; })), lc);
+  await a.ok('PATCH', `/api/shares/${id}`, { title: 'Jetstream consultant', preview: 'https://example.com/demo' });
+
   // The allow/deny table: every role against everything a friend can send (lib/share.js receive, scratch data).
   const r = spawnSync(process.execPath, ['-e', `
     const fs = require('fs'), path = require('path'), share = require(${JSON.stringify(path.join(ROOT, 'lib', 'share.js'))});
@@ -126,6 +137,26 @@ export async function shareRoles({ a, b, ca, cb, until, ctx }) {
   await page.waitForSelector('.share-cmts', { timeout: 3000 }).catch(() => {});
   await sleep(500);
   check('card panel: a Viewer gets neither 🙋 nor 🧪', await page.locator('#shareAssignBtn').count() === 0 && await page.locator('#shareTestBtn').count() === 0);
+
+  // AIG-961/962/963 on the page: title and preview fields, the preset, and the friend's board header.
+  await page.goto(BASE + '/#/p/juliet');
+  await page.waitForSelector('#shareBtn');
+  await page.click('#shareBtn');
+  await page.waitForSelector('#shareTitle');
+  check('🔗 dialog: Title and Preview link fields hold the saved values, the title shows by the friend', await page.inputValue('#shareTitle') === 'Jetstream consultant' && await page.inputValue('#sharePreview') === 'https://example.com/demo' && /, Jetstream consultant/.test(await page.textContent('#shareFriendTitle')));
+  await page.fill('#shareTitle', 'Pilot');
+  await page.locator('#shareTitle').dispatchEvent('change');
+  check('🔗 dialog: editing the Title saves it', !!(await until(async () => (await a.ok('GET', '/api/shares?slug=juliet'))[0].title === 'Pilot')));
+  await page.waitForSelector('#shareSimple');
+  await a.ok('PATCH', `/api/shares/${id}`, { role: 'member', comments: false });
+  await a.ok('PATCH', '/api/projects/juliet', { approvals: false });
+  await page.click('#shareSimple');
+  check('🔗 dialog: Non-technical friend sets Alpha tester, comments on, Approvals on', !!(await until(async () => { const l = (await a.ok('GET', '/api/shares?slug=juliet'))[0]; return l.role === 'alpha' && l.mine.comments === true && l.approvals === true; })));
+  check('🔗 dialog: the preset hint points to Approvals', /Approvals/.test(await page.textContent('#dialog')));
+  const narrow = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+  check('🔗 dialog: no sideways scroll', narrow);
+  const html = await page.evaluate(() => ({ on: ShareBoard.render({ friend: 'A', theirName: 'Juliet', theirTitle: 'Pilot', theirPreview: 'https://example.com/demo?a=1&b=2', cards: [], can: {}, state: 'live', on: true, effective: {} }), off: ShareBoard.render({ friend: 'A', theirName: 'Juliet', cards: [], can: {}, state: 'live', on: true, effective: {} }) }));
+  check('shared board: ▶ Preview opens in a new tab with noopener; empty = no button; title shows', /id="sbPreview"[^>]*target="_blank"[^>]*rel="noopener"/.test(html.on) && /▶ Preview/.test(html.on) && /id="sbTitle"[^>]*>Pilot</.test(html.on) && !/sbPreview|sbTitle/.test(html.off), html.on);
   noErrors(page);
   await page.close();
 }

@@ -3222,5 +3222,14 @@
  "storage.nothing": "No attachments on closed cards older than {days} days to tidy up.",
  "srv.remind.set": "⏰ Reminder set: {text}, {when}",
  "srv.remind.today": "today {time}",
- "srv.remind.tomorrow": "tomorrow {time}"
+ "srv.remind.tomorrow": "tomorrow {time}",
+ "share.title.label": "Title",
+ "share.title.ph": "e.g. Jetstream consultant",
+ "share.preview.label": "Preview link",
+ "share.title.help": "The title is a label only: it shows next to {name} on your side and on their board header.",
+ "share.preview.help": "A preview link (http or https) gives {name} a Preview button; leave it empty for none.",
+ "share.simple": "Non-technical friend",
+ "share.simple.help": "Alpha tester, comments on, Approvals on",
+ "share.simple.hint": "Sets Alpha tester, comments on and Approvals on for this project. Their wishes land in ✅ Approvals.",
+ "sb.preview": "▶ Preview"
 }

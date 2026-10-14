@@ -38,7 +38,7 @@ const ShareBoard = (function () {
     const by = k => b.cards.filter(x => (x.status || '') === k);
     const cols = COLS.filter(k => !(k === '' || k === 'team') || by(k).length).map(k => `<div class="column sb-col" data-sb-col="${k || 'none'}"><h3><span>${esc(colName(k))}</span><span>${by(k).length}</span></h3>${by(k).map(tile).join('')}</div>`).join('');
     const why = !live(b) ? t(b.state === 'ended' ? 'sb.ended' : 'sb.off', { name: b.friend }) : '';
-    return `<div class="toolbar"><h2>🔗 ${esc(b.theirName || b.friend)}</h2>
+    return `<div class="toolbar"><h2>🔗 ${esc(b.theirName || b.friend)}</h2>${b.theirTitle ? `<span class="pill" id="sbTitle">${esc(b.theirTitle)}</span>` : ''}${b.theirPreview ? `<a class="btn" id="sbPreview" href="${esc(b.theirPreview)}" target="_blank" rel="noopener">${esc(t('sb.preview'))}</a>` : ''}
         <span class="pill" id="sbRole" title="${esc(t('sb.role.title', { name: b.friend }))}">${esc(t('sb.youare', { role }))}</span>${raise}
         <span class="grow"></span>${b.slug ? `<a class="btn" href="#/p/${esc(b.slug)}">${esc(t('sb.linked', { project: b.projectName || b.slug }))}</a>` : ''}</div>
       <p class="muted" id="sbCan">${esc(t('sb.can.' + (b.role || 'member'), { name: b.friend }))} ${esc(t(b.board ? 'sb.whole' : 'sb.ticked', { name: b.friend }))} ${esc(t('sb.never', { name: b.friend }))}</p>

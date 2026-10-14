@@ -3222,5 +3222,14 @@
  "storage.nothing": "Geen bijlagen bij gesloten kaarten ouder dan {days} dagen om op te ruimen.",
  "srv.remind.set": "⏰ Herinnering gezet: {text}, {when}",
  "srv.remind.today": "vandaag {time}",
- "srv.remind.tomorrow": "morgen {time}"
+ "srv.remind.tomorrow": "morgen {time}",
+ "share.title.label": "Titel",
+ "share.title.ph": "bijv. Jetstream-consultant",
+ "share.preview.label": "Voorbeeldlink",
+ "share.title.help": "De titel is alleen een label: hij staat bij {name} aan jouw kant en in de kop van hun bord.",
+ "share.preview.help": "Met een voorbeeldlink (http of https) krijgt {name} een Voorbeeld-knop; laat leeg voor geen knop.",
+ "share.simple": "Niet-technische vriend",
+ "share.simple.help": "Alfatester, reacties aan, Goedkeuringen aan",
+ "share.simple.hint": "Zet Alfatester, reacties en Goedkeuringen aan voor dit project. Hun wensen komen in ✅ Goedkeuringen.",
+ "sb.preview": "▶ Voorbeeld"
 }
