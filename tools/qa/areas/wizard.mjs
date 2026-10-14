@@ -18,12 +18,13 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   await sleep(200);
   const after = await setup();
   check('wing it leaves every default and marks the wizard answered', strip(after.prefs) === before && after.prefs.wizardSeen === true && !after.fields.find(f => f.key === 'owner').value, JSON.stringify(after.prefs));
+  await page.waitForSelector('#homeMoreBtn', { timeout: 5000 }).catch(() => {});
   check('Just let me in lands on Home, not Setup (AIG-1069)', !/#\/setup/.test(page.url()) && await page.isVisible('.toolbar #homeMoreBtn') && (await page.textContent('#homeEmpty')).includes('New project'), page.url());
   await page.goto(s.base + '/#/setup'); await page.reload(); await page.waitForSelector('#setupForm'); await sleep(500);
   check('it does not come back by itself', !(await page.isVisible('#wzYes')));
 
   // AIG-1068: only the first load of the home page goes to Setup; then Home shows a Finish setup line and deep links stay put.
-  await page.goto(s.base + '/'); await sleep(800);
+  await page.goto(s.base + '/'); await page.waitForFunction(() => /#\/setup/.test(location.hash), null, { timeout: 8000 }).catch(() => {});
   check('the first home load goes to Setup once', /#\/setup/.test(page.url()), page.url());
   await page.goto(s.base + '/#/'); await page.reload(); await page.waitForSelector('#finishSetup'); await sleep(300);
   check('after that Home stays and shows Finish setup', !/#\/setup/.test(page.url()) && (await page.textContent('#finishSetup')).includes('Finish setup'), page.url());
