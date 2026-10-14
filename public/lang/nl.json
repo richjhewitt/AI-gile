@@ -3219,5 +3219,9 @@
  "storage.tidy": "Bijlagen bij gesloten (klaar) kaarten ouder dan {days} dagen: {n} bestanden, {size}",
  "storage.delete": "Verwijderen",
  "storage.confirm": "{n} bijlagen ({size}) van gesloten kaarten verwijderen? Er wordt verder niets verwijderd.",
- "storage.nothing": "Geen bijlagen bij gesloten kaarten ouder dan {days} dagen om op te ruimen."
+ "storage.nothing": "Geen bijlagen bij gesloten kaarten ouder dan {days} dagen om op te ruimen.",
+  "pub.feedback": "Openbaar feedbackformulier",
+  "pub.feedback.sub": "Bezoekers van je eigen website kunnen een probleem melden; elke melding wordt een bugkaart in Te doen.",
+  "pub.feedback.group": "Zet de kaarten in deze groep (optioneel)",
+  "pub.feedback.snippet": "Zet deze regel op je website"
 }
