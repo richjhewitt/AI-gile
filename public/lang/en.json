@@ -3219,5 +3219,11 @@
  "storage.tidy": "Attachments on closed (done) cards older than {days} days: {n} files, {size}",
  "storage.delete": "Delete",
  "storage.confirm": "Delete {n} attachment files ({size}) from closed cards? Nothing else is removed.",
- "storage.nothing": "No attachments on closed cards older than {days} days to tidy up."
+ "storage.nothing": "No attachments on closed cards older than {days} days to tidy up.",
+  "int.h": "📝 Alpha / beta interest ({n})",
+  "int.which.alpha": "alpha",
+  "int.which.beta": "beta",
+  "int.which.both": "alpha + beta",
+  "int.copy": "📋 Copy all emails",
+  "int.none": "Nobody yet: the form is at aigile.lol/interest.html"
 }

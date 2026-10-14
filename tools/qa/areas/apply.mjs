@@ -33,6 +33,19 @@ def('apply', '📜 business licence applications: POST /apply at the relay, sign
     check('Decline marks it and offers no letter', !(await page.$('.lic-row:has-text("Zed Ltd") .lic-letter')));
     await page.reload(); await page.waitForSelector('#licencesBox .lic-row');
     check('the decisions are kept', /approved/.test(await page.locator('.lic-row:has-text("Acme Bees")').textContent()) && /declined/.test(await page.locator('.lic-row:has-text("Zed Ltd")').textContent()));
+
+    // 📝 Alpha / beta interest (AIG-754): POST /interest from the website, signed list on the board, under the licences.
+    const ipost = o => fetch(relay.base + '/interest', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(o) });
+    check('interest: a bad email or a bad pick is refused', (await ipost({ email: 'nope', which: 'alpha' })).status === 400 && (await ipost({ email: 'a@b.example', which: 'gamma' })).status === 400);
+    const i1 = await ipost({ email: 'Ann@Example.org', which: 'alpha' });
+    check('interest: accepted with open CORS for the website form', i1.status === 201 && i1.headers.get('access-control-allow-origin') === '*');
+    await ipost({ email: 'ann@example.org', which: 'both' });
+    await ipost({ email: 'bob@example.org', which: 'beta' });
+    check('interest: the list is not readable without the operator key', (await fetch(relay.base + '/interest')).status === 401);
+    const il = await s.ok('GET', '/api/interest');
+    check('interest: one entry per email (a repeat replaces it, any case), read by the board', il.items.length === 2 && il.items.find(x => x.email === 'ann@example.org').which === 'both', il);
+    await page.reload(); await page.waitForSelector('#intList .int-row');
+    check('Setup shows the interest list under the licences, with Copy all emails', (await page.locator('#intList .int-row').count()) === 2 && /bob@example\.org/.test(await page.textContent('#intList')) && await page.locator('#intCopy').count() === 1);
     noErrors(page);
   } finally { relay.stop(); }
 }, true);

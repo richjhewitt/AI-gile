@@ -3219,5 +3219,11 @@
  "storage.tidy": "Bijlagen bij gesloten (klaar) kaarten ouder dan {days} dagen: {n} bestanden, {size}",
  "storage.delete": "Verwijderen",
  "storage.confirm": "{n} bijlagen ({size}) van gesloten kaarten verwijderen? Er wordt verder niets verwijderd.",
- "storage.nothing": "Geen bijlagen bij gesloten kaarten ouder dan {days} dagen om op te ruimen."
+ "storage.nothing": "Geen bijlagen bij gesloten kaarten ouder dan {days} dagen om op te ruimen.",
+  "int.h": "📝 Interesse in alfa / bèta ({n})",
+  "int.which.alpha": "alfa",
+  "int.which.beta": "bèta",
+  "int.which.both": "alfa + bèta",
+  "int.copy": "📋 Alle e-mails kopiëren",
+  "int.none": "Nog niemand: het formulier staat op aigile.lol/interest.html"
 }
