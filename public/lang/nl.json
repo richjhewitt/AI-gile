@@ -2818,6 +2818,15 @@
  "eng.gemini": "Gemini",
  "eng.model.gemini": "Gemini-model (leeg = standaard van Gemini)",
  "srv.engine.nogemini": "Gemini CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart.",
+ "srv.engine.nogeminikey": "Gemini heeft een API-sleutel nodig: Setup → Gemini API key. Deze run is niet gestart.",
+ "eng.gkey.h": "Gemini API-sleutel",
+ "eng.gkey.help": "Gemini-runs gebruiken deze sleutel (Google staat de persoonlijke aanmelding voor Gemini CLI niet meer toe). Hij wordt versleuteld op deze pc bewaard en nooit meer getoond.",
+ "eng.gkey.link": "Haal een sleutel bij Google AI Studio",
+ "eng.gkey.saved": "Bewaard",
+ "eng.gkey.notset": "Niet ingesteld",
+ "eng.gkey.ph": "Plak je API-sleutel",
+ "eng.gkey.save": "Sleutel bewaren",
+ "eng.gkey.remove": "Sleutel verwijderen",
  "rails.h": "🛡️ Vangrails",
  "rails.riskPlan": "Een riskante kaart heeft jouw akkoord op een plan nodig voordat het team bouwt",
  "rails.qaGate": "Een kaart met rode QA wordt niet ter test overgedragen",
@@ -3342,5 +3351,10 @@
  "eng.model.copilot": "Copilot-model (leeg = standaard van Copilot)",
  "eng.model.cursor": "Cursor-model (leeg = standaard van Cursor)",
  "srv.engine.nocopilot": "GitHub Copilot CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart.",
- "srv.engine.nocursor": "Cursor CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart."
+ "srv.engine.nocursor": "Cursor CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart.",
+ "pa.name": "💚 Persoonlijke assistent",
+ "srv.pa.help": "Ik kan:\n• je herinneren: “herinner me om 3 uur om Bob te bellen”\n• je dag starten: “start mijn dag”\n• al het andere gaat naar de Lead Scrum Master",
+ "srv.pa.day": "🌅 Start mijn dag wordt geopend.",
+ "srv.pa.passed": "Doorgegeven aan de Lead Scrum Master",
+ "srv.pa.failed": "Doorgeven lukte niet: {why}"
 }

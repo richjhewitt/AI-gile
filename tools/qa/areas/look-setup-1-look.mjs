@@ -100,7 +100,7 @@ def('logos', 'a project picture and an app logo replace the emoji / 🗂️: upl
   check('meta carries it', (await s.ok('GET', '/api/meta')).appLogo.startsWith('/api/app-logo'));
   await page.click('#app-logo button:has-text("Remove")');
   await page.waitForSelector('#app-logo img.brand-logo', { state: 'detached' });
-  check('favicon is the emoji again', (await page.getAttribute('#favicon', 'href')) === fav0 && (await page.textContent('#brand')).includes('🗂️'));
+  check('favicon is the emoji again', (await page.getAttribute('#favicon', 'href')) === fav0 && (await page.getAttribute('#brand img', 'src')) === 'icons/icon-192.png');
   check('app logo gone', (await fetch(s.base + '/api/app-logo')).status === 404 && (await s.ok('GET', '/api/meta')).appLogo === '');
   // Icon colours (AIG-400): bad colours refused; a preset recolours the tab icon; Reset goes back to the emoji.
   check('default icon colours: no custom icon', (await s.ok('GET', '/api/meta')).appIcon === null && (await fetch(s.base + '/api/app-icon.svg')).status === 404);

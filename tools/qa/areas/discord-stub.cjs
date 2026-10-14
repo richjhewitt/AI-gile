@@ -40,6 +40,11 @@ const d = require(root + '/lib/discord'), bot = d.bots()[0];
   r.late = await d.handleMessage(d.bots()[0], { author: { id: '888888' }, content: lk2.code }); r.exp = d.linkStatus('lead'); Date.now = real;
   r.usersEnd = users();
   r.words = [[400, 50033], [404, 10013], [403, 50007], [401, 0], [400, 0]].map(([a, c]) => d.restWords(a, c));
+  // Invite link (AIG-1019): the bot is in no server, then in one
+  let guilds = [];
+  global.fetch = async u => ({ ok: true, status: 200, json: async () => u.endsWith('/applications/@me') ? { id: '4242' } : guilds });
+  r.in0 = (await d.statusFull())[0]; guilds = [{ id: '1' }]; r.cached = (await d.statusFull())[0].inServer;
+  d.saveConfig([{ name: 'lead', users: '123456789', target: 't' }]); r.in1 = (await d.statusFull())[0];
   global.fetch = async () => ({ ok: false, status: 400, json: async () => ({ code: 50033, message: 'Invalid Recipient(s)' }) });
   console.warn = () => {};
   try { await d.test('lead'); r.err = 'none'; } catch (e) { r.err = e.message; }

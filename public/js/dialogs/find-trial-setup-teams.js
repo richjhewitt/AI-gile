@@ -100,6 +100,7 @@ function renderSetup() {
     </section>
     <section class="set-sec" id="sec-teams"><h3 class="set-h">${esc(t('setup.sec.teams'))}</h3>
     <div class="f lead-prefs ai-only" id="mainTeamBox">${mainTeamBoxHtml()}</div>
+    <div class="f" id="geminiKeyBox">${(GKEY.set = null, geminiKeyHtml())}</div>
     <div class="f lead-prefs ai-only" id="runInPrefs">${runInHtml()}</div>
     <div class="f" id="rolesBox">${(Roles.reset(), Roles.html())}</div>
     <div class="f" id="presenceBox">${(queueMicrotask(Presence.load), Presence.html())}</div>

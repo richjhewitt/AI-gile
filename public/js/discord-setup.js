@@ -6,9 +6,9 @@ const DiscordSetup = (() => {
     'Go to <b>discord.com/developers/applications</b> and click <b>New Application</b>. Name it after the agent.',
     'Open <b>Bot</b> in the left menu, then <b>Reset Token</b> and copy it. It is shown once.',
     'Still on <b>Bot</b>: nothing else to switch on. Direct messages need no special permission.',
-    'Open <b>OAuth2</b>, tick <b>bot</b> under Scopes, copy the link, open it and add the bot to any server you are in (a bot can only DM people it shares a server with).',
     'Paste the token below, pick who the bot talks to and press <b>Save</b>.',
-    'Press <b>Link my Discord</b>, then DM the code it shows to your bot in Discord. (No code needed if you would rather paste your User ID: Discord <b>Settings &gt; Advanced</b>, Developer Mode, right-click your name, <b>Copy User ID</b>.)',
+    'Add the bot to a server you are in: after saving, press <b>1. Add the bot to your server</b> (a bot can only be messaged if you share a server with it).',
+    'Press <b>Link my Discord</b>, then in that server click the bot in the member list, choose <b>Message</b> and send it the code. (No code needed if you would rather paste your User ID: Discord <b>Settings &gt; Advanced</b>, Developer Mode, right-click your name, <b>Copy User ID</b>.)',
     'Press <b>Send test message</b>.',
   ];
   const optHtml = (cur) => [['_watchman', '🧭 Lead Scrum Master'], ...D.projects.map(p => [p.slug, p.name || p.slug])]
@@ -18,6 +18,7 @@ const DiscordSetup = (() => {
       <input type="text" data-dc="name" data-i="${i}" value="${esc(b.name)}" placeholder="Bot name" onchange="DiscordSetup.edit(this)">
       <select data-dc="target" data-i="${i}" onchange="DiscordSetup.edit(this)">${optHtml(b.target)}</select>
       <input type="password" data-dc="token" data-i="${i}" value="" placeholder="${b.hasToken ? 'Token saved (type to replace)' : 'Bot token'}" autocomplete="off" onchange="DiscordSetup.edit(this)">
+      ${inviteHtml(b)}
       <button type="button" class="primary" onclick="DiscordSetup.linkMe(${i})">Link my Discord</button>
       <span class="dc-link">${linkHtml(b)}</span>
       <details><summary>or paste a User ID</summary><input type="text" data-dc="users" data-i="${i}" value="${esc(b.users)}" placeholder="Your Discord User ID (optional)" onchange="DiscordSetup.edit(this)"></details>
@@ -25,12 +26,13 @@ const DiscordSetup = (() => {
       <button type="button" onclick="DiscordSetup.del(${i})" title="Remove">✕</button>
       <small class="muted">${esc(statusOf(b))}</small></div>`).join('');
     return `<span>💬 Discord</span><small class="muted">Talk to an agent from Discord, as easily as in the board. Optional.</small>
-      <details ${D.open ? 'open' : ''} ontoggle="DiscordSetup.open=this.open"><summary>Setup guide (7 steps)</summary><ol>${GUIDE.map(s => `<li>${s}</li>`).join('')}</ol></details>
+      <details ${D.open ? 'open' : ''} ontoggle="DiscordSetup.open=this.open"><summary>Setup guide (8 steps)</summary><ol>${GUIDE.map(s => `<li>${s}</li>`).join('')}</ol></details>
       ${rows}
       <div><button type="button" onclick="DiscordSetup.add()">+ Add a bot</button> <button type="button" class="primary" onclick="DiscordSetup.save()">Save</button></div>
       <div class="err" id="dc-err"></div><div class="muted">${esc(D.msg)}</div>`;
   }
-  const linkHtml = b => { const l = D.link[b.name]; if (l && l.linked) return '✅ Linked as ' + esc(l.username); if (l && l.code) return 'DM this code to <b>' + esc(b.name) + '</b> on Discord: <b class="dc-code" style="font-size:1.3em;letter-spacing:.15em">' + esc(l.code) + '</b> <small class="muted">(valid 10 minutes)</small>'; if (l && l.expired) return '⌛ That code ran out: press Link my Discord again'; return b.users ? '✅ Linked' : ''; };
+  const linkHtml = b => { const l = D.link[b.name]; if (l && l.linked) return '✅ Linked as ' + esc(l.username); if (l && l.code) return 'Message this code to <b>' + esc(b.name) + '</b> on Discord: <b class="dc-code" style="font-size:1.3em;letter-spacing:.15em">' + esc(l.code) + '</b> <button class="md-copy" data-copy-text="' + esc(l.code) + '" title="' + esc(t('format.copyvalue')) + '">⧉ Copy</button> <small class="muted">(valid 10 minutes)</small>'; if (l && l.expired) return '⌛ That code ran out: press Link my Discord again'; return b.users ? '✅ Linked' : ''; };
+  const inviteHtml = b => { const s = D.state.find(x => x.name === b.name); return s && s.inServer === false && s.invite ? '<a class="btn primary dc-invite" href="' + esc(s.invite) + '" target="_blank" rel="noopener">1. Add the bot to your server</a> <small class="muted">2. In that server’s member list click the bot, choose Message, and send the code.</small>' : ''; };
   const statusOf = b => { const s = D.state.find(x => x.name === b.name); return !s ? 'Not saved yet' : s.error ? '⚠️ ' + s.error : s.connected ? '🟢 Connected' : '⚪ Connecting…'; };
   const paint = () => { const el = document.getElementById('discordBox'); if (el) el.innerHTML = html(); };
   D.load = async () => {

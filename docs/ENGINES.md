@@ -25,6 +25,12 @@ On its first run on a board, a new engine's lead:
 | Sub-agents | Agent tool | none in `exec`: the board starts each member as its own run | none: same as Codex | none: same | none: same |
 | Asks before acting | no (permission mode) | no (sandbox off, AIG-402) | no (`--yolo`) | no (`--allow-all`, `--no-ask-user`) | no (`--force`; `--trust` skips the workspace prompt) |
 
+## Gemini sign-in: an API key (AIG-1015)
+
+Google refuses the personal sign-in for Gemini CLI now (`IneligibleTierError`, "migrate to Antigravity"), so a Gemini run uses an API key. Setup > Your main team > **Gemini API key** (masked box, link to https://aistudio.google.com/apikey, "Saved" / "Not set"): `GET /api/gemini-key` answers only `{set}`, `POST` (owner, secrets page token) saves, an empty key removes. The key is kept with `secrets.keep/kept` (`gemini:apikey`, DPAPI or AES, `data/secrets/kept.json`), never sent to the page or logged.
+
+A Gemini run (`launch` in lib/presence.js) gets `GEMINI_API_KEY` and `GEMINI_CLI_HOME=data/gemini-home`. The folder holds `.gemini/settings.json` = `{"security":{"auth":{"selectedType":"gemini-api-key"}}}`, because the user's own `~/.gemini/settings.json` (`oauth-personal`) otherwise beats the key; HOME and USERPROFILE are not touched. Claude, Codex, Copilot and Cursor runs never get these. With no key saved the run does not start: one board comment, "Gemini needs an API key: Setup -> Gemini API key". Headless also needs `--skip-trust` (already in the args).
+
 ## Copilot and Cursor (AIG-971, AIG-973)
 
 Checked 2026-10-14. Engine `copilot` (exe `copilot`) and `cursor` (exe `agent`, else `cursor-agent`); the model per roster entry is `copilotModel` / `cursorModel`, empty = the engine default. Neither is installed on the dev PC, so none of this has run for real.

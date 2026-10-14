@@ -23,3 +23,26 @@ async function engineSave(name, patch) {
   try { await api('POST', '/api/projects/' + slug() + '/team', { name, ...patch }); await teamPaint(); }
   catch (e) { setErr('tm-err', e); }
 }
+
+/* ---------- 🔑 Gemini API key (AIG-1015) ---------- */
+// Google refuses the personal sign-in for Gemini CLI, so a Gemini run needs an API key. Saved with the secrets page token, kept
+// encrypted on this PC (lib/engines.js); the page only ever learns whether one is set, never the key.
+const GKEY = { set: null, msg: '' };
+function geminiKeyHtml() {
+  if (GKEY.set === null) { queueMicrotask(geminiKeyLoad); return `<span>${esc(t('eng.gkey.h'))}</span>`; }
+  return `<span>${esc(t('eng.gkey.h'))}</span> <b id="gkeyState" class="pill">${esc(t(GKEY.set ? 'eng.gkey.saved' : 'eng.gkey.notset'))}</b>
+    <small class="muted">${esc(t('eng.gkey.help'))} <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">${esc(t('eng.gkey.link'))}</a></small>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0"><input type="password" id="gkeyInput" autocomplete="off" spellcheck="false" maxlength="200" style="min-width:280px" placeholder="${esc(t('eng.gkey.ph'))}" aria-label="${esc(t('eng.gkey.h'))}">
+      <button type="button" id="gkeySave" onclick="geminiKeySave()">${esc(t('eng.gkey.save'))}</button>
+      ${GKEY.set ? `<button type="button" id="gkeyRemove" onclick="geminiKeySave(true)">${esc(t('eng.gkey.remove'))}</button>` : ''}</div>
+    ${GKEY.msg ? `<div class="err" id="gkeyErr">${esc(GKEY.msg)}</div>` : ''}`;
+}
+const geminiKeyPaint = () => { const el = $('geminiKeyBox'); if (el) el.innerHTML = geminiKeyHtml(); };
+async function geminiKeyLoad() { try { GKEY.set = !!(await api('GET', '/api/gemini-key')).set; } catch { GKEY.set = false; } geminiKeyPaint(); }
+async function geminiKeySave(remove) {
+  const v = remove ? '' : ($('gkeyInput') || {}).value || '';
+  if (!remove && !v.trim()) return;
+  try { GKEY.set = !!(await api('POST', '/api/gemini-key', { key: v.trim(), token: await secToken() })).set; GKEY.msg = ''; }
+  catch (e) { GKEY.msg = e.message; }
+  geminiKeyPaint();
+}
