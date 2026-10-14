@@ -113,7 +113,7 @@ def('approvals', "approvals: a friend's raised card waits for the owner's OK (no
     // Approve from the page.
     await b.ok('POST', `/api/shares/${id}/raise`, { type: 'feature', title: 'Wait for me four' });
     await page.waitForSelector('#ibApprovals:not([hidden]) [data-appr-yes]', { timeout: 8000 });
-    check('inbox: a new waiting card brings the top badge', await page.locator('.ib-btn .ib-badge[data-friends]').count() === 1);
+    check('inbox: a new waiting card brings the top badge', !!(await until(async () => (await page.locator('.ib-btn .ib-badge[data-friends]').count()) === 1)));
     await page.click('#ibApprovals [data-appr-yes]');
     await until(async () => (await pa()).cards.some(c => c.title.includes('Wait for me four') && c.status === 'todo'));
     check('inbox: Approve puts it in To do', (await pa()).cards.some(c => c.title.includes('Wait for me four') && c.status === 'todo'));
