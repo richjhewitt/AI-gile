@@ -3286,6 +3286,7 @@
  "wz.ask.b.in": "Just let me in",
  "wz.ask.b.in.help": "Skip all this. You can run the wizard or tour later.",
  "wz.2.agent.ph": "e.g. claude",
+ "wz.2.vsext": "Claude Code (VS Code extension)",
  "wz.2.use": "Use the one I found",
  "dlg.newcard.more": "More options",
  "card.menu": "⋯",

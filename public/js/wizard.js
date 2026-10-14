@@ -66,7 +66,7 @@ function wizardShow() {
     body = `<h2>${esc(t('wz.2.h'))}</h2>
       <label class="f"><span>${esc(t('wz.2.name'))}</span><input type="text" id="wz-name" value="${esc(WZ.name)}" maxlength="80" autocomplete="off"><small class="muted">${esc(t('wz.2.name.help'))}</small></label>
       ${WZ.noAi ? '' : `<label class="f"><span>${esc(t('wz.2.agent'))}</span><input type="text" id="wz-agent" value="${esc(WZ.agent)}" placeholder="${esc(t('wz.2.agent.ph'))}" autocomplete="off" spellcheck="false"><small class="muted">${esc(t('wz.2.agent.help'))}</small>`}
-      ${g && !WZ.agent && !WZ.noAi ? `<small class="suggest"><button type="button" id="wzUse" title="${esc(g)}" onclick="$('wz-agent').value = ${esc(JSON.stringify(g))}; this.closest('.suggest').remove()">${esc(t('wz.2.use'))}</button> <code>${esc(g)}</code></small>` : ''}${WZ.noAi ? '' : '</label>'}`;
+      ${g && !WZ.agent && !WZ.noAi ? `<small class="suggest"><button type="button" id="wzUse" title="${esc(g)}" onclick="$('wz-agent').value = ${esc(JSON.stringify(g))}; this.closest('.suggest').remove()">${esc(t('wz.2.use'))}</button> <code title="${esc(g)}">${esc(/\*/.test(g) ? t('wz.2.vsext') : g)}</code></small>` : ''}${WZ.noAi ? '' : '</label>'}`;
   }
   if (n === 3) body = `<h2>${esc(t('wz.3.h'))}</h2><p class="muted">${esc(t('wz.3.sub'))}</p><div class="wz-opts">${Object.keys(WZ_STYLES).map(k => pick('wz-style', k, WZ.style, t('wz.style.' + k), t('wz.style.' + k + '.help'))).join('')}</div>
       <h3>${esc(t('wz.adv.help.h'))}</h3><div class="wz-opts">${HELP_LEVELS.map(v => pick('wz-help', v, WZ.help, t('help.level.' + v))).join('')}</div>`;

@@ -3286,6 +3286,7 @@
  "wz.ask.b.in": "Laat me maar binnen",
  "wz.ask.b.in.help": "Sla dit over. De wizard of rondleiding kan later nog.",
  "wz.2.agent.ph": "bijv. claude",
+ "wz.2.vsext": "Claude Code (VS Code-extensie)",
  "wz.2.use": "Gebruik degene die ik vond",
  "dlg.newcard.more": "Meer opties",
  "card.menu": "⋯",

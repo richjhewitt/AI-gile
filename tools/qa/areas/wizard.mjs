@@ -44,7 +44,8 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   check('without a name there is no Skip', !(await page.isVisible('#wzSkip')));
   await page.click('#wzNext'); await sleep(200);
   check('Next without a name stays and says so', await page.isVisible('#wz-name') && (await page.textContent('#wz-err')).length > 0);
-  const guess = (await page.isVisible('#wzUse')) ? await page.textContent('.suggest code') : '';   // AIG-940: the found one is a button, the placeholder only a hint
+  const guess = (await page.isVisible('#wzUse')) ? await page.getAttribute('#wzUse', 'title') : '';   // AIG-940: the found one is a button, the placeholder only a hint
+  check('the found agent never shows a wildcard path (AIG-1071)', !(await page.isVisible('#wzUse')) || !(await page.textContent('.wizard .suggest')).includes('*'), await page.textContent('.wizard .suggest'));
   check('the agent guess is not typed in; the placeholder is a short hint', (await page.inputValue('#wz-agent')) === '' && (await page.getAttribute('#wz-agent', 'placeholder')) !== guess);
   await page.fill('#wz-name', 'Wiz');
   await page.click('#wzNext'); await page.waitForSelector('[name=wz-style]');
