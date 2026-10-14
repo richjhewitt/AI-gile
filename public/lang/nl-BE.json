@@ -115,6 +115,7 @@
  "filter.anyone": "Iedereen",
  "filter.sprints": "Alle {{dev:sprints}}",
  "filter.search": "🔍 Kaarten zoeken…",
+ "filter.btn": "⚙ Filters",
  "filter.count.html": "<b>{shown}</b> van {n} getoond · <a href=\"#\" onclick=\"clearFilter();return false\">wissen</a>",
  "type.feature": "feature",
  "type.bug": "{{dev:bug}}",

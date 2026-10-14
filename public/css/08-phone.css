@@ -17,6 +17,11 @@
   header .spacer { flex-basis: 100%; height: 0; }
   header > *, #inboxTop, #teamTop, #pokeTop, #nightTop { max-width: 100%; }
   .ib-alerts { white-space: normal; }
+  /* AIG-1082: search plus one ⚙ Filters button; the dropdowns open under it; the top bar stays on one line */
+  .fbar { flex-wrap: nowrap; } .fbar input[type=search] { flex: 1 1 auto; min-width: 0; max-width: none; }
+  .fbar .f-tog { display: inline-block; flex: 0 0 auto; }
+  .fbar #f-sel { display: none; flex-basis: 100%; } .fbar.open { flex-wrap: wrap; } .fbar.open #f-sel { display: flex; flex-wrap: wrap; gap: 6px; } .fbar #f-count { display: none; }
+  header #inboxTop { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px; } #inboxTop .ib-btn { white-space: nowrap; } #inboxTop .ib-alerts:disabled { display: none; }
   .navlink, button, select, .theme-pick, .tab, [role=tab] { min-height: 40px; }
   .navlink { display: inline-flex; align-items: center; padding: 6px 12px; }
   .navlink[hidden] { display: none; }   /* a hidden top-bar link (e.g. the 🔴 Live button) showed as a blank pill (AIG-923) */
