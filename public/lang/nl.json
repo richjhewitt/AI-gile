@@ -2287,6 +2287,7 @@
   "approvals.note.need": "Schrijf eerst een korte opmerking, je vriend ziet die.",
   "approvals.setting": "Goedkeuringen: kaarten van een vriend wachten op mijn OK",
   "approvals.setting.hint": "Staat dit aan, dan staat de kaart van een vriend in het tabblad Goedkeuringen van de inbox. Geen team pakt hem op voor jij hem goedkeurt.",
+  "peerreview.setting": "🔍 Peer review: een andere AI controleert elke kaart voor hij bij jou komt",
   "srv.approvals.declined": "Afgewezen: {note}",
   "featreq.btn": "🙋 Vraag een functie aan",
   "featreq.intro": "Vertel {name} wat je graag wilt. Het wacht altijd op de OK van {name} voor het een kaart wordt.",
