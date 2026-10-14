@@ -28,6 +28,9 @@ def('roles', 'Setup > Roles: Can make projects (defaults, tick on/off, refused c
   const page = await openPage(ctx, '#/setup');
   await page.waitForSelector('#rolesBox .roles-make[data-who="Bob"] input');
   check('the page shows the owner ticked and locked, Bob unticked', await page.isChecked('#rolesBox .roles-make[data-who="Owner"] input') && await page.isDisabled('#rolesBox .roles-make[data-who="Owner"] input') && !(await page.isChecked('#rolesBox .roles-make[data-who="Bob"] input')));
+  const bobTxt = await page.textContent('#rolesBox .roles-make[data-who="Bob"]');
+  check('each chip shows where they work: project and role (AIG-1004)', /Alpha · Developer/.test(bobTxt), bobTxt);
+  if (process.env.QA_SHOTS) await page.locator('#rolesBox .roles-list').screenshot({ path: path.join(process.env.QA_SHOTS, 'roles-places.png') });
   await Promise.all([page.waitForResponse(r => r.url().endsWith('/api/roles') && r.request().method() === 'POST'), page.click('#rolesBox .roles-make[data-who="Bob"] input')]);
   check('ticking Bob is saved', (JSON.parse(fs.readFileSync(local, 'utf8')).canMake || {}).bob === true);
   check('Bob can now make a project', s.cli(['new-project', 'Beta', '--key', 'BET', '--as', 'Bob']).code === 0);
