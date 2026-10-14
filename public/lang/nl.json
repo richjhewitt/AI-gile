@@ -3235,5 +3235,14 @@
  "pub.feedback": "Openbaar feedbackformulier",
  "pub.feedback.sub": "Bezoekers van je eigen website kunnen een probleem melden; elke melding wordt een bugkaart in Te doen.",
  "pub.feedback.group": "Zet de kaarten in deze groep (optioneel)",
- "pub.feedback.snippet": "Zet deze regel op je website"
+ "pub.feedback.snippet": "Zet deze regel op je website",
+ "tb.b.status": "Je status",
+ "status.title": "Je status: {status} (klik om te wijzigen)",
+ "status.online": "Online",
+ "status.idle": "Afwezig",
+ "status.dnd": "Niet storen",
+ "status.offline": "Offline",
+ "status.rest": "Rustdag",
+ "status.rest.help": "Rustdag: de nachtwacht neemt het over, alleen dringende dingen bereiken je, en de teams vragen het de Lead Scrum Master in plaats van jou",
+ "status.rest.confirm": "Een rustdag beginnen? De nachtwacht neemt het over, alleen dringende kaarten blijven in je inbox, en elk team hoort dat het de Lead Scrum Master moet vragen in plaats van jou."
 }

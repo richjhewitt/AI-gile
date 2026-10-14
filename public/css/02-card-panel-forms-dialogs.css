@@ -203,11 +203,11 @@ textarea.grow { max-height: 85vh; resize: vertical; }
 .gif-foot { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-top: 6px; color: var(--muted); }
 
 /* ❓ Help menu, first-run offer and the Agile intro slides (AIG-345, AIG-328) */
-#helpMenu { position: fixed; z-index: 30; min-width: 230px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.25); display: flex; flex-direction: column; gap: 2px; }
-#helpMenu button { text-align: start; border: 0; background: transparent; padding: 7px 10px; border-radius: 6px; cursor: pointer; color: inherit; font: inherit; font-size: 13px; }
-#helpMenu button:hover, #helpMenu button.on { background: var(--col); }
-#helpMenu .help-sep { border-top: 1px solid var(--line); margin: 4px 0; }
-#helpMenu .help-lvl-h { font-size: 11px; padding: 2px 10px; }
+#helpMenu, #statusMenu { position: fixed; z-index: 30; min-width: 230px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.25); display: flex; flex-direction: column; gap: 2px; }
+#helpMenu button, #statusMenu button { text-align: start; border: 0; background: transparent; padding: 7px 10px; border-radius: 6px; cursor: pointer; color: inherit; font: inherit; font-size: 13px; }
+#helpMenu button:hover, #helpMenu button.on, #statusMenu button:hover, #statusMenu button.on { background: var(--col); }
+#helpMenu .help-sep, #statusMenu .help-sep { border-top: 1px solid var(--line); margin: 4px 0; }
+#helpMenu .help-lvl-h, #statusMenu .help-lvl-h { font-size: 11px; padding: 2px 10px; }
 .overlay:has(> .dialog.wz-first) { background: var(--bg); }
 .wz-choices { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
 .wz-choice { display: flex; flex-direction: column; align-items: flex-start; text-align: start; gap: 2px; padding: 10px 14px; }

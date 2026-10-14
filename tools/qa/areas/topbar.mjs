@@ -9,7 +9,7 @@ def('topbar', 'Setup: top bar buttons on/off, reorder, left or right side, theme
   const vis = id => page.evaluate(i => { const e = document.getElementById(i); return !!e && getComputedStyle(e).display !== 'none'; }, id);
   const leftOfSpacer = () => page.evaluate(() => { const b = document.getElementById('bugBtn'); return !!(b.compareDocumentPosition(document.querySelector('header .spacer')) & Node.DOCUMENT_POSITION_FOLLOWING); });
   const before = await ids();
-  check('lists 16 buttons (with 🎥 Streamer, 📊 ScrumGlance, 🌿 WeedGlance, 🔋 Tired), reset starts disabled', await page.locator('#tbList .tb-row').count() === 16 && await page.locator('#tbReset').isDisabled());
+  check('lists 17 buttons (with 🎥 Streamer, 📊 ScrumGlance, 🌿 WeedGlance, 🟢 Status, 🔋 Tired), reset starts disabled', await page.locator('#tbList .tb-row').count() === 17 && await page.locator('#tbReset').isDisabled());
   check('the settings gear switch is locked on', await page.locator('[data-tb="setupNav"] .tb-on').isDisabled());
 
   // Hide the Idea button

@@ -4,7 +4,7 @@
 // Default = the layout in index.html. The Setup gear can't be switched off, so Setup is always reachable.
 const Topbar = (() => {
   const KEY = 'aigile.topbar';
-  const BTNS = [['helpBtn', 'help'], ['ideaBtn', 'idea'], ['bugBtn', 'bug'], ['teamTop', 'team'], ['inboxTop', 'inbox'], ['pokeTop', 'poke'], ['nightTop', 'night'], ['glanceBtn', 'glance'], ['weedBtn', 'weed'], ['streamBtn', 'stream'], ['ntBtn', 'nt'], ['tiredBtn', 'tired'], ['assumeNav', 'assume'], ['usageNav', 'usage'], ['setupNav', 'setup'], ['themeBtn', 'theme']];
+  const BTNS = [['helpBtn', 'help'], ['ideaBtn', 'idea'], ['bugBtn', 'bug'], ['teamTop', 'team'], ['inboxTop', 'inbox'], ['pokeTop', 'poke'], ['nightTop', 'night'], ['glanceBtn', 'glance'], ['weedBtn', 'weed'], ['streamBtn', 'stream'], ['ntBtn', 'nt'], ['statusBtn', 'status'], ['tiredBtn', 'tired'], ['assumeNav', 'assume'], ['usageNav', 'usage'], ['setupNav', 'setup'], ['themeBtn', 'theme']];
   const IDS = BTNS.map(b => b[0]), KEEP = 'setupNav';
   const AI_BTNS = ['ntBtn', 'usageNav', 'pokeTop', 'nightTop', 'teamTop'];   // hidden by No AI, ever (AIG-581)
   const DEF_SIDE = { bugBtn: 'l' };   // AIG-733: Raise bug sits next to the project name unless a saved layout says otherwise
@@ -28,8 +28,9 @@ const Topbar = (() => {
   const PKEY = 'aigile.topbar.pinned';
   const MORE_EXTRA = ['twitchBtn', 'mailNav', 'immWrap'];
   const PINNABLE = [...IDS, ...MORE_EXTRA];
-  const PIN_DEF = ['bugBtn', 'helpBtn', 'inboxTop', 'setupNav', 'pokeTop', 'nightTop', 'teamTop'];
-  const loadPins = () => { let a; try { a = JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch { a = null; } return Array.isArray(a) ? a.filter(i => PINNABLE.includes(i)) : PIN_DEF.slice(); };
+  const PIN_DEF = ['bugBtn', 'helpBtn', 'inboxTop', 'setupNav', 'pokeTop', 'nightTop', 'teamTop', 'statusBtn'];
+  // AIG-984: the status button joins a saved pin list once (unpinning it later sticks)
+  const loadPins = () => { let a; try { a = JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch { a = null; } if (!Array.isArray(a)) return PIN_DEF.slice(); a = a.filter(i => PINNABLE.includes(i)); try { if (!localStorage.getItem(PKEY + '.status')) { localStorage.setItem(PKEY + '.status', '1'); if (!a.includes('statusBtn')) { a.push('statusBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } } catch {} return a; };
   let pins = loadPins();
   const phoneMq = window.matchMedia ? matchMedia('(max-width: 600px)') : { matches: false };
   const isPhone = () => phoneMq.matches;
@@ -42,7 +43,7 @@ const Topbar = (() => {
     if (on) labelMore();
   }
   // AIG-955: an icon-only item in the More menu gets a short word next to it (inside the menu only; the bar stays icon-only)
-  const MORE_LABEL = { ideaBtn: 'idea', tiredBtn: 'tired', setupNav: 'setup' };
+  const MORE_LABEL = { ideaBtn: 'idea', statusBtn: 'status', tiredBtn: 'tired', setupNav: 'setup' };
   function labelMore() {
     for (const id of Object.keys(MORE_LABEL)) {
       const e = $(id); if (!e) continue;

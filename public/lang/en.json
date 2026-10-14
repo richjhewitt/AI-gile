@@ -3235,5 +3235,14 @@
  "pub.feedback": "Public feedback form",
  "pub.feedback.sub": "Visitors to your own website can report a problem; each report becomes a bug card in To do.",
  "pub.feedback.group": "Put the cards in this group (optional)",
- "pub.feedback.snippet": "Add this line to your website"
+ "pub.feedback.snippet": "Add this line to your website",
+ "tb.b.status": "Your status",
+ "status.title": "Your status: {status} (click to change)",
+ "status.online": "Online",
+ "status.idle": "Idle",
+ "status.dnd": "Do not disturb",
+ "status.offline": "Offline",
+ "status.rest": "Rest day",
+ "status.rest.help": "Rest day: the night watch takes over, only urgent things reach you, and the teams ask the Lead Scrum Master instead of you",
+ "status.rest.confirm": "Start a rest day? The night watch takes over, only urgent cards stay in your inbox, and every team is told to ask the Lead Scrum Master instead of you."
 }
