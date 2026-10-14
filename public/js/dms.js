@@ -6,7 +6,7 @@
 // Friends' private DMs (AIG-111, lib/dm.js) are chats too: the list has a filter All / Agents / People, and a
 // friend's chat has the same typing box, 👍 and attachments. A friend's chat key is 'dm:<contact id>'.
 const Dms = (() => {
-  let projects = [], chats = [], people = [], closed = {}, showClosed = false, showQuiet = false, showDone = false, askAll = false, filter = 'all', open = null, listOpen = false, thread = null, threadSeq = 0, busy = false;
+  let paName = '', projects = [], chats = [], people = [], closed = {}, showClosed = false, showQuiet = false, showDone = false, askAll = false, filter = 'all', open = null, listOpen = false, thread = null, threadSeq = 0, busy = false;
   let groups = [], grpCands = [];   // 👥 group chats (AIG-1027): key 'grp:<id>'
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
   const QUIET_MS = 6 * 3600000;   // AIG-946, AIG-1021: a chat with nothing unread and no message for 6 hours hides until a new one
@@ -70,6 +70,7 @@ const Dms = (() => {
     try { boards = (await PagePoll.get('/api/shares')).filter(l => l.theirRole && !l.forgotten && ['live', 'ended'].includes(l.state)); } catch {}
     try { people = (await PagePoll.get('/api/dms/contacts')).filter(c => !c.blocked).map(c => ({ ...c, unread: c.lastIn && c.lastIn > dmSeen.get(c.id) && open !== 'dm:' + c.id ? 1 : 0 })); } catch { people = []; }
     try { closed = await PagePoll.get('/api/dmclosed'); } catch { closed = {}; }
+    try { paName = (await PagePoll.get('/api/assistant')).name; } catch {}
     try { groups = NoAi.on ? [] : await PagePoll.get('/api/chats/_groups'); } catch { groups = []; }
     const fp = Object.fromEntries(people.filter(c => c.pic).map(c => [c.name.trim().toLowerCase(), c.pic]));   // friends' pictures for their comments and DMs (AIG-883)
     if (JSON.stringify(fp) !== JSON.stringify(state.friendPics || {})) { state.friendPics = fp; if (typeof refresh === 'function') refresh(true); }
@@ -110,7 +111,7 @@ const Dms = (() => {
   function draftRows() {
     const list = listDrafts(); if (!list.length) return '';
     const where = key => {
-      if (key.startsWith('dm/')) { const k = key.slice(3), c = chats.find(x => x.slug === k), p = people.find(x => 'dm:' + x.id === k); return k === '_allhands' ? t('allhands.name') : k === '_assistant' ? t('pa.name') : c ? chatName(c) : p ? p.name : k; }
+      if (key.startsWith('dm/')) { const k = key.slice(3), c = chats.find(x => x.slug === k), p = people.find(x => 'dm:' + x.id === k); return k === '_allhands' ? t('allhands.name') : k === '_assistant' ? (paName || t('pa.name')) : c ? chatName(c) : p ? p.name : k; }
       const [s, id] = key.split('/'); return s + ' · ' + id;
     };
     return `<div class="dm-drafts"><div class="muted dm-draft-h">${esc(t('dms.drafts'))}</div>${list.map(d => `<div class="dm-rowwrap"><button class="dm-row" data-dmdraft="${esc(d.key)}"><span class="dm-rowtext"><b>${esc(where(d.key))}</b><span class="muted">${esc(plain(d.text).slice(0, 50))}${d.at ? ' · ' + ago(new Date(d.at).toISOString()) : ''}</span></span></button><button class="dm-rowx" data-dmdraftx="${esc(d.key)}" title="${esc(t('dms.drafts.discard'))}" aria-label="${esc(t('dms.drafts.discard'))}">✕</button></div>`).join('')}</div>`;
@@ -133,7 +134,7 @@ const Dms = (() => {
     const chips = ['all', 'agents', 'people', ...(DiscordTab.linked() ? ['discord'] : []), ...(TwitchTab.linked() ? ['twitch'] : [])].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t('dms.filter.' + f))}${f === 'discord' ? badge(DiscordTab.unread()) : ''}</button>`).join('');
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
-      <div class="dm-list">${drafts}${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button><button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(t('pa.name'))}</b></span></button>${groupsHtml()}` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}</div>`;
+      <div class="dm-list">${drafts}${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b></span></button><button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(paName || t('pa.name'))}</b></span></button>${groupsHtml()}` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}</div>`;
     const panel = el('dmPanel');
     if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
     panel.hidden = false;
@@ -185,7 +186,7 @@ const Dms = (() => {
       const preview = plain(last.text).slice(0, 90);
       return `<div class="dm-fold ${isOpen ? 'open' : ''} ${c.waiting ? 'waiting' : ''}">
         <div class="dm-fold-h k-${esc(c.kind || 'other')}" data-fold="${esc(id)}" role="button" tabindex="0" aria-expanded="${isOpen}">
-          ${thread.assistant ? `<b>${esc(t('pa.name'))}</b>` : thread.group ? `<b>👥 ${esc(thread.lead)}</b>` : thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : id === '_lead' ? `<span class="dm-tag">${esc(t('dms.kind.lead'))}</span>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><a class="dm-fold-id" href="#/p/${esc(thread.slug)}/${esc(id)}" title="${esc(t('dms.opencard'))}"><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span></a>`}
+          ${thread.assistant ? `<b>${esc(t('pa.tagline'))}</b>` : thread.group ? `<b>👥 ${esc(thread.lead)}</b>` : thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : id === '_lead' ? `<span class="dm-tag">${esc(t('dms.kind.lead'))}</span>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><a class="dm-fold-id" href="#/p/${esc(thread.slug)}/${esc(id)}" title="${esc(t('dms.opencard'))}"><b>${esc(id)}</b> <span class="dm-fold-t">${esc(c.title || last.title || '')}</span></a>`}
           <span class="muted dm-fold-n">${esc(t(msgs.length === 1 ? 'dms.count.one' : 'dms.count.many', { n: msgs.length }))} · ${ago(last.at)}</span></div>
         ${isOpen ? `<div class="dm-fold-b">${thread.watchman || thread.assistant || thread.group || id === '_lead' ? '' : `<div class="actions dm-cardacts"><button class="dm-opencard" data-opencard="${esc(id)}" title="${esc(t('dms.opencard'))}">${esc(t('dms.opencard'))}</button><button data-popcard="${esc(id)}" title="${esc(t('dms.popout.title'))}">${esc(t('dms.popout'))}</button></div>`}${msgs.map(m => msgHtml(m, m === last ? acts : '')).join('')}</div>`
           : `<div class="dm-fold-p muted"><b>${esc(last.author)}:</b> ${esc(preview)}</div>${acts}`}</div>`;
@@ -354,9 +355,9 @@ const Dms = (() => {
     open = slug; listOpen = true;
     const who = isPerson(slug) ? people.find(x => 'dm:' + x.id === slug) || { id: slug.slice(3), name: t('dms.person') } : null;
     thread = who ? { person: true, id: who.id, slug, name: who.name, messages: [], open: [] } : null;
-    const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || (isGrp(slug) ? (g => ({ slug, name: g ? g.members.map(m => m.name + ' (' + m.engineLabel + ')').join(', ') : '', lead: g ? g.name : slug.slice(4), emoji: '👥', group: true }))(groups.find(x => 'grp:' + x.id === slug)) : null) || (slug === '_assistant' ? { slug, name: t('pa.name'), lead: t('pa.name'), emoji: '💚', assistant: true } : { slug, name: slug });
+    const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || (isGrp(slug) ? (g => ({ slug, name: g ? g.members.map(m => m.name + ' (' + m.engineLabel + ')').join(', ') : '', lead: g ? g.name : slug.slice(4), emoji: '👥', group: true }))(groups.find(x => 'grp:' + x.id === slug)) : null) || (slug === '_assistant' ? { slug, name: paName || t('pa.name'), lead: paName || t('pa.name'), emoji: '💚', assistant: true } : { slug, name: slug });
     const panel = el('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv(who) : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(chatName(c))}</div></div><span style="flex:1"></span>${who ? '' : callLink(c.callUrl, 'dm-call')}${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv(who) : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(c.assistant ? t('pa.tagline') : chatName(c))}</div></div><span style="flex:1"></span>${who ? '' : callLink(c.callUrl, 'dm-call')}${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}${who ? '<div class="dm-usage" id="dmUsage" hidden></div>' : ''}
       <div class="dm-list" id="dmList"></div>
       <div id="dmFollow"></div>
