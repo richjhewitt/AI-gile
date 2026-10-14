@@ -126,3 +126,32 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   check('repainting the board on Setup with no project does not throw', await page.evaluate(() => { try { state.route = { view: 'setup' }; state.project = null; renderBoardOnly(); return true; } catch (e) { return false; } }));
   noErrors(page);
 }, true, { AIGILE_OWNER: '', AIGILE_LOCAL: (process.env.QA_SETUP_FILE = path.join(tmp('setup'), 'aigile.local.json')) });
+
+def('autopop', 'the Open in their own window switch: cards pop out by themselves, inline when off, inline inside a pop-out (AIG-1044)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Pop me', { status: 'todo' });
+  const stub = page => page.evaluate(() => { window.__opened = []; window.open = (...a) => { window.__opened.push(a); return {}; }; });
+  const go = async (page, hash) => { await page.evaluate(h => { location.hash = h; }, hash); await sleep(600); };
+  // off (the default): the card opens inline
+  let page = await openPage(ctx, '#/p/alpha');
+  await stub(page);
+  await go(page, '#/p/alpha/' + c.id);
+  check('off: the card opens inline', (await page.evaluate(() => location.hash)) === '#/p/alpha/' + c.id && (await page.evaluate(() => window.__opened.length)) === 0);
+  // on: the card pops out and this window stays on the board
+  await s.ok('POST', '/api/setup', { prefs: { autoPop: true } });
+  page = await openPage(ctx, '#/p/alpha');
+  await stub(page);
+  await go(page, '#/p/alpha/' + c.id);
+  const op = await page.evaluate(() => window.__opened);
+  check('on: window.open got the pop-out route', op.length === 1 && op[0][0] === '#/pop/alpha/' + c.id, JSON.stringify(op));
+  check('on: this window stays on the board', (await page.evaluate(() => location.hash)) === '#/p/alpha');
+  // a blocked popup falls back to inline
+  await page.evaluate(() => { window.open = () => null; });
+  await go(page, '#/p/alpha/' + c.id);
+  check('blocked popup: opens inline', (await page.evaluate(() => location.hash)) === '#/p/alpha/' + c.id);
+  // inside a pop-out: never pops again
+  const pop = await ctx.newPage(); await pop.goto(BASE + '/#/pop/alpha/' + c.id);
+  await pop.waitForSelector('.panel h2');
+  check('pop-out: auto-pop is off inside it', (await pop.evaluate(() => popAutoOn())) === false);
+  await s.ok('POST', '/api/setup', { prefs: { autoPop: false } });
+}, true);

@@ -37,7 +37,10 @@ if (/Electron/.test(navigator.userAgent)) for (const k of ['alert', 'confirm', '
 // Opening or closing a card on the same board keeps the board where it was.
 const pageOf = h => h.replace(/^(#\/p\/[^/]+)\/.*$/, '$1').replace(/^(#\/setup)\/.*$/, '$1');
 let lastPage = pageOf(location.hash);
+let lastHash = location.hash;
 window.addEventListener('hashchange', () => {
+  if (popAutoHash(location.hash, lastHash)) return;
+  lastHash = location.hash;
   state.editing = false; state.setupLanded = null;
   const pg = pageOf(location.hash); if (pg !== lastPage) { lastPage = pg; window.scrollTo(0, 0); }
   refresh(true);

@@ -91,6 +91,7 @@ const Term = (() => {
     }
     stream(me);
     term.focus();
+    if (!pop && connect && popAutoOn()) popOut();
     return me;
   }
   function stream(me) {
@@ -138,7 +139,7 @@ const Term = (() => {
   // ⧉ The terminal in its own window; the session stays on the board, so nothing is lost.
   function popOut() {
     if (!cur) return;
-    window.popOut('term', `#/pop-term/${encodeURIComponent(cur.slug)}/${encodeURIComponent(cur.id)}/${encodeURIComponent(cur.name)}`, 'aigile-term-' + cur.slug + '-' + cur.id, 860, 540);
+    if (!window.popOut('term', `#/pop-term/${encodeURIComponent(cur.slug)}/${encodeURIComponent(cur.id)}/${encodeURIComponent(cur.name)}`, 'aigile-term-' + cur.slug + '-' + cur.id, 860, 540)) return;
     teardown(false);
   }
   // The pop-out window's page: just the terminal. It attaches to the open session; it never dials by itself.
