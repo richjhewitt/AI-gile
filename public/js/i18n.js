@@ -109,6 +109,9 @@ async function loadLang() {
   document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
   document.querySelectorAll('[data-i18n-label]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nLabel)); });
   paintEnBtn(); paintImm();
+  // AIG-976: the 🐣 tag's tooltip ends with the version, so a friend can say which build they have (asked once, not awaited).
+  (i18n.version ? Promise.resolve(i18n.version) : fetch('/api/version').then(r => r.ok ? r.json() : {}).then(j => (i18n.version = j.version)))
+    .then(v => { const el = document.querySelector('.alpha-tag'); if (el && v) el.title = t('alpha.tip') + ' · v' + v; }).catch(() => {});
   i18n.ready = true;
   saveLang();
 }

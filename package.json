@@ -1,5 +1,6 @@
 {
   "name": "aigile",
+  "version": "0.1.0",
   "private": true,
   "license": "PolyForm-Noncommercial-1.0.0",
   "description": "AI-gile: the board runs on Node alone; node-pty is optional, for the built-in server terminal (AIG-471)",
