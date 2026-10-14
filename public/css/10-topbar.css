@@ -76,6 +76,8 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 /* ---------- More menu (AIG-931/932): the same buttons, moved under one button; on a phone it is the one ☰ menu ---------- */
 #tbMore { position: relative; display: inline-flex; }
 #tbMore .tbm-p { display: none; }
+/* AIG-1077: power tools are hidden until switched on in Setup (a tool that is switched on stays reachable) */
+body.no-power :is(#streamBtn, #twitchBtn, #ntBtn, #tiredBtn, #assumeNav, #glanceBtn, #weedBtn):not([aria-pressed="true"]) { display: none !important; }
 #tbMoreMenu { position: absolute; inset-inline-end: 0; top: calc(100% + 6px); z-index: 30; min-width: 220px; max-width: 92vw; max-height: calc(100vh - 90px); overflow-y: auto; display: flex; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 28px rgba(0, 0, 0, .35); }
 #tbMoreMenu[hidden] { display: none; }
 .tbm-label { display: none; }
