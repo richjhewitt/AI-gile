@@ -39,7 +39,8 @@ const PRIO_RANK = { now: 0, today: 1, whenever: 3 };   // no priority set sits b
 // An item's kind: what the team set, else a sensible guess (tests are tests, the rest are decisions).
 const isInfo = c => !!c.info && c.status === 'verify' && !isOwnerTask(c);   // 📖 To read (AIG-392): an info-only hand-over
 // 🚦 Ready for go (AIG-828): planned work waiting on a go / no-go: kind plan, or an open question that asks "Go?" (the same test as its Go / Not yet buttons).
-const isGoAsk = c => !!c.needsYou && c.status !== 'verify' && /\bgo\s*\?/i.test(((c.comments || []).filter(m => m.mark === 'ask').pop() || {}).text || '');
+const isGoAsk = c => { const cs = c.comments || [], i = cs.map(m => m.mark).lastIndexOf('ask');   // AIG-999: an answered Go is no longer one
+  return !!c.needsYou && c.status !== 'verify' && i >= 0 && !cs.slice(i + 1).some(m => isOwner(m.author)) && /\bgo\s*\?/i.test(cs[i].text || ''); };
 const kindOfItem = c => isOwnerTask(c) && c.lifeType ? 'life' : isOwnerTask(c) && c.server ? 'server' : isOwnerTask(c) && c.outside ? 'outside' : isInfo(c) ? 'read' : c.kind || (c.status === 'verify' ? 'test' : isGoAsk(c) ? 'plan' : isOwnerTask(c) ? 'task' : 'decide');   // a task is not a question (AIG-922)
 // Queue order: your priority, then what it holds up most, then quickest first.
 const queueRank = (a, b) => (PRIO_RANK[a.ownerPrio] ?? 2) - (PRIO_RANK[b.ownerPrio] ?? 2) || (b.bumpedAt || '').localeCompare(a.bumpedAt || '') || (b.holds || []).length - (a.holds || []).length || (a.mins || 999) - (b.mins || 999);

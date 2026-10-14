@@ -21,7 +21,8 @@ function cardAnswers(p, c) {
   if (c.status === 'done') return '';
   if (isOwner(c.assignee)) return `<div class="msg-acts card-acts"><button class="good" data-cardtaskdone onclick="cardTaskDone()">${esc(t('inbox.k.done'))}</button><button data-cardtasksnooze title="${esc(t('inbox.t.wait.title'))}" onclick="cardTaskSnooze()">${esc(t('life.snooze'))}</button></div>`;
   if (!c.needsYou || c.blocked || c.status === 'verify') return '';
-  const cs = [...(c.comments || [])].reverse(), a = cs.find(x => x.mark === 'ask' && !isOwner(x.author)) || cs.find(x => !isOwner(x.author));
+  // AIG-999: a question the owner already answered gives no buttons again; the team's newest message leads
+  const cs = [...(c.comments || [])].reverse(), open = cs.findIndex(x => x.mark === 'ask' && !isOwner(x.author)), a = open >= 0 && !cs.slice(0, open).some(x => isOwner(x.author)) ? cs[open] : cs.find(x => !isOwner(x.author));
   const acts = a ? askActions(a, 'question') : [];
   return acts.length ? `<div class="msg-acts card-acts">${acts.map(x => `<button class="${x.ask != null ? '' : 'good'}" data-cardact ${x.ask != null ? `data-ask="${esc(x.ask)}"` : `data-say="${esc(x.say)}"`}>${esc(x.label)}</button>`).join('')}</div>` : '';
 }
