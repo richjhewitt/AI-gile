@@ -35,6 +35,7 @@ def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, 
   await page.goto(BASE + '/#/p/tunio');
   await page.click('button:has-text("Look")');
   await page.fill('#look-emoji', '🎸');
+  check('Look has the public feedback tick and group (AIG-969)', (await page.locator('#look-fb').count()) === 1 && (await page.locator('#look-fbgroup').count()) === 1);
   await page.$eval('#look-color', el => { el.value = '#123456'; });
   await page.click('#dialog button:has-text("Save")');
   await sleep(500);
