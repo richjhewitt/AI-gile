@@ -82,6 +82,17 @@ def('firewall', 'message firewall: same text twice, Original: copies, empty poke
   const rp = await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Dev', text: 'Ping 1' });
   check('Lead chat: the whole thread is checked, an owner message in between reopens the topic', !rp.firewalled, rp);
 
+  // AIG-966: handing a card over again with no owner word since doesn't send the same "Ready for you to test" note again.
+  const h = await mkCard(s, 'wall', 'Handover');
+  const notes = async () => (await getCard(s, 'wall', h.id)).comments.filter(m => /^Ready for you to test/.test(m.text)).length;
+  s.cli(['test', 'wall', h.id, '1. Click X', '--as', 'Dev']);
+  const h2 = s.cli(['test', 'wall', h.id, '1. Click Y', '--as', 'Dev']);
+  const hc = await getCard(s, 'wall', h.id);
+  check('a re-hand-over posts no second note, is not caught, and still updates the steps', /handed to/.test(h2.out) && !/kept out/.test(h2.out) && await notes() === 1 && hc.testSteps === '1. Click Y' && hc.status === 'verify', [h2.out, hc.comments]);
+  await say(s, 'wall', h.id, 'Owner', 'Sent back: still broken');
+  s.cli(['test', 'wall', h.id, '1. Click Z', '--as', 'Dev']);
+  check('after the owner has replied, the next hand-over gets its note', await notes() === 2);
+
   // The bin page: reached from the inbox link, phone width, dark mode.
   const page = await openPage(ctx, '#/inbox');
   await page.waitForSelector('#ibBin');
