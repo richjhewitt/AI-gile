@@ -44,7 +44,7 @@ def('keepgoing', '🌙 keeps every team on task: the every-minute look picks up 
   const mid = await mkCard(s, 'half', 'Half done', { status: 'doing' });
   const todo = await mkCard(s, 'idle', 'Buildable', { status: 'todo' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['half', 'idle'] });
-  await sleep(4500);   // going quiet wakes both teams; wait until those runs end
+  await runsEnd(s, ["half", "idle"]);   // going quiet wakes both teams; wait until those runs end
   await s.ok('GET', '/api/projects/idle/updates?wait=1');   // the Idle session now sits in 'aigile wait'
   await sleep(50);
   await s.ok('POST', '/api/watchman/quick');
@@ -61,7 +61,7 @@ def('limit', '🌙 usage limit: no restarts counted while out, carry on after th
   await mkProject(s, 'Out', 'OUT', { path: tmp('out') });
   const mid = await mkCard(s, 'out', 'Half done', { status: 'doing' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['out'] });
-  await sleep(4500);   // going quiet wakes the team; wait until that run ends
+  await runsEnd(s, ["out"]);   // going quiet wakes the team; wait until that run ends
   const logf = path.join(s.data, 'logs', 'out.log'), runs = () => (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length;
   const ampm = d => `${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}${d.getHours() < 12 ? 'am' : 'pm'}`;
   const cutOff = (startAgo, resetIn) => fs.appendFileSync(logf, `=== ${new Date(Date.now() - startAgo).toISOString()} started ===\nYou've hit your session limit · resets ${ampm(new Date(Date.now() + resetIn))} (Europe/London)\n=== exited ended ===\n`);
@@ -70,7 +70,7 @@ def('limit', '🌙 usage limit: no restarts counted while out, carry on after th
   let n = runs(); await s.ok('POST', '/api/watchman/quick'); await sleep(300);
   check('after the reset the team carries on', runs() === n + 1, fs.readFileSync(logf, 'utf8'));
   check('a limit cut-off is not counted as a try', !(await getCard(s, 'out', mid.id)).comments.some(m => /Picked back up|Stuck/.test(m.text)));
-  await sleep(4500);
+  await runsEnd(s, ["out"]);
   // Out of usage now: nobody is woken until the reset, and one message says when.
   cutOff(60e3, 2 * 3600e3);
   n = runs(); await s.ok('POST', '/api/watchman/round'); await s.ok('POST', '/api/watchman/round'); await sleep(300);
@@ -91,7 +91,7 @@ def('limitread', '⏳ a usage reading at 100% holds every wake until its reset, 
   await mkCard(s, 'full', 'Work', { status: 'todo' });
   await s.ok('POST', '/api/limits', { rate_limits: { five_hour: { used_percentage: 100, resets_at: Math.floor(Date.now() / 1000) + 3600 }, seven_day: { used_percentage: 40, resets_at: Math.floor(Date.now() / 1000) + 86400 } } });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['full'] });
-  await sleep(4500);   // going quiet itself may start one run; then the watchman takes over
+  await runsEnd(s, ["full"]);   // going quiet itself may start one run; then the watchman takes over
   const logf = path.join(s.data, 'logs', 'full.log'), runs = () => { try { return (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length; } catch { return 0; } };
   const n = runs();
   await s.ok('POST', '/api/watchman/round'); await sleep(300);
@@ -104,10 +104,10 @@ def('stuckonly', '🌙 a card flagged stuck stops only itself: the team is still
   await mkProject(s, 'Jam', 'JAM', { path: tmp('jam') });
   const mid = await mkCard(s, 'jam', 'Keeps failing', { status: 'doing' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['jam'] });
-  for (let i = 0; i < 3; i++) { await sleep(4500); await s.ok('POST', '/api/watchman/round'); }
+  for (let i = 0; i < 3; i++) { await runsEnd(s, ["jam"]); await s.ok('POST', '/api/watchman/round'); }
   check('third try: stuck', /Stuck/.test((await getCard(s, 'jam', mid.id)).comments.at(-1).text));
   await mkCard(s, 'jam', 'Other work', { status: 'todo' });
-  await sleep(4500);
+  await runsEnd(s, ["jam"]);
   const logf = path.join(s.data, 'logs', 'jam.log'), n = (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length;
   await s.ok('POST', '/api/watchman/round'); await sleep(300);
   check('the team is still woken for its other work', (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length === n + 1);

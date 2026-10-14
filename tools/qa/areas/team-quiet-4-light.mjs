@@ -35,7 +35,8 @@ def('tester', '🤖 Test these for me: the button starts one AI tester run over 
   await page.waitForFunction(() => /Testing/.test(document.getElementById('ibTester').textContent), null, { timeout: 5000 }).catch(() => {});
   check('it shows it is testing', /Testing/.test(await page.textContent('#ibTester')));
   check('a second start while it runs starts nothing new', (await s.ok('POST', '/api/tester', {})).already === true);
-  await sleep(1500);
+  for (let i = 0; i < 40 && !fs.existsSync(s.wakeOut); i++) await sleep(250);
+  await sleep(300);
   check('the tester runs on the smaller model, in its own name, with the tester brief', /--model.*sonnet/.test(fs.readFileSync(s.wakeOut, 'utf8')) && /Tester \(Sonnet\)/.test(fs.readFileSync(s.wakeOut, 'utf8')) && /TESTER\.md/.test(fs.readFileSync(s.wakeOut, 'utf8')));
   for (let i = 0; i < 40 && (await s.ok('GET', '/api/tester')).running; i++) await sleep(250);
   // At night: the watchman starts it by itself.
