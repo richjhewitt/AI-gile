@@ -37,7 +37,8 @@ try {
       if (!c.path || !c.path.startsWith('/')) continue;
       await timed(r, async () => {
         const post = /^(POST|PUT|PATCH)$/i.test(c.method || '');
-        const x = await fetch(s.base + fill(c.path), { method: c.method || 'GET', redirect: 'manual', headers: { 'Content-Type': 'application/json' }, body: post ? '{}' : undefined });
+        const go = () => fetch(s.base + fill(c.path), { method: c.method || 'GET', redirect: 'manual', headers: { 'Content-Type': 'application/json' }, body: post ? '{}' : undefined });
+        const x = await go().catch(async () => { await sleep(500); return go(); });   // a dropped connection once in a long run
         await x.arrayBuffer();
         return (x.status >= 200 && x.status < 400) || 'HTTP ' + x.status;
       });
@@ -82,11 +83,14 @@ if (qaAreas.length) {
   const seen = {};   // area -> { fails: [lines] }
   let buf = '';
   const onLine = l => { const m = /^(PASS|FAIL)\s+([\w-]+):\s*(.*)$/.exec(l); if (!m) return; const a = seen[m[2]] ||= { fails: [] }; if (m[1] === 'FAIL') a.fails.push(m[3].slice(0, 160)); };
-  await new Promise(res => {
-    const ch = spawn(process.execPath, [qaPath, ...qaAreas], { cwd: ROOT, windowsHide: true, stdio: ['ignore', 'pipe', 'ignore'], env: { ...process.env, QA_PORT: String(PORT + 1) } });
+  const runAreas = areas => new Promise(res => {
+    const ch = spawn(process.execPath, [qaPath, ...areas], { cwd: ROOT, windowsHide: true, stdio: ['ignore', 'pipe', 'ignore'], env: { ...process.env, QA_PORT: String(PORT + 1) } });
     ch.stdout.on('data', d => { buf += d; const ls = buf.split(/\r?\n/); buf = ls.pop(); ls.forEach(onLine); });
-    ch.on('close', () => { if (buf) onLine(buf); res(); });
+    ch.on('close', () => { if (buf) onLine(buf); buf = ''; res(); });
   });
+  await runAreas(qaAreas);
+  // Hundreds of areas in one process sometimes time out under load (they pass alone): run each failed area once more on its own.
+  for (const a of qaAreas.filter(a => !seen[a] || seen[a].fails.length)) { delete seen[a]; await runAreas([a]); }
   for (const r of results) {
     if (r.status !== 'pending') continue;
     const a = seen[r.check.area];

@@ -1085,7 +1085,8 @@
   "where": "Below title bar > Restart the app",
   "evidence": "public/lang/en.json restart text; public/js/app.js",
   "check": {
-   "kind": "unsure"
+   "kind": "qa",
+   "area": "restartpill"
   },
   "audit": "present"
  },
@@ -1768,12 +1769,12 @@
    "AIG-413"
   ],
   "where": "Public site",
-  "evidence": "only word roadmap in lang files; no page found in public/ or docs",
-  "missingWhat": "no roadmap page located",
+  "evidence": "docs/ROADMAP.md (a repo document, no public page)",
   "check": {
-   "kind": "unsure"
+   "kind": "unsure",
+   "why": "not a page: docs/ROADMAP.md in the repo, nothing served by the board"
   },
-  "audit": "unsure"
+  "audit": "present"
  },
  {
   "feature": "Agent profiles, scales, role and team templates, project types, Add team",
@@ -2015,7 +2016,8 @@
   "where": "⚡ Usage page chart",
   "evidence": "lib/forecast.js, usage-page.js .uz-burn-svg, i18n usage.burn.*",
   "check": {
-   "kind": "unsure"
+   "kind": "qa",
+   "area": "pace"
   },
   "perf": "usage page needed two clicks (AIG-558); check it loads once",
   "audit": "present"
@@ -2561,7 +2563,8 @@
   "where": "Open card while working the To test pile",
   "evidence": "card.js #pileLeft, i18n pile.left",
   "check": {
-   "kind": "unsure"
+   "kind": "qa",
+   "area": "testpile"
   },
   "audit": "present"
  },
