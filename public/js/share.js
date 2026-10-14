@@ -219,6 +219,11 @@ const Share = (function () {
       <label class="f"><span>${esc(t('share.role.scope'))}</span><select id="shareRoleScope" onchange="Share.setRole('${l.id}')">
         <option value="project" ${l.roleScope !== 'all' ? 'selected' : ''}>${esc(t('share.role.scope.project'))}</option>
         <option value="all" ${l.roleScope === 'all' ? 'selected' : ''}>${esc(t('share.role.scope.all', { name: l.friend }))}</option></select></label>
+      <label class="f"><span>${esc(t('share.title.label'))}</span><input type="text" id="shareTitle" maxlength="40" value="${esc(l.title || '')}" placeholder="${esc(t('share.title.ph'))}" onchange="Share.setLabels('${l.id}')"></label>
+      <label class="f"><span>${esc(t('share.preview.label'))}</span><input type="url" id="sharePreview" maxlength="300" value="${esc(l.preview || '')}" placeholder="https://" onchange="Share.setLabels('${l.id}')"></label>
+      <p class="muted">${esc(t('share.title.help', { name: l.friend }))} ${esc(t('share.preview.help', { name: l.friend }))}</p>
+      <div class="actions"><button id="shareSimple" onclick="Share.simplePreset('${l.id}')" title="${esc(t('share.simple.help'))}">${esc(t('share.simple'))}</button></div>
+      <p class="muted">${esc(t('share.simple.hint'))}</p>
       <p class="muted" id="shareRoleHelp">${esc(t('share.role.help.' + l.role))} ${esc(t('share.role.never', { name: l.friend }))}</p>
       ${changeHtml(l)}
       ${l.theirRole ? `<p class="muted" id="shareTheirRole">${esc(t('share.role.theirs', { name: l.friend, role: t('share.role.' + l.theirRole) }))}</p>` : ''}</div>`;
@@ -228,7 +233,7 @@ const Share = (function () {
     const s = slug(), l = ofProject(s), p = state.project;
     let body;
     if (l && l.state === 'live') {
-      body = `<p>${esc(t('share.live', { name: l.friend, project: l.theirName }))}</p>
+      body = `<p>${esc(t('share.live', { name: l.friend, project: l.theirName }))}</p>${l.title ? `<p class="muted" id="shareFriendTitle">${esc(l.friend + ', ' + l.title)}</p>` : ''}
         <label class="chk share-switch"><input type="checkbox" id="shareOn" ${l.on ? 'checked' : ''} onchange="Share.setOn('${l.id}', this.checked)"> ${esc(t('share.switch'))}</label>
         <p class="muted">${esc(l.on ? t('share.switch.on') : t('share.switch.off'))}${l.droppedOff ? ' · ' + esc(t('share.dropped', { n: l.droppedOff })) : ''}${l.overCap ? ' · ' + esc(t('share.overcap', { n: l.overCap })) : ''}</p>
         <p class="muted" id="shareHeard">${esc(l.lastHeard ? t('share.heard', { name: l.friend, when: ago(l.lastHeard) }) : t('share.heard.never', { name: l.friend }))}</p>
@@ -274,6 +279,9 @@ const Share = (function () {
   const setApprovals = (slug, approvals) => act(() => api('PATCH', '/api/projects/' + slug, { approvals }));
   const setBoard = (id, board) => act(async () => { const r = await api('PATCH', '/api/shares/' + id, { board }); if (r.shared) note(t('share.board.sent', { n: r.shared.sent, held: r.shared.held })); });
   const setRole = id => act(() => api('PATCH', '/api/shares/' + id, { role: $('shareRole').value, scope: $('shareRoleScope').value }));
+  const setLabels = id => act(() => api('PATCH', '/api/shares/' + id, { title: $('shareTitle').value, preview: $('sharePreview').value }));
+  // AIG-962: Non-technical friend = Viewer, comments on, project Approvals on (their wishes wait in ✅ Approvals)
+  const simplePreset = id => act(async () => { await api('PATCH', '/api/shares/' + id, { role: 'viewer', scope: 'project', comments: true }); await api('PATCH', '/api/projects/' + slug(), { approvals: true }); });
   const setChange = (cid, key, on) => act(() => api('POST', '/api/projects/' + slug() + '/change-roles', key === 'pm' ? { pm: { [on ? 'add' : 'remove']: '@' + cid } } : { [key]: on ? '@' + cid : '' }));
   const ping = id => act(() => api('POST', `/api/shares/${id}/ping`));
   function unlink(id, forget) {
@@ -322,6 +330,6 @@ const Share = (function () {
   }
 
   PagePoll.every(() => { if (typeof i18n !== 'undefined' && i18n.ready) return load(); }, 3000, { hidden: 30000 });
-  return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setApprovals, setRole, setChange, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
+  return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setApprovals, setRole, setLabels, simplePreset, setChange, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
     laneHtml, cardBtn, cardComments, commentMark, previewCard, sendCard, unshareCard, sendHeld, laneCard, laneReply, takeCard };
 })();
