@@ -35,9 +35,9 @@ def('homeux', 'Home: counts hide zeros and show % done, More holds the moved but
   await page.close();
 
   page = await choose();
-  await page.click("#wzNo"); await sleep(1500);
-  check('Just let me in: Setup shows, no dialog and no second popup', await page.isVisible('#setupForm') && (await page.locator('#dialog .dialog, #dialog > *').count()) === 0 && (await setup()).prefs.wizardSeen === true, [await page.isVisible("#setupForm"), await page.locator("#dialog > *").count(), (await setup()).prefs.wizardSeen].join());
-  await page.reload(); await page.waitForSelector('#setupForm'); await sleep(500);
+  await page.click("#wzNo"); await page.waitForSelector('#homeMoreBtn', { timeout: 5000 }).catch(() => {}); await sleep(500);
+  check('Just let me in: Home shows, no dialog and no second popup (AIG-1069)', await page.isVisible('#homeMoreBtn') && (await page.locator('#dialog .dialog, #dialog > *').count()) === 0 && (await setup()).prefs.wizardSeen === true, [page.url(), await page.isVisible('#homeMoreBtn'), await page.isVisible("#setupForm"), await page.locator("#dialog > *").count(), (await setup()).prefs.wizardSeen].join());
+  await page.goto(s.base + '/#/setup'); await page.reload(); await page.waitForSelector('#setupForm'); await sleep(500);
   check('it does not come back', (await page.locator('#wzYes').count()) === 0);
   noErrors(page); await page.close();
 
