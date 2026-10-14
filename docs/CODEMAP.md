@@ -6,6 +6,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - Server: `node server.js` (or `start-aigile.bat`) -> http://localhost:4321. `AIGILE_PORT` and `AIGILE_DATA` change the port and data folder; `AIGILE_DEV=1` adds the "new version, refresh" prompt.
 - CLI: `node aigile.js help` (`AIGILE_URL` points it at another server; `AIGILE_AS` sets the author).
 - QA: `node tools/qa/qa.mjs [area ...]` (no args = all; `--list` shows them; `QA_PORT`, default 4390). Own server on a temp folder, live board untouched. Runner, helpers, area files, AI tester: [qa.md](codemap/qa.md).
+- Session modes: `node tools/session-modes.cjs [--days 7] [--json]` (AIG-461): cost and speed per way of running a lead (VS Code, terminal, background), from ~/.claude/projects usage numbers only; findings in [SESSION-MODES.md](SESSION-MODES.md).
 
 ## Server ([server.md](codemap/server.md): files, API routes, local-only settings)
 - `server.js`: http plumbing, `/api/*` dispatch, static files from `public/`
