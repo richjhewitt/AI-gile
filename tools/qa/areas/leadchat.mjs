@@ -38,6 +38,7 @@ def('leadchat', '💬 Lead chat: DMs go to one chat per project, not a card each
   await page.goto(page.url().replace(/#.*/, '') + '#/inbox');
   await page.waitForSelector('#ib .ib-item, .ib-item', { timeout: 8000 });
   check('the inbox item says Lead chat and links the card id', /Lead chat/.test(await page.textContent('.ib-item')) && !!(await page.$(`.ib-item a[href="#/p/chatty/${card.id}"]`)));
+  check('a Lead chat item has no ⤢ pop-out (it would open a card that no longer exists)', !(await page.$('.ib-item .ib-popone')));   // AIG-1016
   await page.fill('.ib-item textarea', 'Thanks, go ahead');
   await page.click('.ib-item [data-act="send"]');
   await sleep(800);

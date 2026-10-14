@@ -6,7 +6,7 @@
   /* ---------- inbox page (AIG-33) ---------- */
   function qHtml(c) {
     const a = shownAsk(c), acts = c.blocked || c.leadChat ? [] : askActions(a, 'question');
-    return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${urgentBtn(c, c.project)}<button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button></div>${queueChips(c)}
+    return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${urgentBtn(c, c.project)}${c.leadChat ? '' : `<button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button>`}</div>${queueChips(c)}
       <div class="ib-title">${c.leadChat ? `<a href="#" onclick="Dms.show('${c.project}'); return false">${esc(c.title)}</a>` : `<a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a>`}</div>
       <div class="ib-who">${t(c.blocked ? 'inbox.q.isblocked.html' : 'inbox.q.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
       <div class="ib-question">${linkify(a.text, c)}</div>${Attach.shown(a, c.project)}${actionsHtml(acts, c.project, c.id)}
