@@ -3233,5 +3233,20 @@
  "storage.nothing": "No attachments on closed cards older than {days} days to tidy up.",
   "mail.card.pick": "Project for the card",
   "mail.card.make": "📋 Make a card",
-  "mail.card.made": "Made {id} in {project} (backlog)"
+  "mail.card.made": "Made {id} in {project} (backlog)",
+  "mail.rules": "🏷️ Rules",
+  "mail.rules.help": "Rules add a label or suggest a card. They never move, mark read or delete a mail. Use | for or: invoice|bill",
+  "mail.rules.name": "Rule name",
+  "mail.rules.from.ph": "From contains",
+  "mail.rules.subject.ph": "Subject contains",
+  "mail.rules.label": "Label",
+  "mail.rules.card": "Suggest a card",
+  "mail.rules.add": "Add rule",
+  "mail.rules.del": "Delete rule",
+  "mail.rules.reset": "Starter rules back",
+  "mail.rules.reset.sure": "Put the starter rules back? Your own rules go.",
+  "mail.rules.saved": "Rules saved",
+  "mail.rules.from": "from {v}",
+  "mail.rules.subject": "subject {v}",
+  "mail.rules.suggest.title": "A rule suggests a card for this mail"
 }

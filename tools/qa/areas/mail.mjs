@@ -209,6 +209,23 @@ def('mail', 'Mail card 1: add an IMAP mailbox in Setup (find, test, save), passw
     await page.click('#mailBack');
     await page.waitForSelector('.mail-list .mail-row');
 
+    // 🏷️ Rules without AI (AIG-906)
+    const starter = (await s.ok('GET', '/api/mail/rules')).rules;
+    check('rules: four starter rules (bills, appointments, deliveries, newsletters), all on', starter.length === 4 && starter.every(r => r.on) && starter.some(r => r.id === 'bills'), starter);
+    check('rules: a rule with nothing to match or nothing to do is refused', (await s.api('POST', '/api/mail/rules', { rules: [{ name: 'x', label: 'y' }] })).status === 400 && (await s.api('POST', '/api/mail/rules', { rules: [{ name: 'x', from: 'y' }] })).status === 400);
+    await page.click('#mailRulesBtn');
+    await page.waitForSelector('#mailRules .mail-rule');
+    check('🏷️ Rules opens the list with the starter rules', await page.locator('#mailRules .mail-rule').count() === 4);
+    await page.fill('#mrName', 'Jörg'); await page.fill('#mrFrom', 'nobody@x|JORG@example'); await page.fill('#mrLabel', '⭐ Jörg'); await page.check('#mrCard');
+    await page.click('#mrAdd');
+    await page.waitForFunction(() => [...document.querySelectorAll('.mail-label')].some(e => /Jörg/.test(e.textContent)));
+    const tagged = (await s.ok('GET', `/api/mail/inbox?box=${b.id}`)).items, jorg = tagged.find(x => x.from.address === 'jorg@example.org');
+    check('a new rule labels the matching mail (any case, | means or) and suggests a card; others untouched', jorg && jorg.labels.includes('⭐ Jörg') && jorg.suggestCard === true && tagged.filter(x => x !== jorg).every(x => !x.labels.includes('⭐ Jörg')), tagged);
+    check('the row shows the label and the 📋 chip', await page.locator('.mail-row .mail-suggest').count() >= 1);
+    await page.locator('#mailRules .mail-rule input[type=checkbox]').last().uncheck();
+    await page.waitForFunction(() => ![...document.querySelectorAll('.mail-label')].some(e => /Jörg/.test(e.textContent)));
+    check('switching a rule off takes its label away; rules never STORE, MOVE or EXPUNGE on the server', !seen.lines.some(l => /STORE|MOVE|EXPUNGE|COPY/i.test(l)));
+
     const cache = path.join(s.data, 'mail', b.id, 'inbox.json');
     const c = JSON.parse(fs.readFileSync(cache, 'utf8'));
     check('the cache keeps headers of the last 30 days only (the 40-day-old one is left out)', c.items.length === 2 && c.items.every(x => x.uid !== 101), c.items.map(x => x.uid));

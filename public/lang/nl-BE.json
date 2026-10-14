@@ -3233,5 +3233,20 @@
  "storage.nothing": "Geen bijlagen bij gesloten kaarten ouder dan {days} dagen om op te ruimen.",
   "mail.card.pick": "Project voor de kaart",
   "mail.card.make": "📋 Maak een kaart",
-  "mail.card.made": "{id} gemaakt in {project} (backlog)"
+  "mail.card.made": "{id} gemaakt in {project} (backlog)",
+  "mail.rules": "🏷️ Regels",
+  "mail.rules.help": "Regels zetten een label of stellen een kaart voor. Ze verplaatsen, lezen of wissen nooit een mail. Gebruik | voor of: factuur|rekening",
+  "mail.rules.name": "Naam van de regel",
+  "mail.rules.from.ph": "Van bevat",
+  "mail.rules.subject.ph": "Onderwerp bevat",
+  "mail.rules.label": "Label",
+  "mail.rules.card": "Stel een kaart voor",
+  "mail.rules.add": "Regel toevoegen",
+  "mail.rules.del": "Regel wissen",
+  "mail.rules.reset": "Startregels terug",
+  "mail.rules.reset.sure": "De startregels terugzetten? Je eigen regels verdwijnen.",
+  "mail.rules.saved": "Regels bewaard",
+  "mail.rules.from": "van {v}",
+  "mail.rules.subject": "onderwerp {v}",
+  "mail.rules.suggest.title": "Een regel stelt een kaart voor bij deze mail"
 }

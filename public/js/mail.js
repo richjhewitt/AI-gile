@@ -57,8 +57,40 @@ const Mail = (() => {
     } catch (e) { c.made = e.message; }
     paint();
   };
+  // 🏷️ Rules without AI (AIG-906, lib/mailrules.js): label and/or suggest a card; never move, mark read or delete a mail.
+  M.toggleRules = async () => {
+    M.showRules = !M.showRules; M.rulesMsg = '';
+    if (M.showRules && !M.rules) { try { M.rules = (await api('GET', '/api/mail/rules')).rules; } catch (e) { M.rulesMsg = e.message; } }
+    paint();
+  };
+  const saveRules = async (rules, body) => {
+    try { M.rules = (await api('POST', '/api/mail/rules', body || { rules })).rules; M.rulesMsg = t('mail.rules.saved'); M.data = null; M.refresh(); }
+    catch (e) { M.rulesMsg = e.message; paint(); }
+  };
+  M.ruleOn = (i, on) => saveRules(M.rules.map((r, j) => j === i ? { ...r, on } : r));
+  M.ruleDel = i => saveRules(M.rules.filter((_, j) => j !== i));
+  M.rulesReset = () => { if (confirm(t('mail.rules.reset.sure'))) saveRules(null, { reset: true }); };
+  M.ruleAdd = () => {
+    const g = id => (($(id) || {}).value || '').trim();
+    saveRules([...(M.rules || []), { name: g('mrName'), from: g('mrFrom'), subject: g('mrSubj'), label: g('mrLabel'), card: !!($('mrCard') || {}).checked, on: true }]);
+  };
+  M.rulesHtml = () => {
+    const rs = M.rules || [];
+    const li = (r, i) => `<li class="mail-rule" style="margin:4px 0"><label><input type="checkbox" ${r.on ? 'checked' : ''} onchange="Mail.ruleOn(${i}, this.checked)"> <b>${esc(r.name)}</b></label>
+      <span class="muted">${esc([r.from && t('mail.rules.from', { v: r.from }), r.subject && t('mail.rules.subject', { v: r.subject })].filter(Boolean).join(', '))} → ${esc([r.label, r.card && '📋'].filter(Boolean).join(' '))}</span>
+      <button type="button" class="mail-rule-del" title="${esc(t('mail.rules.del'))}" aria-label="${esc(t('mail.rules.del'))}" onclick="Mail.ruleDel(${i})">✕</button></li>`;
+    const inp = (id, key, ml) => `<input id="${id}" type="text" maxlength="${ml}" placeholder="${esc(t(key))}" aria-label="${esc(t(key))}" style="min-width:120px">`;
+    return `<div class="mail-rules" id="mailRules" style="border:1px solid var(--border,#8884);border-radius:8px;padding:8px 12px;margin-bottom:8px">
+      <small class="muted">${esc(t('mail.rules.help'))}</small>
+      <ul style="list-style:none;padding:0">${rs.map(li).join('')}</ul>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${inp('mrName', 'mail.rules.name', 60)}${inp('mrFrom', 'mail.rules.from.ph', 200)}${inp('mrSubj', 'mail.rules.subject.ph', 200)}${inp('mrLabel', 'mail.rules.label', 40)}
+        <label><input type="checkbox" id="mrCard"> ${esc(t('mail.rules.card'))}</label>
+        <button type="button" id="mrAdd" onclick="Mail.ruleAdd()">${esc(t('mail.rules.add'))}</button>
+        <button type="button" id="mrReset" onclick="Mail.rulesReset()">${esc(t('mail.rules.reset'))}</button></div>
+      <small class="muted" id="mailRulesMsg">${esc(M.rulesMsg || '')}</small></div>`;
+  };
   M.toggleHtml = () => { if (M.cur) M.cur.html = !M.cur.html; paint(); };
-  M.sig = () => JSON.stringify([M.cfg, M.data, M.loading, M.msg, M.cur && [M.cur.uid, M.cur.loading, M.cur.html, M.cur.error, !!M.cur.d, M.cur.made], (M.projs || []).length, hidden()]);
+  M.sig = () => JSON.stringify([M.cfg, M.data, M.loading, M.msg, M.cur && [M.cur.uid, M.cur.loading, M.cur.html, M.cur.error, !!M.cur.d, M.cur.made], (M.projs || []).length, M.showRules, M.rules, M.rulesMsg, hidden()]);
   const fmt = d => {
     if (!d) return '';
     const x = new Date(d); if (isNaN(x)) return '';
@@ -70,7 +102,8 @@ const Mail = (() => {
     return `<tr class="mail-row${m.unread ? ' unread' : ''}" style="border-top:1px solid var(--border,#8884)">
       <td style="width:18px;text-align:center">${m.unread ? `<span class="mail-dot" title="${esc(t('mail.unread'))}" aria-label="${esc(t('mail.unread'))}" style="color:var(--accent)">●</span>` : ''}</td>
       <td class="mail-from" title="${esc(who.address)}" style="${bold};max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(who.name || who.address || '?')}</td>
-      <td class="mail-subj" style="${bold};overflow-wrap:anywhere"><a href="#/mail" class="mail-open" onclick="Mail.open(${Number(m.uid) || 0});return false" style="color:inherit;text-decoration:none">${esc(m.subject || t('mail.nosubject'))}</a></td>
+      <td class="mail-subj" style="${bold};overflow-wrap:anywhere"><a href="#/mail" class="mail-open" onclick="Mail.open(${Number(m.uid) || 0});return false" style="color:inherit;text-decoration:none">${esc(m.subject || t('mail.nosubject'))}</a>
+        ${(m.labels || []).map(l => ` <span class="chip mail-label" style="font-size:11px;font-weight:normal">${esc(l)}</span>`).join('')}${m.suggestCard ? ` <span class="chip mail-suggest" title="${esc(t('mail.rules.suggest.title'))}" style="font-size:11px;font-weight:normal">📋</span>` : ''}</td>
       <td class="mail-date muted" style="white-space:nowrap;text-align:end">${esc(fmt(m.date))}</td></tr>`;
   };
   M.render = () => {
@@ -86,7 +119,9 @@ const Mail = (() => {
       <div class="mail-bar" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
         <button type="button" id="mailRefresh" onclick="Mail.refresh()" ${M.loading ? 'disabled' : ''}>${esc(t('mail.refresh'))}</button>
         <button type="button" id="mailForget" onclick="Mail.forget()">${esc(t('mail.forget'))}</button>
+        <button type="button" id="mailRulesBtn" onclick="Mail.toggleRules()" aria-expanded="${M.showRules ? 'true' : 'false'}">${esc(t('mail.rules'))}</button>
         <span class="muted" id="mailState">${esc(state_)}</span></div>
+      ${M.showRules ? M.rulesHtml() : ''}
       ${d.error ? `<div class="err" id="mailErr">${esc(t('mail.err', { msg: d.error }))}</div>` : ''}
       ${items.length ? `<table class="mail-list" style="width:100%;border-collapse:collapse"><thead><tr class="muted"><th></th><th style="text-align:start">${esc(t('mail.col.from'))}</th><th style="text-align:start">${esc(t('mail.col.subject'))}</th><th style="text-align:end">${esc(t('mail.col.date'))}</th></tr></thead>
         <tbody>${items.map(row).join('')}</tbody></table>` : `<p class="muted" id="mailEmpty">${esc(M.loading ? t('mail.loading') : t('mail.empty'))}</p>`}</div>`;

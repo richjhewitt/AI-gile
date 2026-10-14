@@ -6,7 +6,7 @@ import path from 'node:path';
 import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def, pinAllInit, clickBar } from '../lib.mjs';
 
 // The checker (AIG-487): its JSON report for a folder of language files.
-const runCheck = (...a) => { const r = spawnSync(process.execPath, [path.join(ROOT, 'tools', 'i18n', 'check.mjs'), '--json', ...a], { encoding: 'utf8' }); let j = null; try { j = JSON.parse(r.stdout); } catch {} return { code: r.status, j, out: r.stdout + r.stderr }; };
+const runCheck = (...a) => { const r = spawnSync(process.execPath, [path.join(ROOT, 'tools', 'i18n', 'check.mjs'), '--json', ...a], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }); let j = null; try { j = JSON.parse(r.stdout); } catch {} return { code: r.status, j, out: r.stdout + r.stderr }; };
 // A browser context with these extra language files (stubbed: /api/langs lists them, /lang/<code>.json serves a marked copy of English).
 const MARK = { ar: 'ع ', he: 'ש ', 'zh-tw': '繁 ', no: 'NO ', fil: 'FIL ', 'pt-br': 'BR ', pirate: 'Arr ', eo: 'EO ' };
 async function withLangs(b, opts, codes) {
