@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, check, sleep, until, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 const require = createRequire(import.meta.url);
 
 def('light', '🪶 Pro-friendly runs: comment runs on the smaller model, every 5th run a fresh conversation; off changes nothing (AIG-268)', async s => {
@@ -35,7 +35,7 @@ def('tester', '🤖 Test these for me: the button starts one AI tester run over 
   await page.waitForFunction(() => /Testing/.test(document.getElementById('ibTester').textContent), null, { timeout: 5000 }).catch(() => {});
   check('it shows it is testing', /Testing/.test(await page.textContent('#ibTester')));
   check('a second start while it runs starts nothing new', (await s.ok('POST', '/api/tester', {})).already === true);
-  await sleep(1500);
+  await until(async () => fs.existsSync(s.wakeOut) && /TESTER/.test(fs.readFileSync(s.wakeOut, 'utf8')), 20000);   // AIG-1036: wait for the stub, not a fixed sleep
   check('the tester runs on the smaller model, in its own name, with the tester brief', /--model.*sonnet/.test(fs.readFileSync(s.wakeOut, 'utf8')) && /Tester \(Sonnet\)/.test(fs.readFileSync(s.wakeOut, 'utf8')) && /TESTER\.md/.test(fs.readFileSync(s.wakeOut, 'utf8')));
   for (let i = 0; i < 40 && (await s.ok('GET', '/api/tester')).running; i++) await sleep(250);
   // At night: the watchman starts it by itself.
