@@ -84,6 +84,7 @@
  "home.quiet": "🌙 Going quiet",
  "home.quiet.title": "Tell every working team you're switching off for a few hours",
  "home.showarchived": "Show archived",
+ "projects.none.hint": "Press + New project to start your first one. Setup is one click away in the top bar.",
  "projects.none": "No projects yet.",
  "standup.all": "📣 Stand-up all",
  "standup.all.title": "Ask every team for done / next / blockers",

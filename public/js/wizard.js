@@ -42,7 +42,7 @@ async function wzLeave() {
   try { localStorage.setItem('aigile.helpOffered', '1'); } catch {}
   closeDialog();
 }
-async function wizardWing() { try { await wzLeave(); } catch (e) { setErr('wz-err', e); } }
+async function wizardWing() { try { await wzLeave(); if (state.route && state.route.view === 'setup') location.hash = '#/'; } catch (e) { setErr('wz-err', e); } }
 async function wizardTour() { try { await wzLeave(); startTour('new'); } catch (e) { setErr('wz-err', e); } }
 function wizardStart() {
   const s = state.setup, pr = s.prefs || {}, first = !pr.wizardSeen;
