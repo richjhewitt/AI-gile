@@ -226,6 +226,57 @@ def('mail', 'Mail card 1: add an IMAP mailbox in Setup (find, test, save), passw
     await page.waitForFunction(() => ![...document.querySelectorAll('.mail-label')].some(e => /Jörg/.test(e.textContent)));
     check('switching a rule off takes its label away; rules never STORE, MOVE or EXPUNGE on the server', !seen.lines.some(l => /STORE|MOVE|EXPUNGE|COPY/i.test(l)));
 
+    // ↩️ Reply and send (AIG-904): a fake SMTP server in this process, plain TCP like the fake IMAP one.
+    const smtp = { lines: [], datas: [] }, sport = await freePort();
+    const ssrv = net.createServer(sock => {
+      let buf = '', inData = false;
+      sock.write('220 fake SMTP\r\n');
+      sock.on('data', d => {
+        buf += d.toString('latin1');
+        if (inData) { const e = buf.indexOf('\r\n.\r\n'); if (e < 0) return; smtp.datas.push(buf.slice(0, e)); buf = buf.slice(e + 5); inData = false; sock.write('250 queued\r\n'); }
+        let i; while ((i = buf.indexOf('\r\n')) >= 0 && !inData) {
+          const l = buf.slice(0, i); buf = buf.slice(i + 2); smtp.lines.push(l);
+          if (/^EHLO/i.test(l)) sock.write('250-fake\r\n250 AUTH PLAIN\r\n');
+          else if (/^AUTH PLAIN /i.test(l)) sock.write(Buffer.from(l.slice(11), 'base64').toString('utf8').startsWith('\0' + USER + '\0') ? '235 ok\r\n' : '535 no\r\n');
+          else if (/^(MAIL|RCPT)/i.test(l)) sock.write('250 ok\r\n');
+          else if (/^DATA/i.test(l)) { inData = true; sock.write('354 go\r\n'); }
+          else if (/^QUIT/i.test(l)) { sock.write('221 bye\r\n'); sock.end(); }
+          else sock.write('500 what\r\n');
+        }
+      });
+    });
+    await new Promise(r => ssrv.listen(sport, '127.0.0.1', r));
+    try {
+      await s.ok('POST', '/api/mail/config', { ...box, id: b.id, password: '', smtpHost: '127.0.0.1', smtpPort: sport, token });
+      const mailx = { box: b.id, to: 'jorg@example.org', subject: 'Re: hello ü', text: 'Thanks!\n.a line with a dot' };
+      check('send: refused without the page token, and from the CLI even with it', (await s.api('POST', '/api/mail/send', mailx)).status === 403
+        && (await fetch(s.base + '/api/mail/send', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Aigile-Where': 'terminal' }, body: JSON.stringify({ ...mailx, token }) })).status === 403 && smtp.datas.length === 0);
+      check('send: a bad address is refused before connecting', (await s.api('POST', '/api/mail/send', { ...mailx, to: 'not an address', token })).status === 400 && smtp.lines.length === 0);
+      const sent = await s.ok('POST', '/api/mail/send', { ...mailx, token });
+      const raw = smtp.datas[0] || '', body64 = raw.split('\r\n\r\n')[1] || '';
+      check('send: logs in, one RCPT, the body arrives (base64, UTF-8 subject encoded)', sent.ok && smtp.lines.some(l => /^AUTH PLAIN/.test(l)) && smtp.lines.filter(l => /^RCPT TO:<jorg@example\.org>/.test(l)).length === 1
+        && /^Subject: =\?UTF-8\?B\?/m.test(raw) && Buffer.from(body64.replace(/\r\n/g, ''), 'base64').toString('utf8') === 'Thanks!\r\n.a line with a dot', raw.slice(0, 400));
+      const log = fs.readFileSync(path.join(s.data, 'mail', 'log.jsonl'), 'utf8');
+      check('send: one log line with the subject, never the body', /"what":"sent"/.test(log) && /hello/.test(log) && !/Thanks/.test(log));
+      await page.evaluate(() => { window.__mailUndoS = 2; });
+      await page.locator('.mail-open').first().click();
+      await page.waitForSelector('#mailReply');
+      await page.click('#mailReply');
+      await page.waitForSelector('#mcTo');
+      check('↩️ Reply fills in the sender, Re: subject and the quoted text', await page.inputValue('#mcTo') === 'jorg@example.org' && /^Re: /.test(await page.inputValue('#mcSubj')) && /> Hello Jörg/.test(await page.inputValue('#mcText')));
+      await page.fill('#mcText', 'Undo me');
+      await page.click('#mcSend');
+      await page.click('#mcUndo');
+      await sleep(2600);
+      check('↶ Undo within the countdown: nothing is sent', smtp.datas.length === 1 && /undid/i.test(await page.textContent('#mcMsg')));
+      await page.fill('#mcText', 'Real reply');
+      await page.click('#mcSend');
+      await page.waitForFunction(() => !document.getElementById('mailCompose'), null, { timeout: 15000 });
+      check('📤 Send after the countdown: sent once, as a reply (In-Reply-To kept when the mail had one)', smtp.datas.length === 2 && /Real reply/.test(Buffer.from((smtp.datas[1].split('\r\n\r\n')[1] || '').replace(/\r\n/g, ''), 'base64').toString('utf8')));
+      await page.click('#mailBack');
+      await page.waitForSelector('.mail-list .mail-row');
+    } finally { ssrv.close(); }
+
     const cache = path.join(s.data, 'mail', b.id, 'inbox.json');
     const c = JSON.parse(fs.readFileSync(cache, 'utf8'));
     check('the cache keeps headers of the last 30 days only (the 40-day-old one is left out)', c.items.length === 2 && c.items.every(x => x.uid !== 101), c.items.map(x => x.uid));

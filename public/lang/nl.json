@@ -3248,5 +3248,21 @@
   "mail.rules.saved": "Regels bewaard",
   "mail.rules.from": "van {v}",
   "mail.rules.subject": "onderwerp {v}",
-  "mail.rules.suggest.title": "Een regel stelt een kaart voor bij deze mail"
+  "mail.rules.suggest.title": "Een regel stelt een kaart voor bij deze mail",
+  "mail.setup.smtphost": "Verzendserver",
+  "mail.setup.smtphost.ph": "smtp. + je mailserver (leeg laten kan)",
+  "mail.setup.smtpport": "Verzendpoort",
+  "mail.send.new": "✏️ Nieuwe mail",
+  "mail.send.reply": "↩️ Antwoorden",
+  "mail.send.replybtn": "↩️ Antwoorden",
+  "mail.send.to": "Aan (komma ertussen)",
+  "mail.send.body": "Je bericht",
+  "mail.send.send": "📤 Versturen",
+  "mail.send.sending": "Versturen…",
+  "mail.send.undo": "↶ Ongedaan maken ({n} s)",
+  "mail.send.undone": "Niet verstuurd: je maakte het ongedaan",
+  "mail.send.sent": "Verstuurd",
+  "mail.send.cancel": "Annuleren",
+  "mail.send.noto": "Aan wie?",
+  "mail.send.wrote": "{who} schreef:"
 }

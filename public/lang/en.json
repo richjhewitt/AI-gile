@@ -3248,5 +3248,21 @@
   "mail.rules.saved": "Rules saved",
   "mail.rules.from": "from {v}",
   "mail.rules.subject": "subject {v}",
-  "mail.rules.suggest.title": "A rule suggests a card for this mail"
+  "mail.rules.suggest.title": "A rule suggests a card for this mail",
+  "mail.setup.smtphost": "Send server",
+  "mail.setup.smtphost.ph": "smtp. + your mail server (leave empty for that)",
+  "mail.setup.smtpport": "Send port",
+  "mail.send.new": "✏️ New mail",
+  "mail.send.reply": "↩️ Reply",
+  "mail.send.replybtn": "↩️ Reply",
+  "mail.send.to": "To (comma between)",
+  "mail.send.body": "Your message",
+  "mail.send.send": "📤 Send",
+  "mail.send.sending": "Sending…",
+  "mail.send.undo": "↶ Undo ({n} s)",
+  "mail.send.undone": "Not sent: you undid it",
+  "mail.send.sent": "Sent",
+  "mail.send.cancel": "Cancel",
+  "mail.send.noto": "Who is it to?",
+  "mail.send.wrote": "{who} wrote:"
 }

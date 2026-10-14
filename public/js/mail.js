@@ -57,6 +57,45 @@ const Mail = (() => {
     } catch (e) { c.made = e.message; }
     paint();
   };
+  // ↩️ Reply / ✏️ New mail (AIG-904): only you send. Send waits 10 s with an Undo button before the request goes out; the
+  // server takes it only with the secrets page token (lib/mailsend.js), so the CLI and agents can't send.
+  const UNDO_S = () => window.__mailUndoS || 10;   // QA shortens it
+  M.newMail = () => { M.compose = { to: '', subject: '', text: '' }; paint(); };
+  M.reply = () => {
+    const d = M.cur && M.cur.d; if (!d) return;
+    const subj = d.subject || '', quote = String(d.text || '').split(/\r?\n/).slice(0, 40).map(l => '> ' + l).join('\n');
+    M.compose = { to: (d.from || {}).address || '', subject: /^re:/i.test(subj) ? subj : 'Re: ' + subj, text: '\n\n' + t('mail.send.wrote', { who: (d.from || {}).name || (d.from || {}).address || '?' }) + '\n' + quote, inReplyTo: d.messageId || '' };
+    paint();
+  };
+  M.cancelCompose = () => { if (M.compose && M.compose.timer) clearInterval(M.compose.timer); M.compose = null; paint(); };
+  M.send = () => {
+    const c = M.compose; if (!c || c.timer) return;
+    c.to = ($('mcTo') || {}).value || ''; c.subject = ($('mcSubj') || {}).value || ''; c.text = ($('mcText') || {}).value || '';
+    if (!c.to.trim()) { c.msg = t('mail.send.noto'); return paint(); }
+    c.left = UNDO_S(); c.msg = '';
+    c.timer = setInterval(async () => {
+      if (--c.left > 0) return paint();
+      clearInterval(c.timer); c.timer = null; c.left = 0; c.sending = true; paint();
+      try { await api('POST', '/api/mail/send', { token: await secToken(), box: (box() || {}).id, to: c.to, subject: c.subject, text: c.text, inReplyTo: c.inReplyTo }); M.compose = null; M.msg = t('mail.send.sent'); }
+      catch (e) { c.sending = false; c.msg = e.message; }
+      paint();
+    }, 1000);
+    paint();
+  };
+  M.undoSend = () => { const c = M.compose; if (c && c.timer) { clearInterval(c.timer); c.timer = null; c.left = 0; c.msg = t('mail.send.undone'); paint(); } };
+  M.renderCompose = b => {
+    const c = M.compose, busy = !!c.timer || c.sending;
+    return `<div class="uz mail-page"><h2>${esc(t(c.inReplyTo ? 'mail.send.reply' : 'mail.send.new'))} <span class="muted" style="font-size:14px;font-weight:normal">${esc(b.address)}</span></h2>
+      <div class="mail-compose" id="mailCompose" style="display:flex;flex-direction:column;gap:6px;max-width:720px">
+        <input id="mcTo" type="text" maxlength="2000" value="${esc(c.to)}" placeholder="${esc(t('mail.send.to'))}" aria-label="${esc(t('mail.send.to'))}" ${busy ? 'disabled' : ''}>
+        <input id="mcSubj" type="text" maxlength="300" value="${esc(c.subject)}" placeholder="${esc(t('mail.col.subject'))}" aria-label="${esc(t('mail.col.subject'))}" ${busy ? 'disabled' : ''}>
+        <textarea id="mcText" rows="12" aria-label="${esc(t('mail.send.body'))}" ${busy ? 'disabled' : ''}>${esc(c.text)}</textarea>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          ${c.timer ? `<button type="button" class="primary" id="mcUndo" onclick="Mail.undoSend()">${esc(t('mail.send.undo', { n: c.left }))}</button>`
+            : `<button type="button" class="primary" id="mcSend" onclick="Mail.send()" ${c.sending ? 'disabled' : ''}>${esc(t(c.sending ? 'mail.send.sending' : 'mail.send.send'))}</button>`}
+          <button type="button" id="mcCancel" onclick="Mail.cancelCompose()" ${busy ? 'disabled' : ''}>${esc(t('mail.send.cancel'))}</button>
+          <span class="muted" id="mcMsg">${esc(c.msg || '')}</span></div></div></div>`;
+  };
   // 🏷️ Rules without AI (AIG-906, lib/mailrules.js): label and/or suggest a card; never move, mark read or delete a mail.
   M.toggleRules = async () => {
     M.showRules = !M.showRules; M.rulesMsg = '';
@@ -90,7 +129,7 @@ const Mail = (() => {
       <small class="muted" id="mailRulesMsg">${esc(M.rulesMsg || '')}</small></div>`;
   };
   M.toggleHtml = () => { if (M.cur) M.cur.html = !M.cur.html; paint(); };
-  M.sig = () => JSON.stringify([M.cfg, M.data, M.loading, M.msg, M.cur && [M.cur.uid, M.cur.loading, M.cur.html, M.cur.error, !!M.cur.d, M.cur.made], (M.projs || []).length, M.showRules, M.rules, M.rulesMsg, hidden()]);
+  M.sig = () => JSON.stringify([M.cfg, M.data, M.loading, M.msg, M.cur && [M.cur.uid, M.cur.loading, M.cur.html, M.cur.error, !!M.cur.d, M.cur.made], (M.projs || []).length, M.showRules, M.rules, M.rulesMsg, M.compose && [M.compose.left, M.compose.sending, M.compose.msg, !!M.compose.timer], hidden()]);
   const fmt = d => {
     if (!d) return '';
     const x = new Date(d); if (isNaN(x)) return '';
@@ -111,6 +150,7 @@ const Mail = (() => {
     if (hidden()) return `<div class="uz">${head}<p class="muted">${esc(t('mail.streamer'))}</p></div>`;
     const b = box();
     if (!b) return `<div class="uz">${head}<p class="muted">${esc(t('mail.none'))}</p><p><button class="primary" onclick="Mail.toSetup()">${esc(t('mail.none.setup'))}</button></p></div>`;
+    if (M.compose) return M.renderCompose(b);
     if (M.cur) return M.renderOne(b);
     const d = M.data || { items: [] }, items = d.items || [];
     const when = d.at ? ago(d.at) : '';
@@ -119,6 +159,7 @@ const Mail = (() => {
       <div class="mail-bar" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
         <button type="button" id="mailRefresh" onclick="Mail.refresh()" ${M.loading ? 'disabled' : ''}>${esc(t('mail.refresh'))}</button>
         <button type="button" id="mailForget" onclick="Mail.forget()">${esc(t('mail.forget'))}</button>
+        <button type="button" id="mailNew" onclick="Mail.newMail()">${esc(t('mail.send.new'))}</button>
         <button type="button" id="mailRulesBtn" onclick="Mail.toggleRules()" aria-expanded="${M.showRules ? 'true' : 'false'}">${esc(t('mail.rules'))}</button>
         <span class="muted" id="mailState">${esc(state_)}</span></div>
       ${M.showRules ? M.rulesHtml() : ''}
@@ -132,7 +173,7 @@ const Mail = (() => {
   const CSP = "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; img-src data:; style-src 'unsafe-inline'\"><base target=\"_blank\">";
   M.renderOne = b => {
     const c = M.cur, d = c.d, head = `<h2>${esc(t('mail.title'))} <span class="muted" style="font-size:14px;font-weight:normal">${esc(b.name)} · ${esc(b.address)}</span></h2>
-      <p><button type="button" id="mailBack" onclick="Mail.back()">${esc(t('mail.back'))}</button></p>`;
+      <p><button type="button" id="mailBack" onclick="Mail.back()">${esc(t('mail.back'))}</button> ${c.d ? `<button type="button" id="mailReply" onclick="Mail.reply()">${esc(t('mail.send.replybtn'))}</button>` : ''}</p>`;
     if (c.loading) return `<div class="uz mail-page">${head}<p class="muted" id="mailOpening">${esc(t('mail.opening'))}</p></div>`;
     if (c.error) return `<div class="uz mail-page">${head}<div class="err" id="mailErr">${esc(t('mail.err.open', { msg: c.error }))}</div></div>`;
     const who = d.from || {}, to = (d.to || []).map(x => x.name || x.address).join(', ');
@@ -170,6 +211,8 @@ const Mail = (() => {
         <button type="button" id="mailFind" onclick="Mail.find()">${esc(t('mail.setup.find'))}</button></div>
       ${field('mailHost', 'mail.setup.host', b.host, 'type="text" maxlength="253" placeholder="imap.example.com"')}
       ${field('mailPort', 'mail.setup.port', b.port || 993, 'type="number" min="1" max="65535" style="width:90px"')}
+      ${field('mailSmtpHost', 'mail.setup.smtphost', b.smtpHost, 'type="text" maxlength="253" placeholder="' + esc(t('mail.setup.smtphost.ph')) + '"')}
+      ${field('mailSmtpPort', 'mail.setup.smtpport', b.smtpPort || 465, 'type="number" min="1" max="65535" style="width:90px"')}
       ${field('mailUser', 'mail.setup.user', b.user, `type="text" maxlength="200" placeholder="${esc(t('mail.setup.user.ph'))}"`)}
       ${field('mailPass', 'mail.setup.pass', '', `type="password" maxlength="1000" autocomplete="new-password" placeholder="${esc(b.hasPassword ? t('mail.setup.pass.keep') : '')}"`)}
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button type="button" id="mailTest" onclick="Mail.test()">${esc(t('mail.setup.test'))}</button>
@@ -177,7 +220,7 @@ const Mail = (() => {
         ${box() ? `<button type="button" id="mailRemove" onclick="Mail.remove()">${esc(t('mail.setup.remove'))}</button> <a href="#/mail" id="mailOpen">${esc(t('mail.setup.open'))}</a>` : ''}</div>
       ${b.lastError ? `<small class="muted mail-note" id="mailSetErr">${esc(b.lastError)} <a href="#/setup/dmsRelay">${esc(t('mail.setup.relay.link'))}</a></small>` : '<div class="err" id="mailSetErr"></div>'}<small class="muted" id="mailSetState">${esc(M.setupMsg)}</small>`;
   };
-  const form = () => ({ id: (box() || {}).id, name: v('mailName'), address: v('mailAddr'), host: v('mailHost'), port: Number(v('mailPort')) || 993, user: v('mailUser') || v('mailAddr'), password: ($('mailPass') || {}).value || '' });
+  const form = () => ({ id: (box() || {}).id, name: v('mailName'), address: v('mailAddr'), host: v('mailHost'), port: Number(v('mailPort')) || 993, smtpHost: v('mailSmtpHost'), smtpPort: Number(v('mailSmtpPort')) || 465, user: v('mailUser') || v('mailAddr'), password: ($('mailPass') || {}).value || '' });
   M.find = async () => {
     say(t('mail.setup.finding'));
     try {
