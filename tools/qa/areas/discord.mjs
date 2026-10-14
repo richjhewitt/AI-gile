@@ -1,5 +1,6 @@
 // QA area: discord (AIG-481): only listed users are heard, DMs reach the open question's card, replies come back once, the token never shows.
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { check, tmp, def } from '../lib.mjs';
@@ -20,4 +21,6 @@ def('discord', 'Discord bridge with a stubbed Discord: allowed users only, DM be
   check('a code works once', o.reuse === null && o.usersFinal.join() === '777777,123456789', o);
   check('an expired code links nobody', o.late === null && o.exp.expired && o.usersEnd.join() === '777777,123456789', o);
   check('Discord errors come as plain words', o.words[0].includes("isn't a Discord user") && o.words[1].includes("isn't a Discord user") && o.words[2].includes('share a server') && o.words[3].includes('token is wrong') && o.err.includes("isn't a Discord user") && !/400/.test(o.err), [o.words, o.err]);
+  check('a bot in no server gets an invite link with its client_id, never the token', o.in0.inServer === false && o.in0.invite === 'https://discord.com/oauth2/authorize?client_id=4242&scope=bot&permissions=68608' && !JSON.stringify(o.in0).includes('TKN'), o.in0);
+  check('the answer is kept for a minute, Save looks again, and once in a server the page hides step 1', o.cached === false && o.in1.inServer === true && /s\.inServer === false/.test(fs.readFileSync(path.join(root, 'public/js/discord-setup.js'), 'utf8')) && /target="_blank" rel="noopener">1\. Add the bot to your server/.test(fs.readFileSync(path.join(root, 'public/js/discord-setup.js'), 'utf8')), [o.cached, o.in1]);
 });
