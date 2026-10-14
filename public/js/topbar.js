@@ -4,10 +4,10 @@
 // Default = the layout in index.html. The Setup gear can't be switched off, so Setup is always reachable.
 const Topbar = (() => {
   const KEY = 'aigile.topbar';
-  const BTNS = [['helpBtn', 'help'], ['ideaBtn', 'idea'], ['bugBtn', 'bug'], ['teamTop', 'team'], ['inboxTop', 'inbox'], ['pokeTop', 'poke'], ['nightTop', 'night'], ['glanceBtn', 'glance'], ['weedBtn', 'weed'], ['streamBtn', 'stream'], ['ntBtn', 'nt'], ['statusBtn', 'status'], ['tiredBtn', 'tired'], ['assumeNav', 'assume'], ['usageNav', 'usage'], ['setupNav', 'setup'], ['themeBtn', 'theme']];
+  const BTNS = [['helpBtn', 'help'], ['bugBtn', 'bug'], ['ideaBtn', 'idea'], ['teamTop', 'team'], ['inboxTop', 'inbox'], ['pokeTop', 'poke'], ['nightTop', 'night'], ['glanceBtn', 'glance'], ['weedBtn', 'weed'], ['streamBtn', 'stream'], ['ntBtn', 'nt'], ['statusBtn', 'status'], ['tiredBtn', 'tired'], ['assumeNav', 'assume'], ['usageNav', 'usage'], ['setupNav', 'setup'], ['themeBtn', 'theme']];
   const IDS = BTNS.map(b => b[0]), KEEP = 'setupNav';
   const AI_BTNS = ['ntBtn', 'usageNav', 'pokeTop', 'nightTop', 'teamTop'];   // hidden by No AI, ever (AIG-581)
-  const DEF_SIDE = { bugBtn: 'l' };   // AIG-733: Raise bug sits next to the project name unless a saved layout says otherwise
+  const DEF_SIDE = { bugBtn: 'l', ideaBtn: 'l' };   // AIG-733: Raise bug sits next to the project name unless a saved layout says otherwise
   const sideOf = (c, id) => c.side[id] || DEF_SIDE[id] || 'r';
   const COLOURS = ['accent', 'done', 'warn', 'danger', 'you'];
   const blank = () => ({ order: IDS.slice(), off: [], side: {}, colour: {} });
@@ -28,9 +28,9 @@ const Topbar = (() => {
   const PKEY = 'aigile.topbar.pinned';
   const MORE_EXTRA = ['twitchBtn', 'mailNav', 'immWrap'];
   const PINNABLE = [...IDS, ...MORE_EXTRA];
-  const PIN_DEF = ['bugBtn', 'helpBtn', 'inboxTop', 'setupNav', 'pokeTop', 'nightTop', 'teamTop', 'statusBtn'];
+  const PIN_DEF = ['bugBtn', 'ideaBtn', 'helpBtn', 'inboxTop', 'setupNav', 'pokeTop', 'nightTop', 'teamTop', 'statusBtn'];
   // AIG-984: the status button joins a saved pin list once (unpinning it later sticks)
-  const loadPins = () => { let a; try { a = JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch { a = null; } if (!Array.isArray(a)) return PIN_DEF.slice(); a = a.filter(i => PINNABLE.includes(i)); try { if (!localStorage.getItem(PKEY + '.status')) { localStorage.setItem(PKEY + '.status', '1'); if (!a.includes('statusBtn')) { a.push('statusBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } } catch {} return a; };
+  const loadPins = () => { let a; try { a = JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch { a = null; } if (!Array.isArray(a)) return PIN_DEF.slice(); a = a.filter(i => PINNABLE.includes(i)); try { if (!localStorage.getItem(PKEY + '.status')) { localStorage.setItem(PKEY + '.status', '1'); if (!a.includes('statusBtn')) { a.push('statusBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } if (!localStorage.getItem(PKEY + '.idea')) { localStorage.setItem(PKEY + '.idea', '1'); if (!a.includes('ideaBtn')) { a.splice(a.includes('bugBtn') ? a.indexOf('bugBtn') + 1 : a.length, 0, 'ideaBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } } catch {} return a; };
   let pins = loadPins();
   const phoneMq = window.matchMedia ? matchMedia('(max-width: 600px)') : { matches: false };
   const isPhone = () => phoneMq.matches;
@@ -74,7 +74,7 @@ const Topbar = (() => {
       if (isPhone()) for (const e of [...document.querySelector('header').children]) { if (e.matches('h1,.spacer,#inboxTop,#tbMore,.alpha-tag,.crumb')) continue; mm.appendChild(e); }
       else {
         for (const id of ['hfTop', 'quietTimeTop', 'liveBtn']) { const e = $(id); if (e && e.closest('#tbMoreMenu')) end.parentNode.insertBefore(e, end); }
-        const en = $('enBtn'); if (en && en.closest('#tbMoreMenu')) more.after(en);
+        const en = $('enBtn'); if (en && (en.closest('#tbMoreMenu') || en.previousElementSibling !== more)) more.after(en);   // AIG-1066: the 🌐 button stays on the bar (it shows itself only while the quick English switch is on)
         const lv = $('live'); if (lv && lv.closest('#tbMoreMenu')) lv.closest('header').appendChild(lv);
       }
     }

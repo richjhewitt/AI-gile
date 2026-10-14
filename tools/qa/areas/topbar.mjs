@@ -20,14 +20,14 @@ def('topbar', 'Setup: top bar buttons on/off, reorder, left or right side, theme
   // Reorder with the arrows: Help below Idea
   await page.locator('[data-tb="helpBtn"] .tb-down').click();
   let o = await page.evaluate(() => [...document.querySelectorAll('#tbList .tb-row')].map(r => r.dataset.tb));
-  check('down arrow swaps Help and Idea in the list', o[0] === 'ideaBtn' && o[1] === 'helpBtn', o.join());
+  check('down arrow swaps Help and Raise bug in the list', o[0] === 'bugBtn' && o[1] === 'helpBtn', o.join());
   const now = await ids();
-  check('the bar follows (Idea before Help)', now.indexOf('ideaBtn') < now.indexOf('helpBtn'), now.join());
+  check('the bar follows (Raise bug before Help)', now.indexOf('bugBtn') < now.indexOf('helpBtn'), now.join());
 
-  // Drag Raise bug to the top
-  await page.locator('[data-tb="bugBtn"] .tb-grip').dragTo(page.locator('[data-tb="ideaBtn"] .tb-name'));
+  // Drag Idea to the top
+  await page.locator('[data-tb="ideaBtn"] .tb-grip').dragTo(page.locator('[data-tb="bugBtn"] .tb-name'));
   o = await page.evaluate(() => [...document.querySelectorAll('#tbList .tb-row')].map(r => r.dataset.tb));
-  check('dragging a row moves it', o[0] === 'bugBtn', o.join());
+  check('dragging a row moves it', o[0] === 'ideaBtn', o.join());
 
   // Raise bug: left side, red
   const plain = await page.evaluate(() => getComputedStyle(document.getElementById('bugBtn')).color);
@@ -63,7 +63,7 @@ def('topmenu', 'Top bar: Inbox/Help/Setup + More on desktop, one row with a ☰ 
   await page.waitForSelector('#tbMoreBtn');
   const shown = () => page.evaluate(() => [...document.querySelectorAll('header button, header a.navlink')].filter(e => !e.closest('#tbMoreMenu') && e.getClientRects().length).map(e => e.id));
   let ids = await shown();
-  check('desktop: Help, Setup and More are in the bar, Glance/Idea/Theme are not', ['helpBtn', 'setupNav', 'tbMoreBtn'].every(i => ids.includes(i)) && !['glanceBtn', 'ideaBtn', 'themeBtn'].some(i => ids.includes(i)), ids.join());
+  check('desktop: Help, Setup and More are in the bar, Glance/Theme are not (Idea sits by Raise bug, AIG-1066)', ['helpBtn', 'ideaBtn', 'setupNav', 'tbMoreBtn'].every(i => ids.includes(i)) && !['glanceBtn', 'themeBtn'].some(i => ids.includes(i)), ids.join());
   check('desktop: Inbox is in the bar', await page.evaluate(() => !!document.querySelector('#inboxTop') && !document.querySelector('#inboxTop').closest('#tbMoreMenu')));
   check('the menu starts closed', await page.locator('#tbMoreMenu').isHidden());
   await page.locator('#tbMoreBtn').click();
@@ -88,5 +88,24 @@ def('topmenu', 'Top bar: Inbox/Help/Setup + More on desktop, one row with a ☰ 
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.waitForFunction(() => !document.getElementById('helpBtn').closest('#tbMoreMenu'));
   await page.screenshot({ path: 'R:/wt/shot-topbar-desk.png' });
+  noErrors(page);
+}, true);
+
+// AIG-1066: the quick English 🌐 button stays on the desktop bar (Dutch + switch on), and Idea sits right after Raise bug.
+def('topbaren', 'Top bar: 🌐 quick English button on the bar and flips to English; 💡 Idea is the next sibling of Raise bug (AIG-1066)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  openPage.firstrun = true;
+  const fresh = await ctx.browser().newContext({ viewport: { width: 1400, height: 900 } });
+  await fresh.addInitScript(() => { try { localStorage.setItem('aigile.lang', 'nl'); localStorage.setItem('aigile.enSwitch', '1'); } catch {} });
+  let page; try { page = await openPage(fresh, '#/'); } finally { openPage.firstrun = false; }
+  await page.waitForFunction(() => document.documentElement.lang === 'nl' && document.getElementById('enBtn') && !document.getElementById('enBtn').hidden, null, { timeout: 8000 }).catch(() => {});
+  const on = await page.evaluate(() => { const e = document.getElementById('enBtn'); return !!e && !e.hidden && !e.closest('#tbMoreMenu') && e.getClientRects().length > 0 && e.parentElement === document.querySelector('header'); });
+  check('Dutch + quick switch on: the 🌐 button is visible on the bar (not under Meer)', on);
+  const sib = await page.evaluate(() => document.getElementById('bugBtn').nextElementSibling === document.getElementById('ideaBtn'));
+  check('Idea is the next sibling of Raise bug', sib);
+  check('Idea shows on the bar by default', await page.evaluate(() => !document.getElementById('ideaBtn').closest('#tbMoreMenu') && document.getElementById('ideaBtn').getClientRects().length > 0));
+  await page.click('#enBtn');
+  await page.waitForFunction(() => document.documentElement.lang === 'en' && document.getElementById('enBtn') && /NL/.test(document.getElementById('enBtn').textContent), null, { timeout: 8000 }).catch(() => {});
+  check('clicking 🌐 flips the board to English', await page.evaluate(() => document.documentElement.lang === 'en' && !document.getElementById('enBtn').hidden), await page.evaluate(() => document.documentElement.lang + '|' + document.getElementById('enBtn').textContent));
   noErrors(page);
 }, true);

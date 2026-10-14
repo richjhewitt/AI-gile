@@ -89,7 +89,8 @@ export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   /
   }
   if (!mine) { try { proc.kill(); } catch {} throw new Error(`the server on port ${port} is not this QA run's (no matching token): another process holds it`); }
   const api = async (method, url, body) => {
-    const r = await fetch(BASE + url, { method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
+    const go = () => fetch(BASE + url, { method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
+    const r = await go().catch(e => method === 'GET' && /ECONNRESET|UND_ERR_SOCKET/.test(String(e.cause && (e.cause.code || e.cause))) ? go() : Promise.reject(e));   // AIG-1036: a keep-alive socket the server already closed; a GET is safe to repeat
     const j = await r.json().catch(() => ({}));
     return { status: r.status, body: j };
   };
