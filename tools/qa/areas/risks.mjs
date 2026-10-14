@@ -44,7 +44,7 @@ def('risks', '⚠️ risk register: API, CLI add/list/set, brief overdue line, h
   const hap = s.cli(['risk', 'rego', 'set', 'R-3', '--status', 'happened']);
   check('CLI set happened names the incident card', hap.code === 0 && /-> REG-\d+/.test(hap.out), hap);
   const inc = (await s.ok('GET', '/api/projects/rego')).cards.find(c => c.title === '🔥 Incident: Vendor API changes');
-  check('a 🔥 incident card (bug, high) was made', !!inc && inc.type === 'bug' && inc.priority === 'high' && inc.riskId === 'R-3', inc);
+  check('a 🔥 incident card (incident, high) was made', !!inc && inc.type === 'incident' && inc.priority === 'high' && inc.riskId === 'R-3', inc);
   await s.ok('PATCH', '/api/projects/rego/risks/R-3', { status: 'happened', mitigation: 'again' });
   check('setting happened twice makes only one card', (await s.ok('GET', '/api/projects/rego')).cards.filter(c => /Incident: Vendor/.test(c.title)).length === 1);
   const rf = path.join(s.data, 'rego.risks'), good = fs.readFileSync(rf, 'utf8');

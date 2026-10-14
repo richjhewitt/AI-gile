@@ -65,7 +65,7 @@ def('teaser', 'site/index.html (file://, stubbed fetch): word slider from 1 to 2
   await p2.addInitScript(() => { window.fetch = () => Promise.resolve({ ok: false, json: () => Promise.reject(new Error('x')) }); });
   await p2.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
   await sleep(400);
-  check('on error the count line and the pitch stay hidden', await p2.evaluate(() => document.getElementById('board-count').hidden && document.getElementById('pitch').hidden));
+  check('on error the count line stays hidden; the pitch falls back to teaser-lines.js (AIG-697)', await p2.evaluate(() => document.getElementById('board-count').hidden && !document.getElementById('pitch').hidden));
   check('opened from a file with fetch failing, the timeline still shows (timeline.js)', await p2.evaluate(() => !document.getElementById('timeline').hidden && document.querySelectorAll('#tl-done .tl-item').length > 0));
   const p3 = await ctx.newPage();
   await p3.addInitScript(tl => { Object.defineProperty(window, 'TIMELINE', { get: () => undefined, set: () => {} }); window.fetch = u => /timeline.json$/.test(u) ? Promise.resolve({ ok: true, json: () => Promise.resolve(tl) }) : Promise.resolve({ ok: false, json: () => Promise.reject(new Error('x')) }); }, TL);
@@ -74,4 +74,16 @@ def('teaser', 'site/index.html (file://, stubbed fetch): word slider from 1 to 2
   check('without window.TIMELINE the fetch fallback still fills the timeline', (await p3.$$eval('#tl-done .tl-item', e => e.length)) === 2);
   await p3.close();
   await page.close(); await p2.close();
+}, true);
+
+// AIG-697: opened by double-click there is no fetch for local files, so the pitch comes from site/teaser-lines.js.
+def('teaserfile', 'site/index.html from file:// with the real fetch: the pitch still shows (teaser-lines.js), and it matches teaser-lines.json (AIG-697)', async (s, ctx) => {
+  const fs = await import('node:fs');
+  const js = fs.readFileSync(path.join(ROOT, 'site', 'teaser-lines.js'), 'utf8'), json = JSON.parse(fs.readFileSync(path.join(ROOT, 'site', 'teaser-lines.json'), 'utf8'));
+  check('teaser-lines.js matches teaser-lines.json (run node tools/gen/teaser-lines.mjs)', js.includes(JSON.stringify(json)));
+  const page = await ctx.newPage();
+  await page.route(/relay\.aigile\.lol/, r => r.abort());
+  await page.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
+  await page.waitForSelector('#pitch:not([hidden])', { timeout: 5000 });
+  check('the pitch shows and the slider works without a web server', /^1 \/ \d+$/.test(await page.$eval('#pitch-count', e => e.textContent)));
 }, true);

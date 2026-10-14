@@ -18,7 +18,7 @@ function changeHtml(p, c) {
   <p><b>${esc(t('chg.risk'))}</b> ${x.riskId ? `<a href="#/risks/${esc(p.slug)}">${esc(x.riskId)}</a>` : `<span class="muted">${esc(t('chg.norisk'))}</span>`}</p>
   <p><b>${esc(t('chg.when'))}</b> ${x.when ? esc(changeWhen(x.when)) : none}</p>
   <p><b>${esc(t('chg.undo'))}</b> ${x.undo ? esc(x.undo) : none}</p>
-  ${x.callUrl ? `<p class="chg-call">${callLink(x.callUrl)}</p>` : ''}
+  ${x.callUrl || p.callUrl ? `<p class="chg-call">${callLink(x.callUrl || p.callUrl)}</p>` : ''}
   ${x.from ? `<p><b>${esc(t('chg.from'))}</b> ${link(x.from)}</p>` : ''}${probs.length ? `<p><b>${esc(t('chg.problems'))}</b> ${probs.map(link).join(', ')}</p>` : ''}${goNoGoHtml(p, c)}</div>`;
 }
 /* ---------- 🚦 Go / no-go panel (AIG-858) ----------
@@ -57,12 +57,13 @@ async function raiseChange(preset = {}) {
     <div class="row chg-when"><label class="f"><span>${esc(t('chg.when.from'))}</span><input type="datetime-local" id="chg-from"></label>
       <label class="f"><span>${esc(t('chg.when.to'))}</span><input type="datetime-local" id="chg-to"></label></div>
     ${ta('undo')}
+    <label class="f"><span>${esc(t('call.h'))}</span><input type="url" id="chg-callurl" maxlength="500" placeholder="https://"></label>
     <div class="err" id="d-err"></div>
     <div class="actions"><button class="primary" type="submit">${esc(t('chg.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`, 'change');
   $('chg-form').onsubmit = async e => {
     e.preventDefault();
     const v = k => $('chg-' + k).value.trim(), at = k => v(k) ? new Date(v(k)).toISOString() : '';
-    const body = { title: v('title'), kind: v('kind'), what: v('what'), why: v('why'), undo: v('undo'), riskId: v('risk'), from: preset.from || '' };
+    const body = { title: v('title'), kind: v('kind'), what: v('what'), why: v('why'), undo: v('undo'), riskId: v('risk'), callUrl: v('callurl'), from: preset.from || '' };
     if (v('from') || v('to')) body.when = { from: at('from'), to: at('to') };
     try { const r = await api('POST', `/api/projects/${slug()}/changes`, body); closeDialog(); location.hash = `#/p/${slug()}/${r.id}`; }
     catch (err) { $('d-err').textContent = err.message; }

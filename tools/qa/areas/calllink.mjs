@@ -41,7 +41,8 @@ def('calllink', '📞 Join call link: project link on the stand-up report and DM
   try { await page.locator('.change').screenshot({ path: 'R:/wt/aig861-shot.png' }); } catch {}
   const op = await openPage(ctx, `#/p/call/${other.id}`);
   await op.waitForSelector('.change');
-  check('a change card without a link shows no Join call', (await op.locator('.change a.calllink').count()) === 0);
+  const projLink = (await s.ok('GET', '/api/projects/call')).callUrl;
+  check('a change card without its own link shows the project call link, or none (AIG-861)', projLink ? (await op.getAttribute('.change a.calllink', 'href')) === projLink : (await op.locator('.change a.calllink').count()) === 0, projLink);
   check('an empty link clears it', !(await s.ok('PATCH', `/api/projects/call/changes/${ch.id}`, { callUrl: '' })).callUrl);
   check('an empty project link clears it', !(await s.ok('PATCH', '/api/projects/call', { callUrl: '' })).callUrl);
   await noErrors(su); await noErrors(board); await noErrors(page); await noErrors(op);
