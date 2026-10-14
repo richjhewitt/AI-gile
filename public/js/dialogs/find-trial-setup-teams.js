@@ -305,6 +305,7 @@ function srvEdit(el) {
   else if (k === 'sudoWho') { const n = el.value.split(',').map(x => x.trim()).filter(Boolean); s.sudo = n.length ? n : true; }
   else if (k === 'host' || k === 'user') { const p = srvSplit(s.value); p[k] = el.value.trim(); s.value = p.uri + (p.user ? p.user + '@' : '') + p.host; }   // AIG-773
   else if (k === 'port' || k === 'key' || k === 'folder') { if (el.value.trim()) s[k] = k === 'port' ? +el.value : el.value.trim(); else delete s[k]; }
+  else if (k === 'value' && s.kind !== 'ssh' && /^(?:[\w.-]+@[\w.-]+|\d{1,3}(?:\.\d{1,3}){3})$/.test(el.value.trim())) { s.kind = 'ssh'; s.value = el.value.trim(); srvPaint(); }   // AIG-1031: an IP or user@host typed in the box is an ssh address
   else { s[k] = el.value; if (k === 'kind') srvPaint(); }
   srvSave();
 }
