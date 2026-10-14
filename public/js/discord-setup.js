@@ -30,7 +30,7 @@ const DiscordSetup = (() => {
       <div><button type="button" onclick="DiscordSetup.add()">+ Add a bot</button> <button type="button" class="primary" onclick="DiscordSetup.save()">Save</button></div>
       <div class="err" id="dc-err"></div><div class="muted">${esc(D.msg)}</div>`;
   }
-  const linkHtml = b => { const l = D.link[b.name]; if (l && l.linked) return '✅ Linked as ' + esc(l.username); if (l && l.code) return 'DM this code to <b>' + esc(b.name) + '</b> on Discord: <b class="dc-code" style="font-size:1.3em;letter-spacing:.15em">' + esc(l.code) + '</b> <small class="muted">(valid 10 minutes)</small>'; if (l && l.expired) return '⌛ That code ran out: press Link my Discord again'; return b.users ? '✅ Linked' : ''; };
+  const linkHtml = b => { const l = D.link[b.name]; if (l && l.linked) return '✅ Linked as ' + esc(l.username); if (l && l.code) return 'DM this code to <b>' + esc(b.name) + '</b> on Discord: <b class="dc-code" style="font-size:1.3em;letter-spacing:.15em">' + esc(l.code) + '</b> <button class="md-copy" data-copy-text="' + esc(l.code) + '" title="' + esc(t('format.copyvalue')) + '">⧉ Copy</button> <small class="muted">(valid 10 minutes)</small>'; if (l && l.expired) return '⌛ That code ran out: press Link my Discord again'; return b.users ? '✅ Linked' : ''; };
   const statusOf = b => { const s = D.state.find(x => x.name === b.name); return !s ? 'Not saved yet' : s.error ? '⚠️ ' + s.error : s.connected ? '🟢 Connected' : '⚪ Connecting…'; };
   const paint = () => { const el = document.getElementById('discordBox'); if (el) el.innerHTML = html(); };
   D.load = async () => {
