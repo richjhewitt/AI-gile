@@ -3208,6 +3208,10 @@
  "dms.quiet.show": "Toon {n} stille chats",
  "dms.quiet.show.one": "Toon 1 stille chat",
  "dms.quiet.hide": "Verberg stille chats",
+ "dms.done.show": "Klaar ({n})",
+ "dms.done.hide": "Klaar verbergen ({n})",
+ "dms.drafts": "📝 Concepten",
+ "dms.drafts.discard": "Dit concept weggooien",
  "allhands.confirm": "Naar {n} teams sturen?",
  "allhands.confirm.one": "Naar 1 team sturen?",
  "home.more": "Meer ▾",
@@ -3360,6 +3364,10 @@
  "srv.engine.nocopilot": "GitHub Copilot CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart.",
  "srv.engine.nocursor": "Cursor CLI is niet geïnstalleerd op deze pc, dus deze run is niet gestart.",
  "pa.name": "💚 Persoonlijke assistent",
+ "srv.pa.help": "Ik kan:\n• je herinneren: “herinner me om 3 uur om Bob te bellen”\n• je dag starten: “start mijn dag”\n• al het andere gaat naar de Lead Scrum Master",
+ "srv.pa.day": "🌅 Start mijn dag wordt geopend.",
+ "srv.pa.passed": "Doorgegeven aan de Lead Scrum Master",
+ "srv.pa.failed": "Doorgeven lukte niet: {why}",
  "grp.section": "👥 Groepen",
  "grp.new": "＋ Nieuwe groep",
  "grp.new.h": "👥 Nieuwe groep",
@@ -3372,9 +3380,5 @@
  "grp.none": "Nog geen agents op een rooster.",
  "grp.empty": "Nog geen berichten. Schrijf iets: iedereen in de groep wordt gewekt om te antwoorden.",
  "grp.to": "Aan iedereen in {name}",
- "srv.grp.skip": "{name} is niet gewekt: {why}",
- "srv.pa.help": "Ik kan:\n• je herinneren: “herinner me om 3 uur om Bob te bellen”\n• je dag starten: “start mijn dag”\n• al het andere gaat naar de Lead Scrum Master",
- "srv.pa.day": "🌅 Start mijn dag wordt geopend.",
- "srv.pa.passed": "Doorgegeven aan de Lead Scrum Master",
- "srv.pa.failed": "Doorgeven lukte niet: {why}"
+ "srv.grp.skip": "{name} is niet gewekt: {why}"
 }

@@ -217,7 +217,7 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
   noErrors(page);
 }, true);
 
-def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; it asks before losing an unsent reply', async (s, ctx) => {
+def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; an unsent reply is kept as a draft, no leave box (AIG-1022)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const c = await mkCard(s, 'alpha', 'Typing here');
   let build = 'one';
@@ -231,24 +231,15 @@ def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; it ask
   check('Refresh pill shows, no pop-up', (await page.textContent('#updateTop')).includes('Refresh') && (await page.locator('.overlay.center').count()) === 0);
   check('typing untouched', (await page.inputValue('#r-text')) === 'half a sentence');
   let asked = '';
-  page.once('dialog', d => { asked = d.message(); d.dismiss(); });
-  await page.click('#updateTop button');
-  await sleep(300);
-  check('asks before losing the reply, and stays when cancelled', /unsent reply/.test(asked) && (await page.inputValue('#r-text')) === 'half a sentence', asked);
-  await page.fill('#r-text', '');
-  await Promise.all([page.waitForEvent('load'), page.click('#upRefresh button')]);
-  check('reloads straight away with nothing unsent', true);
-  // Desktop app: its Restart pill replaces Refresh, since a restart reloads too (AIG-83, AIG-130), and asks first.
+  page.on('dialog', d => { asked = d.message(); d.dismiss(); });
+  await Promise.all([page.waitForEvent('load'), page.click('#updateTop button')]);
+  check('Refresh asks nothing (AIG-1022) and the half-typed reply is back as a draft', asked === '' && await page.waitForFunction(() => (document.getElementById('r-text') || {}).value === 'half a sentence').then(() => true, () => false), asked);
+  // Desktop app: its Restart pill replaces Refresh, since a restart reloads too (AIG-83, AIG-130).
   await page.waitForSelector('#r-text').catch(() => page.click('[data-ctab="reply"]'));
-  await page.fill('#r-text', 'another half');
   build = 'three';
   await page.waitForSelector('#upRefresh button', { timeout: 8000 });
   await page.evaluate(() => window.showRestartApp());
   check('Restart app shows and Refresh hides', (await page.textContent('#upRestart')).includes('Restart app') && !(await page.isVisible('#upRefresh button')));
-  page.once('dialog', d => { asked = d.message(); d.dismiss(); });
-  await page.click('#upRestart button');
-  await sleep(300);
-  check('Restart asks before losing the reply', /Restart anyway/.test(asked) && (await page.inputValue('#r-text')) === 'another half', asked);
 }, true);
 
 def('drafts', 'unsent text survives a reload; sending clears it (AIG-171)', async (s, ctx) => {
