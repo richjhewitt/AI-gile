@@ -1387,6 +1387,8 @@
  "wz.5.sub": "Change any of this in ⚙️ Setup, or run the wizard again.",
  "home.finishsetup": "Setup is not finished yet.",
  "home.finishsetup.go": "Finish setup",
+ "wz.5.missing": "Still to fill in, in Setup: {names}.",
+ "wz.5.go": "Take me there",
  "wz.5.more": "A couple of boxes at the bottom of Setup are still empty; fill them in and save.",
  "ug.title": "5h: {h5} left · week: {wk} left · last reading {when}",
  "ug.none": "No usage reading yet (⚡ Usage shows how to switch it on)",

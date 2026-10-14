@@ -1385,6 +1385,8 @@
  "wz.5.sub": "Pas dit alles aan bij ⚙️ Instellingen, of start de wizard opnieuw.",
  "home.finishsetup": "Instellingen zijn nog niet af.",
  "home.finishsetup.go": "Rond de instellingen af",
+ "wz.5.missing": "Nog in te vullen, in Instellingen: {names}.",
+ "wz.5.go": "Breng me erheen",
  "wz.5.more": "Een paar vakken onderaan Instellingen zijn nog leeg; vul ze in en bewaar.",
  "ug.title": "5u: {h5} over · week: {wk} over · laatste meting {when}",
  "ug.none": "Nog geen verbruiksmeting (⚡ Verbruik laat zien hoe je die aanzet)",

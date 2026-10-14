@@ -58,6 +58,7 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   await page.check('[name=wz-plan][value=fly]');
   await page.click('#wzNext'); await page.waitForSelector('#wzDone');
   check('last screen points to Setup', (await page.textContent('.wizard')).includes('Setup'));
+  check('last screen names the empty boxes and links to them (AIG-1070)', (await page.textContent('#wzMissing')).includes('Agent notes file') && await page.isVisible('#wzGoSetup'));
   let st = await setup();
   check('the careful style is saved', st.prefs.go === 'ask' && st.prefs.chatty === false && st.prefs.tidyCards === true && st.prefs.watchAll === false, JSON.stringify(st.prefs));
   check('the spend plan is saved', st.prefs.plan === 'fly' && st.prefs.budgetH5 === st.plans.fly.budgetH5 && st.prefs.maxRuns === 1);

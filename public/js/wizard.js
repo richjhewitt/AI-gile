@@ -71,12 +71,19 @@ function wizardShow() {
   if (n === 3) body = `<h2>${esc(t('wz.3.h'))}</h2><p class="muted">${esc(t('wz.3.sub'))}</p><div class="wz-opts">${Object.keys(WZ_STYLES).map(k => pick('wz-style', k, WZ.style, t('wz.style.' + k), t('wz.style.' + k + '.help'))).join('')}</div>
       <h3>${esc(t('wz.adv.help.h'))}</h3><div class="wz-opts">${HELP_LEVELS.map(v => pick('wz-help', v, WZ.help, t('help.level.' + v))).join('')}</div>`;
   if (n === 4) body = `<h2>${esc(t('wz.4.h'))}</h2><p class="muted">${esc(t('wz.4.sub'))}</p><div class="wz-opts">${WZ_PLANS.map(k => pick('wz-plan', k, WZ.plan, t('budget.plan.' + k), t('wz.plan.' + k + '.help'))).join('')}</div>`;
-  if (n === 5) body = `<h2>${esc(t('wz.5.h'))}</h2><p>${esc(t('wz.5.sub'))}</p>${state.setup.needed ? `<p class="muted">${esc(t('wz.5.more'))}</p>` : ''}`;
+  if (n === 5) body = `<h2>${esc(t('wz.5.h'))}</h2><p>${esc(t('wz.5.sub'))}</p>${wzMissingHtml()}`;
   const skip = n > 1 && n < 5 && !(n === 2 && !WZ.hadOwner && !WZ.name) ? `<button id="wzSkip" onclick="wizardGo(${n + 1}, true)">${esc(t('wz.skip'))}</button>` : '';
   openDialog(`${dots}${body}<div class="err" id="wz-err"></div>
     <div class="actions">${n > 1 && n < 5 ? `<button id="wzBack" onclick="wizardGo(${n - 1})">${esc(t('wz.back'))}</button>` : ''}${skip}
     ${n === 1 ? `<button id="wzAdv" onclick="advStart()">${esc(t('wz.1.adv'))}</button>` : ''}
     ${n < 5 ? `<button class="primary" id="wzNext" onclick="wizardGo(${n + 1})">${esc(t('wz.next'))}</button>` : `<button class="primary" id="wzDone" onclick="wizardClose()">${esc(t('wz.done'))}</button>`}</div>`, 'wizard');
+}
+// The last screen names the Setup boxes that are still empty and links to them (AIG-1070).
+function wzMissingHtml() {
+  const s = state.setup; if (!s.needed || WZ.noAi) return '';
+  const names = ['agent.command', 'agent.notesFile', 'agent.settingsFile'].filter(k => !wzField(k).value).map(k => tk('setup.f.' + k, wzField(k).label || k));
+  if (!names.length) return '';
+  return `<p class="muted" id="wzMissing">${esc(t('wz.5.missing', { names: names.join(', ') }))}</p><p><button type="button" id="wzGoSetup" onclick="wizardClose(); location.hash = '#/setup/you'">${esc(t('wz.5.go'))}</button></p>`;
 }
 async function wizardGo(to, skipped) {
   wzKeep();
