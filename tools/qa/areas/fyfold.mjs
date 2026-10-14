@@ -32,6 +32,14 @@ def('fyfold', 'For you: a chip opens a window of folded rows, a card opens it un
   check('its Got it and Reply buttons are there', (await first.locator('[data-act="gotit"]').count()) === 1 && (await first.locator('[data-act="inforeply"]').count()) === 1);
   await page.keyboard.press('Escape');
   check('Esc closes the window', (await page.locator('.fyf').count()) === 0);
+  // AIG-1033: a To read card the inbox list lacks (project not picked for today, snoozed) still opens, from the column card and from its row.
+  await page.evaluate(() => { IB.raw = []; IB.items = []; });
+  await page.click(`.column.foryou .card[data-id="${reads[1].id}"] .t`);
+  await page.waitForSelector('.fyf[data-kind="r"] .fyf-row.open');
+  check('a To read card opens from the column even when the inbox list lacks it', (await page.locator('.fyf-row.open .fyf-b [data-act="gotit"]').count()) === 1 && /Nothing to click: note about Two/.test(await page.locator('.fyf-row.open .fyf-b').textContent()));
+  await page.locator('.fyf-row:not(.open) .fyf-h').first().click();
+  check('its row unfolds the same way', (await page.locator('.fyf-row.open .fyf-b [data-act="gotit"]').count()) === 2);
+  await page.keyboard.press('Escape');
 
   // A card in the column opens the Tests list with that card unfolded.
   const target = tests[1];

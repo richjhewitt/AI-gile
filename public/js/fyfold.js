@@ -5,9 +5,11 @@
 const FyFold = (() => {
   const cardsOf = k => forYouQueue(state.project).filter(c => kindOf(c) === k);
   const itemOf = c => (IB.raw || []).find(x => IB.keyOf(x) === state.project.slug + '/' + c.id);
+  // The inbox list can lack a card the board still shows (project not picked for today, snoozed): build the item from the card so a click still opens it (AIG-1033).
+  const itemFor = c => itemOf(c) || (p => ({ project: p.slug, projectName: p.name, projectEmoji: p.emoji, projectLogo: p.logo, ...c }))(state.project);
   const rowHtml = c => `<div class="fyf-row" data-id="${esc(c.id)}"><button type="button" class="fyf-h" aria-expanded="false" data-fyrow><span class="fyf-id">${esc(c.id)}</span><span class="pill">${esc(t('type.' + c.type))}</span><span class="fyf-t">${esc(c.title)}</span></button><div class="fyf-b" hidden></div></div>`;
   function bodyHtml(c) {
-    const it = itemOf(c); if (!it) return `<a href="#/p/${state.project.slug}/${esc(c.id)}">${esc(c.title)}</a>`;
+    const it = itemFor(c); if (!it) return `<a href="#/p/${state.project.slug}/${esc(c.id)}">${esc(c.title)}</a>`;
     const kind = IB.kindOf(it), back = kind === 't' && !it.info
       ? `<div class="fyf-back"><textarea rows="1" data-fyback-text placeholder="${esc(t('verdict.comment'))}" aria-label="${esc(t('verdict.comment'))}"></textarea><button type="button" class="warn" data-fyback>${esc(t('act.sendback'))}</button></div>` : '';
     return `<div class="ib-item ${kind}" data-key="${esc(IB.keyOf(it))}" data-project="${esc(it.project)}" data-id="${esc(it.id)}">${IB.itemHtml(it)}${back}</div>`;
