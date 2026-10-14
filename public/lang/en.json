@@ -3398,5 +3398,19 @@
  "mail.setup.g.done": "✅ Signed in to Google",
  "mail.setup.g.not": "Not signed in to Google yet",
  "mail.setup.g.go": "Open Google's sign-in page",
- "mail.setup.g.waiting": "Waiting for you to sign in at Google…"
+ "mail.setup.g.waiting": "Waiting for you to sign in at Google…",
+ "status.rest.go": "Start rest day",
+ "phone.tun.h": "Over my server",
+ "phone.tun.help": "Reach this board from anywhere through your own server: the board keeps a private ssh tunnel open to it, and the server shows the board only to a paired phone.",
+ "phone.tun.server": "Server",
+ "phone.tun.host": "Name the phone opens",
+ "phone.tun.port": "Port on the server",
+ "phone.tun.save": "Save",
+ "phone.tun.off": "Turn off",
+ "phone.tun.none": "Save an ssh server in My servers first.",
+ "phone.tun.up": "Tunnel up",
+ "phone.tun.starting": "Tunnel starting…",
+ "phone.tun.down": "Tunnel down",
+ "phone.tun.idle": "Tunnel not set up",
+ "phone.tun.err": "last error: {err}"
 }
