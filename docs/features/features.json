@@ -164,7 +164,7 @@
   "evidence": "aigile.js, lib/cli/*",
   "check": {
    "kind": "qa",
-   "area": "api-cli"
+   "area": "cli"
   },
   "audit": "present"
  },
@@ -195,10 +195,8 @@
   "where": "board filter bar",
   "evidence": "public/js/filters.js",
   "check": {
-   "kind": "ui",
-   "page": "/#/p/ai-gile",
-   "selector": "search box",
-   "action": "type text"
+   "kind": "qa",
+   "area": "filters"
   },
   "audit": "present"
  },
@@ -246,7 +244,7 @@
   "evidence": "lib/routes/docs-inbox.js /api/projects/:slug/docs, public/js/format.js",
   "check": {
    "kind": "qa",
-   "area": "projects-docs"
+   "area": "docs"
   },
   "audit": "present"
  },
@@ -363,7 +361,7 @@
   "evidence": "lib/presence.js, team-quiet QA areas",
   "check": {
    "kind": "qa",
-   "area": "team-quiet-1-presence"
+   "area": "runin"
   },
   "audit": "present"
  },
@@ -456,7 +454,7 @@
   "evidence": "public/js/night.js",
   "check": {
    "kind": "qa",
-   "area": "team-quiet-4-light"
+   "area": "nightglance"
   },
   "audit": "present"
  },
@@ -470,7 +468,7 @@
   "evidence": "lib/watchman.js, /api/watchman, /api/chats",
   "check": {
    "kind": "qa",
-   "area": "team-quiet-3-watchman"
+   "area": "watchdm"
   },
   "audit": "present"
  },
@@ -525,7 +523,7 @@
   "evidence": "lib/dm.js, relay/relay.js, dms-friends.js",
   "check": {
    "kind": "qa",
-   "area": "dm-invite"
+   "area": "dmchats"
   },
   "audit": "present"
  },
@@ -554,7 +552,7 @@
   "evidence": "js/tour.js, js/help.js, GET /api/intro",
   "check": {
    "kind": "qa",
-   "area": "helplevels"
+   "area": "tour"
   },
   "audit": "present"
  },
@@ -567,7 +565,7 @@
   "evidence": "js/glossary.js",
   "check": {
    "kind": "qa",
-   "area": "look-setup-4-glossary"
+   "area": "glossary"
   },
   "audit": "present"
  },
@@ -623,10 +621,8 @@
   "where": "board columns templates",
   "evidence": "templates found in card-fields/core/columns; no strict-mode switch located",
   "check": {
-   "kind": "ui",
-   "page": "/#/p/ai-gile",
-   "selector": "Columns button",
-   "action": "click, look for template"
+   "kind": "qa",
+   "area": "newscrum"
   },
   "missingWhat": "strict enforcement setting not found",
   "audit": "unsure"
@@ -645,7 +641,7 @@
   "evidence": "public/js/popout.js, desktop/main.js getBounds",
   "check": {
    "kind": "qa",
-   "area": "popout-all"
+   "area": "popout"
   },
   "audit": "present"
  },
@@ -683,7 +679,7 @@
   "evidence": "public/js/i18n.js, public/lang/*.json",
   "check": {
    "kind": "qa",
-   "area": "look-setup-3-i18n"
+   "area": "i18n"
   },
   "audit": "present"
  },
@@ -715,7 +711,7 @@
   "evidence": "lib/standup.js, js/standup.js, /api/standup",
   "check": {
    "kind": "qa",
-   "area": "standup-tester"
+   "area": "standup"
   },
   "audit": "present"
  },
@@ -742,7 +738,7 @@
   "evidence": "app.js theme, lib/logos.js",
   "check": {
    "kind": "qa",
-   "area": "look-setup-1-look"
+   "area": "theme"
   },
   "audit": "present"
  },
@@ -818,7 +814,7 @@
   "evidence": "lib/tester.js, board.js tester.start, inbox-page tester.btn, /api/tester",
   "check": {
    "kind": "qa",
-   "area": "trusttester"
+   "area": "aitester"
   },
   "audit": "present"
  },
@@ -890,7 +886,7 @@
   "evidence": "lib/trial.js, /api/trial, pretend-team.js",
   "check": {
    "kind": "qa",
-   "area": "pretend-friend"
+   "area": "trial"
   },
   "audit": "present"
  },
@@ -915,10 +911,8 @@
   "where": "test card > Run",
   "evidence": "no obvious run-in-browser handler found; only runCmd (editor command)",
   "check": {
-   "kind": "ui",
-   "page": "/",
-   "selector": "test row run button",
-   "action": "look for Run"
+   "kind": "qa",
+   "area": "openit"
   },
   "audit": "unsure"
  },
@@ -940,7 +934,7 @@
   "evidence": "lib/watchman.js (crack the whip, clear, watched-only); public/js/dms.js; POST /api/chats/_watchman",
   "check": {
    "kind": "qa",
-   "area": "team-quiet-3-watchman"
+   "area": "watchdm"
   },
   "audit": "present"
  },
@@ -982,7 +976,7 @@
   "evidence": "lib/quiet.js (MORNING, takeMorning, setQuiet); public/js/night.js; app.js quiet handling",
   "check": {
    "kind": "qa",
-   "area": "team-quiet-2-quietinbox"
+   "area": "quiet"
   },
   "audit": "present"
  },
@@ -996,7 +990,7 @@
   "evidence": "lib/limits.js, lib/notokens.js, lib/watchman.js",
   "check": {
    "kind": "qa",
-   "area": "tokenlimits"
+   "area": "limitread"
   },
   "audit": "present"
  },
@@ -1203,7 +1197,7 @@
   "evidence": "lib/tester.js, lib/watchman.js, public/js/inbox-ai.js",
   "check": {
    "kind": "qa",
-   "area": "trusttester"
+   "area": "tester"
   },
   "audit": "present"
  },
@@ -1251,7 +1245,7 @@
   "evidence": "lib/pretend.js, public/js/pretend.js",
   "check": {
    "kind": "qa",
-   "area": "pretend-friend"
+   "area": "pretendfriend"
   },
   "audit": "present"
  },
@@ -1265,7 +1259,7 @@
   "evidence": "public/js/dms-friends.js, lib/dm.js, QA dm-invite",
   "check": {
    "kind": "qa",
-   "area": "dm-invite"
+   "area": "dminvite"
   },
   "audit": "present"
  },
@@ -1278,7 +1272,7 @@
   "evidence": "relay/relay.js file delivery",
   "check": {
    "kind": "qa",
-   "area": "share-more"
+   "area": "dmstore"
   },
   "audit": "present"
  },
@@ -1294,7 +1288,7 @@
   "evidence": "public/js/popout.js, card.js, poll.js",
   "check": {
    "kind": "qa",
-   "area": "popout-all"
+   "area": "steady"
   },
   "perf": "1s open-card refresh polling costs requests; check poll.js backoff",
   "audit": "present"
@@ -1322,7 +1316,7 @@
   "evidence": "public/js/popout.js, inbox-items.js",
   "check": {
    "kind": "qa",
-   "area": "popout-all"
+   "area": "popone"
   },
   "audit": "present"
  },
@@ -1466,10 +1460,8 @@
   "where": "Language picker",
   "evidence": "public/lang/aussie.json",
   "check": {
-   "kind": "ui",
-   "page": "/",
-   "selector": "language select",
-   "action": "choose Aussie"
+   "kind": "qa",
+   "area": "i18n"
   },
   "audit": "present"
  },
@@ -1527,7 +1519,7 @@
   "evidence": "public/js/usage-glance.js, usage-page.js",
   "check": {
    "kind": "qa",
-   "area": "usageshare"
+   "area": "usage"
   },
   "audit": "present"
  },
@@ -1896,7 +1888,7 @@
   "evidence": "lib/scrummaster.js, lib/watchman.js; QA onelead, scrummaster",
   "check": {
    "kind": "qa",
-   "area": "scrummaster"
+   "area": "runin"
   },
   "audit": "present"
  },
@@ -1991,7 +1983,7 @@
   "evidence": "lib/expertteams.js, dialogs/expert-teams.js, i18n tm.mates.help; QA experts, expert-teams, teamroles",
   "check": {
    "kind": "qa",
-   "area": "expert-teams"
+   "area": "teamrename"
   },
   "audit": "present"
  },
@@ -2060,7 +2052,7 @@
   "evidence": "public/js/pretend-setup.js, lib/pretend.js; QA pretend-friend",
   "check": {
    "kind": "qa",
-   "area": "pretend-friend"
+   "area": "launchpick"
   },
   "audit": "present"
  },
@@ -2125,7 +2117,7 @@
   "evidence": "lib/discord.js, public/js/discord-tab.js, discord-setup.js, discord-presence.js; QA discordtab, discord, discordact",
   "check": {
    "kind": "qa",
-   "area": "discordtab"
+   "area": "discord"
   },
   "audit": "present"
  },
@@ -2138,7 +2130,7 @@
   "evidence": "attach.js exists, not traced into the _watchman chat route",
   "check": {
    "kind": "qa",
-   "area": "chats-dms"
+   "area": "attach"
   },
   "missingWhat": "confirm attachment travels with watchman chat message",
   "audit": "unsure"
@@ -2154,7 +2146,7 @@
   "evidence": "lib/assumptions.js, public/js/assumptions.js; QA assumptions, assume",
   "check": {
    "kind": "qa",
-   "area": "assumptions"
+   "area": "assume"
   },
   "audit": "present"
  },
@@ -2184,7 +2176,7 @@
   "evidence": "lib/quiet.js; QA team-quiet-1-presence",
   "check": {
    "kind": "qa",
-   "area": "team-quiet-1-presence"
+   "area": "quiet"
   },
   "audit": "present"
  },
@@ -2201,7 +2193,7 @@
   "evidence": "public/js/i18n.js, public/lang/*.json (123 files), lib/i18n.js; QA look-setup-3-i18n, immersion",
   "check": {
    "kind": "qa",
-   "area": "look-setup-3-i18n"
+   "area": "i18n"
   },
   "audit": "present"
  },
@@ -2251,7 +2243,7 @@
   "evidence": "js/glossary.js; QA gloss-nospace, shortcuts; i18n.js rtl",
   "check": {
    "kind": "qa",
-   "area": "gloss-nospace"
+   "area": "glossnospace"
   },
   "audit": "present"
  },
@@ -2313,7 +2305,7 @@
   "evidence": "lib/standup.js, js/standup.js; QA standup-tester",
   "check": {
    "kind": "qa",
-   "area": "standup-tester"
+   "area": "standup"
   },
   "audit": "present"
  },
@@ -2991,7 +2983,7 @@
   "evidence": "public/js/format.js vscode://",
   "check": {
    "kind": "qa",
-   "area": "projects-docs"
+   "area": "mdlinks"
   },
   "audit": "present"
  },
@@ -3119,7 +3111,7 @@
   "evidence": "public/js/standup.js; lib/standup.js; lib/quiet.js",
   "check": {
    "kind": "qa",
-   "area": "standup-tester"
+   "area": "standup"
   },
   "audit": "present"
  },
@@ -3175,7 +3167,7 @@
   "evidence": "public/js/popout.js saves size/position on resize; movement is OS-window level, not proven in code",
   "check": {
    "kind": "qa",
-   "area": "popout-all"
+   "area": "popout"
   },
   "audit": "unsure"
  },
@@ -3245,7 +3237,7 @@
   "evidence": "lib/watchman.js; public/js/night.js",
   "check": {
    "kind": "qa",
-   "area": "team-quiet-3-watchman"
+   "area": "autopoke"
   },
   "audit": "present"
  },
@@ -3335,7 +3327,7 @@
   "evidence": "help.js new-project --parent exists; no dedicated move-project command seen",
   "check": {
    "kind": "qa",
-   "area": "moveproject"
+   "area": "spaces"
   },
   "audit": "unsure"
  },
@@ -3810,7 +3802,7 @@
   "evidence": "share-link.js patch; Share.simplePreset",
   "check": {
    "kind": "qa",
-   "area": "share-roles"
+   "area": "share"
   },
   "audit": "present"
  },

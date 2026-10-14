@@ -261,7 +261,19 @@ function srvSshInputs(s, i) {
 const srvSshMore = (s, i) => `<div class="srv-more">
     <input type="number" data-srv="port" data-i="${i}" min="1" max="65535" value="${esc(s.port || '')}" placeholder="${esc(t('servers.port'))}" onchange="srvEdit(this)">
     <input type="text" data-srv="key" data-i="${i}" value="${esc(s.key || '')}" placeholder="${esc(t('servers.key'))}" onchange="srvEdit(this)">
-    <input type="text" data-srv="folder" data-i="${i}" value="${esc(s.folder || '')}" placeholder="${esc(t('servers.folder'))}" onchange="srvEdit(this)"></div>`;
+    <input type="text" data-srv="folder" data-i="${i}" value="${esc(s.folder || '')}" placeholder="${esc(t('servers.folder'))}" onchange="srvEdit(this)"></div>${srvPwHtml(s, i)}`;
+// AIG-1023: an optional sudo password, so agents allowed sudo can run a server step themselves (aigile sudo). Saved with the secrets
+// page token, kept encrypted on this PC (lib/servers.js); the page only learns whether one is saved (sudoPw), never the password.
+const srvPwHtml = (s, i) => !String(s.name || '').trim() ? '' : `<div class="srv-pw"><small>${esc(t('servers.sudoPw'))}</small> <b class="pill" data-srv-pw-state="${i}">${esc(t(s.sudoPw ? 'servers.sudoPw.saved' : 'servers.sudoPw.notset'))}</b>
+    <input type="password" data-srv-pw="${i}" autocomplete="new-password" spellcheck="false" maxlength="1024" placeholder="${esc(t('servers.sudoPw.ph'))}" aria-label="${esc(t('servers.sudoPw'))}">
+    <button type="button" data-srv-pw-save="${i}" onclick="srvPwSave(${i})">${esc(t('servers.sudoPw.save'))}</button>${s.sudoPw ? ` <button type="button" data-srv-pw-remove="${i}" onclick="srvPwSave(${i}, true)">${esc(t('servers.sudoPw.remove'))}</button>` : ''}
+    <small class="muted">${esc(t('servers.sudoPw.help'))}</small></div>`;
+async function srvPwSave(i, remove) {
+  const s = srvDraft[i], inp = document.querySelector(`#serversBox input[data-srv-pw="${i}"]`), v = remove ? '' : (inp || {}).value || '';
+  if (!s || (!remove && !v)) return;
+  try { if (await api('POST', '/api/servers/sudo-pw', { name: s.name, password: v, token: await secToken() }).then(r => r.set)) s.sudoPw = true; else delete s.sudoPw; srvPaint(t('setup.saved.short')); }
+  catch (e) { if (inp) inp.value = ''; setErr('servers-err', e); }
+}
 function serversHtml(msg = '') {
   if (!srvDraft) srvDraft = (leadPrefs().servers || []).map(x => ({ ...x }));
   const rows = srvDraft.map((s, i) => `<div class="srv-row">
@@ -279,7 +291,12 @@ function serversHtml(msg = '') {
 }
 const srvPaint = msg => { if ($('serversBox')) $('serversBox').innerHTML = serversHtml(msg); };
 async function srvSave() {
-  try { state.setup = await api('POST', '/api/setup', { prefs: { servers: srvDraft.filter(s => s.name.trim() && s.value.trim() && (s.kind !== 'ssh' || srvSplit(s.value).host)) } }); srvPaint(t('setup.saved.short')); }
+  try {
+    state.setup = await api('POST', '/api/setup', { prefs: { servers: srvDraft.filter(s => s.name.trim() && s.value.trim() && (s.kind !== 'ssh' || srvSplit(s.value).host)) } });
+    const saved = (state.setup.prefs || {}).servers || [];   // AIG-1023: a renamed or removed server lost its sudo password
+    srvDraft.forEach(d => { if (saved.some(x => x.name === d.name && x.sudoPw)) d.sudoPw = true; else delete d.sudoPw; });
+    srvPaint(t('setup.saved.short'));
+  }
   catch (e) { setErr('servers-err', e); }
 }
 function srvEdit(el) {
