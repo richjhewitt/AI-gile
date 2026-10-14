@@ -3,6 +3,10 @@
 // Codex, plus Codex's own model ('' = Codex's default). Stored on the roster entry (POST /api/projects/:slug/team { name, engine,
 // codexModel }); an entry saved before this has no engine and means Claude. The project's background run uses the lead's engine
 // (lib/engines.js). The lead is the entry named or titled "lead", else the first one: the same rule as the server's leadOf.
+// AIG-1007: the ready-made model per team role for the engine picked in Setup > Your main team (the table is lib/engines.js ROLE_MODELS,
+// sent with GET /api/profiles). Claude's models are in the role names, so nothing extra shows for it.
+let mtEngine = 'claude';
+const mtModelHtml = r => { const m = mtEngine === 'claude' ? '' : (((state.profiles || {}).roleModels || {})[r] || {})[mtEngine]; return m ? ` <small class="muted mt-model">${esc(m)}</small>` : ''; };
 const engAgents = () => ((state.project || {}).team || []).filter(m => m.kind !== 'person' && !/retired/i.test(m.status || ''));
 const engLead = () => { const l = engAgents(); return l.find(m => /lead/i.test(m.name + ' ' + (m.role || ''))) || l[0] || null; };
 function enginesHtml() {

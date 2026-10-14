@@ -90,6 +90,24 @@ def('engines', 'engines: Engine pick per agent in the Team dialog, a Codex lead 
   check('read(): init, assistant text, tool use, plain text, unknown ignored',
     G.read('{"type":"init"}')[0].includes('gemini') && G.read('{"type":"message","role":"assistant","content":"hi"}')[0].includes('hi') && G.read('{"type":"message","role":"user","content":"x"}').length === 0
     && G.read('{"type":"tool_use","tool_name":"run_shell_command","parameters":{"command":"ls"}}')[0].includes('ls') && G.read('plain words')[0] === 'plain words' && G.read('{"type":"zzz"}').length === 0);
+  // 5c. ready-made model per role (AIG-1007): a Codex / Gemini agent with a role and no model gets the table's one
+  const RM = require('../../../lib/engines').ROLE_MODELS, id = /^[a-z0-9.-]+$/;
+  check('the table has all 8 roles with a Codex and a Gemini id', Object.keys(RM).length === 8 && Object.values(RM).every(v => id.test(v.codex) && id.test(v.gemini)), RM);
+  await s.ok('POST', '/api/projects/eng/team', { name: 'Fe', role: 'Frontend', engine: 'codex' });
+  await s.ok('POST', '/api/projects/eng/team', { name: 'Doc', role: 'Docs', engine: 'gemini' });
+  await s.ok('POST', '/api/projects/eng/team', { name: 'Own', role: 'Backend', engine: 'codex', codexModel: 'mine' });
+  const tm5 = (await s.ok('GET', '/api/projects/eng')).team, by = n => tm5.find(m => m.name === n);
+  check('a Codex Frontend gets the Frontend Codex model', by('Fe').codexModel === RM['Frontend (Sonnet)'].codex, by('Fe'));
+  check('a Gemini Docs agent gets the Docs Gemini model', by('Doc').geminiModel === RM['Docs (Haiku)'].gemini, by('Doc'));
+  check('a model the owner typed is kept', by('Own').codexModel === 'mine');
+  check('GET /api/profiles sends the table', JSON.stringify((await s.ok('GET', '/api/profiles')).roleModels) === JSON.stringify(RM));
+  await page.evaluate(() => { state.profiles = null; return loadProfiles(); });
+  await page.evaluate(() => { document.body.insertAdjacentHTML('beforeend', '<div id="mtbox">' + mainTeamHtml('mtq', '', false) + '</div>'); });
+  check('Claude shows no extra model', (await page.locator('#mtq .mt-model').count()) === 0);
+  await page.locator('#mtq-eng').selectOption('codex');
+  check('Codex shows a model next to each of the 8 roles', (await page.locator('#mtq .mt-model').count()) === 8 && (await page.locator('#mtq .mt-ticks label').first().innerText()).includes(RM['Lead (Opus)'].codex));
+  await page.locator('#mtq-eng').selectOption('gemini');
+  check('Gemini shows its models', (await page.locator('#mtq .mt-ticks label').last().innerText()).includes(RM['Tester (Sonnet)'].gemini));
   // 6. back to Claude
   await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', engine: 'claude' });
   await s.ok('POST', '/api/projects/eng/wake');
