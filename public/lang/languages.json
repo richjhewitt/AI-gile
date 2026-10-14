@@ -121,5 +121,6 @@
   { "code": "emoji", "label": "EMOJI", "name": "Emoji 😀", "locale": "en-GB", "fun": true },
   { "code": "leet", "label": "1337", "name": "l33t 5p34k", "locale": "en-GB", "fun": true },
   { "code": "morse", "label": "MORSE", "name": "−−− ·−· ··· ·", "locale": "en-GB", "fun": true },
-  { "code": "runes", "label": "ᚱ", "name": "ᚱᚢᚾᛅᛦ Runes", "locale": "en-GB", "fun": true }
+  { "code": "runes", "label": "ᚱ", "name": "ᚱᚢᚾᛅᛦ Runes", "locale": "en-GB", "fun": true },
+  { "code": "egy", "label": "EGY", "name": "𓂀 Hieroglyphs", "locale": "en-GB", "fun": true }
 ]
