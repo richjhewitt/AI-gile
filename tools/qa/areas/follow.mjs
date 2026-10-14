@@ -75,6 +75,7 @@ def('follow', 'the chat follows the lead: followUp on the closed card, Go to but
   await p5.waitForSelector('#dmPanel [data-dm="alpha"]');
   await p5.click('#dmPanel [data-dm="alpha"]');
   await p5.waitForSelector('#dmList .dm-fold');
+  await p5.click('#dmList [data-dmshowdone]');   // AIG-1036: q1 is done and the owner wrote its first message, so it sits under the Done fold (AIG-1025)
   await p5.click(`#dmList [data-fold="${q1.id}"] .dm-fold-n`);   // the count: the id and title are a link now (AIG-449)
   await p5.waitForSelector('#dmFollow .follow-bar', { timeout: 6000 });
   check('the lead chat shows the Go to button on the closed card', new RegExp(q2.id).test(await p5.textContent('#dmFollow .follow-go')));
