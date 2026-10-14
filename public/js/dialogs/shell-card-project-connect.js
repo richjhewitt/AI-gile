@@ -62,6 +62,15 @@ function lifeToggle() {
 async function makeLifeBoard() {
   try { await api('PATCH', '/api/projects/' + slug(), { lifeBoard: true }); const s = $('nc-life-suggest'); if (s) s.remove(); if (state.project) state.project.lifeBoard = true; } catch (e) { alert(e.message); }
 }
+// AIG-1075: show where a new card went: scroll its column into view, flash the card, say the column in a note.
+function showNewCard(id) {
+  const el = document.querySelector(`#app a.card[data-id="${id}"]`); if (!el) return;
+  const col = el.closest('.column'), h = col && col.querySelector('h3 span');
+  try { el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); } catch { el.scrollIntoView(); }
+  el.classList.add('newflash'); setTimeout(() => el.classList.remove('newflash'), 2500);
+  if (h) note(t('dlg.newcard.wentto', { id, column: h.textContent.replace(/\s*[\u00b7(].*$/, '').trim() }));
+}
+
 async function createCard(e) {
   e.preventDefault();
   if (createCard.busy) return false;   // AIG-1061: one submit per raise (Enter, click, slow upload)
@@ -92,6 +101,7 @@ async function createCard(e) {
     }
     closeDialog();
     await rerender();
+    showNewCard(c.id);
   } catch (err) { setErr('d-err', /title is required/.test(err.message) ? t('dlg.err.title') : err); if (sub) sub.disabled = false; }   // no title, and Tidy cards is off
   finally { createCard.busy = false; }
   return false;

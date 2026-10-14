@@ -94,6 +94,8 @@ main { padding: 20px; }
 .column[data-status=verify] { outline: 2px dashed var(--you); outline-offset: -2px; }
 .column[data-status=team] { outline: 2px dashed #e11d74; outline-offset: -2px; }
 .flight { margin: 0 0 10px; font-size: 13px; }
+@keyframes newflash { 0%, 60% { box-shadow: 0 0 0 3px var(--accent); } 100% { box-shadow: none; } }
+.newflash { animation: newflash 2.5s ease-out; }
 .welcome { grid-column: 1 / -1; max-width: 520px; padding: 18px 20px; border: 1px dashed var(--accent); border-radius: var(--radius); background: var(--panel); }
 .welcome h2 { margin: 0 0 6px; font-size: 18px; }
 .welcome p { margin: 0 0 14px; color: var(--muted); }

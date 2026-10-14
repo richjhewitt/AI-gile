@@ -394,6 +394,7 @@
  "common.done": "Done",
  "dlg.newcard": "New card",
  "dlg.newcard.project": "Project",
+ "dlg.newcard.wentto": "Added {id} to {column}",
  "dlg.newcard.added": "Added {id} to {project}",
  "dlg.bug.titleph": "What's broken?",
  "dlg.bug.desclabel": "What happened / how to reproduce",

@@ -71,6 +71,9 @@ def('newcard-project', 'New card: Project picker defaults to this board; another
   await page.waitForSelector('#dialog .dialog', { state: 'detached' });
   await page.waitForTimeout(300);
   check('default: card in this project, none in the other', (await cards('alpha')).some(c => c.title === 'Stays home') && !(await cards('beta')).some(c => c.title === 'Stays home'));
+  // AIG-1075: the new card is shown: a note naming its column, and the card flashes
+  check('a note says which column the new card went to', /Added ALP-\d+ to .+/.test(await page.textContent('#note')), await page.textContent('#note'));
+  check('the new card flashes and is in view', await page.evaluate(() => { const a = document.querySelector('#app a.card.newflash'); if (!a) return false; const r = a.getBoundingClientRect(); return r.right > 0 && r.left < innerWidth; }));
   await page.click('.toolbar button.primary');
   await page.waitForSelector('#nc-project');
   await page.selectOption('#nc-project', 'beta');
