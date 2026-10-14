@@ -1,6 +1,6 @@
 # aigile.lol site
 
-Static one-page site: `index.html`, `style.css`, `assets/`. No build step, no trackers, no cookies.
+Static one-page site: `index.html`, `style.css`, `teaser.js` + `teaser-lines.json`, `timeline.js` + `timeline.json`, `assets/`. No build step, no trackers, no cookies.
 Colours come from the board (`public/css/*.css`); re-copy them if the board's colours change.
 
 ## Deploy

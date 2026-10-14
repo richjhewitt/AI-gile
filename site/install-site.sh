@@ -35,7 +35,8 @@ command -v certbot >/dev/null || { apt-get update -y && apt-get install -y certb
 
 echo "==> Site files ($ROOT)"
 install -d -o root -g root -m 755 "$ROOT"
-cp -r "$HERE/index.html" "$HERE/style.css" "$HERE/assets" "$ROOT/"
+cp -r "$HERE/index.html" "$HERE/style.css" "$HERE/teaser.js" "$HERE/teaser-lines.json" \
+  "$HERE/timeline.js" "$HERE/timeline.json" "$HERE/assets" "$ROOT/"
 chmod -R a+rX "$ROOT"
 
 echo "==> nginx site (only /etc/nginx/sites-available/$SITE is created)"
