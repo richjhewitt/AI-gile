@@ -3264,5 +3264,9 @@
   "mail.send.sent": "Sent",
   "mail.send.cancel": "Cancel",
   "mail.send.noto": "Who is it to?",
-  "mail.send.wrote": "{who} wrote:"
+  "mail.send.wrote": "{who} wrote:",
+  "mail.setup.agents": "Let agents read this mailbox and draft replies",
+  "mail.setup.agents.sub": "they never send; every read is logged",
+  "mail.draft.by": "✍️ Draft by {who}",
+  "mail.draft.use": "Use this draft"
 }

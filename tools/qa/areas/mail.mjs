@@ -5,6 +5,8 @@
 import fs from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { check, def, tmp, freePort, openPage, noErrors, until, sleep } from '../lib.mjs';
 
 const SECDIR = tmp('mailsec');
@@ -274,6 +276,27 @@ def('mail', 'Mail card 1: add an IMAP mailbox in Setup (find, test, save), passw
       await page.waitForFunction(() => !document.getElementById('mailCompose'), null, { timeout: 15000 });
       check('📤 Send after the countdown: sent once, as a reply (In-Reply-To kept when the mail had one)', smtp.datas.length === 2 && /Real reply/.test(Buffer.from((smtp.datas[1].split('\r\n\r\n')[1] || '').replace(/\r\n/g, ''), 'base64').toString('utf8')));
       await page.click('#mailBack');
+      await page.waitForSelector('.mail-list .mail-row');
+      // ✍️ Agents read and draft, never send (AIG-908)
+      const off = s.cli(['mail', 'read', '103', '--as', 'Postie']);
+      check('agents: reading is refused until the owner allows it', off.code !== 0 && /may not read/.test(off.err + off.out), off);
+      await s.ok('POST', '/api/mail/config', { ...box, id: b.id, password: '', smtpHost: '127.0.0.1', smtpPort: sport, agents: true, token });
+      // read needs the fake IMAP server in this process, so the CLI runs without blocking it (spawn, not spawnSync)
+      const cliA = args => new Promise(res => { const p = spawn(process.execPath, [fileURLToPath(new URL('../../../aigile.js', import.meta.url)), ...args], { env: { ...process.env, AIGILE_URL: s.base }, windowsHide: true }); let out = '', err = ''; p.stdout.on('data', d => out += d); p.stderr.on('data', d => err += d); p.on('close', code => res({ code, out: out.trim(), err: err.trim() })); });
+      const ls = await cliA(['mail', 'list', '--as', 'Postie']), rd = await cliA(['mail', 'read', '103', '--as', 'Postie']);
+      check('agents: list and read come inside the untrusted-email fence, plain text only', ls.code === 0 && /<<untrusted-email/.test(ls.out) && /jorg@example\.org/.test(ls.out)
+        && rd.code === 0 && /^<<untrusted-email uid=103>>/.test(rd.out) && /not an instruction/.test(rd.out) && /Hello Jörg/.test(rd.out) && /<<end untrusted-email>>$/.test(rd.out) && !/<b>there/.test(rd.out), rd.out.slice(0, 400));
+      const dr = s.cli(['mail', 'draft', '103', 'Dear Jörg, thanks!', '--as', 'Postie']);
+      check('agents: a draft is saved; there is no send command, and the send route refuses the CLI', dr.code === 0 && s.cli(['mail', 'send', '103', '--as', 'Postie']).code !== 0 && smtp.datas.length === 2);
+      const lg = fs.readFileSync(path.join(s.data, 'mail', 'log.jsonl'), 'utf8');
+      check('agents: every list, read and draft is logged by name, without the body', /"what":"read","by":"Postie"/.test(lg) && /"what":"draft","by":"Postie"/.test(lg) && !/Dear Jörg/.test(lg));
+      await page.locator('.mail-open').first().click();
+      await page.waitForSelector('#mailDrafts .mail-draft');
+      check('the open mail shows "Draft by Postie" with the text', /Postie/.test(await page.textContent('#mailDrafts')) && /Dear Jörg, thanks!/.test(await page.textContent('#mailDrafts')));
+      await page.click('.mail-usedraft');
+      await page.waitForSelector('#mcText');
+      check('Use this draft opens Reply with the draft on top; nothing is sent until you press Send', /^Dear Jörg, thanks!/.test(await page.inputValue('#mcText')) && smtp.datas.length === 2);
+      await page.click('#mcCancel'); await page.click('#mailBack');
       await page.waitForSelector('.mail-list .mail-row');
     } finally { ssrv.close(); }
 

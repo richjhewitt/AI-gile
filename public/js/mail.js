@@ -41,6 +41,8 @@ const Mail = (() => {
     api('GET', '/api/projects').then(l => { M.projs = l; paint(); }).catch(() => {});
     try { const d = await api('GET', '/api/mail/message?box=' + q(b.id) + '&uid=' + encodeURIComponent(uid)); if (M.cur && M.cur.uid === uid) M.cur = { uid, d, html: !d.text && !!d.html }; }
     catch (e) { if (M.cur && M.cur.uid === uid) M.cur = { uid, error: e.message }; }
+    // ✍️ Drafts agents saved for this mail (AIG-908)
+    try { const r = await api('GET', '/api/mail/drafts?box=' + q(b.id) + '&uid=' + encodeURIComponent(uid)); if (M.cur && M.cur.uid === uid) M.cur.drafts = r.drafts; } catch {}
     paint();
   };
   M.back = () => { M.cur = null; paint(); };
@@ -67,6 +69,8 @@ const Mail = (() => {
     M.compose = { to: (d.from || {}).address || '', subject: /^re:/i.test(subj) ? subj : 'Re: ' + subj, text: '\n\n' + t('mail.send.wrote', { who: (d.from || {}).name || (d.from || {}).address || '?' }) + '\n' + quote, inReplyTo: d.messageId || '' };
     paint();
   };
+  // ✍️ Use an agent's draft (AIG-908): opens ↩️ Reply with the draft on top of the quote; you still read it and send it.
+  M.useDraft = i => { const x = M.cur && (M.cur.drafts || [])[i]; if (!x) return; M.reply(); if (M.compose) { M.compose.text = x.text + M.compose.text; paint(); } };
   M.cancelCompose = () => { if (M.compose && M.compose.timer) clearInterval(M.compose.timer); M.compose = null; paint(); };
   M.send = () => {
     const c = M.compose; if (!c || c.timer) return;
@@ -129,7 +133,7 @@ const Mail = (() => {
       <small class="muted" id="mailRulesMsg">${esc(M.rulesMsg || '')}</small></div>`;
   };
   M.toggleHtml = () => { if (M.cur) M.cur.html = !M.cur.html; paint(); };
-  M.sig = () => JSON.stringify([M.cfg, M.data, M.loading, M.msg, M.cur && [M.cur.uid, M.cur.loading, M.cur.html, M.cur.error, !!M.cur.d, M.cur.made], (M.projs || []).length, M.showRules, M.rules, M.rulesMsg, M.compose && [M.compose.left, M.compose.sending, M.compose.msg, !!M.compose.timer], hidden()]);
+  M.sig = () => JSON.stringify([M.cfg, M.data, M.loading, M.msg, M.cur && [M.cur.uid, M.cur.loading, M.cur.html, M.cur.error, !!M.cur.d, M.cur.made, (M.cur.drafts || []).length], (M.projs || []).length, M.showRules, M.rules, M.rulesMsg, M.compose && [M.compose.left, M.compose.sending, M.compose.msg, !!M.compose.timer], hidden()]);
   const fmt = d => {
     if (!d) return '';
     const x = new Date(d); if (isNaN(x)) return '';
@@ -193,6 +197,8 @@ const Mail = (() => {
         <select id="mailCardProj" aria-label="${esc(t('mail.card.pick'))}">${projects().map(p => `<option value="${esc(p.slug)}">${esc(p.name)}</option>`).join('')}</select>
         <button type="button" id="mailMakeCard" onclick="Mail.makeCard()">${esc(t('mail.card.make'))}</button>
         ${c.made ? `<span class="muted" id="mailCardMade">${esc(c.made)}</span>` : ''}</div>
+      ${(c.drafts || []).length ? `<div class="mail-drafts" id="mailDrafts">${c.drafts.map((x, i) => `<div class="mail-draft" style="border:1px dashed var(--border,#8884);border-radius:8px;padding:6px 10px;margin:6px 0"><b>${esc(t('mail.draft.by', { who: x.by }))}</b> <span class="muted">${esc(fmt(x.at))}</span>
+        <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;margin:4px 0;max-height:8em;overflow:auto">${esc(x.text)}</pre><button type="button" class="mail-usedraft" onclick="Mail.useDraft(${i})">${esc(t('mail.draft.use'))}</button></div>`).join('')}</div>` : ''}
       ${body}
       ${(d.attachments || []).length ? `<div class="mail-attach" id="mailAttach"><b>${esc(t('mail.attach'))}</b><ul>${d.attachments.map(a => `<li>${esc(a.name)} <span class="muted">(${esc(a.type)}, ${esc(Math.max(1, Math.round(a.size / 1024)) + ' KB')})</span></li>`).join('')}</ul></div>` : ''}</div>`;
   };
@@ -215,12 +221,13 @@ const Mail = (() => {
       ${field('mailSmtpPort', 'mail.setup.smtpport', b.smtpPort || 465, 'type="number" min="1" max="65535" style="width:90px"')}
       ${field('mailUser', 'mail.setup.user', b.user, `type="text" maxlength="200" placeholder="${esc(t('mail.setup.user.ph'))}"`)}
       ${field('mailPass', 'mail.setup.pass', '', `type="password" maxlength="1000" autocomplete="new-password" placeholder="${esc(b.hasPassword ? t('mail.setup.pass.keep') : '')}"`)}
+      <label class="chk" style="margin:6px 0"><input type="checkbox" id="mailAgents" ${b.agents ? 'checked' : ''}> ${esc(t('mail.setup.agents'))} <small class="muted">${esc(t('mail.setup.agents.sub'))}</small></label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button type="button" id="mailTest" onclick="Mail.test()">${esc(t('mail.setup.test'))}</button>
         <button type="button" class="primary" id="mailSave" onclick="Mail.save()">${esc(t('mail.setup.save'))}</button>
         ${box() ? `<button type="button" id="mailRemove" onclick="Mail.remove()">${esc(t('mail.setup.remove'))}</button> <a href="#/mail" id="mailOpen">${esc(t('mail.setup.open'))}</a>` : ''}</div>
       ${b.lastError ? `<small class="muted mail-note" id="mailSetErr">${esc(b.lastError)} <a href="#/setup/dmsRelay">${esc(t('mail.setup.relay.link'))}</a></small>` : '<div class="err" id="mailSetErr"></div>'}<small class="muted" id="mailSetState">${esc(M.setupMsg)}</small>`;
   };
-  const form = () => ({ id: (box() || {}).id, name: v('mailName'), address: v('mailAddr'), host: v('mailHost'), port: Number(v('mailPort')) || 993, smtpHost: v('mailSmtpHost'), smtpPort: Number(v('mailSmtpPort')) || 465, user: v('mailUser') || v('mailAddr'), password: ($('mailPass') || {}).value || '' });
+  const form = () => ({ id: (box() || {}).id, name: v('mailName'), address: v('mailAddr'), host: v('mailHost'), port: Number(v('mailPort')) || 993, smtpHost: v('mailSmtpHost'), smtpPort: Number(v('mailSmtpPort')) || 465, agents: !!($('mailAgents') || {}).checked, user: v('mailUser') || v('mailAddr'), password: ($('mailPass') || {}).value || '' });
   M.find = async () => {
     say(t('mail.setup.finding'));
     try {

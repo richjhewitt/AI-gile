@@ -3264,5 +3264,9 @@
   "mail.send.sent": "Verstuurd",
   "mail.send.cancel": "Annuleren",
   "mail.send.noto": "Aan wie?",
-  "mail.send.wrote": "{who} schreef:"
+  "mail.send.wrote": "{who} schreef:",
+  "mail.setup.agents": "Agents mogen deze mailbox lezen en antwoorden voorbereiden",
+  "mail.setup.agents.sub": "ze versturen nooit; elk lezen wordt bijgehouden",
+  "mail.draft.by": "✍️ Concept van {who}",
+  "mail.draft.use": "Dit concept gebruiken"
 }
