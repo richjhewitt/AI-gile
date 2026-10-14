@@ -78,6 +78,13 @@ function lookServerHtml(p) {
   return `<select id="look-srv" onchange="lookServer()"><option value="">${esc(t('look.server.none'))}</option>${names.map(n => `<option value="${esc(n)}" ${String(v.name || '').toLowerCase() === n.toLowerCase() ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>
     <span id="look-srv-more" ${v.name ? '' : 'hidden'}><input type="text" id="look-srv-user" value="${esc(v.user || '')}" placeholder="${esc(t('look.server.user'))}" size="12"> <input type="text" id="look-srv-folder" value="${esc(v.folder || '')}" placeholder="${esc(t('look.server.folder'))}"></span>`;
 }
+// 🪐 Space lead (AIG-439): only on a space (a project with projects inside); off, its own lead, or one of its projects' leads.
+function lookSpaceLeadHtml(p) {
+  const kids = (p.space && p.space.kids) || [], v = p.spaceLead || '';
+  if (!kids.length) return '';
+  const opt = (val, label) => `<option value="${esc(val)}" ${v === val ? 'selected' : ''}>${esc(label)}</option>`;
+  return `<label class="f ai-only" id="look-spacelead-box"><span>🪐 ${esc(t('look.spacelead'))}</span><select id="look-spacelead">${opt('', t('look.spacelead.off'))}${opt(p.slug, t('look.spacelead.own'))}${kids.map(k => opt(k.slug, t('look.spacelead.kid', { name: k.name }))).join('')}</select><small class="muted">${esc(t('look.spacelead.sub'))}</small></label>`;
+}
 const lookServer = () => { $('look-srv-more').hidden = !$('look-srv').value; };
 const lookServerValue = () => ({ name: $('look-srv').value, user: $('look-srv-user').value.trim(), folder: $('look-srv-folder').value.trim() });
 async function lookDialog() {
@@ -98,6 +105,7 @@ async function lookDialog() {
     <label class="chk"><input type="checkbox" id="look-aioff" ${p.aiOff ? 'checked' : ''}> ⏸ ${esc(t('look.aioff'))} <span class="muted">${esc(t('look.aioff.sub'))}</span></label>
     <label class="chk ai-only"><input type="checkbox" id="look-verbose" ${p.verbose ? 'checked' : ''}> ${esc(t('look.verbose'))}</label>
     <label class="chk ai-only"><input type="checkbox" id="look-second" ${p.secondLead ? 'checked' : ''}> ${esc(t('look.second'))} <span class="muted">${esc(t('look.second.sub'))}</span></label>
+    ${lookSpaceLeadHtml(p)}
     <label class="chk"><input type="checkbox" id="look-life" ${p.lifeBoard ? 'checked' : ''}> ${esc(t('look.life'))} <span class="muted">${esc(t('look.life.sub'))}</span></label>
     <label class="f ai-only"><span>${esc(t('look.runin'))}</span>${runInSelect('look-runin', p.runIn || '', 'lookRunIn()', def)}${runInBlind(w)}</label>
     <label class="f ai-only" id="look-runcmd-box" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="look-runcmd" value="${esc(p.runCmd || '')}" placeholder="${esc(leadPrefs().runCmd || 'cursor "{folder}"')}"><small class="muted">${esc(t('runin.cmd.look'))}</small></label>
@@ -117,7 +125,7 @@ async function saveLook(auto) {
   try {
     const cwBox = $('look-chgwin-box');
     if (!auto && cwBox && cwBox.value.trim() !== cwBox.dataset.was) await api('POST', '/api/projects/' + slug() + '/change-windows', { set: cwBox.value });   // owner only; a bad line shows its error
-    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, personal: $('look-personal').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), feedback: Pub.feedbackValue(state.project || {}), publicHideTitles: !!($('look-pubhide') || {}).checked, aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, dod: { ready: $('look-dod-ready').value, done: $('look-dod-done').value }, srv: lookServerValue(), callUrl: $('look-callurl').value.trim() });
+    await api('PATCH', '/api/projects/' + slug(), auto ? { color: '', emoji: '' } : { color: $('look-color').value, emoji: $('look-emoji').value, chatty: $('look-chatty').checked, verbose: $('look-verbose').checked, secondLead: $('look-second').checked, lifeBoard: $('look-life').checked, private: $('look-private').checked, personal: $('look-personal').checked, public: $('look-public').checked, publicName: $('look-pubname').value.trim(), feedback: Pub.feedbackValue(state.project || {}), publicHideTitles: !!($('look-pubhide') || {}).checked, aiOff: $('look-aioff').checked, runIn: $('look-runin').value, runCmd: $('look-runcmd').value, dod: { ready: $('look-dod-ready').value, done: $('look-dod-done').value }, srv: lookServerValue(), callUrl: $('look-callurl').value.trim(), ...($('look-spacelead') ? { spaceLead: $('look-spacelead').value } : {}) });
     closeDialog(); await rerender();
   } catch (e) { setErr('look-err', e); }
 }
