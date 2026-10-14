@@ -3319,5 +3319,14 @@
  "int.copy": "📋 Alle e-mails kopiëren",
  "int.none": "Nog niemand: het formulier staat op aigile.lol/interest.html",
  "pub.hidetitles": "Kaarttitels verbergen",
- "pub.hidetitles.sub": "kijkers zien de kaarten bewegen, als balken, maar niet wat erop staat"
+ "pub.hidetitles.sub": "kijkers zien de kaarten bewegen, als balken, maar niet wat erop staat",
+ "tb.b.status": "Je status",
+ "status.title": "Je status: {status} (klik om te wijzigen)",
+ "status.online": "Online",
+ "status.idle": "Afwezig",
+ "status.dnd": "Niet storen",
+ "status.offline": "Offline",
+ "status.rest": "Rustdag",
+ "status.rest.help": "Rustdag: de nachtwacht neemt het over, alleen dringende dingen bereiken je, en de teams vragen het de Lead Scrum Master in plaats van jou",
+ "status.rest.confirm": "Een rustdag beginnen? De nachtwacht neemt het over, alleen dringende kaarten blijven in je inbox, en elk team hoort dat het de Lead Scrum Master moet vragen in plaats van jou."
 }

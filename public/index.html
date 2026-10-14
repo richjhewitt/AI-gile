@@ -50,7 +50,8 @@
   <button id="streamBtn" class="navlink" onclick="Streamer.toggle()" aria-pressed="false" data-i18n="streamer.btn" title="Streamer mode">🎥 Streamer</button>
   <button id="liveBtn" class="navlink" onclick="Streamer.goLive()" hidden></button>
   <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" title="No Token Mode">⛔ No Token Mode</button>
-  <button id="tiredBtn" class="navlink" onclick="Tired.toggle()" aria-pressed="false" title="Tired mode">🔋</button>
+  <button id="statusBtn" class="navlink" onclick="Status.menu()" aria-haspopup="menu" title="Your status">🟢</button>
+  <button id="tiredBtn"class="navlink" onclick="Tired.toggle()" aria-pressed="false" title="Tired mode">🔋</button>
   <a class="navlink" id="mailNav" href="#/mail" style="display:none" data-i18n="mail.nav" data-i18n-title="mail.nav.title" title="Your mail inbox">✉️ Mail</a>
   <a class="navlink" id="assumeNav" href="#/assumptions" data-i18n-title="assume.nav.title" title="Guesses the team made while you were away"><span data-i18n="assume.nav">🌙 Assumptions</span> <span id="assumeBadge" class="pill you" hidden></span></a>
   <a class="navlink" id="usageNav" href="#/usage"><span data-i18n="nav.usage">⚡ Usage</span><span id="ugBars"></span></a>
@@ -214,6 +215,7 @@ window.Boot = (() => {
 <script src="js/shortcuts.js"></script>
 <script src="js/notokens.js"></script>
 <script src="js/tired.js"></script>
+<script src="js/status.js"></script>
 <script src="js/break.js"></script>
 <script src="js/selfcare.js"></script>
 <script src="js/hyperfocus.js"></script>

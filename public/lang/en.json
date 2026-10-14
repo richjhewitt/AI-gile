@@ -3319,5 +3319,14 @@
  "int.copy": "📋 Copy all emails",
  "int.none": "Nobody yet: the form is at aigile.lol/interest.html",
  "pub.hidetitles": "Hide card titles",
- "pub.hidetitles.sub": "viewers see the cards move, as bars, but not what they say"
+ "pub.hidetitles.sub": "viewers see the cards move, as bars, but not what they say",
+ "tb.b.status": "Your status",
+ "status.title": "Your status: {status} (click to change)",
+ "status.online": "Online",
+ "status.idle": "Idle",
+ "status.dnd": "Do not disturb",
+ "status.offline": "Offline",
+ "status.rest": "Rest day",
+ "status.rest.help": "Rest day: the night watch takes over, only urgent things reach you, and the teams ask the Lead Scrum Master instead of you",
+ "status.rest.confirm": "Start a rest day? The night watch takes over, only urgent cards stay in your inbox, and every team is told to ask the Lead Scrum Master instead of you."
 }
