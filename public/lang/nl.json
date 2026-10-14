@@ -3398,5 +3398,19 @@
  "mail.setup.g.done": "✅ Aangemeld bij Google",
  "mail.setup.g.not": "Nog niet aangemeld bij Google",
  "mail.setup.g.go": "Open de aanmeldpagina van Google",
- "mail.setup.g.waiting": "Wachten tot je je aanmeldt bij Google…"
+ "mail.setup.g.waiting": "Wachten tot je je aanmeldt bij Google…",
+ "srv.grp.skip": "{name} is niet gewekt: {why}",
+ "phone.tun.h": "Via mijn server",
+ "phone.tun.help": "Bereik dit bord overal via je eigen server: het bord houdt een privé ssh-tunnel open naar die server, en de server toont het bord alleen aan een gekoppelde telefoon.",
+ "phone.tun.server": "Server",
+ "phone.tun.host": "Naam die de telefoon opent",
+ "phone.tun.port": "Poort op de server",
+ "phone.tun.save": "Opslaan",
+ "phone.tun.off": "Uitzetten",
+ "phone.tun.none": "Bewaar eerst een ssh-server onder Mijn servers.",
+ "phone.tun.up": "Tunnel actief",
+ "phone.tun.starting": "Tunnel start…",
+ "phone.tun.down": "Tunnel ligt eruit",
+ "phone.tun.idle": "Tunnel niet ingesteld",
+ "phone.tun.err": "laatste fout: {err}"
 }
