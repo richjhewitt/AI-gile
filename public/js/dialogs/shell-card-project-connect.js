@@ -64,6 +64,7 @@ async function makeLifeBoard() {
 }
 async function createCard(e) {
   e.preventDefault();
+  if (createCard.busy) return false;   // AIG-1061: one submit per raise (Enter, click, slow upload)
   const body = readFields(false, false);
   // No title is fine when there is a description: with Tidy cards on the server takes its first line (AIG-399).
   if (!body.title && !body.description.trim()) { setErr('d-err', t('dlg.err.title')); return false; }
@@ -74,6 +75,7 @@ async function createCard(e) {
       body.apptAt = new Date($('nc-apptat').value).toISOString(); body.remindMins = Number($('nc-remind').value);
     }
   }
+  createCard.busy = true; const sub = e.target && e.target.querySelector && e.target.querySelector('button[type=submit]'); if (sub) sub.disabled = true;
   try {
     const sel = $('nc-project'), target = sel && sel.value || slug();
     const attachments = await Attach.upload('new:' + slug(), target);
@@ -90,7 +92,8 @@ async function createCard(e) {
     }
     closeDialog();
     await rerender();
-  } catch (err) { setErr('d-err', /title is required/.test(err.message) ? t('dlg.err.title') : err); }   // no title, and Tidy cards is off
+  } catch (err) { setErr('d-err', /title is required/.test(err.message) ? t('dlg.err.title') : err); if (sub) sub.disabled = false; }   // no title, and Tidy cards is off
+  finally { createCard.busy = false; }
   return false;
 }
 

@@ -232,6 +232,7 @@ metadataReady.finally(() => server.listen(PORT, HOST, () => { console.log(`AI-gi
 // Private DMs: collect this board's relay mailbox every few seconds while DMs are on (lib/dm.js).
 require('./lib/dm').startDms();
 require('./lib/timed').start();   // timed cards come back (AIG-385)
+require('./lib/major').start();   // 🚨 a status line every 30 min while a major incident is open (AIG-1049)
 require('./lib/join').applyInvite().catch(() => {});   // a friend's first start: invite.json from the zip (AIG-347)
 if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();
 require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anything while you are going quiet (AIG-199)
@@ -241,6 +242,7 @@ require('./lib/twitch').start();   // 🟣 only does anything once a Twitch chan
 require('./lib/feedback').start();   // 💬 pulls website visitors' reports for public boards with feedback on (AIG-969)
 require('./lib/bugreports').start();   // 🐞 files Live testers' reports, only with feedback.project set (AIG-561)
 require('./lib/serverhealth').start();   // 🩺 warns when Smizflark Server 2.0 needs upgrading (AIG-660)
+require('./lib/uptime').start();   // 🟢 uptime checks of service projects open incidents (AIG-1047)
 require('./lib/budget').startNightWatch();   // a run past its team's nightly token budget is stopped (AIG-522)
 require('./lib/streamer').start();   // 🎥 streamer mode turns itself on when OBS or Streamlabs runs (AIG-592)
 require('./lib/discord-presence').start();   // 🎮 Discord shows "Using AI-gile" as your activity, if switched on (AIG-642)

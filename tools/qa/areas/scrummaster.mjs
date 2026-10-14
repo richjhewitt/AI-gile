@@ -37,6 +37,7 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   const ap = await openPage(ctx, '#/');
   await ap.waitForSelector('#dmRail [data-dms]'); await ap.click('#dmRail [data-dms]'); await ap.click('#dmPanel [data-dm="_watchman"]');
   await ap.waitForSelector('#dmPanel .dm-compose .att');
+  await ap.waitForSelector('#dmList .dm-fold');   // the thread is loaded: Dms.send does nothing until then
   const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
   await ap.setInputFiles('#dmPanel .att input[type=file]', { name: 'shot.png', mimeType: 'image/png', buffer: png });
   await ap.waitForSelector('#dmPanel .att-chip');

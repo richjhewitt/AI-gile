@@ -31,3 +31,21 @@ def('raisebug', 'Raise bug button: on board, card view and Setup; left of the sp
   check('a new bug card exists', bugs.length === 1 && bugs[0].type === 'bug', JSON.stringify(bugs.map(b => b.type)));
   noErrors(page);
 }, true);
+
+def('raisebug-once', 'Raise bug: opening the dialog several times then sending (even clicked twice) makes one card; two identical POSTs within 10 s make one card (AIG-1061)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('#bugBtn');
+  for (let i = 0; i < 4; i++) { await page.click('#bugBtn'); await page.waitForSelector('#f-title'); await page.click('#dialog button[type=button]'); await page.waitForSelector('#f-title', { state: 'detached' }); }
+  await page.click('#bugBtn'); await page.waitForSelector('#f-title');
+  await page.fill('#f-title', 'Sent once only');
+  await page.evaluate(() => { const b = document.querySelector('#dialog button[type=submit]'); b.click(); b.click(); document.querySelector('#dialog form').requestSubmit(); });
+  await page.waitForSelector('#f-title', { state: 'detached' }); await sleep(800);
+  check('one card from many opens and a double send', (await s.ok('GET', '/api/projects/alpha')).cards.filter(c => c.title === 'Sent once only').length === 1);
+  const a = await mkCard(s, 'alpha', 'Same twice', { description: 'same text', createdBy: 'Owner' });
+  const b = await mkCard(s, 'alpha', 'Same twice', { description: 'same text', createdBy: 'Owner' });
+  check('two identical POSTs make one card', a.id === b.id && (await s.ok('GET', '/api/projects/alpha')).cards.filter(c => c.title === 'Same twice').length === 1, { a: a.id, b: b.id });
+  const c = await mkCard(s, 'alpha', 'Same twice', { description: 'other text', createdBy: 'Owner' });
+  check('different text is a new card', c.id !== a.id);
+  noErrors(page);
+}, true);

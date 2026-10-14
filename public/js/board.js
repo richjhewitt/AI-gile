@@ -249,6 +249,9 @@ function forYouColumn(p, label = t('col.verify.short'), tint = '', pool = p.card
 }
 
 // show = the project's card view choices (board cards only); the card panel passes nothing and shows all.
+// AIG-1048: a red clock on a card past its reply-by time (the server stamps c.late with the target in hours)
+const lateText = h => h >= 48 && h % 24 === 0 ? t('late.days', { n: h / 24 }) : t('late.hours', { n: h });
+const lateChip = c => c.late && c.status !== 'done' ? `<span class="pill late-chip" title="${esc(t('late.title', { h: lateText(c.late) }))}">⏰</span>` : '';
 function metaHtml(c, show = CARD_SHOW) {
   return `${c.lifeType ? (forYou(c) && isMine(c) ? '' : lifeChip(c) + (c.apptAt ? `<span class="pill">📅 ${esc(timedWhen(c.apptAt))}</span>` : '')) : show.type ? `<span class="pill">${esc(t('type.' + c.type))}</span>` : ''}
       ${show.priority && c.priority !== 'normal' ? `<span class="pill ${c.priority}">${esc(t('priority.' + c.priority))}</span>` : ''}
@@ -256,7 +259,7 @@ function metaHtml(c, show = CARD_SHOW) {
       ${show.assignee && c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
       ${c.needsYou && c.status !== 'done' ? `<span class="pill you">${esc(t('card.needsyou'))}</span>` : ''}
       ${c.crucial ? `<span class="pill crucial" title="${esc(t('saver.chip.title'))}">⭐</span>` : ''}
-      ${timedChip(c)}
+      ${lateChip(c)}${timedChip(c)}
       ${checkChip(c)}${waitChip(c)}
       ${aiChip(c)}
       ${c.group ? `<span class="pill grp" title="${esc(t('group.chip.title', { name: c.group }))}">🗂️ ${esc(c.group)}</span>` : ''}

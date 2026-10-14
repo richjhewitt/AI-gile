@@ -60,6 +60,7 @@ a.usage:hover { border-color: var(--accent); }
 .live.off::before { color: var(--danger); }
 main { padding: 20px; }
 .muted { color: var(--muted); }
+.svc-line { font-size: 12px; margin-top: 4px; } .svc-url { text-decoration: underline; cursor: pointer; }
 .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; background: var(--col); color: var(--muted); white-space: nowrap; }
 .pill.grp { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .pill.you { background: var(--you); color: #fff; }
@@ -142,6 +143,8 @@ code[data-copy-text] { cursor: pointer; }
 .change { margin-top: 10px; padding: 6px 10px; border-inline-start: 3px solid #2563eb; background: color-mix(in srgb, #2563eb 6%, var(--panel)); }
 .change p { margin: 4px 0; }
 .chg-raise { margin-top: 10px; }
+.major { margin-top: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.major-on { color: var(--danger, #d33); font-weight: 600; }
 .gonogo { margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--line, #8884); }
 .gonogo h4 { margin: 0 0 4px; }
 .gonogo ul { margin: 4px 0; padding-inline-start: 18px; }
@@ -205,3 +208,6 @@ th { color: var(--muted); font-weight: 500; }
 .bdetails { margin: 0 0 10px; font-size: 13px; } .bdetails summary { cursor: pointer; color: var(--muted); } .bdetails .flight, .bdetails p { margin: 6px 0 0; }
 .q-chip.prio.unset { max-width: 0; margin-left: -4px; padding-left: 0; padding-right: 0; border-width: 0; overflow: hidden; opacity: 0; white-space: nowrap; }
 .q-chips:hover .q-chip.prio.unset, .q-chips:focus-within .q-chip.prio.unset { max-width: 220px; margin-left: 0; padding: 1px 7px; border-width: 1px; opacity: 1; }
+
+/* AIG-1048: red clock on a card past its reply-by time */
+.pill.late-chip { background: #dc2626; color: #fff; }

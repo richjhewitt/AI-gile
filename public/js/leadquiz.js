@@ -73,6 +73,18 @@ function tiredHtml(pr) {
   const tm = k => `<input type="time" id="pf-tired-${k}" value="${esc(c[k])}" aria-label="${esc(t('tired.' + k))}" onchange="if (this.value) setLeadPref({ tired: { ${k}: this.value } })">`;
   return `<div class="f"><span>${esc(t('tired.h'))}</span><div class="tired-box" id="pf-tired">${rd('off')}${rd('bedtime', ` ${tm('bedtime')} ${esc(t('tired.to'))} ${tm('wake')}`)}${rd('dark')}${rd('always')}<small class="muted">${esc(t('tired.help'))}</small></div></div>`;
 }
+// AIG-1048: reply-by hours per kind and priority (blank = no target); saved as prefs.targets (lib/targets.js).
+function targetsHtml(pr) {
+  const tb = pr.targets || {}, P = ['low', 'normal', 'high', 'urgent'];
+  return `<div class="f" id="pf-targets"><span>${esc(t('targets.h'))}</span><small class="muted">${esc(t('targets.help'))}</small><div style="overflow-x:auto"><table>
+    <tr><th></th>${P.map(x => `<th>${esc(t('priority.' + x))}</th>`).join('')}</tr>
+    ${['incident', 'friend', 'bug'].map(k => `<tr><th>${esc(t('targets.' + k))}</th>${P.map(x => `<td><input type="number" min="0" step="any" style="width:4.5em" data-tk="${k}" data-tp="${x}" value="${(tb[k] || {})[x] || ''}" aria-label="${esc(t('targets.' + k) + ' ' + t('priority.' + x))}" onchange="targetsSave()"></td>`).join('')}</tr>`).join('')}</table></div></div>`;
+}
+function targetsSave() {
+  const o = {};
+  document.querySelectorAll('#pf-targets input').forEach(i => { (o[i.dataset.tk] = o[i.dataset.tk] || {})[i.dataset.tp] = Number(i.value) || 0; });
+  setLeadPref({ targets: o });
+}
 // AIG-678: when your day starts and (optionally) stops; Going quiet, snooze-to-tomorrow and the morning use them.
 function dayTimesHtml(pr) {
   const d = pr.day || { start: '09:00', stop: '' };
@@ -84,7 +96,7 @@ function leadPrefsHtml(msg = '') {
   const sw = k => `<label class="f chk"><span><input type="checkbox" ${pr[k] ? 'checked' : ''} onchange="setLeadPref({ ${k}: this.checked })"> ${esc(t('lead.' + k))}</span><small class="muted">${esc(t('lead.' + k + '.help'))}</small></label>`;
   return `<span>${esc(t('scale.h'))}</span><small class="muted">${esc(t('scale.sub'))}</small><div><button type="button" onclick="leadQuiz()">${esc(t('quiz.btn'))}</button></div><small class="muted">${esc(t('quiz.help'))}</small>
     ${OWNER_SCALES.map(([k, max]) => scaleSlider(k, max, sc[k], 'setScale') + (k === 'thrift' ? `<small class="muted" id="pf-pace">${esc(t('budget.pace', { pct: pr.pace }))}</small>${budgetHtml(pr)}` : '')).join('')}
-    ${sw('watchAll')}${sw('planBig')}${sw('light')}${sw('todayPick')}${sw('dayStart')}${sw('autoPop')}${dayTimesHtml(pr)}${tiredHtml(pr)}
+    ${sw('watchAll')}${sw('planBig')}${sw('light')}${sw('todayPick')}${sw('dayStart')}${sw('autoPop')}${targetsHtml(pr)}${dayTimesHtml(pr)}${tiredHtml(pr)}
     ${scaleSlider('tone', 5, pr.tone || 3, 'setTone', 'tn', t('tone.help'))}
     <label class="f"><span>${esc(t('lead.tech'))}</span><select class="setup-theme" onchange="setLeadPref({ techLevel: this.value })">${['', 'beginner', 'some', 'expert'].map(v => `<option value="${v}" ${(pr.techLevel || '') === v ? 'selected' : ''}>${esc(t('lead.tech.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.tech.help'))}</small></label>
     <label class="f"><span>${esc(t('lead.push'))}</span><select id="pushPref" class="setup-theme" onchange="setLeadPref({ push: this.value })">${['ask', 'auto'].map(v => `<option value="${v}" ${(pr.push || 'ask') === v ? 'selected' : ''}>${esc(t('lead.push.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('lead.push.help'))}</small></label>
