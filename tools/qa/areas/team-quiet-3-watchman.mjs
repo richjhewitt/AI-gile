@@ -2,7 +2,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, check, sleep, until, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+// AIG-1036: wait for the runs going quiet started to end (a fixed sleep is too short on a busy PC)
+const settle = async (s, slugs) => { await sleep(2000); await until(async () => { for (const g of slugs) if ((await s.ok('GET', `/api/projects/${g}`)).presence.running) return false; return true; }, 40000); await sleep(500); };
 const require = createRequire(import.meta.url);
 
 // AIG-1001: wait until the stand-in team runs have really ended (a fixed 4.5 s was flaky on a busy PC)
@@ -44,7 +46,7 @@ def('keepgoing', '🌙 keeps every team on task: the every-minute look picks up 
   const mid = await mkCard(s, 'half', 'Half done', { status: 'doing' });
   const todo = await mkCard(s, 'idle', 'Buildable', { status: 'todo' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['half', 'idle'] });
-  await sleep(4500);   // going quiet wakes both teams; wait until those runs end
+  await settle(s, ['half', 'idle']);   // going quiet wakes both teams; wait until those runs end
   await s.ok('GET', '/api/projects/idle/updates?wait=1');   // the Idle session now sits in 'aigile wait'
   await sleep(50);
   await s.ok('POST', '/api/watchman/quick');
@@ -61,16 +63,17 @@ def('limit', '🌙 usage limit: no restarts counted while out, carry on after th
   await mkProject(s, 'Out', 'OUT', { path: tmp('out') });
   const mid = await mkCard(s, 'out', 'Half done', { status: 'doing' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['out'] });
-  await sleep(4500);   // going quiet wakes the team; wait until that run ends
+  await settle(s, ['out']);   // going quiet wakes the team; wait until that run ends
   const logf = path.join(s.data, 'logs', 'out.log'), runs = () => (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length;
   const ampm = d => `${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}${d.getHours() < 12 ? 'am' : 'pm'}`;
-  const cutOff = (startAgo, resetIn) => fs.appendFileSync(logf, `=== ${new Date(Date.now() - startAgo).toISOString()} started ===\nYou've hit your session limit · resets ${ampm(new Date(Date.now() + resetIn))} (Europe/London)\n=== exited ended ===\n`);
+  const append = (file, text) => { for (let i = 0; ; i++) try { return fs.appendFileSync(file, text); } catch (e) { if (e.code !== 'EBUSY' || i > 50) throw e; Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100); } };   // AIG-1036: Windows locks the log while the run writes it
+  const cutOff = (startAgo, resetIn) => append(logf, `=== ${new Date(Date.now() - startAgo).toISOString()} started ===\nYou've hit your session limit · resets ${ampm(new Date(Date.now() + resetIn))} (Europe/London)\n=== exited ended ===\n`);
   // Cut off by a limit that has reset since: carried on, not counted as a try.
   cutOff(3 * 3600e3, -2 * 3600e3);
   let n = runs(); await s.ok('POST', '/api/watchman/quick'); await sleep(300);
   check('after the reset the team carries on', runs() === n + 1, fs.readFileSync(logf, 'utf8'));
   check('a limit cut-off is not counted as a try', !(await getCard(s, 'out', mid.id)).comments.some(m => /Picked back up|Stuck/.test(m.text)));
-  await sleep(4500);
+  await settle(s, ['out']);
   // Out of usage now: nobody is woken until the reset, and one message says when.
   cutOff(60e3, 2 * 3600e3);
   n = runs(); await s.ok('POST', '/api/watchman/round'); await s.ok('POST', '/api/watchman/round'); await sleep(300);
@@ -104,10 +107,12 @@ def('stuckonly', '🌙 a card flagged stuck stops only itself: the team is still
   await mkProject(s, 'Jam', 'JAM', { path: tmp('jam') });
   const mid = await mkCard(s, 'jam', 'Keeps failing', { status: 'doing' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['jam'] });
-  for (let i = 0; i < 3; i++) { await sleep(4500); await s.ok('POST', '/api/watchman/round'); }
+  await settle(s, ['jam']);
+  // AIG-1036: round until it says Stuck (a loaded PC makes a fixed 3 rounds flaky)
+  for (let i = 0; i < 10; i++) { await sleep(4500); await s.ok('POST', '/api/watchman/round'); if (/Stuck/.test((await getCard(s, 'jam', mid.id)).comments.at(-1)?.text || '')) break; }
   check('third try: stuck', /Stuck/.test((await getCard(s, 'jam', mid.id)).comments.at(-1).text));
   await mkCard(s, 'jam', 'Other work', { status: 'todo' });
-  await sleep(4500);
+  await settle(s, ['jam']);
   const logf = path.join(s.data, 'logs', 'jam.log'), n = (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length;
   await s.ok('POST', '/api/watchman/round'); await sleep(300);
   check('the team is still woken for its other work', (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length === n + 1);

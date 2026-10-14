@@ -17,7 +17,7 @@ def('notokens', 'No Token Mode: kills runs, refuses wakes/nudges/tests/usage che
   check('the running team was stopped', (await until(async () => !(await s.ok('GET', '/api/projects/nova')).presence.running, 4000)) === true);
 
   // Nothing starts.
-  await sleep(1500); fs.rmSync(s.wakeOut, { force: true });
+  await until(async () => fs.existsSync(s.wakeOut), 15000); await sleep(1500); fs.rmSync(s.wakeOut, { force: true });   // AIG-1036: the killed run's stub can start late on a busy PC and write after the rm
   const w = await s.api('POST', '/api/projects/nova/wake');
   check('a wake is refused', w.status === 409 && /No Token Mode/.test(w.body.error || ''), w);
   const c = await mkCard(s, 'nova', 'hello'); await say(s, 'nova', c.id, 'Owner', 'please do it');
