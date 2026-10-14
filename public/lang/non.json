@@ -3315,7 +3315,6 @@
   "srv.remind.tomorrow": "á morgin {time}",
   "srv.pa.help": "Ek get:\n• minnt þik: „minn mik kl. 3 á at hringja í Bob“\n• hafit daginn þinn: „hef daginn minn“\n• allt annat fer til Aðalfundarstjóra",
   "srv.pa.day": "🌅 Opna Hefja daginn.",
-  "srv.pa.passed": "Sent Aðalfundarstjóra",
   "srv.pa.failed": "Gat eigi sent þat áfram: {why}",
   "share.title.label": "Heiti",
   "share.title.ph": "t.d. Jetstream-ráðgjafi",
