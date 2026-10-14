@@ -113,6 +113,15 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
   check('empty upload refused', (await s.api('POST', '/api/projects/alpha/attachments', { name: 'x.png', data: '' })).status === 400);
   check('unknown attachment is 404', (await s.api('GET', '/api/projects/alpha/attachments/zz-none.png')).status === 404);
   check('path escape refused', [400, 404].includes((await fetch(BASE + '/api/projects/alpha/attachments/..%2F..%2Falpha.json')).status));
+  // AIG-1090: a picture is cached by the browser; the second request with its ETag is a 304 with no body.
+  const upl = await s.ok('POST', '/api/projects/alpha/attachments', { name: 'cache.png', type: 'image/png', data: PNG }), pu = BASE + '/api/projects/alpha/attachments/' + encodeURIComponent(upl.id);
+  const g1 = await fetch(pu), tag = g1.headers.get('etag');
+  await g1.arrayBuffer();
+  check('an attachment is cacheable with an ETag', g1.status === 200 && !!tag && /immutable/.test(g1.headers.get('cache-control') || ''), [g1.status, tag, g1.headers.get('cache-control')]);
+  const g2 = await fetch(pu, { headers: { 'If-None-Match': tag } });
+  check('the second request answers 304 with no body', g2.status === 304 && (await g2.arrayBuffer()).byteLength === 0, g2.status);
+  check('a changed ETag still gets the picture', (await fetch(pu, { headers: { 'If-None-Match': '"nope"' } })).status === 200);
+  check('API JSON stays no-store', /no-store/.test((await fetch(BASE + '/api/projects/alpha')).headers.get('cache-control') || ''));
 
   // Card: paste a screenshot, send with no text.
   const page = await openPage(ctx, '#/p/alpha/' + c1.id);

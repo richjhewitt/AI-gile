@@ -1,5 +1,6 @@
 // QA area: leadchat (AIG-872): one card-free Lead chat per project. A DM from the page lands there (no 💬 card), is pinned at the
 // top of the Messages chat, wakes the lead (updates / brief list it, `aigile chat` reads and replies), and a lead reply waits in the inbox.
+import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { ROOT, check, sleep, until, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
@@ -71,5 +72,13 @@ def('leadchat', '💬 Lead chat: DMs go to one chat per project, not a card each
   const after2 = await s.ok('GET', '/api/lifeadmin');
   check('a team message makes no reminder, an unreadable one neither', after2.reminders.length === lifeBefore + 1 && !after2.reminders.some(r => /feed the cat/.test(r.text)), after2.reminders.map(r => r.text));
   check('an unreadable message gets no board reply', (await s.ok('GET', '/api/projects/chatty/leadchat')).messages.at(-1).text === 'remind me at the weekend');
+  // AIG-1090: opening a read chat (the page asks every 3 s) must not rewrite the chat file, or bump the global revision.
+  const cf = path.join(s.data, 'chatty.chat');
+  await s.ok('POST', '/api/projects/chatty/leadchat', { author: 'Owner', text: 'one more' });
+  await s.ok('GET', '/api/chats/chatty');   // the first read marks it read
+  const m0 = fs.statSync(cf).mtimeMs, rev0 = JSON.stringify(await s.ok('GET', '/api/rev').catch(() => 0));
+  await sleep(50);
+  for (let i = 0; i < 3; i++) await s.ok('GET', '/api/chats/chatty').catch(() => null);
+  check('reading a read chat leaves the chat file alone', fs.statSync(cf).mtimeMs === m0 && JSON.stringify(await s.ok('GET', '/api/rev').catch(() => 0)) === rev0);
   await noErrors(page);
 }, true);
