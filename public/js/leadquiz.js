@@ -76,9 +76,9 @@ function tiredHtml(pr) {
 // AIG-1048: reply-by hours per kind and priority (blank = no target); saved as prefs.targets (lib/targets.js).
 function targetsHtml(pr) {
   const tb = pr.targets || {}, P = ['low', 'normal', 'high', 'urgent'];
-  return `<div class="f" id="pf-targets"><span>${esc(t('targets.h'))}</span><small class="muted">${esc(t('targets.help'))}</small><table>
+  return `<div class="f" id="pf-targets"><span>${esc(t('targets.h'))}</span><small class="muted">${esc(t('targets.help'))}</small><div style="overflow-x:auto"><table>
     <tr><th></th>${P.map(x => `<th>${esc(t('priority.' + x))}</th>`).join('')}</tr>
-    ${['incident', 'friend', 'bug'].map(k => `<tr><th>${esc(t('targets.' + k))}</th>${P.map(x => `<td><input type="number" min="0" step="any" style="width:4.5em" data-tk="${k}" data-tp="${x}" value="${(tb[k] || {})[x] || ''}" aria-label="${esc(t('targets.' + k) + ' ' + t('priority.' + x))}" onchange="targetsSave()"></td>`).join('')}</tr>`).join('')}</table></div>`;
+    ${['incident', 'friend', 'bug'].map(k => `<tr><th>${esc(t('targets.' + k))}</th>${P.map(x => `<td><input type="number" min="0" step="any" style="width:4.5em" data-tk="${k}" data-tp="${x}" value="${(tb[k] || {})[x] || ''}" aria-label="${esc(t('targets.' + k) + ' ' + t('priority.' + x))}" onchange="targetsSave()"></td>`).join('')}</tr>`).join('')}</table></div></div>`;
 }
 function targetsSave() {
   const o = {};
