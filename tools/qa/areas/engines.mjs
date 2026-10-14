@@ -90,6 +90,41 @@ def('engines', 'engines: Engine pick per agent in the Team dialog, a Codex lead 
   check('read(): init, assistant text, tool use, plain text, unknown ignored',
     G.read('{"type":"init"}')[0].includes('gemini') && G.read('{"type":"message","role":"assistant","content":"hi"}')[0].includes('hi') && G.read('{"type":"message","role":"user","content":"x"}').length === 0
     && G.read('{"type":"tool_use","tool_name":"run_shell_command","parameters":{"command":"ls"}}')[0].includes('ls') && G.read('plain words')[0] === 'plain words' && G.read('{"type":"zzz"}').length === 0);
+  // 5b2. GitHub Copilot (AIG-971) and Cursor (AIG-973): their documented flags, the model only when set, the rules in the prompt
+  const wakeGot = async pat => {
+    await settle(); fs.writeFileSync(out, '');
+    await s.ok('POST', '/api/projects/eng/wake');
+    for (let i = 0; i < 40 && !pat.test(fs.readFileSync(out, 'utf8')); i++) await sleep(250);
+    const g = fs.readFileSync(out, 'utf8').replace(/\r/g, '').replace(/"/g, ''); await settle(); return g;
+  };
+  await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', engine: 'copilot', copilotModel: 'cop-test' });
+  check('Copilot and its model are stored on the lead', (await s.ok('GET', '/api/projects/eng')).team.find(m => m.name === 'Lead').copilotModel === 'cop-test');
+  const got4 = await wakeGot(/allow-all/);
+  check('copilot --allow-all --no-ask-user, JSON output, --model and -p', /--allow-all --no-ask-user --output-format=json --model=cop-test -p You are running through GitHub Copilot CLI/.test(got4), got4);
+  check('the Copilot prompt names AGENTS.md, never push and the board brief', /AGENTS\.md/.test(got4) && /Never run git push/.test(got4) && /board brief for project eng/.test(got4), got4);
+  check('the log says copilot', /started \(copilot\)/.test(log()), log());
+  await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', copilotModel: '' });
+  check('Copilot with no model leaves out --model', !/--model/.test(await wakeGot(/allow-all/)));
+  await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', engine: 'cursor', cursorModel: 'cur-test' });
+  const got5 = await wakeGot(/--force/);
+  check('cursor --print --force --trust, stream-json, --model, then the prompt', /--print --force --trust --output-format stream-json --model cur-test You are running through Cursor CLI/.test(got5), got5);
+  check('the Cursor prompt names AGENTS.md, never push and the board brief', /AGENTS\.md/.test(got5) && /Never run git push/.test(got5) && /board brief for project eng/.test(got5), got5);
+  check('the log says cursor', /started \(cursor\)/.test(log()), log());
+  await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', cursorModel: '' });
+  check('Cursor with no model leaves out --model', !/--model/.test(await wakeGot(/--force/)));
+  const EN = require('../../../lib/engines'), CP = EN.ENGINES.copilot, CU = EN.ENGINES.cursor;
+  check('read(): Copilot text, plain text, unknown ignored', CP.read('{"type":"assistant.message","data":{"content":"hi"}}')[0].includes('hi') && CP.read('plain words')[0] === 'plain words' && CP.read('{"type":"zzz"}').length === 0);
+  check('read(): Cursor init, assistant, tool call, error result, unknown ignored', CU.read('{"type":"system","subtype":"init"}')[0].includes('cursor')
+    && CU.read('{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"hello"}]}}')[0].includes('hello')
+    && CU.read('{"type":"tool_call","subtype":"started","tool_call":{"readToolCall":{"args":{"path":"a.txt"}}}}')[0].includes('a.txt')
+    && CU.read('{"type":"result","subtype":"success","is_error":false,"result":"x"}').length === 0 && CU.read('{"type":"result","subtype":"error","is_error":true,"result":"bad"}')[0].includes('bad') && CU.read('{"type":"zzz"}').length === 0);
+  check('Copilot and Cursor have no ready-made model yet (not confirmed in their docs): the engine default', EN.roleModel('copilot', 'Frontend') === '' && EN.roleModel('cursor', 'Lead') === '');
+  await page.evaluate(() => teamDialog()); await page.waitForSelector('.eng-row');
+  check('the Team dialog offers Copilot and Cursor', (await page.locator('.eng-row[data-agent="Lead"] select option').allInnerTexts()).join('|').includes('Copilot') && (await page.locator('.eng-row[data-agent="Lead"] select option').count()) === 5);
+  await page.locator('.eng-row[data-agent="Lead"] select').selectOption('cursor');
+  await page.waitForFunction(() => (state.project.team.find(m => m.name === 'Lead') || {}).engine === 'cursor');
+  check('picking Cursor shows a model box', (await page.locator('.eng-row[data-agent="Lead"] .eng-model').count()) === 1);
+  await s.ok('POST', '/api/projects/eng/team', { name: 'Lead', engine: 'gemini' });
   // 5c. ready-made model per role (AIG-1007): a Codex / Gemini agent with a role and no model gets the table's one
   const RM = require('../../../lib/engines').ROLE_MODELS, id = /^[a-z0-9.-]+$/;
   check('the table has all 8 roles with a Codex and a Gemini id', Object.keys(RM).length === 8 && Object.values(RM).every(v => id.test(v.codex) && id.test(v.gemini)), RM);
