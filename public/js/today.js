@@ -57,7 +57,7 @@ const TodayPage = (() => {
   // AIG-829: the morning picker (setup switch "Pick today's projects at start-up"): a small dialog on the first open of the day.
   let askedDay = '';   // the day (as the server counts it) the picker was last shown for: a board left open overnight asks again next morning
   const localDay = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
-  T.pickRows = d => d.projects.map(p => `<label class="chk today-pickrow"><input type="checkbox" value="${esc(p.slug)}" ${p.weight === 'rest' ? '' : 'checked'}> ${esc(p.emoji)} ${esc(p.name)}</label>`).join('');
+  T.pickRows = d => d.projects.map(p => `<label class="chk today-pickrow"><input type="checkbox" value="${esc(p.slug)}" ${(p.pickDefault || p.weight) === 'rest' ? '' : 'checked'}> ${esc(p.emoji)} ${esc(p.name)}</label>`).join('');
   T.maybePick = async () => {
     if (document.querySelector('#dialog .overlay')) return;
     const d = await T.load(); if (!d || !d.askPick || !d.projects.length || askedDay === d.day) return;
