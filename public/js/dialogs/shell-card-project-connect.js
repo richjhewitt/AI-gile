@@ -5,11 +5,22 @@ function openDialog(html, cls = '', pop = '') {   // pop: the kind that gets the
   const f = $('dialog').querySelector('input[type=text]'); if (f) f.focus();
 }
 function closeDialog() {
+  if (sureDone) sureDone(false);   // an open askSure is a No
   $('dialog').innerHTML = '';
   if (state.route.view === 'dlg') { window.close(); return; }   // a dialog in its own window: closing it closes the window
   if (state.cvPreview) { state.cvPreview = null; renderBoardOnly(); }   // an unsaved card view preview goes away (AIG-119)
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog').firstChild) closeDialog(); });
+// An in-app "are you sure?" instead of the browser's plain confirm box (AIG-992): resolves true on the OK button, false on Cancel or Escape.
+let sureDone = null;
+function askSure(title, text, ok) {
+  return new Promise(res => {
+    openDialog(`<h2>${esc(title)}</h2><p>${esc(text)}</p><div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button><button type="button" class="primary" id="sureOk">${esc(ok)}</button></div>`, 'sure');
+    sureDone = v => { sureDone = null; res(v); };
+    $('sureOk').onclick = () => { sureDone(true); closeDialog(); };
+    $('sureOk').focus();
+  });
+}
 
 /* ---------- new card ---------- */
 // 🐞 On the 🧪 Live channel a raised bug can also go to the AI-gile team (AIG-561): ticked by default, never for other channels.

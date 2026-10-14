@@ -3328,5 +3328,6 @@
  "status.offline": "Offline",
  "status.rest": "Rustdag",
  "status.rest.help": "Rustdag: de nachtwacht neemt het over, alleen dringende dingen bereiken je, en de teams vragen het de Lead Scrum Master in plaats van jou",
- "status.rest.confirm": "Een rustdag beginnen? De nachtwacht neemt het over, alleen dringende kaarten blijven in je inbox, en elk team hoort dat het de Lead Scrum Master moet vragen in plaats van jou."
+ "status.rest.confirm": "Een rustdag beginnen? De nachtwacht neemt het over, alleen dringende kaarten blijven in je inbox, en elk team hoort dat het de Lead Scrum Master moet vragen in plaats van jou.",
+ "status.rest.go": "Rustdag starten"
 }
