@@ -25,7 +25,7 @@ def('dmsort', 'Messages: newest chat first, All hands pinned, ✕ Close hides a 
   try { await page.screenshot({ path: dir + '/dmsort-list2.png' }); } catch {}
   await say('sort-two', 'newest now');
   await page.evaluate(() => Dms.reload());
-  await page.waitForFunction(() => document.querySelector('#dmPanel .dm-list [data-dm="sort-two"]') === document.querySelectorAll('#dmPanel .dm-list [data-dm]')[1]);
+  await page.waitForFunction(() => document.querySelector('#dmPanel .dm-list [data-dm="sort-two"]') === document.querySelectorAll('#dmPanel .dm-list [data-dm]')[2]);   // [0] All hands, [1] the 💚 assistant
   check('a new message moves its chat to the top', (await order()).join() === '_allhands,sort-two,sort-one,sort-three', await order());
   for (const k of ['sort-one', 'sort-two']) await s.ok('GET', '/api/chats/' + k);   // opening a chat reads it
   await page.evaluate(() => Dms.reload());
