@@ -3231,5 +3231,9 @@
  "share.simple": "Non-technical friend",
  "share.simple.help": "Alpha tester, comments on, Approvals on",
  "share.simple.hint": "Sets Alpha tester, comments on and Approvals on for this project. Their wishes land in ✅ Approvals.",
- "sb.preview": "▶ Preview"
+ "sb.preview": "▶ Preview",
+ "pub.feedback": "Public feedback form",
+ "pub.feedback.sub": "Visitors to your own website can report a problem; each report becomes a bug card in To do.",
+ "pub.feedback.group": "Put the cards in this group (optional)",
+ "pub.feedback.snippet": "Add this line to your website"
 }

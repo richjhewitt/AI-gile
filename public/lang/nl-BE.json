@@ -3231,5 +3231,9 @@
  "share.simple": "Niet-technische vriend",
  "share.simple.help": "Alfatester, reacties aan, Goedkeuringen aan",
  "share.simple.hint": "Zet Alfatester, reacties en Goedkeuringen aan voor dit project. Hun wensen komen in ✅ Goedkeuringen.",
- "sb.preview": "▶ Voorbeeld"
+ "sb.preview": "▶ Voorbeeld",
+ "pub.feedback": "Openbaar feedbackformulier",
+ "pub.feedback.sub": "Bezoekers van je eigen website kunnen een probleem melden; elke melding wordt een bugkaart in Te doen.",
+ "pub.feedback.group": "Zet de kaarten in deze groep (optioneel)",
+ "pub.feedback.snippet": "Zet deze regel op je website"
 }
