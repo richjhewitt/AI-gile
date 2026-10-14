@@ -17,7 +17,8 @@ def('notokens', 'No Token Mode: kills runs, refuses wakes/nudges/tests/usage che
   check('the running team was stopped', (await until(async () => !(await s.ok('GET', '/api/projects/nova')).presence.running, 4000)) === true);
 
   // Nothing starts.
-  await sleep(1500); fs.rmSync(s.wakeOut, { force: true });
+  for (let i = 0; i < 32 && !fs.existsSync(s.wakeOut); i++) await sleep(250);   // the killed run may still be starting (powershell is slow on a busy PC): let its stand-in write first, so it cannot appear after the clean-up
+  await sleep(700); fs.rmSync(s.wakeOut, { force: true });
   const w = await s.api('POST', '/api/projects/nova/wake');
   check('a wake is refused', w.status === 409 && /No Token Mode/.test(w.body.error || ''), w);
   const c = await mkCard(s, 'nova', 'hello'); await say(s, 'nova', c.id, 'Owner', 'please do it');
