@@ -12,6 +12,13 @@
 //   GET  /join/codes             the owner lists codes and whether they were used (signed)
 //   GET  /health   (and /join/health)
 // A page GET never uses a code up (link previews in chat apps fetch pages), only the Download button does.
+//
+// Site passes (AIG-699): a private site (test.aigile.lol) lets in only people with a pass. The owner adds a code with
+// kind "site"; its link is <site>/join/site?code=...; the Open button uses it up and sets an HttpOnly cookie (JOIN_PASS_DAYS,
+// default 90). nginx asks GET /join/site/check on every request (auth_request): 204 with a good pass, else 401, which the
+// site turns into a redirect to the public teaser. Only a hash of each pass is stored (JOIN_DATA/passes.json).
+//   GET  /join/site?code=...   POST /join/site (the Open button)   GET /join/site/check   POST /join/site/out (sign out)
+//   POST /join/site/revoke     the owner ends every pass made from a code (signed): { code }
 // Signed requests carry x-join-key (Ed25519 public key, base64url), x-join-ts (ms), x-join-nonce and x-join-sig:
 // an Ed25519 signature over "aigile-join-v1\n<METHOD>\n<path>\n<ts>\n<nonce>\n<sha256 hex of the body>".
 const http = require('http');
@@ -51,8 +58,29 @@ function save() {
 function sweep() {
   const old = Date.now() - KEEP_USED_MS;
   let changed = false;
-  for (const [c, v] of Object.entries(codes)) if ((v.used || v.exp) < old) { delete codes[c]; changed = true; }
+  // a used site code is kept while a pass made from it lasts, so the owner can still see and revoke it
+  for (const [c, v] of Object.entries(codes)) if ((v.used || v.exp) < old && !Object.values(passes).some(p => p.code === c)) { delete codes[c]; changed = true; }
   if (changed) save();
+  let gone = false;
+  for (const [h, p] of Object.entries(passes)) if (p.exp < Date.now()) { delete passes[h]; gone = true; }
+  if (gone) savePasses();
+}
+
+/* ---------- site passes (AIG-699): { "<sha256 of the cookie>": { code, created, exp } } ---------- */
+const PASSES = path.join(DATA, 'passes.json');
+const PASS_DAYS = Number(process.env.JOIN_PASS_DAYS) || 90;
+const COOKIE = 'aigile_pass';
+let passes = {};
+try { passes = JSON.parse(fs.readFileSync(PASSES, 'utf8')); } catch {}
+function savePasses() {
+  const tmp = PASSES + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(passes), { mode: 0o600 });
+  fs.renameSync(tmp, PASSES);
+}
+const cookieOf = req => { const m = String(req.headers.cookie || '').match(new RegExp('(?:^|;\\s*)' + COOKIE + '=([A-Za-z0-9_-]{43})(?:;|$)')); return m ? m[1] : ''; };
+function passOf(req) {
+  const c = cookieOf(req), p = c && passes[sha256(c)];
+  return p && p.exp > Date.now() ? p : null;
 }
 // valid / used / expired / unknown
 const stateOf = code => { const v = codes[code]; return !v ? 'unknown' : v.used ? 'used' : v.exp < Date.now() ? 'expired' : 'valid'; };
@@ -118,15 +146,18 @@ const TEXT = {
   en: { title: 'AI-gile: your invitation', h: "You're invited to AI-gile", p: 'A board where AI teams build your projects, and you just say GO and test what they make. This link works once, for you.',
     btn: 'Download AI-gile', steps: ['You need Node.js (LTS, from nodejs.org) and Claude Code, signed in.', 'Right-click the zip, choose Extract All.', 'Open the AI-gile folder and double-click start-aigile.bat.', 'Your board starts already linked to the person who invited you.'],
     note: 'Once you press Download this link is used up. Keep the zip safe.',
-    used: 'This link has already been used.', expired: 'This link has run out.', unknown: 'This link is not valid.', ask: 'Ask the person who sent it for a new one.', down: 'The download is not ready yet. Try again later.' },
+    used: 'This link has already been used.', expired: 'This link has run out.', unknown: 'This link is not valid.', ask: 'Ask the person who sent it for a new one.', down: 'The download is not ready yet. Try again later.',
+    sTitle: 'AI-gile: test site', sH: "You're invited to the AI-gile test site", sP: 'An early look at what we are building. This link works once, for you, and lets this browser in for 90 days.', sBtn: 'Open the test site', sOk: 'This browser already has a pass.', sGo: 'Go to the test site' },
   nl: { title: 'AI-gile: je uitnodiging', h: 'Je bent uitgenodigd voor AI-gile', p: 'Een bord waar AI-teams je projecten bouwen, en jij zegt alleen GO en test wat ze maken. Deze link werkt één keer, voor jou.',
     btn: 'Download AI-gile', steps: ['Je hebt Node.js nodig (LTS, van nodejs.org) en Claude Code, ingelogd.', 'Klik met rechts op het zipbestand en kies Alles uitpakken.', 'Open de map AI-gile en dubbelklik op start-aigile.bat.', 'Je bord start al gekoppeld aan degene die je uitnodigde.'],
     note: 'Zodra je op Download drukt, is deze link op. Bewaar het zipbestand goed.',
-    used: 'Deze link is al gebruikt.', expired: 'Deze link is verlopen.', unknown: 'Deze link klopt niet.', ask: 'Vraag degene die hem stuurde om een nieuwe.', down: 'De download is nog niet klaar. Probeer het later opnieuw.' },
+    used: 'Deze link is al gebruikt.', expired: 'Deze link is verlopen.', unknown: 'Deze link klopt niet.', ask: 'Vraag degene die hem stuurde om een nieuwe.', down: 'De download is nog niet klaar. Probeer het later opnieuw.',
+    sTitle: 'AI-gile: testsite', sH: 'Je bent uitgenodigd voor de AI-gile-testsite', sP: 'Een vroege blik op wat we bouwen. Deze link werkt één keer, voor jou, en laat deze browser 90 dagen binnen.', sBtn: 'Open de testsite', sOk: 'Deze browser heeft al een pas.', sGo: 'Naar de testsite' },
   'nl-BE': { title: 'AI-gile: je uitnodiging', h: 'Je bent uitgenodigd voor AI-gile', p: 'Een bord waar AI-teams je projecten bouwen, en jij zegt enkel GO en test wat ze maken. Deze link werkt één keer, voor jou.',
     btn: 'AI-gile downloaden', steps: ['Je hebt Node.js nodig (LTS, van nodejs.org) en Claude Code, aangemeld.', 'Klik met rechts op het zipbestand en kies Alles uitpakken.', 'Open de map AI-gile en dubbelklik op start-aigile.bat.', 'Je bord start al gekoppeld aan wie je uitnodigde.'],
     note: 'Zodra je op Downloaden drukt, is deze link op. Bewaar het zipbestand goed.',
-    used: 'Deze link is al gebruikt.', expired: 'Deze link is verlopen.', unknown: 'Deze link klopt niet.', ask: 'Vraag aan wie hem stuurde om een nieuwe.', down: 'De download is nog niet klaar. Probeer het later opnieuw.' },
+    used: 'Deze link is al gebruikt.', expired: 'Deze link is verlopen.', unknown: 'Deze link klopt niet.', ask: 'Vraag aan wie hem stuurde om een nieuwe.', down: 'De download is nog niet klaar. Probeer het later opnieuw.',
+    sTitle: 'AI-gile: testsite', sH: 'Je bent uitgenodigd voor de AI-gile-testsite', sP: 'Een vroege blik op wat we bouwen. Deze link werkt één keer, voor jou, en laat deze browser 90 dagen binnen.', sBtn: 'Testsite openen', sOk: 'Deze browser heeft al een pas.', sGo: 'Naar de testsite' },
 };
 const langOf = (req, q) => {
   const want = String(q || req.headers['accept-language'] || '').toLowerCase();
@@ -142,12 +173,22 @@ button.dl{background:#3b6cf6;color:#fff;border:0;padding:12px 22px;border-radius
 @media (prefers-color-scheme:dark){body{background:#12151b;color:#e6e9ef}.muted{color:#9aa3b5}}</style>${body}`);
 }
 function joinPage(req, res, code, lang) {
-  const tx = TEXT[lang], st = stateOf(code);
+  const tx = TEXT[lang], st = codes[code] && codes[code].kind === 'site' ? 'unknown' : stateOf(code);   // a site pass never downloads the app
   if (st !== 'valid') return page(res, st === 'unknown' ? 404 : 410, tx, `<h1>🗂️ AI-gile</h1><p>${esc(tx[st])}</p><p class="muted">${esc(tx.ask)}</p>`);
   page(res, 200, tx, `<h1>🗂️ ${esc(tx.h)}</h1><p>${esc(tx.p)}</p>
 <form method="post" action="/join/download"><input type="hidden" name="code" value="${esc(code)}"><input type="hidden" name="lng" value="${esc(lang)}"><button class="dl" type="submit">⬇ ${esc(tx.btn)}</button></form>
 <p class="muted">${esc(tx.note)}</p><ol>${tx.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`);
 }
+
+// The site pass page (AIG-699). A browser that already has a pass just gets a link to the site; the code stays unused.
+function sitePage(req, res, code, lang) {
+  const tx = TEXT[lang], st = codes[code] && codes[code].kind === 'site' ? stateOf(code) : 'unknown', t2 = { ...tx, title: tx.sTitle };
+  if (passOf(req)) return page(res, 200, t2, `<h1>🗂️ AI-gile</h1><p>${esc(tx.sOk)}</p><p><a href="/">${esc(tx.sGo)}</a></p>`);
+  if (st !== 'valid') return page(res, st === 'unknown' ? 404 : 410, t2, `<h1>🗂️ AI-gile</h1><p>${esc(tx[st])}</p><p class="muted">${esc(tx.ask)}</p>`);
+  page(res, 200, t2, `<h1>🗂️ ${esc(tx.sH)}</h1><p>${esc(tx.sP)}</p>
+<form method="post" action="/join/site"><input type="hidden" name="code" value="${esc(code)}"><input type="hidden" name="lng" value="${esc(lang)}"><button class="dl" type="submit">${esc(tx.sBtn)}</button></form>`);
+}
+const passCookie = (value, maxAge) => `${COOKIE}=${value}; Path=/; Max-Age=${maxAge}; HttpOnly; Secure; SameSite=Lax`;
 
 /* ---------- http ---------- */
 function readBody(req) {
@@ -172,10 +213,12 @@ function zipFile() {
 }
 
 async function handle(req, res) {
-  const ip = (TRUST_PROXY && String(req.headers['x-forwarded-for'] || '').split(',')[0].trim()) || req.socket.remoteAddress;
-  if (limited(ip)) throw fail('slow down', 429);
   const url = new URL(req.url, 'http://join');
   const { pathname } = url;
+  // nginx asks this for every file of a private site (AIG-699), so it is not rate limited: it only reads a hash.
+  if (req.method === 'GET' && pathname === '/join/site/check') { res.writeHead(passOf(req) ? 204 : 401, { 'Cache-Control': 'no-store' }); return res.end(); }
+  const ip = (TRUST_PROXY && String(req.headers['x-forwarded-for'] || '').split(',')[0].trim()) || req.socket.remoteAddress;
+  if (limited(ip)) throw fail('slow down', 429);
   if (req.method === 'GET' && (pathname === '/health' || pathname === '/join/health')) return send(res, 200, { ok: true });
 
   if (req.method === 'GET' && pathname === '/join') {
@@ -186,7 +229,7 @@ async function handle(req, res) {
   if (req.method === 'POST' && pathname === '/join/download') {
     const form = new URLSearchParams(await readBody(req));
     const code = String(form.get('code') || '').toUpperCase().trim(), lang = langOf(req, form.get('lng'));
-    if (!isCode(code) || stateOf(code) !== 'valid') return joinPage(req, res, isCode(code) ? code : '', lang);
+    if (!isCode(code) || stateOf(code) !== 'valid' || codes[code].kind === 'site') return joinPage(req, res, isCode(code) ? code : '', lang);
     const zip = zipFile();
     if (!zip) return page(res, 503, TEXT[lang], `<h1>🗂️ AI-gile</h1><p>${esc(TEXT[lang].down)}</p>`);
     const v = codes[code];
@@ -198,22 +241,56 @@ async function handle(req, res) {
     res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Length': out.length, 'Content-Disposition': `attachment; filename="${path.basename(ZIP).replace(/[^\w.\-]/g, '_')}"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
     return res.end(out);
   }
-  // The owner adds a code.
+  // Site passes (AIG-699): the page, the Open button (uses the code up, sets the cookie), and sign out.
+  if (req.method === 'GET' && pathname === '/join/site') {
+    const code = String(url.searchParams.get('code') || '').toUpperCase().trim();
+    return sitePage(req, res, isCode(code) ? code : '', langOf(req, url.searchParams.get('lng')));
+  }
+  if (req.method === 'POST' && pathname === '/join/site') {
+    const form = new URLSearchParams(await readBody(req));
+    const code = String(form.get('code') || '').toUpperCase().trim(), lang = langOf(req, form.get('lng'));
+    if (!isCode(code) || !codes[code] || codes[code].kind !== 'site' || stateOf(code) !== 'valid' || passOf(req)) return sitePage(req, res, isCode(code) ? code : '', lang);
+    const token = crypto.randomBytes(32).toString('base64url'), exp = Date.now() + PASS_DAYS * 24 * 3600e3;
+    codes[code].used = Date.now(); save();
+    passes[sha256(token)] = { code, created: Date.now(), exp }; savePasses();
+    res.writeHead(303, { Location: '/', 'Set-Cookie': passCookie(token, PASS_DAYS * 24 * 3600), 'Cache-Control': 'no-store' });
+    return res.end();
+  }
+  if (req.method === 'POST' && pathname === '/join/site/out') {
+    const c = cookieOf(req); if (c && passes[sha256(c)]) { delete passes[sha256(c)]; savePasses(); }
+    res.writeHead(303, { Location: '/', 'Set-Cookie': passCookie('', 0), 'Cache-Control': 'no-store' });
+    return res.end();
+  }
+  if (req.method === 'POST' && pathname === '/join/site/revoke') {
+    const body = await readBody(req);
+    owner(req, pathname, body);
+    let b; try { b = JSON.parse(body); } catch { throw fail('send JSON', 400); }
+    const code = String(b && b.code || '');
+    if (!isCode(code)) throw fail('send { code }', 400);
+    let n = 0; for (const [h, p] of Object.entries(passes)) if (p.code === code) { delete passes[h]; n++; }
+    if (codes[code] && !codes[code].used) codes[code].used = Date.now();   // an unused link stops working too
+    save(); savePasses();
+    return send(res, 200, { ok: true, ended: n });
+  }
+  // The owner adds a code: an app download { code, help, dm?, from?, days? } or a site pass (AIG-699) { code, kind: 'site', from?, days? }.
   if (req.method === 'POST' && pathname === '/join/codes') {
     const body = await readBody(req);
     owner(req, pathname, body);
     let b; try { b = JSON.parse(body); } catch { throw fail('send JSON', 400); }
-    if (!b || !isCode(String(b.code)) || !['1', '2', '3'].includes(String(b.help))) throw fail('send { code, help: 1, 2 or 3 }', 400);
+    const site = b && b.kind === 'site';
+    if (!b || !isCode(String(b.code)) || (!site && !['1', '2', '3'].includes(String(b.help)))) throw fail('send { code, help: 1, 2 or 3 } or { code, kind: "site" }', 400);
     if (codes[b.code]) throw fail('that code exists already', 409);
     if (Object.keys(codes).length >= MAX_CODES) throw fail('too many codes', 507);
     const days = Math.min(30, Math.max(0.00001, Number(b.days) || DAYS));
-    codes[b.code] = { created: Date.now(), exp: Date.now() + days * 24 * 3600e3, help: String(b.help), dm: String(b.dm || '').slice(0, 4000), from: String(b.from || '').replace(/[\u0000-\u001f]/g, '').slice(0, 40) };
+    codes[b.code] = site ? { created: Date.now(), exp: Date.now() + days * 24 * 3600e3, kind: 'site' }
+      : { created: Date.now(), exp: Date.now() + days * 24 * 3600e3, help: String(b.help), dm: String(b.dm || '').slice(0, 4000), from: String(b.from || '').replace(/[\u0000-\u001f]/g, '').slice(0, 40) };
     save();
     return send(res, 201, { ok: true, exp: codes[b.code].exp });
   }
   if (req.method === 'GET' && pathname === '/join/codes') {
     owner(req, pathname, '');
-    return send(res, 200, { codes: Object.entries(codes).map(([code, v]) => ({ code, created: v.created, exp: v.exp, used: v.used || null, help: v.help })) });
+    const live = code => Object.values(passes).filter(p => p.code === code && p.exp > Date.now()).length;
+    return send(res, 200, { codes: Object.entries(codes).map(([code, v]) => ({ code, created: v.created, exp: v.exp, used: v.used || null, help: v.help, ...(v.kind === 'site' ? { kind: 'site', passes: live(code) } : {}) })) });
   }
   throw fail('not found', 404);
 }

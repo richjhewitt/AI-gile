@@ -3235,5 +3235,14 @@
  "pub.feedback": "Openbaar feedbackformulier",
  "pub.feedback.sub": "Bezoekers van je eigen website kunnen een probleem melden; elke melding wordt een bugkaart in Te doen.",
  "pub.feedback.group": "Zet de kaarten in deze groep (optioneel)",
- "pub.feedback.snippet": "Zet deze regel op je website"
+ "pub.feedback.snippet": "Zet deze regel op je website",
+  "join.site.btn": "🌐 Maak een testsite-pas",
+  "join.site.help": "Een link die één keer werkt en één browser 90 dagen toegang geeft tot de besloten testsite",
+  "join.site.made": "Paslink gemaakt. Stuur hem door: hij laat één browser 90 dagen op de testsite.",
+  "join.site.inuse": "in gebruik",
+  "join.site.ended": "beëindigd",
+  "join.site.end": "Pas beëindigen",
+  "join.site.end.sure": "Deze pas beëindigen? Die browser kan de testsite dan niet meer openen.",
+  "join.site.ended.msg": "Pas beëindigd.",
+  "join.site.url": "Adres van de testsite (voor testsite-passen)"
 }

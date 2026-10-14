@@ -13,6 +13,14 @@ Copy the folder to the server, then run the installer there (nginx site + certbo
 When there is a download or a public repo, edit its button in `index.html`
 (remove the `soon` class, `aria-disabled` and the "Coming soon" label, and set the link).
 
+## Private test site (AIG-699)
+
+Only browsers with a test site pass get in; everyone else goes to the teaser. Needs the join service on the server.
+
+    sudo bash install-site.sh --private https://aigile.lol test.aigile.lol
+
+Make a pass on the board: Setup → Invite a friend → 🌐 Make a test site pass. Run again without --private to open the site up.
+
 ## nginx
 
     server {
