@@ -183,6 +183,11 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
   let pathname; try { pathname = decodeURIComponent(url.pathname); } catch { res.writeHead(400); return res.end(); }   // a bad %-code no longer stops the board (AIG-150)
   try {
+    // The pairing page (AIG-1008): only on a saved phone host, GET only, the same page for every code (it never reads or spends one).
+    if (req.method === 'GET' && /^\/_pair\/[A-Za-z0-9_-]{10,100}$/.test(pathname) && phone.hostOf(req.headers.host)) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'" });
+      return res.end(phone.pairPage());
+    }
     if (pathname.startsWith('/api/')) {
       guard(req, pathname);
       // Any CLI or hook call from a session you opened counts as that team being at work (AIG-107).
@@ -199,6 +204,7 @@ const server = http.createServer(async (req, res) => {
           // A route can answer with a file instead of JSON: { __file: absolute path }.
           if (out && out.__cookie) { res.setHeader('Set-Cookie', out.__cookie); delete out.__cookie; }   // the phone's device key (AIG-868)
           if (out && out.__sse) return out.__sse(res, req);   // a live stream (the terminal, AIG-471): the route writes it
+          if (out && out.__html) { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'" }); return res.end(out.__html); }   // a small page for a browser landing here (the Google sign-in callback, AIG-910)
           if (out && out.__svg) { res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" }); return res.end(out.__svg); }
           if (out && out.__file) {
             // download: a friend's attachment (AIG-306), always saved, never shown or run by the browser.
@@ -222,7 +228,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 // The port goes in a file next to the data (AIG-252), so the teams' commands find a board that isn't on 4321.
-metadataReady.finally(() => server.listen(PORT, HOST, () => { console.log(`AI-gile running at http://localhost:${PORT}`); try { fs.writeFileSync(path.join(DATA, 'board.port'), String(PORT)); } catch {} }));
+metadataReady.finally(() => server.listen(PORT, HOST, () => { console.log(`AI-gile running at http://localhost:${PORT}`); try { fs.writeFileSync(path.join(DATA, 'board.port'), String(PORT)); } catch {} require('./lib/phonetunnel').start(PORT); }));   // 🔌 the phone tunnel, only when Setup saved one (AIG-1008)
 // Private DMs: collect this board's relay mailbox every few seconds while DMs are on (lib/dm.js).
 require('./lib/dm').startDms();
 require('./lib/timed').start();   // timed cards come back (AIG-385)

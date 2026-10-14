@@ -106,6 +106,18 @@ const Phone = (() => {
     paint();
     if (!P.host) try { const ts = await api('GET', '/api/phone/tailscale'); if (ts.host && !P.host && !($('phHost') || {}).value) { P.host = ts.host; paint(); } } catch {}
   }
+  // Over my server (AIG-1008): a saved ssh server keeps a tunnel open so the phone can reach this board on a public name.
+  function tunnelHtml(d) {
+    const tn = d.tunnel, servers = d.sshServers || [];
+    const state = !tn ? t('phone.tun.idle') : t('phone.tun.' + (tn.state === 'up' || tn.state === 'starting' ? tn.state : tn.state === 'down' ? 'down' : 'idle'));
+    return `<div class="ph-tunnel" id="phTun"><h4 class="ph-h">${esc(t('phone.tun.h'))}</h4><small class="muted">${esc(t('phone.tun.help'))}</small>` + (servers.length
+      ? `<label>${esc(t('phone.tun.server'))} <select id="phTunSrv">${servers.map(n => `<option${tn && tn.server.toLowerCase() === n.toLowerCase() ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
+      <label>${esc(t('phone.tun.host'))} <input id="phTunHost" placeholder="test.aigile.lol" value="${esc(tn ? tn.host : '')}" autocomplete="off" spellcheck="false"></label>
+      <label>${esc(t('phone.tun.port'))} <input id="phTunPort" type="number" min="1024" max="65535" placeholder="14321" value="${esc(tn ? tn.port : '')}"></label>
+      <div class="actions"><button type="button" class="primary" id="phTunSave">${esc(t('phone.tun.save'))}</button>${tn ? ` <button type="button" class="ph-alt" id="phTunOff">${esc(t('phone.tun.off'))}</button>` : ''}</div>`
+      : `<small class="muted">${esc(t('phone.tun.none'))}</small>`)
+      + `<small id="phTunState" class="ph-tun-${esc(tn ? tn.state : 'off')}">${esc(state)}${tn && tn.error && tn.state !== 'up' ? ' · ' + esc(t('phone.tun.err', { err: tn.error })) : ''}</small></div>`;
+  }
   function paint() {
     const box = $('phBody'); if (!box) return;
     box.className = '';
@@ -121,17 +133,22 @@ const Phone = (() => {
       ${step(2, '', (P.link ? `<div class="phone-link"><p class="ph-scan">${esc(t('phone.scan'))}</p>${qrSvg(P.link.url)}<p><a href="${esc(P.link.url)}" target="_blank" rel="noopener" id="phLink">${esc(P.link.url)}</a></p><small class="muted">${esc(t('phone.link.help'))}</small></div>` : '') + (P.app ? `<div class="phone-link"><p class="ph-scan">${esc(t('phone.scan'))}</p>${qrSvg(P.app.qr)}<code id="phAppQr" class="phone-key">${esc(P.app.qr)}</code><small class="muted">${esc(t('phone.app.help'))}</small></div>` : '') || `<small class="muted">${esc(t('phone.step2.wait'))}</small>`)}
       ${step(3, '', `<small class="muted">${esc(t('phone.step3.help'))}</small>`)}
       </ol>
+      ${tunnelHtml(d)}
       <div class="err" id="phErr">${esc(P.err)}</div>
       ${d.devices.length ? `<ul class="phone-list">${d.devices.map(x => `<li><b>${esc(x.name)}</b> <small class="muted">${esc(x.host)} · ${esc(t('phone.seen', { when: when(x.seen) }))}</small> <button type="button" class="ph-rm" data-id="${esc(x.id)}">${esc(t('phone.remove'))}</button></li>`).join('')}</ul>` : `<small class="muted">${esc(t('phone.none'))}</small>`}`;
   }
   document.addEventListener('click', async ev => {
-    const b = ev.target.closest && ev.target.closest('#phPair, #phApp, .ph-rm'); if (!b) return;
+    const b = ev.target.closest && ev.target.closest('#phPair, #phApp, .ph-rm, #phTunSave, #phTunOff'); if (!b) return;
     P.err = '';
     try {
       if (b.id === 'phApp') {
         P.host = $('phHost').value.trim(); P.link = null; P.busy = true; paint();
         P.app = await api('POST', '/api/phone/app', { host: P.host });
         P.data = await api('GET', '/api/phone');
+      } else if (b.id === 'phTunSave' || b.id === 'phTunOff') {
+        const body = b.id === 'phTunOff' ? { server: '' } : { server: $('phTunSrv').value, host: $('phTunHost').value.trim(), port: $('phTunPort').value.trim() };
+        P.data = await api('POST', '/api/phone/tunnel', body);
+        setTimeout(load, 4000);   // up or down, a moment later
       } else if (b.id === 'phPair') {
         P.app = null;
         const name = $('phName').value.trim(); P.host = $('phHost').value.trim(); P.busy = true; paint();
