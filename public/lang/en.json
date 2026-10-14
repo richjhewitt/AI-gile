@@ -3317,5 +3317,7 @@
  "int.which.beta": "beta",
  "int.which.both": "alpha + beta",
  "int.copy": "📋 Copy all emails",
- "int.none": "Nobody yet: the form is at aigile.lol/interest.html"
+ "int.none": "Nobody yet: the form is at aigile.lol/interest.html",
+ "pub.hidetitles": "Hide card titles",
+ "pub.hidetitles.sub": "viewers see the cards move, as bars, but not what they say"
 }

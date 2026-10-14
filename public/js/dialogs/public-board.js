@@ -25,6 +25,7 @@ const Pub = (() => {
     return `<label class="chk"><input type="checkbox" id="look-personal" ${p.personal ? 'checked' : ''} onchange="Pub.tick('personal')"> 🏡 ${esc(t('pub.personal'))} <span class="muted">${esc(t('pub.personal.sub'))}</span></label>
       <label class="chk"><input type="checkbox" id="look-public" ${p.public ? 'checked' : ''} onchange="Pub.tick('public')"> 🌍 ${esc(t('pub.public'))} <span class="muted">${esc(t('pub.public.sub'))}</span></label>
       <label class="f" id="look-pubname-box" ${p.public ? '' : 'hidden'}><span>${esc(t('pub.name'))}</span><input type="text" id="look-pubname" value="${esc(p.publicName || '')}" placeholder="${esc(p.slug)}" maxlength="40" autocomplete="off"><small class="muted">${esc(t('pub.name.help'))}</small></label>
+      <label class="chk" id="look-pubhide-box" ${p.public ? '' : 'hidden'}><input type="checkbox" id="look-pubhide" ${p.publicHideTitles ? 'checked' : ''}> 🙈 ${esc(t('pub.hidetitles'))} <span class="muted">${esc(t('pub.hidetitles.sub'))}</span></label>
       <div id="look-fb-box" ${p.public ? '' : 'hidden'}>
         <label class="chk"><input type="checkbox" id="look-fb" ${p.feedback && p.feedback.on ? 'checked' : ''}> 💬 ${esc(t('pub.feedback'))} <span class="muted">${esc(t('pub.feedback.sub'))}</span></label>
         <label class="f"><span>${esc(t('pub.feedback.group'))}</span><input type="text" id="look-fbgroup" value="${esc((p.feedback && p.feedback.group) || '')}" maxlength="60" autocomplete="off"></label>
@@ -37,7 +38,7 @@ const Pub = (() => {
     const pu = $('look-public'), pr = $('look-private'), pe = $('look-personal');
     const on = { public: pu, private: pr, personal: pe }[which];
     if (on && on.checked) for (const el of [pu, pr, pe]) if (el && el !== on) el.checked = false;
-    const box = $('look-pubname-box'); if (box) box.hidden = !pu.checked;
+    for (const id of ['look-pubname-box', 'look-pubhide-box']) { const box = $(id); if (box) box.hidden = !pu.checked; }
     const fb = $('look-fb-box'); if (fb) fb.hidden = !pu.checked;
   }
   async function status() { try { info = await api('GET', '/api/projects/' + slug() + '/public'); } catch { info = null; } return info; }

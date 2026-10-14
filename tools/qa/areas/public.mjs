@@ -69,6 +69,20 @@ def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> pa
     check('the page shows the viewer count', /viewer/.test(await view.textContent('#v')));
     check('the page has no description or comment', !(await view.content()).includes(DESC) && !(await view.content()).includes(CMT));
 
+    // 🙈 Titles hidden (AIG-698): the snapshot carries no title, only a length step; the page draws bars that still move.
+    await s.ok('PATCH', '/api/projects/pub-board', { publicHideTitles: true });
+    await until(async () => (await json()).body.titlesHidden === true, 10000);
+    const hidden = (await json()).body;
+    check('🙈 hide titles: no card title reaches the relay, each card has a length step', hidden.cards.length > 0 && hidden.cards.every(c => c.title === '' && c.len >= 1 && c.len <= 8) && !JSON.stringify(hidden).includes('Fix the login'), hidden.cards.slice(0, 3));
+    await view.waitForSelector('.c[data-id="' + a.id + '"] .bar', { timeout: 10000 });
+    await s.ok('PATCH', `/api/projects/pub-board/cards/${a.id}`, { status: 'doing' });
+    await view.waitForSelector('.c[data-id="' + a.id + '"][data-col="doing"] .bar', { timeout: 10000 });
+    check('the page shows bars instead of titles, and they still move', !(await view.textContent('#cols')).includes('Fix the login'));
+    await s.ok('PATCH', '/api/projects/pub-board', { publicHideTitles: false });
+    await until(async () => (await json()).body.cards.some(c => c.title === 'Fix the login'), 10000);
+    await s.ok('PATCH', `/api/projects/pub-board/cards/${a.id}`, { status: 'review' });
+    await view.waitForSelector('.c[data-id="' + a.id + '"][data-col="review"]', { timeout: 10000 });
+
     // The board: Copy public link and viewers
     const page = await openPage(ctx, '#/p/pub-board');
     await page.evaluate(() => { window.__copied = []; navigator.clipboard.writeText = async t => { window.__copied.push(t); }; });

@@ -3317,5 +3317,7 @@
  "int.which.beta": "bèta",
  "int.which.both": "alfa + bèta",
  "int.copy": "📋 Alle e-mails kopiëren",
- "int.none": "Nog niemand: het formulier staat op aigile.lol/interest.html"
+ "int.none": "Nog niemand: het formulier staat op aigile.lol/interest.html",
+ "pub.hidetitles": "Kaarttitels verbergen",
+ "pub.hidetitles.sub": "kijkers zien de kaarten bewegen, als balken, maar niet wat erop staat"
 }
