@@ -27,7 +27,7 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   check('and adds up to 100', Math.round(d.projects.reduce((n, p) => n + p.share, 0)) === 100);
 
   // Next morning: everything is normal again; "Keep yesterday's" brings the weights back.
-  fs.writeFileSync(path.join(s.data, 'today.stub'), new Date(Date.now() + 864e5).toISOString().slice(0, 10));
+  fs.writeFileSync(path.join(s.data, 'today.stub'), new Date(Date.now() + 2 * 864e5).toISOString().slice(0, 10)); // AIG-1036: +2 days: UTC +1 day is still today when it is past local midnight
   d = await today();
   check('next day: weights reset to normal', d.projects.every(p => p.weight === 'normal') && d.yesterday === 4, d.projects.map(p => p.weight));
   d = await s.ok('POST', '/api/today/keep');

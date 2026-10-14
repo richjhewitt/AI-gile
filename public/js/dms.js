@@ -244,6 +244,7 @@ const Dms = (() => {
     let got; try { got = await PagePoll.get(isGrp(want) ? '/api/chats/_groups/' + want.slice(4) : '/api/chats/' + want); } catch { return; }
     if (seq !== threadSeq || open !== want) return;
     thread = got;
+    if (thread.assistant) { const hb = document.querySelector('#dmPanel .dm-head b'); if (hb && thread.lead && hb.textContent !== thread.lead) hb.textContent = thread.lead; }   // AIG-1036: the head was drawn from the rail list; the assistant picks its name later
     if (thread.group && thread.messages.length) dmSeen.set(want, thread.messages.at(-1).at);   // 👥 opening the group reads it
     const list = el('dmList'); if (!list) return;
     // A card that newly starts waiting on you opens by itself, and the typing box answers it.
