@@ -136,10 +136,10 @@ code[data-copy-text] { cursor: pointer; }
 .fbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .fbar input[type=search] { flex: 1 1 220px; max-width: 360px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--text); font: inherit; }
 #f-sel { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.fbar .f-tog { display: none; }
 .fbar select { width: auto; min-width: 0; padding: 5px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--text); font: inherit; margin-inline-end: 4px; }
 .seen { font-size: 12px; margin-inline-start: 6px; color: var(--muted); }
 .card.is-incident { border-inline-start: 3px solid #dc2626; background: color-mix(in srgb, #dc2626 8%, var(--panel)); }
-.fbar .f-tog { display: none; }
 .postmortem { margin-top: 10px; padding: 6px 10px; border-inline-start: 3px solid #dc2626; background: color-mix(in srgb, #dc2626 6%, var(--panel)); }
 .postmortem p { margin: 4px 0; }
 .problem { margin-top: 10px; padding: 6px 10px; border-inline-start: 3px solid #d97706; background: color-mix(in srgb, #d97706 6%, var(--panel)); }
