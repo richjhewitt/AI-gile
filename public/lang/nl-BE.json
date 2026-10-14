@@ -3208,6 +3208,8 @@
  "dms.quiet.show": "Toon {n} stille chats",
  "dms.quiet.show.one": "Toon 1 stille chat",
  "dms.quiet.hide": "Verberg stille chats",
+ "dms.drafts": "📝 Concepten",
+ "dms.drafts.discard": "Dit concept weggooien",
  "allhands.confirm": "Naar {n} teams sturen?",
  "allhands.confirm.one": "Naar 1 team sturen?",
  "home.more": "Meer ▾",
