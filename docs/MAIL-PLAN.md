@@ -81,7 +81,7 @@ Plan only, no code yet. Each build step below is one card, about one session.
 4. **Mail: make a card from a mail** (life or project card, 📧 tag, link back).
 5. **Mail: rules without AI** (label, move, mark read, suggest card; starter rules; notify chip and ✉ count).
 6. **Mail: agents watch a mailbox and draft replies** (untrusted-data wrapper, CLI read/draft only, caps, guards).
-7. **Mail: Outlook.com / Microsoft 365 sign-in (OAuth)** (Entra app, device code, refresh token in secrets).
+7. **Mail: Outlook.com / Microsoft 365 sign-in (OAuth)** (Entra app, device code, refresh token in secrets). Built: AIG-909, `lib/mailoauth.js`; each user registers their own Entra app (public client flows on) and pastes its client ID.
 8. **Mail: Gmail OAuth (optional)** (only if app passwords fall short).
 
 Cards 1 to 5 need no AI and ship as the No-AI-safe core. 6 to 8 can go in any order after.

@@ -3268,5 +3268,20 @@
   "mail.setup.agents": "Let agents read this mailbox and draft replies",
   "mail.setup.agents.sub": "they never send; every read is logged",
   "mail.draft.by": "✍️ Draft by {who}",
-  "mail.draft.use": "Use this draft"
+  "mail.draft.use": "Use this draft",
+  "mail.setup.auth": "Sign in with",
+  "mail.setup.auth.password": "Password or app password",
+  "mail.setup.auth.microsoft": "Microsoft (Outlook.com, Hotmail, Microsoft 365)",
+  "mail.setup.ms.client": "App (client) ID",
+  "mail.setup.ms.client.help": "Microsoft needs a free app registration of your own: New registration, any account type including personal accounts, then Authentication: Allow public client flows: Yes. Paste its Application (client) ID here.",
+  "mail.setup.ms.client.link": "Open App registrations",
+  "mail.setup.ms.signin": "Sign in with Microsoft",
+  "mail.setup.ms.done": "✅ Signed in to Microsoft",
+  "mail.setup.ms.not": "Not signed in to Microsoft yet",
+  "mail.setup.ms.out": "Sign out",
+  "mail.setup.ms.go": "On any device, open",
+  "mail.setup.ms.type": "and type this code:",
+  "mail.setup.ms.copy": "Copy code",
+  "mail.setup.ms.waiting": "Waiting for you to sign in…",
+  "mail.setup.ms.failed": "Sign-in failed: {msg}"
 }

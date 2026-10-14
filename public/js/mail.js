@@ -3,6 +3,7 @@
 // the board fetches it fresh (GET /api/mail/inbox?fresh=1). Reading a mail is card 2. The ✉️ Mail link in the top bar shows
 // only once a mailbox is set up. Setup > ✉️ Mail (setupHtml) adds or changes it: find settings, test, save, remove; saving and
 // testing take the secrets page token (secToken in dialogs/secrets.js). The password is never sent back to the page.
+// Outlook.com / Microsoft 365 (AIG-909): "Sign in with: Microsoft" swaps the password for a device-code sign-in.
 // Mail is untrusted data: every field from it goes through esc(). Hidden in 🎥 streamer mode.
 const Mail = (() => {
   const M = { cfg: null, data: null, loading: false, msg: '', seen: 0, setupMsg: '' };
@@ -211,23 +212,71 @@ const Mail = (() => {
     if (!M.cfg) { M.watch().then(paintBox); return `<span>${esc(t('mail.setup.h'))}</span>`; }
     const b = box() || { name: '', address: '', host: '', port: 993, user: '', hasPassword: false };
     const field = (id, key, val, extra = '') => `<label class="chk" style="display:flex;gap:8px;align-items:center;margin:4px 0"><span style="min-width:110px">${esc(t(key))}</span><input id="${id}" value="${esc(val)}" autocomplete="off" ${extra}></label>`;
+    // Microsoft sign-in (AIG-909): the servers are Microsoft's own and there is no password, so those fields hide (still sent).
+    const ms = (M.auth || b.auth) === 'microsoft', f = M.msFlow;
     return `<span>${esc(t('mail.setup.h'))}</span><small class="muted">${esc(t('mail.setup.help'))}</small>
       ${field('mailName', 'mail.setup.name', b.name, `type="text" maxlength="60" placeholder="${esc(t('mail.setup.name.ph'))}"`)}
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${field('mailAddr', 'mail.setup.address', b.address, 'type="email" maxlength="200" placeholder="you@example.com"')}
-        <button type="button" id="mailFind" onclick="Mail.find()">${esc(t('mail.setup.find'))}</button></div>
+        ${ms ? '' : `<button type="button" id="mailFind" onclick="Mail.find()">${esc(t('mail.setup.find'))}</button>`}</div>
+      <label class="chk" style="display:flex;gap:8px;align-items:center;margin:4px 0"><span style="min-width:110px">${esc(t('mail.setup.auth'))}</span>
+        <select id="mailAuth" onchange="Mail.setAuth(this.value)"><option value="password">${esc(t('mail.setup.auth.password'))}</option><option value="microsoft" ${ms ? 'selected' : ''}>${esc(t('mail.setup.auth.microsoft'))}</option></select></label>
+      ${ms ? `<div id="mailMs">${field('mailMsClient', 'mail.setup.ms.client', b.msClient || '', 'type="text" maxlength="36" spellcheck="false" placeholder="00000000-0000-0000-0000-000000000000" style="min-width:300px"')}
+        <small class="muted">${esc(t('mail.setup.ms.client.help'))} <a href="https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade" target="_blank" rel="noopener noreferrer">${esc(t('mail.setup.ms.client.link'))}</a></small>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0"><button type="button" id="mailMsSignIn" onclick="Mail.msSignIn()">${esc(t('mail.setup.ms.signin'))}</button>
+          <span id="mailMsState" class="muted">${esc(b.msSignedIn && !(f && f.state === 'waiting') ? t('mail.setup.ms.done') : t('mail.setup.ms.not'))}</span>
+          ${b.msSignedIn ? `<button type="button" id="mailMsOut" onclick="Mail.msSignOut()">${esc(t('mail.setup.ms.out'))}</button>` : ''}</div>
+        ${f && f.state === 'waiting' ? `<div id="mailMsCode" style="border:1px solid var(--border,#8884);border-radius:8px;padding:8px 12px;margin:4px 0">${esc(t('mail.setup.ms.go'))} <a href="${esc(f.url)}" target="_blank" rel="noopener noreferrer">${esc(f.url)}</a> ${esc(t('mail.setup.ms.type'))}
+          <b id="mailMsUserCode" style="font-size:20px;letter-spacing:2px;user-select:all">${esc(f.code)}</b> <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText(${esc(JSON.stringify(f.code))})">${esc(t('mail.setup.ms.copy'))}</button>
+          <div class="muted">${esc(t('mail.setup.ms.waiting'))}</div></div>` : ''}
+        ${f && f.state === 'error' ? `<div class="err" id="mailMsErr">${esc(t('mail.setup.ms.failed', { msg: f.error }))}</div>` : ''}</div>` : ''}
+      <div id="mailServers" style="${ms ? 'display:none' : ''}">
       ${field('mailHost', 'mail.setup.host', b.host, 'type="text" maxlength="253" placeholder="imap.example.com"')}
       ${field('mailPort', 'mail.setup.port', b.port || 993, 'type="number" min="1" max="65535" style="width:90px"')}
       ${field('mailSmtpHost', 'mail.setup.smtphost', b.smtpHost, 'type="text" maxlength="253" placeholder="' + esc(t('mail.setup.smtphost.ph')) + '"')}
       ${field('mailSmtpPort', 'mail.setup.smtpport', b.smtpPort || 465, 'type="number" min="1" max="65535" style="width:90px"')}
       ${field('mailUser', 'mail.setup.user', b.user, `type="text" maxlength="200" placeholder="${esc(t('mail.setup.user.ph'))}"`)}
-      ${field('mailPass', 'mail.setup.pass', '', `type="password" maxlength="1000" autocomplete="new-password" placeholder="${esc(b.hasPassword ? t('mail.setup.pass.keep') : '')}"`)}
+      ${field('mailPass', 'mail.setup.pass', '', `type="password" maxlength="1000" autocomplete="new-password" placeholder="${esc(b.hasPassword ? t('mail.setup.pass.keep') : '')}"`)}</div>
       <label class="chk" style="margin:6px 0"><input type="checkbox" id="mailAgents" ${b.agents ? 'checked' : ''}> ${esc(t('mail.setup.agents'))} <small class="muted">${esc(t('mail.setup.agents.sub'))}</small></label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button type="button" id="mailTest" onclick="Mail.test()">${esc(t('mail.setup.test'))}</button>
         <button type="button" class="primary" id="mailSave" onclick="Mail.save()">${esc(t('mail.setup.save'))}</button>
         ${box() ? `<button type="button" id="mailRemove" onclick="Mail.remove()">${esc(t('mail.setup.remove'))}</button> <a href="#/mail" id="mailOpen">${esc(t('mail.setup.open'))}</a>` : ''}</div>
       ${b.lastError ? `<small class="muted mail-note" id="mailSetErr">${esc(b.lastError)} <a href="#/setup/dmsRelay">${esc(t('mail.setup.relay.link'))}</a></small>` : '<div class="err" id="mailSetErr"></div>'}<small class="muted" id="mailSetState">${esc(M.setupMsg)}</small>`;
   };
-  const form = () => ({ id: (box() || {}).id, name: v('mailName'), address: v('mailAddr'), host: v('mailHost'), port: Number(v('mailPort')) || 993, smtpHost: v('mailSmtpHost'), smtpPort: Number(v('mailSmtpPort')) || 465, agents: !!($('mailAgents') || {}).checked, user: v('mailUser') || v('mailAddr'), password: ($('mailPass') || {}).value || '' });
+  const form = () => {
+    const ms = v('mailAuth') === 'microsoft';
+    return { id: (box() || {}).id, name: v('mailName'), address: v('mailAddr'), host: v('mailHost'), port: Number(v('mailPort')) || 993, smtpHost: v('mailSmtpHost'), smtpPort: Number(v('mailSmtpPort')) || 465, agents: !!($('mailAgents') || {}).checked,
+      user: ms ? v('mailAddr') : v('mailUser') || v('mailAddr'), password: ms ? '' : ($('mailPass') || {}).value || '', auth: ms ? 'microsoft' : 'password', msClient: v('mailMsClient') };
+  };
+  // Microsoft sign-in (AIG-909): Sign in saves the form, then shows the code to type at Microsoft and polls until it's done.
+  M.setAuth = a => {
+    const keep = ['mailName', 'mailAddr', 'mailMsClient'].map(id => [id, v(id)]), agents = !!($('mailAgents') || {}).checked;
+    M.auth = a; paintBox();
+    for (const [id, val] of keep) if ($(id) && val) $(id).value = val;
+    if ($('mailAgents')) $('mailAgents').checked = agents;
+  };
+  const msPoll = () => {
+    clearTimeout(M.msTimer);
+    const b = box(); if (!b || !M.msFlow || M.msFlow.state !== 'waiting') return;
+    M.msTimer = setTimeout(async () => {
+      try { M.msFlow = await api('GET', '/api/mail/ms/status?box=' + q(b.id)); } catch (e) { M.msFlow = { state: 'error', error: e.message }; }
+      if (M.msFlow.state === 'waiting') return msPoll();
+      await M.watch();
+      if (M.msFlow.state === 'done') { M.msFlow = null; M.data = null; }
+      paintBox(); if (!M.msFlow) say(t('mail.setup.ms.done'));
+    }, window.__mailMsPollMs || 2000);
+  };
+  M.msSignIn = async () => {
+    try {
+      M.cfg = await api('POST', '/api/mail/config', { token: await secToken(), ...form() });
+      M.msFlow = await api('POST', '/api/mail/ms/start', { token: await secToken(), box: box().id });
+    } catch (e) { return say(e.message, true); }
+    M.auth = null; paintBox(); msPoll();
+  };
+  M.msSignOut = async () => {
+    const b = box(); if (!b) return;
+    try { await api('POST', '/api/mail/ms/signout', { token: await secToken(), box: b.id }); } catch (e) { return say(e.message, true); }
+    M.msFlow = null; await M.watch(); paintBox();
+  };
   M.find = async () => {
     say(t('mail.setup.finding'));
     try {
@@ -246,12 +295,12 @@ const Mail = (() => {
   };
   M.save = async () => {
     try { M.cfg = await api('POST', '/api/mail/config', { token: await secToken(), ...form() }); } catch (e) { return say(e.message, true); }
-    M.data = null; M.setupMsg = t('mail.setup.saved'); paintBox(); M.setupMsg = ''; M.watch();
+    M.auth = null; M.data = null; M.setupMsg = t('mail.setup.saved'); paintBox(); M.setupMsg = ''; M.watch();
   };
   M.remove = async () => {
     const b = box(); if (!b || !confirm(t('mail.setup.remove.sure'))) return;
     try { M.cfg = await api('POST', '/api/mail/config', { token: await secToken(), id: b.id, remove: true }); } catch (e) { return say(e.message, true); }
-    M.data = null; M.setupMsg = t('mail.setup.removed'); paintBox(); M.setupMsg = ''; M.watch();
+    M.auth = null; M.msFlow = null; M.data = null; M.setupMsg = t('mail.setup.removed'); paintBox(); M.setupMsg = ''; M.watch();
   };
   // No mailbox yet: a real button to Setup, landing on its Mail box, not the top of the long page (AIG-927).
   M.toSetup = () => {
