@@ -3219,5 +3219,14 @@
  "storage.tidy": "Attachments on closed (done) cards older than {days} days: {n} files, {size}",
  "storage.delete": "Delete",
  "storage.confirm": "Delete {n} attachment files ({size}) from closed cards? Nothing else is removed.",
- "storage.nothing": "No attachments on closed cards older than {days} days to tidy up."
+ "storage.nothing": "No attachments on closed cards older than {days} days to tidy up.",
+ "share.title.label": "Title",
+ "share.title.ph": "e.g. Jetstream consultant",
+ "share.preview.label": "Preview link",
+ "share.title.help": "The title is a label only: it shows next to {name} on your side and on their board header.",
+ "share.preview.help": "A preview link (http or https) gives {name} a Preview button; leave it empty for none.",
+ "share.simple": "Non-technical friend",
+ "share.simple.help": "Viewer, comments on, Approvals on",
+ "share.simple.hint": "Sets Viewer, comments on and Approvals on for this project. Their wishes land in ✅ Approvals.",
+ "sb.preview": "▶ Preview"
 }
