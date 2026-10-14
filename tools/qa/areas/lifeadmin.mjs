@@ -31,8 +31,11 @@ def('lifeadmin', '🏡 life admin without tokens: reminders (once or repeating),
   check('tick marks it done, tick again puts it back', t1.done === true && (await s.ok('POST', `/api/lifeadmin/${r1.id}/tick`)).done === false);
   const sn = await s.ok('POST', `/api/lifeadmin/${r1.id}/snooze`, { mins: 60 });
   check('snooze 60 minutes sets the time', Math.abs(Date.parse(sn.snoozedUntil) - (Date.now() + hour)) < 5000, sn.snoozedUntil);
+  // AIG-1063: "tomorrow" is the owner's next day start (Setup day.start; the board uses 00:00, here 09:00)
+  const lfp = path.join(s.dir, 'aigile.local.json'); fs.writeFileSync(lfp, JSON.stringify({ ...JSON.parse(fs.readFileSync(lfp, 'utf8')), day: { start: '09:00' } }));
   const tm = await s.ok('POST', `/api/lifeadmin/${r1.id}/snooze`, { tomorrow: true }), td = new Date(tm.snoozedUntil);
-  check('tomorrow is 09:00 the next day (local)', td.getHours() === 9 && td.getMinutes() === 0 && td > new Date(Date.now() + 1 * hour), tm.snoozedUntil);
+  check('tomorrow is 09:00 the next day (local)', td.getHours() === 9 && td.getMinutes() === 0 && td > new Date() && td < new Date(Date.now() + 25 * hour), tm.snoozedUntil);
+  fs.writeFileSync(lfp, JSON.stringify({ ...JSON.parse(fs.readFileSync(lfp, 'utf8')), day: { start: '00:00' } }));
   check('a bad snooze is refused', (await s.api('POST', `/api/lifeadmin/${r1.id}/snooze`, { mins: 0 })).status === 400);
   check('a snoozed reminder is not counted as due today', (await api()).dueToday === 0);
 

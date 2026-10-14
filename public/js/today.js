@@ -56,7 +56,6 @@ const TodayPage = (() => {
   };
   // AIG-829: the morning picker (setup switch "Pick today's projects at start-up"): a small dialog on the first open of the day.
   let askedDay = '';   // the day (as the server counts it) the picker was last shown for: a board left open overnight asks again next morning
-  const localDay = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   T.pickRows = d => d.projects.map(p => `<label class="chk today-pickrow"><input type="checkbox" value="${esc(p.slug)}" ${(p.pickDefault || p.weight) === 'rest' ? '' : 'checked'}> ${esc(p.emoji)} ${esc(p.name)}</label>`).join('');
   T.maybePick = async () => {
     if (document.querySelector('#dialog .overlay')) return;
@@ -89,8 +88,8 @@ const TodayPage = (() => {
   T.fresh = async () => { if (Date.now() - seen < 10000 && T.data) return; seen = Date.now(); await T.load(); };
   let polled = 0;
   setInterval(async () => {
-    if (typeof i18n === 'undefined' || !i18n.ready || document.hidden || askedDay === localDay()) return;
-    if (Date.now() - polled < 10000) return;   // look again now and then, so turning the setting on (or a new morning) needs no reload
+    if (typeof i18n === 'undefined' || !i18n.ready || document.hidden) return;
+    if (Date.now() - polled < (askedDay ? 60000 : 10000)) return;   // AIG-1063: the day is the server's (it turns over at the owner's day start): once asked, look now and then   // look again now and then, so turning the setting on (or a new morning) needs no reload
     polled = Date.now(); await T.maybePick();
   }, 3000);
   return T;

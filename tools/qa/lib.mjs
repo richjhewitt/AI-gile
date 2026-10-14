@@ -76,7 +76,8 @@ export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   /
   // that save settings (wizard, budget, setup) used to change. Only the machine bits are carried over.
   const local = path.join(dir, 'aigile.local.json');
   let ownerLocal = {}; try { ownerLocal = JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')); } catch {}
-  fs.writeFileSync(local, JSON.stringify(Object.fromEntries(['usageDir', 'globalSettingsFile', 'agent', 'avatarsDir'].filter(k => k in ownerLocal).map(k => [k, ownerLocal[k]])), null, 2));
+  // AIG-1063: the owner's day turns over at his day start: the test board starts it at 00:00, so results do not depend on the time of day.
+  fs.writeFileSync(local, JSON.stringify({ ...Object.fromEntries(['usageDir', 'globalSettingsFile', 'agent', 'avatarsDir'].filter(k => k in ownerLocal).map(k => [k, ownerLocal[k]])), day: { start: '00:00' } }, null, 2));
   const env = { ...process.env, AIGILE_LOCAL: local, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', AIGILE_UNDO_WAKE_MS: '0', AIGILE_QA_TOKEN: token, ...extraEnv };   // tests speak to "Owner", whatever your own name is
   delete env.AIGILE_DEV; delete env.AIGILE_ALLOW_DONE; delete env.AIGILE_AS;
   const proc = spawn(process.execPath, [path.join(root, 'server.js')], { env, stdio: 'ignore', cwd: root });

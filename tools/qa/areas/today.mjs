@@ -8,6 +8,8 @@ import { check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors,
 def('today', '🎯 Today: weights per project, reset each morning, order, 💤 rest only wakes for the owner, token split by weight and slow-down (AIG-595/596/597)', async (s, ctx) => {
   for (const [n, k] of [['Aa', 'AAA'], ['Bb', 'BBB'], ['Cc', 'CCC'], ['Dd', 'DDD'], ['Ee', 'EEE']]) await mkProject(s, n, k, { path: tmp('today-' + n) });
   const today = () => s.ok('GET', '/api/today');
+  const lf = path.join(s.dir, 'aigile.local.json'), setStart = hhmm => { const o = JSON.parse(fs.readFileSync(lf, 'utf8')); fs.writeFileSync(lf, JSON.stringify({ ...o, day: { ...(o.day || {}), start: hhmm } })); };
+  const ymd = ms => { const d = new Date(ms); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };   // local date, like the server
   const row = (d, slug) => d.projects.find(p => p.slug === slug);
   let d = await today();
   check('every project starts as normal', d.projects.length === 5 && d.projects.every(p => p.weight === 'normal'), d.projects.map(p => p.weight));
@@ -26,8 +28,21 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   check('the split is 50 / 30 / 20 by level, shared among the projects there', row(d, 'aa').share === 25 && row(d, 'bb').share === 25 && row(d, 'cc').share === 30 && row(d, 'dd').share === 20 && row(d, 'ee').share === 0, d.projects.map(p => p.share));
   check('and adds up to 100', Math.round(d.projects.reduce((n, p) => n + p.share, 0)) === 100);
 
+  // AIG-1063: the day turns over at the owner's day start (the board starts it at 00:00), not at midnight.
+  const nowD = new Date();
+  if (nowD.getHours() * 60 + nowD.getMinutes() < 23 * 60 + 59) {
+    check('from the day start on, the key is today', (await today()).day === ymd(Date.now()), (await today()).day);
+    setStart('23:59');
+    d = await today();
+    check('before the day start it is still yesterday', d.day === ymd(Date.now() - 864e5), d.day);
+    check('the picker starts from yesterday choices (rest stays unticked)', row(d, 'ee').pickDefault === 'rest' && row(d, 'aa').pickDefault === 'high' && row(d, 'cc').pickDefault === 'normal', d.projects.map(p => p.pickDefault));
+    setStart('00:00');
+    d = await today();
+    check('from the day start on, the weights are new and the picker still offers yesterday choices', d.day === ymd(Date.now()) && row(d, 'aa').weight === 'normal' && row(d, 'ee').pickDefault === 'rest', d.projects.map(p => p.pickDefault));
+  }
+
   // Next morning: everything is normal again; "Keep yesterday's" brings the weights back.
-  fs.writeFileSync(path.join(s.data, 'today.stub'), new Date(Date.now() + 864e5).toISOString().slice(0, 10));
+  fs.writeFileSync(path.join(s.data, 'today.stub'), ymd(Date.now() + 864e5));
   d = await today();
   check('next day: weights reset to normal', d.projects.every(p => p.weight === 'normal') && d.yesterday === 4, d.projects.map(p => p.weight));
   d = await s.ok('POST', '/api/today/keep');
@@ -51,7 +66,7 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   for (let i = 0; i < 40 && (await s.ok('GET', '/api/projects/ee')).presence.running; i++) await sleep(250);
 
   // The day's tokens: a project past its share slows down like the usage saver.
-  const lf = path.join(s.dir, 'aigile.local.json'), loc = JSON.parse(fs.readFileSync(lf, 'utf8'));
+  const loc = JSON.parse(fs.readFileSync(lf, 'utf8'));
   fs.writeFileSync(lf, JSON.stringify({ ...loc, budget: { ...(loc.budget || {}), day: 1000000 } }));
   await s.ok('POST', '/api/today', { slug: 'ee', weight: 'normal' });
   await s.ok('POST', '/api/today', { slug: 'aa', weight: 'high' });   // aa 50, bb/cc/dd/ee 30 shared by four = 7.5 each... 80 total -> scaled
@@ -102,7 +117,7 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   check('and nothing was saved', (await today()).mode !== 'pct');
   d = await s.ok('POST', '/api/today/shares', { pct: { aa: 50, bb: 50 } });
   check('exact shares are saved and used instead of the weights', d.mode === 'pct' && row(d, 'aa').share === 50 && row(d, 'bb').share === 50 && row(d, 'cc').share === 0 && row(d, 'aa').allowed === 500000, d.projects.map(p => p.share));
-  fs.writeFileSync(path.join(s.data, 'today.stub'), new Date(Date.now() + 2 * 864e5).toISOString().slice(0, 10));
+  fs.writeFileSync(path.join(s.data, 'today.stub'), ymd(Date.now() + 2 * 864e5));
   d = await today();
   check('they do not reset with the day (the weights do)', d.mode === 'pct' && row(d, 'aa').share === 50 && d.projects.every(p => p.weight === 'normal'));
   fs.rmSync(path.join(s.data, 'today.stub'), { force: true });
@@ -181,7 +196,8 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   fs.writeFileSync(stub, '2031-05-07');
   const pg = await openPage(ctx, '#/');
   await pg.waitForSelector('#dialog .overlay', { timeout: 10000 });
-  check('the dialog lists every project, ticked', (await pg.$$('#todayPickList input:checked')).length === 5);
+  const pickedNow = await pg.$$eval('#todayPickList input:checked', e => e.map(x => x.value).sort().join());
+  check('the dialog lists every project, ticked as yesterday (Aa, Bb; Cc, Dd, Ee rested)', (await pg.$$('#todayPickList input')).length === 5 && pickedNow === 'aa,bb', pickedNow);
   await pg.setViewportSize({ width: 390, height: 800 });
   check('phone width: the dialog does not scroll sideways', await pg.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
   await pg.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
