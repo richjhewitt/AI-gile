@@ -144,6 +144,14 @@ async function dmCall(cid, name) {
     swap: async () => (await api('GET', `/api/calls/dm/${encodeURIComponent(cid)}`)).theirs === true });
 }
 
+/* ---------- 🎥 a project's Meeting Room (AIG-1168) ---------- */
+async function meetingCall(slug, name) {
+  let st;
+  try { st = await api('GET', `/api/calls/meeting/${encodeURIComponent(slug)}`); } catch (e) { return Call.note(t('lkcall.h'), e.message); }
+  if (!st.set) return Call.note(t('lkcall.h'), t('meet.notset'), { href: '#/setup/calls', text: t('lkcall.notset.go') });
+  Call.join({ title: name, getToken: () => api('POST', `/api/calls/meeting/${encodeURIComponent(slug)}/token`, {}) });
+}
+
 /* ---------- Setup > Calls (LiveKit) ---------- */
 // The address and API key are shown; the API secret is saved with the secrets page token and never comes back to the page.
 const CallSetup = (() => {
