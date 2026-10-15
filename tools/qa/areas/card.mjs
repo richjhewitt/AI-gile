@@ -440,18 +440,17 @@ def('testpile', 'testing pile: "3 of 12 left" line on the card while working thr
   await page.click('#extras-btn');
   await page.waitForSelector('#chk-box');
   check('the link brings Checklist and Waits for back', (await page.locator('#wf-box').count()) === 1);
-  await page.waitForSelector('#pileLeft');
-  check('first card shows 3 of 3 left', (await page.textContent('#pileLeft')).trim() === '3 of 3 left', await page.textContent('#pileLeft'));
+  check('a card opened straight from a link has no pile counter (AIG-1147)', (await page.locator('#pileLeft').count()) === 0);
   await page.click('button.good');
-  await page.waitForFunction(() => !location.hash.endsWith('ALP-1') && /2 of 3 left/.test((document.querySelector('#pileLeft') || {}).textContent || '')).catch(() => {});
-  check('after Accept the next card shows 2 of 3 left', (await page.textContent('#pileLeft')).trim() === '2 of 3 left', await page.textContent('#pileLeft'));
+  await page.waitForFunction(() => !location.hash.endsWith('ALP-1') && /2 of 3 in your test pile/.test((document.querySelector('#pileLeft') || {}).textContent || '')).catch(() => {});
+  check('after Accept the next card shows 2 of 3 in your test pile', (await page.textContent('#pileLeft')).trim() === '2 of 3 in your test pile', await page.textContent('#pileLeft'));
   check('the next card says what just happened (AIG-1135)', /Accepted ALP-1/.test(await page.textContent('#moved-note')) && /next card in your pile/.test(await page.textContent('#moved-note')), await page.textContent('#moved-note').catch(() => ''));
   const cur = page.url().split('/').pop();
   await page.fill('#v-text', 'not right');
   await page.click('button.warn');
-  await page.waitForFunction(c => !location.hash.endsWith(c) && /1 of 3 left/.test((document.querySelector('#pileLeft') || {}).textContent || ''), cur).catch(() => {});
+  await page.waitForFunction(c => !location.hash.endsWith(c) && /3 of 3 in your test pile/.test((document.querySelector('#pileLeft') || {}).textContent || ''), cur).catch(() => {});
   check('after Send back the next card says Sent back', /Sent back/.test(await page.textContent('#moved-note')), await page.textContent('#moved-note').catch(() => ''));
-  check('after Send back the next card shows 1 of 3 left', (await page.textContent('#pileLeft')).trim() === '1 of 3 left', await page.textContent('#pileLeft'));
+  check('after Send back the next card shows 3 of 3 in your test pile', (await page.textContent('#pileLeft')).trim() === '3 of 3 in your test pile', await page.textContent('#pileLeft'));
   // Enter sends off for card replies: Enter is a new line, Ctrl+Enter sends
   await mkCard(s, 'alpha', 'Chatty', { status: 'doing', assignee: 'Forge' });
   await say(s, 'alpha', 'ALP-4', 'Forge', 'working on it');

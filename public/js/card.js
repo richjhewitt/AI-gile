@@ -74,7 +74,7 @@ async function pressMajor(id) {
 }
 // The merge gate (AIG-613): 🟢 QA green (areas, full suite) / 🔴 QA red / ⚪ no QA yet. Set with aigile qa.
 function qaGateHtml(c) {
-  const q = c.qa; if (!q) return `<div class="qa-gate none">${esc(t('qa.none'))}</div>`;
+  const q = c.qa; if (!q) return `<div class="qa-gate none" title="${esc(t('qa.none.title'))}">${esc(t('qa.none'))}</div>`;
   const red = q.result === 'fail' || q.full === 'fail', bits = [(q.areas || []).join(', '), q.full ? t('qa.full.' + q.full) : ''].filter(Boolean).join('; ');
   return `<div class="qa-gate ${red ? 'red' : 'green'}" title="${esc([q.by, q.at && ago(q.at)].filter(Boolean).join(' · '))}">${esc(t(red ? 'qa.red' : 'qa.green'))}${bits ? ` <span class="muted">(${esc(bits)})</span>` : ''}${q.note ? ` <span class="muted">${esc(q.note)}</span>` : ''}</div>`;
 }
@@ -232,8 +232,8 @@ function pileLeft(p, c) {
   const left = forYouQueue(p).filter(x => x.status === 'verify' && kindOf(x) === 't').length;
   if (!state.pileRun || state.pileRun.slug !== p.slug) state.pileRun = { slug: p.slug, total: left };
   state.pileRun.total = Math.max(state.pileRun.total, left);
-  if (left < 1 || state.pileRun.total < 2) return '';
-  return `<div class="muted pile-left" id="pileLeft">${esc(t('pile.left', { n: left, total: state.pileRun.total }))}</div>`;
+  if (left < 1 || state.pileRun.total < 2 || state.pileFrom !== c.id) return '';   // only when you came on from the pile, not from a link (AIG-1147)
+  return `<div class="muted pile-left" id="pileLeft" title="${esc(t('pile.left.title'))}">${esc(t('pile.at', { i: state.pileRun.total - left + 1, total: state.pileRun.total }))}</div>`;
 }
 function nextForYou() { const q = forYouQueue(state.project).map(c => c.id), i = q.indexOf(cardId()); return i < 0 ? null : q[i + 1] || q[i - 1] || null; }
 // The card opens the next one in your pile: say what just happened, so the swap is never silent (AIG-1135).
