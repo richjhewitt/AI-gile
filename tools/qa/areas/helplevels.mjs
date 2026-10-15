@@ -108,6 +108,27 @@ def('helplevels', '❓ help levels: each level\'s first run, the Help menu, the 
   check('Help menu starts with Getting started, which opens a short list', (await p1.locator('#helpMenu button').first().getAttribute('id')) === 'hmStart');
   await p1.click('#hmStart');
   check('Getting started lists four steps', (await p1.locator('#gettingStarted li').count()) === 4);
+  // 🛎️ Service management guide (AIG-1158): each level opens by the Help level, Show more adds the next.
+  await p1.keyboard.press('Escape');
+  const svc = async () => { await p1.click('#helpBtn'); await p1.click('#hmService'); await p1.waitForSelector('#svcGuide h3'); return p1.textContent('#svcGuide'); };
+  let g = await svc();
+  check('service guide, some help: opens on Step by step, no raw front matter', /Step by step/.test(g) && /Open the project/.test(g) && !/^---/.test(g) && (await p1.locator('#svcAgents').count()) === 1);
+  await p1.click('#svcMore');
+  g = await p1.textContent('#svcGuide');
+  check('service guide: Show more gives the Full course and hides the button', /Full course/.test(g) && /Uptime dot/.test(g) && await p1.locator('#svcMore').isHidden());
+  check('service guide: the command line sits in the agents fold', /For agents [(]command line[)]/.test(await p1.textContent('#svcAgents summary')) && /aigile/.test(await p1.textContent('#svcAgents')));
+  await p1.keyboard.press('Escape');
+  await s.ok('POST', '/api/setup', { prefs: { helpLevel: '3' } });
+  await p1.click('#helpBtn'); await sleep(300); await p1.keyboard.press('Escape');
+  g = await svc();
+  check('service guide, no help: Highlights, five lines, no fold', /Highlights/.test(g) && (await p1.locator('#svcGuide li').count()) === 5 && (await p1.locator('#svcAgents').count()) === 0);
+  await p1.keyboard.press('Escape');
+  await s.ok('POST', '/api/setup', { prefs: { helpLevel: '1' } });
+  await p1.click('#helpBtn'); await sleep(300); await p1.keyboard.press('Escape');
+  g = await svc();
+  check('service guide, all the help: opens on the Full course', /Full course/.test(g) && await p1.locator('#svcMore').isHidden());
+  await p1.keyboard.press('Escape');
+  await s.ok('POST', '/api/setup', { prefs: { helpLevel: '2' } });   // back to some help for what follows
   noErrors(p1);
   await c1.close();
 
