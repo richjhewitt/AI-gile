@@ -84,6 +84,7 @@ def('uploads', 'resumable uploads: resume after a missing piece, caps, cancel, n
   await page.setInputFiles(input, { name: 'cancel-me.bin', mimeType: 'application/octet-stream', buffer: big });
   await page.click('.reply button:has-text("Send reply")');
   await page.waitForSelector('.reply .att-prog progress');
+  await page.waitForFunction(() => /cancel-me\.bin/.test((document.querySelector('.reply .att-pct') || {}).textContent || ''), null, { timeout: 5000 }).catch(() => {});
   check('the progress bar shows the file name', /cancel-me\.bin/.test(await page.textContent('.reply .att-pct')));
   await page.click('.reply .att-cancel');
   await page.waitForFunction(() => /Upload cancelled/.test(document.getElementById('r-err').textContent), null, { timeout: 4000 }).catch(() => {});
