@@ -14,6 +14,7 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
   // ---- 133: call one ----
   const page = await openPage(ctx, '#/p/alpha');
   page.on('dialog', d => d.accept());
+  if (!(await page.isVisible('button:has-text("📣 Stand-up")')) && await page.isVisible('#tbDots')) await page.click('#tbDots');   // AIG-1076: a new project's toolbar keeps it under ⋯ More
   await page.click('button:has-text("📣 Stand-up")');
   await page.waitForFunction(() => location.hash === '#/standups/alpha');
   const a = await cardsOf('alpha');
