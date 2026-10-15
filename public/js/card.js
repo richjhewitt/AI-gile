@@ -86,7 +86,7 @@ function renderCard(p, c) {
   const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}</div>`;
   // AIG-935: title first; Close, Edit (and Reopen) stay in view, every other action sits in the one ⋯ menu (same buttons, same ids).
   // ⧉ Pop out stays in view too (AIG-1012): in the ⋯ menu nobody found it.
-  const menu = `<div class="card-menu" id="card-menu" ${state.cardMenu ? '' : 'hidden'}>${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}<button id="remind-btn" onclick="remindToggle()" title="${esc(t('remind.title'))}">${esc(t('remind.btn'))}</button>${timerUi(c)}${crucialBtn(c)}${urgentBtn(c, p.slug, true)}${Focus.btn(p, c)}${Term.btn(c, 'term-btn')}${moveUi(p, c, 'selects')}<button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button></div>`;
+  const menu = `<div class="card-menu" id="card-menu" ${state.cardMenu ? '' : 'hidden'}>${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}<button id="remind-btn" onclick="remindToggle()" title="${esc(t('remind.title'))}">${esc(t('remind.btn'))}</button>${timerUi(c)}${crucialBtn(c)}${urgentBtn(c, p.slug, true)}${Focus.btn(p, c)}${Term.btn(c, 'term-btn')}${moveUi(p, c, 'selects')}<button type="button" id="copylink-btn" data-copy-text="${esc(location.href.split('#')[0] + '#/p/' + p.slug + '/' + c.id)}" title="${esc(t('card.copylink.title'))}">${esc(t('card.copylink'))}</button><button type="button" id="dup-btn" onclick="duplicateCard()" title="${esc(t('card.duplicate.title'))}">${esc(t('card.duplicate'))}</button><button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button></div>`;
   const topActs = `<div class="card-acts"><button onclick="${close}">${esc(t('card.close'))}</button>${moveUi(p, c, 'reopen')}<button onclick="editCard()">${esc(t('card.edit'))}</button>${popBtn}<span class="card-menu-wrap"><button type="button" id="cm-btn" class="cm-btn" aria-haspopup="true" aria-expanded="${!!state.cardMenu}" title="${esc(t('card.menu.title'))}" aria-label="${esc(t('card.menu.title'))}" onclick="cardMenuToggle()">${esc(t('card.menu'))}</button>${menu}</span></div>`;
   if (state.editing) {
     return `<div class="overlay"><div class="panel">${head}
@@ -167,11 +167,19 @@ async function saveCard(e) {
 }
 async function deleteCard() {
   const c = curCard();
-  if (!confirm(t('card.delete.confirm', { id: c.id, title: c.title }))) return;
-  try {
+  try {   // AIG-1260: no confirm; the Undo bar (a minute) and Recently deleted (30 days) bring it back
     await api('DELETE', `/api/projects/${slug()}/cards/${c.id}`);
     state.editing = false;
+    if (typeof Undo !== 'undefined' && Undo.showDeleted) Undo.showDeleted(slug(), c.id);
     location.hash = '#/p/' + slug();
+  } catch (err) { alert(err.message); }
+}
+// ⧉ Duplicate (AIG-1264): a new Backlog card with the same fields, opened at once.
+async function duplicateCard() {
+  const c = curCard(); cardMenuToggle(false);
+  try {
+    const n = await api('POST', `/api/projects/${slug()}/cards/${c.id}/duplicate`, {});
+    location.hash = '#/p/' + slug() + '/' + n.id;
   } catch (err) { alert(err.message); }
 }
 
