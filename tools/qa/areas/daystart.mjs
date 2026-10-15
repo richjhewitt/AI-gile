@@ -20,7 +20,7 @@ def('daystart', '🌅 Setup: when your day starts and stops (default 09:00), sav
 
   await page.goto(page.url().split('#')[0] + '#/'); await page.waitForSelector('#app > *'); await sleep(800);
   await page.evaluate(() => goQuiet()); await page.waitForSelector('#quietUntil');
-  check('Going quiet ends at your start time', await page.inputValue('#quietUntil') === '06:30');
+  check('Going quiet wake-up time starts empty (AIG-1208)', await page.inputValue('#quietUntil') === '');
   await page.evaluate(() => closeDialog());
 
   await page.goto(page.url().split('#')[0] + '#/setup'); await page.waitForSelector('#pf-day-start');

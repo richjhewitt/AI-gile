@@ -22,6 +22,15 @@ def('startday', '🌅 Start my day: one morning check-in (tasks, tests, life adm
   check('on: the first open of the day asks', d.on === true && d.ask === true && d.day === '2031-06-01');
   d = await s.ok('POST', '/api/daystart/seen');
   check('seen: asked no more that day', d.ask === false && (await s.ok('GET', '/api/daystart')).ask === false);
+  // AIG-1208: quiet without a wake-up time stays on until Start my day; with one it is left to the clock
+  await s.ok('POST', '/api/quiet', { on: true, watch: [] });
+  check('quiet with no until: stays on', !!(await s.ok('GET', '/api/meta')).quiet);
+  await s.ok('POST', '/api/daystart/seen');
+  check('Start my day ends a quiet with no until', !(await s.ok('GET', '/api/meta')).quiet);
+  await s.ok('POST', '/api/quiet', { on: true, watch: [], until: '03:33' });
+  await s.ok('POST', '/api/daystart/seen');
+  check('a quiet with an until is left to its time', !!(await s.ok('GET', '/api/meta')).quiet);
+  await s.ok('POST', '/api/quiet', { on: false });
   fs.writeFileSync(stub, '2031-06-02');
   check('next morning: asks again', (await s.ok('GET', '/api/daystart')).ask === true);
 
