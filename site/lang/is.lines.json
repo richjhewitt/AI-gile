@@ -1,0 +1,56 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Vélmenni.", "Úthlutað."] },
+    { "n": 2, "texts": ["Vélmenna-kanban, ókeypis.", "Fulltrúar, skipulagðir.", "Hugmyndir, smíðaðar."] },
+    { "n": 3, "texts": ["Kanban fyrir vélmenni.", "Hugmyndir verða eiginleikar.", "Ókeypis fulltrúa-kanban."] },
+    { "n": 5, "texts": [
+      "Kanban-tafla sem fulltrúar reka.",
+      "Þú skrifar spjöld. Þau smíða.",
+      "Ókeypis, staðbundið, prófað og pínu kjánalegt."
+    ] },
+    { "n": 8, "texts": [
+      "Ókeypis kanban-tafla þar sem gervigreindarfulltrúar vinna.",
+      "Skrifaðu hugmynd. Þau smíða hana. Þú samþykkir.",
+      "Lipur vinna fyrir eina manneskju og mörg þolinmóð vélmenni."
+    ] },
+    { "n": 13, "texts": [
+      "Kanban-tafla á tölvunni þinni þar sem gervigreindarfulltrúar taka spjöldin að sér.",
+      "Skrifaðu hugmynd. Teymi fulltrúa smíðar hana. Prófari athugar hana áður en þú sérð hana.",
+      "Ókeypis, engir aðgangar, engir rekjarar: tafla, nokkur vélmenni og þú ræður ferðinni."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile er kanban-tafla til að vinna með gervigreindarfulltrúum sem forrita. Þeir taka spjöldin að sér; þú prófar þau og samþykkir.",
+      "Hvert verkefni fær leiðtoga og teymi gervigreindarfulltrúa. Skrifaðu athugasemd við hvaða spjald sem er og teymið tekur til starfa.",
+      "Ókeypis, persónuleg verkefnatafla sem keyrir á þinni eigin tölvu. Verkamennirnir eru vélmenni. Sá sem segir já ert þú."
+    ] },
+    { "n": 34, "texts": [
+      "Þú setur hugmyndir á töflu. Teymi gervigreindarfulltrúa breytir þeim í virka eiginleika, prófar þá og skilar þeim til baka með skrefum til að prófa. Ekkert telst búið fyrr en þú segir það.",
+      "AI-gile er heimasmíðuð kanban-tafla sem Rich bjó til með mikilli hjálp frá fulltrúunum sem hún stýrir nú. Hún er ókeypis, keyrir á tölvunni þinni og er deilt með vinum en ekki seld.",
+      "Hugsaðu þér venjulega kanban-töflu með dálkum frá Backlog til Lokið, nema að spjöldin eru tekin að sér af gervigreindarfulltrúum. Þeir segja frá framvindu, spyrja þegar þeir festast og bíða alltaf eftir þínu samþykki."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile er kanban-tafla þar sem teymið er skipað gervigreindarfulltrúum. Hvert verkefni hefur leiðtoga sem skipuleggur vinnuna og hjálparmenn sem smíða. Þegar eiginleiki er tilbúinn prófar gervigreindarprófari hann og tekur skjámynd, svo lendir hann í þínum bunka. Samþykktu hann eða skrifaðu athugasemd og þeir vinna hann upp á nýtt.",
+      "Þetta byrjaði sem leið einnar manneskju til að halda utan um fjölda gervigreindarforritunarlota í einu og óx í almennilega töflu. Hún keyrir á þinni vél, krefst engra aðganga og hefur enga rekjara. Hún er ókeypis fyrir vini og forvitna. Hún er líka ókláruð, svo búast má við hrjúfum köntum og óvæntum uppákomum.",
+      "Hér er heiðarlega útgáfan. Þú þarft enn að eiga hugmyndirnar og enn að yfirfara niðurstöðurnar. AI-gile sér um allt þar á milli: raðar spjöldunum, vekur réttan fulltrúa þegar þú skrifar athugasemd, sýnir nákvæmlega hvað breyttist og safnar öllu saman í einn stuttan bunka handa þér."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile er ókeypis kanban-tafla sem þú keyrir á þinni eigin tölvu. Í stað fólks hefur hvert verkefni teymi gervigreindarfulltrúa: leiðtoga sem breytir hugmyndunum þínum í spjöld og áætlun, og hjálparmenn sem taka spjöldin að sér í forgangsröð. Þegar eitthvað er smíðað fylgir gervigreindarprófari prófunarskrefunum og sýnir þér það sem hann sá. Svo bíður það í einum bunka sem heitir Fyrir þig. Þú samþykkir það, eða skrifar athugasemd og teymið reynir aftur. Ekkert kemst nokkurn tíma í Lokið án þín.",
+      "Nokkrir eiginleikar sem þú bjóst kannski ekki við. Næturvakt heldur Á dagskrá fullum meðan þú sefur og velur spjöld sem þurfa ekkert svar frá þér. Teljari sýnir hve mikið fulltrúarnir hafa notað í dag og í þessari viku, og No Token Mode segir þeim að hætta að eyða. Þú getur sent vinum skilaboð og einkaskilaboð eru dulkóðuð frá enda til enda. Taflan talar um 120 tungumál, þar á meðal hollensku, flæmsku, sjóræningjamál og klingonsku. Ekkert af þessu kostar krónu og enginn er að reyna að selja þér það.",
+      "AI-gile er lítið, persónulegt verkefni en ekki fyrirtæki. Rich vildi sinna nokkrum gervigreindarforritunarverkefnum án þess að opna hvert forrit til að athuga með þau, svo hann og fulltrúarnir smíðuðu töflu fyrir það og notuðu hana svo til að smíða afganginn af sjálfri sér. Hún er í lokaðri forútgáfu, sem þýðir að hún virkar, að mestu, fyrir fáeina vini. Hér er engin verðskrá, ekkert fréttabréf og engin vaxtaráætlun. Ef þetta hljómar gagnlegt geturðu beðið um að fá að prófa þegar hún opnast aðeins meira."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile er kanban-tafla fyrir eina manneskju og fjölda gervigreindarfulltrúa. Hún keyrir á þinni eigin tölvu og er alveg ókeypis. Þú bætir við verkefnum og hvert verkefni fær leiðtoga og lítið teymi. Þú spjallar við leiðtogann, svolítið eins og á Discord, og lýsir hugmynd; leiðtoginn breytir henni í spjöld og áætlun og bíður svo eftir að þú ýtir á Áfram. Teymið vinnur sig í gegnum spjöldin í forgangsröð og notar einfalt skipanaviðmót sem er gert fyrir mállíkön. Áður en nokkuð kemur aftur til þín fylgir gervigreindarprófari skrefunum í afriti af forritinu og hengir við skjámynd. Fullunnið verk lendir í bunkanum þínum með breyttu skrárnar og muninn. Þú samþykkir það, eða skrifar athugasemd og teymið vaknar og reynir aftur. Aðeins þú getur fært spjald í Lokið.",
+      "Dagur með AI-gile, nokkurn veginn. Að kvöldi skrifarðu nokkrar athugasemdir: þessi hnappur er á röngum stað, þessum lista þarf að raða, gætum við fengið dökkt þema. Þú ferð að sofa. Fulltrúarnir lesa athugasemdirnar, gera breytingarnar, prófa þær og skila þeim til þín. Ef Á dagskrá tæmist fyllir næturvaktin hana úr Backlog með spjöldum sem þurfa ekkert svar frá þér. Að morgni er einn stuttur bunki: nokkrar spurningar og nokkrir hlutir til að prófa, hver með skrefum sem syfjuð manneskja getur fylgt og skjámynd af því að það virkar. Þú smellir þig í gegnum þetta, samþykkir það sem er gott og sendir restina til baka. Teljari sýnir hvað þetta kostaði og No Token Mode er til staðar fyrir sparsamar vikur. Svo færðu þér morgunmat, sem fulltrúarnir geta ekki hjálpað við enn.",
+      "Fyrst, hvað AI-gile er ekki. Það er ekki sprotafyrirtæki, það er ekki til sölu og enginn safnar gögnunum þínum. Það er ókeypis tafla sem keyrir á tölvunni þinni, án aðganga, án rekjara og án vefkakna. Það sem það er: einn snyrtilegur staður til að sjá öll gervigreindarforritunarverkefni í einu, þar sem teymi fulltrúa vinnur spjöldin og þú tekur ákvarðanirnar. Það steypir skyldum spjöldum saman, lagar ruglingslega titla og fylgist með að kóðinn haldist mjór. Það talar um 120 tungumál, frá hollensku og flæmsku til sjóræningjamáls og klingonsku. Vinir geta sent hver öðrum skilaboð, í einrúmi og dulkóðuð. Það var smíðað af Rich og fjölda þolinmóðra fulltrúa, mest með því að nota sjálft sig. Það er í lokaðri forútgáfu og því hrjúft sums staðar. Ef þetta hljómar skemmtilega, biddu kurteislega og þú gætir komist snemma inn."
+    ] }
+  ],
+  "quips": {
+    "1": "Eitt orð. Djarft. Kannski of djarft.",
+    "3": "Þrjú orð. Nú þegar heiðarlegri en flestar vörusíður.",
+    "8": "Átta orð. Samt styttra en standandi fundur.",
+    "21": "Lengdirnar eru reyndar sögupunktar. Að sjálfsögðu.",
+    "55": "Fimmtíu og fimm orð. Tvö spjöld kláruðust meðan þú last þetta.",
+    "144": "Þetta er það langa. Það er enginn 233. Fulltrúarnir eru farnir að sofa."
+  }
+}

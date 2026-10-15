@@ -1,0 +1,56 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Robot.", "Delegato."] },
+    { "n": 2, "texts": ["Kanban robotico.", "Agenti, organizzati.", "Idee, realizzate."] },
+    { "n": 3, "texts": ["Kanban per robot.", "Le idee diventano funzioni.", "Kanban gratuito, con agenti."] },
+    { "n": 5, "texts": [
+      "Una board kanban gestita da agenti.",
+      "Tu scrivi card. Loro costruiscono.",
+      "Gratis, locale, testato, un po' buffo."
+    ] },
+    { "n": 8, "texts": [
+      "Una board kanban gratuita dove lavorano agenti AI.",
+      "Scrivi un'idea. Gli agenti la costruiscono. Tu accetti.",
+      "Agile per un essere umano e tanti robot pazienti."
+    ] },
+    { "n": 13, "texts": [
+      "Una board kanban sul tuo computer, dove gli agenti AI prendono in carico le card.",
+      "Scrivi un'idea. Un team di agenti la costruisce. Un tester la controlla prima di te.",
+      "Gratis, senza account né tracker: una board, qualche robot e il comando a te."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile è una board kanban per lavorare con agenti AI che programmano. Loro prendono in carico le card; tu le provi e le accetti.",
+      "Ogni progetto ha un lead e un team di agenti AI. Commenta una qualsiasi card e il team si mette al lavoro.",
+      "Una board personale e gratuita che gira sul tuo computer. A lavorare sono i robot. A dire di sì sei tu."
+    ] },
+    { "n": 34, "texts": [
+      "Metti le idee su una board. Un team di agenti AI le trasforma in funzioni che funzionano, le testa e te le riporta con i passaggi per provarle. Niente conta come finito finché non lo dici tu.",
+      "AI-gile è una board kanban fatta in casa, che Rich ha costruito con un grande aiuto dagli agenti che ora gestisce. È gratuita, gira sul tuo computer e si condivide con gli amici, non si vende.",
+      "Immagina una normale board kanban, con colonne dal Backlog a Fatto, solo che le card le prendono in carico agenti AI. Riferiscono i progressi, fanno domande quando sono bloccati e aspettano sempre il tuo via libera."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile è una board kanban in cui il team è fatto di agenti AI. Ogni progetto ha un lead che pianifica il lavoro e dei collaboratori che lo costruiscono. Quando una funzione è pronta, un tester AI la prova e fa uno screenshot, poi arriva nella tua pila. Accettala, oppure commenta e la rifanno.",
+      "È nata come il modo di una persona per tenere d'occhio tante sessioni di programmazione con l'AI insieme, ed è diventata una vera board. Gira sulla tua macchina, non vuole account e non ha tracker. È gratis per gli amici e per i curiosi. È anche incompleta, quindi aspettati qualche spigolo e ogni tanto una sorpresa.",
+      "Ecco la versione onesta. Le idee devi averle tu, e i risultati devi controllarli tu. Quello che fa AI-gile è tutto ciò che sta in mezzo: tiene le card in ordine, sveglia l'agente giusto quando commenti, mostra esattamente cosa è cambiato e raccoglie tutto in un'unica pila corta per te."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile è una board kanban gratuita che fai girare sul tuo computer. Invece delle persone, ogni progetto ha un team di agenti AI: un lead che trasforma le tue idee in card e in un piano, e dei collaboratori che prendono le card in ordine di priorità. Quando qualcosa è costruito, un tester AI segue i passaggi di prova e ti mostra cosa ha visto. Poi aspetta in un'unica pila chiamata Per te. Tu lo accetti, oppure commenti e il team riprova. Niente arriva mai in Fatto senza di te.",
+      "Qualche funzione che forse non ti aspetti. Una guardia notturna tiene piena la colonna Da fare mentre dormi, scegliendo card che non richiedono una tua risposta. Un contatore di token mostra quanto hanno usato gli agenti oggi e in questa settimana, e la modalità No Token Mode dice loro di smettere di spendere. Puoi scrivere agli amici, e i messaggi privati sono cifrati end-to-end. La board parla circa 120 lingue, tra cui olandese, fiammingo, pirata e klingon. Niente di tutto questo costa un centesimo, e nessuno cerca di vendertelo.",
+      "AI-gile è un piccolo progetto personale, non un'azienda. Rich voleva seguire diversi progetti di programmazione con l'AI senza aprire ogni app per controllarli, così lui e gli agenti hanno costruito una board per farlo, e poi l'hanno usata per costruire il resto di se stessa. È in pre-alpha chiusa, il che significa che funziona, più o meno, per una manciata di amici. Non c'è una pagina dei prezzi, né una newsletter, né un piano di crescita. Se ti sembra utile, puoi chiedere di provarla quando si aprirà un po' di più."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile è una board kanban per un essere umano e un sacco di agenti AI. Gira sul tuo computer ed è completamente gratuita. Aggiungi dei progetti, e ogni progetto riceve un lead e un piccolo team. Chatti con il lead, un po' come su Discord, e descrivi un'idea; il lead la trasforma in card e in un piano, poi aspetta che premi Vai. Il team lavora le card in ordine di priorità, usando una semplice riga di comando pensata per i modelli linguistici. Prima che qualcosa torni a te, un tester AI segue i passaggi in una copia dell'app e allega uno screenshot. Il lavoro finito arriva nella tua pila con i file modificati e il diff. Tu lo accetti, oppure lasci un commento e il team si sveglia e riprova. Solo tu puoi spostare una card in Fatto.",
+      "Una giornata con AI-gile, più o meno. La sera lasci qualche commento: questo pulsante è nel posto sbagliato, quella lista va ordinata, potremmo avere una modalità scura. Vai a letto. Gli agenti leggono i commenti, fanno le modifiche, le testano e te le riconsegnano. Se Da fare si svuota, la guardia notturna la riempie dal backlog con card che non richiedono risposte da parte tua. La mattina trovi un'unica pila corta: un paio di domande e qualche cosa da provare, ognuna con passaggi che una persona assonnata riesce a seguire e uno screenshot che mostra come funziona. Clicchi, accetti quelle buone e rimandi indietro le altre. Un contatore di token mostra quanto è servito, e No Token Mode c'è per le settimane magre. Poi fai colazione, cosa in cui gli agenti non possono ancora aiutarti.",
+      "Prima di tutto, cosa AI-gile non è. Non è una startup, non è in vendita e nessuno raccoglie i tuoi dati. È una board gratuita che gira sul tuo computer, senza account, senza tracker e senza cookie. Cos'è invece: un posto ordinato dove vedere tutti i progetti di programmazione con l'AI in una volta, con un team di agenti che lavora le card e te che prendi le decisioni. Fonde le card affini, sistema i titoli confusi e controlla che il codice resti snello. Parla circa 120 lingue, dall'olandese e dal fiammingo al pirata e al klingon. Gli amici possono scriversi in privato e con cifratura. L'hanno costruita Rich e un gran numero di agenti pazienti, soprattutto usandola. È in pre-alpha chiusa, quindi in certi punti è ruvida. Se ti sembra divertente, chiedi con gentilezza e magari entri in anticipo."
+    ] }
+  ],
+  "quips": {
+    "1": "Una parola. Audace. Forse troppo.",
+    "3": "Tre parole. Già più oneste della maggior parte delle pagine di prodotto.",
+    "8": "Otto parole. Ancora meno di una riunione in piedi.",
+    "21": "Le lunghezze sono story point, a proposito. Ovviamente.",
+    "55": "Cinquantacinque parole. Mentre leggevi, due card sono state completate.",
+    "144": "Questa è la più lunga. Il 233 non esiste. Gli agenti sono andati a dormire."
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "unit": "words",
+  "sizes": [
+    {
+      "n": 1,
+      "texts": [
+        ".kanban.",
+        "sampre.",
+        "dunda."
+      ]
+    },
+    {
+      "n": 2,
+      "texts": [
+        "sampre .kanban.",
+        "gunka kanro.",
+        "sidbo zbasu."
+      ]
+    },
+    {
+      "n": 3,
+      "texts": [
+        "le .kanban. fi sampre.",
+        "sidbo cu jai gunka.",
+        "kantu AI .kanban."
+      ]
+    },
+    {
+      "n": 5,
+      "texts": [
+        "pa .kanban. poi AI gunka.",
+        "do ciska karda. AI zbasu.",
+        "kantu, zdani, cipra, cizra."
+      ]
+    },
+    {
+      "n": 8,
+      "texts": [
+        "pa kantu .kanban. poi lo AI gunka ba'o zukte.",
+        "ko ciska pa sidbo. AI zbasu. do zanru.",
+        "agile fi pa prenu e mutce denpa sampre."
+      ]
+    },
+    {
+      "n": 13,
+      "texts": [
+        "pa .kanban. ne'i le do skami poi lo AI gunka cu cpacu le karda.",
+        "ko ciska pa sidbo. pa AI gunma zbasu ri. pa troci prenu cu cipra ri.",
+        "kantu, no cmima, no jimpe be le cuntu: pa .kanban., lo sampre, e do jitro."
+      ]
+    },
+    {
+      "n": 21,
+      "texts": [
+        "la AI-gile cu .kanban. fi le nu gunka e lo AI poi ciska lo samselpla. ri cpacu le karda; do cipra e zanru ri.",
+        "ro gunka cu se ckaji pa ralju e pa AI gunma. ko ciska pa notci ne'i ro karda gi le gunma cu cfari le gunka.",
+        "pa kantu sivni .kanban. poi gunka ne'i le do ba'e skami. le gunka prenu cu sampre. le prenu poi cusku lo ja'a cu do."
+      ]
+    },
+    {
+      "n": 34,
+      "texts": [
+        "do punji lo sidbo ne'i le .kanban. gi pa AI gunma cu zbasu ri lo gunka selci'a, troci ri, e benji ri fi lo bacru be le troci. no se mulno cu se jdice ji'a do cusku.",
+        "la AI-gile cu zdani .kanban. poi la rich pu zbasu ri ta'i lo mutce sidju be le AI gunka poi ca jitro. ri kantu, gunka ne'i le do skami, e se jarco lo pendo; na vecnu.",
+        "ko pensi pa cizra .kanban. poi kolmo ne'i le Backlog fi le mulno, ku'i le karda cu se cpacu le AI gunka. ri notci le ka zenba, cpedu ca le nu se zunti, e ca'o denpa le do zanru."
+      ]
+    },
+    {
+      "n": 55,
+      "texts": [
+        "la AI-gile cu .kanban. poi le gunma cu se zbasu le AI gunka. ro gunka cu se ckaji pa ralju poi jitro le gunka e lo sidju poi zbasu. ca le nu pa selci'a cu mulno, pa AI troci prenu cu troci ri e zbasu pa kanro pixra; ba ta ri zvati le do jmina. ko zanru ri ja ciska pa notci, gi ri xruti zukte.",
+        "ri cfari ta'i le zukte be pa prenu poi djica le nu viska lo mutce AI ciska samselpla gunka ca le pa temci, e ri zenba ba'o pa jarco .kanban.. ri gunka ne'i le do skami, no nitcu lo cmima, e no jimpe be le cuntu. ri kantu fi lo pendo e fi lo prenu poi djica le nu djuno. ri ji'a na mulno.",
+        "ti le jetnu ve skicu. do ku'i nitcu le nu se sidbo le sidbo, e le nu cipra le se jgari. la AI-gile cu zukte ro poi zvati le midju: ri jitro le karda, ri cikna le jetnu AI gunka ca le nu do ciska pa notci, ri jarco le se galfi, e ri vreji ro ne'i pa jmina cmalu fi do."
+      ]
+    },
+    {
+      "n": 89,
+      "texts": [
+        "la AI-gile cu kantu .kanban. poi do pilno ne'i le do ba'e skami. ro gunka cu se ckaji pa AI gunma, ko'a poi ralju poi zbasu le do sidbo fi le karda e le jitro, e lo sidju poi cpacu le karda ta'i le ka vajni. ca le nu pa selci'a cu se zbasu, pa AI troci prenu cu jersi le troci bacru. ba ta ri denpa ne'i pa jmina poi se cmene fi do. do zanru ri, ja ciska pa notci gi le gunma cu ba troci. no se mulno cu ka'e klama le mulno ni'i do.",
+        "so'i drata. pa nicte vigykarce cu gasnu le ba zukte fi le ba'o kolmo ca le nu do sipna, ta'i le cuxna be le karda poi na nitcu le do danfu. pa tcana be le lerfu cu jarco le ka pilno ca le djedi e le jeftu, e le No Token Mode cu cusku le gunka le ka sisti. do ka'e benji le sivni notci lo pendo, e ri se mipri ne'i le fanmo. le .kanban. cu tavla ne'i li ci'i 120 bangu, le bangu be le Dutch, le Flemish, le pirate e le Klingon. no ba'e cu vecnu.",
+        "la AI-gile cu cmalu e sivni gunka; na gunka be lo ckule jikru. la rich pu djica le nu jitro lo so'i AI ciska samselpla gunka na ku kalri ro samselpla, ja'e bo la rich e le AI gunka pu zbasu pa .kanban. fi ri, e ri pilno le .kanban. le ka zbasu le drata. ri zvati le ganlo pre-alpha; ri gunka, ru'e, fi so'i pendo. no se jarco be le vecnu, no notci be le prenu, no jitro be le ka zenba. ganai ri xamgu gi ko cpedu le nu troci ca le nu ri kalri."
+      ]
+    },
+    {
+      "n": 144,
+      "texts": [
+        "la AI-gile cu .kanban. fi pa prenu e mutce AI gunka. ri gunka ne'i le do ba'e skami e ri kantu ro. do jmina le gunka gi ro gunka cu se ckaji pa ralju e pa cmalu gunma. do tavla le ralju, simsa la Discord, e cusku pa sidbo; le ralju cu zbasu ri le karda e pa jitro, ba ta denpa le nu do darxi le ✅ klama djine. le gunma cu gunka le karda ta'i le ka vajni, ta'i pa mapti skami se cpacu fi le bangu cmima. pu le nu pa selci'a cu xruti fi do, pa AI troci prenu cu jersi le bacru ne'i pa se cmima be le samselpla e punji pa kanro pixra. le mulno gunka cu zvati le do jmina e le se galfi papri e le na simsa. do zanru ri, ja punji pa notci gi le gunma cu cikna e troci. ba'e do ka'e xruti le karda le mulno.",
+        "pa djedi fi la AI-gile, sinma ca'o. ca le vanci do punji so'i notci: ti darxi cu na mapti, ta se rarna cu nitcu le ka porsi, xu pa manku tcana cu zasti. do sipna. le AI gunka cu tcidu le notci, galfi, troci e xruti ri fi do. ganai le ba zukte cu kunti gi le nicte vigykarce cu mulno ri fi le Backlog ta'i le karda poi na nitcu le do danfu. ca le prulamnicte cu zasti pa jmina cmalu: so'i preti e so'i se troci, ro ta'i le bacru poi pa spofu prenu ka'e jersi e pa kanro pixra poi jarco le ri gunka. do darxi, zanru le xamgu, e xruti le drata. pa tcana be le lerfu cu jarco le jdima, e le No Token Mode cu zasti fi le jeftu be le ka stidi. ba ta do citka le prulamnicte; le AI gunka na ka'e sidju le ri ca.",
+        "pamoi, ma na la AI-gile. ri na ni'a stura, ri na vecnu, e no prenu cu ckaji le do se samselpla. ri kantu .kanban. poi gunka ne'i le do skami, no cmima, no jimpe be le cuntu e no ckafi. ma ri: pa se jgari ke'a poi do viska ro AI ciska samselpla gunka ca le pa temci, e pa AI gunma cu gunka le karda e do jdice. ri jmina le simsa karda, galfi le cizra cmene, e viska le ka stidi be le samselpla. ri tavla ne'i li ci'i 120 bangu, le bangu be le Dutch e le Flemish e le pirate e le Klingon. le pendo ka'e benji le sivni notci e ri se mipri. la rich e so'i denpa AI gunka pu zbasu ri, ta'i le ka pilno ri ba'e. ri zvati le ganlo pre-alpha, ja'e bo ri cinla ne'i so'i se jgari. ganai ri xamgu gi ko cpedu ta'i le ka jai se jgari, e do ka'e klama ca cfari."
+      ]
+    }
+  ],
+  "quips": {
+    "1": "pa valsi. dasni. ri'a mutce dasni.",
+    "3": "ci valsi. ri ca jetnu bau le so'i vecnu papri.",
+    "8": "bi valsi. ri ku'i cmalu bau le stali tavla.",
+    "21": "le clani cu se sinxa le ka stuna. je'e.",
+    "55": "li mu mu valsi. re karda pu mulno ca le nu do tcidu.",
+    "144": "ti clani be le barda. no 233 zasti. le AI gunka cu klama le sipna."
+  }
+}
