@@ -53,6 +53,7 @@ async function joinLoad() {
 }
 function joinExpiry(c) {
   if (c.kind === 'site' && c.used) return c.passes === null ? t('join.used') : c.passes ? t('join.site.inuse') : t('join.site.ended');   // AIG-699
+  if (c.cancelled) return t('join.cancelled');   // AIG-1249
   if (c.used) return t('join.used');
   const ms = c.exp - Date.now();
   if (ms <= 0) return t('join.expired');
@@ -63,7 +64,8 @@ function joinHtml() {
   const d = JN.data, keep = { n: ($('joinName') || {}).value || '', h: ($('joinHelp') || {}).value || JN.help };
   const row = c => `<div class="join-c" data-code="${esc(c.code)}"><b>${esc(c.kind === 'site' ? '🌐' : ['', '🐣', '🙂', '😎'][c.help] || '')} ${esc(c.name || c.code)}</b> <code>${esc(c.code)}</code>
       <small class="muted">${esc(joinExpiry(c))}</small>${c.inv ? ' ' + fpHtml(c.inv, c.pic && c.pic.pic, c.pic && c.pic.mine) : ''}
-      ${c.kind === 'site' && (c.passes || (!c.used && c.exp > Date.now())) ? `<button type="button" class="join-end" data-code="${esc(c.code)}">${esc(t('join.site.end'))}</button>` : ''}</div>`;
+      ${c.kind === 'site' && (c.passes || (!c.used && c.exp > Date.now())) ? `<button type="button" class="join-end" data-code="${esc(c.code)}">${esc(t('join.site.end'))}</button>` : ''}
+      ${c.kind !== 'site' && !c.used && !c.cancelled && c.exp > Date.now() ? `<button type="button" class="join-cancel" data-code="${esc(c.code)}">${esc(t('join.cancel'))}</button>` : ''}</div>`;
   return `<div class="dmf-sec" id="joinSec"><b>${esc(t('join.h2'))}</b><small class="muted">${esc(t('join.for'))} ${esc(t('join.help'))}</small>
       <select id="joinHelp">${['1', '2', '3'].map(n => `<option value="${n}" ${keep.h === n ? 'selected' : ''}>${esc(['', '🐣', '🙂', '😎'][n] + ' ' + t('join.level.' + n))}</option>`).join('')}</select>
       <input type="text" id="joinName" value="${esc(keep.n)}" placeholder="${esc(t('dmf.invite.name'))}" autocomplete="off">
@@ -95,6 +97,9 @@ document.addEventListener('click', async ev => {
       b.disabled = true;
       JN.link = (await api('POST', '/api/join/site', { name: $('joinName').value.trim() })).link;
       $('joinName').value = ''; JN.msg = t('join.site.made');
+    } else if (b.classList.contains('join-cancel')) {
+      if (!confirm(t('join.cancel.sure'))) return;
+      await api('POST', '/api/join/cancel', { code: b.dataset.code }); JN.msg = t('join.cancel.msg');
     } else if (b.classList.contains('join-end')) {
       if (!confirm(t('join.site.end.sure'))) return;
       await api('POST', '/api/join/revoke', { code: b.dataset.code }); JN.msg = t('join.site.ended.msg');

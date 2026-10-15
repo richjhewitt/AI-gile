@@ -50,7 +50,7 @@ function wzClaimAsk(code) {
 async function wzClaimGo() {
   const b = $('claimGo'); if (!b || b.disabled) return;
   b.disabled = true; setErr('claim-err', '');
-  try { wzWelcome(await api('POST', '/api/join/claim', { code: $('claimCode').value })); }
+  try { wzWelcome(await api('POST', '/api/join/claim', { code: $('claimCode').value, lang: langCode() })); }
   catch (e) { setErr('claim-err', e); b.disabled = false; }
 }
 async function wzClaimSkip() { try { await api('POST', '/api/join/claim/skip'); } catch {} wzChoices(); }
