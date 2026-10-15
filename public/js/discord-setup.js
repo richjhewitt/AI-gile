@@ -15,15 +15,14 @@ const DiscordSetup = (() => {
     .map(([v, n]) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(n)}</option>`).join('');
   function html() {
     const rows = D.bots.map((b, i) => `<div class="srv-row">
-      <input type="text" data-dc="name" data-i="${i}" value="${esc(b.name)}" placeholder="Bot name" onchange="DiscordSetup.edit(this)">
-      <select data-dc="target" data-i="${i}" onchange="DiscordSetup.edit(this)">${optHtml(b.target)}</select>
-      <input type="password" data-dc="token" data-i="${i}" value="" placeholder="${b.hasToken ? 'Token saved (type to replace)' : 'Bot token'}" autocomplete="off" onchange="DiscordSetup.edit(this)">
+      <label class="f"><span>Bot name</span><input type="text" data-dc="name" data-i="${i}" value="${esc(b.name)}" placeholder="Bot name" onchange="DiscordSetup.edit(this)"></label>
+      <label class="f"><span>Which agent it talks to</span><select data-dc="target" data-i="${i}" onchange="DiscordSetup.edit(this)">${optHtml(b.target)}</select></label>
+      <label class="f"><span>Bot token</span><input type="password" data-dc="token" data-i="${i}" value="" placeholder="${b.hasToken ? 'Token saved (type to replace)' : 'Bot token'}" autocomplete="off" onchange="DiscordSetup.edit(this)"></label>
       ${inviteHtml(b)}
       <button type="button" class="primary" onclick="DiscordSetup.linkMe(${i})">Link my Discord</button>
       <span class="dc-link">${linkHtml(b)}</span>
-      <details><summary>or paste a User ID</summary><input type="text" data-dc="users" data-i="${i}" value="${esc(b.users)}" placeholder="Your Discord User ID (optional)" onchange="DiscordSetup.edit(this)"></details>
-      <button type="button" onclick="DiscordSetup.test(${i})">Send test message</button>
-      <button type="button" onclick="DiscordSetup.del(${i})" title="Remove">✕</button>
+      <details><summary>or paste a User ID</summary><label class="f"><span>Your Discord User ID</span><input type="text" data-dc="users" data-i="${i}" value="${esc(b.users)}" placeholder="Your Discord User ID (optional)" onchange="DiscordSetup.edit(this)"></label></details>
+      <div class="actions"><button type="button" onclick="DiscordSetup.test(${i})">Send test message</button> <button type="button" class="dc-del" onclick="DiscordSetup.del(${i})">🗑 Remove bot</button></div>
       <small class="muted">${esc(statusOf(b))}</small></div>`).join('');
     return `<span>💬 Discord</span><small class="muted">Talk to an agent from Discord, as easily as in the board. Optional.</small>
       <details ${D.open ? 'open' : ''} ontoggle="DiscordSetup.open=this.open"><summary>Setup guide (8 steps)</summary><ol>${GUIDE.map(s => `<li>${s}</li>`).join('')}</ol></details>

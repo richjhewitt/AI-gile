@@ -273,15 +273,16 @@ function healthLine() {
 }
 // AIG-773: an ssh server is host + user (saved together as value, user@host) with optional port, key file and default folder.
 const srvSplit = v => { const m = String(v || '').match(/^(ssh:\/\/)?(?:([^@/]+)@)?(.*)$/); return { uri: m[1] || '', user: m[2] || '', host: m[3] || '' }; };
+const srvFld = (label, inner) => `<label class="f"><span>${esc(label)}</span>${inner}</label>`;
 function srvSshInputs(s, i) {
   const p = srvSplit(s.value);
-  return `<input type="text" data-srv="host" data-i="${i}" value="${esc(p.host)}" placeholder="${esc(t('servers.host'))}" onchange="srvEdit(this)">
-    <input type="text" data-srv="user" data-i="${i}" value="${esc(p.user)}" placeholder="${esc(t('servers.user'))}" size="10" onchange="srvEdit(this)">`;
+  return srvFld(t('servers.host'), `<input type="text" data-srv="host" data-i="${i}" value="${esc(p.host)}" placeholder="${esc(t('servers.host'))}" onchange="srvEdit(this)">`)
+    + srvFld(t('servers.user'), `<input type="text" data-srv="user" data-i="${i}" value="${esc(p.user)}" placeholder="${esc(t('servers.user'))}" size="10" onchange="srvEdit(this)">`);
 }
 const srvSshMore = (s, i) => `<div class="srv-more">
-    <input type="number" data-srv="port" data-i="${i}" min="1" max="65535" value="${esc(s.port || '')}" placeholder="${esc(t('servers.port'))}" onchange="srvEdit(this)">
-    <input type="text" data-srv="key" data-i="${i}" value="${esc(s.key || '')}" placeholder="${esc(t('servers.key'))}" onchange="srvEdit(this)">
-    <input type="text" data-srv="folder" data-i="${i}" value="${esc(s.folder || '')}" placeholder="${esc(t('servers.folder'))}" onchange="srvEdit(this)"></div>${srvPwHtml(s, i)}`;
+    ${srvFld(t('servers.port'), `<input type="number" data-srv="port" data-i="${i}" min="1" max="65535" value="${esc(s.port || '')}" placeholder="${esc(t('servers.port'))}" onchange="srvEdit(this)">`)}
+    ${srvFld(t('servers.key'), `<input type="text" data-srv="key" data-i="${i}" value="${esc(s.key || '')}" placeholder="${esc(t('servers.key'))}" onchange="srvEdit(this)">`)}
+    ${srvFld(t('servers.folder'), `<input type="text" data-srv="folder" data-i="${i}" value="${esc(s.folder || '')}" placeholder="${esc(t('servers.folder'))}" onchange="srvEdit(this)">`)}</div>${srvPwHtml(s, i)}`;
 // AIG-1023: an optional sudo password, so agents allowed sudo can run a server step themselves (aigile sudo). Saved with the secrets
 // page token, kept encrypted on this PC (lib/servers.js); the page only learns whether one is saved (sudoPw), never the password.
 const srvPwHtml = (s, i) => !String(s.name || '').trim() ? '' : `<div class="srv-pw"><small>${esc(t('servers.sudoPw'))}</small> <b class="pill" data-srv-pw-state="${i}">${esc(t(s.sudoPw ? 'servers.sudoPw.saved' : 'servers.sudoPw.notset'))}</b>
@@ -297,13 +298,13 @@ async function srvPwSave(i, remove) {
 function serversHtml(msg = '') {
   if (!srvDraft) srvDraft = (leadPrefs().servers || []).map(x => ({ ...x }));
   const rows = srvDraft.map((s, i) => `<div class="srv-row">
-    <input type="text" data-srv="name" data-i="${i}" value="${esc(s.name)}" placeholder="${esc(t('servers.name'))}" onchange="srvEdit(this)">
-    <select data-srv="kind" data-i="${i}" onchange="srvEdit(this)">${['path', 'cmd', 'ssh'].map(k => `<option value="${k}" ${(s.kind || 'path') === k ? 'selected' : ''}>${esc(t('servers.kind.' + k))}</option>`).join('')}</select>
-    ${s.kind === 'ssh' ? srvSshInputs(s, i) : `<input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t('servers.' + (s.kind === 'cmd' ? 'cmd' : 'path') + '.ph'))}" onchange="srvEdit(this)">`}
-    <button type="button" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">✕</button>
+    ${srvFld(t('servers.name'), `<input type="text" data-srv="name" data-i="${i}" value="${esc(s.name)}" placeholder="${esc(t('servers.name'))}" onchange="srvEdit(this)">`)}
+    ${srvFld(t('servers.lbl.kind'), `<select data-srv="kind" data-i="${i}" onchange="srvEdit(this)">${['path', 'cmd', 'ssh'].map(k => `<option value="${k}" ${(s.kind || 'path') === k ? 'selected' : ''}>${esc(t('servers.kind.' + k))}</option>`).join('')}</select>`)}
+    ${s.kind === 'ssh' ? srvSshInputs(s, i) : srvFld(t('servers.lbl.addr'), `<input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t('servers.' + (s.kind === 'cmd' ? 'cmd' : 'path') + '.ph'))}" onchange="srvEdit(this)">`)}
     ${s.kind === 'ssh' ? srvSshMore(s, i) : ''}
     <label class="srv-sudo"><input type="checkbox" data-srv="sudo" data-i="${i}" ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? 'checked' : ''} onchange="srvEdit(this)"> ${esc(t('servers.sudo'))}</label>
-    ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? `<input type="text" data-srv="sudoWho" data-i="${i}" value="${esc(Array.isArray(s.sudo) ? s.sudo.join(', ') : '')}" placeholder="${esc(t('servers.sudoWho'))}" onchange="srvEdit(this)">` : ''}</div>`).join('');
+    ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? `<input type="text" data-srv="sudoWho" data-i="${i}" value="${esc(Array.isArray(s.sudo) ? s.sudo.join(', ') : '')}" placeholder="${esc(t('servers.sudoWho'))}" onchange="srvEdit(this)">` : ''}
+    <div class="actions"><button type="button" class="srv-del" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">${esc(t('servers.del'))}</button></div></div>`).join('');
   const found = (srvFound || []).filter(f => !srvDraft.some(s => s.value === f.path)).map(f => `<button type="button" class="srv-found" data-name="${esc(f.name)}" data-path="${esc(f.path)}" onclick="srvAddFound(this)">+ ${esc(f.name)}</button>`).join(' ');
   return `<span>${esc(t('servers.h'))}</span><small class="muted">${esc(t('servers.help'))}</small>${rows}
     <div><button type="button" onclick="srvAdd()">${esc(t('servers.add'))}</button> <button type="button" id="srvFind" onclick="srvFind()">${esc(t('servers.find'))}</button> ${found}</div>
