@@ -2652,6 +2652,7 @@
  "eng.pick": "Engine voor {name}",
  "eng.lead.tag": "draait het project",
  "srv.engine.nocodex": "Codex is niet geïnstalleerd op deze pc, dus deze run is niet gestart.",
+ "srv.agent.none": "Er is nog geen AI-programma ingesteld, dus het team kan niet gewekt worden. Open Setup en vul Agentprogramma in, of gebruik het bord zonder AI.",
  "tw.login.h": "🟣 Inloggen om te antwoorden",
  "tw.login.help": "Om in de chat te antwoorden plak je een Twitch-chattoken (rechten chat:read en chat:edit) en de bijbehorende login. Het blijft op deze pc staan en wordt nooit meer getoond.",
  "tw.login.get": "Token ophalen",
