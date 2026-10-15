@@ -291,10 +291,10 @@ let lastBadge = -1;
 function setBadge(n) {
   n = badgeCount(n); if (n === lastBadge) return; lastBadge = n;
   try {
-    if (process.platform === 'win32') {
-      const b = badgeBitmap(n);
-      if (win && !win.isDestroyed()) win.setOverlayIcon(b ? nativeImage.createFromBitmap(b.buffer, { width: b.width, height: b.height }) : null, n ? n + ' waiting' : '');
-    } else app.setBadgeCount(n);
+    // AIG-1308: no overlay on Windows: small taskbar buttons draw it as a second (accent-coloured) dot on top of the purple
+    // diamond window icon, which already says something is waiting. Clear any overlay an older build left.
+    if (process.platform === 'win32') { if (win && !win.isDestroyed()) win.setOverlayIcon(null, ''); }
+    else app.setBadgeCount(n);
   } catch {}
 }
 ipcMain.on('aigile:badge', (e, n) => { if (win && !win.isDestroyed() && e.sender === win.webContents) setBadge(n); });
