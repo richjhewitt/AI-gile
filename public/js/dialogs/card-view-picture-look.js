@@ -131,13 +131,14 @@ function lookServiceHtml(p) {
       <label class="f"><span>${esc(t('svc.users'))}</span><input type="text" id="look-svc-users" maxlength="200" value="${esc(s.users || '')}" placeholder="${esc(t('svc.users.ph'))}"></label>
       <label class="f"><span>${esc(t('svc.url'))}</span><input type="url" id="look-svc-url" maxlength="500" value="${esc(s.url || '')}" placeholder="https://..."></label>
       <label class="f"><span>${esc(t('svc.oncall.h'))}</span><select id="look-svc-oncall">${team.map(m => `<option value="${esc(m.name)}" ${m.name === (s.onCall || lead) ? 'selected' : ''}>${esc(m.name)}${m.name === lead ? ' (' + esc(t('svc.lead')) + ')' : ''}</option>`).join('')}</select></label>
+      <label class="f"><span>${esc(t('svc.tokencap'))}</span><input type="text" inputmode="numeric" id="look-svc-cap" maxlength="13" value="${s.tokenCap ? esc(s.tokenCap) : ''}" placeholder="${esc(t('svc.tokencap.ph'))}"></label>
       <p><a href="#/ci/${esc(p.slug)}" onclick="closeDialog()">${esc(t('ci.btn'))}</a></p>
       <label class="chk"><input type="checkbox" id="look-svc-public" ${s.public ? 'checked' : ''}> ${esc(t('svc.public'))} <span class="muted">${esc(t('svc.public.sub'))}</span></label>
     </div></div>`;
 }
 function lookServiceValue() {
   const on = $('look-svc-on').checked, oc = $('look-svc-oncall');
-  return { on, offers: $('look-svc-offers').value, users: $('look-svc-users').value, url: $('look-svc-url').value, onCall: oc ? oc.value : '', public: $('look-svc-public').checked };
+  return { on, offers: $('look-svc-offers').value, users: $('look-svc-users').value, url: $('look-svc-url').value, onCall: oc ? oc.value : '', public: $('look-svc-public').checked, tokenCap: $('look-svc-cap').value };
 }
 // 👥 The roles on this project moved to their own dialog (AIG-423, dialogs/team-profile.js); Look only opens it.
 async function saveLook(auto) {
