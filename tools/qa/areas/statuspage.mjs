@@ -41,6 +41,24 @@ def('statuspage', '🟢 status page: public services reach the relay /status.jso
     check('no card title or other comment leaks', !text.includes(SECRET) && !text.includes(SECRET_TXT) && Object.keys(r).sort().join() === 'at,line,name,offers,state', text);
   } finally { relay.stop(); try { await b.stop(); } catch {} }
 
+  // AIG-1119: after a board restart, unticking Public still takes the service off the relay
+  {
+    const b1 = await startServer({ AIGILE_PUBLIC_MS: '300' }, await freePort());
+    const relay2 = await startRelay({ RELAY_STATS_KEY: (await b1.ok('GET', '/api/licences')).key });
+    let b2 = null;
+    try {
+      await b1.ok('POST', '/api/dms/settings', { relay: relay2.base });
+      await mkProject(b1, 'Restart Pub', 'RSP');
+      await b1.ok('PATCH', '/api/projects/restart-pub', { service: { on: true, offers: 'Radio', public: true } });
+      const names = async () => (await (await fetch(relay2.base + '/status.json')).json()).services.map(x => x.name);
+      check('a public service is published before the restart', !!(await until(async () => (await names()).includes('Restart Pub'), 15000)), await names());
+      await b1.stop();
+      b2 = await startServer({ AIGILE_PUBLIC_MS: '300', AIGILE_DATA: b1.data, AIGILE_LOCAL: path.join(b1.dir, 'aigile.local.json') }, await freePort());
+      await b2.ok('PATCH', '/api/projects/restart-pub', { service: { on: true, offers: 'Radio', public: false } });
+      check('after a restart, unticking Public takes it off the relay', !!(await until(async () => !(await names()).includes('Restart Pub'), 15000)), await names());
+    } finally { relay2.stop(); try { await b1.stop(); } catch {} try { if (b2) await b2.stop(); } catch {} }
+  }
+
   // red: a major incident (c.major, AIG-1049) beats the amber one; the line comes from the worst incident
   const SP = (await import('../../../lib/statuspage.js')).default;
   const mk = (name, service, cards) => ({ slug: name.toLowerCase(), name, service, cards, updated: '2026-10-14T10:00:00Z' });
