@@ -17,7 +17,9 @@ function openDialog(html, cls = '', pop = '') {   // pop: the kind that gets the
     box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.tabIndex = -1;
     const h = box.querySelector('h2, h1, h3'); if (h) { if (!h.id) h.id = 'dlg-title'; box.setAttribute('aria-labelledby', h.id); }
   }
-  if (!dlgOpener) dlgOpener = dlgLast;   // a dialog replacing a dialog keeps the first opener
+  // a dialog replacing a dialog keeps the first opener; nothing focused now (focus moved off the last control, which is still on the page) = no opener
+  const act = document.activeElement, idle = (!act || act === document.body) && dlgLast && document.contains(dlgLast.el);
+  if (!dlgOpener) dlgOpener = idle ? null : dlgLast;
   const f = $('dialog').querySelector('input[type=text]'); if (f) f.focus(); else if (box && !box.contains(document.activeElement)) (dlgFocusables()[0] || box).focus();
 }
 function closeDialog() {
