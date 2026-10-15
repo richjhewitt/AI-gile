@@ -76,4 +76,21 @@ def('problems', '🧩 problem card: API + CLI add/set/link, incidents linked bot
   await ip.waitForSelector('.problem');
   check('an incident card shows its problem', (await ip.innerText('.problem')).includes(pr.id));
   await noErrors(page); await noErrors(ip);
+  // AIG-1152: inline editing on the card, and the known errors page shows the saved workaround
+  const ep = await openPage(ctx, `#/p/prob/${pr.id}`);
+  await ep.waitForSelector('.probedit');
+  await ep.evaluate(() => { document.querySelector('.probedit').open = true; });
+  await ep.fill('.probedit textarea[data-pe="cause"]', 'edited cause');
+  await ep.fill('.probedit textarea[data-pe="workaround"]', 'edited workaround');
+  await ep.click('.probedit .pe-save');
+  await ep.waitForFunction(() => /\S/.test(document.querySelector('.probedit .pe-msg').textContent));
+  const ed = (await s.ok('GET', '/api/projects/prob/problems')).problems.find(x => x.id === pr.id);
+  check('editing on the card saves cause and workaround', ed.rootCause === 'edited cause' && ed.workaround === 'edited workaround', ed);
+  await ep.check(`.probedit input[value="${i4.id}"]`);
+  await ep.waitForFunction(() => /\S/.test(document.querySelector('.probedit .pe-msg').textContent));
+  check('ticking an incident links it both ways', (await getCard(s, 'prob', i4.id)).problemId === pr.id && (await getCard(s, 'prob', pr.id)).incidents.includes(i4.id));
+  const kp = await openPage(ctx, '#/known-errors/prob');
+  await kp.waitForSelector('.ke-row');
+  check('the known errors page shows the edited workaround', /edited workaround/.test(await kp.innerText('body')));
+  await noErrors(ep); await noErrors(kp);
 }, true);
