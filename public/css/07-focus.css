@@ -11,7 +11,7 @@ html[data-focus] body { overflow: hidden; }
 .fx-notes { font-size: clamp(17px, 2vw, 22px); line-height: 1.5; opacity: .85; white-space: pre-wrap; max-height: 40vh; overflow: auto; }
 .fx-time { margin-top: 26px; font-size: 18px; color: var(--muted); }
 .fx-btns { max-width: 900px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 14px; }
-.fx-done { font-size: clamp(28px, 4vw, 44px); padding: 26px; border-radius: 18px; border: 0; cursor: pointer; background: var(--done); color: #fff; font-weight: 700; }
+.fx-done { font-size: clamp(28px, 4vw, 44px); padding: 26px; border-radius: 18px; border: 0; cursor: pointer; background: var(--done); color: var(--on-fill); font-weight: 700; }
 .fx-done:hover { filter: brightness(1.1); }
 .fx-small { display: flex; justify-content: center; gap: 12px; }
 .fx-small button { font-size: 14px; padding: 6px 14px; opacity: .7; background: transparent; color: inherit; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }

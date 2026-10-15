@@ -83,7 +83,7 @@ body.pop { padding-inline-start: 0; } body.pop #dmRail, body.pop #dmPanel { disp
 .face-lib figcaption { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dm-av { display: inline-flex; width: 42px; height: 42px; border-radius: 50%; align-items: center; justify-content: center; font-size: 21px; background: color-mix(in srgb, var(--proj, var(--accent)) 22%, var(--panel)); border: 2px solid transparent; transition: border-radius .15s; }
 .dm-railbtn:hover .dm-av, .dm-railbtn.on .dm-av { border-radius: 14px; border-color: var(--proj, var(--accent)); }
-.dm-unread { position: absolute; inset-inline-end: -2px; bottom: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--danger); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
+.dm-unread { position: absolute; inset-inline-end: -2px; bottom: -2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--danger); color: var(--on-fill); font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
 #dmPanel { position: fixed; inset-inline-start: 60px; top: 0; bottom: 0; width: min(440px, calc(100vw - 60px)); z-index: 24; background: var(--panel); border-inline-end: 1px solid var(--line); box-shadow: 4px 0 24px rgba(0,0,0,.2); display: flex; flex-direction: column; }
 #dmPanel[hidden] { display: none; }
 .dm-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
@@ -140,7 +140,7 @@ body:has(#suPrompt) #app { padding-bottom: 76px; }
 .dm-pip { position: absolute; inset-inline-start: -9px; top: 17px; width: 8px; height: 8px; border-radius: 0; border-start-end-radius: 4px; border-end-end-radius: 4px; background: var(--text); }
 .dm-filter { display: flex; gap: 6px; padding: 8px 12px 0; }
 .dm-chip { padding: 4px 12px; border: 1px solid var(--line); border-radius: 14px; background: none; color: var(--text); cursor: pointer; font-size: 13px; }
-.dm-chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.dm-chip.on { background: var(--accent); border-color: var(--accent); color: var(--on-fill); }
 .dm-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border: 0; border-radius: 10px; background: none; text-align: start; cursor: pointer; position: relative; }
 .dm-row:hover { background: var(--col); }
 .dm-row .dm-rowtext { flex: 1; display: flex; flex-direction: column; min-width: 0; }

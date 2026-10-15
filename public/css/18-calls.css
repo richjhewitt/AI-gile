@@ -13,5 +13,5 @@
 .call-name { position: absolute; left: 6px; bottom: 4px; font-size: 12px; padding: 1px 6px; border-radius: 6px; background: #000a; color: #fff; max-width: calc(100% - 12px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .call-bar { display: flex; gap: 8px; flex-wrap: wrap; }
 .call-bar button.on { outline: 2px solid var(--accent); }
-.call-bar button.bad { background: var(--danger); color: #fff; border-color: var(--danger); }
+.call-bar button.bad { background: var(--danger); color: var(--on-fill); border-color: var(--danger); }
 .dm-msg.dm-call .dm-bubble { font-style: italic; }

@@ -4,7 +4,7 @@
 #scChip .sc-msg { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
 #scChip .sc-btns { display: flex; flex-wrap: wrap; gap: 6px; }
 #scChip button, #scToday .sc-x { border-radius: 999px; padding: 4px 12px; cursor: pointer; font-weight: 600; }
-#scChip .sc-done, #scChip .sc-go { background: var(--done, #16a34a); color: #fff; border: 0; }
+#scChip .sc-done, #scChip .sc-go { background: var(--done, #16a34a); color: var(--on-fill); border: 0; }
 .sc-pulse { animation: scPulse 1.2s ease-out 1; }
 @keyframes scPulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--done, #16a34a) 70%, transparent); } 100% { box-shadow: 0 0 0 14px transparent; } }
 @media (prefers-reduced-motion: reduce) { .sc-pulse { animation: none; } }

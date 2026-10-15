@@ -4,6 +4,7 @@
   --accent: #3b6cf6; --done: #1f9d61; --warn: #d97706; --danger: #dc2626; --you: #9333ea;
   --shadow: 0 1px 2px rgba(20,30,50,.08);
   --radius: 10px;
+  --on-fill: #fff; --warn-ink: #b45309;   /* text on accent/done/danger fills; dark in the dark themes, where those fills are light */
   color-scheme: light;   /* native bits (file picker, scrollbars, date boxes) follow the theme (AIG-930) */
 }
 /* Dark: the system setting, unless the user picked Light; or the user picked Dark (AIG-143). */
@@ -12,6 +13,7 @@
     --bg: #12151b; --panel: #1b2029; --col: #161a22; --text: #e6e9ef; --muted: #9da5b8; --line: #2a303c;
     --accent: #6d93ff; --done: #34c77b; --warn: #f0a33a; --danger: #f06262; --you: #b57cff;
     --shadow: 0 1px 2px rgba(0,0,0,.4);
+    --on-fill: #0b1020; --warn-ink: var(--warn);
     color-scheme: dark;
   }
 }
@@ -19,6 +21,7 @@
     --bg: #12151b; --panel: #1b2029; --col: #161a22; --text: #e6e9ef; --muted: #9da5b8; --line: #2a303c;
     --accent: #6d93ff; --done: #34c77b; --warn: #f0a33a; --danger: #f06262; --you: #b57cff;
     --shadow: 0 1px 2px rgba(0,0,0,.4);
+    --on-fill: #0b1020; --warn-ink: var(--warn);
     color-scheme: dark;
 }
 /* Black (AIG-916): true #000 for OLED, dim text, panels and columns the same black as the page (only thin lines set them apart). */
@@ -26,13 +29,14 @@
   --bg: #000; --panel: #000; --col: #000; --text: #b4b9c4; --muted: #7a8192; --line: #23262d;
   --accent: #6d93ff; --done: #34c77b; --warn: #f0a33a; --danger: #f06262; --you: #b57cff;
   --shadow: none;
+  --on-fill: #0b1020; --warn-ink: var(--warn);
   color-scheme: dark;
 }
 /* Night mode (the owner went quiet): dim, warm, no blue light. */
 :root[data-night] {
   --bg: #0d0906; --panel: #15100b; --col: #110c08; --text: #c9a27e; --muted: #7d6450; --line: #2a1f16;
   --accent: #a8622c; --done: #7f8a3a; --warn: #b8782e; --danger: #a8483a; --you: #8f5a4a;
-  --shadow: none;
+  --shadow: none; --on-fill: #fff; --warn-ink: var(--warn);
   color-scheme: dark;
 }
 :root[data-night] img, :root[data-night] svg { filter: sepia(.6) brightness(.8); }
@@ -66,10 +70,10 @@ main { padding: 20px; }
 .svc-line { font-size: 12px; margin-top: 4px; } .svc-url { text-decoration: underline; cursor: pointer; }
 .pill { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; background: var(--col); color: var(--muted); white-space: nowrap; }
 .pill.grp { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-.pill.you { background: var(--you); color: #fff; }
+.pill.you { background: var(--you); color: var(--on-fill); }
 .pill.timed { background: var(--chip, rgba(127,127,127,.18)); }
-.pill.blocked { background: var(--danger); color: #fff; }
-.pill.urgent { color: var(--danger); } .pill.high { color: var(--warn); }
+.pill.blocked { background: var(--danger); color: var(--on-fill); }
+.pill.urgent { color: var(--danger); } .pill.high { color: var(--warn-ink); }
 
 /* ---------- Portfolio (home) ---------- */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
@@ -119,7 +123,7 @@ main { padding: 20px; }
 .ctab { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 8px 12px; font-weight: 600; color: var(--muted); flex: none; }
 .ctab.on { color: var(--text); border-bottom-color: var(--accent); }
 .ctab .n { font-size: 11px; background: var(--col); border-radius: 99px; padding: 1px 6px; margin-inline-start: 4px; color: var(--muted); }
-.ctab .n.hot { background: var(--you); color: #fff; }
+.ctab .n.hot { background: var(--you); color: var(--on-fill); }
 .comment.latest { background: var(--col); border-radius: 8px; padding: 10px 12px; border: 0; }
 .tag-latest { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent); margin-inline-end: 8px; }
 .pres { font-weight: 600; } .pres.on { color: var(--done); } .pres.off { color: var(--muted); } .pres.wake { color: var(--warn); }
