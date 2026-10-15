@@ -243,6 +243,15 @@ def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; an uns
   page.on('dialog', d => { asked = d.message(); d.dismiss(); });
   await Promise.all([page.waitForEvent('load'), page.click('#updateTop button')]);
   check('Refresh asks nothing (AIG-1022) and the half-typed reply is back as a draft', asked === '' && await page.waitForFunction(() => (document.getElementById('r-text') || {}).value === 'half a sentence').then(() => true, () => false), asked);
+  // AIG-1120: a half-filled new-card form is not a draft, so Refresh asks first in the app's own box; Cancel keeps it
+  await page.evaluate(() => { window.__still = 1; newCard(); });
+  await page.fill('#f-description', 'not saved anywhere');
+  await page.evaluate(() => { refreshPage(); });
+  await page.waitForSelector('#leaveBox #leaveNo');
+  check('an unsaved new-card form asks in the own app box, naming the action', /Refresh/.test(await page.textContent('#leaveBox')) && asked === '', asked);
+  await page.click('#leaveNo');
+  check('Cancel stays: no reload, the form text is still there', (await page.evaluate(() => window.__still)) === 1 && (await page.inputValue('#f-description')) === 'not saved anywhere' && (await page.locator('#leaveBox').count()) === 0);
+  await page.evaluate(() => closeDialog());
   // Desktop app: its Restart pill replaces Refresh, since a restart reloads too (AIG-83, AIG-130).
   await page.waitForSelector('#r-text').catch(() => page.click('[data-ctab="reply"]'));
   build = 'three';

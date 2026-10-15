@@ -42,6 +42,12 @@ def('twitchtab', 'Twitch tab in the DM window: hidden with no channel, set in Se
   await pg.waitForFunction(() => /live one/.test(document.getElementById('dmList').textContent), null, { timeout: 10000 });
   const last = await pg.locator('#dmList .tw-name').last().textContent();
   check('a new message appears live at the bottom', last === 'Carol', last);
+  // AIG-1120: the Twitch pop-out window keeps polling
+  const tp = await openPage(ctx, '#/'); await tp.goto(s.base + '/#/pop-twitch'); await tp.reload(); await tp.waitForSelector('#twPop #dmList .tw-msg');
+  await s.ok('POST', '/api/twitch/stub-message', { name: 'Dave', content: 'popout live' });
+  await tp.waitForFunction(() => /popout live/.test(document.getElementById('dmList').textContent), null, { timeout: 10000 });
+  check('the Twitch pop-out shows a new message live', true);
+  await tp.close();
   check('no token: there is no reply box (read-only)', await pg.locator('#twText').count() === 0 && (await s.ok('GET', '/api/twitch/config')).canReply === false);
   check('no token: sending is refused', (await s.api('POST', '/api/twitch/send', { text: 'hi' })).status === 400);
   check('a bad token is refused', (await s.api('POST', '/api/twitch/token', { login: 'smizflark', token: 'short' })).status === 400);
