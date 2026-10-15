@@ -147,6 +147,27 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   await page.keyboard.press('Shift+ArrowLeft');
   for (let i = 0; i < 20 && (await getCard(s, 'alpha', mid)).status === st1; i++) await sleep(250);
   check('Shift+Left moves it back', (await getCard(s, 'alpha', mid)).status === st0);
+  // AIG-1267: two Shift+Right in a row, waiting past the board redraw in between, move the card two columns.
+  const colOrder = await page.evaluate(() => [...document.querySelectorAll('#app .board .column')].filter(c => c.getClientRects().length).map(c => c.dataset.status));
+  await page.focus(`a.card[data-id="${mid}"]`);
+  await page.keyboard.press('Shift+ArrowRight');
+  for (let i = 0; i < 20 && (await getCard(s, 'alpha', mid)).status === st0; i++) await sleep(250);
+  await sleep(1500);
+  await page.evaluate(async () => { state.lastSig = state.lastBoardSig = null; await refresh(true); });
+  const focusedAfter = await page.evaluate(() => document.activeElement.dataset && document.activeElement.dataset.id);
+  const stA = (await getCard(s, 'alpha', mid)).status;
+  await page.keyboard.press('Shift+ArrowRight');
+  for (let i = 0; i < 20 && (await getCard(s, 'alpha', mid)).status === stA; i++) await sleep(250);
+  const stB = (await getCard(s, 'alpha', mid)).status;
+  check('after a move and a board redraw the card still has focus', focusedAfter === mid, focusedAfter);
+  check('two Shift+Right in a row move the card two columns', colOrder.indexOf(stB) === colOrder.indexOf(st0) + 2, [colOrder, st0, stA, stB]);
+  await page.focus(`a.card[data-id="${mid}"]`);
+  await page.keyboard.press('Shift+ArrowLeft');
+  for (let i = 0; i < 20 && (await getCard(s, 'alpha', mid)).status === stB; i++) await sleep(250);
+  await sleep(300);
+  await page.keyboard.press('Shift+ArrowLeft');
+  for (let i = 0; i < 20 && (await getCard(s, 'alpha', mid)).status !== st0; i++) await sleep(250);
+  check('two Shift+Left bring it back', (await getCard(s, 'alpha', mid)).status === st0);
   await page.focus(`a.card[data-id="${mid}"]`);
   await page.evaluate(async () => { state.lastSig = state.lastBoardSig = null; await refresh(true); });
   check('a board redraw keeps the focused card focused (AIG-1289)', (await page.evaluate(() => document.activeElement.dataset && document.activeElement.dataset.id)) === mid);
@@ -164,6 +185,15 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   await page.keyboard.press('e');
   await page.waitForSelector('#f-title');
   check('e opens the edit form', true);
+  // AIG-1268: Esc leaves the edit form (nothing saved, focus on the card panel), so c then jumps to the reply box.
+  await page.keyboard.type('XYZ');
+  await page.keyboard.press('Escape');
+  await page.waitForSelector('#f-title', { state: 'detached' });
+  check('Esc in the edit form goes back to the card view', (await page.locator('#modal .panel').count()) === 1 && (await page.locator('#modal .panel form #f-title').count()) === 0);
+  check('Esc saved nothing', (await getCard(s, 'alpha', mid)).title === 'Mover');
+  check('after Esc the focus is on the card panel', await page.evaluate(() => !!document.activeElement.closest('#modal .panel')));
+  await page.keyboard.press('c');
+  check('c after Esc puts the cursor in the reply box, not the title', (await page.evaluate(() => document.activeElement.id)) === 'r-text');
   await noErrors(page);
   await page.close();
 }, true);
