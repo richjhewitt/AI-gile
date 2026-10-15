@@ -124,6 +124,38 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   await page.keyboard.press('g'); await page.keyboard.press('m');
   await page.waitForSelector('#dmPanel:not([hidden])');
   check('g m opens Messages', true);
+
+  // AIG-1267: Shift+Right / Shift+Left move the focused card one column and keep focus; AIG-1268: e edits, c comments.
+  await mkCard(s, 'alpha', 'Mover', { status: 'todo' });
+  await page.goto(page.url().split('#')[0] + '#/p/alpha');
+  await page.waitForSelector('a.card[data-id]');
+  const mid = await page.evaluate(() => [...document.querySelectorAll('a.card[data-id]')].find(a => /Mover/.test(a.textContent)).dataset.id);
+  const st0 = (await getCard(s, 'alpha', mid)).status;
+  await page.focus(`a.card[data-id="${mid}"]`);
+  await page.keyboard.press('Shift+ArrowRight');
+  for (let i = 0; i < 20 && (await getCard(s, 'alpha', mid)).status === st0; i++) await sleep(250);
+  const st1 = (await getCard(s, 'alpha', mid)).status;
+  await sleep(500);
+  check('Shift+Right moves the focused card to the next column', st1 !== st0, [st0, st1]);
+  check('the moved card keeps focus', (await page.evaluate(() => document.activeElement.dataset && document.activeElement.dataset.id)) === mid);
+  check('the move is announced', /moved to/.test(await page.locator('#scLive').innerText()));
+  await page.keyboard.press('Shift+ArrowLeft');
+  for (let i = 0; i < 20 && (await getCard(s, 'alpha', mid)).status === st1; i++) await sleep(250);
+  check('Shift+Left moves it back', (await getCard(s, 'alpha', mid)).status === st0);
+  await page.keyboard.press('?');
+  check('cheat sheet lists move, edit and comment', /Shift\+←/.test(await page.locator('#dialog').innerText()) && (await page.locator('.sc-t kbd', { hasText: /^e$/ }).count()) === 1);
+  await page.keyboard.press('Escape');
+  await page.goto(page.url().split('#')[0] + '#/p/alpha/' + mid);
+  await page.waitForSelector('#modal .panel');
+  await page.evaluate(() => document.activeElement && document.activeElement.blur());
+  await page.keyboard.press('c');
+  check('c puts the cursor in the reply box', (await page.evaluate(() => document.activeElement.id)) === 'r-text');
+  await page.keyboard.type('hello');
+  check('typing in the reply box fires no shortcut', (await page.inputValue('#r-text')) === 'hello');
+  await page.evaluate(() => document.activeElement.blur());
+  await page.keyboard.press('e');
+  await page.waitForSelector('#f-title');
+  check('e opens the edit form', true);
   await noErrors(page);
   await page.close();
 }, true);

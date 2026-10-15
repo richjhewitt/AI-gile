@@ -4,7 +4,7 @@
 const Shortcuts = (() => {
   // [keys, how the keys combine ('or' = either, 'then' = one after the other), language key]
   const LIST = [
-    [['j', 'k'], 'or', 'sc.move'], [['Enter', 'o'], 'or', 'sc.open'], [['a'], '', 'sc.accept'], [['b'], '', 'sc.back'], [['n'], '', 'sc.new'],
+    [['j', 'k'], 'or', 'sc.move'], [['Enter', 'o'], 'or', 'sc.open'], [['a'], '', 'sc.accept'], [['b'], '', 'sc.back'], [['n'], '', 'sc.new'], [['e'], '', 'sc.edit'], [['c'], '', 'sc.comment'], [['Shift+←', 'Shift+→'], 'or', 'sc.movecol'],
     [['g', 'h'], 'then', 'sc.home'], [['g', 'i'], 'then', 'sc.inbox'], [['g', 'm'], 'then', 'sc.messages'], [['g', 's'], 'then', 'sc.setup'],
     [['/'], '', 'sc.search'], [['?'], '', 'sc.keyhelp'], [['Esc'], '', 'sc.close']];
   let gAt = 0;
@@ -25,9 +25,34 @@ const Shortcuts = (() => {
       + '.sc-k{white-space:nowrap;width:1%}.sc-t kbd{display:inline-block;min-width:1.2em;text-align:center;padding:1px 6px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;background:var(--col);color:var(--text);font:12px/1.4 var(--mono,monospace)}';
     document.head.appendChild(s);
   }
+  // AIG-1267: Shift+Left/Right on a focused board card moves it one column (the way the screen reads, so it flips in right-to-left), says where it went.
+  function say(msg) {
+    let r = document.getElementById('scLive');
+    if (!r) { r = document.createElement('div'); r.id = 'scLive'; r.setAttribute('role', 'status'); r.setAttribute('aria-live', 'polite'); r.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap'; document.body.appendChild(r); }
+    r.textContent = ''; setTimeout(() => { r.textContent = msg; }, 50);
+  }
+  async function moveFocused(el, dir) {
+    const cols = [...document.querySelectorAll('#app .board .column')].filter(vis), from = el.closest('.column'), i = cols.indexOf(from), to = cols[i + dir];
+    if (!from || !to || !state.project) return;
+    const id = el.dataset.id, status = to.dataset.status, step = to.dataset.step || '', c = state.project.cards.find(x => x.id === id);
+    if (!c) return;
+    const name = (to.querySelector('h3 > span') || {}).textContent || status, body = { status, step };
+    try {
+      if (c.type === 'incident' && status === 'done' && c.status !== 'done') { body.postmortem = await postmortemAsk(); if (!body.postmortem) return; }
+      await api('PATCH', `/api/projects/${slug()}/cards/${id}`, body);
+      await refresh(true);
+    } catch (err) { say(t('board.movefail', { msg: err.message })); return; }
+    const again = document.querySelector(`#app a.card[data-id="${CSS.escape(id)}"]`); if (again) again.focus();
+    say(t('sc.moved', { id, col: name.trim() }));
+  }
   function key(e) {
     if (e.ctrlKey || e.altKey || e.metaKey || e.isComposing || e.defaultPrevented || typing(e)) return;
     const k = e.key, dlg = $('dialog') && $('dialog').firstChild;
+    if (e.shiftKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft') && !$('dialog').firstChild && !document.querySelector('#modal .panel')) {
+      const el = document.activeElement, d = arrowStep(e);
+      if (el && el.matches && el.matches('#app .board a.card[data-id]') && d) { e.preventDefault(); moveFocused(el, d); }
+      return;
+    }
     if (!k || k.length !== 1) return;
     if (k === '?') { e.preventDefault(); if (!dlg) sheet(); else if ($('scClose')) closeDialog(); return; }
     const l = k.toLowerCase();
@@ -52,6 +77,12 @@ const Shortcuts = (() => {
       const ai = document.getElementById('ibAi'); if (ai && !ai.hidden) return;   // the inbox flick view has its own a
       const btn = modal && modal.querySelector(`.verdict button[onclick*="verdict(${l === 'a'}"]`);
       if (btn) { e.preventDefault(); btn.click(); }
+      return;
+    }
+    if (modal && (l === 'e' || l === 'c')) {   // AIG-1268: the open card
+      const btn = l === 'e' ? modal.querySelector('.card-acts button[onclick="editCard()"]') : null;
+      if (l === 'e' && btn) { e.preventDefault(); btn.click(); }
+      if (l === 'c' && typeof cardTab === 'function') { if (!$('r-text')) return; e.preventDefault(); cardTab('reply'); $('r-text').focus(); }
       return;
     }
     if (modal) return;
