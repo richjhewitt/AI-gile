@@ -179,6 +179,7 @@ code[data-copy-text] { cursor: pointer; }
 .urg-btn { padding: 0 5px; font-size: 12px; line-height: 18px; filter: grayscale(1); opacity: .55; }
 .urg-btn.on { filter: none; opacity: 1; }
 .card .urg-btn { float: inline-end; margin-inline-start: 4px; opacity: 0; }
+.card-menu .urg-btn.urg-lab { padding: revert-layer; font-size: inherit; line-height: inherit; filter: none; opacity: 1; float: none; margin: 0; }
 .card:hover .urg-btn, .card .urg-btn.on, .card .urg-btn:focus-visible { opacity: 1; }
 @media (hover: none) { .card .urg-btn { opacity: .7; } .card .urg-btn.on { opacity: 1; } }
 .card.is-urgent { border-inline-start: 3px solid var(--danger); }

@@ -38,6 +38,9 @@ async function morningPrompt() {
     <button onclick="suPromptGone()">${esc(t('standup.prompt.no'))}</button></div>`;
   document.body.appendChild(el);
 }
+// Gone on any move to another page and on Esc: it is only a nudge, never something to leave sitting over a list or a chat (AIG-1139).
+window.addEventListener("hashchange", suPromptGone);
+document.addEventListener("keydown", e => { if (e.key === "Escape") suPromptGone(); });
 async function suPick() {
   const ps = await api('GET', '/api/projects');
   openDialog(`<h2>${esc(t('standup.pick.title'))}</h2><form class="su-pick" onsubmit="return suPicked(event)">
