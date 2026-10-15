@@ -249,6 +249,9 @@ body.poptwitch { padding: 0; } body.poptwitch main { display: none; }
 .dm-newgroup { border: 0; background: none; cursor: pointer; font-size: 12px; color: inherit; padding: 2px 4px; }
 .grp-pick { max-height: 45vh; overflow: auto; margin: 8px 0; }
 .grp-cand { display: block; font-weight: normal; margin: 4px 0; }
+.grp-search { width: 100%; margin: 6px 0 0; box-sizing: border-box; }
+.grp-proj { font-size: 12px; font-weight: 600; margin: 10px 0 2px; }
+.grp-cand[hidden], .grp-proj[hidden] { display: none; }
 .dm-closed { margin-top: 12px; border-top: 1px solid var(--col); padding-top: 8px; }
 .dm-closed .dm-rowwrap { }
 .dm-closedlink { border: 0; background: none; color: var(--muted, #888); font-size: 12px; text-decoration: underline; cursor: pointer; padding: 4px 10px; }
