@@ -1,6 +1,6 @@
 /* ---------- 📞 Calls (AIG-1162): voice, video and screen share over LiveKit (lifted from ChilledChat's voice-livekit.js) ---------- */
 // Generic: Call.join({ title, getToken }) opens one floating call panel (participant tiles; Mic, Camera, Share screen, Leave).
-// getToken() answers { url, token } from the board; the room is inside the token, so any caller (a friend's DM now, a project's
+// getToken() answers { url, token, room? } from the board (room: the call must be that one, checked once joined); the room is inside the token, so any caller (a friend's DM now, a project's
 // Meeting Room later) only says how to get one. livekit-client comes from jsDelivr, pinned, with SRI (like xterm in terminal.js).
 // Screen share is video only: no system audio, so the other callers' voices never echo back to them.
 const Call = (() => {
@@ -74,6 +74,8 @@ const Call = (() => {
         .on(E.TrackMuted, again).on(E.TrackUnmuted, again).on(E.LocalTrackPublished, () => room === r && paint()).on(E.LocalTrackUnpublished, () => room === r && paint())
         .on(E.Disconnected, () => { if (room === r) { room = null; cleanup(); } });
       await r.connect(tk.url, tk.token);
+      // AIG-1171: the board said which room this token is for; a token for any other room is left before the mic goes on.
+      if (tk.room && r.name !== tk.room) { try { await r.disconnect(); } catch {} throw new Error(t('lkcall.wrongroom')); }
       room = r; paint();
       try { await r.localParticipant.setMicrophoneEnabled(true); } catch (e) { err(e); }   // no mic (or it was refused): still in the call, listening
       paint();

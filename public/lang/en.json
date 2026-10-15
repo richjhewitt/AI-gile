@@ -3488,6 +3488,7 @@
  "lkcall.screen.on": "🖥️ Share screen",
  "lkcall.screen.off": "🖥️ Stop sharing",
  "lkcall.leave": "Leave call",
+ "lkcall.wrongroom": "That call pass was for a different call, so AI-gile left it straight away. Ask your friend to start the call again.",
  "lkcall.set.h": "📞 Calls (LiveKit)",
  "lkcall.set.on": "Ready",
  "lkcall.set.off": "Not set up",

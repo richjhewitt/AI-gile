@@ -11,6 +11,26 @@ const SECDIR = tmp('callsec');
 const SECRET = 'qa-livekit-secret-Zx81', KEY = 'APIqaKey123', URL = 'wss://livekit.example.test';
 const claims = tok => JSON.parse(Buffer.from(tok.split('.')[1], 'base64url').toString('utf8'));
 const signedWith = (tok, secret) => { const [h, p, sig] = tok.split('.'); return JSON.parse(Buffer.from(h, 'base64url')).alg === 'HS256' && crypto.createHmac('sha256', secret).update(h + '.' + p).digest('base64url') === sig; };
+// AIG-1171: a fake guest token (any secret: B cannot check A's signature, it checks the claims).
+const fakeTok = (c, alg = 'HS256') => { const b = x => Buffer.from(JSON.stringify(x)).toString('base64url'), body = b({ alg, typ: 'JWT' }) + '.' + b(c); return body + '.' + crypto.createHmac('sha256', 'x').update(body).digest('base64url'); };
+// AIG-1171: a stand-in for livekit-client in the page, so the call panel's joining, leaving and tiles can be checked without a LiveKit.
+// window.lkHold: connect() waits until the test calls lkLog.rooms[i].ok(); window.lkRoomName: the room name the "server" answers with.
+function stubLivekit() {
+  const log = window.lkLog = { attach: 0, detach: 0, mic: 0, connects: [], disconnects: 0, rooms: [] };
+  class Track { constructor(kind, source) { this.kind = kind; this.source = source; this.els = []; }
+    attach() { log.attach++; const v = document.createElement(this.kind === 'audio' ? 'audio' : 'video'); this.els.push(v); return v; }
+    detach(el) { const out = el ? this.els.filter(x => x === el) : this.els.slice(); this.els = this.els.filter(x => !out.includes(x)); log.detach += out.length; return out; } }
+  class P { constructor(id) { this.identity = id; this.name = id; this.pubs = new Map(); this.isMicrophoneEnabled = false; this.isCameraEnabled = false; this.isScreenShareEnabled = false; this.isSpeaking = false; }
+    getTrackPublication(s) { return this.pubs.get(s); }
+    async setMicrophoneEnabled(v) { log.mic++; this.isMicrophoneEnabled = v; } async setCameraEnabled(v) { this.isCameraEnabled = v; } async setScreenShareEnabled(v) { this.isScreenShareEnabled = v; } }
+  class Room { constructor() { this.h = {}; this.localParticipant = new P('me'); this.remoteParticipants = new Map(); this.name = ''; this.gone = false; log.rooms.push(this); }
+    on(e, f) { (this.h[e] = this.h[e] || []).push(f); return this; }
+    emit(e, ...a) { (this.h[e] || []).forEach(f => f(...a)); }
+    connect(url, token) { log.connects.push(token); return new Promise(ok => { this.ok = () => { this.name = window.lkRoomName || 'r1'; ok(); }; if (!window.lkHold) this.ok(); }); }
+    async disconnect() { log.disconnects++; this.gone = true; } }
+  const E = ['TrackSubscribed', 'TrackUnsubscribed', 'ParticipantConnected', 'ParticipantDisconnected', 'ActiveSpeakersChanged', 'TrackMuted', 'TrackUnmuted', 'LocalTrackPublished', 'LocalTrackUnpublished', 'Disconnected'];
+  window.LivekitClient = { Room, RoomEvent: Object.fromEntries(E.map(e => [e, e])), Track: { Source: { Camera: 'camera', ScreenShare: 'screen_share', Microphone: 'microphone' } }, Track_: Track, P };
+}
 const roomFor = (m1, m2) => 'aigile-dm-' + crypto.createHash('sha256').update('aigile-call-v1|' + [m1, m2].sort().join('|')).digest('hex').slice(0, 32);
 
 def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route refuses non-participants / teams / not set up, token claims and room correct, the friend joins with the guest token (AIG-1162)', async (s, ctx) => {
@@ -79,6 +99,17 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     const t2 = await b.ok('POST', `/api/calls/dm/${ca.id}/token`, {});
     const c2 = claims(t2.token);
     check('B\'s token is A\'s guest token: same room, B\'s identity, signed by A\'s secret', t2.theirs === true && t2.room === room && c2.video.room === room && c2.sub === onB.mailbox && c2.iss === KEY && signedWith(t2.token, SECRET), c2);
+    // AIG-1171: B keeps a guest token only when its own claims are for this DM's room, for B, and live (not the envelope's word)
+    const invFile = path.join(b.data, 'calls', 'invites.json'), invOk = fs.readFileSync(invFile, 'utf8');
+    const nowS = Math.floor(Date.now() / 1000), good = { iss: KEY, sub: onB.mailbox, nbf: nowS - 10, exp: nowS + 3600, video: { room, roomJoin: true } };
+    const forged = { 'another room': { ...good, video: { room: 'aigile-dm-0123456789abcdef0123456789abcdef', roomJoin: true } }, 'someone else (A\'s identity)': { ...good, sub: onA.mailbox },
+      'expired': { ...good, exp: nowS - 5 }, 'living for days': { ...good, exp: nowS + 5 * 86400 }, 'not yet valid': { ...good, nbf: nowS + 3600 }, 'no join grant': { ...good, video: { room } } };
+    const kept = async tokn => { const all = JSON.parse(invOk); all[ca.id].token = tokn; fs.writeFileSync(invFile, JSON.stringify(all)); const st = await b.ok('GET', `/api/calls/dm/${ca.id}`); const tk = await b.api('POST', `/api/calls/dm/${ca.id}/token`, {}); return st.invite || tk.body.token === tokn; };
+    const took = []; for (const [k, c] of Object.entries(forged)) if (await kept(fakeTok(c))) took.push(k);
+    if (await kept(fakeTok(good, 'none'))) took.push('alg none');
+    check('a guest token for another room / another person / expired / too long / not yet valid / no join / alg none is never used', took.length === 0, took);
+    check('a guest token with the right claims is used (the check is on the claims, not the signature)', await kept(fakeTok(good)));
+    fs.writeFileSync(invFile, invOk);
     check('B\'s chat shows the call line', (await b.ok('GET', `/api/dms/contacts/${ca.id}/messages`)).some(m => m.kind === 'call' && m.dir === 'in'));
 
     // blocked: no token
@@ -90,7 +121,15 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     const setup = await openPage(ctx, '#/setup/calls');
     await setup.waitForSelector('#callSetState');
     check('Setup → Calls shows Ready and the address, the secret box empty', /Ready/.test(await setup.locator('#callSetState').innerText()) && await setup.locator('#callSetUrl').inputValue() === URL && await setup.locator('#callSetSecret').inputValue() === '');
-    noErrors(page); noErrors(setup);
+    // AIG-1171: the page checks the joined room is the one the board named, before the mic goes on
+    const pg = await openPage(ctx, '#/');
+    await pg.evaluate(stubLivekit);
+    await pg.evaluate(() => { window.lkRoomName = 'someone-elses-room'; Call.join({ title: 'Bea', getToken: async () => ({ url: 'wss://x', token: 'a.b.c', room: 'r1' }) }); });
+    await pg.waitForSelector('#callNote');
+    const wr = await pg.evaluate(() => ({ note: document.getElementById('callNote').textContent, mic: lkLog.mic, gone: lkLog.rooms[0].gone, active: Call.active() }));
+    check('a token that lands in another room: left at once, mic never on, says so', /different call/.test(wr.note) && wr.mic === 0 && wr.gone && !wr.active, wr);
+    await pg.evaluate(() => { Call.close(); window.lkRoomName = 'r1'; });
+    noErrors(page); noErrors(setup); noErrors(pg);
     const cleared = await a.ok('POST', '/api/calls', { clear: true, token: tok });
     check('Remove clears it all', cleared.set === false && cleared.secret === false && !cleared.url);
   } finally { b.stop(); relay.stop(); }
