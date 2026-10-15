@@ -93,6 +93,19 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
   await page.evaluate(() => document.documentElement.setAttribute('dir', 'rtl'));
   { const g = await grid(); check('right-to-left: the feature grid still has no gap (AIG-1295)', g.cols === 3 && g.edge <= 1 && g.n % 3 === 0, g); }
   await page.evaluate(() => document.documentElement.removeAttribute('dir'));
+  // AIG-1301: the theme button cycles light -> dark -> black; black is true #000 and survives a reload
+  {
+    const st = () => page.evaluate(() => ({ th: document.documentElement.getAttribute('data-theme'), black: document.documentElement.hasAttribute('data-black'), bg: getComputedStyle(document.body).backgroundColor, saved: localStorage.getItem('aigile-site-theme'), tip: document.getElementById('theme').title }));
+    await page.evaluate(() => { localStorage.setItem('aigile-site-theme', 'light'); document.documentElement.setAttribute('data-theme', 'light'); document.documentElement.removeAttribute('data-black'); });
+    await page.click('#theme'); const d = await st();
+    await page.click('#theme'); const b = await st();
+    check('theme button: light, then dark, then black (true #000, saved, tip names the next one) (AIG-1301)', d.th === 'dark' && !d.black && b.th === 'dark' && b.black && b.bg === 'rgb(0, 0, 0)' && b.saved === 'black' && /light/i.test(b.tip), [d, b]);
+    await page.reload(); await sleep(300);
+    const r = await st();
+    check('black survives a reload', r.black && r.bg === 'rgb(0, 0, 0)', r);
+    await page.click('#theme'); const l = await st();
+    check('and the next click goes back to light', l.th === 'light' && !l.black, l);
+  }
   check('no page errors', errs.length === 0, errs);
 
   const p2 = await ctx.newPage();

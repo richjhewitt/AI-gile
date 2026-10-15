@@ -6,9 +6,10 @@
   "lang.search": "Search languages",
   "lang.none": "No language matches",
   "lang.notYet": "{name} is not translated yet",
-  "theme.aria": "Switch between light and dark theme",
+  "theme.aria": "Switch theme: light, dark or black",
   "theme.toLight": "Switch to light theme",
   "theme.toDark": "Switch to dark theme",
+  "theme.toBlack": "Switch to black theme (true black, easy on OLED screens)",
   "words.underline": "Underline these words on the page",
   "words.underlineHelp": "Hover or tap a dotted word to see what it means.",
 

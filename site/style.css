@@ -24,6 +24,9 @@
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
 }
 
+/* AIG-1301: Black, like the app: true #000 for OLED screens, on top of the dark theme */
+:root[data-black] { --bg: #000; --surface: #0a0a0a; --raised: #111; --hover: #171717; --line: #222; --muted: #8a8f99; --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.8); }
+
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.6;overflow-x:hidden}
