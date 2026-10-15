@@ -488,6 +488,7 @@ async function refreshStaged(force, liveState, state, api) {
 function renderBoardOnly() {
   queueMicrotask(paintFilterBar);
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
+  const keepCols = [...document.querySelectorAll('.column')].map(c => [c.dataset.status + '|' + (c.dataset.step || ''), c.scrollTop]);   // AIG-1211: a column scrolls inside itself
   if (state.route.view === 'usage') return;
   if (state.route.view === 'bin') { $('app').innerHTML = Bin.render(); return; }
   if (state.route.view === 'assumptions') { $('app').innerHTML = Assumptions.render(); return; }
@@ -507,6 +508,7 @@ function renderBoardOnly() {
   if (state.route.view !== 'home' && !(state.route.view === 'project' && state.project)) return;
   $('app').innerHTML = state.route.view === 'home' ? renderHome() : renderBoard(state.project);
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
+  for (const [key, y] of keepCols) if (y) { const c = [...document.querySelectorAll('.column')].find(c => c.dataset.status + '|' + (c.dataset.step || '') === key); if (c) c.scrollTop = y; }
 }
 
 // The open card is only rebuilt when its own HTML changed (AIG-310), so a change elsewhere on the board doesn't
@@ -520,6 +522,7 @@ function render() {
   queueMicrotask(paintFilterBar);
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
+  const keepCols = [...document.querySelectorAll('.column')].map(c => [c.dataset.status + '|' + (c.dataset.step || ''), c.scrollTop]);   // AIG-1211: a column scrolls inside itself
   if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); document.body.classList.toggle('poplist', !!state.route.pop); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; setupLand(); wizardMaybe(); return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
@@ -568,6 +571,7 @@ function render() {
   if (!card) state.editing = false;
   paintModal(card ? renderCard(p, card) : '');
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
+  for (const [key, y] of keepCols) if (y) { const c = [...document.querySelectorAll('.column')].find(c => c.dataset.status + '|' + (c.dataset.step || '') === key); if (c) c.scrollTop = y; }
   const pn = document.querySelector('#modal .panel'); if (pn) pn.scrollTop = keepScroll;
 }
 const rerender = () => refresh(true);

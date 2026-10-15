@@ -95,6 +95,13 @@ main { padding: 20px; }
 .lane-h { margin: 0 0 6px; font-size: 14px; }
 .column { background: var(--col); border-radius: var(--radius); padding: 10px; min-height: 120px; }
 .column h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: flex; justify-content: space-between; }
+/* AIG-1211: on a desktop a column scrolls inside itself, so Team and Log sit just under the board; its header stays in view. */
+@media (min-width: 761px) {
+  .board { align-items: start; }
+  .board:not(.focus) .column { max-height: calc(100vh - 130px); overflow-y: auto; overscroll-behavior: contain; }
+  .board:not(.focus) .column h3 { position: sticky; top: -10px; z-index: 2; margin: -10px -10px 8px; padding: 10px 10px 6px; background: var(--col); }
+}
+.team-all { margin-top: 8px; }
 .column h3 { gap: 6px; align-items: center; }   /* AIG-1083: the name takes one line with an ellipsis, the count and buttons stay on the right */
 .column h3 > span:first-child { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .column h3 > span:last-child { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
