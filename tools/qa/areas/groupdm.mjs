@@ -34,6 +34,7 @@ def('groupdm', '👥 group chats: ＋ New group in Messages, the owner\'s messag
   check('Messages has a Groups part with ＋ New group', /Groups/.test(await page.textContent('#dmPanel .dm-groups')));
   await page.click('#dmPanel [data-dmnewgroup]');
   await page.waitForSelector('#grpPick [data-grpi]');
+  check('the New group dialog sits above the Messages panel (AIG-1130)', await page.evaluate(() => { const r = document.querySelector('#grpName').getBoundingClientRect(), e = document.elementFromPoint(r.x + 5, r.y + 5); return !!e && e.id === 'grpName'; }));
   check('the picker shows name · project · engine', /Pixel · Pix · Codex/.test(await page.textContent('#grpPick')) && /Claudia · Clo · Claude/.test(await page.textContent('#grpPick')));
   await page.fill('#grpName', 'IRL logo');
   await page.click('#grpCreate');
