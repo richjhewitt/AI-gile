@@ -3,7 +3,7 @@
 // which answers with `aigile pasay`, can pick its own name (`paname`) and never touches the Scrum Master's chat; No Token Mode gives a plain line.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, mkProject, openPage, noErrors, until, def, tmp, ROOT } from '../lib.mjs';
+import { check, mkProject, openPage, noErrors, until, def, tmp, ROOT, readChat, writeChat } from '../lib.mjs';
 
 // The stub agent: in the assistant's folder it notes the cwd and model, answers with pasay (or picks a name when asked), else does nothing.
 const dir = tmp('pa'), calls = path.join(dir, 'calls.txt'), stub = path.join(dir, 'pa-stub.bat'), local = path.join(dir, 'local.json');
@@ -24,7 +24,7 @@ def('assistant', '💚 Personal assistant chat pinned under All hands (reminder,
   for (const [n, k] of [['Qh Seven', 'QS'], ['Qh Unread', 'QU'], ['Qh Fresh', 'QF']]) { await mkProject(s, n, k); await s.ok('POST', '/api/projects/' + n.toLowerCase().replace(' ', '-') + '/team', { name: 'Lead', role: 'Lead' }); }
   const say = slug => s.ok('POST', `/api/projects/${slug}/leadchat`, { text: 'hello', author: 'Lead' });
   await say('qh-seven'); await say('qh-unread'); await say('qh-fresh');
-  const back = (slug, ms, read) => { const f = path.join(s.data, slug + '.chat'), j = JSON.parse(fs.readFileSync(f, 'utf8')); j.msgs.forEach(m => { m.at = ago(ms); }); j.readAt = read ? ago(ms - 1000) : ''; fs.writeFileSync(f, JSON.stringify(j)); };
+  const back = (slug, ms, read) => { const f = path.join(s.data, slug + '.chat'), j = readChat(s, f); j.msgs.forEach(m => { m.at = ago(ms); }); j.readAt = read ? ago(ms - 1000) : ''; writeChat(s, f, j); };   // sealed on disk (AIG-1170)
   back('qh-seven', 7 * hr, true); back('qh-unread', 7 * hr, false); back('qh-fresh', 2 * hr, true);
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('#dmRail [data-dms]'); await page.click('#dmRail [data-dms]');

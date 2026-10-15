@@ -2,7 +2,7 @@
 // data/<slug>.dm-archive.json, leave the board and stats; open DM cards stay; dry run changes nothing; a second run changes nothing.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, mkProject, mkCard, say, def, until } from '../lib.mjs';
+import { check, mkProject, mkCard, say, def, until, readChat, writeChat } from '../lib.mjs';
 
 def('dmtidy', '💬 DM tidy: done DM cards move into the Lead chat in time order, archived, off the board and stats; dry run; idempotent (AIG-873)', async (s) => {
   await mkProject(s, 'Tidy', 'TDY');
@@ -24,7 +24,7 @@ def('dmtidy', '💬 DM tidy: done DM cards move into the Lead chat in time order
   fs.writeFileSync(file, JSON.stringify(p));
   // A late save from the server (wake, dispatch) can overwrite the edit above: write again until the server sees the 3 done cards.
   await until(async () => (await s.ok('GET', '/api/projects/tidy')).cards.filter(c => c.status === 'done').length === 3 || (fs.writeFileSync(file, JSON.stringify(p)), false), 5000);
-  const cf = path.join(s.data, 'tidy.chat'), ch = JSON.parse(fs.readFileSync(cf, 'utf8')); ch.msgs[0].at = t(3); fs.writeFileSync(cf, JSON.stringify(ch));
+  const cf = path.join(s.data, 'tidy.chat'), ch = readChat(s, cf); ch.msgs[0].at = t(3); writeChat(s, cf, ch);   // sealed on disk (AIG-1170)
   const before = fs.readFileSync(cf, 'utf8');
 
   const af = path.join(s.data, 'tidy.dm-archive.json');

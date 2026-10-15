@@ -108,6 +108,19 @@ export const mkProject = (s, name, key, extra = {}) => s.ok('POST', '/api/projec
 export const mkCard = (s, slug, title, extra = {}) => s.ok('POST', `/api/projects/${slug}/cards`, { title, ...extra });
 export const getCard = async (s, slug, id) => (await s.ok('GET', `/api/projects/${slug}?full=1`)).cards.find(c => c.id === id);   // ?full=1: done cards whole (AIG-1100)
 export const say = (s, slug, id, author, text, extra = {}) => s.ok('POST', `/api/projects/${slug}/cards/${id}/comments`, { author, text, ...extra });
+// AIG-1170: chat files and DM attachments are sealed on disk (lib/atrest.js). Read or write one as plain text through the board's
+// own code, with that board's data and key (a child process: the key is kept per data folder). file: a path inside s.data.
+function atrestCall(s, op, file, input) {
+  const code = `const A = require(${JSON.stringify(path.join(ROOT, 'lib', 'atrest.js'))}), [op, f] = process.argv.slice(1);
+let input = ''; try { input = require('fs').readFileSync(0); } catch {}
+if (op === 'read') process.stdout.write(A.readText(f)); else if (op === 'bytes') process.stdout.write(A.readBytes(f).toString('base64')); else A.writeText(f, input.toString('utf8'));`;
+  const r = spawnSync(process.execPath, ['-e', code, op, file], { env: { ...process.env, AIGILE_DATA: s.data, AIGILE_LOCAL: path.join(s.dir, 'aigile.local.json') }, input: input || '', encoding: 'utf8', maxBuffer: 64 << 20 });
+  if (r.status !== 0) throw new Error(`atrest ${op} ${file}: ${(r.stderr || '').trim().split('\n').slice(-3).join(' ')}`);
+  return r.stdout;
+}
+export const readChat = (s, file) => JSON.parse(atrestCall(s, 'read', file));
+export const writeChat = (s, file, value) => { atrestCall(s, 'write', file, JSON.stringify(value)); };
+export const readSealedBytes = (s, file) => Buffer.from(atrestCall(s, 'bytes', file), 'base64');
 
 // A browser page that records page errors.
 export const pinAllInit = () => { try { if (!localStorage.getItem('aigile.topbar.pinned')) localStorage.setItem('aigile.topbar.pinned', JSON.stringify(['helpBtn','ideaBtn','bugBtn','teamTop','inboxTop','pokeTop','nightTop','glanceBtn','weedBtn','streamBtn','ntBtn','tiredBtn','assumeNav','usageNav','setupNav','themeBtn','twitchBtn','mailNav','immWrap'])); } catch {} };
