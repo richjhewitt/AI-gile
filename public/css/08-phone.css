@@ -17,6 +17,11 @@
   header .spacer { flex-basis: 100%; height: 0; }
   header > *, #inboxTop, #teamTop, #pokeTop, #nightTop { max-width: 100%; }
   .ib-alerts { white-space: normal; }
+  /* AIG-1082: search plus one ⚙ Filters button; the dropdowns open under it; the top bar stays on one line */
+  .fbar { flex-wrap: nowrap; } .fbar input[type=search] { flex: 1 1 auto; min-width: 0; max-width: none; }
+  .fbar .f-tog { display: inline-block; flex: 0 0 auto; }
+  .fbar #f-sel { display: none; flex-basis: 100%; } .fbar.open { flex-wrap: wrap; } .fbar.open #f-sel { display: flex; flex-wrap: wrap; gap: 6px; } .fbar #f-count { display: none; }
+  header #inboxTop { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px; } #inboxTop .ib-btn { white-space: nowrap; } #inboxTop .ib-alerts:disabled { display: none; }
   .navlink, button, select, .theme-pick, .tab, [role=tab] { min-height: 40px; }
   .navlink { display: inline-flex; align-items: center; padding: 6px 12px; }
   .navlink[hidden] { display: none; }   /* a hidden top-bar link (e.g. the 🔴 Live button) showed as a blank pill (AIG-923) */
@@ -35,6 +40,11 @@
   .dialog { width: 100%; max-height: 92vh; overflow-y: auto; }
   .overlay.center { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }   /* a dialog's buttons sit above the DM bar, not under it (AIG-423) */
   .overlay.center .dialog { max-height: calc(100vh - 70px - env(safe-area-inset-bottom)); }
+  /* the stand-up question sits above the DM bar, and its three buttons stay on one line (AIG-1078) */
+  #suPrompt { bottom: calc(66px + env(safe-area-inset-bottom)); }
+  body.pop #suPrompt, body.poplist #suPrompt { bottom: 12px; }
+  #suPrompt .su-pill > b { flex-basis: 100%; }
+  #suPrompt .su-pill button { white-space: nowrap; padding-inline: 10px; }
   pre, table { max-width: 100%; overflow-x: auto; }
   img, video { max-width: 100%; height: auto; }
   /* 🪐 spaces (AIG-434): the rail's folders run sideways; the fold arrows and ⋯ are big enough for a finger */
@@ -53,3 +63,6 @@
 .phone-list { list-style: none; padding: 0; margin: 8px 0 0; }
 .phone-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 4px 0; }
 .phone-stop { padding: 24px; max-width: 520px; }
+
+/* AIG-1086: no windows on a phone, so no Pop out in the new card, the dialogs or the open card */
+@media (max-width: 600px) { .dlg-pop, .card-pop { display: none !important; } }

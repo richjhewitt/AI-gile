@@ -28,8 +28,8 @@ async function morningPrompt() {
   try { if (localStorage.getItem('aigile.standupAsked') === suDay()) return; } catch { return; }   // no storage: never nag
   const a = document.activeElement;
   if (busy() || (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return void setTimeout(morningPrompt, 3000);
-  // Read the shared project list only when a prompt can actually be shown.
-  try { if (!(await PagePoll.get('/api/projects')).some(p => p.total)) return void setTimeout(morningPrompt, 60e3); } catch { return; }
+  // Read the shared project list only when a prompt can actually be shown; only worth asking once a project has a team and a folder on disk (AIG-1078).
+  try { if (!(await PagePoll.get('/api/projects')).some(p => !p.archived && p.path && !p.pathMissing && (p.crew || []).length)) return void setTimeout(morningPrompt, 60e3); } catch { return; }
   try { localStorage.setItem('aigile.standupAsked', suDay()); } catch { return; }
   const el = document.createElement('div'); el.id = 'suPrompt';
   el.innerHTML = `<div class="su-pill"><b>${esc(t('standup.prompt'))}</b>

@@ -35,14 +35,21 @@ def('homeux', 'Home: counts hide zeros and show % done, More holds the moved but
   await page.close();
 
   page = await choose();
-  await page.click("#wzNo"); await sleep(1500);
-  check('Just let me in: Setup shows, no dialog and no second popup', await page.isVisible('#setupForm') && (await page.locator('#dialog .dialog, #dialog > *').count()) === 0 && (await setup()).prefs.wizardSeen === true, [await page.isVisible("#setupForm"), await page.locator("#dialog > *").count(), (await setup()).prefs.wizardSeen].join());
-  await page.reload(); await page.waitForSelector('#setupForm'); await sleep(500);
+  await page.click("#wzNo"); await page.waitForSelector('#homeMoreBtn', { timeout: 5000 }).catch(() => {}); await sleep(500);
+  check('Just let me in: Home shows, no dialog and no second popup (AIG-1069)', await page.isVisible('#homeMoreBtn') && (await page.locator('#dialog .dialog, #dialog > *').count()) === 0 && (await setup()).prefs.wizardSeen === true, [page.url(), await page.isVisible('#homeMoreBtn'), await page.isVisible("#setupForm"), await page.locator("#dialog > *").count(), (await setup()).prefs.wizardSeen].join());
+  await page.goto(s.base + '/#/setup'); await page.reload(); await page.waitForSelector('#setupForm'); await sleep(500);
   check('it does not come back', (await page.locator('#wzYes').count()) === 0);
   noErrors(page); await page.close();
 
   // ---- home (AIG-937)
   await s.ok('POST', '/api/setup', { owner: 'Rich', 'agent.command': 'echo', 'agent.notesFile': 'CLAUDE.md', 'agent.settingsFile': '.claude/settings.json' });   // set up: home, not Setup
+  // ---- empty home (AIG-1073): a welcome card, no Show archived or Scrum Master line, room for one more button
+  const eh = await openPage(ctx, '#/'); await eh.waitForSelector('#homeWelcome');
+  check('empty home: a welcome card with a big + New project', /project/i.test(await eh.textContent('#homeWelcome p')) && await eh.isVisible('#homeWelcomeNew'));
+  check('empty home: no Show archived and no Scrum Master line', (await eh.locator('.toolbar .chk').count()) === 0 && (await eh.locator('.smline').count()) === 0 && !/No projects yet/.test(await eh.textContent('#app')));
+  check('empty home: the actions row is there for more buttons', await eh.locator('#homeWelcomeActions').count() === 1);
+  await eh.close();
+
   const al = await mkProject(s, 'Alpha', 'ALP');
   await mkCard(s, al.slug, 'One', { status: 'doing' });
   await mkCard(s, al.slug, 'Two', { status: 'done' });
@@ -53,6 +60,12 @@ def('homeux', 'Home: counts hide zeros and show % done, More holds the moved but
   const counts = await page.$$eval('a.proj .counts span', e => e.map(x => x.textContent.trim()));
   check('counts show no zero columns', counts.length > 0 && counts.every(x => !/\b0$/.test(x)), counts.join('|'));
   check('the card says % done', /\d+%/.test(await page.textContent('a.proj .counts b')));
+  // AIG-1080: 0% done with only waiting cards: a small segment on the track, never the full bar
+  const zr = await mkProject(s, 'Zero', 'ZER'); await mkCard(s, zr.slug, 'Wait A', { status: 'team' }); await mkCard(s, zr.slug, 'Wait B', { status: 'todo' });
+  await page.reload(); await page.waitForSelector(`a.proj[href="#/p/${zr.slug}"] .bar span`);
+  const zw = await page.$eval(`a.proj[href="#/p/${zr.slug}"] .bar`, b => ({ w: b.firstElementChild.getBoundingClientRect().width, all: b.getBoundingClientRect().width }));
+  check('0% done: waiting cards are a small segment, not the full bar', zw.w > 0 && zw.w < zw.all * 0.3, JSON.stringify(zw));
+  check('a started project still fills by its share', await page.$eval('a.proj .bar', b => { const x = [...b.children].reduce((a, c) => a + c.getBoundingClientRect().width, 0); return x > b.getBoundingClientRect().width * 0.9; }));
   const vis = await page.$$eval('.toolbar > button', b => b.filter(x => x.getClientRects().length).map(x => x.id || x.className));
   check('the toolbar shows New project and More only', vis.length === 2 && vis.includes('homeMoreBtn'), vis.join());
   check('More starts closed', await page.locator('#homeMenu').isHidden());

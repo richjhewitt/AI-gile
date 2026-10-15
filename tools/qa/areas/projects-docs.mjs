@@ -255,7 +255,7 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   check('an empty imported board says what happens next (AIG-333)', /Wake the team/.test(await page.$eval('#emptyHint', e => e.textContent)));
   await page.evaluate(() => { localStorage.removeItem('aigile.standupAsked'); return morningPrompt(); });
   await page.waitForTimeout(500);
-  check('no stand-up prompt on a board with no cards anywhere', !(await page.$('#suPrompt')));
+  check('no stand-up prompt before any project has a team (AIG-1078)', !(await page.$('#suPrompt')));
   noErrors(page);
 }, true);
 
