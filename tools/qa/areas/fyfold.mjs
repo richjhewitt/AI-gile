@@ -75,3 +75,35 @@ def('fyfold', 'For you: a chip opens a window of folded rows, a card opens it un
   check('the cross closes the window', (await page.locator('.fyf').count()) === 0);
   noErrors(page);
 }, true);
+
+def('fyfoldnext', 'Tests list: Accept or Send back opens the next test in the list; the last says All tests done (AIG-1212)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const tests = [];
+  for (const n of ['One', 'Two', 'Three']) {
+    const c = await mkCard(s, 'alpha', 'Check ' + n);
+    s.cli(['test', 'alpha', c.id, '1. Click **Go** for ' + n + '\n2. It works', '--as', 'Lead']);
+    tests.push(c); await sleep(20);
+  }
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.waitForSelector('.column.foryou .card[data-id]');
+  const order = async () => page.locator('.fyf-row').evaluateAll(els => els.map(e => e.dataset.id));
+  const openId = async () => page.locator('.fyf-row.open').evaluateAll(els => els.map(e => e.dataset.id));
+  await page.click(`.column.foryou .card[data-id="${tests[0].id}"] .t`);
+  await page.waitForSelector('.fyf[data-kind="t"] .fyf-row.open');
+  const ids = await order();
+  await page.click('.fyf-row.open [data-act="accept"]');
+  await page.waitForFunction(() => document.querySelectorAll('.fyf-row').length === 2, null, { timeout: 5000 }).catch(() => {});
+  let o = await openId();
+  check('Accept opens the next test in the list straight away', o.length === 1 && o[0] === ids[1], JSON.stringify({ ids, o }));
+  check('the list fits at 390px', await page.evaluate(() => document.querySelector('.fyf').scrollWidth <= window.innerWidth + 1));
+  await page.fill('.fyf-row.open [data-fyback-text]', 'Not yet');
+  await page.click('.fyf-row.open [data-fyback]');
+  await page.waitForFunction(() => document.querySelectorAll('.fyf-row').length === 1, null, { timeout: 5000 }).catch(() => {});
+  o = await openId();
+  check('Send back opens the next test too', o.length === 1 && o[0] === ids[2], JSON.stringify(o));
+  await page.click('.fyf-row.open [data-act="accept"]');
+  await page.waitForFunction(() => document.querySelectorAll('.fyf-row').length === 0 || /All tests done/.test(document.body.textContent), null, { timeout: 5000 }).catch(() => {});
+  check('after the last one it says All tests done', /All tests done/.test(await page.textContent('body')));
+  noErrors(page);
+}, true);
