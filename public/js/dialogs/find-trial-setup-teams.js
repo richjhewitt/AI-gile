@@ -86,9 +86,9 @@ function renderSetup() {
   const secs = ["lang","look","plan","teams","discord","mail","servers","phone","storage","you","more"];
   return `<div class="setup">${state.route && state.route.pop ? '' : `<button type="button" class="dlg-pop" id="setupPop" title="${esc(t('popout.title'))}" onclick="popOutSetup()">${esc(t('popout.btn'))}</button>`}<h2>${esc(t('setup.h'))}</h2>
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
+    <div class="set-sec set-wiz" id="wizBox"><button type="button" id="wzRun" onclick="wizardStart()">${esc(t('wz.btn'))}</button><small class="muted">${esc(t('wz.btn.help'))}</small></div>
     <nav class="set-index" id="setIndex" aria-label="${esc(t('setup.index'))}">${secs.map(k => `<a href="#/setup/${k}" data-sec="${k}" onclick="return setupJump('${k}')">${esc(t('setup.sec.' + k))}</a>`).join('')}</nav>
     <section class="set-sec" id="sec-lang"><h3 class="set-h">${esc(t('setup.sec.lang'))}</h3>
-    <div class="f"><span>${esc(t('wz.btn'))}</span><div><button type="button" id="wzRun" onclick="wizardStart()">${esc(t('wz.btn'))}</button></div><small class="muted">${esc(t('wz.btn.help'))}</small></div>
     <label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('setup-lang')}<small class="muted">${esc(t('setup.lang.help'))}</small></label>
     <div class="f imm-box" id="immBox">${Imm.html()}</div>
     <label class="f chk"><span><input type="checkbox" id="enSwitch" ${ls('aigile.enSwitch') === '1' ? 'checked' : ''} onchange="setEnSwitch(this.checked)"> ${esc(t('lang.en.switch'))}</span><small class="muted">${esc(t('lang.en.help'))}</small></label>

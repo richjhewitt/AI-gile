@@ -19,6 +19,11 @@ def('setupux', 'Setup index: section links scroll to their section, #/setup/<sec
   await page.click('#setIndex a[data-sec="mail"]'); await sleep(500);
   const mailTop = await page.evaluate(() => document.getElementById('sec-mail').getBoundingClientRect().top);
   check('a link scrolls to its section', mailTop >= 0 && mailTop < 260 && (await page.evaluate(() => window.scrollY)) > 100, String(mailTop));
+  // AIG-1148: one wizard button in its own box at the top, 'How agents work with you', checkbox labels not squeezed
+  check('one wizard button, in a box above the index, not in the Language section', (await page.locator('#wzRun').count()) === 1 && (await page.locator('#sec-lang #wzRun').count()) === 0 && (await page.locator('#wizBox #wzRun').count()) === 1);
+  check('the plan section is called How agents work with you', /How agents work with you/.test(await page.textContent('#sec-plan .set-h')) && /How agents work with you/.test(await page.textContent('#setIndex a[data-sec="plan"]')));
+  const ck = await page.evaluate(() => { const l = document.getElementById('aiOwnList').closest('label'), sp = l.querySelector('span'); return { w: sp.getBoundingClientRect().width, lw: l.getBoundingClientRect().width, h: sp.getBoundingClientRect().height }; });
+  check('a More settings checkbox label is not squeezed (one line, full width)', ck.h < 30 && ck.w > ck.lw * 0.8, JSON.stringify(ck));
   check('the address shows the section', (await page.evaluate(() => location.hash)) === '#/setup/mail');
   // AIG-1140: the bar follows the top bar's height and the heading lands fully below it
   await page.evaluate(() => { const h = document.querySelector('body > header'); h.style.paddingBottom = '60px'; }); await sleep(300);
