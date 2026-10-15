@@ -17,24 +17,33 @@ function matchesFilter(c, slug) {
   if (f.sprint && (c.sprint || '') !== f.sprint) return false;
   if (f.group && (c.group || '') !== f.group) return false;
   if (f.desk && ((c.desk || {}).kind || '') !== f.desk) return false;   // AIG-1104
-  if (f.q) { const q = f.q.toLowerCase(); if (![c.id, c.title, c.description, c.assignee, c.sprint, c.group].some(x => String(x || '').toLowerCase().includes(q)) && !(c.light && DoneFind.has(slug, q, c.id))) return false; }
+  if (f.q) { const q = f.q.toLowerCase(); if (!fieldHit(c, q) && !commentHit(c, q) && !(c.light && DoneFind.has(slug, q, c.id))) return false; }
   return true;
+}
+// AIG-1265: the search also reads what was said in comments. A card found only that way gets a small "in a comment" hint.
+const fieldHit = (c, q) => [c.id, c.title, c.description, c.assignee, c.sprint, c.group].some(x => String(x || '').toLowerCase().includes(q));
+const commentHit = (c, q) => (c.comments || []).some(m => String((m && m.text) || '').toLowerCase().includes(q));
+function inCommentOnly(c, slug) {
+  const f = state.filters && state.filters[slug], q = f && f.q ? f.q.toLowerCase() : '';
+  if (!q || fieldHit(c, q)) return false;
+  return commentHit(c, q) || (!!c.light && DoneFind.inComment(slug, q, c.id));
 }
 // ⚡ A light done card has no description here (AIG-1100): the server says which done cards' descriptions hold the
 // search text, one call per search (after a short pause in typing); the board redraws when it answers.
 const DoneFind = (() => {
-  let key = '', ids = new Set(), timer = 0;
+  let key = '', ids = new Set(), com = new Set(), timer = 0;
   function has(slug, q, id) {
     const k = slug + '|' + q;
     if (k !== key) {
-      key = k; ids = new Set(); clearTimeout(timer);
+      key = k; ids = new Set(); com = new Set(); clearTimeout(timer);
       timer = setTimeout(async () => {
-        try { const r = await api('GET', `/api/projects/${slug}/find?q=${encodeURIComponent(q)}`); if (key === k && r.ids.length) { ids = new Set(r.ids); renderBoardOnly(); paintFilterBar(); } } catch {}
+        try { const r = await api('GET', `/api/projects/${slug}/find?q=${encodeURIComponent(q)}`); if (key === k && r.ids.length) { ids = new Set(r.ids); com = new Set(r.comment || []); renderBoardOnly(); paintFilterBar(); } } catch {}
       }, 300);
     }
     return ids.has(id);
   }
-  return { has };
+  const inComment = (slug, q, id) => key === slug + '|' + q && com.has(id);
+  return { has, inComment };
 })();
 function paintFilterBar() {
   const bar = $('filterbar');

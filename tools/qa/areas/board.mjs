@@ -115,6 +115,53 @@ def('filters', 'search survives polling, type filter, clear', async (s, ctx) => 
   noErrors(page);
 }, true);
 
+def('boardpick', 'search finds words in comments (hint on the card); Ctrl-click picks cards, move together, one undo, Esc clears (AIG-1265/1266)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'First card', { status: 'todo' });
+  const b = await mkCard(s, 'alpha', 'Second card', { status: 'todo' });
+  const c = await mkCard(s, 'alpha', 'Third card', { status: 'todo' });
+  const d = await mkCard(s, 'alpha', 'Done card', { status: 'done' });
+  await say(s, 'alpha', a.id, 'Forge', 'We tried the quokka approach');
+  await say(s, 'alpha', d.id, 'Forge', 'Old quokka note');
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('#f-q');
+  await page.fill('#f-q', 'quokka');
+  await page.waitForTimeout(900);
+  const cards = () => page.locator('.board .card').count();
+  check('search finds a word only in a comment, done card too', (await cards()) === 2, await cards());
+  check('hint on cards found in a comment', (await page.locator('.board .card .incomment').count()) === 2);
+  await page.fill('#f-q', 'First');
+  check('no hint when the title matches', (await page.locator('.board .card .incomment').count()) === 0);
+  await page.click('#f-count a');
+  const sel = id => `.card[data-id="${id}"]`;
+  await page.click(sel(a.id), { modifiers: ['Control'] });
+  await page.click(sel(b.id), { modifiers: ['Control'] });
+  await page.click(sel(c.id), { modifiers: ['Control'] });
+  check('ctrl-click ticks, no card opens', (await page.locator('.card.picked').count()) === 3 && !page.url().includes('/ALP-'), page.url());
+  check('bar shows 3 picked', /3 picked/.test(await page.textContent('#pickBar')));
+  await page.waitForTimeout(1500);
+  check('picks survive polling', (await page.locator('.card.picked').count()) === 3);
+  await page.click('#pickBar [data-pickcol=done]');
+  await page.waitForTimeout(800);
+  const st = async () => (await s.ok('GET', '/api/projects/alpha')).cards.filter(x => [a.id, b.id, c.id].includes(x.id)).map(x => x.status).join();
+  check('all three moved to Done', (await st()) === 'done,done,done', await st());
+  check('bar gone after the move', (await page.locator('#pickBar').count()) === 0);
+  await page.click('#undoBtn');
+  await page.waitForTimeout(800);
+  check('one Undo puts all three back', (await st()) === 'todo,todo,todo', await st());
+  await page.click(sel(a.id), { modifiers: ['Control'] });
+  await page.click(sel(b.id), { modifiers: ['Shift'] });
+  check('shift-click ticks the run', (await page.locator('.card.picked').count()) === 2);
+  await page.keyboard.press('Escape');
+  check('Esc clears the picks', (await page.locator('.card.picked').count()) === 0 && (await page.locator('#pickBar').count()) === 0);
+  await page.click('#pickBtn');
+  await page.click(sel(c.id));
+  check('select mode: plain click ticks', (await page.locator('.card.picked').count()) === 1);
+  await page.setViewportSize({ width: 390, height: 800 });
+  check('pick bar fits a phone', await page.evaluate(() => { const r = document.getElementById('pickBar').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }));
+  noErrors(page);
+}, true);
+
 def('columns', '⚙️ Columns: rename, reorder, hide and colour a board\'s columns; statuses never change (AIG-116)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET');
   const c = await mkCard(s, 'alpha', 'Plan it', { status: 'todo' });

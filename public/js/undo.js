@@ -31,13 +31,20 @@
     b.hidden = false;
     clearTimeout(timer); timer = setTimeout(hide, SHOW_MS);
   }
+  // AIG-1266: one Undo for a move of several cards at once: the page gives its own text and what to run.
+  function custom(msg, fn) {
+    last = { fn, at: Date.now() };
+    const b = bar();
+    b.querySelector('#undoMsg').textContent = msg; b.querySelector('#undoBtn').textContent = t('undo.btn'); b.hidden = false;
+    clearTimeout(timer); timer = setTimeout(hide, SHOW_MS);
+  }
   async function run() {
     if (!last || Date.now() - last.at > KEEP_MS) return;
-    const { slug, id } = last; last = null; hide();
+    const { slug, id, fn } = last; last = null; hide();
     const b = bar();
     try {
-      await api('POST', `/api/projects/${slug}/cards/${id}/undo`, {});
-      b.querySelector('#undoMsg').textContent = t('undo.back', { id }); b.querySelector('#undoBtn').textContent = ''; b.hidden = false;
+      if (fn) await fn(); else await api('POST', `/api/projects/${slug}/cards/${id}/undo`, {});
+      b.querySelector('#undoMsg').textContent = fn ? t('undo.back.many') : t('undo.back', { id }); b.querySelector('#undoBtn').textContent = ''; b.hidden = false;
       clearTimeout(timer); timer = setTimeout(hide, 3e3);
       if (typeof refresh === 'function') refresh(true);
       if (typeof Inbox !== 'undefined' && Inbox.reload) Inbox.reload();
@@ -63,5 +70,5 @@
     if (!last || Date.now() - last.at > KEEP_MS) return;
     e.preventDefault(); run();
   });
-  window.Undo = { run, show };
+  window.Undo = { run, show, custom, colName };
 })();
