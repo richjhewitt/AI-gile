@@ -9,6 +9,7 @@ import { check, mkProject, openPage, noErrors, until, def, tmp, ROOT } from '../
 const dir = tmp('pa'), calls = path.join(dir, 'calls.txt'), stub = path.join(dir, 'pa-stub.bat'), local = path.join(dir, 'local.json');
 fs.writeFileSync(path.join(dir, 'pa-stub.js'), `const fs = require('fs'), a = process.argv.slice(2), m = a[a.indexOf('--model') + 1] || '-', p = a[a.indexOf('-p') + 1] || '', cwd = process.cwd(), cli = ${JSON.stringify(path.join(ROOT, 'aigile.js'))};
 fs.appendFileSync(${JSON.stringify(calls)}, m + ' ' + cwd + '\\n');
+if (/pwned/.test(p)) fs.writeFileSync(${JSON.stringify(path.join(dir, 'prompt.txt'))}, p);
 const run = (...x) => require('child_process').spawnSync(process.execPath, [cli, ...x], { stdio: 'inherit' });
 if (/assistant/i.test(cwd)) { console.log('{"type":"system"}'); if (/pick a name/i.test(p)) run('paname', 'Juno'); run('pasay', 'Stub reply from ' + m); }`);
 fs.writeFileSync(stub, `@echo off
@@ -55,6 +56,11 @@ def('assistant', '💚 Personal assistant chat pinned under All hands (reminder,
   check('its folder has its brief and a notes file', /NOT the Lead Scrum Master/.test(fs.readFileSync(path.join(s.data, 'assistant', 'CLAUDE.md'), 'utf8')) && fs.existsSync(path.join(s.data, 'assistant', 'NOTES.md')));
   check('nothing says "Passed to the Lead Scrum Master"', !(await msgs()).some(m => /Passed to the Lead Scrum Master/.test(m.text)));
   check('and the Scrum Master chat got nothing', (await s.ok('GET', '/api/chats/_watchman')).messages.length === smBefore && !(await s.ok('GET', '/api/chats/_watchman')).messages.some(m => /how are you today/.test(m.text)));
+  await until(async () => !(await s.ok('GET', '/api/chats/_assistant')).busy, 10000);
+  // AIG-1119: cmd.exe never expands or runs what the owner typed: %PATH% and &echo pwned reach the agent as typed
+  await send('show me %PATH% &echo pwned | more ^ <x>');
+  const got = await until(() => { try { return fs.readFileSync(path.join(dir, 'prompt.txt'), 'utf8'); } catch { return ''; } }, 15000);
+  check('a prompt with %PATH% and &echo pwned reaches the agent literally', !!got && got.includes('show me %PATH% &echo pwned | more ^ <x>'), got);
   await until(async () => !(await s.ok('GET', '/api/chats/_assistant')).busy, 10000);
   // Its name
   check('default name', (await s.ok('GET', '/api/chats/_assistant')).name === '💚 Personal assistant');
