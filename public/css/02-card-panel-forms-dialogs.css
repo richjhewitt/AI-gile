@@ -16,11 +16,16 @@ button.good { background: var(--done); border-color: var(--done); color: #fff; f
 button.warn { background: var(--warn); border-color: var(--warn); color: #fff; font-weight: 600; }
 button.danger { color: var(--danger); }
 button:disabled { opacity: .5; cursor: default; }
+/* AIG-930: the file picker's button looks like ours in both themes; 'Alerts blocked' is a state, so it stays readable. */
+input[type=file]::file-selector-button { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; margin-inline-end: 8px; cursor: pointer; }
+.ib-alerts:disabled { opacity: 1; color: var(--muted); }
 input, select, textarea { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; }
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-input[type=checkbox] { width: auto; }
+input[type=checkbox], input[type=radio] { width: auto; }   /* a radio at 100% pushed its label aside (AIG-921) */
 textarea { resize: vertical; min-height: 70px; }
 label.f { display: block; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
+h3.look-sec { margin: 18px 0 8px; font-size: 15px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+#look-dod > span, #look-chgwin > span, #look-call > span, #look-server > span, #look-roles > span { display: block; font-weight: 600; color: var(--text); font-size: 13px; margin-bottom: 2px; }
 label.f > :not(span) { margin-top: 3px; font-size: 14px; }
 label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-end: 14px; color: var(--text); font-size: 13px; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; } .row > * { flex: 1 1 120px; }
@@ -30,8 +35,11 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
 .toolbar h2 { margin: 0 8px 0 0; font-size: 18px; }
 .toolbar .grow { flex: 1; }
+.hm-menu { order: 9; flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.hm-menu[hidden] { display: none; }
 .colbtn { padding: 0 7px; line-height: 20px; font-size: 13px; }
-.overlay.center { align-items: center; justify-content: center; padding: 12px; z-index: 20; }
+.done-more { display: block; width: 100%; margin-top: 6px; }   /* ⚡ Done: Load more (AIG-1100) */
+.overlay.center { align-items: center; justify-content: center; padding: 12px; z-index: 26; }   /* AIG-1130: above the Messages panel (24) */
 .dialog.wide { width: min(900px, 100%); resize: horizontal; min-width: min(420px, 100%); max-width: 100%; }
 .md table { border-collapse: collapse; margin: 8px 0; } .md td, .md th { border: 1px solid var(--line); padding: 4px 8px; }
 .md pre { background: var(--col); padding: 10px; border-radius: 8px; overflow: auto; } .md code { font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
@@ -76,6 +84,10 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .att-shown { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .att-shown img { max-width: 220px; max-height: 160px; border: 1px solid var(--line); border-radius: 6px; display: block; }
 .att-file { font-size: 13px; }
+/* AIG-1165: a resumable upload's progress and Cancel, in the reply box */
+.att-prog { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.att-prog progress { width: 120px; height: 8px; }
+.att-prog .att-pct { max-width: 220px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
 /* ---------- new build: Refresh pill (AIG-78), above open cards and dialogs ---------- */
 #updateTop { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; gap: 8px; }
@@ -93,6 +105,27 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 /* ---------- setup page (AIG-91) ---------- */
 .setup { max-width: 720px; margin: 24px auto; }
 .setup small { display: block; margin-top: 3px; }
+/* Setup index and section cards (AIG-934): one sticky row of links, each part of the page a card with a real heading */
+.set-index { position: sticky; top: 0; z-index: 4; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 0; margin: 0 0 14px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.set-index a { display: inline-block; padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--text); text-decoration: none; font-size: 13px; white-space: nowrap; }
+.set-index a:hover, .set-index a:focus-visible { border-color: var(--accent); }
+.set-sec { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 16px 10px; margin: 0 0 18px; }
+.set-wiz { padding: 12px 16px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; } .set-wiz small { margin: 0; flex: 1 1 260px; }
+/* AIG-1148: a tick box and its words on one line, the hint below (not squeezed into a narrow column) */
+.setup label.f.chk { display: block; }
+.setup label.f.chk > span { display: block; font-size: 14px; }
+.set-h { font-size: 20px; margin: 12px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.mail-note { color: var(--muted); }
+/* Phone pairing: numbered steps (AIG-941) */
+.ph-steps { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 14px; }
+.ph-step { display: flex; gap: 12px; align-items: flex-start; }
+.ph-n { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; }
+.ph-body { flex: 1; min-width: 0; }
+.ph-body label { display: block; margin: 4px 0; }
+.ph-body input { max-width: 100%; }
+.ph-h { margin: 3px 0 6px; font-size: 15px; }
+.ph-scan { margin: 4px 0; font-weight: 600; }
+button.ph-alt { background: none; border: 0; padding: 0; min-height: 0; color: var(--accent); text-decoration: underline; cursor: pointer; font: inherit; }
 /* What kind of lead (AIG-235): one question per block, the answers as big tappable choices */
 .lead-prefs { margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); }
 .lead-prefs > span { font-size: 12px; color: var(--muted); }
@@ -181,11 +214,16 @@ textarea.grow { max-height: 85vh; resize: vertical; }
 .gif-foot { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-top: 6px; color: var(--muted); }
 
 /* ❓ Help menu, first-run offer and the Agile intro slides (AIG-345, AIG-328) */
-#helpMenu { position: fixed; z-index: 30; min-width: 230px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.25); display: flex; flex-direction: column; gap: 2px; }
-#helpMenu button { text-align: start; border: 0; background: transparent; padding: 7px 10px; border-radius: 6px; cursor: pointer; color: inherit; font: inherit; font-size: 13px; }
-#helpMenu button:hover, #helpMenu button.on { background: var(--col); }
-#helpMenu .help-sep { border-top: 1px solid var(--line); margin: 4px 0; }
-#helpMenu .help-lvl-h { font-size: 11px; padding: 2px 10px; }
+#helpMenu, #statusMenu { position: fixed; z-index: 30; min-width: 230px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.25); display: flex; flex-direction: column; gap: 2px; }
+#helpMenu button, #statusMenu button { text-align: start; border: 0; background: transparent; padding: 7px 10px; border-radius: 6px; cursor: pointer; color: inherit; font: inherit; font-size: 13px; }
+#helpMenu button:hover, #helpMenu button.on, #statusMenu button:hover, #statusMenu button.on { background: var(--col); }
+#helpMenu .help-sep, #statusMenu .help-sep { border-top: 1px solid var(--line); margin: 4px 0; }
+#helpMenu .help-lvl-h, #statusMenu .help-lvl-h { font-size: 11px; padding: 2px 10px; }
+.overlay:has(> .dialog.wz-first) { background: var(--bg); }
+.wz-choices { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.wz-choice { display: flex; flex-direction: column; align-items: flex-start; text-align: start; gap: 2px; padding: 10px 14px; }
+.wz-choice small { font-size: 12px; }
+.wz-choice.primary small { color: inherit; opacity: .85; }
 .help-offer { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
 .dialog.intro { width: min(560px, 100%); }
 .intro-top { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; }
@@ -242,7 +280,7 @@ html[data-stream-dms] .dm-railbtn[data-dms], html[data-stream-dms] #dmPanel, htm
 .stream-hide { border: 1px solid var(--line, #8883); border-radius: 8px; margin: 6px 0; padding: 4px 10px; } .stream-hide legend { font-size: 13px; padding: 0 4px; } .stream-hide .chk { display: flex; align-items: center; gap: 6px; min-height: 36px; flex-wrap: wrap; }
 #streamBtn.stream-on { background: var(--danger, #d33); color: #fff; border-radius: 6px; }
 #streamNote { position: fixed; inset-inline-start: 12px; bottom: 12px; z-index: 60; max-width: min(92vw, 420px); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--bg, #fff); color: var(--text, #111); border: 1px solid var(--line, #8886); box-shadow: var(--shadow, 0 4px 16px #0004); font-size: 13px; } #streamNote button { min-height: 36px; }
-html[data-stream-secrets] #serversBox input[data-srv="name"], html[data-stream-secrets] #serversBox input[data-srv="value"] { -webkit-text-security: disc; text-security: disc; }
+html[data-stream-secrets] #serversBox input[data-srv="name"], html[data-stream-secrets] #serversBox input[data-srv="value"], html[data-stream-secrets] #serversBox input[data-srv="host"], html[data-stream-secrets] #serversBox input[data-srv="user"], html[data-stream-secrets] #serversBox input[data-srv="key"], html[data-stream-secrets] #serversBox input[data-srv="folder"] { -webkit-text-security: disc; text-security: disc; }
 .pub-btn .muted { font-size: 12px; } .lic-row { border: 1px solid var(--line, #8883); border-radius: 8px; padding: 8px 10px; margin: 6px 0; } .lic-letter { width: 100%; box-sizing: border-box; font: 12px/1.4 ui-monospace, monospace; margin: 6px 0; } .lic-row button { min-height: 36px; }
 
 /* ---------- For you fold window (AIG-738) ---------- */
@@ -259,3 +297,26 @@ html[data-stream-secrets] #serversBox input[data-srv="name"], html[data-stream-s
 .fyf-back { display: flex; gap: 8px; margin-top: 8px; align-items: flex-start; }
 .fyf-back textarea { flex: 1; min-width: 0; }
 @media (max-width: 640px) { .fyf-dlg { max-height: 94vh; } .fyf-h { flex-wrap: wrap; } .fyf-t { flex-basis: 100%; white-space: normal; } .fyf-back { flex-direction: column; } }
+
+/* @ tags (AIG-851) */
+.mention-box { position: fixed; z-index: 1000; max-height: 250px; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.18); padding: 4px; }
+.mention-item { padding: 5px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+.mention-item.on, .mention-item:hover { background: var(--col); }
+
+/* AIG-935: open card: title first, Close / Edit / ⋯ at the top right, every other action in the ⋯ menu */
+  .moved-note { background: var(--panel); border: 1px solid var(--accent); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 10px; font-size: 14px; }
+.extras-link { margin: 6px 0; font-size: 13px; }
+.extras-link .link { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; text-decoration: underline; }
+.v-steps { margin-top: 10px; }
+.v-steps h3 { margin: 0 0 4px; font-size: 14px; }
+.card-head { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+.card-title { flex: 1 1 240px; min-width: 0; }
+.card-acts { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.card-menu-wrap { position: relative; display: inline-block; }
+.card-menu { position: absolute; inset-inline-end: 0; top: calc(100% + 4px); z-index: 30; min-width: 220px; max-width: min(360px, 86vw); max-height: 70vh; overflow: auto; display: flex; flex-direction: column; align-items: stretch; gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 8px 28px rgba(0,0,0,.3); padding: 8px; }
+.card-menu[hidden] { display: none; }
+.card-menu > button, .card-menu > select, .card-menu > span > button { text-align: start; }
+html.qa-menu .card-menu, html.qa-menu .card-menu[hidden] { display: flex; position: static; flex-direction: row; flex-wrap: wrap; box-shadow: none; max-width: none; max-height: none; width: 100%; padding: 0; border: 0; }
+html.qa-menu .card-menu-wrap, html.qa-menu .card-acts { display: contents; }   /* QA only: the other areas click these buttons directly */
+details.nc-more { margin: 8px 0; }
+details.nc-more > summary { cursor: pointer; font-weight: 600; color: var(--muted); padding: 6px 0; }

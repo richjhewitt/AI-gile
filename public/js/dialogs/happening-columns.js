@@ -55,27 +55,41 @@ async function sendAskTeam(e) {
 function projectOptionsHtml(projects, leads, pick) {
   return projects.map(p => `<option value="${esc(p.slug)}" ${p.slug === pick ? 'selected' : ''}>${esc((p.emoji || '') + ' ' + p.name + (leads[p.slug] ? ' (' + leads[p.slug] + ')' : ''))}</option>`).join('');
 }
+// AIG-833: each project as its own group: its lead, ✨ the best agent for this, then every teammate ("slug@Name").
+function ideaTeamOptionsHtml(projects, leads, pick) {
+  return projects.map(p => {
+    const crew = (p.crew || []).filter(m => m.name !== leads[p.slug]);
+    if (!crew.length) return projectOptionsHtml([p], leads, pick);
+    return `<optgroup label="${esc((p.emoji || '') + ' ' + p.name)}">${projectOptionsHtml([p], leads, pick)}
+      <option value="${esc(p.slug)}@_best">${esc(t('idea.best'))}</option>
+      ${crew.map(m => `<option value="${esc(p.slug + '@' + m.name)}">${esc(m.name + (m.role ? ': ' + m.role : ''))}</option>`).join('')}</optgroup>`;
+  }).join('');
+}
 async function ideaDialog() {
   let projects = [], leads = {};
   try { projects = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
   try { (await api('GET', '/api/chats')).forEach(c => { leads[c.slug] = c.lead; }); } catch {}
   const here = slug() || '';
-  const pick = projects.some(p => p.slug === here) ? here : '_later';
+  const pick = projects.some(p => p.slug === here) ? here : '_sm';   // AIG-803: off a project the idea goes to the assistant, not back to my own pile
   Attach.clear('idea');
   popNext('idea'); openDialog(`<h2>${esc(t('idea.h'))}</h2>
     <form onsubmit="return sendIdea(event)"><label class="f"><span>${esc(t('idea.q'))}</span><textarea id="idea-text" class="grow" data-draft="idea" rows="4" oninput="growBox(this)" onkeydown="if (EnterSend.is(event, 'idea')) sendIdea(event)" placeholder="${esc(t('idea.ph'))}"></textarea></label>
-    <label class="f"><span>${esc(t('idea.to'))}</span><select id="idea-to">
-      <option value="_sm">${esc(t('idea.sm'))}</option>
-      ${projectOptionsHtml(projects, leads, pick)}
-      <option value="_all">${esc(t('idea.all'))}</option><option value="_later" ${pick === '_later' ? 'selected' : ''}>${esc(t('idea.later'))}</option></select></label>
+    <label class="f"><span>${esc(t('idea.to'))}</span><select id="idea-to" onkeydown="if (EnterSend.is(event, 'idea')) sendIdea(event)">
+      <option value="_sm" ${pick === '_sm' ? 'selected' : ''}>${esc(t('idea.sm'))}</option>
+      ${ideaTeamOptionsHtml(projects, leads, pick)}
+      <option value="_all">${esc(t('idea.all'))}</option><option value="_later">${esc(t('idea.later'))}</option></select></label>
     <div class="err" id="idea-err"></div>
-    <div class="actions"><button class="primary" type="submit" title="Ctrl+Enter">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('idea')}</div></form>`, 'wide');
+    <div class="actions"><button class="primary" type="submit" title="Ctrl+Enter">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button><button type="button" id="expertBtn" onclick="expertDialog()" title="${esc(t('expert.btn.title'))}">${esc(t('expert.btn'))}</button>${Attach.boxHtml('idea')}</div></form>`, 'wide');
   const box = $('idea-text'); box.closest('.dialog').classList.add('wide'); growBox(box); box.focus();
 }
+let ideaBusy = false;   // AIG-790: one send at a time; repeat clicks and Enters while it sends do nothing
 async function sendIdea(e) {
   e.preventDefault();
-  const text = $('idea-text').value.trim(), to = $('idea-to').value;
+  if (ideaBusy) return false;
+  const text = $('idea-text').value.trim(), [to, dmTo] = $('idea-to').value.split('@');
   if (!text) { setErr('idea-err', t('idea.err')); return false; }
+  const btn = $('idea-text').closest('form').querySelector('button[type=submit]');
+  ideaBusy = true; btn.disabled = true;
   try {
     // 🧭 Lead Scrum Master (AIG-388): the idea goes to its own chat; it turns it into cards in the right project(s).
     if (to === '_sm') {
@@ -91,11 +105,12 @@ async function sendIdea(e) {
       const attachments = await Attach.upload('idea', s);
       await api('POST', `/api/projects/${s}/cards`, to === '_later'
         ? { title, description: text, type: 'task', status: 'backlog', createdBy: 'Ideas', quick: true, needsYou: true, attachments }
-        : { title, description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments });
+        : { title, description: text, type: 'task', status: 'team', createdBy: me(), quick: true, attachments, ...(dmTo ? { dmTo } : {}) });
     }
     Attach.clear('idea'); clearDraft('idea');
     closeDialog(); await rerender();
   } catch (err) { setErr('idea-err', err); }
+  finally { ideaBusy = false; btn.disabled = false; }
   return false;
 }
 

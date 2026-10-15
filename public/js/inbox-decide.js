@@ -14,18 +14,20 @@ function decideItem(c) {
 }
 // shown: the inbox items for the current tab; returns the pile, grouped by project (shown is in tab order).
 function decideList(shown) { return shown.filter(c => IB.isQuestion(c) || (c.info && IB.isTest(c))).map(decideItem).filter(Boolean).sort((a, b) => (b.c.bumpedAt || '').localeCompare(a.c.bumpedAt || '')); }   // a bumped reminder first (AIG-373)
-// Two lines that say what is asked: the bold question line (with what leads up to it), else the first lines.
+// What is asked: the bold question line with up to 4 lines leading up to it (a plan's bullets stay, as •), else the first lines.
+// Markdown marks (**, #, >) are dropped, never shown raw (AIG-922).
 function decideSummary(text) {
-  const ls = String(text || '').replace(/```[\s\S]*?```/g, '').split('\n').map(s => s.trim().replace(/^[-*#>•\s]+/, '')).filter(Boolean);
-  const ask = ls.find(l => /\*\*[^*]*\?[^*]*\*\*/.test(l)) || ls.find(l => /\bGO\s*\?/.test(l));
-  const pick = ask ? [ls[0] === ask ? null : ls[0], ask].filter(Boolean) : ls.slice(0, 2);
-  return pick.join('\n');
+  const ls = String(text || '').replace(/```[\s\S]*?```/g, '').split('\n').map(s => s.trim()).filter(Boolean);
+  let i = ls.findIndex(l => /\*\*[^*]*\?[^*]*\*\*/.test(l)); if (i < 0) i = ls.findIndex(l => /\bGO\s*\?/.test(l));
+  const plain = l => l.replace(/^#+\s*/, '').replace(/^>\s*/, '').replace(/^[-*•]\s+/, '• ').replace(/\*\*|__/g, '');
+  if (i < 0) return { lead: ls.slice(0, 2).map(plain).join('\n'), ask: '' };
+  return { lead: ls.slice(Math.max(0, i - 4), i).map(plain).join('\n'), ask: plain(ls[i]) };   // the question itself is never clamped away
 }
 function decideHtml(d, i, n) {
   const c = d.c, btns = d.acts.map((a, k) => `<button class="${a.ask != null ? '' : 'good'}" data-dc="ans" data-n="${k}"><b>${k + 1}</b> ${esc(a.label)}</button>`).join('');
   const body = d.quiz
     ? `<div class="dc-topic">${esc(t('decide.topic', { topic: c.quiz.topic }))} · <span class="muted">${esc(t('decide.qn', { i: d.idx + 1, n: d.n }))}</span></div><div class="dc-sum dc-q">${esc(d.q)}</div>`
-    : `<div class="dc-sum">${IB.linkify(decideSummary(d.text), c).replace(/\n/g, '<br>')}</div>`;
+    : (sm => `${sm.lead ? `<div class="dc-sum">${esc(sm.lead).replace(/\n/g, '<br>')}</div>` : ''}${sm.ask ? `<div class="dc-ask">${IB.linkify(sm.ask, c)}</div>` : ''}`)(decideSummary(d.text));
   const other = d.quiz ? `<button data-dc="other">${esc(t('quiz.other'))}</button>` : '';
   const reason = d.quiz ? `<textarea id="dcText" rows="1" hidden placeholder="${esc(t('quiz.other.ph'))}"></textarea>` : d.info || d.acts.some(a => a.ask != null) ? `<textarea id="dcText" rows="2" placeholder="${esc(t('decide.ph'))}"></textarea>` : '';
   return `<div class="fl-head"><b>${esc(t('decide.h', { i: i + 1, n }))}</b><span class="spacer"></span>

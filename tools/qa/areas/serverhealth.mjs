@@ -5,11 +5,23 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { startRelay, check, tmp, def, mkProject, openPage, noErrors } from '../lib.mjs';
 
-const dir = tmp('health'), stub = path.join(dir, 'reading.json');
+const dir = tmp('health'), stub = path.join(dir, 'reading.json'), local = path.join(dir, 'local.json'), sshStub = path.join(dir, 'ssh-stub.js'), sshOut = path.join(dir, 'ssh.out'), sshLog = path.join(dir, 'ssh.log');
 const put = o => fs.writeFileSync(stub, JSON.stringify(o));
 put({ cpu: 10, mem: 40, disk: 30, storage: 5e6, uptime: 86400 * 3 });
 
-def('serverhealth', 'Server health (AIG-660): relay /health is signed, fine readings make no card, high readings make one card (never two), Setup > My servers shows the numbers', async (s, ctx) => {
+// AIG-1125: a stub ssh (AIGILE_SSH_STUB) logs its arguments and prints what is in ssh.out, like uptime; nproc; free -m; df -P /
+fs.writeFileSync(local, JSON.stringify({ owner: 'Owner', agent: { command: 'x', notesFile: 'CLAUDE.local.md', settingsFile: '.claude/settings.local.json' } }));
+fs.writeFileSync(sshStub, `require('fs').appendFileSync(${JSON.stringify(sshLog)}, JSON.stringify(process.argv.slice(2)) + '\\n'); process.stdout.write(require('fs').readFileSync(${JSON.stringify(sshOut)}, 'utf8'));`);
+const fake = disk => ` 10:00:01 up 12 days,  3:02,  1 user,  load average: 0.40, 0.50, 0.60
+cores 2
+               total        used        free      shared  buff/cache   available
+Mem:            1000         400         100           0         500         600
+Swap:              0           0           0
+Filesystem     1024-blocks    Used Available Capacity Mounted on
+/dev/sda1         10000000 ${disk * 100000} 1600000 ${disk}% /
+`;
+
+def('serverhealth', 'Server health (AIG-660, AIG-1125): relay /health is signed, fine readings make no card, high readings make one card (never two), Setup > My servers shows the numbers', async (s, ctx) => {
   // relay side: a signed request gets numbers, an unsigned one only ok
   const kp = crypto.generateKeyPairSync('ed25519'), x = kp.publicKey.export({ format: 'jwk' }).x;
   const relay = await startRelay({ RELAY_STATS_KEY: x });
@@ -57,4 +69,34 @@ def('serverhealth', 'Server health (AIG-660): relay /health is signed, fine read
   const line = await page.textContent('#srv-health');
   check('Setup > My servers shows the latest numbers', /CPU 20%/.test(line) && /memory 50%/.test(line) && /disk 88%/.test(line), line);
   noErrors(page); await page.close();
-}, true, { AIGILE_HEALTH_STUB: stub, AIGILE_NO_HEALTH_POLL: '1' });
+
+  // AIG-1125: a second server (ssh) is read through the stub ssh: a line in Setup, and a card of its own after 3 high polls
+  fs.writeFileSync(sshOut, fake(50));
+  await s.ok('POST', '/api/setup', { prefs: { servers: [{ name: 'Web', kind: 'ssh', value: 'deploy@web.example.test', port: 2222 }, { name: 'Shortcut', kind: 'path', value: 'C:/x/y.lnk' }] } });
+  const webCards = async () => ((await s.ok('GET', '/api/projects/ai-gile')).cards || []).filter(c => c.from === 'server health: web');
+  const q1 = await s.ok('POST', '/api/serverhealth/poll');
+  const run = (() => { try { return fs.readFileSync(sshLog, 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l)); } catch { return []; } })();
+  check('only the ssh server is read, with BatchMode, its port and no sudo', run.length === 1 && run[0].includes('BatchMode=yes') && run[0].includes('2222') && run[0].includes('deploy@web.example.test') && !/sudo/.test(run[0].at(-1)), run);
+  check('its numbers are parsed (CPU by cores, memory without cache, disk)', q1.servers.length === 1 && q1.servers[0].reading.cpu === 20 && q1.servers[0].reading.mem === 40 && q1.servers[0].reading.disk === 50, q1.servers);
+  check('fine numbers make no card for it', (await webCards()).length === 0);
+  fs.writeFileSync(sshOut, fake(84));
+  await s.ok('POST', '/api/serverhealth/poll'); await s.ok('POST', '/api/serverhealth/poll');
+  check('high for 2 polls makes no card for it', (await webCards()).length === 0);
+  await s.ok('POST', '/api/serverhealth/poll');
+  const wc = await webCards();
+  // AIG-1159: owner only (it runs ssh), and polls at the same time share one sweep
+  const before = fs.readFileSync(sshLog, 'utf8').split('\n').filter(Boolean).length;
+  const tp = await fetch(s.base + '/api/serverhealth/poll', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Aigile-As': 'Forge', 'X-Aigile-Where': 'terminal' }, body: '{}' });
+  check('a team agent cannot start a poll (403) and no ssh runs', tp.status === 403 && fs.readFileSync(sshLog, 'utf8').split('\n').filter(Boolean).length === before, tp.status);
+  const [pa, pb] = await Promise.all([s.ok('POST', '/api/serverhealth/poll'), s.ok('POST', '/api/serverhealth/poll')]);
+  check('two polls at once run ssh once', fs.readFileSync(sshLog, 'utf8').split('\n').filter(Boolean).length === before + 1 && JSON.stringify(pa) === JSON.stringify(pb), fs.readFileSync(sshLog, 'utf8').split('\n').filter(Boolean).length - before);
+  check('high for 3 polls makes one card naming the server', wc.length === 1 && wc[0].title === 'Web: time to upgrade (disk 84%)', wc);
+  await s.ok('POST', '/api/serverhealth/poll');
+  check('polling again makes no second card', (await webCards()).length === 1);
+  check('the relay card is untouched', (await cards()).length === 1);
+  const page2 = await openPage(ctx, '#/setup');
+  await page2.waitForSelector('#srv-health-0', { timeout: 8000 });
+  const l2 = await page2.textContent('#srv-health-0');
+  check('Setup > My servers shows the second server CPU and disk', /^Web: CPU 20%/.test(l2) && /memory 40%/.test(l2) && /disk 84%/.test(l2) && /up 12 days/.test(l2), l2);
+  noErrors(page2); await page2.close();
+}, true, { AIGILE_HEALTH_STUB: stub, AIGILE_NO_HEALTH_POLL: '1', AIGILE_LOCAL: local, AIGILE_SSH_STUB: sshStub });

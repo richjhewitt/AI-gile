@@ -1,105 +1,15 @@
-/* ---------- card fields (shared by the edit panel and the New card dialog) ---------- */
-const opts = (list, cur, labels) => list.map(v => `<option value="${v}" ${v === cur ? 'selected' : ''}>${esc(labels ? labels[v] : v)}</option>`).join('');
-
-function cardFields(c, o = {}) {
-  return `<label class="f"><span>${esc(t('card.f.title'))}</span><input type="text" id="f-title" value="${esc(c.title)}" placeholder="${esc(o.titlePh || '')}" maxlength="200"></label>
-    <label class="f"><span>${esc(o.descLabel || t('card.f.description'))}</span><textarea id="f-description" rows="4" placeholder="${esc(o.descPh || '')}">${esc(c.description)}</textarea></label>
-    ${o.testSteps ? `<label class="f"><span>${esc(t('card.f.teststeps'))}</span><textarea id="f-testSteps" rows="4">${esc(c.testSteps)}</textarea></label>` : ''}
-    <div class="row">
-      <label class="f"><span>${esc(t('card.f.type'))}</span><select id="f-type">${opts(TYPES, c.type, Object.fromEntries(TYPES.map(k => [k, t('type.' + k)])))}</select></label>
-      <label class="f"><span>${esc(t('card.f.priority'))}</span><select id="f-priority">${opts(PRIORITIES, c.priority, Object.fromEntries(PRIORITIES.map(k => [k, t('priority.' + k)])))}</select></label>
-      <label class="f"><span>${esc(t('card.f.risk'))}</span><select id="f-risk">${opts(RISKS, c.risk || 'normal', Object.fromEntries(RISKS.map(k => [k, t('risk.' + k)])))}</select></label>
-      <label class="f"><span>${esc(t('card.f.status'))}</span><select id="f-status">${opts(Object.keys(COLS), c.status, Object.fromEntries(Object.keys(COLS).map(k => [k, colLabel(state.project, k)])))}</select></label>
-    </div>
-    <div class="row">
-      <label class="f"><span>${esc(t('card.f.assignee'))}</span>${assigneeSelect(c.assignee || '')}</label>
-      <label class="f"><span>${esc(t('card.f.sprint'))}</span><input type="text" id="f-sprint" value="${esc(c.sprint)}"></label>
-      <label class="f"><span>${esc(t('card.f.group'))}</span><input type="text" id="f-group" list="f-group-list" placeholder="${esc(t('card.f.group.ph'))}" value="${esc(c.group || '')}"><datalist id="f-group-list">${[...new Set((state.project ? state.project.cards : []).map(x => x.group).filter(Boolean))].sort().map(g => `<option value="${esc(g)}">`).join('')}</datalist></label>
-    </div>
-    ${o.flags ? `<div><label class="chk"><input type="checkbox" id="f-blocked" ${c.blocked ? 'checked' : ''}> ${esc(t('card.f.blocked'))}</label>
-      <label class="chk"><input type="checkbox" id="f-needsYou" ${c.needsYou ? 'checked' : ''}> ${esc(t('card.f.needsyou'))}</label>
-      <label class="chk"><input type="checkbox" id="f-focus" ${c.focus ? 'checked' : ''}> ${esc(t('fx.f.focus'))}</label>
-      <label class="chk"><input type="checkbox" id="f-hidepublic" ${c.hidePublic ? 'checked' : ''}> ${esc(t('pub.card.hide'))}</label></div>` : ''}`;
-}
-// Who a card goes to: a role (the lead launches that kind of agent; the model is shown so the cost is
-// visible), a named team member, or the owner himself (a task for him). Agents swap a role for their name on start.
-const ROLES = [
-  ['Lead (Opus)', '🧠', 'role.lead'],
-  ['Reviewer (Opus)', '🔍', 'role.reviewer'],
-  ['Frontend (Sonnet)', '🎨', 'role.frontend'],
-  ['Backend (Sonnet)', '⚙️', 'role.backend'],
-  ['QA (Haiku)', '🧪', 'role.qa'],
-  ['Quick fix (Haiku)', '🔧', 'role.quickfix'],
-  ['Docs (Haiku)', '📄', 'role.docs'],
-];
-// Team roles per project (AIG-366): p.roles lists the roles that are on; none = all on. Lead is always on.
-const TEAM_ROLES = [...ROLES.map(r => r[0]), 'Tester (Sonnet)'];
-const projectRoleOn = (r, p = state.project) => r === TEAM_ROLES[0] || !p || !Array.isArray(p.roles) || p.roles.includes(r);
-// A role template on a project (AIG-420): kept by its id, e.g. ux-researcher-senior. state.profiles = GET /api/profiles.
-const profileRole = id => ((state.profiles || {}).roles || []).find(r => r.id === id);
-// Loaded once with the project (core.js), so the role picker can name roles added from a team.
-async function loadProfiles() { if (!state.profiles) try { state.profiles = await api('GET', '/api/profiles'); } catch { state.profiles = { roles: [], teams: [] }; } return state.profiles; }
-const Model = m => String(m || '').replace(/^./, c => c.toUpperCase());
-const roleModel = r => (/\((Opus|Sonnet|Haiku)\)$/.exec(r) || [])[1] || Model((profileRole(r) || {}).model);
-const roleName = id => { const r = profileRole(id); return r ? `${t('prof.role.' + r.group)}, ${t('prof.level.' + r.level)} (${Model(r.model)})` : id; };
-const ROLE_ICON = { lead: '🧠', reviewer: '🔍', frontend: '🎨', backend: '⚙️', qa: '🧪', quickfix: '🔧', copywriter: '📄', tester: '🤖', pm: '📋', fullstack: '🧩', mobile: '📱', devops: '🖥️', security: '🔒', uxui: '✏️', 'ux-researcher': '🔎', data: '📊', accessibility: '♿', i18n: '🌍' };
-const roleIcon = id => ROLE_ICON[(profileRole(id) || {}).group] || '👤';
-// The role templates on a project beyond today's 8 (AIG-420), e.g. reviewer-senior: assigned by their label, the name briefs use.
-const extraRoles = (p = state.project) => (p && Array.isArray(p.roles) ? p.roles : []).filter(r => !TEAM_ROLES.includes(r) && profileRole(r));
-// Per model the helper limit when set, else the number of roles on: { total, list: "Opus 1, Sonnet 2, Haiku 3" }.
-function rolesCount(on) {
-  const pr = leadPrefs(); let total = 0;
-  const list = ['Opus', 'Sonnet', 'Haiku'].map(m => {
-    const n = [...new Set(on)].filter(r => roleModel(r) === m).length, lim = pr['helpers' + m];
-    const k = lim !== '' && lim != null ? Math.min(n, lim) : n;
-    total += k; return n ? m + ' ' + k : '';
-  }).filter(Boolean).join(', ');
-  return { total, list };
-}
-function assigneeSelect(cur) {
-  const team = (state.project?.team || []).filter(m => !/retired/i.test(m.status || '') && m.name !== me()).map(m => m.name);
-  const extra = extraRoles().map(id => [profileRole(id).label, id]);
-  const known = new Set(['', me(), ...ROLES.map(r => r[0]), ...extra.map(x => x[0]), ...team]);
-  const o = (v, label) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
-  return `<select id="f-assignee" onchange="onAssignee(this)">
-    ${o('', t('assignee.nobody'))}${cur && !known.has(cur) ? o(cur, '👤 ' + cur) : ''}
-    <optgroup label="${esc(t('assignee.roles'))}">${ROLES.filter(r => r[0] === cur || projectRoleOn(r[0])).map(([v, i, d]) => o(v, `${i} ${v}: ${t(d)}`)).join('')}${extra.map(([v, id]) => o(v, `${roleIcon(id)} ${roleName(id)}`)).join('')}</optgroup>
-    ${team.length ? `<optgroup label="${esc(t('assignee.members'))}">${team.map(n => o(n, '👤 ' + n)).join('')}</optgroup>` : ''}
-    <optgroup label="${esc(t('assignee.you'))}">${o(me(), '🙋 ' + me() + t('assignee.you.task'))}</optgroup>
-    <option value="__other">${esc(t('assignee.other'))}</option></select>`;
-}
-function onAssignee(sel) {
-  if (sel.value !== '__other') return;
-  const v = (prompt(t('assignee.prompt')) || '').trim();
-  if (!v) { sel.value = ''; return; }
-  sel.add(new Option('👤 ' + v, v, true, true), sel.options[1]);
-}
-
-// ⭐ Crucial (AIG-549): kept running while the usage saver is on.
-const crucialBtn = c => `<button class="crucial-btn${c.crucial ? ' on' : ''}" aria-pressed="${c.crucial ? 'true' : 'false'}" title="${esc(t('saver.crucial.title'))}" onclick="toggleCrucial()">${esc(t('saver.crucial'))}</button>`;
-async function toggleCrucial() {
-  const c = curCard(); if (!c) return;
-  try { await api('PATCH', `/api/projects/${slug()}/cards/${c.id}`, { crucial: !c.crucial }); refresh(true); } catch (e) { alert(e.message); }
-}
-
-function readFields(flags, testSteps) {
-  const o = { title: $('f-title').value.trim(), description: $('f-description').value, type: $('f-type').value, priority: $('f-priority').value, risk: $('f-risk').value,
-    status: $('f-status').value, assignee: $('f-assignee').value.trim(), sprint: $('f-sprint').value.trim(), group: $('f-group').value.trim() };
-  if (testSteps) o.testSteps = $('f-testSteps').value;
-  if (flags) { o.blocked = $('f-blocked').checked; o.needsYou = $('f-needsYou').checked; o.focus = $('f-focus').checked; o.hidePublic = $('f-hidepublic').checked; }
-  return o;
-}
-
 /* ---------- card detail panel ---------- */
 // ↩ Reopen and ⋯ Move to (AIG-403): a done card goes back to the column it came from; any card can be moved to a column.
-function moveUi(p, c) {
+function moveUi(p, c, part) {   // part: 'reopen' (the button) or 'selects' (the Move dropdowns); both when omitted
   const cols = colsOf(p).filter(x => x.key !== c.status);
   // The other projects, for ➡️ Move to project (AIG-438): the home list if it is loaded, else fetched once.
   if (!state.projects && !state.projectList && !state.projectListAsked) { state.projectListAsked = true; api('GET', '/api/projects').then(l => { state.projectList = l; refresh(true); }).catch(() => {}); }
-  const others = (state.projects || state.projectList || []).filter(x => x.slug !== p.slug && !x.archived);
-  return (c.status === 'done' ? `<button data-reopen onclick="moveCard('${esc(c.reopenTo || 'todo')}')" title="${esc(t('card.reopen.title'))}">${esc(t('card.reopen'))}</button> ` : '')
-    + `<select id="mv-to" data-moveto onchange="moveCard(this.value)" aria-label="${esc(t('card.moveto'))}"><option value="">${esc(t('card.moveto'))}</option>${cols.map(x => `<option value="${esc(x.key)}">${esc(((x.emoji ? x.emoji + ' ' : '') + x.name).trim())}</option>`).join('')}</select>`
+  const others = TodayPage.only(state.projects || state.projectList || []).filter(x => x.slug !== p.slug && !x.archived);
+  const reopen = (c.status === 'done' ? `<button data-reopen onclick="moveCard('${esc(c.reopenTo || 'todo')}')" title="${esc(t('card.reopen.title'))}">${esc(t('card.reopen'))}</button> ` : '');
+  if (part === 'reopen') return reopen;
+  const selects = `<select id="mv-to" data-moveto onchange="moveCard(this.value)" aria-label="${esc(t('card.moveto'))}"><option value="">${esc(t('card.moveto'))}</option>${cols.map(x => `<option value="${esc(x.key)}">${esc(((x.emoji ? x.emoji + ' ' : '') + x.name).trim())}</option>`).join('')}</select>`
     + (others.length ? ` <select id="mv-proj" onchange="moveToProject(this.value)" aria-label="${esc(t('card.moveproj'))}"><option value="">${esc(t('card.moveproj'))}</option>${others.map(x => `<option value="${esc(x.slug)}">${esc(x.name)}</option>`).join('')}</select>` : '');
+  return part === 'selects' ? selects : reopen + selects;
 }
 // ➡️ Move to another project (AIG-438): a copy lands there with a link back; this card closes with a link forward.
 async function moveToProject(to) {
@@ -108,6 +18,7 @@ async function moveToProject(to) {
 }
 async function moveCard(status) {
   if (!status) return;
+  state.cardMenu = false;
   const body = { status };
   if (status === 'done' && state.project) {   // 🔥 an incident is closed with its post-mortem (AIG-614)
     const c = state.project.cards.find(x => x.id === cardId());
@@ -129,19 +40,54 @@ function postmortemAsk() {
   });
 }
 const postmortemHtml = c => c.postmortem ? `<div class="postmortem"><h3>${esc(t('pm.heading'))}</h3>${['happened', 'why', 'change'].map(k => `<p><b>${esc(t('pm.' + k))}</b> ${esc(c.postmortem[k])}</p>`).join('')}</div>` : '';
+// 🧩 A problem card (AIG-887) shows its root cause, workaround, linked incidents and change request; an incident shows its problem.
+const cardLinkHtml = (p, id) => `<a href="#/p/${esc(p.slug)}/${esc(id)}">${esc(id)}</a>`;
+const problemHtml = (p, c) => c.type === 'problem' ? `<div class="problem"><h3>${esc(t('prob.heading'))}</h3>
+  <p><b>${esc(t('prob.cause'))}</b> ${c.rootCause ? esc(c.rootCause) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
+  <p><b>${esc(t('prob.workaround'))}</b> ${c.workaround ? esc(c.workaround) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
+  <p><b>${esc(t('prob.incidents'))}</b> ${(c.incidents || []).length ? c.incidents.map(i => cardLinkHtml(p, i)).join(', ') : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
+  <p><b>${esc(t('prob.change'))}</b> ${c.changeId ? cardLinkHtml(p, c.changeId) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p></div>`
+  : c.problemId ? `<div class="problem"><p><b>${esc(t('prob.of'))}</b> ${cardLinkHtml(p, c.problemId)}</p></div>` : '';
+// 📝 Post-incident review (AIG-1108): on a done major incident. The owner ticks the action items; "Make a card" turns one into a card.
+const reviewHtml = (p, c) => {
+  const r = c.review; if (!r) return '';
+  if (r.state !== 'posted') return `<div class="postmortem pirbox"><h3>${esc(t('pir.heading'))}</h3><p class="muted">${esc(t(r.state === 'manual' ? 'pir.manual' : 'pir.waiting', { name: r.by || '' }))}</p></div>`;
+  const acts = (r.actions || []).map((a, i) => `<li class="pir-action"><label><input type="checkbox" ${a.ok ? 'checked' : ''} onchange="pirTick('${esc(c.id)}', ${i}, this.checked)"> ${esc(a.text)}</label> ${a.card ? cardLinkHtml(p, a.card) : `<button type="button" class="pir-make" onclick="pirMake('${esc(c.id)}', ${i})">${esc(t('pir.make'))}</button>`}</li>`).join('');
+  return `<div class="postmortem pirbox"><h3>${esc(t('pir.heading'))}</h3><p><b>${esc(t('pir.timeline'))}</b> ${esc(r.timeline)}</p><p><b>${esc(t('pir.helped'))}</b> ${esc(r.helped)}</p><p><b>${esc(t('pir.actions'))}</b></p><ul class="pir-actions">${acts}</ul>${r.runbook ? `<p><b>${esc(t('pir.runbook'))}</b> ${cardLinkHtml(p, r.runbook)}</p>` : ''}</div>`;
+};
+async function pirTick(id, i, on) { try { await api('POST', `/api/projects/${slug()}/cards/${id}/review/tick`, { i, on }); } catch (e) { alert(e.message); refresh(true); } }
+async function pirMake(id, i) { try { await api('POST', `/api/projects/${slug()}/cards/${id}/review/card`, { i }); refresh(true); } catch (e) { alert(e.message); } }
+const knownErrorsLink = (p, c) => c.type === 'incident' ? `<p class="ke-p"><a class="ke-link" href="#/known-errors/${esc(p.slug)}">${esc(t('ke.incident.link'))}</a></p>` : '';
+// 🚨 Major incident button (AIG-1049): on an open incident card; pressed again it ends the major incident.
+// 🛎️ Service desk kind (AIG-1104): a badge on the board card, a picker on the open card (owner)
+const deskBadge = c => c.desk && c.desk.kind ? `<div class="desk-badge desk-${esc(c.desk.kind)}">${esc(t('desk.kind.' + c.desk.kind))}${c.desk.dup ? ` · ${esc(t('desk.looks', { id: c.desk.dup.id }))}` : ''}</div>` : '';
+const deskHtml = c => !c.desk || !c.desk.kind ? '' : `<div class="desk"><label>${esc(t('desk.label'))} <select id="desk-kind" onchange="setDeskKind('${esc(c.id)}', this.value)">${['request', 'incident', 'idea'].map(k => `<option value="${k}" ${k === c.desk.kind ? 'selected' : ''}>${esc(t('desk.kind.' + k))}</option>`).join('')}</select></label>${c.desk.dup ? ` <span class="desk-dup">${esc(t('desk.looks', { id: '' }))}<a href="#/p/${slug()}/${esc(c.desk.dup.id)}">${esc(c.desk.dup.id)}</a></span> <button type="button" class="desk-link" onclick="linkDesk('${esc(c.id)}')">${esc(t('desk.link'))}</button>` : ''}${c.desk.linked ? ` <span class="muted desk-linked">${esc(t('desk.linked', { id: c.desk.linked }))}</span>` : ''}</div>`;
+async function linkDesk(id) {
+  try { await api('POST', `/api/projects/${slug()}/cards/${id}/desk-link`, {}); refresh(true); } catch (e) { alert(e.message); }
+}
+async function setDeskKind(id, kind) {
+  try { await api('POST', `/api/projects/${slug()}/cards/${id}/desk`, { kind }); refresh(true); } catch (e) { alert(e.message); }
+}
+const majorHtml = c => c.type !== 'incident' || c.status === 'done' ? '' : `<div class="major">${c.major ? `<span class="major-on">${esc(t('major.on', { by: c.major.by || '', when: ago(c.major.at) }))}</span> ` : ''}<button type="button" class="${c.major ? '' : 'danger'}" onclick="pressMajor('${esc(c.id)}')" title="${esc(t('major.title'))}">${esc(t(c.major ? 'major.end' : 'major.btn'))}</button></div>`;
+async function pressMajor(id) {
+  try { await api('POST', `/api/projects/${slug()}/cards/${id}/major`, {}); refresh(true); } catch (e) { alert(e.message); }
+}
 // The merge gate (AIG-613): 🟢 QA green (areas, full suite) / 🔴 QA red / ⚪ no QA yet. Set with aigile qa.
 function qaGateHtml(c) {
-  const q = c.qa; if (!q) return `<div class="qa-gate none">${esc(t('qa.none'))}</div>`;
+  const q = c.qa; if (!q) return `<div class="qa-gate none" title="${esc(t('qa.none.title'))}">${esc(t('qa.none'))}</div>`;
   const red = q.result === 'fail' || q.full === 'fail', bits = [(q.areas || []).join(', '), q.full ? t('qa.full.' + q.full) : ''].filter(Boolean).join('; ');
   return `<div class="qa-gate ${red ? 'red' : 'green'}" title="${esc([q.by, q.at && ago(q.at)].filter(Boolean).join(' · '))}">${esc(t(red ? 'qa.red' : 'qa.green'))}${bits ? ` <span class="muted">(${esc(bits)})</span>` : ''}${q.note ? ` <span class="muted">${esc(q.note)}</span>` : ''}</div>`;
 }
+const movedBanner = c => { const m = state.moved; if (!m) return ''; if (m.to !== c.id) { state.moved = null; return ''; } return `<div class="moved-note" id="moved-note" role="status">✓ ${esc(m.text)} ${esc(t('card.next.now'))}</div>`; };
 function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
-  const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
-  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}${state.editing ? '' : `<button id="remind-btn" onclick="remindToggle()" title="${esc(t('remind.title'))}">${esc(t('remind.btn'))}</button>`}${state.editing ? '' : timerUi(c)}${state.editing ? '' : crucialBtn(c)}${state.editing ? '' : Focus.btn(p, c)}${state.editing ? '' : Term.btn(c, 'term-btn')}<span style="flex:1"></span>
-      ${state.editing ? '' : moveUi(p, c)}
-      ${state.editing ? '' : `<button onclick="editCard()">${esc(t('card.edit'))}</button> <button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button>`}</div>`;
+  const popBtn = pop ? '' : `<button class="card-pop" onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
+  const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}</div>`;
+  // AIG-935: title first; Close, Edit (and Reopen) stay in view, every other action sits in the one ⋯ menu (same buttons, same ids).
+  // ⧉ Pop out stays in view too (AIG-1012): in the ⋯ menu nobody found it.
+  const menu = `<div class="card-menu" id="card-menu" ${state.cardMenu ? '' : 'hidden'}>${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}<button id="remind-btn" onclick="remindToggle()" title="${esc(t('remind.title'))}">${esc(t('remind.btn'))}</button>${timerUi(c)}${crucialBtn(c)}${urgentBtn(c, p.slug, true)}${Focus.btn(p, c)}${Term.btn(c, 'term-btn')}${moveUi(p, c, 'selects')}<button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button></div>`;
+  const topActs = `<div class="card-acts"><button onclick="${close}">${esc(t('card.close'))}</button>${moveUi(p, c, 'reopen')}<button onclick="editCard()">${esc(t('card.edit'))}</button>${popBtn}<span class="card-menu-wrap"><button type="button" id="cm-btn" class="cm-btn" aria-haspopup="true" aria-expanded="${!!state.cardMenu}" title="${esc(t('card.menu.title'))}" aria-label="${esc(t('card.menu.title'))}" onclick="cardMenuToggle()">${esc(t('card.menu'))}</button>${menu}</span></div>`;
   if (state.editing) {
     return `<div class="overlay"><div class="panel">${head}
       <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(t('card.editing'))}</div>
@@ -157,6 +103,7 @@ function renderCard(p, c) {
       <div class="actions"><button class="good" onclick="gotIt()">${esc(t('info.gotit'))}</button><button onclick="infoReply()" title="${esc(t('info.reply.title'))}">${esc(t('info.reply'))}</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>`
     : c.status === 'verify' ? `<div class="verdict"><h3>${esc(t('verdict.h'))}</h3>${pileLeft(p, c)}${aiEvidence(c, p.slug)}
       <div class="muted">${esc(t('verdict.waiting'))}${c.testSteps ? esc(t('verdict.steps')) : ''}.</div>
+      ${c.testSteps ? `<div class="v-steps"><h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div></div>` : ''}
       <label class="f" style="margin-top:8px"><span>${esc(t('verdict.comment'))}</span><textarea id="v-text" data-draft="${esc(p.slug + '/' + c.id)}/verdict" rows="3" placeholder="${esc(t('verdict.placeholder'))}" onkeydown="if(EnterSend.is(event,'card')){event.preventDefault();verdict(false)}"></textarea></label>
       <div class="err" id="v-err"></div>
       ${c.openUrl ? `<div class="actions" style="margin-top:0"><button class="primary" onclick="openIt('${p.slug}', '${c.id}', this)" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button><span class="muted">${esc(c.openUrl)}</span></div>` : ''}
@@ -172,11 +119,13 @@ function renderCard(p, c) {
   if (state.tabFor !== c.id) { state.tabFor = c.id; state.cardTab = c.status === 'verify' ? 'test' : c.comments.length ? 'reply' : 'details'; }
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
-  return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel" ${Term.panelAttr(p, c)}>${head}
-    <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
-    <h2>${esc(c.title)}</h2>
+  return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel" ${Term.panelAttr(p, c)}>
+    ${movedBanner(c)}<div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    <h2>${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
-    ${checklistUi(p, c)}${waitsUi(p, c)}${secretsUi(p, c)}
+    ${deskHtml(c)}${majorHtml(c)}${CiPage.affects(p, c)}${reviewHtml(p, c)}
+    ${c.status === 'verify' ? verdict : ''}
+    ${extrasUi(p, c)}${secretsUi(p, c)}${accessReviewHtml(p, c)}
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
       ${Share.cardComments(p, c)}
@@ -184,148 +133,22 @@ function renderCard(p, c) {
       ${pop ? chatHtml(p, c, msg) : followBar(p, c) + replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
-      ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${Attach.shown(c, p.slug)}
+      ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${runbooksHtml(p, c)}${problemHtml(p, c)}${probEdit(p, c)}${knownErrorsLink(p, c)}${changeHtml(p, c)}${Attach.shown(c, p.slug)}
     </div>
-    ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>${verdict}
+    ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>
       ${c.proof ? proofHtml(c.proof) : ''}
       ${notes.length ? `<h3>${esc(t('card.fromteam'))}</h3>${notesHtml(notes, msg)}` : ''}
-      ${c.testSteps ? `<h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
+      ${c.testSteps && c.status !== 'verify' ? `<h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
   </div></div>`;
 }
-// The Reply tab as it was: latest message on top, the reply box right under it, older ones below.
-function replyHtml(p, c, msg, newest) {
-  return `${newest.length ? msg(newest[0], true) : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}
-      ${replyBox(p, c)}
-      ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">${esc(t('card.earlier'))}</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}`;
+
+/* ---------- the ⋯ actions menu (AIG-935) ---------- */
+function cardMenuToggle(on) {
+  state.cardMenu = on === undefined ? !state.cardMenu : on;
+  const m = $('card-menu'), b = $('cm-btn'); if (m) m.hidden = !state.cardMenu; if (b) b.setAttribute('aria-expanded', String(!!state.cardMenu));
 }
-const replyBox = (p, c) => `<div class="reply">${cardAnswers(p, c)}<textarea id="r-text" data-draft="${esc(p.slug + '/' + c.id)}/reply" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(EnterSend.is(event,'card')){event.preventDefault();sendReply()}"></textarea>
-        <div class="err" id="r-err"></div>
-        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${looksRight(c)}${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>`;
-/* ---------- one-click answers on the card itself (AIG-371, AIG-315) ----------
-   An open `aigile task` (assigned to the owner) always gets a ✅ Done. An open `aigile ask` (needs the owner) gets the same
-   Go / Yes / --options buttons as the inbox (askActions, core.js); one that needs a reason (Not yet, No) starts the reply box.
-   👍 Looks right sits next to Send reply when the newest comment is from the team and holds a code block or says
-   "you should see" (en) / "je zou ... zien" / "zou je ... moeten zien" (nl). It sends the localised "Done, it looked as expected". */
-const LOOKS_RIGHT_RE = /```|you should see|you'll see|je zou[^.\n]{0,40}zien|zou je[^.\n]{0,40}zien|je moet[^.\n]{0,40}zien/i;
-function looksRight(c) {
-  const m = (c.comments || []).at(-1);
-  return m && !isOwner(m.author) && c.status !== 'done' && LOOKS_RIGHT_RE.test(m.text || '') ? `<button class="good" data-looksright title="${esc(t('card.looksright.title'))}" onclick="sendReply(t('card.looksright.say'))">${esc(t('card.looksright'))}</button>` : '';
-}
-function cardAnswers(p, c) {
-  if (c.status === 'done') return '';
-  if (isOwner(c.assignee)) return `<div class="msg-acts card-acts"><button class="good" data-cardtaskdone onclick="cardTaskDone()">${esc(t('inbox.k.done'))}</button></div>`;
-  if (!c.needsYou || c.blocked || c.status === 'verify') return '';
-  const cs = [...(c.comments || [])].reverse(), a = cs.find(x => x.mark === 'ask' && !isOwner(x.author)) || cs.find(x => !isOwner(x.author));
-  const acts = a ? askActions(a, 'question') : [];
-  return acts.length ? `<div class="msg-acts card-acts">${acts.map(x => `<button class="${x.ask != null ? '' : 'good'}" data-cardact ${x.ask != null ? `data-ask="${esc(x.ask)}"` : `data-say="${esc(x.say)}"`}>${esc(x.label)}</button>`).join('')}</div>` : '';
-}
-document.addEventListener('click', e => {
-  const b = e.target.closest('[data-cardact]'); if (!b) return;
-  e.preventDefault();
-  if (b.dataset.ask != null) { const ta = $('r-text'); if (ta) { ta.value = b.dataset.ask; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } return; }
-  sendReply(b.dataset.say);
-});
-async function cardTaskDone() {
-  const next = nextForYou();
-  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/taskdone`, { text: $('r-text').value.trim() }); clearDraft(slug() + '/' + cardId() + '/reply'); doneWithCard(next); } catch (err) { setErr('r-err', err); }
-}
-// A popped-out card is a live chat (AIG-313): oldest first, newest at the bottom, a typing line while the team
-// works on the card, the reply box underneath. Sending never closes it.
-function chatHtml(p, c, msg) {
-  // AIG-639: "working…" only while a run is going, or a session is at work (not idle in its wait); a finished run says nothing.
-  const pr = p.presence || {}, atWork = pr.running || (pr.online && !pr.waitingMs && (pr.where === 'vscode' || pr.where === 'terminal'));
-  const typing = atWork && (c.status === 'doing' || c.status === 'team') && !c.needsYou;
-  return `<div class="chat">${c.comments.length ? c.comments.map(m => msg(m, false)).join('') : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}</div>
-      ${typing || nudgeLit(p, c, false) ? `<div class="typing muted" id="typing">${typing ? stateLine(pr) : ''} ${nudgeBtn(p, c, typing)}</div>` : ''}
-      ${followBar(p, c)}${replyBox(p, c)}`;
-}
-// AIG-636: what the team is doing and for how long ("working · 12 min"), so busy and hung look different. presence.activity
-// comes from the board: thinking (model output), working (tools), command (a long shell command). A run whose log has
-// not grown for 15 min shows "no sign of life" in the warning colour.
-const NOLIFE_MS = 15 * 60e3;
-function stateLine(pr) {
-  const a = pr.activity; if (!a) return esc(t('card.working'));
-  const min = iso => Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / 60e3)), stale = a.watch && Date.now() - Date.parse(a.signAt) >= NOLIFE_MS;
-  const line = esc(t('card.act.' + a.state)) + ' · ' + esc(t('card.act.min', { n: min(a.since) }));
-  return `<span class="act">${line}</span>` + (stale ? ` <b class="act-stale">⚠ ${esc(t('card.act.stale', { n: min(a.signAt) }))}</b>` : '');
-}
-// 👉 Nudge (AIG-593): by the typing line, lit when your last message is still not seen after 3 min, or the team has been
-// typing for 5 min with nothing new. A click is the card's normal poke (free; only the wake run uses tokens). A run that
-// really hangs is restarted by the board's own hang check (presence.js), so the button never kills a working run.
-const typingSince = {};
-const NUDGE_UNSEEN_MS = 3 * 60e3, NUDGE_TYPING_MS = 5 * 60e3;
-function nudgeLit(p, c, typing) {
-  const k = p.slug + '/' + c.id, last = c.comments[c.comments.length - 1], now = Date.now();
-  const lastAt = last ? Date.parse(last.at) : 0;   // typing time restarts with each new message
-  if (!typing) delete typingSince[k]; else if (!typingSince[k]) typingSince[k] = now; else if (lastAt > typingSince[k]) typingSince[k] = lastAt;
-  const mine = [...c.comments].reverse().find(m => isOwner(m.author));
-  const unseen = mine && !mine.poke && !(p.teamSeenAt && mine.at <= p.teamSeenAt) && now - Date.parse(mine.at) > NUDGE_UNSEEN_MS && !c.comments.slice(c.comments.indexOf(mine) + 1).some(m => !isOwner(m.author));
-  return !!(unseen || (typing && now - typingSince[k] > NUDGE_TYPING_MS));
-}
-function nudgeBtn(p, c, typing) {
-  const lit = nudgeLit(p, c, typing);
-  return `<button type="button" class="nudge${lit ? ' lit' : ''}" id="nudgeBtn" onclick="nudgeCard(this)" title="${esc(t(lit ? 'nudge.lit' : 'nudge.title'))}" aria-label="${esc(t('nudge.title'))}">👉</button>`;
-}
-async function nudgeCard(btn) {
-  if (btn) btn.disabled = true;
-  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/poke`); refresh(true); } catch (e) { alert(e.message); if (btn) btn.disabled = false; }
-}
-// AIG-426: the lead carried on in another card: a button to go there (and, if set, going by itself).
-function followBar(p, c) { return c.followUp && p.cards.some(x => x.id === c.followUp) ? Follow.html('card', p.slug, c.id, c.followUp) : ''; }
-// While the owner types in a pop-out, only the messages and the typing line are swapped, never the reply box.
-function popChatLive() {
-  const p = state.project, c = p && p.cards.find(x => x.id === state.route.card), chat = document.querySelector('#modal .chat');
-  if (!c || !chat || state.editing) return false;
-  const tmp = document.createElement('div'); tmp.innerHTML = renderCard(p, c);
-  const nc = tmp.querySelector('.chat'); if (!nc) return false;
-  const de = document.documentElement, atEnd = de.scrollHeight - window.scrollY - window.innerHeight < 60;
-  if (chat.innerHTML !== nc.innerHTML) chat.innerHTML = nc.innerHTML;
-  const ty = document.getElementById('typing'), nt = tmp.querySelector('#typing');
-  if (ty && !nt) ty.remove(); else if (!ty && nt) chat.after(nt); else if (ty && nt && ty.innerHTML !== nt.innerHTML && !ty.contains(document.activeElement)) ty.innerHTML = nt.innerHTML;   // 👉 lights up (AIG-593)
-  const fbar = document.querySelector('#modal .follow-bar'), nbar = tmp.querySelector('.follow-bar');
-  if (fbar && !nbar) fbar.remove(); else if (nbar && (!fbar || fbar.dataset.follow !== nbar.dataset.follow)) { if (fbar) fbar.remove(); (document.getElementById('typing') || chat).after(nbar); }
-  if (atEnd) window.scrollTo(0, de.scrollHeight);
-  return true;
-}
-// The open card on the board (AIG-314): a new team message must show even while the reply box is focused or holds a
-// draft. Only what sits above and below the reply box, and the tab row, are swapped; the box itself is never touched.
-function cardLive() {
-  const p = state.project, c = p && p.cards.find(x => x.id === state.route.card), r = document.querySelector('#modal .panel .reply');
-  if (!c || !r || state.editing || state.dragging || $('dialog').firstChild) return false;
-  const tmp = document.createElement('div'); tmp.innerHTML = renderCard(p, c);
-  const nr = tmp.querySelector('.reply'), tabs = document.querySelector('#modal .ctabs'), nt = tmp.querySelector('.ctabs');
-  if (!nr || nr.parentNode.dataset.pane !== r.parentNode.dataset.pane) return false;
-  let changed = false;
-  if (tabs && nt && tabs.innerHTML !== nt.innerHTML) { tabs.innerHTML = nt.innerHTML; changed = true; }
-  const side = (el, dir) => { const a = []; for (let n = el[dir]; n; n = n[dir]) a.push(n); return a; };
-  for (const dir of ['previousSibling', 'nextSibling']) {
-    const o = side(r, dir), n = side(nr, dir), h = l => l.map(x => x.outerHTML || x.textContent).join('');
-    if (h(o) === h(n)) continue;
-    changed = true; o.forEach(x => x.remove());
-    if (dir === 'previousSibling') n.reverse().forEach(x => r.parentNode.insertBefore(x, r));   // nearest-first -> document order
-    else n.forEach(x => r.parentNode.appendChild(x));
-  }
-  // The one-click answers and Looks right live inside the box but follow the newest message (AIG-371, AIG-315): swap just those.
-  const acts = r.querySelector('.card-acts'), nacts = nr.querySelector('.card-acts'), lr = r.querySelector('[data-looksright]'), nlr = nr.querySelector('[data-looksright]');
-  if ((acts ? acts.outerHTML : '') !== (nacts ? nacts.outerHTML : '')) { changed = true; if (acts && nacts) acts.replaceWith(nacts); else if (acts) acts.remove(); else r.prepend(nacts); }
-  if ((lr ? lr.outerHTML : '') !== (nlr ? nlr.outerHTML : '')) { changed = true; if (lr && nlr) lr.replaceWith(nlr); else if (lr) lr.remove(); else r.querySelector('.primary').after(nlr); }
-  if (changed) $('modal')._html = null;
-  return true;
-}
-// Test tab notes (AIG-186): newest first, so the latest word sits right under the reply box. An AI tester check
-// that a newer one replaced is faded and labelled, so a corrected verdict can't be mistaken for the current one.
-const isCheck = m => /^🤖 /.test(m.text || '');
-function notesHtml(notes, msg) {
-  const lastCheck = notes.filter(isCheck).pop();
-  return [...notes].reverse().map(m => isCheck(m) && m !== lastCheck
-    ? `<div class="stale" title="${esc(t('card.stale'))}">${msg(m, false)}<div class="stale-note">${esc(t('card.stale'))}</div></div>` : msg(m, false)).join('');
-}
-// Switch card tab without re-rendering, so anything typed in another tab is kept.
-function cardTab(k) {
-  state.cardTab = k;
-  document.querySelectorAll('#modal .ctab').forEach(b => b.classList.toggle('on', b.dataset.ctab === k));
-  document.querySelectorAll('#modal .cpane').forEach(d => { d.hidden = d.dataset.pane !== k; });
-}
+document.addEventListener('click', e => { if (state.cardMenu && !e.target.closest('.card-menu-wrap')) cardMenuToggle(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.cardMenu) cardMenuToggle(false); });
 
 /* ---------- card actions: edit, delete, reply, verdict ---------- */
 function editCard() { state.editing = true; render(); const ti = $('f-title'); if (ti) ti.focus(); }
@@ -375,7 +198,7 @@ function proofHtml(pr) {
 // ▶ Open it (AIG-146): ask the board to start the app if needed, then open the page. No OK popup (AIG-719).
 async function openIt(s, id, btn) {
   const was = btn.textContent; btn.disabled = true; btn.textContent = t('verdict.open.starting');
-  try { const r = await api('POST', `/api/projects/${s}/cards/${id}/open`); window.open(r.url, '_blank'); }
+  try { const r = await api('POST', `/api/projects/${s}/cards/${id}/openit`); window.open(r.url, '_blank'); }
   catch (e) { alert(e.message); }
   btn.disabled = false; btn.textContent = was;
 }
@@ -387,20 +210,20 @@ const reopenList = () => { try { return JSON.parse(localStorage.getItem(REOPEN_K
 const reopenSave = l => { try { localStorage.setItem(REOPEN_KEY, JSON.stringify(l)); } catch {} };
 function rememberPop(s, id) { if (!state.route.pop) return; const l = reopenList(); l[s + '/' + id] = new Date().toISOString(); reopenSave(l); }
 async function reopenPops() {
-  if (state.route.pop || document.hidden && !/Electron/.test(navigator.userAgent)) return;
+  if (!state.route || /^#\/pop/.test(location.hash) || document.hidden) return;
   const l = reopenList(), keys = Object.keys(l); if (!keys.length) return;
   const projects = {};
   for (const k of keys) {
     const [s, id] = k.split('/'), at = l[k];
     if (Date.now() - Date.parse(at) > REOPEN_MS) { delete l[k]; continue; }
-    try { projects[s] = projects[s] || await api('GET', '/api/projects/' + s); } catch { continue; }
+    try { projects[s] = projects[s] || await PagePoll.get('/api/projects/' + s); } catch { continue; }
     const c = projects[s].cards.find(x => x.id === id);
     if (!c || c.status === 'done') { delete l[k]; continue; }
     if (c.comments.some(m => m.at > at && !isOwner(m.author))) { delete l[k]; popOut('card', `#/pop/${s}/${id}`, 'aigile-' + s + '-' + id, 560, 780); }
   }
   reopenSave(l);
 }
-setInterval(reopenPops, 5000);
+PagePoll.every(reopenPops, 5000, { home: true });
 
 // After dealing with a For you card, open the next one in the queue instead of closing (AIG-141).
 // "3 of 12 left" (AIG-633): while working through the For you to test pile, a small line on the card. The total is the
@@ -409,12 +232,13 @@ function pileLeft(p, c) {
   const left = forYouQueue(p).filter(x => x.status === 'verify' && kindOf(x) === 't').length;
   if (!state.pileRun || state.pileRun.slug !== p.slug) state.pileRun = { slug: p.slug, total: left };
   state.pileRun.total = Math.max(state.pileRun.total, left);
-  if (left < 1 || state.pileRun.total < 2) return '';
-  return `<div class="muted pile-left" id="pileLeft">${esc(t('pile.left', { n: left, total: state.pileRun.total }))}</div>`;
+  if (left < 1 || state.pileRun.total < 2 || state.pileFrom !== c.id) return '';   // only when you came on from the pile, not from a link (AIG-1147)
+  return `<div class="muted pile-left" id="pileLeft" title="${esc(t('pile.left.title'))}">${esc(t('pile.at', { i: state.pileRun.total - left + 1, total: state.pileRun.total }))}</div>`;
 }
 function nextForYou() { const q = forYouQueue(state.project).map(c => c.id), i = q.indexOf(cardId()); return i < 0 ? null : q[i + 1] || q[i - 1] || null; }
-function doneWithCard(next) {
-  if (next && !state.route.pop) { state.editing = false; location.hash = '#/p/' + slug() + '/' + next; } else closeCard();
+// The card opens the next one in your pile: say what just happened, so the swap is never silent (AIG-1135).
+function doneWithCard(next, msgKey) {
+  if (next && !state.route.pop) { state.editing = false; state.pileFrom = next; state.moved = { to: next, text: t(msgKey || 'card.next.done', { id: cardId() }) }; location.hash = '#/p/' + slug() + '/' + next; } else closeCard();
 }
 async function sendReply(fixed) {
   const next = nextForYou(), txt = fixed || $('r-text').value.trim(), key = slug() + '/' + cardId();
@@ -429,104 +253,6 @@ async function sendReply(fixed) {
       setErr('r-err', ''); refresh(true);
       return;
     }
-    doneWithCard(next);
+    doneWithCard(next, 'card.next.replied');
   } catch (err) { setErr('r-err', err); }
-}
-/* ---------- checklist and waits for (AIG-406) ---------- */
-// A task for the owner shows its steps a few at a time (AIG-416): the owner's steps setting says how many open ones.
-const CHK_SHOW = { 1: 1, 2: 3, 3: 5 }, chkAll = new Set();
-function checklistUi(p, c) {
-  const list = c.checklist || [], left = checkLeft(c);
-  if (c.status === 'done' && !list.length) return '';
-  const show = isOwnerTask(c) && !chkAll.has(c.id) ? CHK_SHOW[leadPrefs().steps] : 0, open = list.map((x, i) => x.done ? -1 : i).filter(i => i >= 0);
-  const hidden = show && open.length > show ? new Set(open.slice(show)) : new Set();
-  const items = list.map((x, i) => hidden.has(i) ? '' : `<li class="${x.done ? 'on' : ''}"><label><input type="checkbox" data-chk-i="${i}" ${x.done ? 'checked' : ''} onchange="checkTick(${i}, this.checked)"> <span>${esc(x.text)}</span></label>`
-    + `<span class="chk-acts"><button type="button" class="chk-b" title="${esc(t('check.up'))}" ${i ? '' : 'disabled'} onclick="checkMove(${i}, -1)">↑</button><button type="button" class="chk-b" title="${esc(t('check.down'))}" ${i < list.length - 1 ? '' : 'disabled'} onclick="checkMove(${i}, 1)">↓</button><button type="button" class="chk-b" title="${esc(t('check.remove'))}" onclick="checkRemove(${i})">✕</button></span></li>`).join('');
-  return `<div class="chk" id="chk-box"><div class="chk-h"><b>☑ ${esc(t('check.h'))}</b>${list.length ? ` <span class="pill chk${left ? '' : ' all'}">${list.length - left}/${list.length}</span>` : ''}</div>
-    ${list.length ? `<ul class="chk-list">${items}</ul>` : ''}${hidden.size ? `<div class="chk-more muted" id="chk-more">${esc(t('check.more', { n: hidden.size }))} <button type="button" class="link" onclick="chkAll.add(cardId()); refresh(true)">${esc(t('check.more.all'))}</button></div>` : ''}
-    <div class="chk-add"><input id="chk-new" placeholder="${esc(t('check.add.ph'))}" onkeydown="if(event.key==='Enter'){event.preventDefault();checkAdd()}"> <button type="button" id="chk-add-btn" onclick="checkAdd()">${esc(t('check.add'))}</button></div></div>`;
-}
-const cardUrl = () => `/api/projects/${slug()}/cards/${cardId()}`;
-async function checkTick(i, on) {
-  try { await api('POST', cardUrl() + '/check', on ? { tick: [i + 1] } : { untick: [i + 1] }); refresh(true); } catch (e) { alert(e.message); refresh(true); }
-}
-async function checkSave(list) {
-  try { await api('PATCH', cardUrl(), { checklist: list.map(x => ({ text: x.text, done: !!x.done, by: x.by, at: x.at })) }); refresh(true); } catch (e) { alert(e.message); }
-}
-function checkAdd() {
-  const el = $('chk-new'), words = (el.value || '').split(',').map(s => s.trim()).filter(Boolean);
-  if (!words.length) { el.focus(); return; }
-  checkSave([...(curCard().checklist || []), ...words.map(text => ({ text }))]);
-}
-function checkRemove(i) { const l = [...(curCard().checklist || [])]; l.splice(i, 1); checkSave(l); }
-function checkMove(i, d) { const l = [...(curCard().checklist || [])], j = i + d; if (j < 0 || j >= l.length) return; [l[i], l[j]] = [l[j], l[i]]; checkSave(l); }
-function waitsUi(p, c) {
-  const ids = c.waitsFor || [];
-  if (c.status === 'done' && !ids.length) return '';
-  const pick = `<select id="wf-add" aria-label="${esc(t('wait.pick'))}" onfocus="waitFill(this)" onmousedown="waitFill(this)" onchange="waitAdd(this.value)"><option value="">${esc(t('wait.pick'))}</option></select>`;   // options filled when opened, so a new card elsewhere does not rebuild the panel
-  return `<div class="wf" id="wf-box">${ids.length ? `<b>⏳ ${esc(t('wait.h'))}</b> ` : ''}${ids.map(id => { const b = p.cards.find(x => x.id === id), fin = !b || b.status === 'done';
-    return `<span class="pill waits ${fin ? 'fin' : ''}" title="${esc(b ? b.title : id)}">${fin ? '✓ ' : ''}<a href="#/p/${esc(p.slug)}/${esc(id)}">${esc(id)}</a> <button type="button" class="chk-b" title="${esc(t('wait.remove'))}" onclick="waitDrop('${esc(id)}')">✕</button></span>`; }).join(' ')} ${pick}</div>`;
-}
-function waitFill(sel) {
-  if (sel.options.length > 1) return;
-  const c = curCard(), ids = c.waitsFor || [];
-  for (const x of state.project.cards.filter(x => x.id !== c.id && x.status !== 'done' && !ids.includes(x.id) && !(x.waitsFor || []).includes(c.id))) sel.add(new Option(x.id + ' ' + x.title.slice(0, 60), x.id));
-}
-async function waitSave(ids) { try { await api('PATCH', cardUrl(), { waitsFor: ids }); refresh(true); } catch (e) { alert(e.message); } }
-function waitAdd(id) { if (id) waitSave([...(curCard().waitsFor || []), id]); }
-function waitDrop(id) { waitSave((curCard().waitsFor || []).filter(x => x !== id)); }
-
-/* ---------- timed card (AIG-385): ⏰ come back at ---------- */
-function timerUi(c) {
-  if (c.status === 'done') return '';
-  const label = timed(c) ? '⏰ ' + timedWhen(c.timedUntil) : '⏰';
-  return `<button id="tm-btn" onclick="timerToggle()" title="${esc(t('timed.title'))}">${esc(label)}</button>
-    <span id="tm-box" hidden><select id="tm-pre" onchange="timerPre()"><option value="">${esc(t('timed.pick'))}</option><option value="1h">${esc(t('timed.p.1h'))}</option><option value="3h">${esc(t('timed.p.3h'))}</option><option value="tom">${esc(t('timed.p.tom'))}</option><option value="mon">${esc(t('timed.p.mon'))}</option></select>
-    <input type="datetime-local" id="tm-at" aria-label="${esc(t('timed.at'))}"> <button class="primary" onclick="timerSet()">${esc(t('timed.set'))}</button>${timed(c) ? ` <button onclick="timerClear()">${esc(t('timed.clear'))}</button>` : ''}</span>`;
-}
-function timerToggle() { const b = $('tm-box'); if (b) b.hidden = !b.hidden; }
-const localInput = d => new Date(d.getTime() - d.getTimezoneOffset() * 60e3).toISOString().slice(0, 16);
-function timerPre() {
-  const v = $('tm-pre').value, d = new Date();
-  if (v === '1h') d.setHours(d.getHours() + 1); else if (v === '3h') d.setHours(d.getHours() + 3);
-  else if (v === 'tom') { d.setDate(d.getDate() + 1); d.setHours(9, 0, 0, 0); }
-  else if (v === 'mon') { d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7)); d.setHours(9, 0, 0, 0); }
-  else return;
-  $('tm-at').value = localInput(d);
-}
-async function timerSet() {
-  const v = $('tm-at').value;
-  if (!v) { $('tm-at').focus(); return; }
-  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/timer`, { until: new Date(v).toISOString() }); refresh(true); } catch (e) { alert(e.message); }
-}
-async function timerClear() {
-  try { await api('DELETE', `/api/projects/${slug()}/cards/${cardId()}/timer`); refresh(true); } catch (e) { alert(e.message); }
-}
-async function waitAndSee() {
-  const next = nextForYou();
-  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next); } catch (err) { setErr('v-err', err); }
-}
-// 📖 To read (AIG-392): Got it accepts (a typed note goes along); Reply tells the team and keeps the card here.
-async function gotIt() { return verdict(true); }
-async function infoReply() {
-  const txt = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';
-  if (!txt && !Attach.has(key)) { setErr('v-err', t('info.err')); $('v-text').focus(); return; }
-  try {
-    const attachments = await Attach.upload(key, slug());
-    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { reply: true, text: txt, attachments });
-    Attach.clear(key); clearDraft(slug() + '/' + cardId() + '/info'); $('v-text').value = ''; setErr('v-err', ''); refresh(true);
-  } catch (err) { setErr('v-err', err); }
-}
-async function verdict(accept, btn) {
-  if (accept && !acceptSure(btn, curCard())) return;   // unfinished checklist: "2 of 3 left: accept anyway?" (AIG-406)
-  const next = nextForYou(), txt = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';
-  if (!accept && !txt && !Attach.has(key)) { setErr('v-err', t('verdict.err')); $('v-text').focus(); return; }
-  try {
-    const attachments = await Attach.upload(key, slug());
-    await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { accept, text: txt, attachments });
-    Attach.clear(key);
-    clearDraft(slug() + '/' + cardId() + '/verdict');
-    if (!accept) rememberPop(slug(), cardId());
-    doneWithCard(next);
-  } catch (err) { setErr('v-err', err); }
 }

@@ -42,6 +42,7 @@ const Weed = (() => {
   const placeName = keys => keys.filter(Boolean).slice(0, 3).map(k => t('fourtwenty.place.' + k)).join(', ');
 
   function toast(msg) {
+    if (document.documentElement.hasAttribute('data-break')) return;   // ⏸ break (AIG-824): no reminders
     if (toastEl) toastEl.remove();
     toastEl = document.createElement('div'); toastEl.id = 'weedToast'; toastEl.className = 'weed-toast'; toastEl.setAttribute('role', 'status');
     toastEl.innerHTML = `<span>${esc(msg)}</span><button type="button" aria-label="${esc(t('common.close'))}" onclick="Weed.dismiss()">✕</button>`;
@@ -52,6 +53,7 @@ const Weed = (() => {
   // A desktop alert only when the Inbox alerts are switched on and allowed (the same switch as the Inbox uses).
   function desktop(msg) {
     try {
+      if (document.documentElement.hasAttribute('data-break')) return;
       if (typeof Notification === 'undefined' || Notification.permission !== 'granted' || localStorage.getItem('aigile.alerts') !== '1') return;
       const n = new Notification(msg, { tag: 'aigile-420' }); n.onclick = () => { try { window.focus(); } catch {} n.close(); };
     } catch {}
@@ -84,14 +86,14 @@ const Weed = (() => {
     const btn = document.getElementById('weedBtn'); if (btn) btn.classList.toggle('wd-off', level === 'off');
   }
   async function sync() {
-    try { const s = await api('GET', '/api/setup'); state.setup = s; applyPrefs(s.prefs || {}); } catch {}
+    try { const s = await PagePoll.get('/api/setup'); state.setup = s; applyPrefs(s.prefs || {}); } catch {}
     loadedAt = nowMs();
   }
   function tick() {
-    if (nowMs() - loadedAt > 10000) { loadedAt = nowMs(); sync(); }
-    check(); paintPop();
+    if (!document.hidden && nowMs() - loadedAt > 10000) { loadedAt = nowMs(); sync(); }
+    check(); if (!document.hidden) paintPop();
   }
-  function start() { if (started) return; started = true; sync(); setInterval(tick, 1000); }
+  function start() { if (started) return; started = true; sync(); PagePoll.every(tick, 1000, { hidden: 30000 }); }
 
   // WeedGlance: the countdown window.
   const clock = ms => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };

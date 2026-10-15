@@ -14,10 +14,7 @@ const IB = {
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   // ago() and t() are the page's (js/core.js, js/i18n.js); they are only called after everything has loaded.
   const post = async (method, url, body) => {
-    const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(j.error || r.statusText);
-    return j;
+    return PagePoll.request(method, url, body || {});
   };
   // Server sends three kinds: tasks (assigned to the owner: something only they can do), questions, and verify cards.
   const isTask = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
@@ -25,14 +22,16 @@ const IB = {
   const isTest = c => !isTask(c) && c.status === 'verify';
   const kindOf = c => isTask(c) ? 'k' : isQuestion(c) ? 'q' : 't';
   // A 👉 poke is the Scrum Master nudging the team, never a question for the owner (AIG-717).
-  const lastAsk = c => [...(c.comments || [])].reverse().find(m => !m.poke && String(m.author).trim().toLowerCase() !== me().toLowerCase())
+  // An "Original: ..." comment is the owner's own words kept by the lead when tidying (AIG-811), never a new message (AIG-835).
+  const lastAsk = c => [...(c.comments || [])].reverse().find(m => !m.poke && !/^\s*Original:/i.test(m.text || '') && String(m.author).trim().toLowerCase() !== me().toLowerCase())
     || { author: c.assignee || 'The team', at: c.updated, text: c.description || c.title };
   // The item shows the task / question itself (AIG-367), not whatever the team said last: the newest comment marked by `aigile task` / `ask`.
   const shownAsk = c => {
     const mark = isTask(c) ? 'task' : c.blocked ? '' : 'ask';
     const m = mark && [...(c.comments || [])].reverse().find(x => x.mark === mark && String(x.author).trim().toLowerCase() !== me().toLowerCase());
     // After the owner replied and the lead answered (AIG-472), the lead's newest message leads; the task itself folds under it (see `earlier`).
-    const last = isTask(c) && lastAsk(c);
+    // A question too (AIG-999): once answered, the old "GO?" never comes back as if new.
+    const last = lastAsk(c);
     const replied = m && (c.comments || []).some(x => x.at > m.at && last && x.at < last.at && String(x.author).trim().toLowerCase() === me().toLowerCase());
     return replied && !last.mark ? last : m || lastAsk(c);
   };
@@ -49,14 +48,17 @@ const IB = {
     set(t) { try { localStorage.setItem('aigile.inboxTab', t); } catch {} },
   };
   IB.tab = tabPref.get();
-  let loaded = false, inflight = null, seen = new Set();
+  let loaded = false, inflight = null, seen = new Set(), loadEpoch = -1, loadSeq = 0;
 
   /* ---------- data ---------- */
-  function load() {
-    if (inflight) return inflight;
-    inflight = fetch('/api/inbox', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error(r.statusText))).then(l => typeof Streamer !== 'undefined' && Streamer.on() ? Streamer.filter('GET', '/api/inbox', l) : l)
-      .then(list => { inflight = null; apply(list); IB.testerDone(); return true; })
-      .catch(e => { inflight = null; throw e; });
+  function load(force) {
+    if (inflight && loadEpoch === PagePoll.generation && !force) return inflight;
+    loadEpoch = PagePoll.generation; const seq = ++loadSeq;
+    inflight = PagePoll.get('/api/inbox', { force }).then(l => { const sw = typeof Swarm !== 'undefined' ? Swarm.only(l, true) : l, off = typeof TodayPage !== 'undefined' ? TodayPage.hidden() : [];
+      const filtered = off.length ? sw.filter(c => !off.includes(c.project)) : sw;   // 🎯 AIG-1032: only today's picked projects (Show all brings the rest back)
+      return { list: filtered, sig: renderSig(l) + ':' + filtered.map(keyOf).join(',') }; })   // 🚨 swarm: only that project (AIG-877)
+      .then(({ list, sig }) => { if (seq === loadSeq) { inflight = null; if (loadEpoch === PagePoll.generation) { apply(list, sig); IB.testerDone(); } } return true; })
+      .catch(e => { if (seq === loadSeq) inflight = null; throw e; });
     return inflight;
   }
   // Going quiet (night mode): no tests or tasks, and only the 3 newest questions.
@@ -68,9 +70,13 @@ const IB = {
     IB.hidden = all.length - qs.length;
     return IB.raw.filter(c => qs.includes(c));
   }
-  function apply(list) {
+  function apply(list, sourceSig) {
     if (typeof i18n === 'undefined' || !i18n.ready) { setTimeout(() => load().catch(() => {}), 100); return; }   // wait for the language file (AIG-124)
-    IB.raw = list.filter((c, i) => list.findIndex(x => keyOf(x) === keyOf(c)) === i);   // a card is one item, never two (AIG-472)
+    const dataSig = (sourceSig || renderSig(list)) + ":" + i18n.lang + ":" + Math.floor(Date.now() / 60000);
+    if (loaded && dataSig === IB.dataSig) { IB.paintTop(); return; }
+    IB.dataSig = dataSig;
+    const keys = new Set();
+    IB.raw = list.filter(c => { const key = keyOf(c); if (keys.has(key)) return false; keys.add(key); return true; });   // a card is one item, never two (AIG-472)
     IB.items = view();
     const qs = IB.items.filter(c => !isTest(c));   // questions and tasks both alert (only those shown)
     // New questions only: never on the first load. A fresh question on the same card counts as new.
@@ -82,12 +88,12 @@ const IB = {
     seen = new Set(IB.raw.filter(c => !isTest(c)).map(key));   // hidden ones are not new when quiet ends
     loaded = true;
     IB.paintTop();
-    if (onInboxPage()) IB.paintPage();
+    if (!document.hidden && onInboxPage()) IB.paintPage();
   }
-  function repaint() { if (!loaded) return; IB.items = view(); IB.paintTop(); if (onInboxPage() && el('ib')) IB.paintPage(); }
+  function repaint() { if (!loaded) return; IB.items = view(); IB.paintTop(); if (!document.hidden && onInboxPage() && el('ib')) IB.paintPage(); }
   const onInboxPage = () => location.hash === '#/inbox';
   // Link offers and friends' questions are waiting on the owner too: counted in All, the top bar, the rail and the title.
-  const friends = () => (IB.offers || 0) + (IB.asks || 0);
+  const friends = () => (IB.offers || 0) + (IB.asks || 0) + (IB.approvals || 0);   // AIG-815: approvals too (lost in a merge)
   const setFriends = (key, n) => { if (IB[key] === n) return; IB[key] = n; if (typeof IB.paintTop === 'function') IB.paintTop(); if (onInboxPage() && el('ib') && IB.paintTabs) IB.paintTabs(); };
   Object.assign(IB, { friends, setFriends, el, esc, post, isTask, isQuestion, isTest, kindOf, lastAsk, shownAsk, earlier, keyOf, linkify, onInboxPage, tabPref, load, apply, repaint, view });
 })();

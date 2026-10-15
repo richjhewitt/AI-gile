@@ -2,9 +2,9 @@
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
-import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 
-def('popout', '⧉ Pop out opens a card on its own in a new window (AIG-122)', async (s, ctx) => {
+def('popout', 'â§‰ Pop out opens a card on its own in a new window (AIG-122)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const c = await mkCard(s, 'alpha', 'Follow these steps', { status: 'verify', testSteps: '1. Do the thing\n2. See the result' });
   const page = await openPage(ctx, '#/p/alpha/' + c.id);
@@ -21,10 +21,10 @@ def('popout', '⧉ Pop out opens a card on its own in a new window (AIG-122)', a
   noErrors(page);
 }, true);
 
-def('popchat', '⧉ a pop-out stays open after Send and new team messages land at the bottom, like a chat (AIG-313)', async (s, ctx) => {
+def('popchat', 'â§‰ a pop-out stays open after Send and new team messages land at the bottom, like a chat (AIG-313)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const c = await mkCard(s, 'alpha', 'Server steps', { status: 'doing', assignee: 'Forge' });
-  s.cli(['comment', 'alpha', c.id, 'Step 1: run the setup', '--as', 'Forge']);
+  await say(s, 'alpha', c.id, 'Forge', 'Step 1: run the setup');   // through the API: a CLI call would mark a session at work (AIG-107)
   const main = await openPage(ctx, '#/p/alpha');
   const popP = ctx.waitForEvent('page');
   await main.evaluate(id => window.open('#/pop/alpha/' + id, 'aigile-alpha-' + id, 'width=560,height=780'), c.id);
@@ -53,8 +53,18 @@ def('popchat', '⧉ a pop-out stays open after Send and new team messages land a
   // AIG-405: the bar a pop-out is dragged by stays at the top after scrolling down
   await pop.evaluate(() => { const p = document.querySelector('.panel'); const tall = document.createElement('div'); tall.style.height = '3000px'; p.appendChild(tall); window.scrollTo(0, 2000); });
   await sleep(200);
-  const bar = await pop.evaluate(() => { const p = document.querySelector('.panel'), a = p.querySelector(':scope > .actions'); return { top: a && Math.round(a.getBoundingClientRect().top), first: p.firstElementChild && p.firstElementChild.className, pos: a && getComputedStyle(a).position, sy: Math.round(scrollY), st: Math.round(document.scrollingElement.scrollTop), ov: getComputedStyle(p).overflowY, chain: (() => { const o = []; for (let e = a; e; e = e.parentElement) { const s = getComputedStyle(e); if (s.overflowX !== 'visible' || s.overflowY !== 'visible' || s.contain !== 'none') o.push((e.id || e.tagName) + ':' + s.overflowX + '/' + s.overflowY + '/' + s.contain); } return o.join(' '); })() }; });
+  const bar = await pop.evaluate(() => { const p = document.querySelector('.panel'), a = p.querySelector(':scope > .actions, :scope > .card-head'); return { top: a && Math.round(a.getBoundingClientRect().top), first: p.firstElementChild && p.firstElementChild.className, pos: a && getComputedStyle(a).position, sy: Math.round(scrollY), st: Math.round(document.scrollingElement.scrollTop), ov: getComputedStyle(p).overflowY, chain: (() => { const o = []; for (let e = a; e; e = e.parentElement) { const s = getComputedStyle(e); if (s.overflowX !== 'visible' || s.overflowY !== 'visible' || s.contain !== 'none') o.push((e.id || e.tagName) + ':' + s.overflowX + '/' + s.overflowY + '/' + s.contain); } return o.join(' '); })() }; });
   check('pop-out: the top bar stays in view when scrolled', bar.top !== null && Math.abs(bar.top) < 12, bar);
+  // AIG-780: in the desktop app every pop-out has a real bar to drag the window by, last in the page and on top
+  for (const h of ['#/pop/alpha/' + c.id, '#/pop-inbox/q', '#/pop-night']) {
+    const d = await ctx.newPage();
+    await d.addInitScript(() => Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 Electron/30.0.0' }));
+    await d.goto(BASE + '/' + h, { waitUntil: 'commit' });   // the Electron page asks for aigile://theme, which a test browser never finishes
+    await d.waitForSelector('#popDrag', { state: 'attached', timeout: 8000 }).catch(() => {});
+    const r = await d.evaluate(() => { const b = document.getElementById('popDrag'); if (!b) return null; const st = getComputedStyle(b), box = b.getBoundingClientRect(); return { region: st.webkitAppRegion || st.getPropertyValue('-webkit-app-region'), top: box.top, h: box.height, w: box.width, z: st.zIndex, hit: document.elementFromPoint(innerWidth / 2, 10) === b }; });
+    check('desktop pop-out ' + h.split('/')[1] + ': a drag bar across the top', r && r.region === 'drag' && r.top === 0 && r.h === 36 && r.hit, r);
+    await d.close();
+  }
   noErrors(main);
 }, true);
 
@@ -86,7 +96,8 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   await page.waitForFunction(() => location.hash === '#/setup', null, { timeout: 8000 }).catch(() => {});
   await page.waitForSelector('#setupForm');
   check('board opens Setup first', page.url().endsWith('#/setup'));
-  await page.click('#wzNo'); await page.click('#helpNo'); await page.waitForSelector('#wzNo', { state: 'detached' });   // AIG-354: the wizard offer, waved off
+  await page.click('#wzNo'); await page.waitForSelector('#wzNo', { state: 'detached' });   // AIG-354: the wizard offer, waved off
+  await page.waitForSelector('#homeMoreBtn'); await page.goto(s.base + '/#/setup'); await page.waitForSelector('#setupForm');   // AIG-1069: that lands on Home
   check('name is required', (await s.api('POST', '/api/setup', { owner: '' })).status === 400);
   await page.fill('input[data-key="owner"]', 'Sam');
   // AIG-334: a guessed agent program is only a suggestion; typing just a name must not save it.
@@ -116,3 +127,42 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   check('repainting the board on Setup with no project does not throw', await page.evaluate(() => { try { state.route = { view: 'setup' }; state.project = null; renderBoardOnly(); return true; } catch (e) { return false; } }));
   noErrors(page);
 }, true, { AIGILE_OWNER: '', AIGILE_LOCAL: (process.env.QA_SETUP_FILE = path.join(tmp('setup'), 'aigile.local.json')) });
+
+def('autopop', 'the Open in their own window switch: cards pop out by themselves, inline when off, inline inside a pop-out (AIG-1044)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const c = await mkCard(s, 'alpha', 'Pop me', { status: 'todo' });
+  const stub = page => page.evaluate(() => { window.__opened = []; window.open = (...a) => { window.__opened.push(a); return {}; }; });
+  const go = async (page, hash) => { await page.evaluate(h => { location.hash = h; }, hash); await sleep(600); };
+  // off (the default): the card opens inline
+  let page = await openPage(ctx, '#/p/alpha');
+  await stub(page);
+  await go(page, '#/p/alpha/' + c.id);
+  check('off: the card opens inline', (await page.evaluate(() => location.hash)) === '#/p/alpha/' + c.id && (await page.evaluate(() => window.__opened.length)) === 0);
+  // on: the card pops out and this window stays on the board
+  await s.ok('POST', '/api/setup', { prefs: { autoPop: true } });
+  page = await openPage(ctx, '#/p/alpha');
+  await stub(page);
+  await go(page, '#/p/alpha/' + c.id);
+  const op = await page.evaluate(() => window.__opened);
+  check('on: window.open got the pop-out route', op.length === 1 && op[0][0] === '#/pop/alpha/' + c.id, JSON.stringify(op));
+  check('on: this window stays on the board', (await page.evaluate(() => location.hash)) === '#/p/alpha');
+  // a blocked popup falls back to inline
+  await page.evaluate(() => { window.open = () => null; });
+  await go(page, '#/p/alpha/' + c.id);
+  check('blocked popup: opens inline', (await page.evaluate(() => location.hash)) === '#/p/alpha/' + c.id);
+  // AIG-1120: a dialog pops out after its caller has finished (no error), and stays inline when the popup is blocked
+  await page.evaluate(() => { window.__opened = []; window.open = (...a) => { window.__opened.push(a); return {}; }; });
+  await page.evaluate(() => { openDialog('<p id="apX">x</p>', '', 'bug'); });
+  await sleep(300);
+  check('on: a dialog pops out once the caller is done', (await page.evaluate(() => window.__opened.length)) === 1 && /pop-dlg\/bug/.test(await page.evaluate(() => window.__opened[0][0])) && (await page.locator('#apX').count()) === 0);
+  await page.evaluate(() => { window.open = () => null; openDialog('<p id="apY">y</p>', '', 'bug'); });
+  await sleep(300);
+  check('blocked popup: the dialog stays inline', (await page.locator('#apY').count()) === 1);
+  await page.evaluate(() => closeDialog());
+  noErrors(page);
+  // inside a pop-out: never pops again
+  const pop = await ctx.newPage(); await pop.goto(BASE + '/#/pop/alpha/' + c.id);
+  await pop.waitForSelector('.panel h2');
+  check('pop-out: auto-pop is off inside it', (await pop.evaluate(() => popAutoOn())) === false);
+  await s.ok('POST', '/api/setup', { prefs: { autoPop: false } });
+}, true);

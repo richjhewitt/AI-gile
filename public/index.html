@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="AI-gile">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="icon" id="favicon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗂️</text></svg>">
+<link rel="icon" id="favicon" href="icons/icon-192.png">
 <link rel="stylesheet" href="css/01-theme-header-home-board.css">
 <link rel="stylesheet" href="css/02-card-panel-forms-dialogs.css">
 <link rel="stylesheet" href="css/03-columns-titlebar-dms.css">
@@ -22,10 +22,17 @@
 <link rel="stylesheet" href="css/09-terminal.css">
 <link rel="stylesheet" href="css/10-topbar.css">
 <link rel="stylesheet" href="css/11-stats.css">
+<link rel="stylesheet" href="css/12-risks.css">
+<link rel="stylesheet" href="css/13-break.css">
+<link rel="stylesheet" href="css/14-selfcare.css">
+<link rel="stylesheet" href="css/15-experts.css">
+<link rel="stylesheet" href="css/16-lifeadmin.css">
+<link rel="stylesheet" href="css/17-storage.css">
+<link rel="stylesheet" href="css/18-calls.css">
 </head>
 <body>
 <header>
-  <h1><a href="#/" id="brand">🗂️ AI-gile</a></h1>
+  <h1><a href="#/" id="brand"><img class="brand-logo" src="icons/icon-192.png" alt=""> AI-gile</a></h1>
   <span class="alpha-tag" data-i18n="alpha.tag" data-i18n-title="alpha.tip" title="Early and unfinished: thanks for trying it!">🐣 Closed pre-alpha</span>
   <span class="crumb" id="crumb"></span>
   <span class="spacer"></span>
@@ -33,6 +40,7 @@
   <button id="ideaBtn" class="navlink" onclick="ideaDialog()" data-i18n-title="idea.btn.title" title="Got an idea? Jot it down">💡</button>
   <button id="bugBtn" class="navlink" onclick="newCard({type:'bug',priority:'high',status:'team'})" data-i18n="board.raisebug">🐞 Raise bug</button>
   <span id="teamTop"></span>
+  <span id="hfTop"></span>
   <span id="inboxTop"></span>
   <span id="pokeTop"></span>
   <span id="nightTop"></span>
@@ -43,16 +51,21 @@
   <button id="streamBtn" class="navlink" onclick="Streamer.toggle()" aria-pressed="false" data-i18n="streamer.btn" title="Streamer mode">🎥 Streamer</button>
   <button id="liveBtn" class="navlink" onclick="Streamer.goLive()" hidden></button>
   <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" title="No Token Mode">⛔ No Token Mode</button>
-  <button id="tiredBtn" class="navlink" onclick="Tired.toggle()" aria-pressed="false" title="Tired mode">🔋</button>
+  <button id="statusBtn" class="navlink" onclick="Status.menu()" aria-haspopup="menu" title="Your status">🟢</button>
+  <button id="tiredBtn"class="navlink" onclick="Tired.toggle()" aria-pressed="false" title="Tired mode">🔋</button>
+  <a class="navlink" id="mailNav" href="#/mail" style="display:none" data-i18n="mail.nav" data-i18n-title="mail.nav.title" title="Your mail inbox">✉️ Mail</a>
   <a class="navlink" id="assumeNav" href="#/assumptions" data-i18n-title="assume.nav.title" title="Guesses the team made while you were away"><span data-i18n="assume.nav">🌙 Assumptions</span> <span id="assumeBadge" class="pill you" hidden></span></a>
   <a class="navlink" id="usageNav" href="#/usage"><span data-i18n="nav.usage">⚡ Usage</span><span id="ugBars"></span></a>
   <a class="navlink" id="setupNav" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer">⚙️</a>
   <button id="themeBtn" class="theme-pick" onclick="nextTheme()" title="Theme">🖥️ System</button>
+  <span id="tbMore"><button type="button" id="tbMoreBtn" class="navlink" aria-haspopup="true" aria-expanded="false" data-i18n-label="tb.menu" aria-label="Menu" onclick="Topbar.menu()"><span class="tbm-d" data-i18n="tb.more">More ▾</span><span class="tbm-p">☰</span></button><div id="tbMoreMenu" role="menu" hidden></div></span>
   <button id="enBtn" class="theme-pick" hidden onclick="toggleEn()"></button>
   <span id="immWrap" class="langwrap imm-wrap" hidden><button id="immBtn" class="theme-pick" onclick="toggleImm()"></button><button id="immMore" class="theme-pick imm-more" aria-haspopup="true" aria-expanded="false" onclick="immMenu()" hidden>▾</button><div id="immList" class="immlist" hidden></div></span>
   <span class="live" id="live" data-i18n="live.ok">live</span>
 </header>
+<div id="updateTop"><span id="upUpdate"></span><span id="upRefresh"></span><span id="upRestart"></span></div>
 <div id="saverBar" class="saver-bar" role="status" hidden></div>
+<div id="swarmBar" class="saver-bar" role="status" style="background:#b91c1c;color:#fff" hidden></div>
 <div id="filterbar"></div>
 <main id="app"></main>
 <div id="focusScreen" hidden></div>
@@ -60,7 +73,6 @@
 <div id="dialog"></div>
 <nav id="dmRail" data-i18n-label="dms.rail.label" aria-label="DMs with your team leads"></nav>
 <aside id="dmPanel" hidden></aside>
-<div id="updateTop"><span id="upUpdate"></span><span id="upRefresh"></span><span id="upRestart"></span></div>
 
 <!-- Start-up guard (AIG-517): a script or language file that fails to load or parse (a half-written file, a restart
      mid-load) shows "Updating… retrying" and tries again after 1s, 2s, 4s ... 30s, instead of leaving the page blank.
@@ -107,11 +119,25 @@ window.Boot = (() => {
 </script>
 
 <!-- Classic scripts sharing one global scope; the order matters (see docs/CODEMAP.md). app.js starts everything and must stay last. -->
+<script src="js/poll.js"></script>
 <script src="js/usage-page.js"></script>
 <script src="js/assumptions.js"></script>
+<script src="js/bin.js"></script>
+<script src="js/mail.js"></script>
 <script src="js/whatsnew.js"></script>
 <script src="js/today.js"></script>
+<script src="js/lifeadmin.js"></script>
+<script src="js/myday.js"></script>
 <script src="js/stats.js"></script>
+<script src="js/risks.js"></script>
+<script src="js/releases.js"></script>
+<script src="js/knownerrors.js"></script>
+<script src="js/improvements.js"></script>
+<script src="js/changes.js"></script>
+<script src="js/runbooks.js"></script>
+<script src="js/ci.js"></script>
+<script src="js/review.js"></script>
+<script src="js/accessreview.js"></script>
 <script src="js/discord-setup.js"></script>
 <script src="js/editor.js"></script>
 <script src="js/startday.js"></script>
@@ -138,6 +164,7 @@ window.Boot = (() => {
 <script src="js/immersion.js"></script>
 <script src="js/format.js"></script>
 <script src="js/attach.js"></script>
+<script src="js/mention.js"></script>
 <script src="js/filters.js"></script>
 <script src="js/home.js"></script>
 <script src="js/spaces.js"></script>
@@ -151,6 +178,10 @@ window.Boot = (() => {
 <script src="js/entersend.js"></script>
 <script src="js/follow.js"></script>
 <script src="js/remind.js"></script>
+<script src="js/card-fields.js"></script>
+<script src="js/card-chat.js"></script>
+<script src="js/card-extras.js"></script>
+<script src="js/probedit.js"></script>
 <script src="js/card.js"></script>
 <script src="js/dialogs/shell-card-project-connect.js"></script>
 <script src="js/dialogs/people.js"></script>
@@ -161,6 +192,7 @@ window.Boot = (() => {
 <script src="js/dialogs/team-profile.js"></script>
 <script src="js/dialogs/engines.js"></script>
 <script src="js/dialogs/expert-teams.js"></script>
+<script src="js/dialogs/experts.js"></script>
 <script src="js/dialogs/secrets.js"></script>
 <script src="js/dialogs/public-board.js"></script>
 <script src="js/dialogs/licences.js"></script>
@@ -177,20 +209,32 @@ window.Boot = (() => {
 <script src="js/discord-tab.js"></script>
 <script src="js/twitch-tab.js"></script>
 <script src="js/dms.js"></script>
+<script src="js/features.js"></script>
 <script src="js/dms-friends.js"></script>
+<script src="js/calls.js"></script>
 <script src="js/pretend-setup.js"></script>
+<script src="js/phone.js"></script>
+<script src="js/storage.js"></script>
 <script src="js/share.js"></script>
 <script src="js/share-board.js"></script>
 <script src="js/offline.js"></script>
 <script src="js/pack.js"></script>
 <script src="js/ask.js"></script>
+<script src="js/approvals.js"></script>
 <script src="js/pretend.js"></script>
+<script src="js/shortcuts.js"></script>
 <script src="js/notokens.js"></script>
 <script src="js/tired.js"></script>
+<script src="js/status.js"></script>
+<script src="js/break.js"></script>
+<script src="js/selfcare.js"></script>
+<script src="js/hyperfocus.js"></script>
+<script src="js/swarm.js"></script>
 <script src="js/undo.js"></script>
 <script src="js/emoji-data.js"></script>
 <script src="js/emoji.js"></script>
 <script src="js/pwa.js"></script>
+<script src="js/sharepick.js"></script>
 <script src="js/terminal.js"></script>
 <script src="js/topbar.js"></script>
 <script src="js/noai.js"></script>

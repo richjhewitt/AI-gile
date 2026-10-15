@@ -7,7 +7,7 @@ const Ask = (function () {
   const off = () => typeof NoTokens !== 'undefined' && NoTokens.on;   // ⛔ No Token Mode (AIG-383)
 
   async function load() {
-    try { asks = (await api('GET', '/api/dms/asks')).asks || []; } catch { return; }
+    try { asks = (await PagePoll.get('/api/dms/asks')).asks || []; } catch { return; }
     if (typeof IB !== 'undefined') IB.setFriends('asks', asks.length);   // counted in the inbox and its badges (AIG-382)
     const s = JSON.stringify([asks, off()]);
     if (s === sig) return;
@@ -46,6 +46,6 @@ const Ask = (function () {
   const yes = key => act(key, 'yes');
   const no = key => act(key, 'no');
 
-  setInterval(() => { if (!document.hidden && typeof i18n !== 'undefined' && i18n.ready) load(); }, 3000);
+  PagePoll.every(() => { if (typeof i18n !== 'undefined' && i18n.ready) return load(); }, 3000, { hidden: 30000, home: true });
   return { load, paintInbox, yes, no };
 })();

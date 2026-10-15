@@ -109,6 +109,9 @@ async function loadLang() {
   document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
   document.querySelectorAll('[data-i18n-label]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nLabel)); });
   paintEnBtn(); paintImm();
+  // AIG-976: the 🐣 tag's tooltip ends with the version, so a friend can say which build they have (asked once, not awaited).
+  (i18n.version ? Promise.resolve(i18n.version) : fetch('/api/version').then(r => r.ok ? r.json() : {}).then(j => (i18n.version = j.version)))
+    .then(v => { const el = document.querySelector('.alpha-tag'); if (el && v) el.title = t('alpha.tip') + ' · v' + v; }).catch(() => {});
   i18n.ready = true;
   saveLang();
 }
@@ -125,8 +128,8 @@ function paintEnBtn() {
   b.textContent = '🌐 ' + (i18n.lang === 'en' ? (langOf(chosenLang()) || { label: chosenLang().toUpperCase() }).label : 'EN');
   b.title = t(i18n.lang === 'en' ? 'lang.en.back' : 'lang.en.title', { name: LANGS[chosenLang()] });
 }
-function toggleEn() {
-  if (typeof okToLeave === 'function' && !okToLeave(t('lang.switch'))) return;
+async function toggleEn() {
+  if (typeof okToLeave === 'function' && !(await okToLeave(t('lang.switch')))) return;
   try { i18n.lang === 'en' ? localStorage.removeItem('aigile.enNow') : localStorage.setItem('aigile.enNow', '1'); localStorage.removeItem('aigile.immNow'); } catch {}
   location.reload();
 }
@@ -143,8 +146,8 @@ function paintImm() {
   list.setAttribute('aria-label', t('imm.menu'));
   list.innerHTML = L.map(c => `<button type="button" lang="${esc(c)}" dir="auto" data-imm="${esc(c)}" ${c === on ? 'aria-current="true"' : ''}>${esc(LANGS[c])}</button>`).join('') + (on ? `<button type="button" data-imm="">${esc(t('imm.back', { name: LANGS[chosenLang()] }))}</button>` : '');
 }
-function immGo(code) {
-  if (typeof okToLeave === 'function' && !okToLeave(t('lang.switch'))) return;
+async function immGo(code) {
+  if (typeof okToLeave === 'function' && !(await okToLeave(t('lang.switch')))) return;
   lsSet('aigile.enNow', null);
   if (code) { lsSet('aigile.immPick', code); lsSet('aigile.immNow', '1'); } else lsSet('aigile.immNow', null);
   location.reload();
@@ -209,9 +212,9 @@ document.addEventListener('keydown', e => {
 }, true);
 document.addEventListener('focusin', e => { document.querySelectorAll('.langlist:not([hidden])').forEach(l => { if (!l.parentNode.contains(e.target)) langClose(l); }); });
 // A page of text built from strings is simplest to redo in full, so a change reloads (after asking, if something is unsent).
-function setLang(l) {
+async function setLang(l) {
   if (!LANGS[l] || l === chosenLang()) return;
-  if (typeof okToLeave === 'function' && !okToLeave(t('lang.switch'))) return;
+  if (typeof okToLeave === 'function' && !(await okToLeave(t('lang.switch')))) return;
   try { localStorage.setItem('aigile.lang', l); localStorage.removeItem('aigile.enNow'); } catch {}
   location.reload();
 }

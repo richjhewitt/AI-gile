@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI-gile status</title>
+<style>
+:root{color-scheme:light dark;--bg:#f6f7f9;--card:#fff;--text:#1d2330;--muted:#677085;--line:#dde1e8}
+@media (prefers-color-scheme:dark){:root{--bg:#12151b;--card:#20262f;--text:#e6e9ef;--muted:#8b93a7;--line:#2a303c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:24px 16px}
+h1{font-size:22px;margin:0 0 16px}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dot{font-size:20px;line-height:1.3}
+.name{font-weight:600;overflow-wrap:anywhere}
+.offers,.when{color:var(--muted);font-size:14px}
+.line{margin-top:4px;overflow-wrap:anywhere}
+#msg{color:var(--muted);padding:20px 0;text-align:center;font-size:18px}
+#quiet{color:var(--muted);padding:20px 0;text-align:center;font-size:18px}
+footer{margin-top:20px;font-size:14px;color:var(--muted)}
+a{color:inherit}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<h1>AI-gile status</h1>
+<ul id="list"></ul>
+<p id="quiet" hidden>All quiet</p>
+<p id="msg" role="status">Checking…</p>
+<footer><a href="index.html">AI-gile</a></footer>
+</main>
+<script>
+(function(){
+  var URL_="https://relay.aigile.lol/status.json",POLL_MS=60000,DOT={green:"\uD83D\uDFE2",amber:"\uD83D\uDFE0",red:"\uD83D\uDD34"};
+  var list=document.getElementById("list"),quiet=document.getElementById("quiet"),msg=document.getElementById("msg");
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+  function ago(at){
+    var t=Date.parse(at);if(isNaN(t))return "";
+    var m=Math.max(0,Math.round((Date.now()-t)/60000));
+    return "updated "+(m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago");
+  }
+  function draw(s){
+    list.textContent="";msg.hidden=true;
+    var a=(s&&Array.isArray(s.services))?s.services:[];
+    quiet.hidden=a.length>0;
+    a.forEach(function(x){
+      var li=el("li",x.state),body=el("div");
+      li.appendChild(el("span","dot",DOT[x.state]||DOT.green));
+      body.appendChild(el("div","name",x.name));
+      if(x.offers)body.appendChild(el("div","offers",x.offers));
+      if(x.line)body.appendChild(el("div","line",x.line));
+      body.appendChild(el("div","when",ago(x.at)));
+      li.appendChild(body);list.appendChild(li);
+    });
+  }
+  function poll(){
+    fetch(URL_,{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(draw).catch(function(){
+      if(!list.children.length){quiet.hidden=true;msg.hidden=false;msg.textContent="Can't reach the status service right now (retrying)"}
+    });
+  }
+  poll();setInterval(poll,POLL_MS);
+})();
+</script>
+</body>
+</html>

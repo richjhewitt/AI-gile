@@ -39,11 +39,40 @@ def('inbox', 'top-bar counts, project tabs, inline answer, task Done', async (s,
   const c1 = await getCard(s, 'alpha', 'ALP-1');
   check('inline answer sent to the team', c1.comments.at(-1).text === 'blue please' && c1.status === 'team' && !c1.needsYou, [c1.status, c1.needsYou]);
 
+  // AIG-867: Snooze on a task puts it off, never done, team not told; it comes back when the snooze ends.
+  const k0 = await getCard(s, 'alpha', 'ALP-2'), n0 = k0.comments.length;
+  const laters = await page.$$eval('.ib-item button[data-act=wait]', bs => bs.map(b => b.textContent.trim()));   // AIG-1137: one name everywhere
+  check('question and task both say Later (1 h)', laters.length >= 2 && laters.every(x => x === '⏳ Later (1 h)'), laters);
+  await page.click('.ib-item.k[data-id="ALP-2"] button[data-act=wait]');
+  await page.waitForSelector('.ib-item.k[data-id="ALP-2"]', { state: 'detached' });
+  const ks = await getCard(s, 'alpha', 'ALP-2');
+  check('task Snooze hides it for about an hour, not done, nothing sent', ks.status === k0.status && ks.assignee === k0.assignee && ks.comments.length === n0 && Math.abs(new Date(ks.snoozedUntil) - Date.now() - 3600e3) < 60e3, ks);
+  await s.ok('DELETE', '/api/projects/alpha/cards/ALP-2/snooze');
+  await page.waitForSelector('.ib-item.k[data-id="ALP-2"]', { timeout: 8000 });
+  check('snoozed task is back when the snooze ends', true);
+
   await page.click('.ib-item.k[data-id="ALP-2"] button[data-act=taskdone]');
   await page.waitForSelector('.ib-item.k[data-id="ALP-2"]', { state: 'detached' });
   const c2 = await getCard(s, 'alpha', 'ALP-2');
   check('task Done tells the team', c2.status === 'team' && c2.assignee === 'Pixel' && /Done/.test(c2.comments.at(-1).text), [c2.status, c2.assignee]);
 
+  // AIG-1136: Send back is a button that opens a one-line reason box; Send greys out until something is typed.
+  const row = '.ib-item.t[data-id="ALP-3"]';
+  check('Send back is a button, reason box hidden', (await page.locator(row + ' button[data-act=sbopen]').count()) === 1 && await page.locator(row + ' .ib-sb').isHidden());
+  await page.click(row + ' button[data-act=sbopen]');
+  check('Send back opens the box, Send is greyed out', await page.locator(row + ' .ib-sb textarea').isVisible() && await page.locator(row + ' button[data-act=sbsend]').isDisabled());
+  await page.fill(row + ' .ib-sb textarea', 'wrong colour');
+  check('typing a reason enables Send', await page.locator(row + ' button[data-act=sbsend]').isEnabled());
+  await page.click(row + ' button[data-act=sbcancel]');
+  check('Cancel closes the box and nothing is sent', await page.locator(row + ' .ib-sb').isHidden() && (await getCard(s, 'alpha', 'ALP-3')).status === 'verify');
+  await page.click(row + ' button[data-act=sbopen]');
+  await page.fill(row + ' .ib-sb textarea', 'wrong colour');
+  await page.click(row + ' button[data-act=sbsend]');
+  await page.waitForSelector(row, { state: 'detached' });
+  const sb = await getCard(s, 'alpha', 'ALP-3');
+  check('Send back from the row returns it to the team with the reason', sb.status !== 'verify' && sb.comments.at(-1).text.includes('wrong colour'), [sb.status, sb.comments.at(-1)]);
+  await s.ok('PATCH', '/api/projects/alpha/cards/ALP-3', { status: 'verify' });
+  await page.waitForSelector(row, { timeout: 8000 });
   await page.click('.ib-item.t[data-id="ALP-3"] button[data-act=accept]');
   await page.waitForSelector('.ib-item.t[data-id="ALP-3"]', { state: 'detached' });
   check('Accept from the inbox', (await getCard(s, 'alpha', 'ALP-3')).status === 'done');
@@ -71,7 +100,7 @@ def('foryou', 'For you column: tests, questions, tasks and blocks together; chip
   check('Tests chip puts the test first', (await ids())[0] === t.id, await ids());
   await page.reload(); await page.waitForSelector('.column.foryou .card');
   check('the pick is remembered', (await ids())[0] === t.id && await page.isVisible('.fy-chip.on[data-first="t"]'));
-  await page.click('.fy-chip[data-first="k"]');
+  await page.click('.fy-chip[data-first="k"]'); await page.click('.fyf-x'); await page.waitForSelector('.fyf', { state: 'detached' });   // a chip now opens the fold window (AIG-738); close it
   await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, k.id, { timeout: 3000 }).catch(() => {});
   check('Tasks chip puts the task first', (await ids())[0] === k.id, await ids());
   noErrors(page);
@@ -118,6 +147,7 @@ def('queue', 'your queue: holds up, your priority, kind, time; sorted, filtered,
   await sleep(300);
   check('kind filter shows only server jobs', (await page.locator(`.ib-item[data-id="${b.id}"]`).count()) === 1 && (await page.locator('.ib-item.k, .ib-item.t').count()) === 1);
   await page.click('#ibKinds [data-kind=""]');
+  await page.hover('#ibNext .q-chips'); await sleep(300);   // an unset priority chip only shows on hover (AIG-939)
   await page.click(`#ibNext [data-prio]`);   // none -> now on the Next up item
   await sleep(600);
   check('clicking 🔥 sets your priority', (await getCard(s, 'alpha', b.id)).ownerPrio === 'now');
@@ -252,6 +282,43 @@ def('aiflick', '🤖 AI passed view: one test at a time with the evidence, accep
   noErrors(page);
 }, true);
 
+def('aiownlist', 'Setup switch: AI-passed tests leave the tests list and wait under 🤖 AI passed, with their own Accept all (AIG-781)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Passed one'), b = await mkCard(s, 'alpha', 'Plain one');
+  s.cli(['test', 'alpha', a.id, 'click a', '--as', 'Lead']); s.cli(['test', 'alpha', b.id, 'click b', '--as', 'Lead']);
+  s.cli(['checked', 'alpha', a.id, 'pass', 'Saw it working', '--as', 'Tester']);
+  const page = await openPage(ctx, '#/setup');
+  await page.waitForSelector('#aiOwnList');
+  check('the switch is in Setup, off by default', !(await page.isChecked('#aiOwnList')));
+  await page.check('#aiOwnList');
+  await page.evaluate(() => { location.hash = '#/inbox'; });
+  await page.waitForSelector('#ibAiBar [data-aiall]');
+  const tests = await page.textContent('#ibT');
+  check('the passed test left the tests list; the other stays', !tests.includes(a.id) && tests.includes(b.id), tests);
+  await page.click('#ibAiBar [data-aiall]');
+  await page.waitForFunction(() => !document.querySelector('#ibAiBar [data-flick]'), null, { timeout: 5000 }).catch(() => {});
+  check('its Accept all accepts the passed one only', (await getCard(s, 'alpha', a.id)).status === 'done' && (await getCard(s, 'alpha', b.id)).status === 'verify');
+  noErrors(page);
+}, true);
+
+def('readyforgo', '🚦 Ready for go: a plan asking "Go?" (or --kind plan) gets its own kind in the inbox and the For you column (AIG-828)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const a = await mkCard(s, 'alpha', 'Build the thing'), b = await mkCard(s, 'alpha', 'Pick a colour'), c = await mkCard(s, 'alpha', 'Other plan');
+  s.cli(['ask', 'alpha', a.id, 'Plan: two cards. Go?', '--as', 'Lead']);
+  s.cli(['ask', 'alpha', b.id, 'Blue or green?', '--as', 'Lead']);
+  check('--kind plan is accepted', s.cli(['ask', 'alpha', c.id, 'Ready when you are', '--as', 'Lead', '--kind', 'plan']).code === 0);
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('#ibKinds [data-kind="plan"]');
+  await page.click('#ibKinds [data-kind="plan"]');
+  await sleep(300);
+  const ids = await page.$$eval('.ib-item', els => els.filter(e => e.offsetParent).map(e => e.dataset.id));
+  check('the plan filter shows the two plans only', ids.includes(a.id) && ids.includes(c.id) && !ids.includes(b.id), ids);
+  await page.evaluate(() => { location.hash = '#/p/alpha'; });
+  await page.waitForSelector('[data-first="p"]');
+  check('the For you column has a 🚦 chip counting 2', /2/.test(await page.textContent('[data-first="p"]')), await page.textContent('[data-first="p"]'));
+  noErrors(page);
+}, true);
+
 def('poplist', '⧉ pop an inbox list out into its own window: only that list, no top bar (AIG-104)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const a = await mkCard(s, 'alpha', 'Try it'), b = await mkCard(s, 'alpha', 'Add the key');
@@ -309,7 +376,7 @@ def('servertask', 'a task can be marked 🖥️ Server: CLI flag, grouped first 
   await page.waitForSelector('.column.foryou .card');
   const ids = async () => page.$$eval('.column.foryou .card', els => els.map(e => e.dataset.id));
   check('For you has a Server chip with its count', /Server 1/.test(await page.textContent('.fy-chip[data-first="s"]')), await page.textContent('.fy-chips'));
-  await page.click('.fy-chip[data-first="k"]');
+  await page.click('.fy-chip[data-first="k"]'); await page.click('.fyf-x'); await page.waitForSelector('.fyf', { state: 'detached' });   // a chip now opens the fold window (AIG-738); close it
   await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, b.id, { timeout: 3000 }).catch(() => {});
   check('server tasks lead the Tasks', (await ids())[0] === b.id, await ids());
   check('server task shows its 🖥️ mark', (await page.textContent(`.column.foryou .card[data-id="${b.id}"]`)).includes('🖥️'));
@@ -341,7 +408,7 @@ def('outsidetask', 'a task can be marked 🤝 Outside help: CLI flag, own group 
   await page.waitForSelector('.column.foryou .card');
   const ids = async () => page.$$eval('.column.foryou .card', els => els.map(e => e.dataset.id));
   check('For you has an Outside help chip with its count', /Outside help 1/.test(await page.textContent('.fy-chip[data-first="o"]')), await page.textContent('.fy-chips'));
-  await page.click('.fy-chip[data-first="k"]');
+  await page.click('.fy-chip[data-first="k"]'); await page.click('.fyf-x'); await page.waitForSelector('.fyf', { state: 'detached' });   // a chip now opens the fold window (AIG-738); close it
   await page.waitForFunction(id => document.querySelector('.column.foryou .card')?.dataset.id === id, c.id, { timeout: 3000 }).catch(() => {});
   check('order is Server, Outside help, other tasks', (await ids()).join() === [c.id, b.id, a.id].join(), await ids());
   await page.click(`.column.foryou .card[data-id="${a.id}"] [data-outside]`);

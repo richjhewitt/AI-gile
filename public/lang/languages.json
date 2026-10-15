@@ -105,6 +105,7 @@
   { "code": "yi", "label": "YI", "name": "ייִדיש", "locale": "yi", "dir": "rtl" },
   { "code": "ckb", "label": "CKB", "name": "کوردی", "locale": "ckb-IQ-u-nu-latn", "dir": "rtl" },
   { "code": "pirate", "label": "ARR", "name": "Pirate 🏴‍☠️", "locale": "en-GB", "fun": true },
+  { "code": "aussie", "label": "EN-AU", "name": "Aussie English 🦘", "locale": "en-AU", "fun": true },
   { "code": "eo", "label": "EO", "name": "Esperanto", "locale": "eo", "fun": true },
   { "code": "ia", "label": "IA", "name": "Interlingua", "locale": "ia", "fun": true },
   { "code": "tlh", "label": "TLH", "name": "tlhIngan Hol (Klingon)", "locale": "en-GB", "fun": true },
@@ -119,5 +120,9 @@
   { "code": "ang", "label": "ANG", "name": "Englisc (Old English)", "locale": "en-GB", "fun": true },
   { "code": "emoji", "label": "EMOJI", "name": "Emoji 😀", "locale": "en-GB", "fun": true },
   { "code": "leet", "label": "1337", "name": "l33t 5p34k", "locale": "en-GB", "fun": true },
-  { "code": "morse", "label": "MORSE", "name": "−−− ·−· ··· ·", "locale": "en-GB", "fun": true }
+  { "code": "morse", "label": "MORSE", "name": "−−− ·−· ··· ·", "locale": "en-GB", "fun": true },
+  { "code": "runes", "label": "ᚱ", "name": "ᚱᚢᚾᛅᛦ Runes", "locale": "en-GB", "fun": true },
+  { "code": "egy", "label": "EGY", "name": "𓂀 Hieroglyphs", "locale": "en-GB", "fun": true },
+  { "code": "non", "label": "NON", "name": "Norrœnt mál", "locale": "is-IS" },
+  { "code": "grc", "label": "GRC", "name": "Ἑλληνική (ἀρχαία)", "locale": "el-GR" }
 ]

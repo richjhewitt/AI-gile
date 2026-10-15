@@ -31,3 +31,34 @@ def('raisebug', 'Raise bug button: on board, card view and Setup; left of the sp
   check('a new bug card exists', bugs.length === 1 && bugs[0].type === 'bug', JSON.stringify(bugs.map(b => b.type)));
   noErrors(page);
 }, true);
+
+def('raisebug-once', 'Raise bug: opening the dialog several times then sending (even clicked twice) makes one card; two identical POSTs within 10 s make one card (AIG-1061)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('#bugBtn');
+  for (let i = 0; i < 4; i++) { await page.click('#bugBtn'); await page.waitForSelector('#f-title'); await page.click('#dialog button[type=button]'); await page.waitForSelector('#f-title', { state: 'detached' }); }
+  await page.click('#bugBtn'); await page.waitForSelector('#f-title');
+  await page.fill('#f-title', 'Sent once only');
+  await page.evaluate(() => { const b = document.querySelector('#dialog button[type=submit]'); b.click(); b.click(); document.querySelector('#dialog form').requestSubmit(); });
+  await page.waitForSelector('#f-title', { state: 'detached' }); await sleep(800);
+  check('one card from many opens and a double send', (await s.ok('GET', '/api/projects/alpha')).cards.filter(c => c.title === 'Sent once only').length === 1);
+  const a = await mkCard(s, 'alpha', 'Same twice', { description: 'same text', createdBy: 'Owner' });
+  const b = await mkCard(s, 'alpha', 'Same twice', { description: 'same text', createdBy: 'Owner' });
+  check('two identical POSTs make one card', a.id === b.id && (await s.ok('GET', '/api/projects/alpha')).cards.filter(c => c.title === 'Same twice').length === 1, { a: a.id, b: b.id });
+  const c = await mkCard(s, 'alpha', 'Same twice', { description: 'other text', createdBy: 'Owner' });
+  check('different text is a new card', c.id !== a.id);
+  // AIG-1110: Enter in the description sends (one card), Shift+Enter is a new line, the picker lists today's picks
+  await mkProject(s, 'Beta', 'BET'); await mkProject(s, 'Gamma', 'GAM');
+  await page.click('#bugBtn'); await page.waitForSelector('#f-description');
+  await page.fill('#f-title', 'Enter sends'); await page.fill('#f-description', 'enter line one'); await page.press('#f-description', 'Shift+Enter'); await page.type('#f-description', 'line two');
+  check('Shift+Enter adds a newline and does not send', (await page.inputValue('#f-description')) === 'enter line one\nline two' && await page.$('#f-description') !== null);
+  await page.press('#f-description', 'Enter'); await page.waitForSelector('#f-description', { state: 'detached' }); await sleep(800);
+  check('Enter in the description makes one card', (await s.ok('GET', '/api/projects/alpha')).cards.filter(c => c.title === 'Enter sends').length === 1);
+  try {
+    await s.ok('POST', '/api/today/pick', { slugs: ['alpha', 'beta'] }); const pg2 = await openPage(ctx, '#/p/alpha'); await pg2.waitForSelector('#bugBtn');
+    await pg2.click('#bugBtn'); await pg2.waitForSelector('#f-title'); if (await pg2.$('#nc-project') === null) await pg2.click('#dialog details summary');
+    const opts = await pg2.$$eval('#nc-project option', o => o.map(x => x.value));
+    check('the picker lists only the picked projects', opts.join() === 'alpha,beta', opts);
+  } catch (e) { check('the picker lists only the picked projects', false, String(e)); }
+  noErrors(page);
+}, true);

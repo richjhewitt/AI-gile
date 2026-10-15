@@ -113,6 +113,15 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
   check('empty upload refused', (await s.api('POST', '/api/projects/alpha/attachments', { name: 'x.png', data: '' })).status === 400);
   check('unknown attachment is 404', (await s.api('GET', '/api/projects/alpha/attachments/zz-none.png')).status === 404);
   check('path escape refused', [400, 404].includes((await fetch(BASE + '/api/projects/alpha/attachments/..%2F..%2Falpha.json')).status));
+  // AIG-1090: a picture is cached by the browser; the second request with its ETag is a 304 with no body.
+  const upl = await s.ok('POST', '/api/projects/alpha/attachments', { name: 'cache.png', type: 'image/png', data: PNG }), pu = BASE + '/api/projects/alpha/attachments/' + encodeURIComponent(upl.id);
+  const g1 = await fetch(pu), tag = g1.headers.get('etag');
+  await g1.arrayBuffer();
+  check('an attachment is cacheable with an ETag', g1.status === 200 && !!tag && /immutable/.test(g1.headers.get('cache-control') || ''), [g1.status, tag, g1.headers.get('cache-control')]);
+  const g2 = await fetch(pu, { headers: { 'If-None-Match': tag } });
+  check('the second request answers 304 with no body', g2.status === 304 && (await g2.arrayBuffer()).byteLength === 0, g2.status);
+  check('a changed ETag still gets the picture', (await fetch(pu, { headers: { 'If-None-Match': '"nope"' } })).status === 200);
+  check('API JSON stays no-store', /no-store/.test((await fetch(BASE + '/api/projects/alpha')).headers.get('cache-control') || ''));
 
   // Card: paste a screenshot, send with no text.
   const page = await openPage(ctx, '#/p/alpha/' + c1.id);
@@ -217,7 +226,7 @@ def('attach', 'paste or attach files in replies; thumbnails; teams get the paths
   noErrors(page);
 }, true);
 
-def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; it asks before losing an unsent reply', async (s, ctx) => {
+def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; an unsent reply is kept as a draft, no leave box (AIG-1022)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const c = await mkCard(s, 'alpha', 'Typing here');
   let build = 'one';
@@ -231,24 +240,24 @@ def('refresh', 'a new build shows a 🆕 Refresh pill above an open card; it ask
   check('Refresh pill shows, no pop-up', (await page.textContent('#updateTop')).includes('Refresh') && (await page.locator('.overlay.center').count()) === 0);
   check('typing untouched', (await page.inputValue('#r-text')) === 'half a sentence');
   let asked = '';
-  page.once('dialog', d => { asked = d.message(); d.dismiss(); });
-  await page.click('#updateTop button');
-  await sleep(300);
-  check('asks before losing the reply, and stays when cancelled', /unsent reply/.test(asked) && (await page.inputValue('#r-text')) === 'half a sentence', asked);
-  await page.fill('#r-text', '');
-  await Promise.all([page.waitForEvent('load'), page.click('#upRefresh button')]);
-  check('reloads straight away with nothing unsent', true);
-  // Desktop app: its Restart pill replaces Refresh, since a restart reloads too (AIG-83, AIG-130), and asks first.
+  page.on('dialog', d => { asked = d.message(); d.dismiss(); });
+  await Promise.all([page.waitForEvent('load'), page.click('#updateTop button')]);
+  check('Refresh asks nothing (AIG-1022) and the half-typed reply is back as a draft', asked === '' && await page.waitForFunction(() => (document.getElementById('r-text') || {}).value === 'half a sentence').then(() => true, () => false), asked);
+  // AIG-1120: a half-filled new-card form is not a draft, so Refresh asks first in the app's own box; Cancel keeps it
+  await page.evaluate(() => { window.__still = 1; newCard(); });
+  await page.fill('#f-description', 'not saved anywhere');
+  await page.evaluate(() => { refreshPage(); });
+  await page.waitForSelector('#leaveBox #leaveNo');
+  check('an unsaved new-card form asks in the own app box, naming the action', /Refresh/.test(await page.textContent('#leaveBox')) && asked === '', asked);
+  await page.click('#leaveNo');
+  check('Cancel stays: no reload, the form text is still there', (await page.evaluate(() => window.__still)) === 1 && (await page.inputValue('#f-description')) === 'not saved anywhere' && (await page.locator('#leaveBox').count()) === 0);
+  await page.evaluate(() => closeDialog());
+  // Desktop app: its Restart pill replaces Refresh, since a restart reloads too (AIG-83, AIG-130).
   await page.waitForSelector('#r-text').catch(() => page.click('[data-ctab="reply"]'));
-  await page.fill('#r-text', 'another half');
   build = 'three';
   await page.waitForSelector('#upRefresh button', { timeout: 8000 });
   await page.evaluate(() => window.showRestartApp());
   check('Restart app shows and Refresh hides', (await page.textContent('#upRestart')).includes('Restart app') && !(await page.isVisible('#upRefresh button')));
-  page.once('dialog', d => { asked = d.message(); d.dismiss(); });
-  await page.click('#upRestart button');
-  await sleep(300);
-  check('Restart asks before losing the reply', /Restart anyway/.test(asked) && (await page.inputValue('#r-text')) === 'another half', asked);
 }, true);
 
 def('drafts', 'unsent text survives a reload; sending clears it (AIG-171)', async (s, ctx) => {
@@ -424,16 +433,24 @@ def('testpile', 'testing pile: "3 of 12 left" line on the card while working thr
   await mkProject(s, 'Alpha', 'ALP');
   for (const n of ['One', 'Two', 'Three']) await mkCard(s, 'alpha', 'Pile ' + n, { status: 'verify', testSteps: 'Step ' + n });
   const page = await openPage(ctx, '#/p/alpha/ALP-1');
-  await page.waitForSelector('#pileLeft');
-  check('first card shows 3 of 3 left', (await page.textContent('#pileLeft')).trim() === '3 of 3 left', await page.textContent('#pileLeft'));
+  // AIG-1133: How to test sits inside the Your call box; an empty Checklist and Waits for sit behind one link.
+  await page.waitForSelector('.verdict .v-steps');
+  check('How to test is inside the Your call box, above Accept', /Step One/.test(await page.textContent('.verdict .v-steps')) && await page.evaluate(() => { const v = document.querySelector('.verdict'); return v.querySelector('.v-steps').compareDocumentPosition(v.querySelector('button.good')) & Node.DOCUMENT_POSITION_FOLLOWING; }));
+  check('an empty Checklist and Waits for are behind one link', (await page.locator('#chk-box').count()) === 0 && (await page.locator('#extras-btn').count()) === 1);
+  await page.click('#extras-btn');
+  await page.waitForSelector('#chk-box');
+  check('the link brings Checklist and Waits for back', (await page.locator('#wf-box').count()) === 1);
+  check('a card opened straight from a link has no pile counter (AIG-1147)', (await page.locator('#pileLeft').count()) === 0);
   await page.click('button.good');
-  await page.waitForFunction(() => !location.hash.endsWith('ALP-1') && /2 of 3 left/.test((document.querySelector('#pileLeft') || {}).textContent || '')).catch(() => {});
-  check('after Accept the next card shows 2 of 3 left', (await page.textContent('#pileLeft')).trim() === '2 of 3 left', await page.textContent('#pileLeft'));
+  await page.waitForFunction(() => !location.hash.endsWith('ALP-1') && /2 of 3 in your test pile/.test((document.querySelector('#pileLeft') || {}).textContent || '')).catch(() => {});
+  check('after Accept the next card shows 2 of 3 in your test pile', (await page.textContent('#pileLeft')).trim() === '2 of 3 in your test pile', await page.textContent('#pileLeft'));
+  check('the next card says what just happened (AIG-1135)', /Accepted ALP-1/.test(await page.textContent('#moved-note')) && /next card in your pile/.test(await page.textContent('#moved-note')), await page.textContent('#moved-note').catch(() => ''));
   const cur = page.url().split('/').pop();
   await page.fill('#v-text', 'not right');
   await page.click('button.warn');
-  await page.waitForFunction(c => !location.hash.endsWith(c) && /1 of 3 left/.test((document.querySelector('#pileLeft') || {}).textContent || ''), cur).catch(() => {});
-  check('after Send back the next card shows 1 of 3 left', (await page.textContent('#pileLeft')).trim() === '1 of 3 left', await page.textContent('#pileLeft'));
+  await page.waitForFunction(c => !location.hash.endsWith(c) && /3 of 3 in your test pile/.test((document.querySelector('#pileLeft') || {}).textContent || ''), cur).catch(() => {});
+  check('after Send back the next card says Sent back', /Sent back/.test(await page.textContent('#moved-note')), await page.textContent('#moved-note').catch(() => ''));
+  check('after Send back the next card shows 3 of 3 in your test pile', (await page.textContent('#pileLeft')).trim() === '3 of 3 in your test pile', await page.textContent('#pileLeft'));
   // Enter sends off for card replies: Enter is a new line, Ctrl+Enter sends
   await mkCard(s, 'alpha', 'Chatty', { status: 'doing', assignee: 'Forge' });
   await say(s, 'alpha', 'ALP-4', 'Forge', 'working on it');

@@ -23,7 +23,8 @@ const Term = (() => {
   /* ---------- which server: the card's own, or the only one with an ssh address ---------- */
   function nameFor(c) {
     const names = state.terms || [];
-    return names.find(x => x.toLowerCase() === String(c.serverName || '').toLowerCase()) || (names.length === 1 ? names[0] : '');
+    const mine = projectServer(c);   // AIG-774: the card's own server, else the project's, else the only one
+    return names.find(x => x.toLowerCase() === String(c.serverName || '').toLowerCase()) || names.find(x => x.toLowerCase() === mine.toLowerCase()) || (names.length === 1 ? names[0] : '');
   }
   const can = c => c && c.server && (state.terms || []).length;
   // On the card's panel: the code blocks of a server task get ▶ buttons (decorated below).
@@ -90,6 +91,7 @@ const Term = (() => {
     }
     stream(me);
     term.focus();
+    if (!pop && connect && popAutoOn()) popOut();
     return me;
   }
   function stream(me) {
@@ -137,7 +139,7 @@ const Term = (() => {
   // ⧉ The terminal in its own window; the session stays on the board, so nothing is lost.
   function popOut() {
     if (!cur) return;
-    window.popOut('term', `#/pop-term/${encodeURIComponent(cur.slug)}/${encodeURIComponent(cur.id)}/${encodeURIComponent(cur.name)}`, 'aigile-term-' + cur.slug + '-' + cur.id, 860, 540);
+    if (!window.popOut('term', `#/pop-term/${encodeURIComponent(cur.slug)}/${encodeURIComponent(cur.id)}/${encodeURIComponent(cur.name)}`, 'aigile-term-' + cur.slug + '-' + cur.id, 860, 540)) return;
     teardown(false);
   }
   // The pop-out window's page: just the terminal. It attaches to the open session; it never dials by itself.

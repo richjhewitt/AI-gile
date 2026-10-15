@@ -13,9 +13,12 @@
     if (popList) { IB.only = popList; IB.flick = -1; }
     const shown = IB.tab === 'all' ? [...IB.items].sort((a, b) => IB.tabOrder.indexOf(a.project) - IB.tabOrder.indexOf(b.project)) : IB.items.filter(c => c.project === IB.tab);
     // 🤖 AI passed (AIG-192): its own view, one test at a time; the rest of the inbox steps aside while it's open.
+    // AIG-781: with "AI-passed tests in their own list" on, they leave the tests list and live only here, with their own Accept all.
+    const own = aiOwn();
     const aiList = shown.filter(c => isTest(c) && c.aiCheck && c.aiCheck.result === 'pass');
     if (IB.flick >= aiList.length) IB.flick = aiList.length - 1;
-    const bar = aiList.length ? `<button class="ib-tab ${IB.flick >= 0 ? 'on' : ''}" data-flick="1">${esc(t('inbox.ai.tab', { n: aiList.length }))}</button>` : '';
+    const bar = aiList.length ? `<button class="ib-tab ${IB.flick >= 0 ? 'on' : ''}" data-flick="1">${esc(t('inbox.ai.tab', { n: aiList.length }))}</button>`
+      + (own && IB.flick < 0 ? ` <button class="good ib-aiall" data-aiall="1" title="${esc(t('inbox.aiall.title'))}">${esc(t('inbox.aiall', { n: aiList.length }))}</button>` : '') : '';
     if (el('ibAiBar').dataset.sig !== bar) { el('ibAiBar').dataset.sig = bar; el('ibAiBar').innerHTML = bar; }
     // ⚡ Decide (AIG-361): the open answer-button questions and Topics, one at a time.
     const dcList = decideList(shown);
@@ -41,7 +44,7 @@
     const pick = shown.filter(c => !IB.kindFilter || kindOfItem(c) === IB.kindFilter).sort(queueRank);
     // Tests the AI tester passed come first, so Accept all AI-passed matches what you see at the top (AIG-196).
     const aiPassed = c => !!(c.aiCheck && c.aiCheck.result === 'pass');
-    const qs = pick.filter(isQuestion), ks = pick.filter(isTask).sort((a, b) => (!!b.server * 2 + !!b.outside) - (!!a.server * 2 + !!a.outside) || !!a.lifeType - !!b.lifeType), ts = pick.filter(isTest).sort((a, b) => aiPassed(b) - aiPassed(a));
+    const qs = pick.filter(isQuestion), ks = pick.filter(isTask).sort((a, b) => (!!b.server * 2 + !!b.outside) - (!!a.server * 2 + !!a.outside) || !!a.lifeType - !!b.lifeType), ts = pick.filter(c => isTest(c) && !(own && aiPassed(c))).sort((a, b) => aiPassed(b) - aiPassed(a));
     // A link to one question (alerts, the home list) opens its chat.
     if (IB.flashKey) { const f = qs.find(c => keyOf(c) === IB.flashKey); if (f) IB.chat = f.project; }
     IB.paintChats(qs);
@@ -61,13 +64,17 @@
     el('ibMore').hidden = !IB.hidden; el('ibMore').textContent = t('inbox.more', { n: IB.hidden });
     if (IB.hidden && (!IB.only || IB.only === 'q')) el('ibQ').hidden = false;
     if (typeof Share !== 'undefined') Share.paintInbox();   // link offers from friends (AIG-304)
+    if (typeof Approvals !== 'undefined') Approvals.paintInbox();   // cards waiting for my OK (AIG-815)
     if (typeof Ask !== 'undefined') Ask.paintInbox();   // friends' questions for my AI (AIG-210)
-    el('ibEmpty').innerHTML = IB.items.length || IB.hidden || IB.offers || IB.asks ? '' : `<div class="ib-empty"><div class="big">${esc(t('inbox.empty.title'))}</div><p>${esc(t('inbox.empty.text'))}</p></div>`;
+    el('ibEmpty').innerHTML = IB.items.length || IB.hidden || IB.offers || IB.asks || IB.approvals ? '' : `<div class="ib-empty"><div class="big">${esc(t('inbox.empty.title'))}</div><p>${esc(t('inbox.empty.text'))}</p></div>`;
     if (IB.flashKey) {
       const n = [...document.querySelectorAll('.ib-item')].find(x => x.dataset.key === IB.flashKey);
       if (n) { n.scrollIntoView({ block: 'center' }); n.classList.add('flash'); const t = n.querySelector('textarea'); if (t) t.focus({ preventScroll: true }); IB.flashKey = null; }
     }
   }
   const toast = msg => { const t = el('ibToast'); if (t) t.textContent = msg; else if (typeof note === 'function') note(msg); };
-  Object.assign(IB, { paintPage, toast });
+  // Setup switch (AIG-781), off by default.
+  const aiOwn = () => { try { return localStorage.getItem('aigile.aiOwnList') === '1'; } catch { return false; } };
+  const setAiOwn = on => { try { on ? localStorage.setItem('aigile.aiOwnList', '1') : localStorage.removeItem('aigile.aiOwnList'); } catch {} };
+  Object.assign(IB, { paintPage, toast, aiOwn, setAiOwn });
 })();

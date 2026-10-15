@@ -9,6 +9,15 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 // Tests speak to "Owner" whatever your own name is, here and in the servers they start (setup clears it to test naming).
 process.env.AIGILE_OWNER = 'Owner';
+// AIG-1002: QA's scratch git repos must never reach a real one. A scratch clone that failed (a sandboxed run, 10-13) left git
+// walking up into the enclosing worktree, where an area committed and pushed "HEAD:main" to the real GitHub. So: git never
+// climbs above the temp folder, and every push to a web address fails (scratch remotes are local folders).
+process.env.GIT_CEILING_DIRECTORIES = [os.tmpdir(), process.env.GIT_CEILING_DIRECTORIES].filter(Boolean).join(path.delimiter);
+for (const pre of ['https://', 'http://', 'git@', 'ssh://']) {
+  const n = +(process.env.GIT_CONFIG_COUNT || 0);
+  process.env['GIT_CONFIG_KEY_' + n] = 'url.qa-no-push-' + pre.replace(/\W/g, '') + '://blocked/.pushInsteadOf'; process.env['GIT_CONFIG_VALUE_' + n] = pre;
+  process.env.GIT_CONFIG_COUNT = String(n + 1);
+}
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const PORT = Number(process.env.QA_PORT) || 4390;
@@ -50,7 +59,8 @@ export const until = async (fn, ms = 8000) => { const end = Date.now() + ms; let
 // port: a second board for the dms area runs on another port.
 export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   // root: another copy of the app, e.g. the No-AI build (AIG-617)   // a second board passes await freePort()
   // A busy QA_PORT means another process (a board, a relay, an old run) would answer our calls: stop the run at once.
-  if (!(await portFree(port))) {
+  // The last area's server may still be letting go of the port (kill does not wait): give it a few seconds first.
+  if (!(await until(() => portFree(port), 5000))) {
     if (port === PORT) { console.error(`QA_PORT ${port} is in use by another process: pick another QA_PORT`); process.exit(3); }
     throw new Error(`port ${port} is in use by another process`);
   }
@@ -66,7 +76,8 @@ export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   /
   // that save settings (wizard, budget, setup) used to change. Only the machine bits are carried over.
   const local = path.join(dir, 'aigile.local.json');
   let ownerLocal = {}; try { ownerLocal = JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')); } catch {}
-  fs.writeFileSync(local, JSON.stringify(Object.fromEntries(['usageDir', 'globalSettingsFile', 'agent', 'avatarsDir'].filter(k => k in ownerLocal).map(k => [k, ownerLocal[k]])), null, 2));
+  // AIG-1063: the owner's day turns over at his day start: the test board starts it at 00:00, so results do not depend on the time of day.
+  fs.writeFileSync(local, JSON.stringify({ ...Object.fromEntries(['usageDir', 'globalSettingsFile', 'agent', 'avatarsDir'].filter(k => k in ownerLocal).map(k => [k, ownerLocal[k]])), day: { start: '00:00' } }, null, 2));
   const env = { ...process.env, AIGILE_LOCAL: local, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', AIGILE_UNDO_WAKE_MS: '0', AIGILE_QA_TOKEN: token, ...extraEnv };   // tests speak to "Owner", whatever your own name is
   delete env.AIGILE_DEV; delete env.AIGILE_ALLOW_DONE; delete env.AIGILE_AS;
   const proc = spawn(process.execPath, [path.join(root, 'server.js')], { env, stdio: 'ignore', cwd: root });
@@ -78,7 +89,8 @@ export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   /
   }
   if (!mine) { try { proc.kill(); } catch {} throw new Error(`the server on port ${port} is not this QA run's (no matching token): another process holds it`); }
   const api = async (method, url, body) => {
-    const r = await fetch(BASE + url, { method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
+    const go = () => fetch(BASE + url, { method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
+    const r = await go().catch(e => method === 'GET' && /ECONNRESET|UND_ERR_SOCKET/.test(String(e.cause && (e.cause.code || e.cause))) ? go() : Promise.reject(e));   // AIG-1036: a keep-alive socket the server already closed; a GET is safe to repeat
     const j = await r.json().catch(() => ({}));
     return { status: r.status, body: j };
   };
@@ -94,10 +106,24 @@ export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   /
 // Seed helpers (through the API).
 export const mkProject = (s, name, key, extra = {}) => s.ok('POST', '/api/projects', { name, key, ...extra });
 export const mkCard = (s, slug, title, extra = {}) => s.ok('POST', `/api/projects/${slug}/cards`, { title, ...extra });
-export const getCard = async (s, slug, id) => (await s.ok('GET', `/api/projects/${slug}`)).cards.find(c => c.id === id);
+export const getCard = async (s, slug, id) => (await s.ok('GET', `/api/projects/${slug}?full=1`)).cards.find(c => c.id === id);   // ?full=1: done cards whole (AIG-1100)
 export const say = (s, slug, id, author, text, extra = {}) => s.ok('POST', `/api/projects/${slug}/cards/${id}/comments`, { author, text, ...extra });
+// AIG-1170: chat files and DM attachments are sealed on disk (lib/atrest.js). Read or write one as plain text through the board's
+// own code, with that board's data and key (a child process: the key is kept per data folder). file: a path inside s.data.
+function atrestCall(s, op, file, input) {
+  const code = `const A = require(${JSON.stringify(path.join(ROOT, 'lib', 'atrest.js'))}), [op, f] = process.argv.slice(1);
+let input = ''; try { input = require('fs').readFileSync(0); } catch {}
+if (op === 'read') process.stdout.write(A.readText(f)); else if (op === 'bytes') process.stdout.write(A.readBytes(f).toString('base64')); else A.writeText(f, input.toString('utf8'));`;
+  const r = spawnSync(process.execPath, ['-e', code, op, file], { env: { ...process.env, AIGILE_DATA: s.data, AIGILE_LOCAL: path.join(s.dir, 'aigile.local.json') }, input: input || '', encoding: 'utf8', maxBuffer: 64 << 20 });
+  if (r.status !== 0) throw new Error(`atrest ${op} ${file}: ${(r.stderr || '').trim().split('\n').slice(-3).join(' ')}`);
+  return r.stdout;
+}
+export const readChat = (s, file) => JSON.parse(atrestCall(s, 'read', file));
+export const writeChat = (s, file, value) => { atrestCall(s, 'write', file, JSON.stringify(value)); };
+export const readSealedBytes = (s, file) => Buffer.from(atrestCall(s, 'bytes', file), 'base64');
 
 // A browser page that records page errors.
+export const pinAllInit = () => { try { if (!localStorage.getItem('aigile.topbar.pinned')) localStorage.setItem('aigile.topbar.pinned', JSON.stringify(['helpBtn','ideaBtn','bugBtn','teamTop','inboxTop','pokeTop','nightTop','glanceBtn','weedBtn','streamBtn','ntBtn','tiredBtn','assumeNav','usageNav','setupNav','themeBtn','twitchBtn','mailNav','immWrap'])); } catch {} };
 export async function openPage(ctx, hash) {
   const page = await ctx.newPage();
   page.errors = [];
@@ -105,6 +131,12 @@ export async function openPage(ctx, hash) {
   page.on('console', m => { if (m.type() === 'error') page.errors.push('console: ' + m.text()); });
   // The morning "Call stand-ups?" pill (AIG-136) would sit over other areas' clicks: mark today as asked, except in the standup area.
   if (!openPage.morning) await page.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
+  // AIG-932: the top bar shows only Inbox/Help/Setup and a More menu; the other areas click the buttons by selector, so they pin them all (the topbar area leaves it alone).
+  if (!openPage.firstrun) await page.addInitScript(pinAllInit);
+  // AIG-937: home keeps its More menu open here, so areas click the moved buttons by selector (the homeux area leaves it alone).
+  if (!openPage.homeMore) await page.addInitScript(() => { try { localStorage.setItem('aigile.homeMoreOpen', '1'); } catch {} });
+  // The open card's ⋯ menu (AIG-935) is laid out open for other areas, which click its buttons directly; the cardux area sets openPage.realMenu.
+  if (!openPage.realMenu) await page.context().addInitScript(() => { const on = () => document.documentElement && (document.documentElement.classList.add('qa-menu'), true); if (!on()) new MutationObserver((_, o) => { if (on()) o.disconnect(); }).observe(document, { childList: true }); });
   await page.goto(BASE + '/' + (hash || ''));
   await page.waitForSelector('#app > *', { timeout: 8000 });
   return page;
@@ -115,3 +147,18 @@ export const noErrors = page => check('no page errors', page.errors.length === 0
 /* ---------- area registry ---------- */
 export const areas = {};
 export const def = (name, doc, fn, needsBrowser = false, env = {}) => { areas[name] = { doc, fn, needsBrowser, env }; };
+// AIG-931/932: click a top bar button by selector; if it sits in the More / ☰ menu, open that first.
+export async function clickBar(page, sel) {
+  const hidden = await page.evaluate(s => { const e = document.querySelector(s); const m = document.getElementById('tbMoreMenu'); return !!(e && m && m.contains(e) && m.hidden); }, sel);
+  if (hidden) await page.click('#tbMoreBtn');
+  await page.click(sel);
+}
+// AIG-1149: click a board toolbar button; on a compact toolbar (no cards, AIG-1076) it sits behind the ⋯ More popover (#tbDots), so open that first.
+// target: a selector (#shareBtn) or plain button text (Look, Permissions).
+export async function tbClick(page, target) {
+  const sel = /^[#.\[]|:has-text|^button/.test(target) ? target : `button:has-text("${target}")`;
+  const loc = page.locator(sel).first();
+  await loc.waitFor({ state: 'attached', timeout: 15000 });
+  if (!(await loc.isVisible().catch(() => false)) && await page.isVisible('#tbDots')) { await page.click('#tbDots'); await page.waitForTimeout(200); }
+  await loc.click();
+}

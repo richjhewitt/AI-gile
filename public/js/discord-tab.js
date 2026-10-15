@@ -12,19 +12,19 @@ const DiscordTab = (() => {
   const alertsOn = () => typeof Notification !== 'undefined' && Notification.permission === 'granted' && localStorage.getItem('aigile.alerts') === '1';
   async function poll() {
     try { st = await api('GET', '/api/discord/unread'); } catch { return; }
-    if (st.total > lastTotal && document.hidden && alertsOn() && !document.documentElement.hasAttribute('data-focus')) {
+    if (st.total > lastTotal && document.hidden && alertsOn() && !document.documentElement.hasAttribute('data-focus') && !document.documentElement.hasAttribute('data-break')) {
       const c = st.chats.slice().sort((a, b) => String(b.at).localeCompare(String(a.at)))[0] || {};
       try { const n = new Notification(t('dc.notify', { who: c.from || 'Discord' }), { body: String(c.preview || '').slice(0, 160), tag: 'aigile-discord' }); n.onclick = () => { try { window.focus(); } catch {} n.close(); }; } catch {}
     }
     lastTotal = st.total;
-    if (typeof Dms !== 'undefined') Dms.reload && Dms.reload();
+    if (!document.hidden && typeof Dms !== 'undefined') Dms.reload && Dms.reload();
   }
   async function loadChats() { try { chats = await api('GET', '/api/discord/chats'); } catch { chats = []; } if (typeof Dms !== 'undefined') Dms.reload(); }
   const unreadOf = c => ((st.chats.find(x => x.key === c.bot + '|' + c.id)) || {}).n || 0;
   function rowsHtml() {
     if (!chats.length) loadChats();
     const badge = n => n ? `<span class="dm-unread">${n > 99 ? '99+' : n}</span>` : '';
-    return chats.map(c => `<button class="dm-row" data-dm="${esc(keyOf(c))}"><span class="dm-av">${c.kind === 'dm' ? '💬' : '#'}</span><span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc(c.kind === 'dm' ? t('dc.kind.dm', { bot: c.bot }) : (c.guild || '') + ' · ' + c.bot)}</span></span>${badge(unreadOf(c))}</button>`);
+    return chats.slice().sort((a, b) => String(b.at || "").localeCompare(String(a.at || ""))).map(c => `<button class="dm-row" data-dm="${esc(keyOf(c))}"><span class="dm-av">${c.kind === 'dm' ? '💬' : '#'}</span><span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc(c.kind === 'dm' ? t('dc.kind.dm', { bot: c.bot }) : (c.guild || '') + ' · ' + c.bot)}</span></span>${badge(unreadOf(c))}</button>`);
   }
   const msgHtml = m => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> ${ago(m.at)}</div><div class="dm-bubble">${esc(m.text).replace(/\n/g, '<br>')}${(m.images || []).map(u => `<a href="${esc(u)}" target="_blank" rel="noopener"><img class="dc-pic att-shown" src="${esc(u)}" alt="" loading="lazy" referrerpolicy="no-referrer"></a>`).join('')}</div></div>`;
   function show(key) {
@@ -54,6 +54,6 @@ const DiscordTab = (() => {
     busy = false;
   }
   function stop() { cur = null; }
-  poll(); setInterval(poll, 4000);
+  PagePoll.every(poll, 4000, { hidden: 5000, immediate: true, home: true, alerts: true });   // raises a desktop notification: keeps its pace when hidden (AIG-1153)
   return { show, load, send, stop, rowsHtml, loadChats, linked: () => !!st.linked, unread: () => st.total || 0 };
 })();

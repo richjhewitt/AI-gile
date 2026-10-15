@@ -1,7 +1,17 @@
 /* ---------- team status: in flight, presence, wake ---------- */
 // "Pixel → AIG-5 (12m ago)". Quiet for 30+ minutes = stale (amber), so stalled agents stand out.
-function flightHtml(list) {
-  return list.map(c => `<span class="${Date.now() - new Date(c.updated) > 30 * 60e3 ? 'stale' : ''}" title="${esc(c.title)}">${esc(c.assignee || t('board.unassigned'))} → ${esc(c.id)} <span class="muted">(${ago(c.updated)})</span></span>`).join(' · ');
+// A 🐝 swarm worker (AIG-901, c.worker = its branch) opens its own log on click.
+function flightHtml(list, s) {
+  return list.map(c => c.worker
+    ? `<span class="flight-worker" data-worker="${esc(c.id)}" title="${esc(t('swarm.worker.title', { branch: c.worker, title: c.title }))}" style="cursor:pointer" onclick="agentLog(event, '${esc(s || slug())}', '${esc(c.id)}')">🐝 ${esc(c.assignee || t('swarm.worker'))} → ${esc(c.id)} <span class="muted">(${ago(c.updated)})</span></span>`
+    : `<span class="${Date.now() - new Date(c.updated) > 30 * 60e3 ? 'stale' : ''}" title="${esc(c.title)}">${esc(c.assignee || t('board.unassigned'))} → ${esc(c.id)} <span class="muted">(${ago(c.updated)})</span></span>`).join(' · ');
+}
+// The board's In flight list: cards in progress plus 🐝 swarm workers (AIG-901) whose card is still in To do.
+function flightList(p) {
+  const ws = (p.presence && p.presence.workers) || [], doing = p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated));
+  const list = doing.map(c => { const w = ws.find(x => x.id === c.id); return w ? { ...c, worker: w.branch } : c; });
+  for (const w of ws) { const c = !list.some(f => f.id === w.id) && p.cards.find(c => c.id === w.id); if (c) list.unshift({ ...c, updated: w.startedAt, worker: w.branch }); }
+  return list;
 }
 
 // Is the team working? Either a background run of ours, or a session heard from in the last 5 minutes (hooks, wait, status line).
@@ -33,13 +43,17 @@ async function restartTeam(e, s = slug()) {
   try { await api('POST', `/api/projects/${s}/restart`); refresh(true); }
   catch (err) { alert(err.message); b.disabled = false; b.textContent = t('pres.restart'); }
 }
-async function agentLog(e, s = slug()) {
+async function agentLog(e, s = slug(), worker = '') {   // worker: a 🐝 swarm worker's card id (AIG-901)
   e.preventDefault(); e.stopPropagation();
   try {
-    const r = await api('GET', `/api/projects/${s}/agentlog`);
-    openDialog(`<h2>${esc(t('pres.log.h'))}</h2><pre id="agentLog" style="max-height:60vh;overflow:auto;white-space:pre-wrap">${esc(r.text || t('pres.log.empty'))}</pre><div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
+    const r = await api('GET', `/api/projects/${s}/agentlog${worker ? '?worker=' + encodeURIComponent(worker) : ''}`);
+    const stop = worker && r.running ? `<button id="workerStop" onclick="stopWorker('${esc(s)}', '${esc(worker)}')">${esc(t('swarm.worker.stop'))}</button>` : '';
+    openDialog(`<h2>${esc(worker ? t('swarm.worker.log', { id: worker, branch: r.branch || '' }) : t('pres.log.h'))}</h2><pre id="agentLog" style="max-height:60vh;overflow:auto;white-space:pre-wrap">${esc(r.text || t('pres.log.empty'))}</pre><div class="actions">${stop}<button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
     const pre = $('agentLog'); if (pre) pre.scrollTop = pre.scrollHeight;
   } catch (err) { alert(err.message); }
+}
+async function stopWorker(s, id) {
+  try { await api('POST', `/api/projects/${s}/workers/${encodeURIComponent(id)}/stop`); closeDialog(); refresh(true); } catch (err) { alert(err.message); }
 }
 
 /* ---------- 👁 Watch (AIG-154) ---------- */
@@ -58,8 +72,8 @@ async function watchTeam(e, s = slug()) {
   e.preventDefault(); e.stopPropagation();
   openDialog(`<h2>${esc(t('eye.h'))} <button class="watch-pop" title="${esc(t('eye.pop'))}" onclick="popOut('watch', '#/pop-watch/${s}', 'aigile-watch-${s}', 620, 720)">⧉</button></h2>
     ${watchBody()}<div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
-  const tick = async () => { if (!$('watchLog')) return clearInterval(timer); try { paintWatch(await api('GET', `/api/projects/${s}/agentlog`)); } catch {} };
-  const timer = setInterval(tick, 2500); tick();
+  const tick = async () => { if (!$('watchLog')) return timer(); try { paintWatch(await api('GET', `/api/projects/${s}/agentlog`)); } catch {} };
+  const timer = PagePoll.every(tick, 3000, { immediate: true });
 }
 // The pop-out (#/pop-watch/<slug>) rides the 1 s page poll; the shell is drawn once so scrolling up to read stays put.
 function renderWatch() {
@@ -80,6 +94,8 @@ function renderNews() {
 }
 
 /* ---------- board page ---------- */
+// Phone (AIG-933): the toolbar buttons sit behind one ⋯ button; the choice survives the 1 s redraw.
+function toggleTb() { state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), d = $('tbDots'); if (m) m.classList.toggle('open', state.tbOpen); if (d) d.setAttribute('aria-expanded', state.tbOpen ? 'true' : 'false'); }
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
@@ -90,20 +106,37 @@ function renderBoard(p) {
   const stale = m => /idle/i.test(m.status || '') && !/lead/i.test(m.name + ' ' + (m.role || '')) && Date.now() - Date.parse(m.updated || 0) > 12 * 3600e3;
   const team = (p.team || []).filter(m => !/retired/i.test(m.status || '') && !stale(m));
   const log = (p.log || []).slice().reverse().slice(0, 50);
-  return `<div class="toolbar"><h2>${esc(p.name)}${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}</h2>
-      <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
-      <button onclick="openDocs()">${esc(t('board.docs'))}</button>
-      <button onclick="happeningDialog()" title="${esc(t('board.happening.title'))}">${esc(t('board.happening'))}</button>
+  // AIG-1076: an empty (new) project keeps + New, Docs, Ask the team and Views on the bar; the rest sits behind ⋯ More (on a phone everything does, AIG-933).
+  const compact = !p.cards.length && !(window.matchMedia && matchMedia('(max-width: 600px)').matches);
+  const keep = `<button onclick="openDocs()">${esc(t('board.docs'))}</button>
       <button onclick="askTeamDialog()" title="${esc(t('board.ask.title'))}">${esc(t('board.ask'))}</button>
+      <button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>`;
+  return `<div class="toolbar${compact ? ' compact' : ''}"><h2>${esc(p.name)}${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}${p.sample ? ` <span class="pill sample-pill">${esc(t('sample.pill'))}</span> <button id="sampleRemove" onclick="removeSample()" title="${esc(t('sample.remove.title'))}">${esc(t('sample.remove'))}</button>` : ''}</h2>
+      <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
+      ${compact ? keep : ''}
+      <button class="tb-dots" id="tbDots" aria-expanded="${state.tbOpen ? 'true' : 'false'}" aria-label="${esc(t('board.more'))}" title="${esc(t('board.more'))}" onclick="toggleTb()">⋯${compact ? ' ' + esc(t('board.more')) : ''}</button>
+      <div class="tb-more${state.tbOpen ? ' open' : ''}" id="boardTbMore">
+      ${compact ? '' : `<button onclick="openDocs()">${esc(t('board.docs'))}</button>`}
+      <button onclick="happeningDialog()" title="${esc(t('board.happening.title'))}">${esc(t('board.happening'))}</button>
+      ${compact ? '' : `<button onclick="askTeamDialog()" title="${esc(t('board.ask.title'))}">${esc(t('board.ask'))}</button>`}
       <select class="lanesel" title="${esc(t('lanes.title'))}" onchange="setLanes(this.value)">${lanesList().map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
-      <button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>
+      ${compact ? '' : `<button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>`}
       ${standupButtons(p)}
       <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
       <button onclick="location.hash='#/stats/${esc(p.slug)}'" title="${esc(t('stats.btn.title'))}">${esc(t('stats.title'))}</button>
+      <button onclick="location.hash='#/ci/${esc(p.slug)}'" title="${esc(t('ci.btn.title'))}">${esc(t('ci.btn'))}</button>
+      ${p.service && p.service.on ? `<button onclick="location.hash='#/review/${esc(p.slug)}'" title="${esc(t('rev.btn.title'))}">${esc(t('rev.btn'))}</button>` : ''}
+      <button onclick="raiseChange()" title="${esc(t('chg.raise.title'))}">${esc(t('chg.raise'))}</button>
+      <button onclick="location.hash='#/risks/${esc(p.slug)}'" title="${esc(t('risks.btn.title'))}">${esc(t('risks.title'))}</button>
+      <button onclick="location.hash='#/releases/${esc(p.slug)}'" title="${esc(t('rel.btn.title'))}">${esc(t('rel.btn'))}</button>
+      <button onclick="location.hash='#/known-errors/${esc(p.slug)}'" title="${esc(t('ke.btn.title'))}">${esc(t('ke.title'))}</button>
+      <button onclick="location.hash='#/improvements'" title="${esc(t('imp.btn.title'))}">${esc(t('imp.title'))}</button>
+      ${Swarm.btn(p.slug, 'swarmBtn')}
       <span class="grow"></span>
-      <button onclick="connectDialog()" title="${p.path && p.pathMissing ? esc(t('srv.folder.missing', { path: p.path })) : p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path && p.pathMissing ? t('board.connected.missing') : p.path ? t('board.connected') : t('board.connect'))}</button>
+      ${NoAi.on && p.lifeBoard && !p.path ? '' : `<button onclick="connectDialog()" title="${p.path && p.pathMissing ? esc(t('srv.folder.missing', { path: p.path })) : p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path && p.pathMissing ? t('board.connected.missing') : p.path ? t('board.connected') : t('board.connect'))}</button>`}
       ${Share.button(p)}
       ${Pub.copyBtn(p)}
+      <button id="hfBtn" onclick="Hyperfocus.on('${esc(p.slug)}')" title="${esc(t('hf.btn.title'))}">${esc(t('hf.btn'))}</button>
       <button onclick="Spaces.menu('${esc(p.slug)}')" title="${esc(t('space.menu.title'))}">${esc(t('space.btn'))}</button>
       <button onclick="saveProjectFile()" title="${esc(t('ofl.save.title'))}">${esc(t('ofl.save'))}</button>
       <button onclick="teamDialog()" title="${esc(t('board.team.title'))}">${esc(t('board.team'))}</button>
@@ -111,12 +144,12 @@ function renderBoard(p) {
       <button onclick="columnsDialog()" title="${esc(t('board.columns.title'))}">${esc(t('board.columns'))}</button>
       <button onclick="cardViewDialog()" title="${esc(t('board.cards.title'))}">${esc(t('board.cards'))}</button>
       ${p.path ? `<button onclick="permsDialog()" title="${esc(t('board.perms.title'))}">${esc(t('board.perms'))}</button>` : ''}
-      <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${esc(p.archived ? t('board.unarchive') : t('board.archive'))}</button></div>
-    <div class="flight">${t('board.flight.html')} ${flightHtml(p.cards.filter(c => c.status === 'doing').sort((a, b) => b.updated.localeCompare(a.updated))) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>
-    ${p.description || p.path ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}${p.path ? `${p.description ? ' · ' : ''}<code>${esc(p.path)}</code>` : ''}</p>` : ''}
+      <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${esc(p.archived ? t('board.unarchive') : t('board.archive'))}</button></div></div>
+    ${p.description ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}</p>` : ''}
+    <details class="bdetails" id="bDetails"${state.detailsOpen ? ' open' : ''} ontoggle="state.detailsOpen = this.open"><summary>${esc(t('board.details'))}</summary><div class="flight">${t('board.flight.html')} ${flightHtml(flightList(p), p.slug) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>${p.path ? `<p class="muted"><code>${esc(p.path)}</code></p>` : ''}</details>
     ${Share.laneHtml(p)}
     ${Spaces.boardHtml(p, projCard)}
-    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.nopath', { connect: esc(t('board.connect')) })}</div>`}
+    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path || (NoAi.on && p.lifeBoard) ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.start', { add: esc(t('board.new')), connect: esc(t('board.connect')) })}</div>`}
     ${board}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}${team.length ? `<button class="bm-btn" onclick="badgeDialog()" title="${esc(t('badge.title.hint'))}">${esc(t('badge.title'))}</button>` : ''}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>
@@ -162,27 +195,35 @@ function columnsHtml(p, pool) {
   return colsOf(p).filter(c => !c.hidden && (!fyFocus(p.slug) || c.key === 'verify')).map(col => {
     const k = col.key, label = (col.emoji ? col.emoji + ' ' : '') + col.name, tint = col.color ? ` style="--colc:${esc(col.color)}"` : '';
     if (k === 'verify') return forYouColumn(p, label, tint, pool, col.wip);
-    const cs = pool.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => (a.sortPos || 1e9) - (b.sortPos || 1e9) || b.updated.localeCompare(a.updated));   // sortPos: 🧭 Scrum Master /sort (AIG-730)
+    const cs = pool.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => k === 'done' ? String(b.updated).localeCompare(String(a.updated)) : (a.sortPos || 1e9) - (b.sortPos || 1e9) || b.updated.localeCompare(a.updated));   // sortPos: 🧭 Scrum Master /sort (AIG-730); Done: newest first
     const all = p.cards.filter(c => c.status === k && !forYou(c)).length;   // the limit counts the whole column (AIG-118)
+    // ⚡ Done shows the newest 50, then Load more (AIG-1100): a long-lived board has a thousand done cards.
+    const lim = k === 'done' ? doneShown(p.slug) : Infinity, left = cs.length - lim, vis = left > 0 ? cs.slice(0, lim) : cs;
+    const more = left > 0 ? `<button type="button" class="done-more" onclick="doneMore('${esc(p.slug)}')">${esc(t('board.done.more', { n: left }))}</button>` : '';
     // Your own steps (AIG-117): one sub-column per step; cards with no or an old step sit in the first.
     if (col.steps.length) return col.steps.map((st, i) => {
-      const mine = cs.filter(c => c.step === st || (i === 0 && !col.steps.includes(c.step)));
-      return `<div class="column step ${wipClass(all, col.wip)}" data-status="${k}" data-step="${esc(st)}"${tint}><h3><span>${esc(label)} · ${esc(st)}</span><span>${i ? mine.length : countHtml(mine.length, all, col.wip)}</span></h3>${mine.map(cardHtml).join('')}</div>`;
+      const mine = vis.filter(c => c.step === st || (i === 0 && !col.steps.includes(c.step)));
+      return `<div class="column step ${wipClass(all, col.wip)}" data-status="${k}" data-step="${esc(st)}"${tint}><h3><span>${esc(label)} · ${esc(st)}</span><span>${i ? mine.length : countHtml(mine.length, all, col.wip)}</span></h3>${mine.map(cardHtml).join('')}${i === col.steps.length - 1 ? more : ''}</div>`;
     }).join('');
-    return `<div class="column ${wipClass(all, col.wip)}" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, col.wip)} ${['todo', 'doing', 'review', 'team'].includes(k) && cs.length ? `<button class="colbtn" title="${esc(t('board.pokeall'))}" onclick="pokeColumn('${k}', this)">👉</button> ` : ''}<button class="colbtn" title="${esc(t('board.newin', { col: label }))}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
+    return `<div class="column ${wipClass(all, col.wip)}" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, col.wip)} ${['todo', 'doing', 'review', 'team'].includes(k) && cs.length ? `<button class="colbtn" title="${esc(t('board.pokeall'))}" onclick="pokeColumn('${k}', this)">👉</button> ` : ''}<button class="colbtn" title="${esc(t('board.newin', { col: label }))}" onclick="newCard({status:'${k}'})">+</button></span></h3>${vis.map(cardHtml).join('')}${more}</div>`;
   }).join('');
 }
+
+// How many Done cards show, per project, for this page only (AIG-1100).
+const DONE_STEP = 50;
+function doneShown(s) { state.doneShown = state.doneShown || {}; return state.doneShown[s] || DONE_STEP; }
+function doneMore(s) { state.doneShown[s] = doneShown(s) + DONE_STEP; refresh(true); }
 
 /* ---------- For you column (AIG-106) ---------- */
 // Everything waiting on the owner, whatever its status: tests, questions, tasks and blocks. Those cards show
 // here instead of in their own column (their status doesn't change). Chips pick which kind comes first.
-const KINDS = ['q', 't', 'r', 's', 'o', 'k', 'l'], kindLabel = k => t('fy.kind.' + k);
+const KINDS = ['q', 'p', 't', 'r', 's', 'o', 'k', 'l'], kindLabel = k => t('fy.kind.' + k);
 const isMine = c => String(c.assignee || '').trim().toLowerCase() === me().toLowerCase();
 const timed = c => !!c.timedUntil && new Date(c.timedUntil) > Date.now();   // AIG-385
 const timedChip = c => timed(c) ? `<span class="pill timed" title="${esc(t('timed.title'))}">⏰ ${esc(timedWhen(c.timedUntil))}</span>` : '';
 const timedWhen = iso => { const d = new Date(iso), day = d.toDateString() === new Date().toDateString() ? '' : d.toLocaleDateString(i18n.locale, { weekday: 'short', day: 'numeric', month: 'short' }) + ' '; return day + d.toLocaleTimeString(i18n.locale, { hour: '2-digit', minute: '2-digit' }); };
 const forYou = c => c.status !== 'done' && !timed(c) && !isWaitingCard(c) && !taskReplied(c) && (c.status === 'verify' || c.needsYou || c.blocked || isMine(c));
-const kindOf = c => isMine(c) ? (c.lifeType ? 'l' : c.server ? 's' : c.outside ? 'o' : 'k') : c.status === 'verify' && !c.needsYou && !c.blocked ? (c.info ? 'r' : 't') : 'q';   // r: 📖 To read (AIG-392)
+const kindOf = c => isMine(c) ? (c.lifeType ? 'l' : c.server ? 's' : c.outside ? 'o' : 'k') : c.status === 'verify' && !c.needsYou && !c.blocked ? (c.info ? 'r' : 't') : c.kind === 'plan' || (!c.kind && isGoAsk(c)) ? 'p' : 'q';   // p: 🚦 ready for go (AIG-828)   // r: 📖 To read (AIG-392)
 function forYouFirst(k) {
   if (k) { state.forYouFirst = k; try { localStorage.setItem('aigile.forYouFirst', k); } catch {} refresh(true); }
   if (!state.forYouFirst) { try { state.forYouFirst = localStorage.getItem('aigile.forYouFirst'); } catch {} }
@@ -205,7 +246,7 @@ async function tidyPile(s, btn) {
 async function testForMe(s) {
   try { await api('POST', '/api/tester', { projects: [s] }); } catch (e) { alert(e.message); return; }
   state.testerOn = true; note(t('tester.started')); refresh(true);
-  const look = async () => { let st = null; try { st = await api('GET', '/api/tester'); } catch {} if (st && st.running) return void setTimeout(look, 10e3); state.testerOn = false; refresh(true); };
+  const look = async () => { if (document.hidden) return void setTimeout(look, 10e3); let st = null; try { st = await api('GET', '/api/tester'); } catch {} if (st && st.running) return void setTimeout(look, 10e3); state.testerOn = false; refresh(true); };
   setTimeout(look, 10e3);
 }
 // Focus (AIG-141): click the For you header to see only that column; remembered per project.
@@ -219,7 +260,7 @@ function forYouColumn(p, label = t('col.verify.short'), tint = '', pool = p.card
   const first = forYouFirst();
   const cs = forYouQueue(p, pool);
   const n = k => cs.filter(c => kindOf(c) === k).length;
-  const chips = KINDS.map(k => `<button class="fy-chip ${k === first ? 'on' : ''}" data-first="${k}" title="${esc(t('fy.first'))}" onclick="${n(k) ? 'fyOpen' : 'forYouFirst'}('${k}'${n(k) ? ', null, true' : ''})">${esc(kindLabel(k))} ${n(k)}</button>`).join('');
+  const chips = KINDS.filter(k => n(k) > 0 || k === first).map(k => `<button class="fy-chip ${k === first ? 'on' : ''}${n(k) ? '' : ' fy-zero'}" data-first="${k}" title="${esc(t('fy.first'))}" onclick="${n(k) ? 'fyOpen' : 'forYouFirst'}('${k}'${n(k) ? ', null, true' : ''})">${esc(kindLabel(k))} ${n(k)}</button>`).join('');
   const all = p.cards.filter(forYou).length;
   const unchecked = cs.filter(c => c.testSteps && !c.info && !c.aiCheck).length, testing = !!state.testerOn;
   const robot = unchecked || testing ? `<button class="colbtn" id="fyTester-${p.slug}" ${testing ? 'disabled' : ''} title="${esc(testing ? t('tester.running') : t('fy.tester.title', { n: unchecked }))}" onclick="testForMe('${p.slug}')">🤖${testing ? '' : ' ' + unchecked}</button>` : '';
@@ -227,6 +268,9 @@ function forYouColumn(p, label = t('col.verify.short'), tint = '', pool = p.card
 }
 
 // show = the project's card view choices (board cards only); the card panel passes nothing and shows all.
+// AIG-1048: a red clock on a card past its reply-by time (the server stamps c.late with the target in hours)
+const lateText = h => h >= 48 && h % 24 === 0 ? t('late.days', { n: h / 24 }) : t('late.hours', { n: h });
+const lateChip = c => c.late && c.status !== 'done' ? `<span class="pill late-chip" title="${esc(t('late.title', { h: lateText(c.late) }))}">⏰</span>` : '';
 function metaHtml(c, show = CARD_SHOW) {
   return `${c.lifeType ? (forYou(c) && isMine(c) ? '' : lifeChip(c) + (c.apptAt ? `<span class="pill">📅 ${esc(timedWhen(c.apptAt))}</span>` : '')) : show.type ? `<span class="pill">${esc(t('type.' + c.type))}</span>` : ''}
       ${show.priority && c.priority !== 'normal' ? `<span class="pill ${c.priority}">${esc(t('priority.' + c.priority))}</span>` : ''}
@@ -234,14 +278,14 @@ function metaHtml(c, show = CARD_SHOW) {
       ${show.assignee && c.assignee ? `<span class="pill">👤 ${esc(c.assignee)}</span>` : ''}
       ${c.needsYou && c.status !== 'done' ? `<span class="pill you">${esc(t('card.needsyou'))}</span>` : ''}
       ${c.crucial ? `<span class="pill crucial" title="${esc(t('saver.chip.title'))}">⭐</span>` : ''}
-      ${timedChip(c)}
+      ${lateChip(c)}${timedChip(c)}
       ${checkChip(c)}${waitChip(c)}
       ${aiChip(c)}
       ${c.group ? `<span class="pill grp" title="${esc(t('group.chip.title', { name: c.group }))}">🗂️ ${esc(c.group)}</span>` : ''}
       ${c.blocked ? `<span class="pill blocked">${esc(t('card.blocked'))}</span>` : ''}
       ${c.status === 'verify' && c.morning && state.setup && state.setup.tiredNow ? `<span class="pill snoozed">${esc(t('card.morning'))}</span>` : ''}
       ${snoozed(c) ? `<span class="pill snoozed">${esc(t('card.backat', { time: new Date(c.snoozedUntil).toLocaleTimeString(i18n.locale, { hour: '2-digit', minute: '2-digit' }) }))}</span><button class="poke" onclick="event.preventDefault();event.stopPropagation();bringBack('${c.id}')">${esc(t('card.bringback'))}</button>` : ''}
-      ${show.comments && c.comments.length ? `<span class="pill">💬 ${c.comments.length}</span>` : ''}
+      ${show.comments && (c.nComments || c.comments.length) ? `<span class="pill">💬 ${c.nComments || c.comments.length}</span>` : ''}
       ${show.age ? `<span class="pill age" title="${esc(t('card.lastupdated'))}">🕒 ${ago(c.updated)}</span>` : ''}`;
 }
 
@@ -255,10 +299,10 @@ function cardHtml(c) {
   const live = ['doing', 'review'].includes(c.status), heard = live && lastHeard(c);
   const stale = live && Date.now() - new Date(heard.at) > STALE_MS;
   const view = cardViewOf(state.project);
-  const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : '', c.type === 'incident' && c.status !== 'done' ? 'is-incident' : '', isWaitingCard(c) ? 'is-waiting' : ''].join(' ');
+  const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : '', c.priority === 'urgent' && c.status !== 'done' ? 'is-urgent' : '', c.type === 'incident' && c.status !== 'done' ? 'is-incident' : '', isWaitingCard(c) ? 'is-waiting' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}"${forYou(c) ? ` onclick="return fyCardClick(event, '${c.id}')"` : ''} data-id="${c.id}" draggable="true" style="display:block">
-    <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}${forYou(c) ? `<button class="ib-popone" title="${esc(t('inbox.popone'))}" onclick="event.preventDefault();event.stopPropagation();window.open('#/pop/${state.project.slug}/${c.id}', 'aigile-${state.project.slug}-${c.id}', 'width=560,height=780')">⤢</button>` : ''}</div>${forYou(c) ? queueChips(c) : ''}
-    <div class="t">${esc(c.title)}</div>
+    <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${c.forFriend ? ` <span class="share-mark">${esc(t('featreq.for', { name: c.forFriend }))}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}${urgentBtn(c, state.project.slug)}${forYou(c) ? `<button class="ib-popone" title="${esc(t('inbox.popone'))}" onclick="event.preventDefault();event.stopPropagation();window.open('#/pop/${state.project.slug}/${c.id}', 'aigile-${state.project.slug}-${c.id}', 'width=560,height=780')">⤢</button>` : ''}</div>${forYou(c) ? queueChips(c) : ''}
+    <div class="t">${esc(c.title)}</div>${deskBadge(c)}
     ${live ? `<div class="heard">💬 ${esc(heard.who)} ${ago(heard.at)}${heard.text ? ': ' + esc(heard.text.slice(0, 60).replace(/\n/g, ' ')) : ''}</div>` : ''}
     <div class="meta">${metaHtml(c, view.show)}${live ? `<button class="poke ai-only${stale ? ' hot' : ''}" title="${esc(t('card.poke.title'))}" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">${esc(t('card.poke'))}</button>` : ''}</div></a>`;
 }

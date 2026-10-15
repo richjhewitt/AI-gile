@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
-import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def, until } from '../lib.mjs';
 
 def('glossary', '📖 dev words explained: searchable glossary page, and tooltips when the switch is on (AIG-102)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -69,7 +69,7 @@ def('restartpill', '🔄 new server code shows a Restart the board pill; it asks
   check('no pill while the server is up to date', (await page.locator('#upRestart button').count()) === 0);
   const f = path.join(ROOT, 'lib', 'store.js'), t = new Date();
   fs.utimesSync(f, t, t);   // server code changed after the server started
-  check('meta says the server is stale', (await s.ok('GET', '/api/meta')).stale === true);
+  check('meta says the server is stale', await until(async () => (await s.ok('GET', '/api/meta')).stale === true, 16000));   // outside dev the server rescans on an ask after 10 s of quiet (AIG-1090)
   await page.waitForSelector('#upRestart button', { timeout: 10000 });
   // AIG-295: one pill only, and in the desktop app it is clickable, not part of the draggable title bar.
   check('the pill has one place on the page', (await page.locator('#upRestart').count()) === 1);

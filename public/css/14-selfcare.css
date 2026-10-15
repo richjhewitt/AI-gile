@@ -1,0 +1,25 @@
+/* 💚 Self-care reminders (AIG-775, AIG-776, AIG-777). */
+#scChip { position: fixed; inset-inline-start: 12px; bottom: 60px; z-index: 9997; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; max-width: min(560px, calc(100vw - 24px)); padding: 8px 10px 8px 14px; border-radius: 16px; background: var(--panel, var(--bg)); color: var(--text); border: 1px solid var(--line); box-shadow: 0 4px 16px rgba(0,0,0,.25); font-size: 14px; }
+#scChip[hidden], #scToday[hidden] { display: none; }
+#scChip .sc-msg { flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+#scChip .sc-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+#scChip button, #scToday .sc-x { border-radius: 999px; padding: 4px 12px; cursor: pointer; font-weight: 600; }
+#scChip .sc-done, #scChip .sc-go { background: var(--done, #16a34a); color: #fff; border: 0; }
+.sc-pulse { animation: scPulse 1.2s ease-out 1; }
+@keyframes scPulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--done, #16a34a) 70%, transparent); } 100% { box-shadow: 0 0 0 14px transparent; } }
+@media (prefers-reduced-motion: reduce) { .sc-pulse { animation: none; } }
+#scToday { position: fixed; inset-inline-start: 12px; bottom: 120px; z-index: 9997; width: min(360px, calc(100vw - 24px)); max-height: 50vh; overflow: auto; padding: 10px 12px; border-radius: 14px; background: var(--panel, var(--bg)); color: var(--text); border: 1px solid var(--line); box-shadow: 0 4px 16px rgba(0,0,0,.25); font-size: 14px; }
+#scToday .sc-th { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+#scToday .sc-list { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+#scToday .sc-r.skip { opacity: .7; }
+#scToday .sc-r.due b { color: var(--warn, #d97706); }
+.sc-box { display: grid; gap: 8px; }
+.sc-rows { display: grid; gap: 4px; }
+.sc-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--col); }
+.sc-name { flex: 1 1 160px; display: flex; align-items: center; gap: 6px; min-width: 0; overflow-wrap: anywhere; }
+.sc-mins, #scNewMins { width: 5em; }
+.sc-add, .sc-times, .sc-quiet { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.sc-quiet small, .sc-meds-box small { flex-basis: 100%; }
+.sc-tm { display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px 2px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--col); }
+.sc-tm button, .sc-del { border: 0; background: none; cursor: pointer; color: var(--muted); }
+.sc-add input[type=text] { flex: 1 1 160px; min-width: 0; }

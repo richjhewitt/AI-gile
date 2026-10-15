@@ -119,6 +119,15 @@ def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
   check('cli inbox lists verify and task', inb.out.includes(d1.id) && inb.out.includes(n1.id), inb.out);
   const br = a('brief', 'alpha');
   check('brief has the digest', br.code === 0 && /^Alpha \(alpha\):/.test(br.out) && /Waiting on Owner/.test(br.out) && /For the team/.test(br.out), br.out);
+  // AIG-1062: the project description is in the brief, and a change shows once in updates
+  await s.ok('PATCH', '/api/projects/alpha', { description: 'desc' });
+  check('brief shows the project description', /^Project: desc\r?$/m.test(a('brief', 'alpha').out), a('brief', 'alpha').out);
+  await mkProject(s, 'Desc', 'DSC');
+  await s.ok('PATCH', '/api/projects/desc', { description: 'one Claude, one ChatGPT designer' });
+  check('updates: first look is the baseline', a('updates', 'desc').out === 'Nothing new from Owner.');
+  await s.ok('PATCH', '/api/projects/desc', { description: 'two Claudes now' });
+  const ud = a('updates', 'desc').out; check('updates shows a changed description', /Project description changed: two Claudes now/.test(ud), ud);
+  check('the description change shows only once', a('updates', 'desc').out === 'Nothing new from Owner.');
   // AIG-465: no picture nag once the people in view have one; an old idle helper with none is not in view.
   await s.ok('POST', '/api/setup', { prefs: { plan: 'normal' } });
   await s.ok('POST', '/api/projects/alpha/team', { name: 'Forge', role: 'Lead', status: '🔄 working', avatar: 'badge:fox/teal/glasses' });

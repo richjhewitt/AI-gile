@@ -12,8 +12,9 @@ const QUIZ = [
 ];
 const leadPrefs = () => (state.setup && state.setup.prefs) || {};
 
-async function leadQuiz() {
-  try { state.setup = await api('GET', '/api/setup'); } catch {}
+async function leadQuiz(setup) {
+  if (setup) state.setup = setup;
+  else try { state.setup = await api('GET', '/api/setup'); } catch {}
   const cur = { ...leadPrefs(), explain: glossOn() }, picked = set => Object.entries(set).every(([k, v]) => cur[k] === v);
   openDialog(`<h2>${esc(t('quiz.h'))}</h2><p class="muted">${esc(t('quiz.sub'))}</p>
     ${QUIZ.map(([q, opts]) => `<div class="quiz-q"><b>${esc(t('quiz.' + q))}</b><div class="quiz-opts">${opts.map(([a, set]) =>
@@ -62,6 +63,7 @@ function budgetHtml(pr) {
     ${row('saveH5', 'saver.h5', 1, 99)}${row('saveWk', 'saver.wk', 1, 99)}<small class="muted">${esc(t('saver.help'))}</small>
     <label class="f chk"><span><input type="checkbox" id="pf-maximise" ${pr.maximise ? 'checked' : ''} onchange="setLeadPref({ maximise: this.checked })"> ${esc(t('maxi.label'))}</span><small class="muted">${esc(t('maxi.help'))}</small></label>
     ${row('maxRuns', 'budget.runs', 0, 50)}<small class="muted">${esc(t('budget.runs.help'))}</small>
+    ${row('swarmWorkers', 'swarm.workers', 1, 20)}<small class="muted">${esc(t('swarm.workers.help'))}</small>
     <span>${esc(t('budget.helpers'))}</span>${['Opus', 'Sonnet', 'Haiku'].map(m => row('helpers' + m, 'budget.helpers.' + m.toLowerCase(), 0, 50)).join('')}<small class="muted">${esc(t('budget.helpers.help'))}</small></details>`;
 }
 // 😴 Tired mode (AIG-669): never / at bedtime / when the page is dark / always. The top bar's click switch sits in mode 'on'.
@@ -71,18 +73,36 @@ function tiredHtml(pr) {
   const tm = k => `<input type="time" id="pf-tired-${k}" value="${esc(c[k])}" aria-label="${esc(t('tired.' + k))}" onchange="if (this.value) setLeadPref({ tired: { ${k}: this.value } })">`;
   return `<div class="f"><span>${esc(t('tired.h'))}</span><div class="tired-box" id="pf-tired">${rd('off')}${rd('bedtime', ` ${tm('bedtime')} ${esc(t('tired.to'))} ${tm('wake')}`)}${rd('dark')}${rd('always')}<small class="muted">${esc(t('tired.help'))}</small></div></div>`;
 }
+// AIG-1048: reply-by hours per kind and priority (blank = no target); saved as prefs.targets (lib/targets.js).
+function targetsHtml(pr) {
+  const tb = pr.targets || {}, P = ['low', 'normal', 'high', 'urgent'];
+  return `<div class="f" id="pf-targets"><span>${esc(t('targets.h'))}</span><small class="muted">${esc(t('targets.help'))}</small><div style="overflow-x:auto"><table>
+    <tr><th></th>${P.map(x => `<th>${esc(t('priority.' + x))}</th>`).join('')}</tr>
+    ${['incident', 'friend', 'bug'].map(k => `<tr><th>${esc(t('targets.' + k))}</th>${P.map(x => `<td><input type="number" min="0" step="any" style="width:4.5em" data-tk="${k}" data-tp="${x}" value="${(tb[k] || {})[x] || ''}" aria-label="${esc(t('targets.' + k) + ' ' + t('priority.' + x))}" onchange="targetsSave()"></td>`).join('')}</tr>`).join('')}</table></div></div>`;
+}
+function targetsSave() {
+  const o = {};
+  document.querySelectorAll('#pf-targets input').forEach(i => { (o[i.dataset.tk] = o[i.dataset.tk] || {})[i.dataset.tp] = Number(i.value) || 0; });
+  setLeadPref({ targets: o });
+}
+// AIG-678: when your day starts and (optionally) stops; Going quiet, snooze-to-tomorrow and the morning use them.
+function dayTimesHtml(pr) {
+  const d = pr.day || { start: '09:00', stop: '' };
+  return `<div class="f" id="pf-day"><label>${esc(t('day.start'))} <input type="time" id="pf-day-start" value="${esc(d.start || '09:00')}" onchange="setLeadPref({ day: { start: this.value || '09:00' } })"></label>
+    <label>${esc(t('day.stop'))} <input type="time" id="pf-day-stop" value="${esc(d.stop || '')}" onchange="setLeadPref({ day: { stop: this.value } })"></label><small class="muted">${esc(t('day.help'))}</small></div>`;
+}
 function leadPrefsHtml(msg = '') {
   const pr = leadPrefs(), sc = pr.scales || {};
   const sw = k => `<label class="f chk"><span><input type="checkbox" ${pr[k] ? 'checked' : ''} onchange="setLeadPref({ ${k}: this.checked })"> ${esc(t('lead.' + k))}</span><small class="muted">${esc(t('lead.' + k + '.help'))}</small></label>`;
   return `<span>${esc(t('scale.h'))}</span><small class="muted">${esc(t('scale.sub'))}</small><div><button type="button" onclick="leadQuiz()">${esc(t('quiz.btn'))}</button></div><small class="muted">${esc(t('quiz.help'))}</small>
     ${OWNER_SCALES.map(([k, max]) => scaleSlider(k, max, sc[k], 'setScale') + (k === 'thrift' ? `<small class="muted" id="pf-pace">${esc(t('budget.pace', { pct: pr.pace }))}</small>${budgetHtml(pr)}` : '')).join('')}
-    ${sw('watchAll')}${sw('planBig')}${sw('light')}${tiredHtml(pr)}
+    ${sw('watchAll')}${sw('planBig')}${sw('light')}${sw('todayPick')}${sw('dayStart')}${sw('autoPop')}${targetsHtml(pr)}${dayTimesHtml(pr)}${tiredHtml(pr)}
     ${scaleSlider('tone', 5, pr.tone || 3, 'setTone', 'tn', t('tone.help'))}
     <label class="f"><span>${esc(t('lead.tech'))}</span><select class="setup-theme" onchange="setLeadPref({ techLevel: this.value })">${['', 'beginner', 'some', 'expert'].map(v => `<option value="${v}" ${(pr.techLevel || '') === v ? 'selected' : ''}>${esc(t('lead.tech.' + (v || 'none')))}</option>`).join('')}</select><small class="muted">${esc(t('lead.tech.help'))}</small></label>
     <label class="f"><span>${esc(t('lead.push'))}</span><select id="pushPref" class="setup-theme" onchange="setLeadPref({ push: this.value })">${['ask', 'auto'].map(v => `<option value="${v}" ${(pr.push || 'ask') === v ? 'selected' : ''}>${esc(t('lead.push.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('lead.push.help'))}</small></label>
     <label class="f"><span>${esc(t('fourtwenty.h'))}</span><select id="pf-420" class="setup-theme" onchange="setLeadPref({ fourTwenty: this.value })">${['off', 'day', 'ampm', 'every', 'world'].map(v => `<option value="${v}" ${(pr.fourTwenty || 'off') === v ? 'selected' : ''}>${esc(t('fourtwenty.lvl.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('fourtwenty.help'))}</small></label>
     ${(pr.fourTwenty || 'off') !== 'off' ? `<label class="f"><span>${esc(t('fourtwenty.before'))}</span><input type="number" id="pf-420b" min="0" max="15" value="${pr.fourTwentyBefore ?? 5}" style="width:5em" onchange="setLeadPref({ fourTwentyBefore: Number(this.value) })"><small class="muted">${esc(t('fourtwenty.before.help'))}</small></label>` : ''}
-    ${quietTimesHtml(pr)}
+    ${quietTimesHtml(pr)}${railsHtml(pr)}
     <div class="err" id="lead-err"></div><div class="muted" id="lead-done">${esc(msg)}</div>`;
 }
 // Change calendar (AIG-615): quiet times (streams, demos, nights) when nothing goes live. Saved as prefs.quiet (lib/changecal.js).
@@ -96,6 +116,18 @@ function quietTimesHtml(pr) {
   return `<div class="f qt" id="quietTimes"><span>${esc(t('quiettime.h'))}</span>${(pr.quiet || []).map(row).join('')}
     <div><button type="button" id="qtAdd" onclick="quietTimeSave(-1)">${esc(t('quiettime.add'))}</button></div><small class="muted">${esc(t('quiettime.help'))}</small></div>`;
 }
+// Guard rails by skill level (AIG-616, lib/rails.js): beginner / help 1 hides them; some shows a read-only list; expert gets a switch each.
+const RAILS = ['riskPlan', 'qaGate', 'quietTimes', 'postmortem'];
+function railsHtml(pr) {
+  const m = pr.railsMode || 'list';
+  if (m === 'hidden') return '';
+  const off = pr.rails || {};
+  const row = k => m === 'switches'
+    ? `<label class="chk"><input type="checkbox" id="rail-${k}" ${off[k] === false ? '' : 'checked'} onchange="railSave()"> ${esc(t('rails.' + k))}</label>`
+    : `<div class="rail-row" data-rail="${k}">✔ ${esc(t('rails.' + k))}</div>`;
+  return `<div class="f" id="guardRails"><span>${esc(t('rails.h'))}</span>${RAILS.map(row).join('')}<small class="muted">${esc(t(m === 'switches' ? 'rails.help.switches' : 'rails.help.list'))}</small></div>`;
+}
+function railSave() { const r = {}; for (const k of RAILS) r[k] = $('rail-' + k).checked; setLeadPref({ rails: r }); }
 // Reads the rows and saves them all; drop: a row to take out, or -1 to add a new one.
 function quietTimeSave(drop) {
   const list = [...document.querySelectorAll('#quietTimes .qt-row')].map(r => r.dataset.qt).filter(i => Number(i) !== drop)

@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>AI-gile on Android: how it should work</title>
+<style>
+:root{
+  --bg:#fbfaf7; --bg2:#efece6; --ink:#1d1d1f; --soft:#5a5a62; --line:#c9c4ba;
+  --acc:#2f6fb2; --accInk:#ffffff; --ok:#2e7d4f; --warn:#a4561c; --done:#e6f2ea;
+}
+:root[data-theme=dark]{
+  --bg:#17181b; --bg2:#22242a; --ink:#ecebe7; --soft:#a6a6ae; --line:#41444c;
+  --acc:#7fb2ea; --accInk:#0f1a26; --ok:#7fcf9c; --warn:#e7a26b; --done:#1d2b22;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme=light]){
+    --bg:#17181b; --bg2:#22242a; --ink:#ecebe7; --soft:#a6a6ae; --line:#41444c;
+    --acc:#7fb2ea; --accInk:#0f1a26; --ok:#7fcf9c; --warn:#e7a26b; --done:#1d2b22;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  font-size:clamp(1.1rem,2.1vw,1.55rem);line-height:1.45;-webkit-text-size-adjust:100%}
+.slide{min-height:100vh;min-height:100dvh;padding:clamp(1.2rem,4vw,3.5rem) clamp(1.2rem,6vw,5rem) 5.5rem;
+  display:flex;flex-direction:column;justify-content:center;max-width:1200px;margin:0 auto}
+.slide[hidden]{display:none}
+h1{font-size:clamp(2.2rem,6.5vw,4.4rem);line-height:1.1;margin:0 0 .6em}
+h2{font-size:clamp(1.7rem,4.2vw,3rem);line-height:1.15;margin:0 0 .7em}
+.kicker{color:var(--soft);font-weight:600;letter-spacing:.02em;margin-bottom:.4em;font-size:.85em}
+.big{font-size:1.25em}
+.soft{color:var(--soft)}
+ul,ol{margin:0;padding-left:1.3em}
+li{margin:.35em 0}
+li::marker{color:var(--acc);font-weight:700}
+.split{display:flex;gap:clamp(1.5rem,5vw,4rem);align-items:center}
+.split>.txt{flex:1;min-width:0}
+@media (max-width:760px){.split{flex-direction:column;align-items:stretch}.split .phone{align-self:center}}
+.done{margin-top:1.1em;padding:.7em 1em;border-radius:14px;background:var(--done);border-left:6px solid var(--ok)}
+.done b{color:var(--ok)}
+.cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+.who{border:2px solid var(--line);border-radius:18px;padding:1em 1.1em;background:var(--bg2)}
+.who h3{margin:0 0 .3em;font-size:1.2em}
+.who p{margin:.3em 0}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem 3rem}
+.tag{display:inline-block;border:2px solid var(--line);border-radius:999px;padding:.05em .6em;margin:.15em .2em .15em 0;font-size:.85em}
+
+/* phone wireframe */
+.phone{flex:none;width:min(270px,78vw);aspect-ratio:9/18.5;border:3px solid var(--line);border-radius:34px;padding:9px;
+  background:var(--bg2);display:flex;font-size:15px;line-height:1.3}
+.scr{flex:1;border-radius:25px;background:var(--bg);overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--line)}
+.sb{display:flex;justify-content:space-between;padding:6px 16px 2px;font-size:11px;color:var(--soft)}
+.top{padding:6px 14px 8px;font-weight:700;font-size:17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.top small{font-weight:400;color:var(--soft);font-size:12px}
+.body{flex:1;padding:10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.tabs{display:flex;border-top:1px solid var(--line)}
+.tabs span{flex:1;text-align:center;padding:9px 0 11px;font-size:12px;color:var(--soft)}
+.tabs .on{color:var(--acc);font-weight:700}
+.it{border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.it small{color:var(--soft);display:block;font-size:12px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--acc);flex:none}
+.bt{border-radius:12px;padding:10px 6px;text-align:center;font-weight:700;border:2px solid var(--acc);color:var(--acc)}
+.bt.p{background:var(--acc);color:var(--accInk)}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.lbl{font-size:12px;color:var(--soft)}
+.ck{display:flex;gap:8px;align-items:center}
+.ck i{width:18px;height:18px;border:2px solid var(--line);border-radius:5px;flex:none;font-style:normal;font-size:13px;line-height:14px;text-align:center}
+.ck i.y{background:var(--ok);border-color:var(--ok);color:var(--bg)}
+.bub{border-radius:14px;padding:7px 10px;max-width:85%;font-size:14px}
+.bub.them{background:var(--bg2);align-self:flex-start}
+.bub.me{background:var(--acc);color:var(--accInk);align-self:flex-end}
+.inp{border:1.5px solid var(--line);border-radius:999px;padding:8px 12px;color:var(--soft);font-size:13px}
+.banner{background:var(--bg2);border-radius:10px;padding:6px 10px;font-size:12px;color:var(--soft);text-align:center}
+.lock{background:linear-gradient(var(--bg2),var(--bg))}
+.clock{font-size:46px;font-weight:300;text-align:center;margin:18px 0 2px}
+.date{text-align:center;color:var(--soft);font-size:13px;margin-bottom:14px}
+.note{background:var(--bg);border:1.5px solid var(--line);border-radius:16px;padding:10px 12px;font-size:14px}
+.note .app{font-size:11px;color:var(--soft);margin-bottom:3px}
+.note .acts{display:flex;gap:14px;margin-top:8px;font-weight:700;color:var(--acc);font-size:13px}
+.shot{height:90px;border-radius:10px;border:1.5px dashed var(--line);display:flex;align-items:center;justify-content:center;color:var(--soft);font-size:12px;background:var(--bg2)}
+.pc{border:3px solid var(--line);border-radius:12px;padding:8px;background:var(--bg2);width:150px;font-size:12px}
+
+/* nav */
+#nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;align-items:center;gap:.8rem;padding:.6rem;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);border-top:1px solid var(--line);font-size:1rem}
+#nav button{font:inherit;font-size:1rem;min-width:3.2rem;min-height:2.8rem;border-radius:12px;border:2px solid var(--line);
+  background:var(--bg2);color:var(--ink);cursor:pointer;padding:0 .8rem}
+#nav button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+#count{min-width:4.5rem;text-align:center;color:var(--soft)}
+@media print{#nav{display:none}.slide[hidden]{display:flex}.slide{break-after:page}}
+</style>
+</head>
+<body>
+
+<!-- 1 -->
+<section class="slide">
+  <div class="kicker">AIG-753 · Android plan in pictures</div>
+  <h1>AI-gile on Android:<br>how it should work</h1>
+  <p class="big">Journey by journey, one idea per slide.</p>
+  <p class="soft">Next: right arrow, Space, tap the right side or swipe left.<br>Back: left arrow or tap the left side. Press T to switch light and dark.</p>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="kicker">The one big idea</div>
+  <h2>The phone is a window onto your board at home</h2>
+  <ul class="big">
+    <li>Your board on the PC keeps the cards, the chats and the keys.</li>
+    <li>The phone shows them and lets you act.</li>
+    <li>Lose the phone? Remove it on the PC. Nothing is lost.</li>
+  </ul>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="kicker">Who uses it</div>
+  <h2>Three people, three needs</h2>
+  <div class="cards3">
+    <div class="who"><h3>Rich</h3><p>Owns the board. Runs the AI teams.</p><p class="soft">Wants: only what needs him, short screens, calm alerts.</p></div>
+    <div class="who"><h3>Sam, a friend</h3><p>Rich invited Sam. Sam has their own board.</p><p class="soft">Wants: chat with Rich privately, nothing else in the way.</p></div>
+    <div class="who"><h3>Jo, an alpha tester</h3><p>In the closed test on Google Play.</p><p class="soft">Wants: clear steps to try, an easy way to report a bug.</p></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="kicker">The shape of the app</div>
+  <div class="split">
+    <div class="phone"><div class="scr">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="top">Home</div>
+      <div class="body">
+        <div class="it">AI-gile <span class="dot"></span></div>
+        <div class="it">State of the Smizflark</div>
+        <div class="it">Tunio <span class="dot"></span></div>
+        <div class="it">LocoRadio</div>
+      </div>
+      <div class="tabs"><span class="on">Home</span><span>For you</span><span>Messages</span><span>Setup</span></div>
+    </div></div>
+    <div class="txt">
+      <h2>Four tabs. Always the same four.</h2>
+      <ul>
+        <li><b>Home:</b> your projects, in your order.</li>
+        <li><b>For you:</b> what waits on you.</li>
+        <li><b>Messages:</b> team leads and friends.</li>
+        <li><b>Setup:</b> connection, alerts, quiet hours, text size, theme.</li>
+      </ul>
+      <p class="soft">A dot means "something waits on you here". Nothing else gets a dot.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5: pairing -->
+<section class="slide">
+  <div class="kicker">Journey 1 of 9 · Rich, Sam</div>
+  <div class="split">
+    <div class="phone"><div class="scr">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="top">Connect</div>
+      <div class="body">
+        <div style="text-align:center;font-weight:700;margin-top:6px">Connect to your board</div>
+        <svg viewBox="0 0 100 100" width="130" height="130" style="align-self:center" aria-label="QR code being scanned">
+          <rect x="2" y="2" width="96" height="96" rx="10" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="14 8" opacity=".5"/>
+          <g fill="currentColor"><rect x="18" y="18" width="20" height="20"/><rect x="62" y="18" width="20" height="20"/><rect x="18" y="62" width="20" height="20"/>
+          <rect x="46" y="46" width="8" height="8"/><rect x="62" y="62" width="8" height="8"/><rect x="74" y="74" width="8" height="8"/><rect x="46" y="20" width="8" height="8"/><rect x="20" y="46" width="8" height="8"/></g>
+        </svg>
+        <div class="lbl" style="text-align:center">Point at the code on your PC</div>
+        <div class="banner">Check: <b>maple · river · lamp</b><br>Same words on the PC?</div>
+        <div class="row"><div class="bt">No</div><div class="bt p">Yes, connect</div></div>
+        <div class="lbl" style="text-align:center">or type an address</div>
+      </div>
+    </div></div>
+    <div class="txt">
+      <h2>First open: pair with your home board</h2>
+      <ol>
+        <li>On the PC: Setup, Phones, <b>Add a phone</b>. A QR code shows.</li>
+        <li>On the phone: open the app, tap <b>Scan</b>, point at the code.</li>
+        <li>Check the three words match on both screens. Tap <b>Yes, connect</b>.</li>
+        <li>Home opens with your projects. The phone is now listed on the PC with <b>Remove</b>.</li>
+      </ol>
+      <p class="done"><b>Done when:</b> the phone shows your projects in your order within 30 seconds of scanning, and pressing Remove on the PC locks the phone out straight away.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6: For you -->
+<section class="slide">
+  <div class="kicker">Journey 2 of 9 · Rich</div>
+  <div class="split">
+    <div class="phone"><div class="scr">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="top">For you <small>3 things</small></div>
+      <div class="body">
+        <div class="it"><div>Pick a project colour<small>AI-gile · to test</small></div><span class="dot"></span></div>
+        <div class="it"><div>Ship on Friday?<small>Tunio · a question</small></div><span class="dot"></span></div>
+        <div class="it"><div>Needs the server password<small>LocoRadio · stuck on you</small></div><span class="dot"></span></div>
+        <div class="lbl" style="text-align:center;margin-top:auto">That's everything. The rest can wait.</div>
+      </div>
+      <div class="tabs"><span>Home</span><span class="on">For you</span><span>Messages</span><span>Setup</span></div>
+    </div></div>
+    <div class="txt">
+      <h2>Glance at what needs me</h2>
+      <ol>
+        <li>Tap <b>For you</b>.</li>
+        <li>See a short list from every project, one line each.</li>
+        <li>Each line says why: <b>to test</b>, <b>a question</b> or <b>stuck on you</b>.</li>
+        <li>Tap one to act, or close the app. Nothing nags.</li>
+      </ol>
+      <p class="done"><b>Done when:</b> the count and the cards on the phone match the For you pile on the PC exactly, with nobody else's work in the list.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7: test a card -->
+<section class="slide">
+  <div class="kicker">Journey 3 of 9 · Rich, Jo</div>
+  <div class="split">
+    <div class="phone"><div class="scr">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="top">To test <small>1 of 3</small></div>
+      <div class="body">
+        <div style="font-weight:700">Pick a project colour</div>
+        <div class="lbl">AI-gile · tested by the team: passed</div>
+        <div class="ck"><i class="y">✓</i>Open a project</div>
+        <div class="ck"><i class="y">✓</i>Tap the colour dot</div>
+        <div class="ck"><i></i>Pick green, see the rail change</div>
+        <div class="row" style="margin-top:auto"><div class="bt">Send back</div><div class="bt p">Pass</div></div>
+      </div>
+      <div class="tabs"><span>Home</span><span class="on">For you</span><span>Messages</span><span>Setup</span></div>
+    </div></div>
+    <div class="txt">
+      <h2>Test a card, then pass or send back</h2>
+      <ol>
+        <li>In For you, tap <b>Test these</b>. One card fills the screen.</li>
+        <li>Tick each step as you try it.</li>
+        <li><b>Pass</b>: the card is done, the next one shows.</li>
+        <li><b>Send back</b>: say what went wrong in one line, add a picture if you like.</li>
+      </ol>
+      <p class="done"><b>Done when:</b> Pass moves the card to Done on the PC board, and Send back returns it to its team with your line as a comment.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 8: one-tap answer -->
+<section class="slide">
+  <div class="kicker">Journey 4 of 9 · Rich</div>
+  <div class="split">
+    <div class="phone"><div class="scr">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="top">Ship on Friday? <small>Tunio</small></div>
+      <div class="body">
+        <div class="bub them"><b>Lead:</b> Release is ready. Ship it on Friday, or wait for the new icons?</div>
+        <div class="lbl">Tap an answer</div>
+        <div class="bt p">Ship Friday</div>
+        <div class="bt">Wait for icons</div>
+        <div class="bt">Not sure, let's talk</div>
+        <div class="inp" style="margin-top:auto">Or type a reply</div>
+      </div>
+      <div class="tabs"><span>Home</span><span class="on">For you</span><span>Messages</span><span>Setup</span></div>
+    </div></div>
+    <div class="txt">
+      <h2>Answer a question with one tap</h2>
+      <ol>
+        <li>A lead asks something on a card.</li>
+        <li>The app shows the answers as big buttons, taken from the question.</li>
+        <li>Tap one. That's it. Typing is there if none fit.</li>
+        <li>The card leaves For you; the team carries on.</li>
+      </ol>
+      <p class="done"><b>Done when:</b> one tap posts that exact answer on the card on the PC, and the card is no longer in For you on either screen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9: chat -->
+<section class="slide">
+  <div class="kicker">Journey 5 of 9 · Rich, Sam</div>
+  <div class="split">
+    <div class="phone"><div class="scr">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="top">Messages</div>
+      <div class="body">
+        <div class="lbl">Team leads</div>
+        <div class="it"><div>AI-gile lead<small>Done: the colour picker</small></div></div>
+        <div class="it"><div>Tunio lead<small>Waiting on your answer</small></div><span class="dot"></span></div>
+        <div class="lbl">Friends</div>
+        <div class="it"><div>🔒 Sam<small>Fancy a game later?</small></div><span class="dot"></span></div>
+        <div class="it"><div>🔒 Priya<small>Thanks!</small></div></div>
+      </div>
+      <div class="tabs"><span>Home</span><span>For you</span><span class="on">Messages</span><span>Setup</span></div>
+    </div></div>
+    <div class="txt">
+      <h2>Chat with a lead and with a friend</h2>
+      <ol>
+        <li>Tap <b>Messages</b>. Leads at the top, friends below.</li>
+        <li>Tap a name, type, send. Same screen for both.</li>
+        <li>🔒 means private: only you and that friend can read it.</li>
+        <li>From any card: <b>Chat about this</b> opens the lead with the card linked.</li>
+      </ol>
+      <p class="done"><b>Done when:</b> a message sent on the phone shows in the same chat on the PC, and Sam's reply arrives on the phone with the 🔒 mark.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10: notification -->
+<section class="slide">
+  <div class="kicker">Journey 6 of 9 · Rich</div>
+  <div class="split">
+    <div class="phone"><div class="scr lock">
+      <div class="sb"><span></span><span>●●●</span></div>
+      <div class="clock">14:05</div>
+      <div class="date">Tuesday 13 October</div>
+      <div class="body">
+        <div class="note"><div class="app">AI-gile · Waits on you</div><b>3 things wait on you</b><br>2 to test, 1 question
+          <div class="acts"><span>Open</span><span>Later</span></div></div>
+        <div class="note"><div class="app">AI-gile · Waits on you</div><b>Tunio: Ship on Friday?</b>
+          <div class="acts"><span>Ship Friday</span><span>Wait</span><span>Open</span></div></div>
+      </div>
+    </div></div>
+    <div class="txt">
+      <h2>Get a calm alert and act from it</h2>
+      <ol>
+        <li>Only one kind of alert is on at first: <b>waits on you</b>.</li>
+        <li>Alerts come grouped: "3 things", never one per message.</li>
+        <li>A question can be answered right on the alert.</li>
+        <li><b>Later</b> hides it for an hour. No badge nags you meanwhile.</li>
+      </ol>
+      <p class="done"><b>Done when:</b> five cards landing in a minute make one alert, not five, and tapping an answer on the alert posts it without opening the app.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11: bug with screenshot -->
+<section class="slide">
+  <div class="kicker">Journey 7 of 9 · Jo, Rich</div>
+  <div class="split">
+    <div class="phone"><div class="scr">
+      <div class="sb"><span>9:41</span><span>●●●</span></div>
+      <div class="top">Raise a bug</div>
+      <div class="body">
+        <div class="shot">your screenshot</div>
+        <div class="lbl">Project</div>
+        <div class="it">AI-gile <small>last used</small></div>
+        <div class="lbl">What went wrong? (one line)</div>
+        <div class="inp" style="border-radius:12px;color:var(--ink)">The Pass button does nothing</div>
+        <div class="bt p" style="margin-top:auto">Send bug</div>
+      </div>
+    </div></div>
+    <div class="txt">
+      <h2>Raise a bug with a screenshot</h2>
+      <ol>
+        <li>Take a screenshot as normal.</li>
+        <li>Tap <b>Share</b>, pick <b>AI-gile bug</b>. (Or <b>Raise a bug</b> in the app.)</li>
+        <li>The last project is picked for you. Write one line.</li>
+        <li><b>Send bug</b>. It lands on the board, picture attached.</li>
+      </ol>
+      <p class="done"><b>Done when:</b> the bug card appears on the PC board within a minute, with the screenshot attached and the phone model and app version filled in.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 12: quiet hours / tired mode -->
+<section class="slide">
+  <div class="kicker">Journey 8 of 9 · Rich</div>
+  <div class="split">
+    <div class="phone"><div class="scr">
+      <div class="sb"><span>22:10</span><span>●●●</span></div>
+      <div class="top">Tired mode</div>
+      <div class="body" style="justify-content:center;text-align:center;gap:14px">
+        <div style="font-size:20px;font-weight:700">Resting</div>
+        <div>Alerts are held until <b>8:00</b>.</div>
+        <div class="lbl">Just one thing, if you want it:</div>
+        <div class="it" style="font-size:17px"><div>Ship on Friday?<small>Tunio</small></div></div>
+        <div class="bt p">End tired mode</div>
+      </div>
+      <div class="tabs"><span>Home</span><span>For you</span><span>Messages</span><span class="on">Setup</span></div>
+    </div></div>
+    <div class="txt">
+      <h2>Quiet hours and tired mode</h2>
+      <ol>
+        <li><b>Quiet hours</b> are on from the start: 22:00 to 8:00. You can change them.</li>
+        <li><b>Tired mode</b>: one tap in Setup or from the quick settings tile.</li>
+        <li>Bigger text, one thing on screen, all alerts held.</li>
+        <li>In the morning: one summary alert, then back to normal.</li>
+      </ol>
+      <p class="done"><b>Done when:</b> nothing buzzes during quiet hours or tired mode, and one morning summary lists everything that was held.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 13: offline -->
+<section class="slide">
+  <div class="kicker">Journey 9 of 9 · Everyone</div>
+  <div class="split">
+    <div class="phone"><div class="scr">
+      <div class="sb"><span>9:41</span><span>no signal</span></div>
+      <div class="top">Tunio lead</div>
+      <div class="body">
+        <div class="banner">Offline · last updated 12 min ago</div>
+        <div class="bub them">Want the new icons in this release?</div>
+        <div class="bub me">Yes please</div>
+        <div class="lbl" style="align-self:flex-end">Waiting to send</div>
+        <div class="inp" style="margin-top:auto">Message</div>
+      </div>
+      <div class="tabs"><span>Home</span><span>For you</span><span class="on">Messages</span><span>Setup</span></div>
+    </div></div>
+    <div class="txt">
+      <h2>Offline, then catching up</h2>
+      <ol>
+        <li>No signal? You still see everything as it was, with the time it was last updated.</li>
+        <li>Reply, pass or send back as normal. Each shows <b>Waiting to send</b>.</li>
+        <li>Signal back: they send in order, by themselves.</li>
+        <li>If the board changed meanwhile, the board wins, and the phone tells you what happened.</li>
+      </ol>
+      <p class="done"><b>Done when:</b> three actions made in flight mode all reach the PC in the right order once back online, and none are lost or sent twice.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 14: Discord better -->
+<section class="slide">
+  <div class="kicker">Honest comparison</div>
+  <h2>What we do better than Discord</h2>
+  <div class="two">
+    <ul>
+      <li><b>Calm by default.</b> One kind of alert is on: things that wait on you.</li>
+      <li><b>Grouped alerts.</b> "3 things", not three pings. Quiet hours on from day one.</li>
+      <li><b>Chat sits on the work.</b> A talk about a card is on the card. A Discord thread is not a task.</li>
+    </ul>
+    <ul>
+      <li><b>Your AI teams are in the chat list</b>, next to your friends.</li>
+      <li><b>Friend chats are private end to end.</b> Discord text chats are not (check before we say it in public).</li>
+      <li><b>Your own machines.</b> No account with us, no ads, no upsells, no streaks.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 15: Discord wins -->
+<section class="slide">
+  <div class="kicker">Honest comparison</div>
+  <h2>Where Discord is better, and stays better for now</h2>
+  <ul class="big">
+    <li>Voice and video calls.</li>
+    <li>Big communities and servers with thousands of people.</li>
+    <li>A huge choice of bots and add-ons.</li>
+    <li>Years of polish, and it works on every device.</li>
+  </ul>
+  <p class="soft">We don't try to beat these in the first version.</p>
+</section>
+
+<!-- 16: won't do -->
+<section class="slide">
+  <div class="kicker">Keeping it small</div>
+  <h2>What we won't do in version 1</h2>
+  <div class="two">
+    <ul>
+      <li>No voice or video.</li>
+      <li>No group chats.</li>
+      <li>No reactions, typing dots or read receipts.</li>
+      <li>No moving cards by dragging.</li>
+    </ul>
+    <ul>
+      <li>No editing projects or teams. Do that on the PC.</li>
+      <li>No reaching a friend's board.</li>
+      <li>No checking every second. It drains the battery.</li>
+      <li>No iPhone yet.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 17: safety -->
+<section class="slide">
+  <div class="kicker">Safety first</div>
+  <div class="split">
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;flex:none">
+      <div class="pc"><b>Your PC</b><br>board, cards, chats, keys</div>
+      <div class="soft" style="font-size:1.5em;line-height:1">⇅</div>
+      <div class="pc" style="width:110px;border-radius:18px"><b>Phone</b><br>a window, paired and signed</div>
+    </div>
+    <div class="txt">
+      <h2>Nothing gets weaker on the PC</h2>
+      <ul>
+        <li>Today the board only answers on the PC. That stays true for everything else.</li>
+        <li>Only a paired phone gets in, and every request it makes is signed.</li>
+        <li>Alerts say only "something new". Details come over the safe link, never through Google.</li>
+        <li>This part gets a security review before any building starts.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 18: tester checklist -->
+<section class="slide">
+  <div class="kicker">For testers</div>
+  <h2>The nine checks, on one page</h2>
+  <ol style="font-size:.85em">
+    <li>Paired in 30 seconds; Remove on the PC locks the phone out.</li>
+    <li>For you on the phone matches the PC exactly.</li>
+    <li>Pass goes to Done; Send back returns with your line.</li>
+    <li>One tap posts the exact answer and clears it from For you.</li>
+    <li>Phone and PC show the same chats; friend replies have 🔒.</li>
+    <li>Five cards in a minute make one alert; answers work from the alert.</li>
+    <li>A bug lands within a minute, with screenshot, phone model and version.</li>
+    <li>Nothing buzzes in quiet hours or tired mode; one morning summary.</li>
+    <li>Offline actions all arrive, in order, once, when back online.</li>
+  </ol>
+</section>
+
+<!-- 19: open questions -->
+<section class="slide">
+  <div class="kicker">Over to you, Rich</div>
+  <h2>Five questions</h2>
+  <ol>
+    <li>Alerts: Google's push first (easiest), or your own ntfy server first (no Google)?</li>
+    <li>Away from home: use Tailscale (an extra app), or wait for our own relay route?</li>
+    <li>Can a friend use the app without their own board on a PC?</li>
+    <li>Tired mode: its own thing, or the same as the board's focus mode and going quiet?</li>
+    <li>Who should be in the closed test on Google Play?</li>
+  </ol>
+</section>
+
+<!-- 20: next -->
+<section class="slide">
+  <div class="kicker">What happens next</div>
+  <h2>Step by step</h2>
+  <ol class="big">
+    <li>Use the phone web pages daily, to learn what matters (AIG-410).</li>
+    <li>Agree the safe way in from outside (AIG-411).</li>
+    <li>Build in small steps: pair and look, then act, then alerts, then offline (AIG-741 to AIG-750).</li>
+  </ol>
+  <p class="soft">The full plan is in docs/android-plan.md.</p>
+</section>
+
+<nav id="nav" aria-label="Slides">
+  <button id="prev" aria-label="Previous slide">&#8592;</button>
+  <span id="count" aria-live="polite">1 / 1</span>
+  <button id="next" aria-label="Next slide">&#8594;</button>
+  <button id="theme" aria-label="Switch light and dark">Light / Dark</button>
+</nav>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var count = document.getElementById('count');
+  var i = 0;
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.hidden = k !== i; });
+    count.textContent = (i + 1) + ' / ' + slides.length;
+    if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
+    window.scrollTo(0, 0);
+  }
+  function theme() {
+    var root = document.documentElement;
+    var dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('journeys-theme', root.dataset.theme); } catch (e) {}
+  }
+  try { var t = localStorage.getItem('journeys-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  document.getElementById('prev').onclick = function () { go(i - 1); };
+  document.getElementById('next').onclick = function () { go(i + 1); };
+  document.getElementById('theme').onclick = theme;
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter') { if (k === 'Enter' && e.target.tagName === 'BUTTON') return; e.preventDefault(); go(i + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') { e.preventDefault(); go(i - 1); }
+    else if (k === 'Home') { go(0); }
+    else if (k === 'End') { go(slides.length - 1); }
+    else if (k === 't' || k === 'T') { theme(); }
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('#nav') || (window.getSelection && String(window.getSelection()))) return;
+    if (e.clientX < window.innerWidth / 3) go(i - 1); else go(i + 1);
+  });
+  var x0 = null, y0 = null;
+  document.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? i + 1 : i - 1);
+  }, { passive: true });
+  var start = parseInt(location.hash.slice(1), 10);
+  go(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>

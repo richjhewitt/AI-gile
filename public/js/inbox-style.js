@@ -16,7 +16,7 @@ const INBOX_CSS = `
     --k-bg: #3d2e10; --k-fg: #ffd591; --k-tint: #221c10; --k-line: #a0762a; --k-ink: #ffcf7a;
   }
 }
-:root[data-theme=dark] {
+:root[data-theme=dark], :root[data-theme=black] {
     --q-bg: #3b74f0; --q-fg: #fff; --q-tint: #162039; --q-line: #5b8cf5; --q-ink: #9dbbff;
     --b-line: #ef5350; --b-tint: #2c1618; --b-ink: #ff9b97;
     --t-bg: #22305a; --t-fg: #bcd0ff; --t-tint: #181e2e; --t-line: #4a5f9a; --t-ink: #a9c1ff;
@@ -94,6 +94,9 @@ const INBOX_CSS = `
 .ib-empty .big { font-size: 26px; font-weight: 700; }
 .ib-empty p { color: var(--muted); margin: 8px 0 0; }
 .ib-err { color: var(--danger); font-size: 13px; margin-top: 6px; }
+.ib-sb { display: flex; gap: 6px; align-items: flex-start; margin-top: 8px; }
+.ib-sb[hidden] { display: none; }
+.ib-sb textarea { flex: 1; min-width: 0; margin: 0; }
 .ib-hint { font-size: 12px; color: var(--muted); }
 /* card groups (AIG-386) */
 .ib-group .ib-gcard { margin-top: 8px; } .ib-group .ib-gcard > a { font-weight: 600; text-decoration: underline; }

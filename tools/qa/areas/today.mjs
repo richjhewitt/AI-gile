@@ -2,12 +2,16 @@
 // "Keep yesterday's", order for the Scrum Master and the night watchman, 💤 only waking for the owner's comments, the day's token
 // split by weight and the slow-down of a project past its share. The page: the 🎯 Today link, the badge on the project cards.
 import fs from 'node:fs';
+import http from 'node:http';
+import zlib from 'node:zlib';
 import path from 'node:path';
-import { check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, until, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def, PORT } from '../lib.mjs';
 
 def('today', '🎯 Today: weights per project, reset each morning, order, 💤 rest only wakes for the owner, token split by weight and slow-down (AIG-595/596/597)', async (s, ctx) => {
   for (const [n, k] of [['Aa', 'AAA'], ['Bb', 'BBB'], ['Cc', 'CCC'], ['Dd', 'DDD'], ['Ee', 'EEE']]) await mkProject(s, n, k, { path: tmp('today-' + n) });
   const today = () => s.ok('GET', '/api/today');
+  const lf = path.join(s.dir, 'aigile.local.json'), setStart = hhmm => { const o = JSON.parse(fs.readFileSync(lf, 'utf8')); fs.writeFileSync(lf, JSON.stringify({ ...o, day: { ...(o.day || {}), start: hhmm } })); };
+  const ymd = ms => { const d = new Date(ms); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };   // local date, like the server
   const row = (d, slug) => d.projects.find(p => p.slug === slug);
   let d = await today();
   check('every project starts as normal', d.projects.length === 5 && d.projects.every(p => p.weight === 'normal'), d.projects.map(p => p.weight));
@@ -26,8 +30,21 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   check('the split is 50 / 30 / 20 by level, shared among the projects there', row(d, 'aa').share === 25 && row(d, 'bb').share === 25 && row(d, 'cc').share === 30 && row(d, 'dd').share === 20 && row(d, 'ee').share === 0, d.projects.map(p => p.share));
   check('and adds up to 100', Math.round(d.projects.reduce((n, p) => n + p.share, 0)) === 100);
 
+  // AIG-1063: the day turns over at the owner's day start (the board starts it at 00:00), not at midnight.
+  const nowD = new Date();
+  if (nowD.getHours() * 60 + nowD.getMinutes() < 23 * 60 + 59) {
+    check('from the day start on, the key is today', (await today()).day === ymd(Date.now()), (await today()).day);
+    setStart('23:59');
+    d = await today();
+    check('before the day start it is still yesterday', d.day === ymd(Date.now() - 864e5), d.day);
+    check('the picker starts from yesterday choices (rest stays unticked)', row(d, 'ee').pickDefault === 'rest' && row(d, 'aa').pickDefault === 'high' && row(d, 'cc').pickDefault === 'normal', d.projects.map(p => p.pickDefault));
+    setStart('00:00');
+    d = await today();
+    check('from the day start on, the weights are new and the picker still offers yesterday choices', d.day === ymd(Date.now()) && row(d, 'aa').weight === 'normal' && row(d, 'ee').pickDefault === 'rest', d.projects.map(p => p.pickDefault));
+  }
+
   // Next morning: everything is normal again; "Keep yesterday's" brings the weights back.
-  fs.writeFileSync(path.join(s.data, 'today.stub'), new Date(Date.now() + 864e5).toISOString().slice(0, 10));
+  fs.writeFileSync(path.join(s.data, 'today.stub'), ymd(Date.now() + 864e5));
   d = await today();
   check('next day: weights reset to normal', d.projects.every(p => p.weight === 'normal') && d.yesterday === 4, d.projects.map(p => p.weight));
   d = await s.ok('POST', '/api/today/keep');
@@ -51,7 +68,7 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   for (let i = 0; i < 40 && (await s.ok('GET', '/api/projects/ee')).presence.running; i++) await sleep(250);
 
   // The day's tokens: a project past its share slows down like the usage saver.
-  const lf = path.join(s.dir, 'aigile.local.json'), loc = JSON.parse(fs.readFileSync(lf, 'utf8'));
+  const loc = JSON.parse(fs.readFileSync(lf, 'utf8'));
   fs.writeFileSync(lf, JSON.stringify({ ...loc, budget: { ...(loc.budget || {}), day: 1000000 } }));
   await s.ok('POST', '/api/today', { slug: 'ee', weight: 'normal' });
   await s.ok('POST', '/api/today', { slug: 'aa', weight: 'high' });   // aa 50, bb/cc/dd/ee 30 shared by four = 7.5 each... 80 total -> scaled
@@ -102,7 +119,7 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   check('and nothing was saved', (await today()).mode !== 'pct');
   d = await s.ok('POST', '/api/today/shares', { pct: { aa: 50, bb: 50 } });
   check('exact shares are saved and used instead of the weights', d.mode === 'pct' && row(d, 'aa').share === 50 && row(d, 'bb').share === 50 && row(d, 'cc').share === 0 && row(d, 'aa').allowed === 500000, d.projects.map(p => p.share));
-  fs.writeFileSync(path.join(s.data, 'today.stub'), new Date(Date.now() + 2 * 864e5).toISOString().slice(0, 10));
+  fs.writeFileSync(path.join(s.data, 'today.stub'), ymd(Date.now() + 2 * 864e5));
   d = await today();
   check('they do not reset with the day (the weights do)', d.mode === 'pct' && row(d, 'aa').share === 50 && d.projects.every(p => p.weight === 'normal'));
   fs.rmSync(path.join(s.data, 'today.stub'), { force: true });
@@ -154,7 +171,79 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   check('and the row button switches it back on', row(await today(), 'bb').aiOff === false);
   fs.rmSync(s.wakeOut, { force: true });
   await say(s, 'bb', cardB.id, 'Owner', 'are you there now?');
-  for (let i = 0; i < 30 && !fs.existsSync(s.wakeOut); i++) await sleep(200);
-  check('back on, the owner\'s comment wakes the team again', fs.existsSync(s.wakeOut));
+  const woke = await until(() => fs.existsSync(s.wakeOut), 20000);   // usually ~1.5s, but the stand-in agent is slow to start on a busy PC (many areas at once)
+  check('back on, the owner\'s comment wakes the team again', woke);
   noErrors(page);
+
+  // AIG-829/830: the morning picker, then the unpicked projects hidden until Show all. A fixed stub date keeps it date-proof.
+  const stub = path.join(s.data, 'today.stub');
+  fs.writeFileSync(stub, '2031-05-05');
+  check('the picker is off by default', (await today()).askPick === false);
+  await s.ok('POST', '/api/setup', { prefs: { todayPick: true } });
+  check('the setup switch is saved with the other owner settings', (await s.ok('GET', '/api/setup')).prefs.todayPick === true && JSON.parse(fs.readFileSync(lf, 'utf8')).today.pick === true);
+  d = await today();
+  check('on: the first open of the day asks, and nothing is hidden yet', d.askPick === true && d.left.length === 0);
+  await s.ok('POST', '/api/today', { slug: 'aa', weight: 'high' });
+  await s.ok('POST', '/api/today', { slug: 'bb', weight: 'low' });
+  d = await s.ok('POST', '/api/today/pick', { slugs: ['aa', 'bb'] });
+  check('ticked = normal or the higher weight kept; unticked = rest', row(d, 'aa').weight === 'high' && row(d, 'bb').weight === 'normal' && ['cc', 'dd', 'ee'].every(x => row(d, x).weight === 'rest'), d.projects.map(p => p.weight));
+  check('it is asked once, and the rest are left out for the day', d.askPick === false && d.left.sort().join() === 'cc,dd,ee', d.left);
+  check('the background weights stay as set (rest guard still reads them)', row(d, 'dd').resting === true && d.order[d.order.length - 1] !== 'aa');
+  check('a bad list is refused', (await s.api('POST', '/api/today/pick', { slugs: 'aa' })).status === 400);
+  fs.writeFileSync(stub, '2031-05-06');
+  d = await today();
+  check('next morning: asks again, weights and hidden list reset', d.askPick === true && d.left.length === 0 && d.projects.every(p => p.weight === 'normal'));
+  const skip = await s.ok('POST', '/api/today/pick', { skip: true });
+  check('Not today: asked no more that day, nothing hidden or changed', skip.askPick === false && skip.left.length === 0 && skip.projects.every(p => p.weight === 'normal'));
+  fs.writeFileSync(stub, '2031-05-07');
+  const pg = await openPage(ctx, '#/');
+  await pg.waitForSelector('#dialog .overlay', { timeout: 10000 });
+  const pickedNow = await pg.$$eval('#todayPickList input:checked', e => e.map(x => x.value).sort().join());
+  check('the dialog lists every project, ticked as yesterday (Aa, Bb; Cc, Dd, Ee rested)', (await pg.$$('#todayPickList input')).length === 5 && pickedNow === 'aa,bb', pickedNow);
+  await pg.setViewportSize({ width: 390, height: 800 });
+  check('phone width: the dialog does not scroll sideways', await pg.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+  await pg.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+  for (const x of ['cc', 'dd', 'ee']) await pg.uncheck(`#todayPickList input[value="${x}"]`);
+  await pg.click('#todayPickGo');
+  await pg.waitForFunction(() => !document.querySelector('#dialog .overlay') && document.querySelectorAll('a.proj').length === 2, null, { timeout: 8000 }).catch(() => {});
+  check('only the picked projects show on home', (await pg.$$('a.proj')).length === 2 && !!(await pg.$('a.proj[href="#/p/aa"]')));
+  check('a Show all line says how many are hidden', /3/.test(await pg.textContent('.today-hidden')));
+  await pg.waitForFunction(() => document.querySelectorAll('#dmRail [data-slug]').length > 0 && !document.querySelector('#dmRail [data-slug="cc"]'), null, { timeout: 8000 }).catch(() => {});
+  check('the side rail hides them too', (await pg.$$('#dmRail [data-slug="cc"]')).length === 0 && (await pg.$$('#dmRail [data-slug="aa"]')).length === 1);
+  await pg.click('.today-hidden a');
+  await pg.waitForFunction(() => document.querySelectorAll('a.proj').length === 5, null, { timeout: 8000 }).catch(() => {});
+  check('Show all brings them all back', (await pg.$$('a.proj')).length === 5 && (await pg.$$('.today-hidden')).length === 0);
+  await pg.reload(); await pg.waitForSelector('a.proj');
+  check('and stays so for the rest of the day (this browser)', (await pg.$$('a.proj')).length === 5);
+  fs.writeFileSync(stub, '2031-05-08');
+  await s.ok('POST', '/api/today/pick', { slugs: ['aa'] });
+  await pg.reload(); await pg.waitForSelector('a.proj');
+  await pg.waitForFunction(() => document.querySelectorAll('a.proj').length === 1, null, { timeout: 8000 }).catch(() => {});
+  check('the flag is only for its own date: the next day hides again', (await pg.$$('a.proj')).length === 1);
+  noErrors(pg);
+  fs.rmSync(stub, { force: true });
+  await s.ok('POST', '/api/setup', { prefs: { todayPick: false } });
+  check('switched off, the setting is gone from the file', JSON.parse(fs.readFileSync(lf, 'utf8')).today === undefined);
+  // AIG-829/830 fix: a board already open picks up the switch being turned on, no reload needed
+  await s.ok('POST', '/api/setup', { prefs: { todayPick: true } });
+  check('turned on while the board is open: the picker appears without a reload', await pg.waitForSelector('#dialog .overlay', { timeout: 20000 }).then(() => true, () => false));
+  await pg.click('#dialog .actions button >> nth=0');
+  await s.ok('POST', '/api/setup', { prefs: { todayPick: false } });
 }, true);
+
+def('speed', '⚡ /api/today answers from a 2 s cache; big JSON comes gzipped when asked (AIG-1091)', async s => {
+  await mkProject(s, 'Zed', 'ZED', { path: tmp('speed-zed') });
+  const a = await s.ok('GET', '/api/today'), b = await s.ok('GET', '/api/today');
+  check('a second /api/today within 2 s is served from the cache', typeof a.at === 'number' && a.at === b.at, [a.at, b.at]);
+  await s.ok('POST', '/api/today', { slug: 'zed', weight: 'high' });
+  const c = await s.ok('GET', '/api/today');
+  check('a change drops the cache', c.at !== b.at && c.projects.find(p => p.slug === 'zed').weight === 'high');
+  await mkCard(s, 'zed', 'Big card', { testSteps: '1. ' + 'step '.repeat(12000) });
+  const get = (p, headers) => new Promise(res => {
+    http.get({ host: '127.0.0.1', port: PORT, path: p, headers }, x => { const ch = []; x.on('data', d => ch.push(d)); x.on('end', () => res({ h: x.headers, buf: Buffer.concat(ch) })); });
+  });
+  const plain = await get('/api/projects/zed', {}), gz = await get('/api/projects/zed', { 'Accept-Encoding': 'gzip' }), small = await get('/api/meta', { 'Accept-Encoding': 'gzip' });
+  check('over 32 KB and asked: gzipped, Vary set, same JSON', plain.buf.length > 32768 && gz.h['content-encoding'] === 'gzip' && /Accept-Encoding/i.test(gz.h.vary || '') && gz.buf.length < plain.buf.length / 3 && zlib.gunzipSync(gz.buf).toString() === plain.buf.toString(), [plain.buf.length, gz.buf.length]);
+  check('not asked: sent plain', !plain.h['content-encoding']);
+  check('small answers stay plain', !small.h['content-encoding']);
+});

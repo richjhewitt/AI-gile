@@ -8,6 +8,7 @@ const Attach = (() => {
   const isImg = a => /^image\//.test(a.type || '') || /\.(png|jpe?g|gif|webp)$/i.test(a.name || '');
   // Images show a thumbnail; clicking it opens a full-size preview, to check it's the right one (AIG-129).
   const urls = new WeakMap(), urlOf = f => { if (!urls.has(f)) urls.set(f, URL.createObjectURL(f)); return urls.get(f); };
+  const revoke = f => { const u = urls.get(f); if (u) { URL.revokeObjectURL(u); urls.delete(f); } };   // a removed or sent file frees its preview (AIG-1090)
   const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="${esc(t('attach.preview'))}">` : '📎'} <span class="att-name" title="${esc(f.name)}">${esc(f.name)}</span><button type="button" data-att-del="${i}" title="${esc(t('attach.remove'))}">✕</button></span>`).join('');
   function preview(src) {
     const lb = document.createElement('div');
@@ -23,7 +24,7 @@ const Attach = (() => {
     const lb = document.createElement('div');
     lb.className = 'att-lightbox'; lb.title = t('attach.close');
     const img = document.createElement('img'); lb.appendChild(img);
-    const show = () => { img.src = imgs[at].src; img.alt = imgs[at].alt || ''; };
+    const show = () => { img.src = imgs[at].dataset.full || imgs[at].src; img.alt = imgs[at].alt || ''; };
     const close = () => { lb.remove(); document.removeEventListener('keydown', key_, true); };
     const key_ = e => {
       if (e.key === 'Escape') { e.stopPropagation(); close(); }
@@ -39,7 +40,7 @@ const Attach = (() => {
     const imgs = [...scope.querySelectorAll('.att-shown a > img, img.gif-inline')];
     gallery(imgs, Math.max(0, imgs.indexOf(img)));
   }, true);
-  const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="${esc(t('attach.title'))}">${esc(t('attach.btn'))}</button><button type="button" class="att-gif" title="${esc(t('gif.title'))}">🎞️</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span></span>`;
+  const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="${esc(t('attach.title'))}">${esc(t('attach.btn'))}</button><button type="button" class="att-gif" title="${esc(t('gif.title'))}" aria-label="${esc(t('gif.title'))}">${esc(t('gif.btn'))}</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span><span class="att-progw">${progHtml(key)}</span></span>`;
   const paint = key => document.querySelectorAll('.att').forEach(b => { if (b.dataset.attKey === key) b.querySelector('.att-list').innerHTML = chips(key); });
   const add = (key, files) => { pending.set(key, [...list(key), ...files.filter(f => f.size)]); paint(key); };
   const stamp = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
@@ -48,10 +49,11 @@ const Attach = (() => {
     const box = e.target.closest('.att'); if (!box) return;
     if (e.target.closest('.att-btn')) box.querySelector('input[type=file]').click();
     if (e.target.closest('.att-gif')) gifPicker(e.target.closest('.att-gif'), box);
+    if (e.target.closest('[data-att-cancel]')) cancel(box.dataset.attKey);   // AIG-1165
     const view = e.target.closest('[data-att-view]');
-    if (view) preview(view.src);
+    if (view) preview(view.dataset.full || view.src);
     const del = e.target.closest('[data-att-del]');
-    if (del) { const k = box.dataset.attKey, l = list(k); l.splice(+del.dataset.attDel, 1); pending.set(k, l); paint(k); }
+    if (del) { const k = box.dataset.attKey, l = list(k); l.splice(+del.dataset.attDel, 1).forEach(revoke); pending.set(k, l); paint(k); }
   });
   document.addEventListener('change', e => {
     const box = e.target.closest && e.target.closest('.att');
@@ -117,33 +119,75 @@ const Attach = (() => {
       ? new File([f], `screenshot-${stamp()}${files.length > 1 ? '-' + (i + 1) : ''}.${(f.type.split('/')[1] || 'png').replace('jpeg', 'jpg')}`, { type: f.type }) : f));
   });
 
+  // Resumable uploads (AIG-1165, lib/uploads.js): each file goes in pieces with a progress bar and Cancel in the box. A piece
+  // that fails is tried again; sending again picks up where it stopped (the board says which pieces it has).
+  const jobs = new Map();   // key -> { ctl, cancelled, name, total, before, sent }
+  const started = new WeakMap();   // File -> { base, id, done? }: the same file sent again resumes, or reuses the finished upload
+  const b64 = async blob => { const u = new Uint8Array(await blob.arrayBuffer()); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+  const pctOf = j => j.total ? Math.min(100, Math.floor((j.before + j.sent) * 100 / j.total)) : 0;
+  const progHtml = key => { const j = jobs.get(key); return j ? `<span class="att-prog"><progress max="100" value="${pctOf(j)}"></progress><span class="att-pct">${esc(t('attach.uploading', { name: j.name, pct: pctOf(j) }))}</span><button type="button" class="att-cancel" data-att-cancel>${esc(t('attach.cancel'))}</button></span>` : ''; };
+  function paintProg(key) {
+    const j = jobs.get(key);
+    document.querySelectorAll('.att').forEach(b => {
+      if (b.dataset.attKey !== key) return;
+      const w = b.querySelector('.att-progw'), bar = w && w.querySelector('progress'); if (!w) return;
+      if (j && bar) { bar.value = pctOf(j); w.querySelector('.att-pct').textContent = t('attach.uploading', { name: j.name, pct: pctOf(j) }); }
+      else w.innerHTML = progHtml(key);
+    });
+  }
+  function cancel(key) { const j = jobs.get(key); if (j) { j.cancelled = true; j.ctl.abort(); } }
+  // One file to <base>/uploads (base: /api/projects/<slug> or /api/dms/contacts/<id>); returns what /done answers.
+  async function sendOne(key, base, f, j, extra) {
+    const signal = j.ctl.signal, s = started.get(f);
+    if (s && s.base === base && s.done) return s.done;
+    let st = null;
+    try {
+      if (s && s.base === base) st = await api('GET', `${base}/uploads/${s.id}`, undefined, { signal }).catch(e => { if (j.cancelled) throw e; return null; });   // gone or expired: start again
+      if (!st) { st = await api('POST', `${base}/uploads`, { name: f.name, type: f.type, size: f.size }, { signal }); started.set(f, { base, id: st.id }); }
+      const size = n => Math.min(f.size, (n + 1) * st.chunk) - n * st.chunk;
+      for (let round = 0; ; round++) {
+        const got = new Set(st.received);
+        j.sent = [...got].reduce((a, n) => a + size(n), 0); paintProg(key);
+        for (let n = 0; n < st.chunks; n++) {
+          if (got.has(n)) continue;
+          const data = await b64(f.slice(n * st.chunk, n * st.chunk + size(n)));
+          for (let tries = 0; ; tries++) {
+            try { await api('POST', `${base}/uploads/${st.id}/${n}`, { data }, { signal }); break; }
+            catch (e) { if (j.cancelled || tries >= 2) throw e; await new Promise(r => setTimeout(r, 500 * (tries + 1))); }
+          }
+          got.add(n); j.sent += size(n); paintProg(key);
+        }
+        try { const done = await api('POST', `${base}/uploads/${st.id}/done`, extra || {}, { signal }); started.set(f, { base, id: st.id, done }); return done; }
+        catch (e) { if (j.cancelled || round >= 2 || !/pieces missing/.test(e.message || '')) throw e; st = await api('GET', `${base}/uploads/${st.id}`, undefined, { signal }); }   // a piece went missing: send it again
+      }
+    } catch (e) {
+      if (!j.cancelled) throw e;
+      const u = started.get(f); started.delete(f);
+      if (u && !u.done) api('DELETE', `${base}/uploads/${u.id}`).catch(() => {});   // the board drops the pieces
+      throw new Error(t('attach.cancelled'));
+    }
+  }
+  async function sendAll(key, base, each) {
+    const files = list(key); if (!files.length) return [];
+    for (const f of files) if (f.size > MAX) throw new Error(t('attach.toobig', { name: f.name }));
+    const j = { ctl: new AbortController(), cancelled: false, name: '', total: files.reduce((a, f) => a + f.size, 0), before: 0, sent: 0 };
+    jobs.set(key, j); paintProg(key);
+    try {
+      const out = [];
+      for (const f of files) { j.name = f.name; j.sent = 0; out.push(await each(f, j)); j.before += f.size; }
+      return out;
+    } finally { jobs.delete(key); paintProg(key); }
+  }
   // Uploads the pending files and returns them for the comment ({ id, type }); call clear(key) once it's sent.
-  async function upload(key, slug) {
-    const out = [];
-    for (const f of list(key)) {
-      if (f.size > MAX) throw new Error(t('attach.toobig', { name: f.name }));
-      const data = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(f); });
-      const a = await api('POST', `/api/projects/${slug}/attachments`, { name: f.name, type: f.type, data });
-      out.push({ id: a.id, type: a.type });
-    }
-    return out;
-  }
-  // For a private DM (AIG-111): the pending files as { name, type, data } to send inside the sealed message.
-  async function read(key) {
-    const out = [];
-    for (const f of list(key)) {
-      if (f.size > MAX) throw new Error(t('attach.toobig', { name: f.name }));
-      const data = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(f); });
-      out.push({ name: f.name, type: f.type, data });
-    }
-    return out;
-  }
-  const clear = key => { pending.delete(key); paint(key); };
+  const upload = (key, slug) => sendAll(key, `/api/projects/${slug}`, async (f, j) => { const a = await sendOne(key, `/api/projects/${slug}`, f, j, await makeThumb(f, 320)); return { id: a.id, type: a.type }; });
+  // For a private DM (AIG-111): the pending files uploaded to this board as { upload: id }; the message seals them in.
+  const read = (key, contact) => sendAll(key, `/api/dms/contacts/${contact}`, async (f, j) => ({ upload: (await sendOne(key, `/api/dms/contacts/${contact}`, f, j)).upload }));
+  const clear = key => { list(key).forEach(revoke); pending.delete(key); paint(key); };
   const has = key => list(key).length > 0;
   // Under a comment: thumbnails for images (click for full size), links for other files.
   const shown = (m, slug, base = `/api/projects/${slug}/attachments`) => m.attachments && m.attachments.length ? `<div class="att-shown">${m.attachments.map(a => {
     const u = `${base}/${encodeURIComponent(a.id)}`;
-    return isImg(a) ? `<a href="${u}" target="_blank" title="${esc(a.name)}"><img src="${u}" alt="${esc(a.name)}" loading="lazy"></a>` : `<a href="${u}" target="_blank" class="att-file">📎 ${esc(a.name)}</a>`;
+    return isImg(a) ? `<a href="${u}" target="_blank" title="${esc(a.name)}"><img src="${a.thumb ? u + '?thumb=1' : u}" data-full="${u}" alt="${esc(a.name)}" loading="lazy"></a>` : `<a href="${u}" target="_blank" class="att-file">📎 ${esc(a.name)}</a>`;
   }).join('')}</div>` : '';
 
   return { boxHtml, upload, read, clear, has, shown };

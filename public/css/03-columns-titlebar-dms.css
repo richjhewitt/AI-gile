@@ -8,10 +8,12 @@ body.pop .panel { padding: 10px 16px 16px; }
 body.desktop.pop .panel > .actions:first-child { -webkit-app-region: drag; padding-right: 140px; min-height: 32px; }
 /* AIG-405: the bar you drag a pop-out by stays at the top while you scroll */
 body.pop .panel { overflow: visible; }
-body.pop .panel > .actions:first-child { position: sticky; top: 0; z-index: 30; background: var(--panel); margin-top: -10px; padding-top: 10px; }
+body.pop .panel > .actions:first-child, body.pop .panel > .card-head:first-child { position: sticky; top: 0; z-index: 30; background: var(--panel); margin-top: -10px; padding-top: 10px; }
 /* AIG-700: a real title bar (as tall as the window buttons) to drag by; the gaps between buttons were too small to grab */
-body.desktop.pop::before { content: ""; position: fixed; top: 0; left: 0; right: 0; height: 36px; background: var(--panel); border-bottom: 1px solid var(--border); -webkit-app-region: drag; z-index: 40; }
-body.desktop.pop { padding-top: 36px; }
+/* AIG-780: a real element (#popDrag, added by app.js) in every pop-out window; the ::before bar didn't drag in the app */
+body.desktop.popwin #popDrag { position: fixed; top: 0; left: 0; right: 0; height: 36px; background: var(--panel); border-bottom: 1px solid var(--border); -webkit-app-region: drag; z-index: 40; }
+body.desktop.popwin { padding-top: 36px; }
+body.desktop.popwin.popterm .term-dock { top: 36px; }
 body.desktop.pop .panel > .actions:first-child { top: 36px; }
 body.desktop.pop .panel > .actions:first-child :is(button, select, a, input) { -webkit-app-region: no-drag; }
 body.desktop.pop .panel > .actions:first-child button { padding: 3px 10px; font-size: 13px; }
@@ -65,6 +67,16 @@ body.pop { padding-inline-start: 0; } body.pop #dmRail, body.pop #dmPanel { disp
 /* profile pictures (AIG-150): next to names in chats, comments and the team list; the library on Setup */
 .face { width: 1.5em; height: 1.5em; border-radius: 50%; object-fit: cover; vertical-align: -0.45em; margin-inline-end: 5px; }
 .dm-meta .face { width: 18px; height: 18px; vertical-align: -5px; }
+/* your picture for a friend or invite (AIG-883) */
+.fp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: 100%; }
+.fp .face { margin: 0; }
+.fp-edit { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+.fp-edit input { min-width: 0; max-width: 100%; flex: 1 1 140px; }
+.dmf-c > .face { width: 28px; height: 28px; }
+/* personal builds (AIG-847) */
+.dmf-feat, .feat-row, .feat-add { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: 100%; margin-top: 6px; }
+.feat-add input { min-width: 0; flex: 1 1 120px; }
+.feat-row code { overflow-wrap: anywhere; }
 .face-lib { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0; }
 .face-lib figure { margin: 0; width: 64px; text-align: center; }
 .face-lib .face { width: 48px; height: 48px; margin: 0; }
@@ -80,10 +92,10 @@ body.pop { padding-inline-start: 0; } body.pop #dmRail, body.pop #dmPanel { disp
 .dm-msg { display: flex; flex-direction: column; align-items: flex-start; margin: 6px 0; }
 .dm-msg.mine { align-items: flex-end; }
 .dm-meta { font-size: 11px; color: var(--muted); margin: 0 4px 2px; }
+.dm-star { color: #e0a800; }   /* AIG-975: starred in the phone app */
 .dm-bubble { max-width: 88%; padding: 7px 11px; border-radius: 14px 14px 14px 4px; background: var(--col); white-space: pre-wrap; overflow-wrap: anywhere; }
 .dm-origin { display: inline-block; margin: 3px 4px 0; padding: 1px 8px; border-radius: 10px; font-size: 11px; border: 1px solid var(--line); color: var(--muted); }
 .dm-origin.ai { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
-.dm-legend { font-size: 11px; padding: 4px 10px 0; }
 .dm-msg.mine .dm-bubble { border-radius: 14px 14px 4px 14px; background: color-mix(in srgb, var(--accent) 22%, var(--panel)); }
 .dm-compose { border-top: 1px solid var(--line); padding: 8px 12px 12px; }
 .dm-compose textarea { width: 100%; }
@@ -112,6 +124,12 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .su-person.waiting { color: var(--muted); }
 #suPrompt { position: fixed; inset-inline-start: 12px; bottom: 12px; z-index: 25; max-width: calc(100vw - 24px); }
 #suPrompt .su-pill { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 8px 12px; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
+/* The "Call stand-ups?" pill floats over the bottom left: leave room under the Messages list so Show closed stays clickable (AIG-917). */
+body:has(#suPrompt) .dm-list { padding-bottom: 76px; }
+/* AIG-967: never over a dialog, and room under the page so buttons at the bottom (All hands Send, Request) stay clickable */
+body:has(#dialog:not(:empty)) #suPrompt { display: none; }
+body:has(#suPrompt) #app { padding-bottom: 76px; }
+@media (max-width: 600px) { body:has(#suPrompt) .dm-list { padding-bottom: 130px; } }
 .su-pick label { display: block; padding: 4px 0; }
 
 /* ---------- the rail as Discord servers (AIG-147..149) ---------- */
@@ -217,3 +235,56 @@ body.poptwitch { padding: 0; } body.poptwitch main { display: none; }
 .cemoji-w { position: relative; display: inline-block; }
 .cemoji-save { display: none; position: absolute; top: 100%; inset-inline-start: 0; z-index: 5; padding: 1px 6px; font-size: 11px; line-height: 1.4; white-space: nowrap; cursor: pointer; }
 .cemoji-w:hover .cemoji-save, .cemoji-w:focus-within .cemoji-save { display: block; }
+/* AIG-917: a row with a small close button, unread rows bold with a bar, and the closed list at the bottom */
+.dm-rowwrap { position: relative; display: flex; align-items: center; border-radius: 10px; }
+.dm-rowwrap .dm-row { flex: 1; min-width: 0; }
+.dm-rowwrap.unread { background: color-mix(in srgb, var(--danger) 10%, transparent); box-shadow: inset 3px 0 0 var(--danger); }
+.dm-rowwrap.unread .dm-rowtext b { font-weight: 800; }
+.dm-rowx { border: 0; background: none; color: var(--muted, #888); font-size: 12px; padding: 4px 8px; cursor: pointer; opacity: .35; border-radius: 8px; }
+.dm-rowwrap:hover .dm-rowx, .dm-rowx:focus-visible { opacity: 1; }
+.dm-rowx:hover { background: var(--col); }
+/* 👥 group chats (AIG-1027) */
+.dm-groups { margin: 6px 0; border-top: 1px solid var(--col); padding-top: 6px; }
+.dm-groups-h { display: flex; align-items: center; justify-content: space-between; padding: 2px 10px; font-size: 12px; }
+.dm-newgroup { border: 0; background: none; cursor: pointer; font-size: 12px; color: inherit; padding: 2px 4px; }
+.grp-pick { max-height: 45vh; overflow: auto; margin: 8px 0; }
+.grp-cand { display: block; font-weight: normal; margin: 4px 0; }
+.grp-search { width: 100%; margin: 6px 0 0; box-sizing: border-box; }
+.grp-proj { font-size: 12px; font-weight: 600; margin: 10px 0 2px; }
+.grp-cand[hidden], .grp-proj[hidden] { display: none; }
+.dm-closed { margin-top: 12px; border-top: 1px solid var(--col); padding-top: 8px; }
+.dm-closed .dm-rowwrap { }
+.dm-closedlink { border: 0; background: none; color: var(--muted, #888); font-size: 12px; text-decoration: underline; cursor: pointer; padding: 4px 10px; }
+.dm-askq { flex: 1 1 100%; font-size: 13px; }
+.dm-quiet { margin-top: 4px; border-top: 0; padding-top: 0; }
+.dm-compose .actions[hidden] { display: none; }
+/* AIG-1164: reply, react, edit, delete and typing in friends' chats and 👥 groups (lifted from ChilledChat) */
+.dm-msg[data-mid] { position: relative; }
+.dm-lineacts { display: none; gap: 2px; margin: 2px 4px 0; }
+.dm-msg[data-mid]:hover .dm-lineacts, .dm-msg[data-mid]:focus-within .dm-lineacts { display: flex; }
+@media (hover: none) { .dm-lineacts { display: flex; opacity: .7; } }
+.dm-lineacts button { background: none; border: 1px solid transparent; border-radius: 6px; padding: 1px 5px; font-size: 13px; line-height: 1.3; cursor: pointer; color: var(--muted); }
+.dm-lineacts button:hover, .dm-lineacts button:focus-visible { border-color: var(--line); color: var(--text); }
+.dm-reacts { display: flex; flex-wrap: wrap; gap: 4px; margin: 3px 4px 0; }
+.dm-react { display: inline-flex; align-items: center; gap: 3px; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--line); background: var(--col); font-size: 13px; cursor: pointer; }
+.dm-react span { font-size: 11px; color: var(--muted); }
+.dm-react.mine { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, var(--panel)); }
+.dm-picker { position: absolute; z-index: 5; bottom: 100%; display: flex; flex-wrap: wrap; gap: 2px; max-width: 260px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+.dm-msg.mine .dm-picker { right: 0; }
+.dm-picker button { background: none; border: 0; font-size: 18px; padding: 2px 4px; border-radius: 6px; cursor: pointer; }
+.dm-picker button:hover, .dm-picker button:focus-visible { background: var(--col); }
+.dm-quote { max-width: 88%; margin: 0 4px 2px; padding: 2px 8px; border-inline-start: 3px solid var(--accent); font-size: 12px; color: var(--muted); cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dm-replybar { display: flex; align-items: center; gap: 6px; padding: 4px 8px; margin-bottom: 4px; border-inline-start: 3px solid var(--accent); background: var(--col); font-size: 12px; border-radius: 0 6px 6px 0; }
+.dm-replybar[hidden] { display: none; }
+.dm-replytext { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dm-replybar button { background: none; border: 0; cursor: pointer; color: var(--muted); }
+.dm-edited { font-style: italic; }
+.dm-edit { width: 100%; min-width: 220px; box-sizing: border-box; }
+.dm-msg.dm-flash .dm-bubble { outline: 2px solid var(--accent); }
+.dm-typing { min-height: 0; padding: 0 12px; font-size: 11px; display: flex; align-items: center; gap: 6px; }
+.dm-typing:empty { display: none; }
+.dm-dots { display: inline-flex; gap: 3px; }
+.dm-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); animation: dmDots 1.4s infinite both; }
+.dm-dots span:nth-child(2) { animation-delay: .2s; } .dm-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes dmDots { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-3px); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .dm-dots span { animation: none; } }

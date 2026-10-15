@@ -20,14 +20,16 @@ const standupButtons = p => `<button onclick="callStandup(['${p.slug}'])" title=
 const suDay = () => new Date().toLocaleDateString('sv');
 const suPromptGone = () => { const el = $('suPrompt'); if (el) el.remove(); };
 async function morningPrompt() {
+  if (document.hidden) return void setTimeout(morningPrompt, 60e3);
+  if (/^#\/pop/.test(location.hash)) return;
   if (!i18n.ready) return void setTimeout(morningPrompt, 500);
-  // Nothing to stand up about on a brand-new board with no cards anywhere (AIG-333).
-  try { if (!(await api('GET', '/api/projects')).some(p => p.total)) return void setTimeout(morningPrompt, 60e3); } catch { return; }
   // Never in a pop-out (AIG-281): in the small night glance it covered the projects.
   if ($('suPrompt') || !state.route || state.route.pop || state.route.popList || ['setup', 'night', 'watch', 'news'].includes(state.route.view)) return;
   try { if (localStorage.getItem('aigile.standupAsked') === suDay()) return; } catch { return; }   // no storage: never nag
   const a = document.activeElement;
   if (busy() || (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return void setTimeout(morningPrompt, 3000);
+  // Read the shared project list only when a prompt can actually be shown; only worth asking once a project has a team and a folder on disk (AIG-1078).
+  try { if (!(await PagePoll.get('/api/projects')).some(p => !p.archived && p.path && !p.pathMissing && (p.crew || []).length)) return void setTimeout(morningPrompt, 60e3); } catch { return; }
   try { localStorage.setItem('aigile.standupAsked', suDay()); } catch { return; }
   const el = document.createElement('div'); el.id = 'suPrompt';
   el.innerHTML = `<div class="su-pill"><b>${esc(t('standup.prompt'))}</b>
@@ -36,6 +38,9 @@ async function morningPrompt() {
     <button onclick="suPromptGone()">${esc(t('standup.prompt.no'))}</button></div>`;
   document.body.appendChild(el);
 }
+// Gone on any move to another page and on Esc: it is only a nudge, never something to leave sitting over a list or a chat (AIG-1139).
+window.addEventListener("hashchange", suPromptGone);
+document.addEventListener("keydown", e => { if (e.key === "Escape") suPromptGone(); });
 async function suPick() {
   const ps = await api('GET', '/api/projects');
   openDialog(`<h2>${esc(t('standup.pick.title'))}</h2><form class="su-pick" onsubmit="return suPicked(event)">
@@ -67,7 +72,7 @@ function renderStandups() {
   const needs = (d.needs || []).length ? `<div class="su-needs"><h3>${esc(t('standup.needs', { n: d.needs.length }))}</h3><ul>${d.needs.map(b =>
     `<li><a href="#/p/${esc(b.project)}/${esc(b.card)}"><b>${esc(b.projectName)}</b> · ${esc(b.name)}</a>: ${suLines(b.text)} <span class="muted">${ago(b.at)}</span></li>`).join('')}</ul></div>` : '';
   const projects = d.projects.map(p => `<div class="su-proj" style="--proj:${esc(p.color)}">
-      <h3>${pic(p.logo, p.emoji)} <a href="#/p/${esc(p.project)}">${esc(p.projectName)}</a> <span class="muted">${esc(t('standup.answered', { a: p.answered, n: p.people.length, when: ago(p.at) }))} · <a href="#/p/${esc(p.project)}/${esc(p.card)}">${esc(p.card)}</a>${p.status === 'done' ? ' · ' + esc(t('standup.closed')) : ''}</span></h3>
+      <h3>${pic(p.logo, p.emoji)} <a href="#/p/${esc(p.project)}">${esc(p.projectName)}</a> ${callLink(p.callUrl, 'su-call')} <span class="muted">${esc(t('standup.answered', { a: p.answered, n: p.people.length, when: ago(p.at) }))} · <a href="#/p/${esc(p.project)}/${esc(p.card)}">${esc(p.card)}</a>${p.status === 'done' ? ' · ' + esc(t('standup.closed')) : ''}</span></h3>
       ${p.people.map(r => r.waiting ? `<div class="su-person waiting"><b>${esc(r.name)}</b> <span class="muted">${esc(t('standup.waiting'))}</span></div>`
         : `<div class="su-person"><b>${esc(r.name)}</b> <span class="muted">${ago(r.at)}</span>
           <div><span class="su-k">${esc(t('standup.done'))}</span> ${suLines(r.done) || '-'}</div>

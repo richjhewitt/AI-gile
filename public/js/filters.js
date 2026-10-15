@@ -2,7 +2,7 @@
 // ---- search / filter (AIG-16): purely in the browser, no extra server calls -----------------------
 // The bar lives outside #app so the 1s refresh never wipes what the owner is typing; typing only re-draws the board.
 state.filters = {};
-const blankFilter = () => ({ q: '', type: '', who: '', sprint: '', group: '' });
+const blankFilter = () => ({ q: '', type: '', who: '', sprint: '', group: '', desk: '' });
 // First look at a project in this tab: start from the last view used there (kept in the browser), if it still exists.
 function startFilter(slug) {
   let last = ''; try { last = localStorage.getItem('aigile.view.' + slug) || ''; } catch {}
@@ -16,9 +16,26 @@ function matchesFilter(c, slug) {
   if (f.who && (c.assignee || '') !== f.who) return false;
   if (f.sprint && (c.sprint || '') !== f.sprint) return false;
   if (f.group && (c.group || '') !== f.group) return false;
-  if (f.q) { const q = f.q.toLowerCase(); if (![c.id, c.title, c.description, c.assignee, c.sprint, c.group].some(x => String(x || '').toLowerCase().includes(q))) return false; }
+  if (f.desk && ((c.desk || {}).kind || '') !== f.desk) return false;   // AIG-1104
+  if (f.q) { const q = f.q.toLowerCase(); if (![c.id, c.title, c.description, c.assignee, c.sprint, c.group].some(x => String(x || '').toLowerCase().includes(q)) && !(c.light && DoneFind.has(slug, q, c.id))) return false; }
   return true;
 }
+// ⚡ A light done card has no description here (AIG-1100): the server says which done cards' descriptions hold the
+// search text, one call per search (after a short pause in typing); the board redraws when it answers.
+const DoneFind = (() => {
+  let key = '', ids = new Set(), timer = 0;
+  function has(slug, q, id) {
+    const k = slug + '|' + q;
+    if (k !== key) {
+      key = k; ids = new Set(); clearTimeout(timer);
+      timer = setTimeout(async () => {
+        try { const r = await api('GET', `/api/projects/${slug}/find?q=${encodeURIComponent(q)}`); if (key === k && r.ids.length) { ids = new Set(r.ids); renderBoardOnly(); paintFilterBar(); } } catch {}
+      }, 300);
+    }
+    return ids.has(id);
+  }
+  return { has };
+})();
 function paintFilterBar() {
   const bar = $('filterbar');
   if (state.route.view !== 'project' || !state.project) { if (bar.innerHTML) { bar.innerHTML = ''; bar.dataset.slug = ''; } return; }
@@ -26,17 +43,22 @@ function paintFilterBar() {
   const uniq = key => [...new Set(p.cards.map(c => c[key]).filter(Boolean))].sort();
   const opt = (v, label, cur) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
   const sel = (key, all, list) => `<select data-f="${key}">${opt('', all, f[key])}${list.map(v => opt(v, key === 'type' ? t('type.' + v) : v, f[key])).join('')}</select>`;
-  const shown = p.cards.filter(c => matchesFilter(c, p.slug)).length, active = f.q || f.type || f.who || f.sprint || f.group;
-  const selects = sel('type', t('filter.types'), ['feature', 'bug', 'task', 'incident']) + sel('who', t('filter.anyone'), uniq('assignee')) + sel('sprint', t('filter.sprints'), uniq('sprint')) + (uniq('group').length || f.group ? sel('group', t('filter.groups'), uniq('group')) : '');
+  const shown = p.cards.filter(c => matchesFilter(c, p.slug)).length, active = f.q || f.type || f.who || f.sprint || f.group || f.desk;
+  const deskSel = p.cards.some(c => c.desk) || f.desk ? `<select data-f="desk">${opt('', t('desk.filter.all'), f.desk)}${['request', 'incident', 'idea'].map(k => opt(k, t('desk.filter.' + k), f.desk)).join('')}</select>` : '';   // AIG-1104
+  const selects = deskSel + sel('type', t('filter.types'), ['feature', 'bug', 'task', ...['incident', 'problem', 'change'].filter(k => f.type === k || p.cards.some(c => c.type === k))]) + sel('who', t('filter.anyone'), uniq('assignee')) + sel('sprint', t('filter.sprints'), uniq('sprint')) + (uniq('group').length || f.group ? sel('group', t('filter.groups'), uniq('group')) : '');
   if (bar.dataset.slug !== p.slug) {   // build once per project; afterwards only the selects and count update
     bar.dataset.slug = p.slug;
-    bar.innerHTML = `<div class="fbar"><input type="search" id="f-q" placeholder="${esc(t('filter.search'))}" value="${esc(f.q)}" oninput="setFilter('q', this.value)">
+    bar.innerHTML = `<div class="fbar${state.filtersOpen ? ' open' : ''}"><input type="search" id="f-q" placeholder="${esc(t('filter.search'))}" value="${esc(f.q)}" oninput="setFilter('q', this.value)">
+      <button type="button" class="f-tog" id="f-tog" aria-expanded="${state.filtersOpen ? 'true' : 'false'}" onclick="toggleFilters()"></button>
       <span id="f-sel">${selects}</span><span id="f-count" class="muted"></span></div>`;
     bar.querySelector('#f-sel').onchange = e => setFilter(e.target.dataset.f, e.target.value);
   } else if ($('f-sel').dataset.sig !== selects && !$('f-sel').contains(document.activeElement)) { $('f-sel').innerHTML = selects; }
   $('f-sel').dataset.sig = selects;
+  const nAct = ['type', 'who', 'sprint', 'group', 'desk'].filter(k => f[k]).length;   // AIG-1082: on a phone the dropdowns sit behind this button
+  $('f-tog').textContent = t('filter.btn') + (nAct ? ' · ' + nAct : '');
   $('f-count').innerHTML = active ? t('filter.count.html', { shown, n: p.cards.length }) : '';
 }
+function toggleFilters() { state.filtersOpen = !state.filtersOpen; const b = document.querySelector('#filterbar .fbar'); if (b) b.classList.toggle('open', state.filtersOpen); const g = $('f-tog'); if (g) g.setAttribute('aria-expanded', state.filtersOpen ? 'true' : 'false'); }
 function setFilter(key, v) { curFilter(state.project.slug)[key] = v; renderBoardOnly(); paintFilterBar(); }
 function clearFilter() { setLastView(state.project.slug, ''); state.filters[state.project.slug] = blankFilter(); $('filterbar').dataset.slug = ''; renderBoardOnly(); paintFilterBar(); }
 
@@ -54,7 +76,9 @@ function applyView(i) {
 async function saveViews(views) {
   const p = state.project;
   await api('PATCH', '/api/projects/' + p.slug, { views });
-  p.views = views.length ? views : undefined;   // show it now, before the next poll
+  const keep = views.length ? views : undefined;
+  p.views = keep;   // show it now, before the next poll
+  if (state.project && state.project.slug === p.slug) state.project.views = keep;   // a poll during the save may have swapped the project object for a stale one
 }
 async function saveView() {
   const name = $('view-name').value.trim(), p = state.project, f = curFilter(p.slug);

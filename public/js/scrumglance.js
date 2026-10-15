@@ -1,7 +1,7 @@
 /* ---------- 📊 ScrumGlance (AIG-688) ---------- */
 // A small live panel: counts and short lists of what is in progress, to do, waiting for you to test and done today.
 // For the project on screen, or every project on the home page. Plain code (GET /api/glance), no AI. It rides the
-// page's 1s poll (app.js calls ScrumGlance.tick()). ⧉ Pop out moves it to its own small window (#/pop-glance[/slug]).
+// page's refresh poll (app.js calls ScrumGlance.tick()). ⧉ Pop out moves it to its own small window (#/pop-glance[/slug]).
 const ScrumGlance = (() => {
   const GROUPS = [['doing', 'glance.doing', '🔨'], ['todo', 'glance.todo', '📋'], ['verify', 'glance.verify', '🧪'], ['done', 'glance.done', '✅']];
   let open = false, data = null, busyNow = false, shown = '';
@@ -24,10 +24,10 @@ const ScrumGlance = (() => {
     if (key === shown) return; shown = key;
     el.innerHTML = `<div class="sg-bar"><b>${esc(t('glance.h'))}</b><span class="spacer"></span><button type="button" id="sgPop" onclick="ScrumGlance.pop()">${esc(t('glance.pop'))}</button><button type="button" id="sgClose" aria-label="${esc(t('glance.close'))}" title="${esc(t('glance.close'))}" onclick="ScrumGlance.toggle()">✕</button></div><div class="sg-body">${body(data, true)}</div>`;
   }
-  async function load(slug) {
-    try { data = await api('GET', '/api/glance' + (slug ? '?project=' + encodeURIComponent(slug) : '')); } catch { data = data || null; }
+  async function load(slug, options = {}) {
+    try { data = await PagePoll.get('/api/glance' + (slug ? '?project=' + encodeURIComponent(slug) : ''), options); } catch { data = data || null; }
   }
-  // Called every second by the page's poll; the pop-out view loads in refresh() instead.
+  // Called by the page poll (app.js); the pop-out view loads in refresh() instead.
   async function tick() {
     if (!open || busyNow || (state.route && state.route.view === 'glance')) return;
     busyNow = true; try { await load(scope()); } finally { busyNow = false; }

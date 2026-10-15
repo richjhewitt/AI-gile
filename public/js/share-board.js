@@ -34,11 +34,11 @@ const ShareBoard = (function () {
   function render(b) {
     if (!b) return `<p class="muted">${esc(t('sb.gone'))}</p>`;
     const role = b.role ? t('share.role.' + b.role) : t('share.role.member');
-    const raise = may(b, 'raise') ? (b.can.raise || []).map(k => `<button class="${k === 'bug' ? 'bug' : 'primary'}" data-sb-raise="${k}" onclick="ShareBoard.raiseDialog('${k}')">${esc(t('sb.raise.' + k))}</button>`).join('') : '';
+    const raise = may(b, 'raise') ? (b.can.raise || []).map(k => `<button class="${k === 'bug' ? 'bug' : 'primary'}" data-sb-raise="${k}" onclick="ShareBoard.raiseDialog('${k}')">${esc(t('sb.raise.' + k))}</button>`).join('') + ((b.can.raise || []).includes('feature') ? `<button data-sb-request onclick="ShareBoard.requestDialog()">${esc(t('featreq.btn'))}</button>` : '') : '';
     const by = k => b.cards.filter(x => (x.status || '') === k);
     const cols = COLS.filter(k => !(k === '' || k === 'team') || by(k).length).map(k => `<div class="column sb-col" data-sb-col="${k || 'none'}"><h3><span>${esc(colName(k))}</span><span>${by(k).length}</span></h3>${by(k).map(tile).join('')}</div>`).join('');
     const why = !live(b) ? t(b.state === 'ended' ? 'sb.ended' : 'sb.off', { name: b.friend }) : '';
-    return `<div class="toolbar"><h2>🔗 ${esc(b.theirName || b.friend)}</h2>
+    return `<div class="toolbar"><h2>🔗 ${esc(b.theirName || b.friend)}</h2>${b.theirTitle ? `<span class="pill" id="sbTitle">${esc(b.theirTitle)}</span>` : ''}${b.theirPreview ? `<a class="btn" id="sbPreview" href="${esc(b.theirPreview)}" target="_blank" rel="noopener">${esc(t('sb.preview'))}</a>` : ''}
         <span class="pill" id="sbRole" title="${esc(t('sb.role.title', { name: b.friend }))}">${esc(t('sb.youare', { role }))}</span>${raise}
         <span class="grow"></span>${b.slug ? `<a class="btn" href="#/p/${esc(b.slug)}">${esc(t('sb.linked', { project: b.projectName || b.slug }))}</a>` : ''}</div>
       <p class="muted" id="sbCan">${esc(t('sb.can.' + (b.role || 'member'), { name: b.friend }))} ${esc(t(b.board ? 'sb.whole' : 'sb.ticked', { name: b.friend }))} ${esc(t('sb.never', { name: b.friend }))}</p>
@@ -84,6 +84,24 @@ const ShareBoard = (function () {
       <div class="actions"><button class="primary" id="sbRaiseSend" onclick="ShareBoard.sendRaise('${type}')">${esc(t('sb.raise.send', { name: b.friend }))}</button>
         <button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
   }
+  // Request a feature or a custom build (AIG-846): always held for the owner's OK, whatever his Approvals setting.
+  function requestDialog() {
+    const b = cur(); if (!b) return;
+    openDialog(`<h2>${esc(t('featreq.btn'))}</h2><p class="muted">${esc(t('featreq.intro', { name: b.friend }))}</p>
+      <label class="f"><span>${esc(t('sb.raise.title'))}</span><input type="text" id="frTitle" maxlength="200"></label>
+      <label class="f"><span>${esc(t('featreq.want'))}</span><textarea id="frWant" rows="4"></textarea></label>
+      <label class="f"><span>${esc(t('featreq.why'))}</span><textarea id="frWhy" rows="3"></textarea></label>
+      <label class="check"><input type="checkbox" id="frCustom"> ${esc(t('featreq.custom'))}</label>
+      <div class="err" id="sbErr"></div>
+      <div class="actions"><button class="primary" id="frSend" onclick="ShareBoard.sendRequest()">${esc(t('sb.raise.send', { name: b.friend }))}</button>
+        <button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
+  }
+  async function sendRequest(force) {
+    const v = id => ($(id) || {}).value || '', title = v('frTitle'), want = v('frWant'), why = v('frWhy'), custom = !!($('frCustom') || {}).checked;
+    if (!title.trim() || !want.trim()) return err(new Error(t('featreq.need')));
+    try { await api('POST', `/api/shares/${cur().link}/request`, { title, want, why, custom, force: !!force }); note(t('featreq.sent', { name: cur().friend })); await again(); }
+    catch (e) { if (scrubbed(e)) return sendRequest(true); err(e); }
+  }
   const err = e => { const x = $('sbErr'); if (x) x.textContent = e.message || String(e); else alert(e.message); };
   const again = async share => { state.sboard = await api('GET', `/api/shares/${cur().link}/board`); if (share) open(share); else closeDialog(); refresh(true); };
   const scrubbed = e => /path or a secret/.test(e.message) && confirm(e.message);
@@ -108,5 +126,5 @@ const ShareBoard = (function () {
     try { await api('POST', `/api/shares/${cur().link}/inbound/${share}/verdict`, { verdict: v, note, force: !!force }); await again(share); }
     catch (e) { if (scrubbed(e)) return verdict(share, v, true); err(e); }
   }
-  return { render, open, raiseDialog, sendRaise, reply, setStatus, verdict };
+  return { render, open, requestDialog, sendRequest, raiseDialog, sendRaise, reply, setStatus, verdict };
 })();

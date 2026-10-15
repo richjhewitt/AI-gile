@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
-import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, home, 🎨 Look dialog', async (s, ctx) => {
   await mkProject(s, 'Tunio', 'TUN'); await mkProject(s, 'LocoRadio', 'LOC');   // Tunio has no keyword emoji since AIG-245: its spare one (🔭) comes from its slug
@@ -33,8 +33,9 @@ def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, 
   await sleep(1500);
   check('stays open after redraws', await page.$eval('details.inbox', d => d.open));
   await page.goto(BASE + '/#/p/tunio');
-  await page.click('button:has-text("Look")');
+  await tbClick(page, 'Look');
   await page.fill('#look-emoji', '🎸');
+  check('Look has the public feedback tick and group (AIG-969)', (await page.locator('#look-fb').count()) === 1 && (await page.locator('#look-fbgroup').count()) === 1);
   await page.$eval('#look-color', el => { el.value = '#123456'; });
   await page.click('#dialog button:has-text("Save")');
   await sleep(500);
@@ -75,7 +76,7 @@ def('logos', 'a project picture and an app logo replace the emoji / 🗂️: upl
   check('home card shows the picture, not the emoji', !(await page.textContent('a.proj[href="#/p/tunio"] h2')).includes('🔭'));
   // Through the Look dialog: pick a file, then Remove.
   await page.goto(BASE + '/#/p/tunio');
-  await page.click('button:has-text("Look")');
+  await tbClick(page, 'Look');
   const before = await page.getAttribute('#look-logo img.pic', 'src');
   await page.setInputFiles('#look-logo-file', file);
   await page.waitForFunction(old => document.querySelector('#look-logo img.pic')?.getAttribute('src') !== old, before);
@@ -99,7 +100,7 @@ def('logos', 'a project picture and an app logo replace the emoji / 🗂️: upl
   check('meta carries it', (await s.ok('GET', '/api/meta')).appLogo.startsWith('/api/app-logo'));
   await page.click('#app-logo button:has-text("Remove")');
   await page.waitForSelector('#app-logo img.brand-logo', { state: 'detached' });
-  check('favicon is the emoji again', (await page.getAttribute('#favicon', 'href')) === fav0 && (await page.textContent('#brand')).includes('🗂️'));
+  check('favicon is the emoji again', (await page.getAttribute('#favicon', 'href')) === fav0 && (await page.getAttribute('#brand img', 'src')) === 'icons/icon-192.png');
   check('app logo gone', (await fetch(s.base + '/api/app-logo')).status === 404 && (await s.ok('GET', '/api/meta')).appLogo === '');
   // Icon colours (AIG-400): bad colours refused; a preset recolours the tab icon; Reset goes back to the emoji.
   check('default icon colours: no custom icon', (await s.ok('GET', '/api/meta')).appIcon === null && (await fetch(s.base + '/api/app-icon.svg')).status === 404);
@@ -132,6 +133,7 @@ def('theme', 'theme: follows the system, or System / Light / Dark picked in the 
   check('Dark picked overrides a light system', (await page.evaluate(() => document.documentElement.dataset.theme)) === 'dark' && (await bg()) !== light);
   await page.reload(); await page.waitForSelector('#themeBtn');
   check('the pick is remembered', (await page.evaluate(() => document.documentElement.dataset.theme)) === 'dark');
+  await page.click('#themeBtn');   // -> Black (AIG-916)
   await page.click('#themeBtn');   // -> System
   check('back to System follows the system', !(await page.evaluate(() => document.documentElement.dataset.theme)) && (await bg()) === light);
   noErrors(page);

@@ -4,6 +4,7 @@
 .st-tile.st-wide { grid-column: span 2; }
 .st-tile .st-v { font-size: 20px; font-weight: 600; overflow-wrap: anywhere; }
 .st-tile.st-done .st-v { color: var(--done); }
+.st-tile .st-v { overflow-wrap: break-word; }
 .st-tile .st-k { color: var(--muted); font-size: 12px; }
 .st-chart { width: 100%; max-width: 560px; height: auto; display: block; }
 .st-bar { fill: var(--accent); }
@@ -16,3 +17,6 @@
 .st-wrap h3 { margin: 0 0 6px; }
 .st-wrap pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; margin: 0 0 10px; }
 @media (max-width: 600px) { .st-tile.st-wide { grid-column: span 1; } .st-wrap { max-width: none; } }
+/* 📆 Monthly service review (AIG-1155) */
+.rev-nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+.rev-sum { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; margin: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }

@@ -12,7 +12,12 @@ const UsageGlance = (() => {
   };
   const cls = v => v >= 50 ? 'g' : v >= 20 ? 'a' : 'r';
   const bar = v => `<i class="ug-bar${v == null ? ' none' : ' ' + cls(v)}"><b style="width:${v == null ? 0 : Math.max(v, 8)}%"></b></i>`;
+  // The same % left as the Usage page: both windows, or null when unknown (AIG-937). Home shows this instead of token totals.
+  const vals = () => { const l = d && d.latest; return { h5: l ? left(l.h5) : null, wk: l ? left(l.wk) : null }; };
+  const homeHtml = () => { const v = vals(); return v.h5 == null && v.wk == null ? '' : t('home.uz.html', { h5: v.h5 == null ? '–' : v.h5 + t('usage.pctleft'), wk: v.wk == null ? '–' : v.wk + t('usage.pctleft') }) + ' <span class="muted"> · <b>' + esc(t('home.usage.left')) + '</b></span>'; };
+  function paintHome() { const h = document.getElementById('homeUsage'); if (!h) return; const html = homeHtml(); if (h.innerHTML !== html) h.innerHTML = html; h.hidden = !html || NoAi.on; }
   function paint() {
+    paintHome();
     const el = document.getElementById('ugBars'), a = document.getElementById('usageNav'); if (!el || !a) return;
     const nt = NoTokens.on, l = d && d.latest, h5 = l ? left(l.h5) : null, wk = l ? left(l.wk) : null;
     const sv = d && d.saving, key = JSON.stringify([h5, wk, l && l.at, nt, d && d.over, sv, i18n.lang, Math.floor(Date.now() / 60e3)]);
@@ -28,6 +33,6 @@ const UsageGlance = (() => {
     a.title = tips.join('\n');
   }
   async function poll() { try { d = await api('GET', '/api/limits/latest'); } catch { return; } paint(); }
-  function start() { poll(); setInterval(poll, 60e3); setInterval(paint, 2000); }
-  return { start, poll, paint };
+  function start() { PagePoll.every(poll, 60e3, { immediate: true, home: true }); PagePoll.every(paint, 5000, { home: true }); }
+  return { start, poll, paint, vals, homeHtml };
 })();

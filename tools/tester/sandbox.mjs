@@ -19,7 +19,7 @@ if (fs.existsSync(local)) fs.copyFileSync(local, localCopy); else fs.writeFileSy
 const stub = path.join(dir, 'no-agent' + (process.platform === 'win32' ? '.bat' : '.sh'));   // "waking" a team does nothing here
 fs.writeFileSync(stub, process.platform === 'win32' ? '@echo off\r\nexit\r\n' : '#!/bin/sh\nexit 0\n', { mode: 0o755 });
 
-const env = { ...process.env, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_LOCAL: localCopy, AIGILE_AGENT_COMMAND: stub, AIGILE_NO_RESTART: '1', AIGILE_NO_USAGE_AUTO: '1' };
+const env = { ...process.env, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_LOCAL: localCopy, AIGILE_AGENT_COMMAND: stub, AIGILE_NO_RESTART: '1', AIGILE_NO_USAGE_AUTO: '1', AIGILE_SANDBOX: '1' };
 delete env.AIGILE_AS;
 const proc = spawn(process.execPath, [path.join(ROOT, 'server.js')], { env, stdio: 'ignore', cwd: ROOT });
 let up = false;

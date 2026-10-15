@@ -5,6 +5,16 @@ import { createRequire } from 'node:module';
 import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 const require = createRequire(import.meta.url);
 
+// AIG-1001: wait until the stand-in team runs have really ended (a fixed 4.5 s was flaky on a busy PC)
+async function runsEnd(s, slugs) {
+  await sleep(1000);
+  for (let i = 0; i < 80; i++) {
+    const ps = await s.ok('GET', '/api/projects');
+    if (!slugs.some(x => { const p = ps.find(q => q.slug === x); return p && p.presence && p.presence.running; })) return;
+    await sleep(250);
+  }
+}
+
 def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuck after 3 tries, wakes idle teams, morning summary (AIG-199)', async (s, ctx) => {
   await mkProject(s, 'Cut', 'CUT', { path: tmp('cut') });
   await mkProject(s, 'Nap', 'NAP', { path: tmp('nap') });
@@ -13,14 +23,14 @@ def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuc
   await mkCard(s, 'nap', 'Waiting work', { status: 'todo' });
   await mkCard(s, 'skip', 'Not watched', { status: 'todo' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['cut', 'nap'] });
-  await sleep(4500);   // going quiet wakes the teams; wait until those runs end
+  await runsEnd(s, ['cut', 'nap']);   // going quiet wakes the teams; wait until those runs end
   await s.ok('POST', '/api/watchman/round');
   let c = await getCard(s, 'cut', mid.id);
   check('a team that stopped mid-card is started again, with a note', /Picked back up/.test(c.comments.at(-1).text));
   let st = await s.ok('GET', '/api/watchman');
   check('an idle team with work is woken; an unwatched one is left alone', st.summary.find(x => x.project === 'nap').woke === 1 && !st.summary.find(x => x.project === 'skip'));
-  await sleep(4500);   // the stand-in agent ends; the team is asleep again
-  await s.ok('POST', '/api/watchman/round'); await sleep(4500); await s.ok('POST', '/api/watchman/round');
+  await runsEnd(s, ['cut', 'nap']);   // the stand-in agent ends; the team is asleep again
+  await s.ok('POST', '/api/watchman/round'); await runsEnd(s, ['cut', 'nap']); await s.ok('POST', '/api/watchman/round');
   c = await getCard(s, 'cut', mid.id);
   check('third time on the same card: stuck, and in your pile', /Stuck/.test(c.comments.at(-1).text) && c.needsYou === true, c.comments.at(-1).text);
   const back = await s.ok('POST', '/api/quiet', { on: false });
@@ -34,7 +44,7 @@ def('keepgoing', '🌙 keeps every team on task: the every-minute look picks up 
   const mid = await mkCard(s, 'half', 'Half done', { status: 'doing' });
   const todo = await mkCard(s, 'idle', 'Buildable', { status: 'todo' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['half', 'idle'] });
-  await sleep(4500);   // going quiet wakes both teams; wait until those runs end
+  await runsEnd(s, ["half", "idle"]);   // going quiet wakes both teams; wait until those runs end
   await s.ok('GET', '/api/projects/idle/updates?wait=1');   // the Idle session now sits in 'aigile wait'
   await sleep(50);
   await s.ok('POST', '/api/watchman/quick');
@@ -51,7 +61,7 @@ def('limit', '🌙 usage limit: no restarts counted while out, carry on after th
   await mkProject(s, 'Out', 'OUT', { path: tmp('out') });
   const mid = await mkCard(s, 'out', 'Half done', { status: 'doing' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['out'] });
-  await sleep(4500);   // going quiet wakes the team; wait until that run ends
+  await runsEnd(s, ["out"]);   // going quiet wakes the team; wait until that run ends
   const logf = path.join(s.data, 'logs', 'out.log'), runs = () => (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length;
   const ampm = d => `${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}${d.getHours() < 12 ? 'am' : 'pm'}`;
   const cutOff = (startAgo, resetIn) => fs.appendFileSync(logf, `=== ${new Date(Date.now() - startAgo).toISOString()} started ===\nYou've hit your session limit · resets ${ampm(new Date(Date.now() + resetIn))} (Europe/London)\n=== exited ended ===\n`);
@@ -60,7 +70,7 @@ def('limit', '🌙 usage limit: no restarts counted while out, carry on after th
   let n = runs(); await s.ok('POST', '/api/watchman/quick'); await sleep(300);
   check('after the reset the team carries on', runs() === n + 1, fs.readFileSync(logf, 'utf8'));
   check('a limit cut-off is not counted as a try', !(await getCard(s, 'out', mid.id)).comments.some(m => /Picked back up|Stuck/.test(m.text)));
-  await sleep(4500);
+  await runsEnd(s, ["out"]);
   // Out of usage now: nobody is woken until the reset, and one message says when.
   cutOff(60e3, 2 * 3600e3);
   n = runs(); await s.ok('POST', '/api/watchman/round'); await s.ok('POST', '/api/watchman/round'); await sleep(300);
@@ -68,10 +78,12 @@ def('limit', '🌙 usage limit: no restarts counted while out, carry on after th
   const th = await s.ok('GET', '/api/chats/_watchman');
   check('one message says when teams start again', th.messages.filter(m => /usage limit/.test(m.text)).length === 1, th.messages);
   // Morning: the chat stays, with what got done, until cleared.
+  await s.ok('PATCH', `/api/projects/out/cards/${mid.id}`, { status: 'done' });   // the team finished the card in the night (AIG-1051: the summary lists only projects where something got done)
   await s.ok('POST', '/api/quiet', { on: false });
   const w = (await s.ok('GET', '/api/chats')).find(c => c.slug === '_watchman');
   check('awake again: the night\'s chat is still listed, with something new', w && w.unread >= 1, w);
-  check('its last message says what got done', /The night[\s\S]*Out/.test((await s.ok('GET', '/api/chats/_watchman')).messages.at(-1).text));
+  const lm = (await s.ok('GET', '/api/chats/_watchman')).messages;
+  check('its last message says what got done', /The night[\s\S]*Out/.test(lm.at(-1).text), lm.slice(-2));
   await s.ok('POST', '/api/chats/_watchman', { text: 'clear chat' });
   check('clearing it empties it; it stays listed so you can write to it by day (AIG-359)', (await s.ok('GET', '/api/chats/_watchman')).messages.length === 0 && (await s.ok('GET', '/api/chats')).some(c => c.slug === '_watchman'));
 }, false);
@@ -81,7 +93,7 @@ def('limitread', '⏳ a usage reading at 100% holds every wake until its reset, 
   await mkCard(s, 'full', 'Work', { status: 'todo' });
   await s.ok('POST', '/api/limits', { rate_limits: { five_hour: { used_percentage: 100, resets_at: Math.floor(Date.now() / 1000) + 3600 }, seven_day: { used_percentage: 40, resets_at: Math.floor(Date.now() / 1000) + 86400 } } });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['full'] });
-  await sleep(4500);   // going quiet itself may start one run; then the watchman takes over
+  await runsEnd(s, ["full"]);   // going quiet itself may start one run; then the watchman takes over
   const logf = path.join(s.data, 'logs', 'full.log'), runs = () => { try { return (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length; } catch { return 0; } };
   const n = runs();
   await s.ok('POST', '/api/watchman/round'); await sleep(300);
@@ -94,10 +106,10 @@ def('stuckonly', '🌙 a card flagged stuck stops only itself: the team is still
   await mkProject(s, 'Jam', 'JAM', { path: tmp('jam') });
   const mid = await mkCard(s, 'jam', 'Keeps failing', { status: 'doing' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['jam'] });
-  for (let i = 0; i < 3; i++) { await sleep(4500); await s.ok('POST', '/api/watchman/round'); }
+  for (let i = 0; i < 3; i++) { await runsEnd(s, ["jam"]); await s.ok('POST', '/api/watchman/round'); }
   check('third try: stuck', /Stuck/.test((await getCard(s, 'jam', mid.id)).comments.at(-1).text));
   await mkCard(s, 'jam', 'Other work', { status: 'todo' });
-  await sleep(4500);
+  await runsEnd(s, ["jam"]);
   const logf = path.join(s.data, 'logs', 'jam.log'), n = (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length;
   await s.ok('POST', '/api/watchman/round'); await sleep(300);
   check('the team is still woken for its other work', (fs.readFileSync(logf, 'utf8').match(/started/g) || []).length === n + 1);

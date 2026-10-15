@@ -36,10 +36,10 @@ async function savePerms() {
 
 /* ---------- docs: read a project's .md files ---------- */
 // The project's .md files, fetched once per project, so file names in cards can open them.
-async function loadDocs(s) {
+async function loadDocs(s, options = {}) {
   if (state.docsFor === s) return;
-  state.docsFor = s;
-  try { state.docs = await api('GET', `/api/projects/${s}/docs`); } catch { state.docs = []; }
+  try { state.docs = await api('GET', `/api/projects/${s}/docs`, undefined, options); state.docsFor = s; }
+  catch (e) { if (options.signal?.aborted) throw e; state.docs = []; }
 }
 // ---- docs: read a project's .md files in the board -----------------------------
 async function openDocs() {

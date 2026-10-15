@@ -5,11 +5,22 @@ function openDialog(html, cls = '', pop = '') {   // pop: the kind that gets the
   const f = $('dialog').querySelector('input[type=text]'); if (f) f.focus();
 }
 function closeDialog() {
+  if (sureDone) sureDone(false);   // an open askSure is a No
   $('dialog').innerHTML = '';
   if (state.route.view === 'dlg') { window.close(); return; }   // a dialog in its own window: closing it closes the window
   if (state.cvPreview) { state.cvPreview = null; renderBoardOnly(); }   // an unsaved card view preview goes away (AIG-119)
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog').firstChild) closeDialog(); });
+// An in-app "are you sure?" instead of the browser's plain confirm box (AIG-992): resolves true on the OK button, false on Cancel or Escape.
+let sureDone = null;
+function askSure(title, text, ok) {
+  return new Promise(res => {
+    openDialog(`<h2>${esc(title)}</h2><p>${esc(text)}</p><div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button><button type="button" class="primary" id="sureOk">${esc(ok)}</button></div>`, 'sure');
+    sureDone = v => { sureDone = null; res(v); };
+    $('sureOk').onclick = () => { sureDone(true); closeDialog(); };
+    $('sureOk').focus();
+  });
+}
 
 /* ---------- new card ---------- */
 // 🐞 On the 🧪 Live channel a raised bug can also go to the AI-gile team (AIG-561): ticked by default, never for other channels.
@@ -21,6 +32,7 @@ async function bugSendBox() {
 async function newCard(preset = {}) {
   let projects = [], leads = {};
   try { projects = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
+  if (typeof TodayPage !== 'undefined') { const keep = slug(), all = projects; projects = TodayPage.only(all); if (keep && !projects.some(p => p.slug === keep)) projects = all.filter(p => p.slug === keep || projects.includes(p)); }   // AIG-1110: only today's picks (unless Show all), plus the current project
   try { (await api('GET', '/api/chats')).forEach(c => { leads[c.slug] = c.lead; }); } catch {}
   const bug = preset.type === 'bug';
   // The owner's new cards go straight to the team (AIG-51); the + on a column still picks that column.
@@ -34,12 +46,16 @@ async function newCard(preset = {}) {
         <label class="f"><span>${esc(t('dlg.life.remind'))}</span><select id="nc-remind">${[0, 15, 30, 60, 120, 1440].map(m => `<option value="${m}" ${m === 60 ? 'selected' : ''}>${esc(t('dlg.life.remind.' + m))}</option>`).join('')}</select></label></div>
       <small class="muted" id="nc-appt-hint" hidden>${esc(t('dlg.life.hint'))}</small>
       ${state.project && !state.project.lifeBoard ? `<small class="muted" id="nc-life-suggest">${esc(t('dlg.life.suggest'))} <a href="#" onclick="makeLifeBoard();return false">${esc(t('dlg.life.suggest.btn'))}</a></small>` : ''}</div>`;
+  // AIG-942: a quick idea needs a title and a description; everything else is under More options (open when something was pre-filled).
+  const moreOpen = !!(preset.type && preset.type !== 'feature' || preset.priority && preset.priority !== 'normal' || preset.risk && preset.risk !== 'normal' || preset.status && preset.status !== 'team' || preset.assignee || preset.sprint || preset.group || lifeOn || document.documentElement.classList.contains('qa-menu'));   // qa-menu: QA lays everything open
+  const pickProject = projects.length > 1 || !slug() ? `<label class="f"><span>${esc(t('dlg.newcard.project'))}</span><select id="nc-project">${projectOptionsHtml(projects, leads, slug())}</select></label>` : '';
   popNext(bug ? 'bug' : 'card'); openDialog(`<h2>${esc(bug ? t('board.raisebug') : t('dlg.newcard'))}</h2>
-    <form onsubmit="return createCard(event)">${projects.length > 1 || !slug() ? `<label class="f"><span>${esc(t('dlg.newcard.project'))}</span><select id="nc-project">${projectOptionsHtml(projects, leads, slug())}</select></label>` : ''}${lifeBox}${cardFields(c, bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') })}
+    <form onsubmit="return createCard(event)">${cardFields(c, { more: true, moreOpen, moreTop: pickProject + lifeBox, ...(bug ? { titlePh: t('dlg.bug.titleph'), descLabel: t('dlg.bug.desclabel'), descPh: t('dlg.bug.descph') } : { titlePh: t('dlg.newcard.titleph') }) })}
       <div class="err" id="d-err"></div>
       <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${esc(bug ? t('dlg.raisebug') : t('dlg.createcard'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');
   if (bug) { const ov = $('dialog').querySelector('.overlay'); if (ov) ov.classList.add('top'); }   // above pop-outs, card view and other windows (AIG-733)
   if (lifeOn) lifeToggle();
+  const dsc = $('f-description'); if (dsc) dsc.addEventListener('keydown', ev => { if (EnterSend.is(ev, 'card')) { ev.preventDefault(); if (dsc.form) dsc.form.requestSubmit(); } });   // AIG-1110: Enter sends, Shift+Enter is a new line; createCard's busy guard keeps it to one
 }
 function lifeToggle() {
   const on = $('nc-life').checked, appt = on && $('nc-lifetype').value === 'appointment';
@@ -48,8 +64,18 @@ function lifeToggle() {
 async function makeLifeBoard() {
   try { await api('PATCH', '/api/projects/' + slug(), { lifeBoard: true }); const s = $('nc-life-suggest'); if (s) s.remove(); if (state.project) state.project.lifeBoard = true; } catch (e) { alert(e.message); }
 }
+// AIG-1075: show where a new card went: scroll its column into view, flash the card, say the column in a note.
+function showNewCard(id) {
+  const el = document.querySelector(`#app a.card[data-id="${id}"]`); if (!el) return;
+  const col = el.closest('.column'), h = col && col.querySelector('h3 span');
+  try { el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); } catch { el.scrollIntoView(); }
+  el.classList.add('newflash'); setTimeout(() => el.classList.remove('newflash'), 2500);
+  if (h) note(t('dlg.newcard.wentto', { id, column: h.textContent.replace(/\s*[\u00b7(].*$/, '').trim() }));
+}
+
 async function createCard(e) {
   e.preventDefault();
+  if (createCard.busy) return false;   // AIG-1061: one submit per raise (Enter, click, slow upload)
   const body = readFields(false, false);
   // No title is fine when there is a description: with Tidy cards on the server takes its first line (AIG-399).
   if (!body.title && !body.description.trim()) { setErr('d-err', t('dlg.err.title')); return false; }
@@ -60,6 +86,7 @@ async function createCard(e) {
       body.apptAt = new Date($('nc-apptat').value).toISOString(); body.remindMins = Number($('nc-remind').value);
     }
   }
+  createCard.busy = true; const sub = e.target && e.target.querySelector && e.target.querySelector('button[type=submit]'); if (sub) sub.disabled = true;
   try {
     const sel = $('nc-project'), target = sel && sel.value || slug();
     const attachments = await Attach.upload('new:' + slug(), target);
@@ -76,7 +103,9 @@ async function createCard(e) {
     }
     closeDialog();
     await rerender();
-  } catch (err) { setErr('d-err', /title is required/.test(err.message) ? t('dlg.err.title') : err); }   // no title, and Tidy cards is off
+    showNewCard(c.id);
+  } catch (err) { setErr('d-err', /title is required/.test(err.message) ? t('dlg.err.title') : err); if (sub) sub.disabled = false; }   // no title, and Tidy cards is off
+  finally { createCard.busy = false; }
   return false;
 }
 
@@ -90,6 +119,7 @@ async function newProject(opts = {}) {
   openDialog(`<h2>${esc(t(opts.space ? 'dlg.newspace' : 'dlg.newproject'))}</h2>
     <form onsubmit="return createProject(event)">
       <label class="f"><span>${esc(t('dlg.np.name'))}</span><input type="text" id="p-name" oninput="suggestKey()" maxlength="80"></label>
+      <details id="p-more"${opts.space ? ' open' : ''}><summary>${esc(t('dlg.np.more'))}</summary>
       <div class="row"><label class="f"><span>${esc(t('dlg.np.key'))}</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
       <label class="f"><span>${esc(t('dlg.np.folder'))}</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="${esc(t('dlg.np.folder.ph'))}"></label>
       <label class="f"><span>${esc(t('dlg.np.desc'))}</span><textarea id="p-desc" rows="3"></textarea></label>
@@ -98,9 +128,44 @@ async function newProject(opts = {}) {
       <label class="f"><span>${esc(t('dlg.np.tpl'))}</span><select id="p-tpl" onchange="$('p-own').style.display = this.value === 'own' ? '' : 'none'">
         <option value="kanban">${esc(t('dlg.np.tpl.kanban'))}</option><option value="scrum">${esc(t('dlg.np.tpl.scrum'))}</option><option value="own">${esc(t('dlg.np.tpl.own'))}</option></select></label>
       <label class="f" id="p-own" style="display:none"><span>${esc(t('dlg.np.tpl.own.help'))}</span><input type="text" id="p-own-names" placeholder="${esc(t('dlg.np.tpl.own.ph'))}"></label>
+      </details>
       <div class="err" id="d-err"></div><div id="p-done"></div>
-      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`);
+      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${opts.space ? '' : ` <button type="button" id="p-sample" onclick="addSample()" title="${esc(t('sample.add.title'))}">${esc(t('sample.add'))}</button> <button type="button" id="p-play" onclick="newPlayground()">${esc(t('dlg.np.play'))}</button>`}</div>${opts.space ? '' : `<p class="muted"><small>${esc(t('dlg.np.play.hint'))}</small></p>`}</form>`);
   if (opts.space) { $('p-spacetpl').value = SPACE_TPLS[0]; spaceTpl(SPACE_TPLS[0]); }
+}
+// New playground (AIG-818/819): one box with a friend's name; makes the project for them and shows the invite code to Copy.
+function newPlayground() {
+  openDialog(`<h2>${esc(t('play.h'))}</h2>
+    <form onsubmit="return createPlayground(event)">
+      <label class="f"><span>${esc(t('play.name'))}</span><input type="text" id="pg-name" maxlength="60" autofocus></label>
+      <p class="muted">${esc(t('play.help'))}</p>
+      <div class="err" id="d-err"></div><div id="pg-done"></div>
+      <div class="actions" id="pg-acts"><button class="primary" type="submit" id="pg-go">${esc(t('play.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`);
+  setTimeout(() => { const i = $('pg-name'); if (i) i.focus(); }, 0);
+}
+async function createPlayground(e) {
+  e.preventDefault();
+  const name = $('pg-name').value.trim();
+  if (!name) { setErr('d-err', t('play.err.name')); return false; }
+  try {
+    const r = await api('POST', '/api/playgrounds', { name });
+    $('d-err').textContent = '';
+    $('pg-name').readOnly = true;
+    $('pg-done').innerHTML = `<p>✅ ${esc(t('play.made', { name: r.name }))}</p>${r.code ? `<textarea id="pg-code" readonly rows="3" onclick="this.select()" style="width:100%">${esc(r.code)}</textarea><small class="muted">${esc(t('play.send', { name }))}</small>` : `<p class="muted">${esc(t('play.' + r.friend, { name }))}</p>`}<div id="pg-msg" class="muted"></div>`;
+    $('pg-acts').innerHTML = `${r.code ? `<button type="button" class="primary" id="pg-copy">${esc(t('dmf.copy'))}</button> ` : ''}<button type="button" onclick="closeDialog(); location.hash = '#/p/${r.slug}'">${esc(t('dlg.np.open'))}</button> <button type="button" onclick="closeDialog()">${esc(t('common.close'))}</button>`;
+    if (r.code) $('pg-copy').onclick = async () => { try { await navigator.clipboard.writeText(r.code); } catch { $('pg-code').select(); document.execCommand('copy'); } $('pg-msg').textContent = t('dmf.copied'); };
+  } catch (err) { setErr('d-err', err); }
+  return false;
+}
+// Sample project (AIG-1072): one click makes it (once), one click removes it.
+async function addSample() {
+  try { await api('POST', '/api/sample-project'); } catch (err) { if (!/already/.test(String((err && err.message) || err))) { alert(String((err && err.message) || err)); return; } }
+  closeDialog(); location.hash = '#/p/sample-project'; refresh(true);
+}
+async function removeSample() {
+  if (!confirm(t('sample.remove.ask'))) return;
+  try { await api('DELETE', '/api/sample-project'); } catch (err) { alert(String((err && err.message) || err)); return; }
+  location.hash = '#/'; refresh(true);
 }
 function suggestKey() {
   const name = $('p-name').value, k = $('p-key'), f = $('p-path');

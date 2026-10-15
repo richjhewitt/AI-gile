@@ -17,6 +17,7 @@ node "../AI-gile/aigile.js" <command> <project> ...
 ```
 aigile brief <proj>              # the whole picture in one call (not BOARD.local.md)
 aigile updates <proj>            # what the owner said since you last looked
+aigile chat <proj> ["text" --as NAME]   # the Lead chat (no cards): no text = recent messages, text = your reply; if talk becomes work, make a card and post its id there
 aigile next <proj>               # what to work on
 aigile show <proj> <id>          # full card and conversation: read before starting
 aigile open <proj> <id> --as NAME  # pop the card open in the owner's app (only while it is in front; else a chip)
@@ -34,7 +35,7 @@ Status: 🔄 working · 👀 in review · ✅ accepted · 🔁 sent back · 💤
 
 Profile picture: pick a picture that suits you: `aigile avatar <proj> --as NAME` (library pictures, plus the free 🎨 badge maker: `aigile avatar <proj> badge fox teal glasses --as NAME`). On the cheapest plan or in ⛔ No Token Mode you are given a random badge: don't spend tokens on it. To choose from the library: `aigile avatar <proj> --as NAME` lists them, then `aigile avatar <proj> <number or name> --as NAME`.
 
-**3. Move cards as you go.** `aigile move <proj> <id> doing` (`assign` it to yourself if unassigned); `review` only while a teammate checks it. `comment` for progress and findings. Add cards for work you discover: `aigile add <proj> "title" --type bug --priority high --status todo --desc "..."`.
+**3. Move cards as you go.** Check the project's Definition of Ready before `doing` and its Definition of Done before `test` (`aigile dod <proj>`; `start` and `test` print the list). `aigile move <proj> <id> doing` (`assign` it to yourself if unassigned); `review` only while a teammate checks it. `comment` for progress and findings. Add cards for work you discover: `aigile add <proj> "title" --type bug --priority high --status todo --desc "..."`.
 
 **Leads launching agents:** record each with `aigile start <proj> <id> --as <AgentName>` (assigns the card, moves it to `doing`, sets the roster task, shows the owner the "In flight" line). When the agent finishes, hand over with `test`, or `move` it on. **Translating:** run `aigile i18n missing <lang>` and translate only the JSON it prints (missing or changed English keys); never read all of `public/lang/en.json`. **Helper cap:** at most 4 helpers per run (the brief gives the exact number for the owner's spend scale: 2 on 🐢 up to 6 on 🚀), each with a short brief naming the exact files or line ranges. Brief each helper with `aigile profile <proj> <role>` (e.g. `frontend`): paste its lines at the top of the helper's prompt.
 
@@ -44,7 +45,7 @@ Profile picture: pick a picture that suits you: `aigile avatar <proj> --as NAME`
 
 **Roles on cards.** A card may be assigned to a role: `Lead (Opus)`, `Reviewer (Opus)`, `Frontend (Sonnet)`, `Backend (Sonnet)`, `QA (Haiku)`, `Quick fix (Haiku)`, `Docs (Haiku)`. The lead launches that kind of agent; its `start ... --as <name>` replaces the role with its name.
 
-**4. Hand features to the owner with `test`.** Don't move your own work to `done`; the owner accepts it. Once built and self-tested:
+**4. Hand features to the owner with `test`.** Don't move your own work to `done`; the owner (or, where the owner allows it, the lead once it works) accepts it. Add a screenshot wherever you can. Once built and self-tested:
 
 ```
 aigile test <proj> <id> "1. Open http://localhost:4321
@@ -66,12 +67,16 @@ For a page to look at, add `--open http://localhost:5173/the/page` (and `--start
 aigile ask <proj> <id> "Should exports include archived items? I'm assuming no." --as YourName
 ```
 
-No card for it? `add` one first. This flags the card NEEDS-OWNER and puts it in their inbox with one-click answers: a plan ending in **GO?** gets Go / Not yet, a yes/no gets Yes / No, otherwise `--options "M3U,JSON"` (up to 4). Then move on with `next`. State your assumption so a "fine" is enough. For an external blocker (missing key, failing service) use `aigile block <proj> <id> "why" --as YourName`, and `unblock` when it clears; their reply clears the block too.
+No card for it? `add` one first. This flags the card NEEDS-OWNER and puts it in their inbox with one-click answers: a plan ending in **GO?** gets Go / Not yet and shows as **🚦 Ready for go** (or mark it with `--kind plan`), a yes/no gets Yes / No, otherwise `--options "M3U,JSON"` (up to 4). Then move on with `next`. State your assumption so a "fine" is enough. For an external blocker (missing key, failing service) use `aigile block <proj> <id> "why" --as YourName`, and `unblock` when it clears; their reply clears the block too.
+
+**Retro:** after a sprint go/no-go or a closed incident (the brief says "Run a retro"), suggest a working-agreement change: `aigile retro <proj> "suggested change" --why "what happened" [--section "Git"] [--card AIG-x] --as YourName` makes one 🚦 Ready for go card; on Go the board adds the line to WAYS-OF-WORKING.md.
 
 **Owner away? Don't ask, assume.** Log it so he can judge it cold, half-asleep, without the card in his head: `aigile assume <proj> <id> --decided "what had to be decided" --chose "what we chose" --why "why" --if-plugged "what changes if he says no" [--options "A|B|C"] --as YourName` (also `comment ... --assume` with the same flags). Not a bare one-liner. It lands on his 🌙 Assumptions page, grouped by card, where he marks it 👍 fine or ✋ plugs it with a reply on the card.
 **To do ran dry?** The night watch refills it from urgent/high backlog cards that need no owner answer and logs why as an assumption; start them, and flag any you think is a wrong pick.
 
 **Several questions on the same subject?** Group them: `aigile quiz <proj> <id> --topic "Sharing" "Question one?|Opt A,Opt B" "Question two?|Yes,No" --as YourName`. Keep each question to one line (up to 4 short options); the owner answers them together in the ⚡ Decide pile and you get one comment back. When you ask Go, keep the plan to a 2-line summary.
+
+**Risk register.** When you plan a risky card or ask for a Go, add the risk: `aigile risk <proj> add "what could go wrong" --card AIG-x --likelihood 2 --impact 3 --mitigation "..." --warning "..." --review YYYY-MM-DD --as YourName`. `aigile risk <proj>` lists them; `aigile risk <proj> set <rid> --status happened` files a 🔥 incident card.
 
 **Links, not directions.** When a step sends the owner to a website (a DNS provider, a dashboard, a store page), give the direct link to that exact page, e.g. the domain's DNS settings; if you can't know it, the provider's sign-in page. Never "go to X and find Y".
 

@@ -5,11 +5,11 @@ const StatsPage = (() => {
   const S = { data: null, slug: '', text: '' };
   const num = n => Number(n || 0).toLocaleString(i18n.locale);
   const dayLabel = s => { if (!s) return ''; const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(i18n.locale, { year: 'numeric', month: 'short', day: 'numeric' }); };
-  S.load = async slug => {
+  S.load = async (slug, options = {}) => {
     if (S.slug !== slug) { S.slug = slug; S.data = null; }
-    try { S.data = await api('GET', `/api/projects/${slug}/stats`); } catch { S.data = { error: true }; }
+    try { S.data = await PagePoll.get(`/api/projects/${slug}/stats`, { timeout: 30000, ...options }); } catch { if (!options.signal?.aborted) S.data = { error: true }; }
   };
-  const tile = (k, v, cls) => `<div class="st-tile ${cls}"><div class="st-v">${esc(v)}</div><div class="st-k">${esc(t(k))}</div></div>`;
+  const tile = (k, v, cls, sub) => `<div class="st-tile ${cls}"><div class="st-v">${esc(v)}</div><div class="st-k">${esc(t(k))}</div>${sub ? `<div class="st-k">${esc(sub)}</div>` : ''}</div>`;
   const chart = weeks => {
     const W = 480, H = 140, pad = 18, bw = W / weeks.length, top = Math.max(1, ...weeks.map(w => w.done));
     const bars = weeks.map((w, i) => { const h = Math.round((H - pad - 14) * w.done / top);
@@ -29,13 +29,13 @@ const StatsPage = (() => {
   S.render = () => {
     const d = S.data;
     const back = `<a href="#/p/${esc(S.slug)}">${esc(t('stats.back'))}</a>`;
-    if (!d) return `<div class="uz st-page"><p class="muted">${esc(t('common.loading'))}</p></div>`;
+    if (!d) return `<div class="uz st-page"><p>${back}</p><p class="muted">${esc(t('common.loading'))}</p></div>`;
     if (d.error) return `<div class="uz st-page"><p>${back}</p><p class="muted">${esc(t('stats.error'))}</p></div>`;
     S.text = wrapped(d);
     const r = d.records || {};
     const tiles = tile('stats.done', num(d.done), 'st-done') + tile('stats.made', num(d.made), '') + tile('stats.comments', num(d.comments), '')
       + tile('stats.commits', d.git ? num(d.git.commits) : '–', '') + tile('stats.lines', d.git ? num(d.git.lines) : '–', '')
-      + tile('stats.busiest', d.busiestDay ? t('stats.busiest.v', { day: dayLabel(d.busiestDay.day), n: d.busiestDay.done }) : '–', 'st-wide')
+      + tile('stats.busiest', d.busiestDay ? t('stats.busiest.n', { n: d.busiestDay.done }) : '–', 'st-wide', d.busiestDay ? dayLabel(d.busiestDay.day) : '')
       + tile('stats.streak', d.longestStreak ? t('stats.streak.v', { count: d.longestStreak }) : '–', '')
       + tile('stats.first', d.firstCard ? dayLabel(d.firstCard) : '–', '');
     return `<div class="uz st-page"><p>${back}</p><h2>${esc(t('stats.title'))}: ${esc(d.project)}</h2>

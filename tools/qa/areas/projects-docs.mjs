@@ -1,8 +1,8 @@
-// QA areas: docs, mdlinks, newproject, perms, discover.
+// QA areas: docs, mdlinks, newproject, perms, discover, filtertypes.
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { BASE, ROOT, check, sleep, tmp, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, ROOT, check, sleep, tmp, mkProject, mkCard, openPage, noErrors, def, tbClick } from '../lib.mjs';
 // The clipboard text, with Windows line ends (\r\n) read back as \n.
 const clip = page => page.evaluate(() => navigator.clipboard.readText()).then(t => t.replace(/\r\n/g, '\n'));
 
@@ -132,6 +132,8 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
   const page = await openPage(ctx, '#/');
   await page.click('button:has-text("+ New project")');
   await page.fill('#p-name', 'Fresh One');
+  check('only the name shows up front; the rest sits under More options (AIG-1079)', !(await page.isVisible('#p-path')) && !(await page.isVisible('#p-key')) && (await page.isVisible('#p-more summary')) && (await page.isVisible('#p-play')));
+  await page.evaluate(() => { $('p-more').open = true; });
   check('folder suggested from the name', /[\\/]Fresh One$/.test(await page.inputValue('#p-path')), await page.inputValue('#p-path'));
   await page.fill('#p-path', folder);
   await page.click('#dialog button[type=submit]');
@@ -156,6 +158,7 @@ def('newscrum', 'New project from the Scrum or own-columns template names the co
   const heads = () => page.$$eval('.column h3 span:first-child', els => els.map(e => e.textContent));
   await page.click('button:has-text("+ New project")');
   await page.fill('#p-name', 'Scrum Team');
+  await page.evaluate(() => { $('p-more').open = true; });
   await page.fill('#p-path', '');
   await page.selectOption('#p-tpl', 'scrum');
   await page.click('#dialog button[type=submit]');
@@ -168,6 +171,7 @@ def('newscrum', 'New project from the Scrum or own-columns template names the co
   await page.goto(BASE + '#/');
   await page.click('button:has-text("+ New project")');
   await page.fill('#p-name', 'Own Team');
+  await page.evaluate(() => { $('p-more').open = true; });
   await page.fill('#p-path', '');
   await page.selectOption('#p-tpl', 'own');
   await page.fill('#p-own-names', 'Ideas, Next');
@@ -193,7 +197,7 @@ def('perms', '🔐 Permissions: ticks follow the rules, save keeps hooks, new fo
   check('new folder gets run, edit, push-asks and ways', ['Bash', 'Edit', ways].every(x => r.allow.includes(x)) && r.ask.includes('Bash(git push:*)') && !r.allow.includes('WebFetch'), r);
   check('ways rule is an absolute read of the board folder', /^Read\(\/\/[a-z]\/.*\/\*\*\)$/.test(ways), ways);
   const page = await openPage(ctx, '#/p/alpha');
-  await page.click('button:has-text("Permissions")');
+  await tbClick(page, 'Permissions');
   await page.waitForSelector('#perm-ticks input');
   const ticked = async k => page.isChecked(`#perm-ticks input[data-k="${k}"]`);
   check('ticks match the file', (await ticked('run')) && (await ticked('ways')) && !(await ticked('web')));
@@ -246,12 +250,25 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   const all = await s.ok('GET', '/api/projects');
   check('both suggested ones added with their own keys, no rename', all.length === 2 && new Set(all.map(x => x.key)).size === 2 && all.every(x => ks.includes(x.key)), all.map(x => x.key));
   await page.evaluate(sl => { location.hash = '#/p/' + sl; }, (all.find(x => x.name === 'Shopping') || {}).slug);
-  await page.waitForSelector('p.muted code');
-  check('board header puts a separator between description and folder path (AIG-332)', await page.$eval('p.muted:has(code)', e => / · $/.test(e.firstChild.textContent)), await page.$eval('p.muted:has(code)', e => e.textContent));
+  await page.waitForSelector('#bDetails');
+  check('the folder path sits in the folded Details on the board (AIG-938)', await page.$eval('#bDetails', e => !e.open && !!e.querySelector('code')));
   check('an empty imported board says what happens next (AIG-333)', /Wake the team/.test(await page.$eval('#emptyHint', e => e.textContent)));
   await page.evaluate(() => { localStorage.removeItem('aigile.standupAsked'); return morningPrompt(); });
   await page.waitForTimeout(500);
-  check('no stand-up prompt on a board with no cards anywhere', !(await page.$('#suPrompt')));
+  check('no stand-up prompt before any project has a team (AIG-1078)', !(await page.$('#suPrompt')));
   noErrors(page);
 }, true);
-
+
+def('filtertypes', 'The type filter offers incident, problem and change only on a project that has such a card (AIG-1081)', async (s, ctx) => {
+  await mkProject(s, 'Plain Types', 'PLT');
+  await mkCard(s, 'plain-types', 'A thing', { type: 'task', status: 'todo' });
+  const page = await openPage(ctx, '#/p/plain-types');
+  await page.waitForSelector('select[data-f=type]');
+  const opts = () => page.$$eval('select[data-f=type] option', os => os.map(o => o.value));
+  check('no service types on a plain project', JSON.stringify(await opts()) === JSON.stringify(['', 'feature', 'bug', 'task']), await opts());
+  await mkCard(s, 'plain-types', 'Down', { type: 'incident', status: 'todo' });
+  await page.goto(BASE + '#/p/plain-types'); await page.reload();
+  await page.waitForSelector('select[data-f=type]');
+  check('incident appears once a card has it', (await opts()).includes('incident') && !(await opts()).includes('problem'), await opts());
+  noErrors(page); await page.close();
+}, true);

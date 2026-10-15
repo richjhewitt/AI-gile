@@ -24,31 +24,38 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   await page.click('#dmPanel [data-dm="alpha"]');
   await page.waitForSelector('#dmList .dm-msg');
   check('their message on the left', /M3U or JSON/.test(await page.textContent('#dmList .dm-msg:not(.mine)')));
-  check('typing box replies to the open question', (await page.inputValue('#dmTarget')) === c.id);
+  check('typing box defaults to the Lead chat, not the open question (AIG-936)', (await page.inputValue('#dmTarget')) === '_new');
   // A general message while a question waits (AIG-285): pick "New message to" in the list.
   await page.selectOption('#dmTarget', '_new');
   await page.fill('#dmText', 'Unrelated: how is the week going?');
   await page.press('#dmText', 'Enter');
   await sleep(600);
-  const gen = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.quick);
-  check('"New message to" sends a general message; the question stays open', gen && /Unrelated/.test(gen.title) && (await getCard(s, 'alpha', c.id)).needsYou, gen);
-  await s.ok('PATCH', `/api/projects/alpha/cards/${gen.id}`, { status: 'done' });
-  await page.waitForFunction(id => document.getElementById('dmTarget') && document.getElementById('dmTarget').value === id, c.id, { timeout: 5000 }).catch(() => {});
-  check('after sending, the typing box answers the question again', (await page.inputValue('#dmTarget')) === c.id);
+  const gen = (await s.ok('GET', '/api/projects/alpha/leadchat')).messages.at(-1);   // AIG-872: the Lead chat, not a 💬 card
+  check('"New message to" sends a general message; the question stays open', gen && /Unrelated/.test(gen.text) && !(await s.ok('GET', '/api/projects/alpha')).cards.some(x => x.quick) && (await getCard(s, 'alpha', c.id)).needsYou, gen);
+  check('after sending, the Lead chat is open and the box carries on in it (AIG-872)', (await page.inputValue('#dmTarget')) === '_new' && /Unrelated/.test(await page.textContent('#dmList .dm-fold.open')));
+  await page.selectOption('#dmTarget', c.id);
   await page.fill('#dmText', 'JSON please');
   await page.press('#dmText', 'Enter');
   await page.waitForSelector('#dmList .dm-msg.mine');
   const after = await getCard(s, 'alpha', c.id);
   check('your reply lands on the card and clears the question', after.comments.at(-1).text === 'JSON please' && !after.needsYou && after.status === 'team', after.comments.at(-1));
   await page.waitForFunction(() => /New message to/.test(document.getElementById('dmTo').textContent), null, { timeout: 5000 }).catch(() => {});
+  await page.waitForSelector('#dmTarget');
+  await page.selectOption('#dmTarget', '_new');
   await page.fill('#dmText', 'Idea: dark mode for the player');
   await page.press('#dmText', 'Enter');
   await sleep(600);
-  const quick = (await s.ok('GET', '/api/projects/alpha')).cards.find(x => x.quick && x.status !== 'done');
-  check('with nothing open, a new message becomes a quick question for the team', quick && quick.title === '💬 Idea: dark mode for the player' && quick.status === 'team', quick);
+  await sleep(300);
+  check('with nothing open, a new message goes to the Lead chat', (await s.ok('GET', '/api/projects/alpha/leadchat')).messages.at(-1).text === 'Idea: dark mode for the player');
+  const quick = await s.ok('POST', '/api/projects/alpha/cards', { title: '💬 Idea: dark mode for the player', description: 'Idea: dark mode for the player', type: 'task', status: 'team', createdBy: 'Owner', quick: true });   // an old-style 💬 card still works
   s.cli(['comment', 'alpha', quick.id, 'Nice: made AIG-cards for it', '--as', 'Lead']);
   await page.waitForFunction(() => /made AIG-cards/.test(document.getElementById('dmList').textContent), null, { timeout: 6000 }).catch(() => {});
   check('the lead answer shows in the chat', /made AIG-cards/.test(await page.textContent('#dmList')));
+  // AIG-811: a tidied card's "Original:" comment is his message, not a second one after it.
+  s.cli(['edit', 'alpha', quick.id, '--desc', '- tidied bullet', '--as', 'Lead']);
+  s.cli(['comment', 'alpha', quick.id, 'Original: my own raw words', '--as', 'Lead']);
+  const msgs = (await s.ok('GET', '/api/chats/alpha')).messages.filter(m => m.card === quick.id);
+  check('Original: comment stands in for the tidied description, once', msgs.filter(m => /my own raw words/.test(m.text)).length === 1 && !msgs.some(m => /^Original:/.test(m.text)) && !msgs.some(m => /tidied bullet/.test(m.text)) && msgs.find(m => /raw words/.test(m.text)).mine, msgs.map(m => m.text));
   // Chatty lead (AIG-140): off by default; when on, the lead can start a DM without adding to the board.
   await s.ok('PATCH', '/api/projects/alpha', { chatty: false });   // not the owner's default for new projects
   check('a lead cannot start a DM while chatty is off', s.cli(['dm', 'alpha', 'hi!', '--as', 'Lead']).code !== 0);
@@ -358,7 +365,7 @@ def('dmchats', 'friends\' private DMs show as chats next to the team leads, with
     await page.click('#dmPanel [data-dmfilter="people"]');
     check('People shows only the friend', await page.locator('#dmPanel [data-dm="alpha"]').count() === 0 && await page.locator(`#dmPanel [data-dm="dm:${ca.id}"]`).count() === 1);
     await page.click('#dmPanel [data-dmfilter="all"]');
-    check('All brings both back (and the 🧭 Lead Scrum Master, AIG-359)', await page.locator('#dmPanel .dm-row').count() === 3);
+    check('All brings both back (and the 🧭 Lead Scrum Master, AIG-359)', await page.locator('#dmPanel .dm-row:not([data-dm="_allhands"]):not([data-dm="_assistant"])').count() === 3);
 
     await page.click(`#dmPanel [data-dm="dm:${ca.id}"]`);
     await page.waitForSelector('#dmList .dm-msg');
@@ -383,7 +390,7 @@ def('dmchats', 'friends\' private DMs show as chats next to the team leads, with
     await page.waitForSelector('#dmPanel [data-dmfilter]');
     check('the chosen filter is still there when you come back to the list', await page.locator('#dmPanel [data-dmfilter="all"].on').count() === 1);
     await page.click('#dmPanel [data-dm="alpha"]');
-    await page.waitForSelector('#dmGo');
+    await page.waitForSelector('#dmGo', { state: 'attached' });
     check('a lead\'s chat still has its own Go button', /Go/.test(await page.textContent('#dmGo')));
     noErrors(page);
   } finally { b.stop(); relay.stop(); }

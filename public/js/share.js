@@ -19,12 +19,13 @@ const Share = (function () {
   const curSlug = () => typeof state !== 'undefined' && state.route && state.route.slug;
   async function load() {
     try {
-      [links, people] = await Promise.all([api('GET', '/api/shares'), api('GET', '/api/dms/contacts')]);
-      projects = offers().length ? await api('GET', '/api/projects') : [];   // only an offer needs the project list
+      [links, people] = await Promise.all([PagePoll.get('/api/shares'), document.hidden ? Promise.resolve(people) : PagePoll.get('/api/dms/contacts')]);
+      projects = !document.hidden && offers().length ? await PagePoll.get('/api/projects') : [];   // only an offer needs the project list
       const l = curSlug() && ofProject(curSlug());
-      inb = l && !l.forgotten && l.state !== 'offered' && l.state !== 'incoming' ? await api('GET', `/api/shares/${l.id}/inbound`) : null;
+      inb = document.hidden ? inb : l && !l.forgotten && l.state !== 'offered' && l.state !== 'incoming' ? await PagePoll.get(`/api/shares/${l.id}/inbound`) : null;
     } catch { return; }
     if (typeof IB !== 'undefined') IB.setFriends('offers', offers().length);   // counted in the inbox and its badges even off the inbox page (AIG-382)
+    if (document.hidden) return;
     const s = JSON.stringify([links, people.map(p => [p.id, p.name, p.checked, p.blocked]), projects.map(p => [p.slug, p.name]), inb]);
     if (s === sig) return;
     sig = s;
@@ -55,7 +56,7 @@ const Share = (function () {
   // The card panel's 🔗 button: share it, see what is shared, or where it came from.
   function cardBtn(p, c) {
     const l = ofProject(p.slug);
-    if (c.share && c.share.theirs) return `<span class="pill share-pill">${esc(t('share.card.theirs', { name: l ? l.friend : '' }))}</span>`;
+    if (c.share && c.share.theirs) return `<span class="pill share-pill">${esc(t('share.card.theirs', { name: l ? l.friend : '' }))}</span>${c.forFriend ? ` <span class="pill share-pill">${esc(t('featreq.for', { name: c.forFriend }))}</span>` : ''}`;
     if (!l || l.state !== 'live' || (!c.share && !(l.effective && l.effective.sendCards && can(l, 'seeMine')))) return '';
     return `<button id="shareCardBtn" onclick="Share.previewCard('${esc(c.id)}')">${esc(t(c.share ? 'share.card.shared' : 'share.card.btn', { name: l.friend }))}${c.share && c.share.held ? ' ' + esc(t('share.card.held')) : ''}</button>`;
   }
@@ -138,7 +139,7 @@ const Share = (function () {
     const l = ofProject(slug());
     if (!l) return;
     let pv;
-    try { pv = await api('GET', `/api/shares/${l.id}/preview?card=${encodeURIComponent(cardId)}`); } catch (e) { alert(e.message); return; }
+    try { pv = await PagePoll.get(`/api/shares/${l.id}/preview?card=${encodeURIComponent(cardId)}`); } catch (e) { alert(e.message); return; }
     const sh = pv.shared, can = l.state === 'live' && l.on && l.effective && l.effective.sendCards;
     const rows = pv.fields.map(k => `<tr data-field="${k}"><th>${esc(t('share.prev.f.' + k))}</th><td>${k === 'description' ? plain(pv.payload[k] || '') : esc(pv.payload[k])}</td></tr>`).join('');
     const flags = pv.flags.length ? `<div class="share-flags"><p>${esc(t('share.prev.flags'))}</p><ul>${pv.flags.map(f => `<li>${esc(t('share.prev.f.' + f.field))}: ${esc(t('share.prev.kind.' + f.kind))} <code>${esc(f.text)}</code></li>`).join('')}</ul></div>` : '';
@@ -207,6 +208,10 @@ const Share = (function () {
   const whatHtml = l => l.effective ? `<ul class="share-what">${[['sendCards', 'share.eff.send'], ['takeCards', 'share.eff.take'], ['comments', 'share.eff.comments'], ['status', 'share.eff.status'], ['files', 'share.eff.files'], ['teamRead', 'share.eff.teamRead']]
     .map(([k, key]) => `<li>${l.effective[k] ? '✅' : '⛔'} ${esc(t(key, { name: l.friend }))}</li>`).join('')}</ul>` : '';
 
+  // AIG-856: change roles, picked per friend per project by the owner (the API refuses anyone else); they sit on top of the share role.
+  const CHG = ['pm', 'testLead', 'devLead'];
+  const changeHtml = l => !l.slug || l.state !== 'live' ? '' : `<div class="share-chgrole" id="shareChgRole"><b>${esc(t('chgrole.label'))}</b>${CHG.map(k => `<label class="chk"><input type="checkbox" data-chg="${k}" ${(l.changeRoles || []).includes(k) ? 'checked' : ''} onchange="Share.setChange('${esc(l.contact)}', '${k}', this.checked)"> ${esc(t('chgrole.' + k))}</label>`).join('')}
+    <p class="muted">${esc(t('chgrole.help', { name: l.friend }))}</p>${(l.theirChange || []).length ? `<p class="muted" id="shareTheirChange">${esc(t('chgrole.theirs', { name: l.friend, roles: l.theirChange.map(k => t('chgrole.' + k)).join(', ') }))}</p>` : ''}</div>`;
   // Their role: one of the AIG-185 roles, for this project or all my projects with them; what it lets them do.
   function roleHtml(l) {
     const opts = ROLES.map(r => `<option value="${r}" ${l.role === r ? 'selected' : ''}>${esc(t('share.role.' + r))}</option>`).join('');
@@ -214,7 +219,13 @@ const Share = (function () {
       <label class="f"><span>${esc(t('share.role.scope'))}</span><select id="shareRoleScope" onchange="Share.setRole('${l.id}')">
         <option value="project" ${l.roleScope !== 'all' ? 'selected' : ''}>${esc(t('share.role.scope.project'))}</option>
         <option value="all" ${l.roleScope === 'all' ? 'selected' : ''}>${esc(t('share.role.scope.all', { name: l.friend }))}</option></select></label>
+      <label class="f"><span>${esc(t('share.title.label'))}</span><input type="text" id="shareTitle" maxlength="40" value="${esc(l.title || '')}" placeholder="${esc(t('share.title.ph'))}" onchange="Share.setLabels('${l.id}')"></label>
+      <label class="f"><span>${esc(t('share.preview.label'))}</span><input type="url" id="sharePreview" maxlength="300" value="${esc(l.preview || '')}" placeholder="https://" onchange="Share.setLabels('${l.id}')"></label>
+      <p class="muted">${esc(t('share.title.help', { name: l.friend }))} ${esc(t('share.preview.help', { name: l.friend }))}</p>
+      <div class="actions"><button id="shareSimple" onclick="Share.simplePreset('${l.id}')" title="${esc(t('share.simple.help'))}">${esc(t('share.simple'))}</button></div>
+      <p class="muted">${esc(t('share.simple.hint'))}</p>
       <p class="muted" id="shareRoleHelp">${esc(t('share.role.help.' + l.role))} ${esc(t('share.role.never', { name: l.friend }))}</p>
+      ${changeHtml(l)}
       ${l.theirRole ? `<p class="muted" id="shareTheirRole">${esc(t('share.role.theirs', { name: l.friend, role: t('share.role.' + l.theirRole) }))}</p>` : ''}</div>`;
   }
   async function dialog() {
@@ -222,7 +233,7 @@ const Share = (function () {
     const s = slug(), l = ofProject(s), p = state.project;
     let body;
     if (l && l.state === 'live') {
-      body = `<p>${esc(t('share.live', { name: l.friend, project: l.theirName }))}</p>
+      body = `<p>${esc(t('share.live', { name: l.friend, project: l.theirName }))}</p>${l.title ? `<p class="muted" id="shareFriendTitle">${esc(l.friend + ', ' + l.title)}</p>` : ''}
         <label class="chk share-switch"><input type="checkbox" id="shareOn" ${l.on ? 'checked' : ''} onchange="Share.setOn('${l.id}', this.checked)"> ${esc(t('share.switch'))}</label>
         <p class="muted">${esc(l.on ? t('share.switch.on') : t('share.switch.off'))}${l.droppedOff ? ' · ' + esc(t('share.dropped', { n: l.droppedOff })) : ''}${l.overCap ? ' · ' + esc(t('share.overcap', { n: l.overCap })) : ''}</p>
         <p class="muted" id="shareHeard">${esc(l.lastHeard ? t('share.heard', { name: l.friend, when: ago(l.lastHeard) }) : t('share.heard.never', { name: l.friend }))}</p>
@@ -230,6 +241,9 @@ const Share = (function () {
         ${roleHtml(l)}
         <label class="chk"><input type="checkbox" id="shareBoard" ${l.board ? 'checked' : ''} ${can(l, 'seeMine') ? '' : 'disabled'} onchange="Share.setBoard('${l.id}', this.checked)"> ${esc(t('share.board', { name: l.friend }))}</label>
         <p class="muted" id="shareBoardHelp">${esc(t(!can(l, 'seeMine') ? 'share.board.no' : l.board ? 'share.board.on' : 'share.board.off', { name: l.friend }))}</p>
+        ${l.slug ? `<label class="chk"><input type="checkbox" id="shareApprovals" ${l.approvals ? 'checked' : ''} onchange="Share.setApprovals('${l.slug}', this.checked)"> ${esc(t('approvals.setting'))}</label>
+        <p class="muted">${esc(t('approvals.setting.hint'))}</p>
+        <label class="chk"><input type="checkbox" id="sharePeerReview" ${l.peerReview ? 'checked' : ''} onchange="Share.setPeerReview('${l.slug}', this.checked)"> ${esc(t('peerreview.setting'))}</label>` : ''}
         <label class="chk"><input type="checkbox" id="shareTeamRead" ${l.mine && l.mine.teamRead ? 'checked' : ''} onchange="Share.setTeamRead('${l.id}', this.checked)"> ${esc(t('share.allow.teamRead'))}</label>
         <p class="muted">${esc(t(l.mine && l.mine.teamRead ? 'share.teamRead.on' : 'share.teamRead.off', { name: l.friend }))}</p>
         <div class="actions"><button onclick="Share.ping('${l.id}')" ${l.on ? '' : 'disabled'}>${esc(t('share.ping'))}</button>
@@ -263,8 +277,14 @@ const Share = (function () {
   const offer = () => act(() => api('POST', '/api/shares', { slug: slug(), contact: $('shareWho').value, allow: readTicks('o-') }));
   const setOn = (id, on) => act(() => api('PATCH', '/api/shares/' + id, { on }));
   const setTeamRead = (id, teamRead) => act(() => api('PATCH', '/api/shares/' + id, { teamRead }));
+  const setApprovals = (slug, approvals) => act(() => api('PATCH', '/api/projects/' + slug, { approvals }));
+  const setPeerReview = (slug, peerReview) => act(() => api('PATCH', '/api/projects/' + slug, { peerReview }));   // AIG-993
   const setBoard = (id, board) => act(async () => { const r = await api('PATCH', '/api/shares/' + id, { board }); if (r.shared) note(t('share.board.sent', { n: r.shared.sent, held: r.shared.held })); });
   const setRole = id => act(() => api('PATCH', '/api/shares/' + id, { role: $('shareRole').value, scope: $('shareRoleScope').value }));
+  const setLabels = id => act(() => api('PATCH', '/api/shares/' + id, { title: $('shareTitle').value, preview: $('sharePreview').value }));
+  // AIG-962: Non-technical friend = Viewer, comments on, project Approvals on (their wishes wait in ✅ Approvals)
+  const simplePreset = id => act(async () => { await api('PATCH', '/api/shares/' + id, { role: 'alpha', scope: 'project', comments: true }); await api('PATCH', '/api/projects/' + slug(), { approvals: true }); });
+  const setChange = (cid, key, on) => act(() => api('POST', '/api/projects/' + slug() + '/change-roles', key === 'pm' ? { pm: { [on ? 'add' : 'remove']: '@' + cid } } : { [key]: on ? '@' + cid : '' }));
   const ping = id => act(() => api('POST', `/api/shares/${id}/ping`));
   function unlink(id, forget) {
     if (forget && !confirm(t('share.forget.confirm'))) return;
@@ -311,7 +331,7 @@ const Share = (function () {
     try { await api('POST', `/api/shares/${id}/decline`); sig = ''; await load(); } catch (e) { const x = document.querySelector(`[data-share="${id}"] [data-share-err]`); if (x) x.textContent = e.message; }
   }
 
-  setInterval(() => { if (!document.hidden && typeof i18n !== 'undefined' && i18n.ready) load(); }, 3000);
-  return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setRole, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
+  PagePoll.every(() => { if (typeof i18n !== 'undefined' && i18n.ready) return load(); }, 3000, { hidden: 30000, home: true });
+  return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setApprovals, setPeerReview, setRole, setLabels, simplePreset, setChange, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
     laneHtml, cardBtn, cardComments, commentMark, previewCard, sendCard, unshareCard, sendHeld, laneCard, laneReply, takeCard };
 })();

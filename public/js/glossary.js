@@ -6,6 +6,7 @@ const GLOSSARY = ['backlog', 'sprint', 'standup', 'bug', 'test', 'commit', 'push
   'deploy', 'kanban', 'wip', 'pr', 'hook', 'token', 'agent'];
 // Words on every screen would be underlined everywhere: they stay in the glossary but get no tooltip.
 const NO_TIP = ['test'];
+const NO_AI_SKIP = ['agent', 'token', 'hook'];   // AIG-821: words about AI agents, left out in No AI mode
 const glossOn = () => { try { return localStorage.getItem('aigile.explain') === '1'; } catch { return false; } };
 function setExplain(on) {
   try { on ? localStorage.setItem('aigile.explain', '1') : localStorage.removeItem('aigile.explain'); } catch {}
@@ -14,7 +15,7 @@ function setExplain(on) {
 
 /* ---------- the glossary page ---------- */
 function renderGlossary() {
-  const items = GLOSSARY.map(id => ({ word: t('gloss.' + id + '.word'), text: t('gloss.' + id + '.text') })).sort((a, b) => a.word.localeCompare(b.word));
+  const items = GLOSSARY.filter(id => !(NoAi.on && NO_AI_SKIP.includes(id))).map(id => ({ word: t('gloss.' + id + '.word'), text: t('gloss.' + id + '.text') })).sort((a, b) => a.word.localeCompare(b.word));
   return `<div class="gloss"><h2>${esc(t('gloss.h'))}</h2><p class="muted">${esc(t('gloss.intro'))}</p>
     <input type="search" id="glossQ" placeholder="${esc(t('gloss.search'))}" oninput="filterGlossary(this.value)" aria-label="${esc(t('gloss.search'))}">
     <dl class="gloss-list">${items.map(x => `<div class="gloss-item"><dt>${esc(x.word)}</dt><dd>${esc(x.text)}</dd></div>`).join('')}</dl>

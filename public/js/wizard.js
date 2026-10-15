@@ -1,5 +1,5 @@
 /* ---------- 🧙 setup wizard, quick mode (AIG-354) ---------- */
-// First run offers "Set it up with the wizard" or "I'll wing it"; 🧙 Run the wizard in Setup comes back any time.
+// First run (AIG-940): one dialog on a blank page, three choices: Wizard, Tour, Just let me in; 🧙 Run the wizard in Setup comes back any time.
 // Five screens: welcome, name + agent program, team style, how much AI, done. Saves only through POST /api/setup (the
 // fields and prefs), once, when you leave screen 4. A guessed agent program is only a suggestion until "Use this" (AIG-334).
 // Team style = answers to the lead quiz questions (QUIZ in leadquiz.js).
@@ -31,14 +31,19 @@ function wizardMaybe() {
   if (back && s && !$('dialog').firstChild) { WZ.shown = true; advResume(ADV_SCREENS[ADV_SCREENS.indexOf(back) + 1] || 'summary'); return; }
   if (WZ.shown || !s || !s.needed || (s.prefs || {}).wizardSeen || $('dialog').firstChild) return;
   WZ.shown = true;
-  openDialog(`<h2>${esc(t('wz.ask.h'))}</h2><p>${esc(t('wz.ask.sub'))}</p>
-    <div class="actions"><button class="primary" id="wzYes" onclick="wizardStart()">${esc(t('wz.ask.yes'))}</button><button id="wzNo" onclick="wizardWing()">${esc(t('wz.ask.no'))}</button></div>
-    <div class="err" id="wz-err"></div>`, 'wizard');
+  const ch = (id, fn, k, pri) => `<button class="wz-choice${pri ? ' primary' : ''}" id="${id}" onclick="${fn}"><b>${esc(t('wz.ask.b.' + k))}</b><small class="muted">${esc(t('wz.ask.b.' + k + '.help'))}</small></button>`;
+  openDialog(`<h2>${esc(t('wz.ask.h'))}</h2><p>${esc(t('wz.ask.pick'))}</p>
+    <div class="wz-choices">${ch('wzYes', 'wizardStart()', 'wizard', true)}${ch('wzTour', 'wizardTour()', 'tour')}${ch('wzNo', 'wizardWing()', 'in')}</div>
+    <div class="err" id="wz-err"></div>`, 'wizard wz-first');   // wz-first: an opaque backdrop, so the page behind is blank
 }
-async function wizardWing() {
-  try { state.setup = await api('POST', '/api/setup', { prefs: { wizardSeen: true } }); closeDialog(); helpMaybe(); }
-  catch (e) { setErr('wz-err', e); }
+// Just let me in / Tour: the wizard counts as answered. Neither offers anything more afterwards.
+async function wzLeave() {
+  state.setup = await api('POST', '/api/setup', { prefs: { wizardSeen: true } });
+  try { localStorage.setItem('aigile.helpOffered', '1'); } catch {}
+  closeDialog();
 }
+async function wizardWing() { try { await wzLeave(); if (state.route && state.route.view === 'setup') location.hash = '#/'; } catch (e) { setErr('wz-err', e); } }
+async function wizardTour() { try { await wzLeave(); startTour('new'); } catch (e) { setErr('wz-err', e); } }
 function wizardStart() {
   const s = state.setup, pr = s.prefs || {}, first = !pr.wizardSeen;
   WZ.hadOwner = !!wzField('owner').value;
@@ -60,18 +65,25 @@ function wizardShow() {
     const g = wzField('agent.command').suggest;
     body = `<h2>${esc(t('wz.2.h'))}</h2>
       <label class="f"><span>${esc(t('wz.2.name'))}</span><input type="text" id="wz-name" value="${esc(WZ.name)}" maxlength="80" autocomplete="off"><small class="muted">${esc(t('wz.2.name.help'))}</small></label>
-      ${WZ.noAi ? '' : `<label class="f"><span>${esc(t('wz.2.agent'))}</span><input type="text" id="wz-agent" value="${esc(WZ.agent)}" placeholder="${esc(g)}" autocomplete="off" spellcheck="false"><small class="muted">${esc(t('wz.2.agent.help'))}</small>`}
-      ${g && !WZ.agent && !WZ.noAi ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(g)}</code> <button type="button" id="wzUse" onclick="$('wz-agent').value = ${esc(JSON.stringify(g))}; this.closest('.suggest').remove()">${esc(t('setup.suggest.use'))}</button></small>` : ''}${WZ.noAi ? '' : '</label>'}`;
+      ${WZ.noAi ? '' : `<label class="f"><span>${esc(t('wz.2.agent'))}</span><input type="text" id="wz-agent" value="${esc(WZ.agent)}" placeholder="${esc(t('wz.2.agent.ph'))}" autocomplete="off" spellcheck="false"><small class="muted">${esc(t('wz.2.agent.help'))}</small>`}
+      ${g && !WZ.agent && !WZ.noAi ? `<small class="suggest"><button type="button" id="wzUse" title="${esc(g)}" onclick="$('wz-agent').value = ${esc(JSON.stringify(g))}; this.closest('.suggest').remove()">${esc(t('wz.2.use'))}</button> <code title="${esc(g)}">${esc(/\*/.test(g) ? t('wz.2.vsext') : g)}</code></small>` : ''}${WZ.noAi ? '' : '</label>'}`;
   }
   if (n === 3) body = `<h2>${esc(t('wz.3.h'))}</h2><p class="muted">${esc(t('wz.3.sub'))}</p><div class="wz-opts">${Object.keys(WZ_STYLES).map(k => pick('wz-style', k, WZ.style, t('wz.style.' + k), t('wz.style.' + k + '.help'))).join('')}</div>
       <h3>${esc(t('wz.adv.help.h'))}</h3><div class="wz-opts">${HELP_LEVELS.map(v => pick('wz-help', v, WZ.help, t('help.level.' + v))).join('')}</div>`;
   if (n === 4) body = `<h2>${esc(t('wz.4.h'))}</h2><p class="muted">${esc(t('wz.4.sub'))}</p><div class="wz-opts">${WZ_PLANS.map(k => pick('wz-plan', k, WZ.plan, t('budget.plan.' + k), t('wz.plan.' + k + '.help'))).join('')}</div>`;
-  if (n === 5) body = `<h2>${esc(t('wz.5.h'))}</h2><p>${esc(t('wz.5.sub'))}</p>${state.setup.needed ? `<p class="muted">${esc(t('wz.5.more'))}</p>` : ''}`;
+  if (n === 5) body = `<h2>${esc(t('wz.5.h'))}</h2><p>${esc(t('wz.5.sub'))}</p>${wzMissingHtml()}`;
   const skip = n > 1 && n < 5 && !(n === 2 && !WZ.hadOwner && !WZ.name) ? `<button id="wzSkip" onclick="wizardGo(${n + 1}, true)">${esc(t('wz.skip'))}</button>` : '';
   openDialog(`${dots}${body}<div class="err" id="wz-err"></div>
     <div class="actions">${n > 1 && n < 5 ? `<button id="wzBack" onclick="wizardGo(${n - 1})">${esc(t('wz.back'))}</button>` : ''}${skip}
     ${n === 1 ? `<button id="wzAdv" onclick="advStart()">${esc(t('wz.1.adv'))}</button>` : ''}
     ${n < 5 ? `<button class="primary" id="wzNext" onclick="wizardGo(${n + 1})">${esc(t('wz.next'))}</button>` : `<button class="primary" id="wzDone" onclick="wizardClose()">${esc(t('wz.done'))}</button>`}</div>`, 'wizard');
+}
+// The last screen names the Setup boxes that are still empty and links to them (AIG-1070).
+function wzMissingHtml() {
+  const s = state.setup; if (!s.needed || WZ.noAi) return '';
+  const names = ['agent.command', 'agent.notesFile', 'agent.settingsFile'].filter(k => !wzField(k).value).map(k => tk('setup.f.' + k, wzField(k).label || k));
+  if (!names.length) return '';
+  return `<p class="muted" id="wzMissing">${esc(t('wz.5.missing', { names: names.join(', ') }))}</p><p><button type="button" id="wzGoSetup" onclick="wizardClose(); location.hash = '#/setup/you'">${esc(t('wz.5.go'))}</button></p>`;
 }
 async function wizardGo(to, skipped) {
   wzKeep();

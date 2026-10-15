@@ -63,12 +63,19 @@ async function importFound() {
 // A fresh, empty copy of the board on its own port, with made-up projects to find: opens in a new window.
 // From Setup (a button) or the ❓ Help menu (none). With all the help on, the new window starts with the Agile intro, in this language (AIG-328).
 // The demo board speaks your language (AIG-488): it is sent along and opened with ?lang=.
+// A small note at the bottom of the page: '' removes it.
+function trialNote(msg, bad) {
+  let n = $('trialNote'); if (!msg) { if (n) n.remove(); return; }
+  if (!n) { n = document.createElement('div'); n.id = 'trialNote'; n.setAttribute('role', 'status'); n.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9999;padding:8px 14px;border-radius:8px;background:var(--panel,#222);color:var(--text,#fff);border:1px solid var(--line,#888);box-shadow:0 2px 12px #0006;max-width:90vw'; document.body.append(n); }
+  n.textContent = (bad ? '⚠️ ' : '') + msg; clearTimeout(n._t); n._t = setTimeout(() => n.remove(), bad ? 8000 : 4000);
+}
 async function startTrial(btn) {
   const was = btn && btn.textContent, err = $('trial-err');
   if (btn) { btn.disabled = true; btn.textContent = t('trial.busy'); }
   if (err) err.textContent = '';
-  try { const r = await api('POST', '/api/trial', { code: LP.code, window: LP.win, lang: chosenLang() }); launchOpen(r.url + '?lang=' + encodeURIComponent(chosenLang()) + (HELP.level === '1' ? '&intro=1' : ''));   }
-  catch (e) { if (err) err.textContent = e.message; else alert(e.message); }
+  if (!btn) trialNote(t('trial.opening'));   // from the Help menu there is no button to show it (AIG-1084)
+  try { const r = await api('POST', '/api/trial', { code: LP.code, window: LP.win, lang: chosenLang() }); const w = launchOpen(r.url + '?lang=' + encodeURIComponent(chosenLang()) + (HELP.level === '1' ? '&intro=1' : '')); if (!btn) trialNote(w === null ? t('trial.blocked') : '');   }
+  catch (e) { if (err) err.textContent = e.message; else trialNote(e.message, true); }
   if (btn) { btn.disabled = false; btn.textContent = was; }
 }
 
@@ -76,42 +83,110 @@ async function startTrial(btn) {
 // ---- setup: your name and where the agent lives on this computer, saved to aigile.local.json ----
 function renderSetup() {
   const s = state.setup;
-  return `<div class="setup"><h2>${esc(t('setup.h'))}</h2>
+  const secs = ["lang","look","plan","teams","discord","mail","servers","phone","calls","storage","you","more"];
+  return `<div class="setup">${state.route && state.route.pop ? '' : `<button type="button" class="dlg-pop" id="setupPop" title="${esc(t('popout.title'))}" onclick="popOutSetup()">${esc(t('popout.btn'))}</button>`}<h2>${esc(t('setup.h'))}</h2>
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
-    <div class="f"><span>${esc(t('wz.btn'))}</span><div><button type="button" id="wzRun" onclick="wizardStart()">${esc(t('wz.btn'))}</button></div><small class="muted">${esc(t('wz.btn.help'))}</small></div>
+    <div class="set-sec set-wiz" id="wizBox"><button type="button" id="wzRun" onclick="wizardStart()">${esc(t('wz.btn'))}</button><small class="muted">${esc(t('wz.btn.help'))}</small></div>
+    <nav class="set-index" id="setIndex" aria-label="${esc(t('setup.index'))}">${secs.map(k => `<a href="#/setup/${k}" data-sec="${k}" onclick="return setupJump('${k}')">${esc(t('setup.sec.' + k))}</a>`).join('')}</nav>
+    <section class="set-sec" id="sec-lang"><h3 class="set-h">${esc(t('setup.sec.lang'))}</h3>
     <label class="f"><span>${esc(t('lang.title'))}</span>${langPickHtml('setup-lang')}<small class="muted">${esc(t('setup.lang.help'))}</small></label>
     <div class="f imm-box" id="immBox">${Imm.html()}</div>
     <label class="f chk"><span><input type="checkbox" id="enSwitch" ${ls('aigile.enSwitch') === '1' ? 'checked' : ''} onchange="setEnSwitch(this.checked)"> ${esc(t('lang.en.switch'))}</span><small class="muted">${esc(t('lang.en.help'))}</small></label>
     <label class="f chk"><span><input type="checkbox" id="explainWords" ${glossOn() ? 'checked' : ''} onchange="setExplain(this.checked)"> ${esc(t('gloss.switch'))}</span><small class="muted">${esc(t('gloss.switch.help'))} <a href="#/glossary">${esc(t('gloss.open'))}</a></small></label>
+    </section>
+    <section class="set-sec" id="sec-look"><h3 class="set-h">${esc(t('setup.sec.look'))}</h3>
     <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
+    <div class="f" id="topbarBox">${Topbar.html()}</div>
+    <div class="f" id="iconBox">${iconHtml()}</div>
+    <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
+    <div class="f"><span>${esc(t('face.me'))}</span>${logoEditor('me-pic', s.mePic)}</div>
+    <div class="f"><span>${esc(t('face.lib'))}</span>${libraryHtml(s.library)}</div>
+    </section>
+    <section class="set-sec" id="sec-plan"><h3 class="set-h">${esc(t('setup.sec.plan'))}</h3>
+    <div class="f lead-prefs ai-only" id="leadPrefs">${leadPrefsHtml()}</div>
+    </section>
+    <section class="set-sec" id="sec-teams"><h3 class="set-h">${esc(t('setup.sec.teams'))}</h3>
+    <div class="f lead-prefs ai-only" id="mainTeamBox">${mainTeamBoxHtml()}</div>
+    <div class="f" id="geminiKeyBox">${(GKEY.set = null, geminiKeyHtml())}</div>
+    <div class="f lead-prefs ai-only" id="runInPrefs">${runInHtml()}</div>
+    <div class="f" id="rolesBox">${(Roles.reset(), Roles.html())}</div>
+    <div class="f" id="presenceBox">${(queueMicrotask(Presence.load), Presence.html())}</div>
+    </section>
+    <section class="set-sec" id="sec-discord"><h3 class="set-h">${esc(t('setup.sec.discord'))}</h3>
+    <div class="f" id="discordBox">${(queueMicrotask(DiscordSetup.load), DiscordSetup.html())}</div>
+    </section>
+    <section class="set-sec" id="sec-mail"><h3 class="set-h">${esc(t('setup.sec.mail'))}</h3>
+    <div class="f" id="mailBox">${Mail.setupHtml()}</div>
+    </section>
+    <section class="set-sec" id="sec-servers"><h3 class="set-h">${esc(t('setup.sec.servers'))}</h3>
+    <div class="f" id="serversBox">${(srvDraft = null, serversHtml())}</div>
+    </section>
+    <section class="set-sec" id="sec-phone"><h3 class="set-h">${esc(t('setup.sec.phone'))}</h3>
+    <div class="f" id="phoneBox">${Phone.html()}</div>
+    </section>
+    <section class="set-sec" id="sec-calls"><h3 class="set-h">${esc(t('setup.sec.calls'))}</h3>
+    <div class="f" id="callsBox">${(CallSetup.reset(), CallSetup.html())}</div>
+    </section>
+    <section class="set-sec" id="sec-storage"><h3 class="set-h">${esc(t('setup.sec.storage'))}</h3>
+    <div class="f" id="storageBox">${(Storage.d = undefined, Storage.html())}</div>
+    </section>
+    <section class="set-sec" id="sec-you"><h3 class="set-h">${esc(t('setup.sec.you'))}</h3>
+    <form id="setupForm" onsubmit="return saveSetupPage(event)">
+      ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}" ${f.suggest ? `placeholder="${esc(f.suggest)}" data-suggest="${esc(f.suggest)}"` : ''}><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small>${f.suggest && !f.value ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(f.suggest)}</code> <button type="button" class="usesuggest" onclick="useSuggest(this)">${esc(t('setup.suggest.use'))}</button></small>` : ''}</label>`).join('')}
+      <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
+      <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button></div></form>
+    </section>
+    <section class="set-sec" id="sec-more"><h3 class="set-h">${esc(t('setup.sec.more'))}</h3>
+    <label class="f chk"><span><input type="checkbox" id="aiOwnList" ${IB.aiOwn() ? 'checked' : ''} onchange="IB.setAiOwn(this.checked)"> ${esc(t('inbox.aiown.switch'))}</span><small class="muted">${esc(t('inbox.aiown.help'))}</small></label>
+    <label class="f chk"><span><input type="checkbox" id="powerTools" ${Topbar.power() ? 'checked' : ''} onchange="Topbar.setPower(this.checked)"> ${esc(t('tb.power'))}</span><small class="muted">${esc(t('tb.power.help'))}</small></label>
     <label class="f ai-only"><span>${esc(t('follow.setup'))}</span><select class="setup-theme" id="followMode" onchange="Follow.setMode(this.value)">${['auto', 'button'].map(v => `<option value="${v}" ${Follow.mode() === v ? 'selected' : ''}>${esc(t('follow.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('follow.setup.help'))}</small></label>
     <div class="f" id="enterSendBox">${EnterSend.html()}</div>
     <div class="f noai-box" id="noAiBox">${noAiBoxHtml()}</div>
-    <div class="f" id="topbarBox">${Topbar.html()}</div>
+    <div class="f" id="selfcareBox">${SelfCare.html()}</div>
     <div class="f" id="channelBox">${Channel.html()}</div>
-    <div class="f lead-prefs ai-only" id="leadPrefs">${leadPrefsHtml()}</div>
-    <div class="f lead-prefs ai-only" id="mainTeamBox">${mainTeamBoxHtml()}</div>
-    <div class="f lead-prefs ai-only" id="runInPrefs">${runInHtml()}</div>
-    <div class="f" id="serversBox">${(srvDraft = null, serversHtml())}</div>
-    <div class="f" id="rolesBox">${(Roles.reset(), Roles.html())}</div>
     <div class="f" id="streamerBox">${Streamer.setupHtml()}</div>
-    <div class="f" id="presenceBox">${(queueMicrotask(Presence.load), Presence.html())}</div>
     <div class="f" id="licencesBox">${(Lic.reset(), Lic.html())}</div>
     <div class="f" id="secretsBox">${(SEC.list = null, secretsBoxHtml())}</div>
+    <div class="f" id="accessReviewBox">${AccessReview.html()}</div>
     <div class="f" id="twitchBox">${TwitchTab.setupHtml()}</div>
-    <div class="f" id="discordBox">${(queueMicrotask(DiscordSetup.load), DiscordSetup.html())}</div>
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
     <div class="f" id="pretendBox">${pretendBoxHtml()}</div>
     <div class="f"><span>${esc(t('trial.h'))}</span><div>${launchPickHtml()}<button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
-    <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>
-    <div class="f" id="iconBox">${iconHtml()}</div>
-    <div class="f"><span>${esc(t('face.me'))}</span>${logoEditor('me-pic', s.mePic)}</div>
-    <div class="f"><span>${esc(t('face.lib'))}</span>${libraryHtml(s.library)}</div>
-    <form id="setupForm" onsubmit="return saveSetupPage(event)">
-      ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}" ${f.suggest ? `placeholder="${esc(f.suggest)}" data-suggest="${esc(f.suggest)}"` : ''}><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small>${f.suggest && !f.value ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(f.suggest)}</code> <button type="button" class="usesuggest" onclick="useSuggest(this)">${esc(t('setup.suggest.use'))}</button></small>` : ''}</label>`).join('')}
-      <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
-      <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button></div></form></div>`;
+    </section></div>`;
+}
+/* ---------- Setup index (AIG-934): links to the sections, #/setup/<section> deep links ---------- */
+// A deep link also takes any box id minus "Box" (#/setup/mail, #/setup/dmsRelay). Scrolls clear of the sticky top bar and index.
+function setupTarget(sec) { return $('sec-' + sec) || $(sec + 'Box') || $(sec); }
+function setupScrollTo(sec) {
+  const el = setupTarget(sec), ix = $('setIndex'); if (!el) return false;
+  const hdr = document.querySelector('body > header'), h = hdr && getComputedStyle(hdr).position !== 'static' ? hdr.offsetHeight : 0;
+  if (ix) ix.style.top = h + 'px';
+  window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - h - (ix ? ix.offsetHeight : 0) - 10);
+  return true;
+}
+// ⧉ Pop out (AIG-1030): Setup in its own window (#/pop-setup); this window goes back to the home page.
+function popOutSetup() { popOut('setup', '#/pop-setup', 'aigile-setup', 760, 820); location.hash = '#/'; }
+function setupJump(sec) {
+  const pop = state.route && state.route.pop;
+  history.replaceState(null, '', pop ? '#/pop-setup' : '#/setup/' + sec); state.route = { view: 'setup', sec, ...(pop ? { pop: true } : {}) }; state.setupLanded = location.hash;
+  setupScrollTo(sec); return false;
+}
+// After a render of Setup: land on the section of the link (again once the async boxes have filled in), else stay at the top.
+// AIG-1140: the index sits just under the top bar, whatever height that has (it wraps to two rows when chips load).
+let setupRO = null;
+function setupSyncTop() {
+  const ix = $('setIndex'), hdr = document.querySelector('body > header');
+  if (ix) ix.style.top = (hdr && getComputedStyle(hdr).position !== 'static' ? hdr.offsetHeight : 0) + 'px';
+}
+function setupLand() {
+  const hdr = document.querySelector('body > header');
+  setupSyncTop();
+  if (hdr && window.ResizeObserver && !setupRO) { setupRO = new ResizeObserver(setupSyncTop); setupRO.observe(hdr, { box: 'border-box' }); }
+  const sec = state.route.sec; if (!sec || state.setupLanded === location.hash) return;
+  state.setupLanded = location.hash;
+  let n = 0; const go = () => { if (setupScrollTo(sec)) { setTimeout(() => setupScrollTo(sec), 400); setTimeout(() => setupScrollTo(sec), 1200); } else if (++n < 50) setTimeout(go, 100); };
+  go();
 }
 /* ---------- DMs relay address (AIG-309) ---------- */
 // Where DMs go through: save the address, or Check it (the board server fetches <relay>/health).
@@ -147,7 +222,7 @@ async function saveSetupPage(e) {
     // What's next (AIG-254): a way on to the projects, and a warning if the agent program isn't there.
     $('setup-done').innerHTML = esc(state.setup.needed ? t('setup.saved.more') : t('setup.saved')) + (state.setup.needed ? '' : ` <a href="#/">${esc(t('setup.next'))}</a>`)
       + (state.setup.agentProblem ? `<div class="err">${esc(t('setup.agent.problem', { msg: state.setup.agentProblem }))}</div>` : '');
-    if (!named && body.owner) leadQuiz();   // first run: the name is in, so offer "What kind of lead?" once (AIG-235)
+    if (!named && body.owner) leadQuiz(state.setup);   // first run: the name is in, so offer "What kind of lead?" once (AIG-235)
   } catch (err) { setErr('setup-err', err); }
   return false;
 }
@@ -194,17 +269,45 @@ async function setIconColors(part) {
 let srvDraft = null, srvFound = null;
 // 🩺 The relay's latest numbers (AIG-660): one small line under the list.
 function healthLine() {
-  const h = (state.setup || {}).health; if (!h) return '';
+  const st = state.setup || {}, h = st.health, fl = st.serverHealth || [];
   const p = v => v == null ? '?' : Math.round(v) + '%', gb = v => v == null ? '?' : v >= 1e9 ? (v / 1e9).toFixed(1) + ' GB' : Math.round(v / 1e6) + ' MB';
-  return `<small class="muted" id="srv-health">${esc(t('servers.health', { name: h.server || '', cpu: p(h.cpu), mem: p(h.mem), disk: p(h.disk), size: gb(h.storage), days: h.uptime == null ? '?' : Math.floor(h.uptime / 86400), when: new Date(h.at).toLocaleString() }))}</small>`;
+  const line = (x, id) => `<small class="muted" id="${id}">${esc(t('servers.health', { name: x.server || '', cpu: p(x.cpu), mem: p(x.mem), disk: p(x.disk), size: gb(x.storage), days: x.uptime == null ? '?' : Math.floor(x.uptime / 86400), when: new Date(x.at).toLocaleString() }))}</small>`;
+  return [h ? line(h, 'srv-health') : '', ...fl.map((x, i) => line(x, 'srv-health-' + i))].filter(Boolean).join('<br>');
+}
+// AIG-773: an ssh server is host + user (saved together as value, user@host) with optional port, key file and default folder.
+const srvSplit = v => { const m = String(v || '').match(/^(ssh:\/\/)?(?:([^@/]+)@)?(.*)$/); return { uri: m[1] || '', user: m[2] || '', host: m[3] || '' }; };
+const srvFld = (label, inner) => `<label class="f"><span>${esc(label)}</span>${inner}</label>`;
+function srvSshInputs(s, i) {
+  const p = srvSplit(s.value);
+  return srvFld(t('servers.host'), `<input type="text" data-srv="host" data-i="${i}" value="${esc(p.host)}" placeholder="${esc(t('servers.host'))}" onchange="srvEdit(this)">`)
+    + srvFld(t('servers.user'), `<input type="text" data-srv="user" data-i="${i}" value="${esc(p.user)}" placeholder="${esc(t('servers.user'))}" size="10" onchange="srvEdit(this)">`);
+}
+const srvSshMore = (s, i) => `<div class="srv-more">
+    ${srvFld(t('servers.port'), `<input type="number" data-srv="port" data-i="${i}" min="1" max="65535" value="${esc(s.port || '')}" placeholder="${esc(t('servers.port'))}" onchange="srvEdit(this)">`)}
+    ${srvFld(t('servers.key'), `<input type="text" data-srv="key" data-i="${i}" value="${esc(s.key || '')}" placeholder="${esc(t('servers.key'))}" onchange="srvEdit(this)">`)}
+    ${srvFld(t('servers.folder'), `<input type="text" data-srv="folder" data-i="${i}" value="${esc(s.folder || '')}" placeholder="${esc(t('servers.folder'))}" onchange="srvEdit(this)">`)}</div>${srvPwHtml(s, i)}`;
+// AIG-1023: an optional sudo password, so agents allowed sudo can run a server step themselves (aigile sudo). Saved with the secrets
+// page token, kept encrypted on this PC (lib/servers.js); the page only learns whether one is saved (sudoPw), never the password.
+const srvPwHtml = (s, i) => !String(s.name || '').trim() ? '' : `<div class="srv-pw"><small>${esc(t('servers.sudoPw'))}</small> <b class="pill" data-srv-pw-state="${i}">${esc(t(s.sudoPw ? 'servers.sudoPw.saved' : 'servers.sudoPw.notset'))}</b>
+    <input type="password" data-srv-pw="${i}" autocomplete="new-password" spellcheck="false" maxlength="1024" placeholder="${esc(t('servers.sudoPw.ph'))}" aria-label="${esc(t('servers.sudoPw'))}">
+    <button type="button" data-srv-pw-save="${i}" onclick="srvPwSave(${i})">${esc(t('servers.sudoPw.save'))}</button>${s.sudoPw ? ` <button type="button" data-srv-pw-remove="${i}" onclick="srvPwSave(${i}, true)">${esc(t('servers.sudoPw.remove'))}</button>` : ''}
+    <small class="muted">${esc(t('servers.sudoPw.help'))}</small></div>`;
+async function srvPwSave(i, remove) {
+  const s = srvDraft[i], inp = document.querySelector(`#serversBox input[data-srv-pw="${i}"]`), v = remove ? '' : (inp || {}).value || '';
+  if (!s || (!remove && !v)) return;
+  try { if (await api('POST', '/api/servers/sudo-pw', { name: s.name, password: v, token: await secToken() }).then(r => r.set)) s.sudoPw = true; else delete s.sudoPw; srvPaint(t('setup.saved.short')); }
+  catch (e) { if (inp) inp.value = ''; setErr('servers-err', e); }
 }
 function serversHtml(msg = '') {
   if (!srvDraft) srvDraft = (leadPrefs().servers || []).map(x => ({ ...x }));
   const rows = srvDraft.map((s, i) => `<div class="srv-row">
-    <input type="text" data-srv="name" data-i="${i}" value="${esc(s.name)}" placeholder="${esc(t('servers.name'))}" onchange="srvEdit(this)">
-    <select data-srv="kind" data-i="${i}" onchange="srvEdit(this)">${['path', 'cmd', 'ssh'].map(k => `<option value="${k}" ${(s.kind || 'path') === k ? 'selected' : ''}>${esc(t('servers.kind.' + k))}</option>`).join('')}</select>
-    <input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t('servers.' + (s.kind === 'cmd' || s.kind === 'ssh' ? s.kind : 'path') + '.ph'))}" onchange="srvEdit(this)">
-    <button type="button" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">✕</button></div>`).join('');
+    ${srvFld(t('servers.name'), `<input type="text" data-srv="name" data-i="${i}" value="${esc(s.name)}" placeholder="${esc(t('servers.name'))}" onchange="srvEdit(this)">`)}
+    ${srvFld(t('servers.lbl.kind'), `<select data-srv="kind" data-i="${i}" onchange="srvEdit(this)">${['path', 'cmd', 'ssh'].map(k => `<option value="${k}" ${(s.kind || 'path') === k ? 'selected' : ''}>${esc(t('servers.kind.' + k))}</option>`).join('')}</select>`)}
+    ${s.kind === 'ssh' ? srvSshInputs(s, i) : srvFld(t('servers.lbl.addr'), `<input type="text" data-srv="value" data-i="${i}" value="${esc(s.value)}" placeholder="${esc(t('servers.' + (s.kind === 'cmd' ? 'cmd' : 'path') + '.ph'))}" onchange="srvEdit(this)">`)}
+    ${s.kind === 'ssh' ? srvSshMore(s, i) : ''}
+    <label class="srv-sudo"><input type="checkbox" data-srv="sudo" data-i="${i}" ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? 'checked' : ''} onchange="srvEdit(this)"> ${esc(t('servers.sudo'))}</label>
+    ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? `<input type="text" data-srv="sudoWho" data-i="${i}" value="${esc(Array.isArray(s.sudo) ? s.sudo.join(', ') : '')}" placeholder="${esc(t('servers.sudoWho'))}" onchange="srvEdit(this)">` : ''}
+    <div class="actions"><button type="button" class="srv-del" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">${esc(t('servers.del'))}</button></div></div>`).join('');
   const found = (srvFound || []).filter(f => !srvDraft.some(s => s.value === f.path)).map(f => `<button type="button" class="srv-found" data-name="${esc(f.name)}" data-path="${esc(f.path)}" onclick="srvAddFound(this)">+ ${esc(f.name)}</button>`).join(' ');
   return `<span>${esc(t('servers.h'))}</span><small class="muted">${esc(t('servers.help'))}</small>${rows}
     <div><button type="button" onclick="srvAdd()">${esc(t('servers.add'))}</button> <button type="button" id="srvFind" onclick="srvFind()">${esc(t('servers.find'))}</button> ${found}</div>
@@ -212,10 +315,24 @@ function serversHtml(msg = '') {
 }
 const srvPaint = msg => { if ($('serversBox')) $('serversBox').innerHTML = serversHtml(msg); };
 async function srvSave() {
-  try { state.setup = await api('POST', '/api/setup', { prefs: { servers: srvDraft.filter(s => s.name.trim() && s.value.trim()) } }); srvPaint(t('setup.saved.short')); }
+  try {
+    state.setup = await api('POST', '/api/setup', { prefs: { servers: srvDraft.filter(s => s.name.trim() && s.value.trim() && (s.kind !== 'ssh' || srvSplit(s.value).host)) } });
+    const saved = (state.setup.prefs || {}).servers || [];   // AIG-1023: a renamed or removed server lost its sudo password
+    srvDraft.forEach(d => { if (saved.some(x => x.name === d.name && x.sudoPw)) d.sudoPw = true; else delete d.sudoPw; });
+    srvPaint(t('setup.saved.short'));
+  }
   catch (e) { setErr('servers-err', e); }
 }
-function srvEdit(el) { srvDraft[+el.dataset.i][el.dataset.srv] = el.value; if (el.dataset.srv === 'kind') srvPaint(); srvSave(); }
+function srvEdit(el) {
+  const s = srvDraft[+el.dataset.i], k = el.dataset.srv;
+  if (k === 'sudo') { if (el.checked) s.sudo = true; else delete s.sudo; srvPaint(); }   // AIG-701
+  else if (k === 'sudoWho') { const n = el.value.split(',').map(x => x.trim()).filter(Boolean); s.sudo = n.length ? n : true; }
+  else if (k === 'host' || k === 'user') { const p = srvSplit(s.value); p[k] = el.value.trim(); s.value = p.uri + (p.user ? p.user + '@' : '') + p.host; }   // AIG-773
+  else if (k === 'port' || k === 'key' || k === 'folder') { if (el.value.trim()) s[k] = k === 'port' ? +el.value : el.value.trim(); else delete s[k]; }
+  else if (k === 'value' && s.kind !== 'ssh' && /^(?:[\w.-]+@[\w.-]+|\d{1,3}(?:\.\d{1,3}){3})$/.test(el.value.trim())) { s.kind = 'ssh'; s.value = el.value.trim(); srvPaint(); }   // AIG-1031: an IP or user@host typed in the box is an ssh address
+  else { s[k] = el.value; if (k === 'kind') srvPaint(); }
+  srvSave();
+}
 function srvAdd() { srvDraft.push({ name: '', kind: 'path', value: '' }); srvPaint(); }
 function srvDel(i) { srvDraft.splice(i, 1); srvPaint(); srvSave(); }
 function srvAddFound(b) { srvDraft.push({ name: b.dataset.name, kind: 'path', value: b.dataset.path }); srvPaint(); srvSave(); }

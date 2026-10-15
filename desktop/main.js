@@ -1,13 +1,18 @@
 // AI-gile desktop (AIG-76): the board in its own window. Starts the board server if it isn't running
 // (left running on quit, so teams keep their board), then shows http://localhost:<port>.
-const { app, BrowserWindow, shell, nativeTheme, nativeImage, screen } = require('electron');
+const { app, BrowserWindow, shell, nativeTheme, nativeImage, screen, Tray, Menu, session, ipcMain, desktopCapturer, webContents } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
+const net = require('net');
 
-const ROOT = path.resolve(__dirname, '..');
+// Packaged (AppImage): the board's files sit in resources/aigile and its data goes to the user's own folder (the AppImage is read-only).
+const ROOT = app.isPackaged ? path.join(process.resourcesPath, 'aigile') : path.resolve(__dirname, '..');
+if (app.isPackaged && !process.env.AIGILE_DATA) process.env.AIGILE_DATA = path.join(app.getPath('userData'), 'data');
 const PORT = Number(process.env.AIGILE_PORT) || 4321;
-const BASE = `http://localhost:${PORT}`;
+const BASE = `http://localhost:${PORT}`;   // keep "localhost": saved looks (theme, quick English, drafts) belong to this address (AIG-1092)
+// AIG-1091/1092: resolve localhost straight to 127.0.0.1 (the board listens there only), skipping the slow IPv6 try
+app.commandLine.appendSwitch('host-resolver-rules', 'MAP localhost 127.0.0.1');
 const ICON = path.join(__dirname, 'icon.png'), ICON_WAITING = path.join(__dirname, 'icon-waiting.png');
 // App logo (AIG-175): if one is set in Setup (png, jpg or ico), it is the window icon; else the default.
 const DATA = path.resolve(process.env.AIGILE_DATA || path.join(ROOT, 'data'));
@@ -27,19 +32,51 @@ function custom(name) {
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-async function up() { try { return (await fetch(BASE + '/api/meta')).ok; } catch { return false; } }
+async function up(timeout = 1000) {
+  const controller = new AbortController(), timer = setTimeout(() => controller.abort(), timeout);
+  try { const r = await fetch(BASE + '/api/meta', { signal: controller.signal }); if (r.body) await r.body.cancel(); return r.ok; }
+  catch { return false; }
+  finally { clearTimeout(timer); }
+}
+function portOccupied() {
+  return new Promise(resolve => {
+    const socket = net.connect({ host: '127.0.0.1', port: PORT });
+    let settled = false;
+    const finish = occupied => { if (settled) return; settled = true; socket.destroy(); resolve(occupied); };
+    socket.setTimeout(3000);
+    socket.once('connect', () => finish(true));
+    socket.once('error', error => finish(error.code !== 'ECONNREFUSED'));
+    socket.once('timeout', () => finish(true)); // uncertain: do not launch a duplicate
+  });
+}
 
 // Same as start-aigile.bat: node server.js in the AI-gile folder, detached and hidden.
 async function ensureServer() {
+  const deadline = Date.now() + 10000;
   if (await up()) return true;
+  // An unhealthy listener still owns the port; do not start a competing board.
+  if (await portOccupied()) return false;
   const node = process.env.AIGILE_NODE || 'node', env = { ...process.env };   // dev mode comes from aigile.local.json now (AIG-253)
   delete env.ELECTRON_RUN_AS_NODE;
-  spawn(node, ['server.js'], { cwd: ROOT, detached: true, stdio: 'ignore', windowsHide: true, env }).unref();
-  for (let i = 0; i < 50; i++) { await sleep(200); if (await up()) return true; }
+  // AIG-995: an app opened from the macOS Finder gets a bare PATH, so look where Homebrew and the node installer put node
+  if (process.platform === 'darwin') env.PATH = [env.PATH, '/opt/homebrew/bin', '/usr/local/bin'].filter(Boolean).join(':');
+  let failed = false;
+  try {
+    const child = spawn(node, ['server.js'], { cwd: ROOT, detached: true, stdio: 'ignore', windowsHide: true, env });
+    child.once('error', () => { failed = true; });
+    child.once('exit', () => {}); // another starter may have won the port; keep probing until the deadline
+    child.unref();
+  } catch { return false; }
+  while (!failed && Date.now() < deadline) {
+    await sleep(Math.min(200, Math.max(0, deadline - Date.now())));
+    if (failed) return false;
+    const left = deadline - Date.now();
+    if (left > 0 && await up(Math.min(1000, left))) return true;
+  }
   return false;
 }
 
-let win = null, twitchWin = null;
+let win = null, twitchWin = null, tray = null;
 /* ---------- popped-out cards survive a restart (AIG-144) ---------- */
 // Open pop-outs (address and position) are kept in the app's own folder; closing one yourself forgets it.
 const POPS = () => path.join(app.getPath('userData'), 'popouts.json');
@@ -82,7 +119,7 @@ function reopenPops() {
 }
 // No Windows title bar (AIG-128): just the window buttons, in the board's own colours, over the page's top bar.
 const bar = () => nativeTheme.shouldUseDarkColors ? { color: '#1b2029', symbolColor: '#e6e9ef', height: 36 } : { color: '#ffffff', symbolColor: '#1d2330', height: 36 };
-const chrome = () => ({ autoHideMenuBar: true, icon: appIcon(), titleBarStyle: 'hidden', titleBarOverlay: bar() });
+const chrome = () => ({ autoHideMenuBar: true, icon: appIcon(), titleBarStyle: 'hidden', titleBarOverlay: bar(), webPreferences: { preload: path.join(__dirname, 'preload.js') } });   // preload: the share picker (AIG-1163)
 nativeTheme.on('updated', () => BrowserWindow.getAllWindows().forEach(w => { try { w.setTitleBarOverlay(bar()); } catch {} }));
 // Link and navigation rules for any of our windows (the main one and popped-out cards).
 function wire(w) {
@@ -105,7 +142,7 @@ function wire(w) {
   w.webContents.on('will-navigate', (e, url) => {
     if (url === 'aigile://restart') { e.preventDefault(); quitting = true; savePops(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
     // The page's theme pick (AIG-143): the window buttons and every window follow it.
-    if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark'].includes(t)) nativeTheme.themeSource = t; return; }
+    if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark', 'black'].includes(t)) nativeTheme.themeSource = t === 'black' ? 'dark' : t; return; }
     // Goodnight (AIG-228): only the night glance stays on screen.
     if (url === 'aigile://minimize') { e.preventDefault(); w.minimize(); return; }
     // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).
@@ -134,10 +171,60 @@ function open(ok) {
   // Taskbar badge: the page puts what's waiting on the owner in its title, "(3) AI-gile"; then the icon gets a purple diamond.
   // It's the window icon, not an overlay: small taskbar buttons draw overlays as a dot, and a count is unreadable there.
   // A missing or broken icon file must never show an error box (AIG-81): keep the current icon instead.
-  win.on('page-title-updated', (e, title) => { try { win.setIcon(/^\(\d+\)/.test(title) ? custom('icon-waiting.png') || ICON_WAITING : appIcon()); } catch {} });
-  // Closing the main window closes the app, pop-outs too, and remembers them for next time.
-  win.on('close', () => { quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); if (twitchWin && !twitchWin.isDestroyed()) twitchWin.close(); });
+  win.on('page-title-updated', (e, title) => { try { const i = /^\(\d+\)/.test(title) ? custom('icon-waiting.png') || ICON_WAITING : appIcon(); win.setIcon(i); if (tray) tray.setImage(i); } catch {} });
+  // X hides the main window to the tray (AIG-849); pop-outs stay. Quit (tray menu) closes the app, pop-outs too, and remembers them for next time.
+  win.on('session-end', () => { quitting = true; savePops(); });
+  win.on('close', e => { if (!quitting) { e.preventDefault(); win.hide(); return; } quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); if (twitchWin && !twitchWin.isDestroyed()) twitchWin.close(); });
   win.on('closed', () => { win = null; });
+  makeTray();
+}
+/* ---------- tray (AIG-849) ---------- */
+function showMain() {
+  if (!win) return; if (win.isMinimized()) win.restore(); win.show(); win.focus();
+  // Still on "AI-gile didn't start" (the board was restarting when the app opened): X only hides to the tray, so opening
+  // the app again showed the same page for good. Try the board again and load it once it answers (AIG-920).
+  if (win.webContents.getURL().startsWith('data:')) ensureServer().then(ok => { if (ok && win && !win.isDestroyed()) { win.loadURL(BASE); reopenPops(); } }).catch(() => {});
+}
+function makeTray() {
+  if (tray) return;
+  try {
+    tray = new Tray(appIcon());
+    tray.setToolTip('AI-gile');
+    tray.setContextMenu(Menu.buildFromTemplate([{ label: 'Open', click: showMain }, { type: 'separator' }, { label: 'Quit', click: () => { quitting = true; savePops(); app.quit(); } }]));
+    tray.on('click', showMain);
+  } catch { tray = null; }
+}
+
+/* ---------- screen sharing (AIG-1163, after ChilledChat) ---------- */
+// Electron has no picker of its own for getDisplayMedia: the app lists the screens and windows (with thumbnails) and the page
+// shows them in its own dialog (desktop/preload.js, public/js/sharepick.js). Only the board itself may ask: exact origin, not a prefix.
+const ORIGIN = new URL(BASE).origin;
+const originOf = u => { try { return new URL(u).origin; } catch { return ''; } };
+const picks = new Map();   // id -> { wc, sources, callback, audio, gone }
+let pickSeq = 0;
+function endPick(id, sourceId) {
+  const p = picks.get(id); if (!p) return;
+  picks.delete(id);
+  try { p.wc.removeListener('destroyed', p.gone); p.wc.removeListener('did-navigate', p.gone); } catch {}
+  const s = typeof sourceId === 'string' && p.sources.find(x => x.id === sourceId);
+  try { if (s) p.callback(p.audio ? { video: s, audio: 'loopback' } : { video: s }); else p.callback(); } catch {}   // no arguments = no share
+}
+function sharePicker() {
+  session.defaultSession.setDisplayMediaRequestHandler(async (req, callback) => {
+    const frame = req.frame, wc = frame && webContents.fromFrame(frame);
+    if (!wc || originOf(req.securityOrigin) !== ORIGIN || originOf(frame.origin) !== ORIGIN) { callback(); return; }
+    let sources = [];
+    try { sources = await desktopCapturer.getSources({ types: ['screen', 'window'], thumbnailSize: { width: 320, height: 180 } }); } catch {}
+    if (!sources.length || wc.isDestroyed()) { callback(); return; }
+    for (const [id, p] of picks) if (p.wc === wc) endPick(id, null);   // one picker per window: a new ask replaces the old one
+    const id = ++pickSeq, gone = () => endPick(id, null);
+    // System sound (loopback) only when the page asks for audio, and only on Windows (the only place Electron has it).
+    picks.set(id, { wc, sources, callback, audio: !!req.audioRequested && process.platform === 'win32', gone });
+    wc.once('destroyed', gone); wc.once('did-navigate', gone);   // the page went away or reloaded: no share
+    wc.send('aigile:share-pick', { id, sources: sources.map(s => ({ id: s.id, name: s.name, screen: s.id.startsWith('screen:'), thumb: s.thumbnail && !s.thumbnail.isEmpty() ? s.thumbnail.toDataURL() : '' })) });
+  });
+  // The page's answer: a source id from the list it was sent, or null for Cancel. Only the window that was asked can answer.
+  ipcMain.on('aigile:share-picked', (e, a) => { const id = Number(a && a.id), p = picks.get(id); if (p && p.wc === e.sender) endPick(id, a.source); });
 }
 
 // New build of the app itself (AIG-83): when any of its own files is newer than at start, the page shows a
@@ -154,7 +241,8 @@ if (process.env.AIGILE_PROFILE) app.setPath('userData', process.env.AIGILE_PROFI
 if (!app.requestSingleInstanceLock()) app.quit();
 else {
   app.setAppUserModelId('AI-gile');
-  app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
-  app.whenReady().then(async () => open(await ensureServer()));
+  app.on('second-instance', showMain);
+  app.whenReady().then(async () => { sharePicker(); open(await ensureServer()); });
+  app.on('before-quit', () => { quitting = true; });
   app.on('window-all-closed', () => app.quit());
 }

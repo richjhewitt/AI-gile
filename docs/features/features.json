@@ -1,0 +1,3954 @@
+[
+ {
+  "feature": "Server, JSON storage and API",
+  "cards": [
+   "AIG-1"
+  ],
+  "where": "server (node server.js)",
+  "evidence": "server.js, lib/store.js, lib/routes.js",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/projects"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Portfolio home with live polling",
+  "cards": [
+   "AIG-2",
+   "AIG-18",
+   "AIG-19",
+   "AIG-105",
+   "AIG-200"
+  ],
+  "where": "home page",
+  "evidence": "public/js/home.js, poll.js, app.js 1s tick",
+  "check": {
+   "kind": "qa",
+   "area": "homeux"
+  },
+  "perf": "1s poll of the whole board; check payload size on big boards",
+  "audit": "present"
+ },
+ {
+  "feature": "For you to test + Accept / Send back verdict",
+  "cards": [
+   "AIG-3",
+   "AIG-9",
+   "AIG-21"
+  ],
+  "where": "card view > Accept / Send back",
+  "evidence": "POST .../cards/:id/verdict (lib/routes/comments.js); card.js verdict buttons",
+  "check": {
+   "kind": "qa",
+   "area": "card"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Team checking vs For you columns (review)",
+  "cards": [
+   "AIG-106",
+   "AIG-114"
+  ],
+  "where": "board columns",
+  "evidence": "STATUS_ORDER/columns in public/js/core.js, board.js",
+  "check": {
+   "kind": "qa",
+   "area": "board"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "New card form and Raise bug",
+  "cards": [
+   "AIG-5",
+   "AIG-41",
+   "AIG-84",
+   "AIG-89"
+  ],
+  "where": "board toolbar > New card / Raise bug",
+  "evidence": "public/js/dialogs/shell-card-project-connect.js, board.js",
+  "check": {
+   "kind": "qa",
+   "area": "raisebug"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Attachments and screenshots (paste, several, preview)",
+  "cards": [
+   "AIG-77",
+   "AIG-80",
+   "AIG-82",
+   "AIG-85",
+   "AIG-129"
+  ],
+  "where": "reply box / New card > paste or attach",
+  "evidence": "public/js/attach.js, lightbox in format.js, lib/attachments.js",
+  "check": {
+   "kind": "qa",
+   "area": "lightbox"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Edit card fields in panel",
+  "cards": [
+   "AIG-6"
+  ],
+  "where": "card view > fields",
+  "evidence": "public/js/card-fields.js",
+  "check": {
+   "kind": "qa",
+   "area": "cardux"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Drag and drop cards between columns",
+  "cards": [
+   "AIG-7"
+  ],
+  "where": "board",
+  "evidence": "board.js draggable/dragstart/dragover",
+  "check": {
+   "kind": "qa",
+   "area": "board"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Card conversation: reply, Enter to send, team column comments",
+  "cards": [
+   "AIG-8",
+   "AIG-17",
+   "AIG-22",
+   "AIG-23",
+   "AIG-43",
+   "AIG-152",
+   "AIG-45",
+   "AIG-169"
+  ],
+  "where": "card view > Reply tab; inbox",
+  "evidence": "public/js/card-chat.js, entersend.js, lib/dispatch.js",
+  "check": {
+   "kind": "qa",
+   "area": "msgux"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Add / archive project from UI and connect folder",
+  "cards": [
+   "AIG-10",
+   "AIG-40",
+   "AIG-73",
+   "AIG-26"
+  ],
+  "where": "home > New project / Connect",
+  "evidence": "lib/onboard.js, shell-card-project-connect.js",
+  "check": {
+   "kind": "qa",
+   "area": "wizard"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "aigile CLI",
+  "cards": [
+   "AIG-11"
+  ],
+  "where": "terminal: aigile help",
+  "evidence": "aigile.js, lib/cli/*",
+  "check": {
+   "kind": "qa",
+   "area": "cli"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Desktop app (Electron) and start script",
+  "cards": [
+   "AIG-15",
+   "AIG-76",
+   "AIG-81",
+   "AIG-83",
+   "AIG-130",
+   "AIG-142"
+  ],
+  "where": "desktop shortcut / restart-app button",
+  "evidence": "desktop/main.js, start-aigile.bat, POST /api/restart",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/update"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Search and filters (assignee, type, sprint)",
+  "cards": [
+   "AIG-16"
+  ],
+  "where": "board filter bar",
+  "evidence": "public/js/filters.js",
+  "check": {
+   "kind": "qa",
+   "area": "filters"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Poke / wake a sleeping team",
+  "cards": [
+   "AIG-28",
+   "AIG-59",
+   "AIG-60",
+   "AIG-67",
+   "AIG-71",
+   "AIG-72"
+  ],
+  "where": "home / board > Poke, Wake",
+  "evidence": "app.js poke, lib/presence.js startTeam",
+  "check": {
+   "kind": "qa",
+   "area": "autopoke"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Refresh prompt for new version (dev flag)",
+  "cards": [
+   "AIG-24",
+   "AIG-78"
+  ],
+  "where": "modal / top-bar refresh",
+  "evidence": "AIGILE_DEV, app.js",
+  "check": {
+   "kind": "qa",
+   "area": "version"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Project docs and md links open in board; clickable links and card ids",
+  "cards": [
+   "AIG-25",
+   "AIG-27",
+   "AIG-68",
+   "AIG-70"
+  ],
+  "where": "project > Docs; card text",
+  "evidence": "lib/routes/docs-inbox.js /api/projects/:slug/docs, public/js/format.js",
+  "check": {
+   "kind": "qa",
+   "area": "docs"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Claude usage and plan usage page",
+  "cards": [
+   "AIG-29",
+   "AIG-44",
+   "AIG-93",
+   "AIG-113",
+   "AIG-151",
+   "AIG-155"
+  ],
+  "where": "Usage page",
+  "evidence": "lib/usage.js, limits.js, routes/meta.js /api/usage, js/usage-page.js",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/usage"
+  },
+  "perf": "usage.js scans session logs; check its caching",
+  "audit": "present"
+ },
+ {
+  "feature": "Wait and see / move to end of queue",
+  "cards": [
+   "AIG-30",
+   "AIG-58"
+  ],
+  "where": "For you test row > Wait",
+  "evidence": "board.js / card-chat.js snooze, timed.js",
+  "check": {
+   "kind": "qa",
+   "area": "timed"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Inbox (questions, tasks, tests, per project tabs, top bar chips)",
+  "cards": [
+   "AIG-31",
+   "AIG-32",
+   "AIG-33",
+   "AIG-34",
+   "AIG-36",
+   "AIG-37",
+   "AIG-46",
+   "AIG-56",
+   "AIG-61",
+   "AIG-86",
+   "AIG-101"
+  ],
+  "where": "top bar inbox button",
+  "evidence": "public/js/inbox*.js, GET /api/inbox",
+  "check": {
+   "kind": "qa",
+   "area": "inbox"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Desktop pop-up and sound for new question",
+  "cards": [
+   "AIG-35"
+  ],
+  "where": "browser notification",
+  "evidence": "inbox-top.js Notification",
+  "check": {
+   "kind": "qa",
+   "area": "badges"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Assignee roster types with models",
+  "cards": [
+   "AIG-38"
+  ],
+  "where": "Team dialog / assignee select",
+  "evidence": "lib/profiles.js, dialogs/team-profile.js",
+  "check": {
+   "kind": "qa",
+   "area": "teamroles"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Responsive card panel",
+  "cards": [
+   "AIG-42"
+  ],
+  "where": "card view",
+  "evidence": "css card panel, card.js",
+  "check": {
+   "kind": "qa",
+   "area": "cardux"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Session location, sleeping teams, start session, runs (background/terminal/VS Code), verbose Watch",
+  "cards": [
+   "AIG-47",
+   "AIG-48",
+   "AIG-54",
+   "AIG-55",
+   "AIG-57",
+   "AIG-107",
+   "AIG-153",
+   "AIG-154",
+   "AIG-219"
+  ],
+  "where": "home / board team strip, Setup > team runs",
+  "evidence": "lib/presence.js, team-quiet QA areas",
+  "check": {
+   "kind": "qa",
+   "area": "runin"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Code blocks with copy; spaced bullets",
+  "cards": [
+   "AIG-49",
+   "AIG-50"
+  ],
+  "where": "card text",
+  "evidence": "public/js/format.js",
+  "check": {
+   "kind": "qa",
+   "area": "inforead"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Default new items to For the team",
+  "cards": [
+   "AIG-51"
+  ],
+  "where": "New card default status",
+  "evidence": "store.js card rules / dispatch.js",
+  "check": {
+   "kind": "qa",
+   "area": "dispatch"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "All-teams message and Going quiet",
+  "cards": [
+   "AIG-53",
+   "AIG-62",
+   "AIG-63",
+   "AIG-64",
+   "AIG-66",
+   "AIG-69",
+   "AIG-207",
+   "AIG-208",
+   "AIG-216",
+   "AIG-220"
+  ],
+  "where": "top bar > Going quiet / goodnight box",
+  "evidence": "lib/routes/allhands.js, lib/quiet.js, public/js/night.js",
+  "check": {
+   "kind": "qa",
+   "area": "allhands"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Permissions editor for projects",
+  "cards": [
+   "AIG-65",
+   "AIG-74"
+  ],
+  "where": "project > permissions",
+  "evidence": "public/js/dialogs/permissions-docs.js",
+  "check": {
+   "kind": "ui",
+   "page": "/#/p/ai-gile",
+   "selector": "button[onclick=\"permsDialog()\"]",
+   "action": "button exists (projects with a folder)"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Go button on messages",
+  "cards": [
+   "AIG-75",
+   "AIG-176"
+  ],
+  "where": "inbox / chat message action buttons",
+  "evidence": "inbox-actions.js, inbox-decide.js",
+  "check": {
+   "kind": "qa",
+   "area": "decide"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Night glance popout",
+  "cards": [
+   "AIG-209",
+   "AIG-217"
+  ],
+  "where": "night.js, #/pop-night",
+  "evidence": "public/js/night.js",
+  "check": {
+   "kind": "qa",
+   "area": "nightglance"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Night watchman and its DM chat",
+  "cards": [
+   "AIG-199",
+   "AIG-211"
+  ],
+  "where": "DMs list > watchman",
+  "evidence": "lib/watchman.js, /api/watchman, /api/chats",
+  "check": {
+   "kind": "qa",
+   "area": "watchdm"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Restart the board button",
+  "cards": [
+   "AIG-213",
+   "AIG-214"
+  ],
+  "where": "Setup / update pill",
+  "evidence": "POST /api/restart (routes/meta.js), app.js",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/update"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "DM-style chats with leads, Discord-style rail, unread badges, drag to reorder",
+  "cards": [
+   "AIG-87",
+   "AIG-137",
+   "AIG-138",
+   "AIG-145",
+   "AIG-147",
+   "AIG-148",
+   "AIG-149",
+   "AIG-181",
+   "AIG-189"
+  ],
+  "where": "left rail",
+  "evidence": "public/js/dms.js (draggable, POST /api/projects/order), lib/badges.js",
+  "check": {
+   "kind": "qa",
+   "area": "rails"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Real DMs between people (E2E, invites, relay, People filter)",
+  "cards": [
+   "AIG-108",
+   "AIG-109",
+   "AIG-110",
+   "AIG-111",
+   "AIG-112",
+   "AIG-180",
+   "AIG-99"
+  ],
+  "where": "DMs > People, Friends",
+  "evidence": "lib/dm.js, relay/relay.js, dms-friends.js",
+  "check": {
+   "kind": "qa",
+   "area": "dmchats"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Lead chat: send idea, chatty leads",
+  "cards": [
+   "AIG-139",
+   "AIG-140",
+   "AIG-178"
+  ],
+  "where": "DM with lead",
+  "evidence": "lib/leadchat.js, dmrules.js, chatty pref in card-view-picture-look.js",
+  "check": {
+   "kind": "qa",
+   "area": "dmrules"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Learn the board: tour, levels, pretend team",
+  "cards": [
+   "AIG-88",
+   "AIG-95"
+  ],
+  "where": "Help menu > tour",
+  "evidence": "js/tour.js, js/help.js, GET /api/intro",
+  "check": {
+   "kind": "qa",
+   "area": "tour"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Dev words glossary and tooltips",
+  "cards": [
+   "AIG-102"
+  ],
+  "where": "Help > glossary",
+  "evidence": "js/glossary.js",
+  "check": {
+   "kind": "qa",
+   "area": "glossary"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Friend install: guide, update pill, zip update, security pass, your name",
+  "cards": [
+   "AIG-90",
+   "AIG-91",
+   "AIG-92",
+   "AIG-94",
+   "AIG-103"
+  ],
+  "where": "Setup first run; update pill",
+  "evidence": "lib/update.js, zipupdate.js, safefolder.js, lib/setup.js",
+  "check": {
+   "kind": "qa",
+   "area": "wizard"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Starter ways of working copied on connect",
+  "cards": [
+   "AIG-96"
+  ],
+  "where": "on project connect",
+  "evidence": "lib/starter.js",
+  "check": {
+   "kind": "qa",
+   "area": "starter"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Refactor offer with cost estimate",
+  "cards": [
+   "AIG-98"
+  ],
+  "where": "home > refactor offer",
+  "evidence": "lib/refactor.js, dialogs/refactor.js",
+  "check": {
+   "kind": "qa",
+   "area": "refactor"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Strict methodology modes (Scrum, Kanban)",
+  "cards": [
+   "AIG-100",
+   "AIG-170"
+  ],
+  "where": "board columns templates",
+  "evidence": "templates found in card-fields/core/columns; no strict-mode switch located",
+  "check": {
+   "kind": "qa",
+   "area": "newscrum"
+  },
+  "missingWhat": "strict enforcement setting not found",
+  "audit": "unsure"
+ },
+ {
+  "feature": "Pop-out windows (inbox lists, cards, remember place, reopen on reply)",
+  "cards": [
+   "AIG-104",
+   "AIG-122",
+   "AIG-128",
+   "AIG-144",
+   "AIG-183",
+   "AIG-188"
+  ],
+  "where": "card/inbox pop-out button",
+  "evidence": "public/js/popout.js, desktop/main.js getBounds",
+  "check": {
+   "kind": "qa",
+   "area": "popout"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Customisable board columns, WIP, rows, views, card display",
+  "cards": [
+   "AIG-115",
+   "AIG-116",
+   "AIG-117",
+   "AIG-118",
+   "AIG-119",
+   "AIG-120",
+   "AIG-121",
+   "AIG-184"
+  ],
+  "where": "board toolbar > Columns, Cards, Views",
+  "evidence": "dialogs/happening-columns.js, board.js, card-view-picture-look.js",
+  "check": {
+   "kind": "qa",
+   "area": "board"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Languages (i18n, Dutch, Flemish, review)",
+  "cards": [
+   "AIG-123",
+   "AIG-124",
+   "AIG-125",
+   "AIG-126",
+   "AIG-127",
+   "AIG-174"
+  ],
+  "where": "Setup > Language",
+  "evidence": "public/js/i18n.js, public/lang/*.json",
+  "check": {
+   "kind": "qa",
+   "area": "i18n"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Ask the team and What's happening",
+  "cards": [
+   "AIG-131",
+   "AIG-132"
+  ],
+  "where": "board toolbar",
+  "evidence": "board.js, project summary route",
+  "check": {
+   "kind": "qa",
+   "area": "board"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Stand-ups (call, report, morning prompt, needs vs blockers)",
+  "cards": [
+   "AIG-133",
+   "AIG-134",
+   "AIG-135",
+   "AIG-136",
+   "AIG-204",
+   "AIG-212"
+  ],
+  "where": "board > Stand-up; home Stand-up all",
+  "evidence": "lib/standup.js, js/standup.js, /api/standup",
+  "check": {
+   "kind": "qa",
+   "area": "standup"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Focus For you column, auto-open next",
+  "cards": [
+   "AIG-141"
+  ],
+  "where": "For you view",
+  "evidence": "public/js/focus.js, fyfold.js",
+  "check": {
+   "kind": "qa",
+   "area": "focus"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Light/dark theme and logos",
+  "cards": [
+   "AIG-143",
+   "AIG-175"
+  ],
+  "where": "Setup/Look dialog",
+  "evidence": "app.js theme, lib/logos.js",
+  "check": {
+   "kind": "qa",
+   "area": "theme"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Profile pictures and picture library",
+  "cards": [
+   "AIG-150"
+  ],
+  "where": "Setup > profile picture",
+  "evidence": "lib/avatars.js, /api/avatars",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/avatars"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Open file paths in editor",
+  "cards": [
+   "AIG-156"
+  ],
+  "where": "file path chip",
+  "evidence": "lib/editor.js, POST /api/editor",
+  "check": {
+   "kind": "qa",
+   "area": "editor"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Collapsible chat folds per card",
+  "cards": [
+   "AIG-157"
+  ],
+  "where": "DM chat folds",
+  "evidence": "dms.js foldsHtml",
+  "check": {
+   "kind": "qa",
+   "area": "chats-dms"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Your queue: holds up, own priority, kinds, time, Next up",
+  "cards": [
+   "AIG-158",
+   "AIG-159",
+   "AIG-160",
+   "AIG-161",
+   "AIG-162",
+   "AIG-187"
+  ],
+  "where": "inbox > Next up strip",
+  "evidence": "inbox-queue.js, inbox-items.js ibNext",
+  "check": {
+   "kind": "qa",
+   "area": "inbox"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "AI tester with evidence, AI passed tab",
+  "cards": [
+   "AIG-163",
+   "AIG-164",
+   "AIG-186",
+   "AIG-192",
+   "AIG-196",
+   "AIG-197"
+  ],
+  "where": "inbox > AI passed; card > Ask AI tester",
+  "evidence": "lib/tester.js, board.js tester.start, inbox-page tester.btn, /api/tester",
+  "check": {
+   "kind": "qa",
+   "area": "aitester"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Proof on hand-back",
+  "cards": [
+   "AIG-166",
+   "AIG-167"
+  ],
+  "where": "card view proof",
+  "evidence": "lib/proof.js, card.js, cmds-cards.js",
+  "check": {
+   "kind": "qa",
+   "area": "card"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Unsent drafts survive refresh",
+  "cards": [
+   "AIG-171"
+  ],
+  "where": "any reply box",
+  "evidence": "core.js draft saving",
+  "check": {
+   "kind": "qa",
+   "area": "offline"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "People and roles",
+  "cards": [
+   "AIG-185"
+  ],
+  "where": "Setup > People",
+  "evidence": "dialogs/people.js, lib/roles.js",
+  "check": {
+   "kind": "qa",
+   "area": "roles"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Fold a card into another; Tidy my pile",
+  "cards": [
+   "AIG-190",
+   "AIG-193",
+   "AIG-206",
+   "AIG-215"
+  ],
+  "where": "inbox > Tidy; aigile fold",
+  "evidence": "cmds-cards.js fold, inbox.js/board.js tidy",
+  "check": {
+   "kind": "qa",
+   "area": "fyfold"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "New-user trial board and pretend team",
+  "cards": [
+   "AIG-201",
+   "AIG-202",
+   "AIG-203",
+   "AIG-205"
+  ],
+  "where": "Setup > Try it as a new user",
+  "evidence": "lib/trial.js, /api/trial, pretend-team.js",
+  "check": {
+   "kind": "qa",
+   "area": "trial"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Ask a mate",
+  "cards": [
+   "AIG-210"
+  ],
+  "where": "DM with friend > Ask",
+  "evidence": "lib/ask.js",
+  "check": {
+   "kind": "qa",
+   "area": "ask"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Run in browser button on test items",
+  "cards": [
+   "AIG-146"
+  ],
+  "where": "test card > Run",
+  "evidence": "no obvious run-in-browser handler found; only runCmd (editor command)",
+  "check": {
+   "kind": "qa",
+   "area": "openit"
+  },
+  "audit": "unsure"
+ },
+ {
+  "feature": "Watchman chat: orders, thumbs-up replies, crack the whip, clear chat, unread badge, fewer messages",
+  "cards": [
+   "AIG-221",
+   "AIG-226",
+   "AIG-231",
+   "AIG-233",
+   "AIG-255",
+   "AIG-256",
+   "AIG-262",
+   "AIG-273",
+   "AIG-278",
+   "AIG-271"
+  ],
+  "where": "Messages rail > Night watchman chat (clear button, unread badge)",
+  "evidence": "lib/watchman.js (crack the whip, clear, watched-only); public/js/dms.js; POST /api/chats/_watchman",
+  "check": {
+   "kind": "qa",
+   "area": "watchdm"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Night watch keeps teams working: auto-wake idle teams, survive board restart, sprint nudges, no empty wakes",
+  "cards": [
+   "AIG-222",
+   "AIG-224",
+   "AIG-242",
+   "AIG-261",
+   "AIG-269",
+   "AIG-270",
+   "AIG-272",
+   "AIG-277",
+   "AIG-286"
+  ],
+  "where": "Runs in background at night; Setup > night watch",
+  "evidence": "lib/watchman.js, lib/presence.js; QA areas stuckwake, autopoke, team-quiet-1-presence",
+  "check": {
+   "kind": "qa",
+   "area": "autopoke"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Going quiet: quiet card, night glance window, morning summary, wake-at time, hourly cap",
+  "cards": [
+   "AIG-223",
+   "AIG-257",
+   "AIG-280",
+   "AIG-227",
+   "AIG-228",
+   "AIG-229",
+   "AIG-230",
+   "AIG-232",
+   "AIG-281"
+  ],
+  "where": "Top bar > Going quiet; night glance window",
+  "evidence": "lib/quiet.js (MORNING, takeMorning, setQuiet); public/js/night.js; app.js quiet handling",
+  "check": {
+   "kind": "qa",
+   "area": "quiet"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Usage limits: teams restart when the plan refreshes, no false 'stuck' cards",
+  "cards": [
+   "AIG-265",
+   "AIG-283"
+  ],
+  "where": "Usage page; automatic",
+  "evidence": "lib/limits.js, lib/notokens.js, lib/watchman.js",
+  "check": {
+   "kind": "qa",
+   "area": "limitread"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Tidy the For you pile (fold cards, tidy button, fading note)",
+  "cards": [
+   "AIG-225",
+   "AIG-258",
+   "AIG-263",
+   "AIG-274",
+   "AIG-276",
+   "AIG-279",
+   "AIG-284",
+   "AIG-350",
+   "AIG-362",
+   "AIG-369",
+   "AIG-397",
+   "AIG-404",
+   "AIG-259"
+  ],
+  "where": "For you column header > Tidy my pile",
+  "evidence": "public/js/board.js tidy pile; lib/routes/comments.js; public/js/fyfold.js",
+  "check": {
+   "kind": "qa",
+   "area": "fyfold"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Tidy cards (lead neatens new cards), no-title new card",
+  "cards": [
+   "AIG-234",
+   "AIG-237",
+   "AIG-399"
+  ],
+  "where": "Setup > Tidy cards switch; New card dialog",
+  "evidence": "lead.tidyCards in lib/setup.js and lib/routes/projects-cards.js",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/setup"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "What kind of lead do you want? questionnaire",
+  "cards": [
+   "AIG-235",
+   "AIG-236"
+  ],
+  "where": "Setup > lead questionnaire (also first run)",
+  "evidence": "public/js/leadquiz.js",
+  "check": {
+   "kind": "ui",
+   "page": "/#/setup",
+   "selector": "text=What kind of lead",
+   "action": "click"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Card links: .md names, folders open in Explorer, .html in browser, bare addresses, Copy buttons, folder button",
+  "cards": [
+   "AIG-240",
+   "AIG-294",
+   "AIG-318",
+   "AIG-390",
+   "AIG-398",
+   "AIG-429"
+  ],
+  "where": "Links inside card text",
+  "evidence": "public/js/format.js, lib/openfile.js, lib/routes/ctx.js",
+  "check": {
+   "kind": "qa",
+   "area": "card"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Restart the app pill (one, clickable, watchman restarts at night)",
+  "cards": [
+   "AIG-241",
+   "AIG-295",
+   "AIG-346"
+  ],
+  "where": "Below title bar > Restart the app",
+  "evidence": "public/lang/en.json restart text; public/js/app.js",
+  "check": {
+   "kind": "qa",
+   "area": "restartpill"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Friends' zip, download page and self-update (Stable/Latest)",
+  "cards": [
+   "AIG-248",
+   "AIG-249",
+   "AIG-250",
+   "AIG-251",
+   "AIG-264"
+  ],
+  "where": "Setup > Channel; docs/INSTALL.md",
+  "evidence": "tools/pack.mjs, lib/zipupdate.js, lib/channel.js, tools/stable.mjs",
+  "check": {
+   "kind": "qa",
+   "area": "channels"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Teams' commands on a board not on port 4321",
+  "cards": [
+   "AIG-252"
+  ],
+  "where": "CLI / connect hooks",
+  "evidence": "AIGILE_URL in aigile.js lib/cli/core.js; lib/onboard.js hooks",
+  "check": {
+   "kind": "qa",
+   "area": "api-cli"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Friends don't get dev mode",
+  "cards": [
+   "AIG-253"
+  ],
+  "where": "Start-up (no refresh prompt)",
+  "evidence": "server.js AIGILE_DEV only",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/meta"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Setup: next step after Save, agent program path check",
+  "cards": [
+   "AIG-254",
+   "AIG-334"
+  ],
+  "where": "Setup > Save",
+  "evidence": "lib/setup.js agent.command check; lib/platform.js",
+  "check": {
+   "kind": "qa",
+   "area": "setupux"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Run cost measurement",
+  "cards": [
+   "AIG-266",
+   "AIG-299"
+  ],
+  "where": "Usage page cost per run",
+  "evidence": "lib/usage.js, public/js/usage-page.js, _runs.jsonl",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/usage"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Pro-friendly setting, spend scale, usage saver, budget caps",
+  "cards": [
+   "AIG-268",
+   "AIG-353"
+  ],
+  "where": "Setup > budget",
+  "evidence": "lib/budget.js; QA saver, budget",
+  "check": {
+   "kind": "qa",
+   "area": "budget"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "No Token Mode (manual, automatic at limit, hides AI buttons)",
+  "cards": [
+   "AIG-337",
+   "AIG-338",
+   "AIG-339"
+  ],
+  "where": "Top bar > no-token switch",
+  "evidence": "lib/notokens.js, public/js/notokens.js, css/06-notokens.css",
+  "check": {
+   "kind": "qa",
+   "area": "notokens"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "AI tester: Test these for me, night tests, For you button",
+  "cards": [
+   "AIG-291",
+   "AIG-292",
+   "AIG-300"
+  ],
+  "where": "Inbox / For you header",
+  "evidence": "lib/tester.js, lib/watchman.js, public/js/inbox-ai.js",
+  "check": {
+   "kind": "qa",
+   "area": "tester"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Friends sharing: relay, invites, tick to share, roles, shared board, friend lane, text fence",
+  "cards": [
+   "AIG-304",
+   "AIG-305",
+   "AIG-306",
+   "AIG-307",
+   "AIG-324",
+   "AIG-325",
+   "AIG-381",
+   "AIG-382"
+  ],
+  "where": "Project > Share; Friends",
+  "evidence": "lib/share.js, share-base.js, public/js/share.js, share-board.js",
+  "check": {
+   "kind": "qa",
+   "area": "share"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Ask a mate behaviour in No Token Mode",
+  "cards": [
+   "AIG-383"
+  ],
+  "where": "Inbox friend question",
+  "evidence": "lib/ask.js, public/js/ask.js",
+  "check": {
+   "kind": "qa",
+   "area": "ask"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Pretend friend Davy (own window, banner, ask a mate stub)",
+  "cards": [
+   "AIG-322",
+   "AIG-323",
+   "AIG-384"
+  ],
+  "where": "Setup > Pretend friend",
+  "evidence": "lib/pretend.js, public/js/pretend.js",
+  "check": {
+   "kind": "qa",
+   "area": "pretendfriend"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Invite a friend screen and relay address box",
+  "cards": [
+   "AIG-311",
+   "AIG-309"
+  ],
+  "where": "Setup > DMs",
+  "evidence": "public/js/dms-friends.js, lib/dm.js, QA dm-invite",
+  "check": {
+   "kind": "qa",
+   "area": "dminvite"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Files between friends deleted from relay after delivery",
+  "cards": [
+   "AIG-341"
+  ],
+  "where": "relay/relay.js",
+  "evidence": "relay/relay.js file delivery",
+  "check": {
+   "kind": "qa",
+   "area": "dmstore"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Open card live updates, no flicker, pop-outs stay open",
+  "cards": [
+   "AIG-310",
+   "AIG-313",
+   "AIG-314",
+   "AIG-405"
+  ],
+  "where": "Card view / pop-out",
+  "evidence": "public/js/popout.js, card.js, poll.js",
+  "check": {
+   "kind": "qa",
+   "area": "steady"
+  },
+  "perf": "1s open-card refresh polling costs requests; check poll.js backoff",
+  "audit": "present"
+ },
+ {
+  "feature": "Answer buttons on agent tasks: Looks right next step, Done/Yes/No",
+  "cards": [
+   "AIG-315",
+   "AIG-371"
+  ],
+  "where": "Card reply box",
+  "evidence": "public/js/card-chat.js looksRight",
+  "check": {
+   "kind": "qa",
+   "area": "cardux"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Pop out one inbox item",
+  "cards": [
+   "AIG-367"
+  ],
+  "where": "Inbox item > pop out",
+  "evidence": "public/js/popout.js, inbox-items.js",
+  "check": {
+   "kind": "qa",
+   "area": "popone"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "DMs: waiting card shows only what you need; open card from message; message lead about something else",
+  "cards": [
+   "AIG-370",
+   "AIG-449",
+   "AIG-285"
+  ],
+  "where": "Messages rail",
+  "evidence": "public/js/dms.js, dmme.js; leadchat.js replaced the New message to Lead option",
+  "missingWhat": "no 'New message to Lead' i18n key found; likely superseded by Lead chat (AIG-872)",
+  "check": {
+   "kind": "qa",
+   "area": "msgux"
+  },
+  "audit": "partial"
+ },
+ {
+  "feature": "Inbox chips open All tab",
+  "cards": [
+   "AIG-288",
+   "AIG-293"
+  ],
+  "where": "Top bar chips",
+  "evidence": "public/js/inbox-top.js, inbox-tabs.js",
+  "check": {
+   "kind": "qa",
+   "area": "inbox"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Inbox pictures open full size; attachment remove",
+  "cards": [
+   "AIG-372",
+   "AIG-376"
+  ],
+  "where": "Inbox, attach chips",
+  "evidence": "lightbox in public/js/attach.js, format.js",
+  "check": {
+   "kind": "qa",
+   "area": "lightbox"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Raise a card for any project",
+  "cards": [
+   "AIG-316"
+  ],
+  "where": "New card dialog project picker",
+  "evidence": "POST /api/projects/:slug/cards; QA raisebug",
+  "check": {
+   "kind": "qa",
+   "area": "raisebug"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "New user path: Find my projects, import, empty board hint, first-open error",
+  "cards": [
+   "AIG-317",
+   "AIG-331",
+   "AIG-332",
+   "AIG-333",
+   "AIG-335",
+   "AIG-340"
+  ],
+  "where": "Home > Find my projects",
+  "evidence": "lib/discover.js, lib/starter.js, lib/trial.js, QA starter",
+  "check": {
+   "kind": "qa",
+   "area": "starter"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Closed alpha: invite codes, alpha label, device language",
+  "cards": [
+   "AIG-347",
+   "AIG-348",
+   "AIG-352"
+  ],
+  "where": "Top bar alpha tag; join page",
+  "evidence": "lib/join.js, alpha.tag in en.json, lib/routes/team-dms.js",
+  "check": {
+   "kind": "qa",
+   "area": "join"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Server tasks group and Open server button",
+  "cards": [
+   "AIG-320",
+   "AIG-374"
+  ],
+  "where": "For you > Server group",
+  "evidence": "lib/servers.js, openServerBtn in core.js",
+  "check": {
+   "kind": "qa",
+   "area": "servers"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Outside help task group",
+  "cards": [
+   "AIG-380"
+  ],
+  "where": "For you > Outside help",
+  "evidence": "cmds-cards.js --outside",
+  "check": {
+   "kind": "cli",
+   "cmd": "aigile help"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Agile intro, Help menu and help levels",
+  "cards": [
+   "AIG-327",
+   "AIG-328",
+   "AIG-345"
+  ],
+  "where": "Help menu",
+  "evidence": "public/js/help.js, tour.js, GET /api/intro",
+  "check": {
+   "kind": "qa",
+   "area": "helplevels"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Aussie English language",
+  "cards": [
+   "AIG-330"
+  ],
+  "where": "Language picker",
+  "evidence": "public/lang/aussie.json",
+  "check": {
+   "kind": "qa",
+   "area": "i18n"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Emoji picker and GIFs",
+  "cards": [
+   "AIG-342",
+   "AIG-343"
+  ],
+  "where": "Type :smi in comments/DMs; GIF button",
+  "evidence": "public/js/emoji.js, lib/giphy.js, attach.js",
+  "check": {
+   "kind": "qa",
+   "area": "gifs"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Resizable ask and idea boxes; idea capture button; idea to Scrum Master",
+  "cards": [
+   "AIG-344",
+   "AIG-363",
+   "AIG-351",
+   "AIG-388"
+  ],
+  "where": "Top bar idea button",
+  "evidence": "public/js/dialogs/happening-columns.js ideaTeamOptionsHtml",
+  "check": {
+   "kind": "qa",
+   "area": "ideabtn"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Setup wizard (quick and advanced)",
+  "cards": [
+   "AIG-354",
+   "AIG-355"
+  ],
+  "where": "Setup > Run the wizard",
+  "evidence": "public/js/wizard.js, wizard-adv.js",
+  "check": {
+   "kind": "qa",
+   "area": "wizard"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Usage at a glance mini bars and minimal usage view",
+  "cards": [
+   "AIG-356",
+   "AIG-431"
+  ],
+  "where": "Top bar usage button",
+  "evidence": "public/js/usage-glance.js, usage-page.js",
+  "check": {
+   "kind": "qa",
+   "area": "usage"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Copy for another AI (AIGILE pack)",
+  "cards": [
+   "AIG-357",
+   "AIG-377"
+  ],
+  "where": "Card > Copy for another AI",
+  "evidence": "lib/pack.js, public/js/pack.js",
+  "check": {
+   "kind": "qa",
+   "area": "pack"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Codex as agent program",
+  "cards": [
+   "AIG-358",
+   "AIG-402"
+  ],
+  "where": "Team dialog engine",
+  "evidence": "lib/engines.js ENGINES table",
+  "check": {
+   "kind": "qa",
+   "area": "engines"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Lead Scrum Master (on day and night, diligence)",
+  "cards": [
+   "AIG-359",
+   "AIG-441"
+  ],
+  "where": "Scrum Master panel",
+  "evidence": "lib/scrummaster.js diligence",
+  "check": {
+   "kind": "qa",
+   "area": "scrummaster"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "For you Decide, topics, mini questionnaire",
+  "cards": [
+   "AIG-361",
+   "AIG-445"
+  ],
+  "where": "For you / inbox topics",
+  "evidence": "public/js/inbox-decide.js",
+  "check": {
+   "kind": "qa",
+   "area": "decide"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Dispatcher: right agent for each card or reply",
+  "cards": [
+   "AIG-364"
+  ],
+  "where": "Background",
+  "evidence": "lib/dispatch.js",
+  "check": {
+   "kind": "qa",
+   "area": "dispatch"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Pick team roles per project",
+  "cards": [
+   "AIG-366"
+  ],
+  "where": "Project > Team",
+  "evidence": "public/js/dialogs/team-profile.js",
+  "check": {
+   "kind": "qa",
+   "area": "teamroles"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "No repeated messages (bump), plain notes not questions",
+  "cards": [
+   "AIG-373",
+   "AIG-375"
+  ],
+  "where": "Card chat",
+  "evidence": "QA bump, plainnote; lib/routes/comments.js",
+  "check": {
+   "kind": "qa",
+   "area": "plainnote"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Timed cards (come back at) and card groups",
+  "cards": [
+   "AIG-385",
+   "AIG-386"
+  ],
+  "where": "Card snooze/timed; groups in For you",
+  "evidence": "lib/timed.js, comments.js snooze route, QA timed, groups",
+  "check": {
+   "kind": "qa",
+   "area": "groups"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Info-only hand-overs (Got it)",
+  "cards": [
+   "AIG-392"
+  ],
+  "where": "For you To read",
+  "evidence": "card-extras.js, inbox-actions.js; QA inforead",
+  "check": {
+   "kind": "qa",
+   "area": "inforead"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Real-life tasks and focus mode",
+  "cards": [
+   "AIG-394",
+   "AIG-395"
+  ],
+  "where": "Card type life; focus",
+  "evidence": "lib/focus.js, public/js/focus.js",
+  "check": {
+   "kind": "qa",
+   "area": "focus"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Badge maker for agent pictures",
+  "cards": [
+   "AIG-396"
+  ],
+  "where": "Team dialog > picture",
+  "evidence": "public/js/dialogs/badge-maker.js, lib/badges.js",
+  "check": {
+   "kind": "qa",
+   "area": "badges"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Customisable app icon colours",
+  "cards": [
+   "AIG-400"
+  ],
+  "where": "Setup > icon colours",
+  "evidence": "lib/appicon.js",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/setup"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Undo after a card click",
+  "cards": [
+   "AIG-403"
+  ],
+  "where": "Undo toast after moving a card",
+  "evidence": "lib/undo.js; POST .../cards/:id/undo; public/js/undo.js",
+  "check": {
+   "kind": "qa",
+   "area": "undo"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "No pop-up console windows",
+  "cards": [
+   "AIG-275",
+   "AIG-391"
+  ],
+  "where": "Background",
+  "evidence": "windowsHide used across lib; QA sandboxsafe",
+  "check": {
+   "kind": "qa",
+   "area": "sandboxsafe"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Linux support",
+  "cards": [
+   "AIG-408",
+   "AIG-409"
+  ],
+  "where": "INSTALL, desktop AppImage",
+  "evidence": "lib/platform.js, tools/linux/install.sh, desktop/package.json appimage",
+  "check": {
+   "kind": "qa",
+   "area": "platform"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Phone browser pages and PWA",
+  "cards": [
+   "AIG-410"
+  ],
+  "where": "Phone browser; install to home screen",
+  "evidence": "public/js/pwa.js, manifest, QA phone",
+  "check": {
+   "kind": "qa",
+   "area": "phone"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Android app",
+  "cards": [
+   "AIG-412"
+  ],
+  "where": "Android",
+  "evidence": "server side pairing in lib/phone.js (Bearer, sealed); docs/android-plan.md",
+  "missingWhat": "no app code in repo, only plan docs and pairing API",
+  "check": {
+   "kind": "qa",
+   "area": "phonepair"
+  },
+  "audit": "partial"
+ },
+ {
+  "feature": "Roadmap page",
+  "cards": [
+   "AIG-413"
+  ],
+  "where": "Public site",
+  "evidence": "docs/ROADMAP.md (a repo document, no public page)",
+  "check": {
+   "kind": "unsure",
+   "why": "not a page: docs/ROADMAP.md in the repo, nothing served by the board"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Agent profiles, scales, role and team templates, project types, Add team",
+  "cards": [
+   "AIG-415",
+   "AIG-416",
+   "AIG-417",
+   "AIG-418",
+   "AIG-419",
+   "AIG-420",
+   "AIG-421",
+   "AIG-422",
+   "AIG-423",
+   "AIG-424",
+   "AIG-442",
+   "AIG-443",
+   "AIG-444",
+   "AIG-427",
+   "AIG-428"
+  ],
+  "where": "Setup > How agents work; Team dialog",
+  "evidence": "lib/profiles.js, projecttypes.js, expertteams.js, team-profile.js",
+  "check": {
+   "kind": "qa",
+   "area": "profiles"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Chat follows the lead to the next card",
+  "cards": [
+   "AIG-426"
+  ],
+  "where": "Open chat window",
+  "evidence": "lib/follow.js, public/js/follow.js",
+  "check": {
+   "kind": "qa",
+   "area": "follow"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Projects inside projects (spaces), roll-up, move card, cross-project waits",
+  "cards": [
+   "AIG-430",
+   "AIG-433",
+   "AIG-434",
+   "AIG-435",
+   "AIG-436",
+   "AIG-437",
+   "AIG-438",
+   "AIG-440",
+   "AIG-450"
+  ],
+  "where": "Home / rail tree; card > Move to project",
+  "evidence": "p.parent in store.js, public/js/spaces.js, QA spaces, moveproject",
+  "check": {
+   "kind": "qa",
+   "area": "spaces"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Offline share project as file",
+  "cards": [
+   "AIG-446"
+  ],
+  "where": "CLI / project share",
+  "evidence": "lib/offline.js, QA offline",
+  "check": {
+   "kind": "qa",
+   "area": "offline"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "One lead at a time, per-project session, tester own folder, hooks per project",
+  "cards": [
+   "AIG-447",
+   "AIG-448",
+   "AIG-453",
+   "AIG-454",
+   "AIG-455"
+  ],
+  "where": "Background runs",
+  "evidence": "lib/presence.js session id; QA onelead",
+  "check": {
+   "kind": "qa",
+   "area": "onelead"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Guide / wiki outline",
+  "cards": [
+   "AIG-425"
+  ],
+  "where": "docs/guide/outline",
+  "evidence": "docs/guide/outline/01..10",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/intro"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Scrum Master run modes, launch and always-on",
+  "cards": [
+   "AIG-456",
+   "AIG-457",
+   "AIG-458",
+   "AIG-476",
+   "AIG-463",
+   "AIG-515",
+   "AIG-523"
+  ],
+  "where": "Home > where each team runs; Scrum Master panel",
+  "evidence": "lib/scrummaster.js, lib/watchman.js; QA onelead, scrummaster",
+  "check": {
+   "kind": "qa",
+   "area": "runin"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Session modes cost/speed report",
+  "cards": [
+   "AIG-461"
+  ],
+  "where": "CLI: node tools/session-modes.cjs",
+  "evidence": "tools/session-modes.cjs, docs/SESSION-MODES.md (CODEMAP)",
+  "check": {
+   "kind": "cli",
+   "cmd": "node tools/session-modes.cjs --json"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Scrum Master status/message hygiene (no repeated status, Send anyway, no lost message, clear limits text)",
+  "cards": [
+   "AIG-534",
+   "AIG-598",
+   "AIG-647",
+   "AIG-635",
+   "AIG-531"
+  ],
+  "where": "Scrum Master chat in DMs",
+  "evidence": "i18n dms.sendanyway; lib/watchman.js; QA scrummaster",
+  "check": {
+   "kind": "qa",
+   "area": "scrummaster"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Night watch auto-poke and unstick stalled boards",
+  "cards": [
+   "AIG-516",
+   "AIG-520",
+   "AIG-521",
+   "AIG-540",
+   "AIG-465"
+  ],
+  "where": "Night watch switch; home 'teams need a poke' pill",
+  "evidence": "lib/watchman.js; i18n poke.one/poke.title; QA autopoke, stuckwake",
+  "check": {
+   "kind": "qa",
+   "area": "autopoke"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Nudge icon in card chat, poke whole column, real activity instead of typing",
+  "cards": [
+   "AIG-589",
+   "AIG-593",
+   "AIG-527",
+   "AIG-636",
+   "AIG-639"
+  ],
+  "where": "Card chat pop-up > 👉; column header 👉",
+  "evidence": "public/js/card-chat.js nudgeBtn/nudgeLit; board.js poke column; i18n card.notseen, card.act.thinking",
+  "check": {
+   "kind": "qa",
+   "area": "nudge"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "No stray terminal windows from agents' test servers",
+  "cards": [
+   "AIG-459",
+   "AIG-462"
+  ],
+  "where": "invisible (no pop-up windows)",
+  "evidence": "windowsHide used in lib/ask.js, lib/assumptions.js, lib/bugreports.js, stats.js",
+  "check": {
+   "kind": "qa",
+   "area": "sandboxsafe"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Choose your main team / team templates (expert teams) and rename teammates",
+  "cards": [
+   "AIG-460",
+   "AIG-577",
+   "AIG-578",
+   "AIG-579",
+   "AIG-634"
+  ],
+  "where": "Setup wizard; 👥 Team dialog",
+  "evidence": "lib/expertteams.js, dialogs/expert-teams.js, i18n tm.mates.help; QA experts, expert-teams, teamroles",
+  "check": {
+   "kind": "qa",
+   "area": "teamrename"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Spaces: projects inside projects",
+  "cards": [
+   "AIG-464"
+  ],
+  "where": "Project header > 🪐 Space",
+  "evidence": "public/js/spaces.js, i18n space.btn; QA spaces, spacekids",
+  "check": {
+   "kind": "qa",
+   "area": "spaces"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Usage burn-down and forecast",
+  "cards": [
+   "AIG-466"
+  ],
+  "where": "⚡ Usage page chart",
+  "evidence": "lib/forecast.js, usage-page.js .uz-burn-svg, i18n usage.burn.*",
+  "check": {
+   "kind": "qa",
+   "area": "pace"
+  },
+  "perf": "usage page needed two clicks (AIG-558); check it loads once",
+  "audit": "present"
+ },
+ {
+  "feature": "Trust the AI tester and tester sweep (accept sure passes)",
+  "cards": [
+   "AIG-467",
+   "AIG-692",
+   "AIG-542"
+  ],
+  "where": "Setup > Trust the AI tester; inbox 'Accept all AI-passed'",
+  "evidence": "lib/tester.js trust(); i18n trust.h, inbox.aiall; QA trusttester",
+  "check": {
+   "kind": "qa",
+   "area": "trusttester"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Life tasks fixes (IRL card not a test, single Done button)",
+  "cards": [
+   "AIG-543",
+   "AIG-571"
+  ],
+  "where": "For you / life cards",
+  "evidence": "QA lifetasks, lifenag",
+  "check": {
+   "kind": "qa",
+   "area": "lifetasks"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Pretend friend: pick version and window",
+  "cards": [
+   "AIG-468"
+  ],
+  "where": "Setup > Pretend friend",
+  "evidence": "public/js/pretend-setup.js, lib/pretend.js; QA pretend-friend",
+  "check": {
+   "kind": "qa",
+   "area": "launchpick"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Copy button on values in card messages",
+  "cards": [
+   "AIG-470"
+  ],
+  "where": "Card messages: bold values and inline code",
+  "evidence": "public/js/format.js (copy value)",
+  "check": {
+   "kind": "qa",
+   "area": "msgux"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Server tasks: Open server, built-in terminal, small editor, server access roles",
+  "cards": [
+   "AIG-469",
+   "AIG-471",
+   "AIG-536",
+   "AIG-677"
+  ],
+  "where": "Server task card > Open server / terminal / editor; Setup > My servers",
+  "evidence": "core.js openServerBtn; lib/terminal.js, lib/editor.js, public/js/terminal.js, editor.js; QA servers, terminal, editor, roles",
+  "check": {
+   "kind": "qa",
+   "area": "terminal"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "For you pile tidy and stale/DM-card fixes",
+  "cards": [
+   "AIG-472",
+   "AIG-544",
+   "AIG-529",
+   "AIG-535",
+   "AIG-541",
+   "AIG-624",
+   "AIG-672"
+  ],
+  "where": "For you > Tidy my pile",
+  "evidence": "i18n tidy.btn, tidy.asked; public/js/fyfold.js; QA fyfold",
+  "check": {
+   "kind": "qa",
+   "area": "fyfold"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Discord bot DMs, Discord tab and activity",
+  "cards": [
+   "AIG-473",
+   "AIG-553",
+   "AIG-557",
+   "AIG-559",
+   "AIG-642"
+  ],
+  "where": "DM window > Discord chip; Setup > Discord",
+  "evidence": "lib/discord.js, public/js/discord-tab.js, discord-setup.js, discord-presence.js; QA discordtab, discord, discordact",
+  "check": {
+   "kind": "qa",
+   "area": "discord"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Attach screenshot in Lead Scrum Master chat",
+  "cards": [
+   "AIG-474"
+  ],
+  "where": "Scrum Master chat > Attach",
+  "evidence": "attach.js exists, not traced into the _watchman chat route",
+  "check": {
+   "kind": "qa",
+   "area": "attach"
+  },
+  "missingWhat": "confirm attachment travels with watchman chat message",
+  "audit": "unsure"
+ },
+ {
+  "feature": "Assumptions log, page and per-project summary",
+  "cards": [
+   "AIG-477",
+   "AIG-526",
+   "AIG-533"
+  ],
+  "where": "#/assumptions",
+  "evidence": "lib/assumptions.js, public/js/assumptions.js; QA assumptions, assume",
+  "check": {
+   "kind": "qa",
+   "area": "assume"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Overnight flow: refill To do, plan big backlog cards",
+  "cards": [
+   "AIG-478",
+   "AIG-480"
+  ],
+  "where": "Setup > night watch (plan big)",
+  "evidence": "lib/watchman.js; QA planbig, team-quiet-3-watchman",
+  "check": {
+   "kind": "qa",
+   "area": "planbig"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Going quiet",
+  "cards": [
+   "AIG-484",
+   "AIG-500",
+   "AIG-524",
+   "AIG-525"
+  ],
+  "where": "Top bar going-quiet control",
+  "evidence": "lib/quiet.js; QA team-quiet-1-presence",
+  "check": {
+   "kind": "qa",
+   "area": "quiet"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Language engine, picker, 121 languages foundation",
+  "cards": [
+   "AIG-486",
+   "AIG-487",
+   "AIG-488",
+   "AIG-501",
+   "AIG-502"
+  ],
+  "where": "Setup > Language",
+  "evidence": "public/js/i18n.js, public/lang/*.json (123 files), lib/i18n.js; QA look-setup-3-i18n, immersion",
+  "check": {
+   "kind": "qa",
+   "area": "i18n"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Translations: every language complete",
+  "cards": [
+   "AIG-489",
+   "AIG-490",
+   "AIG-491",
+   "AIG-492",
+   "AIG-493",
+   "AIG-494",
+   "AIG-495",
+   "AIG-496",
+   "AIG-497",
+   "AIG-498",
+   "AIG-499",
+   "AIG-503",
+   "AIG-504",
+   "AIG-505",
+   "AIG-506",
+   "AIG-507",
+   "AIG-508",
+   "AIG-509",
+   "AIG-510",
+   "AIG-511",
+   "AIG-512",
+   "AIG-513",
+   "AIG-514"
+  ],
+  "where": "public/lang/<code>.json",
+  "evidence": "public/lang has 123 json files",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/lang/de.json"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Glossary hints without spaces; RTL arrow keys",
+  "cards": [
+   "AIG-518",
+   "AIG-528"
+  ],
+  "where": "Glossary hints in zh/ja/th; arrow keys in ar/he",
+  "evidence": "js/glossary.js; QA gloss-nospace, shortcuts; i18n.js rtl",
+  "check": {
+   "kind": "qa",
+   "area": "glossnospace"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "No Token Mode: auto off, hide AI bits",
+  "cards": [
+   "AIG-530",
+   "AIG-532",
+   "AIG-556"
+  ],
+  "where": "Top bar ⛔ pill",
+  "evidence": "lib/notokens.js, public/js/notokens.js; QA notokens",
+  "check": {
+   "kind": "qa",
+   "area": "notokens"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Smaller context / token deep dive / usage page two-click fix",
+  "cards": [
+   "AIG-545",
+   "AIG-558"
+  ],
+  "where": "⚡ Usage page; agent prompts",
+  "evidence": "lib/usage.js, usage-page.js; QA tokenlimits",
+  "check": {
+   "kind": "qa",
+   "area": "tokenlimits"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Usage saver and crucial cards",
+  "cards": [
+   "AIG-547",
+   "AIG-548",
+   "AIG-549",
+   "AIG-550",
+   "AIG-551"
+  ],
+  "where": "Setup > Tokens saver %; card ⭐ Crucial",
+  "evidence": "lib/budget.js, card-fields.js crucialBtn, board.js crucial pill, i18n saver.help, srv.saver.*; QA saver",
+  "check": {
+   "kind": "qa",
+   "area": "saver"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Stand-ups (per team, auto close)",
+  "cards": [
+   "AIG-537",
+   "AIG-538",
+   "AIG-539",
+   "AIG-611"
+  ],
+  "where": "Stand-up report",
+  "evidence": "lib/standup.js, js/standup.js; QA standup-tester",
+  "check": {
+   "kind": "qa",
+   "area": "standup"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Welcome-back and Start-my-day (when does your day start)",
+  "cards": [
+   "AIG-546",
+   "AIG-678"
+  ],
+  "where": "Home > Start my day; Setup day start",
+  "evidence": "public/js/startday.js, myday.js; i18n day.start; QA startday, daystart",
+  "check": {
+   "kind": "qa",
+   "area": "startday"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Top bar: raise bug button, show/hide/reorder, colours",
+  "cards": [
+   "AIG-568",
+   "AIG-575",
+   "AIG-576"
+  ],
+  "where": "Top bar; Setup > top bar",
+  "evidence": "public/js/topbar.js, i18n tb.b.bug; QA topbar, raisebug",
+  "check": {
+   "kind": "qa",
+   "area": "topbar"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Releases: channels, What's new, release notes, roll back, tester bug reports",
+  "cards": [
+   "AIG-560",
+   "AIG-561",
+   "AIG-562",
+   "AIG-563"
+  ],
+  "where": "#/whats-new; Setup channel box",
+  "evidence": "lib/channel.js, lib/rollback.js, lib/bugreports.js, js/whatsnew.js; QA whatsnew, rollback, channels, bugreports",
+  "check": {
+   "kind": "qa",
+   "area": "whatsnew"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Automation: free rule replies, labels, GO queues cards, fold parts",
+  "cards": [
+   "AIG-565",
+   "AIG-566",
+   "AIG-567",
+   "AIG-609",
+   "AIG-610"
+  ],
+  "where": "DM bubbles chip '⚙ Automated, free'",
+  "evidence": "lib/dmrules.js, i18n dms.origin.auto; QA dmrules",
+  "check": {
+   "kind": "qa",
+   "area": "dmrules"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Secrets box, run without seeing, list/expire/delete",
+  "cards": [
+   "AIG-585",
+   "AIG-586",
+   "AIG-587"
+  ],
+  "where": "Task secret box; Setup > Secrets",
+  "evidence": "lib/secrets.js, cmds-secrets.js, dialogs/secrets.js; QA secrets",
+  "check": {
+   "kind": "qa",
+   "area": "secrets"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Streamer mode: private/personal projects, masking, OBS auto, stream window, Discord streams",
+  "cards": [
+   "AIG-590",
+   "AIG-591",
+   "AIG-592",
+   "AIG-631",
+   "AIG-637",
+   "AIG-638",
+   "AIG-640"
+  ],
+  "where": "Top bar 🎥; Setup > Streamer mode",
+  "evidence": "lib/streamer.js, js/streamer.js, i18n streamer.win, pub.personal; QA streamer",
+  "check": {
+   "kind": "qa",
+   "area": "streamer"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "OBS connect and Go live",
+  "cards": [
+   "AIG-641",
+   "AIG-643",
+   "AIG-644",
+   "AIG-645"
+  ],
+  "where": "Board > 🔴 Go live (#liveBtn)",
+  "evidence": "lib/obs.js, streamer.js liveBtn; QA streamer",
+  "check": {
+   "kind": "qa",
+   "area": "streamer"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Today: daily weights, share by weight, AI off per project",
+  "cards": [
+   "AIG-594",
+   "AIG-595",
+   "AIG-596",
+   "AIG-597",
+   "AIG-607",
+   "AIG-608"
+  ],
+  "where": "#/today",
+  "evidence": "lib/today.js, js/today.js, i18n today.pct.equal, today.aioff; QA today",
+  "check": {
+   "kind": "qa",
+   "area": "today"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Business licence and application form",
+  "cards": [
+   "AIG-600",
+   "AIG-601",
+   "AIG-619"
+  ],
+  "where": "LICENSE; Setup > Business licences; aigile.lol form",
+  "evidence": "LICENSE (PolyForm), lib/licences.js, dialogs/licences.js; QA apply",
+  "check": {
+   "kind": "qa",
+   "area": "apply"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Public boards",
+  "cards": [
+   "AIG-602",
+   "AIG-603",
+   "AIG-604",
+   "AIG-605",
+   "AIG-698"
+  ],
+  "where": "Look dialog > Public; Copy public link",
+  "evidence": "lib/publicboard.js, dialogs/public-board.js, relay/relay.js /b/; QA public",
+  "check": {
+   "kind": "qa",
+   "area": "public"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Teaser site: word slider, funny versions, live count",
+  "cards": [
+   "AIG-695",
+   "AIG-696",
+   "AIG-697"
+  ],
+  "where": "aigile.lol (site/)",
+  "evidence": "site/teaser.js, site/teaser-lines.json; QA teaser",
+  "check": {
+   "kind": "qa",
+   "area": "teaser"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "test.aigile.lol for signed-in people only",
+  "cards": [
+   "AIG-699"
+  ],
+  "where": "test.aigile.lol (external)",
+  "evidence": "no redirect/sign-in logic found in site/ or relay; likely server config outside repo",
+  "check": {
+   "kind": "ui",
+   "page": "https://test.aigile.lol",
+   "selector": "body",
+   "action": "load signed out, expect redirect to teaser"
+  },
+  "missingWhat": "auth/redirect not visible in repo",
+  "audit": "unsure"
+ },
+ {
+  "feature": "No AI edition: switch, people, guide, download, give-in",
+  "cards": [
+   "AIG-581",
+   "AIG-582",
+   "AIG-583",
+   "AIG-617",
+   "AIG-618"
+  ],
+  "where": "Setup > No AI, ever",
+  "evidence": "lib/noai.js, tools/build-noai.mjs, i18n noai.givein; QA noai, noaism",
+  "check": {
+   "kind": "qa",
+   "area": "noai"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Twitch chat tab, pop-out reply, !idea",
+  "cards": [
+   "AIG-628",
+   "AIG-629",
+   "AIG-630"
+  ],
+  "where": "DM window > Twitch chip",
+  "evidence": "lib/twitch.js, js/twitch-tab.js; QA twitchtab",
+  "check": {
+   "kind": "qa",
+   "area": "twitchtab"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Enter to send settings",
+  "cards": [
+   "AIG-632"
+  ],
+  "where": "Setup > Enter sends",
+  "evidence": "public/js/entersend.js, i18n enter.title; QA msgux",
+  "check": {
+   "kind": "qa",
+   "area": "msgux"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Testing pile 'N of M left'",
+  "cards": [
+   "AIG-633"
+  ],
+  "where": "Open card while working the To test pile",
+  "evidence": "card.js #pileLeft, i18n pile.left",
+  "check": {
+   "kind": "qa",
+   "area": "testpile"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Grouped tests: each card own reply/accept",
+  "cards": [
+   "AIG-656",
+   "AIG-657"
+  ],
+  "where": "Inbox > grouped tests item",
+  "evidence": "public/js/inbox-groups.js groupTests; QA groups",
+  "check": {
+   "kind": "qa",
+   "area": "groups"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Pop out every window; pop-out card movable",
+  "cards": [
+   "AIG-658",
+   "AIG-700"
+  ],
+  "where": "⧉ Pop out buttons",
+  "evidence": "public/js/popout.js; QA popout-all, look-setup-2-popout",
+  "check": {
+   "kind": "qa",
+   "area": "popout-all"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Pro practice: risk label, merge gate, incident card, quiet times, guard rails",
+  "cards": [
+   "AIG-612",
+   "AIG-613",
+   "AIG-614",
+   "AIG-615",
+   "AIG-616"
+  ],
+  "where": "Card risk chip; 🔥 incident; Setup quiet times and rails",
+  "evidence": "lib/rails.js, i18n risk.risky, rails.qaGate, type.incident, quiettime.h; QA incident, rails, risk",
+  "check": {
+   "kind": "qa",
+   "area": "rails"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Custom emojis and 🫩",
+  "cards": [
+   "AIG-648",
+   "AIG-649",
+   "AIG-650",
+   "AIG-691"
+  ],
+  "where": ":emoji: picker > Yours",
+  "evidence": "lib/emojis.js, js/emoji.js, emoji-data.js; QA emojis, emojisdm, emojifallback, emoji",
+  "check": {
+   "kind": "qa",
+   "area": "emojis"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Server health warning",
+  "cards": [
+   "AIG-660"
+  ],
+  "where": "Setup > My servers health line",
+  "evidence": "lib/serverhealth.js; QA serverhealth",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/serverhealth"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "4:20 alarm, heads-up, WeedGlance",
+  "cards": [
+   "AIG-663",
+   "AIG-664",
+   "AIG-665"
+  ],
+  "where": "Setup > 4:20; 🌿 WeedGlance",
+  "evidence": "public/js/fourtwenty.js, i18n weed.btn; QA fourtwenty",
+  "check": {
+   "kind": "qa",
+   "area": "fourtwenty"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Tired mode",
+  "cards": [
+   "AIG-669",
+   "AIG-670",
+   "AIG-671"
+  ],
+  "where": "Top bar 🔋/😴",
+  "evidence": "lib/tired.js, js/tired.js, i18n tb.b.tired; QA tired",
+  "check": {
+   "kind": "qa",
+   "area": "tired"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Push to GitHub: ask first or just push",
+  "cards": [
+   "AIG-673"
+  ],
+  "where": "Setup > Lead prefs push",
+  "evidence": "lib/setup.js push 'ask'|'auto', i18n lead.push.ask; QA pushsetting",
+  "check": {
+   "kind": "qa",
+   "area": "pushsetting"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Agents message each other",
+  "cards": [
+   "AIG-674",
+   "AIG-675"
+  ],
+  "where": "CLI: aigile msg",
+  "evidence": "lib/agentmsg.js, help.js msg; QA agentmsg",
+  "check": {
+   "kind": "qa",
+   "area": "agentmsg"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Role: who can make projects",
+  "cards": [
+   "AIG-676"
+  ],
+  "where": "Setup > Roles",
+  "evidence": "lib/roles.js, i18n roles.make.h; QA roles",
+  "check": {
+   "kind": "qa",
+   "area": "roles"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "DM me about this card",
+  "cards": [
+   "AIG-684"
+  ],
+  "where": "Card menu > 💬 DM me",
+  "evidence": "public/js/dmme.js; QA dmme",
+  "check": {
+   "kind": "qa",
+   "area": "dmme"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Share token use with friends",
+  "cards": [
+   "AIG-685",
+   "AIG-686"
+  ],
+  "where": "Usage page share switch; DM usage line",
+  "evidence": "lib/usageshare.js, i18n dms.usage.title; QA usageshare",
+  "check": {
+   "kind": "qa",
+   "area": "usageshare"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "ScrumGlance and no status DMs",
+  "cards": [
+   "AIG-688",
+   "AIG-689"
+  ],
+  "where": "Top bar glance; #/pop-glance",
+  "evidence": "lib/glance.js, js/scrumglance.js; QA scrumglance",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/glance"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Remind me what this card is",
+  "cards": [
+   "AIG-693"
+  ],
+  "where": "Card menu > ❓ Remind me",
+  "evidence": "public/js/remind.js, card.js #remind-btn; QA remind",
+  "check": {
+   "kind": "qa",
+   "area": "remind"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Team politeness slider",
+  "cards": [
+   "AIG-694"
+  ],
+  "where": "Setup > How polite your team is",
+  "evidence": "i18n scale.tone, tone.1; lib/setup.js tone",
+  "check": {
+   "kind": "qa",
+   "area": "setupux"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Per-server sudo flag for agents",
+  "cards": [
+   "AIG-701"
+  ],
+  "where": "Setup > My servers > sudo tick; aigile sudo-ok",
+  "evidence": "public/js/dialogs/find-trial-setup-teams.js:srv-sudo; lib/cli/cmds-read.js:'sudo-ok'; lib/servers.js sudoLine",
+  "check": {
+   "kind": "qa",
+   "area": "servers"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Engine pick per agent: Claude, Codex, Gemini",
+  "cards": [
+   "AIG-704",
+   "AIG-705",
+   "AIG-761",
+   "AIG-762"
+  ],
+  "where": "Team dialog > Engine select",
+  "evidence": "lib/engines.js ENGINES table (claude/codex/gemini); public/js/dialogs/engines.js",
+  "check": {
+   "kind": "qa",
+   "area": "engines"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Default project folder; Scrum Master/leads may make projects",
+  "cards": [
+   "AIG-706"
+  ],
+  "where": "Setup > default project folder; aigile new-project",
+  "evidence": "lib/store.js projectsFolder; lib/routes/meta.js; lib/cli/help.js new-project --folder",
+  "check": {
+   "kind": "cli",
+   "cmd": "aigile new-project CrawlTwo --key CT2"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Public feedback form on a project's site becomes cards",
+  "cards": [
+   "AIG-708",
+   "AIG-968",
+   "AIG-969",
+   "AIG-970"
+  ],
+  "where": "Look dialog > Public part > Public feedback; relay /f/<name>",
+  "evidence": "lib/feedback.js; relay/relay.js /f/; Pub.feedbackValue in public/js/dialogs/public-board.js",
+  "check": {
+   "kind": "qa",
+   "area": "feedback"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Message firewall, Assistant's bin, no fake questions (pokes, own messages, Original:)",
+  "cards": [
+   "AIG-711",
+   "AIG-717",
+   "AIG-803",
+   "AIG-811",
+   "AIG-835",
+   "AIG-839",
+   "AIG-840",
+   "AIG-841",
+   "AIG-966"
+  ],
+  "where": "Inbox head > bin link, #/bin",
+  "evidence": "lib/firewall.js; lib/routes/firewall.js GET /api/firewall; public/js/bin.js; poke:true comments filtered in store.js",
+  "check": {
+   "kind": "qa",
+   "area": "firewall"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Usage page loads without blank screen",
+  "cards": [
+   "AIG-712",
+   "AIG-713"
+  ],
+  "where": "#/usage",
+  "evidence": "public/js/usage-page.js exists; no specific fix marker found",
+  "check": {
+   "kind": "ui",
+   "page": "/#/usage",
+   "selector": "body",
+   "action": "load, expect content within 3s"
+  },
+  "audit": "unsure"
+ },
+ {
+  "feature": "Usage maximiser and parallel runs up to usage left",
+  "cards": [
+   "AIG-714",
+   "AIG-739"
+  ],
+  "where": "Setup > budget / usage page",
+  "evidence": "lib/budget.js, lib/presence.js (parallel helpers), lib/profiles.js",
+  "check": {
+   "kind": "qa",
+   "area": "budget"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Language immersion button, learning languages, language days, random",
+  "cards": [
+   "AIG-716",
+   "AIG-722",
+   "AIG-723",
+   "AIG-724",
+   "AIG-725"
+  ],
+  "where": "Top bar 🌍 button; Setup > Language immersion",
+  "evidence": "public/js/immersion.js; public/js/i18n.js",
+  "check": {
+   "kind": "qa",
+   "area": "immersion"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Storage report and tidy-up",
+  "cards": [
+   "AIG-718"
+  ],
+  "where": "Setup > #storageBox",
+  "evidence": "public/js/storage.js GET /api/storage; lib/routes/storage.js; lib/storage.js",
+  "check": {
+   "kind": "qa",
+   "area": "storage"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Open it button starts the page without a popup",
+  "cards": [
+   "AIG-719"
+  ],
+  "where": "Card > ▶ Open it",
+  "evidence": "lib/routes/docs-inbox.js ▶ Open it start; lib/cli/cmds-cards.js --open/--start",
+  "check": {
+   "kind": "api",
+   "method": "POST",
+   "path": "/api/projects/:slug/cards/:id/openit"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Wake reliability: folder missing text, no popups, no false restarts, second run allowed",
+  "cards": [
+   "AIG-721",
+   "AIG-740",
+   "AIG-767",
+   "AIG-771",
+   "AIG-817",
+   "AIG-895"
+  ],
+  "where": "Poke badge; Wake button; aigile wake",
+  "evidence": "lib/presence.js:440 srv.folder.missing, logBusy EBUSY retry; pathMissing in store.js/board.js",
+  "check": {
+   "kind": "qa",
+   "area": "stuckwake"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Project stats page and Wrapped",
+  "cards": [
+   "AIG-726",
+   "AIG-727"
+  ],
+  "where": "Board toolbar > Stats, #/stats/<slug>",
+  "evidence": "lib/stats.js; lib/routes/stats.js GET /api/projects/:slug/stats; public/js/stats.js",
+  "check": {
+   "kind": "qa",
+   "area": "stats"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "No-AI Scrum Master: / commands and request forms",
+  "cards": [
+   "AIG-728",
+   "AIG-729",
+   "AIG-730",
+   "AIG-731"
+  ],
+  "where": "Messages > Scrum Master (no AI)",
+  "evidence": "lib/smcmd.js; dms.js smCmdsHtml",
+  "check": {
+   "kind": "qa",
+   "area": "noaism"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Clickable links in comments (markdown, vscode://)",
+  "cards": [
+   "AIG-732"
+  ],
+  "where": "Card comments",
+  "evidence": "public/js/format.js vscode://",
+  "check": {
+   "kind": "qa",
+   "area": "mdlinks"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Raise bug button always there",
+  "cards": [
+   "AIG-733",
+   "AIG-959"
+  ],
+  "where": "Top bar 🐞 (under More) / next to project name",
+  "evidence": "public/index.html and dialogs/shell-card-project-connect.js raiseBug",
+  "check": {
+   "kind": "qa",
+   "area": "raisebug"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Enter sends in Test tab comment and Ask the team box",
+  "cards": [
+   "AIG-737",
+   "AIG-919"
+  ],
+  "where": "Card Test tab; 💡 idea box",
+  "evidence": "public/js/entersend.js (index.html script); card.mjs checks Enter sends",
+  "check": {
+   "kind": "qa",
+   "area": "card"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "For you chips open one folded window",
+  "cards": [
+   "AIG-738"
+  ],
+  "where": "Home / board For you chips",
+  "evidence": "public/js/fyfold.js",
+  "check": {
+   "kind": "qa",
+   "area": "fyfold"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Phone pairing and server link for the Android app",
+  "cards": [
+   "AIG-741",
+   "AIG-868",
+   "AIG-907"
+  ],
+  "where": "Setup > Phone box (QR)",
+  "evidence": "lib/phone.js; lib/phone-seal.js; lib/routes/phone.js; public/js/phone.js",
+  "check": {
+   "kind": "qa",
+   "area": "phonepair"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "aigile.lol register interest and business licence form",
+  "cards": [
+   "AIG-754"
+  ],
+  "where": "Setup > Business licences; relay /apply",
+  "evidence": "lib/licences.js; public/js/dialogs/licences.js",
+  "check": {
+   "kind": "qa",
+   "area": "apply"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "aigile open pops a card in the app",
+  "cards": [
+   "AIG-758"
+  ],
+  "where": "CLI aigile open; in-app chip",
+  "evidence": "lib/opencard.js; public/js/opencard.js",
+  "check": {
+   "kind": "qa",
+   "area": "opencard"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "DMs as threads: Lead chat, replies stay in thread, drift to card",
+  "cards": [
+   "AIG-757",
+   "AIG-759",
+   "AIG-872",
+   "AIG-876",
+   "AIG-936"
+  ],
+  "where": "Messages > Lead chat",
+  "evidence": "lib/leadchat.js; lib/routes/docs-inbox.js; dms.js _lead fold",
+  "check": {
+   "kind": "qa",
+   "area": "leadchat"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Sorry what? button",
+  "cards": [
+   "AIG-765"
+  ],
+  "where": "Card and DM reply button",
+  "evidence": "public/js/remind.js (Sorry what? comment)",
+  "check": {
+   "kind": "qa",
+   "area": "remind"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Call stand-ups and going quiet",
+  "cards": [
+   "AIG-766",
+   "AIG-791",
+   "AIG-879",
+   "AIG-967"
+  ],
+  "where": "Standup button; nudge over bottom buttons",
+  "evidence": "public/js/standup.js; lib/standup.js; lib/quiet.js",
+  "check": {
+   "kind": "qa",
+   "area": "standup"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "My servers: one global list, each project picks one",
+  "cards": [
+   "AIG-773",
+   "AIG-774"
+  ],
+  "where": "Setup > My servers; Look dialog > Server",
+  "evidence": "lib/servers.js withOverrides; p.srv",
+  "check": {
+   "kind": "qa",
+   "area": "servers"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Self-care reminders",
+  "cards": [
+   "AIG-775",
+   "AIG-776",
+   "AIG-777"
+  ],
+  "where": "Setup > #selfcareBox; chip #scChip",
+  "evidence": "public/js/selfcare.js",
+  "check": {
+   "kind": "qa",
+   "area": "selfcare"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Teaser timeline",
+  "cards": [
+   "AIG-778",
+   "AIG-779"
+  ],
+  "where": "aigile.lol site",
+  "evidence": "site/timeline.js; tools/gen/timeline.mjs",
+  "check": {
+   "kind": "qa",
+   "area": "teaser"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Pop-outs movable",
+  "cards": [
+   "AIG-780"
+  ],
+  "where": "Any pop-out window",
+  "evidence": "public/js/popout.js saves size/position on resize; movement is OS-window level, not proven in code",
+  "check": {
+   "kind": "qa",
+   "area": "popout"
+  },
+  "audit": "unsure"
+ },
+ {
+  "feature": "Assumptions page: AI-passed tests list, summary, undo window",
+  "cards": [
+   "AIG-781",
+   "AIG-884"
+  ],
+  "where": "#/assumptions",
+  "evidence": "lib/assumptions.js; public/js/assumptions.js; inbox-page.js",
+  "check": {
+   "kind": "qa",
+   "area": "assumptions"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Twitch chat button works outside streamer mode",
+  "cards": [
+   "AIG-783",
+   "AIG-792"
+  ],
+  "where": "DM window Twitch chip",
+  "evidence": "public/js/twitch-tab.js; lib/twitch.js",
+  "check": {
+   "kind": "qa",
+   "area": "twitchtab"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "All hands message to every team",
+  "cards": [
+   "AIG-790",
+   "AIG-794",
+   "AIG-943"
+  ],
+  "where": "Messages > All hands, Send to N teams? confirm",
+  "evidence": "lib/routes/allhands.js; dms.js allHandsAsk",
+  "check": {
+   "kind": "qa",
+   "area": "allhands"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Start my day and life admin",
+  "cards": [
+   "AIG-797",
+   "AIG-798"
+  ],
+  "where": "Home > 🌅 Start my day; #/life",
+  "evidence": "public/js/myday.js; lib/lifeadmin.js; GET /api/daystart",
+  "check": {
+   "kind": "qa",
+   "area": "startday"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Night watch button works",
+  "cards": [
+   "AIG-800"
+  ],
+  "where": "Scrum Master panel > Night watch",
+  "evidence": "lib/watchman.js; public/js/night.js",
+  "check": {
+   "kind": "qa",
+   "area": "autopoke"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Life reminders: hourly repeat and Snooze",
+  "cards": [
+   "AIG-802",
+   "AIG-813",
+   "AIG-823"
+  ],
+  "where": "Inbox life reminders; #/life",
+  "evidence": "lib/lifeadmin.js snooze; lib/routes/comments.js",
+  "check": {
+   "kind": "qa",
+   "area": "lifenag"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Break modes and shower screen",
+  "cards": [
+   "AIG-824",
+   "AIG-825",
+   "AIG-837",
+   "AIG-838"
+  ],
+  "where": "Home toolbar > ⏸ Break, 🚿 Shower",
+  "evidence": "public/js/break.js #showerScreen #breakBack",
+  "check": {
+   "kind": "qa",
+   "area": "breaks"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Keyboard shortcuts and ? cheat sheet",
+  "cards": [
+   "AIG-805",
+   "AIG-807"
+  ],
+  "where": "Press ? anywhere",
+  "evidence": "public/js/shortcuts.js",
+  "check": {
+   "kind": "qa",
+   "area": "shortcuts"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Playground project type and New playground button",
+  "cards": [
+   "AIG-808",
+   "AIG-818",
+   "AIG-819"
+  ],
+  "where": "New project > New playground (#p-play)",
+  "evidence": "lib/playground.js; CLI aigile playground",
+  "check": {
+   "kind": "qa",
+   "area": "playground"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "KeyboardMedic: everything works in No AI mode",
+  "cards": [
+   "AIG-809",
+   "AIG-820",
+   "AIG-821",
+   "AIG-956"
+  ],
+  "where": "No AI, ever mode",
+  "evidence": "lib/noai.js; public/js/noai.js",
+  "check": {
+   "kind": "qa",
+   "area": "noai"
+  },
+  "perf": "AIG-956: noai and setup QA areas time out (waits #ppl-name, #setupForm submit)",
+  "audit": "present"
+ },
+ {
+  "feature": "CLI: move project into a space",
+  "cards": [
+   "AIG-810"
+  ],
+  "where": "aigile new-project --parent / move",
+  "evidence": "help.js new-project --parent exists; no dedicated move-project command seen",
+  "check": {
+   "kind": "qa",
+   "area": "spaces"
+  },
+  "audit": "unsure"
+ },
+ {
+  "feature": "Approvals tab in inbox",
+  "cards": [
+   "AIG-814",
+   "AIG-815"
+  ],
+  "where": "Inbox > #ibApprovals",
+  "evidence": "lib/approvals.js; public/js/approvals.js",
+  "check": {
+   "kind": "qa",
+   "area": "approvals"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Swarm mode and swarm UI",
+  "cards": [
+   "AIG-822",
+   "AIG-827",
+   "AIG-874",
+   "AIG-877",
+   "AIG-880",
+   "AIG-893"
+  ],
+  "where": "Board toolbar > 🚨 Swarm this; #swarmBar",
+  "evidence": "lib/swarm.js; public/js/swarm.js Swarm.btn",
+  "check": {
+   "kind": "qa",
+   "area": "swarm"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Hyperfocus mode",
+  "cards": [
+   "AIG-871",
+   "AIG-875"
+  ],
+  "where": "Top bar / project button",
+  "evidence": "lib/hyperfocus.js; public/js/hyperfocus.js",
+  "check": {
+   "kind": "qa",
+   "area": "hyperfocus"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Swarm workers: one worktree run per To do card",
+  "cards": [
+   "AIG-892",
+   "AIG-901"
+  ],
+  "where": "In flight 🐝",
+  "evidence": "lib/swarmworkers.js",
+  "check": {
+   "kind": "qa",
+   "area": "swarmworkers"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Today's projects picker",
+  "cards": [
+   "AIG-829",
+   "AIG-830"
+  ],
+  "where": "First open of day; #/today",
+  "evidence": "lib/today.js; public/js/today.js",
+  "check": {
+   "kind": "qa",
+   "area": "today"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Ready for go task kind",
+  "cards": [
+   "AIG-828"
+  ],
+  "where": "For you > Ready for go",
+  "evidence": "lib/store.js KINDS 'plan'",
+  "check": {
+   "kind": "qa",
+   "area": "retro"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Best agent for this and @ tags",
+  "cards": [
+   "AIG-833",
+   "AIG-851",
+   "AIG-852",
+   "AIG-853"
+  ],
+  "where": "Type @ in comment/DM; idea box Send to",
+  "evidence": "public/js/mention.js",
+  "check": {
+   "kind": "qa",
+   "area": "mention"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Request an expert",
+  "cards": [
+   "AIG-844",
+   "AIG-845"
+  ],
+  "where": "Idea box > #expertBtn",
+  "evidence": "lib/experts.js; dialogs/experts.js",
+  "check": {
+   "kind": "qa",
+   "area": "expertpick"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Friend feature requests",
+  "cards": [
+   "AIG-846"
+  ],
+  "where": "Friend's board > Request a feature",
+  "evidence": "share-board.js requestDialog; qa featreq",
+  "check": {
+   "kind": "qa",
+   "area": "featreq"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Per-friend feature switches",
+  "cards": [
+   "AIG-847"
+  ],
+  "where": "Friends > #featSec",
+  "evidence": "lib/features.js; public/js/features.js",
+  "check": {
+   "kind": "qa",
+   "area": "features"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Desktop app hides to tray",
+  "cards": [
+   "AIG-849"
+  ],
+  "where": "Electron app",
+  "evidence": "desktop/main.js makeTray, close handler",
+  "check": {
+   "kind": "ui",
+   "page": "desktop",
+   "selector": "tray icon",
+   "action": "close window, tray stays"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Change roles (project manager)",
+  "cards": [
+   "AIG-856"
+  ],
+  "where": "Share dialog > change role",
+  "evidence": "lib/changeroles.js",
+  "check": {
+   "kind": "qa",
+   "area": "changeroles"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Raise a change request",
+  "cards": [
+   "AIG-857"
+  ],
+  "where": "Board toolbar > Raise a change",
+  "evidence": "lib/changes.js; js/changes.js raiseChange",
+  "check": {
+   "kind": "qa",
+   "area": "changes"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Go / no-go chain",
+  "cards": [
+   "AIG-858"
+  ],
+  "where": "Change card vote panel",
+  "evidence": "lib/gonogo.js",
+  "check": {
+   "kind": "qa",
+   "area": "gonogo"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Change windows",
+  "cards": [
+   "AIG-859"
+  ],
+  "where": "Look dialog > change windows",
+  "evidence": "lib/changewin.js",
+  "check": {
+   "kind": "qa",
+   "area": "changewin"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Change management guides",
+  "cards": [
+   "AIG-860"
+  ],
+  "where": "Help guide",
+  "evidence": "docs/guide/outline/03-cards/changes.md",
+  "check": {
+   "kind": "qa",
+   "area": "helplevels"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Call link on change/stand-up",
+  "cards": [
+   "AIG-861"
+  ],
+  "where": "Look dialog; stand-up; change card",
+  "evidence": "callLink in js/changes.js",
+  "check": {
+   "kind": "qa",
+   "area": "calllink"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Risk register",
+  "cards": [
+   "AIG-863"
+  ],
+  "where": "#/risks/<slug>",
+  "evidence": "lib/risks.js; js/risks.js",
+  "check": {
+   "kind": "qa",
+   "area": "risks"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Definition of Ready / Done",
+  "cards": [
+   "AIG-864"
+  ],
+  "where": "Look dialog; aigile dod",
+  "evidence": "lib/dod.js",
+  "check": {
+   "kind": "qa",
+   "area": "dod"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Retros suggest team rules",
+  "cards": [
+   "AIG-865"
+  ],
+  "where": "aigile retro",
+  "evidence": "lib/retro.js",
+  "check": {
+   "kind": "qa",
+   "area": "retro"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Pure black theme and small things",
+  "cards": [
+   "AIG-867",
+   "AIG-916"
+  ],
+  "where": "Theme picker",
+  "evidence": "public/js/app.js THEMES black; inbox-style.js data-theme=black",
+  "check": {
+   "kind": "qa",
+   "area": "blacktheme"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Tidy old DM cards into threads",
+  "cards": [
+   "AIG-873"
+  ],
+  "where": "aigile dms tidy",
+  "evidence": "lib/dmtidy.js",
+  "check": {
+   "kind": "qa",
+   "area": "dmtidy"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Messages newest first, auto-hide and close quiet chats",
+  "cards": [
+   "AIG-917",
+   "AIG-946"
+  ],
+  "where": "Messages list",
+  "evidence": "lib/dmclosed.js; dms.js",
+  "check": {
+   "kind": "qa",
+   "area": "dmsort"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Friend pictures",
+  "cards": [
+   "AIG-883"
+  ],
+  "where": "Friends > Picture",
+  "evidence": "lib/friendpics.js",
+  "check": {
+   "kind": "qa",
+   "area": "friendpic"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Problem cards and incidents guide",
+  "cards": [
+   "AIG-887",
+   "AIG-888"
+  ],
+  "where": "Card type problem; guide",
+  "evidence": "lib/problems.js; docs/guide/outline/03-cards/incidents-problems.md",
+  "check": {
+   "kind": "qa",
+   "area": "problems"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Mail: add mailbox and read inbox list",
+  "cards": [
+   "AIG-902"
+  ],
+  "where": "Setup > Mail; #/mail",
+  "evidence": "lib/mail.js; public/js/mail.js",
+  "check": {
+   "kind": "qa",
+   "area": "mail"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Mail: read a mail, reply/send SMTP, make card, rules, agent watch, Outlook sign-in",
+  "cards": [
+   "AIG-903",
+   "AIG-904",
+   "AIG-905",
+   "AIG-906",
+   "AIG-908",
+   "AIG-909"
+  ],
+  "where": "#/mail",
+  "evidence": "lib/mail.js is IMAP list only; no SMTP, body view, rules, card, OAuth markers found",
+  "missingWhat": "mail body view, SMTP send, make card from mail, rules, agent watch/drafts, Microsoft OAuth",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/mail/config"
+  },
+  "audit": "missing"
+ },
+ {
+  "feature": "Codex and Claude review each other's branches",
+  "cards": [
+   "AIG-913"
+  ],
+  "where": "Card comments before merge",
+  "evidence": "no review-pairing code found",
+  "missingWhat": "all of it (may be process rule only)",
+  "check": {
+   "kind": "unsure"
+  },
+  "audit": "missing"
+ },
+ {
+  "feature": "App speed: poll stamp instead of full board fetch",
+  "cards": [
+   "AIG-920",
+   "AIG-950",
+   "AIG-957"
+  ],
+  "where": "Every open window poll",
+  "evidence": "lib/routes/meta.js stamp; public/js/poll.js",
+  "check": {
+   "kind": "qa",
+   "area": "breaks"
+  },
+  "perf": "Board (3.5MB) and inbox (1.1MB) were fetched each second; stamp is the fix, verify presence fetch is separate",
+  "audit": "present"
+ },
+ {
+  "feature": "Sandbox safety for tester/QA boards",
+  "cards": [
+   "AIG-944",
+   "AIG-965"
+  ],
+  "where": "QA/tester boards",
+  "evidence": "lib/safefolder.js; onboard.js uses mayTouch",
+  "missingWhat": "no safefolder guard found in lib/discover.js or lib/channel.js; index.lock cleanup in QA not found",
+  "check": {
+   "kind": "qa",
+   "area": "sandboxsafe"
+  },
+  "audit": "partial"
+ },
+ {
+  "feature": "Starred messages sync",
+  "cards": [
+   "AIG-975"
+  ],
+  "where": "Messages ★",
+  "evidence": "lib/stars.js; routes/docs-inbox.js",
+  "check": {
+   "kind": "qa",
+   "area": "stars"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "One version number and /api/version",
+  "cards": [
+   "AIG-976"
+  ],
+  "where": "🐣 tag tooltip",
+  "evidence": "lib/routes/meta.js:32",
+  "check": {
+   "kind": "api",
+   "method": "GET",
+   "path": "/api/version"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Release notes from the board",
+  "cards": [
+   "AIG-977"
+  ],
+  "where": "node tools/gen/release-notes.mjs",
+  "evidence": "tools/gen/release-notes.mjs; docs/releases/v0.42.md",
+  "check": {
+   "kind": "cli",
+   "cmd": "node --check tools/gen/release-notes.mjs"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Share link title, Non-technical preset, Preview link",
+  "cards": [
+   "AIG-961",
+   "AIG-962",
+   "AIG-963"
+  ],
+  "where": "Share dialog; #sbPreview",
+  "evidence": "share-link.js patch; Share.simplePreset",
+  "check": {
+   "kind": "qa",
+   "area": "share"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Lead chat: remind me at 3 makes a life reminder",
+  "cards": [
+   "AIG-964"
+  ],
+  "where": "Lead chat",
+  "evidence": "lifeadmin.parseRemind; leadchat remind",
+  "check": {
+   "kind": "qa",
+   "area": "leadchat"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "One-click urgent",
+  "cards": [
+   "AIG-899"
+  ],
+  "where": "Card ! button",
+  "evidence": "public/js/card-fields.js urgentBtn",
+  "check": {
+   "kind": "qa",
+   "area": "urgentbtn"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Board on phone browser (PWA)",
+  "cards": [
+   "AIG-948"
+  ],
+  "where": "test.aigile.lol on phone",
+  "evidence": "public/js/pwa.js service worker; live hosting not checkable",
+  "check": {
+   "kind": "qa",
+   "area": "phone"
+  },
+  "audit": "unsure"
+ },
+ {
+  "feature": "Calmer top bar and phone menu",
+  "cards": [
+   "AIG-923",
+   "AIG-931",
+   "AIG-932",
+   "AIG-955"
+  ],
+  "where": "Top bar > More / phone menu",
+  "evidence": "public/js/topbar.js tbMoreBtn tbMoreMenu",
+  "check": {
+   "kind": "qa",
+   "area": "topbar"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Home and board declutter",
+  "cards": [
+   "AIG-924",
+   "AIG-933",
+   "AIG-937",
+   "AIG-938",
+   "AIG-939"
+  ],
+  "where": "Home, board",
+  "evidence": "no single marker; dispatcher debug text removal not found by grep",
+  "check": {
+   "kind": "qa",
+   "area": "homeux"
+  },
+  "audit": "unsure"
+ },
+ {
+  "feature": "Setup index and phone pairing steps",
+  "cards": [
+   "AIG-934",
+   "AIG-941"
+  ],
+  "where": "Setup index nav #setIndex",
+  "evidence": "find-trial-setup-teams.js set-index",
+  "check": {
+   "kind": "qa",
+   "area": "setupux"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Open card: title first, actions in ⋯ menu",
+  "cards": [
+   "AIG-935"
+  ],
+  "where": "Open card",
+  "evidence": "public/js/card.js AIG-935",
+  "check": {
+   "kind": "qa",
+   "area": "cardux"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "First run single dialog",
+  "cards": [
+   "AIG-940"
+  ],
+  "where": "Blank first load",
+  "evidence": "public/js/wizard.js AIG-940",
+  "check": {
+   "kind": "qa",
+   "area": "wizard"
+  },
+  "audit": "present"
+ },
+ {
+  "feature": "Quick new card: Title, Description, Create",
+  "cards": [
+   "AIG-942"
+  ],
+  "where": "New card box",
+  "evidence": "no marker found",
+  "check": {
+   "kind": "qa",
+   "area": "ideabtn"
+  },
+  "audit": "unsure"
+ },
+ {
+  "feature": "UX small fixes (Decide markdown, Inbox scroll, Lead chat line, Mail Setup button, Stats breadcrumb, dark contrast)",
+  "cards": [
+   "AIG-921",
+   "AIG-922",
+   "AIG-925",
+   "AIG-926",
+   "AIG-927",
+   "AIG-928",
+   "AIG-929",
+   "AIG-930"
+  ],
+  "where": "various pages",
+  "evidence": "inbox-decide.js exists; per-fix markers not checked",
+  "check": {
+   "kind": "qa",
+   "area": "msgux"
+  },
+  "audit": "unsure"
+ }
+]

@@ -1,5 +1,7 @@
 # 🧭 Lead Scrum Master
 
+The 💚 Personal assistant is a separate agent with its own chat, folder and name (`lib/assistant.js`): it never goes through the Scrum Master.
+
 The night watchman grew into one role with a day and a night mode (AIG-349 part 4, AIG-359). It is in charge of every project lead. It talks to leads only through cards and comments, and to the owner only in its own chat (💬 DMs, "🧭 Lead Scrum Master").
 
 ## What it looks at

@@ -32,6 +32,31 @@ def('fyfold', 'For you: a chip opens a window of folded rows, a card opens it un
   check('its Got it and Reply buttons are there', (await first.locator('[data-act="gotit"]').count()) === 1 && (await first.locator('[data-act="inforeply"]').count()) === 1);
   await page.keyboard.press('Escape');
   check('Esc closes the window', (await page.locator('.fyf').count()) === 0);
+  // AIG-1033: a To read card the inbox list lacks (project not picked for today, snoozed) still opens, from the column card and from its row.
+  await page.evaluate(() => { IB.raw = []; IB.items = []; });
+  await page.click(`.column.foryou .card[data-id="${reads[1].id}"] .t`);
+  await page.waitForSelector('.fyf[data-kind="r"] .fyf-row.open');
+  check('a To read card opens from the column even when the inbox list lacks it', (await page.locator('.fyf-row.open .fyf-b [data-act="gotit"]').count()) === 1 && /Nothing to click: note about Two/.test(await page.locator('.fyf-row.open .fyf-b').textContent()));
+  await page.locator('.fyf-row:not(.open) .fyf-h').first().click();
+  check('its row unfolds the same way', (await page.locator('.fyf-row.open .fyf-b [data-act="gotit"]').count()) === 2);
+  await page.keyboard.press('Escape');
+
+  // AIG-1067: with the inbox list empty, Reply and Got it on a To read item take it out of the fold; the empty fold closes.
+  for (const act of ['inforeply', 'gotit']) {
+    await page.evaluate(() => { IB.raw = []; IB.items = []; });
+    const left = await page.locator('.column.foryou .card[data-id]').evaluateAll((els, ids) => els.filter(e => ids.includes(e.dataset.id)).map(e => e.dataset.id), reads.map(r => r.id));
+    if (!left.length) { check('a To read card is left for ' + act, false); continue; }
+    await page.click(`.column.foryou .card[data-id="${left[0]}"] .t`);
+    await page.waitForSelector('.fyf[data-kind="r"] .fyf-row.open');
+    const n0 = await page.locator('.fyf-row').count();
+    if (act === 'inforeply') await page.fill('.fyf-row.open textarea', 'Thanks, noted');
+    await page.click(`.fyf-row.open [data-act="${act}"]`);
+    await page.waitForFunction(n => document.querySelectorAll('.fyf-row').length < n, n0, { timeout: 5000 }).catch(() => {});
+    check(act + ' takes the item out of the fold', (await page.locator(`.fyf-row[data-id="${left[0]}"]`).count()) === 0);
+    if (n0 === 1) check(act + ' closes the empty fold', (await page.locator('.fyf').count()) === 0);
+    else await page.keyboard.press('Escape');
+    await sleep(300);
+  }
 
   // A card in the column opens the Tests list with that card unfolded.
   const target = tests[1];

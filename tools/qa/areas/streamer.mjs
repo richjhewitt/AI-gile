@@ -63,8 +63,8 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   await page.waitForSelector('#serversBox');
   await sleep(600);
   const srvInputs = await page.$$eval('#serversBox input[data-srv]', is => is.map(i => i.value));
-  check('Setup > My servers keeps the real value in the box (for editing)', srvInputs.includes('Prodbox') && srvInputs.includes('root@10.9.8.7'), srvInputs);
-  check('and covers them on screen', await page.evaluate(() => [...document.querySelectorAll('#serversBox input[data-srv]')].every(i => getComputedStyle(i).webkitTextSecurity === 'disc')));
+  check('Setup > My servers keeps the real value in the box (for editing)', srvInputs.includes('Prodbox') && (srvInputs.includes('root@10.9.8.7') || (srvInputs.includes('root') && srvInputs.includes('10.9.8.7'))), srvInputs);
+  check('and covers them on screen', await page.evaluate(() => [...document.querySelectorAll('#serversBox input[data-srv="name"], #serversBox input[data-srv="value"], #serversBox input[data-srv="host"], #serversBox input[data-srv="user"]')].every(i => getComputedStyle(i).webkitTextSecurity === 'disc')));
   check('Setup > friends and DM boxes are hidden', !(await page.locator('#dmsFriendsBox').isVisible()));
 
   // Phone width
@@ -132,7 +132,7 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   await until(async () => (await win3.locator('a.proj').count()) === 2);
   const home3 = await win3.locator('main, #app').first().textContent();
   check('with Private unticked the private project shows, the Personal one still does not', home3.includes('Secret Board') && !home3.includes('Life Board'));
-  check('with DMs unticked the DM button is back', await win3.locator('.dm-railbtn[data-dms]').isVisible());
+  check('with DMs unticked the DM button is back', !!(await until(() => win3.locator('.dm-railbtn[data-dms]').isVisible())));   // drawn a moment after the projects (AIG-920)
   await win3.goto(`${BASE}/?stream=1#/p/open-board/${card.id}`); await win3.waitForSelector('.panel .codebox');
   check('with Secrets unticked the comment shows the real text', (await win3.locator('.panel').textContent()).includes(IP));
   await win3.close();

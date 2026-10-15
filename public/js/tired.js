@@ -16,19 +16,19 @@ const Tired = (() => {
   }
   function take(s) {
     const was = state.setup && state.setup.prefs && state.setup.prefs.tired && state.setup.prefs.tired.mode;
-    state.setup = s; now = !!s.tiredNow; paint();
+    state.setup = s; now = !!s.tiredNow; paint(); if (typeof Status !== 'undefined') Status.paint();   // AIG-984
     if (was && s.prefs.tired.mode !== was && document.getElementById('leadPrefs') && typeof paintLeadPrefs === 'function') paintLeadPrefs();
   }
   async function poll() {
     try {
       const d = isDark();
-      take(d !== sentDark ? await api('POST', '/api/setup', { prefs: { tiredDark: d } }) : await api('GET', '/api/setup'));
+      take(d !== sentDark ? await api('POST', '/api/setup', { prefs: { tiredDark: d } }) : await PagePoll.get('/api/setup'));
       sentDark = d;
     } catch {}
   }
   async function toggle() {
     try { take(await api('POST', '/api/setup', { prefs: { tiredFlip: true } })); } catch (e) { alert(e.message); }
   }
-  function start() { poll(); setInterval(() => { if (isDark() !== sentDark) poll(); }, 2000); setInterval(poll, 20000); }
+  function start() { PagePoll.every(() => { if (isDark() !== sentDark) return poll(); }, 2000, { home: true }); PagePoll.every(poll, 20000, { immediate: true, home: true }); }
   return { start, toggle, poll, get now() { return now; } };
 })();

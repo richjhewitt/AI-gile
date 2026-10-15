@@ -21,9 +21,13 @@
 //   GET    /b/:name/live     server-sent events: each new snapshot, and the viewer count
 //   One snapshot per name (up to 256 KB), kept in DATA/pub/<name>/. It holds what the board chose to publish (card ids, titles,
 //   types, priorities, assignees, team names), nothing else. Viewers need no login.
+//   Public feedback (AIG-968, AIG-970): POST /f/:name is a visitor's report, only while the board switched it on (5 per hour per address);
+//   POST /f/:name/config { on }, GET /f/:name/pull, POST /f/:name/ack { ids } are signed; GET /f/:name/form.js is the button and form
 //   Business licence applications (AIG-601):
 //   POST /apply            { company, website, what, how, email }: one file in DATA/apply/ (5 per hour per address, 8 KB at most)
 //   GET  /apply            the applications, only if RELAY_STATS_KEY is set and the request is signed by it (the operator's board)
+//   POST /interest         { email, which: alpha|beta|both }: register interest from the website (AIG-754); one file per email
+//                          in DATA/interest/ (a repeat replaces it), 5 per hour per address; GET /interest signed like GET /apply
 //   POST /bug              { title, text, build, channel }: a Live tester's bug report (10 per hour per address, 8 KB at most)
 //   GET  /bug, POST /bug/ack { ids }: the operator's board collects reports and deletes them (signed by RELAY_STATS_KEY)
 //   GET  /health           { ok } for anyone; signed by RELAY_STATS_KEY it adds cpu, mem, disk, storage, uptime (AIG-660)
@@ -113,6 +117,35 @@ function owner(req, box, pathname, body, onlyKey) {
   }
 }
 
+/* ---------- public status page (AIG-1050) ---------- */
+// The operator's board posts { services: [{ name, offers, state, line, at }] }, signed by RELAY_STATS_KEY like /apply and /bug (never
+// "the first key claims it": a stranger could claim a fresh relay); anyone reads /status.json (CORS *, cached 30 s) (AIG-1119).
+const STATUS_DIR = path.join(DATA, 'statuspage');
+let statusCache = { at: 0, text: '{"services":[]}' };
+async function statusPage(req, res, pathname) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' }); return res.end(); }
+  if (req.method === 'GET' && pathname === '/status.json') {
+    if (Date.now() - statusCache.at > 30e3) { let text = '{"services":[]}'; try { text = fs.readFileSync(path.join(STATUS_DIR, 'status.json'), 'utf8'); } catch {} statusCache = { at: Date.now(), text }; }
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=30', 'X-Content-Type-Options': 'nosniff' });
+    return res.end(statusCache.text);
+  }
+  if (req.method === 'POST' && pathname === '/status') {
+    if (!STATS_KEY) throw fail('not found', 404);
+    const body = await readBody(req, 64 * 1024);
+    owner(req, null, pathname, body, STATS_KEY);
+    fs.mkdirSync(STATUS_DIR, { recursive: true });
+    let o; try { o = JSON.parse(body); } catch { throw fail('send JSON', 400); }
+    const services = (Array.isArray(o && o.services) ? o.services : []).slice(0, 50).filter(x => x && typeof x === 'object').map(x => ({
+      name: str(x.name, 80), offers: str(x.offers, 200), state: ['green', 'amber', 'red'].includes(x.state) ? x.state : 'green', line: str(x.line, 200), at: str(x.at, 40) }));
+    const text = JSON.stringify({ services }), file = path.join(STATUS_DIR, 'status.json');
+    fs.writeFileSync(file + '.tmp', text); fs.renameSync(file + '.tmp', file);
+    statusCache = { at: 0, text };
+    return send(res, 201, { ok: true });
+  }
+  throw fail('not found', 404);
+}
+
 /* ---------- health (AIG-660) ---------- */
 // The numbers the operator's board watches to warn before this server needs a bigger plan. Node built-ins only.
 function dirBytes(dir, budget = { n: 200000 }) {
@@ -162,8 +195,11 @@ async function handle(req, res) {
     return send(res, 200, await health());
   }
   if (req.method === 'GET' && pathname === '/stats' && STATS_KEY) { owner(req, null, pathname, '', STATS_KEY); sweep(); return send(res, 200, { envelopes: count, bytes: used }); }
+  if (pathname === '/status' || pathname === '/status.json') return statusPage(req, res, pathname);   // 🟢 public status page (AIG-1050)
   if (pathname.startsWith('/b/')) return board(req, res, pathname, ip);
+  if (pathname.startsWith('/f/')) return feedback(req, res, pathname, ip);   // public feedback (AIG-968)
   if (pathname === '/apply') return apply(req, res, pathname, ip);
+  if (pathname === '/interest') return interest(req, res, pathname, ip);   // 📝 alpha / beta interest (AIG-754)
   if (pathname === '/bug' || pathname === '/bug/ack') return bugs(req, res, pathname, ip);   // 🐞 Live testers (AIG-561)
   const m = pathname.match(/^\/m\/([^/]+)(\/ack)?$/);
   if (!m || !isBox(m[1])) throw fail('not found', 404);
@@ -231,9 +267,9 @@ function cleanSnap(o) {
   if (!o || typeof o !== 'object' || Array.isArray(o)) throw fail('send a snapshot as JSON', 400);
   const list = (v, n) => (Array.isArray(v) ? v : []).slice(0, n).filter(x => x && typeof x === 'object');
   return {
-    v: 1, title: str(o.title, 80), at: new Date().toISOString(),
+    v: 1, title: str(o.title, 80), at: new Date().toISOString(), titlesHidden: o.titlesHidden === true || undefined,
     columns: list(o.columns, 12).map(c => ({ id: str(c.id, 30), label: str(c.label, 40) })),
-    cards: list(o.cards, 3000).map(c => ({ id: str(c.id, 20), title: str(c.title, 200), type: str(c.type, 12), priority: str(c.priority, 12), status: str(c.status, 30), assignee: str(c.assignee, 60) })),
+    cards: list(o.cards, 3000).map(c => ({ id: str(c.id, 20), title: o.titlesHidden === true ? '' : str(c.title, 200), len: Math.max(0, Math.min(8, Math.round(Number(c.len) || 0))) || undefined, type: str(c.type, 12), priority: str(c.priority, 12), status: str(c.status, 30), assignee: str(c.assignee, 60) })),
     team: list(o.team, 50).map(m => ({ name: str(m.name, 60), role: str(m.role, 60), avatar: /^https:\/\/[^\s"'<>]{1,300}$/.test(String(m.avatar || '')) ? String(m.avatar) : '' })),
   };
 }
@@ -310,7 +346,7 @@ h1{font-size:18px;margin:0}.muted{color:var(--muted);font-size:13px}.team{displa
 .col h2{font-size:13px;margin:2px 4px 8px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 .c{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:14px}
 .c.bug{border-left-color:#ef4444}.c.feature{border-left-color:var(--accent)}.c.task{border-left-color:#8b5cf6}
-.c .id{font-size:11px;color:var(--muted)}.c .m{font-size:12px;color:var(--muted);margin-top:4px}.c.new{animation:pop .9s ease}
+.c .id{font-size:11px;color:var(--muted)}.c .bar{height:10px;border-radius:5px;background:var(--line);margin:6px 0 2px}.c .m{font-size:12px;color:var(--muted);margin-top:4px}.c.new{animation:pop .9s ease}
 @keyframes pop{0%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 0 transparent}}
 #msg{padding:40px 16px;text-align:center;font-size:18px}[hidden]{display:none!important}
 @media (max-width:600px){.col{flex-basis:80vw}}
@@ -331,7 +367,7 @@ function draw(s){
   (s.columns||[]).forEach(function(col){
     var d=el("section","col");d.appendChild(el("h2",null,col.label));
     (s.cards||[]).filter(function(c){return c.status===col.id}).forEach(function(c){
-      var e=el("div","c "+c.type);e.dataset.id=c.id;e.dataset.col=col.id;e.appendChild(el("div","id",c.id));e.appendChild(el("div",null,c.title));
+      var e=el("div","c "+c.type);e.dataset.id=c.id;e.dataset.col=col.id;e.appendChild(el("div","id",c.id));if(c.title)e.appendChild(el("div",null,c.title));else{var bar=el("div","bar");bar.style.width=Math.max(15,(c.len||3)*12)+"%";e.appendChild(bar)}
       var m=[c.priority!=="normal"?c.priority:"",c.assignee].filter(Boolean).join(" · ");if(m)e.appendChild(el("div","m",m));
       d.appendChild(e);now[c.id]=col.id});
     main.appendChild(d)});
@@ -351,6 +387,132 @@ function start(){
 fetch("/b/"+name+".json").then(function(r){if(!r.ok){gone();return null}return r.json()}).then(function(s){if(s){draw(s)}start()}).catch(start);
 })();
 </script></body></html>`;
+
+/* ---------- public feedback (AIG-968, AIG-970) ---------- */
+// Visitors to a project's own website report a problem: POST /f/<name> (JSON or form). Only while the board switched feedback on for that
+// public name (POST /f/<name>/config, signed by the name's key). Reports wait in DATA/pub/<name>/fb/ (the last 200) until the board pulls
+// them (GET /f/<name>/pull, signed) and acks them (POST /f/<name>/ack { ids }, signed). GET /f/<name>/form.js is the button and form.
+const FB_RATE = Number(process.env.RELAY_FEEDBACK_RATE) || 5;       // reports per hour per address
+const FB_KEEP = 200, FB_PULL = 20, FB_TEXT = 2000, FB_SHOT = 300 * 1024;
+const fbHits = new Map();                                            // ip -> times in the last hour
+const FB_ID = /^\d{13}-[0-9a-f]{16}$/;
+const fbDir = name => path.join(pubDir(name), 'fb');
+const fbOn = name => { try { return JSON.parse(fs.readFileSync(path.join(pubDir(name), 'feedback.json'), 'utf8')).on === true; } catch { return false; } };
+const fbText = (v, n) => String(v == null ? '' : v).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, '').replace(/\r\n?/g, '\n').trim().slice(0, n);
+const fbFiles = name => { try { return fs.readdirSync(fbDir(name)).filter(f => f.endsWith('.json') && FB_ID.test(f.slice(0, -5))).sort(); } catch { return []; } };
+setInterval(() => { const t = Date.now(); for (const [ip, l] of fbHits) { const k = l.filter(x => t - x < 3600e3); if (k.length) fbHits.set(ip, k); else fbHits.delete(ip); } }, 600e3).unref();
+
+async function feedback(req, res, pathname, ip) {
+  res.setHeader('Access-Control-Allow-Origin', '*');   // the form lives on the project's own website
+  const m = pathname.match(/^\/f\/([a-z0-9-]+)(\/config|\/pull|\/ack|\/form\.js)?$/);
+  if (!m || !isName(m[1])) throw fail('not found', 404);
+  const name = m[1], kind = m[2] || '';
+  if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' }); return res.end(); }
+  if (req.method === 'GET' && kind === '/form.js') {
+    res.writeHead(200, { 'Content-Type': 'application/javascript; charset=utf-8', 'Cache-Control': 'public, max-age=300', 'X-Content-Type-Options': 'nosniff' });
+    return res.end(FORM_JS.replace('__NAME__', name));
+  }
+  // The board: switch it on or off, collect, ack. All signed by the key that owns the public name.
+  if (kind === '/config' || kind === '/pull' || kind === '/ack') {
+    const post = kind !== '/pull';
+    if (req.method !== (post ? 'POST' : 'GET')) throw fail('not found', 404);
+    const body = post ? await readBody(req, 64 * 1024) : '';
+    if (!ownerIn(pubDir(name))) throw fail('publish the board first', 404);   // never claims a name
+    owner(req, { dir: pubDir(name) }, pathname, body);
+    if (kind === '/config') {
+      let o; try { o = JSON.parse(body); } catch { throw fail('send { on } as JSON', 400); }
+      fs.writeFileSync(path.join(pubDir(name), 'feedback.json'), JSON.stringify({ on: !!(o && o.on) }));
+      return send(res, 200, { ok: true, on: !!(o && o.on) });
+    }
+    if (kind === '/pull') {
+      const reports = [];
+      for (const f of fbFiles(name).slice(0, FB_PULL)) { try { reports.push({ id: f.slice(0, -5), ...JSON.parse(fs.readFileSync(path.join(fbDir(name), f), 'utf8')) }); } catch {} }
+      return send(res, 200, { reports });
+    }
+    let ids; try { ids = JSON.parse(body).ids; } catch {}
+    if (!Array.isArray(ids)) throw fail('send { ids }', 400);
+    let deleted = 0;
+    for (const id of ids.slice(0, 500)) if (FB_ID.test(String(id))) { try { fs.unlinkSync(path.join(fbDir(name), id + '.json')); deleted++; } catch {} }
+    return send(res, 200, { deleted });
+  }
+  if (kind || req.method !== 'POST') throw fail('not found', 404);
+  // A visitor's report.
+  if (!fbOn(name)) throw fail('this site is not taking reports', 404);
+  const body = await readBody(req, 460 * 1024);
+  let o;
+  if (/json/i.test(String(req.headers['content-type'] || ''))) { try { o = JSON.parse(body); } catch { throw fail('send the report as JSON', 400); } }
+  else o = Object.fromEntries(new URLSearchParams(body));
+  if (!o || typeof o !== 'object' || Array.isArray(o)) throw fail('send the report as JSON', 400);
+  const now = Date.now(), recent = (fbHits.get(ip) || []).filter(t => now - t < 3600e3);
+  if (recent.length >= FB_RATE) throw fail('too many reports from here: try again later', 429);
+  recent.push(now); fbHits.set(ip, recent);
+  if (String(o.website == null ? '' : o.website) !== '') return send(res, 200, { ok: true });   // the hidden field: a bot filled it; look done, keep nothing
+  const r = { lang: fbText(o.lang, 12).replace(/[^A-Za-z0-9_-]/g, ''), page: fbText(o.page, 200).replace(/\n/g, ' '), says: fbText(o.says, FB_TEXT), should: fbText(o.should, FB_TEXT) };
+  if (!r.says) throw fail('say what went wrong', 400);
+  if (o.screenshot) {
+    const sm = String(o.screenshot).match(/^data:image\/(png|jpeg);base64,([A-Za-z0-9+/]+={0,2})$/);
+    if (!sm) throw fail('the screenshot must be a png or jpeg picture', 400);
+    const buf = Buffer.from(sm[2], 'base64');
+    if (buf.length > FB_SHOT) throw fail('the screenshot is too big (300 KB at most)', 413);
+    const magic = sm[1] === 'png' ? buf.subarray(0, 4).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47])) : buf.subarray(0, 3).equals(Buffer.from([0xff, 0xd8, 0xff]));
+    if (!magic) throw fail('the screenshot is not a real ' + sm[1] + ' picture', 400);
+    r.screenshot = 'data:image/' + sm[1] + ';base64,' + sm[2];
+  }
+  fs.mkdirSync(fbDir(name), { recursive: true });
+  const id = Date.now() + '-' + crypto.randomBytes(8).toString('hex');
+  fs.writeFileSync(path.join(fbDir(name), id + '.json'), JSON.stringify({ ...r, at: new Date().toISOString() }), { mode: 0o600 });
+  const have = fbFiles(name);
+  for (const f of have.slice(0, Math.max(0, have.length - FB_KEEP))) { try { fs.unlinkSync(path.join(fbDir(name), f)); } catch {} }   // the oldest go
+  return send(res, 201, { ok: true });
+}
+// The script a website adds: <script src="https://relay/f/<name>/form.js" defer></script>. No cookies, no other requests than the one POST.
+const FORM_JS = String.raw`(function(){
+var NAME="__NAME__",SRC=(document.currentScript&&document.currentScript.src)||"",BASE=SRC?new URL(SRC).origin:"";
+var T={en:{btn:"Report a problem",lang:"Language",says:"What went wrong?",should:"What should have happened?",shot:"Screenshot (optional, png or jpeg, 300 KB at most)",send:"Send",cancel:"Cancel",thanks:"Thank you! Your report was sent.",err:"Sorry, it could not be sent. Please try again later.",big:"That picture is too big or not a png or jpeg."},
+nl:{btn:"Meld een probleem",lang:"Taal",says:"Wat ging er mis?",should:"Wat had er moeten gebeuren?",shot:"Schermafbeelding (optioneel, png of jpeg, max 300 KB)",send:"Versturen",cancel:"Annuleren",thanks:"Bedankt! Je melding is verstuurd.",err:"Sorry, het versturen is mislukt. Probeer het later opnieuw.",big:"Die afbeelding is te groot of geen png of jpeg."},
+de:{btn:"Problem melden",lang:"Sprache",says:"Was ist schiefgelaufen?",should:"Was hätte passieren sollen?",shot:"Screenshot (optional, png oder jpeg, höchstens 300 KB)",send:"Senden",cancel:"Abbrechen",thanks:"Danke! Ihre Meldung wurde gesendet.",err:"Leider konnte nichts gesendet werden. Bitte später erneut versuchen.",big:"Das Bild ist zu groß oder kein png oder jpeg."},
+fr:{btn:"Signaler un problème",lang:"Langue",says:"Qu'est-ce qui n'a pas marché ?",should:"Que devrait-il se passer ?",shot:"Capture d'écran (facultatif, png ou jpeg, 300 Ko max)",send:"Envoyer",cancel:"Annuler",thanks:"Merci ! Votre signalement a été envoyé.",err:"Désolé, l'envoi a échoué. Réessayez plus tard.",big:"Cette image est trop grande ou n'est pas un png ou jpeg."},
+es:{btn:"Informar de un problema",lang:"Idioma",says:"¿Qué salió mal?",should:"¿Qué debería haber pasado?",shot:"Captura de pantalla (opcional, png o jpeg, máx. 300 KB)",send:"Enviar",cancel:"Cancelar",thanks:"¡Gracias! Tu informe fue enviado.",err:"Lo siento, no se pudo enviar. Inténtalo más tarde.",big:"Esa imagen es demasiado grande o no es png ni jpeg."}};
+var htmlLang=(document.documentElement.getAttribute("lang")||"en").trim();
+var L=T[htmlLang.slice(0,2).toLowerCase()]||T.en;
+function el(tag,css,text){var e=document.createElement(tag);if(css)e.style.cssText=css;if(text!=null)e.textContent=text;return e}
+var btn=el("button","position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:8px 14px;border:0;border-radius:18px;background:#2563eb;color:#fff;font:14px system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)",L.btn);
+btn.type="button";
+var box=el("form","position:fixed;right:16px;bottom:16px;z-index:2147483001;width:min(340px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;padding:14px;border-radius:10px;background:#fff;color:#111;font:14px system-ui,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,.35);display:none");
+box.noValidate=true;
+function field(label,node){var w=el("label","display:block;margin:0 0 10px",null);w.appendChild(el("span","display:block;margin:0 0 3px;font-weight:600",label));node.style.cssText="width:100%;box-sizing:border-box;font:inherit;padding:5px;border:1px solid #999;border-radius:4px";w.appendChild(node);box.appendChild(w);return node}
+var lang=field(L.lang,el("input"));lang.maxLength=12;lang.value=htmlLang.slice(0,12);
+var says=field(L.says,el("textarea"));says.rows=3;says.maxLength=2000;
+var should=field(L.should,el("textarea"));should.rows=3;should.maxLength=2000;
+var shot=field(L.shot,el("input"));shot.type="file";shot.accept="image/png,image/jpeg";
+var trap=el("input","position:absolute;left:-9999px;width:1px;height:1px;opacity:0");trap.type="text";trap.name="website";trap.tabIndex=-1;trap.autocomplete="off";trap.setAttribute("aria-hidden","true");box.appendChild(trap);
+var msg=el("div","margin:0 0 10px;min-height:1em");msg.setAttribute("role","status");box.appendChild(msg);
+var row=el("div","display:flex;gap:8px;justify-content:flex-end");
+var send=el("button","padding:6px 14px;border:0;border-radius:4px;background:#2563eb;color:#fff;cursor:pointer",L.send);send.type="submit";
+var cancel=el("button","padding:6px 14px;border:1px solid #999;border-radius:4px;background:#fff;color:#111;cursor:pointer",L.cancel);cancel.type="button";
+row.appendChild(cancel);row.appendChild(send);box.appendChild(row);
+function show(on){box.style.display=on?"block":"none";btn.style.display=on?"none":"block";if(on)says.focus()}
+btn.onclick=function(){msg.textContent="";show(true)};
+cancel.onclick=function(){show(false)};
+function post(shotData){
+  var body={lang:lang.value,page:location.pathname,says:says.value,should:should.value,website:trap.value};
+  if(shotData)body.screenshot=shotData;
+  send.disabled=true;
+  fetch(BASE+"/f/"+NAME,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),credentials:"omit",referrerPolicy:"no-referrer"})
+  .then(function(r){if(!r.ok)throw 0;msg.textContent=L.thanks;says.value=should.value=shot.value="";send.disabled=false;setTimeout(function(){show(false)},2500)})
+  .catch(function(){msg.textContent=L.err;send.disabled=false});
+}
+box.onsubmit=function(ev){
+  ev.preventDefault();if(!says.value.trim())return;
+  var f=shot.files&&shot.files[0];
+  if(!f)return post("");
+  if(f.size>307200||!/^image\/(png|jpeg)$/.test(f.type)){msg.textContent=L.big;return}
+  var fr=new FileReader();fr.onload=function(){post(String(fr.result))};fr.onerror=function(){msg.textContent=L.err};fr.readAsDataURL(f)
+};
+function add(){document.body.appendChild(btn);document.body.appendChild(box)}
+if(document.body)add();else document.addEventListener("DOMContentLoaded",add);
+})();
+`;
 
 /* ---------- business licence applications (AIG-601) ---------- */
 const APPLY = path.join(DATA, 'apply');
@@ -381,6 +543,39 @@ async function apply(req, res, pathname, ip) {
   const id = Date.now() + '-' + crypto.randomBytes(8).toString('hex');
   fs.writeFileSync(path.join(APPLY, id + '.json'), JSON.stringify({ ...a, at: new Date().toISOString() }), { mode: 0o600 });
   recent.push(now); applyHits.set(ip, recent);
+  return send(res, 201, { ok: true });
+}
+
+// 📝 Interest in the alpha and beta (AIG-754): the website form posts an email and which test. One file per email (named by
+// its hash, so a second sign-up replaces the first and the list holds no duplicates). Read only by the operator's board.
+const INTEREST = path.join(DATA, 'interest');
+const interestHits = new Map();   // ip -> times in the last hour
+async function interest(req, res, pathname, ip) {
+  res.setHeader('Access-Control-Allow-Origin', '*');   // the form lives on the website, not on the relay
+  if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' }); return res.end(); }
+  if (req.method === 'GET') {
+    if (!STATS_KEY) throw fail('not found', 404);
+    owner(req, null, pathname, '', STATS_KEY);
+    let names = []; try { names = fs.readdirSync(INTEREST).filter(f => /^[0-9a-f]{32}\.json$/.test(f)); } catch {}
+    const items = [];
+    for (const n of names) { try { items.push(JSON.parse(fs.readFileSync(path.join(INTEREST, n), 'utf8'))); } catch {} }
+    return send(res, 200, { interest: items.sort((a, b) => String(a.at).localeCompare(String(b.at))) });
+  }
+  if (req.method !== 'POST') throw fail('not found', 404);
+  const now = Date.now(), recent = (interestHits.get(ip) || []).filter(t => now - t < 3600e3);
+  if (recent.length >= 5) throw fail('too many sign-ups from here: try again later', 429);
+  const body = await readBody(req, 2 * 1024);
+  let o; try { o = JSON.parse(body); } catch { throw fail('send it as JSON', 400); }
+  if (!o || typeof o !== 'object' || Array.isArray(o)) throw fail('send it as JSON', 400);
+  const email = str(o.email, 160).trim().toLowerCase(), which = str(o.which, 10);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw fail('a valid email is needed', 400);
+  if (!['alpha', 'beta', 'both'].includes(which)) throw fail('pick alpha, beta or both', 400);
+  const name = crypto.createHash('sha256').update(email).digest('hex').slice(0, 32) + '.json';
+  let have = 0; try { have = fs.readdirSync(INTEREST).length; } catch {}
+  if (have >= 5000 && !fs.existsSync(path.join(INTEREST, name))) throw fail('the list is full', 507);
+  fs.mkdirSync(INTEREST, { recursive: true });
+  fs.writeFileSync(path.join(INTEREST, name), JSON.stringify({ email, which, at: new Date().toISOString() }), { mode: 0o600 });
+  recent.push(now); interestHits.set(ip, recent);
   return send(res, 201, { ok: true });
 }
 
