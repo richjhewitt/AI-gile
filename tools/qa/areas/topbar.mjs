@@ -64,6 +64,7 @@ def('topmenu', 'Top bar: Inbox/Help/Setup + More on desktop, one row with a ☰ 
   const shown = () => page.evaluate(() => [...document.querySelectorAll('header button, header a.navlink')].filter(e => !e.closest('#tbMoreMenu') && e.getClientRects().length).map(e => e.id));
   let ids = await shown();
   check('desktop: Help, Setup and More are in the bar, Glance/Theme are not (Idea sits by Raise bug, AIG-1066)', ['helpBtn', 'ideaBtn', 'setupNav', 'tbMoreBtn'].every(i => ids.includes(i)) && !['glanceBtn', 'themeBtn'].some(i => ids.includes(i)), ids.join());
+  check('first run: ⚡ Usage is in the bar (AIG-1169)', ids.includes('usageNav'), ids.join());
   check('desktop: Inbox is in the bar', await page.evaluate(() => !!document.querySelector('#inboxTop') && !document.querySelector('#inboxTop').closest('#tbMoreMenu')));
   check('the menu starts closed', await page.locator('#tbMoreMenu').isHidden());
   await page.locator('#tbMoreBtn').click();
@@ -118,4 +119,36 @@ def('topbaren', 'Top bar: 🌐 quick English button on the bar and flips to Engl
   await page.waitForFunction(() => document.documentElement.lang === 'en' && document.getElementById('enBtn') && /NL/.test(document.getElementById('enBtn').textContent), null, { timeout: 8000 }).catch(() => {});
   check('clicking 🌐 flips the board to English', await page.evaluate(() => document.documentElement.lang === 'en' && !document.getElementById('enBtn').hidden), await page.evaluate(() => document.documentElement.lang + '|' + document.getElementById('enBtn').textContent));
   noErrors(page);
+}, true);
+
+// AIG-1169: Usage is on the bar by default and joins a saved pin list once (unpinning it sticks); More ends with "Customise top bar…", which opens Setup on the top bar box.
+def('tbusage', 'Top bar: ⚡ Usage on the bar (joins a saved pin list once, unpinning sticks); More ends with ⚙ Customise top bar…, which lands on Setup > Top bar buttons (AIG-1169)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  openPage.firstrun = true;
+  const fresh = await ctx.browser().newContext({ viewport: { width: 1400, height: 900 } });
+  // an older browser: a saved pin list without Usage, from before the one-time join
+  await fresh.addInitScript(() => { try { if (!sessionStorage.getItem('qaSeeded')) { sessionStorage.setItem('qaSeeded', '1'); localStorage.setItem('aigile.topbar.pinned', JSON.stringify(['bugBtn', 'ideaBtn', 'helpBtn', 'inboxTop', 'setupNav', 'statusBtn'])); localStorage.setItem('aigile.topbar.pinned.status', '1'); localStorage.setItem('aigile.topbar.pinned.idea', '1'); } } catch {} });
+  let page; try { page = await openPage(fresh, '#/'); } finally { openPage.firstrun = false; }
+  await page.waitForSelector('#tbMoreBtn');
+  const onBar = () => page.evaluate(() => { const e = document.getElementById('usageNav'); return !!e && !e.closest('#tbMoreMenu') && e.getClientRects().length > 0; });
+  check('a saved pin list without Usage: Usage joins the bar once', await onBar() && await page.evaluate(() => JSON.parse(localStorage.getItem('aigile.topbar.pinned')).includes('usageNav') && localStorage.getItem('aigile.topbar.pinned.usage') === '1'));
+  await page.locator('#tbMoreBtn').click();
+  check('More ends with ⚙ Customise top bar…', await page.evaluate(() => { const m = document.getElementById('tbMoreMenu'), l = m.lastElementChild; return !!l && l.id === 'tbCustom' && l.getClientRects().length > 0 && /Customise top bar/.test(l.textContent); }));
+  await page.locator('#tbCustom').click();
+  await page.waitForSelector('#topbarBox.tb-flash', { timeout: 8000 }).catch(() => {});
+  check('it opens Setup on the top bar box, flashed, and the menu closes', page.url().endsWith('#/setup/topbar') && await page.locator('#tbMoreMenu').isHidden() && await page.evaluate(() => document.getElementById('topbarBox').classList.contains('tb-flash')), page.url());
+  await page.waitForTimeout(1500);
+  const top = await page.evaluate(() => Math.round(document.getElementById('topbarBox').getBoundingClientRect().top));
+  check('the top bar box is scrolled into view (' + top + 'px)', top >= 0 && top < 300);
+  await page.locator('#tbMoreBtn').click(); await page.locator('#tbCustom').click(); await page.waitForTimeout(200);
+  check('from Setup itself it works again (still on the box, menu closed)', page.url().endsWith('#/setup/topbar') && await page.locator('#tbMoreMenu').isHidden());
+  // unpin Usage: it stays off after a reload
+  await page.locator('[data-pin=usageNav]').uncheck();
+  await page.reload(); await page.waitForSelector('#tbMoreBtn');
+  check('unpinning Usage sticks after a reload (it is under More)', !(await onBar()) && await page.evaluate(() => !!document.getElementById('usageNav').closest('#tbMoreMenu') && !JSON.parse(localStorage.getItem('aigile.topbar.pinned')).includes('usageNav')));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForFunction(() => document.querySelector('header').offsetHeight < 70);
+  check('phone: no Customise item in the ☰ menu', await page.evaluate(() => document.getElementById('tbCustom').hidden));
+  noErrors(page);
+  await fresh.close();
 }, true);

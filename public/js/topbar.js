@@ -33,14 +33,14 @@ const Topbar = (() => {
   const PKEY = 'aigile.topbar.pinned';
   const MORE_EXTRA = ['twitchBtn', 'mailNav', 'immWrap'];
   const PINNABLE = [...IDS, ...MORE_EXTRA];
-  const PIN_DEF = ['bugBtn', 'ideaBtn', 'helpBtn', 'inboxTop', 'setupNav', 'pokeTop', 'nightTop', 'teamTop', 'statusBtn'];
-  // AIG-984: the status button joins a saved pin list once (unpinning it later sticks)
-  const loadPins = () => { let a; try { a = JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch { a = null; } if (!Array.isArray(a)) return PIN_DEF.slice(); a = a.filter(i => PINNABLE.includes(i)); try { if (!localStorage.getItem(PKEY + '.status')) { localStorage.setItem(PKEY + '.status', '1'); if (!a.includes('statusBtn')) { a.push('statusBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } if (!localStorage.getItem(PKEY + '.idea')) { localStorage.setItem(PKEY + '.idea', '1'); if (!a.includes('ideaBtn')) { a.splice(a.includes('bugBtn') ? a.indexOf('bugBtn') + 1 : a.length, 0, 'ideaBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } } catch {} return a; };
+  const PIN_DEF = ['bugBtn', 'ideaBtn', 'helpBtn', 'inboxTop', 'setupNav', 'pokeTop', 'nightTop', 'teamTop', 'statusBtn', 'usageNav'];
+  // AIG-984: the status button joins a saved pin list once (unpinning it later sticks); AIG-1169: so does Usage (No AI still hides it)
+  const loadPins = () => { let a; try { a = JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch { a = null; } if (!Array.isArray(a)) return PIN_DEF.slice(); a = a.filter(i => PINNABLE.includes(i)); try { if (!localStorage.getItem(PKEY + '.status')) { localStorage.setItem(PKEY + '.status', '1'); if (!a.includes('statusBtn')) { a.push('statusBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } if (!localStorage.getItem(PKEY + '.idea')) { localStorage.setItem(PKEY + '.idea', '1'); if (!a.includes('ideaBtn')) { a.splice(a.includes('bugBtn') ? a.indexOf('bugBtn') + 1 : a.length, 0, 'ideaBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } if (!localStorage.getItem(PKEY + '.usage')) { localStorage.setItem(PKEY + '.usage', '1'); if (!a.includes('usageNav')) { a.push('usageNav'); localStorage.setItem(PKEY, JSON.stringify(a)); } } } catch {} return a; };
   let pins = loadPins();
   const phoneMq = window.matchMedia ? matchMedia('(max-width: 600px)') : { matches: false };
   const isPhone = () => phoneMq.matches;
   const inBar = id => isPhone() ? id === 'inboxTop' : pins.includes(id);
-  const savePins = () => { try { localStorage.setItem(PKEY, JSON.stringify(pins)); } catch {} };
+  const savePins = () => { try { localStorage.setItem(PKEY, JSON.stringify(pins)); for (const k of ['.status', '.idea', '.usage']) localStorage.setItem(PKEY + k, '1'); } catch {} };   // a list saved here has had its one-time joins
   function menu(open) {
     const b = $('tbMoreBtn'), m = $('tbMoreMenu'); if (!b || !m) return;
     const on = open === undefined ? m.hidden : !!open;
@@ -57,6 +57,13 @@ const Topbar = (() => {
       if (!s) { s = document.createElement('span'); s.className = 'tbm-label'; e.appendChild(s); }
       s.textContent = t('tb.b.' + MORE_LABEL[id]);
     }
+    const cz = $('tbCustom'); if (cz) cz.textContent = t('tb.custom');
+  }
+  // AIG-1169: "Customise top bar…" at the bottom of More opens Setup on the top bar box and flashes it
+  function custom() {
+    menu(false);
+    if (location.hash.startsWith('#/setup') && $('topbarBox') && typeof setupJump === 'function') setupJump('topbar'); else location.hash = '#/setup/topbar';
+    let n = 0; const fl = () => { const b = $('topbarBox'); if (!b) { if (++n < 50) setTimeout(fl, 100); return; } b.classList.remove('tb-flash'); void b.offsetWidth; b.classList.add('tb-flash'); }; fl();
   }
   document.addEventListener('click', e => {
     const m = $('tbMoreMenu'); if (!m || m.hidden) return;
@@ -83,6 +90,8 @@ const Topbar = (() => {
         const en = $('enBtn'), ib = $('ideaBtn'), anchor = ib && !ib.closest('#tbMoreMenu') && ib.parentNode === more.parentNode ? ib : more; if (en && (en.closest('#tbMoreMenu') || en.previousElementSibling !== anchor)) anchor.after(en);   // AIG-1066/AIG-1087: the 🌐 button stays on the bar, right after Idea (after More if Idea is tucked away); it shows itself only while the quick English switch is on
         const lv = $('live'); if (lv && lv.closest('#tbMoreMenu')) lv.closest('header').appendChild(lv);
       }
+      let cz = $('tbCustom'); if (!cz) { cz = document.createElement('button'); cz.type = 'button'; cz.id = 'tbCustom'; cz.className = 'navlink tb-custom'; cz.onclick = custom; }
+      cz.hidden = isPhone(); mm.appendChild(cz);   // always last; not on a phone, where the one menu is long already
     }
   }
   function change(fn) { fn(cur); save(cur); apply(); paint(); }
@@ -116,6 +125,6 @@ const Topbar = (() => {
   document.addEventListener('dragover', e => { if (drag && e.target.closest && e.target.closest('.tb-row')) e.preventDefault(); });
   document.addEventListener('drop', e => { const r = e.target.closest && e.target.closest('.tb-row'); if (!drag || !r) return; e.preventDefault(); const to = cur.order.indexOf(r.dataset.tb), id = drag; drag = null; if (id !== r.dataset.tb) move(id, to); });
   document.addEventListener('dragend', () => { drag = null; });
-  return { html, apply, menu, power, setPower, pin, pins: () => pins,  toggle, side, colour, step, move, reset, state: () => cur };
+  return { html, apply, menu, custom, power, setPower, pin, pins: () => pins,  toggle, side, colour, step, move, reset, state: () => cur };
 })();
 Topbar.apply();

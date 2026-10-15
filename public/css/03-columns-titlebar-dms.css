@@ -258,3 +258,33 @@ body.poptwitch { padding: 0; } body.poptwitch main { display: none; }
 .dm-askq { flex: 1 1 100%; font-size: 13px; }
 .dm-quiet { margin-top: 4px; border-top: 0; padding-top: 0; }
 .dm-compose .actions[hidden] { display: none; }
+/* AIG-1164: reply, react, edit, delete and typing in friends' chats and 👥 groups (lifted from ChilledChat) */
+.dm-msg[data-mid] { position: relative; }
+.dm-lineacts { display: none; gap: 2px; margin: 2px 4px 0; }
+.dm-msg[data-mid]:hover .dm-lineacts, .dm-msg[data-mid]:focus-within .dm-lineacts { display: flex; }
+@media (hover: none) { .dm-lineacts { display: flex; opacity: .7; } }
+.dm-lineacts button { background: none; border: 1px solid transparent; border-radius: 6px; padding: 1px 5px; font-size: 13px; line-height: 1.3; cursor: pointer; color: var(--muted); }
+.dm-lineacts button:hover, .dm-lineacts button:focus-visible { border-color: var(--line); color: var(--text); }
+.dm-reacts { display: flex; flex-wrap: wrap; gap: 4px; margin: 3px 4px 0; }
+.dm-react { display: inline-flex; align-items: center; gap: 3px; padding: 1px 7px; border-radius: 99px; border: 1px solid var(--line); background: var(--col); font-size: 13px; cursor: pointer; }
+.dm-react span { font-size: 11px; color: var(--muted); }
+.dm-react.mine { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, var(--panel)); }
+.dm-picker { position: absolute; z-index: 5; bottom: 100%; display: flex; flex-wrap: wrap; gap: 2px; max-width: 260px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); box-shadow: 0 4px 14px rgba(0,0,0,.18); }
+.dm-msg.mine .dm-picker { right: 0; }
+.dm-picker button { background: none; border: 0; font-size: 18px; padding: 2px 4px; border-radius: 6px; cursor: pointer; }
+.dm-picker button:hover, .dm-picker button:focus-visible { background: var(--col); }
+.dm-quote { max-width: 88%; margin: 0 4px 2px; padding: 2px 8px; border-inline-start: 3px solid var(--accent); font-size: 12px; color: var(--muted); cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dm-replybar { display: flex; align-items: center; gap: 6px; padding: 4px 8px; margin-bottom: 4px; border-inline-start: 3px solid var(--accent); background: var(--col); font-size: 12px; border-radius: 0 6px 6px 0; }
+.dm-replybar[hidden] { display: none; }
+.dm-replytext { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dm-replybar button { background: none; border: 0; cursor: pointer; color: var(--muted); }
+.dm-edited { font-style: italic; }
+.dm-edit { width: 100%; min-width: 220px; box-sizing: border-box; }
+.dm-msg.dm-flash .dm-bubble { outline: 2px solid var(--accent); }
+.dm-typing { min-height: 0; padding: 0 12px; font-size: 11px; display: flex; align-items: center; gap: 6px; }
+.dm-typing:empty { display: none; }
+.dm-dots { display: inline-flex; gap: 3px; }
+.dm-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); animation: dmDots 1.4s infinite both; }
+.dm-dots span:nth-child(2) { animation-delay: .2s; } .dm-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes dmDots { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-3px); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .dm-dots span { animation: none; } }
