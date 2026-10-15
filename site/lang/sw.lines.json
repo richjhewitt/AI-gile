@@ -1,0 +1,56 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Roboti.", "Kukabidhi."] },
+    { "n": 2, "texts": ["Kanban, kiotomatiki.", "Mawakala, wamepangika.", "Mawazo, yamejengwa."] },
+    { "n": 3, "texts": ["Kanban ya roboti.", "Mawazo yanakuwa vipengele.", "Kanban ya mawakala, bure."] },
+    { "n": 5, "texts": [
+      "Ubao wa kanban unaoendeshwa na mawakala.",
+      "Wewe andika kadi. Mawakala wanajenga.",
+      "Bure, binafsi, imejaribiwa, kidogo kichekesho."
+    ] },
+    { "n": 8, "texts": [
+      "Ubao wa bure wa kanban wenye mawakala wa AI.",
+      "Andika wazo. Mawakala wanalijenga. Wewe unakubali.",
+      "Agile kwa binadamu mmoja na roboti wengi wenye subira."
+    ] },
+    { "n": 13, "texts": [
+      "Ubao wa kanban kwenye kompyuta yako ambapo mawakala wa AI huchukua kadi na kujenga.",
+      "Andika wazo. Timu ya mawakala inalijenga. Mjaribu analikagua, kisha wewe unaamua.",
+      "Bure, bila akaunti wala vifuatiliaji: ubao, roboti kadhaa, na wewe ukiwa kiongozi."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile ni ubao wa kanban wa kufanya kazi na mawakala wa AI wanaoandika msimbo. Wao huchukua kadi; wewe unazijaribu na kuzikubali.",
+      "Kila mradi unapata kiongozi na timu ya mawakala wa AI. Toa maoni kwenye kadi yoyote na timu inaanza kazi.",
+      "Ubao wa majukumu wa bure na binafsi unaoendeshwa kwenye kompyuta yako mwenyewe. Wafanyakazi ni roboti. Anayesema ndiyo ni wewe."
+    ] },
+    { "n": 34, "texts": [
+      "Unaweka mawazo kwenye ubao. Timu ya mawakala wa AI inayageuza kuwa vipengele vinavyofanya kazi, inavijaribu, na kukurudishia pamoja na hatua za kujaribu. Hakuna kinachohesabiwa kuwa kimekamilika hadi useme.",
+      "AI-gile ni ubao wa kanban uliotengenezwa nyumbani ambao Rich aliujenga kwa msaada mkubwa wa mawakala anaowasimamia sasa. Ni wa bure, huendeshwa kwenye kompyuta yako, na hushirikiwa na marafiki, hauuzwi.",
+      "Fikiria ubao wa kawaida wa kanban, wenye safu kutoka Backlog hadi Zimekamilika, isipokuwa kadi zinachukuliwa na mawakala wa AI. Wanaripoti maendeleo, wanauliza wanapokwama, na daima wanasubiri kidole chako gumba juu."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile ni ubao wa kanban ambapo timu inaundwa na mawakala wa AI. Kila mradi una kiongozi anayepanga kazi na wasaidizi wanaojenga. Kipengele kikiwa tayari, mjaribu wa AI analijaribu na kupiga picha ya skrini, kisha kinatua kwenye rundo lako. Kikubali, au toa maoni nao wakifanyie kazi upya.",
+      "Ilianza kama njia ya mtu mmoja ya kufuatilia vikao vingi vya AI vya kuandika msimbo kwa wakati mmoja, kisha ikakua kuwa ubao kamili. Inaendeshwa kwenye kompyuta yako, haihitaji akaunti, na haina vifuatiliaji. Ni ya bure kwa marafiki na wadadisi. Pia haijakamilika, kwa hiyo tarajia kasoro na mshangao mara moja moja.",
+      "Hili hapa toleo la ukweli. Bado ni wewe unayehitaji kuwa na mawazo, na bado ni wewe unayekagua matokeo. AI-gile hufanya kila kitu kilicho katikati: huweka kadi kwa mpangilio, huamsha wakala sahihi unapotoa maoni, huonyesha hasa kilichobadilika, na hukusanya yote kwenye rundo moja fupi kwa ajili yako."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile ni ubao wa kanban wa bure unaouendesha kwenye kompyuta yako mwenyewe. Badala ya watu, kila mradi una timu ya mawakala wa AI: kiongozi anayegeuza mawazo yako kuwa kadi na mpango, na wasaidizi wanaochukua kadi kwa mpangilio wa kipaumbele. Kitu kikijengwa, mjaribu wa AI hufuata hatua za majaribio na kukuonyesha alichokiona. Kisha kinasubiri kwenye rundo moja liitwalo Kwako. Unakikubali, au unatoa maoni na timu inajaribu tena. Hakuna kitu kinachofika Zimekamilika bila wewe.",
+      "Kuna mambo kadhaa ambayo huenda hukuyatarajia. Mlinzi wa usiku hujaza safu ya Za kufanya ukiwa umelala, akichagua kadi zisizohitaji jibu kutoka kwako. Kihesabu cha tokeni kinaonyesha mawakala wametumia kiasi gani leo na wiki hii, na No Token Mode huwaambia waache kutumia. Unaweza kuwatumia marafiki ujumbe, na ujumbe wa faragha umesimbwa kutoka mwanzo hadi mwisho. Ubao huzungumza takriban lugha 120, zikiwemo Kiholanzi, Kiflemi, maharamia na Kiklingoni. Hakuna hata kimoja kinachogharimu senti, na hakuna anayejaribu kukuuzia chochote pia.",
+      "AI-gile ni mradi mdogo, binafsi, si kampuni. Rich alitaka kutunza miradi kadhaa ya AI ya kuandika msimbo bila kufungua kila programu kuangalia hali, kwa hiyo yeye na mawakala wakajenga ubao kwa ajili hiyo, kisha wakautumia ubao huo kujenga sehemu iliyobaki yake. Uko kwenye pre-alpha iliyofungwa, yaani unafanya kazi, kwa kiasi kikubwa, kwa marafiki wachache. Hakuna ukurasa wa bei, hakuna jarida na hakuna mpango wa kukua. Ukionekana kukufaa, unaweza kuomba kujaribu utakapofunguliwa zaidi kidogo."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile ni ubao wa kanban kwa binadamu mmoja na mawakala wengi wa AI. Unaendeshwa kwenye kompyuta yako mwenyewe na ni wa bure kabisa. Unaongeza miradi, na kila mradi unapata kiongozi na timu ndogo. Unapiga gumzo na kiongozi, kama vile Discord, na kueleza wazo; kiongozi analigeuza kuwa kadi na mpango, kisha anasubiri ubonyeze Anza. Timu inapitia kadi kwa mpangilio wa kipaumbele, ikitumia zana rahisi ya mstari wa amri iliyotengenezwa kwa miundo ya lugha. Kabla chochote hakijakurudia, mjaribu wa AI hufuata hatua kwenye nakala ya programu na kuambatisha picha ya skrini. Kazi iliyokamilika inatua kwenye rundo lako pamoja na faili zilizobadilika na tofauti. Unaikubali, au unaacha maoni na timu inaamka na kujaribu tena. Wewe pekee ndiye unayeweza kuhamisha kadi hadi Zimekamilika.",
+      "Siku moja na AI-gile, kwa ufupi. Jioni unaacha maoni machache: kitufe hiki kiko mahali pasipofaa, orodha ile ipangwe, tunaweza kupata hali ya giza. Unaenda kulala. Mawakala wanasoma maoni, wanafanya mabadiliko, wanayajaribu na kukurudishia. Za kufanya zikiisha, mlinzi wa usiku anazijaza kutoka kwenye backlog kwa kadi zisizohitaji jibu lako. Asubuhi kuna rundo moja fupi: maswali machache na mambo kadhaa ya kujaribu, kila moja likiwa na hatua ambazo mtu mwenye usingizi anaweza kuzifuata na picha ya skrini inayoonyesha inafanya kazi. Unapitia, unakubali nzuri na kurudisha zilizobaki. Kihesabu cha tokeni kinaonyesha yote yalitumia kiasi gani, na No Token Mode ipo kwa wiki za kubana matumizi. Kisha unakula kifungua kinywa, ambapo mawakala bado hawawezi kusaidia. Wakati mwingine unaamka na swali la wakala aliyekwama, na unalijibu kwa sentensi moja kabla ya chai. Hakuna mkutano, hakuna barua pepe ndefu, hakuna kuuliza nani alibadilisha nini.",
+      "Kwanza, AI-gile si nini. Si kampuni changa, haiuzwi, na hakuna anayekusanya data yako. Ni ubao wa bure unaoendeshwa kwenye kompyuta yako, bila akaunti, bila vifuatiliaji na bila vidakuzi. Ni nini: mahali pamoja pa nadhifu pa kuona miradi yako yote ya AI ya kuandika msimbo kwa wakati mmoja, timu ya mawakala ikifanya kadi na wewe ukifanya maamuzi. Huunganisha kadi zinazohusiana, hurekebisha vichwa vilivyochanganyika, na hufuatilia jinsi msimbo unavyobaki mwepesi. Huzungumza takriban lugha 120, kuanzia Kiholanzi na Kiflemi hadi maharamia na Kiklingoni. Marafiki wanaweza kutumiana ujumbe, kwa faragha na kwa usimbaji. Ilijengwa na Rich na idadi kubwa ya mawakala wenye subira, hasa kwa kujitumia yenyewe. Iko kwenye pre-alpha iliyofungwa, kwa hiyo ina kasoro hapa na pale. Ukiona inavutia, omba kwa adabu na huenda ukaingia mapema."
+    ] }
+  ],
+  "quips": {
+    "1": "Neno moja. Jasiri. Labda jasiri kupita kiasi.",
+    "3": "Maneno matatu. Tayari ni ya kweli kuliko kurasa nyingi za bidhaa.",
+    "8": "Maneno manane. Bado ni mafupi kuliko stand-up.",
+    "21": "Kwa njia, urefu ni story points. Bila shaka ndivyo.",
+    "55": "Maneno hamsini na tano. Kadi mbili zimekamilika ulipokuwa unasoma hili.",
+    "144": "Hii ndiyo ndefu. Hakuna 233. Mawakala wamekwenda kulala."
+  }
+}

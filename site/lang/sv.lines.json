@@ -1,0 +1,56 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Robotar.", "Delegerat."] },
+    { "n": 2, "texts": ["Kanban, automatiserat.", "Agenter, organiserade.", "Idéer, byggda."] },
+    { "n": 3, "texts": ["Kanban för robotar.", "Idéer blir funktioner.", "Gratis agentkanban, tack."] },
+    { "n": 5, "texts": [
+      "Kanbantavla som agenter sköter åt dig.",
+      "Du skriver kort. Agenter bygger.",
+      "Gratis, lokalt, testat, lite fånigt."
+    ] },
+    { "n": 8, "texts": [
+      "En gratis kanbantavla där AI-agenter gör jobbet åt dig.",
+      "Skriv en idé. Agenterna bygger den. Du godkänner.",
+      "Agilt för en människa och många tålmodiga robotar."
+    ] },
+    { "n": 13, "texts": [
+      "En kanbantavla på din egen dator där AI-agenter plockar upp korten och bygger.",
+      "Skriv en idé. Ett team av agenter bygger den. En testare kollar den.",
+      "Gratis, utan konton och spårare: en tavla, några robotar och du som bestämmer."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile är en kanbantavla för dig som jobbar med AI-kodagenter. De plockar upp korten; du testar och godkänner dem.",
+      "Varje projekt får en lead och ett team av AI-agenter. Kommentera vilket kort som helst så sätter sig teamet och jobbar.",
+      "En gratis, personlig att göra-tavla som körs på din egen dator. Arbetarna är robotar. Den som säger ja är du."
+    ] },
+    { "n": 34, "texts": [
+      "Du lägger idéer på en tavla. Ett team av AI-agenter förvandlar dem till fungerande funktioner, testar dem och lämnar tillbaka dem med steg att prova. Ingenting räknas som klart förrän du säger det.",
+      "AI-gile är en hemmabyggd kanbantavla som Rich byggt med mycket hjälp av de agenter som den nu styr. Den är gratis, körs på din dator och delas med vänner, den säljs inte.",
+      "Tänk dig en vanlig kanbantavla, med kolumner från Backlog till Klart, förutom att korten plockas upp av AI-agenter. De rapporterar framsteg, frågar när de kört fast och väntar alltid på din tumme upp."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile är en kanbantavla där teamet består av AI-agenter. Varje projekt har en lead som planerar arbetet och hjälpare som bygger. När en funktion är klar provar en AI-testare den och tar en skärmbild, och sedan hamnar den i din hög. Godkänn den, eller kommentera så gör de om den.",
+      "Det började som en enda persons sätt att hålla reda på många AI-kodsessioner samtidigt, och växte till en riktig tavla. Den körs på din dator, kräver inget konto och har inga spårare. Den är gratis för vänner och nyfikna. Den är också ofärdig, så räkna med ojämnheter och en och annan överraskning.",
+      "Här kommer den ärliga versionen. Du måste fortfarande ha idéerna, och du måste fortfarande kontrollera resultaten. Det AI-gile gör är allt däremellan: det håller korten i ordning, väcker rätt agent när du kommenterar, visar exakt vad som ändrats och samlar allt i en enda kort hög åt dig."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile är en gratis kanbantavla som du kör på din egen dator. I stället för människor har varje projekt ett team av AI-agenter: en lead som gör dina idéer till kort och en plan, och hjälpare som tar korten i prioritetsordning. När något är byggt följer en AI-testare teststegen och visar dig vad den såg. Sedan väntar det i en enda hög som heter Till dig. Du godkänner det, eller så kommenterar du och teamet försöker igen. Ingenting når någonsin Klart utan dig.",
+      "Några saker du kanske inte väntar dig. En nattvakt fyller på To do medan du sover och väljer kort som inte behöver något svar från dig. En tokenräknare visar hur mycket agenterna har använt i dag och den här veckan, och No Token Mode säger åt dem att sluta spendera. Du kan skriva till vänner, och privata meddelanden är end-to-end-krypterade. Tavlan talar ungefär 120 språk, bland annat holländska, flamländska, pirat och klingonska. Inget av det kostar en krona, och ingen försöker sälja något till dig heller.",
+      "AI-gile är ett litet, personligt projekt, inte ett företag. Rich ville ta hand om flera AI-kodprojekt utan att öppna varje app för att kolla läget, så han och agenterna byggde en tavla för det, och använde sedan tavlan för att bygga resten av sig själv. Den är i sluten pre-alfa, vilket betyder att den fungerar, mestadels, för en handfull vänner. Här finns ingen prissida, inget nyhetsbrev och ingen tillväxtplan. Låter det användbart kan du be om att få prova när den öppnar sig lite mer."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile är en kanbantavla för en människa och många AI-agenter. Den körs på din egen dator och är helt gratis. Du lägger till projekt, och varje projekt får en lead och ett litet team. Du chattar med leaden, ungefär som i Discord, och beskriver en idé; leaden gör kort och en plan av den och väntar sedan på att du trycker på Kör. Teamet arbetar sig igenom korten i prioritetsordning, med ett enkelt kommandoradsverktyg gjort för språkmodeller. Innan något kommer tillbaka till dig följer en AI-testare stegen i en kopia av appen och bifogar en skärmbild. Färdigt arbete hamnar i din hög med de ändrade filerna och diffen. Du godkänner det, eller så lämnar du en kommentar och teamet vaknar och försöker igen. Bara du kan flytta ett kort till Klart.",
+      "En dag med AI-gile, ungefär. På kvällen lämnar du några kommentarer: den här knappen sitter fel, den där listan borde sorteras, kunde vi få ett mörkt läge. Du går och lägger dig. Agenterna läser kommentarerna, gör ändringarna, testar dem och lämnar tillbaka dem till dig. Om To do tar slut fyller nattvakten på från backloggen med kort som inte kräver något svar från dig. På morgonen ligger det en enda kort hög: ett par frågor och några saker att prova, var och en med steg som en sömnig människa kan följa och en skärmbild på hur det fungerar. Du klickar dig igenom, godkänner de bra och skickar tillbaka resten. En tokenräknare visar vad allt kostade i användning, och No Token Mode finns för snåla veckor. Sedan äter du frukost, och där kan agenterna inte hjälpa till än.",
+      "Först, vad AI-gile inte är. Det är inte en startup, det är inte till salu och ingen samlar in dina data. Det är en gratis tavla som körs på din dator, utan konton, utan spårare och utan kakor. Vad det är: ett städat ställe att se alla dina AI-kodprojekt på en gång, med ett team av agenter som tar korten och du som fattar besluten. Den slår ihop besläktade kort, rättar rörigt formulerade titlar och håller koll på hur slimmad koden förblir. Den talar ungefär 120 språk, från holländska och flamländska till pirat och klingonska. Vänner kan skriva till varandra, privat och krypterat. Den byggdes av Rich och ett stort antal tålmodiga agenter, mest genom att använda sig själv. Den är i sluten pre-alfa, så den är ojämn på sina ställen. Låter det kul? Fråga snällt så kanske du kommer in tidigt."
+    ] }
+  ],
+  "quips": {
+    "1": "Ett ord. Djärvt. Kanske för djärvt.",
+    "3": "Tre ord. Redan ärligare än de flesta produktsidor.",
+    "8": "Åtta ord. Fortfarande kortare än ett stå-upp-möte.",
+    "21": "Längderna är förresten story points. Såklart att de är.",
+    "55": "Femtiofem ord. Två kort blev klara medan du läste det.",
+    "144": "Det var den långa. Det finns ingen 233. Agenterna har gått och lagt sig."
+  }
+}

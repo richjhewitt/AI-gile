@@ -1,0 +1,56 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Lopoti.", "Tuku."] },
+    { "n": 2, "texts": ["Kanban lopoti.", "ʻEiseniti faʻu.", "Fakakaukau, faʻu."] },
+    { "n": 3, "texts": ["Kanban maʻa lopoti.", "Fakakaukau hoko moʻoni.", "Kanban ʻeiseniti taʻetotongi."] },
+    { "n": 5, "texts": [
+      "Laupapa kanban ʻoku ngāue ʻeiseniti.",
+      "Tohi kaati. ʻEiseniti te nau faʻu.",
+      "Taʻetotongi, ʻi he komipiuta, kuo sivi."
+    ] },
+    { "n": 8, "texts": [
+      "Laupapa kanban taʻetotongi ʻoku ngāue ai ʻeiseniti AI.",
+      "Tohi ha fakakaukau. ʻEiseniti te nau faʻu. Te ke tali.",
+      "Agile maʻa ha tangata mo e lopoti kātaki."
+    ] },
+    { "n": 13, "texts": [
+      "Laupapa kanban ʻi hoʻo komipiuta ʻoku toʻo ai ʻe he ʻeiseniti AI ʻa e kaati.",
+      "Tohi ha fakakaukau. Te nau faʻu ia, pea te ne siviʻi ʻe ha sivi.",
+      "Taʻetotongi, ʻikai ha akaunití: ko ha laupapa, ngaahi lopoti, pea ko koe ʻoku takí."
+    ] },
+    { "n": 21, "texts": [
+      "Ko e AI-gile ko ha laupapa kanban ia ki he ngāue mo e ʻeiseniti AI. ʻOku nau toʻo e kaati; te ke sivi mo tali.",
+      "Ko e poloseki kotoa ʻoku ʻi ai ha taki mo ha kautaha ʻeiseniti AI. Fakahā ʻi ha kaati pea ʻoku ngāue ʻa e kautaha.",
+      "Ko ha laupapa fakafoʻituitui taʻetotongi ʻoku ngāue ʻi hoʻo komipiuta. Ko e kau ngāue ko e lopoti. Ko koe ʻoku pehē ʻio."
+    ] },
+    { "n": 34, "texts": [
+      "Tuku e fakakaukau ki ha laupapa. Ko e kautaha ʻeiseniti AI ʻoku liliu ia ki he meʻa ʻoku ngāue, sivi ia, pea foki mai mo e sitepu. ʻIkai ha meʻa kuo fai kae ʻoua ke ke pehē.",
+      "Ko e AI-gile ko ha laupapa kanban naʻe faʻu ʻe Rich mo e tokoni lahi mei he ngaahi ʻeiseniti. ʻOku taʻetotongi, ngāue ʻi hoʻo komipiuta, pea vahevahe mo e kaungāmeʻa, ʻikai fakatau atu.",
+      "Fakakaukauʻi ha laupapa kanban angamaheni, mei he Backlog ki he Kuo fai, ka ko e ʻeiseniti AI ʻoku toʻo e kaati. ʻOku nau fakahā e fakalakalaka, fehuʻi ʻo ka tuʻu, pea tatali ki hoʻo tali."
+    ] },
+    { "n": 55, "texts": [
+      "Ko e AI-gile ko ha laupapa kanban ʻa ia ko e kautaha ko e ʻeiseniti AI. Ko e poloseki kotoa ʻoku ʻi ai ha taki ʻoku palani mo ha kau tokoni ʻoku faʻu. ʻO ka mateuteu, ʻoku sivi ʻe ha sivi AI pea tā ha screenshot, pea hoko ia ki hoʻo haʻanga. Tali ia, pe fakahā pea nau toe fai.",
+      "Naʻe kamata ia ko e founga ʻa ha tokotaha ke muimui ki he ngaahi seti AI lahi taha, pea tupu ko ha laupapa totonu. ʻOku ngāue ʻi hoʻo komipiuta, ʻikai fiemaʻu ha akaunití, ʻikai ha toʻo fakaʻilonga. ʻOku taʻetotongi maʻa e kaungāmeʻa. ʻOku kei teʻeki kakato, ko ia ʻamanaki ki ha fakaofo.",
+      "ʻOku ʻeni ʻa e tala moʻoni. Kei fiemaʻu ke ke ʻai e ngaahi fakakaukau, pea sivi e ola. Ko e AI-gile ʻoku ne fai e meʻa kotoa ʻi he vahaʻa: tauhi e kaati, ʻā ʻa e ʻeiseniti totonu, fakahā e meʻa kuo liliu, pea tānaki ia ki ha haʻanga nounou maʻau."
+    ] },
+    { "n": 89, "texts": [
+      "Ko e AI-gile ko ha laupapa kanban taʻetotongi ʻokú ke fakahoko ʻi hoʻo komipiuta. ʻI he feituʻu ʻo e kakai, ko e poloseki kotoa ʻoku ʻi ai ha kautaha ʻeiseniti AI: ha taki ʻoku liliu hoʻo fakakaukau ki he kaati mo ha palani, mo e kau tokoni ʻoku toʻo e kaati. ʻO ka faʻu ha meʻa, ʻoku muimui ha sivi AI ki he sitepu pea fakahā kiate koe. Pea tatali ia ʻi ha haʻanga ʻoku ui ko e Maʻau. Tali ia, pe fakahā pea feinga e kautaha ʻo toe. ʻIkai ha meʻa te ne aʻu ki he Kuo fai ʻikai ko koe.",
+      "Ko ha ngaahi meʻa ʻe ʻikai te ke ʻamanaki. ʻOku fakafonu ʻe ha leʻo poʻuli ʻa e kolomu Ke fai lolotonga hoʻo mohe, ʻo fili e kaati ʻikai fiemaʻu ha tali meiate koe. ʻOku fakahā ʻe ha tokeni lau ʻa e meʻa kuo ngāueʻaki ʻe he ʻeiseniti, pea tala ʻe he No Token Mode ke tuku e fakamoleki. ʻE lava ke ke fekau pōpoaki ki he kaungāmeʻa, pea ʻoku fakapulipuliʻi mei he ʻuluaki ki he ngataʻanga. ʻOku lea e laupapa ʻi he lea ʻe 120, kau ai e Hōlani, kaniva mo e Klingon. ʻIkai ha totongi, pea ʻikai ha taha ʻoku fakatau atu ha meʻa kiate koe.",
+      "Ko e AI-gile ko ha kiʻi poloseki fakafoʻituitui, ʻikai ko ha kautaha. Naʻe fie tauhi ʻe Rich ha ngaahi poloseki AI ʻo ʻikai fakaava e polokalama kotoa, ko ia naʻá ne mo e ʻeiseniti naʻa nau faʻu ha laupapa, pea ngāueʻaki ia ke faʻu e toenga ʻo ia pē. ʻOku ʻi he pre-alpha tāpuni, ʻa ia ʻoku ne ngāue, ʻi he lahi taha, maʻa ha kiʻi kaungāmeʻa. ʻIkai ha pēsi totongi, ʻikai ha nusipepa, ʻikai ha palani tupu. Kapau ʻoku ongo ʻaonga, kole ke feinga ʻo ka toe ava siʻi."
+    ] },
+    { "n": 144, "texts": [
+      "Ko e AI-gile ko ha laupapa kanban maʻa ha tangata pe taha mo e ʻeiseniti AI lahi. ʻOku ngāue ʻi hoʻo komipiuta pea taʻetotongi kakato. ʻOku ke tānaki ha ngaahi poloseki, pea ko e poloseki taki taha ʻoku maʻu ha taki mo ha kiʻi kautaha. ʻOku ke talanoa mo e taki, hangē ko e Discord, pea fakamatala ha fakakaukau; ʻoku liliu ia ʻe he taki ki he kaati mo ha palani, pea tatali kae lomiʻi ʻe koe ʻa e Ō. ʻOku ngāue ʻa e kautaha ʻi he kaati ʻo muimui ki he mahuʻinga, ʻaki ha meʻangāue laine fekau faingofua. Ki muʻa ke foki mai ha meʻa, ʻoku muimui ha sivi AI ki he sitepu ʻi ha kopi ʻo e polokalama pea fakataha ha screenshot. Ko e ngāue kuo kakato ʻoku hoko ki hoʻo haʻanga mo e faile kuo liliu. Tali ia, pe tuku ha fakamatala pea feinga ʻa e kautaha. Ko koe pē te ne lava ʻo hiki ha kaati ki he Kuo fai.",
+      "Ko ha ʻaho mo e AI-gile, ʻi he fakafuofua. ʻI he efiafi ʻokú ke tuku ha ngaahi fakamatala siʻi: ko e pātani ni ʻoku hala hono potu, ko e lisi ko ia ke fakahokohoko, ʻe lava nai ha founga fakapoʻuli. ʻOkú ke ʻalu ki he mohe. ʻOku lau ʻe he ʻeiseniti e fakamatala, fai e liliu, sivi ia pea foki mai. Kapau ʻe maha e Ke fai, ʻoku fakafonu ia ʻe he leʻo poʻuli mei he backlog ʻaki e kaati ʻikai fiemaʻu ha tali meiate koe. ʻI he pongipongi ʻoku ʻi ai ha haʻanga nounou pe taha: ha ngaahi fehuʻi siʻi mo ha ngaahi meʻa ke feinga, taki taha mo e sitepu ʻe lava ke muimui ai ha tangata mohe mo ha screenshot. ʻOku ke lomiʻi, tali e lelei pea foki e toenga. ʻOku fakahā ʻe ha tokeni lau e meʻa kuo moleki, pea ʻoku ʻi ai e No Token Mode maʻa e uike fakamālohi. Pea ʻokú ke kai ho pongipongi, ʻa ia ʻoku teʻeki lava ke tokoni ai e ʻeiseniti.",
+      "ʻUluaki, ko e meʻa ʻoku ʻikai ko e AI-gile. ʻIkai ko ha kautaha kamata, ʻikai fakatau atu, pea ʻikai ha taha ʻoku tānaki hoʻo fakamatala. Ko ha laupapa taʻetotongi ia ʻoku ngāue ʻi hoʻo komipiuta, ʻikai ha akaunití, ʻikai ha toʻo fakaʻilonga, ʻikai ha kuki. Ko e meʻa ia: ko ha potu pe taha ʻoku maau ke sio ki he poloseki AI kotoa he taimi pē taha, mo ha kautaha ʻeiseniti ʻoku fai e kaati pea ko koe ʻoku fai e fili. ʻOku ne fakataha e kaati fekauʻaki, fakatonutonu e ʻulu hala, pea sio ki he maʻama ʻo e kouti. ʻOku lea ʻi he lea ʻe 120, mei he Hōlani ki he kaniva mo e Klingon. ʻE lava ʻe he kaungāmeʻa ʻo fekau pōpoaki fakapulipuli. Naʻe faʻu ia ʻe Rich mo ha tokolahi ʻo e ʻeiseniti kātaki, ʻaki hono ngāueʻaki ʻa ia pē. ʻOku ʻi he pre-alpha tāpuni, ko ia ʻoku matolu ʻi ha ngaahi potu. Kapau ʻoku fakafiefia, kole fakaʻapaʻapa pea te ke lava ʻo hū vave."
+    ] }
+  ],
+  "quips": {
+    "1": "Lea pe taha. Toʻa. Mahalo he toʻa tōnunu.",
+    "3": "Lea ʻe tolu. Kuo moʻoni ange ia he lahi taha ʻo e peesi ʻo e koloa.",
+    "8": "Lea ʻe valu. Kei nounou ange ia he stand-up.",
+    "21": "Ko e lōloa ko e story points, ʻo kapau. ʻIo ʻoku pehē.",
+    "55": "Lea ʻe nimangofulu-mā-nima. Naʻe kakato ha kaati ʻe ua lolotonga hoʻo lau ʻeni.",
+    "144": "Ko e taha lōloa ia. ʻIkai ha 233. Kuo ʻalu e ʻeiseniti ki he mohe."
+  }
+}
