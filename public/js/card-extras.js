@@ -51,7 +51,7 @@ function waitDrop(id) { waitSave((curCard().waitsFor || []).filter(x => x !== id
 /* ---------- timed card (AIG-385): ⏰ come back at ---------- */
 function timerUi(c) {
   if (c.status === 'done') return '';
-  const label = timed(c) ? '⏰ ' + timedWhen(c.timedUntil) : '⏰';
+  const label = timed(c) ? '⏰ ' + timedWhen(c.timedUntil) : t('timed.btn');
   return `<button id="tm-btn" onclick="timerToggle()" title="${esc(t('timed.title'))}">${esc(label)}</button>
     <span id="tm-box" hidden><select id="tm-pre" onchange="timerPre()"><option value="">${esc(t('timed.pick'))}</option><option value="1h">${esc(t('timed.p.1h'))}</option><option value="3h">${esc(t('timed.p.3h'))}</option><option value="tom">${esc(t('timed.p.tom'))}</option><option value="mon">${esc(t('timed.p.mon'))}</option></select>
     <input type="datetime-local" id="tm-at" aria-label="${esc(t('timed.at'))}"> <button class="primary" onclick="timerSet()">${esc(t('timed.set'))}</button>${timed(c) ? ` <button onclick="timerClear()">${esc(t('timed.clear'))}</button>` : ''}</span>`;

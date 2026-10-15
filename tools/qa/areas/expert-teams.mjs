@@ -3,7 +3,7 @@
 // filled (Lead first) and the starter cards land in the backlog. Phone width and dark mode.
 import fs from 'node:fs';
 import path from 'node:path';
-import { BASE, check, until, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, check, until, mkProject, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('experts', '🧰 premade expert teams: templates, size slider, rough usage estimate (default, then from run history), apply fills roster and backlog (AIG-577..579)', async (s, ctx) => {
   const list = await s.ok('GET', '/api/expert-teams');
@@ -15,7 +15,7 @@ def('experts', '🧰 premade expert teams: templates, size slider, rough usage e
   await mkProject(s, 'Expo', 'EXP');
   const page = await openPage(ctx, '#/p/expo');
   await page.goto(`${BASE}/#/p/expo`); await page.reload();
-  await page.click('button:has-text("Look")');
+  await tbClick(page, 'Look');
   await page.waitForSelector('#look-roles button');
   await page.click('#look-roles button');
   await page.waitForSelector('#xt-pick');
@@ -58,7 +58,7 @@ def('experts', '🧰 premade expert teams: templates, size slider, rough usage e
   fs.writeFileSync(path.join(s.data, 'logs', '_runs.jsonl'), JSON.stringify({ slug: 'expo', start: Date.now() - 2 * 3600e3, end: Date.now() - 3600e3, in: 400000, out: 100000, cache: 0, models: ['sonnet'] }) + '\n');
   const h = (await s.ok('GET', '/api/expert-teams')).history;
   check('history baseline is read from the runs (500k tokens in 1 Sonnet hour)', h.runs === 1 && h.perSonnetHour === 500000 && h.rough, h);
-  await page.reload(); await page.click('button:has-text("Look")'); await page.click('#look-roles button');
+  await page.reload(); await tbClick(page, 'Look'); await page.click('#look-roles button');
   await page.selectOption('#xt-pick', 'dev');
   await page.waitForSelector('#xt-est');
   const eh = await est();

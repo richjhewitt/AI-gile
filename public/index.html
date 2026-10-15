@@ -62,6 +62,7 @@
   <span id="immWrap" class="langwrap imm-wrap" hidden><button id="immBtn" class="theme-pick" onclick="toggleImm()"></button><button id="immMore" class="theme-pick imm-more" aria-haspopup="true" aria-expanded="false" onclick="immMenu()" hidden>▾</button><div id="immList" class="immlist" hidden></div></span>
   <span class="live" id="live" data-i18n="live.ok">live</span>
 </header>
+<div id="updateTop"><span id="upUpdate"></span><span id="upRefresh"></span><span id="upRestart"></span></div>
 <div id="saverBar" class="saver-bar" role="status" hidden></div>
 <div id="swarmBar" class="saver-bar" role="status" style="background:#b91c1c;color:#fff" hidden></div>
 <div id="filterbar"></div>
@@ -71,7 +72,6 @@
 <div id="dialog"></div>
 <nav id="dmRail" data-i18n-label="dms.rail.label" aria-label="DMs with your team leads"></nav>
 <aside id="dmPanel" hidden></aside>
-<div id="updateTop"><span id="upUpdate"></span><span id="upRefresh"></span><span id="upRestart"></span></div>
 
 <!-- Start-up guard (AIG-517): a script or language file that fails to load or parse (a half-written file, a restart
      mid-load) shows "Updating… retrying" and tries again after 1s, 2s, 4s ... 30s, instead of leaving the page blank.
