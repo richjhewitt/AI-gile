@@ -16,7 +16,7 @@ How to run what you have built so the people using it get a reliable service. Th
 ## Step by step
 1. On the project board click **🎨 Look**. In the **Project settings** dialog find the **🛎️ Service** section. Tick **This project is a service** and fill in what it offers, who uses it and its web address.
 2. Choose the **On-call agent** (the lead by default) and tick **Public** if friends may see it on the status page. Optionally type a **Monthly token cap** so one project cannot eat the whole budget. Click **Save**.
-3. Look at the project's dot on the home page: green means the address answers. If it stops answering, an incident card appears by itself.
+3. Look at the project's dot on **Home**: green means the address answers. If it stops answering, an incident card appears by itself.
 4. Open that incident card. A bad one? Click **🚨 Major**. Click **End major incident** when it is over.
 5. Cards that wait too long show a red ⏰. Open them first. The inbox filter **Desk: incidents** shows only incidents from friends and the feedback form.
 6. Click **⋯ More** on the board, then **🗂️ Items**. Click **+ Add item** for each server, domain, certificate, key, repo or supplier. Add an expiry date and, for data, where it is backed up and how often. Click **Backed up today** after each backup.
