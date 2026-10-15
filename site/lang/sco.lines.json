@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Robots.",
+      "Haundit."
+    ] },
+    { "n": 2, "texts": [
+      "Robot kanban.",
+      "Agents, sortit.",
+      "Ideas, biggit."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban for robots.",
+      "Ideas become features.",
+      "Free agent kanban."
+    ] },
+    { "n": 5, "texts": [
+      "A kanban board rin by agents.",
+      "Ye write cairds. Agents big.",
+      "Free, local, tested, gey daft."
+    ] },
+    { "n": 8, "texts": [
+      "A free kanban board whaur AI agents wirk.",
+      "Write an idea. Agents big it. Ye accept.",
+      "Agile for the ae body an mony patient robots."
+    ] },
+    { "n": 13, "texts": [
+      "A kanban board on yer computer whaur AI agents tak up the cairds.",
+      "Write an idea. A team o agents bigs it. A tester checks it.",
+      "Free, nae accounts, nae trackers: a board, some robots, an ye in chairge."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile is a kanban board for wirkin wi AI codin agents. They tak up the cairds; ye test an accept them, an that's the lot.",
+      "Ilka project gets a lead an a team o AI agents. Comment on onie caird an the team gets stuck in tae the wirk.",
+      "A free, personal tae-dae board that rins on yer ain computer. The wirkers are robots. The ane that says aye is you."
+    ] },
+    { "n": 34, "texts": [
+      "Ye pit ideas on a board. A team o AI agents turns them intae wirkin features, tests them, an hauns them back wi steps tae try. Naething coonts as duin until ye say sae yersel.",
+      "AI-gile is a hamemade kanban board that Rich biggit wi a guid wheen o help frae the agents it noo manages. It's free, rins on yer computer, an is shared wi freends, nae sauld.",
+      "Picture an ordinar kanban board, wi columns frae Backlog tae Duin, except the cairds are ta'en up by AI agents. They report hou they're gettin on, ask questions when stuck, an aye wait on yer thumbs up."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile is a kanban board whaur the team is made o AI agents. Ilka project haes a lead that plans the wirk an helpers that big it. When a feature is ready, an AI tester tries it oot an taks a screenshot, then it lands in yer pile. Accept it, or leave a comment an they rewirk it.",
+      "It started oot as ae body's wey o keepin track o lots o AI codin sessions at aince, an grew intae a richt board. It rins on yer machine, needs nae account, an haes nae trackers. It's free for freends an onybody that's curious. It's alsae unfinished, sae expect some rouch edges an the odd surprise.",
+      "Here's the honest version. Ye still hae tae hae the ideas, an ye still hae tae check the results. Whit AI-gile daes is awthing in atween: it keeps the cairds in order, wakes the richt agent when ye comment, shaws exactly whit chynged, an keeps the lot in the ae short pile for ye."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile is a free kanban board that ye rin on yer ain computer. Insteid o fowk, ilka project haes a team o AI agents: a lead that turns yer ideas intae cairds an a plan, an helpers that tak up the cairds in priority order. When somethin is biggit, an AI tester follaes the test steps an shaws ye whit it saw. Then it waits in the ae pile merked For ye. Ye accept it, or ye comment an the team haes anither go. Naething iver reaches Duin wioot ye.",
+      "A wheen o things ye micht nae expect. A nicht watch keeps the Tae dae column topped up while ye sleep, pickin cairds that dinnae need an answer frae ye. A token coonter shaws hou muckle the agents hae uised the day an this week, an Nae Token Mode tells them tae stop spendin. Ye can message freends, an private messages are end-tae-end encryptit. The board speaks aboot 120 leids, includin Dutch, Flemish, pirate an Klingon. Nane o it costs a penny, an naebody's tryin tae sell it tae ye either.",
+      "AI-gile is a wee personal project, nae a company. Rich wantit tae look efter several AI codin projects wioot openin ilka app tae check on them, sae he an the agents biggit a board for it, then uised the board tae big the rest o itsel. It's in steekit pre-alpha, which means it wirks, mair or less, for a haunfu o freends. There's nae pricin page, nae newsletter an nae growth plan. If it sounds uisefu, ye can ask tae try it when it opens up a wee bit mair."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile is a kanban board for the ae human an a guid wheen o AI agents. It rins on yer ain computer an it's completely free. Ye add projects, an ilka project gets a lead an a wee team. Ye blether wi the lead, a bit like Discord, an describe an idea; the lead turns it intae cairds an a plan, then waits for ye tae chap Go. The team wirks thro the cairds in priority order, uisin a simple command line made for leid models. Afore onything comes back tae ye, an AI tester follaes the steps in a copy o the app an attaches a screenshot. Finished wirk lands in yer pile wi the chynged files an the diff. Ye accept it, or ye leave a comment an the team wakes up an tries again. Only ye can muive a caird tae Duin.",
+      "A day wi AI-gile, mair or less. In the evenin ye leave a few comments: this button's in the wrang place, that list should be sortit, could we hae a dairk mode. Ye gang tae yer bed. The agents read the comments, mak the chynges, test them an hand them back tae ye. If Tae dae rins dry, the nicht watch fills it frae the backlog wi cairds that need nae answer frae ye. In the mornin there's the ae short pile: a couple o questions an a few things tae try, ilk wi steps a sleepy body can follae an a screenshot o it wirkin. Ye click thro, accept the guid anes an send back the rest. A token coonter shaws whit it aw uised, an Nae Token Mode is there for lean weeks. Then ye hae yer breakfast, which the agents canna help wi yet.",
+      "First, whit AI-gile isnae. It isnae a startup, it isnae for sale, an naebody's collectin yer data. It's a free board that rins on yer computer, wi nae accounts, nae trackers an nae cookies. Whit it is: the ae tidy place tae see ilka AI codin project at aince, wi a team o agents daein the cairds an you makin the decisions. It faulds related cairds thegither, fixes muddled titles, an keeps an ee on hou lean the code bides. It speaks aboot 120 leids, frae Dutch an Flemish tae pirate an Klingon. Freends can message ilk ither, privately an encryptit. It wis biggit by Rich an a guid wheen o patient agents, mostly uisin itsel. It's in steekit pre-alpha, sae it's rouch in places. If it sounds like fun, ask nicely an ye micht get in early."
+    ] }
+  ],
+  "quips": {
+    "1": "The ae word. Bold. Maybe ower bold.",
+    "3": "Three words. Awready mair honest than maist product pages.",
+    "8": "Echt words. Still shorter than a stand-up.",
+    "21": "The lengths are story points, by the wey. O course they are.",
+    "55": "Fifty-five words. Twa cairds got finished while ye read that.",
+    "144": "That's the lang ane. There's nae 233. The agents hae gaen tae bed."
+  }
+}

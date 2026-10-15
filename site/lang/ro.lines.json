@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Roboți.",
+      "Delegat."
+    ] },
+    { "n": 2, "texts": [
+      "Kanban robotic.",
+      "Agenți, organizați.",
+      "Idei, construite."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban pentru roboți.",
+      "Ideile devin funcții.",
+      "Kanban gratuit pentru agenți."
+    ] },
+    { "n": 5, "texts": [
+      "O tablă kanban condusă de agenți.",
+      "Tu scrii carduri. Agenții construiesc.",
+      "Gratuit, local, testat, puțin caraghios."
+    ] },
+    { "n": 8, "texts": [
+      "O tablă kanban gratuită unde lucrează agenți AI.",
+      "Scrii o idee. Agenții o construiesc. Tu accepți.",
+      "Agile pentru un om și mulți roboți răbdători."
+    ] },
+    { "n": 13, "texts": [
+      "O tablă kanban pe calculatorul tău, unde agenți AI preiau cardurile.",
+      "Scrii o idee. O echipă de agenți o construiește. Un tester o verifică.",
+      "Gratuit, fără conturi, fără urmăritoare: o tablă, niște roboți și tu la comandă."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile este o tablă kanban pentru lucrul cu agenți AI de programare. Ei preiau cardurile; tu le testezi și le accepți.",
+      "Fiecare proiect primește un lider și o echipă de agenți AI. Lași un comentariu la orice card și echipa se pune pe treabă.",
+      "O listă personală de sarcini, gratuită, care rulează pe calculatorul tău. Muncitorii sunt roboți. Cel care spune da ești tu."
+    ] },
+    { "n": 34, "texts": [
+      "Pui ideile pe o tablă. O echipă de agenți AI le face funcții care merg, le testează și ți le dă înapoi cu pași de încercat. Nimic nu e gata până nu spui tu că e gata.",
+      "AI-gile este o tablă kanban făcută în casă, pe care Rich a construit-o cu mult ajutor de la agenții pe care acum îi coordonează. E gratuită, rulează pe calculatorul tău și se dă prietenilor, nu se vinde.",
+      "Imaginează-ți o tablă kanban obișnuită, cu coloane de la Backlog până la Gata, doar că cardurile sunt preluate de agenți AI. Ei raportează cum merge, întreabă când se blochează și așteaptă mereu încuviințarea ta."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile este o tablă kanban în care echipa e făcută din agenți AI. Fiecare proiect are un lider care planifică munca și ajutoare care o construiesc. Când o funcție e gata, un tester AI o încearcă și face o captură de ecran, apoi ajunge în grămada ta. O accepți sau lași un comentariu și o refac.",
+      "A început ca felul în care un singur om ținea evidența multor sesiuni de programare cu AI deodată și a crescut într-o tablă adevărată. Rulează pe calculatorul tău, nu cere cont și n-are urmăritoare. E gratuită pentru prieteni și pentru oricine e curios. E și neterminată, așa că așteaptă-te la colțuri aspre și la câte o surpriză.",
+      "Iată varianta cinstită. Ideile tot tu trebuie să le ai, iar rezultatele tot tu trebuie să le verifici. Ce face AI-gile este tot ce e între ele: ține cardurile în ordine, trezește agentul potrivit când comentezi, arată exact ce s-a schimbat și strânge totul într-o singură grămadă scurtă pentru tine."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile este o tablă kanban gratuită pe care o rulezi pe propriul calculator. În loc de oameni, fiecare proiect are o echipă de agenți AI: un lider care transformă ideile tale în carduri și într-un plan, și ajutoare care iau cardurile în ordinea priorității. Când ceva e construit, un tester AI urmează pașii de test și îți arată ce a văzut. Apoi așteaptă într-o singură grămadă numită Pentru tine. O accepți sau lași un comentariu și echipa mai încearcă o dată. Nimic nu ajunge vreodată la Gata fără tine.",
+      "Câteva lucruri la care poate nu te aștepți. O veghe de noapte ține coloana De făcut plină cât dormi, alegând carduri care nu cer niciun răspuns de la tine. Un contor de tokeni arată cât au folosit agenții azi și săptămâna asta, iar Modul fără tokeni le spune să nu mai cheltuiască. Poți scrie prietenilor, iar mesajele private sunt criptate de la un capăt la altul. Tabla vorbește vreo 120 de limbi, printre ele neerlandeza, flamanda, limba piraților și klingoniana. Nimic din toate astea nu costă un ban și nimeni nu încearcă să ți le vândă.",
+      "AI-gile este un proiect mic, personal, nu o companie. Rich voia să țină sub ochi mai multe proiecte de programare cu AI fără să deschidă fiecare aplicație, așa că el și agenții au făcut o tablă pentru asta, apoi au folosit tabla ca să construiască restul. E în pre-alfa închis, ceea ce înseamnă că merge, mai mult sau mai puțin, pentru o mână de prieteni. Nu există pagină de prețuri, buletin informativ sau plan de creștere. Dacă ți se pare util, poți cere să-l încerci când se deschide puțin mai mult."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile este o tablă kanban pentru un om și o mulțime de agenți AI. Rulează pe propriul tău calculator și este complet gratuită. Adaugi proiecte, iar fiecare proiect primește un lider și o echipă mică. Vorbești cu liderul, cam ca pe Discord, și îi descrii o idee; el o transformă în carduri și într-un plan, apoi așteaptă să apeși Go. Echipa parcurge cardurile în ordinea priorității, folosind o linie de comandă simplă, făcută pentru modelele de limbaj. Înainte să-ți revină ceva, un tester AI urmează pașii într-o copie a aplicației și atașează o captură de ecran. Munca terminată ajunge în grămada ta, cu fișierele schimbate și diferențele. O accepți sau lași un comentariu, iar echipa se trezește și mai încearcă. Doar tu poți muta un card la Gata.",
+      "O zi cu AI-gile, în mare. Seara lași câteva comentarii: butonul ăsta e într-un loc nepotrivit, lista aceea ar trebui sortată, am putea avea o temă întunecată. Te duci la culcare. Agenții citesc comentariile, fac schimbările, le testează și ți le dau înapoi. Dacă De făcut rămâne gol, veghea de noapte îl umple din backlog cu carduri care nu cer niciun răspuns de la tine. Dimineața e o singură grămadă scurtă: două întrebări și câteva lucruri de încercat, fiecare cu pași pe care îi poate urma un om somnoros și cu o captură de ecran în care merge. Dai clic prin ele, accepți ce e bun și trimiți înapoi restul. Un contor de tokeni arată cât s-a folosit, iar Modul fără tokeni e pentru săptămânile slabe. Apoi iei micul dejun, la care agenții încă nu pot ajuta.",
+      "Mai întâi, ce nu este AI-gile. Nu e un start-up, nu e de vânzare și nimeni nu-ți adună datele. E o tablă gratuită care rulează pe calculatorul tău, fără conturi, fără urmăritoare și fără cookie-uri. Ce este: un singur loc ordonat unde vezi toate proiectele de programare cu AI deodată, cu o echipă de agenți care fac cardurile și tu care iei deciziile. Unește cardurile înrudite, repară titlurile încurcate și urmărește cât de suplu rămâne codul. Vorbește vreo 120 de limbi, de la neerlandeză și flamandă până la limba piraților și klingoniană. Prietenii își pot scrie unii altora, în privat și criptat. A fost construit de Rich și de o mulțime de agenți răbdători, mai ales folosindu-se pe el însuși. E în pre-alfa închis, deci pe alocuri e aspru. Dacă ți se pare distractiv, cere frumos și poate intri mai devreme."
+    ] }
+  ],
+  "quips": {
+    "1": "Un cuvânt. Îndrăzneț. Poate prea îndrăzneț.",
+    "3": "Trei cuvinte. Deja mai cinstit decât majoritatea paginilor de produs.",
+    "8": "Opt cuvinte. Tot mai scurt decât un stand-up.",
+    "21": "Apropo, lungimile sunt puncte de poveste. Bineînțeles că sunt.",
+    "55": "Cincizeci și cinci de cuvinte. Două carduri s-au terminat cât ai citit.",
+    "144": "Asta e cea lungă. Nu există 233. Agenții s-au culcat."
+  }
+}

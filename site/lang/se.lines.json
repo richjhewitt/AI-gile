@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Robohtat.",
+      "Sáddejuvvon."
+    ] },
+    { "n": 2, "texts": [
+      "Kanban robohtaide.",
+      "Agenttat, ortnegis.",
+      "Jurddat, huksejuvvon."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban robohtaide várás.",
+      "Jurddat šaddet doaimmaide.",
+      "Friddja agenttakanban."
+    ] },
+    { "n": 5, "texts": [
+      "Kanban-tavla maid agenttat jođihit dutnje.",
+      "Don čállát kortaid. Agenttat hukset.",
+      "Friddja, báikkálaš, geahččaluvvon, veaháš jatnat."
+    ] },
+    { "n": 8, "texts": [
+      "Friddja kanban-tavla mas AI-agenttat barget du ovddas juohke áiggi.",
+      "Čále jurdaga. Agenttat hukset. Don dohkket.",
+      "Agile ovtta olbmui ja ollu bohtosis robohtaide."
+    ] },
+    { "n": 13, "texts": [
+      "Kanban-tavla du iežat dihtoris, mas AI-agenttat váldet kortaid iežaset bargun ja dahket daid.",
+      "Čále jurdaga. Agenttaid joavku hukset dan. Dasto geahččaleaddji dárkkista dan ja dutnje boahtá ruoktot.",
+      "Friddja, almmá kontuid ja čuovvuleaddjiid: tavla, soames robohta ja don jođiheaddjin."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile lea kanban-tavla mii veahkeha du bargat AI-prográmmenagenttaiguin. Sii váldet kortaid iežaset bargun; don geahččalat daid ja dohkket daid.",
+      "Juohke prošeakta oažžu iežas jođiheaddji ja AI-agenttaid joavkku. Čále kommeantta ovtta kortii, ja dalle joavku álggaha bargat dan ala.",
+      "Friddja persovnnalaš bargolistu mii johtá du iežat dihtoris. Bargit leat robohtat. Dat gii dadjá juo leat don."
+    ] },
+    { "n": 34, "texts": [
+      "Don bijat jurdagiid tavlii. AI-agenttaid joavku dahká daid doaibmi funkšuvnnaid, geahččala daid ja addá daid ruoktot dutnje geahččalanlávkkiiguin maid sáhttá čuovvut. Maidege ii lohkkojuvvo gárvvisin ovdal go don iežat dadjat dan.",
+      "AI-gile lea ruovttuin dahkkojuvvon kanban-tavla maid Rich lea huksen ollu veahkkin agenttain geaid dat dál jođiha. Dat lea friddja, johtá du dihtoris, ja juogaduvvo ustibiidda, ii vuvdojuvvo.",
+      "Jurddaš dábálaš kanban-tavlla, mas leat ráiddut Backlogas Gárvvisii, muhto kortaid váldet AI-agenttat. Sii muitalit mo bargu manná, jerret go bidjet ja vuordet álo du dohkkehusa. Ja bargit eai leat olbmot."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile lea kanban-tavla gos joavku lea dahkkojuvvon AI-agenttain. Juohke prošeavttas lea jođiheaddji gii plánen barggu, ja veahkkehat geat hukset dan. Go ominaivvas lea gárvvis, AI-geahččaleaddji geahččala dan ja váldá ruvttagova, ja dasto dat boahtá du čoalkkuide. Dohkke dan, dahje čále kommeantta ja sii dahket fas.",
+      "Dat álggii ovtta olbmo vugiin doallat guovddážis ollu AI-prográmmensessuvnnaid oktanaga, ja šattai riekta tavlan. Dat johtá du mášiinnas, ii bivdde konttu, ja das eai leat čuovvuleaddjit. Dat lea friddja ustibiidda ja buohkaide geat leat miellagiddevaččat. Dat ii leat vel gárvvis, nu vuordde veaháš garra ravddaid ja muhtumin hui earálágan bohtosiid.",
+      "Dát lea duohta veršuvdna. Don ferte ain hutkat jurdagiid, ja don ferte ain dárkkistit bohtosiid. AI-gile dahká buot maid das gaskkas: doallá kortaid ortnegis, čuoččáha riekta agenta go čállát kommeantta, čájeha dárkilit mii lea rievdan, ja čohkke buot ovtta oanehis čoalkkus dutnje. Ii eambbo, ii unnit. Dat lea unna ja ráhkis bargu, mii ii leat vel gárvvis muhto lea juo ávkkálaš."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile lea friddja kanban-tavla maid don johtát iežat dihtoris. Olbmuid sadjái juohke prošeavttas lea AI-agenttaid joavku: jođiheaddji gii dahká du jurdagiin kortaid ja plána, ja veahkkehat geat váldet kortaid deatalašvuođa mielde. Go juoga lea huksejuvvon, AI-geahččaleaddji čuovvu geahččalanlávkkiid ja čájeha dutnje maid oaidnigođii. Dasto dat vuordá oktan čoalkkus man namma lea Dutnje. Don dohkket dan, dahje čálát kommeantta ja joavku geahččala fas. Buot dat dáhpáhuvvá du iežat dihtoris, ja dieđut eai guođe dan. Maidege ii goassige joavdda Gárvvisii almmá dutnje.",
+      "Moadde ášši maid it vuorddáše. Ijavuohta doallá Dahkat-ráiddu devdojuvvon go don oađát, válljemin kortaid maidda ii dárbbaš du vástádusa. Token-lohkki čájeha man ollu agenttat leat geavahan otne ja dán vahkus, ja Ii-token-vuohki dadjá sidjiide heaitit lonuheamis. Don sáhtát čálihit ustibiiguin, ja priváhta čállosat leat gaskkohagas čihkkojuvvon. Tavla hupmá sullii 120 giela, earret eará hollánddagiela, flámagiela, mearrarievvárgiela ja klingona. Ii oktage dáin máksa ruhta, ja ii oktage geahččal dutnje vuovdit dan. Buot dat lea dahkkojuvvon vai don sáhtát oađđit buorebut.",
+      "AI-gile lea smávva persovnnalaš prošeakta, ii fitnodat. Rich háliidii dovdat máŋga AI-prográmmenprošeavtta almmá rahpamin juohke appa, ja son ja agenttat hukse dan várás tavla, ja geavahedje dan tavlla iežas loahpa huksema várás. Dat lea gidda pre-alfas, mii oaivvilda ahte dat doaibmá, eanaš, moadde ustibii várás. Eai leat hinddasiidu, eai ođđasat eaige šaddanplána. Jos dat orru ávkkálažžan, sáhtát bivdit geahččalit go rahpasa veaháš eanet. Dat lea ain dáhpáhuvvame, ja jearaldagat leat buorit."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile lea kanban-tavla ovtta olbmui ja ollu AI-agentii. Dat johtá du iežat dihtoris ja lea áibbas friddja. Eai kontut, eai čuovvuleaddjit. Don lasihat prošeavttaid, ja juohke prošeakta oažžu jođiheaddji ja smávva joavkku. Don hupmat jođiheaddjiin, veaháš Discord-lágán, ja čilget jurdaga; jođiheaddji dahká das kortaid ja plána, ja dasto vuordá go deaddilat Go. Joavku bargá kortaid čađa deatalašvuođa mielde, geavahemiin álkes gohččunlinjá mii lea dahkkojuvvon giellamodeallaide. Ovdal go maidege máhccá dutnje, AI-geahččaleaddji čuovvu lávkkiid appa kopiias ja lasiha ruvttagova. Gárvvis bargu boahtá du čoalkkuide rievdaduvvon fiillaiguin ja erohusain. Don dohkket dan, dahje guođát kommeantta ja joavku čuoččáha ja geahččala fas. Juohke dohkkehus lea du, ja juohke ruoktotaddin lea dutnje čielggas ja álkes. Dušše don sáhtát sirdit kortta Gárvvisii.",
+      "Beaivi AI-gilin, sulaid nu. Eahkedis don guođát moadde kommeantta: dát boallu lea boastut sajis, dat listu galggašii leat ortnegis, sáhttá go leat čáhppes vuohki. Don manat oađđit. Agenttat lohket kommeanttaid, dahket rievdadusaid, geahččalit daid ja addet ruoktot. Jos Dahkat gerddiha, ijavuohta deavdá dan backlogas kortaiguin maidda ii dárbbaš du vástádusa. Iđđes lea okta oanehis čoalku: guokte gažaldaga ja moadde juoga maid geahččalit, juohkehaččas lávkkit maid váiban olmmoš sáhttá čuovvut ja ruvttagovva mii čájeha ahte doaibmá. Don deaddilat čađa, dohkket buriid ja sáddet ruoktot eará. Token-lohkki čájeha man ollu dat geavahii, ja Ii-token-vuohki lea unna vahkuid várás. Go dus lea áigi, don sáhtát čállit eanet jurdagiid, ja joavku váldá daid maŋŋel. Dasto don borat iđitboradeami, mas agenttat eai sáhte vel veahkehit.",
+      "Vuos, mii AI-gile ii leat. Dat ii leat startup, ii vuovdojuvvo, ja ii oktage čohkke du dieđuid. Dat lea friddja tavla mii johtá du dihtoris, almmá kontuid, čuovvuleaddjiid ja cookie:id. Mii dat lea: okta čorgat báikki gos oainnát buot AI-prográmmenprošeavttaid oktanaga, agenttajoavkkuin mat dahket kortaid ja don mearridat. Dat čohkke seammalágan kortaid, divvu seaguhuvvan namaid ja čuovvu man geahpas koda orru. Dat hupmá sullii 120 giela, hollánddas ja flámmas mearrarievvárgillii ja klingonii. Ustibat sáhttet čállit goabbat guoibmásis, priváhta ja gaskkohagas čihkkojuvvon. Dan leat hukse Rich ja ollu bohtosis agenttat, eanaš geavahemiin dan iežas. Dat lea gidda pre-alfas, nu dat lea báikkiid garra. Jos dat gullo hávskin, bivdde čábbát ja soaitá beassat árrat sisa. Ja dat lea juo veaháš suohtas."
+    ] }
+  ],
+  "quips": {
+    "1": "Okta sátni. Duostil. Vejolaččat menddo duostil.",
+    "3": "Golbma sáni. Juo eanet duohta go eanaš buvttahusa siiddut.",
+    "8": "Gávcci sáni. Ain oanehit go stand-up.",
+    "21": "Guhkkodagat leat muhtumin story points. Dieđusge.",
+    "55": "Vihtanuppelohkái-vihtta sáni. Guokte korttá šattai gárvvisin dan botta go lohkat.",
+    "144": "Dát lea guhkes. 233 ii gávdno. Agenttat leat vuolgán oađđit."
+  }
+}
