@@ -873,6 +873,8 @@
  "card.quiz.h": "🗂️ Onderwerp: {topic}",
  "card.quiz.sub": "Beantwoord alle {n} en ze gaan als één reactie terug",
  "inbox.toast.sentback": "{id} teruggestuurd naar het team",
+ "inbox.sb.send": "Terugsturen",
+ "inbox.sb.ph": "Wat is er mis? Eén regel is genoeg",
  "cv.size": "Grootte",
  "cv.show": "Op elke kaart tonen",
  "cv.sample": "Zo ziet een kaart eruit",

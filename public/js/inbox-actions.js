@@ -48,6 +48,15 @@
     try { await post('POST', base(n) + '/verdict', { accept: true }); done(n, t('inbox.toast.accepted', { id: n.dataset.id })); }
     catch (e) { fail(n, e); }
   }
+  // 🔁 Send back from the row (AIG-1136): a one-line reason, the same verdict as on the card.
+  async function sendBack(n) {
+    if (n.dataset.sending) return;
+    const text = n.querySelector('[data-sb]').value.trim();
+    if (!text) { n.querySelector('.ib-err').textContent = t('verdict.err'); return; }
+    lock(n);
+    try { await post('POST', base(n) + '/verdict', { accept: false, text }); done(n, t('inbox.toast.sentback', { id: n.dataset.id })); }
+    catch (e) { fail(n, e); }
+  }
   // 📖 To read (AIG-392): Got it accepts; Reply sends the note to the team and the card stays.
   async function gotIt(n) {
     lock(n);
@@ -131,5 +140,5 @@
     row.querySelectorAll("button").forEach(b => b.disabled = true);
     try { await post("PATCH", `/api/projects/${row.dataset.project}/cards/${row.dataset.id}`, { status: "verify" }); IB.toast(t("trust.reopened", { id: row.dataset.id })); await IB.load(); IB.paintPage(); } catch (e) { IB.toast(e.message || String(e)); }
   }
-  Object.assign(IB, { testerDone, reopenTested, send, taskDone, lifeDone, accept, gotIt, infoReply, waitAndSee, letsGo, startTester, acceptAiPassed, flickAct });
+  Object.assign(IB, { testerDone, reopenTested, send, sendBack, taskDone, lifeDone, accept, gotIt, infoReply, waitAndSee, letsGo, startTester, acceptAiPassed, flickAct });
 })();

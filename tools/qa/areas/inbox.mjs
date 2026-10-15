@@ -56,6 +56,23 @@ def('inbox', 'top-bar counts, project tabs, inline answer, task Done', async (s,
   const c2 = await getCard(s, 'alpha', 'ALP-2');
   check('task Done tells the team', c2.status === 'team' && c2.assignee === 'Pixel' && /Done/.test(c2.comments.at(-1).text), [c2.status, c2.assignee]);
 
+  // AIG-1136: Send back is a button that opens a one-line reason box; Send greys out until something is typed.
+  const row = '.ib-item.t[data-id="ALP-3"]';
+  check('Send back is a button, reason box hidden', (await page.locator(row + ' button[data-act=sbopen]').count()) === 1 && await page.locator(row + ' .ib-sb').isHidden());
+  await page.click(row + ' button[data-act=sbopen]');
+  check('Send back opens the box, Send is greyed out', await page.locator(row + ' .ib-sb textarea').isVisible() && await page.locator(row + ' button[data-act=sbsend]').isDisabled());
+  await page.fill(row + ' .ib-sb textarea', 'wrong colour');
+  check('typing a reason enables Send', await page.locator(row + ' button[data-act=sbsend]').isEnabled());
+  await page.click(row + ' button[data-act=sbcancel]');
+  check('Cancel closes the box and nothing is sent', await page.locator(row + ' .ib-sb').isHidden() && (await getCard(s, 'alpha', 'ALP-3')).status === 'verify');
+  await page.click(row + ' button[data-act=sbopen]');
+  await page.fill(row + ' .ib-sb textarea', 'wrong colour');
+  await page.click(row + ' button[data-act=sbsend]');
+  await page.waitForSelector(row, { state: 'detached' });
+  const sb = await getCard(s, 'alpha', 'ALP-3');
+  check('Send back from the row returns it to the team with the reason', sb.status !== 'verify' && sb.comments.at(-1).text.includes('wrong colour'), [sb.status, sb.comments.at(-1)]);
+  await s.ok('PATCH', '/api/projects/alpha/cards/ALP-3', { status: 'verify' });
+  await page.waitForSelector(row, { timeout: 8000 });
   await page.click('.ib-item.t[data-id="ALP-3"] button[data-act=accept]');
   await page.waitForSelector('.ib-item.t[data-id="ALP-3"]', { state: 'detached' });
   check('Accept from the inbox', (await getCard(s, 'alpha', 'ALP-3')).status === 'done');

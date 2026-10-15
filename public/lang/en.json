@@ -880,6 +880,8 @@
  "card.quiz.h": "🗂️ Topic: {topic}",
  "card.quiz.sub": "Answer all {n} (or just reply below) and they go back as one comment",
  "inbox.toast.sentback": "{id} sent back to the team",
+ "inbox.sb.send": "Send back",
+ "inbox.sb.ph": "What is wrong? One line is enough",
  "cv.size": "Size",
  "cv.show": "Show on each card",
  "cv.sample": "How a card looks",

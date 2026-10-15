@@ -41,7 +41,8 @@
       ${c.testSteps ? `<details class="ib-steps"><summary>${esc(t('inbox.t.how'))}</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : `<div class="ib-hint">${esc(t('inbox.t.nosteps'))}</div>`}
       <div class="ib-err"></div>
       <div class="actions">${c.openUrl ? `<button class="primary" data-act="open" data-cmd="${esc(c.startCmd || '')}" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button>` : ''}<button class="good" data-act="accept">${esc(t('card.accept'))}</button><button data-act="wait" title="${esc(t('inbox.later.title'))}">${esc(t('inbox.later'))}</button>
-      <a href="#/p/${c.project}/${c.id}" class="ib-hint" style="text-decoration:underline">${esc(t('inbox.t.sendback'))}</a></div>`;
+<button class="warn" data-act="sbopen" aria-expanded="false">${esc(t('card.sendback'))}</button></div>
+      <div class="ib-sb" hidden><textarea rows="1" data-sb placeholder="${esc(t('inbox.sb.ph'))}" aria-label="${esc(t('inbox.sb.ph'))}"></textarea><button class="warn" data-act="sbsend" disabled>${esc(t('inbox.sb.send'))}</button><button data-act="sbcancel">${esc(t('common.cancel'))}</button></div>`;
   }
   const checkSig = c => (c.checklist || []).map(x => x.done ? 1 : 0).join('');
   // A folded group of tests is the made-up item from inbox-groups.js (group: true); a question or task card can carry a group name too.
