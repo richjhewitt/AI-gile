@@ -121,11 +121,7 @@ function renderCard(p, c) {
     <div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
-<<<<<<< HEAD
-    ${deskHtml(c)}${majorHtml(c)}
-=======
-    ${majorHtml(c)}${reviewHtml(p, c)}
->>>>>>> attach
+    ${deskHtml(c)}${majorHtml(c)}${reviewHtml(p, c)}
     ${c.status === 'verify' ? verdict : ''}
     ${checklistUi(p, c)}${waitsUi(p, c)}${secretsUi(p, c)}${accessReviewHtml(p, c)}
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
