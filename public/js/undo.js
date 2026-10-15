@@ -38,12 +38,21 @@
     b.querySelector('#undoMsg').textContent = msg; b.querySelector('#undoBtn').textContent = t('undo.btn'); b.hidden = false;
     clearTimeout(timer); timer = setTimeout(hide, SHOW_MS);
   }
+  // AIG-1260: a deleted card keeps its Undo bar (and Ctrl+Z) for a minute; after that it sits in Recently deleted.
+  function showDeleted(slug, id) {
+    last = { slug, id, at: Date.now(), del: true };
+    const b = bar();
+    b.querySelector('#undoMsg').textContent = t('undo.deleted', { id });
+    b.querySelector('#undoBtn').textContent = t('undo.btn');
+    b.hidden = false;
+    clearTimeout(timer); timer = setTimeout(hide, KEEP_MS);
+  }
   async function run() {
     if (!last || Date.now() - last.at > KEEP_MS) return;
-    const { slug, id, fn } = last; last = null; hide();
+    const { slug, id, fn, del } = last; last = null; hide();
     const b = bar();
     try {
-      if (fn) await fn(); else await api('POST', `/api/projects/${slug}/cards/${id}/undo`, {});
+      if (fn) await fn(); else await api('POST', del ? `/api/projects/${slug}/deleted/${id}/restore` : `/api/projects/${slug}/cards/${id}/undo`, {});
       b.querySelector('#undoMsg').textContent = fn ? t('undo.back.many') : t('undo.back', { id }); b.querySelector('#undoBtn').textContent = ''; b.hidden = false;
       clearTimeout(timer); timer = setTimeout(hide, 3e3);
       if (typeof refresh === 'function') refresh(true);
@@ -70,5 +79,5 @@
     if (!last || Date.now() - last.at > KEEP_MS) return;
     e.preventDefault(); run();
   });
-  window.Undo = { run, show, custom, colName };
+  window.Undo = { run, show, custom, colName, showDeleted };
 })();

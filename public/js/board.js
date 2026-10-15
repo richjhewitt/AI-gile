@@ -93,6 +93,20 @@ function renderNews() {
   return top + `<div class="newslist">${list.map(m => `<div class="news-item${m.mine ? ' mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> · <a href="#/pop/${esc(s)}/${esc(m.card)}" target="_blank">${esc(m.card)}</a> <span class="muted">${esc(m.title)} · ${ago(m.at)}</span></div><div class="dm-bubble">${esc(m.text || '').replace(/\n/g, '<br>')}</div></div>`).join('')}</div>`;
 }
 
+/* ---------- Recently deleted (AIG-1260) ---------- */
+async function deletedDialog() {
+  let list = [];
+  try { list = await api('GET', `/api/projects/${slug()}/deleted`); } catch (e) { alert(e.message); return; }
+  popNext('deleted'); openDialog(`<h2>${esc(t('deleted.h'))}</h2><p class="muted">${esc(t('deleted.intro'))}</p>
+    ${list.length ? list.map(d => `<div class="viewrow"><span class="grow"><b>${esc(d.id)}</b> ${esc(d.title)} <span class="muted">· ${esc(ago(d.at))}${d.comments ? ' · 💬 ' + d.comments : ''}</span></span><button type="button" data-restore="${esc(d.id)}" onclick="restoreDeleted('${esc(d.id)}')">${esc(t('deleted.restore'))}</button></div>`).join('') : `<p class="muted">${esc(t('deleted.none'))}</p>`}
+    <div class="err" id="del-err"></div>
+    <div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
+}
+async function restoreDeleted(id) {
+  try { await api('POST', `/api/projects/${slug()}/deleted/${id}/restore`, {}); closeDialog(); if (typeof refresh === 'function') refresh(true); }
+  catch (e) { setErr('del-err', e); }
+}
+
 /* ---------- board page ---------- */
 // Phone (AIG-933): the toolbar buttons sit behind one ⋯ button; the choice survives the 1 s redraw.
 function toggleTb() { state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), d = $('tbDots'); if (m) m.classList.toggle('open', state.tbOpen); if (d) d.setAttribute('aria-expanded', state.tbOpen ? 'true' : 'false'); }
@@ -137,6 +151,7 @@ function renderBoard(p) {
       <button onclick="location.hash='#/known-errors/${esc(p.slug)}'" title="${esc(t('ke.btn.title'))}">${esc(t('ke.title'))}</button>
       <button onclick="location.hash='#/improvements'" title="${esc(t('imp.btn.title'))}">${esc(t('imp.title'))}</button>
       ${Swarm.btn(p.slug, 'swarmBtn')}
+      ${p.nDeleted ? `<button id="deletedBtn" onclick="deletedDialog()" title="${esc(t('deleted.btn.title'))}">${esc(t('deleted.btn', { n: p.nDeleted }))}</button>` : ''}
       <span class="grow"></span>
       ${NoAi.on && p.lifeBoard && !p.path ? '' : `<button onclick="connectDialog()" title="${p.path && p.pathMissing ? esc(t('srv.folder.missing', { path: p.path })) : p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path && p.pathMissing ? t('board.connected.missing') : p.path ? t('board.connected') : t('board.connect'))}</button>`}
       ${Share.button(p)}
