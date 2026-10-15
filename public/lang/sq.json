@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Të avancuara: përdor serverin tim LiveKit",
  "lkcall.set.own": "Për thirrjet e tua përdoret serveri yt LiveKit.",
  "srv.lkcall.off": "Thirrjet nuk janë të disponueshme tani.",
- "srv.lkcall.relayfail": "Nuk u mor dot një leje thirrjeje nga serveri i thirrjeve i AI-gile tani. Provo përsëri pas një minute."
+ "srv.lkcall.relayfail": "Nuk u mor dot një leje thirrjeje nga serveri i thirrjeve i AI-gile tani. Provo përsëri pas një minute.",
+ "srv.health.cpulong": "Procesori është mbi {limit}% për rreth {mins} minuta. Mesatarja e 15 minutave të fundit është {avg}%.",
+ "srv.health.cpurun": "Procesori është mbi {limit}% për rreth {mins} minuta radhazi."
 }

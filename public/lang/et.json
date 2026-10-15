@@ -3896,5 +3896,7 @@
  "lkcall.set.adv": "Täpsemalt: kasuta minu enda LiveKiti serverit",
  "lkcall.set.own": "Sinu kõnede jaoks kasutatakse sinu enda LiveKiti serverit.",
  "srv.lkcall.off": "Kõned pole praegu saadaval.",
- "srv.lkcall.relayfail": "AI-gile'i kõneserverilt ei õnnestunud praegu kõnepääset saada. Proovi minuti pärast uuesti."
+ "srv.lkcall.relayfail": "AI-gile'i kõneserverilt ei õnnestunud praegu kõnepääset saada. Proovi minuti pärast uuesti.",
+ "srv.health.cpulong": "Protsessor on olnud umbes {mins} minutit üle {limit}%. Viimase 15 minuti keskmine on {avg}%.",
+ "srv.health.cpurun": "Protsessor on olnud umbes {mins} minutit järjest üle {limit}%."
 }

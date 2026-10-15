@@ -3905,5 +3905,7 @@
  "lkcall.set.adv": "Advanced: use my ain LiveKit server",
  "lkcall.set.own": "Yer ain LiveKit server is uised for yer calls.",
  "srv.lkcall.off": "Calls arenae available richt noo.",
- "srv.lkcall.relayfail": "Couldnae get a call pass frae the AI-gile call server jist noo. Try again in a meenit."
+ "srv.lkcall.relayfail": "Couldnae get a call pass frae the AI-gile call server jist noo. Try again in a meenit.",
+ "srv.health.cpulong": "The CPU's been abune {limit}% fur aboot {mins} minutes. The 15-minute average is {avg}%.",
+ "srv.health.cpurun": "The CPU's been abune {limit}% fur aboot {mins} minutes on the trot."
 }

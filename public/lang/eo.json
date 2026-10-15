@@ -3905,5 +3905,7 @@
  "lkcall.set.adv": "Altnivele: uzi mian propran LiveKit-servilon",
  "lkcall.set.own": "Via propra LiveKit-servilo estas uzata por viaj vokoj.",
  "srv.lkcall.off": "Vokoj nun ne disponeblas.",
- "srv.lkcall.relayfail": "Nun ne eblis ricevi vokpermeson de la voka servilo de AI-gile. Reprovu post minuto."
+ "srv.lkcall.relayfail": "Nun ne eblis ricevi vokpermeson de la voka servilo de AI-gile. Reprovu post minuto.",
+ "srv.health.cpulong": "La CPU estas super {limit}% jam proksimume {mins} minutojn. La 15-minuta mezumo estas {avg}%.",
+ "srv.health.cpurun": "La CPU estas super {limit}% jam proksimume {mins} minutojn sinsekve."
 }

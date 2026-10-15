@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "4dv4nc3d: u53 my 0wn LiveKit 53rv3r",
  "lkcall.set.own": "Y0ur 0wn LiveKit 53rv3r 15 u53d f0r y0ur c4ll5.",
  "srv.lkcall.off": "C4ll5 4r3 n07 4v41l4bl3 r1gh7 n0w.",
- "srv.lkcall.relayfail": "C0uld n07 g37 4 c4ll p455 fr0m 7h3 AI-gile c4ll 53rv3r ju57 n0w. 7ry 4g41n 1n 4 m1nu73."
+ "srv.lkcall.relayfail": "C0uld n07 g37 4 c4ll p455 fr0m 7h3 AI-gile c4ll 53rv3r ju57 n0w. 7ry 4g41n 1n 4 m1nu73.",
+ "srv.health.cpulong": "7h3 CPU h45 b33n 4b0v3 {limit}% f0r 4b0u7 {mins} m1nu735. 7h3 15-m1nu73 4v3r4g3 15 {avg}%.",
+ "srv.health.cpurun": "7h3 CPU h45 b33n 4b0v3 {limit}% f0r 4b0u7 {mins} m1nu735 1n 4 r0w."
 }

@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Gevorderd: gebruik my eie LiveKit-bediener",
  "lkcall.set.own": "Jou eie LiveKit-bediener word vir jou oproepe gebruik.",
  "srv.lkcall.off": "Oproepe is nou nie beskikbaar nie.",
- "srv.lkcall.relayfail": "Kon nou nie 'n oproeppas van die AI-gile-oproepbediener kry nie. Probeer oor 'n minuut weer."
+ "srv.lkcall.relayfail": "Kon nou nie 'n oproeppas van die AI-gile-oproepbediener kry nie. Probeer oor 'n minuut weer.",
+ "srv.health.cpulong": "Die SVE was vir ongeveer {mins} minute bo {limit}%. Die 15-minuut-gemiddelde is {avg}%.",
+ "srv.health.cpurun": "Die SVE was vir ongeveer {mins} minute aaneen bo {limit}%."
 }

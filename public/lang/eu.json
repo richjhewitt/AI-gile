@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Aurreratua: erabili nire LiveKit zerbitzaria",
  "lkcall.set.own": "Zure LiveKit zerbitzaria erabiltzen da zure deietarako.",
  "srv.lkcall.off": "Deiak ez daude erabilgarri orain.",
- "srv.lkcall.relayfail": "Ezin izan da dei-baimenik lortu AI-gileren dei-zerbitzaritik orain. Saiatu berriro minutu batean."
+ "srv.lkcall.relayfail": "Ezin izan da dei-baimenik lortu AI-gileren dei-zerbitzaritik orain. Saiatu berriro minutu batean.",
+ "srv.health.cpulong": "PUZa orain dela {mins} minutu inguru dago %{limit} baino gainetik. Azken 15 minutuen batez bestekoa %{avg} da.",
+ "srv.health.cpurun": "PUZa {mins} minutu inguru jarraian dago %{limit} baino gainetik."
 }

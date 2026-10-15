@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Qoʻshimcha: oʻzimning LiveKit serverimdan foydalanish",
  "lkcall.set.own": "Qoʻngʻiroqlaringiz uchun oʻzingizning LiveKit serveringiz ishlatilmoqda.",
  "srv.lkcall.off": "Qoʻngʻiroqlar hozir mavjud emas.",
- "srv.lkcall.relayfail": "AI-gile qoʻngʻiroq serveridan hozir qoʻngʻiroq ruxsatnomasini olib boʻlmadi. Bir daqiqadan soʻng qayta urinib koʻring."
+ "srv.lkcall.relayfail": "AI-gile qoʻngʻiroq serveridan hozir qoʻngʻiroq ruxsatnomasini olib boʻlmadi. Bir daqiqadan soʻng qayta urinib koʻring.",
+ "srv.health.cpulong": "Protsessor taxminan {mins} daqiqadan beri {limit}% dan yuqori. Oxirgi 15 daqiqalik o'rtacha {avg}%.",
+ "srv.health.cpurun": "Protsessor taxminan {mins} daqiqa uzluksiz {limit}% dan yuqori."
 }

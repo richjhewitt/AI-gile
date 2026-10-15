@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Lisäasetukset: käytä omaa LiveKit-palvelintani",
  "lkcall.set.own": "Puheluissasi käytetään omaa LiveKit-palvelintasi.",
  "srv.lkcall.off": "Puhelut eivät ole nyt käytettävissä.",
- "srv.lkcall.relayfail": "Puhelulupaa ei saatu AI-gilen puhelupalvelimelta juuri nyt. Yritä minuutin päästä uudelleen."
+ "srv.lkcall.relayfail": "Puhelulupaa ei saatu AI-gilen puhelupalvelimelta juuri nyt. Yritä minuutin päästä uudelleen.",
+ "srv.health.cpulong": "Suoritin on ollut noin {mins} minuuttia yli {limit} %:n. 15 minuutin keskiarvo on {avg} %.",
+ "srv.health.cpurun": "Suoritin on ollut noin {mins} minuuttia yhtäjaksoisesti yli {limit} %:n."
 }

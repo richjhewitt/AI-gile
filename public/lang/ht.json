@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Avanse: sèvi ak pwòp sèvè LiveKit mwen",
  "lkcall.set.own": "Se pwòp sèvè LiveKit ou ki sèvi pou apèl ou yo.",
  "srv.lkcall.off": "Apèl yo pa disponib kounye a.",
- "srv.lkcall.relayfail": "Pa t ka jwenn yon pas apèl nan men sèvè apèl AI-gile a kounye a. Eseye ankò nan yon minit."
+ "srv.lkcall.relayfail": "Pa t ka jwenn yon pas apèl nan men sèvè apèl AI-gile a kounye a. Eseye ankò nan yon minit.",
+ "srv.health.cpulong": "CPU a ap pase {limit}% depi apeprè {mins} minit. Mwayèn 15 dènye minit yo se {avg}%.",
+ "srv.health.cpurun": "CPU a ap pase {limit}% depi apeprè {mins} minit san rete."
 }

@@ -3884,5 +3884,7 @@
  "lkcall.set.adv": "Furþor: brūc mīnne āgenne LiveKit-þēn",
  "lkcall.set.own": "Þīn āgen LiveKit-þēn bið ġebrūcen for þīnum clypungum.",
  "srv.lkcall.off": "Clypunga ne bēoþ nū nā.",
- "srv.lkcall.relayfail": "Ne mihte nū clypunge-lēafe fram AI-gile clypunge-þēne ġetan. Fand eft on ānre mīnūte."
+ "srv.lkcall.relayfail": "Ne mihte nū clypunge-lēafe fram AI-gile clypunge-þēne ġetan. Fand eft on ānre mīnūte.",
+ "srv.health.cpulong": "Seo CPU wæs ofer {limit}% ymb {mins} mynuta. Se fīftȳnmynuta gemiddel is {avg}%.",
+ "srv.health.cpurun": "Seo CPU wæs ofer {limit}% ymb {mins} mynuta on ānum."
 }

@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Mipangilio ya juu: tumia seva yangu ya LiveKit",
  "lkcall.set.own": "Seva yako ya LiveKit inatumika kwa simu zako.",
  "srv.lkcall.off": "Simu hazipatikani sasa hivi.",
- "srv.lkcall.relayfail": "Imeshindwa kupata pasi ya simu kutoka seva ya simu ya AI-gile kwa sasa. Jaribu tena baada ya dakika moja."
+ "srv.lkcall.relayfail": "Imeshindwa kupata pasi ya simu kutoka seva ya simu ya AI-gile kwa sasa. Jaribu tena baada ya dakika moja.",
+ "srv.health.cpulong": "CPU imekuwa juu ya {limit}% kwa takriban dakika {mins}. Wastani wa dakika 15 ni {avg}%.",
+ "srv.health.cpurun": "CPU imekuwa juu ya {limit}% kwa takriban dakika {mins} mfululizo."
 }

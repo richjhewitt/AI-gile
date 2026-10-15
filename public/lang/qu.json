@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Hatun yachaq: kikiy LiveKit servidorta llamk'achiy",
  "lkcall.set.own": "Waqyaykunaykipaq kikiyki LiveKit servidorllan llamk'achisqa.",
  "srv.lkcall.off": "Kunan manan waqyaykuna kanchu.",
- "srv.lkcall.relayfail": "Kunan manan AI-gilepa waqyay servidorninmanta waqyay pasuta chaskiyta atirqanchu. Huk minutu qhepaman huktawan ruray."
+ "srv.lkcall.relayfail": "Kunan manan AI-gilepa waqyay servidorninmanta waqyay pasuta chaskiyta atirqanchu. Huk minutu qhepaman huktawan ruray.",
+ "srv.health.cpulong": "CPU {limit}% manta aswan kachkan {mins} minutu hinanta. Qhipa 15 minutupa chawpin {avg}% kan.",
+ "srv.health.cpurun": "CPU {limit}% manta aswan kachkan {mins} minutu hinanta, mana tukukuspa."
 }

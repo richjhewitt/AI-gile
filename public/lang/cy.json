@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Uwch: defnyddio fy ngweinydd LiveKit fy hun",
  "lkcall.set.own": "Mae dy weinydd LiveKit dy hun yn cael ei ddefnyddio ar gyfer dy alwadau.",
  "srv.lkcall.off": "Dydy galwadau ddim ar gael ar hyn o bryd.",
- "srv.lkcall.relayfail": "Methwyd â chael tocyn galwad gan weinydd galwadau AI-gile ar hyn o bryd. Rho gynnig arni eto ymhen munud."
+ "srv.lkcall.relayfail": "Methwyd â chael tocyn galwad gan weinydd galwadau AI-gile ar hyn o bryd. Rho gynnig arni eto ymhen munud.",
+ "srv.health.cpulong": "Mae'r CPU wedi bod uwchlaw {limit}% am tua {mins} munud. Cyfartaledd y 15 munud diwethaf yw {avg}%.",
+ "srv.health.cpurun": "Mae'r CPU wedi bod uwchlaw {limit}% am tua {mins} munud yn olynol."
 }

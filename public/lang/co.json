@@ -3905,5 +3905,7 @@
  "lkcall.set.adv": "Avanzatu: usà u mo propiu servitore LiveKit",
  "lkcall.set.own": "U to propiu servitore LiveKit hè adupratu per e to chjamate.",
  "srv.lkcall.off": "E chjamate ùn sò micca dispunibule avà.",
- "srv.lkcall.relayfail": "Impussibule d'uttene un passu di chjamata da u servitore di chjamate di AI-gile avà. Ripruva trà un minutu."
+ "srv.lkcall.relayfail": "Impussibule d'uttene un passu di chjamata da u servitore di chjamate di AI-gile avà. Ripruva trà un minutu.",
+ "srv.health.cpulong": "U CPU hè sopra à {limit}% da circa {mins} minuti. A media di l'ultimi 15 minuti hè {avg}%.",
+ "srv.health.cpurun": "U CPU hè sopra à {limit}% da circa {mins} minuti di filata."
 }

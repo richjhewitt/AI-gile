@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Erweidert: mäin eegene LiveKit-Server benotzen",
  "lkcall.set.own": "Däin eegene LiveKit-Server gëtt fir deng Uriff benotzt.",
  "srv.lkcall.off": "Uriff sinn de Moment net verfügbar.",
- "srv.lkcall.relayfail": "Et konnt grad kee Uruff-Pass vum AI-gile-Server fir Uriff geholl ginn. Probéier et an enger Minutt nach eng Kéier."
+ "srv.lkcall.relayfail": "Et konnt grad kee Uruff-Pass vum AI-gile-Server fir Uriff geholl ginn. Probéier et an enger Minutt nach eng Kéier.",
+ "srv.health.cpulong": "De Prozessor ass scho ronn {mins} Minutten iwwer {limit}%. De Moyenne vun de leschte 15 Minutten ass {avg}%.",
+ "srv.health.cpurun": "De Prozessor ass scho ronn {mins} Minutten ouni Paus iwwer {limit}%."
 }

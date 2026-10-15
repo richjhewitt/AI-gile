@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Araokaet: implijout ma servijer LiveKit deiñ-me",
  "lkcall.set.own": "Ho servijer LiveKit deoc'h-c'hwi a vez implijet evit ho pellgomzadennoù.",
  "srv.lkcall.off": "N'eo ket hegerz ar pellgomzadennoù bremañ.",
- "srv.lkcall.relayfail": "N'eus ket bet tu da gaout ur pas pellgomzadenn diwar servijer pellgomzadennoù AI-gile bremañ. Klaskit en-dro a-benn ur vunutenn."
+ "srv.lkcall.relayfail": "N'eus ket bet tu da gaout ur pas pellgomzadenn diwar servijer pellgomzadennoù AI-gile bremañ. Klaskit en-dro a-benn ur vunutenn.",
+ "srv.health.cpulong": "Emañ ar CPU a-us da {limit}% abaoe {mins} munutenn bennak. {avg}% eo kreizad ar 15 munutenn diwezhañ.",
+ "srv.health.cpurun": "Emañ ar CPU a-us da {limit}% abaoe {mins} munutenn bennak hep paouez."
 }

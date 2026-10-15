@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Əlavə: öz LiveKit serverimdən istifadə et",
  "lkcall.set.own": "Zənglərin üçün öz LiveKit serverindən istifadə olunur.",
  "srv.lkcall.off": "Zənglər hazırda əlçatan deyil.",
- "srv.lkcall.relayfail": "AI-gile zəng serverindən indi zəng buraxılışı almaq olmadı. Bir dəqiqədən sonra yenidən yoxla."
+ "srv.lkcall.relayfail": "AI-gile zəng serverindən indi zəng buraxılışı almaq olmadı. Bir dəqiqədən sonra yenidən yoxla.",
+ "srv.health.cpulong": "Prosessor təxminən {mins} dəqiqədir {limit}%-dən yuxarıdır. 15 dəqiqəlik orta göstərici {avg}%-dir.",
+ "srv.health.cpurun": "Prosessor təxminən {mins} dəqiqə fasiləsiz {limit}%-dən yuxarı olub."
 }

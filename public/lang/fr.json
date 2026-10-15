@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Avancé : utiliser mon propre serveur LiveKit",
  "lkcall.set.own": "Ton propre serveur LiveKit est utilisé pour tes appels.",
  "srv.lkcall.off": "Les appels ne sont pas disponibles pour le moment.",
- "srv.lkcall.relayfail": "Impossible d'obtenir un laissez-passer d'appel auprès du serveur d'appels d'AI-gile pour l'instant. Réessaie dans une minute."
+ "srv.lkcall.relayfail": "Impossible d'obtenir un laissez-passer d'appel auprès du serveur d'appels d'AI-gile pour l'instant. Réessaie dans une minute.",
+ "srv.health.cpulong": "Le processeur dépasse {limit} % depuis environ {mins} minutes. La moyenne sur 15 minutes est de {avg} %.",
+ "srv.health.cpurun": "Le processeur dépasse {limit} % depuis environ {mins} minutes d'affilée."
 }

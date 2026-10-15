@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Ìlọsíwájú: lo sáfà LiveKit tèmi",
  "lkcall.set.own": "A ń lo sáfà LiveKit tìrẹ fún àwọn ìpè rẹ.",
  "srv.lkcall.off": "Àwọn ìpè kò sí báyìí.",
- "srv.lkcall.relayfail": "A kò rí ìwé ìwọlé ìpè gbà láti ọ̀dọ̀ sáfà ìpè AI-gile báyìí. Gbìyànjú lẹ́ẹ̀kan sí i ní ìṣẹ́jú kan."
+ "srv.lkcall.relayfail": "A kò rí ìwé ìwọlé ìpè gbà láti ọ̀dọ̀ sáfà ìpè AI-gile báyìí. Gbìyànjú lẹ́ẹ̀kan sí i ní ìṣẹ́jú kan.",
+ "srv.health.cpulong": "CPU ti ju {limit}% fún bí ìṣẹ́jú {mins}. Ìpíndọ́gba ìṣẹ́jú 15 ni {avg}%.",
+ "srv.health.cpurun": "CPU ti ju {limit}% fún bí ìṣẹ́jú {mins} láìdúró."
 }

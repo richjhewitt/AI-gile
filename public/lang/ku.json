@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Pêşketî: serverê xwe yê LiveKit bi kar bîne",
  "lkcall.set.own": "Ji bo bangên te serverê te yê LiveKit tê bikaranîn.",
  "srv.lkcall.off": "Bang niha ne berdest e.",
- "srv.lkcall.relayfail": "Niha nehat stendin derbasdariya bangê ji serverê bangan yê AI-gile. Piştî xulekekê dîsa biceribîne."
+ "srv.lkcall.relayfail": "Niha nehat stendin derbasdariya bangê ji serverê bangan yê AI-gile. Piştî xulekekê dîsa biceribîne.",
+ "srv.health.cpulong": "CPU nêzîkî {mins} deqeyan e ji %{limit} zêdetir e. Navînciya 15 deqeyên dawî %{avg} e.",
+ "srv.health.cpurun": "CPU nêzîkî {mins} deqeyan li pey hev ji %{limit} zêdetir e."
 }

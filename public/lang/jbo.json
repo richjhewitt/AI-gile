@@ -3875,5 +3875,7 @@
  "lkcall.set.adv": "mutce: mi pilno le mi ba'e LiveKit samcmu",
  "lkcall.set.own": "le do ba'e LiveKit samcmu cu se pilno fi le do fonxa.",
  "srv.lkcall.off": "le fonxa na ka'e pilno ca.",
- "srv.lkcall.relayfail": "mi na ka'e cpacu pa fonxa se jarco ne'i la AI-gile samcmu ca. ko ba troci ne'i pa mentu."
+ "srv.lkcall.relayfail": "mi na ka'e cpacu pa fonxa se jarco ne'i la AI-gile samcmu ca. ko ba troci ne'i pa mentu.",
+ "srv.health.cpulong": "le jvinu be lo skami cu zmadu li {limit} ze'a lo nanca be li {mins} mentu .i lo nacmei be li 15 mentu cu li {avg}",
+ "srv.health.cpurun": "le jvinu be lo skami cu zmadu li {limit} ze'a lo nanca be li {mins} mentu ba'o lo nu ca'o ri"
 }

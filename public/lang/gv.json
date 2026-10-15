@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Ard-eaynagh: ymmyd my server LiveKit hene",
  "lkcall.set.own": "Ta dty server LiveKit hene er ny ymmydey son dty ghlaaghyn.",
  "srv.lkcall.off": "Cha vel glaaghyn ry-gheddyn nish.",
- "srv.lkcall.relayfail": "Cha dod mayd geddyn pass glaa veih server glaa AI-gile nish. Gow dty hrial reesht ayns minnid."
+ "srv.lkcall.relayfail": "Cha dod mayd geddyn pass glaa veih server glaa AI-gile nish. Gow dty hrial reesht ayns minnid.",
+ "srv.health.cpulong": "Ta yn CPU harrish {limit}% rish mychione {mins} minnidyn. Ta {avg}% veanagh ny 15 minnidyn s'jerree.",
+ "srv.health.cpurun": "Ta yn CPU harrish {limit}% rish mychione {mins} minnidyn er-giarrey."
 }

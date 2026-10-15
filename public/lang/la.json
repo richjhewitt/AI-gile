@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Provectum: servidore meo LiveKit uti",
  "lkcall.set.own": "Tuus servidor LiveKit ad vocationes tuas adhibetur.",
  "srv.lkcall.off": "Vocationes nunc praesto non sunt.",
- "srv.lkcall.relayfail": "Tessera vocationis a servidore vocationum AI-gile nunc obtineri non potuit. Post minutum iterum conare."
+ "srv.lkcall.relayfail": "Tessera vocationis a servidore vocationum AI-gile nunc obtineri non potuit. Post minutum iterum conare.",
+ "srv.health.cpulong": "CPU supra {limit}% fuit per circiter {mins} minuta. Medium quindecim minutorum est {avg}%.",
+ "srv.health.cpurun": "CPU supra {limit}% fuit per circiter {mins} minuta continenter."
 }

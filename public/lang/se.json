@@ -3916,5 +3916,7 @@
  "lkcall.set.adv": "Viidáset: geavat iežan LiveKit-servera",
  "lkcall.set.own": "Du bálkkaid várás geavahuvvo du iežat LiveKit-server.",
  "srv.lkcall.off": "Bálkkat eai leat dál gávdnamis.",
- "srv.lkcall.relayfail": "Dál ii oaččuhan bálkepássa AI-gilen bálkeserveras. Geahččal minuhta geahčen fas."
+ "srv.lkcall.relayfail": "Dál ii oaččuhan bálkepássa AI-gilen bálkeserveras. Geahččal minuhta geahčen fas.",
+ "srv.health.cpulong": "Bargoeaddji lea leamaš badjel {limit}% likkadin {mins} minuhta. Maŋimuš 15 minuhta gaskamearri lea {avg}%.",
+ "srv.health.cpurun": "Bargoeaddji lea leamaš badjel {limit}% likkadin {mins} minuhta jotkkolaččat."
 }

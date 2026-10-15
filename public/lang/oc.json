@@ -3905,5 +3905,7 @@
  "lkcall.set.adv": "Avançat : utilizar mon pròpri servidor LiveKit",
  "lkcall.set.own": "Ton pròpri servidor LiveKit es utilizat per tos apèls.",
  "srv.lkcall.off": "Los apèls son pas disponibles pel moment.",
- "srv.lkcall.relayfail": "Pas pogut obténer un passa d'apèl del servidor d'apèls d'AI-gile pel moment. Tòrna ensajar d'aquí una minuta."
+ "srv.lkcall.relayfail": "Pas pogut obténer un passa d'apèl del servidor d'apèls d'AI-gile pel moment. Tòrna ensajar d'aquí una minuta.",
+ "srv.health.cpulong": "Lo CPU es a l'entorn de {mins} minutas al dessús de {limit} %. La mejana dels darrièrs 15 minutas es de {avg} %.",
+ "srv.health.cpurun": "Lo CPU es a l'entorn de {mins} minutas de seguida al dessús de {limit} %."
 }

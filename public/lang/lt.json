@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Papildomai: naudoti savo LiveKit serverį",
  "lkcall.set.own": "Tavo skambučiams naudojamas tavo paties LiveKit serveris.",
  "srv.lkcall.off": "Skambučiai šiuo metu nepasiekiami.",
- "srv.lkcall.relayfail": "Šiuo metu nepavyko gauti skambučio leidimo iš AI-gile skambučių serverio. Pabandyk po minutės."
+ "srv.lkcall.relayfail": "Šiuo metu nepavyko gauti skambučio leidimo iš AI-gile skambučių serverio. Pabandyk po minutės.",
+ "srv.health.cpulong": "Procesorius jau apie {mins} min. viršija {limit} %. Paskutinių 15 minučių vidurkis yra {avg} %.",
+ "srv.health.cpurun": "Procesorius jau apie {mins} min. iš eilės viršija {limit} %."
 }

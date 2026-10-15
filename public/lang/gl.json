@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Avanzado: usar o meu propio servidor LiveKit",
  "lkcall.set.own": "Para as túas chamadas úsase o teu propio servidor LiveKit.",
  "srv.lkcall.off": "As chamadas non están dispoñibles agora mesmo.",
- "srv.lkcall.relayfail": "Agora mesmo non se puido obter un pase de chamada do servidor de chamadas de AI-gile. Téntao de novo nun minuto."
+ "srv.lkcall.relayfail": "Agora mesmo non se puido obter un pase de chamada do servidor de chamadas de AI-gile. Téntao de novo nun minuto.",
+ "srv.health.cpulong": "A CPU leva uns {mins} minutos por riba do {limit} %. A media dos últimos 15 minutos é do {avg} %.",
+ "srv.health.cpurun": "A CPU leva uns {mins} minutos seguidos por riba do {limit} %."
 }

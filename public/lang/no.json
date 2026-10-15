@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Avansert: bruk min egen LiveKit-server",
  "lkcall.set.own": "Din egen LiveKit-server brukes til samtalene dine.",
  "srv.lkcall.off": "Samtaler er ikke tilgjengelige akkurat nå.",
- "srv.lkcall.relayfail": "Fikk ikke et samtalepass fra AI-giles samtaleserver akkurat nå. Prøv igjen om et minutt."
+ "srv.lkcall.relayfail": "Fikk ikke et samtalepass fra AI-giles samtaleserver akkurat nå. Prøv igjen om et minutt.",
+ "srv.health.cpulong": "CPU-en har vært over {limit} % i omtrent {mins} minutter. Gjennomsnittet for de siste 15 minuttene er {avg} %.",
+ "srv.health.cpurun": "CPU-en har vært over {limit} % i omtrent {mins} minutter på rad."
 }

@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Avancerat: använd min egen LiveKit-server",
  "lkcall.set.own": "Din egen LiveKit-server används för dina samtal.",
  "srv.lkcall.off": "Samtal är inte tillgängliga just nu.",
- "srv.lkcall.relayfail": "Kunde inte få en samtalspassering från AI-giles samtalsserver just nu. Försök igen om en minut."
+ "srv.lkcall.relayfail": "Kunde inte få en samtalspassering från AI-giles samtalsserver just nu. Försök igen om en minut.",
+ "srv.health.cpulong": "Processorn har legat över {limit} % i ungefär {mins} minuter. Genomsnittet för de senaste 15 minuterna är {avg} %.",
+ "srv.health.cpurun": "Processorn har legat över {limit} % i ungefär {mins} minuter i sträck."
 }

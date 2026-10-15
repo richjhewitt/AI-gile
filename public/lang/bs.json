@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Napredno: koristi moj vlastiti LiveKit server",
  "lkcall.set.own": "Za tvoje pozive koristi se tvoj vlastiti LiveKit server.",
  "srv.lkcall.off": "Pozivi trenutno nisu dostupni.",
- "srv.lkcall.relayfail": "Trenutno nije moguće dobiti propusnicu za poziv sa AI-gileovog servera za pozive. Pokušaj ponovo za minut."
+ "srv.lkcall.relayfail": "Trenutno nije moguće dobiti propusnicu za poziv sa AI-gileovog servera za pozive. Pokušaj ponovo za minut.",
+ "srv.health.cpulong": "Procesor je iznad {limit}% oko {mins} minuta. Prosjek zadnjih 15 minuta je {avg}%.",
+ "srv.health.cpurun": "Procesor je iznad {limit}% oko {mins} minuta zaredom."
 }

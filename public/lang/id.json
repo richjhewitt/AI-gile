@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Lanjutan: pakai server LiveKit-ku sendiri",
  "lkcall.set.own": "Server LiveKit-mu sendiri dipakai untuk panggilanmu.",
  "srv.lkcall.off": "Panggilan belum tersedia saat ini.",
- "srv.lkcall.relayfail": "Belum bisa mendapatkan tiket panggilan dari server panggilan AI-gile. Coba lagi sebentar lagi."
+ "srv.lkcall.relayfail": "Belum bisa mendapatkan tiket panggilan dari server panggilan AI-gile. Coba lagi sebentar lagi.",
+ "srv.health.cpulong": "CPU berada di atas {limit}% selama sekitar {mins} menit. Rata-rata 15 menit terakhir adalah {avg}%.",
+ "srv.health.cpurun": "CPU berada di atas {limit}% selama sekitar {mins} menit berturut-turut."
 }

@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Kiʻekiʻe: e hoʻohana i kaʻu kikowaena LiveKit ponoʻī",
  "lkcall.set.own": "Hoʻohana ʻia kāu kikowaena LiveKit ponoʻī no kāu mau kelepona.",
  "srv.lkcall.off": "ʻAʻole loaʻa nā kelepona i kēia manawa.",
- "srv.lkcall.relayfail": "ʻAʻole i loaʻa kahi ʻae kelepona mai ke kikowaena kelepona o AI-gile i kēia manawa. E hoʻāʻo hou i hoʻokahi minuke."
+ "srv.lkcall.relayfail": "ʻAʻole i loaʻa kahi ʻae kelepona mai ke kikowaena kelepona o AI-gile i kēia manawa. E hoʻāʻo hou i hoʻokahi minuke.",
+ "srv.health.cpulong": "Ua ʻoi aku ka CPU ma mua o ka {limit}% no nā minuke ma kahi o {mins}. ʻO ka awelika o nā minuke he 15, ʻo ia ka {avg}%.",
+ "srv.health.cpurun": "Ua ʻoi aku ka CPU ma mua o ka {limit}% no nā minuke ma kahi o {mins} me ka hoʻōki ʻole."
 }

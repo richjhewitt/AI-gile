@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Zaawansowane: użyj mojego własnego serwera LiveKit",
  "lkcall.set.own": "Do Twoich połączeń używany jest Twój własny serwer LiveKit.",
  "srv.lkcall.off": "Połączenia nie są teraz dostępne.",
- "srv.lkcall.relayfail": "Nie udało się teraz uzyskać przepustki do połączenia z serwera połączeń AI-gile. Spróbuj ponownie za minutę."
+ "srv.lkcall.relayfail": "Nie udało się teraz uzyskać przepustki do połączenia z serwera połączeń AI-gile. Spróbuj ponownie za minutę.",
+ "srv.health.cpulong": "Procesor jest powyżej {limit}% od około {mins} minut. Średnia z ostatnich 15 minut to {avg}%.",
+ "srv.health.cpurun": "Procesor jest powyżej {limit}% od około {mins} minut z rzędu."
 }

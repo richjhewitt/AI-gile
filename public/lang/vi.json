@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Nâng cao: dùng máy chủ LiveKit của tôi",
  "lkcall.set.own": "Cuộc gọi của bạn đang dùng máy chủ LiveKit của riêng bạn.",
  "srv.lkcall.off": "Hiện chưa gọi được.",
- "srv.lkcall.relayfail": "Hiện chưa lấy được vé cuộc gọi từ máy chủ cuộc gọi của AI-gile. Hãy thử lại sau một phút."
+ "srv.lkcall.relayfail": "Hiện chưa lấy được vé cuộc gọi từ máy chủ cuộc gọi của AI-gile. Hãy thử lại sau một phút.",
+ "srv.health.cpulong": "CPU đã vượt {limit}% khoảng {mins} phút. Trung bình 15 phút gần nhất là {avg}%.",
+ "srv.health.cpurun": "CPU đã vượt {limit}% liên tục khoảng {mins} phút."
 }

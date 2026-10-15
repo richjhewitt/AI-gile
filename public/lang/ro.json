@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Avansat: folosește propriul meu server LiveKit",
  "lkcall.set.own": "Pentru apelurile tale se folosește propriul tău server LiveKit.",
  "srv.lkcall.off": "Apelurile nu sunt disponibile acum.",
- "srv.lkcall.relayfail": "Nu am putut obține o permisiune de apel de la serverul de apeluri AI-gile chiar acum. Mai încearcă peste un minut."
+ "srv.lkcall.relayfail": "Nu am putut obține o permisiune de apel de la serverul de apeluri AI-gile chiar acum. Mai încearcă peste un minut.",
+ "srv.health.cpulong": "Procesorul este peste {limit}% de aproximativ {mins} minute. Media ultimelor 15 minute este {avg}%.",
+ "srv.health.cpurun": "Procesorul este peste {limit}% de aproximativ {mins} minute la rând."
 }

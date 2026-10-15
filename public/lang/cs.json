@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Pokročilé: použít můj vlastní server LiveKit",
  "lkcall.set.own": "Pro tvé hovory se používá tvůj vlastní server LiveKit.",
  "srv.lkcall.off": "Hovory teď nejsou dostupné.",
- "srv.lkcall.relayfail": "Z hovorového serveru AI-gile se teď nepodařilo získat propustku k hovoru. Zkus to za minutu."
+ "srv.lkcall.relayfail": "Z hovorového serveru AI-gile se teď nepodařilo získat propustku k hovoru. Zkus to za minutu.",
+ "srv.health.cpulong": "Procesor je přibližně {mins} minut nad {limit} %. Průměr za posledních 15 minut je {avg} %.",
+ "srv.health.cpurun": "Procesor je přibližně {mins} minut v kuse nad {limit} %."
 }

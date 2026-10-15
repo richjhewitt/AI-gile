@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Casta: úsáid mo fhreastalaí LiveKit féin",
  "lkcall.set.own": "Úsáidtear do fhreastalaí LiveKit féin do do ghlaonna.",
  "srv.lkcall.off": "Níl glaonna ar fáil faoi láthair.",
- "srv.lkcall.relayfail": "Níorbh fhéidir pas glaoigh a fháil ó fhreastalaí glaonna AI-gile díreach anois. Bain triail eile as i gceann nóiméid."
+ "srv.lkcall.relayfail": "Níorbh fhéidir pas glaoigh a fháil ó fhreastalaí glaonna AI-gile díreach anois. Bain triail eile as i gceann nóiméid.",
+ "srv.health.cpulong": "Tá an LAP os cionn {limit}% le thart ar {mins} nóiméad. Is é {avg}% meán na 15 nóiméad seo caite.",
+ "srv.health.cpurun": "Tá an LAP os cionn {limit}% le thart ar {mins} nóiméad as a chéile."
 }

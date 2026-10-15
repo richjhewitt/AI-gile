@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Napredno: uporabi moj strežnik LiveKit",
  "lkcall.set.own": "Za tvoje klice se uporablja tvoj strežnik LiveKit.",
  "srv.lkcall.off": "Klici trenutno niso na voljo.",
- "srv.lkcall.relayfail": "Od AI-gilovega strežnika za klice zdaj ni bilo mogoče dobiti prepustnice za klic. Poskusi znova čez minuto."
+ "srv.lkcall.relayfail": "Od AI-gilovega strežnika za klice zdaj ni bilo mogoče dobiti prepustnice za klic. Poskusi znova čez minuto.",
+ "srv.health.cpulong": "Procesor je približno {mins} minut nad {limit} %. Povprečje zadnjih 15 minut je {avg} %.",
+ "srv.health.cpurun": "Procesor je približno {mins} minut zapored nad {limit} %."
 }

@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "詳細設定: 自分のLiveKitサーバーを使う",
  "lkcall.set.own": "通話には、あなた自身のLiveKitサーバーが使われます。",
  "srv.lkcall.off": "いま通話は利用できません。",
- "srv.lkcall.relayfail": "いまAI-gileの通話サーバーから通話パスを取得できませんでした。1分後にもう一度試してください。"
+ "srv.lkcall.relayfail": "いまAI-gileの通話サーバーから通話パスを取得できませんでした。1分後にもう一度試してください。",
+ "srv.health.cpulong": "CPUが約{mins}分間、{limit}%を超えています。直近15分の平均は{avg}%です。",
+ "srv.health.cpurun": "CPUが約{mins}分間連続で{limit}%を超えています。"
 }

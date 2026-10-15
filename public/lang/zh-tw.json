@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "進階：使用我自己的 LiveKit 伺服器",
  "lkcall.set.own": "你的通話使用你自己的 LiveKit 伺服器。",
  "srv.lkcall.off": "通話暫時無法使用。",
- "srv.lkcall.relayfail": "暫時無法從 AI-gile 通話伺服器取得通話憑證。請一分鐘後再試。"
+ "srv.lkcall.relayfail": "暫時無法從 AI-gile 通話伺服器取得通話憑證。請一分鐘後再試。",
+ "srv.health.cpulong": "CPU 已超過 {limit}% 約 {mins} 分鐘。最近 15 分鐘的平均值是 {avg}%。",
+ "srv.health.cpurun": "CPU 已連續超過 {limit}% 約 {mins} 分鐘。"
 }

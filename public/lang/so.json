@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Horumarsan: isticmaal LiveKit server-kayga",
  "lkcall.set.own": "LiveKit server-kaaga ayaa loo isticmaalaa wicitaannadaada.",
  "srv.lkcall.off": "Wicitaannadu hadda ma diyaarna.",
- "srv.lkcall.relayfail": "Hadda laguma helin ogolaansho wicitaan server-ka wicitaanka ee AI-gile. Mar dambe isku day daqiiqad ka dib."
+ "srv.lkcall.relayfail": "Hadda laguma helin ogolaansho wicitaan server-ka wicitaanka ee AI-gile. Mar dambe isku day daqiiqad ka dib.",
+ "srv.health.cpulong": "CPU-gu wuxuu ka sarreeyay {limit}% qiyaastii {mins} daqiiqo. Celceliska 15-kii daqiiqo ee u dambeeyay waa {avg}%.",
+ "srv.health.cpurun": "CPU-gu wuxuu ka sarreeyay {limit}% qiyaastii {mins} daqiiqo oo isku xigta."
 }

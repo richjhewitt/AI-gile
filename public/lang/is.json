@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Ítarlegt: nota minn eigin LiveKit-þjón",
  "lkcall.set.own": "Þinn eigin LiveKit-þjónn er notaður fyrir símtölin þín.",
  "srv.lkcall.off": "Símtöl eru ekki í boði núna.",
- "srv.lkcall.relayfail": "Tókst ekki að fá símtalapassa frá símtalaþjóni AI-gile núna. Reyndu aftur eftir mínútu."
+ "srv.lkcall.relayfail": "Tókst ekki að fá símtalapassa frá símtalaþjóni AI-gile núna. Reyndu aftur eftir mínútu.",
+ "srv.health.cpulong": "Örgjörvinn hefur verið yfir {limit}% í um {mins} mínútur. Meðaltal síðustu 15 mínútna er {avg}%.",
+ "srv.health.cpurun": "Örgjörvinn hefur verið yfir {limit}% í um {mins} mínútur samfleytt."
 }

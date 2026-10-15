@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Okuthuthukile: sebenzisa iseva yami ye-LiveKit",
  "lkcall.set.own": "Iseva yakho ye-LiveKit isetshenziswa emakholini akho.",
  "srv.lkcall.off": "Amakholi awatholakali okwamanje.",
- "srv.lkcall.relayfail": "Asikwazanga ukuthola ipasi lekholi kuseva yamakholi ye-AI-gile khona manje. Zama futhi ngomzuzu."
+ "srv.lkcall.relayfail": "Asikwazanga ukuthola ipasi lekholi kuseva yamakholi ye-AI-gile khona manje. Zama futhi ngomzuzu.",
+ "srv.health.cpulong": "I-CPU isingaphezu kuka-{limit}% cishe imizuzu engu-{mins}. Isilinganiso semizuzu eyi-15 singu-{avg}%.",
+ "srv.health.cpurun": "I-CPU isingaphezu kuka-{limit}% cishe imizuzu engu-{mins} ilandelana."
 }

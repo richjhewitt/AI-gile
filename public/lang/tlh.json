@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Advanced: use my own LiveKit server",
  "lkcall.set.own": "Your own LiveKit server is used for your calls.",
  "srv.lkcall.off": "Calls are not available right now.",
- "srv.lkcall.relayfail": "Could not get a call pass from the AI-gile call server just now. Try again in a minute."
+ "srv.lkcall.relayfail": "Could not get a call pass from the AI-gile call server just now. Try again in a minute.",
+ "srv.health.cpulong": "QeH vaS {limit}% ghaH CPU. {mins} tup. 15 tup 'avwI' ghaH {avg}%.",
+ "srv.health.cpurun": "QeH vaS {limit}% ghaH CPU. {mins} tup, bIyeD pagh."
 }

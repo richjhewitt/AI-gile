@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Gelişmiş: kendi LiveKit sunucumu kullan",
  "lkcall.set.own": "Aramaların için kendi LiveKit sunucun kullanılıyor.",
  "srv.lkcall.off": "Aramalar şu an kullanılamıyor.",
- "srv.lkcall.relayfail": "AI-gile arama sunucusundan şu an bir arama bileti alınamadı. Bir dakika sonra tekrar dene."
+ "srv.lkcall.relayfail": "AI-gile arama sunucusundan şu an bir arama bileti alınamadı. Bir dakika sonra tekrar dene.",
+ "srv.health.cpulong": "İşlemci yaklaşık {mins} dakikadır %{limit} üzerinde. Son 15 dakikanın ortalaması %{avg}.",
+ "srv.health.cpurun": "İşlemci yaklaşık {mins} dakikadır aralıksız %{limit} üzerinde."
 }

@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Erweitert: meinen eigenen LiveKit-Server nutzen",
  "lkcall.set.own": "Für deine Anrufe wird dein eigener LiveKit-Server genutzt.",
  "srv.lkcall.off": "Anrufe sind gerade nicht verfügbar.",
- "srv.lkcall.relayfail": "Vom AI-gile-Anrufserver konnte gerade kein Anrufpass geholt werden. Versuch es in einer Minute noch einmal."
+ "srv.lkcall.relayfail": "Vom AI-gile-Anrufserver konnte gerade kein Anrufpass geholt werden. Versuch es in einer Minute noch einmal.",
+ "srv.health.cpulong": "Die CPU liegt seit etwa {mins} Minuten über {limit} %. Der Durchschnitt der letzten 15 Minuten beträgt {avg} %.",
+ "srv.health.cpurun": "Die CPU liegt seit etwa {mins} Minuten ohne Pause über {limit} %."
 }

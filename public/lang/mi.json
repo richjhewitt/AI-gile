@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Matatau: whakamahia taku ake tūmau LiveKit",
  "lkcall.set.own": "Ka whakamahia tō ake tūmau LiveKit mō ō waea.",
  "srv.lkcall.off": "Kāore e wātea ngā waea i tēnei wā.",
- "srv.lkcall.relayfail": "Kāore i taea te tiki i tētahi tikiti waea mai i te tūmau waea a AI-gile i tēnei wā. Whakamātauria anō i muri i te meneti kotahi."
+ "srv.lkcall.relayfail": "Kāore i taea te tiki i tētahi tikiti waea mai i te tūmau waea a AI-gile i tēnei wā. Whakamātauria anō i muri i te meneti kotahi.",
+ "srv.health.cpulong": "Kua neke ake te CPU i te {limit}% mō te {mins} meneti tata atu. Ko te toharite 15 meneti ko {avg}%.",
+ "srv.health.cpurun": "Kua neke ake te CPU i te {limit}% mō te {mins} meneti tata atu, kāore i whakamutu."
 }

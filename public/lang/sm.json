@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Faʻaleleia: faaaoga laʻu lava server LiveKit",
  "lkcall.set.own": "O lau lava server LiveKit e faaaogaina mo au valaʻau.",
  "srv.lkcall.off": "E le o avanoa nei valaʻau.",
- "srv.lkcall.relayfail": "E leʻi mafai ona maua se pasi valaʻau mai le server valaʻau a AI-gile i le taimi nei. Toe taumafai i se minute."
+ "srv.lkcall.relayfail": "E leʻi mafai ona maua se pasi valaʻau mai le server valaʻau a AI-gile i le taimi nei. Toe taumafai i se minute.",
+ "srv.health.cpulong": "Ua sili le CPU i le {limit}% mo le tusa ma le {mins} minute. O le averesi o minute e 15 e {avg}%.",
+ "srv.health.cpurun": "Ua sili le CPU i le {limit}% mo le tusa ma le {mins} minute e le tutupu."
 }

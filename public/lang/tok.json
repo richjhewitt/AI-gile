@@ -3884,5 +3884,7 @@
  "lkcall.set.adv": "nasin wawa: mi wile kepeken ilo LiveKit mi",
  "lkcall.set.own": "ilo LiveKit sina li kepeken lon toki kalama sina.",
  "srv.lkcall.off": "toki kalama li lon ala tenpo ni.",
- "srv.lkcall.relayfail": "mi ken ala jo e lipu ken tan ilo toki kalama pi AI-gile tenpo ni. o pali sin lon tenpo lili."
+ "srv.lkcall.relayfail": "mi ken ala jo e lipu ken tan ilo toki kalama pi AI-gile tenpo ni. o pali sin lon tenpo lili.",
+ "srv.health.cpulong": "ilo sona li suli mute pi {limit}% lon tenpo mun {mins}. suli pi tenpo mun 15 li {avg}%.",
+ "srv.health.cpurun": "ilo sona li suli mute pi {limit}% lon tenpo mun {mins} la tenpo ale."
 }

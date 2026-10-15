@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "የላቀ፦ የራሴን LiveKit አገልጋይ ተጠቀም",
  "lkcall.set.own": "ለጥሪዎችዎ የራስዎ LiveKit አገልጋይ ጥቅም ላይ ውሏል።",
  "srv.lkcall.off": "ጥሪዎች አሁን አይገኙም።",
- "srv.lkcall.relayfail": "ከ AI-gile የጥሪ አገልጋይ የጥሪ ማለፊያ አሁን ማግኘት አልተቻለም። ከአንድ ደቂቃ በኋላ እንደገና ይሞክሩ።"
+ "srv.lkcall.relayfail": "ከ AI-gile የጥሪ አገልጋይ የጥሪ ማለፊያ አሁን ማግኘት አልተቻለም። ከአንድ ደቂቃ በኋላ እንደገና ይሞክሩ።",
+ "srv.health.cpulong": "ሲፒዩ ለ{mins} ደቂቃ ያህል ከ{limit}% በላይ ነበር። የ15 ደቂቃ አማካይ {avg}% ነው።",
+ "srv.health.cpurun": "ሲፒዩ ለ{mins} ደቂቃ ያህል ያለማቋረጥ ከ{limit}% በላይ ነበር።"
 }

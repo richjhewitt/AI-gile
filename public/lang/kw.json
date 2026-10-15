@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Avonsys: usya ow servyer LiveKit ow honan",
  "lkcall.set.own": "Dha servyer LiveKit dha honan yw usys rag dha alwow.",
  "srv.lkcall.off": "Galvow nyns yns kavadow lemmyn.",
- "srv.lkcall.relayfail": "Ny yllyn kavos tykket galow dhyworth servyer galvow AI-gile lemmyn. Assay arta a-dro dhe unn mynysenn."
+ "srv.lkcall.relayfail": "Ny yllyn kavos tykket galow dhyworth servyer galvow AI-gile lemmyn. Assay arta a-dro dhe unn mynysenn.",
+ "srv.health.cpulong": "An CPU re beu a-ugh {limit}% rag in-dro dhe {mins} mynysenn. An keskekk a 15 mynysenn dhe-dhiwedhes yw {avg}%.",
+ "srv.health.cpurun": "An CPU re beu a-ugh {limit}% rag in-dro dhe {mins} mynysenn heb hedhi."
 }

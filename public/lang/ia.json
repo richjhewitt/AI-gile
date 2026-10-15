@@ -3905,5 +3905,7 @@
  "lkcall.set.adv": "Avantiate: usar mi proprie servitor LiveKit",
  "lkcall.set.own": "Tu proprie servitor LiveKit es usate pro tu appellos.",
  "srv.lkcall.off": "Le appellos non es disponibile ora.",
- "srv.lkcall.relayfail": "Non poteva obtener un passa de appello ab le servitor de appellos de AI-gile in iste momento. Retenta post un minuta."
+ "srv.lkcall.relayfail": "Non poteva obtener un passa de appello ab le servitor de appellos de AI-gile in iste momento. Retenta post un minuta.",
+ "srv.health.cpulong": "Le CPU es super {limit}% depost circa {mins} minutas. Le media del ultime 15 minutas es {avg}%.",
+ "srv.health.cpurun": "Le CPU es super {limit}% depost circa {mins} minutas consecutive."
 }

@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Na ci gaba: yi amfani da sabar LiveKit ta kaina",
  "lkcall.set.own": "Ana amfani da sabar LiveKit ɗinku don kiranku.",
  "srv.lkcall.off": "Kira ba ya samuwa yanzu.",
- "srv.lkcall.relayfail": "Ba a samu izinin kira daga sabar kira ta AI-gile yanzu ba. Ku sake gwadawa nan da minti ɗaya."
+ "srv.lkcall.relayfail": "Ba a samu izinin kira daga sabar kira ta AI-gile yanzu ba. Ku sake gwadawa nan da minti ɗaya.",
+ "srv.health.cpulong": "CPU ya wuce {limit}% na kusan mintuna {mins}. Matsakaicin mintuna 15 shi ne {avg}%.",
+ "srv.health.cpurun": "CPU ya wuce {limit}% na kusan mintuna {mins} a jere."
 }

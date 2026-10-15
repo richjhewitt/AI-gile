@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Avvanzat: uża s-server LiveKit tiegħi",
  "lkcall.set.own": "Is-server LiveKit tiegħek jintuża għas-sejħiet tiegħek.",
  "srv.lkcall.off": "Is-sejħiet mhumiex disponibbli bħalissa.",
- "srv.lkcall.relayfail": "Ma ġiex miksub pass tas-sejħa mis-server tas-sejħiet ta' AI-gile bħalissa. Erġa' pprova f'minuta."
+ "srv.lkcall.relayfail": "Ma ġiex miksub pass tas-sejħa mis-server tas-sejħiet ta' AI-gile bħalissa. Erġa' pprova f'minuta.",
+ "srv.health.cpulong": "Is-CPU kien fuq minn {limit}% għal madwar {mins} minuti. Il-medja tal-aħħar 15-il minuta hija {avg}%.",
+ "srv.health.cpurun": "Is-CPU kien fuq minn {limit}% għal madwar {mins} minuti wara xulxin."
 }

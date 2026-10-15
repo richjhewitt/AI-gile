@@ -3904,5 +3904,7 @@
  "lkcall.set.adv": "Papildu: izmantot manu LiveKit serveri",
  "lkcall.set.own": "Tavu zvanu veikšanai tiek izmantots tavs LiveKit serveris.",
  "srv.lkcall.off": "Zvani šobrīd nav pieejami.",
- "srv.lkcall.relayfail": "Šobrīd neizdevās iegūt zvana caurlaidi no AI-gile zvanu servera. Mēģini pēc minūtes."
+ "srv.lkcall.relayfail": "Šobrīd neizdevās iegūt zvana caurlaidi no AI-gile zvanu servera. Mēģini pēc minūtes.",
+ "srv.health.cpulong": "Procesors jau apmēram {mins} minūtes pārsniedz {limit}%. Pēdējo 15 minūšu vidējais rādītājs ir {avg}%.",
+ "srv.health.cpurun": "Procesors jau apmēram {mins} minūtes pēc kārtas pārsniedz {limit}%."
 }

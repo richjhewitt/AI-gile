@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Lanjutan: guna pelayan LiveKit saya sendiri",
  "lkcall.set.own": "Pelayan LiveKit anda sendiri digunakan untuk panggilan anda.",
  "srv.lkcall.off": "Panggilan tidak tersedia sekarang.",
- "srv.lkcall.relayfail": "Tidak dapat mendapatkan pas panggilan daripada pelayan panggilan AI-gile sekarang. Cuba lagi dalam seminit."
+ "srv.lkcall.relayfail": "Tidak dapat mendapatkan pas panggilan daripada pelayan panggilan AI-gile sekarang. Cuba lagi dalam seminit.",
+ "srv.health.cpulong": "CPU telah melebihi {limit}% selama kira-kira {mins} minit. Purata 15 minit ialah {avg}%.",
+ "srv.health.cpurun": "CPU telah melebihi {limit}% selama kira-kira {mins} minit berturut-turut."
 }

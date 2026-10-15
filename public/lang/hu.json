@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Haladó: saját LiveKit-szervert használok",
  "lkcall.set.own": "A hívásaidhoz a saját LiveKit-szervered szolgál.",
  "srv.lkcall.off": "A hívások most nem érhetők el.",
- "srv.lkcall.relayfail": "Most nem sikerült hívásjegyet kérni az AI-gile hívásszerverétől. Próbáld újra egy perc múlva."
+ "srv.lkcall.relayfail": "Most nem sikerült hívásjegyet kérni az AI-gile hívásszerverétől. Próbáld újra egy perc múlva.",
+ "srv.health.cpulong": "A processzor körülbelül {mins} perce {limit}% fölött van. Az utolsó 15 perc átlaga {avg}%.",
+ "srv.health.cpurun": "A processzor körülbelül {mins} perce megszakítás nélkül {limit}% fölött van."
 }

@@ -3905,5 +3905,7 @@
  "lkcall.set.adv": "Víðkað: brúka mín egna LiveKit-ambætara",
  "lkcall.set.own": "Tín egni LiveKit-ambætari verður brúktur til tínar samrøður.",
  "srv.lkcall.off": "Samrøður eru ikki tøkar júst nú.",
- "srv.lkcall.relayfail": "Fekk ikki eitt samrøðuloyvi frá samrøðuambætaranum hjá AI-gile júst nú. Royn aftur um eina minutt."
+ "srv.lkcall.relayfail": "Fekk ikki eitt samrøðuloyvi frá samrøðuambætaranum hjá AI-gile júst nú. Royn aftur um eina minutt.",
+ "srv.health.cpulong": "CPU'in hevur verið omanfyri {limit}% í umleið {mins} minuttir. Miðaltalið seinastu 15 minuttirnar er {avg}%.",
+ "srv.health.cpurun": "CPU'in hevur verið omanfyri {limit}% í umleið {mins} minuttir á rað."
 }

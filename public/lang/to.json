@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Fakaʻatā: ngāueʻaki hoku sēvā LiveKit",
  "lkcall.set.own": "ʻOku ngāueʻaki hoʻo sēvā LiveKit maʻa hoʻo ngaahi ui.",
  "srv.lkcall.off": "ʻIkai lava ʻa e ngaahi ui he taimi ni.",
- "srv.lkcall.relayfail": "Naʻe ʻikai lava ke maʻu ha fakamafai ui mei he sēvā ui ʻa e AI-gile he taimi ni. Feinga ʻo toe hili ha miniti."
+ "srv.lkcall.relayfail": "Naʻe ʻikai lava ke maʻu ha fakamafai ui mei he sēvā ui ʻa e AI-gile he taimi ni. Feinga ʻo toe hili ha miniti.",
+ "srv.health.cpulong": "Kuo ʻi ai e CPU ʻi ʻolunga ʻi he {limit}% ʻi he miniti ʻe {mins} nai. Ko e awesi ʻo e miniti ʻe 15 ko e {avg}%.",
+ "srv.health.cpurun": "Kuo ʻi ai e CPU ʻi ʻolunga ʻi he {limit}% ʻi he miniti ʻe {mins} nai ʻo ʻikai tuku."
 }

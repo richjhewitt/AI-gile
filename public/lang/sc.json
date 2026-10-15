@@ -3905,5 +3905,7 @@
  "lkcall.set.adv": "Avantzadu: imprea su servidore LiveKit meu",
  "lkcall.set.own": "Pro sas cramadas tuas s'impreat su servidore LiveKit tuo.",
  "srv.lkcall.off": "Sas cramadas no sunt a disponimentu como.",
- "srv.lkcall.relayfail": "No amus otentu unu passe de cramada dae su servidore de cramadas de AI-gile como. Torra a proare in unu minutu."
+ "srv.lkcall.relayfail": "No amus otentu unu passe de cramada dae su servidore de cramadas de AI-gile como. Torra a proare in unu minutu.",
+ "srv.health.cpulong": "Su CPU est subra de su {limit}% dae a pagu prus {mins} minutos. Sa media de sos ùrtimos 15 minutos est {avg}%.",
+ "srv.health.cpurun": "Su CPU est subra de su {limit}% dae a pagu prus {mins} minutos de sighida."
 }

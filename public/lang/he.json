@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "מתקדם: להשתמש בשרת LiveKit שלי",
  "lkcall.set.own": "שרת LiveKit שלכם משמש לשיחות שלכם.",
  "srv.lkcall.off": "שיחות לא זמינות כרגע.",
- "srv.lkcall.relayfail": "לא הצלחנו כרגע לקבל כרטיס כניסה לשיחה משרת השיחות של AI-gile. נסו שוב בעוד דקה."
+ "srv.lkcall.relayfail": "לא הצלחנו כרגע לקבל כרטיס כניסה לשיחה משרת השיחות של AI-gile. נסו שוב בעוד דקה.",
+ "srv.health.cpulong": "המעבד עובר את {limit}% כבר כ-{mins} דקות. הממוצע ל-15 הדקות האחרונות הוא {avg}%.",
+ "srv.health.cpurun": "המעבד עובר את {limit}% כבר כ-{mins} דקות ברצף."
 }

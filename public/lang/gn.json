@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Advanzado: aiporu che LiveKit servidor",
  "lkcall.set.own": "Nde LiveKit servidor ojeporu nde ñehenói-rã.",
  "srv.lkcall.off": "Umi ñehenói ndaipóri ko'ágã.",
- "srv.lkcall.relayfail": "Ko'ágã ndaikatúi ojehupyty peteĩ pase ñehenói AI-gile servidor-gui. Eha'ã jey peteĩ minuto rire."
+ "srv.lkcall.relayfail": "Ko'ágã ndaikatúi ojehupyty peteĩ pase ñehenói AI-gile servidor-gui. Eha'ã jey peteĩ minuto rire.",
+ "srv.health.cpulong": "CPU oĩ {limit}% ári {mins} aravo'i rupi. 15 aravo'i mbyte medio ha'e {avg}%.",
+ "srv.health.cpurun": "CPU oĩ {limit}% ári {mins} aravo'i rupi, ndopái haguãicha."
 }

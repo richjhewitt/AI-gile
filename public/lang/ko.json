@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "고급: 내 LiveKit 서버 사용",
  "lkcall.set.own": "내 통화에는 직접 운영하는 LiveKit 서버를 써요.",
  "srv.lkcall.off": "지금은 통화를 쓸 수 없어요.",
- "srv.lkcall.relayfail": "지금은 AI-gile 통화 서버에서 통화 이용권을 받지 못했어요. 잠시 후 다시 시도해 주세요."
+ "srv.lkcall.relayfail": "지금은 AI-gile 통화 서버에서 통화 이용권을 받지 못했어요. 잠시 후 다시 시도해 주세요.",
+ "srv.health.cpulong": "CPU가 약 {mins}분 동안 {limit}%를 넘었어요. 최근 15분 평균은 {avg}%예요.",
+ "srv.health.cpurun": "CPU가 약 {mins}분 연속으로 {limit}%를 넘었어요."
 }

@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Avançat: fer servir el meu propi servidor LiveKit",
  "lkcall.set.own": "Per a les teves trucades es fa servir el teu propi servidor LiveKit.",
  "srv.lkcall.off": "Les trucades no estan disponibles ara mateix.",
- "srv.lkcall.relayfail": "Ara mateix no s'ha pogut obtenir un pas de trucada del servidor de trucades d'AI-gile. Torna-ho a provar d'aquí un minut."
+ "srv.lkcall.relayfail": "Ara mateix no s'ha pogut obtenir un pas de trucada del servidor de trucades d'AI-gile. Torna-ho a provar d'aquí un minut.",
+ "srv.health.cpulong": "La CPU fa uns {mins} minuts que és per sobre del {limit}%. La mitjana dels últims 15 minuts és del {avg}%.",
+ "srv.health.cpurun": "La CPU fa uns {mins} minuts seguits que és per sobre del {limit}%."
 }

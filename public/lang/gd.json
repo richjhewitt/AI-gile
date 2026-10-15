@@ -3872,5 +3872,7 @@
  "lkcall.set.adv": "Adhartach: cleachd am frithealaiche LiveKit agam fhèin",
  "lkcall.set.own": "Tha am frithealaiche LiveKit agad fhèin ga chleachdadh airson do ghairmean.",
  "srv.lkcall.off": "Chan eil gairmean ri fhaighinn an-dràsta.",
- "srv.lkcall.relayfail": "Cha d’ fhuair sinn cead gairm bho fhrithealaiche gairm AI-gile an-dràsta. Feuch a-rithist ann am mionaid."
+ "srv.lkcall.relayfail": "Cha d’ fhuair sinn cead gairm bho fhrithealaiche gairm AI-gile an-dràsta. Feuch a-rithist ann am mionaid.",
+ "srv.health.cpulong": "Tha an CPU os cionn {limit}% airson mu {mins} mionaid. 'S e {avg}% cuibheasachd nan 15 mionaidean mu dheireadh.",
+ "srv.health.cpurun": "Tha an CPU os cionn {limit}% airson mu {mins} mionaid ann an sreath."
 }
