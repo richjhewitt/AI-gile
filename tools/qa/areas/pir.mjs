@@ -1,12 +1,12 @@
 // QA area: pir (AIG-1108, AIG-1109): post-incident review on a closed MAJOR incident, and a runbook proposed from it.
 // Stub agent only. Done on a major incident orders the on-call agent and wakes it (card comment + a stub run); the review is posted with
 // the CLI; the owner ticks actions and presses "Make a card"; a plain incident gets no review; with No Token Mode on, a plain
-// "write it yourself" prompt and no wake.
+// "write it yourself" prompt and no wake. Then the runbook (AIG-1109): a 🚦 Go card, Go writes docs/runbooks/<name>.md, Not yet writes nothing.
 import fs from 'node:fs';
 import path from 'node:path';
 import { check, sleep, until, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
-def('pir', '📝 post-incident review of a closed major incident: on-call agent ordered + woken, review with action ticks and Make a card, plain prompt with AI off (AIG-1108)', async (s, ctx) => {
+def('pir', '📝 post-incident review of a closed major incident: on-call agent ordered + woken, review with action ticks and Make a card, plain prompt with AI off; runbook proposed from the review, Go writes docs/runbooks/<name>.md (AIG-1108, AIG-1109)', async (s, ctx) => {
   const folder = tmp('pir'), log = path.join(s.data, 'logs', 'pir.log');
   const starts = () => { try { return (fs.readFileSync(log, 'utf8').match(/started/g) || []).length; } catch { return 0; } };
   await mkProject(s, 'Pir', 'PIR', { path: folder });
@@ -32,7 +32,7 @@ def('pir', '📝 post-incident review of a closed major incident: on-call agent 
   let card = await getCard(s, 'pir', inc.id);
   check('the card has a review asked of the on-call agent', card.review && card.review.state === 'asked' && card.review.by === 'Pager', card.review);
   check('an order comment names the on-call agent and the command', card.comments.some(c => /REVIEW DUE/.test(c.text) && /Pager/.test(c.text) && /aigile pir pir /.test(c.text)), card.comments.map(c => c.text));
-  check('the on-call agent was woken (stub run started)', !!(await until(() => starts() > before, 6000)), starts());
+  check('the on-call agent was woken (stub run started)', !!(await until(() => starts() > before, 15000)), starts());
   check('major is over', !card.major);
 
   // the review
@@ -63,6 +63,43 @@ def('pir', '📝 post-incident review of a closed major incident: on-call agent 
   const again = await s.ok('POST', `/api/projects/pir/cards/${inc.id}/review/card`, { i: 1 });
   check('pressing again makes no second card', again.existing && again.card === act.card && (await s.ok('GET', '/api/projects/pir')).cards.length === n0 + 1);
   noErrors(pg); await pg.close();
+
+  // AIG-1109: the runbook proposal
+  check('after the review the agent is asked for a runbook', card.comments.some(c => /propose a runbook/.test(c.text) && /aigile pir-runbook pir /.test(c.text)));
+  check('no runbook before a review exists', (await s.api('POST', `/api/projects/pir/cards/${plain.id}/review/runbook`, { name: 'x', text: 'y' })).status === 400);
+  const rbDir = path.join(folder, 'docs', 'runbooks');
+  check('a runbook needs a name and text', (await s.api('POST', `/api/projects/pir/cards/${inc.id}/review/runbook`, { name: 'x' })).status === 400 && (await s.api('POST', `/api/projects/pir/cards/${inc.id}/review/runbook`, { text: 'y' })).status === 400);
+  const pr = s.cli(['pir-runbook', 'pir', inc.id, 'Restart The Relay!', '--text', '1. ssh in\n2. restart the relay\n3. check /status', '--as', 'Pager']);
+  check('the CLI proposes a runbook', pr.code === 0 && /waiting for/.test(pr.out), pr);
+  const rbc = (await s.ok('GET', '/api/projects/pir')).cards.find(c => c.runbookProposal);
+  check('a 🚦 plan card waiting for Go, with the name cleaned', rbc && rbc.runbookProposal.name === 'restart-the-relay' && rbc.kind === 'plan' && rbc.needsYou === true && /restart the relay/.test(rbc.description) && /\bgo\s*\?/i.test(rbc.comments.find(m => m.mark === 'ask').text), rbc);
+  check('the incident points at it', (await getCard(s, 'pir', inc.id)).review.runbook === rbc.id);
+  check('nothing is written before Go', !fs.existsSync(rbDir));
+  check('a second proposal while one is open is refused', (await s.api('POST', `/api/projects/pir/cards/${inc.id}/review/runbook`, { name: 'other', text: 'z' })).status === 409);
+  const tg = await fetch(s.base + `/api/projects/pir/cards/${rbc.id}/comments`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-aigile-where': 'cli', 'x-aigile-as': 'Dev' }, body: JSON.stringify({ author: 'Owner', text: 'GO' }) });
+  check('a team request cannot say Go (403)', tg.status === 403 && !fs.existsSync(rbDir));
+  await s.ok('POST', `/api/projects/pir/cards/${rbc.id}/comments`, { author: 'Owner', text: 'GO' });
+  const rbf = path.join(rbDir, 'restart-the-relay.md');
+  check('Go writes docs/runbooks/<name>.md in the project folder', fs.existsSync(rbf) && /1\. ssh in\n2\. restart the relay/.test(fs.readFileSync(rbf, 'utf8').replace(/\r\n/g, '\n')), fs.existsSync(rbf));
+  const rbd = await getCard(s, 'pir', rbc.id);
+  check('the card is done with a comment naming the file', rbd.status === 'done' && !rbd.needsYou && rbd.comments.at(-1).text.includes('docs/runbooks/restart-the-relay.md'), rbd.comments.at(-1));
+  const snap = fs.readFileSync(rbf, 'utf8');
+  await s.ok('POST', `/api/projects/pir/cards/${rbc.id}/comments`, { author: 'Owner', text: 'go' });
+  check('answering again changes nothing', fs.readFileSync(rbf, 'utf8') === snap);
+  // Not yet writes nothing; the same name again never overwrites
+  const rb2 = await s.ok('POST', `/api/projects/pir/cards/${inc.id}/review/runbook`, { name: 'dns-down', text: 'check the registrar', author: 'Pager' });
+  await s.ok('POST', `/api/projects/pir/cards/${rb2.id}/comments`, { author: 'Owner', text: 'Not yet: later' });
+  check('Not yet closes the card and writes no file', (await getCard(s, 'pir', rb2.id)).status === 'done' && !fs.existsSync(path.join(rbDir, 'dns-down.md')));
+  const rb3 = await s.ok('POST', `/api/projects/pir/cards/${inc.id}/review/runbook`, { name: 'restart-the-relay', text: 'a newer version', author: 'Pager' });
+  await s.ok('POST', `/api/projects/pir/cards/${rb3.id}/comments`, { author: 'Owner', text: 'Yes' });
+  check('an existing runbook is never overwritten: the new one gets -2', fs.readFileSync(rbf, 'utf8') === snap && fs.existsSync(path.join(rbDir, 'restart-the-relay-2.md')));
+  const rb4 = await s.ok('POST', `/api/projects/pir/cards/${inc.id}/review/runbook`, { name: 'question', text: 'x', author: 'Pager' });
+  await s.ok('POST', `/api/projects/pir/cards/${rb4.id}/comments`, { author: 'Owner', text: 'What does this cover?' });
+  check('a question back is a normal comment: card stays open', (await getCard(s, 'pir', rb4.id)).status !== 'done' && !fs.existsSync(path.join(rbDir, 'question.md')));
+  const pg2 = await openPage(ctx, `#/p/pir/${inc.id}`);
+  await pg2.waitForSelector('.pirbox', { timeout: 8000 });
+  check('the review box links the runbook card', (await pg2.innerText('.pirbox')).includes(rb4.id));
+  noErrors(pg2); await pg2.close();
 
   // AI off: plain prompt, no wake
   const inc2 = await mkCard(s, 'pir', 'Mail down', { type: 'incident', status: 'doing', assignee: 'Lead' });

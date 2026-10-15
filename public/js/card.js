@@ -53,7 +53,7 @@ const reviewHtml = (p, c) => {
   const r = c.review; if (!r) return '';
   if (r.state !== 'posted') return `<div class="postmortem pirbox"><h3>${esc(t('pir.heading'))}</h3><p class="muted">${esc(t(r.state === 'manual' ? 'pir.manual' : 'pir.waiting', { name: r.by || '' }))}</p></div>`;
   const acts = (r.actions || []).map((a, i) => `<li class="pir-action"><label><input type="checkbox" ${a.ok ? 'checked' : ''} onchange="pirTick('${esc(c.id)}', ${i}, this.checked)"> ${esc(a.text)}</label> ${a.card ? cardLinkHtml(p, a.card) : `<button type="button" class="pir-make" onclick="pirMake('${esc(c.id)}', ${i})">${esc(t('pir.make'))}</button>`}</li>`).join('');
-  return `<div class="postmortem pirbox"><h3>${esc(t('pir.heading'))}</h3><p><b>${esc(t('pir.timeline'))}</b> ${esc(r.timeline)}</p><p><b>${esc(t('pir.helped'))}</b> ${esc(r.helped)}</p><p><b>${esc(t('pir.actions'))}</b></p><ul class="pir-actions">${acts}</ul></div>`;
+  return `<div class="postmortem pirbox"><h3>${esc(t('pir.heading'))}</h3><p><b>${esc(t('pir.timeline'))}</b> ${esc(r.timeline)}</p><p><b>${esc(t('pir.helped'))}</b> ${esc(r.helped)}</p><p><b>${esc(t('pir.actions'))}</b></p><ul class="pir-actions">${acts}</ul>${r.runbook ? `<p><b>${esc(t('pir.runbook'))}</b> ${cardLinkHtml(p, r.runbook)}</p>` : ''}</div>`;
 };
 async function pirTick(id, i, on) { try { await api('POST', `/api/projects/${slug()}/cards/${id}/review/tick`, { i, on }); } catch (e) { alert(e.message); refresh(true); } }
 async function pirMake(id, i) { try { await api('POST', `/api/projects/${slug()}/cards/${id}/review/card`, { i }); refresh(true); } catch (e) { alert(e.message); } }
