@@ -96,3 +96,7 @@ body.no-power :is(#streamBtn, #twitchBtn, #ntBtn, #tiredBtn, #assumeNav, #glance
   header > #inboxTop { flex: 0 1 auto; min-width: 0; overflow: hidden; } #inboxTop .ib-alerts, #inboxTop .navlink { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #tbMoreMenu { position: fixed; inset-inline: 8px; top: 56px; max-width: none; }
 }
+/* AIG-1146: the Refresh / Restart pills are a slim bar under the header, in the page flow, so they never cover the top bar, chat headers or dialog titles. */
+#updateTop, body.desktop #updateTop { position: relative; transform: none; z-index: 40; width: fit-content; margin-inline: auto; border-radius: 0 0 12px 12px; border-top: 0; justify-content: center; flex-wrap: wrap; padding: 4px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
+#updateTop:not(:has(button)) { display: none; }
+#updateTop button { box-shadow: none; padding-block: 2px; font-size: 13px; }
