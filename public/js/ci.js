@@ -25,6 +25,10 @@ const CiPage = (() => {
       C.edit = null; await reload();
     } catch (e) { $('ci-err').textContent = e.message; }
   };
+  C.backedUp = async id => {
+    try { await api('POST', `/api/projects/${C.slug}/ci/${encodeURIComponent(id)}/backed-up`, {}); } catch (e) { alert(e.message); }
+    await reload();
+  };
   C.remove = async id => {
     if (!confirm(t('ci.remove.ask', { id }))) return;
     try { await api('DELETE', `/api/projects/${C.slug}/ci/${encodeURIComponent(id)}`); } catch (e) { alert(e.message); }
@@ -45,10 +49,11 @@ const CiPage = (() => {
       <div class="actions"><button class="primary" type="submit" id="ci-save">${esc(t('ci.save'))}</button><button type="button" onclick="CiPage.start(null)">${esc(t('common.cancel'))}</button></div></form>`;
   };
   const row = x => {
-    const bits = [x.expires ? esc(t('ci.expires.on', { day: x.expires })) : '', x.backup ? esc(t('ci.backup.line', { where: x.backup.where, days: x.backup.everyDays })) : '',
+    const bits = [x.expires ? esc(t('ci.expires.on', { day: x.expires })) : '', x.backup ? esc(t('ci.backup.line', { where: x.backup.where, days: x.backup.everyDays })) + (x.backup.last ? ' · ' + esc(t('ci.backup.last', { day: x.backup.last })) : '') : '',
       ...(x.links || []).map(l => /^https?:\/\//.test(l) ? `<a href="${esc(l)}" target="_blank" rel="noopener">${esc(l)}</a>` : esc(l))].filter(Boolean).join(' · ');
     return `<li class="ci-row" data-ci="${esc(x.id)}"><div><b>${esc(x.name)}</b> <span class="pill">${esc(t('ci.kind.' + x.kind))}</span> <span class="muted">${esc(x.id)}</span>
       <button type="button" data-edit="${esc(x.id)}" onclick="CiPage.start('${q(x.id)}')">${esc(t('ci.edit'))}</button>
+      ${x.backup ? `<button type="button" data-backedup="${esc(x.id)}" onclick="CiPage.backedUp('${q(x.id)}')">${esc(t('ci.backedup'))}</button>` : ''}
       <button type="button" data-rm="${esc(x.id)}" onclick="CiPage.remove('${q(x.id)}')">${esc(t('ci.remove'))}</button></div>
       ${x.detail ? `<div>${esc(x.detail)}</div>` : ''}${bits ? `<div class="muted">${bits}</div>` : ''}</li>`;
   };
