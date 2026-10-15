@@ -1,0 +1,25 @@
+name: AIgile
+options:
+  bundleIdPrefix: lol.aigile
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  AIgile:
+    type: application
+    platform: iOS
+    sources:
+      - AIgile
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: lol.aigile.app
+        DEVELOPMENT_TEAM: ""
+        CODE_SIGN_STYLE: Automatic
+        INFOPLIST_FILE: AIgile/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"
