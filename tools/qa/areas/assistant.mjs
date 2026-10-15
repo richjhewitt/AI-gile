@@ -37,6 +37,10 @@ def('assistant', '💚 Personal assistant chat pinned under All hands (reminder,
   // The chat
   const send = t => s.ok('POST', '/api/chats/_assistant', { text: t });
   const msgs = async () => (await s.ok('GET', '/api/chats/_assistant')).messages;
+  // AIG-1119: an agent or background caller never writes as the owner, renames the assistant, picks the owner's day or starts a Discord link
+  const team = (url, body) => fetch(s.base + url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-aigile-where': 'background', 'x-aigile-as': 'Dev' }, body: JSON.stringify(body) }).then(r => r.status);
+  const st = [await team('/api/chats/_assistant', { text: 'remind me at 3 to leak' }), await team('/api/assistant/name', { name: 'Evil' }), await team('/api/today/pick', { slugs: [] }), await team('/api/discord/link', { name: 'x' })];
+  check('owner-only: assistant chat, assistant name, today pick, Discord link refuse a team call (403)', st.every(x => x === 403) && !(await msgs()).some(m => /leak/.test(m.text)), st);
   await send('remind me at 3 to call Bob');
   check('"remind me at 3 to call Bob" makes a reminder', (await s.ok('GET', '/api/lifeadmin')).reminders.some(r => /call Bob/i.test(r.text)));
   check('and it confirms in the chat', (await msgs()).some(m => !m.mine && /Reminder set.*call Bob/i.test(m.text)), await msgs());
