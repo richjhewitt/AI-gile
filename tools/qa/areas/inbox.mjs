@@ -41,6 +41,8 @@ def('inbox', 'top-bar counts, project tabs, inline answer, task Done', async (s,
 
   // AIG-867: Snooze on a task puts it off, never done, team not told; it comes back when the snooze ends.
   const k0 = await getCard(s, 'alpha', 'ALP-2'), n0 = k0.comments.length;
+  const laters = await page.$$eval('.ib-item button[data-act=wait]', bs => bs.map(b => b.textContent.trim()));   // AIG-1137: one name everywhere
+  check('question and task both say Later (1 h)', laters.length >= 2 && laters.every(x => x === '⏳ Later (1 h)'), laters);
   await page.click('.ib-item.k[data-id="ALP-2"] button[data-act=wait]');
   await page.waitForSelector('.ib-item.k[data-id="ALP-2"]', { state: 'detached' });
   const ks = await getCard(s, 'alpha', 'ALP-2');
