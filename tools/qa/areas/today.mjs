@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import http from 'node:http';
 import zlib from 'node:zlib';
 import path from 'node:path';
-import { check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def, PORT } from '../lib.mjs';
+import { check, sleep, until, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def, PORT } from '../lib.mjs';
 
 def('today', '🎯 Today: weights per project, reset each morning, order, 💤 rest only wakes for the owner, token split by weight and slow-down (AIG-595/596/597)', async (s, ctx) => {
   for (const [n, k] of [['Aa', 'AAA'], ['Bb', 'BBB'], ['Cc', 'CCC'], ['Dd', 'DDD'], ['Ee', 'EEE']]) await mkProject(s, n, k, { path: tmp('today-' + n) });
@@ -171,8 +171,8 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   check('and the row button switches it back on', row(await today(), 'bb').aiOff === false);
   fs.rmSync(s.wakeOut, { force: true });
   await say(s, 'bb', cardB.id, 'Owner', 'are you there now?');
-  for (let i = 0; i < 30 && !fs.existsSync(s.wakeOut); i++) await sleep(200);
-  check('back on, the owner\'s comment wakes the team again', fs.existsSync(s.wakeOut));
+  const woke = await until(() => fs.existsSync(s.wakeOut), 20000);   // usually ~1.5s, but the stand-in agent is slow to start on a busy PC (many areas at once)
+  check('back on, the owner\'s comment wakes the team again', woke);
   noErrors(page);
 
   // AIG-829/830: the morning picker, then the unpicked projects hidden until Show all. A fixed stub date keeps it date-proof.
