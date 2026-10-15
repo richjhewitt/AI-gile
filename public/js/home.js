@@ -58,6 +58,12 @@ function homeMore() {
   m.hidden = !m.hidden; state.homeMore = !m.hidden; if (b) b.setAttribute('aria-expanded', String(!m.hidden));
 }
 
+// AIG-1298: a project nobody works on says so on its card (the board has the "Start a team" line): no team, or an AI team with no folder.
+function homeTeamPill(p) {
+  if (NoAi.on || p.aiOff || p.archived || p.sample || p.teamless) return '';
+  const k = p.noTeam ? 'noteam.pill' : !p.path && (p.crew || []).length ? 'noteam.pill.folder' : '';
+  return k ? ` <span class="pill noteam-pill" title="${esc(t(p.noTeam ? 'noteam.line' : 'noteam.nofolder'))}">${esc(t(k))}</span>` : '';
+}
 // One project card: on home, and in a space's grid on its board. sp: { kids, fold, up } from spaces.js.
 function projCard(p, sp = {}) {
   const active = p.total - p.counts.backlog;
@@ -70,7 +76,7 @@ function projCard(p, sp = {}) {
     ${bar(p.counts, active)}
     <div class="counts"><b>${esc(t('home.pctdone', { n: Math.round(p.progress * 100) }))}</b>${Object.entries(COLS).filter(([k]) => p.counts[k]).map(([k, v]) => `<span>${v} ${p.counts[k]}</span>`).join('')}</div>
     ${p.team.length ? `<div class="last">👥 ${p.team.map(m => esc(m.name)).join(', ')}</div>` : ''}
-    <div class="last">${presenceHtml(p, at?.kind === 'asleep')}</div>
+    <div class="last">${homeTeamPill(p) && !p.path && !(p.presence && p.presence.running) ? `${homeTeamPill(p)} <span class="muted">${esc(t(p.noTeam ? 'noteam.line' : 'noteam.nofolder'))}</span>` : homeTeamPill(p) + ' ' + presenceHtml(p, at?.kind === 'asleep')}</div>
     ${(fl => fl.length ? `<div class="last">🛠 ${flightHtml(fl, p.slug)}</div>` : '')(p.inFlight.filter(c => c.worker || c.assignee))}
     ${state.usage?.enabled && state.usage.projects[p.slug] ? `<div class="last">⚡ ${usageLine(state.usage.projects[p.slug])}</div>` : ''}
     ${p.lastLog && p.lastLog.author !== 'Dispatcher' ? `<div class="last">📝 ${esc(p.lastLog.text)} · ${ago(p.lastLog.at)}</div>` : ''}

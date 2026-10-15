@@ -165,6 +165,7 @@ function renderBoard(p) {
       <button onclick="cardViewDialog()" title="${esc(t('board.cards.title'))}">${esc(t('board.cards'))}</button>
       ${p.path ? `<button onclick="permsDialog()" title="${esc(t('board.perms.title'))}">${esc(t('board.perms'))}</button>` : ''}
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${esc(p.archived ? t('board.unarchive') : t('board.archive'))}</button></div></div>
+    ${teamLineHtml(p)}
     ${p.description ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}</p>` : ''}
     <details class="bdetails" id="bDetails"${state.detailsOpen ? ' open' : ''} ontoggle="state.detailsOpen = this.open"><summary>${esc(t('board.details'))}</summary><div class="flight">${t('board.flight.html')} ${flightHtml(flightList(p), p.slug) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>${p.path ? `<p class="muted"><code>${esc(p.path)}</code></p>` : ''}</details>
     ${Share.laneHtml(p)}
@@ -178,6 +179,34 @@ function renderBoard(p) {
       <div class="box"><h3>${esc(t('board.log'))}</h3>${log.length ? `<ul class="log">${log.map(l =>
         `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}</div>
     </div>`;
+}
+
+// AIG-1298: a board nobody works on says so at the top. No team: "Start a team" (the default team, a Lead). An AI team without a
+// folder cannot run: "Choose a folder" (the Connect folder dialog). A team of people only works on the cards, so no folder nag.
+// Nothing in No AI mode, with AI off for the project, on an archived or sample board, or a holder space (teamless).
+function teamState(p) {
+  if (NoAi.on || p.aiOff || p.archived || p.sample || p.teamless) return '';
+  const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
+  if (!team.length) return 'none';
+  return !p.path && team.some(m => m.kind !== 'person' && !m.friend) ? 'folder' : '';
+}
+function teamLineHtml(p) {
+  const st = teamState(p); if (!st) return '';
+  const folderBtn = `<button type="button" id="noTeamFolder" onclick="connectDialog()">${esc(t('noteam.choose'))}</button> <button type="button" id="noTeamMake" onclick="makeTeamFolder(this)">${esc(t('noteam.make'))}</button>`;
+  return `<div class="noteam-line" id="noTeamLine" role="status">${st === 'none'
+    ? `👥 <span>${esc(t('noteam.line'))}</span> <button type="button" class="primary" id="noTeamStart" onclick="startDefaultTeam(this)">${esc(t('noteam.start'))}</button>${p.path ? '' : ` <span class="muted">${esc(t('noteam.folder'))}</span> ${folderBtn}`}`
+    : `📁 <span>${esc(t('noteam.nofolder'))}</span> ${folderBtn}`}</div>`;
+}
+// "Make one for me": a folder under the projects folder, set up and linked; the team (if any) has a first look.
+async function makeTeamFolder(btn) {
+  if (btn) btn.disabled = true;
+  try { await api('POST', '/api/projects/' + slug() + '/connect', { path: true, create: true, wake: !!(state.project.team || []).length }); await refresh(true); }
+  catch (e) { if (btn) btn.disabled = false; alert(e.message); }
+}
+async function startDefaultTeam(btn) {
+  if (btn) btn.disabled = true;
+  try { await api('POST', '/api/projects/' + slug() + '/start-team'); await refresh(true); }
+  catch (e) { if (btn) btn.disabled = false; alert(e.message); }
 }
 
 // Show all team members, not just the active ones (AIG-1211): remembered in this browser.

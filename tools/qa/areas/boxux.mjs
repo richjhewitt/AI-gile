@@ -1,8 +1,8 @@
 // QA area: boxux (AIG-933, AIG-938, AIG-939): board toolbar behind a ⋯ on a phone, For you chips with something in them, folded Details, priority chip only once set, labelled icons.
-import { check, sleep, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, tmp, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
 
 def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For you shows only chips with cards, Details is folded, the priority chip shows once set, icons carry labels (AIG-933/938/939)', async (s, ctx) => {
-  await mkProject(s, 'Alpha', 'ALP', { description: 'A test project' });
+  await mkProject(s, 'Alpha', 'ALP', { description: 'A test project', path: tmp('boxux'), team: true });   // a team and a folder, like a new project: else the AIG-1298 line sits on top
   const a = await mkCard(s, 'alpha', 'Plain task'), b = await mkCard(s, 'alpha', 'Prio task');
   s.cli(['task', 'alpha', a.id, 'log in', '--as', 'Lead']);
   s.cli(['task', 'alpha', b.id, 'run it', '--as', 'Lead']);

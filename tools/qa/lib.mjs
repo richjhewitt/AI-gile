@@ -78,7 +78,7 @@ export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   /
   let ownerLocal = {}; try { ownerLocal = JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')); } catch {}
   // AIG-1063: the owner's day turns over at his day start: the test board starts it at 00:00, so results do not depend on the time of day.
   fs.writeFileSync(local, JSON.stringify({ ...Object.fromEntries(['usageDir', 'globalSettingsFile', 'agent', 'avatarsDir'].filter(k => k in ownerLocal).map(k => [k, ownerLocal[k]])), day: { start: '00:00' } }, null, 2));
-  const env = { ...process.env, AIGILE_LOCAL: local, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', AIGILE_UNDO_WAKE_MS: '0', AIGILE_QA_TOKEN: token, ...extraEnv };   // tests speak to "Owner", whatever your own name is
+  const env = { ...process.env, AIGILE_LOCAL: local, AIGILE_PORT: String(port), AIGILE_DATA: data, AIGILE_AGENT_COMMAND: stub, AIGILE_USAGE_DIR: usageDir, AIGILE_OWNER: 'Owner', AIGILE_UNDO_WAKE_MS: '0', AIGILE_QA_TOKEN: token, AIGILE_HOME: path.join(dir, 'projects'), ...extraEnv };   // new project folders (folder: true, Make one for me, AIG-1298) stay in the run's folder   // tests speak to "Owner", whatever your own name is
   delete env.AIGILE_DEV; delete env.AIGILE_ALLOW_DONE; delete env.AIGILE_AS;
   const proc = spawn(process.execPath, [path.join(root, 'server.js')], { env, stdio: 'ignore', cwd: root });
   let mine = false;
@@ -104,7 +104,8 @@ export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   /
 }
 
 // Seed helpers (through the API).
-export const mkProject = (s, name, key, extra = {}) => s.ok('POST', '/api/projects', { name, key, ...extra });
+// A new project starts with a Lead (AIG-1298); the seed helper keeps the areas' fixtures as they were (no team) unless { team: true }.
+export const mkProject = (s, name, key, extra = {}) => s.ok('POST', '/api/projects', { name, key, team: false, ...extra });
 export const mkCard = (s, slug, title, extra = {}) => s.ok('POST', `/api/projects/${slug}/cards`, { title, ...extra });
 export const getCard = async (s, slug, id) => (await s.ok('GET', `/api/projects/${slug}?full=1`)).cards.find(c => c.id === id);   // ?full=1: done cards whole (AIG-1100)
 export const say = (s, slug, id, author, text, extra = {}) => s.ok('POST', `/api/projects/${slug}/cards/${id}/comments`, { author, text, ...extra });

@@ -73,6 +73,8 @@ main { padding: 20px; }
 .pill.you { background: var(--you); color: var(--on-fill); }
 .pill.timed { background: var(--chip, rgba(127,127,127,.18)); }
 .pill.blocked { background: var(--danger); color: var(--on-fill); }
+.pill.noteam-pill { border: 1px solid var(--warn); color: var(--warn-ink); background: transparent; }
+.noteam-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--warn); border-radius: 8px; font-size: 13px; background: color-mix(in srgb, var(--warn) 10%, var(--panel)); }
 .pill.urgent { color: var(--danger); } .pill.high { color: var(--warn-ink); }
 
 /* ---------- Portfolio (home) ---------- */
