@@ -79,7 +79,8 @@ def('discordtab', 'Discord tab in the DM window: hidden with no bot, chats and c
     });
     await np.goto(s.base + '/#/'); await np.waitForSelector('#app > *');
     await s.ok('POST', '/api/discord/stub-message', { bot: 'Helper', author: '123456789', channel: 'DM1', content: 'ping while away' });
-    await np.waitForFunction(() => window.__notes.length > 0, null, { timeout: 10000 }).catch(() => {});
+    // a hidden window polls every 30 s at most (AIG-1103), so the alert can take that long
+    await np.waitForFunction(() => window.__notes.length > 0, null, { timeout: 40000 }).catch(() => {});
     const notes = await np.evaluate(() => window.__notes);
     check('a hidden page gets a browser notification with who and what', notes.length >= 1 && /Rich|Discord/.test(notes[0][0]) && /ping while away/.test(notes[0][1]), JSON.stringify(notes));
   } finally { stub.close(); }

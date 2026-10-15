@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, brief line, Setup, quiz, task checklist a few at a time) (AIG-416); scale table, profile file and brief compiler (AIG-417); old settings as scales (AIG-418); built-in role templates (AIG-419); team templates and Add team (AIG-420); aigile profile, your copies, per-project numbers (AIG-421); Setup sliders (AIG-422); 👥 Team dialog, profile editor, role picker (AIG-423); Add members or Replace team, ↩ undo (AIG-444); Setup main team (AIG-460); wizard starter team (AIG-424)', async (s, ctx) => {
   const file = path.join(s.dir, 'aigile.local.json');
@@ -249,7 +249,7 @@ def('profiles', '👤 agent profiles: steps at a time (setting, default 1 or 3, 
   // 4. 👥 Team dialog (AIG-423): from 🎨 Look or the header; a row per role, Add team (AIG-420), Add role, ✕ remove.
   await s.ok('POST', '/api/setup', { prefs: { plan: 'nospare' } });   // no helper limits, so the count line is the roles on
   await page.goto(`${BASE}/#/p/web`); await page.reload();
-  await page.click('button:has-text("Look")');
+  await tbClick(page, 'Look');
   await page.waitForSelector('#look-roles button');
   check('Look has no role ticks any more, it opens 👥 Team', !(await page.$('#look-roles input[data-role]')));
   await page.click('#look-roles button');

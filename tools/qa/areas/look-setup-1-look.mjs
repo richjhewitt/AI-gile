@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
-import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, home, 🎨 Look dialog', async (s, ctx) => {
   await mkProject(s, 'Tunio', 'TUN'); await mkProject(s, 'LocoRadio', 'LOC');   // Tunio has no keyword emoji since AIG-245: its spare one (🔭) comes from its slug
@@ -33,7 +33,7 @@ def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, 
   await sleep(1500);
   check('stays open after redraws', await page.$eval('details.inbox', d => d.open));
   await page.goto(BASE + '/#/p/tunio');
-  await page.click('button:has-text("Look")');
+  await tbClick(page, 'Look');
   await page.fill('#look-emoji', '🎸');
   check('Look has the public feedback tick and group (AIG-969)', (await page.locator('#look-fb').count()) === 1 && (await page.locator('#look-fbgroup').count()) === 1);
   await page.$eval('#look-color', el => { el.value = '#123456'; });
@@ -76,8 +76,7 @@ def('logos', 'a project picture and an app logo replace the emoji / 🗂️: upl
   check('home card shows the picture, not the emoji', !(await page.textContent('a.proj[href="#/p/tunio"] h2')).includes('🔭'));
   // Through the Look dialog: pick a file, then Remove.
   await page.goto(BASE + '/#/p/tunio');
-  if (!(await page.locator('button:has-text("Look")').first().isVisible().catch(() => false))) { await page.click('#tbDots'); await sleep(200); }   // Look is in the toolbar's More popover (AIG-1076)
-  await page.click('button:has-text("Look")');
+  await tbClick(page, 'Look');
   const before = await page.getAttribute('#look-logo img.pic', 'src');
   await page.setInputFiles('#look-logo-file', file);
   await page.waitForFunction(old => document.querySelector('#look-logo img.pic')?.getAttribute('src') !== old, before);

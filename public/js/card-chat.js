@@ -34,12 +34,12 @@ document.addEventListener('click', e => {
 });
 async function cardTaskDone() {
   const next = nextForYou();
-  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/taskdone`, { text: $('r-text').value.trim() }); clearDraft(slug() + '/' + cardId() + '/reply'); doneWithCard(next); } catch (err) { setErr('r-err', err); }
+  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/taskdone`, { text: $('r-text').value.trim() }); clearDraft(slug() + '/' + cardId() + '/reply'); doneWithCard(next, 'card.next.done'); } catch (err) { setErr('r-err', err); }
 }
 // Snooze a task (AIG-867): off the list for an hour, never done, the team is not told.
 async function cardTaskSnooze() {
   const next = nextForYou();
-  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next); } catch (err) { setErr('r-err', err); }
+  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next, 'card.next.later'); } catch (err) { setErr('r-err', err); }
 }
 // A popped-out card is a live chat (AIG-313): oldest first, newest at the bottom, a typing line while the team
 // works on the card, the reply box underneath. Sending never closes it.

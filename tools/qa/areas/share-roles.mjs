@@ -4,7 +4,7 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, openPage, noErrors } from '../lib.mjs';
+import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, openPage, noErrors, tbClick } from '../lib.mjs';
 
 // What each role lets a friend send (lib/share.js CAN). ok = it lands; role = refused by the role (seq still moves).
 const KINDS = ['card bug', 'card feature', 'card task', 'comment own', 'comment mine', 'status own', 'status mine', 'status assigned', 'test own', 'file own', 'verdict'];
@@ -119,8 +119,7 @@ export async function shareRoles({ a, b, ca, cb, until, ctx }) {
 
   // The page: the role picker in the 🔗 dialog; 🙋 Assign and 🧪 on a shared card follow the role.
   const page = await openPage(ctx, '#/p/juliet');
-  await page.waitForSelector('#shareBtn');
-  await page.click('#shareBtn');
+  await tbClick(page, '#shareBtn');
   await page.waitForSelector('#shareRole');
   check('🔗 dialog: the role picker shows Member, with what it allows', await page.inputValue('#shareRole') === 'member' && /only counts on cards you assign/.test(await page.textContent('#shareRoleHelp')) && /never wakes your team/.test(await page.textContent('#shareRoleHelp')));
   await page.selectOption('#shareRole', 'tester');
@@ -140,8 +139,7 @@ export async function shareRoles({ a, b, ca, cb, until, ctx }) {
 
   // AIG-961/962/963 on the page: title and preview fields, the preset, and the friend's board header.
   await page.goto(BASE + '/#/p/juliet');
-  await page.waitForSelector('#shareBtn');
-  await page.click('#shareBtn');
+  await tbClick(page, '#shareBtn');
   await page.waitForSelector('#shareTitle');
   check('🔗 dialog: Title and Preview link fields hold the saved values, the title shows by the friend', await page.inputValue('#shareTitle') === 'Jetstream consultant' && await page.inputValue('#sharePreview') === 'https://example.com/demo' && /, Jetstream consultant/.test(await page.textContent('#shareFriendTitle')));
   await page.fill('#shareTitle', 'Pilot');
