@@ -120,7 +120,7 @@ def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
   const br = a('brief', 'alpha');
   check('brief has the digest', br.code === 0 && /^Alpha \(alpha\):/.test(br.out) && /Waiting on Owner/.test(br.out) && /For the team/.test(br.out), br.out);
   // AIG-1062: the project description is in the brief, and a change shows once in updates
-  check('brief shows the project description', /^Project: desc?$/m.test(br.out), br.out);
+  check('brief shows the project description', /^Project: desc\r?$/m.test(br.out), br.out);
   await mkProject(s, 'Desc', 'DSC');
   await s.ok('PATCH', '/api/projects/desc', { description: 'one Claude, one ChatGPT designer' });
   check('updates: first look is the baseline', a('updates', 'desc').out === 'Nothing new from Owner.');
