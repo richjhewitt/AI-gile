@@ -54,6 +54,6 @@ const DiscordTab = (() => {
     busy = false;
   }
   function stop() { cur = null; }
-  PagePoll.every(poll, 4000, { hidden: 5000, immediate: true, home: true });   // a hidden window still alerts promptly (tiny read)
+  PagePoll.every(poll, 4000, { hidden: 5000, immediate: true, home: true, alerts: true });   // raises a desktop notification: keeps its pace when hidden (AIG-1153)
   return { show, load, send, stop, rowsHtml, loadChats, linked: () => !!st.linked, unread: () => st.total || 0 };
 })();

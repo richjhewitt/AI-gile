@@ -4,7 +4,7 @@ journeys: Handle an incident, Find the cause of repeat incidents
 status: new
 features: AIG-614, AIG-887, AIG-888
 ---
-What to do when live breaks (incident), and how to stop it breaking again (problem and change request). Three levels; the Setup help level picks the default: all the help = full course, some help = step by step, no help = highlights.
+What to do when live breaks (incident), and how to stop it breaking again (problem and change request). Three levels; the Help level you picked in the Help menu chooses which one opens first: all the help = full course, some help = step by step, no help = highlights.
 
 ## Highlights
 - An **incident** 🔥 is a card for "it is broken now". It jumps the queue and has a red edge.
@@ -13,14 +13,20 @@ What to do when live breaks (incident), and how to stop it breaking again (probl
 - The real fix goes through a change request.
 
 ## Step by step
-1. Raise the incident: **New card**, type **🔥 incident**, or `aigile add <proj> "Site is down" --type incident`.
+1. Raise the incident: **New card**, type **🔥 incident**.
 2. Fix it first. Use the workaround if the problem card has one.
 3. Move it to done. Fill in **What happened**, **Why**, **What we change**, then **Done**.
-4. It happened before? Make a problem: `aigile problem <proj> add "Deploys break the site" --incidents AIG-1,AIG-2`.
-5. Fill in the cause and the workaround: `aigile problem <proj> AIG-9 --cause "..." --workaround "..."`.
-6. Add later incidents with `aigile problem <proj> AIG-9 link AIG-12`.
-7. Raise a change request for the fix and link it: `aigile problem <proj> AIG-9 --change AIG-20`.
-8. Open the problem card: root cause, workaround, incidents and the change request are all shown.
+4. It happened before? Ask your lead to group the incidents under a **🧩 problem** card (the commands are under *For agents*).
+5. The problem card shows the **Root cause**, the **Workaround**, the incidents and the change request.
+6. Later incidents join the same problem; the card lists them all.
+7. Raise a change request for the fix. The problem stays open until that change is done.
+
+## For agents
+- Raise an incident: `aigile add <proj> "Site is down" --type incident`
+- Make a problem: `aigile problem <proj> add "Deploys break the site" --incidents AIG-1,AIG-2`
+- Cause and workaround: `aigile problem <proj> AIG-9 --cause "..." --workaround "..."`
+- Link a later incident: `aigile problem <proj> AIG-9 link AIG-12`
+- Link the change request: `aigile problem <proj> AIG-9 --change AIG-20`
 
 ## Full course
 - **Why it matters:** an incident is about getting back to normal fast. A problem is about the cause. Mixing them means you fix the same fire again and again.
