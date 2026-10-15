@@ -143,15 +143,30 @@ async function restartBoard(btn) {
 // Unsent text anywhere (a reply, an answer, a dialog) or pending attachments: ask before losing it.
 const hasUnsent = () => [...document.querySelectorAll('textarea, input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
   || !!document.querySelector('.att-chip');
-const okToLeave = what => true;   // AIG-1022: unsent replies are kept as drafts (core.js, Messages > 📝 Drafts), so no "lose it?" box
+// AIG-1022: marked reply boxes are kept as drafts (core.js, Messages > 📝 Drafts), so they never ask. AIG-1120: anything else unsent
+// (a half-filled new-card form, pending attachments) asks first, in the app's own small box. Resolves true to carry on.
+const hasUndrafted = () => [...document.querySelectorAll('textarea:not([data-draft]), input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
+  || !!document.querySelector('.att-chip');
+function okToLeave(what) {
+  if (!hasUndrafted()) return Promise.resolve(true);
+  return new Promise(res => {
+    const box = document.createElement('div'); box.id = 'leaveBox'; box.className = 'overlay center top'; box.style.position = 'fixed';
+    const done = v => { box.remove(); document.removeEventListener('keydown', onKey, true); res(v); };
+    const onKey = e => { if (e.key === 'Escape') { e.stopPropagation(); done(false); } };
+    box.innerHTML = `<div class="dialog sure"><h2>${esc(t('leave.undrafted.h'))}</h2><p>${esc(t('leave.undrafted', { what }))}</p><div class="actions"><button type="button" id="leaveNo">${esc(t('common.cancel'))}</button><button type="button" class="primary" id="leaveYes">${esc(what)}</button></div></div>`;
+    document.body.appendChild(box); document.addEventListener('keydown', onKey, true);
+    box.querySelector('#leaveNo').onclick = () => done(false); box.querySelector('#leaveYes').onclick = () => done(true);
+    box.querySelector('#leaveNo').focus();
+  });
+}
 // Applies the update; the server restarts itself, so wait a few seconds and reload.
 async function applyUpdatePage() {
-  if (!okToLeave(t('update.what.update'))) return;
+  if (!(await okToLeave(t('update.what.update')))) return;
   const box = $('upUpdate'); box.dataset.busy = '1'; box.innerHTML = '<button class="primary" disabled>' + esc(t('update.busy')) + '</button>';
   try { await api('POST', '/api/update/apply'); setTimeout(() => location.reload(), 5000); }
   catch (e) { delete box.dataset.busy; box.dataset.sig = ''; alert(t('update.failed', { msg: e.message })); }
 }
-function refreshPage() { if (okToLeave(t('update.what.refresh'))) location.reload(); }
+async function refreshPage() { if (await okToLeave(t('update.what.refresh'))) location.reload(); }
 // Desktop app only (AIG-83): the app calls this when its own files changed; the pill asks the app to restart itself.
 // A restart reloads the page too, so Refresh is hidden while Restart shows (AIG-130).
 window.showRestartApp = () => {
@@ -159,7 +174,7 @@ window.showRestartApp = () => {
   if (document.documentElement.hasAttribute('data-night') && !hasUnsent()) { location.href = 'aigile://restart'; return; }
   $('upRefresh').hidden = true;
   if (!$('upRestart').firstChild)
-    $('upRestart').innerHTML = `<button class="primary" onclick="if (okToLeave(t('update.what.restart'))) location.href = 'aigile://restart'" title="${esc(t('update.restart.title'))}">${esc(t('update.restart'))}</button>`;
+    $('upRestart').innerHTML = `<button class="primary" onclick="okToLeave(t('update.what.restart')).then(ok => { if (ok) location.href = 'aigile://restart'; })" title="${esc(t('update.restart.title'))}">${esc(t('update.restart'))}</button>`;
 };
 
 
