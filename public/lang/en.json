@@ -45,6 +45,8 @@
  "update.what.update": "Update",
  "update.what.refresh": "Refresh",
  "update.what.restart": "Restart",
+ "leave.undrafted.h": "Unsaved changes",
+ "leave.undrafted": "You have text or files that are not saved as a draft. {what} anyway and lose them?",
  "leave.confirm": "You have an unsent reply. {what} anyway and lose it?",
  "poke.stuck": "stuck",
  "poke.title": "Tap to wake them all",

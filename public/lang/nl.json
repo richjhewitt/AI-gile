@@ -60,6 +60,8 @@
  "update.what.update": "Bijwerken",
  "update.what.refresh": "Vernieuwen",
  "update.what.restart": "Herstarten",
+ "leave.undrafted.h": "Niet-bewaarde wijzigingen",
+ "leave.undrafted": "Je hebt tekst of bestanden die niet als concept bewaard zijn. {what} en ze kwijtraken?",
  "leave.confirm": "Je antwoord is nog niet verstuurd. {what} en het kwijtraken?",
  "poke.stuck": "zit vast",
  "poke.title": "Tik om ze allemaal te wekken",
