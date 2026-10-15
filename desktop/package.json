@@ -19,7 +19,7 @@
     "appId": "lol.aigile.desktop",
     "productName": "AI-gile",
     "directories": { "output": "dist" },
-    "files": ["main.js", "icon.png", "icon-waiting.png", "package.json"],
+    "files": ["main.js", "preload.js", "icon.png", "icon-waiting.png", "package.json"],
     "extraResources": [
       { "from": "..", "to": "aigile", "filter": ["server.js", "aigile.js", "statusline.js", "package.json", "lib/**", "public/**", "profiles/**", "docs/starter/**"] }
     ],
