@@ -75,7 +75,7 @@ const PagePoll = (() => {
   }
   async function revision() {
     const now = Date.now();
-    const cadence = typeof location !== 'undefined' && (/^#\/(?:p|pop)\/[^/]+\/[^/]+/.test(location.hash) || /^#\/(?:inbox$|pop-inbox\/[qkt]$)/.test(location.hash)) ? 1000 : REV_MS;
+    const cadence = typeof location !== 'undefined' && (/^#\/(?:p|pop)\/[^/]+\/[^/]+/.test(location.hash) || /^#\/(?:inbox$|pop-page\/inbox$|pop-inbox\/[qkt]$)/.test(location.hash)) ? 1000 : REV_MS;
     // A hidden window checks at most every 30 s; the focused one keeps its pace (AIG-1103).
     if (now < retryRevAt || now - revAt < (typeof document !== 'undefined' && document.hidden && !alertTimers ? HIDDEN_MS : cadence)) return rev;
     if (revFlight) return revFlight;

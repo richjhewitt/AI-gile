@@ -14,7 +14,7 @@ const Shortcuts = (() => {
   const clickRail = sel => { const b = document.querySelector('#dmRail ' + sel); if (b) b.click(); };
   function sheet() {
     const rows = LIST.map(([ks, how, s]) => `<tr><td class="sc-k">${ks.map(x => `<kbd>${esc(x)}</kbd>`).join(how === 'or' ? ' / ' : ' ')}</td><td>${esc(t(s))}</td></tr>`).join('');
-    openDialog(`<h2>${esc(t('sc.title'))}</h2><table class="sc-t">${rows}</table><div class="muted">${esc(t('sc.note'))}</div>
+    popNext('keys'); openDialog(`<h2>${esc(t('sc.title'))}</h2><table class="sc-t">${rows}</table><div class="muted">${esc(t('sc.note'))}</div>
       <div class="actions"><button type="button" id="scClose" class="primary" onclick="closeDialog()">${esc(t('sc.shut'))}</button></div>`, 'sc');
     const b = $('scClose'); if (b) b.focus();
   }

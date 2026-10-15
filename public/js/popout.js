@@ -7,6 +7,7 @@ const POPWIN_KEY = 'aigile.popwin';
 const popGeo = () => { try { return JSON.parse(localStorage.getItem(POPWIN_KEY)) || {}; } catch { return {}; } };
 function popKindOf(hash) {   // the saved-place key of a pop route
   const d = /^#\/pop-dlg\/([^/]+)/.exec(hash); if (d) return 'dlg-' + d[1];
+  const pg = /^#\/pop-page\/([a-z-]+)/.exec(hash); if (pg) return 'page-' + pg[1];
   const m = /^#\/pop-([a-z]+)/.exec(hash); if (m) return m[1];
   return /^#\/pop\//.test(hash) ? 'card' : '';
 }
@@ -60,13 +61,18 @@ const POP_DLG = {
   bug: () => newCard({ type: 'bug', priority: 'high', status: 'team' }), card: () => newCard(), team: () => teamDialog(), cards: () => cardViewDialog(),
   look: () => lookDialog(), perms: () => permsDialog(), columns: () => columnsDialog(), docs: () => openDocs(),
   ask: () => askTeamDialog(), idea: () => ideaDialog(), happening: () => happeningDialog(), views: () => viewsDialog(), fyfold: () => fyOpen(forYouFirst(), null),
+  // AIG-1313: these had a kind (or are worth keeping beside the board) but could not pop out yet.
+  deleted: () => deletedDialog(), expert: () => expertDialog(), change: () => raiseChange(), keys: () => Shortcuts.sheet(), myday: () => MyDay.open(),
+  start: () => gettingStarted(), intro: () => introOpen(), incidents: () => incidentsGuide(), service: () => serviceGuide(),
 };
 const inPopDlg = () => state.route && state.route.view === 'dlg';
 function popDlg(kind) {
   // AIG-1120: the dialog closes only when the window really opened (a blocked popup leaves it inline).
   if (popOut('dlg-' + kind, `#/pop-dlg/${kind}/${slug() || '-'}`, 'aigile-dlg-' + kind, 560, 720)) closeDialog();
 }
-const popBtnHtml = kind => `<button type="button" class="dlg-pop" data-popdlg="${esc(kind)}" title="${esc(t('popout.title'))}" onclick="popDlg('${esc(kind)}')">${esc(t('popout.btn'))}</button>`;
+// AIG-1313: one look for every ⧉ Pop out (dialogs, pages, chats): same label, same hover text, the same name for a screen reader.
+const popBtn = (onclick, attrs = '') => `<button type="button" class="dlg-pop" ${attrs} title="${esc(t('popout.title'))}" aria-label="${esc(t('popout.aria'))}" onclick="${onclick}">${esc(t('popout.btn'))}</button>`;
+const popBtnHtml = kind => popBtn(`popDlg('${esc(kind)}')`, `data-popdlg="${esc(kind)}"`);
 // popNext('kind') just before an openDialog(...) gives that dialog the button (taken by the very next openDialog).
 let popNextKind = '';
 const popNext = kind => { popNextKind = kind; };
@@ -85,3 +91,30 @@ function renderPopDlg() {
   const open = POP_DLG[state.route.kind];
   if (open && !$('dialog').firstChild && !state.popDlgOpened) { state.popDlgOpened = true; open(); }
 }
+
+/* ---------- ⧉ Pop out for whole pages (AIG-1313) ----------
+   Any page on this list opens on its own at #/pop-page/<its address> (core.js parseRoute reads the address behind it and
+   marks the route popPage). The button sits top right of the page, outside #app, so a redraw never wipes it. Not on a phone. */
+const POP_PAGES = { usage: [460, 640], today: [520, 720], glossary: [560, 760], standups: [640, 780], stats: [760, 760], risks: [760, 760],
+  releases: [760, 760], ci: [760, 760], review: [760, 820], knownerrors: [720, 760], improvements: [720, 760], life: [620, 760],
+  whatsnew: [620, 780], mail: [620, 760], bin: [620, 720], assumptions: [620, 720], inbox: [560, 800] };
+function popPage() {
+  const r = state.route || {}, size = POP_PAGES[r.view]; if (!size) return false;
+  const inner = location.hash.replace(/^#\//, ''), name = 'aigile-page-' + inner.replace(/[^a-z0-9-]+/gi, '-');
+  return !!popOut('page-' + inner.split(/[/?]/)[0], '#/pop-page/' + inner, name, size[0], size[1]);
+}
+// Called on every refresh: shows the button on a page that can pop out, hides it everywhere else; a popped page fills its window.
+function pagePopSync(r = state.route || {}) {
+  document.body.classList.toggle('poppage', !!r.popPage || /^#\/pop-page\//.test(location.hash));
+  const want = !!POP_PAGES[r.view] && !r.popPage && !/^#\/pop/.test(location.hash);
+  let b = $('pagePop');
+  if (!want) { if (b) b.hidden = true; return; }
+  if (!b) {
+    const box = document.createElement('div'); box.id = 'pagePopBar';
+    box.innerHTML = popBtn('popPage()', 'id="pagePop"');
+    $('app').before(box); b = $('pagePop');
+  }
+  b.hidden = false;
+  if (b.textContent !== t('popout.btn')) { b.title = t('popout.title'); b.setAttribute('aria-label', t('popout.aria')); b.textContent = t('popout.btn'); }   // a language switch
+}
+if (/^#\/pop-page\//.test(location.hash)) document.body.classList.add('poppage');   // from the first paint: no header flashing up

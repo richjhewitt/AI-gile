@@ -49,6 +49,7 @@ async function raiseChange(preset = {}) {
   let risks = [];
   try { risks = (await api('GET', `/api/projects/${slug()}/risks`)).risks.filter(r => r.status !== 'closed'); } catch {}
   const ta = (k, rows = 2) => `<label class="f"><span>${esc(t('chg.' + k))}</span><textarea id="chg-${k}" rows="${rows}" maxlength="600"></textarea></label>`;
+  if (!preset.from && !preset.title) popNext('change');   // AIG-1313: a blank change form can pop out (one raised from a card keeps its link here)
   openDialog(`<h2>${esc(t('chg.raise'))}</h2><form id="chg-form">
     <div class="row"><label class="f"><span>${esc(t('chg.kind'))}</span><select id="chg-kind">${CHANGE_KINDS.map(k => `<option value="${k}">${esc(t('chg.kind.' + k))}</option>`).join('')}</select></label>
       <label class="f"><span>${esc(t('chg.risk'))}</span><select id="chg-risk"><option value="">${esc(t('chg.norisk'))}</option>${risks.map(r => `<option value="${esc(r.id)}">${esc(r.id)} ${esc(r.risk.slice(0, 60))}</option>`).join('')}</select></label></div>

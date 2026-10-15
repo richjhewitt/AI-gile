@@ -22,7 +22,7 @@ const ScrumGlance = (() => {
     if (!el) { el = document.createElement('div'); el.id = 'sgPanel'; el.className = 'sg-panel'; el.setAttribute('role', 'region'); document.body.appendChild(el); shown = ''; }
     const key = JSON.stringify([data, scope(), i18n.lang, state.project && state.project.name]);
     if (key === shown) return; shown = key;
-    el.innerHTML = `<div class="sg-bar"><b>${esc(t('glance.h'))}</b><span class="spacer"></span><button type="button" id="sgPop" onclick="ScrumGlance.pop()">${esc(t('glance.pop'))}</button><button type="button" id="sgClose" aria-label="${esc(t('glance.close'))}" title="${esc(t('glance.close'))}" onclick="ScrumGlance.toggle()">✕</button></div><div class="sg-body">${body(data, true)}</div>`;
+    el.innerHTML = `<div class="sg-bar"><b>${esc(t('glance.h'))}</b><span class="spacer"></span>${popBtn('ScrumGlance.pop()', 'id="sgPop"').replace('class="dlg-pop"', 'class="sg-pop"')}<button type="button" id="sgClose" aria-label="${esc(t('glance.close'))}" title="${esc(t('glance.close'))}" onclick="ScrumGlance.toggle()">✕</button></div><div class="sg-body">${body(data, true)}</div>`;
   }
   async function load(slug, options = {}) {
     try { data = await PagePoll.get('/api/glance' + (slug ? '?project=' + encodeURIComponent(slug) : ''), options); } catch { data = data || null; }
@@ -36,7 +36,7 @@ const ScrumGlance = (() => {
   function toggle() { open = !open; if (!open) { const e = document.getElementById('sgPanel'); if (e) e.remove(); } else { shown = ''; tick(); } }
   function pop() {
     const s = scope();
-    window.open('#/pop-glance' + (s ? '/' + encodeURIComponent(s) : ''), 'aigile-glance', 'width=340,height=520');
+    popOut('glance', '#/pop-glance' + (s ? '/' + encodeURIComponent(s) : ''), 'aigile-glance', 340, 520);   // remembers its place (AIG-1313)
     if (open) toggle();
   }
   const popHtml = () => { document.body.classList.add('poplist'); return `<div class="sg-pop">${body(data, false)}</div>`; };

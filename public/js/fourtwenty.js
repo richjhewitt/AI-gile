@@ -115,7 +115,7 @@ const Weed = (() => {
     box.dataset.lvl = prefs.level + i18n.lang; box.innerHTML = html;
   }
   const popHtml = () => { document.body.classList.add('poplist'); start(); return `<div class="weed-pop" id="weedPop"><h4>${esc(t('weed.h'))}</h4>${popBody()}</div>`; };
-  function pop() { window.open('#/pop-weed', 'aigile-weed', 'width=300,height=220'); }
+  function pop() { popOut('weed', '#/pop-weed', 'aigile-weed', 300, 220); }   // remembers its place (AIG-1313)
 
   return { start, sync, check, tick, dismiss, pop, popHtml, next, hits, applyPrefs, get prefs() { return prefs; } };
 })();

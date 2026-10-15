@@ -2737,6 +2737,7 @@
   "tm.renamed": "{from} is now called {to}.",
   "popout.btn": "⧉ Pop out",
   "popout.title": "Open this window on its own, to move and resize",
+  "popout.aria": "Pop out into its own window",
   "lead.push": "Pushing to GitHub",
   "lead.push.ask": "Ask me first",
   "lead.push.auto": "Just push",

@@ -158,7 +158,7 @@ const Dms = (() => {
     const none = qs && (filter === 'all' || filter === 'agents' || filter === 'people' || filter === 'meet') ? t('dms.search.none', { q: q.trim() }) : filter === 'meet' ? t('meet.none') : filter === 'twitch' ? t('tw.nonone') : filter === 'discord' ? t('dc.nonone') : filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) && !shut.length && !quietRows.length ? t('dms.nonone') : t('dms.noleads');
     const chips = ['all', 'agents', 'people', ...(DiscordTab.linked() ? ['discord'] : []), ...(TwitchTab.linked() ? ['twitch'] : []), ...(meets.length ? ['meet'] : []), ...(listDrafts().length ? ['drafts'] : [])].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t(f === 'drafts' ? 'dms.drafts' : 'dms.filter.' + f))}${f === 'discord' ? badge(DiscordTab.unread()) : ''}</button>`).join('');
     const fresh = !chats.some(c => c.last) && !people.some(c => c.last);   // nothing written yet: say what each row is for (AIG-1085)
-    const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span>${popHere()}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       ${['all', 'agents', 'people', 'meet'].includes(filter) ? `<div class="dm-searchrow"><input id="dmSearch" type="search" class="dm-search" value="${esc(q)}" placeholder="${esc(t('dms.search'))}" aria-label="${esc(t('dms.search'))}" autocomplete="off"></div>` : ''}
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
       <div class="dm-list">${filter === 'drafts' ? draftRows() : filter === 'meet' ? meetsHtml(qs) : `${filter === 'all' || filter === 'agents' ? `${hit(t('allhands.name')) ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.allhands'))}</span>` : ''}</span></button>` : ''}${hit(paName || t('pa.name')) ? `<button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(paName || t('pa.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.assistant'))}</span>` : ''}</span></button>` : ''}${groupsHtml(qs)}${rows.length ? `<div class="dm-groups-h dm-leads-h"><span class="muted">${esc(t('dms.leadchats'))}</span></div>` : ''}` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}`}</div>`;
@@ -498,7 +498,7 @@ const Dms = (() => {
     thread = who ? { person: true, id: who.id, slug, name: who.name, messages: [], open: [] } : null;
     const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || (isGrp(slug) ? (g => ({ slug, name: g ? g.members.map(m => m.name + ' (' + m.engineLabel + ')').join(', ') : '', lead: g ? g.name : slug.slice(4), emoji: g && g.meeting ? '🎥' : '👥', group: true, meeting: g && g.meeting }))(groups.concat(meets).find(x => 'grp:' + x.id === slug)) : null) || (slug === '_assistant' ? { slug, name: paName || t('pa.name'), lead: paName || t('pa.name'), emoji: '💚', assistant: true } : { slug, name: slug });
     const panel = el('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv(who) : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(c.assistant ? t('pa.tagline') : chatName(c))}</div></div><span style="flex:1"></span>${c.meeting ? `<button type="button" class="dm-callbtn" id="dmMeetBtn" onclick="meetingCall('${esc(c.meeting)}', this.dataset.name)" data-name="${esc(c.lead)}" title="${esc(t('meet.join.title'))}">${esc(t('meet.join'))}</button>` : ''}${who ? `<button type="button" class="dm-callbtn" id="dmCallBtn" onclick="dmCall('${esc(who.id)}', this.dataset.name)" data-name="${esc(who.name)}" title="${esc(t('lkcall.btn.title', { name: who.name }))}">${esc(t('lkcall.btn'))}</button>` : callLink(c.callUrl, 'dm-call')}${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv(who) : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(c.assistant ? t('pa.tagline') : chatName(c))}</div></div><span style="flex:1"></span>${c.meeting ? `<button type="button" class="dm-callbtn" id="dmMeetBtn" onclick="meetingCall('${esc(c.meeting)}', this.dataset.name)" data-name="${esc(c.lead)}" title="${esc(t('meet.join.title'))}">${esc(t('meet.join'))}</button>` : ''}${who ? `<button type="button" class="dm-callbtn" id="dmCallBtn" onclick="dmCall('${esc(who.id)}', this.dataset.name)" data-name="${esc(who.name)}" title="${esc(t('lkcall.btn.title', { name: who.name }))}">${esc(t('lkcall.btn'))}</button>` : callLink(c.callUrl, 'dm-call')}${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}${popHere()}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}${who ? '<div class="dm-usage" id="dmUsage" hidden></div>' : ''}
       <div class="dm-list" id="dmList"></div>
       <div id="dmFollow"></div>
@@ -525,10 +525,25 @@ const Dms = (() => {
     if ((thread.cards || {})[id]) { if (thread.open.some(o => o.id === id)) target = id; fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(true); }
     else location.hash = '#/p/' + slug + '/' + id;
   }
+  // ⧉ Pop out (AIG-1313): Messages, or the chat that is open, in its own window (#/pop-chat[/<chat>]); the panel here closes.
+  const inPop = () => !!(state.route && state.route.view === 'chat');
+  const popHere = () => inPop() ? '' : popBtn('Dms.popOut()', 'id="dmPop"');
+  function popSelf() {
+    const k = open && open !== '_allhands' && !isTw(open) && !isDc(open) ? open : '';
+    if (window.popOut('chat', '#/pop-chat' + (k ? '/' + encodeURIComponent(k) : ''), 'aigile-chat-' + (k || 'list').replace(/[^a-z0-9-]+/gi, '-'), 440, 720)) close();
+  }
+  // The pop window's page: the panel alone, filling the window. Drawn once; the 3 s poll keeps it live.
+  let popped = false;
+  async function popView(k) {
+    document.body.classList.add('popchat');
+    if (popped) return; popped = true;
+    await loadRail();
+    if (k) show(k); else { listOpen = true; paintList(); }
+  }
   function reload() { return Promise.all([loadRail(), open ? loadThread() : null]); }
   function aim(id) { target = id; if (id !== GENERAL) fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   function back() { DiscordTab.stop(); TwitchTab.stop(); open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
-  function close() { DiscordTab.stop(); TwitchTab.stop(); open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
+  function close() { if (inPop()) { window.close(); return; } DiscordTab.stop(); TwitchTab.stop(); open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
 
   let pendingSend = null;
   async function send(fixed) {
@@ -663,5 +678,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   PagePoll.every(async () => { await loadRail(); if (open) await loadThread(); }, 3000);
   loadRail();
-  return { follow, show, back, close, send, ask, askTeams, aim, reply, reload, smNight, smPush, requestForm, requestSend, newGroup, createGroup, grpFilter };
+  return { popOut: popSelf, popView, follow, show, back, close, send, ask, askTeams, aim, reply, reload, smNight, smPush, requestForm, requestSend, newGroup, createGroup, grpFilter };
 })();

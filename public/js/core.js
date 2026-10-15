@@ -230,55 +230,60 @@ const $ = id => document.getElementById(id);
 
 
 /* ---------- router ---------- */
-function parseRoute() {
-  if (location.hash === '#/inbox') return { view: 'inbox' };
+function parseRoute(h = location.hash) {
+  // ⧉ a page in its own window (AIG-1313): #/pop-page/<address> is that page's own route, marked popPage.
+  const pp = h.match(/^#\/pop-page\/(.+)$/);
+  if (pp) return { ...parseRoute('#/' + pp[1]), popPage: true };
+  if (h === '#/inbox') return { view: 'inbox' };
   // One inbox list in its own window (AIG-104): q = messages, k = your to-dos, t = to test.
-  const popList = location.hash.match(/^#\/pop-inbox\/([qkt])$/);
+  const popList = h.match(/^#\/pop-inbox\/([qkt])$/);
   if (popList) return { view: 'inbox', popList: popList[1] };
-  if (/^#\/usage/.test(location.hash)) return { view: 'usage' };
-  if (location.hash === '#/assumptions') return { view: 'assumptions' };
-  if (location.hash === '#/bin') return { view: 'bin' };   // the Assistant's bin (AIG-840)
-  if (location.hash === '#/mail') return { view: 'mail' };   // ✉️ Mail inbox list (AIG-902)
-  const stMatch = location.hash.match(/^#\/stats\/([a-z0-9-]+)$/);
+  if (/^#\/usage/.test(h)) return { view: 'usage' };
+  if (h === '#/assumptions') return { view: 'assumptions' };
+  if (h === '#/bin') return { view: 'bin' };   // the Assistant's bin (AIG-840)
+  if (h === '#/mail') return { view: 'mail' };   // ✉️ Mail inbox list (AIG-902)
+  const stMatch = h.match(/^#\/stats\/([a-z0-9-]+)$/);
   if (stMatch) return { view: 'stats', slug: stMatch[1] };   // project stats (AIG-726)
-  const rkMatch = location.hash.match(/^#\/risks\/([a-z0-9-]+)$/);
+  const rkMatch = h.match(/^#\/risks\/([a-z0-9-]+)$/);
   if (rkMatch) return { view: 'risks', slug: rkMatch[1] };   // risk register (AIG-863)
-  const relMatch = location.hash.match(/^#\/releases\/([a-z0-9-]+)$/);
+  const relMatch = h.match(/^#\/releases\/([a-z0-9-]+)$/);
   if (relMatch) return { view: 'releases', slug: relMatch[1] };   // releases (AIG-1154)
-  const ciMatch = location.hash.match(/^#\/ci\/([a-z0-9-]+)$/);
+  const ciMatch = h.match(/^#\/ci\/([a-z0-9-]+)$/);
   if (ciMatch) return { view: 'ci', slug: ciMatch[1] };   // configuration items (AIG-1122)
-  const rvMatch = location.hash.match(/^#\/review\/([a-z0-9-]+)(?:\?month=(\d{4}-\d{2}))?$/);
+  const rvMatch = h.match(/^#\/review\/([a-z0-9-]+)(?:\?month=(\d{4}-\d{2}))?$/);
   if (rvMatch) return { view: 'review', slug: rvMatch[1], month: rvMatch[2] || '' };   // monthly service review (AIG-1155)
-  const keMatch = location.hash.match(/^#\/known-errors(?:\/([a-z0-9-]+))?$/);
+  const keMatch = h.match(/^#\/known-errors(?:\/([a-z0-9-]+))?$/);
   if (keMatch) return { view: 'knownerrors', slug: keMatch[1] || '' };   // known errors list (AIG-1106)
-  if (location.hash === '#/improvements') return { view: 'improvements' };   // 📈 improvement list (AIG-1157)
-  if (location.hash === '#/life') return { view: 'life' };   // 🏡 life admin without tokens (AIG-798)
-  if (location.hash === '#/today') return { view: 'today' };   // Today: Today's project weights (AIG-595)
-  if (location.hash === '#/whats-new') return { view: 'whatsnew' };   // ✨ release notes (AIG-562)
-  if (location.hash === '#/pop-setup') return { view: 'setup', pop: true };   // ⚙️ Setup in its own window (AIG-1030)
-  const setupRoute = location.hash.match(/^#\/setup(?:\/([A-Za-z0-9-]+))?$/);   // #/setup/<section> lands on that part of Setup (AIG-934)
+  if (h === '#/improvements') return { view: 'improvements' };   // 📈 improvement list (AIG-1157)
+  if (h === '#/life') return { view: 'life' };   // 🏡 life admin without tokens (AIG-798)
+  if (h === '#/today') return { view: 'today' };   // Today: Today's project weights (AIG-595)
+  if (h === '#/whats-new') return { view: 'whatsnew' };   // ✨ release notes (AIG-562)
+  if (h === '#/pop-setup') return { view: 'setup', pop: true };   // ⚙️ Setup in its own window (AIG-1030)
+  const setupRoute = h.match(/^#\/setup(?:\/([A-Za-z0-9-]+))?$/);   // #/setup/<section> lands on that part of Setup (AIG-934)
   if (setupRoute) return { view: 'setup', ...(setupRoute[1] ? { sec: setupRoute[1] } : {}) };
-  const suRoute = location.hash.match(/^#\/standups(?:\/([^/]+))?$/);   // AIG-539: #/standups/<project> shows one team
+  const suRoute = h.match(/^#\/standups(?:\/([^/]+))?$/);   // AIG-539: #/standups/<project> shows one team
   if (suRoute) return { view: 'standups', ...(suRoute[1] ? { slug: decodeURIComponent(suRoute[1]) } : {}) };
-  if (location.hash === '#/glossary') return { view: 'glossary' };
-  if (location.hash === '#/pop-weed') return { view: 'weed' };   // 🌿 WeedGlance in its own window (AIG-665)
-  if (location.hash === '#/pop-night') return { view: 'night' };   // 🌙 night glance pop-out (AIG-209)   // dev words explained (AIG-102)
-  const glance = location.hash.match(/^#\/pop-glance(?:\/([^/]+))?$/);
+  if (h === '#/glossary') return { view: 'glossary' };
+  if (h === '#/pop-weed') return { view: 'weed' };   // 🌿 WeedGlance in its own window (AIG-665)
+  if (h === '#/pop-night') return { view: 'night' };   // 🌙 night glance pop-out (AIG-209)   // dev words explained (AIG-102)
+  const glance = h.match(/^#\/pop-glance(?:\/([^/]+))?$/);
   if (glance) return { view: 'glance', slug: glance[1] ? decodeURIComponent(glance[1]) : '' };   // 📊 ScrumGlance in its own window (AIG-688)
-  const watch = location.hash.match(/^#\/pop-watch\/([^/]+)$/);
+  const watch = h.match(/^#\/pop-watch\/([^/]+)$/);
   if (watch) return { view: 'watch', slug: watch[1] };   // 👁 Watch a verbose team in its own window (AIG-154)
-  if (location.hash === '#/pop-twitch') return { view: 'twitch' };   // 🟣 Twitch chat in its own window (AIG-629)
-  const news = location.hash.match(/^#\/pop-news\/([^/]+)$/);
+  const chat = h.match(/^#\/pop-chat(?:\/([^/]+))?$/);
+  if (chat) return { view: 'chat', chat: chat[1] ? decodeURIComponent(chat[1]) : '' };   // 💬 Messages, or one chat, in its own window (AIG-1313)
+  if (h === '#/pop-twitch') return { view: 'twitch' };   // 🟣 Twitch chat in its own window (AIG-629)
+  const news = h.match(/^#\/pop-news\/([^/]+)$/);
   if (news) return { view: 'news', slug: news[1] };   // 📜 Team news in its own window (AIG-319)
-  const shared = location.hash.match(/^#\/shared\/([A-Za-z0-9_-]{22})$/);
+  const shared = h.match(/^#\/shared\/([A-Za-z0-9_-]{22})$/);
   if (shared) return { view: 'shared', link: shared[1] };   // a project a friend shares with me, as its own board (AIG-324)
-  const term = location.hash.match(/^#\/pop-term\/([^/]+)\/([^/]+)\/([^/]+)$/);
+  const term = h.match(/^#\/pop-term\/([^/]+)\/([^/]+)\/([^/]+)$/);
   if (term) return { view: 'term', slug: decodeURIComponent(term[1]), card: decodeURIComponent(term[2]), name: decodeURIComponent(term[3]) };   // ⌨ a terminal in its own window (AIG-471)
-  const dlg = location.hash.match(/^#\/pop-dlg\/([a-z]+)\/([^/]+)$/);
+  const dlg = h.match(/^#\/pop-dlg\/([a-z]+)\/([^/]+)$/);
   if (dlg) return { view: 'dlg', kind: dlg[1], ...(dlg[2] !== '-' ? { slug: dlg[2] } : {}) };   // any dialog in its own window (AIG-658)
-  const pop = location.hash.match(/^#\/pop\/([^/]+)\/([^/]+)/);
+  const pop = h.match(/^#\/pop\/([^/]+)\/([^/]+)/);
   if (pop) return { view: 'project', slug: pop[1], card: pop[2], pop: true };
-  const m = location.hash.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
+  const m = h.match(/^#\/p\/([^/]+)(?:\/([^/]+))?/);
   return m ? { view: 'project', slug: m[1], card: m[2] || null } : { view: 'home' };
 }
 
@@ -315,6 +320,7 @@ function refresh(force) {
     if (refreshController) refreshController.abort();
     if (state.route?.view === 'project') state.lastProject = state.route.slug;
     state.route = target; state.lastSig = state.lastBoardSig = null;
+    pagePopSync(target);   // AIG-1313
     return Inbox.show(force);
   }
   if (refreshPromise) {
@@ -351,6 +357,7 @@ async function refreshStaged(force, liveState, state, api) {
   if (state.route && state.route.view === 'project') state.lastProject = state.route.slug; else if (state.route && state.route.view !== 'inbox') state.lastProject = null;
   state.route = parseRoute();
   const route = JSON.stringify(state.route);
+  pagePopSync(state.route);   // ⧉ Pop out on a page that can (AIG-1313)
   if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; $('filterbar').innerHTML = ''; $('filterbar').dataset.slug = ''; }
   // The inbox page renders itself; forget the last render so leaving it always redraws.
   if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; Object.assign(liveState, state); Inbox.show(force).catch(e => console.error(e)); return; }
@@ -388,7 +395,7 @@ async function refreshStaged(force, liveState, state, api) {
     } else if (state.route.view === 'glance') {
       await ScrumGlance.load(state.route.slug, { signal: refreshController.signal });
       sig = renderSig([state.route, ScrumGlance.data, i18n.lang]);
-    } else if (state.route.view === 'term' || state.route.view === 'twitch') {
+    } else if (state.route.view === 'term' || state.route.view === 'twitch' || state.route.view === 'chat') {
       sig = renderSig([state.route, i18n.lang]);
     } else if (state.route.view === 'glossary') {
       sig = renderSig([state.route, i18n.lang]);
@@ -537,6 +544,7 @@ function render() {
   if (state.route.view === 'dlg') { renderPopDlg(); return; }
   if (state.route.view === 'term') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Term.popView(state.route); return; }
   if (state.route.view === 'twitch') { $('modal').innerHTML = ''; TwitchTab.popView(); return; }
+  if (state.route.view === 'chat') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Dms.popView(state.route.chat); return; }
   if (state.route.view === 'weed') { $('app').innerHTML = Weed.popHtml(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'glance') { $('app').innerHTML = ScrumGlance.popHtml(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
