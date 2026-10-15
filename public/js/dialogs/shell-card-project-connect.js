@@ -1,16 +1,44 @@
 /* ---------- dialog shell ---------- */
+// AIG-1277: every dialog is a modal for screen readers (role=dialog, aria-modal, named by its heading), Tab stays inside, and closing puts focus back on what opened it.
+let dlgOpener = null, dlgLast = null;   // dlgLast: the last focused control outside a dialog (a board redraw can replace the opener while a dialog loads, so closing looks for its twin)
+document.addEventListener('focusin', e => { if (!e.target.closest('#dialog')) dlgLast = { el: e.target, id: e.target.id, cls: e.target.className, tag: e.target.tagName, txt: (e.target.textContent || '').trim(), title: e.target.getAttribute('title') || '' }; });
+function dlgTwin(d) {
+  if (!d) return null; if (document.contains(d.el)) return d.el;
+  if (d.id) return document.getElementById(d.id);
+  return [...document.querySelectorAll(d.tag.toLowerCase())].find(x => x.className === d.cls && (x.textContent || '').trim() === d.txt && (x.getAttribute('title') || '') === d.title) || null;
+}
+const DLG_FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])';
+function dlgFocusables() { return [...$('dialog').querySelectorAll(DLG_FOCUSABLE)].filter(el => el.getClientRects().length && !el.closest('[hidden]')); }
 function openDialog(html, cls = '', pop = '') {   // pop: the kind that gets the shared ⧉ Pop out button (popout.js, AIG-658)
   $('dialog').innerHTML = `<div class="overlay center"><div class="dialog ${cls}">${html}</div></div>`;
   popAddBtn(pop || popTake());
-  const f = $('dialog').querySelector('input[type=text]'); if (f) f.focus();
+  const box = $('dialog').querySelector('.dialog');
+  if (box) {
+    box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.tabIndex = -1;
+    const h = box.querySelector('h2, h1, h3'); if (h) { if (!h.id) h.id = 'dlg-title'; box.setAttribute('aria-labelledby', h.id); }
+  }
+  if (!dlgOpener) dlgOpener = dlgLast;   // a dialog replacing a dialog keeps the first opener
+  const f = $('dialog').querySelector('input[type=text]'); if (f) f.focus(); else if (box && !box.contains(document.activeElement)) (dlgFocusables()[0] || box).focus();
 }
 function closeDialog() {
   if (sureDone) sureDone(false);   // an open askSure is a No
   $('dialog').innerHTML = '';
+  { const el = dlgTwin(dlgOpener); if (el) { try { el.focus(); } catch {} } }
+  dlgOpener = null;
   if (state.route.view === 'dlg') { window.close(); return; }   // a dialog in its own window: closing it closes the window
   if (state.cvPreview) { state.cvPreview = null; renderBoardOnly(); }   // an unsaved card view preview goes away (AIG-119)
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dialog').firstChild) closeDialog(); });
+document.addEventListener('keydown', e => {
+  if (!$('dialog').firstChild) return;
+  if (e.key === 'Escape') { closeDialog(); return; }
+  if (e.key !== 'Tab') return;
+  const els = dlgFocusables(), box = $('dialog').querySelector('.dialog');
+  if (!els.length) { e.preventDefault(); if (box) box.focus(); return; }
+  const first = els[0], last = els[els.length - 1], a = document.activeElement;
+  if (!$('dialog').contains(a)) { e.preventDefault(); first.focus(); }
+  else if (e.shiftKey && (a === first || a === box)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+});
 // An in-app "are you sure?" instead of the browser's plain confirm box (AIG-992): resolves true on the OK button, false on Cancel or Escape.
 let sureDone = null;
 function askSure(title, text, ok) {
