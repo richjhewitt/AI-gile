@@ -1,0 +1,101 @@
+{
+ "unit": "words",
+ "sizes": [
+  {
+   "n": 1,
+   "texts": [
+    "Kanban.",
+    "Roboty.",
+    "Zlecone."
+   ]
+  },
+  {
+   "n": 2,
+   "texts": [
+    "Kanban robotów.",
+    "Agenci, uporządkowani.",
+    "Pomysły, zbudowane."
+   ]
+  },
+  {
+   "n": 3,
+   "texts": [
+    "Kanban dla robotów.",
+    "Pomysły stają się funkcjami.",
+    "Darmowy kanban agentów."
+   ]
+  },
+  {
+   "n": 5,
+   "texts": [
+    "Tablica kanban prowadzona przez agentów.",
+    "Ty piszesz karty. Agenci budują.",
+    "Darmowe, lokalne, testowane, odrobinę zwariowane."
+   ]
+  },
+  {
+   "n": 8,
+   "texts": [
+    "Darmowy kanban, w którym pracują agenci AI.",
+    "Zapisz pomysł. Agenci go zbudują. Ty akceptujesz.",
+    "Agile dla jednego człowieka i wielu cierpliwych robotów."
+   ]
+  },
+  {
+   "n": 13,
+   "texts": [
+    "Tablica kanban na Twoim komputerze, gdzie karty biorą agenci AI.",
+    "Zapisz swój pomysł na karcie. Cały zespół agentów go zbuduje, a tester AI sprawdzi, czy działa.",
+    "Za darmo, bez kont, bez trackerów: tablica, trochę robotów i Ty u steru."
+   ]
+  },
+  {
+   "n": 21,
+   "texts": [
+    "AI-gile to tablica kanban do pracy z agentami programistycznymi AI. Oni biorą karty; Ty testujesz i akceptujesz.",
+    "Każdy projekt dostaje lidera i zespół agentów AI. Skomentuj dowolną kartę, a zespół bierze się do pracy.",
+    "Darmowa, osobista tablica zadań, która działa na Twoim własnym komputerze, bez żadnych kont. Pracują roboty, ale to Ty decydujesz, co jest gotowe."
+   ]
+  },
+  {
+   "n": 34,
+   "texts": [
+    "Wrzucasz pomysły na tablicę. Zespół agentów AI zamienia je w działające funkcje, testuje i oddaje z krokami do wypróbowania. Nic nie liczy się jako zrobione, dopóki Ty tego nie powiesz.",
+    "AI-gile to domowa tablica kanban, którą Rich zbudował przy ogromnej pomocy agentów, którymi teraz zarządza. Jest darmowa, działa na Twoim komputerze i jest dzielona z przyjaciółmi, a nie sprzedawana.",
+    "Wyobraź sobie zwykłą tablicę kanban z kolumnami od Backlogu do Gotowe, tyle że karty biorą agenci AI. Zgłaszają postępy, pytają, gdy utkną, i zawsze czekają na Twój kciuk w górę."
+   ]
+  },
+  {
+   "n": 55,
+   "texts": [
+    "AI-gile to tablica kanban, na której zespół składa się z agentów AI. Każdy projekt ma lidera, który planuje pracę, i pomocników, którzy ją wykonują. Gdy funkcja jest gotowa, tester AI ją wypróbowuje i robi zrzut ekranu, a potem trafia na Twój stos. Zaakceptuj ją albo skomentuj, a oni poprawią.",
+    "Zaczęło się jako sposób jednej osoby na ogarnięcie wielu sesji programowania z AI naraz, a urosło do prawdziwej tablicy. Działa na Twojej maszynie, nie wymaga konta i nie ma trackerów. Jest darmowa dla przyjaciół i ciekawskich. Jest też niedokończona, więc spodziewaj się chropowatości i od czasu do czasu niespodzianki.",
+    "Powiedzmy sobie szczerze. Pomysły nadal musisz mieć sam i wyniki nadal musisz sprawdzać. AI-gile robi wszystko pomiędzy: trzyma karty w porządku, budzi właściwego agenta, gdy napiszesz komentarz, pokazuje dokładnie, co się zmieniło, i zbiera całą resztę w jeden krótki stos, który czeka właśnie na Ciebie."
+   ]
+  },
+  {
+   "n": 89,
+   "texts": [
+    "AI-gile to darmowa tablica kanban, którą uruchamiasz na własnym komputerze. Zamiast ludzi każdy projekt ma zespół agentów AI: lidera, który zamienia Twoje pomysły w karty i plan, oraz pomocników, którzy biorą karty według priorytetu. Gdy coś jest zbudowane, tester AI wykonuje kroki testowe i pokazuje, co zobaczył. Potem całość czeka na jednym stosie zwanym Dla Ciebie. Akceptujesz albo komentujesz, a zespół próbuje jeszcze raz. Nic nie trafia do Gotowe bez Ciebie.",
+    "Kilka rzeczy, których możesz się nie spodziewać. Nocna straż uzupełnia kolumnę Do zrobienia, gdy śpisz, wybierając karty, które nie potrzebują Twojej odpowiedzi. Licznik tokenów pokazuje, ile agenci zużyli dziś i w tym tygodniu, a Tryb bez tokenów każe im przestać wydawać. Możesz pisać do przyjaciół, a prywatne wiadomości są szyfrowane od końca do końca. Tablica mówi w około 120 językach, w tym po niderlandzku, flamandzku, piracku i klingońsku. Nic z tego nie kosztuje ani grosza i nikt nie chce Ci tego sprzedać.",
+    "AI-gile to mały, osobisty projekt, a nie firma. Rich chciał opiekować się kilkoma projektami z AI bez otwierania każdej aplikacji osobno, żeby zobaczyć, co słychać, więc razem z agentami zbudował do tego tablicę, a potem tą samą tablicą zbudował resztę jej samej. Jest w zamkniętej pre-alfie, czyli działa, przeważnie, dla garstki przyjaciół. Nie ma cennika, newslettera ani planu podbijania świata. Jeśli brzmi to przydatnie, poproś o dostęp, gdy otworzy się trochę szerzej."
+   ]
+  },
+  {
+   "n": 144,
+   "texts": [
+    "AI-gile to tablica kanban dla jednego człowieka i bardzo wielu agentów AI. Działa na Twoim własnym komputerze i jest całkowicie darmowa. Dodajesz projekty, a każdy projekt dostaje lidera i mały zespół. Rozmawiasz z liderem, trochę jak na Discordzie, i opisujesz swój pomysł; lider zamienia go w karty i plan, po czym czeka, aż naciśniesz Go. Zespół przechodzi przez karty według priorytetu, korzystając z prostego wiersza poleceń stworzonego dla modeli językowych. Zanim cokolwiek wróci do Ciebie, tester AI wykonuje wszystkie kroki w kopii aplikacji i dołącza zrzut ekranu tego, co zobaczył. Gotowa praca ląduje na Twoim stosie razem ze zmienionymi plikami i diffem. Akceptujesz ją albo zostawiasz komentarz, a wtedy zespół się budzi i próbuje jeszcze raz. Tylko Ty możesz przenieść kartę do kolumny Gotowe, nikt inny i nigdy.",
+    "Dzień z AI-gile, mniej więcej. Wieczorem zostawiasz kilka komentarzy: ten przycisk jest w złym miejscu, tamta lista powinna być posortowana, a czy mógłby być tryb ciemny. Idziesz spać. Agenci czytają komentarze, wprowadzają zmiany, testują je i oddają Ci wyniki. Jeśli kolumna Do zrobienia się opróżni, nocna straż uzupełnia ją kartami z backlogu, które nie potrzebują Twojej odpowiedzi. Rano czeka jeden krótki stos: kilka pytań i kilka rzeczy do wypróbowania, każda z krokami, za którymi trafi nawet niewyspana osoba, i ze zrzutem ekranu działającej wersji. Przeklikujesz wszystko, akceptujesz to, co dobre, i odsyłasz resztę. Licznik tokenów pokazuje, ile to wszystko zużyło, a Tryb bez tokenów czeka na chudsze tygodnie. Potem jesz śniadanie, w czym agenci jeszcze Ci nie pomogą.",
+    "Najpierw to, czym AI-gile nie jest. Nie jest startupem, nie jest na sprzedaż i nikt nie zbiera Twoich danych. To darmowa tablica, która działa na Twoim komputerze, bez kont, bez trackerów i bez ciasteczek. A czym jest: jednym uporządkowanym miejscem, w którym widzisz wszystkie projekty z AI naraz, z zespołem agentów robiącym karty i Tobą podejmującym decyzje. Łączy powiązane karty, poprawia zagmatwane tytuły i pilnuje, żeby kod pozostał szczupły. Mówi w około 120 językach, od niderlandzkiego i flamandzkiego po piracki i klingoński. Przyjaciele mogą do siebie pisać, prywatnie i szyfrowanie. Zbudowali ją Rich i bardzo wielu cierpliwych agentów, głównie korzystając z niej samej. Jest w zamkniętej pre-alfie, więc w niektórych miejscach bywa surowa. Jeśli brzmi to zabawnie, poproś ładnie, a może wejdziesz wcześniej."
+   ]
+  }
+ ],
+ "quips": {
+  "1": "Jedno słowo. Odważnie. Może za odważnie.",
+  "3": "Trzy słowa. Już szczerzej niż większość stron produktów.",
+  "8": "Osiem słów. Nadal krócej niż stand-up.",
+  "21": "Długości to zresztą story pointy. Oczywiście, że tak.",
+  "55": "Pięćdziesiąt pięć słów. Dwie karty skończyły się, gdy to czytasz.",
+  "144": "To ta długa. Nie ma 233. Agenci poszli spać."
+ }
+}
