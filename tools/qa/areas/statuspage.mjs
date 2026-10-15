@@ -64,8 +64,8 @@ def('statuspage', '🟢 status page: public services reach the relay /status.jso
   const mk = (name, service, cards) => ({ slug: name.toLowerCase(), name, service, cards, updated: '2026-10-14T10:00:00Z' });
   const inc = (id, extra, comments) => ({ id, title: SECRET, type: 'incident', status: 'doing', comments: comments || [], ...extra });
   const out = SP.compute([
-    mk('Pub', { on: true, offers: 'Radio', public: true }, [inc('P-1', {}, [{ text: 'Status: minor wobble', at: '2026-10-14T09:00:00Z' }]), inc('P-2', { major: true }, [{ text: SECRET_TXT, at: '2026-10-14T09:30:00Z' }, { text: 'Status: Stream is down', at: '2026-10-14T09:40:00Z' }]), { id: 'P-3', title: 'a bug', type: 'bug', status: 'doing' }]),
-    mk('Quiet', { on: true, public: true }, [inc('Q-1', { major: true }, []), inc('Q-2', { status: 'done' })]),
+    mk('Pub', { on: true, offers: 'Radio', public: true }, [inc('P-1', {}, [{ text: 'Status: minor wobble', at: '2026-10-14T09:00:00Z' }]), inc('P-2', { major: { at: '2026-10-14T09:20:00Z', by: 'Owner', swarm: true, alerted: true } }, [{ text: SECRET_TXT, at: '2026-10-14T09:30:00Z' }, { text: 'Status: Stream is down', at: '2026-10-14T09:40:00Z' }]), { id: 'P-3', title: 'a bug', type: 'bug', status: 'doing' }]),
+    mk('Quiet', { on: true, public: true }, [inc('Q-1', { major: { at: '2026-10-14T09:00:00Z', by: 'Owner' } }, []), inc('Q-2', { status: 'done' })]),
     mk('Green', { on: true, public: true }, []),
     mk('Amber', { on: true, public: true }, [inc('A-1', {})]),
     mk('Private', { on: true }, [inc('X-1', { major: true })]),
