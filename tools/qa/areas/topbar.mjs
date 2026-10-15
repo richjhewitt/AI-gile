@@ -185,5 +185,15 @@ def('tbboard', 'Project board: the header stays on one row at 1280/1024/390 px, 
   await page.reload(); await page.waitForSelector('header .crumb');
   const second = await addCard('Second card, team exists');
   check('with a team member: the new card goes to For the team', second && second.status === 'team', second && second.status);
+  const e = await mkProject(s, 'Empty one', 'EMP');   // AIG-1189: a column's + keeps its status when another project is picked
+  await page.reload(); await page.waitForSelector('header .crumb');
+  await page.evaluate(() => newCard({ status: 'doing' }));
+  await page.waitForSelector('#dialog #nc-project');
+  await page.selectOption('#nc-project', e.slug);
+  await page.fill('#f-title', 'Column plus, other project');
+  await page.click('#dialog button[type=submit]');
+  await sleep(800);
+  const third = (await s.ok('GET', '/api/projects/' + e.slug)).cards.find(c => c.title === 'Column plus, other project');
+  check('a column + then another project: the card keeps the column it was added in', third && third.status === 'doing', third && third.status);
   noErrors(page);
 }, true);

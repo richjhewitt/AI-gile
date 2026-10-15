@@ -2,7 +2,7 @@
 // live agents (read from the roster), plus a Join call button on the same call module with a room worked out on the board
 // (this board + the project). Owner only for the call; an archived or unknown project has no room.
 import crypto from 'node:crypto';
-import { check, tmp, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { check, tmp, mkProject, openPage, noErrors, def, sleep } from '../lib.mjs';
 
 const SECDIR = tmp('meetsec');
 const claims = tok => JSON.parse(Buffer.from(tok.split('.')[1], 'base64url').toString('utf8'));
@@ -58,6 +58,12 @@ def('meeting', '🎥 Meeting Room per project: listed in Messages with the roste
   check('phone width (390): no sideways scroll, the button inside the screen', !fit.over && fit.btnRight <= fit.w, fit);
   await page.emulateMedia({ colorScheme: 'dark' });
   check('dark mode: the button text is readable (not same colour as its background)', await page.evaluate(() => { const c = getComputedStyle(document.getElementById('dmMeetBtn')); return c.color !== c.backgroundColor; }));
+  // AIG-1189: the rooms list polls like the groups list (not held until the board's revision changes)
+  const before = await page.evaluate(() => PagePoll.get('/api/chats/_meetings'));
+  await s.ok('POST', '/api/chats/_groups/meeting-pix/say', { as: 'Pixel', text: 'fresh reply papaya' });
+  await sleep(1200);
+  const after = await page.evaluate(() => PagePoll.get('/api/chats/_meetings'));
+  check('a new line in a room shows in the next poll of the rooms list', !before.find(g => g.id === 'meeting-pix').lastText.includes('papaya') && after.find(g => g.id === 'meeting-pix').lastText.includes('papaya'), after.map(g => g.lastText));
   noErrors(page);
 
   // set up, then the token

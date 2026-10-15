@@ -67,7 +67,7 @@ const PagePoll = (() => {
   // DMs, shares, friends' questions and the all-hands chat live in data/ subfolders and relay memory, which /api/rev
   // does not see: those keep polling at the caller's pace. A project page waits on that project's own stamp, so a
   // swarm in another project doesn't re-download this one (AIG-920 review).
-  const VOLATILE = /^\/api\/(?:dms|shares|ask|chats\/_allhands|chats\/_groups|discord|twitch|mail)\b/;
+  const VOLATILE = /^\/api\/(?:dms|shares|ask|chats\/_allhands|chats\/_groups|chats\/_meetings|discord|twitch|mail)\b/;
   let stamps = {};
   async function tokenFor(url) {
     const r = await revision();
