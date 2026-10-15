@@ -1,5 +1,5 @@
 // QA area: topbar (AIG-575/576). Setup lists the top bar buttons: hide one, reorder, move to the left, colour, reset; the bar follows, and it survives a reload.
-import { check, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { check, mkProject, mkCard, openPage, noErrors, def, sleep } from '../lib.mjs';
 
 def('topbar', 'Setup: top bar buttons on/off, reorder, left or right side, theme colour, Reset to default (AIG-575/576)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -151,4 +151,39 @@ def('tbusage', 'Top bar: ⚡ Usage on the bar (joins a saved pin list once, unpi
   check('phone: no Customise item in the ☰ menu', await page.evaluate(() => document.getElementById('tbCustom').hidden));
   noErrors(page);
   await fresh.close();
+}, true);
+
+// AIG-1180: the project board header is one row at 1280, 1024 and 390 px, light and dark. AIG-1181: a card added where no team exists goes to Backlog, not For the team.
+def('tbboard', 'Project board: the header stays on one row at 1280/1024/390 px, light and dark; a first card with no team goes to Backlog (AIG-1180/1181)', async (s, ctx) => {
+  const p = await mkProject(s, 'A rather long project name for the crumb', 'LNG');
+  await mkCard(s, p.slug, 'Waiting work', { status: 'todo' });
+  openPage.firstrun = true; const fresh = await ctx.browser().newContext({ viewport: { width: 1280, height: 800 } }); let page; try { page = await openPage(fresh, '#/p/' + p.slug); } finally { openPage.firstrun = false; }   // the bar as a new user sees it
+  await page.waitForSelector('header .crumb');
+  for (const theme of ['light', 'dark']) {
+    await page.evaluate(t => { document.documentElement.dataset.theme = t; }, theme);
+    for (const w of [1280, 1024, 390]) {
+      await page.setViewportSize({ width: w, height: 800 });
+      await sleep(250);
+      const m = await page.evaluate(() => { const h = document.querySelector('header'), tops = [...h.children].filter(e => e.getClientRects().length && getComputedStyle(e).position !== 'absolute').map(e => Math.round(e.getBoundingClientRect().top)); return { rows: new Set(tops.map(t => Math.round(t / 12))).size, h: h.offsetHeight, over: document.documentElement.scrollWidth - document.documentElement.clientWidth }; });
+      check(`${theme} ${w}px: header fits (1280 and 390: one row; 1024 may take two) (${m.rows} rows, ${m.h}px)`, m.h <= (w === 1024 ? 100 : 70) && m.over <= 0, JSON.stringify(m));
+      if (theme === 'light' && w === 1280 && process.env.QA_SHOT_DIR) await page.screenshot({ path: process.env.QA_SHOT_DIR + '/header-1280-after.png' }).catch(() => {});
+    }
+  }
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.evaluate(() => { document.documentElement.dataset.theme = 'light'; });
+  const addCard = async title => {
+    await page.evaluate(() => newCard());
+    await page.waitForSelector('#dialog #f-title');
+    await page.fill('#f-title', title);
+    await page.click('#dialog button[type=submit]');
+    await sleep(800);
+    return (await s.ok('GET', '/api/projects/' + p.slug)).cards.find(c => c.title === title);
+  };
+  const first = await addCard('First card, no team');
+  check('no team members: the new card goes to Backlog', first && first.status === 'backlog', first && first.status);
+  await s.ok('POST', `/api/projects/${p.slug}/team`, { name: 'Dev', role: 'Developer' });
+  await page.reload(); await page.waitForSelector('header .crumb');
+  const second = await addCard('Second card, team exists');
+  check('with a team member: the new card goes to For the team', second && second.status === 'team', second && second.status);
+  noErrors(page);
 }, true);

@@ -104,3 +104,6 @@ body.no-power :is(#streamBtn, #twitchBtn, #ntBtn, #tiredBtn, #assumeNav, #glance
 #updateTop, body.desktop #updateTop { position: relative; left: auto; top: auto; transform: none; z-index: 40; width: fit-content; margin-inline: auto; border-radius: 0 0 12px 12px; border-top: 0; justify-content: center; flex-wrap: wrap; padding: 4px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
 #updateTop:not(:has(button)) { display: none; }
 #updateTop button { box-shadow: none; padding-block: 2px; font-size: 13px; }
+/* AIG-1180: a long project name shrinks to an ellipsis in the crumb instead of pushing More and live onto a second row. */
+@media (min-width: 601px) { header .crumb { max-width: clamp(80px, 9vw, 420px); } }
+@media (min-width: 601px) and (max-width: 1399px) { header .alpha-tag { display: none; } }
