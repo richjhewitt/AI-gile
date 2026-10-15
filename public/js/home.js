@@ -44,7 +44,7 @@ function renderHome() {
       ${Break.btn()} ${Break.showerBtn()} ${MyDay.btn()}
       <button onclick="callStandup()" title="${esc(t('standup.all.title'))}">${esc(t('standup.all'))}</button>
       <a class="navlink" href="#/today" title="${esc(t('today.link.title'))}">${esc(t('today.link'))}</a> <a class="navlink" href="#/life" title="${esc(t('la.link.title'))}">${esc(t('la.link'))}</a> <a class="navlink" href="#/standups" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a></div></div>`
-    + (state.setupNeeded ? `<p class="muted finish-setup" id="finishSetup">🧰 ${esc(t('home.finishsetup'))} <a class="navlink" href="#/setup/you">${esc(t('home.finishsetup.go'))}</a></p>` : '') + usageStrip(state.usage) + inbox + Spaces.outStrip() + TodayPage.hiddenLine() + `<div class="grid space-tree">${cards || welcomeCard()}</div>` + (fresh ? '' : smLine(state.sm));
+    + (state.setupNeeded ? `<p class="muted finish-setup" id="finishSetup">🧰 ${esc(t('home.finishsetup'))} <a class="navlink" href="#/setup/you">${esc(t('home.finishsetup.go'))}</a></p>` : '') + usageStrip(state.usage) + inbox + Spaces.outStrip() + TodayPage.hiddenLine() + FirstSteps.html() + `<div class="grid space-tree">${cards || welcomeCard()}</div>` + (fresh ? '' : smLine(state.sm));
 }
 
 // AIG-1073: empty home. #homeWelcomeActions is where more starting buttons go (the sample project, AIG-1072).
@@ -76,3 +76,37 @@ function projCard(p, sp = {}) {
     ${p.lastLog && p.lastLog.author !== 'Dispatcher' ? `<div class="last">📝 ${esc(p.lastLog.text)} · ${ago(p.lastLog.at)}</div>` : ''}
   </a>`;
 }
+
+// AIG-1270: First steps for a new friend. Each step ticks from real state (projects, cards, done counts, the friends list); Hide is kept in
+// localStorage aigile.firstSteps. A busy board (3+ projects or 15+ cards, sample project left out) never shows it, and it goes once all are ticked.
+const FirstSteps = {
+  friends: null,   // number of friends once /api/dms/contacts has answered (null = not known yet)
+  hidden() { try { return localStorage.getItem('aigile.firstSteps') === 'hide'; } catch { return false; } },
+  steps(ps) {
+    const real = (ps || []).filter(p => !p.sample && !p.archived), cards = real.reduce((n, p) => n + (p.total || 0), 0);
+    const board = real[0] ? "location.hash='#/p/" + real[0].slug + "'" : 'newProject()';
+    const list = [
+      { id: 'project', done: real.length > 0, go: 'newProject()' },
+      { id: 'card', done: cards > 0, go: 'newCard()' },
+      { id: 'done', done: real.some(p => p.counts && p.counts.done > 0), go: board },
+      { id: 'invite', done: (FirstSteps.friends || 0) > 0, go: "location.hash='#/setup/dms'" },
+    ];
+    if (!NoAi.on) list.push({ id: 'team', done: real.some(p => (p.team || []).length > 0), go: board });
+    return { list, busy: real.length >= 3 || cards >= 15 };
+  },
+  html() {
+    if (FirstSteps.hidden()) return '';
+    const { list, busy } = FirstSteps.steps(state.projects);
+    if (busy || list.every(x => x.done)) return '';
+    if (FirstSteps.friends === null) FirstSteps.load();
+    const row = x => `<li class="${x.done ? 'done' : ''}" data-step="${x.id}"><span class="fs-tick">${x.done ? '✓' : ''}</span> ${x.done ? esc(t('fs.' + x.id)) : `<a href="#" onclick="event.preventDefault();${x.go}">${esc(t('fs.' + x.id))}</a>`}</li>`;
+    return `<div class="firststeps" id="firstSteps"><div class="fs-head"><b>${esc(t('fs.h'))}</b> <span class="muted">${esc(t('fs.count', { n: list.filter(x => x.done).length, total: list.length }))}</span><span class="grow"></span><button type="button" id="fsHide" onclick="FirstSteps.hide()">${esc(t('fs.hide'))}</button></div><ul>${list.map(row).join('')}</ul></div>`;
+  },
+  hide() { try { localStorage.setItem('aigile.firstSteps', 'hide'); } catch {} const b = document.getElementById('firstSteps'); if (b) b.remove(); },
+  async load() {
+    FirstSteps.friends = 0;
+    try { FirstSteps.friends = (await api('GET', '/api/dms/contacts')).filter(c => !c.blocked).length; } catch {}
+    const b = document.getElementById('firstSteps');
+    if (b && !FirstSteps.hidden()) { const h = FirstSteps.html(); if (h) b.outerHTML = h; else b.remove(); }
+  },
+};
