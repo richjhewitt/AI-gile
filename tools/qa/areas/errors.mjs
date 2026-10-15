@@ -91,6 +91,10 @@ def('errors', 'when things go wrong every screen says plainly what: relay down (
     see('save500', pc.seen);
     check('a failing save (500) says plainly it did not work, nothing raw', pc.seen.length === 2 && pc.seen.every(x => /Something went wrong inside AI-gile/.test(x) && !RAW.test(x.replace('Something went wrong inside AI-gile', ''))), pc.seen);
 
+    // 5b. The relay answered with its own reason (too big, name taken): that reason is shown, not "can't reach the relay" (AIG-1202).
+    const rs = await pc.evaluate(() => ['relay said 413: too big (12 MB at most)', 'Error: relay said 403: that name belongs to another board', 'relay said 404: not found', 'relay said 502', 'relay said 500: TypeError: x at y (z.js:1:2)'].map(m => PagePoll.plain(m, 502)));
+    check('relay refusals keep their reason; bare codes and raw text still read as relay trouble', rs[0] === 'Too big (12 MB at most)' && rs[1] === 'That name belongs to another board' && rs.slice(2).every(x => /Can't reach the relay/.test(x)), rs);
+
     // 6. The board itself goes away while the page is open, then comes back.
     const data = b.data, port = Number(new URL(b.base).port);
     await pb.goto(b.base + '/#/p/bravo'); await pb.waitForSelector('#app > *'); await sleep(500);

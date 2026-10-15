@@ -37,6 +37,9 @@ const PagePoll = (() => {
   // A message the board wrote: kept when it reads as a sentence, swapped for plain words when it is a code, a stack line or JSON.
   const plain = (msg, status) => {
     const m = String(msg == null ? '' : msg).trim();
+    // The relay answered with its own reason (too big, name taken, slow down): that reason is what the person needs, not "can't reach the relay".
+    const said = /\brelay said \d{3}: (.+)$/i.exec(m), why = said ? said[1].trim() : '';
+    if (why && !/^(not found|relay error)$/i.test(why) && plain(why) === why) return why[0].toUpperCase() + why.slice(1);
     if (/relay said|fetch failed|ECONN|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|EHOSTUNREACH|ENETUNREACH|UND_ERR|socket hang up|network|could not reach it|the relay answered|no answer within/i.test(m)) return friendly('relay').message;
     if (!m || /^[A-Za-z]*Error\b|\bat \S+ \(.*:\d+|\bat async\b|^[{[]|"error"|<\/?[a-z]+|\[object|^undefined$|^null$|Unexpected token|is not valid JSON|^\d{3}$|^(Internal Server Error|Bad Gateway|Service Unavailable|Gateway Timeout|Not Found|Failed to fetch|Load failed|NetworkError|AbortError|TimeoutError)/i.test(m)) return friendly(status === 404 ? 'notfound' : 'server').message;
     return m;
