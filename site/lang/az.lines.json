@@ -1,0 +1,101 @@
+{
+ "unit": "words",
+ "sizes": [
+  {
+   "n": 1,
+   "texts": [
+    "Kanban.",
+    "Robotlar.",
+    "Həvalə."
+   ]
+  },
+  {
+   "n": 2,
+   "texts": [
+    "Robot kanbanı.",
+    "Agentlər, nizamlı.",
+    "Fikirlər, qurulub."
+   ]
+  },
+  {
+   "n": 3,
+   "texts": [
+    "Robotlar üçün kanban.",
+    "Fikirlər funksiyaya çevrilir.",
+    "Pulsuz agent kanbanı."
+   ]
+  },
+  {
+   "n": 5,
+   "texts": [
+    "Agentlərin idarə etdiyi kanban lövhəsi.",
+    "Sən kart yazırsan. Agentlər qurur.",
+    "Pulsuz, lokal, sınaqdan keçmiş, azacıq əcaib."
+   ]
+  },
+  {
+   "n": 8,
+   "texts": [
+    "Süni intellekt agentlərinin işlədiyi pulsuz kanban lövhəsi.",
+    "Fikir yaz. Agentlər onu qurur. Sən qəbul edirsən.",
+    "Bir insan və çoxlu səbirli robot üçün çeviklik."
+   ]
+  },
+  {
+   "n": 13,
+   "texts": [
+    "Kompüterində olan kanban lövhəsi, kartları süni intellekt agentləri götürüb işləyir.",
+    "Fikir yaz. Agentlər komandası onu qurur. Test edən isə yoxlayır.",
+    "Pulsuz, hesabsız, izləyicisiz: bir lövhə, bir neçə robot və hər şeyi idarə edən sən."
+   ]
+  },
+  {
+   "n": 21,
+   "texts": [
+    "AI-gile süni intellekt kodlama agentləri ilə işləmək üçün kanban lövhəsidir. Kartları onlar götürür, sən isə sınayıb qəbul edirsən.",
+    "Hər layihənin lideri və süni intellekt agentləri komandası olur. İstənilən karta rəy yaz, komanda dərhal işə başlayır.",
+    "Öz kompüterində işləyən pulsuz, şəxsi tapşırıq lövhəsi. İşçilər robotlardır. Hə deyən isə yalnız sənsən. Qərar həmişə səndədir."
+   ]
+  },
+  {
+   "n": 34,
+   "texts": [
+    "Fikirləri lövhəyə qoyursan. Süni intellekt agentləri komandası onları işləyən funksiyalara çevirir, test edir və sınamaq üçün addımlarla geri qaytarır. Sən demədikcə heç nə bitmiş sayılmır. Hər şey şəffafdır.",
+    "AI-gile Richin indi idarə etdiyi agentlərin böyük köməyi ilə evdə düzəltdiyi kanban lövhəsidir. Pulsuzdur, kompüterində işləyir və dostlarla paylaşılır, satılmır. Bu, sadə, açıq və dostcasına bir layihədir, heç bir qəliz şərti yoxdur.",
+    "Backlogdan Bitdiyə qədər sütunları olan adi kanban lövhəsini təsəvvür et, yalnız kartları süni intellekt agentləri götürür. Gedişatı bildirir, ilişəndə soruşur və həmişə sənin razılığını gözləyir. Hər şey gözünün qabağındadır."
+   ]
+  },
+  {
+   "n": 55,
+   "texts": [
+    "AI-gile komandası süni intellekt agentlərindən ibarət olan kanban lövhəsidir. Hər layihənin işi planlayan lideri və onu quran köməkçiləri var. Funksiya hazır olanda süni intellekt test edən onu sınayır və ekran görüntüsü çəkir, sonra o, sənin yığınına düşür. Qəbul et və ya rəy yaz, onlar yenidən işləsinlər. Heç nə gizlində baş vermir.",
+    "Hər şey bir nəfərin eyni vaxtda çoxlu süni intellekt kodlama sessiyasını izləmək üsulu kimi başladı və real lövhəyə çevrildi. Maşınında işləyir, hesab tələb etmir, izləyicisi yoxdur. Dostlar və maraqlananlar üçün pulsuzdur. Həm də yarımçıqdır, ona görə kobud yerlər və arabir sürprizlər gözlə. Bir sözlə, sakit və səmimi bir layihədir.",
+    "Budur dürüst variant. Fikirləri yenə də sən tapmalısan, nəticələri də yenə sən yoxlamalısan. AI-gile isə arada olan hər şeyi edir: kartları sıraya salır, rəy yazanda lazımi agenti oyadır, nəyin dəyişdiyini dəqiq göstərir və hamısını sənin üçün bir qısa yığında saxlayır. Qısası, hər şey sakit və aydın gedir."
+   ]
+  },
+  {
+   "n": 89,
+   "texts": [
+    "AI-gile öz kompüterində işlətdiyin pulsuz kanban lövhəsidir. İnsanların əvəzinə hər layihənin süni intellekt agentləri komandası var: fikirlərini kartlara və plana çevirən lider və kartları prioritet sırası ilə götürən köməkçilər. Nəsə qurulanda süni intellekt test edən sınaq addımlarını izləyir və gördüyünü sənə göstərir. Sonra o, Sənin üçün adlı bir yığında gözləyir. Qəbul edirsən, ya da rəy yazırsan və komanda yenidən cəhd edir. Sənsiz heç nə heç vaxt Bitdi sütununa çatmır. Hamısı sənin kompüterində qalır.",
+    "Gözləmədiyin bəzi imkanlar var. Gecə növbəsi sən yatanda Görüləcək sütununu doldurur və səndən cavab tələb etməyən kartları seçir. Token sayğacı agentlərin bu gün və bu həftə nə qədər işlətdiyini göstərir, Tokensiz rejim isə onlara xərcləməyi dayandırmağı deyir. Dostlarına mesaj yaza bilərsən, şəxsi mesajlar uçdan-uca şifrələnir. Lövhə holland, flamand, quldur və klinqon daxil təxminən 120 dildə danışır. Bunların heç biri bir qəpik də tutmur, və heç kim də bunu sənə satmağa çalışmır. Yəni hər şey sakit və sadə qalır.",
+    "AI-gile kiçik, şəxsi layihədir, şirkət deyil. Rich bir neçə süni intellekt kodlama layihəsinə baxmaq istəyirdi, amma hər tətbiqi açıb yoxlamadan. Ona görə o və agentlər bunun üçün lövhə qurdular, sonra da lövhənin qalan hissəsini qurmaq üçün ondan istifadə etdilər. İndi qapalı pre-alfadadır, yəni bir ovuc dost üçün, əsasən, işləyir. Qiymət səhifəsi yoxdur, xəbər bülleteni yoxdur, böyümə planı yoxdur. Faydalı görünürsə, bir az daha açılanda sınamaq üçün xahiş edə bilərsən. Tələsmə, hər şey sakit gedir."
+   ]
+  },
+  {
+   "n": 144,
+   "texts": [
+    "AI-gile bir insan və çoxlu süni intellekt agenti üçün kanban lövhəsidir. Öz kompüterində işləyir və tamamilə pulsuzdur. Layihələr əlavə edirsən, hər layihəyə lider və kiçik komanda düşür. Liderlə bir az Discord kimi söhbət edib fikri təsvir edirsən; lider onu kartlara və plana çevirir, sonra sənin Başla düyməsini basmağını gözləyir. Komanda kartları prioritet sırası ilə dil modelləri üçün hazırlanmış sadə əmr sətrindən istifadə edərək işləyir. Hər şey sənə qayıtmamışdan əvvəl süni intellekt test edən tətbiqin nüsxəsində addımları izləyir və ekran görüntüsü əlavə edir. Bitmiş iş dəyişən fayllar və fərqlə birlikdə sənin yığınına düşür. Qəbul edirsən, ya da rəy qoyursan, komanda oyanıb yenidən cəhd edir. Kartı Bitdi sütununa yalnız sən keçirə bilərsən. Hər şey əvvəldən axıra gözünün qabağındadır.",
+    "AI-gile ilə bir gün, təxminən. Axşam bir neçə rəy qoyursan: bu düymə yanlış yerdədir, bu siyahı sıralanmalıdır, tünd rejim ola bilərmi. Yatırsan. Agentlər rəyləri oxuyur, dəyişiklikləri edir, test edir və sənə qaytarır. Görüləcək sütunu boşalarsa, gecə növbəsi onu backlogdan səndən cavab tələb etməyən kartlarla doldurur. Səhər bir qısa yığın olur: bir neçə sual və sınamalı bir neçə şey, hər birinin yuxulu adamın izləyə biləcəyi addımları və işlədiyini göstərən ekran görüntüsü var. Kliklə keçirsən, yaxşıları qəbul edirsən, qalanını geri göndərirsən. Token sayğacı hamısının nə işlətdiyini göstərir, arıq həftələr üçün Tokensiz rejim var. Sonra səhər yeməyi yeyirsən, bunda agentlər hələ kömək edə bilmir. Bütün bunlar sənin öz tempində gedir: heç kim səni tələsdirmir, heç nə səni sıxmır. İstəsən, gün ərzində də baxa bilərsən, çünki hər şey həmişə yerindədir.",
+    "Əvvəlcə AI-gile nə deyil. O, startap deyil, satılmır və heç kim məlumatlarını toplamır. Kompüterində işləyən pulsuz lövhədir, hesabsız, izləyicisiz və cookie-siz. Nə isə: bütün süni intellekt kodlama layihələrini bir yerdə görmək üçün səliqəli bir məkan, kartları agentlər komandası edir, qərarları isə sən verirsən. Əlaqəli kartları birləşdirir, qarışıq başlıqları düzəldir və kodun nə qədər yığcam qaldığına nəzər salır. Holland və flamanddan quldur və klinqon dilinə qədər təxminən 120 dildə danışır. Dostlar bir-birinə şəxsi və şifrələnmiş mesaj yaza bilər. Onu Rich və çoxlu səbirli agent qurub, əsasən özündən istifadə edərək. Qapalı pre-alfadadır, ona görə yerlərdə kobuddur. Əgər əyləncəli görünürsə, nəzakətlə xahiş et, bəlkə erkən girdin. Dostların üçün qapı açıqdır. Maraqlanırsansa, bir az səbir et, tezliklə növbə sənə çatacaq, bir də yoxla."
+   ]
+  }
+ ],
+ "quips": {
+  "1": "Bir söz. Cəsarətli. Bəlkə də çox cəsarətli.",
+  "3": "Üç söz. Artıq çox məhsul səhifəsindən dürüstdür.",
+  "8": "Səkkiz söz. Yenə də ayaqüstü görüşdən qısadır.",
+  "21": "Yeri gəlmişkən, uzunluqlar story point-dir. Əlbəttə ki, elədir.",
+  "55": "Əlli beş söz. Sən bunu oxuyanda iki kart bitdi.",
+  "144": "Bu uzun olanıdır. 233 yoxdur. Agentlər yatmağa gedib."
+ }
+}
