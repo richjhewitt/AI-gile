@@ -1,0 +1,56 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Robots.", "Delegate."] },
+    { "n": 2, "texts": ["Robot kanban.", "Agents, organised.", "Ideas, built."] },
+    { "n": 3, "texts": ["Kanban for robots.", "Features, ideas become.", "Free agent kanban."] },
+    { "n": 5, "texts": [
+      "By agents, run this board is.",
+      "Cards, write you. Build, agents do.",
+      "Free, local, tested, silly, yes."
+    ] },
+    { "n": 8, "texts": [
+      "A free kanban board, where work AI agents do.",
+      "An idea, write you must. Build it, agents will.",
+      "Agile for one human and many patient robots, this is."
+    ] },
+    { "n": 13, "texts": [
+      "A kanban board on your computer, this is, where the cards agents pick up.",
+      "An idea, write you do. Builds it, a team of agents. Checks it, a tester.",
+      "Free it is, no accounts, no trackers: a board, some robots, and in charge, you."
+    ] },
+    { "n": 21, "texts": [
+      "A kanban board for working with AI coding agents, AI-gile is. The cards, they pick up; test and accept them, you do.",
+      "A lead and a team of AI agents, each project gets. On any card comment, and to work the team goes.",
+      "A free, personal to-do board, this is, on your own computer it runs. Robots, the workers are. The one saying yes, you are."
+    ] },
+    { "n": 34, "texts": [
+      "Ideas on a board, you put. Into working features, a team of AI agents turns them, tests them, and hands them back with steps to try. Done, nothing counts as, until so you say.",
+      "A homemade kanban board, AI-gile is, that Rich built, with much help from the agents it now manages. Free it is, on your computer it runs, and with friends shared it is, not sold.",
+      "A normal kanban board, picture, with columns from Backlog to Done, except by AI agents the cards are picked up. Progress they report, questions they ask when stuck, and for your thumbs up, always they wait."
+    ] },
+    { "n": 55, "texts": [
+      "A kanban board, AI-gile is, where made of AI agents the team is. A lead each project has, who plans the work, and helpers who build it. Ready when a feature is, an AI tester tries it and takes a screenshot; then in your pile it lands. Accept it you may, or comment, and rework it they will.",
+      "As one person's way of tracking many AI coding sessions at once, it began, and into a proper board it grew. On your machine it runs, no account it needs, no trackers it has. Free for friends and the curious, it is. Unfinished also, so rough edges expect, and the odd surprise.",
+      "The honest version, here it is. The ideas, still have you must, and the results, still check you must. Everything between, AI-gile does: the cards in order it keeps, the right agent it wakes when you comment, exactly what changed it shows, and in one short pile for you, all of it it keeps."
+    ] },
+    { "n": 89, "texts": [
+      "A free kanban board, AI-gile is, that on your own computer you run. Instead of people, a team of AI agents each project has: a lead who turns your ideas into cards and a plan, and helpers who pick the cards up in priority order. Built when something is, an AI tester follows the test steps and shows you what it saw. Then in one pile marked For you, it waits. Accept it you do, or comment, and another go the team has. To Done, nothing ever reaches without you.",
+      "Some features, unexpected they may be. Topped up the To do column a night watch keeps while you sleep, cards choosing that no answer from you need. How much the agents used today and this week, a token counter shows, and spending to stop, No Token Mode tells them. Message friends you can, and end-to-end encrypted private messages are. About 120 languages the board speaks, Dutch, Flemish, pirate and Klingon among them. A penny, none of it costs, and sell it to you, nobody is trying.",
+      "A small, personal project, AI-gile is, not a company. Several AI coding projects to look after, without opening every app to check, Rich wanted; so a board for it, he and the agents built, then to build the rest of itself, used the board. In closed pre-alpha it is, which means work it does, mostly, for a handful of friends. No pricing page there is, no newsletter, no growth plan. Useful if it sounds, ask to try it you can, when open a little more it is."
+    ] },
+    { "n": 144, "texts": [
+      "A kanban board for one human and a lot of AI agents, AI-gile is. On your own computer it runs, and completely free it is. Projects you add, and a lead and a small team each project gets. With the lead you chat, a bit like Discord, and an idea describe; into cards and a plan the lead turns it, then for you to press Go waits. Through the cards in priority order the team works, using a simple command line made for language models. Before anything comes back to you, the steps in a copy of the app an AI tester follows, and a screenshot attaches. In your pile finished work lands, with the changed files and the diff. Accept it you do, or a comment leave, and wakes up the team and tries again. A card to Done, only you can move.",
+      "A day with AI-gile, roughly, this is. In the evening, a few comments you leave: in the wrong place this button is, sorted that list should be, a dark mode could we have. To bed you go. The comments the agents read, the changes make, test them, and hand them back to you. If dry To do runs, from the backlog the night watch fills it, with cards that no answer from you need. In the morning, one short pile there is: a couple of questions and a few things to try, each with steps a sleepy person can follow and a screenshot of it working. Click through you do, accept the good ones, and send back the rest. What it all used, a token counter shows, and for lean weeks, No Token Mode there is. Then breakfast you have, with which the agents cannot help yet.",
+      "First, what AI-gile is not, say I will. A startup it is not, for sale it is not, and your data nobody is collecting. A free board it is, on your computer it runs, with no accounts, no trackers and no cookies. What it is: one tidy place to see every AI coding project at once, with a team of agents doing the cards and the decisions you making. Related cards together it folds, muddled titles it fixes, and how lean the code stays, an eye it keeps. About 120 languages it speaks, from Dutch and Flemish to pirate and Klingon. Friends can message each other, privately and encrypted. By Rich and a large number of patient agents, built it was, mostly using itself. In closed pre-alpha it is, so rough in places. Like fun if it sounds, ask nicely, and in early you might get."
+    ] }
+  ],
+  "quips": {
+    "1": "One word. Bold. Too bold, perhaps.",
+    "3": "Three words. More honest than most product pages, already.",
+    "8": "Eight words. Shorter than a stand-up, still.",
+    "21": "Story points, the lengths are, by the way. Of course they are.",
+    "55": "Fifty-five words. Two cards finished, while you read that.",
+    "144": "The long one, that is. No 233 there is. To bed, the agents have gone."
+  }
+}

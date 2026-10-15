@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Robotoj.",
+      "Delegite."
+    ] },
+    { "n": 2, "texts": [
+      "Robota kanban.",
+      "Agentoj, ordigitaj.",
+      "Ideoj, konstruitaj."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban por robotoj.",
+      "Ideoj fariĝas funkcioj.",
+      "Senpaga agenta kanban."
+    ] },
+    { "n": 5, "texts": [
+      "Kanban-tabulo gvidata de agentoj.",
+      "Vi skribas kartojn. Agentoj konstruas.",
+      "Senpaga, loka, testita, iom malsaĝa."
+    ] },
+    { "n": 8, "texts": [
+      "Senpaga kanban-tabulo, kie AI-agentoj faras la laboron.",
+      "Skribu ideon. Agentoj konstruas ĝin. Vi akceptas.",
+      "Facilmova por unu homo kaj multaj pacientaj robotoj."
+    ] },
+    { "n": 13, "texts": [
+      "Kanban-tabulo en via komputilo, kie AI-agentoj prenas la kartojn kaj plenumas ilin.",
+      "Skribu ideon. Teamo de agentoj konstruas ĝin. Testanto kontrolas. Vi diras jes.",
+      "Senpaga, sen kontoj, sen spuriloj: tabulo, kelkaj robotoj, kaj vi gvidas."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile estas kanban-tabulo por labori kun AI-programaj agentoj. Ili prenas la kartojn; vi testas kaj akceptas ilin.",
+      "Ĉiu projekto ricevas teamestron kaj teamon de AI-agentoj. Komentu ajnan karton kaj la teamo tuj ekklopodas por vi.",
+      "Senpaga persona tasktabulo, kiu funkcias en via propra komputilo. La laboristoj estas robotoj. Tiu, kiu diras jes, estas vi."
+    ] },
+    { "n": 34, "texts": [
+      "Vi metas ideojn sur tabulon. Teamo de AI-agentoj igas ilin funkciantaj ecoj, testas ilin kaj redonas ilin al vi kun paŝoj por provi. Nenio validas kiel farita, ĝis vi mem tion diras.",
+      "AI-gile estas hejmfarita kanban-tabulo, kiun Rich konstruis kun multe da helpo de la agentoj, kiujn ĝi nun administras. Ĝi estas senpaga, funkcias en via komputilo kaj estas kunhavigata kun amikoj, ne vendata.",
+      "Imagu ordinaran kanban-tabulon, kun kolumnoj de Backlog ĝis Farite, sed la kartojn prenas AI-agentoj. Ili raportas progreson, demandas kiam ili blokiĝas, kaj ĉiam atendas vian aprobon antaŭ ol io finiĝas."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile estas kanban-tabulo, kies teamo konsistas el AI-agentoj. Ĉiu projekto havas teamestron, kiu planas la laboron, kaj helpantojn, kiuj konstruas ĝin. Kiam eco pretas, AI-testanto provas ĝin kaj faras ekrankopion, poste ĝi alvenas en vian stakon. Akceptu ĝin, aŭ komentu kaj ili refaras ĝin.",
+      "Ĝi komenciĝis kiel maniero de unu homo kontroli multajn sesiojn de AI-programado samtempe, kaj kreskis en veran tabulon. Ĝi funkcias en via maŝino, postulas neniun konton kaj havas neniujn spurilojn. Ĝi estas senpaga por amikoj kaj scivolemuloj. Ĝi ankaŭ estas nefinita, do atendu malglataĵojn kaj foje surprizon.",
+      "Jen la honesta versio. Vi ankoraŭ devas havi la ideojn, kaj vi ankoraŭ devas kontroli la rezultojn. Kion AI-gile faras, estas ĉio inter ili: ĝi tenas la kartojn en ordo, vekas la ĝustan agenton kiam vi komentas, montras precize kio ŝanĝiĝis, kaj metas ĉion en unu mallongan stakon por vi."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile estas senpaga kanban-tabulo, kiun vi funkciigas en via propra komputilo. Anstataŭ homoj, ĉiu projekto havas teamon de AI-agentoj: teamestron, kiu igas viajn ideojn kartoj kaj plano, kaj helpantojn, kiuj prenas la kartojn laŭ prioritato. Kiam io estas konstruita, AI-testanto sekvas la testpaŝojn kaj montras al vi, kion ĝi vidis. Poste ĝi atendas en unu stako nomata Por vi. Vi akceptas ĝin, aŭ vi komentas kaj la teamo provas denove. Nenio iam atingas Farite sen vi.",
+      "Kelkaj aferoj, kiujn vi eble ne atendas. Nokta gardo tenas la kolumnon Farotaj plena dum vi dormas, elektante kartojn, kiuj ne bezonas respondon de vi. Ĵetona kalkulilo montras, kiom la agentoj uzis hodiaŭ kaj ĉi-semajne, kaj Senĵetona Reĝimo diras al ili ĉesi elspezi. Vi povas mesaĝi al amikoj, kaj privataj mesaĝoj estas tutvoje ĉifritaj. La tabulo parolas ĉirkaŭ 120 lingvojn, inkluzive de la nederlanda, flandra, pirata kaj klingona. Nenio el ĝi kostas eĉ centon, kaj neniu provas vendi ĝin al vi.",
+      "AI-gile estas eta persona projekto, ne kompanio. Rich volis prizorgi plurajn AI-programajn projektojn sen malfermi ĉiun apon por kontroli ilin, do li kaj la agentoj konstruis tabulon por tio, kaj poste uzis la tabulon por konstrui la reston de si mem. Ĝi estas en fermita antaŭ-alfao, kio signifas, ke ĝi funkcias, plejparte, por manpleno da amikoj. Ne ekzistas prezpaĝo, informletero nek kreskoplano. Se ĝi sonas utila, vi povas peti provi ĝin, kiam ĝi malfermiĝos iom pli."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile estas kanban-tabulo por unu homo kaj multaj AI-agentoj. Ĝi funkcias en via propra komputilo kaj estas tute senpaga. Vi aldonas projektojn, kaj ĉiu projekto ricevas teamestron kaj malgrandan teamon. Vi babilas kun la teamestro, iom kiel en Discord, kaj priskribas ideon; la teamestro igas ĝin kartoj kaj plano, kaj atendas ĝis vi premos Ek. La teamo laboras tra la kartoj laŭ prioritato, per simpla komandlinio farita por lingvomodeloj. Antaŭ ol io revenas al vi, AI-testanto sekvas la paŝojn en kopio de la apo kaj aldonas ekrankopion. Finita laboro alvenas en vian stakon kun la ŝanĝitaj dosieroj kaj la diferenco. Vi akceptas ĝin, aŭ vi lasas komenton kaj la teamo vekiĝas kaj provas denove. Nur vi povas movi karton al Farite.",
+      "Tago kun AI-gile, proksimume. Vespere vi lasas kelkajn komentojn: ĉi tiu butono estas en la malĝusta loko, tiu listo devus esti ordigita, ĉu ni povus havi malhelan reĝimon. Vi iras enlitiĝi. La agentoj legas la komentojn, faras la ŝanĝojn, testas ilin kaj redonas ilin al vi. Se Farotaj malplenas, la nokta gardo replenigas ĝin el la backlog per kartoj, kiuj ne bezonas respondon de vi. Matene estas unu mallonga stako: kelkaj demandoj kaj kelkaj aferoj por provi, ĉiu kun paŝoj, kiujn dormema homo povas sekvi, kaj ekrankopio de ĝia funkciado. Vi klakas tra ili, akceptas la bonajn kaj resendas la reston. Ĵetona kalkulilo montras, kion ĉio uzis, kaj Senĵetona Reĝimo ekzistas por maldikaj semajnoj. Poste vi matenmanĝas, en kio la agentoj ankoraŭ ne povas helpi.",
+      "Unue, kio AI-gile ne estas. Ĝi ne estas noventrepreno, ĝi ne estas vendata, kaj neniu kolektas viajn datumojn. Ĝi estas senpaga tabulo, kiu funkcias en via komputilo, sen kontoj, sen spuriloj kaj sen kuketoj. Kio ĝi estas: unu ordigita loko por vidi ĉiujn AI-programajn projektojn samtempe, kun teamo de agentoj, kiu plenumas la kartojn, kaj vi, kiu decidas. Ĝi kunigas rilatajn kartojn, riparas konfuzajn titolojn kaj gardas, kiom svelta la kodo restas. Ĝi parolas ĉirkaŭ 120 lingvojn, de la nederlanda kaj flandra ĝis la pirata kaj klingona. Amikoj povas mesaĝi unu al la alia, private kaj ĉifrite. Ĝin konstruis Rich kaj granda nombro da pacientaj agentoj, plejparte uzante sin mem. Ĝi estas en fermita antaŭ-alfao, do en kelkaj lokoj ĝi estas malglata. Se ĝi sonas amuza, petu afable kaj vi eble eniros frue."
+    ] }
+  ],
+  "quips": {
+    "1": "Unu vorto. Kuraĝa. Eble tro kuraĝa.",
+    "3": "Tri vortoj. Jam pli honesta ol la plej multaj produktaj paĝoj.",
+    "8": "Ok vortoj. Ankoraŭ pli mallonga ol stand-up.",
+    "21": "La longoj, cetere, estas rakontopunktoj. Kompreneble ili estas.",
+    "55": "Kvindek kvin vortoj. Du kartoj finiĝis dum vi legis tion.",
+    "144": "Tio estis la longa. Ne ekzistas 233. La agentoj enlitiĝis."
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "unit": "words",
+  "sizes": [
+    {
+      "n": 1,
+      "texts": [
+        "Kanban.",
+        "Robotid.",
+        "Delegeeritud."
+      ]
+    },
+    {
+      "n": 2,
+      "texts": [
+        "Robotite kanban.",
+        "Agendid, korras.",
+        "Ideed, ehitatud."
+      ]
+    },
+    {
+      "n": 3,
+      "texts": [
+        "Kanban robotitele.",
+        "Ideedest saavad funktsioonid.",
+        "Tasuta agentide kanban."
+      ]
+    },
+    {
+      "n": 5,
+      "texts": [
+        "Kanban-tahvel, mida agendid täidavad.",
+        "Sina kirjutad kaardid. Agendid ehitavad.",
+        "Tasuta, kohalik, testitud, pisut hullumeelne."
+      ]
+    },
+    {
+      "n": 8,
+      "texts": [
+        "Tasuta kanban-tahvel, kus töötavad tehisaru agendid.",
+        "Kirjuta idee. Agendid ehitavad selle. Sina kiidad heaks.",
+        "Agiilne ühele inimesele ja paljudele kannatlikele robotitele."
+      ]
+    },
+    {
+      "n": 13,
+      "texts": [
+        "Kanban-tahvel sinu arvutis, kust tehisaru agendid kaardid üles korjavad ja ära teevad.",
+        "Kirjuta idee. Agentide tiim ehitab selle. Testija kontrollib. Sina ütled jah.",
+        "Tasuta, ilma kontode ja jälgijateta: üks tahvel, mõned robotid ja sina juhtohjade juures."
+      ]
+    },
+    {
+      "n": 21,
+      "texts": [
+        "AI-gile on kanban-tahvel tööks tehisaruga programmeerivate agentidega. Nemad võtavad kaardid ette; sina testid ja kiidad need heaks.",
+        "Igal projektil on tiimijuht ja tehisaru agentide tiim. Kommenteeri suvalist kaarti ja tiim võtab kohe töö ette.",
+        "Tasuta isiklik ülesannete tahvel, mis töötab sinu enda arvutis. Töölised on robotid. See, kes ütleb jah, oled sina."
+      ]
+    },
+    {
+      "n": 34,
+      "texts": [
+        "Paned ideed tahvlile. Tehisaru agentide tiim muudab need töötavateks funktsioonideks, testib ja annab sulle tagasi koos sammudega proovimiseks. Midagi ei loeta tehtuks enne, kui sa seda ise ütled.",
+        "AI-gile on kodus tehtud kanban-tahvel, mille Rich ehitas suure abiga agentidelt, keda see nüüd haldab. See on tasuta, töötab sinu arvutis ja seda jagatakse sõpradega, mitte ei müüda.",
+        "Kujuta ette tavalist kanban-tahvlit, veergudega Backlogist kuni Valmisini, ainult et kaarte võtavad ette tehisaru agendid. Nad annavad edust teada, küsivad, kui jäävad kinni, ja ootavad alati sinu pöidlaid püsti."
+      ]
+    },
+    {
+      "n": 55,
+      "texts": [
+        "AI-gile on kanban-tahvel, mille tiim koosneb tehisaru agentidest. Igal projektil on tiimijuht, kes tööd planeerib, ja abilised, kes selle ehitavad. Kui funktsioon on valmis, proovib tehisaru testija seda ja teeb ekraanipildi, seejärel jõuab see sinu hunnikusse. Kiida heaks või kommenteeri, ja nad teevad selle ümber.",
+        "See sai alguse ühe inimese viisist hoida silma peal paljudel tehisaruga programmeerimise seanssidel korraga ja kasvas päris tahvliks. See töötab sinu masinas, ei vaja kontot ja jälgijaid pole. Sõpradele ja uudishimulikele on see tasuta. Samas on see pooleli, nii et oota konarusi ja mõnd üllatust.",
+        "Siin on aus versioon. Ideed peavad endiselt olema sinul ja tulemusi pead endiselt kontrollima sina. Kõik vahepealse teeb AI-gile: hoiab kaardid korras, äratab õige agendi, kui kommenteerid, näitab täpselt, mis muutus, ja paneb kõik sinu jaoks ühte lühikesse hunnikusse. Kõik see käib sinu enda arvutis, ilma kontota, ja iga samm on tehtud nii, et saaksid selle hõlpsalt tagasi pöörata."
+      ]
+    },
+    {
+      "n": 89,
+      "texts": [
+        "AI-gile on tasuta kanban-tahvel, mida käitad oma arvutis. Inimeste asemel on igal projektil tehisaru agentide tiim: tiimijuht, kes muudab sinu ideed kaartideks ja plaaniks, ning abilised, kes võtavad kaardid ette tähtsuse järjekorras. Kui midagi on ehitatud, järgib tehisaru testija testisamme ja näitab sulle, mida nägi. Seejärel ootab see ühes hunnikus nimega Sulle. Kiidad heaks või kommenteerid ja tiim proovib uuesti. Ükski kaart ei jõua kunagi veergu Valmis ilma sinuta. Kõik see käib sinu arvutis, ilma kontota ja ilma tasuta, nii et ainus hind on sinu tähelepanu.",
+        "Mõned asjad, mida sa ehk ei oota. Öövalve hoiab veeru Tegemata täidetuna, kui sa magad, valides kaarte, mis ei vaja sinu vastust. Tokenite loendur näitab, kui palju agendid täna ja sel nädalal kasutasid, ja Tokenivaba režiim käsib neil kulutamise lõpetada. Sa saad sõpradele kirjutada ning privaatsõnumid on otspunktkrüpteeritud. Tahvel räägib umbes 120 keelt, sealhulgas hollandi, flaami, piraadi ja klingoni keelt. Midagi sellest ei maksa sentigi ja keegi ei püüa seda sulle müüa.",
+        "AI-gile on väike isiklik projekt, mitte ettevõte. Rich tahtis hoolitseda mitme tehisaruga programmeerimise projekti eest, avamata iga rakendust, et järele vaadata. Nii ehitasid tema ja agendid selleks tahvli ning kasutasid seejärel tahvlit, et ehitada ülejäänud osa temast endast. See on suletud eelalfas, mis tähendab, et see töötab, enamasti, käputäiele sõpradele. Hinnalehte, uudiskirja ega kasvuplaani pole. Kui see tundub kasulik, saad paluda proovimist, kui see veidi rohkem avaneb. Praegu on see lihtsalt üks tahvel, paar tosinat robotit ja inimene, kes üritab asjad kontrolli all hoida."
+      ]
+    },
+    {
+      "n": 144,
+      "texts": [
+        "AI-gile on kanban-tahvel ühele inimesele ja paljudele tehisaru agentidele. See töötab sinu enda arvutis ja on täiesti tasuta. Lisad projekte ning iga projekt saab tiimijuhi ja väikese tiimi. Vestled tiimijuhiga, natuke nagu Discordis, ja kirjeldad ideed; tiimijuht teeb sellest kaardid ja plaani ning ootab, kuni vajutad Alusta. Tiim töötab kaardid läbi tähtsuse järjekorras, kasutades lihtsat käsurida, mis on tehtud keelemudelitele. Enne kui miski sinuni tagasi jõuab, järgib tehisaru testija samme rakenduse koopias ja lisab ekraanipildi. Valmis töö jõuab sinu hunnikusse koos muudetud failide ja erinevustega. Kiidad heaks või jätad kommentaari ning tiim ärkab ja proovib uuesti. Ainult sina saad kaardi veergu Valmis tõsta. Kõik see käib ilma kontota, ilma jälgijateta ja ilma maksuta, ning töö jääb alati sinu enda arvutisse. Kui tahad, vaheta keelt: tahvel räägib umbes 120 keelt, hollandi keelest klingoni keeleni.",
+        "Päev AI-gile'iga, umbes. Õhtul jätad paar kommentaari: see nupp on valel kohal, too nimekiri võiks olla sorteeritud, kas saaks tumeda režiimi? Lähed magama. Agendid loevad kommentaarid, teevad muudatused, testivad need ja annavad sulle tagasi. Kui Tegemata saab tühjaks, täidab öövalve selle backlogist kaartidega, mis ei vaja sinu vastust. Hommikul ootab üks lühike hunnik: paar küsimust ja mõned asjad proovimiseks, igaühel sammud, mida unine inimene jaksab järgida, ja ekraanipilt töötamisest. Klõpsad läbi, kiidad head heaks ja saadad ülejäänud tagasi. Tokenite loendur näitab, mida see kõik kulutas, ja Tokenivaba režiim on kõhnadeks nädalateks. Siis sööd hommikust, milles agendid veel aidata ei saa. Nädalavahetusel võid kogu asja ka rahule jätta; agendid ootavad, kuni sa tagasi tuled, ja siis saad rahulikult otsustada, mis on järgmine.",
+        "Kõigepealt see, mis AI-gile ei ole. See ei ole idufirma, see ei ole müügil ja keegi ei kogu sinu andmeid. See on tasuta tahvel, mis töötab sinu arvutis, ilma kontode, jälgijate ja küpsisteta. Mis see on: üks korralik koht, kus näha kõiki tehisaruga programmeerimise projekte korraga, agentide tiim teeb kaardid ära ja sina teed otsused. See liidab seotud kaardid, parandab segased pealkirjad ja hoiab silma peal, kui kerge kood püsib. See räägib umbes 120 keelt, hollandi ja flaami keelest piraadi ja klingoni keeleni. Sõbrad saavad omavahel kirjutada, privaatselt ja krüpteeritult. Selle ehitasid Rich ja väga palju kannatlikke agente, enamasti iseennast kasutades. See on suletud eelalfas, nii et kohati on see kare. Kui see tundub lõbus, küsi viisakalt ja pääsed ehk vara sisse."
+      ]
+    }
+  ],
+  "quips": {
+    "1": "Üks sõna. Julge. Võib-olla liiga julge.",
+    "3": "Kolm sõna. Juba ausam kui enamik tootelehti.",
+    "8": "Kaheksa sõna. Ikka lühem kui stand-up.",
+    "21": "Pikkused on muide story pointid. Muidugi on.",
+    "55": "Viiskümmend viis sõna. Kaks kaarti said valmis, kui sa seda lugesid.",
+    "144": "See oli pikk versioon. 233 pole olemas. Agendid läksid magama."
+  }
+}
