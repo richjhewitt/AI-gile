@@ -16,7 +16,7 @@
     var before={};Object.keys(els).forEach(function(id){if(els[id].isConnected)before[id]=els[id].getBoundingClientRect()});
     var seen={};cols.textContent="";
     (s.columns||[]).forEach(function(c){
-      var d=mk("div","lv-col"),h=mk("h3",null,label(c.label));d.appendChild(h);
+      var d=mk("div","lv-col k-"+String(c.id).replace(/[^a-z]/g,"")),h=mk("h3",null,label(c.label));d.appendChild(h);
       var all=(s.cards||[]).filter(function(x){return x.status===c.id}),n=all.length;
       all.slice(-MAX).forEach(function(c2){
         seen[c2.id]=1;
@@ -33,10 +33,10 @@
     Object.keys(seen).forEach(function(id){
       var e=els[id],b=before[id];if(!b)return;var r=e.getBoundingClientRect(),dx=b.left-r.left,dy=b.top-r.top;
       if(Math.abs(dx)<1&&Math.abs(dy)<1)return;
-      e.style.transition="none";e.style.transform="translate("+dx+"px,"+dy+"px)";e.style.position="relative";e.style.zIndex=2;
+      e.classList.add("moved");e.style.transition="none";e.style.transform="translate("+dx+"px,"+dy+"px)";e.style.position="relative";e.style.zIndex=2;
       requestAnimationFrame(function(){requestAnimationFrame(function(){
         e.style.transition="transform .6s ease";e.style.transform="";
-        setTimeout(function(){e.style.transition="";e.style.zIndex="";e.style.position=""},700)})});
+        setTimeout(function(){e.style.transition="";e.style.zIndex="";e.style.position=""},700);setTimeout(function(){e.classList.remove("moved")},1500)})});
     });
   }
   function start(){

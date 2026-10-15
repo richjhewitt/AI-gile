@@ -133,12 +133,19 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 .live-stat:first-letter{color:#22c55e}
 .live-scroll{overflow-x:auto;text-align:start;padding-bottom:8px}
 .lv-cols{display:flex;gap:10px;align-items:flex-start;min-width:max-content}
-.lv-col{flex:0 0 150px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px;min-height:60px}
-.lv-col h3{font-size:11px;margin:0 2px 8px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
-.lv-n{font-weight:400;opacity:.7}
-.lv-card{height:8px;border-radius:4px;margin:0 0 6px;background:var(--accent)}
-.lv-card.t-bug{background:#ef4444}.lv-card.t-incident{background:#f97316}.lv-card.t-task{background:#8b5cf6}.lv-card.t-feature{background:var(--accent)}
-.lv-card.p-urgent,.lv-card.p-high{height:12px;box-shadow:0 0 0 2px color-mix(in srgb,var(--diamond) 55%,transparent)}
+.live{--c-bug:#dc2626;--c-task:#9333ea;--c-feat:#3b6cf6;--c-inc:#d97706;--c-done:#1f9d61;--c-mute:#5f697d}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .live{--c-bug:#f06262;--c-task:#b57cff;--c-feat:#6d93ff;--c-inc:#f0a33a;--c-done:#34c77b;--c-mute:#9da5b8}}
+:root[data-theme="dark"] .live{--c-bug:#f06262;--c-task:#b57cff;--c-feat:#6d93ff;--c-inc:#f0a33a;--c-done:#34c77b;--c-mute:#9da5b8}
+.lv-col{--k:var(--c-mute);flex:0 0 150px;background:color-mix(in srgb,var(--k) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--k) 24%,var(--line));border-top:3px solid var(--k);border-radius:10px;padding:8px;min-height:60px}
+.lv-col.k-todo{--k:var(--c-feat)}.lv-col.k-doing{--k:var(--c-inc)}.lv-col.k-review,.lv-col.k-team{--k:var(--c-task)}.lv-col.k-verify{--k:var(--c-bug)}.lv-col.k-done{--k:var(--c-done)}
+.lv-col h3{font-size:11px;margin:0 2px 8px;text-transform:uppercase;letter-spacing:.04em;color:var(--k);font-weight:700}
+.lv-n{font-weight:400;opacity:.8;color:var(--muted)}
+.lv-card{--t:var(--c-feat);height:10px;border-radius:5px;margin:0 0 6px;background:linear-gradient(90deg,var(--t),color-mix(in srgb,var(--t) 55%,transparent))}
+.lv-card.t-bug{--t:var(--c-bug)}.lv-card.t-incident{--t:var(--c-inc)}.lv-card.t-task{--t:var(--c-task)}.lv-card.t-feature{--t:var(--c-feat)}
+.lv-card.p-high{height:14px;box-shadow:0 0 0 2px color-mix(in srgb,var(--c-inc) 70%,transparent)}
+.lv-card.p-urgent{height:14px;box-shadow:0 0 0 2px var(--c-bug)}
+.lv-card.moved{animation:lvglow 1.4s ease-out}
+@keyframes lvglow{0%{box-shadow:0 0 0 2px var(--t),0 0 12px 3px color-mix(in srgb,var(--t) 75%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
 .live-msg{color:var(--muted);margin:16px 0}
 .live-cap{color:var(--muted);font-size:14px;margin:12px 0 0}
 .live.off .live-cap{display:none}
