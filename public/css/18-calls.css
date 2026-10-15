@@ -33,3 +33,6 @@
   *, *::before, *::after { animation-duration: .001s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; transition-delay: 0s !important; scroll-behavior: auto !important; }
   .newflash { animation: none; outline: 2px solid var(--accent); }
 }
+.dm-joinrow { margin-top: 6px; }
+.dm-joinbtn { background: var(--accent); color: var(--on-fill); border-color: var(--accent); font-weight: 600; }
+.call-tap { align-self: stretch; background: var(--accent); color: var(--on-fill); border-color: var(--accent); font-weight: 600; }

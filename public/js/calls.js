@@ -52,7 +52,7 @@ const Call = (() => {
     p.setAttribute('aria-label', t('lkcall.aria', { name: title })); p.classList.toggle('mini', mini);
     p.hidden = false;
     if (devs) devList();
-    tiles();
+    tiles(); tap();
   }
   // One tile per person: their camera (or screen share) if any, else their name. Audio plays from hidden elements.
   // AIG-1171: tiles and videos are kept and updated, not rebuilt: each track is attached once (vids), and a track that is gone
@@ -101,6 +101,16 @@ const Call = (() => {
     }
     return PagePoll.plain(msg, 0);
   }
+  // AIG-1239: the browser blocked sound until the page is tapped: a Tap to hear button above the buttons until room.startAudio() works.
+  function tap() {
+    const p = el('callPanel'), old = el('callTap'), blocked = !!(room && p && !p.hidden && room.canPlaybackAudio === false);
+    if (!blocked) { if (old) old.remove(); return; }
+    if (old) return;
+    const b = Object.assign(document.createElement('button'), { type: 'button', id: 'callTap', className: 'call-tap', textContent: t('lkcall.tap') });
+    b.onclick = startAudio;
+    p.insertBefore(b, p.querySelector('.call-bar'));
+  }
+  async function startAudio() { try { if (room) await room.startAudio(); } catch (e) { err(e); } tap(); }
   const err = (e, kind) => { const x = el('callErr'); if (x) x.textContent = e ? plainErr(e, kind) : ''; };
   // AIG-1245: pick the microphone, camera and speaker (browsers that cannot switch the speaker simply list none)
   async function devList() {
@@ -139,6 +149,7 @@ const Call = (() => {
       r.on(E.TrackSubscribed, (track, pub, p) => { if (g !== gen) return; if (track.kind === 'audio') { const a = track.attach(); a.className = 'call-audio'; a.dataset.who = p.identity; a.hidden = true; document.body.appendChild(a); } again(); })
         .on(E.TrackUnsubscribed, track => { track.detach().forEach(x => x.remove()); again(); })
         .on(E.ParticipantConnected, p => { again(); live(t('lkcall.joined', { name: p.name || p.identity })); }).on(E.ParticipantDisconnected, p => { again(); live(t('lkcall.left', { name: p.name || p.identity })); }).on(E.ActiveSpeakersChanged, again)
+        .on(E.AudioPlaybackStatusChanged, () => { if (room === r || pending === r) tap(); })
         .on(E.TrackMuted, again).on(E.TrackUnmuted, again).on(E.LocalTrackPublished, () => room === r && paint()).on(E.LocalTrackUnpublished, () => room === r && paint())
         .on(E.Reconnecting, () => { if (room === r) { recon = true; const st = el('callState'); if (st) st.textContent = stateText(); } })
         .on(E.Reconnected, () => { if (room === r) { recon = false; const st = el('callState'); if (st) st.textContent = stateText(); } })
@@ -176,7 +187,28 @@ const Call = (() => {
   // Leave also stops a join still on its way: its room is disconnected, and the join sees gen moved on.
   async function leave() { gen++; busy = 0; const r = room || pending; room = null; pending = null; if (r) { try { await r.disconnect(); } catch {} } cleanup(); }
   function close() { if (!room) cleanup(); }
-  return { join, leave, close, note, mic, cam, screen, mini: shrink, devices, pick, active: () => !!room, get room() { return room; } };
+  /* ---------- an incoming call: a Join button, a ring and a notification (AIG-1237, AIG-1238) ---------- */
+  const FRESH_MS = 15 * 60000, RING_MS = 90000;   // a call line is joinable for 15 minutes; only a call that just arrived rings
+  const fresh = at => { const x = Date.parse(at); return Number.isFinite(x) && Date.now() - x < FRESH_MS; };
+  const rung = new Map(); let primed = false, ringTimer = null;   // contact -> the lastIn that already rang; the first look never rings (old calls)
+  function ring(people) {
+    for (const c of people || []) {
+      if (!(c.lastDir === 'in' && c.lastKind === 'call' && c.lastIn) || rung.get(c.id) === c.lastIn) continue;
+      rung.set(c.id, c.lastIn);
+      if (!primed || Date.now() - Date.parse(c.lastIn) > RING_MS || room || pending) continue;
+      const ib = typeof IB !== 'undefined' ? IB : null;
+      if (!ib || !ib.alertsOn || !ib.alertsOn() || document.documentElement.hasAttribute('data-focus') || document.documentElement.hasAttribute('data-break')) continue;   // same rules as the inbox beep
+      let n = 0; clearInterval(ringTimer);
+      const beep = () => { if (n++ >= 4 || room || pending) return clearInterval(ringTimer); try { ib.beep(); } catch {} };
+      beep(); ringTimer = setInterval(beep, 1500);
+      try {
+        const nt = new Notification(t('lkcall.ring', { name: c.name }), { body: t('lkcall.ring.body'), tag: 'aigile-call-' + c.id });
+        nt.onclick = () => { clearInterval(ringTimer); notifyGo({ chat: 'dm:' + c.id }); nt.close(); dmCall(c.id, c.name); };
+      } catch {}
+    }
+    primed = true;
+  }
+  return { join, leave, close, note, fresh, ring, startAudio, mic, cam, screen, mini: shrink, devices, pick, active: () => !!room, get room() { return room; } };
 })();
 
 /* ---------- 📞 in a friend's DM ---------- */

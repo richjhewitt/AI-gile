@@ -33,7 +33,7 @@ function stubLivekit() {
     static async getLocalDevices(k) { return k === 'audiooutput' ? [{ deviceId: 'spk1', label: 'Speakers' }] : [{ deviceId: k + '1', label: 'Default ' + k }, { deviceId: k + '2', label: 'Headset ' + k }]; }
     getActiveDevice(k) { return (log.dev || {})[k] || k + '1'; }
     async switchActiveDevice(k, id) { (log.dev = log.dev || {})[k] = id; } }
-  const E = ['TrackSubscribed', 'TrackUnsubscribed', 'ParticipantConnected', 'ParticipantDisconnected', 'ActiveSpeakersChanged', 'TrackMuted', 'TrackUnmuted', 'LocalTrackPublished', 'LocalTrackUnpublished', 'Disconnected', 'Reconnecting', 'Reconnected'];
+  const E = ['AudioPlaybackStatusChanged', 'TrackSubscribed', 'TrackUnsubscribed', 'ParticipantConnected', 'ParticipantDisconnected', 'ActiveSpeakersChanged', 'TrackMuted', 'TrackUnmuted', 'LocalTrackPublished', 'LocalTrackUnpublished', 'Disconnected', 'Reconnecting', 'Reconnected'];
   window.LivekitClient = { Room, RoomEvent: Object.fromEntries(E.map(e => [e, e])), Track: { Source: { Camera: 'camera', ScreenShare: 'screen_share', Microphone: 'microphone' } }, Track_: Track, P };
 }
 const roomFor = (m1, m2) => 'aigile-dm-' + crypto.createHash('sha256').update('aigile-call-v1|' + [m1, m2].sort().join('|')).digest('hex').slice(0, 32);
@@ -224,6 +224,36 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     check('right-to-left: the panel sits on the start side', pn.rtlLeft, pn);
     check('the call ending on its own says so with a reason (not a silent close)', /closed/.test(pn.ended || '') && !pn.active, pn);
     check('mic blocked / missing: plain words, still in the call', /blocked the microphone/.test(pn.blocked) && pn.stillIn && /No microphone found/.test(pn.none), pn);
+    // AIG-1239: the browser blocked sound: a Tap to hear button shows in the panel, and a tap starts it
+    await pg.evaluate(() => { const r = Call.room; r.canPlaybackAudio = false; r.startAudio = async () => { r.canPlaybackAudio = true; r.emit('AudioPlaybackStatusChanged'); }; r.emit('AudioPlaybackStatusChanged'); });
+    check('sound blocked: a Tap to hear button shows', await pg.locator('#callTap').count() === 1);
+    await pg.click('#callTap');
+    await pg.waitForFunction(() => !document.getElementById('callTap'));
+    check('tapped: sound allowed, the button is gone', await pg.evaluate(() => Call.room.canPlaybackAudio === true));
+    await pg.evaluate(() => Call.leave());
+    // AIG-1237: the friend's call line has a Join button (only while fresh); it joins the call
+    await b.ok('POST', `/api/calls/dm/${ca.id}/token`, {});
+    await pg.evaluate(id => Dms.show('dm:' + id), cb.id);
+    await pg.waitForSelector('.dm-msg.dm-call:not(.mine) .dm-joinbtn');
+    check('a fresh incoming call line has a Join button', true);
+    await pg.evaluate(r => { window.lkLog.connects.length = 0; window.lkRoomName = r; }, room);
+    await pg.click('.dm-msg.dm-call:not(.mine) .dm-joinbtn');
+    await pg.waitForFunction(() => Call.active());
+    check('Join joins the call', await pg.evaluate(() => lkLog.connects.length === 1));
+    check('an old call (an hour ago) is not joinable', await pg.evaluate(() => Call.fresh(new Date().toISOString()) && !Call.fresh(new Date(Date.now() - 3600e3).toISOString())));
+    await pg.evaluate(() => Call.leave());
+    // AIG-1238: a call that just arrived rings and notifies (the inbox alert rules); an old one, or the same one twice, does not
+    const ring = await pg.evaluate(() => {
+      let notes = 0, beeps = 0, click = null; window.Notification = function (title) { notes++; this.title = title; this.close = () => {}; click = this; };
+      IB.alertsOn = () => true; IB.beep = () => { beeps++; };
+      const one = { id: 'zz', name: 'Zed', lastDir: 'in', lastKind: 'call', lastIn: new Date().toISOString() };
+      Call.ring([one]); const first = { notes, beeps, title: click && click.title }; Call.ring([one]);
+      Call.ring([{ ...one, id: 'old', lastIn: new Date(Date.now() - 3600e3).toISOString() }]);
+      Call.ring([{ ...one, id: 'txt', lastKind: '' }]);
+      return { first, notes, beeps };
+    });
+    check('a call that just arrived: one notification and a beep, named', ring.first.notes === 1 && ring.first.beeps === 1 && /Zed/.test(ring.first.title), ring);
+    check('the same call twice, an hour-old one and a plain message do not ring', ring.notes === 1, ring);
     await pg.evaluate(() => Call.leave());
     noErrors(page); noErrors(setup); noErrors(pg);
     const cleared = await a.ok('POST', '/api/calls', { clear: true, token: tok });
