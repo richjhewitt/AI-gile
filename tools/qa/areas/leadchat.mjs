@@ -35,7 +35,13 @@ def('leadchat', '💬 Lead chat: DMs go to one chat per project, not a card each
   const r = s.cli(['chat', 'chatty', `Made ${card.id} for it.`, '--as', 'Lead']);
   check('aigile chat "text" --as replies', r.code === 0 && (await s.ok('GET', '/api/projects/chatty/leadchat')).unanswered === 0, r);
   const inbox = await s.ok('GET', '/api/inbox');
-  check('the reply waits in the inbox', inbox.some(i => i.leadChat && i.project === 'chatty' && i.id === 'chat'), inbox.map(i => i.id));
+  check('a plain reply is not a question in the inbox', !inbox.some(i => i.leadChat && i.project === 'chatty'), inbox.map(i => i.id));   // AIG-1219
+  const waits = async () => (await s.ok('GET', '/api/inbox')).some(i => i.leadChat && i.project === 'chatty' && i.id === 'chat');
+  await s.ok('POST', '/api/projects/chatty/leadchat', { author: 'Lead', text: 'Shall I go ahead?' });
+  check('a reply ending in ? waits in the inbox', await waits());
+  await s.ok('POST', '/api/projects/chatty/leadchat', { author: 'Lead', text: 'On it.' });
+  check('a plain follow-up does not', !(await waits()));
+  check('aigile chat --ask waits in the inbox', s.cli(['chat', 'chatty', `Need your call on the colour for ${card.id}`, '--as', 'Lead', '--ask']).code === 0 && await waits());
   await page.goto(page.url().replace(/#.*/, '') + '#/inbox');
   await page.waitForSelector('#ib .ib-item, .ib-item', { timeout: 8000 });
   check('the inbox item says Lead chat and links the card id', /Lead chat/.test(await page.textContent('.ib-item')) && !!(await page.$(`.ib-item a[href="#/p/chatty/${card.id}"]`)));

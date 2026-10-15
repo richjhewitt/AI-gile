@@ -17,7 +17,7 @@ node "../AI-gile/aigile.js" <command> <project> ...
 ```
 aigile brief <proj>              # the whole picture in one call (not BOARD.local.md)
 aigile updates <proj>            # what the owner said since you last looked
-aigile chat <proj> ["text" --as NAME]   # the Lead chat (no cards): no text = recent messages, text = your reply; if talk becomes work, make a card and post its id there
+aigile chat <proj> ["text" --as NAME]   # the Lead chat (no cards): no text = recent messages, text = your reply (--ask if it needs his answer); if talk becomes work, make a card and post its id there
 aigile next <proj>               # what to work on
 aigile show <proj> <id>          # full card and conversation: read before starting
 aigile open <proj> <id> --as NAME  # pop the card open in the owner's app (only while it is in front; else a chip)
