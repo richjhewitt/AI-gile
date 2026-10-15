@@ -85,6 +85,7 @@ def('assistant', '💚 Personal assistant chat pinned under All hands (reminder,
   const head = await page.textContent('#dmPanel .dm-head');
   check('header shows the chosen name once and what it does', /Juno/.test(head) && /Your day, reminders and life admin/.test(head) && !/Personal assistant/.test(head), head);
   await page.click('#dmPanel .dm-head button'); await page.waitForSelector('#dmPanel [data-dm="_assistant"]');
+  await page.waitForFunction(() => /Juno/.test(document.querySelector('#dmPanel [data-dm="_assistant"]')?.textContent || ''), null, { timeout: 8000 }).catch(() => {});
   check('the Messages row shows the name', /Juno/.test(await page.textContent('#dmPanel [data-dm="_assistant"]')));
   noErrors(page);
 }, true, { AIGILE_AGENT_COMMAND: stub, AIGILE_LOCAL: local, AIGILE_NO_WINDOWS: '1', AIGILE_NO_USAGE_AUTO: '1' });

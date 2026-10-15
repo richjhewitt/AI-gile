@@ -1,6 +1,6 @@
 // QA area: ci (AIG-1122): configuration items per project. API add/patch/remove/list (p.ci only when set), validation (kind, date, backup,
 // key = a Secrets name never a value), CLI list/add/set/rm, and the page #/ci/<slug> with add, edit and remove.
-import { check, mkProject, mkCard, def, openPage, noErrors } from '../lib.mjs';
+import { check, until, mkProject, mkCard, def, openPage, noErrors } from '../lib.mjs';
 
 const getProject = (s, slug) => s.ok('GET', '/api/projects/' + slug + '?full=1');
 
@@ -63,7 +63,7 @@ def('ci', '🗂️ configuration items: per project list, add/edit/remove, key n
   await cp.waitForSelector('.affects input[data-affects="ci-1"]:checked');
   await cp.click('.affects input[data-affects="ci-1"]');
   await cp.waitForSelector('.affects input[data-affects="ci-1"]:not(:checked)');
-  const pu = await getProject(s, 'cfg');
+  const pu = await until(async () => { const q = await getProject(s, 'cfg'); return !q.cards.find(c => c.id === inc.id).ci && q; }, 8000) || await getProject(s, 'cfg');
   check('unlinking removes it from both sides', !pu.cards.find(c => c.id === inc.id).ci && !pu.ci.find(x => x.id === 'ci-1').links.some(l => l && l.card), pu.ci);
 
   // Page

@@ -23,11 +23,11 @@ def('urgentbtn', '🔥 button: a tile click makes the card urgent, a second clic
   const open = await openPage(ctx, `#/p/alpha/${a.id}`);
   await open.waitForSelector('.panel .urg-btn');
   await open.click('.panel .urg-btn');
-  await sleep(500);
+  await until(async () => (await getCard(s, 'alpha', a.id)).priority === 'urgent', 8000);
   c = await getCard(s, 'alpha', a.id);
   check('open card: urgent', c.priority === 'urgent' && c.prevPriority === 'high', JSON.stringify([c.priority, c.prevPriority]));
   await open.click('.panel .urg-btn');
-  await sleep(500);
+  await until(async () => (await getCard(s, 'alpha', a.id)).priority === 'high', 8000);
   c = await getCard(s, 'alpha', a.id);
   check('open card: back again', c.priority === 'high', c.priority);
   // inbox rows: a real card row has the button and it works; the Lead chat row (not a card) has none

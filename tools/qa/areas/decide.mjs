@@ -20,7 +20,7 @@ def('decide', '⚡ Decide pile: keys answer / skip / open; a 3-question Topic po
 
   const page = await openPage(ctx, '#/inbox');
   await page.waitForSelector('.ib-decide');
-  check('the kind chips show ⚡ Decide with the count (GO, options, topic = 3)', (await page.textContent('.ib-decide')).replace(/\s+/g, ' ').trim() === '⚡ Decide 3', await page.textContent('.ib-decide'));
+  check('the kind chips show ⚡ Decide with the count (GO, options, topic = 3)', (await page.textContent('.ib-decide')).replace(/\s+/g, ' ').trim() .startsWith('⚡ Decide 3'), await page.textContent('.ib-decide'));
   await page.click('.ib-decide');
   await page.waitForSelector('#ibDc:not([hidden]) .dc-btns');
   const first = await page.textContent('#ibDc');

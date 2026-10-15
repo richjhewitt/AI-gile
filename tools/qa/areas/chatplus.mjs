@@ -2,7 +2,7 @@
 // friends' private DMs (two boards and a local relay) and in 👥 group chats. Ideas and code lifted from ChilledChat.
 import fs from 'node:fs';
 import path from 'node:path';
-import { startRelay, startServer, freePort, until, check, sleep, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { startRelay, startServer, freePort, until, check, sleep, mkProject, openPage, noErrors, def, readChat } from '../lib.mjs';
 
 def('chatplus', 'chat extras: reply with a quote, edit / delete only your own, emoji reactions (one emoji, toggles), a typing line never saved; friends\' DMs over the relay and 👥 groups, agents react with the CLI (AIG-1164)', async (s, ctx) => {
   const relay = await startRelay({ RELAY_RATE: '100000' });
@@ -52,13 +52,13 @@ def('chatplus', 'chat extras: reply with a quote, edit / delete only your own, e
     check('typing goes to the friend', ty.sent === true, ty);
     check('the friend\'s board shows me typing', !!(await until(async () => (await b.ok('GET', '/api/dms/contacts'))[0].typing, 5000)));
     check('again at once is held back (one every 4 s)', (await s.ok('POST', A + '/typing', {})).sent === false);
-    check('typing is never kept as a message', (await b.ok('GET', B + '/messages')).length === linesB && !fs.readFileSync(path.join(b.data, 'dms', cb.id + '.json'), 'utf8').includes('typing'));
+    check('typing is never kept as a message', (await b.ok('GET', B + '/messages')).length === linesB && !JSON.stringify(readChat(b, path.join(b.data, 'dms', cb.id + '.json'))).includes('typing'));
     check('and it wears off', !!(await until(async () => !(await b.ok('GET', '/api/dms/contacts'))[0].typing, 12000)));
 
     // Delete: only the author; the line stays as "deleted" on both boards, its text gone
     const del = await s.ok('DELETE', `${A}/messages/${rep.id}`);
     check('deleting my message empties it', !!del.deleted && del.text === '', del);
-    check('the friend sees it deleted, the text gone', !!(await inB(m => m.id === rep.id && m.deleted && m.text === '')) && !fs.readFileSync(path.join(b.data, 'dms', cb.id + '.json'), 'utf8').includes('Hi back, edited'));
+    check('the friend sees it deleted, the text gone', !!(await inB(m => m.id === rep.id && m.deleted && m.text === '')) && !JSON.stringify(readChat(b, path.join(b.data, 'dms', cb.id + '.json'))).includes('Hi back, edited'));
     check('a deleted message cannot be edited', (await s.api('PATCH', `${A}/messages/${rep.id}`, { text: 'back' })).status === 403);
     check('I cannot delete their message', (await s.api('DELETE', `${A}/messages/${hi.id}`)).status === 403);
 
