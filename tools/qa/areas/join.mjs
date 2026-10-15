@@ -151,7 +151,7 @@ def('join', 'closed alpha invites: signed codes (unsigned refused), Download pag
     const f4c = await friend4.ok('GET', '/api/dms/contacts'), f4me = await friend4.ok('GET', '/api/dms');
     check('a fresh setup: own name and own keys, only Cleo as a contact (not the owner, not Cleo\'s data)', f4c.length === 1 && f4c[0].name === 'Cleo' && f4me.mailbox !== f2box && (await friend4.ok('GET', '/api/setup')).owner === 'Sam Smith', [f4c, f4me.mailbox, f2box]);
     check('Cleo\'s board gets Sam as a friend (the usual They match check)', !!(await until(async () => (await friend2.ok('GET', '/api/dms/contacts')).some(c => c.name === 'Sam Smith' && !c.checked))));
-    check('the join service counted it, with the first name only, and used one invite (the friend's board may already have topped the pool back up)', claimsNow().shares.length === 1 && claimsNow().shares[0].name === 'Sam' && !JSON.stringify(claimsNow()).includes('Smith') && claimsNow().pool.length >= 2, claimsNow().shares);
+    check('the join service counted it, with the first name only, and used one invite', claimsNow().shares.length === 1 && claimsNow().shares[0].name === 'Sam' && !JSON.stringify(claimsNow()).includes('Smith') && claimsNow().pool.length >= 2, claimsNow().shares);
     await p4.click('#claimOn'); await p4.waitForSelector('#wzYes');
     check('no page errors on the newcomer\'s first run', p4.errors.length === 0, p4.errors);
     await p4.close();
