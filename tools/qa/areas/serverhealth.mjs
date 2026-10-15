@@ -84,6 +84,12 @@ def('serverhealth', 'Server health (AIG-660, AIG-1125): relay /health is signed,
   check('high for 2 polls makes no card for it', (await webCards()).length === 0);
   await s.ok('POST', '/api/serverhealth/poll');
   const wc = await webCards();
+  // AIG-1159: owner only (it runs ssh), and polls at the same time share one sweep
+  const before = fs.readFileSync(sshLog, 'utf8').split('\n').filter(Boolean).length;
+  const tp = await fetch(s.base + '/api/serverhealth/poll', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Aigile-As': 'Forge', 'X-Aigile-Where': 'terminal' }, body: '{}' });
+  check('a team agent cannot start a poll (403) and no ssh runs', tp.status === 403 && fs.readFileSync(sshLog, 'utf8').split('\n').filter(Boolean).length === before, tp.status);
+  const [pa, pb] = await Promise.all([s.ok('POST', '/api/serverhealth/poll'), s.ok('POST', '/api/serverhealth/poll')]);
+  check('two polls at once run ssh once', fs.readFileSync(sshLog, 'utf8').split('\n').filter(Boolean).length === before + 1 && JSON.stringify(pa) === JSON.stringify(pb), fs.readFileSync(sshLog, 'utf8').split('\n').filter(Boolean).length - before);
   check('high for 3 polls makes one card naming the server', wc.length === 1 && wc[0].title === 'Web: time to upgrade (disk 84%)', wc);
   await s.ok('POST', '/api/serverhealth/poll');
   check('polling again makes no second card', (await webCards()).length === 1);
