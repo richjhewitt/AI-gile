@@ -40,6 +40,12 @@
   "pitch.chars.other": "{n} characters",
   "count.line.html.one": "{n} card on the board right now",
   "count.line.html.other": "{n} cards on the board right now",
+  "people.humans.html.one": "👥 {n} human",
+  "people.humans.html.other": "👥 {n} humans",
+  "people.agents.html.one": "🤖 {n} agent",
+  "people.agents.html.other": "🤖 {n} agents",
+  "people.working.html.one": "⚡ {n} at work right now",
+  "people.working.html.other": "⚡ {n} at work right now",
 
   "features.aria": "What it does",
   "f.pile.h": "One pile for you",

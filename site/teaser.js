@@ -60,6 +60,30 @@
   }
   poll();setInterval(poll,POLL_MS);
 
+  // 👥 Humans and Agents (AIG-1314): three counts the owner's board sends the relay (/people.json, no names). Each number counts up
+  // when it changes (reduced motion: it just changes); "at work" only while someone is; hidden while the relay can't be reached.
+  var ppl=$("people-count"),pNow={},pRaf={};
+  function pShow(o){
+    var parts=[["humans",o.humans,"people.humans.html"],["agents",o.agents,"people.agents.html"]];if(o.working>0)parts.push(["working",o.working,"people.working.html"]);
+    ppl.innerHTML=parts.map(function(x){return '<span class="pc-'+x[0]+'">'+T(x[2],{n:'<b id="pc-'+x[0]+'"></b>',count:x[1]})+"</span>"}).join('<span class="sep" aria-hidden="true">·</span>');
+    parts.forEach(function(x){
+      var k=x[0],to=x[1],el=$("pc-"+k),from=pNow[k];pNow[k]=to;cancelAnimationFrame(pRaf[k]);
+      if(from==null||from===to||matchMedia("(prefers-reduced-motion: reduce)").matches){el.textContent=to;return}
+      var t0=performance.now();(function tick(t){var q=Math.min(1,(t-t0)/700);el.textContent=Math.round(from+(to-from)*q);if(q<1)pRaf[k]=requestAnimationFrame(tick)})(t0);
+    });
+  }
+  var pLast=null;
+  SiteI18n.on(function(){if(pLast){pNow={};pShow(pLast)}});
+  function pPoll(){
+    fetch(RELAY+"/people.json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(o){
+      var n=function(v){return typeof v==="number"&&isFinite(v)&&v>=0?Math.round(v):null};
+      if(!o||n(o.humans)==null||!n(o.humans)||n(o.agents)==null)throw 0;
+      pLast={humans:n(o.humans),agents:n(o.agents),working:n(o.working)||0};ppl.hidden=false;pShow(pLast);
+    }).catch(function(){ppl.hidden=true});
+  }
+  pPoll();setInterval(pPoll,POLL_MS);
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")pPoll()});   // back on the tab: fresh numbers
+
   // The timeline (AIG-778/779): site/timeline.json from tools/gen/timeline.mjs. Dates in the page language's locale;
   // names and lines from lang/<code>.timeline.json by stage id (AIG-1226), else timeline.json's English.
   var tl=$("timeline"),tlStages=null;
