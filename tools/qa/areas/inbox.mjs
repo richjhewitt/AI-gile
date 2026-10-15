@@ -151,6 +151,14 @@ def('queue', 'your queue: holds up, your priority, kind, time; sorted, filtered,
   await page.click(`#ibNext [data-prio]`);   // none -> now on the Next up item
   await sleep(600);
   check('clicking 🔥 sets your priority', (await getCard(s, 'alpha', b.id)).ownerPrio === 'now');
+  // AIG-1293: the project pill opens that board, by click and by keyboard
+  const pill = `.ib-item[data-id="${a.id}"] .ib-proj`;
+  check('the project pill is a link you can Tab to', (await page.getAttribute(pill, 'role')) === 'link' && (await page.getAttribute(pill, 'tabindex')) === '0');
+  await page.click(pill); await sleep(500);
+  check('clicking the project pill opens that board (AIG-1293)', await page.evaluate(() => location.hash) === '#/p/alpha', await page.evaluate(() => location.hash));
+  await page.goto(page.url().split('#')[0] + '#/inbox'); await page.waitForSelector(pill);
+  await page.focus(pill); await page.keyboard.press('Enter'); await sleep(500);
+  check('Enter on the focused pill opens the board too', await page.evaluate(() => location.hash) === '#/p/alpha');
   noErrors(page);
 }, true);
 

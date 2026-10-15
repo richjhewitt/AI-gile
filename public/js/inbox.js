@@ -11,6 +11,14 @@
 
   // Send back greys out until a reason is typed (AIG-1136).
   document.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.sb !== undefined) { const b = e.target.closest('.ib-sb').querySelector('[data-act=sbsend]'); if (b) b.disabled = !e.target.value.trim(); } });
+  // AIG-1293: the coloured project pill on an item opens that board (click, or Enter/Space when it has focus).
+  const pillOf = t => { const p = t && t.closest && t.closest('.ib-item[data-project] .ib-proj'); return p && p.closest('.ib-item').dataset.project ? p : null; };
+  const openPill = p => { location.hash = '#/p/' + p.closest('.ib-item').dataset.project; };
+  document.addEventListener('click', e => { const p = pillOf(e.target); if (p) { e.preventDefault(); e.stopPropagation(); openPill(p); } }, true);
+  document.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('ib-proj')) { const p = pillOf(e.target); if (p) { e.preventDefault(); openPill(p); } } });
+  new MutationObserver(() => document.querySelectorAll('.ib-item[data-project] .ib-proj:not([role])').forEach(p => {
+    p.setAttribute('role', 'link'); p.tabIndex = 0;
+  })).observe(document.body, { childList: true, subtree: true });
   function onKey(e) {
     if (e.target.tagName === 'TEXTAREA' && EnterSend.is(e, 'card')) {
       const n = e.target.closest('.ib-item'); if (!n) return;   // ⚡ Decide's own box (#dcText) has its own Enter (AIG-445)
