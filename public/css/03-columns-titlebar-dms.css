@@ -138,7 +138,7 @@ body:has(#suPrompt) #app { padding-bottom: 76px; }
 .dm-railbtn.on::before { content: ''; position: absolute; inset-inline-start: -9px; top: 9px; width: 4px; height: 24px; border-radius: 0; border-start-end-radius: 4px; border-end-end-radius: 4px; background: var(--text); }
 .dm-railbtn.on .dm-av { border-radius: 14px; border-color: var(--proj, var(--accent)); }
 .dm-pip { position: absolute; inset-inline-start: -9px; top: 17px; width: 8px; height: 8px; border-radius: 0; border-start-end-radius: 4px; border-end-end-radius: 4px; background: var(--text); }
-.dm-filter { display: flex; gap: 6px; padding: 8px 12px 0; }
+.dm-filter { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px 0; }
 .dm-chip { padding: 4px 12px; border: 1px solid var(--line); border-radius: 14px; background: none; color: var(--text); cursor: pointer; font-size: 13px; }
 .dm-chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 .dm-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border: 0; border-radius: 10px; background: none; text-align: start; cursor: pointer; position: relative; }

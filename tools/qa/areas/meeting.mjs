@@ -48,7 +48,7 @@ def('meeting', '🎥 Meeting Room per project: listed in Messages with the roste
   await page.evaluate(() => Dms.show('grp:meeting-pix'));
   await page.waitForSelector('#dmMeetBtn');
   check('the room shows the Join call button', /Join call/.test(await page.locator('#dmMeetBtn').innerText()));
-  check('the room is in the Messages list with its 🎥', await page.evaluate(async () => { await Dms.back(); return !!document.querySelector('[data-dm="grp:meeting-pix"] .dm-av') && document.querySelector('[data-dm="grp:meeting-pix"] .dm-av').textContent === '🎥'; }));
+  check('rooms are not in the main list, only under the 🎥 Meeting Rooms tab, which is remembered (AIG-1188)', await page.evaluate(async () => { await Dms.back(); const tick = () => new Promise(r => setTimeout(r, 150)); document.querySelector('[data-dmfilter="all"]').click(); await tick(); const inAll = !!document.querySelector('[data-dm="grp:meeting-pix"]'); document.querySelector('[data-dmfilter="meet"]').click(); await tick(); const av = document.querySelector('[data-dm="grp:meeting-pix"] .dm-av'); return !inAll && !!av && av.textContent === '🎥' && localStorage.getItem('aigile.dmfilter') === 'meet'; }));
   await page.evaluate(() => Dms.show('grp:meeting-pix'));
   await page.waitForSelector('#dmMeetBtn');
   await page.click('#dmMeetBtn');

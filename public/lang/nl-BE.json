@@ -3147,6 +3147,8 @@
  "grp.none": "Nog geen agents op een rooster.",
  "grp.nogroups": "Nog geen groepen.",
  "meet.section": "🎥 Vergaderruimtes",
+ "dms.filter.meet": "🎥 Vergaderruimtes",
+ "meet.none": "Nog geen vergaderruimtes.",
  "meet.join": "🎥 Bel mee",
  "meet.join.title": "Doe mee aan het spraak- of videogesprek van de Vergaderruimte van dit project (alleen de eigenaar)",
  "meet.notset": "Bellen is nog niet ingesteld. Voor het gesprek in de Vergaderruimte is een LiveKit-server nodig: open Instellingen → Calls en plak het adres, de API-sleutel en het API-geheim.",

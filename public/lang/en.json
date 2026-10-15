@@ -3114,6 +3114,8 @@
  "grp.none": "No agents on any roster yet.",
  "grp.nogroups": "No groups yet.",
  "meet.section": "🎥 Meeting Rooms",
+ "dms.filter.meet": "🎥 Meeting Rooms",
+ "meet.none": "No meeting rooms yet.",
  "meet.join": "🎥 Join call",
  "meet.join.title": "Join the voice or video call of this project's Meeting Room (owner only)",
  "meet.notset": "Calls are not set up yet. The Meeting Room call needs a LiveKit server: open Setup → Calls and paste its address, API key and API secret.",
