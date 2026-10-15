@@ -40,7 +40,7 @@ async function newCard(preset = {}) {
   const noTeam = s => { const q = projects.find(x => x.slug === s); return !!q && !(q.crew || []).length; };
   newCard.noTeam = noTeam;
   const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: noTeam(slug()) ? 'backlog' : 'team', assignee: '', sprint: '', ...preset };
-  newCard.startStatus = c.status;
+  newCard.startStatus = preset.status ? null : c.status;   // a status picked by the caller (a column's +) stays as it is
   Attach.clear('new:' + slug());
   // 🏡 Real life (AIG-394): the switch shows the life types; a Life board (🎨 Look) starts with it on.
   const lifeOn = !bug && (preset.lifeType || (state.project && state.project.lifeBoard && !preset.type));
