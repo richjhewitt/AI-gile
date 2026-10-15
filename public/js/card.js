@@ -49,6 +49,12 @@ const problemHtml = (p, c) => c.type === 'problem' ? `<div class="problem"><h3>$
   <p><b>${esc(t('prob.change'))}</b> ${c.changeId ? cardLinkHtml(p, c.changeId) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p></div>`
   : c.problemId ? `<div class="problem"><p><b>${esc(t('prob.of'))}</b> ${cardLinkHtml(p, c.problemId)}</p></div>` : '';
 // 🚨 Major incident button (AIG-1049): on an open incident card; pressed again it ends the major incident.
+// 🛎️ Service desk kind (AIG-1104): a badge on the board card, a picker on the open card (owner)
+const deskBadge = c => c.desk && c.desk.kind ? `<div class="desk-badge desk-${esc(c.desk.kind)}">${esc(t('desk.kind.' + c.desk.kind))}</div>` : '';
+const deskHtml = c => !c.desk || !c.desk.kind ? '' : `<div class="desk"><label>${esc(t('desk.label'))} <select id="desk-kind" onchange="setDeskKind('${esc(c.id)}', this.value)">${['request', 'incident', 'idea'].map(k => `<option value="${k}" ${k === c.desk.kind ? 'selected' : ''}>${esc(t('desk.kind.' + k))}</option>`).join('')}</select></label></div>`;
+async function setDeskKind(id, kind) {
+  try { await api('POST', `/api/projects/${slug()}/cards/${id}/desk`, { kind }); refresh(true); } catch (e) { alert(e.message); }
+}
 const majorHtml = c => c.type !== 'incident' || c.status === 'done' ? '' : `<div class="major">${c.major ? `<span class="major-on">${esc(t('major.on', { by: c.major.by || '', when: ago(c.major.at) }))}</span> ` : ''}<button type="button" class="${c.major ? '' : 'danger'}" onclick="pressMajor('${esc(c.id)}')" title="${esc(t('major.title'))}">${esc(t(c.major ? 'major.end' : 'major.btn'))}</button></div>`;
 async function pressMajor(id) {
   try { await api('POST', `/api/projects/${slug()}/cards/${id}/major`, {}); refresh(true); } catch (e) { alert(e.message); }
@@ -102,7 +108,7 @@ function renderCard(p, c) {
     <div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
-    ${majorHtml(c)}
+    ${deskHtml(c)}${majorHtml(c)}
     ${c.status === 'verify' ? verdict : ''}
     ${checklistUi(p, c)}${waitsUi(p, c)}${secretsUi(p, c)}
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>

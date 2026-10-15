@@ -3512,5 +3512,13 @@
  "home.welcome.p": "A project is a board for something you want to get done, with or without code: an app, a garden shed, a trip. Make your first one and add cards to it.",
  "board.empty.start": "Press {add} to add your first card. Got a code folder? Press {connect} to point this project at it, then wake the team: it reads the history there and makes the first cards.",
  "dlg.newcard.wentto": "Added {id} to {column}",
- "board.empty.start.noai": "Press {add} to add your first card. Got a code folder? Press {connect} to point this project at it."
+ "board.empty.start.noai": "Press {add} to add your first card. Got a code folder? Press {connect} to point this project at it.",
+ "desk.label": "Desk:",
+ "desk.kind.request": "Request",
+ "desk.kind.incident": "Incident",
+ "desk.kind.idea": "Idea",
+ "desk.filter.all": "Desk: all",
+ "desk.filter.request": "Desk: requests",
+ "desk.filter.incident": "Desk: incidents",
+ "desk.filter.idea": "Desk: ideas"
 }
