@@ -6,3 +6,15 @@
 .stor-flag { font-size: 11px; color: var(--warn); border: 1px solid var(--warn); border-radius: 99px; padding: 0 6px; margin-left: 4px; white-space: nowrap; }
 .stor-tidy { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
 @media (max-width: 600px) { .stor-t td:nth-child(2) { display: none; } .stor-tidy button { width: 100%; } }
+/* 🗄️ Backups (AIG-1258/1259/1262) and the damaged-file warning on Home (AIG-1261) */
+.bk-where { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-bottom: 10px; }
+.bk-where code { overflow-wrap: anywhere; font-size: 13px; }
+.bk-where small { flex-basis: 100%; }
+.bk-list > small { display: block; margin: 2px 0 6px; }
+.bk-pick { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.bk-pick select { max-width: 100%; }
+.dmg-line { border: 1px solid var(--danger); color: var(--danger); background: var(--panel); border-radius: var(--radius); padding: 8px 10px; margin: 8px 0; overflow-wrap: anywhere; }
+.dmg-line b { color: var(--danger); }
+.dmg-line span, .dmg-line { line-height: 1.45; }
+.dmg-back { margin-inline-start: 6px; }
+@media (max-width: 600px) { .stor-t.bk-t td:nth-child(2) { display: table-cell; } .dmg-back { width: 100%; margin: 6px 0 0; } }

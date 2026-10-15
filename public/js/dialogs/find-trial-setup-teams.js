@@ -85,7 +85,7 @@ function renderSetup() {
   const s = state.setup;
   const secs = ["lang","look","plan","teams","discord","mail","servers","phone","calls","storage","you","more"];
   return `<div class="setup">${state.route && state.route.pop ? '' : `<button type="button" class="dlg-pop" id="setupPop" title="${esc(t('popout.title'))}" onclick="popOutSetup()">${esc(t('popout.btn'))}</button>`}<h2>${esc(t('setup.h'))}</h2>
-    <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
+    <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>${Backups.homeHtml(state.damaged)}
     <div class="set-sec set-wiz" id="wizBox"><button type="button" id="wzRun" onclick="wizardStart()">${esc(t('wz.btn'))}</button><small class="muted">${esc(t('wz.btn.help'))}</small></div>
     <nav class="set-index" id="setIndex" aria-label="${esc(t('setup.index'))}">${secs.map(k => `<a href="#/setup/${k}" data-sec="${k}" onclick="return setupJump('${k}')">${esc(t('setup.sec.' + k))}</a>`).join('')}</nav>
     <section class="set-sec" id="sec-lang"><h3 class="set-h">${esc(t('setup.sec.lang'))}</h3>
@@ -128,6 +128,7 @@ function renderSetup() {
     <div class="f" id="callsBox">${(CallSetup.reset(), CallSetup.html())}</div>
     </section>
     <section class="set-sec" id="sec-storage"><h3 class="set-h">${esc(t('setup.sec.storage'))}</h3>
+    <div class="f" id="backupsBox">${(Backups.d = undefined, Backups.msg = '', Backups.html())}</div>
     <div class="f" id="storageBox">${(Storage.d = undefined, Storage.html())}</div>
     </section>
     <section class="set-sec" id="sec-you"><h3 class="set-h">${esc(t('setup.sec.you'))}</h3>

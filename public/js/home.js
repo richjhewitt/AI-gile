@@ -44,7 +44,7 @@ function renderHome() {
       ${Break.btn()} ${Break.showerBtn()} ${MyDay.btn()}
       <button onclick="callStandup()" title="${esc(t('standup.all.title'))}">${esc(t('standup.all'))}</button>
       <a class="navlink" href="#/today" title="${esc(t('today.link.title'))}">${esc(t('today.link'))}</a> <a class="navlink" href="#/life" title="${esc(t('la.link.title'))}">${esc(t('la.link'))}</a> <a class="navlink" href="#/standups" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a></div></div>`
-    + (state.setupNeeded ? `<p class="muted finish-setup" id="finishSetup">🧰 ${esc(t('home.finishsetup'))} <a class="navlink" href="#/setup/you">${esc(t('home.finishsetup.go'))}</a></p>` : '') + usageStrip(state.usage) + inbox + Spaces.outStrip() + TodayPage.hiddenLine() + FirstSteps.html() + `<div class="grid space-tree">${cards || welcomeCard()}</div>` + (fresh ? '' : smLine(state.sm));
+    + Backups.homeHtml(state.damaged) + (state.setupNeeded ? `<p class="muted finish-setup" id="finishSetup">🧰 ${esc(t('home.finishsetup'))} <a class="navlink" href="#/setup/you">${esc(t('home.finishsetup.go'))}</a></p>` : '') + usageStrip(state.usage) + inbox + Spaces.outStrip() + TodayPage.hiddenLine() + FirstSteps.html() + `<div class="grid space-tree">${cards || welcomeCard()}</div>` + (fresh ? '' : smLine(state.sm));
 }
 
 // AIG-1073: empty home. #homeWelcomeActions is where more starting buttons go (the sample project, AIG-1072).
