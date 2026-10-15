@@ -32,6 +32,7 @@ async function bugSendBox() {
 async function newCard(preset = {}) {
   let projects = [], leads = {};
   try { projects = (await api('GET', '/api/projects')).filter(p => !p.archived); } catch {}
+  if (typeof TodayPage !== 'undefined') { const keep = slug(), all = projects; projects = TodayPage.only(all); if (keep && !projects.some(p => p.slug === keep)) projects = all.filter(p => p.slug === keep || projects.includes(p)); }   // AIG-1110: only today's picks (unless Show all), plus the current project
   try { (await api('GET', '/api/chats')).forEach(c => { leads[c.slug] = c.lead; }); } catch {}
   const bug = preset.type === 'bug';
   // The owner's new cards go straight to the team (AIG-51); the + on a column still picks that column.
@@ -54,6 +55,7 @@ async function newCard(preset = {}) {
       <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${esc(bug ? t('dlg.raisebug') : t('dlg.createcard'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');
   if (bug) { const ov = $('dialog').querySelector('.overlay'); if (ov) ov.classList.add('top'); }   // above pop-outs, card view and other windows (AIG-733)
   if (lifeOn) lifeToggle();
+  const dsc = $('f-description'); if (dsc) dsc.addEventListener('keydown', ev => { if (EnterSend.is(ev, 'card')) { ev.preventDefault(); if (dsc.form) dsc.form.requestSubmit(); } });   // AIG-1110: Enter sends, Shift+Enter is a new line; createCard's busy guard keeps it to one
 }
 function lifeToggle() {
   const on = $('nc-life').checked, appt = on && $('nc-lifetype').value === 'appointment';
