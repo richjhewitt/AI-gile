@@ -3396,6 +3396,7 @@
  "tb.menu": "Menu",
  "tb.pin.h": "Show in top bar",
  "tb.pin.help": "Tick what stays in the bar; the rest is under More. Setup always stays.",
+ "tb.custom": "⚙ Customise top bar…",
  "tb.b.twitch": "Twitch chat",
  "tb.b.mail": "Mail",
  "tb.b.imm": "Language",
