@@ -124,7 +124,7 @@ def('join', 'closed alpha invites: signed codes (unsigned refused), Download pag
     await ctx.grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
     const pa = await openPage(ctx, '#/setup'); pa.on('response', r => { if (r.status() >= 500) pa.errors.push('500 ' + r.url()); });
     await pa.waitForSelector('#joinSec #joinMake');
-    check('Setup has the 🎟️ Invite a friend box', /Invite a friend to AI-gile/.test(await pa.textContent('#joinSec')));
+    check('Setup has the 🎟️ Invite a friend box', /Friend needs AI-gile/.test(await pa.textContent('#joinSec')));
     await pa.selectOption('#joinHelp', '1'); await pa.fill('#joinName', 'Cato');
     await pa.click('#joinMake');
     await pa.waitForSelector('#joinLink');
@@ -138,7 +138,7 @@ def('join', 'closed alpha invites: signed codes (unsigned refused), Download pag
     await fetch(j3.base + '/join/download', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'code=' + link.split('=')[1] });
     await pa.reload(); await pa.waitForSelector('.join-c');
     check('after the download the list says used', await until(async () => /used/.test(await pa.textContent('.join-c').catch(() => ''))) );
-    for (const [lng, re] of [['nl', /Een vriend uitnodigen voor AI-gile/], ['nl-BE', /Een vriend uitnodigen voor AI-gile/]]) {
+    for (const [lng, re] of [['nl', /Vriend heeft AI-gile nodig/], ['nl-BE', /Vriend heeft AI-gile nodig/]]) {
       await pa.evaluate(l => localStorage.setItem('aigile.lang', l), lng); await pa.reload(); await pa.waitForSelector('#joinMake');
       check('texts in ' + lng, re.test(await pa.textContent('#joinSec')) && /Maak een uitnodigingslink/.test(await pa.textContent('#joinMake')) && /gebruikt/.test(await pa.textContent('.join-c')));
     }
