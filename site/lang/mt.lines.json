@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Robots.",
+      "Iddelegat."
+    ] },
+    { "n": 2, "texts": [
+      "Robots jaħdmu.",
+      "Aġenti, f'ordni.",
+      "Ideat, mibnija."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban għar-robots.",
+      "Ideat isiru funzjonijiet.",
+      "B'xejn, lokali, ittestjat."
+    ] },
+    { "n": 5, "texts": [
+      "Bord kanban fejn jibnu l-aġenti.",
+      "Inti tikteb karti. Aġenti jibnu.",
+      "B'xejn, lokali, ittestjat, ftit iblah."
+    ] },
+    { "n": 8, "texts": [
+      "Bord kanban b'xejn fejn jaħdmu l-aġenti tal-AI.",
+      "Ikteb idea waħda. L-aġenti jibnuha. Inti taċċettaha.",
+      "Agile għal bniedem wieħed u ħafna robots paċenzjużi."
+    ] },
+    { "n": 13, "texts": [
+      "Bord kanban fuq il-kompjuter tiegħek fejn l-aġenti tal-AI jieħdu l-karti.",
+      "Ikteb idea. Tim sħiħ ta' aġenti jibnuha. Wara tester jiċċekkjaha sew għalik.",
+      "B'xejn, mingħajr kontijiet jew trackers: bord, ftit robots, u inti fil-kontroll."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile huwa bord kanban biex taħdem ma' aġenti tal-kodiċi bl-AI. Huma jieħdu l-karti kollha; inti tittestjahom u taċċettahom.",
+      "Kull proġett għandu lead u tim ta' aġenti tal-AI. Ikkumenta fuq kwalunkwe karta u t-tim jibda jaħdem.",
+      "Bord personali tal-affarijiet li jridu jsiru, b'xejn, li jaħdem fuq il-kompjuter tiegħek. Dawk li jaħdmu huma robots. Dak li jgħid iva int."
+    ] },
+    { "n": 34, "texts": [
+      "Inti tpoġġi l-ideat tiegħek fuq bord. Tim ta' aġenti tal-AI jibdilhom f'funzjonijiet li jaħdmu, jittestjahom, u jirritornawhom b'passi biex tipprova. Xejn ma jgħodd bħala lest sakemm int ma tgħidx hekk.",
+      "AI-gile huwa bord kanban magħmul id-dar li Rich bena b'ħafna għajnuna mill-aġenti li issa jmexxi. Huwa b'xejn, jaħdem fuq il-kompjuter tiegħek, u jinqasam ma' ħbieb, mhux jinbigħ.",
+      "Immaġina bord kanban tas-soltu, b'kolonni minn Backlog sa Lest, ħlief li l-karti jittieħdu mill-aġenti tal-AI. Jirrappurtaw il-progress, jistaqsu meta jibqgħu mwaħħla, u dejjem jistennew l-approvazzjoni tiegħek qabel ma jmorru 'l quddiem."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile huwa bord kanban fejn it-tim huwa magħmul minn aġenti tal-AI. Kull proġett għandu lead li jippjana x-xogħol u ħaddiema li jibnuh. Meta funzjoni tkun lesta, tester tal-AI jipprovaha u jieħu screenshot, imbagħad tasal fuq il-munzell tiegħek. Aċċettaha, jew ikkumenta u jerġgħu jaħdmu fuqha.",
+      "Beda bħala mod ta' persuna waħda biex iżomm rendikont ta' ħafna sessjonijiet tal-kodiċi bl-AI f'daqqa, u kiber f'bord veru. Jaħdem fuq il-magna tiegħek, ma jeħtieġ l-ebda kont u m'għandu l-ebda trackers. Huwa b'xejn għall-ħbieb u għal min hu kurjuż. Għadu wkoll mhux lest, għalhekk stenna xi truf mhux irfinati u sorpriża minn żmien għal żmien.",
+      "Din hija l-verżjoni onesta tal-istorja kollha. Xorta trid ikollok l-ideat, u xorta trid tiċċekkja r-riżultati. Dak li jagħmel AI-gile huwa dak kollu li hemm bejniethom: iżomm il-karti f'ordni, iqajjem l-aġent t-tajjeb meta tikkumenta, juri eżattament x'inbidel, u jżomm kollox f'munzell qasir wieħed biss għalik, mingħajr storbju."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile huwa bord kanban kompletament b'xejn li tmexxi fuq il-kompjuter tiegħek stess. Minflok in-nies, kull proġett għandu tim sħiħ ta' aġenti tal-AI: lead li jibdel l-ideat tiegħek f'karti u pjan, u għajnuna li tieħu l-karti skont il-prijorità. Meta xi ħaġa tinbena, tester tal-AI isegwi l-passi tat-test u juri lilek x'ra, b'screenshot. Imbagħad tistenna f'munzell wieħed biss jismu Għalik. Inti taċċettaha, jew tikkumenta u t-tim jerġa' jipprova mill-ġdid. Xejn ma jasal qatt f'Lest mingħajrek.",
+      "Ftit karatteristiċi li forsi ma tistennihomx. Għassa tal-lejl iżżomm il-kolonna Biex isir mimlija waqt li torqod, billi tagħżel karti li ma jeħtieġux tweġiba minnek. Għadd tat-tokens juri kemm użaw l-aġenti llum u din il-ġimgħa, u l-Mod bla Tokens jgħidilhom jieqfu jonfqu. Tista' tibgħat messaġġi lill-ħbieb, u l-messaġġi privati huma ċifrati end-to-end. Il-bord jitkellem madwar 120 lingwa, fosthom il-Malti, il-pirata u l-Klingon. Xejn minn dan ma jiswa xejn, u ħadd ma qed jipprova jbigħhulek.",
+      "AI-gile huwa proġett żgħir u personali, mhux kumpanija. Rich xtaq jieħu ħsieb diversi proġetti tal-kodiċi bl-AI mingħajr ma jiftaħ kull app biex jiċċekkjahom, allura hu u l-aġenti bnew bord għal dan, u mbagħad użaw il-bord biex jibnu l-bqija tiegħu nnifsu. Qiegħed f'pre-alpha magħluqa, li jfisser li jaħdem, il-biċċa l-kbira, għal ftit ħbieb. M'hemm l-ebda paġna tal-prezzijiet, l-ebda newsletter u l-ebda pjan ta' tkabbir. Jekk jidher utli, tista' titlob biex tipprovah meta jinfetaħ ftit aktar."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile huwa bord kanban għal bniedem wieħed u ħafna aġenti tal-AI paċenzjużi. Jaħdem fuq il-kompjuter tiegħek stess u huwa għal kollox b'xejn. Inti żżid proġetti, u kull proġett jaqla' lead u tim żgħir. Tiddiskuti mal-lead, kemmxejn bħal fuq Discord, u tiddeskrivi idea; il-lead jagħmilha karti u pjan, u jistenna li tagħfas Go. It-tim jaħdem mal-karti skont il-prijorità, b'għodda sempliċi tal-linja tal-kmandi magħmula għall-mudelli tal-lingwa. Qabel ma xi ħaġa tirritorna għandek, tester tal-AI isegwi l-passi f'kopja tal-app u jwaħħal screenshot. Ix-xogħol lest jasal fuq il-munzell tiegħek, mal-fajls li nbidlu, id-diff u l-iscreenshots. Inti taċċettah, jew tħalli kumment u t-tim iqum u jerġa' jipprova. Kull ma jsir jidher fuq il-bord, f'kolonni mill-Backlog sa Lest. Ma jeħtieġ l-ebda kont. Int biss tista' tmexxi karta għal Lest.",
+      "Jum ma' AI-gile, bejn wieħed u ieħor. Filgħaxija tħalli ftit kummenti: din il-buttuna hi fil-post ħażin, dik il-lista għandha tinżamm ordnata, nistgħu nkollhom mod skur. Tmur torqod. L-aġenti jaqraw il-kummenti, jagħmlu l-bidliet, jittestjawhom u jirritornawhom lilek. Jekk Biex isir jispiċċa, l-għassa tal-lejl timlieh mill-backlog b'karti li ma jeħtieġu l-ebda tweġiba minnek. Filgħodu hemm munzell qasir wieħed: par ta' mistoqsijiet u ftit affarijiet biex tipprova, kull wieħed b'passi li persuna ngħasana tista' ssegwi u screenshot ta' kif jaħdem. Tikklikkja minnu, taċċetta t-tajba u tibgħat lura l-bqija. Għadd tat-tokens juri kemm intuża dan kollu, u l-Mod bla Tokens hemm għal ġimgħat irqaq. Jekk xi ħaġa ma tkunx ċara, it-tim jistaqsi qabel ma jmur 'il quddiem. Imbagħad tieħu l-kolazzjon, li l-aġenti għadhom ma jistgħux jgħinu fih.",
+      "L-ewwel, x'mhuwiex AI-gile. Mhuwiex startup, mhuwiex għall-bejgħ, u ħadd ma qed jiġbor id-dejta tiegħek. Huwa bord b'xejn li jaħdem fuq il-kompjuter tiegħek, mingħajr kontijiet, trackers jew cookies. X'inhu: post wieħed irranġat biex tara l-proġetti kollha tiegħek tal-kodiċi bl-AI f'daqqa, b'tim ta' aġenti jagħmlu l-karti u inti tieħu d-deċiżjonijiet. Jingħaqad karti relatati, isewwi titli mħawdin, u josserva kemm il-kodiċi jibqa' irqiq. Jitkellem madwar 120 lingwa, mill-Malti sal-pirata u l-Klingon. Il-ħbieb jistgħu jibagħtu messaġġi lil xulxin, privatament u ċifrati. Inbena minn Rich u numru kbir ta' aġenti paċenzjużi, li l-aktar użawh huma stess. Ma jbigħ xejn, ma jitlob xejn, u ma jgħaddi xejn lil ħadd. Qiegħed f'pre-alpha magħluqa, għalhekk f'xi postijiet għadu mhux rfinut. Jekk jidher divertenti, itlob b'ġentilezza u forsi tidħol kmieni."
+    ] }
+  ],
+  "quips": {
+    "1": "Kelma waħda. Kuraġġuża. Forsi kuraġġuża żżejjed.",
+    "3": "Tliet kelmiet. Diġà aktar onesti mill-biċċa l-kbira tal-paġni tal-prodotti.",
+    "8": "Tmien kelmiet. Għadu iqsar minn stand-up.",
+    "21": "It-tulijiet huma story points, mill-mod. Naturalment.",
+    "55": "Ħamsa u ħamsin kelma. Żewġ karti ntemmu waqt li qrajt dan.",
+    "144": "Din kienet it-tawwala. M'hemm l-ebda 233. L-aġenti marru jorqdu."
+  }
+}

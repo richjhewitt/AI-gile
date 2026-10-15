@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Erindrekar.",
+      "Falit."
+    ] },
+    { "n": 2, "texts": [
+      "Erindrekar, skipaðir.",
+      "Hugmyndir, smíðaðar.",
+      "Erindrekar vinna."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban fyrir erindreka.",
+      "Hugmyndir verða eiginleikar.",
+      "Ókeypis, heima, prófat."
+    ] },
+    { "n": 5, "texts": [
+      "Borð þar er erindrekar smíða.",
+      "Þú ritar spjöld. Erindrekar smíða.",
+      "Ókeypis, heima, prófat, lítit skrýtit."
+    ] },
+    { "n": 8, "texts": [
+      "Ókeypis kanban-borð þar er gervigreindar-erindrekar vinna öll verkin.",
+      "Rit eina hugmynd. Erindrekar smíða hana. Þú samþykkir.",
+      "Agile fyrir einn mann ok marga þolinmóða erindreka."
+    ] },
+    { "n": 13, "texts": [
+      "Kanban-borð á tölvu þinni þar er gervigreindar-erindrekar taka spjöldin upp ok vinna þau.",
+      "Rit hugmynd. Sveit erindreka smíðar hana. Síðan lítr prófari á hana fyrir þik.",
+      "Ókeypis, engir reikningar né eltarar: borð, nokkrir erindrekar, ok þú ræðr öllu."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile er kanban-borð til at vinna með gervigreindar-kóðaerindrekum. Þeir taka spjöldin upp, hvert af öðru; þú prófar þau ok samþykkir.",
+      "Hvert verk fær leiðtoga ok sveit gervigreindar-erindreka. Gerðu ummæli á hvert spjald, ok þá tekr sveitin til starfa.",
+      "Ókeypis einkaborð til verka, er gengr á þinni eigin tölvu. Verkamennirnir eru erindrekar. Sá er segir já, ert þú."
+    ] },
+    { "n": 34, "texts": [
+      "Þú leggr hugmyndir á borð. Sveit gervigreindar-erindreka gerir þær at starfandi eiginleikum, prófar þá ok skilar þeim aftr með skrefum til at reyna. Ekkert telst lokit fyrr en þú segir svá.",
+      "AI-gile er heimagert kanban-borð er Rich smíðaði með mikilli hjálp erindreka þeirra er þat nú stýrir. Þat er ókeypis, gengr á tölvu þinni ok er deilt með vinum, eigi selt.",
+      "Hugsaðu þér venjulegt kanban-borð, með dálkum frá Backlog til Lokit, nema at spjöldin eru tekin af gervigreindar-erindrekum. Þeir segja frá framvindu, spyrja þá er þeir sitja fastir, ok bíða ávallt eftir þumli þínum upp."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile er kanban-borð þar er sveitin er gerð af gervigreindar-erindrekum. Hvert verk hefr leiðtoga er áætlar verkit ok hjálparmenn er smíða þat. Þá er eiginleiki er búinn, reynir gervigreindar-prófari hann ok tekr skjámynd, ok þá lendir hann á hauginum þínum. Samþykktu hann, eða gerðu ummæli, ok þeir vinna hann upp aftr.",
+      "Þat hófst sem leið eins manns til at halda utan um margar kóðalotur með gervigreind í senn, ok óx at réttu borði. Þat gengr á vél þinni, krefst engra reikninga ok hefr enga eltara. Þat er ókeypis fyrir vini ok forvitna. Þat er ok ólokit, svá búst við hrjúfum brúnum ok einni óvæntri uppákomu.",
+      "Hér er heiðarlega útgáfan. Þú verðr enn at eiga hugmyndirnar, ok þú verðr enn at líta á árangrinn. Þat er AI-gile gerir, er allt þar í milli: þat heldr spjöldunum í röð, vekr réttan erindreka þá er þú gerir ummæli, sýnir nákvæmlega hvat breyttist, ok safnar öllu í einn stuttan haug handa þér."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile er ókeypis kanban-borð er þú rekr á þinni eigin tölvu. Í stað manna hefr hvert verk sveit gervigreindar-erindreka: leiðtoga er gerir hugmyndir þínar at spjöldum ok áætlun, ok hjálparmenn er taka spjöldin í forgangsröð. Þá er eitthvat er smíðat, fylgir gervigreindar-prófari prófunarskrefunum ok sýnir þér hvat hann sá. Síðan bíðr þat í einum haug er heitir Til þín. Þú samþykkir þat, eða þú gerir ummæli ok sveitin reynir aftr. Ekkert kemst nokkurn tíma í Lokit án þín.",
+      "Nokkrir eiginleikar er þú væntir kannski eigi. Næturvörðr heldr Til gerðar-dálkinum fullum meðan þú sefr ok velr spjöld er þurfa eigi svar frá þér. Teljari sýnir hversu mikit erindrekarnir hafa notat í dag ok þessa viku, ok Engin tákn-hátr segir þeim at hætta at eyða. Þú mátt senda vinum skilaboð, ok einkaskilaboð eru dulrituð frá enda til enda. Borðit talar um 120 tungur, þar á meðal norrœnu, sjóræningja ok klingonsku. Ekkert af þessu kostar eyri, ok engi reynir at selja þér þat heldr.",
+      "AI-gile er lítit, persónulegt verk, eigi fyrirtæki. Rich vildi gæta margra gervigreindar-kóðaverka án þess at opna hvert forrit til at líta á þau, svá hann ok erindrekarnir smíðuðu borð til þess, ok notuðu síðan borðit til at smíða afganginn af sér sjálfu. Þat er í lokuðu for-alfa, sem merkir at þat virkar, mestanpart, fyrir fáeina vini. Hér er engin verðsíða, ekkert fréttabréf ok engin vaxtaráætlun. Ef þetta hljómar gagnlegt, mátt þú biðja um at reyna þat þá er þat opnast örlítit meira."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile er kanban-borð fyrir einn mann ok marga gervigreindar-erindreka. Þat gengr á þinni eigin tölvu ok er alveg ókeypis. Þú bætir við verkum, ok hvert verk fær leiðtoga ok litla sveit. Þú ræðr við leiðtogann, líkt ok á Discord, ok lýsir hugmynd; leiðtoginn gerir hana at spjöldum ok áætlun, ok bíðr þess at þú ýtir á Go. Sveitin vinnr sig gegnum spjöldin í forgangsröð, með einföldu skipanalínutóli gerðu fyrir mállíkön. Áðr en nokkut kemr aftr til þín, fylgir gervigreindar-prófari skrefunum í eftirmynd forritsins ok festir við skjámynd. Lokit verk lendir á hauginum þínum með breyttum skrám ok muninum. Þú samþykkir þat, eða þú skilr eftir ummæli, ok sveitin vaknar ok reynir aftr. Aðeins þú mátt færa spjald til Lokit.",
+      "Dagr með AI-gile, í grófum dráttum. At kveldi skilr þú eftir nokkur ummæli: þessi hnappr er á röngum stað, sá listi ætti at vera raðaðr, gætum vér fengit dökkan hátt. Þú ferr at sofa. Erindrekarnir lesa ummælin, gera breytingarnar, prófa þær ok skila þeim aftr til þín. Ef Til gerðar tæmist, fyllir næturvörðrinn þat úr backlog með spjöldum er þurfa ekkert svar frá þér. At morgni er þar einn stuttr haugr: nokkrar spurningar ok fáeinir hlutir at reyna, hver með skrefum er syfjaðr maðr má fylgja ok skjámynd af því at þat virkar. Þú smellir þig gegnum, samþykkir góðu spjöldin ok sendir hin aftr. Teljari sýnir hvat allt þetta notaði, ok Engin tákn-hátr er til fyrir magrar vikur. Síðan etr þú morgunverð, er erindrekarnir fá enn eigi hjálpat með.",
+      "Fyrst, hvat AI-gile er eigi. Þat er eigi sprotafyrirtæki, þat er eigi til sölu, ok engi safnar gögnum þínum. Þat er ókeypis borð er gengr á tölvu þinni, án reikninga, eltara eða kaka. Hvat þat er: einn snyrtiligr staðr til at sjá öll gervigreindar-kóðaverk þín senn, með sveit erindreka er vinnr spjöldin ok þik er tekr ákvarðanirnar. Þat steypir skyldum spjöldum saman, lagar ruglingsleg heiti ok fylgist með hversu mjór kóðinn helzt. Þat talar um 120 tungur, frá norrœnu til sjóræningja ok klingonsku. Vinir mega senda hverr öðrum skilaboð, einkaliga ok dulrituð. Þat var smíðat af Rich ok mörgum þolinmóðum erindrekum, er mestanpart notuðu þat sjálfir. Þat er í lokuðu for-alfa, svá þat er hrjúft sums staðar. Ef þat hljómar skemmtiligt, bið vel, ok kannski kemst þú snemma inn."
+    ] }
+  ],
+  "quips": {
+    "1": "Eitt orð. Djarft. Kannski of djarft.",
+    "3": "Þrjú orð. Þegar heiðarlegra en flestar vörusíður.",
+    "8": "Átta orð. Enn styttra en stand-up.",
+    "21": "Lengdirnar eru annars story points. Auðvitað eru þær þat.",
+    "55": "Fimmtíu ok fimm orð. Tvö spjöld lukust meðan þú last þetta.",
+    "144": "Þat var hit langa. Ekkert 233 er til. Erindrekarnir eru farnir at sofa."
+  }
+}
