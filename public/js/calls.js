@@ -3,6 +3,9 @@
 // getToken() answers { url, token, room? } from the board (room: the call must be that one, checked once joined); the room is inside the token, so any caller (a friend's DM now, a project's
 // Meeting Room later) only says how to get one. livekit-client comes from jsDelivr, pinned, with SRI (like xterm in terminal.js).
 // Screen share is video only: no system audio, so the other callers' voices never echo back to them.
+// AIG-1300: thanks to ChilledChat (calls, screen share, replies, reactions, typing). Its web address goes here once there is one; empty = the name as plain text.
+const CHILLEDCHAT_URL = '';
+const chilledChat = () => CHILLEDCHAT_URL ? `<a href="${esc(CHILLEDCHAT_URL)}" target="_blank" rel="noopener noreferrer">ChilledChat</a>` : 'ChilledChat';
 const Call = (() => {
   const SWAP_MS = 3000;   // AIG-1171: alone in a call on my own server, ask this often whether to move to the friend's (opts.swap)
   const LIB = ['https://cdn.jsdelivr.net/npm/livekit-client@2.22.3/dist/livekit-client.umd.js', 'sha384-G/xxtkVytOx/ia9Q8MXxM+V0ohsaY1fZAgVP3iSGTPz4wJ0s3+ulJNKXh/gnzEDZ'];
@@ -48,7 +51,7 @@ const Call = (() => {
     const bar = `<div class="call-bar">${b('callMic', on.mic ? 'lkcall.mic.off' : 'lkcall.mic.on', 'mic', on.mic)}${b('callCam', on.cam ? 'lkcall.cam.off' : 'lkcall.cam.on', 'cam', on.cam)}${b('callScreen', on.screen ? 'lkcall.screen.off' : 'lkcall.screen.on', 'screen', on.screen)}<button type="button" id="callDevBtn" class="call-x" aria-pressed="${devs}" aria-label="${esc(t('lkcall.dev'))}" title="${esc(t('lkcall.dev'))}" onclick="Call.devices()">⚙</button><button type="button" id="callLeave" class="bad" onclick="Call.leave()">${esc(t('lkcall.leave'))}</button></div>`;
     // AIG-1171: the tiles box stays when it is there (its videos keep playing); only the head and the buttons are redrawn
     if (el('callTiles') && p.contains(el('callTiles'))) { p.querySelector('.call-head').outerHTML = head; p.querySelector('.call-bar').outerHTML = bar; }
-    else { dropVids(); p.innerHTML = head + '<div class="call-tiles" id="callTiles"></div>' + bar + '<div class="call-devs" id="callDevs"' + (devs ? '' : ' hidden') + '></div><div class="err" id="callErr" role="alert"></div><div class="call-live" id="callLive" aria-live="polite"></div>'; }
+    else { dropVids(); p.innerHTML = head + '<div class="call-tiles" id="callTiles"></div>' + bar + '<div class="call-devs" id="callDevs"' + (devs ? '' : ' hidden') + '></div><div class="err" id="callErr" role="alert"></div><div class="call-live" id="callLive" aria-live="polite"></div><p class="call-credit muted" id="callCredit">' + esc(t('lkcall.credit', { name: '{name}' })).replace('{name}', chilledChat()) + '</p>'; }
     p.setAttribute('aria-label', t('lkcall.aria', { name: title })); p.classList.toggle('mini', mini);
     p.hidden = false;
     if (devs) devList();

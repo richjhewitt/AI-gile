@@ -43,7 +43,7 @@ async function helpMenu() {
   m.style.top = r.bottom + 6 + 'px'; m.style.right = Math.max(8, innerWidth - r.right) + 'px';
   const item = (id, fn, key) => `<button type="button" role="menuitem" id="${id}" onclick="helpMenuClose(); ${fn}">${esc(t(key))}</button>`;
   m.innerHTML = item('hmStart', 'gettingStarted()', 'help.m.start') + item('hmIntro', 'introOpen()', 'help.m.intro') + item('hmTour', 'tourDialog()', 'help.m.tour') + item('hmDemo', 'startTrial()', 'help.m.demo')
-    + item('hmGloss', "location.hash = '#/glossary'", 'help.m.gloss') + item('hmInstall', 'installHint()', 'help.m.install') + item('hmIncidents', 'incidentsGuide()', 'help.m.incidents') + item('hmService', 'serviceGuide()', 'help.m.service') + item('hmImprove', "location.hash = '#/improvements'", 'help.m.improve') + `<div class="help-sep"></div><div class="help-lvl-h muted">${esc(t('help.m.level'))}</div>`
+    + item('hmGloss', "location.hash = '#/glossary'", 'help.m.gloss') + item('hmInstall', 'installHint()', 'help.m.install') + item('hmIncidents', 'incidentsGuide()', 'help.m.incidents') + item('hmService', 'serviceGuide()', 'help.m.service') + item('hmImprove', "location.hash = '#/improvements'", 'help.m.improve') + item('hmThanks', 'helpThanks()', 'help.m.thanks') + `<div class="help-sep"></div><div class="help-lvl-h muted">${esc(t('help.m.level'))}</div>`
     + HELP_LEVELS.map(v => `<button type="button" role="menuitemradio" aria-checked="${v === HELP.level}" id="hmLevel${v}" class="${v === HELP.level ? 'on' : ''}" onclick="helpSetLevel('${v}')">${v === HELP.level ? '✓ ' : ''}${esc(t('help.level.' + v))}</button>`).join('');
   document.body.append(m);
 }
@@ -52,6 +52,14 @@ function gettingStarted() {
   openDialog(`<h2>${esc(t('help.start.h'))}</h2><p>${esc(t('help.start.p'))}</p>
     <ol id="gettingStarted">${[1, 2, 3, 4].map(n => `<li>${esc(t('help.start.' + n))}</li>`).join('')}</ol>
     <p class="muted">${esc(t('help.start.more'))}</p>
+    <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
+}
+// 💙 Thanks (AIG-1300): who the calls and the chat extras come from. chilledChat() is in calls.js (the name, a link once CHILLEDCHAT_URL is set).
+function helpThanks() {
+  const line = (key, name) => esc(t(key, { name: '{name}' })).replace('{name}', name);
+  openDialog(`<h2>${esc(t('help.thanks.h'))}</h2><div id="helpThanks">
+    <p>${line('help.thanks.chilled', chilledChat())}</p>
+    <p>${line('help.thanks.livekit', '<a href="https://livekit.io" target="_blank" rel="noopener noreferrer">LiveKit</a>')}</p></div>
     <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
 }
 // 🔥 Incidents and problems guide (AIG-863, AIG-888) and 🛎️ Service management guide (AIG-1158): a guide page in a dialog (English for now).

@@ -36,3 +36,7 @@
 .dm-joinrow { margin-top: 6px; }
 .dm-joinbtn { background: var(--accent); color: var(--on-fill); border-color: var(--accent); font-weight: 600; }
 .call-tap { align-self: stretch; background: var(--accent); color: var(--on-fill); border-color: var(--accent); font-weight: 600; }
+/* AIG-1300: a quiet thanks line at the bottom of an open call */
+.call-credit { margin: 0; font-size: 11px; text-align: center; opacity: .8; }
+.call-credit a { color: inherit; }
+.call-panel.mini .call-credit { display: none; }

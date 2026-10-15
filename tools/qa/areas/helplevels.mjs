@@ -108,6 +108,12 @@ def('helplevels', '❓ help levels: each level\'s first run, the Help menu, the 
   check('Help menu starts with Getting started, which opens a short list', (await p1.locator('#helpMenu button').first().getAttribute('id')) === 'hmStart');
   await p1.click('#hmStart');
   check('Getting started lists four steps', (await p1.locator('#gettingStarted li').count()) === 4);
+  // 💙 Thanks (AIG-1300): ChilledChat for calls and the chat extras, LiveKit for the call server
+  await p1.keyboard.press('Escape');
+  await p1.click('#helpBtn'); await p1.click('#hmThanks'); await p1.waitForSelector('#helpThanks');
+  const thx = await p1.textContent('#helpThanks');
+  check('Help > Thanks credits ChilledChat (calls, screen share, replies, reactions, typing) and LiveKit, in two short lines', /ChilledChat/.test(thx) && /screen share/.test(thx) && /reactions/.test(thx) && /typing/.test(thx) && /LiveKit/.test(thx) && (await p1.locator('#helpThanks p').count()) === 2, thx);
+  await p1.keyboard.press('Escape');
   // 🛎️ Service management guide (AIG-1158): each level opens by the Help level, Show more adds the next.
   await p1.keyboard.press('Escape');
   const svc = async () => { await p1.click('#helpBtn'); await p1.click('#hmService'); await p1.waitForSelector('#svcGuide h3'); return p1.textContent('#svcGuide'); };
