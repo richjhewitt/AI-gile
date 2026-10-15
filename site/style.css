@@ -127,17 +127,17 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 .form-msg.bad{color:#d4433b}
 .muted{color:var(--muted)}
 /* Live board (AIG-1232): every card a bar, sized by its length, coloured by type; the section scrolls sideways on a phone, the page never */
-.live{max-width:62rem;margin:0 auto;padding:32px 0;text-align:center}
+.live{max-width:72rem;margin:0 auto;padding:32px 0;text-align:center}
 .live h2{font-size:28px;margin:0 0 8px}
 .live-stat{margin:0 0 4px;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
 .live-stat:first-letter{color:#22c55e}
 .live-last{margin:0 0 12px;color:var(--muted);font-size:14px}
 .live-scroll{overflow-x:auto;text-align:start;padding-bottom:8px}
-.lv-cols{display:flex;gap:10px;align-items:flex-start;min-width:max-content}
+.lv-cols{display:flex;gap:10px;align-items:flex-start;min-width:min-content}
 .live{--c-bug:#dc2626;--c-task:#9333ea;--c-feat:#3b6cf6;--c-inc:#d97706;--c-done:#1f9d61;--c-mute:#5f697d}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .live{--c-bug:#f06262;--c-task:#b57cff;--c-feat:#6d93ff;--c-inc:#f0a33a;--c-done:#34c77b;--c-mute:#9da5b8}}
 :root[data-theme="dark"] .live{--c-bug:#f06262;--c-task:#b57cff;--c-feat:#6d93ff;--c-inc:#f0a33a;--c-done:#34c77b;--c-mute:#9da5b8}
-.lv-col{--k:var(--c-mute);flex:0 0 150px;background:color-mix(in srgb,var(--k) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--k) 24%,var(--line));border-top:3px solid var(--k);border-radius:10px;padding:8px;min-height:60px}
+.lv-col{--k:var(--c-mute);flex:1 1 0;min-width:120px;background:color-mix(in srgb,var(--k) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--k) 24%,var(--line));border-top:3px solid var(--k);border-radius:10px;padding:8px;min-height:60px}
 .lv-col.k-todo{--k:var(--c-feat)}.lv-col.k-doing{--k:var(--c-inc)}.lv-col.k-review,.lv-col.k-team{--k:var(--c-task)}.lv-col.k-verify{--k:var(--c-bug)}.lv-col.k-done{--k:var(--c-done)}
 .lv-col h3{font-size:11px;margin:0 2px 8px;text-transform:uppercase;letter-spacing:.04em;color:var(--k);font-weight:700}
 .lv-n{font-weight:400;opacity:.8;color:var(--muted)}

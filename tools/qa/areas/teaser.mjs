@@ -31,6 +31,7 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
   // AIG-1255: the live board says when a card last moved; AIG-1253: link preview tags
   await page.waitForSelector('#live-last:not([hidden])', { timeout: 5000 });
   check('the live board says "Last card moved 3 min ago" (AIG-1255)', (await page.$eval('#live-last', e => e.textContent)) === 'Last card moved 3 min ago');
+  { const fit = await page.$eval('#live-cols', w => { const c = w.querySelector('.lv-col'), add = []; for (let i = 0; i < 6; i++) add.push(w.appendChild(c.cloneNode(true))); const sc = w.parentElement, r = { sw: sc.scrollWidth, cw: sc.clientWidth }; add.forEach(e => e.remove()); return r; }); check('at 1400px wide all 7 live board columns fit, no sideways scroll (AIG-1279)', fit.sw <= fit.cw + 1, fit); }
   const og = n => page.$eval('meta[property="' + n + '"],meta[name="' + n + '"]', e => e.content).catch(() => '');
   check('link preview: Open Graph and Twitter card tags (AIG-1253)', (await og('og:title')).length > 5 && (await og('og:description')).length > 20 && /^https:.*preview\.png$/.test(await og('og:image')) && (await og('twitter:card')) === 'summary_large_image' && (await og('twitter:image')) === (await og('og:image')));
   const png = (await import('node:fs')).readFileSync(path.join(ROOT, 'site', 'assets', 'preview.png'));
@@ -70,11 +71,11 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
   check('planned part is marked planned and has no dates', planned.length === 1 && planned[0].tag && /planned/.test(planned[0].t) && planned[0].times === 0, planned);
   check('Today marker sits between done and planned', await page.evaluate(() => { const y = id => document.getElementById(id).getBoundingClientRect().top; return y('tl-done') < y('tl-today') && y('tl-today') < y('tl-planned'); }));
   check('timeline fits at phone width in dark mode', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && getComputedStyle(document.querySelector('.tl-item')).backgroundColor !== 'rgb(238, 240, 243)'));
-  await page.waitForSelector('#famous:not([hidden])', { timeout: 5000 });
+  if (await page.$('#famous')) { await page.waitForSelector('#famous:not([hidden])', { timeout: 5000 });
   check('famous apps: a line and a source link per app, plus our card count, no sideways scroll (AIG-842)', await page.evaluate(() => {
     const l = [...document.querySelectorAll('#famous-list li')], s = [...document.querySelectorAll('#famous-sources li')];
     return l.length >= 4 && s.length === l.length && s.every(x => /^https:/.test(x.querySelector('a')?.href)) && document.getElementById('famous-n').textContent === '37' && document.documentElement.scrollWidth <= innerWidth;
-  }));
+  })); } // the famous apps section is off since AIG-1222: only checked while it is on the page
   check('no page errors', errs.length === 0, errs);
 
   const p2 = await ctx.newPage();
