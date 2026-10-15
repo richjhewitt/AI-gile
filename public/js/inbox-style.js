@@ -61,6 +61,7 @@ const INBOX_CSS = `
 .ib-item.q { border: 2px solid var(--q-line); border-left-width: 8px; background: var(--q-tint); }
 .ib-item.t { border-left: 6px solid var(--t-line); background: var(--t-tint); }
 .ib-item.flash { animation: ibflash 1.6s ease-out 1; }
+@media (prefers-reduced-motion: reduce) { .ib-item.flash { animation: none; outline: 2px solid var(--accent); } }
 @keyframes ibflash { 0% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 45%, transparent); } 100% { box-shadow: var(--shadow); } }
 .ib-top { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
 .ib-tag { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }

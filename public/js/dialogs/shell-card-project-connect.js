@@ -72,7 +72,7 @@ async function makeLifeBoard() {
 function showNewCard(id) {
   const el = document.querySelector(`#app a.card[data-id="${id}"]`); if (!el) return;
   const col = el.closest('.column'), h = col && col.querySelector('h3 span');
-  try { el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); } catch { el.scrollIntoView(); }
+  try { el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } catch { el.scrollIntoView(); }
   el.classList.add('newflash'); setTimeout(() => el.classList.remove('newflash'), 2500);
   if (h) note(t('dlg.newcard.wentto', { id, column: h.textContent.replace(/\s*[\u00b7(].*$/, '').trim() }));
 }

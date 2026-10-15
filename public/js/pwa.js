@@ -16,7 +16,7 @@ function installHint() {
 (() => {
   if (!window.visualViewport || !window.matchMedia || !matchMedia('(hover: none)').matches) return;
   let last = null;
-  const show = () => { if (last && document.activeElement === last) { try { last.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch {} } };
+  const show = () => { if (last && document.activeElement === last) { try { last.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } catch {} } };
   document.addEventListener('focusin', e => { if (e.target.matches && e.target.matches('textarea, input[type=text], input[type=search], input:not([type])')) { last = e.target; setTimeout(show, 350); } });
   visualViewport.addEventListener('resize', show);
 })();
