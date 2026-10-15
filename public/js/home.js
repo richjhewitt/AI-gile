@@ -31,7 +31,7 @@ function renderHome() {
     `<li>${c.status === 'verify' ? '🧪' : '❓'} <a href="#/p/${c.project}/${c.id}"><b>${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</b> · ${esc(c.id)} ${esc(c.title)}</a> <span class="muted">${ago(c.updated)}</span></li>`).join('')}</ul></details>` : '';   // closed by default (AIG-105)
   // 🪐 Spaces (AIG-434): the projects as a tree, a space's projects in an indented row under it.
   const cards = Spaces.homeGrid(Spaces.tree(state.projects), projCard);
-  const fresh = !state.projects.length && !state.showArchived;   // AIG-1073: nothing yet, so no Show archived and no Scrum Master line
+  const fresh = !state.projects.length && !state.showArchived && !state.hasArchived;   // AIG-1073: nothing yet, so no Show archived and no Scrum Master line
   // AIG-937: one + New project button; the rest sit under More (same elements, same ids and handlers). QA keeps it open with localStorage aigile.homeMoreOpen=1.
   let moreOpen = state.homeMore; if (moreOpen === undefined) { try { moreOpen = localStorage.getItem('aigile.homeMoreOpen') === '1'; } catch { moreOpen = false; } }
   return `<div class="toolbar"><button class="primary" onclick="newProject()">${esc(t('home.newproject'))}</button> <button id="homeMoreBtn" aria-expanded="${!!moreOpen}" aria-controls="homeMenu" onclick="homeMore()" title="${esc(t('home.more.title'))}">${esc(t('home.more'))}</button><span class="grow"></span>

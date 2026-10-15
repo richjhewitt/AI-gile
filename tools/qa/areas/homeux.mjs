@@ -48,7 +48,12 @@ def('homeux', 'Home: counts hide zeros and show % done, More holds the moved but
   check('empty home: a welcome card with a big + New project', /project/i.test(await eh.textContent('#homeWelcome p')) && await eh.isVisible('#homeWelcomeNew'));
   check('empty home: no Show archived and no Scrum Master line', (await eh.locator('.toolbar .chk').count()) === 0 && (await eh.locator('.smline').count()) === 0 && !/No projects yet/.test(await eh.textContent('#app')));
   check('empty home: the actions row is there for more buttons', await eh.locator('#homeWelcomeActions').count() === 1);
+  // AIG-1120: every project archived -> the list is empty, but Show archived stays so they can be reached
+  const ar = await mkProject(s, 'Zeta', 'ZET'); await s.ok('PATCH', '/api/projects/' + ar.slug, { archived: true });
+  await eh.reload(); await eh.waitForSelector('.toolbar .chk');
+  check('only archived projects: Show archived is still offered', (await eh.locator('.toolbar .chk').count()) === 1);
   await eh.close();
+  await s.ok('PATCH', '/api/projects/' + ar.slug, { archived: false });
 
   const al = await mkProject(s, 'Alpha', 'ALP');
   await mkCard(s, al.slug, 'One', { status: 'doing' });

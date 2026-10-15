@@ -57,6 +57,7 @@ const reviewHtml = (p, c) => {
 };
 async function pirTick(id, i, on) { try { await api('POST', `/api/projects/${slug()}/cards/${id}/review/tick`, { i, on }); } catch (e) { alert(e.message); refresh(true); } }
 async function pirMake(id, i) { try { await api('POST', `/api/projects/${slug()}/cards/${id}/review/card`, { i }); refresh(true); } catch (e) { alert(e.message); } }
+const knownErrorsLink = (p, c) => c.type === 'incident' ? `<p class="ke-p"><a class="ke-link" href="#/known-errors/${esc(p.slug)}">${esc(t('ke.incident.link'))}</a></p>` : '';
 // 🚨 Major incident button (AIG-1049): on an open incident card; pressed again it ends the major incident.
 const majorHtml = c => c.type !== 'incident' || c.status === 'done' ? '' : `<div class="major">${c.major ? `<span class="major-on">${esc(t('major.on', { by: c.major.by || '', when: ago(c.major.at) }))}</span> ` : ''}<button type="button" class="${c.major ? '' : 'danger'}" onclick="pressMajor('${esc(c.id)}')" title="${esc(t('major.title'))}">${esc(t(c.major ? 'major.end' : 'major.btn'))}</button></div>`;
 async function pressMajor(id) {
@@ -121,7 +122,7 @@ function renderCard(p, c) {
       ${pop ? chatHtml(p, c, msg) : followBar(p, c) + replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
-      ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${problemHtml(p, c)}${changeHtml(p, c)}${Attach.shown(c, p.slug)}
+      ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${runbooksHtml(p, c)}${problemHtml(p, c)}${knownErrorsLink(p, c)}${changeHtml(p, c)}${Attach.shown(c, p.slug)}
     </div>
     ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>
       ${c.proof ? proofHtml(c.proof) : ''}
