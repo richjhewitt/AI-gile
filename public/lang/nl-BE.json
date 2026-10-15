@@ -3612,5 +3612,6 @@
  "desk.looks": "lijkt op {id}",
  "desk.link": "Koppel",
  "desk.linked": "Gekoppeld aan {id}",
- "srv.desk.linked": "Gekoppeld: dit lijkt hetzelfde als {id}."
+ "srv.desk.linked": "Gekoppeld: dit lijkt hetzelfde als {id}.",
+ "ci.affects": "Raakt:"
 }
