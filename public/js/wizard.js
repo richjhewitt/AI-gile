@@ -10,7 +10,7 @@ const WZ_STYLES = {
 };
 const WZ_PLANS = ['fly', 'careful', 'normal', 'generous', 'nospare'];
 const WZ_STEPS = 5;
-const WZ = { noAi: false, shown: false, step: 1, name: '', agent: '', style: '', plan: '', help: '', hadOwner: false };
+const WZ = { noAi: false, shown: false, step: 1, name: '', agent: '', skipAgent: false, style: '', plan: '', help: '', hadOwner: false };
 
 // Which style the current settings already match ('' when none does).
 function wzStyleOf(pr, explain) {
@@ -47,13 +47,14 @@ async function wizardTour() { try { await wzLeave(); startTour('new'); } catch (
 function wizardStart() {
   const s = state.setup, pr = s.prefs || {}, first = !pr.wizardSeen;
   WZ.hadOwner = !!wzField('owner').value;
-  Object.assign(WZ, { step: 1, name: wzField('owner').value, agent: wzField('agent.command').value, style: wzStyleOf(pr, glossOn()) || (first ? 'balanced' : ''), plan: pr.plan || (first ? 'normal' : ''), help: pr.helpLevel || '2' });
+  Object.assign(WZ, { step: 1, name: wzField('owner').value, agent: wzField('agent.command').value, skipAgent: !!pr.agentSkipped && !wzField('agent.command').value, style: wzStyleOf(pr, glossOn()) || (first ? 'balanced' : ''), plan: pr.plan || (first ? 'normal' : ''), help: pr.helpLevel || '2' });
   wizardShow();
 }
 // Take what is typed on this screen before moving on.
 function wzKeep() {
   if ($('wz-name')) WZ.name = $('wz-name').value.trim();
   if ($('wz-agent')) WZ.agent = $('wz-agent').value.trim();
+  if ($('wz-noagent')) WZ.skipAgent = $('wz-noagent').checked;
 }
 function wizardShow() {
   const n = WZ.step, dots = `<div class="wz-dots" aria-label="${esc(t('wz.step', { n, of: WZ_STEPS }))}">${Array.from({ length: WZ_STEPS }, (_, i) => `<span class="wz-dot ${i + 1 === n ? 'on' : i + 1 < n ? 'past' : ''}"></span>`).join('')}</div>`;
@@ -66,7 +67,8 @@ function wizardShow() {
     body = `<h2>${esc(t('wz.2.h'))}</h2>
       <label class="f"><span>${esc(t('wz.2.name'))}</span><input type="text" id="wz-name" value="${esc(WZ.name)}" maxlength="80" autocomplete="off"><small class="muted">${esc(t('wz.2.name.help'))}</small></label>
       ${WZ.noAi ? '' : `<label class="f"><span>${esc(t('wz.2.agent'))}</span><input type="text" id="wz-agent" value="${esc(WZ.agent)}" placeholder="${esc(t('wz.2.agent.ph'))}" autocomplete="off" spellcheck="false"><small class="muted">${esc(t('wz.2.agent.help'))}</small>`}
-      ${g && !WZ.agent && !WZ.noAi ? `<small class="suggest"><button type="button" id="wzUse" title="${esc(g)}" onclick="$('wz-agent').value = ${esc(JSON.stringify(g))}; this.closest('.suggest').remove()">${esc(t('wz.2.use'))}</button> <code title="${esc(g)}">${esc(/\*/.test(g) ? t('wz.2.vsext') : g)}</code></small>` : ''}${WZ.noAi ? '' : '</label>'}`;
+      ${g && !WZ.agent && !WZ.noAi ? `<small class="suggest"><button type="button" id="wzUse" title="${esc(g)}" onclick="$('wz-agent').value = ${esc(JSON.stringify(g))}; this.closest('.suggest').remove()">${esc(t('wz.2.use'))}</button> <code title="${esc(g)}">${esc(/\*/.test(g) ? t('wz.2.vsext') : g)}</code></small>` : ''}${WZ.noAi ? '' : '</label>'}
+      ${WZ.noAi ? '' : `<label class="chk"><input type="checkbox" id="wz-noagent" ${WZ.skipAgent ? 'checked' : ''} onchange="WZ.skipAgent = this.checked"> <span>${esc(t('wz.2.noagent'))}</span></label>`}`;
   }
   if (n === 3) body = `<h2>${esc(t('wz.3.h'))}</h2><p class="muted">${esc(t('wz.3.sub'))}</p><div class="wz-opts">${Object.keys(WZ_STYLES).map(k => pick('wz-style', k, WZ.style, t('wz.style.' + k), t('wz.style.' + k + '.help'))).join('')}</div>
       <h3>${esc(t('wz.adv.help.h'))}</h3><div class="wz-opts">${HELP_LEVELS.map(v => pick('wz-help', v, WZ.help, t('help.level.' + v))).join('')}</div>`;
@@ -81,7 +83,10 @@ function wizardShow() {
 // The last screen names the Setup boxes that are still empty and links to them (AIG-1070).
 function wzMissingHtml() {
   const s = state.setup; if (!s.needed || WZ.noAi) return '';
-  const names = ['agent.command', 'agent.notesFile', 'agent.settingsFile'].filter(k => !wzField(k).value).map(k => tk('setup.f.' + k, wzField(k).label || k));
+  // AIG-1195: plain words; nothing when the friend has no AI program yet, and only the program while none is set
+  if (WZ.skipAgent && !WZ.agent) return '';
+  const ks = WZ.agent || wzField('agent.command').value ? ['agent.notesFile', 'agent.settingsFile'] : ['agent.command'];
+  const names = ks.filter(k => !wzField(k).value).map(k => t('wz.5.m.' + k.split('.')[1]));
   if (!names.length) return '';
   return `<p class="muted" id="wzMissing">${esc(t('wz.5.missing', { names: names.join(', ') }))}</p><p><button type="button" id="wzGoSetup" onclick="wizardClose(); location.hash = '#/setup/you'">${esc(t('wz.5.go'))}</button></p>`;
 }
@@ -98,6 +103,7 @@ async function wzSave() {
   const body = { prefs: { wizardSeen: true } };
   if (WZ.name) body.owner = WZ.name;
   if (WZ.agent && !WZ.noAi) body['agent.command'] = WZ.agent;
+  if (!WZ.noAi) body.prefs.agentSkipped = WZ.skipAgent && !WZ.agent && !wzField('agent.command').value;
   if (WZ.noAi) body.prefs.noAi = true;
   if (WZ.style && !WZ.noAi) Object.assign(body.prefs, wzPrefsOf(WZ.style));
   if (WZ.plan && !WZ.noAi) body.prefs.plan = WZ.plan;

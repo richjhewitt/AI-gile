@@ -60,7 +60,8 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   await page.check('[name=wz-plan][value=fly]');
   await page.click('#wzNext'); await page.waitForSelector('#wzDone');
   check('last screen points to Setup', (await page.textContent('.wizard')).includes('Setup'));
-  check('last screen names the empty boxes and links to them (AIG-1070)', (await page.textContent('#wzMissing')).includes('Agent notes file') && await page.isVisible('#wzGoSetup'));
+  check('last screen names the empty boxes and links to them (AIG-1070)', (await page.textContent('#wzMissing')).includes('your AI program') && await page.isVisible('#wzGoSetup'));
+  check('the last screen uses plain words, no file-name jargon (AIG-1195)', !/Agent (notes|settings) file/.test(await page.textContent('.wizard')));
   let st = await setup();
   check('the careful style is saved', st.prefs.go === 'ask' && st.prefs.chatty === false && st.prefs.tidyCards === true && st.prefs.watchAll === false, JSON.stringify(st.prefs));
   check('the spend plan is saved', st.prefs.plan === 'fly' && st.prefs.budgetH5 === st.plans.fly.budgetH5 && st.prefs.maxRuns === 1);
@@ -69,6 +70,24 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   await page.waitForSelector('.wizard', { state: 'detached' });
   const saved = JSON.parse(fs.readFileSync(process.env.QA_WIZARD_FILE, 'utf8'));
   check('it lands in the local settings file', saved.owner === 'Wiz' && saved.wizard.seen === true && saved.lead.go === 'ask' && !(saved.agent || {}).command, JSON.stringify(saved));
+
+  // AIG-1195: "I don't have an AI program yet" is remembered, and Home stops asking to finish setup.
+  await page.click('#wzRun'); await page.waitForSelector('.wz-dots'); await page.click('#wzNext'); await page.waitForSelector('#wz-noagent');
+  await page.check('#wz-noagent');
+  await page.click('#wzNext'); await page.waitForSelector('[name=wz-style]'); await page.click('#wzSkip'); await page.waitForSelector('[name=wz-plan]'); await page.click('#wzSkip'); await page.waitForSelector('#wzDone');
+  check('no AI program: the last screen lists nothing to fill in', !(await page.isVisible('#wzMissing')));
+  st = await setup();
+  check('the skip is saved and setup is no longer needed', st.prefs.agentSkipped === true && st.needed === false && st.fields.find(f => f.key === 'agent.command').value === '', JSON.stringify(st.prefs));
+  await page.click('#wzDone'); await page.waitForSelector('.wizard', { state: 'detached' });
+  await page.goto(s.base + '/#/'); await page.reload(); await sleep(800);
+  check('Home shows no Finish setup for them', !(await page.locator('#finishSetup').count()));
+  await page.goto(s.base + '/#/setup'); await page.waitForSelector('#wzRun'); await page.click('#wzRun'); await page.waitForSelector('.wz-dots'); await page.click('#wzNext'); await page.waitForSelector('#wz-noagent');
+  check('running the wizard again shows the box ticked', await page.isChecked('#wz-noagent'));
+  await page.uncheck('#wz-noagent');
+  await page.click('#wzNext'); await page.waitForSelector('[name=wz-style]'); await page.click('#wzSkip'); await page.waitForSelector('[name=wz-plan]'); await page.click('#wzSkip'); await page.waitForSelector('#wzDone');
+  st = await setup();
+  check('unticking it brings the setup line back', st.prefs.agentSkipped === false && st.needed === true);
+  await page.click('#wzDone'); await page.waitForSelector('.wizard', { state: 'detached' });
 
   // Use this takes the guess, but only on a click.
   if (guess) {
