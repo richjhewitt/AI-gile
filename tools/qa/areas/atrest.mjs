@@ -2,7 +2,8 @@
 // (on the next write and by the start-up migration, safe twice), export gives plain JSON, and a missing key refuses with no plaintext.
 import fs from 'node:fs';
 import path from 'node:path';
-import { freePort, startRelay, startServer, until, check, mkProject, def } from '../lib.mjs';
+import { spawnSync } from 'node:child_process';
+import { freePort, startRelay, startServer, until, check, mkProject, def, tmp, ROOT } from '../lib.mjs';
 
 const PREFIX = 'aigile-atrest-v1:';
 const disk = f => { try { return fs.readFileSync(f, 'utf8'); } catch { return ''; } };
@@ -68,7 +69,26 @@ def('atrest', '🔒 chats at rest: DM and group chat files sealed on disk, read 
     b3.stop();
 
     // Key missing (data/secrets/kept.json lost): reads and writes refuse in plain English, nothing written in plaintext.
-    const kf = path.join(b.data, 'secrets', 'kept.json'), kept = JSON.parse(disk(kf));
+    const kf = path.join(b.data, 'secrets', 'kept.json'), good = disk(kf), kept = JSON.parse(good);
+
+    // AIG-1172: kept.json damaged (a crash mid-write) or gone, with a good kept.json.bak: chats still open from the backup.
+    fs.writeFileSync(kf + '.bak', good);
+    fs.writeFileSync(kf, good.slice(0, Math.floor(good.length / 2)));
+    b3 = await startServer(env, await freePort());
+    check('damaged kept.json with a good .bak: the sealed chats still open', (await b3.ok('GET', `/api/dms/contacts/${ca.id}/messages`)).some(m => m.text === 'migrate me cherry'));
+    b3.stop();
+    fs.rmSync(kf);
+    b3 = await startServer(env, await freePort());
+    check('kept.json gone with a good .bak: the sealed chats still open', (await b3.ok('GET', `/api/dms/contacts/${ca.id}/messages`)).some(m => m.text === 'migrate me cherry'));
+    b3.stop();
+    // Damaged and no good backup: refused, and never taken for "no key yet" (no new key is made, the damaged file is left as it is).
+    fs.rmSync(kf + '.bak'); fs.writeFileSync(kf, '{"chats.at');
+    b3 = await startServer(env, await freePort());
+    const dr = await b3.api('GET', `/api/dms/contacts/${ca.id}/messages`), dw = await b3.api('POST', '/api/chats/_groups/mig-0001/say', { as: 'A', text: 'not over a damaged key' });
+    check('damaged kept.json, no backup: chats are refused, not opened with a new key', dr.status === 500 && dw.status === 500 && disk(kf) === '{"chats.at' && !fs.existsSync(kf + '.bak') && !disk(bg).includes('not over'), [dr.status, dw.status]);
+    b3.stop();
+    fs.writeFileSync(kf, good);
+
     delete kept['chats.atrest']; fs.writeFileSync(kf, JSON.stringify(kept));
     b3 = await startServer(env, await freePort());
     const r = await b3.api('GET', `/api/dms/contacts/${ca.id}/messages`);
@@ -76,5 +96,21 @@ def('atrest', '🔒 chats at rest: DM and group chat files sealed on disk, read 
     const w = await b3.api('POST', '/api/chats/_groups/mig-0001/say', { as: 'A', text: 'should not land' });
     check('no key: writing is refused, not saved in plaintext', w.status === 500 && /ever saved unencrypted/.test(w.body.error || '') && disk(bg).startsWith(PREFIX) && !disk(bg).includes('should not land'), w);
     check('no key: no new key was made over the old chats', !('chats.atrest' in JSON.parse(disk(kf))));
+
+    // AIG-1172: a save is temp file + rename (no .tmp left behind) and keeps the previous good version as kept.json.bak;
+    // missing everywhere is empty, damaged with no good backup throws (never read as empty), and a save over it is refused.
+    const sd = tmp('kept'), probe = `const S=require(${JSON.stringify(path.join(ROOT, 'lib', 'secrets.js'))});const fs=require('fs'),f=process.argv[1]+'/secrets/kept.json',o={};
+      o.empty=JSON.stringify(S.keptKeys());S.keep('A','one');S.keep('B','two');
+      o.bak=Object.keys(JSON.parse(fs.readFileSync(f+'.bak','utf8'))).join();o.main=S.keptKeys().join();o.tmp=fs.existsSync(f+'.tmp');
+      fs.writeFileSync(f,'{"A":');o.fromBak=S.kept('A')+','+S.kept('B');
+      fs.writeFileSync(f+'.bak','');try{S.kept('A');o.damaged='read'}catch(e){o.damaged='threw'}
+      try{S.keep('C','three');o.save='saved'}catch(e){o.save='refused'}o.left=fs.readFileSync(f,'utf8');
+      console.log(JSON.stringify(o));process.exit(0);`;
+    const pr = spawnSync(process.execPath, ['-e', probe, sd], { env: { ...process.env, AIGILE_SECRETS_DIR: sd, AIGILE_DATA: sd }, encoding: 'utf8' });
+    let o = {}; try { o = JSON.parse(pr.stdout.trim().split('\n').pop()); } catch {}
+    check('kept.json: nothing yet reads as empty', o.empty === '[]', pr.stderr);
+    check('kept.json: a save renames a temp file in (none left) and keeps the previous good version as .bak', o.main === 'A,B' && o.bak === 'A' && o.tmp === false, o);
+    check('kept.json damaged: values come from the .bak', o.fromBak === 'one,null', o);
+    check('kept.json damaged and no good .bak: reading throws, a save is refused and the file is left alone', o.damaged === 'threw' && o.save === 'refused' && o.left === '{"A":', o);
   } finally { b.stop(); if (b2) b2.stop(); if (b3) b3.stop(); relay.stop(); }
 }, false, { AIGILE_DM_POLL_MS: '300' });
