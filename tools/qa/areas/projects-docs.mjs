@@ -161,6 +161,7 @@ def('newscrum', 'New project from the Scrum or own-columns template names the co
   await page.evaluate(() => { $('p-more').open = true; });
   await page.fill('#p-path', '');
   await page.selectOption('#p-tpl', 'scrum');
+  await page.uncheck('#p-team');   // cards only: no folder to make, so the dialog opens the board at once (AIG-1298)
   await page.click('#dialog button[type=submit]');
   await page.waitForFunction(() => location.hash === '#/p/scrum-team');
   await page.waitForSelector('.column h3');
@@ -175,6 +176,7 @@ def('newscrum', 'New project from the Scrum or own-columns template names the co
   await page.fill('#p-path', '');
   await page.selectOption('#p-tpl', 'own');
   await page.fill('#p-own-names', 'Ideas, Next');
+  await page.uncheck('#p-team');
   await page.click('#dialog button[type=submit]');
   await page.waitForFunction(() => location.hash === '#/p/own-team');
   await page.waitForSelector('.column h3');

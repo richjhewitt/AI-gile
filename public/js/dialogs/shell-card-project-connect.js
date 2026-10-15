@@ -184,6 +184,7 @@ async function newProject(opts = {}) {
       <details id="p-more"${opts.space ? ' open' : ''}><summary>${esc(t('dlg.np.more'))}</summary>
       <div class="row"><label class="f"><span>${esc(t('dlg.np.key'))}</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
       <label class="f"><span>${esc(t('dlg.np.folder'))}</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="${esc(t('dlg.np.folder.ph'))}"></label>
+      ${NoAi.on ? '' : `<label class="chk"><input type="checkbox" id="p-team" checked> ${esc(t('dlg.np.team'))}</label>`}
       <label class="f"><span>${esc(t('dlg.np.desc'))}</span><textarea id="p-desc" rows="3"></textarea></label>
       <label class="f"><span>${esc(t('space.tpl'))}</span><select id="p-spacetpl" onchange="spaceTpl(this.value)"><option value="">${esc(t('space.tpl.none'))}</option>${SPACE_TPLS.map(v => `<option value="${v}">${esc(t('space.tpl.' + v))}</option>`).join('')}</select></label>
       <label class="f"><span>${esc(t('dlg.np.kids'))}</span><textarea id="p-kids" rows="3" placeholder="${esc(t('dlg.np.kids.ph'))}"></textarea><small class="muted">${esc(t('dlg.np.kids.help'))}</small></label>
@@ -244,22 +245,26 @@ function boardTemplateNames(tpl, own) {
 }
 async function createProject(e) {
   e.preventDefault();
-  const name = $('p-name').value.trim(), folder = $('p-path').value.trim();
+  // AIG-1298: ticked (the default) = a Lead and a folder (the one given, else one made under the projects folder: a team cannot
+  // work without one); unticked = a cards-only project: no team, and no folder unless one was typed in.
+  const withTeam = !!$('p-team') && $('p-team').checked, team = withTeam || NoAi.on ? {} : { team: false, teamless: true };   // cards-only on purpose: the board does not ask for a team
+  const name = $('p-name').value.trim(), folder = withTeam || NoAi.on || $('p-path').dataset.touched ? $('p-path').value.trim() : '', auto = withTeam && !folder;
   if (!name) { setErr('d-err', t('dlg.np.err.name')); return false; }
   let p;
   try {
-    p = await api('POST', '/api/projects', { name, key: $('p-key').value.trim(), description: $('p-desc').value.trim() });
+    p = await api('POST', '/api/projects', { name, key: $('p-key').value.trim(), description: $('p-desc').value.trim(), ...team });
     // A template only pre-fills the column names (AIG-170); the statuses underneath never change.
     const names = boardTemplateNames($('p-tpl').value, $('p-own-names').value);
     if (names.some(Boolean)) await api('PATCH', '/api/projects/' + p.slug, { columns: STATUS_ORDER.map((status, i) => ({ status, name: names[i] || undefined })) });
   } catch (err) { setErr('d-err', err); return false; }
   const kids = [...new Set($('p-kids').value.split(/\r?\n/).map(x => x.trim()).filter(Boolean))].slice(0, 20);
-  if (!folder && !kids.length) { closeDialog(); location.hash = '#/p/' + p.slug; return false; }
+  if (!folder && !auto && !kids.length) { closeDialog(); location.hash = '#/p/' + p.slug; return false; }
   $('p-acts').innerHTML = `<button type="button" class="primary" onclick="closeDialog(); location.hash = '#/p/${p.slug}'">${esc(t('dlg.np.open'))}</button>`;
   const done = [t('dlg.np.created')], fails = [];
   const show = () => { $('p-done').innerHTML = `<ul>${done.map(d => `<li>✅ ${esc(d)}</li>`).join('')}${fails.map(d => `<li>⚠️ ${esc(d)}</li>`).join('')}</ul>`; };
-  if (folder) {
-    try { const r = await api('POST', `/api/projects/${p.slug}/connect`, { path: folder, create: true, wake: true }); done.push(...r.done); }
+  let base = folder;   // the kids' folders go inside the space's (the made one too)
+  if (folder || auto) {
+    try { const r = await api('POST', `/api/projects/${p.slug}/connect`, { path: folder || true, create: true, wake: true }); done.push(...r.done); if (r.path) base = r.path; }
     catch (err) { done.shift(); fails.push(t('dlg.np.err.folder', { msg: err.message })); } // the warning already says the project exists (AIG-1181)
     show();
   }
@@ -268,8 +273,8 @@ async function createProject(e) {
   // is woken: N first looks at once would burn tokens for nothing.
   for (const name of kids) {
     try {
-      const k = await api('POST', '/api/projects', { name, parent: p.slug });
-      if (folder) await api('POST', `/api/projects/${k.slug}/connect`, { path: folder + '\\' + name.replace(/[<>:"/\\|?*]/g, '').trim(), create: true });
+      const k = await api('POST', '/api/projects', { name, parent: p.slug, ...team });
+      if (folder || auto) await api('POST', `/api/projects/${k.slug}/connect`, { path: base ? base + (base.includes('\\') ? '\\' : '/') + name.replace(/[<>:"/\\|?*]/g, '').trim() : true, create: true });
       done.push(t('dlg.np.kid.done', { name }));
     } catch (err) { fails.push(t('dlg.np.kid.err', { name, msg: err.message })); }
     show();
