@@ -15,3 +15,9 @@
 .call-bar button.on { outline: 2px solid var(--accent); }
 .call-bar button.bad { background: var(--danger); color: var(--on-fill); border-color: var(--danger); }
 .dm-msg.dm-call .dm-bubble { font-style: italic; }
+
+/* AIG-1256: reduced motion. One catch-all so no animation or transition in the app outlasts a blink (the specific rules above keep a still cue where one is needed). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; transition-delay: 0s !important; scroll-behavior: auto !important; }
+  .newflash { animation: none; outline: 2px solid var(--accent); }
+}
