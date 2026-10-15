@@ -1,6 +1,6 @@
 // AI-gile desktop (AIG-76): the board in its own window. Starts the board server if it isn't running
 // (left running on quit, so teams keep their board), then shows http://localhost:<port>.
-const { app, BrowserWindow, shell, nativeTheme, nativeImage, screen, Tray, Menu } = require('electron');
+const { app, BrowserWindow, shell, nativeTheme, nativeImage, screen, Tray, Menu, session, ipcMain, desktopCapturer, webContents } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -119,7 +119,7 @@ function reopenPops() {
 }
 // No Windows title bar (AIG-128): just the window buttons, in the board's own colours, over the page's top bar.
 const bar = () => nativeTheme.shouldUseDarkColors ? { color: '#1b2029', symbolColor: '#e6e9ef', height: 36 } : { color: '#ffffff', symbolColor: '#1d2330', height: 36 };
-const chrome = () => ({ autoHideMenuBar: true, icon: appIcon(), titleBarStyle: 'hidden', titleBarOverlay: bar() });
+const chrome = () => ({ autoHideMenuBar: true, icon: appIcon(), titleBarStyle: 'hidden', titleBarOverlay: bar(), webPreferences: { preload: path.join(__dirname, 'preload.js') } });   // preload: the share picker (AIG-1163)
 nativeTheme.on('updated', () => BrowserWindow.getAllWindows().forEach(w => { try { w.setTitleBarOverlay(bar()); } catch {} }));
 // Link and navigation rules for any of our windows (the main one and popped-out cards).
 function wire(w) {
@@ -195,6 +195,38 @@ function makeTray() {
   } catch { tray = null; }
 }
 
+/* ---------- screen sharing (AIG-1163, after ChilledChat) ---------- */
+// Electron has no picker of its own for getDisplayMedia: the app lists the screens and windows (with thumbnails) and the page
+// shows them in its own dialog (desktop/preload.js, public/js/sharepick.js). Only the board itself may ask: exact origin, not a prefix.
+const ORIGIN = new URL(BASE).origin;
+const originOf = u => { try { return new URL(u).origin; } catch { return ''; } };
+const picks = new Map();   // id -> { wc, sources, callback, audio, gone }
+let pickSeq = 0;
+function endPick(id, sourceId) {
+  const p = picks.get(id); if (!p) return;
+  picks.delete(id);
+  try { p.wc.removeListener('destroyed', p.gone); p.wc.removeListener('did-navigate', p.gone); } catch {}
+  const s = typeof sourceId === 'string' && p.sources.find(x => x.id === sourceId);
+  try { if (s) p.callback(p.audio ? { video: s, audio: 'loopback' } : { video: s }); else p.callback(); } catch {}   // no arguments = no share
+}
+function sharePicker() {
+  session.defaultSession.setDisplayMediaRequestHandler(async (req, callback) => {
+    const frame = req.frame, wc = frame && webContents.fromFrame(frame);
+    if (!wc || originOf(req.securityOrigin) !== ORIGIN || originOf(frame.origin) !== ORIGIN) { callback(); return; }
+    let sources = [];
+    try { sources = await desktopCapturer.getSources({ types: ['screen', 'window'], thumbnailSize: { width: 320, height: 180 } }); } catch {}
+    if (!sources.length || wc.isDestroyed()) { callback(); return; }
+    for (const [id, p] of picks) if (p.wc === wc) endPick(id, null);   // one picker per window: a new ask replaces the old one
+    const id = ++pickSeq, gone = () => endPick(id, null);
+    // System sound (loopback) only when the page asks for audio, and only on Windows (the only place Electron has it).
+    picks.set(id, { wc, sources, callback, audio: !!req.audioRequested && process.platform === 'win32', gone });
+    wc.once('destroyed', gone); wc.once('did-navigate', gone);   // the page went away or reloaded: no share
+    wc.send('aigile:share-pick', { id, sources: sources.map(s => ({ id: s.id, name: s.name, screen: s.id.startsWith('screen:'), thumb: s.thumbnail && !s.thumbnail.isEmpty() ? s.thumbnail.toDataURL() : '' })) });
+  });
+  // The page's answer: a source id from the list it was sent, or null for Cancel. Only the window that was asked can answer.
+  ipcMain.on('aigile:share-picked', (e, a) => { const id = Number(a && a.id), p = picks.get(id); if (p && p.wc === e.sender) endPick(id, a.source); });
+}
+
 // New build of the app itself (AIG-83): when any of its own files is newer than at start, the page shows a
 // 🔄 Restart app pill (asked again every few seconds, so it survives a page refresh).
 const OWN = () => fs.readdirSync(__dirname).filter(f => /\.(js|json|png|ico)$/.test(f)).map(f => fs.statSync(path.join(__dirname, f)).mtimeMs);
@@ -210,7 +242,7 @@ if (!app.requestSingleInstanceLock()) app.quit();
 else {
   app.setAppUserModelId('AI-gile');
   app.on('second-instance', showMain);
-  app.whenReady().then(async () => open(await ensureServer()));
+  app.whenReady().then(async () => { sharePicker(); open(await ensureServer()); });
   app.on('before-quit', () => { quitting = true; });
   app.on('window-all-closed', () => app.quit());
 }

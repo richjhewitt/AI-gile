@@ -39,12 +39,12 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:8px
 .toggle{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:999px;width:44px;height:44px;font-size:20px;cursor:pointer;line-height:1}
 .toggle:hover{background:var(--hover)}
 
-/* Hero: the icon wears the board's purple diamond, like the taskbar when something waits on you. */
+/* Hero: logo, title, then the pre-alpha badge under the title (AIG-1117) */
 .hero{text-align:center;padding:48px 0 32px;background:radial-gradient(ellipse at top,color-mix(in srgb,var(--accent) 18%,transparent),transparent 70%)}
 .hero .logo{width:128px;height:128px;border-radius:20px;box-shadow:var(--shadow-lg)}
-.hero::before{content:"";display:block;width:26px;height:26px;margin:0 auto -26px;transform:translate(52px,-8px) rotate(45deg);background:var(--diamond);border-radius:4px;position:relative;z-index:1}
-.alpha-tag{display:inline-block;margin-top:24px;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 10px;cursor:help}
-h1{font-size:clamp(2rem,8vw,3.75rem);line-height:1.1;margin:24px 0 16px;font-weight:700;overflow-wrap:break-word}
+.alpha{margin:0 0 20px}
+.alpha-tag{display:inline-block;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 10px;cursor:help}
+h1{font-size:clamp(2rem,8vw,3.75rem);line-height:1.1;margin:24px 0 12px;font-weight:700;overflow-wrap:break-word}
 .lede{color:var(--muted);font-size:18px;max-width:38rem;margin:0 auto 32px}
 .lede.small{font-size:16px;margin-bottom:16px}
 .downloads{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
@@ -68,7 +68,7 @@ h1{font-size:clamp(2rem,8vw,3.75rem);line-height:1.1;margin:24px 0 16px;font-wei
 .community h2{font-size:28px;margin:0 0 8px}
 .community .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
 footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:var(--muted);font-size:14px}
-/* Word slider (AIG-695) and live card count (AIG-697) */
+/* AI-gile in N words (AIG-695, AIG-1117) and live card count (AIG-697) */
 .pitch{text-align:center;padding:24px 0 8px}
 .pitch h2{font-size:28px;margin:0 0 8px}
 .pitch-text{max-width:42rem;margin:16px auto 0;min-height:7.5em;font-size:20px;line-height:1.6;text-align:left;background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:20px;overflow-wrap:anywhere}

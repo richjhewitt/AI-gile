@@ -1,40 +1,32 @@
-/* aigile.lol teaser: the one-word-at-a-time pitch (AIG-695) and the live card count (AIG-697). Plain JS, no trackers. */
+/* aigile.lol teaser: AI-gile in as many words as you like (AIG-695, AIG-1117) and the live card count (AIG-697). Plain JS, no trackers. */
 (function(){
   var RELAY="https://relay.aigile.lol", BOARD="ai-gile", POLL_MS=30000, LINES="teaser-lines.json";
   var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   var $=function(i){return document.getElementById(i)};
 
-  // The pitch
+  // AI-gile in N words (AIG-1117): the slider picks a length; each length has its own texts, written for that size (not a prefix of a longer one).
   var sec=$("pitch"),box=$("pitch-text"),range=$("pitch-range"),count=$("pitch-count"),quip=$("pitch-quip"),dice=$("pitch-dice");
-  var data=null,vi=0,words=[],shown=0;
-  function setVersion(i){
-    vi=i;words=String(data.versions[i].words||"").trim().split(/\s+/).filter(Boolean);
-    range.max=Math.max(1,words.length);box.textContent="";shown=0;
-  }
+  var data=null,alt=0;
+  function letters(t){var m=t.match(/[A-Za-zÀ-ɏ]/g);return m?m.length:0}
   function draw(animate){
-    var n=Math.min(+range.value,words.length);
-    while(shown>n){box.removeChild(box.lastChild);shown--}
-    while(shown<n){
-      var sp=document.createElement("span");sp.className="w"+(animate&&!reduce?" new":"");
-      sp.textContent=(shown?" ":"")+words[shown];box.appendChild(sp);shown++;
-    }
-    count.textContent=n+" / "+words.length;
-    var best=0,q=(data&&data.quips)||{};
-    for(var k in q){var m=+k;if(m<=n&&m>best)best=m}
-    quip.textContent=best?q[best]:"";
+    var z=data.sizes[+range.value],t=z.texts[alt%z.texts.length],w=z.n===1?" word":" words";
+    box.textContent="";var sp=document.createElement("span");sp.className="w"+(animate&&!reduce?" new":"");sp.textContent=t;box.appendChild(sp);
+    count.textContent=z.n+w+" · "+letters(t)+" letters";
+    range.setAttribute("aria-valuetext",z.n+w);
+    var q=(data.quips||{})[z.n];quip.textContent=q||"";
   }
-  function step(d){range.value=Math.max(1,Math.min(+range.max,+range.value+d));draw(true)}
+  function step(d){range.value=Math.max(0,Math.min(+range.max,+range.value+d));draw(true)}
   range.addEventListener("input",function(){draw(true)});
   range.addEventListener("wheel",function(e){e.preventDefault();step(e.deltaY<0?1:-1)},{passive:false});
   dice.addEventListener("click",function(){
-    if(data.versions.length<2)return;
-    var j;do{j=Math.floor(Math.random()*data.versions.length)}while(j===vi);
-    var keep=+range.value;setVersion(j);range.value=Math.min(keep,+range.max);draw(false);
+    var k=data.sizes[+range.value].texts.length;if(k<2)return;
+    var cur=alt%k,j;do{j=Math.floor(Math.random()*k)}while(j===cur);alt=j;draw(true);
   });
   // Opened from a file (double-click) the browser blocks fetch: teaser-lines.js (window.TEASER_LINES) is the fallback (AIG-697).
   fetch(LINES).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){if(window.TEASER_LINES)return window.TEASER_LINES;throw 0}).then(function(d){
-    if(!d||!d.versions||!d.versions.length)return;
-    data=d;sec.hidden=false;setVersion(Math.floor(Math.random()*d.versions.length));range.value=1;draw(false);
+    if(!d||!Array.isArray(d.sizes)||!d.sizes.length)return;
+    d.sizes=d.sizes.filter(function(z){return z&&z.n>0&&Array.isArray(z.texts)&&z.texts.length});if(!d.sizes.length)return;
+    data=d;range.min=0;range.max=d.sizes.length-1;range.value=0;alt=Math.floor(Math.random()*3);sec.hidden=false;draw(false);
   }).catch(function(){});
 
   // The live card count: cards in the relay's public board JSON
