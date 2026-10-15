@@ -35,7 +35,9 @@ def('topbar', 'Setup: top bar buttons on/off, reorder, left or right side, theme
   await page.locator('[data-tb="bugBtn"] .tb-sw[data-tbc="danger"]').click();
   check('Raise bug sits left of the spacer, next to the project name', await leftOfSpacer());
   const bug = await page.evaluate(() => { const b = document.getElementById('bugBtn'); return { c: b.dataset.tbc, col: getComputedStyle(b).color }; });
-  check('Raise bug is coloured with the danger theme colour', bug.c === 'danger' && bug.col === plain, JSON.stringify(bug) + ' was ' + plain);
+  // the default is a darker mix of the danger colour for contrast (AIG-1196), so check it is still red, not the exact value
+  const [r, g, b] = (bug.col.match(/[\d.]+/g) || []).map(Number), red = r > 1 ? r : r * 255, gg = g > 1 ? g : g * 255, bb = b > 1 ? b : b * 255;
+  check('Raise bug is coloured with the danger theme colour', bug.c === 'danger' && red > gg + 60 && red > bb + 60, JSON.stringify(bug) + ' was ' + plain);
   check('the red swatch shows as pressed', await page.locator('[data-tb="bugBtn"] .tb-sw[data-tbc="danger"]').getAttribute('aria-pressed') === 'true');
 
   // Survives a reload

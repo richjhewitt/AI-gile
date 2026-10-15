@@ -12,7 +12,9 @@ def('raisebug', 'Raise bug button: on board, card view and Setup; left of the sp
   check('visible on the board', await shown());
   check('left of the spacer, next to the project name', await left());
   const col = await page.evaluate(() => { const p = document.createElement('i'); p.style.color = 'var(--danger)'; document.body.appendChild(p); const d = getComputedStyle(p).color; p.remove(); return { d, c: getComputedStyle(document.getElementById('bugBtn')).color }; });
-  check('coloured with the danger colour', col.d === col.c, JSON.stringify(col));
+  // a darker mix of the danger colour for contrast (AIG-1196): still clearly red
+  const rgb = s => { const n = (s.match(/[\d.]+/g) || []).map(Number); return n.every(x => x <= 1) ? n.map(x => x * 255) : n; }, [r, g, b] = rgb(col.c);
+  check('coloured with the danger colour', r > g + 60 && r > b + 60, JSON.stringify(col));
   await go(`#/p/alpha/${card.id}`);
   check('visible in the card view', await shown());
   await go('#/setup'); await page.waitForSelector('#tbList');
