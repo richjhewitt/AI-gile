@@ -54,42 +54,27 @@ function gettingStarted() {
     <p class="muted">${esc(t('help.start.more'))}</p>
     <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
 }
-// 🔥 Incidents and problems guide (AIG-863, AIG-888): the guide page in a dialog (English for now).
+// 🔥 Incidents and problems guide (AIG-863, AIG-888) and 🛎️ Service management guide (AIG-1158): a guide page in a dialog (English for now).
 // Only the level picked in Help shows (all the help = full course, some = step by step, none = highlights); "Show more" adds the next one; the command line sits in a fold for agents (AIG-1143).
-async function incidentsGuide() {
-  let r; try { r = await api('GET', '/api/guide/incidents'); } catch (e) { alert(e.message); return; }
+// pre is 'inc' or 'svc': it names the box (incGuide), the button (incMore), the fold (incAgents) and the texts (help.inc.more).
+async function guideOpen(pre, url, titleKey) {
+  let r; try { r = await api('GET', url); } catch (e) { alert(e.message); return; }
   const src = String(r.md).replace(/\r/g, '').replace(/^---\n[\s\S]*?\n---\n/, ''), parts = src.split(/^## /m).slice(1), sec = {};
   parts.forEach(p => { const [h, ...rest] = p.split('\n'); sec[h.trim()] = rest.join('\n').trim(); });
-  const title = t('help.m.incidents'), start = HELP.level === '1' ? 2 : HELP.level === '3' ? 0 : 1;
-  openDialog(`<h2>${esc(title)}</h2><div class="guide-md" id="incGuide"></div><div class="actions"><button id="incMore" onclick="incidentsMore()">${esc(t('help.inc.more'))}</button><button onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
-  window._inc = { sec, shown: start };
-  incidentsDraw();
+  openDialog(`<h2>${esc(t(titleKey))}</h2><div class="guide-md" id="${pre}Guide"></div><div class="actions"><button id="${pre}More" onclick="guideMore('${pre}')">${esc(t('help.' + pre + '.more'))}</button><button onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
+  (window._guide = window._guide || {})[pre] = { sec, shown: HELP.level === '1' ? 2 : HELP.level === '3' ? 0 : 1 };
+  guideDraw(pre);
 }
-function incidentsMore() { if (window._inc.shown < 2) window._inc.shown++; incidentsDraw(); }
-function incidentsDraw() {
-  const { sec, shown } = window._inc, box = $('incGuide'); if (!box) return;
+function guideMore(pre) { if (window._guide[pre].shown < 2) window._guide[pre].shown++; guideDraw(pre); }
+function guideDraw(pre) {
+  const { sec, shown } = window._guide[pre], box = $(pre + 'Guide'); if (!box) return;
   const lv = ['Highlights', 'Step by step', 'Full course'][shown];
   box.innerHTML = `<h3>${esc(lv)}</h3>` + md(sec[lv] || '')
-    + (shown >= 1 && sec['For agents'] ? `<details id="incAgents"><summary>${esc(t('help.inc.agents'))}</summary>${md(sec['For agents'])}</details>` : '');
-  const m = $('incMore'); if (m) m.hidden = shown >= 2;
+    + (shown >= 1 && sec['For agents'] ? `<details id="${pre}Agents"><summary>${esc(t('help.' + pre + '.agents'))}</summary>${md(sec['For agents'])}</details>` : '');
+  const m = $(pre + 'More'); if (m) m.hidden = shown >= 2;
 }
-// 🛎️ Service management guide (AIG-1158): same three levels as the incidents guide. Only the level picked in Help shows; "Show more" adds the next; the command line sits in a fold for agents.
-async function serviceGuide() {
-  let r; try { r = await api('GET', '/api/guide/service'); } catch (e) { alert(e.message); return; }
-  const src = String(r.md).replace(/\r/g, '').replace(/^---\n[\s\S]*?\n---\n/, ''), parts = src.split(/^## /m).slice(1), sec = {};
-  parts.forEach(p => { const [h, ...rest] = p.split('\n'); sec[h.trim()] = rest.join('\n').trim(); });
-  openDialog(`<h2>${esc(t('help.m.service'))}</h2><div class="guide-md" id="svcGuide"></div><div class="actions"><button id="svcMore" onclick="serviceMore()">${esc(t('help.svc.more'))}</button><button onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
-  window._svcGuide = { sec, shown: HELP.level === '1' ? 2 : HELP.level === '3' ? 0 : 1 };
-  serviceDraw();
-}
-function serviceMore() { if (window._svcGuide.shown < 2) window._svcGuide.shown++; serviceDraw(); }
-function serviceDraw() {
-  const { sec, shown } = window._svcGuide, box = $('svcGuide'); if (!box) return;
-  const lv = ['Highlights', 'Step by step', 'Full course'][shown];
-  box.innerHTML = `<h3>${esc(lv)}</h3>` + md(sec[lv] || '')
-    + (shown >= 1 && sec['For agents'] ? `<details id="svcAgents"><summary>${esc(t('help.svc.agents'))}</summary>${md(sec['For agents'])}</details>` : '');
-  const m = $('svcMore'); if (m) m.hidden = shown >= 2;
-}
+const incidentsGuide = () => guideOpen('inc', '/api/guide/incidents', 'help.m.incidents');
+const serviceGuide = () => guideOpen('svc', '/api/guide/service', 'help.m.service');
 document.addEventListener('click', e => { if ($('helpMenu') && !e.target.closest('#helpMenu, #helpBtn')) helpMenuClose(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') helpMenuClose(); });
 
