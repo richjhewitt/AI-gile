@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Cel care ține munca în mișcare: observă cardurile blocate, împinge echipele de la spate și îți amintește ce așteaptă. În AI-gile, Lead Scrum Master face asta în toate proiectele.",
- "gloss.scrummaster.text.noai": "Cel care ține munca în mișcare: observă cardurile blocate și îți amintește ce așteaptă. Fără AI, lucrează cu comenzi fixe, de exemplu sortează De făcut."
+ "gloss.scrummaster.text.noai": "Cel care ține munca în mișcare: observă cardurile blocate și îți amintește ce așteaptă. Fără AI, lucrează cu comenzi fixe, de exemplu sortează De făcut.",
+ "gloss.count": {"one":"{count} cuvânt","other":"Cuvinte: {count}"},
+ "tour.firststeps.title": "Primii pași",
+ "tour.firststeps.text": "O listă scurtă ca să pornești: creează un proiect, adaugă un card, invită un prieten. Fiecare pas se bifează singur când îl faci. Ascunde lista când te descurci.",
+ "tour.firststeps.short": "Câteva lucruri de făcut la început. Se bifează singure.",
+ "tour.firststeps.why": "Să le faci pe fiecare o dată e cel mai rapid mod de a învăța board-ul.",
+ "tour.help.title": "Ajutor când ai nevoie",
+ "tour.help.text": "❓ La Ajutor găsești Primii pași, din nou acest tur și 📖 glosarul, care explică pe înțeles cuvintele dezvoltatorilor. Creează un proiect sau adaugă un card ca să începi.",
+ "tour.help.short": "❓ Ajutor: Primii pași, turul din nou și 📖 glosarul.",
+ "tour.chat.text.noai": "Vorbește aici cu prietenii tăi. Deschide chatul unui prieten ca să-l suni, cu video și partajarea ecranului.",
+ "tour.chat.short.noai": "Chaturi cu prietenii. Sună-i direct din chatul lor.",
+ "tour.chat.why.noai": "Discutați lucrurile chiar lângă muncă, fără altă aplicație.",
+ "lkcall.credit": "Apeluri construite pe {name} 💙",
+ "help.m.thanks": "💙 Mulțumiri",
+ "help.thanks.h": "💙 Mulțumiri",
+ "help.thanks.chilled": "Apelurile, partajarea ecranului, răspunsurile, reacțiile și punctele de tastare vin de la {name}. Mulțumim!",
+ "help.thanks.livekit": "Apelurile rulează pe {name}, serverul de apeluri open-source."
 }

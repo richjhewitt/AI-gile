@@ -4097,5 +4097,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "jan ni li awen e tawa pi pali: ona li lukin e lipu pi tawa ala, li tawa e kulupu, li toki e ijo awen tawa sina. lon AI-gile la Lead Scrum Master li pali e ni lon pali ale.",
- "gloss.scrummaster.text.noai": "jan ni li awen e tawa pi pali: ona li lukin e lipu pi tawa ala, li toki e ijo awen tawa sina. AI li lon ala la ona li kepeken toki lawa pi ante ala. sama ni: ona li nasin e pali kama."
+ "gloss.scrummaster.text.noai": "jan ni li awen e tawa pi pali: ona li lukin e lipu pi tawa ala, li toki e ijo awen tawa sina. AI li lon ala la ona li kepeken toki lawa pi ante ala. sama ni: ona li nasin e pali kama.",
+ "gloss.count": {"one":"nimi {count}","other":"nimi {count}"},
+ "tour.firststeps.title": "nasin open",
+ "tour.firststeps.text": "lipu lili tawa open: o pali e pali sin, o pali e lipu, o kama e jan pona. sina pali e ijo la, ona li pini e sitelen ona. sina sona e nasin la, o len e ona.",
+ "tour.firststeps.short": "ijo lili pi tenpo open. ona li pini e sitelen ona.",
+ "tour.firststeps.why": "sina pali e ijo ale lon tenpo wan la, sina sona e lipu pali lon tenpo lili.",
+ "tour.help.title": "pona lon tenpo wile",
+ "tour.help.text": "❓ pona li jo e o open, e tawa lukin ni sin, e 📖 lipu sona nimi. lipu ni li toki pona e nimi pi jan pali ilo. o pali e pali sin anu e lipu tawa open.",
+ "tour.help.short": "❓ pona: o open, tawa lukin sin, 📖 lipu sona nimi.",
+ "tour.chat.text.noai": "o toki tawa jan pona sina lon ni. o open e toki pi jan pona la, sina ken toki kalama tawa ona, kepeken sitelen tawa en pana sitelen lukin.",
+ "tour.chat.short.noai": "toki pi jan pona. o toki kalama tan toki ona.",
+ "tour.chat.why.noai": "o toki lon poka pali, kepeken ilo ante ala.",
+ "lkcall.credit": "toki kalama li tan {name} 💙",
+ "help.m.thanks": "💙 pona tawa sina",
+ "help.thanks.h": "💙 pona tawa sina",
+ "help.thanks.chilled": "toki kalama, pana sitelen lukin, toki sin, pilin en sike pi sitelen lon li tan {name}. pona tawa sina!",
+ "help.thanks.livekit": "toki kalama li tawa kepeken {name}, ilo pi toki kalama pi open ale."
 }

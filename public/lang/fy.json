@@ -4118,5 +4118,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Dejinge dy't it wurk geande hâldt: sjocht fêstsittende kaarten, jout de teams in dúdsje en herinnert dy oan wat der wachtet. Yn AI-gile docht de Lead Scrum Master dat oer alle projekten hinne.",
- "gloss.scrummaster.text.noai": "Dejinge dy't it wurk geande hâldt: sjocht fêstsittende kaarten en herinnert dy oan wat der wachtet. Sûnder AI wurket er mei fêste kommando's, lykas it sortearjen fan Te dwaan."
+ "gloss.scrummaster.text.noai": "Dejinge dy't it wurk geande hâldt: sjocht fêstsittende kaarten en herinnert dy oan wat der wachtet. Sûnder AI wurket er mei fêste kommando's, lykas it sortearjen fan Te dwaan.",
+ "gloss.count": {"one":"{count} wurd","other":"{count} wurden"},
+ "tour.firststeps.title": "Earste stappen",
+ "tour.firststeps.text": "In koarte list om útein te setten: meitsje in projekt, foegje in kaart ta, nûgje in freon út. Elk punt wurdt fansels ôfvinke as do it dochst. Ferstopje de list as do de wei witst.",
+ "tour.firststeps.short": "In pear earste dingen om te dwaan. Se wurde fansels ôfvinke.",
+ "tour.firststeps.why": "Elk punt ien kear dwaan is de fluchste manier om it boerd te learen.",
+ "tour.help.title": "Help as do it nedich hast",
+ "tour.help.text": "❓ Help hat Oan de slach, dizze rûnlieding nochris en de 📖 wurdlist, dy't ûntwikkelderswurden yn gewoane taal útleit. Meitsje in projekt of iepenje in kaart om útein te setten.",
+ "tour.help.short": "❓ Help: Oan de slach, de rûnlieding nochris en de 📖 wurdlist.",
+ "tour.chat.text.noai": "Chat hjir mei dyn freonen. Iepenje it petear fan in freon om him te beljen, mei fideo en skermdieling.",
+ "tour.chat.short.noai": "Petearen mei freonen. Bel ien út syn petear.",
+ "tour.chat.why.noai": "Praat dingen troch krekt neist it wurk, sûnder in oare app.",
+ "lkcall.credit": "Gesprekken boud op {name} 💙",
+ "help.m.thanks": "💙 Tank",
+ "help.thanks.h": "💙 Tank",
+ "help.thanks.chilled": "Gesprekken, skermdieling, antwurden, reaksjes en typpuntsjes komme fan {name}. Tige tank!",
+ "help.thanks.livekit": "Gesprekken rinne op {name}, de iepen-boarne gespreksserver."
 }

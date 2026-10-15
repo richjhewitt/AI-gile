@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Derjenige, der die Arbeit am Fließen hält: entdeckt hängende Karten, stupst die Teams an und erinnert dich daran, was wartet. In AI-gile macht das der Lead Scrum Master über alle Projekte hinweg.",
- "gloss.scrummaster.text.noai": "Derjenige, der die Arbeit am Fließen hält: entdeckt hängende Karten und erinnert dich daran, was wartet. Ohne KI arbeitet er mit festen Befehlen, etwa dem Sortieren von Zu tun."
+ "gloss.scrummaster.text.noai": "Derjenige, der die Arbeit am Fließen hält: entdeckt hängende Karten und erinnert dich daran, was wartet. Ohne KI arbeitet er mit festen Befehlen, etwa dem Sortieren von Zu tun.",
+ "gloss.count": {"one":"{count} Begriff","other":"{count} Begriffe"},
+ "tour.firststeps.title": "Erste Schritte",
+ "tour.firststeps.text": "Eine kurze Liste für den Anfang: Projekt anlegen, Karte hinzufügen, Freund einladen. Jeder Punkt hakt sich von selbst ab, sobald du ihn erledigst. Blende die Liste aus, wenn du dich auskennst.",
+ "tour.firststeps.short": "Ein paar erste Dinge zu tun. Sie haken sich selbst ab.",
+ "tour.firststeps.why": "Jeden Punkt einmal zu machen ist der schnellste Weg, das Board kennenzulernen.",
+ "tour.help.title": "Hilfe, wenn du sie brauchst",
+ "tour.help.text": "❓ Hilfe bietet Erste Schritte, diese Tour noch einmal und das 📖 Glossar, das Entwicklerwörter in einfachen Worten erklärt. Leg ein Projekt an oder erstelle eine Karte, um loszulegen.",
+ "tour.help.short": "❓ Hilfe: Erste Schritte, die Tour noch einmal und das 📖 Glossar.",
+ "tour.chat.text.noai": "Chatte hier mit deinen Freunden. Öffne den Chat eines Freundes, um ihn anzurufen, mit Video und Bildschirmfreigabe.",
+ "tour.chat.short.noai": "Chats mit Freunden. Ruf jemanden direkt aus seinem Chat an.",
+ "tour.chat.why.noai": "Besprich alles direkt neben der Arbeit, ganz ohne andere App.",
+ "lkcall.credit": "Anrufe basieren auf {name} 💙",
+ "help.m.thanks": "💙 Danke",
+ "help.thanks.h": "💙 Danke",
+ "help.thanks.chilled": "Anrufe, Bildschirmfreigabe, Antworten, Reaktionen und Tipp-Punkte kommen von {name}. Danke!",
+ "help.thanks.livekit": "Anrufe laufen über {name}, den Open-Source-Anrufserver."
 }

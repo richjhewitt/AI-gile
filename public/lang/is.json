@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Sá sem heldur vinnunni gangandi: kemur auga á föst spjöld, ýtir við teymunum og minnir þig á það sem bíður. Í AI-gile gerir Lead Scrum Master þetta þvert á öll verkefni.",
- "gloss.scrummaster.text.noai": "Sá sem heldur vinnunni gangandi: kemur auga á föst spjöld og minnir þig á það sem bíður. Án gervigreindar virkar það með föstum skipunum, eins og að raða Á dagskrá."
+ "gloss.scrummaster.text.noai": "Sá sem heldur vinnunni gangandi: kemur auga á föst spjöld og minnir þig á það sem bíður. Án gervigreindar virkar það með föstum skipunum, eins og að raða Á dagskrá.",
+ "gloss.count": {"one":"{count} orð","other":"{count} orð"},
+ "tour.firststeps.title": "Fyrstu skrefin",
+ "tour.firststeps.text": "Stuttur listi til að byrja: búðu til verkefni, bættu við spjaldi, bjóddu vini. Það er sjálfkrafa hakað við hvert atriði þegar þú klárar það. Feldu listann þegar þú ratar um.",
+ "tour.firststeps.short": "Nokkur fyrstu verk. Það er hakað við þau sjálfkrafa.",
+ "tour.firststeps.why": "Að gera hvert þeirra einu sinni er fljótlegasta leiðin til að læra á töfluna.",
+ "tour.help.title": "Hjálp þegar þú þarft",
+ "tour.help.text": "❓ Í Hjálp finnurðu Byrjun, þessa kynningu aftur og 📖 orðalistann, sem útskýrir forritaraorð á einföldu máli. Búðu til verkefni eða bættu við spjaldi til að byrja.",
+ "tour.help.short": "❓ Hjálp: Byrjun, kynningin aftur og 📖 orðalistinn.",
+ "tour.chat.text.noai": "Spjallaðu við vini þína hér. Opnaðu spjall við vin til að hringja í hann, með myndbandi og skjádeilingu.",
+ "tour.chat.short.noai": "Spjall við vini. Hringdu beint úr spjallinu.",
+ "tour.chat.why.noai": "Ræðið málin beint við hliðina á vinnunni, án annars forrits.",
+ "lkcall.credit": "Símtöl byggð á {name} 💙",
+ "help.m.thanks": "💙 Þakkir",
+ "help.thanks.h": "💙 Þakkir",
+ "help.thanks.chilled": "Símtöl, skjádeiling, svör, viðbrögð og innsláttarpunktar koma frá {name}. Takk fyrir!",
+ "help.thanks.livekit": "Símtöl keyra á {name}, símtalaþjóni með opnum kóða."
 }

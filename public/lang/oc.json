@@ -4118,5 +4118,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Lo que fa que lo trabalh avança : repèra las cartas blocadas, buta las equipas e te remembra çò qu'espèra. Dins AI-gile, lo Lead Scrum Master o fa per totes los projèctes.",
- "gloss.scrummaster.text.noai": "Lo que fa que lo trabalh avança : repèra las cartas blocadas e te remembra çò qu'espèra. Sens IA, fonciona amb de comandas fixas, coma triar A far."
+ "gloss.scrummaster.text.noai": "Lo que fa que lo trabalh avança : repèra las cartas blocadas e te remembra çò qu'espèra. Sens IA, fonciona amb de comandas fixas, coma triar A far.",
+ "gloss.count": {"one":"{count} mot","other":"{count} mots"},
+ "tour.firststeps.title": "Primièrs passes",
+ "tour.firststeps.text": "Una lista corta per començar : far un projècte, apondre una carta, convidar un amic. Cada etapa se marca soleta quand la fas. Amaga-la quand coneisses lo camin.",
+ "tour.firststeps.short": "Qualques causas de far d'en primièr. Se marcan solas.",
+ "tour.firststeps.why": "Far cada etapa un còp es lo biais mai rapid d'aprendre lo tablèu.",
+ "tour.help.title": "D'ajuda quand ne fas besonh",
+ "tour.help.text": "❓ Ajuda conten Per començar, aquesta visita tornamai e lo 📖 glossari, qu'explica los mots de desvolopaire en lenga simpla. Fai un projècte o apond una carta per començar.",
+ "tour.help.short": "❓ Ajuda : Per començar, la visita tornamai e lo 📖 glossari.",
+ "tour.chat.text.noai": "Discutís amb tos amics aquí. Dobrís la conversacion d'un amic per l'apelar, amb vidèo e partatge d'ecran.",
+ "tour.chat.short.noai": "Conversacions amb los amics. Apèla-los dempuèi lor conversacion.",
+ "tour.chat.why.noai": "Parlatz de las causas just al costat del trabalh, sens cap d'autra aplicacion.",
+ "lkcall.credit": "Sonadas bastidas sus {name} 💙",
+ "help.m.thanks": "💙 Mercés",
+ "help.thanks.h": "💙 Mercés",
+ "help.thanks.chilled": "Las sonadas, lo partatge d'ecran, las responsas, las reaccions e los punts de picada venon de {name}. Mercés plan !",
+ "help.thanks.livekit": "Las sonadas foncionan sus {name}, lo servidor de sonadas de còdi dobèrt."
 }

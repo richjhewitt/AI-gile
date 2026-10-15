@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Aki a munkát folyásban tartja: észreveszi az elakadt kártyákat, nógatja a csapatokat, és emlékeztet, mi vár rád. Az AI-gile-ban a Lead Scrum Master ezt minden projektben megteszi.",
- "gloss.scrummaster.text.noai": "Aki a munkát folyásban tartja: észreveszi az elakadt kártyákat, és emlékeztet, mi vár rád. MI nélkül rögzített parancsokkal dolgozik, például a Teendő rendezésével."
+ "gloss.scrummaster.text.noai": "Aki a munkát folyásban tartja: észreveszi az elakadt kártyákat, és emlékeztet, mi vár rád. MI nélkül rögzített parancsokkal dolgozik, például a Teendő rendezésével.",
+ "gloss.count": {"one":"{count} szó","other":"{count} szó"},
+ "tour.firststeps.title": "Első lépések",
+ "tour.firststeps.text": "Egy rövid lista az induláshoz: hozz létre egy projektet, adj hozzá egy kártyát, hívj meg egy barátot. Mindegyik magától kipipálódik, amikor megcsinálod. Rejtsd el, ha már kiigazodsz.",
+ "tour.firststeps.short": "Néhány első teendő. Maguktól kipipálódnak.",
+ "tour.firststeps.why": "Ha mindegyiket egyszer megcsinálod, azzal tanulod meg a leggyorsabban a táblát.",
+ "tour.help.title": "Segítség, amikor kell",
+ "tour.help.text": "❓ A Súgóban megtalálod az Első lépéseket, újra ezt a bemutatót és a 📖 szószedetet, amely közérthetően elmagyarázza a fejlesztői szavakat. Kezdésnek hozz létre egy projektet, vagy adj hozzá egy kártyát.",
+ "tour.help.short": "❓ Súgó: Első lépések, újra a bemutató és a 📖 szószedet.",
+ "tour.chat.text.noai": "Itt cseveghetsz a barátaiddal. Nyisd meg egy barátod csevegését, és hívd fel, videóval és képernyőmegosztással.",
+ "tour.chat.short.noai": "Csevegések a barátokkal. Hívj fel valakit a csevegésetekből.",
+ "tour.chat.why.noai": "Beszéljétek meg a dolgokat közvetlenül a munka mellett, más app nélkül.",
+ "lkcall.credit": "A hívások alapja: {name} 💙",
+ "help.m.thanks": "💙 Köszönet",
+ "help.thanks.h": "💙 Köszönet",
+ "help.thanks.chilled": "A hívásokat, a képernyőmegosztást, a válaszokat, a reakciókat és a gépelést jelző pöttyöket a {name} adja. Köszönjük!",
+ "help.thanks.livekit": "A hívások a {name} nyílt forráskódú hívásszerveren futnak."
 }

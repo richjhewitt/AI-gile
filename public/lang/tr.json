@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master,Baş Scrum Master",
  "gloss.scrummaster.text": "İşin akmasını sağlayan kişi: takılan kartları fark eder, ekipleri dürter ve sana neyin beklediğini hatırlatır. AI-gile'da bunu tüm projelerde Lead Scrum Master yapar.",
- "gloss.scrummaster.text.noai": "İşin akmasını sağlayan kişi: takılan kartları fark eder ve sana neyin beklediğini hatırlatır. AI olmadan, Yapılacak'ı sıralamak gibi sabit komutlarla çalışır."
+ "gloss.scrummaster.text.noai": "İşin akmasını sağlayan kişi: takılan kartları fark eder ve sana neyin beklediğini hatırlatır. AI olmadan, Yapılacak'ı sıralamak gibi sabit komutlarla çalışır.",
+ "gloss.count": {"one":"{count} kelime","other":"{count} kelime"},
+ "tour.firststeps.title": "İlk adımlar",
+ "tour.firststeps.text": "Başlamak için kısa bir liste: bir proje oluştur, bir kart ekle, bir arkadaşını davet et. Her biri sen yapınca kendiliğinden işaretlenir. Yolunu bulduğunda gizle.",
+ "tour.firststeps.short": "İlk yapılacak birkaç şey. Kendiliğinden işaretlenirler.",
+ "tour.firststeps.why": "Her birini bir kez yapmak, panoyu öğrenmenin en hızlı yolu.",
+ "tour.help.title": "İhtiyacın olduğunda yardım",
+ "tour.help.text": "❓ Yardım’da Başlarken, bu turun tekrarı ve geliştirici terimlerini sade dille açıklayan 📖 sözlük var. Başlamak için bir proje oluştur ya da bir kart ekle.",
+ "tour.help.short": "❓ Yardım: Başlarken, turun tekrarı ve 📖 sözlük.",
+ "tour.chat.text.noai": "Arkadaşlarınla burada sohbet et. Birini aramak için onun sohbetini aç; görüntü ve ekran paylaşımı da var.",
+ "tour.chat.short.noai": "Arkadaşlarla sohbetler. Aramayı sohbetten başlat.",
+ "tour.chat.why.noai": "Başka bir uygulamaya gerek kalmadan, işin hemen yanında konuşun.",
+ "lkcall.credit": "Aramalar {name} üzerine kurulu 💙",
+ "help.m.thanks": "💙 Teşekkürler",
+ "help.thanks.h": "💙 Teşekkürler",
+ "help.thanks.chilled": "Aramalar, ekran paylaşımı, yanıtlar, tepkiler ve yazıyor noktaları {name} sayesinde. Teşekkürler!",
+ "help.thanks.livekit": "Aramalar, açık kaynak arama sunucusu {name} üzerinde çalışır."
 }

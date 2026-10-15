@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Den som holder arbeidet i flyt: ser kort som står fast, dytter på teamene og minner deg på hva som venter. I AI-gile gjør Lead Scrum Master dette på tvers av alle prosjekter.",
- "gloss.scrummaster.text.noai": "Den som holder arbeidet i flyt: ser kort som står fast og minner deg på hva som venter. Uten AI fungerer det med faste kommandoer, som å sortere Å gjøre."
+ "gloss.scrummaster.text.noai": "Den som holder arbeidet i flyt: ser kort som står fast og minner deg på hva som venter. Uten AI fungerer det med faste kommandoer, som å sortere Å gjøre.",
+ "gloss.count": {"one":"{count} ord","other":"{count} ord"},
+ "tour.firststeps.title": "Første steg",
+ "tour.firststeps.text": "En kort liste for å komme i gang: lag et prosjekt, legg til et kort, inviter en venn. Hvert punkt krysses av automatisk når du gjør det. Skjul listen når du har funnet fram.",
+ "tour.firststeps.short": "Noen få ting å gjøre først. De krysses av automatisk.",
+ "tour.firststeps.why": "Å gjøre hvert punkt én gang er den raskeste måten å lære boardet på.",
+ "tour.help.title": "Hjelp når du trenger det",
+ "tour.help.text": "❓ Hjelp har Komme i gang, denne omvisningen på nytt og 📖 ordlisten, som forklarer utviklerord på vanlig språk. Lag et prosjekt eller legg til et kort for å komme i gang.",
+ "tour.help.short": "❓ Hjelp: Komme i gang, omvisningen på nytt og 📖 ordlisten.",
+ "tour.chat.text.noai": "Snakk med vennene dine her. Åpne chatten med en venn for å ringe, med video og skjermdeling.",
+ "tour.chat.short.noai": "Chatter med venner. Ring en venn fra chatten deres.",
+ "tour.chat.why.noai": "Snakk om ting rett ved siden av arbeidet, uten noen annen app.",
+ "lkcall.credit": "Samtaler bygd på {name} 💙",
+ "help.m.thanks": "💙 Takk",
+ "help.thanks.h": "💙 Takk",
+ "help.thanks.chilled": "Samtaler, skjermdeling, svar, reaksjoner og skriveprikker kommer fra {name}. Tusen takk!",
+ "help.thanks.livekit": "Samtalene kjører på {name}, samtaleserveren med åpen kildekode."
 }

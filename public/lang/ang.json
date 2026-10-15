@@ -4097,5 +4097,21 @@
  "gloss.scrummaster.word": "Scrum-lārēow",
  "gloss.scrummaster.also": "Hēafod Scrum-lārēow,Scrum Master,Lead Scrum Master",
  "gloss.scrummaster.text": "Sē þe þæt weorc flōwende hylt: ġesihþ ġestandenu lēaf, myneġaþ þā weorod and ġemyndgaþ þē hwæt bīdaþ. On AI-gile sē Hēafod Scrum-lārēow dēþ þis ofer ǣlc weorc.",
- "gloss.scrummaster.text.noai": "Sē þe þæt weorc flōwende hylt: ġesihþ ġestandenu lēaf and ġemyndgaþ þē hwæt bīdaþ. Būtan searocræfte hē wyrcþ mid fæstum bebodum, swā Tō donne endebyrdian."
+ "gloss.scrummaster.text.noai": "Sē þe þæt weorc flōwende hylt: ġesihþ ġestandenu lēaf and ġemyndgaþ þē hwæt bīdaþ. Būtan searocræfte hē wyrcþ mid fæstum bebodum, swā Tō donne endebyrdian.",
+ "gloss.count": {"one":"{count} word","other":"{count} word"},
+ "tour.firststeps.title": "Forman stæpas",
+ "tour.firststeps.text": "Scort talu tō onginnenne: wyrc weorc, tōlecg cærtan, laþa frēond. Ǣlċ mearcaþ hit selfe þonne þū hit dēst. Hȳd hīe siþþan þū þīnne weg cnāwst.",
+ "tour.firststeps.short": "Fēa forman þing tō dōnne. Hīe mearciaþ hīe selfe.",
+ "tour.firststeps.why": "Ǣlċ ǣne tō dōnne is se hrædosta weg þæt bord tō leornienne.",
+ "tour.help.title": "Help þonne þū hire beþearft",
+ "tour.help.text": "❓ Help hæfþ Onginnan, þās fēre eft and þā 📖 wordbōc, þe wyrhtena word on clǣnre sprǣċe ārǣt. Wyrc weorc oþþe ārǣr cærtan tō onginnenne.",
+ "tour.help.short": "❓ Help: Onginnan, sēo fēr eft and sēo 📖 wordbōc.",
+ "tour.chat.text.noai": "Spræċ hēr mid þīnum frēondum. Opena frēondes spræċe tō clypienne him, mid wīde and scīnan-dǣle.",
+ "tour.chat.short.noai": "Spræċa mid frēondum. Clypa ǣnne of his spræċe.",
+ "tour.chat.why.noai": "Sprec þing þurh rihte be þǣm weorce, būtan ōþrum searwe.",
+ "lkcall.credit": "Clypunga gebyld on {name} 💙",
+ "help.m.thanks": "💙 Þancas",
+ "help.thanks.h": "💙 Þancas",
+ "help.thanks.chilled": "Clypunga, scīnan-dǣl, andsweru, onbryrdnessa and wrītpricas cumaþ fram {name}. Þancas þē!",
+ "help.thanks.livekit": "Clypunga yrnaþ on {name}, þǣm openan clypunge-þegne."
 }

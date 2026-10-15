@@ -4130,5 +4130,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Aðalfundarstjóri,fundarstjóri,Lead Scrum Master",
  "gloss.scrummaster.text": "Sá er heldr verkinu á ferð: sér föst spjöld, ýtir við sveitunum ok minnir þik á hvat bíðr. Í AI-gile gerir Aðalfundarstjórinn þetta yfir öll verkefni.",
- "gloss.scrummaster.text.noai": "Sá er heldr verkinu á ferð: sér föst spjöld ok minnir þik á hvat bíðr. Án gervigreindar starfar hann með föstum skipunum, svá sem at raða Til gerðar."
+ "gloss.scrummaster.text.noai": "Sá er heldr verkinu á ferð: sér föst spjöld ok minnir þik á hvat bíðr. Án gervigreindar starfar hann með föstum skipunum, svá sem at raða Til gerðar.",
+ "gloss.count": {"one":"{count} orð","other":"{count} orð"},
+ "tour.firststeps.title": "Fyrstu skref",
+ "tour.firststeps.text": "Stutt skrá til at byrja: ger verk, bæt við spjaldi, bjóð vini. Hvert merkisk sjálft þá er þú gerir þat. Fel hana þá er þú kannt leiðina.",
+ "tour.firststeps.short": "Fáein fyrstu verk at gera. Þau merkjask sjálf.",
+ "tour.firststeps.why": "At gera hvert eitt sinn er skjótasta leið at nema borðit.",
+ "tour.help.title": "Hjálp þá er þú þarft",
+ "tour.help.text": "❓ Í Hjálp eru At byrja, þessi leiðsögn aftr ok 📖 orðaskráin, er skýrir tækniorð á einföldu máli. Ger verk eða bæt við spjaldi til at byrja.",
+ "tour.help.short": "❓ Hjálp: At byrja, leiðsögnin aftr ok 📖 orðaskráin.",
+ "tour.chat.text.noai": "Spjalla við vini þína hér. Opna spjall vinar til at hringja í hann, með mynd ok skjádeiling.",
+ "tour.chat.short.noai": "Spjall við vini. Hringdu ór spjalli þeira.",
+ "tour.chat.why.noai": "Ræðið málin rétt hjá verkinu, án annars forrits.",
+ "lkcall.credit": "Símtöl smíðuð á {name} 💙",
+ "help.m.thanks": "💙 Þakkir",
+ "help.thanks.h": "💙 Þakkir",
+ "help.thanks.chilled": "Símtöl, skjádeiling, svör, viðbrögð ok ritdeplar koma frá {name}. Hafðu þökk!",
+ "help.thanks.livekit": "Símtöl renna á {name}, opnum símtalaþjóni."
 }

@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "İşin axmasını təmin edən: ilişmiş kartları görür, komandaları tərpədir və sizə nəyin gözlədiyini xatırladır. AI-gile-da Lead Scrum Master bunu bütün layihələrdə edir.",
- "gloss.scrummaster.text.noai": "İşin axmasını təmin edən: ilişmiş kartları görür və sizə nəyin gözlədiyini xatırladır. AI olmadan sabit əmrlərlə işləyir, məsələn Görüləcək siyahısını sıralamaq."
+ "gloss.scrummaster.text.noai": "İşin axmasını təmin edən: ilişmiş kartları görür və sizə nəyin gözlədiyini xatırladır. AI olmadan sabit əmrlərlə işləyir, məsələn Görüləcək siyahısını sıralamaq.",
+ "gloss.count": {"one":"{count} söz","other":"{count} söz"},
+ "tour.firststeps.title": "İlk addımlar",
+ "tour.firststeps.text": "Başlamaq üçün qısa siyahı: layihə yarat, kart əlavə et, dostu dəvət et. Hər birini edəndə özü işarələnir. Yolunu öyrənəndən sonra gizlət.",
+ "tour.firststeps.short": "İlk görüləsi bir neçə iş. Özləri işarələnir.",
+ "tour.firststeps.why": "Hər birini bir dəfə etmək lövhəni öyrənməyin ən sürətli yoludur.",
+ "tour.help.title": "Lazım olanda yardım",
+ "tour.help.text": "❓ Yardım bölməsində Başlanğıc, bu tur yenidən və developer sözlərini sadə dildə izah edən 📖 lüğət var. Başlamaq üçün layihə yarat və ya kart aç.",
+ "tour.help.short": "❓ Yardım: Başlanğıc, tur yenidən və 📖 lüğət.",
+ "tour.chat.text.noai": "Dostlarınla burada yazış. Dostuna zəng etmək üçün onun söhbətini aç, video və ekran paylaşımı ilə.",
+ "tour.chat.short.noai": "Dostlarla söhbətlər. Birinə onun söhbətindən zəng et.",
+ "tour.chat.why.noai": "Başqa tətbiq olmadan, işin düz yanında məsələləri müzakirə et.",
+ "lkcall.credit": "Zənglər {name} üzərində qurulub 💙",
+ "help.m.thanks": "💙 Təşəkkürlər",
+ "help.thanks.h": "💙 Təşəkkürlər",
+ "help.thanks.chilled": "Zənglər, ekran paylaşımı, cavablar, reaksiyalar və yazı nöqtələri {name} sayəsindədir. Təşəkkür edirik!",
+ "help.thanks.livekit": "Zənglər açıq mənbəli zəng serveri olan {name} üzərində işləyir."
 }

@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "首席 Scrum Master,Lead Scrum Master",
  "gloss.scrummaster.text": "让工作保持顺畅的人：发现卡住的卡片，催一催团队，并提醒你有什么在等着。在 AI-gile 里，由首席 Scrum Master 在所有项目里做这件事。",
- "gloss.scrummaster.text.noai": "让工作保持顺畅的人：发现卡住的卡片，并提醒你有什么在等着。没有 AI 时，它用固定的命令工作，比如整理“待办”。"
+ "gloss.scrummaster.text.noai": "让工作保持顺畅的人：发现卡住的卡片，并提醒你有什么在等着。没有 AI 时，它用固定的命令工作，比如整理“待办”。",
+ "gloss.count": {"one":"{count} 个词","other":"{count} 个词"},
+ "tour.firststeps.title": "新手入门",
+ "tour.firststeps.text": "帮你上手的简短清单：创建项目、添加卡片、邀请朋友。每完成一项会自动打勾。熟悉之后可以隐藏。",
+ "tour.firststeps.short": "最先要做的几件事，完成后自动打勾。",
+ "tour.firststeps.why": "每件事做一次，是熟悉看板最快的方法。",
+ "tour.help.title": "需要时随时帮助",
+ "tour.help.text": "❓ 帮助里有入门、重看本次导览，以及用浅白语言解释开发术语的 📖 词汇表。创建项目或添加卡片即可开始。",
+ "tour.help.short": "❓ 帮助：入门、重看导览和 📖 词汇表。",
+ "tour.chat.text.noai": "在这里和朋友聊天。打开朋友的聊天即可与对方通话，支持视频和共享屏幕。",
+ "tour.chat.short.noai": "与朋友聊天。在聊天里直接发起通话。",
+ "tour.chat.why.noai": "就在工作旁边把事情说清楚，无需其他应用。",
+ "lkcall.credit": "通话基于 {name} 构建 💙",
+ "help.m.thanks": "💙 致谢",
+ "help.thanks.h": "💙 致谢",
+ "help.thanks.chilled": "通话、屏幕共享、回复、表情回应和正在输入的小圆点都来自 {name}。谢谢！",
+ "help.thanks.livekit": "通话运行在开源通话服务器 {name} 上。"
 }

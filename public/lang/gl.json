@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Quen mantén o traballo en movemento: detecta tarxetas atascadas, empurra os equipos e lémbrache o que está agardando. En AI-gile o Lead Scrum Master faino en todos os proxectos.",
- "gloss.scrummaster.text.noai": "Quen mantén o traballo en movemento: detecta tarxetas atascadas e lémbrache o que está agardando. Sen IA funciona con ordes fixas, como ordenar Por facer."
+ "gloss.scrummaster.text.noai": "Quen mantén o traballo en movemento: detecta tarxetas atascadas e lémbrache o que está agardando. Sen IA funciona con ordes fixas, como ordenar Por facer.",
+ "gloss.count": {"one":"{count} palabra","other":"{count} palabras"},
+ "tour.firststeps.title": "Primeiros pasos",
+ "tour.firststeps.text": "Unha lista curta para comezar: crea un proxecto, engade unha tarxeta, convida a un amigo. Cada paso márcase só cando o fas. Agóchaa cando xa te saibas mover.",
+ "tour.firststeps.short": "Unhas primeiras cousas que facer. Márcanse soas.",
+ "tour.firststeps.why": "Facer cada unha unha vez é o xeito máis rápido de aprender o taboleiro.",
+ "tour.help.title": "Axuda cando a precises",
+ "tour.help.text": "❓ Axuda ten Para comezar, este percorrido de novo e o 📖 glosario, que explica as palabras de programación en linguaxe sinxela. Crea un proxecto ou engade unha tarxeta para comezar.",
+ "tour.help.short": "❓ Axuda: Para comezar, o percorrido de novo e o 📖 glosario.",
+ "tour.chat.text.noai": "Fala aquí cos teus amigos. Abre o chat dun amigo para chamalo, con vídeo e pantalla compartida.",
+ "tour.chat.short.noai": "Chats cos amigos. Chama a un desde o seu chat.",
+ "tour.chat.why.noai": "Falade das cousas xusto ao lado do traballo, sen outra app.",
+ "lkcall.credit": "Chamadas feitas sobre {name} 💙",
+ "help.m.thanks": "💙 Grazas",
+ "help.thanks.h": "💙 Grazas",
+ "help.thanks.chilled": "As chamadas, a pantalla compartida, as respostas, as reaccións e os puntos de escritura veñen de {name}. Grazas!",
+ "help.thanks.livekit": "As chamadas funcionan sobre {name}, o servidor de chamadas de código aberto."
 }

@@ -4107,5 +4107,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Quien mantiene el trabajo en marcha: detecta tarjetas atascadas, da un empujón a los equipos y te recuerda lo que está esperando. En AI-gile lo hace el Lead Scrum Master en todos los proyectos.",
- "gloss.scrummaster.text.noai": "Quien mantiene el trabajo en marcha: detecta tarjetas atascadas y te recuerda lo que está esperando. Sin IA funciona con órdenes fijas, como ordenar Por hacer."
+ "gloss.scrummaster.text.noai": "Quien mantiene el trabajo en marcha: detecta tarjetas atascadas y te recuerda lo que está esperando. Sin IA funciona con órdenes fijas, como ordenar Por hacer.",
+ "gloss.count": {"one":"{count} palabra","other":"{count} palabras"},
+ "tour.firststeps.title": "Primeros pasos",
+ "tour.firststeps.text": "Una lista corta para empezar: crea un proyecto, añade una tarjeta, invita a un amigo. Cada paso se marca solo cuando lo haces. Ocúltala cuando ya te manejes.",
+ "tour.firststeps.short": "Unas primeras cosas que hacer. Se marcan solas.",
+ "tour.firststeps.why": "Hacer cada paso una vez es la forma más rápida de aprender a usar el tablero.",
+ "tour.help.title": "Ayuda cuando la necesites",
+ "tour.help.text": "❓ Ayuda tiene Primeros pasos, este tour otra vez y el 📖 glosario, que explica las palabras de desarrollo con lenguaje sencillo. Crea un proyecto o abre una tarjeta para empezar.",
+ "tour.help.short": "❓ Ayuda: Primeros pasos, el tour otra vez y el 📖 glosario.",
+ "tour.chat.text.noai": "Chatea aquí con tus amigos. Abre el chat de un amigo para llamarle, con video y pantalla compartida.",
+ "tour.chat.short.noai": "Chats con amigos. Llama a uno desde su chat.",
+ "tour.chat.why.noai": "Comentad las cosas justo al lado del trabajo, sin otra app.",
+ "lkcall.credit": "Llamadas hechas con {name} 💙",
+ "help.m.thanks": "💙 Gracias",
+ "help.thanks.h": "💙 Gracias",
+ "help.thanks.chilled": "Las llamadas, la pantalla compartida, las respuestas, las reacciones y los puntitos de escritura vienen de {name}. ¡Gracias!",
+ "help.thanks.livekit": "Las llamadas funcionan con {name}, el servidor de llamadas de código abierto."
 }

@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Ka mea e mālama ana i ke kahe o ka hana: ʻike i nā kāleka paʻa, hoʻoikaika i nā hui a hoʻomanaʻo iā ʻoe i nā mea e kali ana. Ma AI-gile, hana ka Lead Scrum Master i kēia ma nā papahana a pau.",
- "gloss.scrummaster.text.noai": "Ka mea e mālama ana i ke kahe o ka hana: ʻike i nā kāleka paʻa a hoʻomanaʻo iā ʻoe i nā mea e kali ana. Me ka ʻole o AI, hana ia me nā kauoha paʻa, e like me ka hoʻonohonoho ʻana iā E hana."
+ "gloss.scrummaster.text.noai": "Ka mea e mālama ana i ke kahe o ka hana: ʻike i nā kāleka paʻa a hoʻomanaʻo iā ʻoe i nā mea e kali ana. Me ka ʻole o AI, hana ia me nā kauoha paʻa, e like me ka hoʻonohonoho ʻana iā E hana.",
+ "gloss.count": {"one":"{count} huaʻōlelo","other":"{count} huaʻōlelo"},
+ "tour.firststeps.title": "Nā hana mua",
+ "tour.firststeps.text": "He papa pōkole e hoʻomaka ai: e hana i papahana, e hoʻohui i kāleka, e kono i hoaaloha. Kaha ʻia kēlā me kēia iā ia iho ke hana ʻoe. E hūnā iā ia ke maopopo iā ʻoe ke ala.",
+ "tour.firststeps.short": "He mau mea mua e hana ai. Kaha ʻia lākou iā lākou iho.",
+ "tour.firststeps.why": "ʻO ka hana ʻana i kēlā me kēia hoʻokahi manawa ke ala wikiwiki loa e aʻo ai i ka papa.",
+ "tour.help.title": "Kōkua ke pono",
+ "tour.help.text": "❓ Aia i loko o Kōkua ʻo Hoʻomaka, kēia huakaʻi hou a me ka 📖 papa huaʻōlelo, e wehewehe ana i nā huaʻōlelo mea hoʻomohala ma ka ʻōlelo maʻalahi. E hana i papahana a i ʻole e hoʻohui i kāleka e hoʻomaka ai.",
+ "tour.help.short": "❓ Kōkua: Hoʻomaka, ka huakaʻi hou a me ka 📖 papa huaʻōlelo.",
+ "tour.chat.text.noai": "E kamaʻilio me kou mau hoaaloha ma ʻaneʻi. E wehe i ke kamaʻilio o kekahi hoaaloha e kelepona iā ia, me ka wikiō a me ke kaʻana like pale.",
+ "tour.chat.short.noai": "Nā kamaʻilio me nā hoaaloha. E kelepona i kekahi mai kāna kamaʻilio.",
+ "tour.chat.why.noai": "E kūkā ma ka ʻaoʻao pono o ka hana, me ka ʻole o kekahi polokalamu ʻē aʻe.",
+ "lkcall.credit": "Ua kūkulu ʻia nā kelepona ma luna o {name} 💙",
+ "help.m.thanks": "💙 Mahalo",
+ "help.thanks.h": "💙 Mahalo",
+ "help.thanks.chilled": "No {name} mai nā kelepona, ke kaʻana like pale, nā pane, nā hōʻike manaʻo a me nā kiko kikokiko. Mahalo nui!",
+ "help.thanks.livekit": "Holo nā kelepona ma luna o {name}, ke kikowaena kelepona kumu hāmama."
 }

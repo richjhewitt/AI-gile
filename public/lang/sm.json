@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "O le tagata e tausia le tafe o galuega: vaaia kāte ua mau, unaʻia ʻau, ma faamanatu atu iā te oe mea o loo faatali. I le AI-gile e faia lenei mea e le Lead Scrum Master i poloketi uma.",
- "gloss.scrummaster.text.noai": "O le tagata e tausia le tafe o galuega: vaaia kāte ua mau ma faamanatu atu iā te oe mea o loo faatali. A aunoa ma le AI e galue i poloaiga mautu, e pei o le faatulagaina o le E fai."
+ "gloss.scrummaster.text.noai": "O le tagata e tausia le tafe o galuega: vaaia kāte ua mau ma faamanatu atu iā te oe mea o loo faatali. A aunoa ma le AI e galue i poloaiga mautu, e pei o le faatulagaina o le E fai.",
+ "gloss.count": {"one":"{count} upu","other":"{count} upu"},
+ "tour.firststeps.title": "Laasaga muamua",
+ "tour.firststeps.text": "O se lisi puʻupuʻu e amata ai: fai se poloketi, faʻaopoopo se kāte, valaaulia se uo. E maka e ia lava taʻitasi pe a e faia. Ufiufi pe a e iloa le auala.",
+ "tour.firststeps.short": "Ni nai mea muamua e fai. E maka e i latou lava.",
+ "tour.firststeps.why": "O le faia faʻatasi o mea taʻitasi o le auala sili ona vave e aʻoaʻo ai le laupapa.",
+ "tour.help.title": "Fesoasoani pe a e manaʻomia",
+ "tour.help.text": "❓ O le Fesoasoani o loʻo i ai le Amataga, lenei asiasiga toe faʻafou ma le 📖 lisi o upu, e faʻamatala upu o le atinaʻe i se gagana faigofie. Fai se poloketi pe faʻaopoopo se kāte e amata ai.",
+ "tour.help.short": "❓ Fesoasoani: Amataga, le asiasiga toe faʻafou ma le 📖 lisi o upu.",
+ "tour.chat.text.noai": "Talanoa ma au uo iinei. Tatala le talanoaga a se uo e valaʻau ai i latou, ma vitio ma faasoaina o le lau.",
+ "tour.chat.short.noai": "Talanoaga ma uo. Valaʻau se tasi mai la latou talanoaga.",
+ "tour.chat.why.noai": "Talanoa i mea i tafatafa tonu o le galuega, e aunoa ma se isi polokalama.",
+ "lkcall.credit": "O valaʻau ua fausia i luga o {name} 💙",
+ "help.m.thanks": "💙 Faafetai",
+ "help.thanks.h": "💙 Faafetai",
+ "help.thanks.chilled": "O valaʻau, faasoaina o le lau, tali, faʻaaliga ma togitogi o le taina e sau mai {name}. Faafetai!",
+ "help.thanks.livekit": "E faʻagaoioia valaʻau i luga o {name}, le server valaʻau e matala lona puna."
 }

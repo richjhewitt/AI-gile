@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "The one who keeps the work flowing: spots stuck cards, nudges the teams and reminds you of what is waiting. In AI-gile the Lead Scrum Master does this across every project.",
- "gloss.scrummaster.text.noai": "The one who keeps the work flowing: spots stuck cards and reminds you of what is waiting. Without AI it works with fixed commands, like sorting To do."
+ "gloss.scrummaster.text.noai": "The one who keeps the work flowing: spots stuck cards and reminds you of what is waiting. Without AI it works with fixed commands, like sorting To do.",
+ "gloss.count": {"one":"{count} mu'","other":"{count} mu'mey"},
+ "tour.firststeps.title": "mIw wa'DIch",
+ "tour.firststeps.text": "A short list to get going: Qu' yIchenmoH, nav yIchel, jup yIrIt. Each one ticks itself when you do it. Hide it once you know your way.",
+ "tour.firststeps.short": "A few first things to do. They tick themselves.",
+ "tour.firststeps.why": "Doing each one once is the quickest way to learn the board.",
+ "tour.help.title": "Help when you need it",
+ "tour.help.text": "❓ Help has ghoSmeH, this tour again and the 📖 glossary, which explains developer words in plain language. Make a project or raise a card to get going.",
+ "tour.help.short": "❓ Help: ghoSmeH, the tour again and the 📖 glossary.",
+ "tour.chat.text.noai": "Chat with your juppu' (friends) here. Open a jup’s chat to call them, with video and screen share.",
+ "tour.chat.short.noai": "Chats with juppu'. Call one from their chat.",
+ "tour.chat.why.noai": "Talk things over right next to the work, with no other app. Qapla'!",
+ "lkcall.credit": "Calls built on {name} 💙",
+ "help.m.thanks": "💙 qatlho' (Thanks)",
+ "help.thanks.h": "💙 qatlho' (Thanks)",
+ "help.thanks.chilled": "Calls, screen share, replies, reactions and typing dots come from {name}. qatlho'!",
+ "help.thanks.livekit": "Calls run on {name}, the open-source call server."
 }

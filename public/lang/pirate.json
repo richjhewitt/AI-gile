@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Scrum captain,Lead Scrum Master",
  "gloss.scrummaster.text": "The one who keeps the work flowin': spots stuck cards, nudges the crews and reminds ye o' what be waitin'. In AI-gile the Scrum captain does this across every project.",
- "gloss.scrummaster.text.noai": "The one who keeps the work flowin': spots stuck cards and reminds ye o' what be waitin'. Without AI it works with fixed commands, like sortin' Yet to do."
+ "gloss.scrummaster.text.noai": "The one who keeps the work flowin': spots stuck cards and reminds ye o' what be waitin'. Without AI it works with fixed commands, like sortin' Yet to do.",
+ "gloss.count": {"one":"{count} word","other":"{count} words"},
+ "tour.firststeps.title": "First steps aboard",
+ "tour.firststeps.text": "A short list to get ye goin': make a project, add a card, invite a matey. Each one ticks itself when ye do it. Stow it away once ye know yer way.",
+ "tour.firststeps.short": "A few first things to do. They tick themselves, arr.",
+ "tour.firststeps.why": "Doin' each one once be the quickest way to learn the ship.",
+ "tour.help.title": "Help when ye need it",
+ "tour.help.text": "❓ Help has Getting started, this tour again an' the 📖 glossary, which explains dev words in plain speak. Make a project or raise a card to get goin'.",
+ "tour.help.short": "❓ Help: Getting started, the tour again an' the 📖 glossary.",
+ "tour.chat.text.noai": "Chat with yer mateys here. Open a matey’s chat to hail 'em, with video an' screen share.",
+ "tour.chat.short.noai": "Chats with yer mateys. Hail one from their chat.",
+ "tour.chat.why.noai": "Talk things over right beside the work, with no other app on deck.",
+ "lkcall.credit": "Calls built on {name} 💙",
+ "help.m.thanks": "💙 Thanks, hearties",
+ "help.thanks.h": "💙 Thanks, hearties",
+ "help.thanks.chilled": "Calls, screen share, replies, reactions an' typin' dots come from {name}. Thank ye kindly!",
+ "help.thanks.livekit": "Calls sail on {name}, the open-source call server."
 }

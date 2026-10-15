@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Die een wat die werk aan die vloei hou: sien vasgehaakte kaarte raak, por die spanne aan en herinner jou aan wat wag. In AI-gile doen die Lead Scrum Master dit oor elke projek.",
- "gloss.scrummaster.text.noai": "Die een wat die werk aan die vloei hou: sien vasgehaakte kaarte raak en herinner jou aan wat wag. Sonder KI werk dit met vaste opdragte, soos om Om te doen te sorteer."
+ "gloss.scrummaster.text.noai": "Die een wat die werk aan die vloei hou: sien vasgehaakte kaarte raak en herinner jou aan wat wag. Sonder KI werk dit met vaste opdragte, soos om Om te doen te sorteer.",
+ "gloss.count": {"one":"{count} woord","other":"{count} woorde"},
+ "tour.firststeps.title": "Eerste stappe",
+ "tour.firststeps.text": "'n Kort lys om aan die gang te kom: maak 'n projek, voeg 'n kaart by, nooi 'n vriend. Elkeen merk homself af wanneer jy dit doen. Versteek dit sodra jy jou pad ken.",
+ "tour.firststeps.short": "'n Paar eerste dinge om te doen. Hulle merk hulself af.",
+ "tour.firststeps.why": "Om elkeen een keer te doen, is die vinnigste manier om die bord te leer ken.",
+ "tour.help.title": "Hulp wanneer jy dit nodig het",
+ "tour.help.text": "❓ Hulp het Om te begin, hierdie toer weer en die 📖 woordelys, wat ontwikkelaarswoorde in gewone taal verduidelik. Maak 'n projek of skep 'n kaart om aan die gang te kom.",
+ "tour.help.short": "❓ Hulp: Om te begin, die toer weer en die 📖 woordelys.",
+ "tour.chat.text.noai": "Gesels hier met jou vriende. Maak 'n vriend se gesprek oop om hulle te bel, met video en skermdeling.",
+ "tour.chat.short.noai": "Gesprekke met vriende. Bel een vanuit hul gesprek.",
+ "tour.chat.why.noai": "Praat dinge deur reg langs die werk, sonder 'n ander toep.",
+ "lkcall.credit": "Oproepe gebou op {name} 💙",
+ "help.m.thanks": "💙 Dankie",
+ "help.thanks.h": "💙 Dankie",
+ "help.thanks.chilled": "Oproepe, skermdeling, antwoorde, reaksies en tikkolletjies kom van {name}. Baie dankie!",
+ "help.thanks.livekit": "Oproepe loop op {name}, die oopbron-oproepbediener."
 }

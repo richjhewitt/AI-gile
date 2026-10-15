@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Yule anayefanya kazi iendelee kutiririka: anaona kadi zilizokwama, anazihimiza timu na anakukumbusha kinachosubiri. Katika AI-gile Lead Scrum Master hufanya hivi katika kila mradi.",
- "gloss.scrummaster.text.noai": "Yule anayefanya kazi iendelee kutiririka: anaona kadi zilizokwama na anakukumbusha kinachosubiri. Bila AI hufanya kazi kwa amri zisizobadilika, kama kupanga Za kufanya."
+ "gloss.scrummaster.text.noai": "Yule anayefanya kazi iendelee kutiririka: anaona kadi zilizokwama na anakukumbusha kinachosubiri. Bila AI hufanya kazi kwa amri zisizobadilika, kama kupanga Za kufanya.",
+ "gloss.count": {"one":"neno {count}","other":"maneno {count}"},
+ "tour.firststeps.title": "Hatua za kwanza",
+ "tour.firststeps.text": "Orodha fupi ya kuanzia: tengeneza mradi, ongeza kadi, mwalike rafiki. Kila moja hujiwekea alama ukiifanya. Ifiche ukishazoea njia.",
+ "tour.firststeps.short": "Mambo machache ya kufanya kwanza. Hujiwekea alama yenyewe.",
+ "tour.firststeps.why": "Kufanya kila moja mara moja ndiyo njia ya haraka zaidi ya kujifunza ubao.",
+ "tour.help.title": "Msaada unapouhitaji",
+ "tour.help.text": "❓ Msaada una Kuanza, ziara hii tena na 📖 faharasa, inayoeleza maneno ya wasanidi kwa lugha rahisi. Tengeneza mradi au ongeza kadi ili kuanza.",
+ "tour.help.short": "❓ Msaada: Kuanza, ziara tena na 📖 faharasa.",
+ "tour.chat.text.noai": "Zungumza na marafiki zako hapa. Fungua gumzo la rafiki ili umpigie simu, kwa video na kushiriki skrini.",
+ "tour.chat.short.noai": "Gumzo na marafiki. Mpigie simu kutoka gumzo lake.",
+ "tour.chat.why.noai": "Jadilini mambo hapo hapo kando ya kazi, bila programu nyingine.",
+ "lkcall.credit": "Simu zimejengwa juu ya {name} 💙",
+ "help.m.thanks": "💙 Shukrani",
+ "help.thanks.h": "💙 Shukrani",
+ "help.thanks.chilled": "Simu, kushiriki skrini, majibu, maoni ya hisia na vitone vya kuandika vinatoka kwa {name}. Asante!",
+ "help.thanks.livekit": "Simu zinaendeshwa na {name}, seva ya simu ya chanzo huria."
 }

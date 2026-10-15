@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Dak li jżomm ix-xogħol għaddej: jinnota kards imwaħħlin, iqanqal lit-timijiet u jfakkrek f'dak li qed jistenna. F'AI-gile l-Lead Scrum Master jagħmel dan f'kull proġett.",
- "gloss.scrummaster.text.noai": "Dak li jżomm ix-xogħol għaddej: jinnota kards imwaħħlin u jfakkrek f'dak li qed jistenna. Mingħajr AI jaħdem b'kmandi fissi, bħal jissortja Biex isir."
+ "gloss.scrummaster.text.noai": "Dak li jżomm ix-xogħol għaddej: jinnota kards imwaħħlin u jfakkrek f'dak li qed jistenna. Mingħajr AI jaħdem b'kmandi fissi, bħal jissortja Biex isir.",
+ "gloss.count": {"one":"{count} kelma","other":"Kliem: {count}"},
+ "tour.firststeps.title": "L-ewwel passi",
+ "tour.firststeps.text": "Lista qasira biex tibda: agħmel proġett, żid karta, stieden xi ħadd. Kull waħda tiġi mmarkata waħedha meta tagħmilha. Aħbiha meta tkun drajt.",
+ "tour.firststeps.short": "Ftit affarijiet x'tagħmel l-ewwel. Jiġu mmarkati waħedhom.",
+ "tour.firststeps.why": "Li tagħmel kull waħda darba hija l-aktar mod mgħaġġel biex titgħallem il-bord.",
+ "tour.help.title": "Għajnuna meta jkollok bżonnha",
+ "tour.help.text": "❓ Fl-Għajnuna hemm Kif tibda, dan it-tour mill-ġdid u l-📖 glossarju, li jispjega l-kliem tal-iżviluppaturi b'lingwa sempliċi. Agħmel proġett jew żid karta biex tibda.",
+ "tour.help.short": "❓ Għajnuna: Kif tibda, it-tour mill-ġdid u l-📖 glossarju.",
+ "tour.chat.text.noai": "Iċċettja mal-ħbieb tiegħek hawn. Iftaħ iċ-chat ta' ħabib biex iċċemplilu, b'video u qsim tal-iskrin.",
+ "tour.chat.short.noai": "Chats mal-ħbieb. Ċempel minn ġoċ-chat tagħhom.",
+ "tour.chat.why.noai": "Tkellmu fuq l-affarijiet eżatt ħdejn ix-xogħol, mingħajr app oħra.",
+ "lkcall.credit": "Sejħiet mibnija fuq {name} 💙",
+ "help.m.thanks": "💙 Grazzi",
+ "help.thanks.h": "💙 Grazzi",
+ "help.thanks.chilled": "Is-sejħiet, il-qsim tal-iskrin, it-tweġibiet, ir-reazzjonijiet u t-tikek tat-tajpjar ġejjin minn {name}. Grazzi!",
+ "help.thanks.livekit": "Is-sejħiet jaħdmu fuq {name}, is-server tas-sejħiet open-source."
 }

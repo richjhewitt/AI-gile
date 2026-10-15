@@ -4118,5 +4118,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "The ane that keeps the wark flowin: spots stuck cairds, nudges the teams an minds ye o whit's waitin. In AI-gile the Lead Scrum Master daes this ower ilka project.",
- "gloss.scrummaster.text.noai": "The ane that keeps the wark flowin: spots stuck cairds an minds ye o whit's waitin. Wi'oot AI it warks wi fixed commands, like sortin Tae dae."
+ "gloss.scrummaster.text.noai": "The ane that keeps the wark flowin: spots stuck cairds an minds ye o whit's waitin. Wi'oot AI it warks wi fixed commands, like sortin Tae dae.",
+ "gloss.count": {"one":"{count} wird","other":"{count} wirds"},
+ "tour.firststeps.title": "First steps",
+ "tour.firststeps.text": "A wee list tae get ye gaun: mak a project, add a caird, invite a pal. Ilka ane ticks itsel when ye dae it. Hide it ance ye ken yer wey.",
+ "tour.firststeps.short": "A few first things tae dae. They tick theirsels.",
+ "tour.firststeps.why": "Daein ilka ane the once is the quickest wey tae learn the board.",
+ "tour.help.title": "Help when ye need it",
+ "tour.help.text": "❓ Help haes Gettin stertit, this tour again an the 📖 glossary, that explains dev wirds in plain langage. Mak a project or raise a caird tae get gaun.",
+ "tour.help.short": "❓ Help: Gettin stertit, the tour again an the 📖 glossary.",
+ "tour.chat.text.noai": "Blether wi yer pals here. Open a pal’s chat tae gie them a call, wi video an screen share.",
+ "tour.chat.short.noai": "Chats wi pals. Call ane frae their chat.",
+ "tour.chat.why.noai": "Talk things ower richt next tae the wark, wi nae ither app.",
+ "lkcall.credit": "Calls biggit on {name} 💙",
+ "help.m.thanks": "💙 Thanks",
+ "help.thanks.h": "💙 Thanks",
+ "help.thanks.chilled": "Calls, screen share, replies, reactions an typin dots come frae {name}. Thank ye!",
+ "help.thanks.livekit": "Calls rin on {name}, the open-source call server."
 }

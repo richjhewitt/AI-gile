@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "스크럼 마스터",
  "gloss.scrummaster.also": "리드 스크럼 마스터,Scrum Master",
  "gloss.scrummaster.text": "일이 계속 흘러가게 하는 사람이에요. 막힌 카드를 찾아내고, 팀을 재촉하고, 여러분을 기다리는 게 뭔지 알려 줘요. AI-gile에서는 리드 스크럼 마스터가 모든 프로젝트에서 이 일을 해요.",
- "gloss.scrummaster.text.noai": "일이 계속 흘러가게 하는 사람이에요. 막힌 카드를 찾아내고, 여러분을 기다리는 게 뭔지 알려 줘요. AI 없이는 할 일 정렬 같은 정해진 명령으로 움직여요."
+ "gloss.scrummaster.text.noai": "일이 계속 흘러가게 하는 사람이에요. 막힌 카드를 찾아내고, 여러분을 기다리는 게 뭔지 알려 줘요. AI 없이는 할 일 정렬 같은 정해진 명령으로 움직여요.",
+ "gloss.count": {"one":"단어 {count}개","other":"단어 {count}개"},
+ "tour.firststeps.title": "첫걸음",
+ "tour.firststeps.text": "시작을 위한 짧은 목록이에요. 프로젝트 만들기, 카드 추가하기, 친구 초대하기. 하나씩 하면 저절로 체크돼요. 익숙해지면 숨겨 두세요.",
+ "tour.firststeps.short": "처음 해 볼 몇 가지. 하면 저절로 체크돼요.",
+ "tour.firststeps.why": "하나씩 한 번 해 보는 게 보드를 익히는 가장 빠른 방법이에요.",
+ "tour.help.title": "필요할 때는 도움말",
+ "tour.help.text": "❓ 도움말에는 시작하기, 이 둘러보기 다시 보기, 개발 용어를 쉬운 말로 풀어 주는 📖 용어집이 있어요. 프로젝트를 만들거나 카드를 추가해서 시작해 보세요.",
+ "tour.help.short": "❓ 도움말: 시작하기, 둘러보기 다시 보기, 📖 용어집.",
+ "tour.chat.text.noai": "여기서 친구들과 채팅해요. 친구 채팅을 열면 영상과 화면 공유로 통화할 수 있어요.",
+ "tour.chat.short.noai": "친구들과 채팅. 채팅에서 바로 통화해요.",
+ "tour.chat.why.noai": "다른 앱 없이 작업 바로 옆에서 이야기를 나눠요.",
+ "lkcall.credit": "통화는 {name} 기반이에요 💙",
+ "help.m.thanks": "💙 감사의 말",
+ "help.thanks.h": "💙 감사의 말",
+ "help.thanks.chilled": "통화, 화면 공유, 답장, 반응, 입력 중 표시는 {name}에서 왔어요. 고마워요!",
+ "help.thanks.livekit": "통화는 오픈 소스 통화 서버인 {name}에서 돌아가요."
 }

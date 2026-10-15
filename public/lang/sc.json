@@ -4118,5 +4118,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Sa persone chi mantenet su traballu in movimentu: bidet sas cartas firmas, ispinghet sas iscuadras e ti ammentat su chi est isetende. In AI-gile, su Lead Scrum Master faghet custu in totu sos progetos.",
- "gloss.scrummaster.text.noai": "Sa persone chi mantenet su traballu in movimentu: bidet sas cartas firmas e ti ammentat su chi est isetende. Sena IA traballat cun cumandos fissos, comente ordinare De fàghere."
+ "gloss.scrummaster.text.noai": "Sa persone chi mantenet su traballu in movimentu: bidet sas cartas firmas e ti ammentat su chi est isetende. Sena IA traballat cun cumandos fissos, comente ordinare De fàghere.",
+ "gloss.count": {"one":"{count} paràula","other":"{count} paràulas"},
+ "tour.firststeps.title": "Primos passos",
+ "tour.firststeps.text": "Una lista curtza pro incumintzare: faghe unu progetu, agiunghe una carta, invita un'amigu. Onni passu si marcat a sa sola cando l'as fatu. Cuala cando ischis su caminu.",
+ "tour.firststeps.short": "Unas cantas cosas de fàghere a primu. Si marcant a sa sola.",
+ "tour.firststeps.why": "Fàghere onni passu una borta est su modu prus lestru pro imparare sa tàula.",
+ "tour.help.title": "Agiudu cando nde tenes bisòngiu",
+ "tour.help.text": "❓ In Agiudu b'at Pro incumintzare, custa visita torra e su 📖 glossàriu, chi ispiegat sas paràulas de isvilupadore in limba simpre. Faghe unu progetu o agiunghe una carta pro incumintzare.",
+ "tour.help.short": "❓ Agiudu: Pro incumintzare, sa visita torra e su 📖 glossàriu.",
+ "tour.chat.text.noai": "Inoghe chistiona cun sos amigos tuos. Aberi sa chistione de un'amigu pro lu telefonare, cun vìdeu e cumpartzidura de sa pantalla.",
+ "tour.chat.short.noai": "Chistiones cun sos amigos. Telèfona dae sa chistione issoro.",
+ "tour.chat.why.noai": "Chistionade de sas cosas a costàgiu de su traballu, chene àteras aplicatziones.",
+ "lkcall.credit": "Chiamadas fraigadas subra {name} 💙",
+ "help.m.thanks": "💙 Gràtzias",
+ "help.thanks.h": "💙 Gràtzias",
+ "help.thanks.chilled": "Chiamadas, cumpartzidura de sa pantalla, rispostas, reatziones e puntigheddos de iscritura benint dae {name}. Gràtzias!",
+ "help.thanks.livekit": "Sas chiamadas funtzionant cun {name}, su serbidore de chiamadas a còdighe abertu."
 }

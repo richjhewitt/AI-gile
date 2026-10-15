@@ -4088,5 +4088,21 @@
  "gloss.scrummaster.word": "jitro be la .skrum.",
  "gloss.scrummaster.also": "Scrum Master,Lead Scrum Master,ralju jitro be la .skrum.",
  "gloss.scrummaster.text": "le ranji gasnu be lo nu lo gunka cu muvdu .i ri viska lo karda poi na muvdu gi'e cpedu fi lo gunma gi'e tcikygau do fi lo se denpa .i ne'i la AI-gile lo ralju jitro be la .skrum. cu gasnu ti ro selplatu",
- "gloss.scrummaster.text.noai": "le ranji gasnu be lo nu lo gunka cu muvdu .i ri viska lo karda poi na muvdu gi'e tcikygau do fi lo se denpa .i va'o lo nu no AI kei ri pilno lo stodi minde mu'a lo nu porsi lo ba zukte"
+ "gloss.scrummaster.text.noai": "le ranji gasnu be lo nu lo gunka cu muvdu .i ri viska lo karda poi na muvdu gi'e tcikygau do fi lo se denpa .i va'o lo nu no AI kei ri pilno lo stodi minde mu'a lo nu porsi lo ba zukte",
+ "gloss.count": {"one":"{count} valsi","other":"{count} valsi"},
+ "tour.firststeps.title": "lo pamoi se cfari",
+ "tour.firststeps.text": "lo tordu liste tezu'e lo nu cfari: ko zbasu lo selplatu .i ko jmina lo karda .i ko vitke cpedu lo pendo .i ro da cu sezyli'u tcita ca lo nu do zukte .i ko mipri ri ca lo nu do slabu le dargu",
+ "tour.firststeps.short": "so'u pamoi se zukte .i ri sezyli'u tcita",
+ "tour.firststeps.why": "lo nu do paroi zukte ro da cu traji sutra tadji lo nu do cilre le jubtai",
+ "tour.help.title": "lo sidju ca lo nu do nitcu",
+ "tour.help.text": "❓ le sidju cu vasru lo nu cfari .e le tcidu za'u re'u .e le 📖 vlaste noi sampu skicu lo sampruce valsi .i ko zbasu lo selplatu .a jmina lo karda tezu'e lo nu cfari",
+ "tour.help.short": "❓ sidju: lo nu cfari .e le tcidu za'u re'u .e le 📖 vlaste",
+ "tour.chat.text.noai": "ko tavla lo do pendo ti .i ko kalri lo tavla be lo pendo tezu'e lo nu fonxa ri kei kansa lo vidvi .e lo nu jarco lo vidni",
+ "tour.chat.short.noai": "tavla lo pendo .i ko fonxa pa da fi lo tavla be ri",
+ "tour.chat.why.noai": "ko casnu lo se zukte ne'a le gunka .i no drata samtci",
+ "lkcall.credit": "lo fonxa cu se zbasu fi {name} 💙",
+ "help.m.thanks": "💙 ki'e",
+ "help.thanks.h": "💙 ki'e",
+ "help.thanks.chilled": "lo fonxa .e lo nu jarco lo vidni .e lo spuda .e lo frati .e lo tcita be lo nu ciska cu se krasi {name} .i ki'e do",
+ "help.thanks.livekit": "lo fonxa cu se samru'e fi {name} noi kalri fonxa samse'u"
 }

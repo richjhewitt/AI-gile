@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Kesê ku kar diherikîne: kartên asêmayî dibîne, tîman han dide û tiştên li benda te bîra te tîne. Di AI-gile de Lead Scrum Master vê li ser hemû projeyan dike.",
- "gloss.scrummaster.text.noai": "Kesê ku kar diherikîne: kartên asêmayî dibîne û tiştên li benda te bîra te tîne. Bêyî AI ew bi fermanên sabit dixebite, wek rêzkirina Ji bo kirinê."
+ "gloss.scrummaster.text.noai": "Kesê ku kar diherikîne: kartên asêmayî dibîne û tiştên li benda te bîra te tîne. Bêyî AI ew bi fermanên sabit dixebite, wek rêzkirina Ji bo kirinê.",
+ "gloss.count": {"one":"{count} peyv","other":"{count} peyv"},
+ "tour.firststeps.title": "Gavên pêşîn",
+ "tour.firststeps.text": "Lîsteyeke kurt ji bo destpêkê: projeyekê çêke, kartekê zêde bike, hevalekî vexwîne. Her yek bi xwe tê nîşankirin dema tu wê dikî. Gava tu rêya xwe nas bikî, lîsteyê veşêre.",
+ "tour.firststeps.short": "Çend tiştên pêşîn ên kirinê. Bi xwe tên nîşankirin.",
+ "tour.firststeps.why": "Kirina her yekê carekê riya herî bilez e ji bo naskirina panoyê.",
+ "tour.help.title": "Alîkarî dema pêwîst be",
+ "tour.help.text": "❓ Di Alîkariyê de Destpêkirin, ev ger dîsa û 📖 ferheng hene, ku peyvên pêşdebiran bi zimanekî hêsan rave dike. Ji bo destpêkê projeyekê çêke an kartekê zêde bike.",
+ "tour.help.short": "❓ Alîkarî: Destpêkirin, ger dîsa û 📖 ferheng.",
+ "tour.chat.text.noai": "Li vir bi hevalên xwe re sohbet bike. Sohbeta hevalekî veke da ku lê bigerî, bi vîdyo û parvekirina dîmenê.",
+ "tour.chat.short.noai": "Sohbet bi hevalan re. Rasterast ji sohbetê lê bigere.",
+ "tour.chat.why.noai": "Tiştan rasterast li kêleka karî biaxivin, bê sepaneke din.",
+ "lkcall.credit": "Bang li ser {name} hatine avakirin 💙",
+ "help.m.thanks": "💙 Spas",
+ "help.thanks.h": "💙 Spas",
+ "help.thanks.chilled": "Bang, parvekirina dîmenê, bersiv, reaksiyon û xalên nivîsandinê ji {name} tên. Spas!",
+ "help.thanks.livekit": "Bang li ser {name} dixebitin, servera bangan a çavkaniya vekirî."
 }

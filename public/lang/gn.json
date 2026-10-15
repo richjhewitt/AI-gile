@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Pe omongu'éva tembiapo: ohecha umi kuatia ojejokóva, omokyre'ỹ atyhakuérape ha nemandu'auka mba'épa oha'arõ. AI-gile-pe Lead Scrum Master ojapo kóva opavave tembiapópe.",
- "gloss.scrummaster.text.noai": "Pe omongu'éva tembiapo: ohecha umi kuatia ojejokóva ha nemandu'auka mba'épa oha'arõ. AI'ỹre omba'apo tembiapoukapy oñemohendáva reheve, Ojejapótava omohenda guáicha."
+ "gloss.scrummaster.text.noai": "Pe omongu'éva tembiapo: ohecha umi kuatia ojejokóva ha nemandu'auka mba'épa oha'arõ. AI'ỹre omba'apo tembiapoukapy oñemohendáva reheve, Ojejapótava omohenda guáicha.",
+ "gloss.count": {"one":"{count} ñe'ẽ","other":"{count} ñe'ẽ"},
+ "tour.firststeps.title": "Jeku'e peteĩha",
+ "tour.firststeps.text": "Peteĩ lista mbyky reñepyrũ haguã: ejapo peteĩ proyecto, emoĩ peteĩ kuatia, ehenói peteĩ angirũ. Peteĩteĩ oñemarka ijeheguiete rejapóvo. Emokañy reikuaáma vove nde rape.",
+ "tour.firststeps.short": "Mbovymi mba'e rejapo raẽ va'erã. Oñemarka ijeheguiete.",
+ "tour.firststeps.why": "Rejapóramo peteĩteĩ peteĩ jey, upéva hína tape pya'eve reikuaa haguã tablero.",
+ "tour.help.title": "Pytyvõ reikotevẽ jave",
+ "tour.help.text": "❓ Pytyvõme oĩ Ñepyrũ, ko tape jey ha 📖 ñe'ẽryru, ohechaukáva tembiapo ñe'ẽ ñe'ẽ hasy'ỹme. Ejapo peteĩ proyecto térã emoĩ peteĩ kuatia reñepyrũ haguã.",
+ "tour.help.short": "❓ Pytyvõ: Ñepyrũ, tape jey ha 📖 ñe'ẽryru.",
+ "tour.chat.text.noai": "Eñemongeta ko'ápe nde angirũnguéra ndive. Eipe'a peteĩ angirũ chat ehenói haguã chupe, video ha pantalla emoherakuã ndive.",
+ "tour.chat.short.noai": "Ñemongeta angirũnguéra ndive. Ehenói peteĩme ichat guive.",
+ "tour.chat.why.noai": "Pemongeta mba'ekuéra tembiapo ykére, ambue app'ỹre.",
+ "lkcall.credit": "Henói ojejapo {name} ári 💙",
+ "help.m.thanks": "💙 Aguyje",
+ "help.thanks.h": "💙 Aguyje",
+ "help.thanks.chilled": "Henói, pantalla emoherakuã, mbohovái, reacción ha kuatiaha kyta ou {name} guive. Aguyje!",
+ "help.thanks.livekit": "Henói oiko {name} ári, henói servidor código abierto."
 }

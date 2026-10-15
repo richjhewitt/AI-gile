@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Prìomh Scrum Master,Lead Scrum Master",
  "gloss.scrummaster.text": "An neach a chumas an obair a’ sruthadh: mothaichidh e do chairtean an sàs, brosnaichidh e na sgiobaidhean agus cuiridh e nad chuimhne na tha a’ feitheamh. Ann an AI-gile, nì am Prìomh Scrum Master seo thar gach pròiseict.",
- "gloss.scrummaster.text.noai": "An neach a chumas an obair a’ sruthadh: mothaichidh e do chairtean an sàs agus cuiridh e nad chuimhne na tha a’ feitheamh. Às aonais AI, obraichidh e le àitheantan stèidhichte, mar a bhith a’ cur Ri dhèanamh an òrdugh."
+ "gloss.scrummaster.text.noai": "An neach a chumas an obair a’ sruthadh: mothaichidh e do chairtean an sàs agus cuiridh e nad chuimhne na tha a’ feitheamh. Às aonais AI, obraichidh e le àitheantan stèidhichte, mar a bhith a’ cur Ri dhèanamh an òrdugh.",
+ "gloss.count": {"one":"{count} fhacal","other":"{count} faclan"},
+ "tour.firststeps.title": "A’ chiad cheuman",
+ "tour.firststeps.text": "Liosta goirid airson tòiseachadh: dèan pròiseact, cuir cairt ris, thoir cuireadh do charaid. Thèid strìochag a chur ri gach fear nuair a nì thu e. Falaich e nuair a bhios fios agad mun cuairt.",
+ "tour.firststeps.short": "Beagan rudan ri dhèanamh an toiseach. Thèid strìochag riutha leotha fhèin.",
+ "tour.firststeps.why": "’S e gach fear a dhèanamh aon turas an dòigh as luaithe air a’ bhòrd ionnsachadh.",
+ "tour.help.title": "Cuideachadh nuair a bhios feum agad air",
+ "tour.help.text": "❓ Ann an Cuideachadh tha A’ tòiseachadh, a’ chuairt seo a-rithist agus am 📖 faclair, a mhìnicheas briathran luchd-leasachaidh ann an cainnt shìmplidh. Dèan pròiseact no cuir cairt ris airson tòiseachadh.",
+ "tour.help.short": "❓ Cuideachadh: A’ tòiseachadh, a’ chuairt a-rithist agus am 📖 faclair.",
+ "tour.chat.text.noai": "Dèan cabadaich le do charaidean an seo. Fosgail cabadaich caraid airson gairm a chur orra, le video is co-roinneadh sgrìn.",
+ "tour.chat.short.noai": "Cabadaich le caraidean. Cuir gairm air fear dhiubh bhon chabadaich aca.",
+ "tour.chat.why.noai": "Bruidhinn air rudan dìreach ri taobh na h-obrach, gun aplacaid eile.",
+ "lkcall.credit": "Gairmean stèidhichte air {name} 💙",
+ "help.m.thanks": "💙 Taing",
+ "help.thanks.h": "💙 Taing",
+ "help.thanks.chilled": "Tha gairmean, co-roinneadh sgrìn, freagairtean, ath-bhualaidhean agus na dotagan sgrìobhaidh a’ tighinn bho {name}. Mòran taing!",
+ "help.thanks.livekit": "Tha gairmean a’ ruith air {name}, am frithealaiche ghairmean le còd fosgailte."
 }

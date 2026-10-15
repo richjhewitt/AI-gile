@@ -4117,5 +4117,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Quem mantém o trabalho a andar: repara nos cartões parados, dá um empurrão às equipas e lembra-te do que está à espera. No AI-gile, o Lead Scrum Master faz isto em todos os projetos.",
- "gloss.scrummaster.text.noai": "Quem mantém o trabalho a andar: repara nos cartões parados e lembra-te do que está à espera. Sem IA, funciona com comandos fixos, como arrumar o A fazer."
+ "gloss.scrummaster.text.noai": "Quem mantém o trabalho a andar: repara nos cartões parados e lembra-te do que está à espera. Sem IA, funciona com comandos fixos, como arrumar o A fazer.",
+ "gloss.count": {"one":"{count} palavra","other":"{count} palavras"},
+ "tour.firststeps.title": "Primeiros passos",
+ "tour.firststeps.text": "Uma pequena lista para começar: cria um projeto, adiciona um cartão, convida um amigo. Cada item marca-se sozinho quando o fazes. Oculta-a quando já te orientares.",
+ "tour.firststeps.short": "Algumas primeiras coisas a fazer. Marcam-se sozinhas.",
+ "tour.firststeps.why": "Fazer cada uma delas uma vez é a forma mais rápida de aprender o quadro.",
+ "tour.help.title": "Ajuda quando precisares",
+ "tour.help.text": "❓ A Ajuda tem Como começar, esta visita outra vez e o 📖 glossário, que explica termos de programação em linguagem simples. Cria um projeto ou abre um cartão para começar.",
+ "tour.help.short": "❓ Ajuda: Como começar, a visita outra vez e o 📖 glossário.",
+ "tour.chat.text.noai": "Conversa aqui com os teus amigos. Abre a conversa de um amigo para lhe ligar, com vídeo e partilha de ecrã.",
+ "tour.chat.short.noai": "Conversas com amigos. Liga a um amigo a partir da conversa dele.",
+ "tour.chat.why.noai": "Falem das coisas mesmo ao lado do trabalho, sem outra aplicação.",
+ "lkcall.credit": "Chamadas feitas com {name} 💙",
+ "help.m.thanks": "💙 Agradecimentos",
+ "help.thanks.h": "💙 Agradecimentos",
+ "help.thanks.chilled": "Chamadas, partilha de ecrã, respostas, reações e os pontinhos de escrita vêm do {name}. Obrigado!",
+ "help.thanks.livekit": "As chamadas correm no {name}, o servidor de chamadas de código aberto."
 }

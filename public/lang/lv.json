@@ -4117,5 +4117,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Tas, kurš uztur darba plūsmu: pamana iestrēgušas kartītes, pamudina komandas un atgādina tev, kas gaida. AI-gile to visos projektos dara Lead Scrum Master.",
- "gloss.scrummaster.text.noai": "Tas, kurš uztur darba plūsmu: pamana iestrēgušas kartītes un atgādina tev, kas gaida. Bez MI tas strādā ar noteiktām komandām, piemēram, sakārto Darāmo."
+ "gloss.scrummaster.text.noai": "Tas, kurš uztur darba plūsmu: pamana iestrēgušas kartītes un atgādina tev, kas gaida. Bez MI tas strādā ar noteiktām komandām, piemēram, sakārto Darāmo.",
+ "gloss.count": {"one":"{count} vārds","other":"{count} vārdi"},
+ "tour.firststeps.title": "Pirmie soļi",
+ "tour.firststeps.text": "Īss saraksts, lai sāktu: izveido projektu, pievieno kartīti, uzaicini draugu. Katrs punkts atzīmējas pats, kad to izdari. Paslēp to, kad jau orientējies.",
+ "tour.firststeps.short": "Dažas pirmās lietas, ko izdarīt. Tās atzīmējas pašas.",
+ "tour.firststeps.why": "Izdarīt katru vienreiz ir ātrākais veids, kā iepazīt dēli.",
+ "tour.help.title": "Palīdzība, kad tā vajadzīga",
+ "tour.help.text": "❓ Palīdzībā ir Darba sākums, šī ekskursija vēlreiz un 📖 vārdnīca, kas vienkāršā valodā skaidro izstrādātāju vārdus. Izveido projektu vai pievieno kartīti, lai sāktu.",
+ "tour.help.short": "❓ Palīdzība: Darba sākums, ekskursija vēlreiz un 📖 vārdnīca.",
+ "tour.chat.text.noai": "Šeit sarunājies ar draugiem. Atver drauga sarunu, lai viņam piezvanītu, ar video un ekrāna kopīgošanu.",
+ "tour.chat.short.noai": "Sarunas ar draugiem. Zvani no drauga sarunas.",
+ "tour.chat.why.noai": "Pārrunājiet lietas turpat blakus darbam, bez citas lietotnes.",
+ "lkcall.credit": "Zvani veidoti ar {name} 💙",
+ "help.m.thanks": "💙 Paldies",
+ "help.thanks.h": "💙 Paldies",
+ "help.thanks.chilled": "Zvani, ekrāna kopīgošana, atbildes, reakcijas un rakstīšanas punktiņi nāk no {name}. Paldies!",
+ "help.thanks.livekit": "Zvani darbojas ar {name}, atvērtā koda zvanu serveri."
 }

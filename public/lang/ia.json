@@ -4118,5 +4118,21 @@
  "gloss.scrummaster.word": "Maestro Scrum",
  "gloss.scrummaster.also": "Scrum Master,Maestro Scrum Principal,Lead Scrum Master",
  "gloss.scrummaster.text": "Le persona qui mantene le labor fluente: nota cartas blocate, stimula le equipas e te rememora lo que attende. In AI-gile le Maestro Scrum Principal face isto in tote le projectos.",
- "gloss.scrummaster.text.noai": "Le persona qui mantene le labor fluente: nota cartas blocate e te rememora lo que attende. Sin IA illo functiona con commandos fixe, como ordinar A facer."
+ "gloss.scrummaster.text.noai": "Le persona qui mantene le labor fluente: nota cartas blocate e te rememora lo que attende. Sin IA illo functiona con commandos fixe, como ordinar A facer.",
+ "gloss.count": {"one":"{count} parola","other":"{count} parolas"},
+ "tour.firststeps.title": "Prime passos",
+ "tour.firststeps.text": "Un breve lista pro comenciar: crea un projecto, adde un carta, invita un amico. Cata passo se marca per se mesme quando tu lo face. Cela le lista quando tu cognosce le via.",
+ "tour.firststeps.short": "Alcun prime cosas a facer. Illos se marca per se mesme.",
+ "tour.firststeps.why": "Facer cata un un vice es le maniera le plus rapide de apprender le tabula.",
+ "tour.help.title": "Adjuta quando tu ha besonio",
+ "tour.help.text": "❓ Adjuta ha Comenciar, iste visita de novo e le 📖 glossario, que explica parolas de programmator in lingua simple. Crea un projecto o adde un carta pro comenciar.",
+ "tour.help.short": "❓ Adjuta: Comenciar, le visita de novo e le 📖 glossario.",
+ "tour.chat.text.noai": "Conversa hic con tu amicos. Aperi le chat de un amico pro appellar le, con video e compartimento de schermo.",
+ "tour.chat.short.noai": "Chats con amicos. Appella un ab su chat.",
+ "tour.chat.why.noai": "Discute le cosas juxta le labor, sin altere application.",
+ "lkcall.credit": "Appellos construite super {name} 💙",
+ "help.m.thanks": "💙 Gratias",
+ "help.thanks.h": "💙 Gratias",
+ "help.thanks.chilled": "Appellos, compartimento de schermo, responsas, reactiones e le punctos de scriber veni de {name}. Gratias!",
+ "help.thanks.livekit": "Le appellos functiona super {name}, le servitor de appellos de codice aperte."
 }

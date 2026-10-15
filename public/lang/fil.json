@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Ang nagpapatuloy sa daloy ng trabaho: napapansin ang mga stuck na card, kinukulit ang mga team at ipinapaalala sa iyo kung ano ang naghihintay. Sa AI-gile, ang Lead Scrum Master ang gumagawa nito sa lahat ng project.",
- "gloss.scrummaster.text.noai": "Ang nagpapatuloy sa daloy ng trabaho: napapansin ang mga stuck na card at ipinapaalala sa iyo kung ano ang naghihintay. Kapag walang AI, gumagana ito gamit ang mga nakatakdang command, gaya ng pag-sort ng Gagawin."
+ "gloss.scrummaster.text.noai": "Ang nagpapatuloy sa daloy ng trabaho: napapansin ang mga stuck na card at ipinapaalala sa iyo kung ano ang naghihintay. Kapag walang AI, gumagana ito gamit ang mga nakatakdang command, gaya ng pag-sort ng Gagawin.",
+ "gloss.count": {"one":"{count} salita","other":"{count} salita"},
+ "tour.firststeps.title": "Mga unang hakbang",
+ "tour.firststeps.text": "Maikling listahan para makapagsimula: gumawa ng project, magdagdag ng card, mag-imbita ng kaibigan. Kusang natse-check ang bawat isa kapag ginawa mo. Itago ito kapag kabisado mo na.",
+ "tour.firststeps.short": "Ilang unang gagawin. Kusa silang natse-check.",
+ "tour.firststeps.why": "Ang paggawa ng bawat isa nang isang beses ang pinakamabilis na paraan para matutunan ang board.",
+ "tour.help.title": "Tulong kapag kailangan mo",
+ "tour.help.text": "Nasa ❓ Help ang Pagsisimula, itong tour ulit at ang 📖 glossary, na nagpapaliwanag ng mga dev word sa simpleng salita. Gumawa ng project o mag-raise ng card para makapagsimula.",
+ "tour.help.short": "❓ Help: Pagsisimula, ang tour ulit at ang 📖 glossary.",
+ "tour.chat.text.noai": "Makipag-chat sa mga kaibigan mo rito. Buksan ang chat ng kaibigan para tawagan siya, may video at screen share.",
+ "tour.chat.short.noai": "Mga chat kasama ang mga kaibigan. Tawagan ang isa mula sa chat nila.",
+ "tour.chat.why.noai": "Pag-usapan ang mga bagay mismo sa tabi ng trabaho, nang walang ibang app.",
+ "lkcall.credit": "Ang mga call ay gawa sa {name} 💙",
+ "help.m.thanks": "💙 Salamat",
+ "help.thanks.h": "💙 Salamat",
+ "help.thanks.chilled": "Galing sa {name} ang mga call, screen share, reply, reaction at typing dots. Salamat!",
+ "help.thanks.livekit": "Tumatakbo ang mga call sa {name}, ang open-source na call server."
 }

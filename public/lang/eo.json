@@ -4118,5 +4118,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Tiu, kiu tenas la laboron fluanta: rimarkas blokitajn kartojn, puŝetas la teamojn kaj memorigas vin pri tio, kio atendas. En AI-gile la Lead Scrum Master faras tion tra ĉiuj projektoj.",
- "gloss.scrummaster.text.noai": "Tiu, kiu tenas la laboron fluanta: rimarkas blokitajn kartojn kaj memorigas vin pri tio, kio atendas. Sen AI ĝi laboras per fiksaj komandoj, kiel ordigi Farotajn."
+ "gloss.scrummaster.text.noai": "Tiu, kiu tenas la laboron fluanta: rimarkas blokitajn kartojn kaj memorigas vin pri tio, kio atendas. Sen AI ĝi laboras per fiksaj komandoj, kiel ordigi Farotajn.",
+ "gloss.count": {"one":"{count} vorto","other":"{count} vortoj"},
+ "tour.firststeps.title": "Unuaj paŝoj",
+ "tour.firststeps.text": "Mallonga listo por ekiri: kreu projekton, aldonu karton, invitu amikon. Ĉiu punkto markiĝas mem, kiam vi faras ĝin. Kaŝu la liston, kiam vi jam konas la vojon.",
+ "tour.firststeps.short": "Kelkaj unuaj aferoj por fari. Ili markiĝas mem.",
+ "tour.firststeps.why": "Fari ĉiun unufoje estas la plej rapida maniero lerni la tabulon.",
+ "tour.help.title": "Helpo, kiam vi bezonas ĝin",
+ "tour.help.text": "❓ Helpo enhavas Komencadon, ĉi tiun gvidviziton denove kaj la 📖 vortaron, kiu klarigas programistajn vortojn per simpla lingvo. Kreu projekton aŭ levu karton por ekiri.",
+ "tour.help.short": "❓ Helpo: Komencado, la gvidvizito denove kaj la 📖 vortaro.",
+ "tour.chat.text.noai": "Babilu ĉi tie kun viaj amikoj. Malfermu la babilejon de amiko por voki ĝin, kun video kaj ekrankunhavigo.",
+ "tour.chat.short.noai": "Babiloj kun amikoj. Voku iun el ties babilejo.",
+ "tour.chat.why.noai": "Priparolu aferojn tuj apud la laboro, sen alia aplikaĵo.",
+ "lkcall.credit": "Vokoj konstruitaj sur {name} 💙",
+ "help.m.thanks": "💙 Dankon",
+ "help.thanks.h": "💙 Dankon",
+ "help.thanks.chilled": "Vokoj, ekrankunhavigo, respondoj, reagoj kaj tajpopunktoj venas de {name}. Dankon!",
+ "help.thanks.livekit": "Vokoj funkcias per {name}, la malfermitkoda vokservilo."
 }

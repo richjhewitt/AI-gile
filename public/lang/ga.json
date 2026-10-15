@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "An té a choinníonn an obair ag sreabhadh: tugann sé faoi deara cártaí atá i bhfostú, spreagann sé na foirne agus meabhraíonn sé duit cad atá ag fanacht. In AI-gile déanann an Lead Scrum Master é seo thar gach tionscadal.",
- "gloss.scrummaster.text.noai": "An té a choinníonn an obair ag sreabhadh: tugann sé faoi deara cártaí atá i bhfostú agus meabhraíonn sé duit cad atá ag fanacht. Gan AI oibríonn sé le horduithe seasta, mar shampla Le déanamh a shórtáil."
+ "gloss.scrummaster.text.noai": "An té a choinníonn an obair ag sreabhadh: tugann sé faoi deara cártaí atá i bhfostú agus meabhraíonn sé duit cad atá ag fanacht. Gan AI oibríonn sé le horduithe seasta, mar shampla Le déanamh a shórtáil.",
+ "gloss.count": {"one":"{count} focal","other":"{count} focal"},
+ "tour.firststeps.title": "Na chéad chéimeanna",
+ "tour.firststeps.text": "Liosta gearr chun tosú: déan tionscadal, cuir cárta leis, tabhair cuireadh do chara. Cuirtear tic le gach ceann acu nuair a dhéanann tú é. Folaigh é nuair a bheidh eolas na slí agat.",
+ "tour.firststeps.short": "Cúpla rud le déanamh ar dtús. Cuirtear tic leo uathu féin.",
+ "tour.firststeps.why": "Is é gach ceann a dhéanamh uair amháin an bealach is tapúla leis an gclár a fhoghlaim.",
+ "tour.help.title": "Cabhair nuair a bhíonn sí uait",
+ "tour.help.text": "❓ Sa Chabhair tá Ag tosú, an turas seo arís agus an 📖 ghluais, a mhíníonn focail forbróirí i ngnáthchaint. Déan tionscadal nó cuir cárta leis chun tosú.",
+ "tour.help.short": "❓ Cabhair: Ag tosú, an turas arís agus an 📖 ghluais.",
+ "tour.chat.text.noai": "Déan comhrá le do chairde anseo. Oscail comhrá cara chun glao a chur air, le físeán agus roinnt scáileáin.",
+ "tour.chat.short.noai": "Comhráite le cairde. Glaoigh ar dhuine acu óna chomhrá.",
+ "tour.chat.why.noai": "Pléigh rudaí díreach in aice leis an obair, gan aon aip eile.",
+ "lkcall.credit": "Glaonna tógtha ar {name} 💙",
+ "help.m.thanks": "💙 Buíochas",
+ "help.thanks.h": "💙 Buíochas",
+ "help.thanks.chilled": "Is ó {name} a thagann glaonna, roinnt scáileáin, freagraí, frithghníomhartha agus na poncanna clóscríofa. Go raibh maith agaibh!",
+ "help.thanks.livekit": "Ritheann glaonna ar {name}, an freastalaí glaonna foinse oscailte."
 }

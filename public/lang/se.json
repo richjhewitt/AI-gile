@@ -4129,5 +4129,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Son gii doallá barggu johtui: fuomáša heaŋgájeaddji korttaid, movttiidahttá joavkkuid ja muittuha du dan birra mii vuordá. AI-gile:s Lead Scrum Master dahká dan buot prošeavttain.",
- "gloss.scrummaster.text.noai": "Son gii doallá barggu johtui: fuomáša heaŋgájeaddji korttaid ja muittuha du dan birra mii vuordá. AI haga dat bargá giddes gohččumiiguin, nugo ordne Dahkat."
+ "gloss.scrummaster.text.noai": "Son gii doallá barggu johtui: fuomáša heaŋgájeaddji korttaid ja muittuha du dan birra mii vuordá. AI haga dat bargá giddes gohččumiiguin, nugo ordne Dahkat.",
+ "gloss.count": {"one":"{count} sátni","other":"{count} sáni"},
+ "tour.firststeps.title": "Vuosttaš lávkkit",
+ "tour.firststeps.text": "Oanehis listu mainna álgit: ráhkat prošeavtta, lasit gortta, bovdde ustiba. Juohke čuokkis merkejuvvo ieš go don dagat dan. Čiega listu go dovddat vuogi.",
+ "tour.firststeps.short": "Moadde vuosttaš dahkamuša. Dat merkejuvvojit iešalddiset.",
+ "tour.firststeps.why": "Juohke dahkamuša oktii dahkat lea johtileamos vuohki oahppat tavlla.",
+ "tour.help.title": "Veahkki go dárbbašat",
+ "tour.help.text": "❓ Veahkkis leat Álggu, dát jođiheapmi fas ja 📖 sátnelistu, mii čilge hutkkuid sániid čielga gillii. Ráhkat prošeavtta dahje lasit gortta álgima várás.",
+ "tour.help.short": "❓ Veahkki: Álggu, jođiheapmi fas ja 📖 sátnelistu.",
+ "tour.chat.text.noai": "Čátte ustibiiguin dáppe. Raba ustiba čátta jus háliidat riŋget sutnje, videoin ja skearru juohkimiin.",
+ "tour.chat.short.noai": "Čáttat ustibiiguin. Riŋge ustibii su čáttas.",
+ "tour.chat.why.noai": "Ságastallet áššiid barggu bálddas, eará prográmma haga.",
+ "lkcall.credit": "Riŋgemat huksejuvvon {name} vuođul 💙",
+ "help.m.thanks": "💙 Giitu",
+ "help.thanks.h": "💙 Giitu",
+ "help.thanks.chilled": "Riŋgemat, skearru juohkin, vástádusat, reakšuvnnat ja čállinčuoggát bohtet {name}:as. Giitu!",
+ "help.thanks.livekit": "Riŋgemat jođihuvvojit {name}:in, mii lea rabas gáldokoda riŋgenbálvá."
 }

@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Ai që e mban punën në lëvizje: dallon kartat e ngecura, nxit ekipet dhe të kujton çfarë pret. Në AI-gile këtë e bën Lead Scrum Master në të gjitha projektet.",
- "gloss.scrummaster.text.noai": "Ai që e mban punën në lëvizje: dallon kartat e ngecura dhe të kujton çfarë pret. Pa AI punon me komanda fikse, si renditja e Për t'u bërë."
+ "gloss.scrummaster.text.noai": "Ai që e mban punën në lëvizje: dallon kartat e ngecura dhe të kujton çfarë pret. Pa AI punon me komanda fikse, si renditja e Për t'u bërë.",
+ "gloss.count": {"one":"{count} fjalë","other":"{count} fjalë"},
+ "tour.firststeps.title": "Hapat e parë",
+ "tour.firststeps.text": "Një listë e shkurtër për t’u nisur: krijo një projekt, shto një kartë, fto një mik. Secili shënohet vetë kur e bën. Fshihe sapo të mësosh rrugën.",
+ "tour.firststeps.short": "Disa gjëra të para për të bërë. Shënohen vetë.",
+ "tour.firststeps.why": "T’i bësh secilën një herë është mënyra më e shpejtë për të mësuar tabelën.",
+ "tour.help.title": "Ndihmë kur të duhet",
+ "tour.help.text": "❓ Ndihma ka Si të nisesh, këtë tur sërish dhe 📖 fjalorin, që shpjegon fjalët e zhvilluesve me gjuhë të thjeshtë. Krijo një projekt ose shto një kartë për t’u nisur.",
+ "tour.help.short": "❓ Ndihma: Si të nisesh, turi sërish dhe 📖 fjalori.",
+ "tour.chat.text.noai": "Bisedo këtu me miqtë e tu. Hap bisedën e një miku për ta thirrur, me video dhe ndarje ekrani.",
+ "tour.chat.short.noai": "Biseda me miqtë. Thirr dikë nga biseda e tij.",
+ "tour.chat.why.noai": "Flisni për gjërat pranë punës, pa ndonjë aplikacion tjetër.",
+ "lkcall.credit": "Thirrjet ndërtuar mbi {name} 💙",
+ "help.m.thanks": "💙 Faleminderit",
+ "help.thanks.h": "💙 Faleminderit",
+ "help.thanks.chilled": "Thirrjet, ndarja e ekranit, përgjigjet, reagimet dhe pikat e shkrimit vijnë nga {name}. Faleminderit!",
+ "help.thanks.livekit": "Thirrjet funksionojnë mbi {name}, serverin e thirrjeve me burim të hapur."
 }

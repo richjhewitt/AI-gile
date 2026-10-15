@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Se, joka pitää työn liikkeessä: huomaa jumiin jääneet kortit, tönäisee tiimejä ja muistuttaa sinua siitä, mikä odottaa. AI-gilessä tätä tekee Lead Scrum Master kaikissa projekteissa.",
- "gloss.scrummaster.text.noai": "Se, joka pitää työn liikkeessä: huomaa jumiin jääneet kortit ja muistuttaa sinua siitä, mikä odottaa. Ilman tekoälyä se toimii kiinteillä komennoilla, kuten Tehtävänä-sarakkeen järjestämisellä."
+ "gloss.scrummaster.text.noai": "Se, joka pitää työn liikkeessä: huomaa jumiin jääneet kortit ja muistuttaa sinua siitä, mikä odottaa. Ilman tekoälyä se toimii kiinteillä komennoilla, kuten Tehtävänä-sarakkeen järjestämisellä.",
+ "gloss.count": {"one":"{count} sana","other":"{count} sanaa"},
+ "tour.firststeps.title": "Ensiaskeleet",
+ "tour.firststeps.text": "Lyhyt lista alkuun: luo projekti, lisää kortti, kutsu ystävä. Jokainen kohta merkitsee itsensä tehdyksi, kun teet sen. Piilota lista, kun osaat jo liikkua.",
+ "tour.firststeps.short": "Muutama ensimmäinen asia. Ne merkitsevät itsensä tehdyiksi.",
+ "tour.firststeps.why": "Kun teet jokaisen kerran, opit taulun nopeimmin.",
+ "tour.help.title": "Apua, kun tarvitset sitä",
+ "tour.help.text": "❓ Ohjeesta löytyvät Aloittaminen, tämä kierros uudelleen ja 📖 sanasto, joka selittää kehittäjäsanat selkokielellä. Pääset alkuun luomalla projektin tai lisäämällä kortin.",
+ "tour.help.short": "❓ Ohje: Aloittaminen, kierros uudelleen ja 📖 sanasto.",
+ "tour.chat.text.noai": "Juttele täällä ystäviesi kanssa. Avaa ystävän keskustelu soittaaksesi hänelle, videolla ja näytön jakamisella.",
+ "tour.chat.short.noai": "Keskustelut ystävien kanssa. Soita jollekulle hänen keskustelustaan.",
+ "tour.chat.why.noai": "Puhu asiat läpi ihan työn vieressä, ilman muuta sovellusta.",
+ "lkcall.credit": "Puhelut perustuvat {name}-palveluun 💙",
+ "help.m.thanks": "💙 Kiitokset",
+ "help.thanks.h": "💙 Kiitokset",
+ "help.thanks.chilled": "Puhelut, näytön jakaminen, vastaukset, reaktiot ja kirjoituspisteet tulevat {name}-palvelusta. Kiitos!",
+ "help.thanks.livekit": "Puhelut toimivat {name}-palvelimella, joka on avoimen lähdekoodin puhelupalvelin."
 }

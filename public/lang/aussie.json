@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "The one who keeps the work flowing: spots stuck cards, gives the teams a nudge and reminds you what's waiting. In AI-gile the Lead Scrum Master does this across every project.",
- "gloss.scrummaster.text.noai": "The one who keeps the work flowing: spots stuck cards and reminds you what's waiting. Without AI it works with fixed commands, like sorting To do."
+ "gloss.scrummaster.text.noai": "The one who keeps the work flowing: spots stuck cards and reminds you what's waiting. Without AI it works with fixed commands, like sorting To do.",
+ "gloss.count": {"one":"{count} word","other":"{count} words"},
+ "tour.firststeps.title": "First steps",
+ "tour.firststeps.text": "A short list to get cracking: make a project, add a card, invite a mate. Each one ticks itself off when you do it. Hide it once you know your way round.",
+ "tour.firststeps.short": "A few first things to do. They tick themselves off.",
+ "tour.firststeps.why": "Doing each one once is the quickest way to get the hang of the board.",
+ "tour.help.title": "Help when you need it",
+ "tour.help.text": "❓ Help has Getting started, this tour again and the 📖 glossary, which explains dev words in plain English. Make a project or raise a card to get cracking.",
+ "tour.help.short": "❓ Help: Getting started, the tour again and the 📖 glossary.",
+ "tour.chat.text.noai": "Have a yarn with your mates here. Open a mate’s chat to give them a bell, with video and screen share.",
+ "tour.chat.short.noai": "Chats with mates. Give one a bell from their chat.",
+ "tour.chat.why.noai": "Talk things over right next to the work, no other app needed.",
+ "lkcall.credit": "Calls built on {name} 💙",
+ "help.m.thanks": "💙 Cheers",
+ "help.thanks.h": "💙 Cheers",
+ "help.thanks.chilled": "Calls, screen share, replies, reactions and typing dots come from {name}. Cheers, legends!",
+ "help.thanks.livekit": "Calls run on {name}, the open-source call server."
 }

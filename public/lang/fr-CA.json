@@ -4107,5 +4107,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Celui qui fait avancer le travail : il repère les cartes bloquées, relance les équipes et te rappelle ce qui attend. Dans AI-gile, le Lead Scrum Master le fait sur tous les projets.",
- "gloss.scrummaster.text.noai": "Celui qui fait avancer le travail : il repère les cartes bloquées et te rappelle ce qui attend. Sans IA, il fonctionne avec des commandes fixes, comme trier À faire."
+ "gloss.scrummaster.text.noai": "Celui qui fait avancer le travail : il repère les cartes bloquées et te rappelle ce qui attend. Sans IA, il fonctionne avec des commandes fixes, comme trier À faire.",
+ "gloss.count": {"one":"{count} mot","other":"{count} mots"},
+ "tour.firststeps.title": "Premiers pas",
+ "tour.firststeps.text": "Une courte liste pour démarrer : créer un projet, ajouter une carte, inviter un ami. Chaque étape se coche toute seule quand tu la fais. Masque-la une fois que tu as tes repères.",
+ "tour.firststeps.short": "Quelques premières choses à faire. Elles se cochent toutes seules.",
+ "tour.firststeps.why": "Faire chaque étape une fois, c'est le moyen le plus rapide d'apprendre le tableau.",
+ "tour.help.title": "De l'aide quand tu en as besoin",
+ "tour.help.text": "❓ Aide propose Premiers pas, cette visite à nouveau et le 📖 glossaire, qui explique les mots de développeur en langage simple. Crée un projet ou ouvre une carte pour démarrer.",
+ "tour.help.short": "❓ Aide : Premiers pas, la visite à nouveau et le 📖 glossaire.",
+ "tour.chat.text.noai": "Discute ici avec tes amis. Ouvre la discussion d'un ami pour l'appeler, avec vidéo et partage d'écran.",
+ "tour.chat.short.noai": "Discussions avec tes amis. Appelle-en un depuis sa discussion.",
+ "tour.chat.why.noai": "Discute des choses juste à côté du travail, sans autre appli.",
+ "lkcall.credit": "Appels propulsés par {name} 💙",
+ "help.m.thanks": "💙 Remerciements",
+ "help.thanks.h": "💙 Remerciements",
+ "help.thanks.chilled": "Les appels, le partage d'écran, les réponses, les réactions et les points de saisie viennent de {name}. Merci !",
+ "help.thanks.livekit": "Les appels tournent sur {name}, le serveur d'appels open source."
 }

@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "スクラムマスター",
  "gloss.scrummaster.also": "リードスクラムマスター,Scrum Master",
  "gloss.scrummaster.text": "作業の流れを保つ人です。止まっているカードを見つけ、チームに声をかけ、あなたを待っているものを知らせます。AI-gile では、リードスクラムマスターがすべてのプロジェクトでこれを行います。",
- "gloss.scrummaster.text.noai": "作業の流れを保つ人です。止まっているカードを見つけ、あなたを待っているものを知らせます。AI なしでは、「やること」の並べ替えのような決まったコマンドで動きます。"
+ "gloss.scrummaster.text.noai": "作業の流れを保つ人です。止まっているカードを見つけ、あなたを待っているものを知らせます。AI なしでは、「やること」の並べ替えのような決まったコマンドで動きます。",
+ "gloss.count": {"one":"{count}語","other":"{count}語"},
+ "tour.firststeps.title": "最初のステップ",
+ "tour.firststeps.text": "始めるための短いリストです。プロジェクトを作る、カードを追加する、友だちを招待する。やると自動でチェックが付きます。使い方がわかったら隠しましょう。",
+ "tour.firststeps.short": "最初にやることがいくつか。自動でチェックが付きます。",
+ "tour.firststeps.why": "それぞれ一度やってみるのが、ボードを覚えるいちばんの近道です。",
+ "tour.help.title": "困ったときはヘルプ",
+ "tour.help.text": "❓ ヘルプには「はじめに」、このツアーのやり直し、開発用語をやさしく解説する📖 用語集があります。まずはプロジェクトを作るか、カードを追加しましょう。",
+ "tour.help.short": "❓ ヘルプ：はじめに、ツアーのやり直し、📖 用語集。",
+ "tour.chat.text.noai": "ここで友だちとチャットできます。友だちのチャットを開けば、ビデオや画面共有つきで通話できます。",
+ "tour.chat.short.noai": "友だちとのチャット。チャットから通話できます。",
+ "tour.chat.why.noai": "ほかのアプリを使わず、作業のすぐ横で話し合えます。",
+ "lkcall.credit": "通話は{name}で作られています 💙",
+ "help.m.thanks": "💙 謝辞",
+ "help.thanks.h": "💙 謝辞",
+ "help.thanks.chilled": "通話、画面共有、返信、リアクション、入力中の点は{name}のおかげです。ありがとうございます！",
+ "help.thanks.livekit": "通話はオープンソースの通話サーバー{name}で動いています。"
 }

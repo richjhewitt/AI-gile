@@ -6,7 +6,7 @@
  "lang.search": "Chercher une langue",
  "lang.none": "Aucune langue ne correspond",
  "lang.notYet": "{name} n'est pas encore traduit",
- "theme.aria": "Passer du thème clair au thème sombre",
+ "theme.aria": "Changer de thème : clair, sombre ou noir",
  "theme.toLight": "Passer au thème clair",
  "theme.toDark": "Passer au thème sombre",
  "words.underline": "Souligner ces mots sur la page",
@@ -143,5 +143,7 @@
  "live.offline": "Le tableau en direct fait une petite pause. Revenez bientôt.",
  "live.cols": "Backlog|À faire|En cours|L'équipe vérifie|À tester par toi|Pour l'équipe|Terminé",
  "f.service.h": "D’une idée à un vrai service",
- "f.service.p": "Tu as construit avec l’IA quelque chose que des gens utilisent maintenant ? Marque-le comme service et le tableau t’aide à bien le faire tourner : contrôles de disponibilité, page d’état publique, incidents avec un compte rendu, changements qui demandent un Go, sauvegardes vérifiées chaque jour. L’aide t’explique chaque étape au fur et à mesure."
+ "f.service.p": "Tu as construit avec l’IA quelque chose que des gens utilisent maintenant ? Marque-le comme service et le tableau t’aide à bien le faire tourner : contrôles de disponibilité, page d’état publique, incidents avec un compte rendu, changements qui demandent un Go, sauvegardes vérifiées chaque jour. L’aide t’explique chaque étape au fur et à mesure.",
+ "theme.toBlack": "Passer au thème noir (vrai noir, doux pour les écrans OLED)",
+ "footer.thanks": "Appels grâce à ChilledChat"
 }

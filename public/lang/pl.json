@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Ktoś, kto dba o płynność pracy: wyłapuje utknięte karty, popędza zespoły i przypomina Ci, co czeka. W AI-gile Lead Scrum Master robi to we wszystkich projektach.",
- "gloss.scrummaster.text.noai": "Ktoś, kto dba o płynność pracy: wyłapuje utknięte karty i przypomina Ci, co czeka. Bez AI działa na stałych poleceniach, na przykład porządkuje Do zrobienia."
+ "gloss.scrummaster.text.noai": "Ktoś, kto dba o płynność pracy: wyłapuje utknięte karty i przypomina Ci, co czeka. Bez AI działa na stałych poleceniach, na przykład porządkuje Do zrobienia.",
+ "gloss.count": {"one":"{count} słowo","other":"Słów: {count}"},
+ "tour.firststeps.title": "Pierwsze kroki",
+ "tour.firststeps.text": "Krótka lista na start: utwórz projekt, dodaj kartę, zaproś znajomego. Każdy punkt odhacza się sam, gdy go zrobisz. Ukryj ją, gdy już się połapiesz.",
+ "tour.firststeps.short": "Kilka rzeczy na początek. Odhaczają się same.",
+ "tour.firststeps.why": "Zrobienie każdej z nich raz to najszybszy sposób, by poznać tablicę.",
+ "tour.help.title": "Pomoc, gdy jej potrzebujesz",
+ "tour.help.text": "❓ W Pomocy znajdziesz Pierwsze kroki, to zwiedzanie od nowa i 📖 słowniczek, który prostym językiem wyjaśnia słowa programistów. Utwórz projekt albo dodaj kartę, żeby zacząć.",
+ "tour.help.short": "❓ Pomoc: Pierwsze kroki, zwiedzanie od nowa i 📖 słowniczek.",
+ "tour.chat.text.noai": "Tu rozmawiasz ze znajomymi. Otwórz czat znajomego, żeby do niego zadzwonić, z wideo i udostępnianiem ekranu.",
+ "tour.chat.short.noai": "Czaty ze znajomymi. Zadzwoń z ich czatu.",
+ "tour.chat.why.noai": "Omawiajcie sprawy tuż obok pracy, bez żadnej innej aplikacji.",
+ "lkcall.credit": "Rozmowy zbudowane na {name} 💙",
+ "help.m.thanks": "💙 Podziękowania",
+ "help.thanks.h": "💙 Podziękowania",
+ "help.thanks.chilled": "Rozmowy, udostępnianie ekranu, odpowiedzi, reakcje i kropki pisania pochodzą z {name}. Dziękujemy!",
+ "help.thanks.livekit": "Rozmowy działają na {name}, otwartoźródłowym serwerze połączeń."
 }

@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Chief Scrum Master,Lead Scrum Master",
  "gloss.scrummaster.text": "The one who keepeth the work aflow: spieth stuck cards, nudgeth the teams and remindeth thee what awaiteth. In AI-gile the Chief Scrum Master doth this across every project.",
- "gloss.scrummaster.text.noai": "The one who keepeth the work aflow: spieth stuck cards and remindeth thee what awaiteth. Without AI it worketh by fixed commands, as the sorting of To be done."
+ "gloss.scrummaster.text.noai": "The one who keepeth the work aflow: spieth stuck cards and remindeth thee what awaiteth. Without AI it worketh by fixed commands, as the sorting of To be done.",
+ "gloss.count": {"one":"{count} word","other":"{count} words"},
+ "tour.firststeps.title": "First steps",
+ "tour.firststeps.text": "A short list to set thee going: make a project, add a card, invite a friend. Each one marketh itself done when thou dost it. Hide it once thou knowest thy way.",
+ "tour.firststeps.short": "A few first deeds to do. They mark themselves done.",
+ "tour.firststeps.why": "To do each one but once is the swiftest way to learn the board.",
+ "tour.help.title": "Help when thou needest it",
+ "tour.help.text": "❓ Help hath Beginning, this tour anew and the 📖 glossary, which maketh developer words plain. Make a project or raise a card to set thee going.",
+ "tour.help.short": "❓ Help: Beginning, the tour anew and the 📖 glossary.",
+ "tour.chat.text.noai": "Converse with thy friends here. Open a friend’s chat to call them, with video and screen shewing.",
+ "tour.chat.short.noai": "Chats with friends. Call one from their chat.",
+ "tour.chat.why.noai": "Talk things over hard by the work, with no other app.",
+ "lkcall.credit": "Calls built upon {name} 💙",
+ "help.m.thanks": "💙 Gramercy",
+ "help.thanks.h": "💙 Gramercy",
+ "help.thanks.chilled": "Calls, screen shewing, replies, reactions and typing dots come from {name}. Gramercy!",
+ "help.thanks.livekit": "Calls run upon {name}, the open-source call server."
 }

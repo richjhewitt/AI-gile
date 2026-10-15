@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Onaj tko održava tok rada: uočava zapele kartice, potiče timove i podsjeća te što čeka. U AI-gileu to radi Lead Scrum Master na svim projektima.",
- "gloss.scrummaster.text.noai": "Onaj tko održava tok rada: uočava zapele kartice i podsjeća te što čeka. Bez AI-ja radi s fiksnim naredbama, poput sortiranja stupca Na redu."
+ "gloss.scrummaster.text.noai": "Onaj tko održava tok rada: uočava zapele kartice i podsjeća te što čeka. Bez AI-ja radi s fiksnim naredbama, poput sortiranja stupca Na redu.",
+ "gloss.count": {"one":"{count} riječ","other":"{count} riječi"},
+ "tour.firststeps.title": "Prvi koraci",
+ "tour.firststeps.text": "Kratak popis za početak: napravi projekt, dodaj karticu, pozovi prijatelja. Svaka se stavka sama označi kad je napraviš. Sakrij ga kad se snađeš.",
+ "tour.firststeps.short": "Nekoliko prvih koraka. Sami se označe.",
+ "tour.firststeps.why": "Napraviti svaki korak jednom najbrži je način da upoznaš ploču.",
+ "tour.help.title": "Pomoć kad ti zatreba",
+ "tour.help.text": "❓ U Pomoći su Kako početi, ovaj obilazak ponovno i 📖 rječnik, koji razvojne pojmove objašnjava jednostavnim riječima. Napravi projekt ili dodaj karticu za početak.",
+ "tour.help.short": "❓ Pomoć: Kako početi, obilazak ponovno i 📖 rječnik.",
+ "tour.chat.text.noai": "Ovdje razgovaraj s prijateljima. Otvori razgovor s prijateljem da ga nazoveš, uz video i dijeljenje ekrana.",
+ "tour.chat.short.noai": "Razgovori s prijateljima. Nazovi nekoga iz vašeg razgovora.",
+ "tour.chat.why.noai": "Dogovarajte se odmah uz posao, bez druge aplikacije.",
+ "lkcall.credit": "Pozivi izgrađeni na {name} 💙",
+ "help.m.thanks": "💙 Zahvale",
+ "help.thanks.h": "💙 Zahvale",
+ "help.thanks.chilled": "Pozivi, dijeljenje ekrana, odgovori, reakcije i točkice tipkanja dolaze iz {name}. Hvala!",
+ "help.thanks.livekit": "Pozivi rade na {name}, poslužitelju za pozive otvorenog koda."
 }

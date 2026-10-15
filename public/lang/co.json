@@ -4118,5 +4118,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Quellu chì face scorre u travagliu: vede e carte bluccate, spinghje e squadre è ti ramenta ciò chì aspetta. In AI-gile u Lead Scrum Master face què per tutti i prughjetti.",
- "gloss.scrummaster.text.noai": "Quellu chì face scorre u travagliu: vede e carte bluccate è ti ramenta ciò chì aspetta. Senza IA funziona cù cumandamenti fissi, cum'è urdinà À fà."
+ "gloss.scrummaster.text.noai": "Quellu chì face scorre u travagliu: vede e carte bluccate è ti ramenta ciò chì aspetta. Senza IA funziona cù cumandamenti fissi, cum'è urdinà À fà.",
+ "gloss.count": {"one":"{count} parolla","other":"{count} parolle"},
+ "tour.firststeps.title": "Primi passi",
+ "tour.firststeps.text": "Una lista corta per principià: fà un prughjettu, aghjunghje una scheda, invità un amicu. Ognunu si marca da per ellu quandu u faci. Piattala quandu cunnosci a strada.",
+ "tour.firststeps.short": "Uni pochi di primi passi. Si marcanu da per elli.",
+ "tour.firststeps.why": "Fà ognunu una volta hè u modu più prestu d'amparà a tavula.",
+ "tour.help.title": "Aiutu quandu ti ci vole",
+ "tour.help.text": "In ❓ Aiutu ci hè Per principià, sta visita torna è u 📖 glussariu, chì spiega e parolle di sviluppatore in lingua sèmplice. Fà un prughjettu o apre una scheda per principià.",
+ "tour.help.short": "❓ Aiutu: Per principià, a visita torna è u 📖 glussariu.",
+ "tour.chat.text.noai": "Cunversa quì cù i to amichi. Apre a chat d'un amicu per chjamallu, cù video è cundivisione di schermu.",
+ "tour.chat.short.noai": "Chat cù l'amichi. Chjamane unu da a so chat.",
+ "tour.chat.why.noai": "Discorri di e cose ghjustu accantu à u travagliu, senza altra app.",
+ "lkcall.credit": "Chjame custruite nant'à {name} 💙",
+ "help.m.thanks": "💙 Grazie",
+ "help.thanks.h": "💙 Grazie",
+ "help.thanks.chilled": "E chjame, a cundivisione di schermu, e risposte, e reazzione è i punti di scrittura venenu da {name}. Grazie!",
+ "help.thanks.livekit": "E chjame giranu nant'à {name}, u servitore di chjame open source."
 }

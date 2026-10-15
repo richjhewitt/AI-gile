@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Ko e tokotaha ʻoku ne tauhi ke hoko atu ʻa e ngāue: ʻoku ne sio ki he ngaahi kaati kuo piki, ʻoku ne fakaloto lahi ʻa e ngaahi timi pea fakamanatu atu kiate koe ʻa e meʻa ʻoku tatali. ʻI he AI-gile ʻoku fai ʻeni ʻe he Lead Scrum Master ʻi he poloseki kotoa pē.",
- "gloss.scrummaster.text.noai": "Ko e tokotaha ʻoku ne tauhi ke hoko atu ʻa e ngāue: ʻoku ne sio ki he ngaahi kaati kuo piki pea fakamanatu atu kiate koe ʻa e meʻa ʻoku tatali. ʻO ʻikai ha AI ʻoku ngāue ʻaki ʻa e ngaahi fekau paú, hangē ko hono fokotuʻutuʻu ʻa e Ke fai."
+ "gloss.scrummaster.text.noai": "Ko e tokotaha ʻoku ne tauhi ke hoko atu ʻa e ngāue: ʻoku ne sio ki he ngaahi kaati kuo piki pea fakamanatu atu kiate koe ʻa e meʻa ʻoku tatali. ʻO ʻikai ha AI ʻoku ngāue ʻaki ʻa e ngaahi fekau paú, hangē ko hono fokotuʻutuʻu ʻa e Ke fai.",
+ "gloss.count": {"one":"foʻi lea ʻe {count}","other":"foʻi lea ʻe {count}"},
+ "tour.firststeps.title": "ʻUluaki ngaahi sitepu",
+ "tour.firststeps.text": "Ko ha lisi nounou ke kamata ai: ngaohi ha poloseki, tānaki ha kaati, fakaafeʻi ha kaumeʻa. ʻE fakaʻilongaʻi pē ia ʻi hoʻo fai ia. Fufū ia ʻi hoʻo ʻilo ho hala.",
+ "tour.firststeps.short": "Ko ha ngaahi meʻa siʻi ke fai ʻuluaki. ʻOku nau fakaʻilongaʻi pē kinautolu.",
+ "tour.firststeps.why": "Ko hono fai tuʻo taha ʻo e meʻa takitaha ko e founga vave taha ia ke ako ai e laupapa.",
+ "tour.help.title": "Tokoni ʻi hoʻo fiemaʻu",
+ "tour.help.text": "❓ ʻOku ʻi he Tokoni ʻa e Kamata, ko e takai ni ke toe fai, mo e 📖 fakahinohino, ʻa ia ʻoku ne fakamatalaʻi ʻa e ngaahi lea polokalama ʻi ha lea faingofua. Ngaohi ha poloseki pe tānaki ha kaati ke kamata ai.",
+ "tour.help.short": "❓ Tokoni: Kamata, toe fai e takai mo e 📖 fakahinohino.",
+ "tour.chat.text.noai": "Talanoa mo ho ngaahi kaumeʻa heni. Fakaava e talanoa ʻa ha kaumeʻa ke ke ui ai kiate ia, mo e vitiō mo e vahevahe sikilini.",
+ "tour.chat.short.noai": "Ngaahi talanoa mo e kaumeʻa. Ui ki ha taha mei heʻene talanoa.",
+ "tour.chat.why.noai": "Talanoaʻi e ngaahi meʻa ʻi he tafaʻaki pē ʻo e ngāue, ʻikai ha toe polokalama kehe.",
+ "lkcall.credit": "Ko e ngaahi fetuʻutaki kuo langa ʻi he {name} 💙",
+ "help.m.thanks": "💙 Mālō",
+ "help.thanks.h": "💙 Mālō",
+ "help.thanks.chilled": "Ko e ngaahi fetuʻutaki, vahevahe sikilini, tali, ngaahi fakahā ongo mo e ngaahi toti tohi ʻoku haʻu mei he {name}. Mālō ʻaupito!",
+ "help.thanks.livekit": "ʻOku lele ʻa e ngaahi fetuʻutaki ʻi he {name}, ko e sēvea fetuʻutaki ʻoku ʻatā hono maʻuʻanga."
 }

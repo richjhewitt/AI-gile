@@ -4117,5 +4117,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Quem mantém o trabalho andando: percebe cartões travados, dá um empurrão nas equipes e lembra você do que está esperando. No AI-gile, o Lead Scrum Master faz isso em todos os projetos.",
- "gloss.scrummaster.text.noai": "Quem mantém o trabalho andando: percebe cartões travados e lembra você do que está esperando. Sem IA, funciona com comandos fixos, como organizar o A fazer."
+ "gloss.scrummaster.text.noai": "Quem mantém o trabalho andando: percebe cartões travados e lembra você do que está esperando. Sem IA, funciona com comandos fixos, como organizar o A fazer.",
+ "gloss.count": {"one":"{count} palavra","other":"{count} palavras"},
+ "tour.firststeps.title": "Primeiros passos",
+ "tour.firststeps.text": "Uma listinha para começar: crie um projeto, adicione um card, convide um amigo. Cada item se marca sozinho quando você o faz. Oculte a lista quando já souber se virar.",
+ "tour.firststeps.short": "Algumas primeiras coisas para fazer. Elas se marcam sozinhas.",
+ "tour.firststeps.why": "Fazer cada uma delas uma vez é o jeito mais rápido de aprender o quadro.",
+ "tour.help.title": "Ajuda quando você precisar",
+ "tour.help.text": "❓ A Ajuda tem Primeiros passos, este tour de novo e o 📖 glossário, que explica termos de programação em linguagem simples. Crie um projeto ou abra um card para começar.",
+ "tour.help.short": "❓ Ajuda: Primeiros passos, o tour de novo e o 📖 glossário.",
+ "tour.chat.text.noai": "Converse com seus amigos aqui. Abra a conversa de um amigo para ligar para ele, com vídeo e compartilhamento de tela.",
+ "tour.chat.short.noai": "Conversas com amigos. Ligue para um amigo pela conversa dele.",
+ "tour.chat.why.noai": "Converse sobre as coisas bem ao lado do trabalho, sem outro app.",
+ "lkcall.credit": "Chamadas feitas com {name} 💙",
+ "help.m.thanks": "💙 Agradecimentos",
+ "help.thanks.h": "💙 Agradecimentos",
+ "help.thanks.chilled": "Chamadas, compartilhamento de tela, respostas, reações e os pontinhos de digitação vêm do {name}. Obrigado!",
+ "help.thanks.livekit": "As chamadas rodam no {name}, o servidor de chamadas de código aberto."
 }

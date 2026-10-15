@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Leeideilagh Scrum Mainshter,Lead Scrum Master",
  "gloss.scrummaster.text": "Yn fer ta freayll yn obbyr roie: t’eh fakin carteyn lhiantyn, greinnaghey ny possanyn as cur ayns cooinaghtyn dhyt cre ta fieau. Ayns AI-gile, ta’n Leeideilagh Scrum Mainshter jannoo shoh ayns dy chooilley phryjeck.",
- "gloss.scrummaster.text.noai": "Yn fer ta freayll yn obbyr roie: t’eh fakin carteyn lhiantyn as cur ayns cooinaghtyn dhyt cre ta fieau. Fegooish AI t’eh gobbraghey lesh saraghyn kiartit, myr reaghey Dy yannoo."
+ "gloss.scrummaster.text.noai": "Yn fer ta freayll yn obbyr roie: t’eh fakin carteyn lhiantyn as cur ayns cooinaghtyn dhyt cre ta fieau. Fegooish AI t’eh gobbraghey lesh saraghyn kiartit, myr reaghey Dy yannoo.",
+ "gloss.count": {"one":"{count} goo","other":"{count} goan"},
+ "tour.firststeps.title": "Ny chied kesmadyn",
+ "tour.firststeps.text": "Rolley giare dy gholl er: jean pryjeck, cur cart stiagh, cuir cuirrey da carrey. Ta dagh fer cowrit eh hene tra t'ou dy yannoo eh. Follee eh tra t'ou toiggal dty raad.",
+ "tour.firststeps.short": "Kuse dy reddyn dy yannoo hoshiaght. T'ad cowrit ad hene.",
+ "tour.firststeps.why": "Dy yannoo dagh fer un cheayrt, shen yn aght s'tappee dy ynsaghey yn boayrd.",
+ "tour.help.title": "Cooney tra t'eh feme ort",
+ "tour.help.text": "❓ Ayns Cooney ta Goaill toshiaght, yn turrys shoh reesht as y 📖 ghoan-lioar, ta mynney goan y ymmydeyryn ayns Gaelg aashagh. Jean pryjeck ny cur cart stiagh dy gholl er.",
+ "tour.help.short": "❓ Cooney: Goaill toshiaght, yn turrys reesht as y 📖 ghoan-lioar.",
+ "tour.chat.text.noai": "Loayr rish dty chaarjyn ayns shoh. Foshil taggloo carrey dy eam er, lesh feeshan as rannee screen.",
+ "tour.chat.short.noai": "Taggloo lesh caarjyn. Eam er fer veih e haggloo.",
+ "tour.chat.why.noai": "Loayr mychione reddyn ec cheu yn obbyr, gyn app elley.",
+ "lkcall.credit": "Eamyn troggit er {name} 💙",
+ "help.m.thanks": "💙 Gura mie ayd",
+ "help.thanks.h": "💙 Gura mie ayd",
+ "help.thanks.chilled": "Ta eamyn, rannee screen, ansoorynyn, freggyrtyn as pongyn screeuee cheet veih {name}. Gura mie ayd!",
+ "help.thanks.livekit": "Ta eamyn roie er {name}, yn sharvaalagh eamyn foshlit."
 }

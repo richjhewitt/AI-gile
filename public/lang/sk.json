@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master,hlavný Scrum Master",
  "gloss.scrummaster.text": "Ten, kto drží prácu v pohybe: všimne si zaseknuté karty, postrčí tímy a pripomenie ti, čo čaká. V AI-gile to Lead Scrum Master robí naprieč všetkými projektmi.",
- "gloss.scrummaster.text.noai": "Ten, kto drží prácu v pohybe: všimne si zaseknuté karty a pripomenie ti, čo čaká. Bez AI to funguje s pevnými príkazmi, napríklad triedením stĺpca Na urobenie."
+ "gloss.scrummaster.text.noai": "Ten, kto drží prácu v pohybe: všimne si zaseknuté karty a pripomenie ti, čo čaká. Bez AI to funguje s pevnými príkazmi, napríklad triedením stĺpca Na urobenie.",
+ "gloss.count": {"one":"{count} slovo","other":"{count} slov"},
+ "tour.firststeps.title": "Prvé kroky",
+ "tour.firststeps.text": "Krátky zoznam na rozbeh: vytvor projekt, pridaj kartu, pozvi kamaráta. Každý krok sa odškrtne sám, keď ho urobíš. Keď sa už vyznáš, skry ho.",
+ "tour.firststeps.short": "Pár vecí na začiatok. Odškrtnú sa samy.",
+ "tour.firststeps.why": "Urobiť každú z nich raz je najrýchlejší spôsob, ako sa naučiť tabuľu.",
+ "tour.help.title": "Pomoc, keď ju potrebuješ",
+ "tour.help.text": "❓ Pomoc obsahuje Začíname, túto prehliadku znova a 📖 slovník, ktorý jednoducho vysvetľuje vývojárske slová. Na rozbeh vytvor projekt alebo pridaj kartu.",
+ "tour.help.short": "❓ Pomoc: Začíname, prehliadka znova a 📖 slovník.",
+ "tour.chat.text.noai": "Tu si píš s kamarátmi. Otvor chat s kamarátom a zavolaj mu, s videom aj zdieľaním obrazovky.",
+ "tour.chat.short.noai": "Chaty s kamarátmi. Zavolaj priamo z chatu.",
+ "tour.chat.why.noai": "Preberte veci priamo pri práci, bez ďalšej aplikácie.",
+ "lkcall.credit": "Hovory postavené na {name} 💙",
+ "help.m.thanks": "💙 Poďakovanie",
+ "help.thanks.h": "💙 Poďakovanie",
+ "help.thanks.chilled": "Hovory, zdieľanie obrazovky, odpovede, reakcie a bodky pri písaní pochádzajú z {name}. Ďakujeme!",
+ "help.thanks.livekit": "Hovory bežia na {name}, open-source serveri pre hovory."
 }

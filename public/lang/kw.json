@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Penn Scrum Master,Lead Scrum Master",
  "gloss.scrummaster.text": "An den a with an ober ow resek: ev a verk kardys sygys, a bok an bagasow hag a'th perth kov a'n pyth ow kortos. Yn AI-gile an Penn Scrum Master a wra henna dres pub towl.",
- "gloss.scrummaster.text.noai": "An den a with an ober ow resek: ev a verk kardys sygys hag a'th perth kov a'n pyth ow kortos. Heb AI y ober gans gorhemmynnow fast, avel restra Dhe wul."
+ "gloss.scrummaster.text.noai": "An den a with an ober ow resek: ev a verk kardys sygys hag a'th perth kov a'n pyth ow kortos. Heb AI y ober gans gorhemmynnow fast, avel restra Dhe wul.",
+ "gloss.count": {"one":"{count} ger","other":"{count} geryow"},
+ "tour.firststeps.title": "An kynsa kammow",
+ "tour.firststeps.text": "Rol berr rag dalleth: gwra towl, keworr karten, gelwel koweth. Pub onan a vydh merkys y honan pan y'n gwrylli. Kudh e pan wodhes dha fordh.",
+ "tour.firststeps.short": "Nebes taklow kynsa dhe wul. I a vydh merkys aga honan.",
+ "tour.firststeps.why": "Gul pub onan unwyth yw an fordh uskissa dhe dhyski an bord.",
+ "tour.help.title": "Gweres pan vo edhom",
+ "tour.help.text": "❓ Yn Gweres yma Dallath, an viaj ma arta ha'n 📖 geryador, a dhisplek geryow displegyer yn yeth sempel. Gwra towl po keworr karten rag dalleth.",
+ "tour.help.short": "❓ Gweres: Dallath, an viaj arta ha'n 📖 geryador.",
+ "tour.chat.text.noai": "Kescows gans dha gowetha omma. Igor kescows koweth rag y elwel, gans gwydhyow ha rannya skrin.",
+ "tour.chat.short.noai": "Kescowsow gans kowetha. Galw onan dhyworth y gescows.",
+ "tour.chat.why.noai": "Kewsewgh a daklow ryb an ober, heb app aral.",
+ "lkcall.credit": "Gelwansow drehevys war {name} 💙",
+ "help.m.thanks": "💙 Meur ras",
+ "help.thanks.h": "💙 Meur ras",
+ "help.thanks.chilled": "Gelwansow, rannya skrin, gorthebow, gwrythyansow ha'n poyntys skrifa a dheu dhyworth {name}. Meur ras!",
+ "help.thanks.livekit": "Gelwansow a res war {name}, an servyer gelwansow fenten-ygor."
 }

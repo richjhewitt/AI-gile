@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Ẹni tó ń mú kí iṣẹ́ máa lọ geere: ó ń rí àwọn káàdì tó há, ó ń rán àwọn ẹgbẹ́ létí, ó sì ń rán ọ létí ohun tó ń dúró. Nínú AI-gile, Lead Scrum Master ló ń ṣe èyí ní gbogbo iṣẹ́ àkànṣe.",
- "gloss.scrummaster.text.noai": "Ẹni tó ń mú kí iṣẹ́ máa lọ geere: ó ń rí àwọn káàdì tó há, ó sì ń rán ọ létí ohun tó ń dúró. Láìsí AI, ó ń ṣiṣẹ́ pẹ̀lú àwọn àṣẹ tí a ti ṣètò, bí títo Láti ṣe."
+ "gloss.scrummaster.text.noai": "Ẹni tó ń mú kí iṣẹ́ máa lọ geere: ó ń rí àwọn káàdì tó há, ó sì ń rán ọ létí ohun tó ń dúró. Láìsí AI, ó ń ṣiṣẹ́ pẹ̀lú àwọn àṣẹ tí a ti ṣètò, bí títo Láti ṣe.",
+ "gloss.count": {"one":"ọ̀rọ̀ {count}","other":"ọ̀rọ̀ {count}"},
+ "tour.firststeps.title": "Àwọn ìgbésẹ̀ àkọ́kọ́",
+ "tour.firststeps.text": "Àkójọ kúkúrú láti bẹ̀rẹ̀: ṣe iṣẹ́ àkànṣe kan, ṣàfikún káàdì kan, pe ọ̀rẹ́ kan. Ọ̀kọ̀ọ̀kan á fi àmì sí ara rẹ̀ nígbà tí o bá ṣe é. Fi pamọ́ nígbà tí o bá ti mọ ọ̀nà.",
+ "tour.firststeps.short": "Àwọn nǹkan díẹ̀ láti kọ́kọ́ ṣe. Wọ́n á fi àmì sí ara wọn.",
+ "tour.firststeps.why": "Ṣíṣe ọ̀kọ̀ọ̀kan lẹ́ẹ̀kan ni ọ̀nà tó yára jù láti kọ́ pátákó náà.",
+ "tour.help.title": "Ìrànlọ́wọ́ nígbà tí o bá nílò rẹ̀",
+ "tour.help.text": "❓ Ìrànlọ́wọ́ ní Bíbẹ̀rẹ̀, ìrìn àjò yìí lẹ́ẹ̀kan sí i àti 📖 ìwé ìtúmọ̀, tó ń ṣàlàyé àwọn ọ̀rọ̀ olùgbéjáde ní èdè tó rọrùn. Ṣe iṣẹ́ àkànṣe kan tàbí ṣàfikún káàdì kan láti bẹ̀rẹ̀.",
+ "tour.help.short": "❓ Ìrànlọ́wọ́: Bíbẹ̀rẹ̀, ìrìn àjò lẹ́ẹ̀kan sí i àti 📖 ìwé ìtúmọ̀.",
+ "tour.chat.text.noai": "Bá àwọn ọ̀rẹ́ rẹ sọ̀rọ̀ níbí. Ṣí ìjíròrò ọ̀rẹ́ kan láti pè é, pẹ̀lú fídíò àti pípín ìboju.",
+ "tour.chat.short.noai": "Ìjíròrò pẹ̀lú àwọn ọ̀rẹ́. Pe ẹnìkan láti inú ìjíròrò rẹ̀.",
+ "tour.chat.why.noai": "Ẹ jíròrò nǹkan lẹ́gbẹ̀ẹ́ iṣẹ́ gan-an, láìsí áàpù mìíràn.",
+ "lkcall.credit": "Àwọn ìpè tí a kọ́ lórí {name} 💙",
+ "help.m.thanks": "💙 Ọpẹ́",
+ "help.thanks.h": "💙 Ọpẹ́",
+ "help.thanks.chilled": "Àwọn ìpè, pípín ìboju, àwọn èsì, àwọn ìfèsì ìmọ̀lára àti àmì ìtẹ̀wé wá láti {name}. A dúpẹ́!",
+ "help.thanks.livekit": "Àwọn ìpè ń ṣiṣẹ́ lórí {name}, olupin ìpè orísun-ṣíṣí."
 }

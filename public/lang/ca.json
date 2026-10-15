@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Qui fa que la feina flueixi: detecta targetes encallades, empeny els equips i et recorda què està esperant. A AI-gile el Lead Scrum Master ho fa a tots els projectes.",
- "gloss.scrummaster.text.noai": "Qui fa que la feina flueixi: detecta targetes encallades i et recorda què està esperant. Sense IA funciona amb ordres fixes, com ordenar Per fer."
+ "gloss.scrummaster.text.noai": "Qui fa que la feina flueixi: detecta targetes encallades i et recorda què està esperant. Sense IA funciona amb ordres fixes, com ordenar Per fer.",
+ "gloss.count": {"one":"{count} paraula","other":"{count} paraules"},
+ "tour.firststeps.title": "Primers passos",
+ "tour.firststeps.text": "Una llista curta per començar: crea un projecte, afegeix una targeta, convida una amistat. Cada pas es marca sol quan el fas. Amaga-la quan ja t'hi moguis bé.",
+ "tour.firststeps.short": "Unes quantes coses per començar. Es marquen soles.",
+ "tour.firststeps.why": "Fer cada pas un cop és la manera més ràpida d'aprendre com funciona el tauler.",
+ "tour.help.title": "Ajuda quan la necessitis",
+ "tour.help.text": "A ❓ Ajuda hi ha Per començar, aquesta visita guiada un altre cop i el 📖 glossari, que explica les paraules de programació en llenguatge planer. Crea un projecte o obre una targeta per començar.",
+ "tour.help.short": "❓ Ajuda: Per començar, la visita guiada un altre cop i el 📖 glossari.",
+ "tour.chat.text.noai": "Xerra aquí amb les teves amistats. Obre el xat d'una amistat per trucar-li, amb vídeo i pantalla compartida.",
+ "tour.chat.short.noai": "Xats amb amistats. Truca-hi des del seu xat.",
+ "tour.chat.why.noai": "Parla de les coses just al costat de la feina, sense cap altra aplicació.",
+ "lkcall.credit": "Trucades fetes amb {name} 💙",
+ "help.m.thanks": "💙 Agraïments",
+ "help.thanks.h": "💙 Agraïments",
+ "help.thanks.chilled": "Les trucades, la pantalla compartida, les respostes, les reaccions i els punts d'escriptura vénen de {name}. Gràcies!",
+ "help.thanks.livekit": "Les trucades funcionen amb {name}, el servidor de trucades de codi obert."
 }

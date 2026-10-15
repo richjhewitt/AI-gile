@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master,skramo meistras",
  "gloss.scrummaster.text": "Tas, kuris palaiko darbo tėkmę: pastebi užstrigusias korteles, paragina komandas ir primena tau, kas laukia. AI-gile tai visuose projektuose daro Lead Scrum Master.",
- "gloss.scrummaster.text.noai": "Tas, kuris palaiko darbo tėkmę: pastebi užstrigusias korteles ir primena tau, kas laukia. Be AI jis veikia pagal nustatytas komandas, pavyzdžiui, rūšiuoja „Reikia padaryti“."
+ "gloss.scrummaster.text.noai": "Tas, kuris palaiko darbo tėkmę: pastebi užstrigusias korteles ir primena tau, kas laukia. Be AI jis veikia pagal nustatytas komandas, pavyzdžiui, rūšiuoja „Reikia padaryti“.",
+ "gloss.count": {"one":"{count} žodis","other":"Žodžių: {count}"},
+ "tour.firststeps.title": "Pirmieji žingsniai",
+ "tour.firststeps.text": "Trumpas sąrašas pradžiai: sukurk projektą, pridėk kortelę, pakviesk draugą. Kiekvienas punktas pasižymi pats, kai jį atlieki. Paslėpk sąrašą, kai jau susigaudysi.",
+ "tour.firststeps.short": "Keli pirmieji darbai. Jie pasižymi patys.",
+ "tour.firststeps.why": "Atlikti kiekvieną po kartą – greičiausias būdas perprasti lentą.",
+ "tour.help.title": "Pagalba, kai jos reikia",
+ "tour.help.text": "❓ Pagalboje rasi Pradžią, šią pažintį iš naujo ir 📖 žodynėlį, kuris paprasta kalba paaiškina programuotojų žodžius. Sukurk projektą arba pridėk kortelę ir pradėk.",
+ "tour.help.short": "❓ Pagalba: Pradžia, pažintis iš naujo ir 📖 žodynėlis.",
+ "tour.chat.text.noai": "Čia kalbėkis su draugais. Atidaryk draugo pokalbį ir paskambink jam, su vaizdu ir ekrano bendrinimu.",
+ "tour.chat.short.noai": "Pokalbiai su draugais. Paskambink iš draugo pokalbio.",
+ "tour.chat.why.noai": "Aptarkite reikalus šalia pat darbo, be jokios kitos programėlės.",
+ "lkcall.credit": "Skambučiai sukurti naudojant {name} 💙",
+ "help.m.thanks": "💙 Ačiū",
+ "help.thanks.h": "💙 Ačiū",
+ "help.thanks.chilled": "Skambučiai, ekrano bendrinimas, atsakymai, reakcijos ir rašymo taškeliai – iš {name}. Ačiū!",
+ "help.thanks.livekit": "Skambučiai veikia per {name} – atvirojo kodo skambučių serverį."
 }

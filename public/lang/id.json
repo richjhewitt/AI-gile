@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Orang yang menjaga pekerjaan tetap mengalir: melihat kartu yang macet, mendorong tim, dan mengingatkanmu apa yang sedang menunggu. Di AI-gile, Lead Scrum Master melakukan ini di semua proyek.",
- "gloss.scrummaster.text.noai": "Orang yang menjaga pekerjaan tetap mengalir: melihat kartu yang macet dan mengingatkanmu apa yang sedang menunggu. Tanpa AI, ini bekerja dengan perintah tetap, seperti mengurutkan Akan dikerjakan."
+ "gloss.scrummaster.text.noai": "Orang yang menjaga pekerjaan tetap mengalir: melihat kartu yang macet dan mengingatkanmu apa yang sedang menunggu. Tanpa AI, ini bekerja dengan perintah tetap, seperti mengurutkan Akan dikerjakan.",
+ "gloss.count": {"one":"{count} istilah","other":"{count} istilah"},
+ "tour.firststeps.title": "Langkah pertama",
+ "tour.firststeps.text": "Daftar singkat untuk memulai: buat proyek, tambahkan kartu, undang teman. Masing-masing tercentang sendiri saat kamu melakukannya. Sembunyikan kalau kamu sudah paham jalannya.",
+ "tour.firststeps.short": "Beberapa hal pertama untuk dilakukan. Semuanya tercentang sendiri.",
+ "tour.firststeps.why": "Melakukan masing-masing sekali adalah cara tercepat mengenal papan.",
+ "tour.help.title": "Bantuan saat kamu butuh",
+ "tour.help.text": "❓ Bantuan berisi Memulai, tur ini lagi, dan 📖 glosarium, yang menjelaskan istilah developer dengan bahasa sederhana. Buat proyek atau tambahkan kartu untuk memulai.",
+ "tour.help.short": "❓ Bantuan: Memulai, tur lagi, dan 📖 glosarium.",
+ "tour.chat.text.noai": "Mengobrol dengan teman-temanmu di sini. Buka obrolan teman untuk meneleponnya, dengan video dan berbagi layar.",
+ "tour.chat.short.noai": "Obrolan dengan teman. Telepon mereka dari obrolannya.",
+ "tour.chat.why.noai": "Bahas semuanya langsung di samping pekerjaan, tanpa aplikasi lain.",
+ "lkcall.credit": "Panggilan dibangun di atas {name} 💙",
+ "help.m.thanks": "💙 Terima kasih",
+ "help.thanks.h": "💙 Terima kasih",
+ "help.thanks.chilled": "Panggilan, berbagi layar, balasan, reaksi, dan titik-titik mengetik berasal dari {name}. Terima kasih!",
+ "help.thanks.livekit": "Panggilan berjalan di {name}, server panggilan open-source."
 }

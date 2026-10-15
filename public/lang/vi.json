@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Người giữ cho công việc trôi chảy: phát hiện thẻ bị kẹt, nhắc các nhóm và nhắc bạn những gì đang chờ. Trong AI-gile, Lead Scrum Master làm việc này cho mọi dự án.",
- "gloss.scrummaster.text.noai": "Người giữ cho công việc trôi chảy: phát hiện thẻ bị kẹt và nhắc bạn những gì đang chờ. Khi không có AI, nó làm việc bằng các lệnh cố định, như sắp xếp Cần làm."
+ "gloss.scrummaster.text.noai": "Người giữ cho công việc trôi chảy: phát hiện thẻ bị kẹt và nhắc bạn những gì đang chờ. Khi không có AI, nó làm việc bằng các lệnh cố định, như sắp xếp Cần làm.",
+ "gloss.count": {"one":"{count} từ","other":"{count} từ"},
+ "tour.firststeps.title": "Những bước đầu tiên",
+ "tour.firststeps.text": "Một danh sách ngắn để bắt đầu: tạo một dự án, thêm một thẻ, mời một người bạn. Mỗi mục tự đánh dấu khi bạn làm xong. Ẩn nó đi khi bạn đã quen.",
+ "tour.firststeps.short": "Vài việc nên làm đầu tiên. Chúng tự đánh dấu.",
+ "tour.firststeps.why": "Làm mỗi việc một lần là cách nhanh nhất để làm quen với bảng.",
+ "tour.help.title": "Trợ giúp khi bạn cần",
+ "tour.help.text": "❓ Trợ giúp có Bắt đầu, xem lại chuyến tham quan này và 📖 bảng thuật ngữ, giải thích từ lập trình bằng ngôn ngữ dễ hiểu. Tạo một dự án hoặc thêm một thẻ để bắt đầu.",
+ "tour.help.short": "❓ Trợ giúp: Bắt đầu, xem lại chuyến tham quan và 📖 bảng thuật ngữ.",
+ "tour.chat.text.noai": "Trò chuyện với bạn bè tại đây. Mở cuộc trò chuyện của một người bạn để gọi họ, có video và chia sẻ màn hình.",
+ "tour.chat.short.noai": "Trò chuyện với bạn bè. Gọi ngay từ cuộc trò chuyện.",
+ "tour.chat.why.noai": "Bàn bạc ngay cạnh công việc, không cần ứng dụng khác.",
+ "lkcall.credit": "Cuộc gọi được xây dựng trên {name} 💙",
+ "help.m.thanks": "💙 Lời cảm ơn",
+ "help.thanks.h": "💙 Lời cảm ơn",
+ "help.thanks.chilled": "Cuộc gọi, chia sẻ màn hình, trả lời, biểu cảm và dấu chấm đang gõ đến từ {name}. Cảm ơn!",
+ "help.thanks.livekit": "Cuộc gọi chạy trên {name}, máy chủ gọi mã nguồn mở."
 }

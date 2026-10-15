@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master,skram-master",
  "gloss.scrummaster.text": "Ish toʻxtamay borishini kuzatadigan kishi: tiqilib qolgan kartalarni koʻradi, jamoalarni turtib qoʻyadi va sizga nima kutayotganini eslatadi. AI-gile’da buni Lead Scrum Master har bir loyihada qiladi.",
- "gloss.scrummaster.text.noai": "Ish toʻxtamay borishini kuzatadigan kishi: tiqilib qolgan kartalarni koʻradi va sizga nima kutayotganini eslatadi. AI boʻlmaganda u belgilangan buyruqlar bilan ishlaydi, masalan, «Bajarilishi kerak»ni saralaydi."
+ "gloss.scrummaster.text.noai": "Ish toʻxtamay borishini kuzatadigan kishi: tiqilib qolgan kartalarni koʻradi va sizga nima kutayotganini eslatadi. AI boʻlmaganda u belgilangan buyruqlar bilan ishlaydi, masalan, «Bajarilishi kerak»ni saralaydi.",
+ "gloss.count": {"one":"{count} ta soʻz","other":"{count} ta soʻz"},
+ "tour.firststeps.title": "Ilk qadamlar",
+ "tour.firststeps.text": "Boshlash uchun qisqa roʻyxat: loyiha yarating, karta qoʻshing, doʻstingizni taklif qiling. Har biri bajarilganda oʻzi belgilanadi. Yoʻlni bilib olgach, uni yashiring.",
+ "tour.firststeps.short": "Avval qilinadigan bir necha ish. Ular oʻzi belgilanadi.",
+ "tour.firststeps.why": "Har birini bir marta bajarish doskani oʻrganishning eng tez yoʻli.",
+ "tour.help.title": "Kerak boʻlganda yordam",
+ "tour.help.text": "❓ Yordam boʻlimida Boshlash, shu tur yana bir bor va dasturchi soʻzlarini oddiy tilda tushuntiruvchi 📖 lugʻat bor. Boshlash uchun loyiha yarating yoki karta qoʻshing.",
+ "tour.help.short": "❓ Yordam: Boshlash, tur yana bir bor va 📖 lugʻat.",
+ "tour.chat.text.noai": "Bu yerda doʻstlaringiz bilan suhbatlashing. Doʻstingizga qoʻngʻiroq qilish uchun uning chatini oching, video va ekranni ulashish bilan.",
+ "tour.chat.short.noai": "Doʻstlar bilan chatlar. Toʻgʻridan-toʻgʻri chatdan qoʻngʻiroq qiling.",
+ "tour.chat.why.noai": "Boshqa ilovasiz, ish yonida gaplashib oling.",
+ "lkcall.credit": "Qoʻngʻiroqlar {name} asosida qurilgan 💙",
+ "help.m.thanks": "💙 Rahmat",
+ "help.thanks.h": "💙 Rahmat",
+ "help.thanks.chilled": "Qoʻngʻiroqlar, ekranni ulashish, javoblar, reaksiyalar va yozish nuqtalari {name} dan keladi. Rahmat!",
+ "help.thanks.livekit": "Qoʻngʻiroqlar ochiq kodli qoʻngʻiroq serveri {name} da ishlaydi."
 }

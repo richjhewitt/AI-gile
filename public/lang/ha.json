@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Wanda ke sa aiki ya ci gaba da gudana: yana lura da katunan da suka makale, yana tunatar da ƙungiyoyi, kuma yana tuna maka abin da ke jira. A AI-gile Lead Scrum Master yana yin haka a kowane aiki.",
- "gloss.scrummaster.text.noai": "Wanda ke sa aiki ya ci gaba da gudana: yana lura da katunan da suka makale kuma yana tuna maka abin da ke jira. Ba tare da AI ba yana aiki da tsayayyun umarni, kamar tsara A yi."
+ "gloss.scrummaster.text.noai": "Wanda ke sa aiki ya ci gaba da gudana: yana lura da katunan da suka makale kuma yana tuna maka abin da ke jira. Ba tare da AI ba yana aiki da tsayayyun umarni, kamar tsara A yi.",
+ "gloss.count": {"one":"kalma {count}","other":"kalmomi {count}"},
+ "tour.firststeps.title": "Matakan farko",
+ "tour.firststeps.text": "Ɗan gajeren jeri don farawa: ƙirƙiri aiki, ƙara kati, gayyaci aboki. Kowanne yana yin alama da kansa idan kun yi shi. Ku ɓoye shi idan kun gane hanya.",
+ "tour.firststeps.short": "Abubuwa kaɗan na farko da za a yi. Suna yin alama da kansu.",
+ "tour.firststeps.why": "Yin kowanne sau ɗaya ita ce hanya mafi sauri ta koyon allon.",
+ "tour.help.title": "Taimako idan kuna buƙata",
+ "tour.help.text": "❓ A cikin Taimako akwai Fara, wannan rangadi kuma da 📖 ƙamus, wanda ke bayyana kalmomin masu haɓakawa cikin harshe mai sauƙi. Ku ƙirƙiri aiki ko ku ƙara kati don farawa.",
+ "tour.help.short": "❓ Taimako: Fara, rangadi kuma da 📖 ƙamus.",
+ "tour.chat.text.noai": "Ku yi hira da abokanku a nan. Ku buɗe hirar aboki don ku kira shi, da bidiyo da raba allo.",
+ "tour.chat.short.noai": "Hira da abokai. Ku kira ɗaya daga hirarsa.",
+ "tour.chat.why.noai": "Ku tattauna abubuwa kusa da aikin, ba tare da wata manhaja ba.",
+ "lkcall.credit": "An gina kira akan {name} 💙",
+ "help.m.thanks": "💙 Godiya",
+ "help.thanks.h": "💙 Godiya",
+ "help.thanks.chilled": "Kira, raba allo, amsoshi, martani da ɗigon rubutu sun fito daga {name}. Mun gode!",
+ "help.thanks.livekit": "Kira suna gudana akan {name}, sabar kira mai buɗaɗɗen tushe."
 }

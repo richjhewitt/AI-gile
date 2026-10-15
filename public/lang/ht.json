@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Chèf Scrum Master,Lead Scrum Master",
  "gloss.scrummaster.text": "Moun ki kenbe travay la ap koule: li wè kat ki bloke, li pouse ekip yo epi li fè ou sonje sa k ap tann. Nan AI-gile, Chèf Scrum Master fè sa nan tout pwojè yo.",
- "gloss.scrummaster.text.noai": "Moun ki kenbe travay la ap koule: li wè kat ki bloke epi li fè ou sonje sa k ap tann. San AI li travay ak kòmand fiks, tankou ranje Pou fè."
+ "gloss.scrummaster.text.noai": "Moun ki kenbe travay la ap koule: li wè kat ki bloke epi li fè ou sonje sa k ap tann. San AI li travay ak kòmand fiks, tankou ranje Pou fè.",
+ "gloss.count": {"one":"{count} mo","other":"{count} mo"},
+ "tour.firststeps.title": "Premye etap",
+ "tour.firststeps.text": "Yon ti lis pou kòmanse: kreye yon pwojè, ajoute yon kat, envite yon zanmi. Chak grenn make poukont li lè ou fè l. Kache l lè ou konnen wout ou.",
+ "tour.firststeps.short": "Kèk premye bagay pou fè. Yo make poukont yo.",
+ "tour.firststeps.why": "Fè chak grenn yon fwa se fason ki pi rapid pou aprann tablo a.",
+ "tour.help.title": "Èd lè ou bezwen l",
+ "tour.help.text": "❓ Nan Èd gen Kijan pou kòmanse, vizit sa a ankò ak 📖 glosè a, ki eksplike mo devlopè yo nan lang senp. Kreye yon pwojè oswa ajoute yon kat pou kòmanse.",
+ "tour.help.short": "❓ Èd: Kijan pou kòmanse, vizit la ankò ak 📖 glosè a.",
+ "tour.chat.text.noai": "Chat ak zanmi ou yo isit la. Louvri chat yon zanmi pou rele l, ak videyo ak pataje ekran.",
+ "tour.chat.short.noai": "Chat ak zanmi. Rele youn nan chat li.",
+ "tour.chat.why.noai": "Pale de bagay yo toupre travay la, san okenn lòt aplikasyon.",
+ "lkcall.credit": "Apèl yo bati sou {name} 💙",
+ "help.m.thanks": "💙 Mèsi",
+ "help.thanks.h": "💙 Mèsi",
+ "help.thanks.chilled": "Apèl, pataje ekran, repons, reyaksyon ak ti pwen k ap tape yo soti nan {name}. Mèsi anpil!",
+ "help.thanks.livekit": "Apèl yo mache sou {name}, sèvè apèl sous louvri a."
 }

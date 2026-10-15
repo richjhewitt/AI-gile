@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "An hini a vir al labour o redek: gwelet a ra ar c'hartennoù sac'het, broudañ a ra ar skipailhoù hag e tegas da soñj deoc'h ar pezh a c'hortoz. En AI-gile e ra al Lead Scrum Master kement-se evit an holl raktresoù.",
- "gloss.scrummaster.text.noai": "An hini a vir al labour o redek: gwelet a ra ar c'hartennoù sac'het hag e tegas da soñj deoc'h ar pezh a c'hortoz. Hep IA e labour gant urzhioù start, evel renkañ Da ober."
+ "gloss.scrummaster.text.noai": "An hini a vir al labour o redek: gwelet a ra ar c'hartennoù sac'het hag e tegas da soñj deoc'h ar pezh a c'hortoz. Hep IA e labour gant urzhioù start, evel renkañ Da ober.",
+ "gloss.count": {"one":"{count} ger","other":"{count} ger"},
+ "tour.firststeps.title": "Kammedoù kentañ",
+ "tour.firststeps.text": "Ul listenn verr evit kregiñ: krouit ur raktres, ouzhpennit ur gartenn, pedit ur mignon. Pep hini a vez merket e-unan pa vez graet ganeoc'h. Kuzhit anezhi pa ouzoc'h an hent.",
+ "tour.firststeps.short": "Un nebeut traoù kentañ d'ober. Merket e vezont e-unan.",
+ "tour.firststeps.why": "Ober pep hini ur wech eo an doare buanañ da zeskiñ ar bord.",
+ "tour.help.title": "Skoazell pa vez ezhomm",
+ "tour.help.text": "E ❓ Skoazell ez eus Kregiñ, ar weladenn-mañ adarre hag ar 📖 geriadur, a zispleg gerioù ar broaderien en ur yezh eeun. Krouit ur raktres pe savit ur gartenn evit kregiñ.",
+ "tour.help.short": "❓ Skoazell: Kregiñ, ar weladenn adarre hag ar 📖 geriadur.",
+ "tour.chat.text.noai": "Kaozeit gant ho mignoned amañ. Digorit kaozeadenn ur mignon evit e c'hervel, gant video ha rannañ ar skramm.",
+ "tour.chat.short.noai": "Kaozeadennoù gant mignoned. Galvit unan eus e gaozeadenn.",
+ "tour.chat.why.noai": "Komzit eus an traoù e-kichen al labour, hep arload all.",
+ "lkcall.credit": "Galvoù savet war {name} 💙",
+ "help.m.thanks": "💙 Trugarez",
+ "help.thanks.h": "💙 Trugarez",
+ "help.thanks.chilled": "Ar galvoù, rannañ ar skramm, ar respontoù, an daskemmoù hag ar pikoù skrivañ a zeu eus {name}. Trugarez deoc'h!",
+ "help.thanks.livekit": "Ar galvoù a dro war {name}, ar servijer galvoù digor."
 }

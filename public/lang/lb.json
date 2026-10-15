@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Deen, deen d'Aarbecht am Floss hält: gesäit Kaarten, déi hänke bleiwen, stupst d'Teams un an erënnert dech drun, wat op dech waart. An AI-gile mécht de Lead Scrum Master dat iwwer all Projet ewech.",
- "gloss.scrummaster.text.noai": "Deen, deen d'Aarbecht am Floss hält: gesäit Kaarten, déi hänke bleiwen, an erënnert dech drun, wat op dech waart. Ouni KI schafft en mat feste Befeeler, wéi Ze maachen sortéieren."
+ "gloss.scrummaster.text.noai": "Deen, deen d'Aarbecht am Floss hält: gesäit Kaarten, déi hänke bleiwen, an erënnert dech drun, wat op dech waart. Ouni KI schafft en mat feste Befeeler, wéi Ze maachen sortéieren.",
+ "gloss.count": {"one":"{count} Wuert","other":"{count} Wierder"},
+ "tour.firststeps.title": "Éischt Schrëtt",
+ "tour.firststeps.text": "Eng kuerz Lëscht fir unzefänken: maach e Projet, setz eng Kaart derbäi, invitéier e Frënd. All Punkt gëtt vu selwer ofgehaakt, wann s du en gemaach hues. Verstopp se, soubal s du dech auskenns.",
+ "tour.firststeps.short": "E puer éischt Saachen ze maachen. Si ginn vu selwer ofgehaakt.",
+ "tour.firststeps.why": "All Punkt eng Kéier ze maachen ass de schnellste Wee, fir d'Board kennenzeléieren.",
+ "tour.help.title": "Hëllef, wann s de se brauchs",
+ "tour.help.text": "❓ An der Hëllef fënns de Ufank, dës Tour nach eng Kéier an d'📖 Glossar, dat Entwécklerwierder einfach erkläert. Maach e Projet oder setz eng Kaart derbäi fir unzefänken.",
+ "tour.help.short": "❓ Hëllef: Ufank, d'Tour nach eng Kéier an d'📖 Glossar.",
+ "tour.chat.text.noai": "Chatt hei mat denge Frënn. Maach de Chat vun engem Frënd op fir en unzeruffen, mat Video a Bildschierm deelen.",
+ "tour.chat.short.noai": "Chats mat Frënn. Ruff direkt aus dem Chat un.",
+ "tour.chat.why.noai": "Schwätzt iwwer d'Saachen direkt nieft der Aarbecht, ouni eng aner App.",
+ "lkcall.credit": "Uriff gebaut op {name} 💙",
+ "help.m.thanks": "💙 Merci",
+ "help.thanks.h": "💙 Merci",
+ "help.thanks.chilled": "Uriff, Bildschierm deelen, Äntwerten, Reaktiounen an d'Tipp-Pünktercher kommen vu {name}. Merci!",
+ "help.thanks.livekit": "D'Uriff lafen op {name}, dem Open-Source-Uruffserver."
 }

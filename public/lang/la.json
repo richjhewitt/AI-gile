@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Dux Scrum Master,Lead Scrum Master",
  "gloss.scrummaster.text": "Is qui opus fluens servat: chartas haerentes animadvertit, turmas impellit et te monet quid exspectet. In AI-gile Dux Scrum Master hoc per omnia incepta facit.",
- "gloss.scrummaster.text.noai": "Is qui opus fluens servat: chartas haerentes animadvertit et te monet quid exspectet. Sine AI imperiis fixis laborat, ut Agenda ordinare."
+ "gloss.scrummaster.text.noai": "Is qui opus fluens servat: chartas haerentes animadvertit et te monet quid exspectet. Sine AI imperiis fixis laborat, ut Agenda ordinare.",
+ "gloss.count": {"one":"{count} verbum","other":"{count} verba"},
+ "tour.firststeps.title": "Primi gradus",
+ "tour.firststeps.text": "Brevis index ad incipiendum: fac inceptum, adde chartam, invita amicum. Quodque sua sponte notatur cum id feceris. Cela indicem cum viam noveris.",
+ "tour.firststeps.short": "Pauca prima agenda. Sua sponte notantur.",
+ "tour.firststeps.why": "Quodque semel facere celerrima via est tabulae discendae.",
+ "tour.help.title": "Auxilium cum opus est",
+ "tour.help.text": "❓ Auxilium habet Incipere, hoc iter iterum et 📖 glossarium, quod verba developerum sermone simplici explicat. Fac inceptum aut adde chartam ut incipias.",
+ "tour.help.short": "❓ Auxilium: Incipere, iter iterum et 📖 glossarium.",
+ "tour.chat.text.noai": "Hic cum amicis tuis colloquere. Aperi colloquium amici ut eum voces, cum video et visione communicata.",
+ "tour.chat.short.noai": "Colloquia cum amicis. Voca amicum ex colloquio ipso.",
+ "tour.chat.why.noai": "Res iuxta ipsum opus tractate, sine alia applicatione.",
+ "lkcall.credit": "Vocationes in {name} aedificatae 💙",
+ "help.m.thanks": "💙 Gratiae",
+ "help.thanks.h": "💙 Gratiae",
+ "help.thanks.chilled": "Vocationes, visio communicata, responsa, motus animi et puncta scribendi a {name} veniunt. Gratias agimus!",
+ "help.thanks.livekit": "Vocationes in {name} currunt, servitore vocationum fontis aperti."
 }

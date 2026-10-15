@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Ten, kdo udržuje práci v pohybu: všimne si zaseknutých karet, popostrčí týmy a připomene ti, co čeká. V AI-gile to Lead Scrum Master dělá napříč všemi projekty.",
- "gloss.scrummaster.text.noai": "Ten, kdo udržuje práci v pohybu: všimne si zaseknutých karet a připomene ti, co čeká. Bez AI funguje s pevnými příkazy, třeba řazení K udělání."
+ "gloss.scrummaster.text.noai": "Ten, kdo udržuje práci v pohybu: všimne si zaseknutých karet a připomene ti, co čeká. Bez AI funguje s pevnými příkazy, třeba řazení K udělání.",
+ "gloss.count": {"one":"{count} slovo","other":"{count} slov"},
+ "tour.firststeps.title": "První kroky",
+ "tour.firststeps.text": "Krátký seznam na začátek: vytvoř projekt, přidej kartu, pozvi kamaráda. Každý krok se odškrtne sám, jakmile ho uděláš. Až se zorientuješ, skryj ho.",
+ "tour.firststeps.short": "Pár prvních věcí. Odškrtnou se samy.",
+ "tour.firststeps.why": "Udělat každý krok jednou je nejrychlejší způsob, jak se v boardu vyznat.",
+ "tour.help.title": "Nápověda, když ji potřebuješ",
+ "tour.help.text": "❓ Nápověda obsahuje Jak začít, tuhle prohlídku znovu a 📖 slovníček, který srozumitelně vysvětluje vývojářská slova. Na začátek vytvoř projekt nebo založ kartu.",
+ "tour.help.short": "❓ Nápověda: Jak začít, prohlídka znovu a 📖 slovníček.",
+ "tour.chat.text.noai": "Tady si piš s kamarády. Otevři chat s kamarádem a zavolej mu, s videem a sdílením obrazovky.",
+ "tour.chat.short.noai": "Chaty s kamarády. Zavolej někomu z jeho chatu.",
+ "tour.chat.why.noai": "Proberete věci přímo u práce, bez další aplikace.",
+ "lkcall.credit": "Hovory postavené na {name} 💙",
+ "help.m.thanks": "💙 Poděkování",
+ "help.thanks.h": "💙 Poděkování",
+ "help.thanks.chilled": "Hovory, sdílení obrazovky, odpovědi, reakce a tečky psaní pocházejí z {name}. Díky!",
+ "help.thanks.livekit": "Hovory běží na {name}, open-source serveru pro hovory."
 }

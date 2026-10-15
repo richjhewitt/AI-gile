@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Qofka shaqada socodsiiya: arka kaarrada xayiran, dhiirrigeliya kooxaha oo ku xasuusiya waxa sugaya. AI-gile, Lead Scrum Master ayaa tan ka sameeya mashruuc kasta.",
- "gloss.scrummaster.text.noai": "Qofka shaqada socodsiiya: arka kaarrada xayiran oo ku xasuusiya waxa sugaya. AI la'aan wuxuu ku shaqeeyaa amarro go'an, sida kala soocidda Waxa la sameeyo."
+ "gloss.scrummaster.text.noai": "Qofka shaqada socodsiiya: arka kaarrada xayiran oo ku xasuusiya waxa sugaya. AI la'aan wuxuu ku shaqeeyaa amarro go'an, sida kala soocidda Waxa la sameeyo.",
+ "gloss.count": {"one":"{count} eray","other":"{count} eray"},
+ "tour.firststeps.title": "Tallaabooyinka ugu horreeya",
+ "tour.firststeps.text": "Liis gaaban oo lagu bilaabo: samee mashruuc, ku dar kaar, casuun saaxiib. Mid kasta wuu iska calaamadeeyaa marka aad sameyso. Qari marka aad jidka barato.",
+ "tour.firststeps.short": "Dhowr shay oo ugu horreeya oo la sameeyo. Way iska calaamadeeyaan.",
+ "tour.firststeps.why": "In mid kasta hal mar la sameeyo ayaa ah habka ugu dhakhsaha badan ee boardka lagu barto.",
+ "tour.help.title": "Caawimo markaad u baahato",
+ "tour.help.text": "❓ Caawimo waxaa ku jira Sida loo bilaabo, dalxiiskan mar kale iyo 📖 qaamuuska, oo erayada horumariyaasha ku sharxa luqad fudud. Samee mashruuc ama ku dar kaar si aad u bilowdo.",
+ "tour.help.short": "❓ Caawimo: Sida loo bilaabo, dalxiiska mar kale iyo 📖 qaamuuska.",
+ "tour.chat.text.noai": "Halkan kala sheekayso saaxiibadaada. Fur sheekada saaxiib si aad u wacdo, adoo isticmaalaya muuqaal iyo wadaagista shaashadda.",
+ "tour.chat.short.noai": "Sheekooyin saaxiibada. Ka wac mid sheekadiisa.",
+ "tour.chat.why.noai": "Arrimaha kaga wada hadla shaqada agteeda, app kale la'aan.",
+ "lkcall.credit": "Wicitaanada waxaa lagu dhisay {name} 💙",
+ "help.m.thanks": "💙 Mahadsanid",
+ "help.thanks.h": "💙 Mahadsanid",
+ "help.thanks.chilled": "Wicitaanada, wadaagista shaashadda, jawaabaha, falcelinta iyo dhibcaha qoraalka waxay ka yimaadaan {name}. Mahadsanid!",
+ "help.thanks.livekit": "Wicitaanadu waxay ku shaqeeyaan {name}, server-ka wicitaanada ee il-furan."
 }

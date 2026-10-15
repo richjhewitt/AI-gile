@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Lana aurrera doala zaintzen duena: trabatutako txartelak antzematen ditu, taldeei bultzadatxo bat ematen die eta zain dagoena gogorarazten dizu. AI-gile-n Lead Scrum Master-ak egiten du hori proiektu guztietan.",
- "gloss.scrummaster.text.noai": "Lana aurrera doala zaintzen duena: trabatutako txartelak antzematen ditu eta zain dagoena gogorarazten dizu. AI gabe agindu finkoekin dabil, Egiteko ordenatzea adibidez."
+ "gloss.scrummaster.text.noai": "Lana aurrera doala zaintzen duena: trabatutako txartelak antzematen ditu eta zain dagoena gogorarazten dizu. AI gabe agindu finkoekin dabil, Egiteko ordenatzea adibidez.",
+ "gloss.count": {"one":"{count} hitz","other":"{count} hitz"},
+ "tour.firststeps.title": "Lehen urratsak",
+ "tour.firststeps.text": "Hasteko zerrenda labur bat: sortu proiektu bat, gehitu txartel bat, gonbidatu lagun bat. Bakoitza bere kabuz markatzen da egiten duzunean. Ezkutatu zerrenda bidea ezagutzen duzunean.",
+ "tour.firststeps.short": "Egiteko lehen gauza batzuk. Bere kabuz markatzen dira.",
+ "tour.firststeps.why": "Bakoitza behin egitea da taula ikasteko modurik azkarrena.",
+ "tour.help.title": "Laguntza behar duzunean",
+ "tour.help.text": "❓ Laguntzan daude Hasten, bisita hau berriro eta 📖 glosategia, garatzaileen hitzak hizkera errazean azaltzen dituena. Hasteko, sortu proiektu bat edo ireki txartel bat.",
+ "tour.help.short": "❓ Laguntza: Hasten, bisita berriro eta 📖 glosategia.",
+ "tour.chat.text.noai": "Txateatu hemen zure lagunekin. Ireki lagun baten txata hari deitzeko, bideoarekin eta pantaila partekatuz.",
+ "tour.chat.short.noai": "Txatak lagunekin. Deitu bati bere txatetik.",
+ "tour.chat.why.noai": "Hitz egin gauzez lanaren ondoan bertan, beste aplikaziorik gabe.",
+ "lkcall.credit": "{name}-ren gainean eraikitako deiak 💙",
+ "help.m.thanks": "💙 Eskerrak",
+ "help.thanks.h": "💙 Eskerrak",
+ "help.thanks.chilled": "Deiak, pantaila partekatzea, erantzunak, erreakzioak eta idazte-puntuak {name}-tik datoz. Eskerrik asko!",
+ "help.thanks.livekit": "Deiak {name}-en gainean dabiltza, kode irekiko dei-zerbitzaria."
 }

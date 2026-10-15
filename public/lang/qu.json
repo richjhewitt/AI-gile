@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Llamk'ay purichkananpaq qhawaq: hark'asqa kartakunata rikun, ayllukunata kallpachan, ima suyachkasqantataq yuyarichisunki. AI-gile-pi Lead Scrum Master kayta llapan proyectokunapi ruran.",
- "gloss.scrummaster.text.noai": "Llamk'ay purichkananpaq qhawaq: hark'asqa kartakunata rikun, ima suyachkasqantataq yuyarichisunki. Mana AI-yuqqa sayaq kamachiykunawan llamk'an, ahinataq Ruranaykunata allichan."
+ "gloss.scrummaster.text.noai": "Llamk'ay purichkananpaq qhawaq: hark'asqa kartakunata rikun, ima suyachkasqantataq yuyarichisunki. Mana AI-yuqqa sayaq kamachiykunawan llamk'an, ahinataq Ruranaykunata allichan.",
+ "gloss.count": {"one":"{count} simi","other":"{count} simi"},
+ "tour.firststeps.title": "Ñawpaq purikuna",
+ "tour.firststeps.text": "Qallarinapaq pisi lista: huk proyectota ruray, huk kartata yapay, huk masita minkay. Sapankan kikinmanta marcakun ruraqtiyki. Ñanta yachaspaqa pakay.",
+ "tour.firststeps.short": "Ñawpaqta rurana wakin. Kikillanmanta marcakunku.",
+ "tour.firststeps.why": "Sapankata huk kutita rurayqa tablerota yachanapaq aswan utqay ñanmi.",
+ "tour.help.title": "Yanapay, munaqtiyki",
+ "tour.help.text": "❓ Help-pi kan Ñawpaq ñankuna, kay tour huk kutita, 📖 glosariopas, chaymi dev simikunata llamp'u simipi sut'inchan. Qallarinapaq huk proyectota ruray utaq huk kartata yapay.",
+ "tour.help.short": "❓ Help: Ñawpaq ñankuna, tour huk kutita, 📖 glosariopas.",
+ "tour.chat.text.noai": "Kaypi masikunawan rimay. Masiykiq chatninta kichay payta llamanaykipaq, videowan pantalla rakinakuywanpas.",
+ "tour.chat.short.noai": "Masikunawan chatkuna. Chatninmanta llamay.",
+ "tour.chat.why.noai": "Llamk'aypa waqtanpi rimanakuy, mana huk appwan.",
+ "lkcall.credit": "Llamadakuna {name} patapi ruwasqa 💙",
+ "help.m.thanks": "💙 Sulpayki",
+ "help.thanks.h": "💙 Sulpayki",
+ "help.thanks.chilled": "Llamadakuna, pantalla rakinakuy, kutichiykuna, reaccionkuna, qillqashaq puntitokunapas {name}manta hamun. Sulpayki!",
+ "help.thanks.livekit": "Llamadakuna {name} patapi purin, kichasqa código llamada servidor."
 }

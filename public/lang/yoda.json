@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "The one who keeps the work flowing: stuck cards it spots, the teams it nudges, and of what is waiting it reminds you. In AI-gile, across every project the Lead Scrum Master does this.",
- "gloss.scrummaster.text.noai": "The one who keeps the work flowing: stuck cards it spots, and of what is waiting it reminds you. Without AI, with fixed commands it works, like To do sorting."
+ "gloss.scrummaster.text.noai": "The one who keeps the work flowing: stuck cards it spots, and of what is waiting it reminds you. Without AI, with fixed commands it works, like To do sorting.",
+ "gloss.count": {"one":"{count} word","other":"{count} words"},
+ "tour.firststeps.title": "First steps",
+ "tour.firststeps.text": "A short list to get going, this is: a project make, a card add, a friend invite. Each one ticks itself, when you do it. Hide it, once your way you know.",
+ "tour.firststeps.short": "A few first things to do, there are. Tick themselves, they do.",
+ "tour.firststeps.why": "Each one once to do, the quickest way to learn the board it is.",
+ "tour.help.title": "Help, when you need it",
+ "tour.help.text": "❓ Getting started, this tour again and the 📖 glossary, Help has. Developer words in plain language, the glossary explains. A project make or a card raise, to get going.",
+ "tour.help.short": "❓ Help: Getting started, the tour again and the 📖 glossary.",
+ "tour.chat.text.noai": "With your friends here, chat you can. A friend’s chat open, to call them, with video and screen share.",
+ "tour.chat.short.noai": "Chats with friends. From their chat, call one.",
+ "tour.chat.why.noai": "Right next to the work, talk things over you can. Another app, need you do not.",
+ "lkcall.credit": "On {name}, calls built are 💙",
+ "help.m.thanks": "💙 Thanks",
+ "help.thanks.h": "💙 Thanks",
+ "help.thanks.chilled": "Calls, screen share, replies, reactions and typing dots, from {name} they come. Thank you, we do!",
+ "help.thanks.livekit": "On {name}, the open-source call server, calls run."
 }

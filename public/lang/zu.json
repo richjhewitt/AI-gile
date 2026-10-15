@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Lowo ogcina umsebenzi uhamba: ubona amakhadi abambekile, ugqugquzela amathimba futhi akukhumbuze okulindile. Ku-AI-gile, i-Lead Scrum Master yenza lokhu kuyo yonke iphrojekthi.",
- "gloss.scrummaster.text.noai": "Lowo ogcina umsebenzi uhamba: ubona amakhadi abambekile futhi akukhumbuze okulindile. Ngaphandle kwe-AI usebenza ngemiyalo emisiwe, njengokuhlela Okufanele kwenziwe."
+ "gloss.scrummaster.text.noai": "Lowo ogcina umsebenzi uhamba: ubona amakhadi abambekile futhi akukhumbuze okulindile. Ngaphandle kwe-AI usebenza ngemiyalo emisiwe, njengokuhlela Okufanele kwenziwe.",
+ "gloss.count": {"one":"igama elingu-{count}","other":"amagama angu-{count}"},
+ "tour.firststeps.title": "Izinyathelo zokuqala",
+ "tour.firststeps.text": "Uhlu olufushane lokuqalisa: yenza iphrojekthi, engeza ikhadi, mema umngane. Ngayinye iziphawula yona uma uyenza. Lufihle uma usuyazi indlela.",
+ "tour.firststeps.short": "Izinto ezimbalwa zokuqala ongazenza. Ziziphawula zona.",
+ "tour.firststeps.why": "Ukwenza ngayinye kanye kuyindlela esheshayo yokufunda ibhodi.",
+ "tour.help.title": "Usizo uma uludinga",
+ "tour.help.text": "❓ Usizo lunesigaba Ukuqala, lolu hambo futhi, kanye ne-📖 uhlu lwamagama, oluchaza amagama abathuthukisi ngolimi olulula. Yenza iphrojekthi noma engeza ikhadi ukuze uqale.",
+ "tour.help.short": "❓ Usizo: Ukuqala, uhambo futhi kanye ne-📖 uhlu lwamagama.",
+ "tour.chat.text.noai": "Xoxa nabangane bakho lapha. Vula ingxoxo yomngane ukuze umshayele, ngevidiyo nokwabelana ngesikrini.",
+ "tour.chat.short.noai": "Izingxoxo nabangane. Mshayele engxoxweni yakhe.",
+ "tour.chat.why.noai": "Khulumani ngezinto eduze nomsebenzi, ngaphandle kwenye i-app.",
+ "lkcall.credit": "Amakholi akhelwe ku-{name} 💙",
+ "help.m.thanks": "💙 Siyabonga",
+ "help.thanks.h": "💙 Siyabonga",
+ "help.thanks.chilled": "Amakholi, ukwabelana ngesikrini, izimpendulo, ukusabela namachashaza okuthayipha kuvela ku-{name}. Siyabonga!",
+ "help.thanks.livekit": "Amakholi asebenza ku-{name}, iseva yamakholi yomthombo ovulekile."
 }

@@ -4118,5 +4118,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Tann, sum heldur arbeiðinum gangandi: varnast kort, ið sita føst, eggjar toymunum og minnir teg á, hvat bíðar. Í AI-gile ger Lead Scrum Master hetta tvørtur um allar verkætlanir.",
- "gloss.scrummaster.text.noai": "Tann, sum heldur arbeiðinum gangandi: varnast kort, ið sita føst, og minnir teg á, hvat bíðar. Uttan AI virkar tað við føstum boðum, eitt nú at skipa At gera."
+ "gloss.scrummaster.text.noai": "Tann, sum heldur arbeiðinum gangandi: varnast kort, ið sita føst, og minnir teg á, hvat bíðar. Uttan AI virkar tað við føstum boðum, eitt nú at skipa At gera.",
+ "gloss.count": {"one":"{count} orð","other":"{count} orð"},
+ "tour.firststeps.title": "Fyrstu stigini",
+ "tour.firststeps.text": "Ein stuttur listi at byrja við: ger eina verkætlan, legg eitt kort afturat, bjóða einum vini. Hvørt punkt krossar seg sjálvt av, tá ið tú gert tað. Fjal listan, tá ið tú kennir vegin.",
+ "tour.firststeps.short": "Nøkur fyrstu ting at gera. Tey krossa seg sjálvi av.",
+ "tour.firststeps.why": "At gera hvørt eina ferð er skjótasta mátin at læra borðið at kenna.",
+ "tour.help.title": "Hjálp, tá ið tú tørvar hana",
+ "tour.help.text": "❓ Hjálp hevur At byrja, hesa rundferðina aftur og 📖 orðalistan, sum greiðir frá uppskipanarorðum á einføldum máli. Ger eina verkætlan ella stovna eitt kort fyri at byrja.",
+ "tour.help.short": "❓ Hjálp: At byrja, rundferðin aftur og 📖 orðalistin.",
+ "tour.chat.text.noai": "Kjatta við vinir tínar her. Lat kjattið hjá einum vini upp fyri at ringja til hansara, við video og skerm-deiling.",
+ "tour.chat.short.noai": "Kjatt við vinir. Ring til ein úr kjattinum hjá honum.",
+ "tour.chat.why.noai": "Tosa um tingini beint við arbeiðið, uttan aðra app.",
+ "lkcall.credit": "Samtalur bygdar á {name} 💙",
+ "help.m.thanks": "💙 Takk",
+ "help.thanks.h": "💙 Takk",
+ "help.thanks.chilled": "Samtalur, skerm-deiling, svar, viðbrøgd og skrivi-prikkar koma frá {name}. Takk fyri!",
+ "help.thanks.livekit": "Samtalurnar koyra á {name}, sum er ein samtaluambætari við opnari keldu."
 }

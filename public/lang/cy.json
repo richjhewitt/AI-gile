@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Prif Scrum Master,Lead Scrum Master",
  "gloss.scrummaster.text": "Yr un sy'n cadw'r gwaith i lifo: sylwi ar gardiau sownd, rhoi hwb i'r timau a dy atgoffa o beth sy'n aros. Yn AI-gile mae'r Prif Scrum Master yn gwneud hyn ar draws pob prosiect.",
- "gloss.scrummaster.text.noai": "Yr un sy'n cadw'r gwaith i lifo: sylwi ar gardiau sownd a dy atgoffa o beth sy'n aros. Heb AI mae'n gweithio gyda gorchmynion sefydlog, fel trefnu I'w wneud."
+ "gloss.scrummaster.text.noai": "Yr un sy'n cadw'r gwaith i lifo: sylwi ar gardiau sownd a dy atgoffa o beth sy'n aros. Heb AI mae'n gweithio gyda gorchmynion sefydlog, fel trefnu I'w wneud.",
+ "gloss.count": {"one":"{count} gair","other":"{count} gair"},
+ "tour.firststeps.title": "Camau cyntaf",
+ "tour.firststeps.text": "Rhestr fer i ddechrau arni: creu prosiect, ychwanegu cerdyn, gwahodd ffrind. Mae pob un yn ticio'i hun pan fyddi di'n ei wneud. Cuddia hi pan fyddi di'n gwybod dy ffordd.",
+ "tour.firststeps.short": "Ychydig o bethau cyntaf i'w gwneud. Maen nhw'n ticio'u hunain.",
+ "tour.firststeps.why": "Gwneud pob un unwaith yw'r ffordd gyflymaf o ddysgu'r bwrdd.",
+ "tour.help.title": "Help pan fydd ei angen arnat ti",
+ "tour.help.text": "Mae ❓ Help yn cynnwys Dechrau arni, y daith hon eto a'r 📖 eirfa, sy'n esbonio geiriau datblygwyr mewn iaith glir. Crea brosiect neu coda gerdyn i ddechrau arni.",
+ "tour.help.short": "❓ Help: Dechrau arni, y daith eto a'r 📖 eirfa.",
+ "tour.chat.text.noai": "Sgwrsia gyda dy ffrindiau yma. Agor sgwrs ffrind i'w ffonio, gyda fideo a rhannu sgrin.",
+ "tour.chat.short.noai": "Sgyrsiau gyda ffrindiau. Ffonia un o'u sgwrs.",
+ "tour.chat.why.noai": "Trafod pethau reit wrth ymyl y gwaith, heb ap arall.",
+ "lkcall.credit": "Galwadau wedi'u hadeiladu ar {name} 💙",
+ "help.m.thanks": "💙 Diolch",
+ "help.thanks.h": "💙 Diolch",
+ "help.thanks.chilled": "Daw galwadau, rhannu sgrin, atebion, ymatebion a dotiau teipio o {name}. Diolch!",
+ "help.thanks.livekit": "Mae galwadau'n rhedeg ar {name}, y gweinydd galwadau cod agored."
 }

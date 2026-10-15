@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "Den, der holder arbejdet flydende: opdager kort, der sidder fast, giver teamene et skub og minder dig om, hvad der venter. I AI-gile gør Lead Scrum Master det på tværs af alle projekter.",
- "gloss.scrummaster.text.noai": "Den, der holder arbejdet flydende: opdager kort, der sidder fast, og minder dig om, hvad der venter. Uden AI virker det med faste kommandoer, fx at sortere To do."
+ "gloss.scrummaster.text.noai": "Den, der holder arbejdet flydende: opdager kort, der sidder fast, og minder dig om, hvad der venter. Uden AI virker det med faste kommandoer, fx at sortere To do.",
+ "gloss.count": {"one":"{count} ord","other":"{count} ord"},
+ "tour.firststeps.title": "Første skridt",
+ "tour.firststeps.text": "En kort liste til at komme i gang: lav et projekt, tilføj et kort, inviter en ven. Hvert punkt krydser sig selv af, når du gør det. Skjul listen, når du kender vejen.",
+ "tour.firststeps.short": "Et par første ting at gøre. De krydser sig selv af.",
+ "tour.firststeps.why": "At gøre hvert punkt én gang er den hurtigste måde at lære boardet at kende.",
+ "tour.help.title": "Hjælp, når du har brug for det",
+ "tour.help.text": "❓ Hjælp har Kom i gang, denne rundtur igen og 📖 ordlisten, som forklarer udviklerord i et klart sprog. Lav et projekt eller opret et kort for at komme i gang.",
+ "tour.help.short": "❓ Hjælp: Kom i gang, rundturen igen og 📖 ordlisten.",
+ "tour.chat.text.noai": "Chat med dine venner her. Åbn en vens chat for at ringe til vedkommende, med video og skærmdeling.",
+ "tour.chat.short.noai": "Chats med venner. Ring til en af dem fra deres chat.",
+ "tour.chat.why.noai": "Snak tingene igennem lige ved siden af arbejdet, uden en anden app.",
+ "lkcall.credit": "Opkald bygget på {name} 💙",
+ "help.m.thanks": "💙 Tak",
+ "help.thanks.h": "💙 Tak",
+ "help.thanks.chilled": "Opkald, skærmdeling, svar, reaktioner og skriveprikker kommer fra {name}. Tak!",
+ "help.thanks.livekit": "Opkaldene kører på {name}, open source-serveren til opkald."
 }

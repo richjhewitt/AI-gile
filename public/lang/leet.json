@@ -4085,5 +4085,21 @@
  "gloss.scrummaster.word": "5crum M4573r",
  "gloss.scrummaster.also": "L34d 5crum M4573r",
  "gloss.scrummaster.text": "7h3 0n3 wh0 k33p5 7h3 w0rk fl0w1ng: 5p075 57uck c4rd5, nudg35 7h3 734m5 4nd r3m1nd5 y0u 0f wh47 15 w4171ng. 1n AI-gile 7h3 L34d 5crum M4573r d035 7h15 4cr055 3v3ry pr0j3c7.",
- "gloss.scrummaster.text.noai": "7h3 0n3 wh0 k33p5 7h3 w0rk fl0w1ng: 5p075 57uck c4rd5 4nd r3m1nd5 y0u 0f wh47 15 w4171ng. W17h0u7 41 17 w0rk5 w17h f1x3d c0mm4nd5, l1k3 50r71ng 70 d0."
+ "gloss.scrummaster.text.noai": "7h3 0n3 wh0 k33p5 7h3 w0rk fl0w1ng: 5p075 57uck c4rd5 4nd r3m1nd5 y0u 0f wh47 15 w4171ng. W17h0u7 41 17 w0rk5 w17h f1x3d c0mm4nd5, l1k3 50r71ng 70 d0.",
+ "gloss.count": {"one":"{count} w0rd","other":"{count} w0rd5"},
+ "tour.firststeps.title": "F1r57 573p5",
+ "tour.firststeps.text": "4 5h0r7 l157 70 g37 g01ng: m4k3 4 pr0j3c7, 4dd 4 c4rd, 1nv173 4 fr13nd. 34ch 0n3 71ck5 1753lf wh3n y0u d0 17. H1d3 17 0nc3 y0u kn0w y0ur w4y.",
+ "tour.firststeps.short": "4 f3w f1r57 7h1ng5 70 d0. 7h3y 71ck 7h3m53lv35.",
+ "tour.firststeps.why": "D01ng 34ch 0n3 0nc3 15 7h3 qu1ck357 w4y 70 l34rn 7h3 b04rd.",
+ "tour.help.title": "H3lp wh3n y0u n33d 17",
+ "tour.help.text": "❓ H3lp h45 G3771ng 574r73d, 7h15 70ur 4g41n 4nd 7h3 📖 gl0554ry, wh1ch 3xpl41n5 d3v3l0p3r w0rd5 1n pl41n l4ngu4g3. M4k3 4 pr0j3c7 0r r4153 4 c4rd 70 g37 g01ng.",
+ "tour.help.short": "❓ H3lp: G3771ng 574r73d, 7h3 70ur 4g41n 4nd 7h3 📖 gl0554ry.",
+ "tour.chat.text.noai": "Ch47 w17h y0ur fr13nd5 h3r3. 0p3n 4 fr13nd’5 ch47 70 c4ll 7h3m, w17h v1d30 4nd 5cr33n 5h4r3.",
+ "tour.chat.short.noai": "Ch475 w17h fr13nd5. C4ll 0n3 fr0m 7h31r ch47.",
+ "tour.chat.why.noai": "74lk 7h1ng5 0v3r r1gh7 n3x7 70 7h3 w0rk, w17h n0 07h3r 4pp.",
+ "lkcall.credit": "C4ll5 bu1l7 0n {name} 💙",
+ "help.m.thanks": "💙 7h4nk5",
+ "help.thanks.h": "💙 7h4nk5",
+ "help.thanks.chilled": "C4ll5, 5cr33n 5h4r3, r3pl135, r34c710n5 4nd 7yp1ng d075 c0m3 fr0m {name}. 7h4nk y0u!",
+ "help.thanks.livekit": "C4ll5 run 0n {name}, 7h3 0p3n-50urc3 c4ll 53rv3r."
 }

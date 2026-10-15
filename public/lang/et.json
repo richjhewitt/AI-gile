@@ -4109,5 +4109,21 @@
  "gloss.scrummaster.word": "Scrum Master",
  "gloss.scrummaster.also": "Lead Scrum Master",
  "gloss.scrummaster.text": "See, kes hoiab töö voolamas: märkab kinni jäänud kaarte, annab meeskondadele müksu ja tuletab sulle meelde, mis ootab. AI-gile’is teeb seda kõigi projektide üleselt Lead Scrum Master.",
- "gloss.scrummaster.text.noai": "See, kes hoiab töö voolamas: märkab kinni jäänud kaarte ja tuletab sulle meelde, mis ootab. Ilma AI-ta töötab see kindlate käskudega, näiteks sorteerib veergu Tegemata."
+ "gloss.scrummaster.text.noai": "See, kes hoiab töö voolamas: märkab kinni jäänud kaarte ja tuletab sulle meelde, mis ootab. Ilma AI-ta töötab see kindlate käskudega, näiteks sorteerib veergu Tegemata.",
+ "gloss.count": {"one":"{count} sõna","other":"{count} sõna"},
+ "tour.firststeps.title": "Esimesed sammud",
+ "tour.firststeps.text": "Lühike nimekiri alustamiseks: loo projekt, lisa kaart, kutsu sõber. Iga punkt märgitakse ise tehtuks, kui selle ära teed. Peida nimekiri, kui oled end sisse elanud.",
+ "tour.firststeps.short": "Paar esimest asja, mida teha. Need märgitakse ise tehtuks.",
+ "tour.firststeps.why": "Iga asja üks kord ära tegemine on kiireim viis tahvel selgeks saada.",
+ "tour.help.title": "Abi siis, kui seda vajad",
+ "tour.help.text": "❓ Abis on Alustamine, see ringkäik uuesti ja 📖 sõnastik, mis selgitab arendajasõnu lihtsas keeles. Alustamiseks loo projekt või lisa kaart.",
+ "tour.help.short": "❓ Abi: Alustamine, ringkäik uuesti ja 📖 sõnastik.",
+ "tour.chat.text.noai": "Vestle siin oma sõpradega. Ava sõbra vestlus, et talle helistada, video ja ekraanijagamisega.",
+ "tour.chat.short.noai": "Vestlused sõpradega. Helista kellelegi tema vestlusest.",
+ "tour.chat.why.noai": "Aruta asjad läbi otse töö kõrval, ilma teise rakenduseta.",
+ "lkcall.credit": "Kõned on ehitatud {name} peale 💙",
+ "help.m.thanks": "💙 Tänud",
+ "help.thanks.h": "💙 Tänud",
+ "help.thanks.chilled": "Kõned, ekraanijagamine, vastused, reaktsioonid ja trükkimistäpid tulevad {name} kaudu. Aitäh!",
+ "help.thanks.livekit": "Kõned töötavad {name} peal, mis on avatud lähtekoodiga kõneserver."
 }
