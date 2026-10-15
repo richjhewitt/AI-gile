@@ -2479,7 +2479,7 @@
    "AIG-697"
   ],
   "where": "aigile.lol (site/)",
-  "evidence": "site/teaser.js, site/teaser-lines.json; QA teaser",
+  "evidence": "site/teaser.js, site/lang/en.lines.json; QA teaser",
   "check": {
    "kind": "qa",
    "area": "teaser"

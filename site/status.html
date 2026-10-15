@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI-gile status</title>
+<title data-i18n="status.title">AI-gile status</title>
+<script src="lang/languages.js"></script>
+<script src="lang/en.js"></script>
+<script src="i18n.js"></script>
 <style>
 :root{color-scheme:light dark;--bg:#f6f7f9;--card:#fff;--text:#1d2330;--muted:#677085;--line:#dde1e8}
 @media (prefers-color-scheme:dark){:root{--bg:#12151b;--card:#20262f;--text:#e6e9ef;--muted:#8b93a7;--line:#2a303c}}
@@ -19,6 +22,7 @@ li{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);bor
 .line{margin-top:4px;overflow-wrap:anywhere}
 #msg{color:var(--muted);padding:20px 0;text-align:center;font-size:18px}
 #quiet{color:var(--muted);padding:20px 0;text-align:center;font-size:18px}
+.top{display:flex;justify-content:flex-end;margin:0 0 8px}
 footer{margin-top:20px;font-size:14px;color:var(--muted)}
 a{color:inherit}
 [hidden]{display:none!important}
@@ -26,9 +30,10 @@ a{color:inherit}
 </head>
 <body>
 <main>
-<h1>AI-gile status</h1>
+<div class="top"><span id="lang-slot"></span></div>
+<h1 data-i18n="status.h1">AI-gile status</h1>
 <ul id="list"></ul>
-<p id="quiet" hidden>All quiet</p>
+<p id="quiet" hidden data-i18n="status.quiet">All quiet</p>
 <p id="msg" role="status">Checking…</p>
 <footer><a href="index.html">AI-gile</a></footer>
 </main>
@@ -40,9 +45,12 @@ a{color:inherit}
   function ago(at){
     var t=Date.parse(at);if(isNaN(t))return "";
     var m=Math.max(0,Math.round((Date.now()-t)/60000));
-    return "updated "+(m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago");
+    var t_=SiteI18n.t;
+    return t_("status.updated",{ago:m<1?t_("status.justNow"):m<60?t_("status.min",{n:m}):m<1440?t_("status.hours",{n:Math.round(m/60)}):t_("status.days",{n:Math.round(m/1440)})});
   }
+  var last=null,msgKey="status.checking";
   function draw(s){
+    last=s;
     list.textContent="";msg.hidden=true;
     var a=(s&&Array.isArray(s.services))?s.services:[];
     quiet.hidden=a.length>0;
@@ -58,9 +66,11 @@ a{color:inherit}
   }
   function poll(){
     fetch(URL_,{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(draw).catch(function(){
-      if(!list.children.length){quiet.hidden=true;msg.hidden=false;msg.textContent="Can't reach the status service right now (retrying)"}
+      if(!list.children.length){quiet.hidden=true;msg.hidden=false;msgKey="status.offline";msg.textContent=SiteI18n.t(msgKey)}
     });
   }
+  // A new language: redraw the "updated" lines and the message in it (AIG-1226).
+  SiteI18n.on(function(){msg.textContent=SiteI18n.t(msgKey);if(last)draw(last)});
   poll();setInterval(poll,POLL_MS);
 })();
 </script>

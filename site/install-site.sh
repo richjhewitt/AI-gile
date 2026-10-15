@@ -59,6 +59,8 @@ command -v certbot >/dev/null || { apt-get update -y && apt-get install -y certb
 echo "==> Site files ($ROOT)"
 install -d -o root -g root -m 755 "$ROOT"
 cp -r "$HERE"/*.html "$HERE"/*.css "$HERE"/*.js "$HERE"/*.json "$HERE/assets" "$ROOT/"   # pages, teaser and form scripts, their data
+install -d -o root -g root -m 755 "$ROOT/lang"   # every language's texts and scripts (AIG-1226); TRANSLATE.md stays behind
+cp "$HERE"/lang/*.js "$HERE"/lang/*.json "$ROOT/lang/"
 chmod -R a+rX "$ROOT"
 
 echo "==> Who may see it (/etc/nginx/snippets/$SITE.conf, rewritten on every run)"

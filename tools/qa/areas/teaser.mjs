@@ -16,7 +16,10 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
   await page.addInitScript(([lines, board, tl]) => {
     window.__urls = [];
     Object.defineProperty(window, 'TIMELINE', { get: () => tl, set: () => {} });   // the page's timeline.js must not replace the stub
-    window.fetch = u => { window.__urls.push(String(u)); const body = /\/b\/ai-gile\.json$/.test(u) ? board : /teaser-lines\.json$/.test(u) ? lines : /timeline\.json$/.test(u) ? tl : null;
+    // AIG-1226: the English slider lines come from lang/en.js; the stub keeps its texts and swaps in these lines.
+    let real = { ui: {} }; const D = {}; Object.defineProperty(D, 'en', { get: () => ({ ...real, lines }), set: v => { real = v; }, enumerable: true });
+    window.SITE_LANG_DATA = D;
+    window.fetch = u => { window.__urls.push(String(u)); const body = /\/b\/ai-gile\.json$/.test(u) ? board : /timeline\.json$/.test(u) ? tl : null;
       return Promise.resolve(body ? { ok: true, json: () => Promise.resolve(body) } : { ok: false, json: () => Promise.reject(new Error('404')) }); };
   }, [LINES, BOARD, TL]);
   await page.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
@@ -70,7 +73,7 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
   await p2.addInitScript(() => { window.fetch = () => Promise.resolve({ ok: false, json: () => Promise.reject(new Error('x')) }); });
   await p2.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
   await sleep(400);
-  check('on error the count line stays hidden; the pitch falls back to teaser-lines.js (AIG-697)', await p2.evaluate(() => document.getElementById('board-count').hidden && !document.getElementById('pitch').hidden));
+  check('on error the count line stays hidden; the pitch still shows from lang/en.js (AIG-697, AIG-1226)', await p2.evaluate(() => document.getElementById('board-count').hidden && !document.getElementById('pitch').hidden));
   check('opened from a file with fetch failing, the timeline still shows (timeline.js)', await p2.evaluate(() => !document.getElementById('timeline').hidden && document.querySelectorAll('#tl-done .tl-item').length > 0));
   const p3 = await ctx.newPage();
   await p3.addInitScript(tl => { Object.defineProperty(window, 'TIMELINE', { get: () => undefined, set: () => {} }); window.fetch = u => /timeline.json$/.test(u) ? Promise.resolve({ ok: true, json: () => Promise.resolve(tl) }) : Promise.resolve({ ok: false, json: () => Promise.reject(new Error('x')) }); }, TL);
@@ -81,15 +84,16 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
   await page.close(); await p2.close();
 }, true);
 
-// AIG-697: opened by double-click there is no fetch for local files, so the pitch comes from site/teaser-lines.js.
-def('teaserfile', 'site/index.html from file:// with the real fetch: the pitch still shows (teaser-lines.js), and it matches teaser-lines.json (AIG-697)', async (s, ctx) => {
+// AIG-697: opened by double-click there is no fetch for local files; the pitch comes from site/lang/en.js (made from en.lines.json, AIG-1226).
+def('teaserfile', 'site/index.html from file:// with the real fetch: the pitch still shows (lang/en.js), and it matches lang/en.lines.json (AIG-697, AIG-1226)', async (s, ctx) => {
   const fs = await import('node:fs');
-  const js = fs.readFileSync(path.join(ROOT, 'site', 'teaser-lines.js'), 'utf8'), json = JSON.parse(fs.readFileSync(path.join(ROOT, 'site', 'teaser-lines.json'), 'utf8'));
-  check('teaser-lines.js matches teaser-lines.json (run node tools/gen/teaser-lines.mjs)', js.includes(JSON.stringify(json)));
+  const { bundleJs } = await import('../../gen/site-lang.mjs');
+  const js = fs.readFileSync(path.join(ROOT, 'site', 'lang', 'en.js'), 'utf8'), json = JSON.parse(fs.readFileSync(path.join(ROOT, 'site', 'lang', 'en.lines.json'), 'utf8'));
+  check('lang/en.js matches the English JSON files (run node tools/gen/site-lang.mjs)', js.replace(/\r\n/g, '\n') === bundleJs('en'));
   const page = await ctx.newPage();
   await page.route(/relay\.aigile\.lol/, r => r.abort());
   await page.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
   await page.waitForSelector('#pitch:not([hidden])', { timeout: 5000 });
   check('the length slider shows without a web server', /^1 word /.test(await page.$eval('#pitch-count', e => e.textContent)));
-  check('every text in teaser-lines.json has exactly its size in words, 2+ texts per size (AIG-1117)', json.sizes.every(z => z.texts.length >= 2 && z.texts.every(t => t.trim().split(/\s+/).length === z.n)));
+  check('every text in lang/en.lines.json has exactly its size in words, 2+ texts per size (AIG-1117)', json.sizes.every(z => z.texts.length >= 2 && z.texts.every(t => t.trim().split(/\s+/).length === z.n)));
 }, true);
