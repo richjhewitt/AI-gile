@@ -1,0 +1,3395 @@
+{
+ "date": "2026-10-15",
+ "summary": "23 pass, 0 fail, 239 no check, 1 slow",
+ "results": [
+  {
+   "feature": "Server, JSON storage and API",
+   "cards": [
+    "AIG-1"
+   ],
+   "where": "server (node server.js)",
+   "kind": "api",
+   "status": "pass",
+   "ms": 3,
+   "why": ""
+  },
+  {
+   "feature": "Portfolio home with live polling",
+   "cards": [
+    "AIG-2",
+    "AIG-18",
+    "AIG-19",
+    "AIG-105",
+    "AIG-200"
+   ],
+   "where": "home page",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "For you to test + Accept / Send back verdict",
+   "cards": [
+    "AIG-3",
+    "AIG-9",
+    "AIG-21"
+   ],
+   "where": "card view > Accept / Send back",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Team checking vs For you columns (review)",
+   "cards": [
+    "AIG-106",
+    "AIG-114"
+   ],
+   "where": "board columns",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "New card form and Raise bug",
+   "cards": [
+    "AIG-5",
+    "AIG-41",
+    "AIG-84",
+    "AIG-89"
+   ],
+   "where": "board toolbar > New card / Raise bug",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Attachments and screenshots (paste, several, preview)",
+   "cards": [
+    "AIG-77",
+    "AIG-80",
+    "AIG-82",
+    "AIG-85",
+    "AIG-129"
+   ],
+   "where": "reply box / New card > paste or attach",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Edit card fields in panel",
+   "cards": [
+    "AIG-6"
+   ],
+   "where": "card view > fields",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Drag and drop cards between columns",
+   "cards": [
+    "AIG-7"
+   ],
+   "where": "board",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Card conversation: reply, Enter to send, team column comments",
+   "cards": [
+    "AIG-8",
+    "AIG-17",
+    "AIG-22",
+    "AIG-23",
+    "AIG-43",
+    "AIG-152",
+    "AIG-45",
+    "AIG-169"
+   ],
+   "where": "card view > Reply tab; inbox",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Add / archive project from UI and connect folder",
+   "cards": [
+    "AIG-10",
+    "AIG-40",
+    "AIG-73",
+    "AIG-26"
+   ],
+   "where": "home > New project / Connect",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "aigile CLI",
+   "cards": [
+    "AIG-11"
+   ],
+   "where": "terminal: aigile help",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Desktop app (Electron) and start script",
+   "cards": [
+    "AIG-15",
+    "AIG-76",
+    "AIG-81",
+    "AIG-83",
+    "AIG-130",
+    "AIG-142"
+   ],
+   "where": "desktop shortcut / restart-app button",
+   "kind": "api",
+   "status": "pass",
+   "ms": 1,
+   "why": ""
+  },
+  {
+   "feature": "Search and filters (assignee, type, sprint)",
+   "cards": [
+    "AIG-16"
+   ],
+   "where": "board filter bar",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Poke / wake a sleeping team",
+   "cards": [
+    "AIG-28",
+    "AIG-59",
+    "AIG-60",
+    "AIG-67",
+    "AIG-71",
+    "AIG-72"
+   ],
+   "where": "home / board > Poke, Wake",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Refresh prompt for new version (dev flag)",
+   "cards": [
+    "AIG-24",
+    "AIG-78"
+   ],
+   "where": "modal / top-bar refresh",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Project docs and md links open in board; clickable links and card ids",
+   "cards": [
+    "AIG-25",
+    "AIG-27",
+    "AIG-68",
+    "AIG-70"
+   ],
+   "where": "project > Docs; card text",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Claude usage and plan usage page",
+   "cards": [
+    "AIG-29",
+    "AIG-44",
+    "AIG-93",
+    "AIG-113",
+    "AIG-151",
+    "AIG-155"
+   ],
+   "where": "Usage page",
+   "kind": "api",
+   "status": "pass",
+   "ms": 3,
+   "why": ""
+  },
+  {
+   "feature": "Wait and see / move to end of queue",
+   "cards": [
+    "AIG-30",
+    "AIG-58"
+   ],
+   "where": "For you test row > Wait",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Inbox (questions, tasks, tests, per project tabs, top bar chips)",
+   "cards": [
+    "AIG-31",
+    "AIG-32",
+    "AIG-33",
+    "AIG-34",
+    "AIG-36",
+    "AIG-37",
+    "AIG-46",
+    "AIG-56",
+    "AIG-61",
+    "AIG-86",
+    "AIG-101"
+   ],
+   "where": "top bar inbox button",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Desktop pop-up and sound for new question",
+   "cards": [
+    "AIG-35"
+   ],
+   "where": "browser notification",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Assignee roster types with models",
+   "cards": [
+    "AIG-38"
+   ],
+   "where": "Team dialog / assignee select",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Responsive card panel",
+   "cards": [
+    "AIG-42"
+   ],
+   "where": "card view",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Session location, sleeping teams, start session, runs (background/terminal/VS Code), verbose Watch",
+   "cards": [
+    "AIG-47",
+    "AIG-48",
+    "AIG-54",
+    "AIG-55",
+    "AIG-57",
+    "AIG-107",
+    "AIG-153",
+    "AIG-154",
+    "AIG-219"
+   ],
+   "where": "home / board team strip, Setup > team runs",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Code blocks with copy; spaced bullets",
+   "cards": [
+    "AIG-49",
+    "AIG-50"
+   ],
+   "where": "card text",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Default new items to For the team",
+   "cards": [
+    "AIG-51"
+   ],
+   "where": "New card default status",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "All-teams message and Going quiet",
+   "cards": [
+    "AIG-53",
+    "AIG-62",
+    "AIG-63",
+    "AIG-64",
+    "AIG-66",
+    "AIG-69",
+    "AIG-207",
+    "AIG-208",
+    "AIG-216",
+    "AIG-220"
+   ],
+   "where": "top bar > Going quiet / goodnight box",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Permissions editor for projects",
+   "cards": [
+    "AIG-65",
+    "AIG-74"
+   ],
+   "where": "project > permissions",
+   "kind": "ui",
+   "status": "pass",
+   "ms": 1022,
+   "why": ""
+  },
+  {
+   "feature": "Go button on messages",
+   "cards": [
+    "AIG-75",
+    "AIG-176"
+   ],
+   "where": "inbox / chat message action buttons",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Night glance popout",
+   "cards": [
+    "AIG-209",
+    "AIG-217"
+   ],
+   "where": "night.js, #/pop-night",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Night watchman and its DM chat",
+   "cards": [
+    "AIG-199",
+    "AIG-211"
+   ],
+   "where": "DMs list > watchman",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Restart the board button",
+   "cards": [
+    "AIG-213",
+    "AIG-214"
+   ],
+   "where": "Setup / update pill",
+   "kind": "api",
+   "status": "pass",
+   "ms": 2,
+   "why": ""
+  },
+  {
+   "feature": "DM-style chats with leads, Discord-style rail, unread badges, drag to reorder",
+   "cards": [
+    "AIG-87",
+    "AIG-137",
+    "AIG-138",
+    "AIG-145",
+    "AIG-147",
+    "AIG-148",
+    "AIG-149",
+    "AIG-181",
+    "AIG-189"
+   ],
+   "where": "left rail",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Real DMs between people (E2E, invites, relay, People filter)",
+   "cards": [
+    "AIG-108",
+    "AIG-109",
+    "AIG-110",
+    "AIG-111",
+    "AIG-112",
+    "AIG-180",
+    "AIG-99"
+   ],
+   "where": "DMs > People, Friends",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Lead chat: send idea, chatty leads",
+   "cards": [
+    "AIG-139",
+    "AIG-140",
+    "AIG-178"
+   ],
+   "where": "DM with lead",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Learn the board: tour, levels, pretend team",
+   "cards": [
+    "AIG-88",
+    "AIG-95"
+   ],
+   "where": "Help menu > tour",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Dev words glossary and tooltips",
+   "cards": [
+    "AIG-102"
+   ],
+   "where": "Help > glossary",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Friend install: guide, update pill, zip update, security pass, your name",
+   "cards": [
+    "AIG-90",
+    "AIG-91",
+    "AIG-92",
+    "AIG-94",
+    "AIG-103"
+   ],
+   "where": "Setup first run; update pill",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Starter ways of working copied on connect",
+   "cards": [
+    "AIG-96"
+   ],
+   "where": "on project connect",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Refactor offer with cost estimate",
+   "cards": [
+    "AIG-98"
+   ],
+   "where": "home > refactor offer",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Strict methodology modes (Scrum, Kanban)",
+   "cards": [
+    "AIG-100",
+    "AIG-170"
+   ],
+   "where": "board columns templates",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Pop-out windows (inbox lists, cards, remember place, reopen on reply)",
+   "cards": [
+    "AIG-104",
+    "AIG-122",
+    "AIG-128",
+    "AIG-144",
+    "AIG-183",
+    "AIG-188"
+   ],
+   "where": "card/inbox pop-out button",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Customisable board columns, WIP, rows, views, card display",
+   "cards": [
+    "AIG-115",
+    "AIG-116",
+    "AIG-117",
+    "AIG-118",
+    "AIG-119",
+    "AIG-120",
+    "AIG-121",
+    "AIG-184"
+   ],
+   "where": "board toolbar > Columns, Cards, Views",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Languages (i18n, Dutch, Flemish, review)",
+   "cards": [
+    "AIG-123",
+    "AIG-124",
+    "AIG-125",
+    "AIG-126",
+    "AIG-127",
+    "AIG-174"
+   ],
+   "where": "Setup > Language",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Ask the team and What's happening",
+   "cards": [
+    "AIG-131",
+    "AIG-132"
+   ],
+   "where": "board toolbar",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Stand-ups (call, report, morning prompt, needs vs blockers)",
+   "cards": [
+    "AIG-133",
+    "AIG-134",
+    "AIG-135",
+    "AIG-136",
+    "AIG-204",
+    "AIG-212"
+   ],
+   "where": "board > Stand-up; home Stand-up all",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Focus For you column, auto-open next",
+   "cards": [
+    "AIG-141"
+   ],
+   "where": "For you view",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Light/dark theme and logos",
+   "cards": [
+    "AIG-143",
+    "AIG-175"
+   ],
+   "where": "Setup/Look dialog",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Profile pictures and picture library",
+   "cards": [
+    "AIG-150"
+   ],
+   "where": "Setup > profile picture",
+   "kind": "api",
+   "status": "pass",
+   "ms": 3,
+   "why": ""
+  },
+  {
+   "feature": "Open file paths in editor",
+   "cards": [
+    "AIG-156"
+   ],
+   "where": "file path chip",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Collapsible chat folds per card",
+   "cards": [
+    "AIG-157"
+   ],
+   "where": "DM chat folds",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": ""
+  },
+  {
+   "feature": "Your queue: holds up, own priority, kinds, time, Next up",
+   "cards": [
+    "AIG-158",
+    "AIG-159",
+    "AIG-160",
+    "AIG-161",
+    "AIG-162",
+    "AIG-187"
+   ],
+   "where": "inbox > Next up strip",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "AI tester with evidence, AI passed tab",
+   "cards": [
+    "AIG-163",
+    "AIG-164",
+    "AIG-186",
+    "AIG-192",
+    "AIG-196",
+    "AIG-197"
+   ],
+   "where": "inbox > AI passed; card > Ask AI tester",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Proof on hand-back",
+   "cards": [
+    "AIG-166",
+    "AIG-167"
+   ],
+   "where": "card view proof",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Unsent drafts survive refresh",
+   "cards": [
+    "AIG-171"
+   ],
+   "where": "any reply box",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "People and roles",
+   "cards": [
+    "AIG-185"
+   ],
+   "where": "Setup > People",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Fold a card into another; Tidy my pile",
+   "cards": [
+    "AIG-190",
+    "AIG-193",
+    "AIG-206",
+    "AIG-215"
+   ],
+   "where": "inbox > Tidy; aigile fold",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "New-user trial board and pretend team",
+   "cards": [
+    "AIG-201",
+    "AIG-202",
+    "AIG-203",
+    "AIG-205"
+   ],
+   "where": "Setup > Try it as a new user",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Ask a mate",
+   "cards": [
+    "AIG-210"
+   ],
+   "where": "DM with friend > Ask",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Run in browser button on test items",
+   "cards": [
+    "AIG-146"
+   ],
+   "where": "test card > Run",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Watchman chat: orders, thumbs-up replies, crack the whip, clear chat, unread badge, fewer messages",
+   "cards": [
+    "AIG-221",
+    "AIG-226",
+    "AIG-231",
+    "AIG-233",
+    "AIG-255",
+    "AIG-256",
+    "AIG-262",
+    "AIG-273",
+    "AIG-278",
+    "AIG-271"
+   ],
+   "where": "Messages rail > Night watchman chat (clear button, unread badge)",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Night watch keeps teams working: auto-wake idle teams, survive board restart, sprint nudges, no empty wakes",
+   "cards": [
+    "AIG-222",
+    "AIG-224",
+    "AIG-242",
+    "AIG-261",
+    "AIG-269",
+    "AIG-270",
+    "AIG-272",
+    "AIG-277",
+    "AIG-286"
+   ],
+   "where": "Runs in background at night; Setup > night watch",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Going quiet: quiet card, night glance window, morning summary, wake-at time, hourly cap",
+   "cards": [
+    "AIG-223",
+    "AIG-257",
+    "AIG-280",
+    "AIG-227",
+    "AIG-228",
+    "AIG-229",
+    "AIG-230",
+    "AIG-232",
+    "AIG-281"
+   ],
+   "where": "Top bar > Going quiet; night glance window",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Usage limits: teams restart when the plan refreshes, no false 'stuck' cards",
+   "cards": [
+    "AIG-265",
+    "AIG-283"
+   ],
+   "where": "Usage page; automatic",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Tidy the For you pile (fold cards, tidy button, fading note)",
+   "cards": [
+    "AIG-225",
+    "AIG-258",
+    "AIG-263",
+    "AIG-274",
+    "AIG-276",
+    "AIG-279",
+    "AIG-284",
+    "AIG-350",
+    "AIG-362",
+    "AIG-369",
+    "AIG-397",
+    "AIG-404",
+    "AIG-259"
+   ],
+   "where": "For you column header > Tidy my pile",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Tidy cards (lead neatens new cards), no-title new card",
+   "cards": [
+    "AIG-234",
+    "AIG-237",
+    "AIG-399"
+   ],
+   "where": "Setup > Tidy cards switch; New card dialog",
+   "kind": "api",
+   "status": "pass",
+   "ms": 2,
+   "why": ""
+  },
+  {
+   "feature": "What kind of lead do you want? questionnaire",
+   "cards": [
+    "AIG-235",
+    "AIG-236"
+   ],
+   "where": "Setup > lead questionnaire (also first run)",
+   "kind": "ui",
+   "status": "pass",
+   "ms": 408,
+   "why": ""
+  },
+  {
+   "feature": "Card links: .md names, folders open in Explorer, .html in browser, bare addresses, Copy buttons, folder button",
+   "cards": [
+    "AIG-240",
+    "AIG-294",
+    "AIG-318",
+    "AIG-390",
+    "AIG-398",
+    "AIG-429"
+   ],
+   "where": "Links inside card text",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Restart the app pill (one, clickable, watchman restarts at night)",
+   "cards": [
+    "AIG-241",
+    "AIG-295",
+    "AIG-346"
+   ],
+   "where": "Below title bar > Restart the app",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Friends' zip, download page and self-update (Stable/Latest)",
+   "cards": [
+    "AIG-248",
+    "AIG-249",
+    "AIG-250",
+    "AIG-251",
+    "AIG-264"
+   ],
+   "where": "Setup > Channel; docs/INSTALL.md",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Teams' commands on a board not on port 4321",
+   "cards": [
+    "AIG-252"
+   ],
+   "where": "CLI / connect hooks",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": ""
+  },
+  {
+   "feature": "Friends don't get dev mode",
+   "cards": [
+    "AIG-253"
+   ],
+   "where": "Start-up (no refresh prompt)",
+   "kind": "api",
+   "status": "pass",
+   "ms": 8,
+   "why": ""
+  },
+  {
+   "feature": "Setup: next step after Save, agent program path check",
+   "cards": [
+    "AIG-254",
+    "AIG-334"
+   ],
+   "where": "Setup > Save",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Run cost measurement",
+   "cards": [
+    "AIG-266",
+    "AIG-299"
+   ],
+   "where": "Usage page cost per run",
+   "kind": "api",
+   "status": "pass",
+   "ms": 1,
+   "why": ""
+  },
+  {
+   "feature": "Pro-friendly setting, spend scale, usage saver, budget caps",
+   "cards": [
+    "AIG-268",
+    "AIG-353"
+   ],
+   "where": "Setup > budget",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "No Token Mode (manual, automatic at limit, hides AI buttons)",
+   "cards": [
+    "AIG-337",
+    "AIG-338",
+    "AIG-339"
+   ],
+   "where": "Top bar > no-token switch",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "AI tester: Test these for me, night tests, For you button",
+   "cards": [
+    "AIG-291",
+    "AIG-292",
+    "AIG-300"
+   ],
+   "where": "Inbox / For you header",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Friends sharing: relay, invites, tick to share, roles, shared board, friend lane, text fence",
+   "cards": [
+    "AIG-304",
+    "AIG-305",
+    "AIG-306",
+    "AIG-307",
+    "AIG-324",
+    "AIG-325",
+    "AIG-381",
+    "AIG-382"
+   ],
+   "where": "Project > Share; Friends",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Ask a mate behaviour in No Token Mode",
+   "cards": [
+    "AIG-383"
+   ],
+   "where": "Inbox friend question",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Pretend friend Davy (own window, banner, ask a mate stub)",
+   "cards": [
+    "AIG-322",
+    "AIG-323",
+    "AIG-384"
+   ],
+   "where": "Setup > Pretend friend",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Invite a friend screen and relay address box",
+   "cards": [
+    "AIG-311",
+    "AIG-309"
+   ],
+   "where": "Setup > DMs",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Files between friends deleted from relay after delivery",
+   "cards": [
+    "AIG-341"
+   ],
+   "where": "relay/relay.js",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Open card live updates, no flicker, pop-outs stay open",
+   "cards": [
+    "AIG-310",
+    "AIG-313",
+    "AIG-314",
+    "AIG-405"
+   ],
+   "where": "Card view / pop-out",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Answer buttons on agent tasks: Looks right next step, Done/Yes/No",
+   "cards": [
+    "AIG-315",
+    "AIG-371"
+   ],
+   "where": "Card reply box",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Pop out one inbox item",
+   "cards": [
+    "AIG-367"
+   ],
+   "where": "Inbox item > pop out",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "DMs: waiting card shows only what you need; open card from message; message lead about something else",
+   "cards": [
+    "AIG-370",
+    "AIG-449",
+    "AIG-285"
+   ],
+   "where": "Messages rail",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Inbox chips open All tab",
+   "cards": [
+    "AIG-288",
+    "AIG-293"
+   ],
+   "where": "Top bar chips",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Inbox pictures open full size; attachment remove",
+   "cards": [
+    "AIG-372",
+    "AIG-376"
+   ],
+   "where": "Inbox, attach chips",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Raise a card for any project",
+   "cards": [
+    "AIG-316"
+   ],
+   "where": "New card dialog project picker",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "New user path: Find my projects, import, empty board hint, first-open error",
+   "cards": [
+    "AIG-317",
+    "AIG-331",
+    "AIG-332",
+    "AIG-333",
+    "AIG-335",
+    "AIG-340"
+   ],
+   "where": "Home > Find my projects",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Closed alpha: invite codes, alpha label, device language",
+   "cards": [
+    "AIG-347",
+    "AIG-348",
+    "AIG-352"
+   ],
+   "where": "Top bar alpha tag; join page",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Server tasks group and Open server button",
+   "cards": [
+    "AIG-320",
+    "AIG-374"
+   ],
+   "where": "For you > Server group",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Outside help task group",
+   "cards": [
+    "AIG-380"
+   ],
+   "where": "For you > Outside help",
+   "kind": "cli",
+   "status": "pass",
+   "ms": 51,
+   "why": ""
+  },
+  {
+   "feature": "Agile intro, Help menu and help levels",
+   "cards": [
+    "AIG-327",
+    "AIG-328",
+    "AIG-345"
+   ],
+   "where": "Help menu",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Aussie English language",
+   "cards": [
+    "AIG-330"
+   ],
+   "where": "Language picker",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Emoji picker and GIFs",
+   "cards": [
+    "AIG-342",
+    "AIG-343"
+   ],
+   "where": "Type :smi in comments/DMs; GIF button",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Resizable ask and idea boxes; idea capture button; idea to Scrum Master",
+   "cards": [
+    "AIG-344",
+    "AIG-363",
+    "AIG-351",
+    "AIG-388"
+   ],
+   "where": "Top bar idea button",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Setup wizard (quick and advanced)",
+   "cards": [
+    "AIG-354",
+    "AIG-355"
+   ],
+   "where": "Setup > Run the wizard",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Usage at a glance mini bars and minimal usage view",
+   "cards": [
+    "AIG-356",
+    "AIG-431"
+   ],
+   "where": "Top bar usage button",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Copy for another AI (AIGILE pack)",
+   "cards": [
+    "AIG-357",
+    "AIG-377"
+   ],
+   "where": "Card > Copy for another AI",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Codex as agent program",
+   "cards": [
+    "AIG-358",
+    "AIG-402"
+   ],
+   "where": "Team dialog engine",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Lead Scrum Master (on day and night, diligence)",
+   "cards": [
+    "AIG-359",
+    "AIG-441"
+   ],
+   "where": "Scrum Master panel",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "For you Decide, topics, mini questionnaire",
+   "cards": [
+    "AIG-361",
+    "AIG-445"
+   ],
+   "where": "For you / inbox topics",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Dispatcher: right agent for each card or reply",
+   "cards": [
+    "AIG-364"
+   ],
+   "where": "Background",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Pick team roles per project",
+   "cards": [
+    "AIG-366"
+   ],
+   "where": "Project > Team",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "No repeated messages (bump), plain notes not questions",
+   "cards": [
+    "AIG-373",
+    "AIG-375"
+   ],
+   "where": "Card chat",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Timed cards (come back at) and card groups",
+   "cards": [
+    "AIG-385",
+    "AIG-386"
+   ],
+   "where": "Card snooze/timed; groups in For you",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Info-only hand-overs (Got it)",
+   "cards": [
+    "AIG-392"
+   ],
+   "where": "For you To read",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Real-life tasks and focus mode",
+   "cards": [
+    "AIG-394",
+    "AIG-395"
+   ],
+   "where": "Card type life; focus",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Badge maker for agent pictures",
+   "cards": [
+    "AIG-396"
+   ],
+   "where": "Team dialog > picture",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Customisable app icon colours",
+   "cards": [
+    "AIG-400"
+   ],
+   "where": "Setup > icon colours",
+   "kind": "api",
+   "status": "pass",
+   "ms": 3,
+   "why": ""
+  },
+  {
+   "feature": "Undo after a card click",
+   "cards": [
+    "AIG-403"
+   ],
+   "where": "Undo toast after moving a card",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "No pop-up console windows",
+   "cards": [
+    "AIG-275",
+    "AIG-391"
+   ],
+   "where": "Background",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Linux support",
+   "cards": [
+    "AIG-408",
+    "AIG-409"
+   ],
+   "where": "INSTALL, desktop AppImage",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Phone browser pages and PWA",
+   "cards": [
+    "AIG-410"
+   ],
+   "where": "Phone browser; install to home screen",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Android app",
+   "cards": [
+    "AIG-412"
+   ],
+   "where": "Android",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Roadmap page",
+   "cards": [
+    "AIG-413"
+   ],
+   "where": "Public site",
+   "kind": "unsure",
+   "status": "nocheck",
+   "ms": null,
+   "why": ""
+  },
+  {
+   "feature": "Agent profiles, scales, role and team templates, project types, Add team",
+   "cards": [
+    "AIG-415",
+    "AIG-416",
+    "AIG-417",
+    "AIG-418",
+    "AIG-419",
+    "AIG-420",
+    "AIG-421",
+    "AIG-422",
+    "AIG-423",
+    "AIG-424",
+    "AIG-442",
+    "AIG-443",
+    "AIG-444",
+    "AIG-427",
+    "AIG-428"
+   ],
+   "where": "Setup > How agents work; Team dialog",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Chat follows the lead to the next card",
+   "cards": [
+    "AIG-426"
+   ],
+   "where": "Open chat window",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Projects inside projects (spaces), roll-up, move card, cross-project waits",
+   "cards": [
+    "AIG-430",
+    "AIG-433",
+    "AIG-434",
+    "AIG-435",
+    "AIG-436",
+    "AIG-437",
+    "AIG-438",
+    "AIG-440",
+    "AIG-450"
+   ],
+   "where": "Home / rail tree; card > Move to project",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Offline share project as file",
+   "cards": [
+    "AIG-446"
+   ],
+   "where": "CLI / project share",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "One lead at a time, per-project session, tester own folder, hooks per project",
+   "cards": [
+    "AIG-447",
+    "AIG-448",
+    "AIG-453",
+    "AIG-454",
+    "AIG-455"
+   ],
+   "where": "Background runs",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Guide / wiki outline",
+   "cards": [
+    "AIG-425"
+   ],
+   "where": "docs/guide/outline",
+   "kind": "api",
+   "status": "pass",
+   "ms": 1,
+   "why": ""
+  },
+  {
+   "feature": "Scrum Master run modes, launch and always-on",
+   "cards": [
+    "AIG-456",
+    "AIG-457",
+    "AIG-458",
+    "AIG-476",
+    "AIG-463",
+    "AIG-515",
+    "AIG-523"
+   ],
+   "where": "Home > where each team runs; Scrum Master panel",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Session modes cost/speed report",
+   "cards": [
+    "AIG-461"
+   ],
+   "where": "CLI: node tools/session-modes.cjs",
+   "kind": "cli",
+   "status": "pass",
+   "ms": 6594,
+   "why": ""
+  },
+  {
+   "feature": "Scrum Master status/message hygiene (no repeated status, Send anyway, no lost message, clear limits text)",
+   "cards": [
+    "AIG-534",
+    "AIG-598",
+    "AIG-647",
+    "AIG-635",
+    "AIG-531"
+   ],
+   "where": "Scrum Master chat in DMs",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Night watch auto-poke and unstick stalled boards",
+   "cards": [
+    "AIG-516",
+    "AIG-520",
+    "AIG-521",
+    "AIG-540",
+    "AIG-465"
+   ],
+   "where": "Night watch switch; home 'teams need a poke' pill",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Nudge icon in card chat, poke whole column, real activity instead of typing",
+   "cards": [
+    "AIG-589",
+    "AIG-593",
+    "AIG-527",
+    "AIG-636",
+    "AIG-639"
+   ],
+   "where": "Card chat pop-up > 👉; column header 👉",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "No stray terminal windows from agents' test servers",
+   "cards": [
+    "AIG-459",
+    "AIG-462"
+   ],
+   "where": "invisible (no pop-up windows)",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Choose your main team / team templates (expert teams) and rename teammates",
+   "cards": [
+    "AIG-460",
+    "AIG-577",
+    "AIG-578",
+    "AIG-579",
+    "AIG-634"
+   ],
+   "where": "Setup wizard; 👥 Team dialog",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Spaces: projects inside projects",
+   "cards": [
+    "AIG-464"
+   ],
+   "where": "Project header > 🪐 Space",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Usage burn-down and forecast",
+   "cards": [
+    "AIG-466"
+   ],
+   "where": "⚡ Usage page chart",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Trust the AI tester and tester sweep (accept sure passes)",
+   "cards": [
+    "AIG-467",
+    "AIG-692",
+    "AIG-542"
+   ],
+   "where": "Setup > Trust the AI tester; inbox 'Accept all AI-passed'",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Life tasks fixes (IRL card not a test, single Done button)",
+   "cards": [
+    "AIG-543",
+    "AIG-571"
+   ],
+   "where": "For you / life cards",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Pretend friend: pick version and window",
+   "cards": [
+    "AIG-468"
+   ],
+   "where": "Setup > Pretend friend",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Copy button on values in card messages",
+   "cards": [
+    "AIG-470"
+   ],
+   "where": "Card messages: bold values and inline code",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Server tasks: Open server, built-in terminal, small editor, server access roles",
+   "cards": [
+    "AIG-469",
+    "AIG-471",
+    "AIG-536",
+    "AIG-677"
+   ],
+   "where": "Server task card > Open server / terminal / editor; Setup > My servers",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "For you pile tidy and stale/DM-card fixes",
+   "cards": [
+    "AIG-472",
+    "AIG-544",
+    "AIG-529",
+    "AIG-535",
+    "AIG-541",
+    "AIG-624",
+    "AIG-672"
+   ],
+   "where": "For you > Tidy my pile",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Discord bot DMs, Discord tab and activity",
+   "cards": [
+    "AIG-473",
+    "AIG-553",
+    "AIG-557",
+    "AIG-559",
+    "AIG-642"
+   ],
+   "where": "DM window > Discord chip; Setup > Discord",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Attach screenshot in Lead Scrum Master chat",
+   "cards": [
+    "AIG-474"
+   ],
+   "where": "Scrum Master chat > Attach",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Assumptions log, page and per-project summary",
+   "cards": [
+    "AIG-477",
+    "AIG-526",
+    "AIG-533"
+   ],
+   "where": "#/assumptions",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Overnight flow: refill To do, plan big backlog cards",
+   "cards": [
+    "AIG-478",
+    "AIG-480"
+   ],
+   "where": "Setup > night watch (plan big)",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Going quiet",
+   "cards": [
+    "AIG-484",
+    "AIG-500",
+    "AIG-524",
+    "AIG-525"
+   ],
+   "where": "Top bar going-quiet control",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Language engine, picker, 121 languages foundation",
+   "cards": [
+    "AIG-486",
+    "AIG-487",
+    "AIG-488",
+    "AIG-501",
+    "AIG-502"
+   ],
+   "where": "Setup > Language",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Translations: every language complete",
+   "cards": [
+    "AIG-489",
+    "AIG-490",
+    "AIG-491",
+    "AIG-492",
+    "AIG-493",
+    "AIG-494",
+    "AIG-495",
+    "AIG-496",
+    "AIG-497",
+    "AIG-498",
+    "AIG-499",
+    "AIG-503",
+    "AIG-504",
+    "AIG-505",
+    "AIG-506",
+    "AIG-507",
+    "AIG-508",
+    "AIG-509",
+    "AIG-510",
+    "AIG-511",
+    "AIG-512",
+    "AIG-513",
+    "AIG-514"
+   ],
+   "where": "public/lang/<code>.json",
+   "kind": "api",
+   "status": "pass",
+   "ms": 523,
+   "why": ""
+  },
+  {
+   "feature": "Glossary hints without spaces; RTL arrow keys",
+   "cards": [
+    "AIG-518",
+    "AIG-528"
+   ],
+   "where": "Glossary hints in zh/ja/th; arrow keys in ar/he",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "No Token Mode: auto off, hide AI bits",
+   "cards": [
+    "AIG-530",
+    "AIG-532",
+    "AIG-556"
+   ],
+   "where": "Top bar ⛔ pill",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Smaller context / token deep dive / usage page two-click fix",
+   "cards": [
+    "AIG-545",
+    "AIG-558"
+   ],
+   "where": "⚡ Usage page; agent prompts",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Usage saver and crucial cards",
+   "cards": [
+    "AIG-547",
+    "AIG-548",
+    "AIG-549",
+    "AIG-550",
+    "AIG-551"
+   ],
+   "where": "Setup > Tokens saver %; card ⭐ Crucial",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Stand-ups (per team, auto close)",
+   "cards": [
+    "AIG-537",
+    "AIG-538",
+    "AIG-539",
+    "AIG-611"
+   ],
+   "where": "Stand-up report",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Welcome-back and Start-my-day (when does your day start)",
+   "cards": [
+    "AIG-546",
+    "AIG-678"
+   ],
+   "where": "Home > Start my day; Setup day start",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Top bar: raise bug button, show/hide/reorder, colours",
+   "cards": [
+    "AIG-568",
+    "AIG-575",
+    "AIG-576"
+   ],
+   "where": "Top bar; Setup > top bar",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Releases: channels, What's new, release notes, roll back, tester bug reports",
+   "cards": [
+    "AIG-560",
+    "AIG-561",
+    "AIG-562",
+    "AIG-563"
+   ],
+   "where": "#/whats-new; Setup channel box",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Automation: free rule replies, labels, GO queues cards, fold parts",
+   "cards": [
+    "AIG-565",
+    "AIG-566",
+    "AIG-567",
+    "AIG-609",
+    "AIG-610"
+   ],
+   "where": "DM bubbles chip '⚙ Automated, free'",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Secrets box, run without seeing, list/expire/delete",
+   "cards": [
+    "AIG-585",
+    "AIG-586",
+    "AIG-587"
+   ],
+   "where": "Task secret box; Setup > Secrets",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Streamer mode: private/personal projects, masking, OBS auto, stream window, Discord streams",
+   "cards": [
+    "AIG-590",
+    "AIG-591",
+    "AIG-592",
+    "AIG-631",
+    "AIG-637",
+    "AIG-638",
+    "AIG-640"
+   ],
+   "where": "Top bar 🎥; Setup > Streamer mode",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "OBS connect and Go live",
+   "cards": [
+    "AIG-641",
+    "AIG-643",
+    "AIG-644",
+    "AIG-645"
+   ],
+   "where": "Board > 🔴 Go live (#liveBtn)",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Today: daily weights, share by weight, AI off per project",
+   "cards": [
+    "AIG-594",
+    "AIG-595",
+    "AIG-596",
+    "AIG-597",
+    "AIG-607",
+    "AIG-608"
+   ],
+   "where": "#/today",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Business licence and application form",
+   "cards": [
+    "AIG-600",
+    "AIG-601",
+    "AIG-619"
+   ],
+   "where": "LICENSE; Setup > Business licences; aigile.lol form",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Public boards",
+   "cards": [
+    "AIG-602",
+    "AIG-603",
+    "AIG-604",
+    "AIG-605",
+    "AIG-698"
+   ],
+   "where": "Look dialog > Public; Copy public link",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Teaser site: word slider, funny versions, live count",
+   "cards": [
+    "AIG-695",
+    "AIG-696",
+    "AIG-697"
+   ],
+   "where": "aigile.lol (site/)",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "test.aigile.lol for signed-in people only",
+   "cards": [
+    "AIG-699"
+   ],
+   "where": "test.aigile.lol (external)",
+   "kind": "ui",
+   "status": "nocheck",
+   "ms": null,
+   "why": ""
+  },
+  {
+   "feature": "No AI edition: switch, people, guide, download, give-in",
+   "cards": [
+    "AIG-581",
+    "AIG-582",
+    "AIG-583",
+    "AIG-617",
+    "AIG-618"
+   ],
+   "where": "Setup > No AI, ever",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Twitch chat tab, pop-out reply, !idea",
+   "cards": [
+    "AIG-628",
+    "AIG-629",
+    "AIG-630"
+   ],
+   "where": "DM window > Twitch chip",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Enter to send settings",
+   "cards": [
+    "AIG-632"
+   ],
+   "where": "Setup > Enter sends",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Testing pile 'N of M left'",
+   "cards": [
+    "AIG-633"
+   ],
+   "where": "Open card while working the To test pile",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Grouped tests: each card own reply/accept",
+   "cards": [
+    "AIG-656",
+    "AIG-657"
+   ],
+   "where": "Inbox > grouped tests item",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Pop out every window; pop-out card movable",
+   "cards": [
+    "AIG-658",
+    "AIG-700"
+   ],
+   "where": "⧉ Pop out buttons",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Pro practice: risk label, merge gate, incident card, quiet times, guard rails",
+   "cards": [
+    "AIG-612",
+    "AIG-613",
+    "AIG-614",
+    "AIG-615",
+    "AIG-616"
+   ],
+   "where": "Card risk chip; 🔥 incident; Setup quiet times and rails",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Custom emojis and 🫩",
+   "cards": [
+    "AIG-648",
+    "AIG-649",
+    "AIG-650",
+    "AIG-691"
+   ],
+   "where": ":emoji: picker > Yours",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Server health warning",
+   "cards": [
+    "AIG-660"
+   ],
+   "where": "Setup > My servers health line",
+   "kind": "api",
+   "status": "pass",
+   "ms": 2,
+   "why": ""
+  },
+  {
+   "feature": "4:20 alarm, heads-up, WeedGlance",
+   "cards": [
+    "AIG-663",
+    "AIG-664",
+    "AIG-665"
+   ],
+   "where": "Setup > 4:20; 🌿 WeedGlance",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Tired mode",
+   "cards": [
+    "AIG-669",
+    "AIG-670",
+    "AIG-671"
+   ],
+   "where": "Top bar 🔋/😴",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Push to GitHub: ask first or just push",
+   "cards": [
+    "AIG-673"
+   ],
+   "where": "Setup > Lead prefs push",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Agents message each other",
+   "cards": [
+    "AIG-674",
+    "AIG-675"
+   ],
+   "where": "CLI: aigile msg",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Role: who can make projects",
+   "cards": [
+    "AIG-676"
+   ],
+   "where": "Setup > Roles",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "DM me about this card",
+   "cards": [
+    "AIG-684"
+   ],
+   "where": "Card menu > 💬 DM me",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Share token use with friends",
+   "cards": [
+    "AIG-685",
+    "AIG-686"
+   ],
+   "where": "Usage page share switch; DM usage line",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "ScrumGlance and no status DMs",
+   "cards": [
+    "AIG-688",
+    "AIG-689"
+   ],
+   "where": "Top bar glance; #/pop-glance",
+   "kind": "api",
+   "status": "pass",
+   "ms": 1,
+   "why": ""
+  },
+  {
+   "feature": "Remind me what this card is",
+   "cards": [
+    "AIG-693"
+   ],
+   "where": "Card menu > ❓ Remind me",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Team politeness slider",
+   "cards": [
+    "AIG-694"
+   ],
+   "where": "Setup > How polite your team is",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Per-server sudo flag for agents",
+   "cards": [
+    "AIG-701"
+   ],
+   "where": "Setup > My servers > sudo tick; aigile sudo-ok",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Engine pick per agent: Claude, Codex, Gemini",
+   "cards": [
+    "AIG-704",
+    "AIG-705",
+    "AIG-761",
+    "AIG-762"
+   ],
+   "where": "Team dialog > Engine select",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Default project folder; Scrum Master/leads may make projects",
+   "cards": [
+    "AIG-706"
+   ],
+   "where": "Setup > default project folder; aigile new-project",
+   "kind": "cli",
+   "status": "pass",
+   "ms": 81,
+   "why": ""
+  },
+  {
+   "feature": "Public feedback form on a project's site becomes cards",
+   "cards": [
+    "AIG-708",
+    "AIG-968",
+    "AIG-969",
+    "AIG-970"
+   ],
+   "where": "Look dialog > Public part > Public feedback; relay /f/<name>",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Message firewall, Assistant's bin, no fake questions (pokes, own messages, Original:)",
+   "cards": [
+    "AIG-711",
+    "AIG-717",
+    "AIG-803",
+    "AIG-811",
+    "AIG-835",
+    "AIG-839",
+    "AIG-840",
+    "AIG-841",
+    "AIG-966"
+   ],
+   "where": "Inbox head > bin link, #/bin",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Usage page loads without blank screen",
+   "cards": [
+    "AIG-712",
+    "AIG-713"
+   ],
+   "where": "#/usage",
+   "kind": "ui",
+   "status": "pass",
+   "ms": 224,
+   "why": ""
+  },
+  {
+   "feature": "Usage maximiser and parallel runs up to usage left",
+   "cards": [
+    "AIG-714",
+    "AIG-739"
+   ],
+   "where": "Setup > budget / usage page",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Language immersion button, learning languages, language days, random",
+   "cards": [
+    "AIG-716",
+    "AIG-722",
+    "AIG-723",
+    "AIG-724",
+    "AIG-725"
+   ],
+   "where": "Top bar 🌍 button; Setup > Language immersion",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Storage report and tidy-up",
+   "cards": [
+    "AIG-718"
+   ],
+   "where": "Setup > #storageBox",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Open it button starts the page without a popup",
+   "cards": [
+    "AIG-719"
+   ],
+   "where": "Card > ▶ Open it",
+   "kind": "api",
+   "status": "pass",
+   "ms": 29,
+   "why": ""
+  },
+  {
+   "feature": "Wake reliability: folder missing text, no popups, no false restarts, second run allowed",
+   "cards": [
+    "AIG-721",
+    "AIG-740",
+    "AIG-767",
+    "AIG-771",
+    "AIG-817",
+    "AIG-895"
+   ],
+   "where": "Poke badge; Wake button; aigile wake",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Project stats page and Wrapped",
+   "cards": [
+    "AIG-726",
+    "AIG-727"
+   ],
+   "where": "Board toolbar > Stats, #/stats/<slug>",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "No-AI Scrum Master: / commands and request forms",
+   "cards": [
+    "AIG-728",
+    "AIG-729",
+    "AIG-730",
+    "AIG-731"
+   ],
+   "where": "Messages > Scrum Master (no AI)",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Clickable links in comments (markdown, vscode://)",
+   "cards": [
+    "AIG-732"
+   ],
+   "where": "Card comments",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Raise bug button always there",
+   "cards": [
+    "AIG-733",
+    "AIG-959"
+   ],
+   "where": "Top bar 🐞 (under More) / next to project name",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Enter sends in Test tab comment and Ask the team box",
+   "cards": [
+    "AIG-737",
+    "AIG-919"
+   ],
+   "where": "Card Test tab; 💡 idea box",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "For you chips open one folded window",
+   "cards": [
+    "AIG-738"
+   ],
+   "where": "Home / board For you chips",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Phone pairing and server link for the Android app",
+   "cards": [
+    "AIG-741",
+    "AIG-868",
+    "AIG-907"
+   ],
+   "where": "Setup > Phone box (QR)",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "aigile.lol register interest and business licence form",
+   "cards": [
+    "AIG-754"
+   ],
+   "where": "Setup > Business licences; relay /apply",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "aigile open pops a card in the app",
+   "cards": [
+    "AIG-758"
+   ],
+   "where": "CLI aigile open; in-app chip",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "DMs as threads: Lead chat, replies stay in thread, drift to card",
+   "cards": [
+    "AIG-757",
+    "AIG-759",
+    "AIG-872",
+    "AIG-876",
+    "AIG-936"
+   ],
+   "where": "Messages > Lead chat",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Sorry what? button",
+   "cards": [
+    "AIG-765"
+   ],
+   "where": "Card and DM reply button",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Call stand-ups and going quiet",
+   "cards": [
+    "AIG-766",
+    "AIG-791",
+    "AIG-879",
+    "AIG-967"
+   ],
+   "where": "Standup button; nudge over bottom buttons",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "My servers: one global list, each project picks one",
+   "cards": [
+    "AIG-773",
+    "AIG-774"
+   ],
+   "where": "Setup > My servers; Look dialog > Server",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Self-care reminders",
+   "cards": [
+    "AIG-775",
+    "AIG-776",
+    "AIG-777"
+   ],
+   "where": "Setup > #selfcareBox; chip #scChip",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Teaser timeline",
+   "cards": [
+    "AIG-778",
+    "AIG-779"
+   ],
+   "where": "aigile.lol site",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Pop-outs movable",
+   "cards": [
+    "AIG-780"
+   ],
+   "where": "Any pop-out window",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Assumptions page: AI-passed tests list, summary, undo window",
+   "cards": [
+    "AIG-781",
+    "AIG-884"
+   ],
+   "where": "#/assumptions",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Twitch chat button works outside streamer mode",
+   "cards": [
+    "AIG-783",
+    "AIG-792"
+   ],
+   "where": "DM window Twitch chip",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "All hands message to every team",
+   "cards": [
+    "AIG-790",
+    "AIG-794",
+    "AIG-943"
+   ],
+   "where": "Messages > All hands, Send to N teams? confirm",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Start my day and life admin",
+   "cards": [
+    "AIG-797",
+    "AIG-798"
+   ],
+   "where": "Home > 🌅 Start my day; #/life",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Night watch button works",
+   "cards": [
+    "AIG-800"
+   ],
+   "where": "Scrum Master panel > Night watch",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Life reminders: hourly repeat and Snooze",
+   "cards": [
+    "AIG-802",
+    "AIG-813",
+    "AIG-823"
+   ],
+   "where": "Inbox life reminders; #/life",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Break modes and shower screen",
+   "cards": [
+    "AIG-824",
+    "AIG-825",
+    "AIG-837",
+    "AIG-838"
+   ],
+   "where": "Home toolbar > ⏸ Break, 🚿 Shower",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Keyboard shortcuts and ? cheat sheet",
+   "cards": [
+    "AIG-805",
+    "AIG-807"
+   ],
+   "where": "Press ? anywhere",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Playground project type and New playground button",
+   "cards": [
+    "AIG-808",
+    "AIG-818",
+    "AIG-819"
+   ],
+   "where": "New project > New playground (#p-play)",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "KeyboardMedic: everything works in No AI mode",
+   "cards": [
+    "AIG-809",
+    "AIG-820",
+    "AIG-821",
+    "AIG-956"
+   ],
+   "where": "No AI, ever mode",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "CLI: move project into a space",
+   "cards": [
+    "AIG-810"
+   ],
+   "where": "aigile new-project --parent / move",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Approvals tab in inbox",
+   "cards": [
+    "AIG-814",
+    "AIG-815"
+   ],
+   "where": "Inbox > #ibApprovals",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Swarm mode and swarm UI",
+   "cards": [
+    "AIG-822",
+    "AIG-827",
+    "AIG-874",
+    "AIG-877",
+    "AIG-880",
+    "AIG-893"
+   ],
+   "where": "Board toolbar > 🚨 Swarm this; #swarmBar",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Hyperfocus mode",
+   "cards": [
+    "AIG-871",
+    "AIG-875"
+   ],
+   "where": "Top bar / project button",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Swarm workers: one worktree run per To do card",
+   "cards": [
+    "AIG-892",
+    "AIG-901"
+   ],
+   "where": "In flight 🐝",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Today's projects picker",
+   "cards": [
+    "AIG-829",
+    "AIG-830"
+   ],
+   "where": "First open of day; #/today",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Ready for go task kind",
+   "cards": [
+    "AIG-828"
+   ],
+   "where": "For you > Ready for go",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Best agent for this and @ tags",
+   "cards": [
+    "AIG-833",
+    "AIG-851",
+    "AIG-852",
+    "AIG-853"
+   ],
+   "where": "Type @ in comment/DM; idea box Send to",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Request an expert",
+   "cards": [
+    "AIG-844",
+    "AIG-845"
+   ],
+   "where": "Idea box > #expertBtn",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Friend feature requests",
+   "cards": [
+    "AIG-846"
+   ],
+   "where": "Friend's board > Request a feature",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Per-friend feature switches",
+   "cards": [
+    "AIG-847"
+   ],
+   "where": "Friends > #featSec",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Desktop app hides to tray",
+   "cards": [
+    "AIG-849"
+   ],
+   "where": "Electron app",
+   "kind": "ui",
+   "status": "nocheck",
+   "ms": null,
+   "why": ""
+  },
+  {
+   "feature": "Change roles (project manager)",
+   "cards": [
+    "AIG-856"
+   ],
+   "where": "Share dialog > change role",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Raise a change request",
+   "cards": [
+    "AIG-857"
+   ],
+   "where": "Board toolbar > Raise a change",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Go / no-go chain",
+   "cards": [
+    "AIG-858"
+   ],
+   "where": "Change card vote panel",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Change windows",
+   "cards": [
+    "AIG-859"
+   ],
+   "where": "Look dialog > change windows",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Change management guides",
+   "cards": [
+    "AIG-860"
+   ],
+   "where": "Help guide",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Call link on change/stand-up",
+   "cards": [
+    "AIG-861"
+   ],
+   "where": "Look dialog; stand-up; change card",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Risk register",
+   "cards": [
+    "AIG-863"
+   ],
+   "where": "#/risks/<slug>",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Definition of Ready / Done",
+   "cards": [
+    "AIG-864"
+   ],
+   "where": "Look dialog; aigile dod",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Retros suggest team rules",
+   "cards": [
+    "AIG-865"
+   ],
+   "where": "aigile retro",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Pure black theme and small things",
+   "cards": [
+    "AIG-867",
+    "AIG-916"
+   ],
+   "where": "Theme picker",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Tidy old DM cards into threads",
+   "cards": [
+    "AIG-873"
+   ],
+   "where": "aigile dms tidy",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Messages newest first, auto-hide and close quiet chats",
+   "cards": [
+    "AIG-917",
+    "AIG-946"
+   ],
+   "where": "Messages list",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Friend pictures",
+   "cards": [
+    "AIG-883"
+   ],
+   "where": "Friends > Picture",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Problem cards and incidents guide",
+   "cards": [
+    "AIG-887",
+    "AIG-888"
+   ],
+   "where": "Card type problem; guide",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Mail: add mailbox and read inbox list",
+   "cards": [
+    "AIG-902"
+   ],
+   "where": "Setup > Mail; #/mail",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Mail: read a mail, reply/send SMTP, make card, rules, agent watch, Outlook sign-in",
+   "cards": [
+    "AIG-903",
+    "AIG-904",
+    "AIG-905",
+    "AIG-906",
+    "AIG-908",
+    "AIG-909"
+   ],
+   "where": "#/mail",
+   "kind": "api",
+   "status": "pass",
+   "ms": 2,
+   "why": ""
+  },
+  {
+   "feature": "Codex and Claude review each other's branches",
+   "cards": [
+    "AIG-913"
+   ],
+   "where": "Card comments before merge",
+   "kind": "unsure",
+   "status": "nocheck",
+   "ms": null,
+   "why": ""
+  },
+  {
+   "feature": "App speed: poll stamp instead of full board fetch",
+   "cards": [
+    "AIG-920",
+    "AIG-950",
+    "AIG-957"
+   ],
+   "where": "Every open window poll",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Sandbox safety for tester/QA boards",
+   "cards": [
+    "AIG-944",
+    "AIG-965"
+   ],
+   "where": "QA/tester boards",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Starred messages sync",
+   "cards": [
+    "AIG-975"
+   ],
+   "where": "Messages ★",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "One version number and /api/version",
+   "cards": [
+    "AIG-976"
+   ],
+   "where": "🐣 tag tooltip",
+   "kind": "api",
+   "status": "pass",
+   "ms": 0,
+   "why": ""
+  },
+  {
+   "feature": "Release notes from the board",
+   "cards": [
+    "AIG-977"
+   ],
+   "where": "node tools/gen/release-notes.mjs",
+   "kind": "cli",
+   "status": "pass",
+   "ms": 49,
+   "why": ""
+  },
+  {
+   "feature": "Share link title, Non-technical preset, Preview link",
+   "cards": [
+    "AIG-961",
+    "AIG-962",
+    "AIG-963"
+   ],
+   "where": "Share dialog; #sbPreview",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Lead chat: remind me at 3 makes a life reminder",
+   "cards": [
+    "AIG-964"
+   ],
+   "where": "Lead chat",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "One-click urgent",
+   "cards": [
+    "AIG-899"
+   ],
+   "where": "Card ! button",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Board on phone browser (PWA)",
+   "cards": [
+    "AIG-948"
+   ],
+   "where": "test.aigile.lol on phone",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Calmer top bar and phone menu",
+   "cards": [
+    "AIG-923",
+    "AIG-931",
+    "AIG-932",
+    "AIG-955"
+   ],
+   "where": "Top bar > More / phone menu",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Home and board declutter",
+   "cards": [
+    "AIG-924",
+    "AIG-933",
+    "AIG-937",
+    "AIG-938",
+    "AIG-939"
+   ],
+   "where": "Home, board",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Setup index and phone pairing steps",
+   "cards": [
+    "AIG-934",
+    "AIG-941"
+   ],
+   "where": "Setup index nav #setIndex",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Open card: title first, actions in ⋯ menu",
+   "cards": [
+    "AIG-935"
+   ],
+   "where": "Open card",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "First run single dialog",
+   "cards": [
+    "AIG-940"
+   ],
+   "where": "Blank first load",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "Quick new card: Title, Description, Create",
+   "cards": [
+    "AIG-942"
+   ],
+   "where": "New card box",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  },
+  {
+   "feature": "UX small fixes (Decide markdown, Inbox scroll, Lead chat line, Mail Setup button, Stats breadcrumb, dark contrast)",
+   "cards": [
+    "AIG-921",
+    "AIG-922",
+    "AIG-925",
+    "AIG-926",
+    "AIG-927",
+    "AIG-928",
+    "AIG-929",
+    "AIG-930"
+   ],
+   "where": "various pages",
+   "kind": "qa",
+   "status": "nocheck",
+   "ms": null,
+   "why": "qa area skipped (--no-qa)"
+  }
+ ]
+}
