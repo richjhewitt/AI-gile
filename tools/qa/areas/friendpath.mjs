@@ -11,7 +11,7 @@ def('friendpath', 'the friend path in the page: invite, join, match words, DM se
   const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, await freePort());
   const shots = process.env.QA_SHOTS;
   if (shots) fs.mkdirSync(shots, { recursive: true });
-  const shot = async (pg, name) => { if (shots) await pg.screenshot({ path: path.join(shots, name + '.png') }).catch(() => {}); };
+  const shot = async (pg, name) => { if (shots && /setup/.test(name)) await pg.evaluate(() => { const e = document.getElementById('joinSec'); if (e) e.scrollIntoView(); }).catch(() => {}); if (shots) await pg.screenshot({ path: path.join(shots, name + '.png')}).catch(() => {}); };
   // A raw key looks like dms.act.react or share.role.x: dotted lowercase words with no spaces.
   const rawKeys = async pg => pg.evaluate(() => (document.body.innerText.match(/\b[a-z][a-zA-Z]+(?:\.[a-zA-Z][a-zA-Z0-9]*){1,4}\b/g) || []).filter(k => /^(dms|share|setup|inbox|board|card|nav|common|dm|sb|friends)\./.test(k)));
   const seen = [];
@@ -104,6 +104,9 @@ def('friendpath', 'the friend path in the page: invite, join, match words, DM se
     await pb.waitForSelector('.share-offer [data-share-yes]:not([disabled])', { timeout: 12000 });
     check('B: the offer names the project and the friend', /Alpha/.test(await pb.textContent('.share-offer')), await pb.textContent('.share-offer'));
     await shot(pb, '07-B-offer'); await keys(pb, 'B inbox offer');
+    // AIG-1184: the All chip below the tabs counts the link offer too, and the offer's name field has a label.
+    check('B: the All chips agree (no "All 0" beside "All 1")', await pb.evaluate(() => { const n = [...document.querySelectorAll('#ibKinds .ib-kind[data-kind=""] .n')].map(x => x.textContent.trim()); return n.length > 0 && n.every(x => x !== '0'); }));
+    check('B: the new-project name field has a label', await pb.evaluate(() => !!document.querySelector('.share-offer label.f [data-share-new]')));
     await pb.selectOption('.share-offer [data-share-into]', 'bravo');
     await pb.click('.share-offer [data-share-yes]');
     await until(async () => (await s.ok('GET', '/api/shares?slug=alpha')).find(l => l.state === 'live'));

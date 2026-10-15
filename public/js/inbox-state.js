@@ -94,6 +94,6 @@ const IB = {
   const onInboxPage = () => location.hash === '#/inbox';
   // Link offers and friends' questions are waiting on the owner too: counted in All, the top bar, the rail and the title.
   const friends = () => (IB.offers || 0) + (IB.asks || 0) + (IB.approvals || 0);   // AIG-815: approvals too (lost in a merge)
-  const setFriends = (key, n) => { if (IB[key] === n) return; IB[key] = n; if (typeof IB.paintTop === 'function') IB.paintTop(); if (onInboxPage() && el('ib') && IB.paintTabs) IB.paintTabs(); };
+  const setFriends = (key, n) => { if (IB[key] === n) return; IB[key] = n; if (typeof IB.paintTop === 'function') IB.paintTop(); if (onInboxPage() && el('ib') && IB.paintTabs) { IB.paintTabs(); if (IB.paintPage) IB.paintPage(); } };
   Object.assign(IB, { friends, setFriends, el, esc, post, isTask, isQuestion, isTest, kindOf, lastAsk, shownAsk, earlier, keyOf, linkify, onInboxPage, tabPref, load, apply, repaint, view });
 })();
