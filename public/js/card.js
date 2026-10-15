@@ -153,6 +153,13 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.card
 /* ---------- card actions: edit, delete, reply, verdict ---------- */
 function editCard() { state.editing = true; render(); const ti = $('f-title'); if (ti) ti.focus(); }
 function cancelEdit() { state.editing = false; rerender(); }
+// AIG-1268: Esc in the card's edit form cancels the edit (nothing saved) and puts focus on the card panel, so c, e, a and b work again.
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || e.defaultPrevented || !state.editing || $('dialog').firstChild || state.cardMenu) return;
+  if (!document.querySelector('#modal .panel form')) return;
+  e.preventDefault(); state.editing = false; render();
+  const p = document.querySelector('#modal .panel'); if (p) { if (!p.hasAttribute('tabindex')) { p.tabIndex = -1; p.style.outline = 'none'; } p.focus({ preventScroll: true }); }
+});
 async function saveCard(e) {
   e.preventDefault();
   const c = curCard(), now = readFields(true, true), body = {};
