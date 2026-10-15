@@ -94,6 +94,8 @@ def('teaserfile', 'site/index.html from file:// with the real fetch: the pitch s
   await page.route(/relay\.aigile\.lol/, r => r.abort());
   await page.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
   await page.waitForSelector('#pitch:not([hidden])', { timeout: 5000 });
+  await page.waitForSelector('#live-msg:not([hidden])', { timeout: 5000 });
+  check('relay unreachable: the live board shows one calm line, no cards (AIG-1232)', (await page.$eval('#live-msg', e => e.textContent)).length > 5 && (await page.$('.lv-card')).length === 0);
   check('the length slider shows without a web server', /^1 word /.test(await page.$eval('#pitch-count', e => e.textContent)));
   check('every text in lang/en.lines.json has exactly its size in words, 2+ texts per size (AIG-1117)', json.sizes.every(z => z.texts.length >= 2 && z.texts.every(t => t.trim().split(/\s+/).length === z.n)));
 }, true);

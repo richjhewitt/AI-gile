@@ -1,6 +1,6 @@
 # aigile.lol site
 
-Static one-page site: `index.html`, `style.css`, `teaser.js`, `timeline.js` + `timeline.json`, `i18n.js` + `lang/` (every language: see `lang/TRANSLATE.md`), `assets/`. No trackers, no cookies.
+Static one-page site: `index.html`, `style.css`, `teaser.js`, `live.js` (live board, AIG-1232), `timeline.js` + `timeline.json`, `i18n.js` + `lang/` (every language: see `lang/TRANSLATE.md`), `assets/`. No trackers, no cookies.
 After editing a `lang/*.json` file run `node tools/gen/site-lang.mjs`, then `node tools/site-i18n-check.mjs`.
 Colours come from the board (`public/css/*.css`); re-copy them if the board's colours change.
 

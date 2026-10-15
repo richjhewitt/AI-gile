@@ -78,6 +78,14 @@ try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark")d
   <!-- "How long others took" is off until the closed alpha is proven (Rich, AIG-1222); famous-apps.js/json are kept -->
 </section>
 
+<section class="live" id="live" aria-labelledby="live-h" hidden>
+  <h2 id="live-h" data-i18n="live.h2">Watch it being built, live</h2>
+  <p class="live-stat" id="live-stat" aria-live="off" hidden></p>
+  <div class="live-scroll"><div class="lv-cols" id="live-cols"></div></div>
+  <p class="live-msg" id="live-msg" hidden></p>
+  <p class="live-cap" data-i18n="live.caption">Every card is hidden: you see the shape of the work, not the words.</p>
+</section>
+
 <section class="community">
   <h2 data-i18n="join.h2">Join in</h2>
   <p class="lede small" data-i18n="join.lede">AI-gile is being built by a small human and a large number of patient agents. It's private for now, in a closed alpha with friends. Want a go when it opens up?</p>
@@ -92,6 +100,7 @@ try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark")d
 <script src="timeline.js"></script>
 <!-- <script src="famous-apps.js"></script> (off, AIG-1222) -->
 <script src="teaser.js"></script>
+<script src="live.js"></script>
 <script>
 (function(){
   var root=document.documentElement,b=document.getElementById("theme");
