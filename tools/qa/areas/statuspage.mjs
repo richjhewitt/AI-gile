@@ -91,6 +91,9 @@ def('statuspage', '🟢 status page: public services reach the relay /status.jso
   check('no sideways scroll at phone width and dark mode applies', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && getComputedStyle(document.body).backgroundColor === 'rgb(18, 21, 27)'));
   check('it polls the relay status.json', await page.evaluate(() => window.__n >= 1));
   check('no page errors', page.errs.length === 0, page.errs);
+  const p3 = await open({ services: [{ key: 'calls', name: 'Calls', offers: 'x', state: 'green', ms: 120, at: ago(1) }, { key: 'web', name: 'Website', state: 'red', at: ago(1) }] });
+  const r3 = await p3.$$eval('#list li', l => l.map(e => e.textContent));
+  check("AI-gile's own checks (AIG-1284): page-language name and offer, Working (answered in N ms) or Down, plus the intro line", r3.length === 2 && /Calls/.test(r3[0]) && /Voice, video and screen share/.test(r3[0]) && /Working \(answered in 120 ms\)/.test(r3[0]) && /Down: didn't answer/.test(r3[1]) && /every 5 minutes/.test(await p3.$eval('.intro', e => e.textContent)), r3);
   const p2 = await open({ services: [] });
   check('no services says All quiet', await p2.$eval('#quiet', e => !e.hidden && e.textContent.trim() === 'All quiet') && (await p2.$$('#list li')).length === 0);
   check('the teaser footer links to Status', /<footer>[^]*href="status.html"[^]*<\/footer>/.test(fs.readFileSync(path.join(ROOT, 'site', 'index.html'), 'utf8')));

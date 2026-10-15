@@ -164,11 +164,27 @@ setInterval(() => { const t = Date.now(); for (const [k, l] of callHits) if (!l.
 // "the first key claims it": a stranger could claim a fresh relay); anyone reads /status.json (CORS *, cached 30 s) (AIG-1119).
 const STATUS_DIR = path.join(DATA, 'statuspage');
 let statusCache = { at: 0, text: '{"services":[]}' };
+// AIG-1284: the relay also checks AI-gile's own public services every 5 minutes, so the page shows them with nobody posting.
+// RELAY_WATCH="key|Name|https://url|what it offers;..." (the page shows its own language's name and offer for a known key).
+// One failed check is amber, two in a row red; anything under 500 counts as up.
+const WATCH = String(process.env.RELAY_WATCH || '').split(';').map(s => s.split('|').map(x => x.trim())).filter(a => a.length >= 3 && /^https:\/\//.test(a[2]))
+  .slice(0, 12).map(([key, name, url, offers]) => ({ key: key.slice(0, 20), name: name.slice(0, 80), url, offers: (offers || '').slice(0, 200), fails: 0 }));
+let watched = [];
+async function watchOnce() {
+  watched = await Promise.all(WATCH.map(async w => {
+    const t0 = Date.now(); let ok = false;
+    try { const r = await fetch(w.url, { signal: AbortSignal.timeout(10e3), redirect: 'manual' }); ok = r.status < 500; } catch {}
+    w.fails = ok ? 0 : w.fails + 1;
+    return { key: w.key, name: w.name, offers: w.offers, state: ok ? 'green' : w.fails > 1 ? 'red' : 'amber', ms: ok ? Date.now() - t0 : undefined, at: new Date().toISOString() };
+  }));
+  statusCache.at = 0;
+}
+if (WATCH.length) { setTimeout(watchOnce, 3e3).unref(); setInterval(watchOnce, 5 * 60e3).unref(); }
 async function statusPage(req, res, pathname) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' }); return res.end(); }
   if (req.method === 'GET' && pathname === '/status.json') {
-    if (Date.now() - statusCache.at > 30e3) { let text = '{"services":[]}'; try { text = fs.readFileSync(path.join(STATUS_DIR, 'status.json'), 'utf8'); } catch {} statusCache = { at: Date.now(), text }; }
+    if (Date.now() - statusCache.at > 30e3) { let text = '{"services":[]}'; try { text = fs.readFileSync(path.join(STATUS_DIR, 'status.json'), 'utf8'); } catch {} if (watched.length) { let o = {}; try { o = JSON.parse(text); } catch {} text = JSON.stringify({ services: [...watched, ...(Array.isArray(o.services) ? o.services : [])] }); } statusCache = { at: Date.now(), text }; }
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=30', 'X-Content-Type-Options': 'nosniff' });
     return res.end(statusCache.text);
   }

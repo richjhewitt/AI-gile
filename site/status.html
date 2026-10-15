@@ -20,6 +20,7 @@ li{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);bor
 .name{font-weight:600;overflow-wrap:anywhere}
 .offers,.when{color:var(--muted);font-size:14px}
 .line{margin-top:4px;overflow-wrap:anywhere}
+.intro{color:var(--muted);margin:-8px 0 16px}
 #msg{color:var(--muted);padding:20px 0;text-align:center;font-size:18px}
 #quiet{color:var(--muted);padding:20px 0;text-align:center;font-size:18px}
 .top{display:flex;justify-content:flex-end;margin:0 0 8px}
@@ -32,6 +33,7 @@ a{color:inherit}
 <main>
 <div class="top"><span id="lang-slot"></span></div>
 <h1 data-i18n="status.h1">AI-gile status</h1>
+<p class="intro" data-i18n="status.intro">Is AI-gile working right now? This page checks the website, board sharing, calls and the download every 5 minutes.</p>
 <ul id="list"></ul>
 <p id="quiet" hidden data-i18n="status.quiet">All quiet</p>
 <p id="msg" role="status">Checking…</p>
@@ -57,9 +59,12 @@ a{color:inherit}
     a.forEach(function(x){
       var li=el("li",x.state),body=el("div");
       li.appendChild(el("span","dot",DOT[x.state]||DOT.green));
-      body.appendChild(el("div","name",x.name));
-      if(x.offers)body.appendChild(el("div","offers",x.offers));
-      if(x.line)body.appendChild(el("div","line",x.line));
+      // AIG-1284: the relay's own checks carry a key: name and offer in the page's language, and up / no answer / down
+      var k=x.key?"status.svc."+String(x.key).replace(/[^a-z]/g,""):"",tk=function(s,f){var v=k&&SiteI18n.t(k+s);return v&&v!==k+s?v:f};
+      body.appendChild(el("div","name",tk("",x.name)));
+      var of=tk(".offers",x.offers);if(of)body.appendChild(el("div","offers",of));
+      var ln=x.key?SiteI18n.t(x.state==="green"?"status.up":x.state==="amber"?"status.slow":"status.down",{ms:x.ms||0}):x.line;
+      if(ln)body.appendChild(el("div","line",ln));
       body.appendChild(el("div","when",ago(x.at)));
       li.appendChild(body);list.appendChild(li);
     });
