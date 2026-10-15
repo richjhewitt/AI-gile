@@ -2807,6 +2807,7 @@
   "tm.renamed": "{from} heet nu {to}.",
   "popout.btn": "⧉ Los venster",
   "popout.title": "Open dit venster los, om te verplaatsen en te vergroten",
+  "popout.aria": "Los venster: in een eigen venster openen",
   "lead.push": "Pushen naar GitHub",
   "lead.push.ask": "Eerst vragen",
   "lead.push.auto": "Gewoon pushen",

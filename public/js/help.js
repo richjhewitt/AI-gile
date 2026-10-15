@@ -49,7 +49,7 @@ async function helpMenu() {
 }
 // 👋 Getting started (AIG-1084): what AI-gile is and the first five minutes, in a dialog.
 function gettingStarted() {
-  openDialog(`<h2>${esc(t('help.start.h'))}</h2><p>${esc(t('help.start.p'))}</p>
+  popNext('start'); openDialog(`<h2>${esc(t('help.start.h'))}</h2><p>${esc(t('help.start.p'))}</p>
     <ol id="gettingStarted">${[1, 2, 3, 4].map(n => `<li>${esc(t('help.start.' + n))}</li>`).join('')}</ol>
     <p class="muted">${esc(t('help.start.more'))}</p>
     <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
@@ -69,6 +69,7 @@ async function guideOpen(pre, url, titleKey) {
   let r; try { r = await api('GET', url); } catch (e) { alert(e.message); return; }
   const src = String(r.md).replace(/\r/g, '').replace(/^---\n[\s\S]*?\n---\n/, ''), parts = src.split(/^## /m).slice(1), sec = {};
   parts.forEach(p => { const [h, ...rest] = p.split('\n'); sec[h.trim()] = rest.join('\n').trim(); });
+  popNext(pre === 'inc' ? 'incidents' : 'service');   // AIG-1313
   openDialog(`<h2>${esc(t(titleKey))}</h2><div class="guide-md" id="${pre}Guide"></div><div class="actions"><button id="${pre}More" onclick="guideMore('${pre}')">${esc(t('help.' + pre + '.more'))}</button><button onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
   (window._guide = window._guide || {})[pre] = { sec, shown: HELP.level === '1' ? 2 : HELP.level === '3' ? 0 : 1 };
   guideDraw(pre);
@@ -122,7 +123,7 @@ function introShow() {
     <div id="introSlide" class="intro-slide"><h2>${esc(s.h)}</h2>${md(s.body)}</div>
     <div class="actions">${INTRO.i ? `<button id="introBack" onclick="introMove(-1)">${esc(t('tour.back'))}</button>` : ''}
       <button class="primary" id="introNext" onclick="${last ? 'closeDialog()' : 'introMove(1)'}">${esc(t(last ? 'help.intro.done' : 'tour.next'))}</button>
-      ${last ? '' : `<button id="introClose" onclick="closeDialog()">${esc(t('help.intro.close'))}</button>`}</div>`, 'intro');
+      ${last ? '' : `<button id="introClose" onclick="closeDialog()">${esc(t('help.intro.close'))}</button>`}</div>`, 'intro', 'intro');
 }
 function introMove(d) { INTRO.i = Math.max(0, Math.min(INTRO.slides.length - 1, INTRO.i + d)); introShow(); }
 document.addEventListener('keydown', e => {

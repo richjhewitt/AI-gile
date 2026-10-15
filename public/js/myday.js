@@ -46,7 +46,7 @@ const MyDay = (() => {
     if (auto && document.querySelector('#dialog .overlay')) return;
     const html = await M.render();
     if (auto && document.querySelector('#dialog .overlay')) return;   // something else opened while it loaded
-    openDialog(html);
+    popNext('myday'); openDialog(html);
     try { await api('POST', '/api/daystart/seen'); if (M.st) M.st.ask = false; } catch {}
   };
   // Redraw in place (after the picker is answered), when this dialog is the one on screen.

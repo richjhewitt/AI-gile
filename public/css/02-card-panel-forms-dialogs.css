@@ -181,6 +181,17 @@ body.pop .overlay { position: static; background: none; padding: 0; display: blo
 .dialog .dlg-pop { float: right; margin: 0 0 6px 8px; padding: 2px 9px; font-size: 12px; }
 body.popdlg .dialog, body.popdlg .dialog.wide { width: 100%; max-width: none; max-height: none; min-height: 100vh; border-radius: 0; box-sizing: border-box; resize: none; }
 body.pop .panel { max-width: none; max-height: none; width: 100%; min-height: 100vh; border-radius: 0; margin: 0; box-shadow: none; }
+/* AIG-1313: the same button top right of a page (outside #app, so it survives a redraw), on Setup, and in the Messages panel head */
+#pagePopBar { position: relative; height: 0; z-index: 6; }
+#pagePop, #setupPop { position: absolute; inset-inline-end: 20px; top: 10px; padding: 2px 9px; font-size: 12px; }
+#setupPop { position: static; float: right; margin: 0 0 6px 8px; }
+#pagePop[hidden] { display: none; }
+.dm-head .dlg-pop { font-size: 12px; padding: 2px 8px; }
+body.poppage header, body.poppage #filterbar, body.poppage #updateTop, body.poppage #dmRail, body.poppage #dmPanel { display: none; }
+body.poppage { padding-inline-start: 0; } body.poppage main { padding: 12px 16px; }
+body.popchat header, body.popchat #filterbar, body.popchat #updateTop, body.popchat #dmRail, body.popchat main { display: none; }
+body.popchat { padding-inline-start: 0; }
+body.popchat #dmPanel { inset: 0; width: 100%; box-shadow: none; border: 0; }
 
 /* ---------- board columns (AIG-116) ---------- */
 .column[style] { border-top: 4px solid var(--colc); }

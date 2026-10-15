@@ -91,7 +91,7 @@ const IB = {
     if (!document.hidden && onInboxPage()) IB.paintPage();
   }
   function repaint() { if (!loaded) return; IB.items = view(); IB.paintTop(); if (!document.hidden && onInboxPage() && el('ib')) IB.paintPage(); }
-  const onInboxPage = () => location.hash === '#/inbox';
+  const onInboxPage = () => /^#\/(?:pop-page\/)?inbox$/.test(location.hash);   // or the inbox in its own window (AIG-1313)
   // Link offers and friends' questions are waiting on the owner too: counted in All, the top bar, the rail and the title.
   const friends = () => (IB.offers || 0) + (IB.asks || 0) + (IB.approvals || 0) + (IB.sharenotes || 0);   // AIG-1311: share notes   // AIG-815: approvals too (lost in a merge)
   const setFriends = (key, n) => { if (IB[key] === n) return; IB[key] = n; if (typeof IB.paintTop === 'function') IB.paintTop(); if (onInboxPage() && el('ib') && IB.paintTabs) { IB.paintTabs(); if (IB.paintPage) IB.paintPage(); } };
