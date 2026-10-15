@@ -31,6 +31,25 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
   check('English has strings', Object.keys(en).length > 100, Object.keys(en).length);
   check('dev words are marked in English', Object.values(en).some(v => /\{\{dev:\w+\}\}/.test(v)));
 
+  // No key written twice in one object of any language file (JSON.parse silently keeps only the last; AIG-1269). Scans the raw text.
+  const dupKeys = text => {
+    const dups = []; const stack = []; let i = 0; const n = text.length;
+    const str = () => { let j = i + 1; while (text[j] !== '"') j += text[j] === '\\' ? 2 : 1; const v = text.slice(i + 1, j); i = j + 1; return v; };
+    let expectKey = false;
+    while (i < n) {
+      const c = text[i];
+      if (c === '{') { stack.push(new Set()); expectKey = true; i++; }
+      else if (c === '}') { stack.pop(); expectKey = false; i++; }
+      else if (c === ',') { expectKey = stack.length > 0; i++; }
+      else if (c === '"') { const v = str(); if (expectKey && stack.length) { const top = stack[stack.length - 1]; if (top.has(v)) dups.push(v); top.add(v); expectKey = false; } }
+      else i++;
+    }
+    return dups;
+  };
+  check('the duplicate-key scan catches a repeated key', dupKeys('{"a":"1","b":{"one":"x"},"c":{"one":"y"},"a":"2"}').join() === 'a');
+  const dupFound = fs.readdirSync(langDir).filter(f => f.endsWith('.json')).flatMap(f => dupKeys(fs.readFileSync(path.join(langDir, f), 'utf8')).map(k => f + ':' + k));
+  check('no language file writes a key twice', dupFound.length === 0, dupFound.slice(0, 10));
+
   // The checker passes every shipped language file (missing keys allowed: English shows instead).
   const shipped = fs.readdirSync(langDir).filter(f => !['en.json', 'languages.json'].includes(f)).map(f => f.slice(0, -5));
   const all = runCheck();
