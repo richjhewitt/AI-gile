@@ -69,6 +69,7 @@ def('emojisdm', 'custom emojis in DMs: the picture goes once per friend inside t
     const pd = await ctx.newPage(); pd.errors = [];
     pd.on('pageerror', e => pd.errors.push(e.message));
     await pd.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
+    await dj('POST', '/api/setup', { prefs: { wizardSeen: true } });   // Davy's board is a first run: its welcome dialog would sit over the rail
     await pd.goto(url + '#/');
     await pd.waitForSelector('#dmRail [data-dms]');
     await pd.click('#dmRail [data-dms]');

@@ -35,6 +35,8 @@ for (const name of wanted) {
     check('area ran to the end', false, String(e.stack || e).split('\n').slice(0, 3).join(' | '));
   } finally {
     if (ctx) await ctx.close().catch(() => {});
+    // A context an area opened itself (phone, dark, first-run) and did not close would keep polling the next area's server on the same port.
+    if (browser) for (const c of browser.contexts()) await c.close().catch(() => {});
     s.stop();
     await sleep(300);
     try { fs.rmSync(s.dir, { recursive: true, force: true }); } catch {}   // the temp data folder is not kept

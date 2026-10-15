@@ -150,6 +150,7 @@ def('tbusage', 'Top bar: ⚡ Usage on the bar (joins a saved pin list once, unpi
   check('unpinning Usage sticks after a reload (it is under More)', !(await onBar()) && await page.evaluate(() => !!document.getElementById('usageNav').closest('#tbMoreMenu') && !JSON.parse(localStorage.getItem('aigile.topbar.pinned')).includes('usageNav')));
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForFunction(() => document.querySelector('header').offsetHeight < 70);
+  await page.waitForFunction(() => document.getElementById('tbCustom').hidden, null, { timeout: 8000 }).catch(() => {});
   check('phone: no Customise item in the ☰ menu', await page.evaluate(() => document.getElementById('tbCustom').hidden));
   noErrors(page);
   await fresh.close();

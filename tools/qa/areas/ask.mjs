@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { BASE, freePort, startRelay, until, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, freePort, startRelay, until, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def, readChat } from '../lib.mjs';
 import { pair } from './share.mjs';
 
 // The stub agent: notes its folder (one line per run), its arguments and what came on stdin, then answers like the
@@ -112,7 +112,7 @@ def('ask', 'ask a mate: a friend\'s short question waits for ✅ / ✋; ✅ runs
     check('the friend chat has words for it', /answer delayed: AI is off on their side/.test(JSON.stringify(await (await fetch(b.base + '/lang/en.json')).json())));
     const chatLen = (await a.ok('GET', `/api/dms/contacts/${cb.id}/messages`)).length;
     await sleep(7000);
-    check('the notice is sent once, not repeated (one mark, no extra chat lines)', (await a.ok('GET', `/api/dms/contacts/${cb.id}/messages`)).length === chatLen && JSON.parse(fs.readFileSync(path.join(a.data, 'dms', cb.id + '.json'), 'utf8')).filter(m => m.offTold).length === 1);
+    check('the notice is sent once, not repeated (one mark, no extra chat lines)', (await a.ok('GET', `/api/dms/contacts/${cb.id}/messages`)).length === chatLen && readChat(a, path.join(a.data, 'dms', cb.id + '.json')).filter(m => m.offTold).length === 1);
     check('✅ is refused while it is off', (await a.api('POST', `/api/dms/asks/${third.contact}/${third.id}/yes`)).status === 409);
     await page.locator('.ask-item', { hasText: 'Belgium' }).locator('[data-ask-no]').click();
     check('✋ still works while it is off', !!(await until(async () => (await msgsB()).filter(m => m.kind === 'answer' && m.no).length === 2, 8000)));

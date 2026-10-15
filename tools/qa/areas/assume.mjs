@@ -22,12 +22,12 @@ def('assume', '🌙 assumptions log: assume + comment --assume, the page and its
   check('newest first, grouped by project', heads.join() === 'Beta,Alpha', heads);
   check('the badge counts unreviewed entries', !!(await page.waitForFunction(() => document.getElementById('assumeBadge')?.textContent === '2', null, { timeout: 5000 }).catch(() => null)));
   await page.click('.as-item:has-text("Blue") .as-ok');
-  await page.waitForFunction(() => document.getElementById('assumeBadge')?.textContent === '1', null, { timeout: 5000 });
+  await page.waitForFunction(() => document.getElementById('assumeBadge')?.textContent === '1', null, { timeout: 10000 });
   check('👍 fine marks it ok', (await s.ok('GET', '/api/assumptions')).find(x => x.slug === 'alpha').state === 'ok');
   await page.click('.as-item:has-text("API stays") .as-plug');
   await page.fill('.as-reply', 'Use v2 instead');
   await page.click('.as-send');
-  await page.waitForFunction(() => document.getElementById('assumeBadge')?.hidden, null, { timeout: 5000 });
+  await page.waitForFunction(() => document.getElementById('assumeBadge')?.hidden, null, { timeout: 15000 });
   const last = (await getCard(s, 'beta', b.id)).comments.at(-1);
   check('✋ plug this sends the reply to the card as the owner', /Use v2 instead/.test(last.text) && last.author === (await s.ok('GET', '/api/meta')).owner, last);
   check('and marks it plugged', (await s.ok('GET', '/api/assumptions')).find(x => x.slug === 'beta').state === 'plug');

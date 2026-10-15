@@ -29,8 +29,8 @@ def('tester', '🤖 Test these for me: the button starts one AI tester run over 
   s.cli(['test', 'tst', c.id, '- Click **Go**\n\n- It says done', '--as', 'Lead']);
   check('one test waits for the tester', (await s.ok('GET', '/api/tester')).waiting === 1);
   const page = await openPage(ctx, '#/inbox');
-  await page.waitForSelector('#ibTester:not([hidden])', { timeout: 6000 }).catch(() => {});
-  check('the inbox offers "Test these for me (1)"', /Test these for me \(1\)/.test(await page.textContent('#ibTester')));
+  await page.waitForFunction(() => /1 the AI can check/.test(document.getElementById('ibTester')?.textContent || ''), null, { timeout: 10000 }).catch(() => {});
+  check('the inbox offers the AI check button (1)', /1 the AI can check/.test(await page.textContent('#ibTester')));
   await page.click('#ibTester');
   await page.waitForFunction(() => /Testing/.test(document.getElementById('ibTester').textContent), null, { timeout: 5000 }).catch(() => {});
   check('it shows it is testing', /Testing/.test(await page.textContent('#ibTester')));

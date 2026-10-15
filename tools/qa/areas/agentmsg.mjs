@@ -45,11 +45,12 @@ def('agentmsg', 'agents message each other: leads, helpers, Scrum Master (update
   check('to yourself is refused', (await s.api('POST', '/api/projects/alpha/agentmsg', { from: 'Forge', to: 'Lead', text: 'x' })).status === 400);
   check('an unknown project is 404', (await s.api('POST', '/api/projects/nope/agentmsg', { from: 'a', to: 'Lead', text: 'x' })).status === 404);
 
-  // The owner sees it in the project chat, labelled, as not his.
+  // AIG-1116: agent-to-agent cards never show in the owner's lead chat; they stay on the board as a closed, labelled card.
   const chat = await s.ok('GET', '/api/chats/alpha');
-  const line = chat.messages.find(m => /look at the login card/.test(m.text));
-  check('the owner chat shows it from the sender, labelled agent to agent, not mine', line && line.author === 'Courier' && line.mine === false && /agent to agent: Courier → Forge/.test(line.text), line);
-  const board = await s.ok('GET', '/api/projects/alpha');
+  check('the owner chat does not show agent-to-agent lines', !chat.messages.some(m => /look at the login card/.test(m.text)), chat.messages);
+  const board = await s.ok('GET', '/api/projects/alpha?full=1');
+  const kept = board.cards.find(c => c.agentMsg && /look at the login card/.test(c.description));
+  check('the card is kept, from the sender, labelled agent to agent', kept && kept.createdBy === 'Courier' && /agent to agent: Courier → Forge/.test(kept.description), kept);
   check('it never wakes the lead as owner news (no card of the owner)', board.cards.every(c => !(c.dm && c.agentMsg && c.createdBy === 'Owner')));
   check('the chat card is closed, so the board stays clean', board.cards.filter(c => c.agentMsg).every(c => c.status === 'done'));
 
