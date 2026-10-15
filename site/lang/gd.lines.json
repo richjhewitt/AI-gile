@@ -1,0 +1,101 @@
+{
+  "unit": "words",
+  "sizes": [
+    {
+      "n": 1,
+      "texts": [
+        "Kanban.",
+        "Robotan.",
+        "Tiomnaichte."
+      ]
+    },
+    {
+      "n": 2,
+      "texts": [
+        "Kanban robotach.",
+        "Àidseantan, òrdail.",
+        "Beachdan, togte."
+      ]
+    },
+    {
+      "n": 3,
+      "texts": [
+        "Kanban airson robotan.",
+        "Bidh beachdan nan gleusan.",
+        "Kanban àidseant, saor."
+      ]
+    },
+    {
+      "n": 5,
+      "texts": [
+        "Bòrd kanban le àidseantan ga ruith.",
+        "Sgrìobh cairtean. Togaidh àidseantan.",
+        "Saor, ionadail, deuchainnichte, rudeigin gòrach."
+      ]
+    },
+    {
+      "n": 8,
+      "texts": [
+        "Bòrd kanban saor far am bi àidseantan AI ag obair.",
+        "Sgrìobh beachd. Togaidh àidseantan e. Gabhaidh tu ris.",
+        "Agile airson aon duine agus mòran robotan foighidneach."
+      ]
+    },
+    {
+      "n": 13,
+      "texts": [
+        "Bòrd kanban air a’ choimpiutair agad far an togar na cairtean le àidseantan AI.",
+        "Sgrìobh beachd air a’ bhòrd. Togaidh sgioba de dh’àidseantan e agus sgrùdaidh deuchainniche e.",
+        "Saor, gun chunntasan, gun luchd-leantainn: bòrd, beagan robotan, agus thusa os an cionn."
+      ]
+    },
+    {
+      "n": 21,
+      "texts": [
+        "AI-gile: bòrd kanban airson obrachadh le àidseantan còdaidh AI. Togaidh iadsan na cairtean; nì thusa deuchainn orra is gabhaidh tu riutha.",
+        "Gheibh gach pròiseact stiùiriche agus sgioba de dh’àidseantan AI. Cuir beachd air cairt sam bith agus tòisichidh an sgioba air obair.",
+        "Bòrd saor pearsanta a ruitheas air do choimpiutair fhèin. Is e robotan an luchd-obrach. Is e thusa an tè no am fear a their ‘tha’."
+      ]
+    },
+    {
+      "n": 34,
+      "texts": [
+        "Cuiridh tu beachdan air bòrd. Tionndaidhidh sgioba de dh’àidseantan AI iad gu gleusan obrach, nì iad deuchainn orra, agus bheir iad air ais thugad iad le ceumannan airson feuchainn. Chan eil dad deiseil gus an can thusa e.",
+        "Tha AI-gile na bhòrd kanban dachaigh a thog Rich le tòrr cuideachaidh bho na h-àidseantan a tha e a-nis a’ stiùireadh. Tha e an-asgaidh, a’ ruith air do choimpiutair, agus air a cho-roinn le caraidean, chan e reic.",
+        "Smaoinich air bòrd kanban àbhaisteach, le colbhan o Backlog gu Deiseil, ach gu bheil na cairtean air an togail le àidseantan AI. Bheir iad aithris air adhartas, faighnichidh iad nuair a tha iad steigte, agus feitheamh iad ri do làmh-suas an-còmhnaidh."
+      ]
+    },
+    {
+      "n": 55,
+      "texts": [
+        "Is e bòrd kanban a th’ ann an AI-gile far a bheil an sgioba air a dèanamh de dh’àidseantan AI. Tha stiùiriche aig gach pròiseact a dhealbhas an obair agus cuidichean a thogas i. Nuair a bhios gleus deiseil, feuchaidh deuchainniche AI e agus gabhaidh e glacadh-sgrìn, agus an uairsin ruigidh e do chrann. Gabh ris, no cuir beachd agus nì iad ath-obair air.",
+        "Thòisich e mar dhòigh aig aon neach air sùil a chumail air tòrr seiseanan còdaidh AI aig an aon àm, agus dh’fhàs e na bhòrd ceart. Ruithidh e air d’ inneal, chan eil cunntas a dhìth, agus chan eil luchd-leantainn ann. Tha e an-asgaidh. Tha e cuideachd neo-chrìochnaichte, mar sin cuir roimhe cliathaichean garbha agus iongnadh an dràsta ’s a-rithist.",
+        "Seo an dreach onarach. Feumaidh tu fhathast na beachdan a bhith agad, agus feumaidh tu fhathast na toraidhean a sgrùdadh. Is e na nì AI-gile gach rud eatorra: cumaidh e na cairtean an òrdugh, dùisgidh e an àidseant cheart nuair a chuireas tu beachd, seallaidh e dè dìreach a dh’atharraich, agus cumaidh e a h-uile rud nad aon chrann ghoirid."
+      ]
+    },
+    {
+      "n": 89,
+      "texts": [
+        "Is e bòrd kanban saor a th’ ann an AI-gile a ruitheas tu air do choimpiutair fhèin. An àite dhaoine, tha sgioba de dh’àidseantan AI aig gach pròiseact: stiùiriche a thionndaidheas do bheachdan gu cairtean agus plana, agus cuidichean a thogas na cairtean a-rèir prìomhachais. Nuair a tha rudeigin togte, leanaidh deuchainniche AI na ceumannan deuchainn agus seallaidh e dhut na chunnaic e. An uairsin feitheamh e ann an aon chrann air a bheil Dhutsa. Gabhaidh tu ris, no cuiridh tu beachd agus bheir an sgioba oidhirp eile. Chan ruig dad Deiseil às d’ aonais.",
+        "Beagan ghleusan nach biodh dùil agad riutha. Cumaidh faire na h-oidhche an colbh Ri dhèanamh làn fhad ’s a tha thu nad chadal, a’ taghadh chairtean nach fheum freagairt bhuat. Seallaidh cunntair thòcan dhut dè an uiread a chleachd na h-àidseantan an-diugh agus an t-seachdain seo, agus cuiridh No Token Mode stad air an caitheamh. Faodaidh tu teachdaireachdan a chur gu caraidean, agus tha teachdaireachdan prìobhaideach crioptaichte o cheann gu ceann. Bruidhnidh am bòrd mu 120 cànan, a’ gabhail a-steach Duitsis, Flemis, spùinneadair agus Klingon. Chan eil bonn sam bith a’ cosg, agus chan eil duine feuchainn ri a reic riut.",
+        "Is e pròiseact beag pearsanta a th’ ann an AI-gile, chan e companaidh. Bha Rich ag iarraidh coimhead às dèidh grunn phròiseactan còdaidh AI gun a h-uile aplacaid fhosgladh airson sùil a thoirt orra, agus mar sin thog e fhèin agus na h-àidseantan bòrd dhan sin, agus an uairsin chleachd iad am bòrd gus a’ chòrr dheth a thogail. Tha e ann am ro-alpha dùinte, is e sin gu bheil e ag obair, sa mhòr-chuid, airson dòrlach de charaidean. Chan eil duilleag phrìsean no plana fàis ann. Ma tha e feumail dhut, faodaidh tu iarraidh feuchainn air nuair a dh’fhosglas e."
+      ]
+    },
+    {
+      "n": 144,
+      "texts": [
+        "Is e bòrd kanban a th’ ann an AI-gile airson aon duine agus tòrr àidseantan AI. Ruithidh e air do choimpiutair fhèin agus tha e gu tur an-asgaidh. Cuiridh tu pròiseactan ris, agus gheibh gach pròiseact stiùiriche agus sgioba bheag. Nì thu cabadaich leis an stiùiriche, rudeigin coltach ri Discord, agus mìnichidh tu beachd; tionndaidhidh an stiùiriche e gu cairtean agus plana, agus an uairsin feitheamh e ort gus Go a bhrùthadh. Obraichidh an sgioba tro na cairtean a-rèir prìomhachais, le loidhne-àithne shìmplidh a chaidh a dhèanamh airson modailean cànain. Mus till dad thugad, leanaidh deuchainniche AI na ceumannan ann an lethbhreac dhen aplacaid agus cuiridh e glacadh-sgrìn ris. Ruigidh obair chrìochnaichte do chrann leis na faidhlichean a dh’atharraich agus an diff. Gabhaidh tu ris, no fàgaidh tu beachd agus dùisgidh an sgioba agus feuchaidh iad a-rithist. Chan urrainn ach dhutsa cairt a ghluasad gu Deiseil.",
+        "Latha le AI-gile, mu thimcheall. Feasgar fàgaidh tu beagan bheachdan: tha am putan seo san àite cheàrr, bu chòir an liosta sin a bhith air a rèiteachadh, am faigheadh sinn modh dorcha. Falbhaidh tu dhan leabaidh. Leughaidh na h-àidseantan na beachdan, nì iad na h-atharraichean, nì iad deuchainn orra agus bheir iad air ais thugad iad. Ma thraogas Ri dhèanamh, lìonaidh faire na h-oidhche e às a’ Backlog le cairtean nach fheum freagairt bhuat. Sa mhadainn tha aon chrann ghoirid ann: càraid cheistean agus beagan rudan airson feuchainn, gach fear le ceumannan as urrainn do dhuine cadalach a leantainn agus glacadh-sgrìn dheth ag obair. Briogaidh tu tro, gabhaidh tu ris an fheadhainn mhath agus cuiridh tu air ais a’ chòrr. Seallaidh cunntair thòcan na chaidh a chaitheamh, agus tha No Token Mode ann airson seachdainean caola. An uairsin gheibh thu do bhrath-bhìdh, nach urrainn dha na h-àidseantan cuideachadh leis fhathast.",
+        "An toiseach, dè nach eil AI-gile. Chan e tòiseachadh-suas a th’ ann, chan eil e ri reic, agus chan eil duine a’ cruinneachadh d’ dàta. Is e bòrd saor a th’ ann a ruitheas air do choimpiutair, gun chunntasan, gun luchd-leantainn agus gun bhriosgaidean. Is e a th’ ann: aon àite òrdail airson a h-uile pròiseact còdaidh AI fhaicinn aig an aon àm, le sgioba de dh’àidseantan a’ dèanamh nan cairtean agus thusa a’ dèanamh nan co-dhùnaidhean. Pasgaidh e cairtean co-cheangailte còmhla, ceartaichidh e tiotalan measgaichte, agus cumaidh e sùil air cho caol ’s a dh’fhanas an còd. Bruidhnidh e mu 120 cànan, bhon Duitsis agus Flemis gu spùinneadair agus Klingon. Faodaidh caraidean teachdaireachdan a chur gu chèile, gu prìobhaideach agus crioptaichte. Chaidh a thogail le Rich agus mòran àidseantan foighidneach, a’ cleachdadh fhèin sa mhòr-chuid. Tha e ann am ro-alpha dùinte, mar sin tha e garbh an siud ’s an seo. Ma tha e coltach le spòrs, iarr gu modhail agus is dòcha gum faigh thu a-steach tràth."
+      ]
+    }
+  ],
+  "quips": {
+    "1": "Aon fhacal. Dàna. Is dòcha ro dhàna.",
+    "3": "Trì faclan. Nas onaraich na a’ mhòr-chuid de dhuilleagan toraidh mar-thà.",
+    "8": "Ochd faclan. Fhathast nas giorra na stand-up.",
+    "21": "Is e puingean sgeòil a th’ anns na faid, co-dhiù. Gu dearbh is e.",
+    "55": "Còig fichead ’s a còig faclan. Chaidh dà chairt a chrìochnachadh fhad ’s a leugh thu sin.",
+    "144": "Sin am fear fada. Chan eil 233 ann. Tha na h-àidseantan air a dhol dhan leabaidh."
+  }
+}

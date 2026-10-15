@@ -1,0 +1,101 @@
+{
+  "unit": "words",
+  "sizes": [
+    {
+      "n": 1,
+      "texts": [
+        "Kanban.",
+        "Robots.",
+        "Delegado."
+      ]
+    },
+    {
+      "n": 2,
+      "texts": [
+        "Kanban robótico.",
+        "Axentes, ordenados.",
+        "Ideas, feitas."
+      ]
+    },
+    {
+      "n": 3,
+      "texts": [
+        "Kanban para robots.",
+        "As ideas fanse funcións.",
+        "Kanban de axentes, gratis."
+      ]
+    },
+    {
+      "n": 5,
+      "texts": [
+        "Taboleiro kanban levado por axentes.",
+        "Ti escribes tarxetas. Eles constrúen.",
+        "Gratis, local, probado, un pouco parvo."
+      ]
+    },
+    {
+      "n": 8,
+      "texts": [
+        "Un taboleiro kanban gratuíto onde traballan axentes de IA.",
+        "Escribe unha idea. Os axentes constrúena. Ti aceptas.",
+        "Agile para unha persoa e moitos robots pacientes."
+      ]
+    },
+    {
+      "n": 13,
+      "texts": [
+        "Un taboleiro kanban no teu ordenador onde axentes de IA collen as tarxetas.",
+        "Escribe unha idea. Un equipo de axentes constrúea. Un tester comproba.",
+        "Gratis, sen contas nin rastrexadores: un taboleiro, uns robots, e ti mandando."
+      ]
+    },
+    {
+      "n": 21,
+      "texts": [
+        "AI-gile é un taboleiro kanban para traballar con axentes de programación con IA. Eles collen as tarxetas; ti probas e aceptas.",
+        "Cada proxecto ten un líder e un equipo de axentes de IA. Comenta calquera tarxeta e o equipo ponse mans á obra.",
+        "Un taboleiro persoal e gratuíto que funciona no teu ordenador. Quen traballa son robots. Quen di que si es ti."
+      ]
+    },
+    {
+      "n": 34,
+      "texts": [
+        "Pos as ideas nun taboleiro. Un equipo de axentes de IA convérteas en funcións que funcionan, próbaas e devólveas con pasos para tentar. Nada conta como feito ata que ti o digas.",
+        "AI-gile é un taboleiro kanban artesanal que Rich fixo con moita axuda dos axentes que agora xestiona. É gratis, funciona no teu ordenador e compártese con amizades, non se vende.",
+        "Imaxina un taboleiro kanban normal, con columnas desde Backlog ata Feito, pero cunhas tarxetas que collen axentes de IA. Informan do avance, preguntan cando se atrancan e sempre agardan o teu visto bo."
+      ]
+    },
+    {
+      "n": 55,
+      "texts": [
+        "AI-gile é un taboleiro kanban onde o equipo está feito de axentes de IA. Cada proxecto ten un líder que planifica o traballo e axudantes que o constrúen. Cando unha función está lista, un tester de IA próbaa e fai unha captura, e despois chega ao teu monte. Acéptaa, ou comenta e retómana.",
+        "Comezou como o xeito que tiña unha persoa de seguir moitas sesións de programación con IA á vez, e creceu ata ser un taboleiro de verdade. Funciona na túa máquina, non pide conta e non leva rastrexadores. É gratis para amizades e curiosos. Tamén está sen rematar, así que agarda arestas e algunha sorpresa.",
+        "Esta é a versión honesta. Ti aínda tes que ter as ideas, e aínda tes que revisar os resultados. O que fai AI-gile é todo o que hai polo medio: mantén as tarxetas en orde, esperta ao axente axeitado cando comentas, mostra exactamente o que cambiou e xunta todo nun monte curto para ti."
+      ]
+    },
+    {
+      "n": 89,
+      "texts": [
+        "AI-gile é un taboleiro kanban gratuíto que executas no teu propio ordenador. En lugar de persoas, cada proxecto ten un equipo de axentes de IA: un líder que converte as túas ideas en tarxetas e nun plan, e axudantes que collen as tarxetas por orde de prioridade. Cando algo está feito, un tester de IA segue os pasos da proba e móstrache o que viu. Despois agarda nun só monte chamado Para ti. Ti aceptas, ou comentas e o equipo tenta outra vez. Nada chega a Feito sen ti.",
+        "Hai funcións que quizais non esperas. Unha vixilancia nocturna mantén a columna Por facer chea mentres durmes, escollendo tarxetas que non precisan resposta túa. Un contador de tokens mostra canto gastaron os axentes hoxe e esta semana, e o No Token Mode manda parar o gasto. Podes escribir ás amizades, e as mensaxes privadas van cifradas de extremo a extremo. O taboleiro fala uns 120 idiomas, entre eles neerlandés, flamengo, pirata e klingon. Nada custa un céntimo, e ninguén intenta vendéchelo.",
+        "AI-gile é un proxecto pequeno e persoal, non unha empresa. Rich quería coidar varios proxectos de programación con IA sen abrir cada aplicación para mirar, así que el e os axentes fixeron un taboleiro para iso, e despois usárono para construír o resto. Está en pre-alfa pechada, que quere dicir que funciona, case sempre, para un puñado de amizades. Non hai páxina de prezos, nin boletín, nin plan de crecemento. Se che parece útil, podes pedir probalo cando se abra un pouco máis."
+      ]
+    },
+    {
+      "n": 144,
+      "texts": [
+        "AI-gile é un taboleiro kanban para unha persoa e moitos axentes de IA. Funciona no teu propio ordenador e é totalmente gratuíto. Engades proxectos, e cada proxecto recibe un líder e un pequeno equipo. Falas co líder, un pouco como en Discord, e describes unha idea; o líder convértea en tarxetas e nun plan, e despois agarda a que premas Go. O equipo vai pasando polas tarxetas por orde de prioridade, cunha liña de comandos sinxela feita para modelos de linguaxe. Antes de que che volva nada, un tester de IA segue os pasos nunha copia da aplicación e engade unha captura. O traballo rematado chega ao teu monte cos ficheiros cambiados e o diff. Ti aceptas, ou deixas un comentario e o equipo esperta e tenta de novo. Só ti podes mover unha tarxeta a Feito.",
+        "Un día con AI-gile, máis ou menos. Pola tarde deixas uns comentarios: este botón está mal colocado, aquela lista debería ordenarse, poderiamos ter un modo escuro. Vas durmir. Os axentes len os comentarios, fan os cambios, próbanos e devólvenos. Se Por facer se baleira, a vixilancia nocturna énchea desde o backlog con tarxetas que non precisan resposta túa. Pola mañá hai un só monte curto: un par de preguntas e algunhas cousas para probar, cada unha con pasos que pode seguir unha persoa durmida e unha captura de que funciona. Pasas, aceptas o bo e devolves o resto. Un contador de tokens mostra canto se gastou, e o No Token Mode está para as semanas escasas. Despois almorzas, cousa na que os axentes aínda non poden axudar.",
+        "Primeiro, o que AI-gile non é. Non é unha startup, non está á venda, e ninguén recolle os teus datos. É un taboleiro gratuíto que funciona no teu ordenador, sen contas, sen rastrexadores e sen cookies. O que si é: un sitio ordenado para ver todos os teus proxectos de programación con IA á vez, cun equipo de axentes facendo as tarxetas e ti tomando as decisións. Une as tarxetas relacionadas, arranxa os títulos confusos e vixía que o código siga áxil. Fala uns 120 idiomas, do neerlandés e o flamengo ao pirata e o klingon. As amizades poden escribirse, en privado e cifrado. Fíxoo Rich cun gran número de axentes pacientes, usándoo case sempre a el mesmo. Está en pre-alfa pechada, así que ten arestas. Se che parece divertido, pídeo con boas maneiras e quizais entres cedo."
+      ]
+    }
+  ],
+  "quips": {
+    "1": "Unha palabra. Atrevida. Quizais demasiado.",
+    "3": "Tres palabras. Xa máis honesto ca a maioría das páxinas de produto.",
+    "8": "Oito palabras. Aínda máis curto ca unha reunión de pé.",
+    "21": "As lonxitudes son puntos de historia, por certo. Claro que si.",
+    "55": "Cincuenta e cinco palabras. Rematáronse dúas tarxetas mentres liches isto.",
+    "144": "Esa é a longa. Non hai 233. Os axentes foron durmir."
+  }
+}

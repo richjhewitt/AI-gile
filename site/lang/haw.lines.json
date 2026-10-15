@@ -1,0 +1,101 @@
+{
+  "unit": "words",
+  "sizes": [
+    {
+      "n": 1,
+      "texts": [
+        "Kanban.",
+        "Robot.",
+        "Hāʻawi."
+      ]
+    },
+    {
+      "n": 2,
+      "texts": [
+        "Kanban robot.",
+        "Robot ʻoli.",
+        "Manaʻo, kūkulu."
+      ]
+    },
+    {
+      "n": 3,
+      "texts": [
+        "Kanban no nā robot.",
+        "Lilo ka manaʻo hiʻona.",
+        "Kanban mea hana manuahi."
+      ]
+    },
+    {
+      "n": 5,
+      "texts": [
+        "Papa kanban a nā mea hana.",
+        "Kākau kāleka. Kūkulu nā mea hana.",
+        "Manuahi, kūloko, hoʻāʻo ʻia, lealea iki."
+      ]
+    },
+    {
+      "n": 8,
+      "texts": [
+        "Papa kanban manuahi, hana nā mea hana AI.",
+        "Kākau i manaʻo. Kūkulu nā mea hana. ʻAe ʻoe.",
+        "Agile no ke kanaka a me nā robot ʻoli."
+      ]
+    },
+    {
+      "n": 13,
+      "texts": [
+        "Papa kanban ma kāu kamepiula, lawe nā mea hana AI i nā kāleka.",
+        "E kākau i kahi manaʻo. Kūkulu kekahi pūʻulu mea hana iā ia. Nānā ka mea hoʻāʻo.",
+        "Manuahi, ʻaʻohe moʻokāki a mea alualu: he papa, kekahi mau robot, a ʻo ʻoe ka luna."
+      ]
+    },
+    {
+      "n": 21,
+      "texts": [
+        "He papa kanban ʻo AI-gile no ka hana pū me nā mea hana hoʻopaʻa code AI. Lawe lākou i nā kāleka; hoʻāʻo ʻoe a ʻae.",
+        "Loaʻa i ka papahana kēlā me kēia kahi alakaʻi a me pūʻulu mea hana AI. ʻŌlelo ma kekahi kāleka, hoʻomaka ka pūʻulu.",
+        "He papa hana pilikino manuahi e holo ana ma kāu kamepiula ponoʻī. He mau robot nā limahana. ʻO ʻoe ka mea e ʻōlelo ana ʻae."
+      ]
+    },
+    {
+      "n": 34,
+      "texts": [
+        "Waiho ʻoe i nā manaʻo ma ka papa. Hoʻololi kekahi pūʻulu mea hana AI iā lākou i mau hiʻona hana, hoʻāʻo, a hoʻihoʻi me nā ʻanuʻu. ʻAʻohe mea i pau a ʻōlelo ʻoe.",
+        "He papa kanban hale ʻo AI-gile a Rich i kūkulu ai me ke kōkua o nā mea hana āna e alakaʻi nei. Manuahi, holo ma kāu kamepiula, kaʻana like me nā hoaaloha, ʻaʻole kūʻai.",
+        "E noʻonoʻo i kahi papa kanban maʻamau, me nā kolamu mai Backlog a Pau, akā lawe nā mea hana AI i nā kāleka. Hōʻike lākou i ka holomua, nīnau ke paʻa, a kali mau i kou ʻae ʻana."
+      ]
+    },
+    {
+      "n": 55,
+      "texts": [
+        "He papa kanban ʻo AI-gile a he mau mea hana AI ka pūʻulu. He alakaʻi kā kēlā me kēia papahana nāna e hoʻolālā, a he mau kōkua nāna e kūkulu. Ke mākaukau kekahi hiʻona, hoʻāʻo ka mea hoʻāʻo AI a lawe i kiʻi pale, a hiki i kāu puʻu. E ʻae, a i ʻole e ʻōlelo a hana hou lākou.",
+        "Hoʻomaka ia ma ke ʻano he ala o hoʻokahi kanaka e mālama i nā hālāwai hoʻopaʻa code AI he nui i ka manawa hoʻokahi, a ulu ia i papa kūpono. Holo ia ma kāu mīkini, ʻaʻole noi i moʻokāki, a ʻaʻohe mea alualu. ʻAʻole naʻe i pau, no laila e manaʻo i nā ʻaoʻao ʻōhūhū a me kekahi mea e kāhāhā ai.",
+        "Eia ka mana ʻoiaʻiʻo. Pono nō ʻoe e loaʻa nā manaʻo a nānā i nā hopena. Hana ʻo AI-gile i nā mea ma waena: mālama i nā kāleka, hoʻāla i ka mea hana kūpono ke ʻōlelo ʻoe, hōʻike i ka mea i loli, a hōʻuluʻulu i hoʻokahi puʻu pōkole nou."
+      ]
+    },
+    {
+      "n": 89,
+      "texts": [
+        "He papa kanban manuahi ʻo AI-gile e holo ana ma kāu kamepiula. Loaʻa i kēlā me kēia papahana kahi pūʻulu mea hana AI: he alakaʻi nāna e hoʻololi i kou mau manaʻo i kāleka a me hoʻolālā, a he mau kōkua nāna e lawe i nā kāleka. Ke kūkulu ʻia kekahi mea, hahai ka mea hoʻāʻo AI i nā ʻanuʻu a hōʻike i kāna i ʻike ai. A laila kali ia ma kahi puʻu i kapa ʻia No ʻoe. ʻAe ʻoe, a i ʻole ʻōlelo a hoʻāʻo hou ka pūʻulu. ʻAʻohe mea e hiki i Pau me ʻoe ʻole.",
+        "Aia kekahi mau hiʻona āu e manaʻo ʻole ai. Mālama ke kiaʻi pō i ke kolamu Hana i piha i kou hiamoe ʻana, me nā kāleka ʻaʻole pono i kāu pane. Hōʻike ka helu token i ka hoʻohana o kēia lā a me kēia pule, a ʻōlelo ke ʻano ʻAʻohe Hōʻailona e hoʻōki. Hiki iā ʻoe ke hoʻouna i nā leka i nā hoaaloha, hūnā ʻia mai ke kiko a i ke kiko. Kamaʻilio ka papa i kahi o 120 ʻōlelo, me ka Holani, ka pailaka a me Klingon. ʻAʻohe kumukūʻai, a ʻaʻohe mea e hoʻāʻo nei e kūʻai aku iā ʻoe.",
+        "He papahana liʻiliʻi pilikino ʻo AI-gile, ʻaʻole he hui. Makemake ʻo Rich e mālama i nā papahana hoʻopaʻa code AI he nui me ka wehe ʻole i kēlā me kēia ʻapp e nānā ai, no laila kūkulu ʻo ia a me nā mea hana i papa no ia, a laila hoʻohana i ka papa e kūkulu i ke koena. Aia ia ma ka pre-alpha pani ʻia, ʻo ia hoʻi, hana ia, ʻo ka hapa nui, no kekahi mau hoaaloha. ʻAʻohe ʻaoʻao kumukūʻai, ʻaʻohe nūhou leka, a ʻaʻohe hoʻolālā ulu. Inā ʻike ʻia he kōkua, hiki iā ʻoe ke noi e hoʻāʻo ke wehe ākea iki ʻia."
+      ]
+    },
+    {
+      "n": 144,
+      "texts": [
+        "He papa kanban ʻo AI-gile no hoʻokahi kanaka a me nā mea hana AI he nui. Holo ia ma kāu kamepiula a manuahi loa. Hoʻohui ʻoe i nā papahana, a loaʻa i kēlā me kēia kahi alakaʻi a me kahi pūʻulu liʻiliʻi. Kamaʻilio ʻoe me ka alakaʻi, e like me Discord, a wehewehe i kahi manaʻo; hoʻololi ia i mau kāleka a me kahi hoʻolālā, a kali e kaomi ʻoe i Go. Hana ka pūʻulu ma nā kāleka ma ke ʻano koʻikoʻi, me kahi laina kauoha maʻalahi no nā kumu hoʻohālike ʻōlelo. Ma mua o ka hoʻi ʻana mai, hahai ka mea hoʻāʻo AI i nā ʻanuʻu ma kahi kope o ka ʻapp a hoʻohui i kiʻi pale. Hiki ka hana i pau i kāu puʻu me nā waihona i loli a me ka ʻokoʻa. ʻAe ʻoe, a i ʻole ʻōlelo ʻoe a hoʻāʻo hou ka pūʻulu. ʻO ʻoe wale nō hiki ke hoʻoneʻe i kāleka i Pau.",
+        "He lā me AI-gile, ma kahi o ia. I ke ahiahi waiho ʻoe i kekahi mau ʻōlelo: aia kēia pihi ma ka wahi hewa, pono e hoʻokaʻina ʻia kēlā papa inoa, hiki paha iā mākou ke loaʻa i ke ʻano ʻeleʻele. Hiamoe ʻoe. Heluhelu nā mea hana i nā ʻōlelo, hana i nā loli, hoʻāʻo iā lākou a hoʻihoʻi iā ʻoe. Inā hakahaka ka Hana, hoʻopiha ke kiaʻi pō iā ia mai ka backlog me nā kāleka ʻaʻole pono i kāu pane. I ke kakahiaka he hoʻokahi puʻu pōkole: ʻelua nīnau a me kekahi mau mea e hoʻāʻo ai, me nā ʻanuʻu hiki i ke kanaka hiamoe ke hahai a me kahi kiʻi pale e hana ana. Kaomi ʻoe, ʻae i ka maikaʻi a hoʻihoʻi i ke koena. Hōʻike ka helu token i ka mea i hoʻohana ʻia, a aia ke ʻano ʻAʻohe Hōʻailona no nā pule liʻiliʻi. A laila ʻai ʻoe i ka ʻaina kakahiaka, ʻaʻole hiki i nā mea hana ke kōkua.",
+        "ʻO ka mea mua, ka mea ʻaʻole ʻo AI-gile. ʻAʻole he hoʻomaka hui, ʻaʻole kūʻai ʻia, a ʻaʻohe mea e hōʻuluʻulu ana i kāu ʻikepili. He papa manuahi ia e holo ana ma kāu kamepiula, me ka moʻokāki ʻole, mea alualu ʻole a kuki ʻole. He wahi maikaʻi ia e ʻike ai i nā papahana hoʻopaʻa code AI a pau i ka manawa hoʻokahi, me kahi pūʻulu mea hana e hana ana i nā kāleka a ʻo ʻoe ka mea hoʻoholo. Hoʻohui ia i nā kāleka pili, hoʻoponopono i nā poʻo inoa pohihihi, a nānā i ka māmā o ke code. Kamaʻilio ia ma kahi o 120 ʻōlelo, mai ka Holani a i ka pailaka a me Klingon. Kūkulu ʻia e Rich a me nā mea hana ʻoli he nui. Aia ia ma ka pre-alpha pani ʻia, no laila ʻōhūhū ma kekahi mau wahi. Inā leʻaleʻa ia iā ʻoe, e noi me ke ahonui."
+      ]
+    }
+  ],
+  "quips": {
+    "1": "Hoʻokahi huaʻōlelo. Wiwoʻole. Wiwoʻole loa paha.",
+    "3": "ʻEkolu huaʻōlelo. ʻOi aku ka pololei ma mua o ka hapa nui o nā ʻaoʻao huahana.",
+    "8": "ʻEwalu huaʻōlelo. Poto ma mua o ka hālāwai kū.",
+    "21": "He kiko moʻolelo nā lōʻihi, ma ke ala. ʻIo nō.",
+    "55": "Kanalimakūmālima huaʻōlelo. Pau ʻelua kāleka i kou heluhelu ʻana i kēia.",
+    "144": "ʻO ia ka mea lōʻihi. ʻAʻohe 233. Ua hele nā mea hana e hiamoe."
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "unit": "words",
+  "sizes": [
+    {
+      "n": 1,
+      "texts": [
+        "Kanban.",
+        "Robot.",
+        "Ojeheja."
+      ]
+    },
+    {
+      "n": 2,
+      "texts": [
+        "Kanban robot.",
+        "Agente, organizado.",
+        "Mba'e, ojapóva."
+      ]
+    },
+    {
+      "n": 3,
+      "texts": [
+        "Kanban robot-pe guarã.",
+        "Ñemoñe'ẽ ojeapo.",
+        "Agente kanban, mba'e'ỹre."
+      ]
+    },
+    {
+      "n": 5,
+      "texts": [
+        "Kanban tabla agente omoñeñandúva.",
+        "Nde rehai kuatia. Agente ojapo.",
+        "Mba'e'ỹre, local, probado, sa'i tavy."
+      ]
+    },
+    {
+      "n": 8,
+      "texts": [
+        "Peteĩ kanban tabla mba'e'ỹre, agente AI omba'apoha.",
+        "Ehai peteĩ ñemoñe'ẽ. Agente ojapo. Nde eaceptar.",
+        "Agile peteĩ tapicha ha hetaiterei robot ipasiénsiavape guarã."
+      ]
+    },
+    {
+      "n": 13,
+      "texts": [
+        "Peteĩ kanban tabla nde mba'e'oka-pe, agente AI oipyhy hendápe kuatia.",
+        "Ehai peteĩ ñemoñe'ẽ. Peteĩ atyha agente ojapo. Peteĩ tester ohecha.",
+        "Mba'e'ỹre, ndaipóri cuenta ni tracker: peteĩ tabla, sa'i robot, ha nde remandúva."
+      ]
+    },
+    {
+      "n": 21,
+      "texts": [
+        "AI-gile ha'e peteĩ kanban tabla ñemba'apo agente AI código ojapóva ndive. Ha'ekuéra oipyhy kuatia; nde eprueba ha eaceptar.",
+        "Peteĩteĩ tembiapo oguereko peteĩ líder ha peteĩ atyha agente AI. Eñe'ẽ oimeraẽ kuatia-pe ha atyha oñepyrũ pya'e omba'apo.",
+        "Peteĩ tabla personal mba'e'ỹre omba'apóva nde mba'e'oka-pe. Umi omba'apóva ha'e robot ha'ekuéra. Ha nde ha'e pe he'íva heẽ, tapiaite."
+      ]
+    },
+    {
+      "n": 34,
+      "texts": [
+        "Reñemoĩ ne ñemoñe'ẽ peteĩ tabla-pe. Peteĩ atyha agente AI ombojoapy ha ojapo hese mba'e omba'apóva, oprueba mba'e ojejapo ha ombohasa jey ndéve tapykuépe eha'ã haguã. Mba'eve ndojejapopái nde ere peve, tapiaite.",
+        "AI-gile ha'e peteĩ kanban tabla ógape ojejapóva, Rich ojapo heta ñepytyvõ ndive umi agente ha'e ko'ágã ombohováiva. Ndaipóri hepyrã, omba'apo nde mba'e'oka-pe, ha oñemoherakuã angirũ ndive, ndaha'éi ojehepyme'ẽ haguã.",
+        "Eñeimo'ã peteĩ kanban tabla tembiguáipe, columna Backlog guive Ojejapopáma peve, ha katu kuatia oipyhy agente AI. Omombe'u mba'e oho, oporandu ojepyta vove, ha oha'arõ tapiaite nde heẽ."
+      ]
+    },
+    {
+      "n": 55,
+      "texts": [
+        "AI-gile ha'e peteĩ kanban tabla, ha pe atyha ojejapo agente AI-gui. Peteĩteĩ tembiapo oguereko peteĩ líder oplanéava pe tembiapo ha oipytyvõva ojapóva ha'e pe ojapo haguã. Peteĩ tembiapo oĩ vove hembýva, peteĩ AI tester oprueba ha ojapo peteĩ pantalla ta'angapy, upéi ohupyty nde ñemoĩ. Eaceptar ko mba'e, térã eñe'ẽ ha ojapo jey hikuái.",
+        "Ojepyrũ peteĩ tapicha rape ha'e ohecha haguã hetaiterei sesión código AI ndive peteĩ jey, ha upéi okakuaa peteĩ tabla añete. Omba'apo nde máquina-pe, ndoikotevẽi cuenta, ha ndaipóri tracker. Ndaipóri hepyrã angirũ-pe ha oikuaasevape. Avei ndopái gueteri, upévare eha'arõ mba'e ipiru'ã ha sorpresa sa'i, ha upéva ndaha'éi mba'eve.",
+        "Péicha añete, ndahasýi. Ndéve reikotevẽ gueteri ñemoñe'ẽ, ha reikotevẽ gueteri rehecha umi ojejapóva. AI-gile ojapo opa mba'e ko'ã mokõi mbytépe: oñongatu kuatia hekopete, omopu'ã pe agente hekopete reñe'ẽ vove kuatia-pe, ohechauka mba'e ojoko'i, ha ombyaty opa mba'e peteĩ ñemoĩ mbykýpe ndéve guarã. Péicha ndereikotevẽi reikuaa'ỹ mba'e oiko, ha rereko ne ñe'ẽ ipahápe."
+      ]
+    },
+    {
+      "n": 89,
+      "texts": [
+        "AI-gile ha'e peteĩ kanban tabla mba'e'ỹre reipurúva nde mba'e'oka-pe. Tapicha rãngue, peteĩteĩ tembiapo oguereko peteĩ atyha agente AI: peteĩ líder ombojoapýva ne ñemoñe'ẽ kuatia ha plan-pe, ha oipytyvõva oipyhy kuatia ojejapo vaerã peteĩ tape rupi. Peteĩ mba'e oñemopu'ã vove, peteĩ AI tester oho prueba tapykuépe ha ohechauka ndéve mba'e ohecha. Upéi oha'arõ peteĩ ñemoĩ-pe hérava Ndéve. Eaceptar, térã eñe'ẽ ha atyha oha'ã jey. Mba'eve ndoguahẽi Ojejapopáma-pe nde'ỹre, mba'eveichagua. Péicha ndéve ndaipóri ñemondo'ỹ, ha ndaipóri sorpresa vai.",
+        "Oĩ mba'e ndereha'arõiva avei. Peteĩ pyhare ñangareko ombyaty columna Ojejapótava rehegua reiko aja ereke, oiporavóva kuatia ndoikotevẽiva nde mbohovái. Peteĩ token jepapa ohechauka mboy ojeporu umi agente ko ára ha ko arapokõindy-pe, ha No Token Mode he'i chupe kuéra ani ojepuru hetave. Ikatu reñemondo marandu nde angirũ kuérape, ha marandu ñemigua oñemigua pyteguápe. Pe tabla oñe'ẽ 120 ñe'ẽ rupi, holandés, flamenco, pirata ha klingon ndive. Mba'eve ndohepýi, ha avave ndoheka ombohepy nde-pe.",
+        "AI-gile ha'e peteĩ tembiapo michĩ personal, ndaha'éi empresa. Rich oipota ñangareko hetaiterei tembiapo código AI rehegua ndaikotevẽi haguã embojuruja opa aplicación ehecha haguã mba'e oikóva hese, upévare ha'e ha umi agente ojapo peteĩ tabla upepe guarã, ha upéi oiporu pe tabla ojapo haguã opa ambue hembýva. Oĩ pre-alfa mboty-pe, he'ise omba'apo, hetáva, sa'i angirũ-pe guarã. Ndaipóri páhina hepyrã, ndaipóri boletín ha ndaipóri plan kakuaa. Ojeporu ramo ndéve, ikatu reporandu eprueba haguã ojeipe'a vove sa'ive, ha ñande ñeha'ã."
+      ]
+    },
+    {
+      "n": 144,
+      "texts": [
+        "AI-gile ha'e peteĩ kanban tabla peteĩ tapicha ha hetaiterei agente AI-pe guarã. Omba'apo nde mba'e'oka-pe ha ndaipóri hepyrã mba'eveichagua. Reñemoĩ tembiapo, ha peteĩteĩ tembiapo oguereko peteĩ líder ha peteĩ atyha michĩ. Reñe'ẽ pe líder ndive, Discord-icha, ha emombe'u chupe peteĩ ñemoñe'ẽ; pe líder ombojoapy kuatia ha plan-pe, upéi oha'arõ reipytyvõ Go. Pe atyha omba'apo kuatia rupi tape rupi, peteĩ comando línea tembiguáipe ojejapóva ñe'ẽ modelo-pe guarã. Oĩ mboyve ñemoĩ ndéve, peteĩ AI tester oho tapykuépe peteĩ kopia aplicación-pe ha omoĩ hese peteĩ pantalla ta'angapy. Tembiapo opáva oguahẽ nde ñemoĩ-pe umi marandu ojoko'ívape ha pe diff ndive. Eaceptar, térã ehejá peteĩ ñe'ẽ ha pe atyha oñemoĩ jey ha oha'ã jey hikuái. Nde añoite ikatu emongu'e peteĩ kuatia Ojejapopáma-pe, avave ndaikatúi.",
+        "Peteĩ ára AI-gile ndive, sa'i ha sa'i. Ka'aru reheja sa'i ñe'ẽ: ko votõ ndaha'éi hendápe, ko lista oñemoĩ vaerã hekopete, ikatu piko jaguereko modo pytũ. Upéi reho reke. Umi agente omoñe'ẽ umi ñe'ẽ, ojapo umi ñemoambue, oprueba ha ombohasa jey ndéve. Ojejapótava opa ramo, pyhare ñangareko ombyaty ko'ã kuatia backlog-gui, ndoikotevẽiva nde mbohovái. Ko'ẽrõ oĩ peteĩ ñemoĩ mbyky ha michĩ: mokõi porandu ha sa'i mba'e eprueba haguã, peteĩteĩ tape ndive ikatúva omuña peteĩ tapicha ke'ỹ, ha peteĩ pantalla ta'angapy omba'apóva. Eikutu, eaceptar umi porãva ha emondo jey ambue. Peteĩ token jepapa ohechauka mboy ojeporu, ha No Token Mode oĩ ára michĩvape guarã. Upéi reñembojuka, ha umi agente ndaikatúi gueteri oipytyvõ upépe. Péicha opa ára oñepyrũ ha opa porã, ha nde reikuaa mba'e ojejapo.",
+        "Raẽ, mba'e AI-gile ndaha'éiva. Ndaha'éi startup, ndojehepyme'ẽi, ha avave ndombyaty nde dato. Ha'e peteĩ tabla mba'e'ỹre omba'apóva nde mba'e'oka-pe, ndaipóri cuenta, ndaipóri tracker ha ndaipóri cookie. Ha'e: peteĩ tenda hekopete ehecha haguã opa tembiapo código AI peteĩ jey, peteĩ atyha agente ojapóva umi kuatia ha nde ejapóva umi jeporavo. Ombyaty kuatia joapýva peteĩme, omoĩporã téra ñembyaíva, ha ohecha pe código opyta hesakã ha michĩ. Oñe'ẽ 120 ñe'ẽ rupi, holandés ha flamenco guive pirata ha klingon peve. Angirũ kuéra ikatu oñemondo marandu, ñemigua ha oñemigua pyteguápe. Rich ojapo hetaiterei agente ipasiénsiavape ndive, ojeporúva hekovépe ohóvo. Oĩ pre-alfa mboty-pe, upévare oĩ ipiru'ã ha'ekuéra. Ndéve ombovy'a ramo, eporandu porãme ha ikatu reike raẽ, ha ipyahu. Ñande ñemoirũ ha ñañemoĩ potĩ ñane rembiapo, sa'i sa'i, ha opa ára ñamba'apo."
+      ]
+    }
+  ],
+  "quips": {
+    "1": "Peteĩ ñe'ẽ. Py'aguasu. Ikatu hetaiterei.",
+    "3": "Mbohapy ñe'ẽ. Ojeroviaha hetave heta producto páhina-gui.",
+    "8": "Mokõi ñe'ẽ ha irundy. Gueteri mbykyve peteĩ kafe-ñepyrũ-gui.",
+    "21": "Pukukue ha'e story point, upéicha. Ikatuha ndaha'éiramo.",
+    "55": "Cincuenta y cinco ñe'ẽ. Mokõi kuatia opa ereñe'ẽ aja ko'ã.",
+    "144": "Péva ha'e puku. Ndaipóri 233. Umi agente oho oke."
+  }
+}

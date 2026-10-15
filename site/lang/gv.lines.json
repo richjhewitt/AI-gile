@@ -1,0 +1,101 @@
+{
+  "unit": "words",
+  "sizes": [
+    {
+      "n": 1,
+      "texts": [
+        "Kanban.",
+        "Robots.",
+        "Currit-magh."
+      ]
+    },
+    {
+      "n": 2,
+      "texts": [
+        "Kanban robotagh.",
+        "Jaagenyn, aarloo.",
+        "Smooinaghtyn, troggit."
+      ]
+    },
+    {
+      "n": 3,
+      "texts": [
+        "Kanban son robots.",
+        "Smooinaghtyn dy ghoo.",
+        "Kanban jaagent, seyr."
+      ]
+    },
+    {
+      "n": 5,
+      "texts": [
+        "Bord kanban rollit liorish jaagenyn.",
+        "Screeu cartyn. Troggee jaagenyn.",
+        "Seyr, logalagh, jeeaghit, red beg ommijagh."
+      ]
+    },
+    {
+      "n": 8,
+      "texts": [
+        "Bord kanban seyr raad ta jaagenyn AI obbraghey.",
+        "Screeu smooinaght. Troggee jaagenyn eh. Ghow oo rish.",
+        "Agile son un dooinney as ymmodee robots foiljagh."
+      ]
+    },
+    {
+      "n": 13,
+      "texts": [
+        "Bord kanban er dty chooid-earrooder raad ta jaagenyn AI goaill ny cartyn.",
+        "Screeu smooinaght. Troggee possan jaagenyn eh. Nee tester eh y yeeaghyn.",
+        "Seyr, cha vel coontyn ny trackeryn: bord, paartey dy robots, as oo hene er y chione."
+      ]
+    },
+    {
+      "n": 21,
+      "texts": [
+        "Ta AI-gile bord kanban son obbraghey lesh jaagenyn coadaghey AI. Ta'd goaill ny cartyn; t'ou geaishtagh as goaill rish.",
+        "Ta leeideilagh as possan jeh jaagenyn AI ec dy chooilley phryjeck. Screeu gaghlin er cart erbee as ta'n possan goaill toshiaght dy obbraghey.",
+        "Bord dy-yannoo pearsoonagh, seyr, ta roie er dty chooid-earrooder hene. She robots ny obbraghee. She oo hene yn fer ta gra ta."
+      ]
+    },
+    {
+      "n": 34,
+      "texts": [
+        "Ta oo cur smooinaghtyn er bord. Ta possan jeh jaagenyn AI cur ad ayns reddyn obbraghey, jeeaghyn ad, as cur ad back dhyts lesh kemmeeyn dy hoiaghey. Cha vel nhee erbee jeant derrey t'ou gra eh.",
+        "Ta AI-gile bord kanban troggit ec thie ec Rich lesh ymmodee cooney veih ny jaagenyn ta eh nish rolley. Te seyr, ta eh roie er dty chooid-earrooder, as te rannit rish carryn, cha nee creckit.",
+        "Smooinee er bord kanban cadjin, lesh colooyn veih Backlog gys Jeant, agh ta jaagenyn AI goaill ny cartyn. Ta'd cur lieh-lioar er cheayrt, fyssaghey tra t'ad fo-ghooinney, as ta'd fieau dy kinjagh er dty ghoo-ayrn."
+      ]
+    },
+    {
+      "n": 55,
+      "texts": [
+        "Ta AI-gile bord kanban raad ta'n possan jeant jeh jaagenyn AI. Ta leeideilagh ec dy chooilley phryjeck ta plaanal yn obbyr as ynseyderyn ta troggal eh. Tra ta red aarloo, ta tester AI gerjagh eh as goaill screenshot, eisht ta eh cheet gys dty chrink. Gow rish eh, ny screeu gaghlin as nee ad jannoo eh reesht.",
+        "Haghyr eh myr raad un pherson dy yeeaghyn ymmodee shessanyn coadaghey AI ec un cheayrt, as dy-yannoo daaghey eh dy ve bord kiart. Ta eh roie er dty vashin, cha vel eh shirrey coontys, as cha vel trackeryn echey. Te seyr son carryn as pobble feaysagh. Te neu-hie neesht, shen-y-fa jean shilley rish gaaue as surprise ayns ynnydyn.",
+        "Shoh yn lane onneyr. Ta feme ort foast smooinaghtyn y ve ayd, as feme ort foast jeeaghyn ny toyrtyssyn. Ny ta AI-gile jannoo she dy chooilley nhee eddyr y daa: te freayll ny cartyn ayns oardagh, doostey yn jaagent kiart tra t'ou screeu gaghlin, soilshaghey dy kiart cre ta caghlaait, as freayll dy chooilley nhee ayns un chrink giarrey dhyts."
+      ]
+    },
+    {
+      "n": 89,
+      "texts": [
+        "Ta AI-gile bord kanban seyr t'ou roie er dty chooid-earrooder hene. Ayns ynnyd pobble, ta possan jeh jaagenyn AI ec dy chooilley phryjeck: leeideilagh ta cur dty smooinaghtyn ayns cartyn as plaan, as ynseyderyn ta goaill ny cartyn ayns oardagh ard-phrimmys. Tra ta red troggit, ta tester AI geaishtagh ny kemmeeyn test as soilshaghey dhyts cre honnick eh. Eisht ta eh fieau ayns un chrink enmyssit Dhyts. T'ou goaill rish eh, ny screeu gaghlin as ta'n possan goaill trial elley. Cha vel nhee erbee cheet gys Jeant erbee dty heshaght.",
+        "Ta paartey dy reddyn nagh vod oo shilley rish. Ta shilley oie freayll y cholloon Dy yannoo lane choud as t'ou 'sy ruggyr, reih cartyn nagh vel feme ec ny freggyrt veih dyts. Ta earrooder token soilshaghey cre va ymmydit ec ny jaagenyn jiu as yn chemmeeys shoh, as ta No Token Mode gra roo scuirr dy chaiyn. Foddee oo screeu gys carryn, as ta screeuyn pryveyt enmyssit veih kione gys kione. Ta'n bord loayrt mychione 120 chengey, as Ollanish, Flemish, pirat as Klingon cooidjagh. Cha vel nhee jeu ayns jerrey cost er pene, as cha vel dooinney erbee shirrey dy chreck eh dhyts.",
+        "Ta AI-gile pryjeck beg, pearsoonagh, cha nee co-heshaght. V'eh dty ghraih Rich dy yannoo kiarail jeh ymmodee phryjeckyn coadaghey AI gyn dy hoshlit dy chooilley appey dy yeeaghyn orroo, myr shen hug eh hene as ny jaagenyn bord son shen, as eisht ghow ad ymmyd jeh'n bord dy hroggal ny va faagit. Te ayns roie-alpha dooint, shen dy ghra te goll er, dy mie, son dorrys dy charrey. Cha vel duillag brisht, cha vel screeuyn-naight, as cha vel plaan gaase. My ta eh jeeaghyn dy ve ymmydagh, foddee oo shirrey dy hoiaghey eh tra vees eh foshlit ny s'ooilley."
+      ]
+    },
+    {
+      "n": 144,
+      "texts": [
+        "Ta AI-gile bord kanban son un dooinney as ymmodee jaagenyn AI. Te roie er dty chooid-earrooder hene as te dy-lhieggan seyr. T'ou cur pryjeckyn lesh, as ta leeideilagh as possan veg ec dy chooilley phryjeck. T'ou loayrt rish y leeideilagh, goll rish Discord, as taggloo mychione smooinaght; ta'n leeideilagh cur eh ayns cartyn as plaan, eisht fieau erriu dy hrimmey Go. Ta'n possan goll trooid ny cartyn ayns oardagh ard-phrimmys, lesh linney-currym aashagh jeant son ard-eie chengey. Roish my jig red erbee back dhyts, ta tester AI geaishtagh ny kemmeeyn ayns coip jeh'n appey as cur screenshot rish. Ta obbyr jeant cheet gys dty chrink lesh ny coadanyn caghlaait as y diff. T'ou goaill rish eh, ny faagail gaghlin as ta'n possan doostey as goaill trial reesht. Cha vod agh oo hene cart y hoiaghey gys Jeant.",
+        "Laa lesh AI-gile, kiart dy chooilley. Anmeeragh t'ou faagail paartey dy ghaghlinyn: ta'n cliklee shoh 'sy ynnyd cairal, lhisagh yn rolley shen ve currit ayns oardagh, vod mayd jannoo reihys dorraghey. T'ou goll dy heillagh. Ta ny jaagenyn lhaih ny gaghlinyn, jannoo ny caghlaaghyn, jeeaghyn ad as cur ad back dhyts. My ta Dy yannoo goll follym, ta shilley oie lhieeney eh veih'n backlog lesh cartyn nagh vel feme ec freggyrt veih dyts. Moghrey, ta un chrink giarrey ayn: daa ny three fyssyn as paartey dy reddyn dy hoiaghey, gagh un lesh kemmeeyn oddys dooinney cadley leeideil as screenshot jeh goll er. T'ou cliklee trooid, goaill rish ny mie as cur back ny vooarey. Ta earrooder token soilshaghey cre va ymmydit, as ta No Token Mode ayn son hiaghtynyn caol. Eisht t'ou goaill bee-moghrey, nagh vod ny jaagenyn cooney lesh foast.",
+        "Ec toshiaght, cre nagh nee AI-gile. Cha nee startup eh, cha vel eh son creck, as cha vel dooinney erbee cruinnaghey dty ghata. Te bord seyr ta roie er dty chooid-earrooder, gyn coontyn, gyn trackeryn as gyn cookies. Cre te: un ynnyd aarloo dy akin dy chooilley phryjeck coadaghey AI dy-cheilley, lesh possan jaagenyn jannoo ny cartyn as oo hene jannoo ny reihyn. Ta eh cur cartyn giarrey cooidjagh, kerraghey ennymyn ghoill, as freayll shilley er cre cha caol ta'n coad cummal. Ta eh loayrt mychione 120 chengey, veih Ollanish as Flemish gys pirat as Klingon. Foddee carryn screeu da cheilley, pryveyt as enmyssit. Hug Rich as ymmodee jaagenyn foiljagh eh seose, ymmydagh jeh eh hene sheean. Te ayns roie-alpha dooint, myr shen te garroo ayns ynnydyn. My ta eh jeeaghyn dy ve gaue, eam dy mie as foddee oo cheet stiagh moal."
+      ]
+    }
+  ],
+  "quips": {
+    "1": "Un fockle. Dennal. Foddee dy chooid ro vooar.",
+    "3": "Three focklyn. Er-lhiam ny s'onneyr na ymmodee duillagyn bree.",
+    "8": "Hoght focklyn. Foast giarey na stand-up.",
+    "21": "She points skeealley ny lhiurideyn, my sailliu. Dy bragh.",
+    "55": "Queig as queig-jeig focklyn. Ve daa chart jeant choud as v'ou lhaih shen.",
+    "144": "Shen yn lhiurid hrooid. Cha vel 233 ayn. Ta ny jaagenyn er gheddyn dy cadley."
+  }
+}
