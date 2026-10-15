@@ -3815,5 +3815,20 @@
  "rev.summary.busy": "Növbədə olan agentdən soruşulur...",
  "rev.summary.noai": "Xülasə yoxdur: AI söndürülüb (No Token Mode, AI-siz və ya büdcə aşılıb).",
  "rev.summary.failed": "Agent bu dəfə xülasə vermədi.",
- "tb.b.quietTop": "🌙 Sakitləşir"
+ "tb.b.quietTop": "🌙 Sakitləşir",
+ "board.team.quiet": "Hazırda heç kim işləmir.",
+ "board.team.showall": "Hamısını göstər ({n})",
+ "board.team.active": "Yalnız aktivləri göstər",
+ "fy.testsdone": "Bütün testlər bitdi",
+ "srv.discord.hello": "Salam {name}, AI-gile komandalarına yazmaq üçün burada cavab ver",
+ "dc.hello.idlabel": "Discord istifadəçi ID-n",
+ "dc.hello.idhelp": "Kopyalamaq üçün: Discord-da Developer Mode-u aç (Settings > Advanced), adının üzərinə sağ klik et, sonra Copy User ID seç.",
+ "dc.hello.btn": "Mənə salam DM-i göndər",
+ "dc.hello.why": "Bot əvvəlcə salamlaşır ki, ona cavab verə biləsən.",
+ "dc.hello.sent": "Salam göndərildi: Discord DM-lərinə bax və orada cavab ver.",
+ "dc.hello.needid": "Əvvəlcə Discord istifadəçi ID-ni əlavə et (\"və ya User ID yapışdır\" bölməsinə bax).",
+ "dc.hello.noserver": "Discord botun sənə yalnız onunla ortaq serverdə olduqda yazmasına icazə verir. Botu üzv olduğun serverə əlavə et, sonra yenidən cəhd et.",
+ "dc.hello.invite": "Botu serverinə əlavə et",
+ "dc.hello.retry": "Yenidən cəhd et",
+ "srv.pir.rb.next": "Rəy yazıldı. {name}: indi növbəti dəfə daha sürətli olsun deyə runbook təklif et: aigile pir-runbook {slug} {id} <short-name> --text \"addımlar, hər sətirdə biri\" --as {name}. Sahib Go deyir və fayl layihə qovluğunda docs/runbooks/<short-name>.md kimi yazılır."
 }

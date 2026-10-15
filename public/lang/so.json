@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Waxaan weydiinayaa wakiilka xilka qaadaya...",
  "rev.summary.noai": "Soo koobid ma jiro: AI waa la damiyay (No Token Mode, No AI ama ka dhaafay miisaaniyadda).",
  "rev.summary.failed": "Wakiilku wax soo koobid ah ma bixin markan.",
- "tb.b.quietTop": "🌙 Aamusnaan"
+ "tb.b.quietTop": "🌙 Aamusnaan",
+ "board.team.quiet": "Hadda cidna ma shaqaynayso.",
+ "board.team.showall": "Tus dhammaan ({n})",
+ "board.team.active": "Tus kuwa shaqeynaya oo kaliya",
+ "fy.testsdone": "Dhammaan imtixaannadii waa dhammaadeen",
+ "srv.discord.hello": "Salaan {name}, halkan ka jawaab si aad ugu qorto kooxahaaga AI-gile",
+ "dc.hello.idlabel": "Aqoonsigaaga isticmaale ee Discord",
+ "dc.hello.idhelp": "Si aad u koobiyeyso: Discord ku daar Developer Mode (Settings > Advanced), midig-ku dhufo magacaaga, kaddib dooro Copy User ID.",
+ "dc.hello.btn": "I soo dir DM salaan ah",
+ "dc.hello.why": "Botku ayaa marka hore salaamaya, si aad ugu jawaabi karto.",
+ "dc.hello.sent": "Salaanta waa la diray: fiiri DM-yadaada Discord oo halkaas ka jawaab.",
+ "dc.hello.needid": "Marka hore ku dar aqoonsigaaga isticmaale ee Discord (eeg \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord wuxuu u ogolyahay botka inuu ku soo diro fariin kaliya haddii aad la wadaagtaan server. Ku dar botka server aad ku jirto, kaddibna isku day mar kale.",
+ "dc.hello.invite": "Ku dar botka serverkaaga",
+ "dc.hello.retry": "Isku day mar kale"
 }

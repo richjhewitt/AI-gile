@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Pitam dežurnog agenta...",
  "rev.summary.noai": "Nema sažetka: AI je isključen (No Token Mode, No AI ili prekoračen budžet).",
  "rev.summary.failed": "Agent ovaj put nije dao sažetak.",
- "tb.b.quietTop": "🌙 Prelazim u tišinu"
+ "tb.b.quietTop": "🌙 Prelazim u tišinu",
+ "board.team.quiet": "Trenutačno nitko ne radi.",
+ "board.team.showall": "Prikaži sve ({n})",
+ "board.team.active": "Prikaži samo aktivne",
+ "fy.testsdone": "Svi testovi gotovi",
+ "srv.discord.hello": "Bok {name}, odgovori ovdje da pošalješ poruku svojim AI-gile timovima",
+ "dc.hello.idlabel": "Tvoj Discord korisnički ID",
+ "dc.hello.idhelp": "Za kopiranje: u Discordu uključi Developer Mode (Settings > Advanced), desnom tipkom miša klikni svoje ime, zatim Copy User ID.",
+ "dc.hello.btn": "Pošalji mi DM s pozdravom",
+ "dc.hello.why": "Bot prvi pozdravi, da mu možeš odgovoriti.",
+ "dc.hello.sent": "Pozdrav poslan: provjeri svoje Discord DM-ove i odgovori tamo.",
+ "dc.hello.needid": "Prvo dodaj svoj Discord korisnički ID (vidi \"ili zalijepi korisnički ID\").",
+ "dc.hello.noserver": "Discord dopušta botu da ti piše samo ako dijelite poslužitelj. Dodaj bota na poslužitelj na kojem si, pa pokušaj ponovno.",
+ "dc.hello.invite": "Dodaj bota na svoj poslužitelj",
+ "dc.hello.retry": "Pokušaj ponovno"
 }

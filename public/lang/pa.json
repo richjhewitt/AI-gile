@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "ਡਿਊਟੀ ਵਾਲੇ ਏਜੰਟ ਤੋਂ ਪੁੱਛਿਆ ਜਾ ਰਿਹਾ ਹੈ...",
  "rev.summary.noai": "ਕੋਈ ਸਾਰ ਨਹੀਂ: AI ਬੰਦ ਹੈ (ਬਿਨਾਂ ਟੋਕਨ ਮੋਡ, ਕਦੇ AI ਨਹੀਂ ਜਾਂ ਬਜਟ ਤੋਂ ਵੱਧ)।",
  "rev.summary.failed": "ਏਜੰਟ ਨੇ ਇਸ ਵਾਰ ਕੋਈ ਸਾਰ ਨਹੀਂ ਦਿੱਤਾ।",
- "tb.b.quietTop": "🌙 ਸ਼ਾਂਤ ਹੋ ਰਿਹਾ ਹਾਂ"
+ "tb.b.quietTop": "🌙 ਸ਼ਾਂਤ ਹੋ ਰਿਹਾ ਹਾਂ",
+ "board.team.quiet": "ਇਸ ਵੇਲੇ ਕੋਈ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ।",
+ "board.team.showall": "ਸਭ ਦਿਖਾਓ ({n})",
+ "board.team.active": "ਸਿਰਫ਼ ਸਰਗਰਮ ਦਿਖਾਓ",
+ "fy.testsdone": "ਸਾਰੇ ਟੈਸਟ ਪੂਰੇ",
+ "srv.discord.hello": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ {name}, ਆਪਣੀਆਂ AI-gile ਟੀਮਾਂ ਨੂੰ ਸੁਨੇਹਾ ਭੇਜਣ ਲਈ ਇੱਥੇ ਜਵਾਬ ਦਿਓ",
+ "dc.hello.idlabel": "ਤੁਹਾਡੀ Discord ਯੂਜ਼ਰ ID",
+ "dc.hello.idhelp": "ਕਾਪੀ ਕਰਨ ਲਈ: Discord ਵਿੱਚ Developer Mode ਚਾਲੂ ਕਰੋ (Settings > Advanced), ਆਪਣੇ ਨਾਮ ਉੱਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ, ਫਿਰ Copy User ID ਚੁਣੋ।",
+ "dc.hello.btn": "ਮੈਨੂੰ ਹੈਲੋ DM ਭੇਜੋ",
+ "dc.hello.why": "ਬੌਟ ਪਹਿਲਾਂ ਹੈਲੋ ਕਹਿੰਦਾ ਹੈ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਜਵਾਬ ਦੇ ਸਕੋ।",
+ "dc.hello.sent": "ਹੈਲੋ ਭੇਜ ਦਿੱਤਾ: ਆਪਣੇ Discord DM ਵੇਖੋ ਅਤੇ ਉੱਥੇ ਜਵਾਬ ਦਿਓ।",
+ "dc.hello.needid": "ਪਹਿਲਾਂ ਆਪਣੀ Discord ਯੂਜ਼ਰ ID ਜੋੜੋ (\"ਜਾਂ User ID ਪੇਸਟ ਕਰੋ\" ਵੇਖੋ)।",
+ "dc.hello.noserver": "ਜੇ ਤੁਸੀਂ ਅਤੇ ਬੌਟ ਇੱਕੋ ਸਰਵਰ ਵਿੱਚ ਹੋ ਤਾਂ ਹੀ Discord ਬੌਟ ਨੂੰ ਤੁਹਾਨੂੰ ਸੁਨੇਹਾ ਭੇਜਣ ਦਿੰਦਾ ਹੈ। ਬੌਟ ਨੂੰ ਉਸ ਸਰਵਰ ਵਿੱਚ ਜੋੜੋ ਜਿਸ ਵਿੱਚ ਤੁਸੀਂ ਹੋ, ਫਿਰ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+ "dc.hello.invite": "ਬੌਟ ਨੂੰ ਆਪਣੇ ਸਰਵਰ ਵਿੱਚ ਜੋੜੋ",
+ "dc.hello.retry": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ"
 }

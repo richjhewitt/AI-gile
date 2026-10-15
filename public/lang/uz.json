@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Navbatchi agentdan soʻralmoqda...",
  "rev.summary.noai": "Xulosa yoʻq: AI oʻchiq (No Token Mode, No AI yoki byudjetdan oshgan).",
  "rev.summary.failed": "Agent bu safar xulosa bermadi.",
- "tb.b.quietTop": "🌙 Tinch rejim"
+ "tb.b.quietTop": "🌙 Tinch rejim",
+ "board.team.quiet": "Hozir hech kim ishlamayapti.",
+ "board.team.showall": "Hammasini ko'rsatish ({n})",
+ "board.team.active": "Faqat faollarni ko'rsatish",
+ "fy.testsdone": "Barcha testlar tugadi",
+ "srv.discord.hello": "Salom {name}, AI-gile jamoalaringizga yozish uchun shu yerga javob bering",
+ "dc.hello.idlabel": "Discord foydalanuvchi ID'ingiz",
+ "dc.hello.idhelp": "Nusxalash uchun: Discord'da Developer Mode'ni yoqing (Settings > Advanced), ismingizni o'ng tugma bilan bosing, so'ng Copy User ID'ni tanlang.",
+ "dc.hello.btn": "Menga salom DM yuboring",
+ "dc.hello.why": "Bot birinchi salom beradi, shunda unga javob bera olasiz.",
+ "dc.hello.sent": "Salom yuborildi: Discord DM'laringizni ko'ring va o'sha yerda javob bering.",
+ "dc.hello.needid": "Avval Discord foydalanuvchi ID'ingizni qo'shing (\"or paste a User ID\" ga qarang).",
+ "dc.hello.noserver": "Discord botga sizga yozishga faqat siz u bilan bir serverda bo'lsangiz ruxsat beradi. Botni o'zingiz bor serverga qo'shing, so'ng qayta urinib ko'ring.",
+ "dc.hello.invite": "Botni serveringizga qo'shish",
+ "dc.hello.retry": "Qayta urinish"
 }

@@ -3816,5 +3816,19 @@
  "rev.summary.noai": "Dim crynodeb: mae AI i ffwrdd (Modd Dim Tocyn, Dim AI neu dros y gyllideb).",
  "rev.summary.failed": "Ni roddodd yr asiant grynodeb y tro hwn.",
  "tb.b.quietTop": "🌙 Mynd yn dawel",
- "srv.pir.rb.next": "Postiwyd yr adolygiad. {name}: cynigia runbook nawr fel bod hyn yn gyflymach y tro nesaf: aigile pir-runbook {slug} {id} <short-name> --text \"y camau, un fesul llinell\" --as {name}. Mae'r perchennog yn dweud Ewch ac mae'r ffeil yn cael ei hysgrifennu i docs/runbooks/<short-name>.md yn ffolder y prosiect."
+ "srv.pir.rb.next": "Postiwyd yr adolygiad. {name}: cynigia runbook nawr fel bod hyn yn gyflymach y tro nesaf: aigile pir-runbook {slug} {id} <short-name> --text \"y camau, un fesul llinell\" --as {name}. Mae'r perchennog yn dweud Ewch ac mae'r ffeil yn cael ei hysgrifennu i docs/runbooks/<short-name>.md yn ffolder y prosiect.",
+ "board.team.quiet": "Does neb yn gweithio ar hyn o bryd.",
+ "board.team.showall": "Dangos y cyfan ({n})",
+ "board.team.active": "Dangos y rhai gweithredol yn unig",
+ "fy.testsdone": "Pob prawf wedi'i gwblhau",
+ "srv.discord.hello": "Helo {name}, atebwch yma i anfon neges at eich timau AI-gile",
+ "dc.hello.idlabel": "Eich ID defnyddiwr Discord",
+ "dc.hello.idhelp": "I'w gopïo: yn Discord trowch Modd Datblygwr ymlaen (Gosodiadau > Uwch), de-gliciwch ar eich enw, yna Copïo ID Defnyddiwr.",
+ "dc.hello.btn": "Anfon DM helo ataf",
+ "dc.hello.why": "Mae'r bot yn dweud helo gyntaf, fel y gallwch ei ateb.",
+ "dc.hello.sent": "Helo wedi'i anfon: edrychwch ar eich DMs Discord ac atebwch yno.",
+ "dc.hello.needid": "Ychwanegwch eich ID defnyddiwr Discord yn gyntaf (gweler \"neu gludwch ID Defnyddiwr\").",
+ "dc.hello.noserver": "Dim ond os ydych chi'n rhannu gweinydd gyda'r bot y mae Discord yn gadael iddo anfon neges atoch. Ychwanegwch y bot at weinydd rydych chi ynddo, yna rhowch gynnig arall arni.",
+ "dc.hello.invite": "Ychwanegu'r bot at eich gweinydd",
+ "dc.hello.retry": "Rhoi cynnig arall arni"
 }

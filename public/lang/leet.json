@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "45k1ng 7h3 0n-c4ll 4g3n7...",
  "rev.summary.noai": "N0 5umm4ry: 41 15 0ff (N0 70k3n M0d3, N0 41 0r 0v3r budg37).",
  "rev.summary.failed": "7h3 4g3n7 g4v3 n0 5umm4ry 7h15 71m3.",
- "tb.b.quietTop": "🌙 G01ng qu137"
+ "tb.b.quietTop": "🌙 G01ng qu137",
+ "board.team.quiet": "N0 0n3 15 w0rk1n6 r16h7 n0w.",
+ "board.team.showall": "5h0w 4ll ({n})",
+ "board.team.active": "5h0w 4c71v3 0nly",
+ "fy.testsdone": "4ll 7e575 d0n3",
+ "srv.discord.hello": "H1 {name}, r3ply h3r3 70 m3554g3 y0ur AI-gile 734m5",
+ "dc.hello.idlabel": "Y0ur D15c0rd u53r 1D",
+ "dc.hello.idhelp": "70 c0py 17: 1n D15c0rd 7urn 0n D3v3l0p3r M0d3 (53771n65 > 4dv4nc3d), r16h7-cl1ck y0ur n4m3, 7h3n C0py U53r 1D.",
+ "dc.hello.btn": "53nd m3 4 h3ll0 DM",
+ "dc.hello.why": "7h3 b07 54y5 h3ll0 f1r57, 50 y0u c4n r3ply 70 17.",
+ "dc.hello.sent": "H3ll0 53n7: ch3ck y0ur D15c0rd DM5 4nd r3ply 7h3r3.",
+ "dc.hello.needid": "4dd y0ur D15c0rd u53r 1D f1r57 (533 \"0r p4573 4 U53r 1D\").",
+ "dc.hello.noserver": "D15c0rd 0nly l37s 7h3 b07 m3554g3 y0u 1f y0u 5h4r3 4 53rv3r w17h 17. 4dd 7h3 b07 70 4 53rv3r y0u 4r3 1n, 7h3n 7ry 4g41n.",
+ "dc.hello.invite": "4dd 7h3 b07 70 y0ur 53rv3r",
+ "dc.hello.retry": "7ry 4g41n"
 }

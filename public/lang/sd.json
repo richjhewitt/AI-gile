@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "on-call ايجنٽ کان پڇي رهيا آهيون...",
  "rev.summary.noai": "ڪو خلاصو نه: AI بند آهي (No Token Mode، No AI يا بجيٽ کان وڌيڪ).",
  "rev.summary.failed": "ايجنٽ هن ڀيري ڪو خلاصو نه ڏنو.",
- "tb.b.quietTop": "🌙 خاموش ٿي رهيو آهي"
+ "tb.b.quietTop": "🌙 خاموش ٿي رهيو آهي",
+ "board.team.quiet": "هينئر ڪو به ڪم نه ڪري رهيو آهي.",
+ "board.team.showall": "سڀ ڏيکاريو ({n})",
+ "board.team.active": "رڳو فعال ڏيکاريو",
+ "fy.testsdone": "سڀ ٽيسٽ مڪمل",
+ "srv.discord.hello": "هيلو {name}، پنهنجين AI-gile ٽيمن کي پيغام موڪلڻ لاءِ هتي جواب ڏيو",
+ "dc.hello.idlabel": "توهان جو Discord يوزر ID",
+ "dc.hello.idhelp": "ڪاپي ڪرڻ لاءِ: Discord ۾ Developer Mode آن ڪريو (Settings > Advanced)، پنهنجي نالي تي ساڄي ڪلڪ ڪريو، پوءِ Copy User ID چونڊيو.",
+ "dc.hello.btn": "مون کي هيلو DM موڪليو",
+ "dc.hello.why": "بوٽ پهرين هيلو چوندو آهي، تنهنڪري توهان جواب ڏئي سگهو ٿا.",
+ "dc.hello.sent": "هيلو موڪليو ويو: پنهنجا Discord DM ڏسو ۽ اتي جواب ڏيو.",
+ "dc.hello.needid": "پهرين پنهنجو Discord يوزر ID شامل ڪريو (\"يا User ID پيسٽ ڪريو\" ڏسو).",
+ "dc.hello.noserver": "Discord بوٽ کي رڳو تڏهن توهان کي پيغام موڪلڻ ڏئي ٿو جڏهن توهان ساڻس گڏيل سرور ۾ هجو. بوٽ کي ان سرور ۾ شامل ڪريو جنهن ۾ توهان آهيو، پوءِ ٻيهر ڪوشش ڪريو.",
+ "dc.hello.invite": "بوٽ کي پنهنجي سرور ۾ شامل ڪريو",
+ "dc.hello.retry": "ٻيهر ڪوشش ڪريو"
 }

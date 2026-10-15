@@ -3816,5 +3816,19 @@
  "rev.summary.noai": "Keine Zusammenfassung: KI ist aus (Kein-Token-Modus, Ohne KI oder über dem Budget).",
  "rev.summary.failed": "Der Agent hat diesmal keine Zusammenfassung geliefert.",
  "tb.b.quietTop": "🌙 Funkstille",
- "srv.pir.rb.next": "Nachbesprechung gepostet. {name}: Schlag jetzt ein Runbook vor, damit es das nächste Mal schneller geht: aigile pir-runbook {slug} {id} <short-name> --text \"die Schritte, einer pro Zeile\" --as {name}. Der Eigentümer sagt Los und die Datei wird nach docs/runbooks/<short-name>.md im Projektordner geschrieben."
+ "srv.pir.rb.next": "Nachbesprechung gepostet. {name}: Schlag jetzt ein Runbook vor, damit es das nächste Mal schneller geht: aigile pir-runbook {slug} {id} <short-name> --text \"die Schritte, einer pro Zeile\" --as {name}. Der Eigentümer sagt Los und die Datei wird nach docs/runbooks/<short-name>.md im Projektordner geschrieben.",
+ "board.team.quiet": "Gerade arbeitet niemand.",
+ "board.team.showall": "Alle anzeigen ({n})",
+ "board.team.active": "Nur Aktive anzeigen",
+ "fy.testsdone": "Alle Tests erledigt",
+ "srv.discord.hello": "Hallo {name}, antworte hier, um deinen AI-gile-Teams zu schreiben",
+ "dc.hello.idlabel": "Deine Discord-Nutzer-ID",
+ "dc.hello.idhelp": "So kopierst du sie: Aktiviere in Discord den Entwicklermodus (Einstellungen > Erweitert), klicke mit rechts auf deinen Namen und wähle Nutzer-ID kopieren.",
+ "dc.hello.btn": "Schick mir eine Hallo-DM",
+ "dc.hello.why": "Der Bot sagt zuerst Hallo, damit du ihm antworten kannst.",
+ "dc.hello.sent": "Hallo gesendet: Schau in deine Discord-DMs und antworte dort.",
+ "dc.hello.needid": "Füge zuerst deine Discord-Nutzer-ID hinzu (siehe \"oder Nutzer-ID einfügen\").",
+ "dc.hello.noserver": "Discord erlaubt dem Bot nur, dir zu schreiben, wenn ihr einen Server teilt. Füge den Bot zu einem Server hinzu, auf dem du bist, und versuche es dann noch einmal.",
+ "dc.hello.invite": "Bot zu deinem Server hinzufügen",
+ "dc.hello.retry": "Noch einmal versuchen"
 }

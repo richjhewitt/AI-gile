@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "ఆన్-కాల్ ఏజెంట్‌ను అడుగుతోంది...",
  "rev.summary.noai": "సారాంశం లేదు: AI ఆఫ్‌లో ఉంది (No Token Mode, No AI లేదా బడ్జెట్ మించింది).",
  "rev.summary.failed": "ఈసారి ఏజెంట్ సారాంశం ఇవ్వలేదు.",
- "tb.b.quietTop": "🌙 నిశ్శబ్దంగా వెళ్తోంది"
+ "tb.b.quietTop": "🌙 నిశ్శబ్దంగా వెళ్తోంది",
+ "board.team.quiet": "ప్రస్తుతం ఎవరూ పని చేయడం లేదు.",
+ "board.team.showall": "అన్నీ చూపించు ({n})",
+ "board.team.active": "చురుకుగా ఉన్నవారిని మాత్రమే చూపించు",
+ "fy.testsdone": "అన్ని పరీక్షలు పూర్తయ్యాయి",
+ "srv.discord.hello": "హాయ్ {name}, మీ AI-gile టీమ్‌లకు సందేశం పంపడానికి ఇక్కడ రిప్లై ఇవ్వండి",
+ "dc.hello.idlabel": "మీ Discord యూజర్ ID",
+ "dc.hello.idhelp": "కాపీ చేయడానికి: Discord లో Developer Mode ఆన్ చేయండి (Settings > Advanced), మీ పేరుపై రైట్-క్లిక్ చేసి, Copy User ID ఎంచుకోండి.",
+ "dc.hello.btn": "నాకు హలో DM పంపు",
+ "dc.hello.why": "బాట్ ముందుగా హలో చెబుతుంది, అప్పుడు మీరు రిప్లై ఇవ్వవచ్చు.",
+ "dc.hello.sent": "హలో పంపబడింది: మీ Discord DMలు చూసి అక్కడే రిప్లై ఇవ్వండి.",
+ "dc.hello.needid": "ముందుగా మీ Discord యూజర్ ID ని జోడించండి (\"or paste a User ID\" చూడండి).",
+ "dc.hello.noserver": "మీరూ బాట్ ఒకే సర్వర్‌లో ఉంటేనే Discord బాట్‌ను మీకు సందేశం పంపనిస్తుంది. మీరు ఉన్న సర్వర్‌కు బాట్‌ను జోడించి, మళ్లీ ప్రయత్నించండి.",
+ "dc.hello.invite": "బాట్‌ను మీ సర్వర్‌కు జోడించు",
+ "dc.hello.retry": "మళ్లీ ప్రయత్నించు"
 }

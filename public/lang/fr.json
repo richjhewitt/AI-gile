@@ -3816,5 +3816,19 @@
  "rev.summary.noai": "Pas de résumé : l'IA est désactivée (No Token Mode, Sans IA ou budget dépassé).",
  "rev.summary.failed": "L'agent n'a pas fourni de résumé cette fois.",
  "tb.b.quietTop": "🌙 Mode silencieux",
- "srv.pir.rb.next": "Revue publiée. {name} : propose maintenant un runbook pour que ce soit plus rapide la prochaine fois : aigile pir-runbook {slug} {id} <short-name> --text \"les étapes, une par ligne\" --as {name}. Le propriétaire dit Go et le fichier est écrit dans docs/runbooks/<short-name>.md dans le dossier du projet."
+ "srv.pir.rb.next": "Revue publiée. {name} : propose maintenant un runbook pour que ce soit plus rapide la prochaine fois : aigile pir-runbook {slug} {id} <short-name> --text \"les étapes, une par ligne\" --as {name}. Le propriétaire dit Go et le fichier est écrit dans docs/runbooks/<short-name>.md dans le dossier du projet.",
+ "board.team.quiet": "Personne ne travaille pour l'instant.",
+ "board.team.showall": "Tout afficher ({n})",
+ "board.team.active": "Afficher seulement les actifs",
+ "fy.testsdone": "Tous les tests sont terminés",
+ "srv.discord.hello": "Salut {name}, réponds ici pour écrire à tes équipes AI-gile",
+ "dc.hello.idlabel": "Ton identifiant utilisateur Discord",
+ "dc.hello.idhelp": "Pour le copier : dans Discord, active le mode développeur (Paramètres > Avancés), fais un clic droit sur ton nom, puis Copier l'identifiant utilisateur.",
+ "dc.hello.btn": "Envoie-moi un DM de bienvenue",
+ "dc.hello.why": "Le bot dit bonjour en premier, pour que tu puisses lui répondre.",
+ "dc.hello.sent": "Bonjour envoyé : regarde tes DM Discord et réponds-y.",
+ "dc.hello.needid": "Ajoute d'abord ton identifiant utilisateur Discord (voir \"ou colle un identifiant utilisateur\").",
+ "dc.hello.noserver": "Discord ne laisse le bot t'écrire que si vous partagez un serveur. Ajoute le bot à un serveur où tu es, puis réessaie.",
+ "dc.hello.invite": "Ajouter le bot à ton serveur",
+ "dc.hello.retry": "Réessayer"
 }

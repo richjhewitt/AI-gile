@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "በጥሪ ላይ ያለውን ወኪል በመጠየቅ ላይ...",
  "rev.summary.noai": "ማጠቃለያ የለም፦ AI ጠፍቷል (የቶከን የለሽ ሁነታ፣ ያለ AI ወይም ከበጀት በላይ)።",
  "rev.summary.failed": "ወኪሉ በዚህ ጊዜ ማጠቃለያ አልሰጠም።",
- "tb.b.quietTop": "🌙 ጸጥ እያለ ነው"
+ "tb.b.quietTop": "🌙 ጸጥ እያለ ነው",
+ "board.team.quiet": "አሁን ማንም እየሰራ አይደለም።",
+ "board.team.showall": "ሁሉንም አሳይ ({n})",
+ "board.team.active": "ንቁዎችን ብቻ አሳይ",
+ "fy.testsdone": "ሁሉም ሙከራዎች ተጠናቅቀዋል",
+ "srv.discord.hello": "ሰላም {name}፣ ለAI-gile ቡድኖችህ መልእክት ለመላክ እዚህ መልስ",
+ "dc.hello.idlabel": "የDiscord የተጠቃሚ መታወቂያህ",
+ "dc.hello.idhelp": "ለመቅዳት፦ በDiscord የገንቢ ሁነታን አብራ (ቅንብሮች > የላቀ)፣ በስምህ ላይ በቀኝ ጠቅ አድርግ፣ ከዚያ የተጠቃሚ መታወቂያ ቅዳ የሚለውን ምረጥ።",
+ "dc.hello.btn": "የሰላም DM ላክልኝ",
+ "dc.hello.why": "ቦቱ መጀመሪያ ሰላም ይላል፣ ስለዚህ መልስ መስጠት ትችላለህ።",
+ "dc.hello.sent": "ሰላምታ ተልኳል፦ የDiscord DMዎችህን ተመልከት እና እዚያ መልስ።",
+ "dc.hello.needid": "መጀመሪያ የDiscord የተጠቃሚ መታወቂያህን ጨምር (\"ወይም የተጠቃሚ መታወቂያ ለጥፍ\" ተመልከት)።",
+ "dc.hello.noserver": "Discord ቦቱ መልእክት እንዲልክልህ የሚፈቅደው አንድ ሰርቨር ከተጋራችሁ ብቻ ነው። ቦቱን አንተ ያለህበት ሰርቨር ላይ ጨምረህ እንደገና ሞክር።",
+ "dc.hello.invite": "ቦቱን ወደ ሰርቨርህ ጨምር",
+ "dc.hello.retry": "እንደገና ሞክር"
 }

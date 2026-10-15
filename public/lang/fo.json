@@ -3849,5 +3849,19 @@
  "rev.summary.noai": "Ongin samandráttur: AI er av (No Token Mode, No AI ella yvir budgetið).",
  "rev.summary.failed": "Agentin gav ongan samandrátt hesaferð.",
  "tb.b.quietTop": "🌙 Kvirrur",
- "srv.pir.rb.next": "Kanning send. {name}: uppskoyt nú ein runbook, so hetta gongur skjótari næstu ferð: aigile pir-runbook {slug} {id} <short-name> --text \"stigini, eitt á hvørjari linju\" --as {name}. Eigarin sigur Go, og fílan verður skrivað til docs/runbooks/<short-name>.md í verkætlanamappuni."
+ "srv.pir.rb.next": "Kanning send. {name}: uppskoyt nú ein runbook, so hetta gongur skjótari næstu ferð: aigile pir-runbook {slug} {id} <short-name> --text \"stigini, eitt á hvørjari linju\" --as {name}. Eigarin sigur Go, og fílan verður skrivað til docs/runbooks/<short-name>.md í verkætlanamappuni.",
+ "board.team.quiet": "Eingin arbeiðir júst nú.",
+ "board.team.showall": "Vís alt ({n})",
+ "board.team.active": "Vís bert virkin",
+ "fy.testsdone": "Allar royndir eru gjørdar",
+ "srv.discord.hello": "Halló {name}, svara her fyri at senda boð til tíni AI-gile toymi",
+ "dc.hello.idlabel": "Títt Discord brúkara-ID",
+ "dc.hello.idhelp": "Fyri at avrita tað: Slá Developer Mode til í Discord (Stillingar > Víðkað), høgraklikk á navnið títt og vel so Avrita brúkara-ID.",
+ "dc.hello.btn": "Send mær eitt halló-DM",
+ "dc.hello.why": "Botturin heilsar fyrst, so tú kanst svara honum.",
+ "dc.hello.sent": "Halló sent: kekka tíni Discord DM og svara har.",
+ "dc.hello.needid": "Legg fyrst títt Discord brúkara-ID aftrat (sí \"ella set brúkara-ID inn\").",
+ "dc.hello.noserver": "Discord letur botturin bert senda tær boð, um tit deila ein ambætara. Legg botturin til ein ambætara, sum tú ert á, og royn aftur.",
+ "dc.hello.invite": "Legg botturin til ambætaran hjá tær",
+ "dc.hello.retry": "Royn aftur"
 }

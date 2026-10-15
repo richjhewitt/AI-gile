@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Ow covyn orth an ajent yn galow...",
  "rev.summary.noai": "Nyns eus berrhans: AI yw dhe ves (Modh heb Tokens, Heb AI po re a'n budjet).",
  "rev.summary.failed": "An ajent ny ros berrhans an prys ma.",
- "tb.b.quietTop": "🌙 Mos yn tewl"
+ "tb.b.quietTop": "🌙 Mos yn tewl",
+ "board.team.quiet": "Nyns eus den vyth ow oberi lemmyn.",
+ "board.team.showall": "Diskwedhes oll ({n})",
+ "board.team.active": "Diskwedhes an bywys yn unnik",
+ "fy.testsdone": "An prevyansow oll gwrys",
+ "srv.discord.hello": "Dydh da {name}, gorthyp omma rag dannvon messach dh'ty jynnys AI-gile",
+ "dc.hello.idlabel": "Dha ID devnydhyer Discord",
+ "dc.hello.idhelp": "Rag y gopia: yn Discord gwra an Modh Displegyer (Settyansow > Avonsys), klyckya a-dhyghow war dha hanow, ena Kopia ID Devnydhyer.",
+ "dc.hello.btn": "Danvon DM salusya dhymm",
+ "dc.hello.why": "An bot a salus yn kynsa, may hyllydh gorthyp dhodho.",
+ "dc.hello.sent": "Salusyans danvenys: gwra whythra dha DMs Discord ha gorthyp ena.",
+ "dc.hello.needid": "Keworra dha ID devnydhyer Discord yn kynsa (gwel \"po peusta ID devnydhyer\").",
+ "dc.hello.noserver": "Discord a asow dhe'n bot skrifa dhis yn unnik mar kevrenny hwi servyer. Keworra an bot dhe servyer may fydh, ena assay arta.",
+ "dc.hello.invite": "Keworra an bot dhe'th servyer",
+ "dc.hello.retry": "Assaya arta"
 }

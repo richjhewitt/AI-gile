@@ -3828,5 +3828,19 @@
  "rev.summary.busy": "Biddende nihtwæcce-ǣgent...",
  "rev.summary.noai": "Nā ġesamnung: AI is āwōg (Nān-Tōcen-Mōde, Nān AI, oþþe ofer fēoh).",
  "rev.summary.failed": "Sē ǣgent ne sealde ġesamnung þis tīde.",
- "tb.b.quietTop": "🌙 Ġeswīgiende"
+ "tb.b.quietTop": "🌙 Ġeswīgiende",
+ "board.team.quiet": "Nān ne wyrceð nū.",
+ "board.team.showall": "Æwȳsa eall ({n})",
+ "board.team.active": "Æwȳsa þā wyrcendan ānne",
+ "fy.testsdone": "Ealle costunga gedōn",
+ "srv.discord.hello": "Hāl, {name}, andswara hēr tō ǣrendgewritu sendenne þīnum AI-gile weorodum",
+ "dc.hello.idlabel": "Þīn Discord brūcendes ID",
+ "dc.hello.idhelp": "Tō āwritanne: on Discord ontȳn Timbrenes Wīse (Gesetnessa > Furðor), rihthand-clyppe on þīn nama, siþþan Āwrit Brūcendes ID.",
+ "dc.hello.btn": "Send mē hālettan DM",
+ "dc.hello.why": "Se bot grēt ǣrest, þæt þū andswarian mǣge.",
+ "dc.hello.sent": "Hāletung āsend: sēc on þīnum Discord DMum and andswara þǣr.",
+ "dc.hello.needid": "Tōlecge ǣrest þīn Discord brūcendes ID (sēh \"oþþe þrēat ān Brūcendes ID\").",
+ "dc.hello.noserver": "Discord lǣt þone bot þē ǣrendgewritan ānum gif gē ān server gemǣne habbaþ. Tōlecge þone bot tō servere þe þū on eart, and fandige eft.",
+ "dc.hello.invite": "Tōlecge þone bot tō þīnum servere",
+ "dc.hello.retry": "Fandige eft"
 }

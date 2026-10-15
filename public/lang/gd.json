@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "A’ faighneachd dhen àidseant air dleastanas…",
  "rev.summary.noai": "Chan eil geàrr-chunntas ann: tha AI dheth (Modh Gun Token, Gun AI no thar buidseit).",
  "rev.summary.failed": "Cha tug an àidseant geàrr-chunntas an turas seo.",
- "tb.b.quietTop": "🌙 A’ dol sàmhach"
+ "tb.b.quietTop": "🌙 A’ dol sàmhach",
+ "board.team.quiet": "Chan eil duine sam bith ag obair an-dràsta.",
+ "board.team.showall": "Seall a h-uile ({n})",
+ "board.team.active": "Seall dìreach na cuid ghnìomhach",
+ "fy.testsdone": "Chaidh a h-uile deuchainn a dhèanamh",
+ "srv.discord.hello": "Halò {name}, freagair an seo gus teachdaireachd a chur dha na sgiobaidhean AI-gile agad",
+ "dc.hello.idlabel": "An ID cleachdaiche Discord agad",
+ "dc.hello.idhelp": "Airson lethbhreac a dhèanamh dheth: ann an Discord cuir air Modh Leasaiche (Roghainnean > Adhartach), dèan briogadh deas air d' ainm, an uair sin Cuir lethbhreac dhen ID cleachdaiche.",
+ "dc.hello.btn": "Cuir DM fàilte thugam",
+ "dc.hello.why": "Bidh am bot a' cantainn halò an toiseach, gus an urrainn dhut freagairt.",
+ "dc.hello.sent": "Fàilte air a chur: thoir sùil air na DMan Discord agad agus freagair an sin.",
+ "dc.hello.needid": "Cuir an ID cleachdaiche Discord agad ris an toiseach (faic \"no cuir ID cleachdaiche an sàs\").",
+ "dc.hello.noserver": "Chan eil Discord a' leigeil leis a' bhot teachdaireachd a chur thugad ach ma tha thu ann an seerbhear còmhla ris. Cuir am bot ri seerbhear sa bheil thu, an uair sin feuch a-rithist.",
+ "dc.hello.invite": "Cuir am bot ris an t-seerbhear agad",
+ "dc.hello.retry": "Feuch a-rithist"
 }

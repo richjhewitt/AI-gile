@@ -3848,5 +3848,19 @@
  "rev.summary.busy": "A pedir ao agente de prevenção...",
  "rev.summary.noai": "Sem resumo: a IA está desligada (Modo sem tokens, Sem IA ou orçamento excedido).",
  "rev.summary.failed": "O agente não deu resumo desta vez.",
- "tb.b.quietTop": "🌙 Ficar offline"
+ "tb.b.quietTop": "🌙 Ficar offline",
+ "board.team.quiet": "Ninguém está a trabalhar neste momento.",
+ "board.team.showall": "Mostrar tudo ({n})",
+ "board.team.active": "Mostrar só os ativos",
+ "fy.testsdone": "Todos os testes concluídos",
+ "srv.discord.hello": "Olá {name}, responda aqui para enviar mensagem às suas equipas AI-gile",
+ "dc.hello.idlabel": "O seu ID de utilizador do Discord",
+ "dc.hello.idhelp": "Para o copiar: no Discord, ative o Developer Mode (Settings > Advanced), clique com o botão direito no seu nome e depois em Copy User ID.",
+ "dc.hello.btn": "Enviar-me um DM de olá",
+ "dc.hello.why": "O bot diz olá primeiro, para que possa responder-lhe.",
+ "dc.hello.sent": "Olá enviado: verifique os seus DM do Discord e responda lá.",
+ "dc.hello.needid": "Adicione primeiro o seu ID de utilizador do Discord (veja «ou colar um User ID»).",
+ "dc.hello.noserver": "O Discord só deixa o bot enviar-lhe mensagens se partilhar um servidor com ele. Adicione o bot a um servidor onde esteja e tente novamente.",
+ "dc.hello.invite": "Adicionar o bot ao seu servidor",
+ "dc.hello.retry": "Tentar novamente"
 }

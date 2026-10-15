@@ -3816,5 +3816,19 @@
  "rev.summary.noai": "Gan achoimre: tá AI as (No Token Mode, No AI nó thar an mbuiséad).",
  "rev.summary.failed": "Níor thug an gníomhaire achoimre an uair seo.",
  "tb.b.quietTop": "🌙 Ag dul ciúin",
- "srv.pir.rb.next": "Postáladh an t-athbhreithniú. {name}: mol anois runbook ionas go mbeidh sé níos tapúla an chéad uair eile: aigile pir-runbook {slug} {id} <short-name> --text \"na céimeanna, ceann in aghaidh na líne\" --as {name}. Deir an t-úinéir Go agus scríobhtar an comhad go docs/runbooks/<short-name>.md i bhfillteán an tionscadail."
+ "srv.pir.rb.next": "Postáladh an t-athbhreithniú. {name}: mol anois runbook ionas go mbeidh sé níos tapúla an chéad uair eile: aigile pir-runbook {slug} {id} <short-name> --text \"na céimeanna, ceann in aghaidh na líne\" --as {name}. Deir an t-úinéir Go agus scríobhtar an comhad go docs/runbooks/<short-name>.md i bhfillteán an tionscadail.",
+ "board.team.quiet": "Níl aon duine ag obair faoi láthair.",
+ "board.team.showall": "Taispeáin gach ceann ({n})",
+ "board.team.active": "Taispeáin na cinn ghníomhacha amháin",
+ "fy.testsdone": "Gach tástáil déanta",
+ "srv.discord.hello": "Dia duit {name}, freagair anseo chun teachtaireacht a sheoladh chuig do fhoirne AI-gile",
+ "dc.hello.idlabel": "Do ID úsáideora Discord",
+ "dc.hello.idhelp": "Chun é a chóipeáil: in Discord cuir Mód Forbróra air (Socruithe > Ardroghanna), cliceáil ar dheis ar d'ainm, ansin Cóipeáil ID Úsáideora.",
+ "dc.hello.btn": "Seol DM beannachta chugam",
+ "dc.hello.why": "Deir an bot dia duit ar dtús, ionas gur féidir leat freagra a thabhairt air.",
+ "dc.hello.sent": "Beannacht seolta: seiceáil do DManna Discord agus freagair ansin.",
+ "dc.hello.needid": "Cuir do ID úsáideora Discord leis ar dtús (féach \"nó greamaigh ID Úsáideora\").",
+ "dc.hello.noserver": "Ní ligeann Discord don bhot teachtaireacht a sheoladh chugat ach amháin má roinneann tú freastalaí leis. Cuir an bot le freastalaí a bhfuil tú ann, ansin bain triail eile as.",
+ "dc.hello.invite": "Cuir an bot le do fhreastalaí",
+ "dc.hello.retry": "Bain triail eile as"
 }

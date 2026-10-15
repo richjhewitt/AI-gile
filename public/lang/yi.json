@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "פֿרעגט דעם װאַך־אַגענט...",
  "rev.summary.noai": "קײן סיכום: AI איז אויס (No Token Mode, No AI אָדער איבערן בודזשעט).",
  "rev.summary.failed": "דער אַגענט האָט דאָס מאָל נישט געגעבן קײן סיכום.",
- "tb.b.quietTop": "🌙 װער שטיל"
+ "tb.b.quietTop": "🌙 װער שטיל",
+ "board.team.quiet": "איצט אַרבעט קיינער נישט.",
+ "board.team.showall": "ווײַז אַלע ({n})",
+ "board.team.active": "ווײַז בלויז די אַקטיווע",
+ "fy.testsdone": "אַלע טעסטס פֿאַרטיק",
+ "srv.discord.hello": "שלום {name}, ענטפֿער דאָ כּדי צו שרײַבן צו דײַנע AI-gile טימס",
+ "dc.hello.idlabel": "דײַן Discord באַניצער-ID",
+ "dc.hello.idhelp": "צו קאָפּירן: אין Discord טוי אָן Developer Mode (Settings > Advanced), רעכטס-קליק אויף דײַן נאָמען, דערנאָך קלײַב Copy User ID.",
+ "dc.hello.btn": "שיק מיר אַ שלום-DM",
+ "dc.hello.why": "דער באָט זאָגט ערשט שלום, כּדי דו זאָלסט קענען ענטפֿערן.",
+ "dc.hello.sent": "שלום געשיקט: קוק אין דײַנע Discord DMs און ענטפֿער דאָרטן.",
+ "dc.hello.needid": "לייג ערשט צו דײַן Discord באַניצער-ID (זע \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord לאָזט דעם באָט שרײַבן צו דיר נאָר אויב איר זענט ביידע אין דעם זעלבן סערווער. לייג צו דעם באָט צו אַ סערווער וווּ דו ביסט, דערנאָך פּרוּוו נאָך אַ מאָל.",
+ "dc.hello.invite": "לייג צו דעם באָט צו דײַן סערווער",
+ "dc.hello.retry": "פּרוּוו נאָך אַ מאָל"
 }

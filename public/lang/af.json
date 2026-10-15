@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Vra die diensagent...",
  "rev.summary.noai": "Geen opsomming: KI is af (Geen-token-modus, Geen KI of oor begroting).",
  "rev.summary.failed": "Die agent het hierdie keer geen opsomming gegee nie.",
- "tb.b.quietTop": "🌙 Word stil"
+ "tb.b.quietTop": "🌙 Word stil",
+ "board.team.quiet": "Niemand werk tans nie.",
+ "board.team.showall": "Wys almal ({n})",
+ "board.team.active": "Wys net aktiewes",
+ "fy.testsdone": "Alle toetse klaar",
+ "srv.discord.hello": "Hallo {name}, antwoord hier om jou AI-gile-spanne te boodskap",
+ "dc.hello.idlabel": "Jou Discord-gebruiker-ID",
+ "dc.hello.idhelp": "Om dit te kopieer: skakel in Discord Ontwikkelaarmodus aan (Instellings > Gevorderd), regsklik op jou naam en kies dan Kopieer gebruiker-ID.",
+ "dc.hello.btn": "Stuur my 'n hallo-DM",
+ "dc.hello.why": "Die bot groet eerste, sodat jy kan antwoord.",
+ "dc.hello.sent": "Hallo gestuur: kyk in jou Discord-DM's en antwoord daar.",
+ "dc.hello.needid": "Voeg eers jou Discord-gebruiker-ID by (sien \"of plak 'n gebruiker-ID\").",
+ "dc.hello.noserver": "Discord laat die bot jou net boodskap as julle 'n bediener deel. Voeg die bot by 'n bediener waarin jy is en probeer weer.",
+ "dc.hello.invite": "Voeg die bot by jou bediener",
+ "dc.hello.retry": "Probeer weer"
 }

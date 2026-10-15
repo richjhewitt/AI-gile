@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Ń béèrè lọ́wọ́ agent ìpè...",
  "rev.summary.noai": "Kò sí àkópọ̀: AI wà ní pípa (Ipò Kò Sí Token, Kò Sí AI tàbí ó ti kọjá ìnáwó).",
  "rev.summary.failed": "Agent kò fún ní àkópọ̀ ní àkókò yìí.",
- "tb.b.quietTop": "🌙 Ń dákẹ́"
+ "tb.b.quietTop": "🌙 Ń dákẹ́",
+ "board.team.quiet": "Kò sí ẹni tó ń ṣiṣẹ́ báyìí.",
+ "board.team.showall": "Fi gbogbo rẹ̀ hàn ({n})",
+ "board.team.active": "Fi àwọn tó ń ṣiṣẹ́ nìkan hàn",
+ "fy.testsdone": "Gbogbo àyẹ̀wò ti parí",
+ "srv.discord.hello": "Báwo {name}, dáhùn níbí láti kọ ìfiranṣẹ́ sí àwọn ẹgbẹ́ AI-gile rẹ",
+ "dc.hello.idlabel": "ID olùlò Discord rẹ",
+ "dc.hello.idhelp": "Láti ṣe ẹ̀dà rẹ̀: ní Discord, tan Developer Mode (Settings > Advanced), tẹ orúkọ rẹ lójú ọ̀tún, lẹ́yìn náà yan Copy User ID.",
+ "dc.hello.btn": "Fi DM ìkíni ránṣẹ́ sí mi",
+ "dc.hello.why": "Bot náà máa kọ́kọ́ kí ọ, kí o lè dá a lóhùn.",
+ "dc.hello.sent": "A ti fi ìkíni ránṣẹ́: wo àwọn DM Discord rẹ kí o sì dáhùn níbẹ̀.",
+ "dc.hello.needid": "Kọ́kọ́ fi ID olùlò Discord rẹ kún un (wo \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord máa ń jẹ́ kí bot fi ìfiranṣẹ́ ránṣẹ́ sí ọ nìkan tí ẹ bá wà ní sẹ́fà kan náà. Fi bot kún sẹ́fà tí o wà, lẹ́yìn náà gbìyànjú lẹ́ẹ̀kan sí i.",
+ "dc.hello.invite": "Fi bot kún sẹ́fà rẹ",
+ "dc.hello.retry": "Gbìyànjú lẹ́ẹ̀kan sí i"
 }

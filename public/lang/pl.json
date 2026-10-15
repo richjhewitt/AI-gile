@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Pytam agenta dyżurnego...",
  "rev.summary.noai": "Brak podsumowania: AI jest wyłączone (Tryb bez tokenów, Bez AI lub przekroczony budżet).",
  "rev.summary.failed": "Tym razem agent nie przygotował podsumowania.",
- "tb.b.quietTop": "🌙 Robię przerwę"
+ "tb.b.quietTop": "🌙 Robię przerwę",
+ "board.team.quiet": "Teraz nikt nie pracuje.",
+ "board.team.showall": "Pokaż wszystkie ({n})",
+ "board.team.active": "Pokaż tylko aktywne",
+ "fy.testsdone": "Wszystkie testy zakończone",
+ "srv.discord.hello": "Cześć {name}, odpowiedz tutaj, aby napisać do swoich zespołów AI-gile",
+ "dc.hello.idlabel": "Twój identyfikator użytkownika Discord",
+ "dc.hello.idhelp": "Jak go skopiować: w aplikacji Discord włącz Developer Mode (Settings > Advanced), kliknij prawym przyciskiem swoją nazwę i wybierz Copy User ID.",
+ "dc.hello.btn": "Wyślij mi powitalną wiadomość DM",
+ "dc.hello.why": "Bot odzywa się pierwszy, więc można mu odpowiedzieć.",
+ "dc.hello.sent": "Powitanie wysłane: sprawdź wiadomości DM w Discordzie i odpowiedz tam.",
+ "dc.hello.needid": "Najpierw dodaj swój identyfikator użytkownika Discord (zobacz „lub wklej User ID”).",
+ "dc.hello.noserver": "Discord pozwala botowi pisać do ciebie tylko wtedy, gdy macie wspólny serwer. Dodaj bota do serwera, na którym jesteś, i spróbuj ponownie.",
+ "dc.hello.invite": "Dodaj bota do swojego serwera",
+ "dc.hello.retry": "Spróbuj ponownie"
 }

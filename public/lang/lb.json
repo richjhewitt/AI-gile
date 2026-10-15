@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "De Bereetschafts-Agent gëtt gefrot...",
  "rev.summary.noai": "Keng Zesummefassung: KI ass aus (No-Token-Modus, KI-fräi oder iwwer Budget).",
  "rev.summary.failed": "Den Agent huet dës Kéier keng Zesummefassung gemaach.",
- "tb.b.quietTop": "🌙 Rou ginn"
+ "tb.b.quietTop": "🌙 Rou ginn",
+ "board.team.quiet": "Elo schafft keen.",
+ "board.team.showall": "Alles weisen ({n})",
+ "board.team.active": "Nëmmen déi Aktiv weisen",
+ "fy.testsdone": "All Tester fäerdeg",
+ "srv.discord.hello": "Moien {name}, äntwert hei fir deng AI-gile Teams ze schreiwen",
+ "dc.hello.idlabel": "Deng Discord-Benotzer-ID",
+ "dc.hello.idhelp": "Fir se ze kopéieren: schalt an Discord den Developer Mode un (Astellungen > Erweidert), klick riets op däin Numm, dann Copy User ID.",
+ "dc.hello.btn": "Schéck mir en Hallo-DM",
+ "dc.hello.why": "De Bot seet als éischt Moien, sou datt Dir him äntwere kënnt.",
+ "dc.hello.sent": "Hallo geschéckt: kuck deng Discord-DMen no an äntwert do.",
+ "dc.hello.needid": "Füügt fir d'éischt deng Discord-Benotzer-ID derbäi (kuck \"oder paste eng Benotzer-ID\").",
+ "dc.hello.noserver": "Discord léisst de Bot der nëmme schreiwen, wann dir e Server deelt. Füügt de Bot op e Server derbäi, op deem Dir sidd, a probéiert nach eng Kéier.",
+ "dc.hello.invite": "De Bot op däi Server derbäifügen",
+ "dc.hello.retry": "Nach eng Kéier probéieren"
 }

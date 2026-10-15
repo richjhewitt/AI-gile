@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "オンコールのエージェントに頼んでいます...",
  "rev.summary.noai": "要約はありません：AIがオフです（トークンなしモード、AIなし、または予算超過）。",
  "rev.summary.failed": "今回、エージェントは要約を返しませんでした。",
- "tb.b.quietTop": "🌙 静かにする"
+ "tb.b.quietTop": "🌙 静かにする",
+ "board.team.quiet": "今は誰も作業していません。",
+ "board.team.showall": "すべて表示 ({n})",
+ "board.team.active": "アクティブのみ表示",
+ "fy.testsdone": "すべてのテストが完了",
+ "srv.discord.hello": "こんにちは {name} さん、ここに返信すると AI-gile のチームにメッセージを送れます",
+ "dc.hello.idlabel": "あなたの Discord ユーザー ID",
+ "dc.hello.idhelp": "コピーするには:Discord で開発者モードをオン(設定 > 詳細設定)にし、自分の名前を右クリックして「ユーザー ID をコピー」を選びます。",
+ "dc.hello.btn": "あいさつ DM を送ってもらう",
+ "dc.hello.why": "ボットが先にあいさつするので、返信できます。",
+ "dc.hello.sent": "あいさつを送りました。Discord の DM を確認して、そこで返信してください。",
+ "dc.hello.needid": "先に Discord のユーザー ID を追加してください(「またはユーザー ID を貼り付け」を参照)。",
+ "dc.hello.noserver": "Discord では、ボットとサーバーを共有している場合にだけボットからメッセージを送れます。あなたが参加しているサーバーにボットを追加してから、もう一度お試しください。",
+ "dc.hello.invite": "ボットをサーバーに追加",
+ "dc.hello.retry": "もう一度試す"
 }

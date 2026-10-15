@@ -3849,5 +3849,19 @@
  "rev.summary.noai": "Gjin gearfetting: AI is út (No Token Mode, No AI of boppe it budzjet).",
  "rev.summary.failed": "De agint joech dizze kear gjin gearfetting.",
  "tb.b.quietTop": "🌙 Stil wurde",
- "srv.pir.rb.next": "Review pleatst. {name}: stel no in runbook foar, dat it de folgjende kear flugger giet: aigile pir-runbook {slug} {id} <short-name> --text \"de stappen, ien per rigel\" --as {name}. De eigner seit Go en it bestân wurdt skreaun nei docs/runbooks/<short-name>.md yn de projektmap."
+ "srv.pir.rb.next": "Review pleatst. {name}: stel no in runbook foar, dat it de folgjende kear flugger giet: aigile pir-runbook {slug} {id} <short-name> --text \"de stappen, ien per rigel\" --as {name}. De eigner seit Go en it bestân wurdt skreaun nei docs/runbooks/<short-name>.md yn de projektmap.",
+ "board.team.quiet": "Op it stuit wurket nimmen.",
+ "board.team.showall": "Alles toane ({n})",
+ "board.team.active": "Allinnich aktiven toane",
+ "fy.testsdone": "Alle tests dien",
+ "srv.discord.hello": "Hoi {name}, antwurdzje hjir om jo AI-gile-teams te berjochtsjen",
+ "dc.hello.idlabel": "Jo Discord-brûkers-ID",
+ "dc.hello.idhelp": "Om it te kopiearjen: set yn Discord de ûntwikkelersmodus oan (Ynstellingen > Avansearre), rjochtsklik op jo namme en kies dan Brûkers-ID kopiearje.",
+ "dc.hello.btn": "Stjoer my in hoi-DM",
+ "dc.hello.why": "De bot seit earst hoi, sadat jo him antwurdzje kinne.",
+ "dc.hello.sent": "Hoi ferstjoerd: sjoch yn jo Discord-DM's en antwurdzje dêr.",
+ "dc.hello.needid": "Foegje earst jo Discord-brûkers-ID ta (sjoch \"of plak in brûkers-ID\").",
+ "dc.hello.noserver": "Discord lit de bot jo allinnich berjochtsje as jo in tsjinner diele. Foegje de bot ta oan in tsjinner dêr't jo yn sitte en besykje it nochris.",
+ "dc.hello.invite": "De bot tafoegje oan jo tsjinner",
+ "dc.hello.retry": "Besykje it nochris"
 }

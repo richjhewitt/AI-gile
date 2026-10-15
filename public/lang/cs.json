@@ -3816,5 +3816,19 @@
  "rev.summary.noai": "Žádný souhrn: AI je vypnutá (Režim bez tokenů, Bez AI nebo nad rozpočtem).",
  "rev.summary.failed": "Agent tentokrát žádný souhrn nedal.",
  "tb.b.quietTop": "🌙 Přecházím do klidu",
- "srv.pir.rb.next": "Revize odeslána. {name}: teď navrhni runbook, aby to příště šlo rychleji: aigile pir-runbook {slug} {id} <short-name> --text \"kroky, jeden na řádek\" --as {name}. Vlastník řekne Jdi a soubor se zapíše do docs/runbooks/<short-name>.md ve složce projektu."
+ "srv.pir.rb.next": "Revize odeslána. {name}: teď navrhni runbook, aby to příště šlo rychleji: aigile pir-runbook {slug} {id} <short-name> --text \"kroky, jeden na řádek\" --as {name}. Vlastník řekne Jdi a soubor se zapíše do docs/runbooks/<short-name>.md ve složce projektu.",
+ "board.team.quiet": "Právě teď nikdo nepracuje.",
+ "board.team.showall": "Zobrazit vše ({n})",
+ "board.team.active": "Zobrazit jen aktivní",
+ "fy.testsdone": "Všechny testy hotové",
+ "srv.discord.hello": "Ahoj {name}, odpověz tady a napiš svým týmům v AI-gile",
+ "dc.hello.idlabel": "Tvé uživatelské ID na Discordu",
+ "dc.hello.idhelp": "Zkopíruješ ho takto: na Discordu zapni Vývojářský režim (Nastavení > Pokročilé), klikni pravým tlačítkem na své jméno a vyber Kopírovat ID uživatele.",
+ "dc.hello.btn": "Pošli mi uvítací DM",
+ "dc.hello.why": "Bot pozdraví jako první, takže mu můžeš odpovědět.",
+ "dc.hello.sent": "Pozdrav odeslán: koukni do svých DM na Discordu a odpověz tam.",
+ "dc.hello.needid": "Nejdřív přidej své uživatelské ID z Discordu (viz \"nebo vlož ID uživatele\").",
+ "dc.hello.noserver": "Discord dovolí botovi napsat ti jen tehdy, když sdílíte server. Přidej bota na server, kde jsi, a zkus to znovu.",
+ "dc.hello.invite": "Přidat bota na tvůj server",
+ "dc.hello.retry": "Zkusit znovu"
 }

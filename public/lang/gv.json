@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Fyrrys y cooneyder on-call...",
  "rev.summary.noai": "Cha vel giare: ta AI dy-ass (No Token Mode, No AI ny harrish budget).",
  "rev.summary.failed": "Cha row giare currit ec y chooneyder y cheayrt shoh.",
- "tb.b.quietTop": "🌙 Goll ny-quiee"
+ "tb.b.quietTop": "🌙 Goll ny-quiee",
+ "board.team.quiet": "Cha vel dooinney erbee gobbragh nish.",
+ "board.team.showall": "Cur-er-reishtyn ooilley ({n})",
+ "board.team.active": "Cur-er-reishtyn ny lhiasaghyn ynrican",
+ "fy.testsdone": "Ooilley ny irrinyn jeant",
+ "srv.discord.hello": "Hug {name}, cur ansoor ayns shoh dy choraa dty hoiryn AI-gile",
+ "dc.hello.idlabel": "Dty ID ymmydeyr Discord",
+ "dc.hello.idhelp": "Dy ghoaill coipey jeh: ayns Discord croghey er Aght Yialdeyr (Reihghyn > Er-Heose), cliogh-chiart er dty ennym, eisht Coipey ID ymmydeyr.",
+ "dc.hello.btn": "Cur DM bannaghtyn dou",
+ "dc.hello.why": "Ta'n bot gra moghrey vie ry-hoshiaght, myr shen oddys oo cur ansoor da.",
+ "dc.hello.sent": "Bannaghtyn currit: jeeagh dty DMyn Discord as cur ansoor ayns shen.",
+ "dc.hello.needid": "Cur dty ID ymmydeyr Discord ry-hoshiaght (jeeagh \"ny pasteil ID ymmydeyr\").",
+ "dc.hello.noserver": "Cha lhig Discord da'n bot screeu dhyt mannagh vel oo ayns saaseyr cooidjagh rish. Cur y bot gys saaseyr t'ou ayn, eisht jean prowal reesht.",
+ "dc.hello.invite": "Cur y bot gys dty hothaar",
+ "dc.hello.retry": "Jean prowal reesht"
 }

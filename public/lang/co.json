@@ -3849,5 +3849,19 @@
  "rev.summary.noai": "Nisun riassuntu: l'IA hè spenta (Modu senza Token, Senza IA o sopra u budgetu).",
  "rev.summary.failed": "L'agente ùn hà datu nisun riassuntu sta volta.",
  "tb.b.quietTop": "🌙 Diventà calmu",
- "srv.pir.rb.next": "Revisione postata. {name}: pruposta avà un runbook per fà più prestu a prossima volta: aigile pir-runbook {slug} {id} <short-name> --text \"i passi, unu per linea\" --as {name}. U pruprietariu dice Vai è u fugliale hè scrittu in docs/runbooks/<short-name>.md in u cartulare di u prughjettu."
+ "srv.pir.rb.next": "Revisione postata. {name}: pruposta avà un runbook per fà più prestu a prossima volta: aigile pir-runbook {slug} {id} <short-name> --text \"i passi, unu per linea\" --as {name}. U pruprietariu dice Vai è u fugliale hè scrittu in docs/runbooks/<short-name>.md in u cartulare di u prughjettu.",
+ "board.team.quiet": "Oghje nimu ùn travaglia.",
+ "board.team.showall": "Mostra tuttu ({n})",
+ "board.team.active": "Mostra solu l'attivi",
+ "fy.testsdone": "Tutte e prove fatte",
+ "srv.discord.hello": "Salute {name}, rispondi quì per scrive à i to squadre AI-gile",
+ "dc.hello.idlabel": "U to ID d'utilizatore Discord",
+ "dc.hello.idhelp": "Per cupià lu: in Discord attiva u modu sviluppatore (Paràmetri > Avanzati), clicca à drittu nant'à u to nome, poi Cupia l'ID d'utilizatore.",
+ "dc.hello.btn": "Mandami un DM di salutu",
+ "dc.hello.why": "U bot saluta prima, cusì pudete rispondeli.",
+ "dc.hello.sent": "Salutu mandatu: guarda i to DM di Discord è rispondi culà.",
+ "dc.hello.needid": "Aghjunghje prima u to ID d'utilizatore Discord (vede \"o incolla un ID d'utilizatore\").",
+ "dc.hello.noserver": "Discord lascia scrive u bot solu s'è vo spartite un servore. Aghjunghje u bot à un servore induve sì, poi prova torna.",
+ "dc.hello.invite": "Aghjunghje u bot à u to servore",
+ "dc.hello.retry": "Prova torna"
 }

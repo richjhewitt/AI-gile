@@ -3816,5 +3816,19 @@
  "rev.summary.noai": "Intet resumé: AI er slået fra (Ingen token-tilstand, Ingen AI eller over budget).",
  "rev.summary.failed": "Agenten gav ikke noget resumé denne gang.",
  "tb.b.quietTop": "🌙 Bliver stille",
- "srv.pir.rb.next": "Gennemgang postet. {name}: foreslå nu en runbook, så det går hurtigere næste gang: aigile pir-runbook {slug} {id} <short-name> --text \"trinene, ét per linje\" --as {name}. Ejeren siger Go, og filen skrives til docs/runbooks/<short-name>.md i projektmappen."
+ "srv.pir.rb.next": "Gennemgang postet. {name}: foreslå nu en runbook, så det går hurtigere næste gang: aigile pir-runbook {slug} {id} <short-name> --text \"trinene, ét per linje\" --as {name}. Ejeren siger Go, og filen skrives til docs/runbooks/<short-name>.md i projektmappen.",
+ "board.team.quiet": "Der er ingen, der arbejder lige nu.",
+ "board.team.showall": "Vis alle ({n})",
+ "board.team.active": "Vis kun aktive",
+ "fy.testsdone": "Alle tests er færdige",
+ "srv.discord.hello": "Hej {name}, svar her for at skrive til dine AI-gile-teams",
+ "dc.hello.idlabel": "Dit Discord-bruger-id",
+ "dc.hello.idhelp": "Sådan kopierer du det: slå Udviklertilstand til i Discord (Indstillinger > Avanceret), højreklik på dit navn og vælg Kopiér bruger-id.",
+ "dc.hello.btn": "Send mig en hej-DM",
+ "dc.hello.why": "Botten siger hej først, så du kan svare den.",
+ "dc.hello.sent": "Hej sendt: tjek dine DM'er på Discord og svar der.",
+ "dc.hello.needid": "Tilføj først dit Discord-bruger-id (se \"eller indsæt et bruger-id\").",
+ "dc.hello.noserver": "Discord lader kun botten skrive til dig, hvis I deler en server. Tilføj botten til en server, du er på, og prøv igen.",
+ "dc.hello.invite": "Tilføj botten til din server",
+ "dc.hello.retry": "Prøv igen"
 }

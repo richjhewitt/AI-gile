@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Askin' the on-call agent...",
  "rev.summary.noai": "No summary: AI be off (No Token Mode, No AI or over budget).",
  "rev.summary.failed": "The agent gave no summary this time.",
- "tb.b.quietTop": "🌙 Goin' quiet"
+ "tb.b.quietTop": "🌙 Goin' quiet",
+ "board.team.quiet": "Not a soul be workin' right now.",
+ "board.team.showall": "Show all hands ({n})",
+ "board.team.active": "Show only active hands",
+ "fy.testsdone": "All tests done",
+ "srv.discord.hello": "Ahoy {name}, reply here to send word to yer AI-gile crews",
+ "dc.hello.idlabel": "Yer Discord user ID",
+ "dc.hello.idhelp": "To copy it: in Discord, turn on Developer Mode (Settings > Advanced), right-click yer name, then Copy User ID.",
+ "dc.hello.btn": "Send me a hello DM",
+ "dc.hello.why": "The bot says ahoy first, so ye can answer it.",
+ "dc.hello.sent": "Hello sent: check yer Discord DMs and reply there.",
+ "dc.hello.needid": "Add yer Discord user ID first (see \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord only lets the bot message ye if ye share a server with it. Add the bot to a server ye be in, then try again.",
+ "dc.hello.invite": "Add the bot to yer server",
+ "dc.hello.retry": "Try again"
 }

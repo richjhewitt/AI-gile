@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Навбәтче агенттан сорала...",
  "rev.summary.noai": "Йомгак юк: AI сүнгән (No Token Mode, No AI яки бюджет артык).",
  "rev.summary.failed": "Агент бу тапкыр йомгак бирмәде.",
- "tb.b.quietTop": "🌙 Тынып калу"
+ "tb.b.quietTop": "🌙 Тынып калу",
+ "board.team.quiet": "Хәзер беркем дә эшләми.",
+ "board.team.showall": "Барысын күрсәт ({n})",
+ "board.team.active": "Эшләүчеләрне генә күрсәт",
+ "fy.testsdone": "Барлык тестлар тәмам",
+ "srv.discord.hello": "Исәнмесез {name}, AI-gile командаларыгызга язу өчен монда җавап языгыз",
+ "dc.hello.idlabel": "Синең Discord кулланучы ID'ың",
+ "dc.hello.idhelp": "Күчереп алу өчен: Discord'та Developer Mode'ны кабызыгыз (Settings > Advanced), исемегезгә уң төймә белән басыгыз һәм Copy User ID'ны сайлагыз.",
+ "dc.hello.btn": "Миңа сәлам DM җибәр",
+ "dc.hello.why": "Бот беренче сәламли, шуңа күрә син аңа җавап бирә алырсың.",
+ "dc.hello.sent": "Сәлам җибәрелде: Discord DM'ларыңны кара һәм шунда җавап бир.",
+ "dc.hello.needid": "Алдан Discord кулланучы ID'ыңны өстә (\"or paste a User ID\" дигәнне кара).",
+ "dc.hello.noserver": "Discord бот сезгә язсын өчен икегез дә бер серверда булырга тиеш. Ботны үзегез булган серверга өстәгез һәм тагын бер тапкыр сынагыз.",
+ "dc.hello.invite": "Ботны серверыңа өстә",
+ "dc.hello.retry": "Тагын сынап кара"
 }

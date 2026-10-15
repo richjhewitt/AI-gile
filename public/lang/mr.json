@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "ऑन-कॉल एजंटकडे विचारत आहे...",
  "rev.summary.noai": "सारांश नाही: AI बंद आहे (No Token Mode, No AI किंवा बजेटपेक्षा जास्त).",
  "rev.summary.failed": "या वेळी एजंटने सारांश दिला नाही.",
- "tb.b.quietTop": "🌙 शांत होणे"
+ "tb.b.quietTop": "🌙 शांत होणे",
+ "board.team.quiet": "सध्या कोणीही काम करत नाही.",
+ "board.team.showall": "सर्व दाखवा ({n})",
+ "board.team.active": "फक्त सक्रिय दाखवा",
+ "fy.testsdone": "सर्व चाचण्या पूर्ण",
+ "srv.discord.hello": "नमस्कार {name}, तुमच्या AI-gile टीम्सना संदेश पाठवण्यासाठी इथे उत्तर द्या",
+ "dc.hello.idlabel": "तुमचा Discord युजर ID",
+ "dc.hello.idhelp": "कॉपी करण्यासाठी: Discord मध्ये Developer Mode चालू करा (Settings > Advanced), तुमच्या नावावर राइट-क्लिक करा, मग Copy User ID निवडा.",
+ "dc.hello.btn": "मला नमस्कार DM पाठवा",
+ "dc.hello.why": "बॉट आधी नमस्कार करतो, त्यामुळे तुम्ही त्याला उत्तर देऊ शकता.",
+ "dc.hello.sent": "नमस्कार पाठवला: तुमचे Discord DM तपासा आणि तिथे उत्तर द्या.",
+ "dc.hello.needid": "आधी तुमचा Discord युजर ID जोडा (\"किंवा User ID पेस्ट करा\" पहा).",
+ "dc.hello.noserver": "तुम्ही बॉटसोबत एकाच सर्व्हरमध्ये असाल तरच Discord बॉटला तुम्हाला संदेश पाठवू देते. तुम्ही ज्या सर्व्हरमध्ये आहात त्यात बॉट जोडा, मग पुन्हा प्रयत्न करा.",
+ "dc.hello.invite": "बॉटला तुमच्या सर्व्हरमध्ये जोडा",
+ "dc.hello.retry": "पुन्हा प्रयत्न करा"
 }

@@ -3816,5 +3816,19 @@
  "rev.summary.noai": "Diverrañ ebet: IA diweredekaet (Mod Token ebet, Hep IA pe dreist ar budjed).",
  "rev.summary.failed": "N'eus ket bet roet diverrañ gant ar sikourer an taol-mañ.",
  "tb.b.quietTop": "🌙 Dont distaolet",
- "srv.pir.rb.next": "Danevell embannet. {name}: kinnigit bremañ ul levr-kuzul evit ma vo buanoc'h an amzer all: aigile pir-runbook {slug} {id} <short-name> --text \"ar stummoù, unan dre linenn\" --as {name}. Pa lavar ar perc'hennour Go e vo skrivet ar restr e docs/runbooks/<short-name>.md e teuliad ar raktres."
+ "srv.pir.rb.next": "Danevell embannet. {name}: kinnigit bremañ ul levr-kuzul evit ma vo buanoc'h an amzer all: aigile pir-runbook {slug} {id} <short-name> --text \"ar stummoù, unan dre linenn\" --as {name}. Pa lavar ar perc'hennour Go e vo skrivet ar restr e docs/runbooks/<short-name>.md e teuliad ar raktres.",
+ "board.team.quiet": "Den ebet n'eo o labourat bremañ.",
+ "board.team.showall": "Diskouez pep tra ({n})",
+ "board.team.active": "Diskouez ar re oberiant hepken",
+ "fy.testsdone": "An holl amprouadennoù zo echu",
+ "srv.discord.hello": "Demat {name}, respontit amañ evit skrivañ d'ho skipailhoù AI-gile",
+ "dc.hello.idlabel": "Ho ID implijer Discord",
+ "dc.hello.idhelp": "Evit eilañ anezhañ: en Discord gweredekait mod ar developer (Arventennoù > Araokaet), klikit a-zehoù war hoc'h anv, ha dibabit Eilañ ID an implijer.",
+ "dc.hello.btn": "Kasit din ur c'hannad personel salud",
+ "dc.hello.why": "Ar bot a salud da gentañ, evit ma c'hallit respont dezhañ.",
+ "dc.hello.sent": "Salud kaset: sellit en ho kannadoù personel Discord ha respontit eno.",
+ "dc.hello.needid": "Ouzhpennit ho ID implijer Discord da gentañ (gwelit \"pe pegit un ID implijer\").",
+ "dc.hello.noserver": "Discord ne ro ket an aotre d'ar bot da skrivañ deoc'h nemet ma rannit ur servijer gantañ. Ouzhpennit ar bot d'ur servijer m'emaoc'h ennañ, ha klaskit en-dro.",
+ "dc.hello.invite": "Ouzhpennañ ar bot d'ho servijer",
+ "dc.hello.retry": "Klask en-dro"
 }

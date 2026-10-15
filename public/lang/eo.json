@@ -3849,5 +3849,19 @@
  "rev.summary.busy": "Demandante la survokan agenton...",
  "rev.summary.noai": "Neniu resumo: AI estas malŝaltita (Reĝimo sen ĵetonoj, Sen AI aŭ super buĝeto).",
  "rev.summary.failed": "La agento ne donis resumon ĉi-foje.",
- "tb.b.quietTop": "🌙 Silentiĝi"
+ "tb.b.quietTop": "🌙 Silentiĝi",
+ "board.team.quiet": "Neniu laboras nun.",
+ "board.team.showall": "Montri ĉion ({n})",
+ "board.team.active": "Montri nur aktivajn",
+ "fy.testsdone": "Ĉiuj testoj finitaj",
+ "srv.discord.hello": "Saluton {name}, respondu ĉi tie por mesaĝi viajn AI-gile-teamojn",
+ "dc.hello.idlabel": "Via Discord-uzantidentigilo",
+ "dc.hello.idhelp": "Por kopii ĝin: en Discord ŝaltu Programistan reĝimon (Agordoj > Altnivelaj), dekstre alklaku vian nomon, poste Kopii uzantidentigilon.",
+ "dc.hello.btn": "Sendu al mi saluton per DM",
+ "dc.hello.why": "La roboto salutas unue, por ke vi povu respondi al ĝi.",
+ "dc.hello.sent": "Saluto sendita: rigardu viajn Discord-DM-ojn kaj respondu tie.",
+ "dc.hello.needid": "Unue aldonu vian Discord-uzantidentigilon (vidu \"aŭ algluu uzantidentigilon\").",
+ "dc.hello.noserver": "Discord permesas al la roboto mesaĝi vin nur se vi kunhavas servilon kun ĝi. Aldonu la roboton al servilo, en kiu vi estas, poste provu denove.",
+ "dc.hello.invite": "Aldoni la roboton al via servilo",
+ "dc.hello.retry": "Provi denove"
 }

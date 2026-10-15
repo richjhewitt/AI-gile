@@ -3828,5 +3828,19 @@
  "rev.summary.busy": "mi toki tawa jan AI pi awen lukin...",
  "rev.summary.noai": "toki lili ala: AI li pini (No Token Mode, No AI anu token li pini).",
  "rev.summary.failed": "jan AI li pana ala e toki lili tenpo ni.",
- "tb.b.quietTop": "🌙 mi lape"
+ "tb.b.quietTop": "🌙 mi lape",
+ "board.team.quiet": "jan ala li pali lon tenpo ni.",
+ "board.team.showall": "o pana e ale ({n})",
+ "board.team.active": "o pana e jan pali taso",
+ "fy.testsdone": "sijelo ale li pini",
+ "srv.discord.hello": "toki {name}, o toki lon ni tawa kulupu AI-gile sina",
+ "dc.hello.idlabel": "nimi ID Discord sina",
+ "dc.hello.idhelp": "sina wile kama jo e ona: lon Discord o open e Developer Mode (Settings > Advanced), o luka-pini-pona lon nimi sina, o pana e Copy User ID.",
+ "dc.hello.btn": "o pana e toki DM tawa mi",
+ "dc.hello.why": "jan bot li toki pona pini, tan ni sina ken toki tawa ona.",
+ "dc.hello.sent": "toki pona li tawa: o lukin e DM Discord sina, o toki lon ni.",
+ "dc.hello.needid": "o pana e nimi ID Discord sina pini (o lukin e \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord li ken e toki tan jan bot taso la sina en ona li lon ma sama. o pana e jan bot lon ma sina, o toki sin.",
+ "dc.hello.invite": "o pana e jan bot tawa ma sina",
+ "dc.hello.retry": "o toki sin"
 }

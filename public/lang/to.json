@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "ʻOku kole ki he ʻeiseniti ʻoku tokanga...",
  "rev.summary.noai": "ʻIkai ha fakamatala nounou: ʻoku tāpuni ʻa e AI (No Token Mode, No AI pe kuo ʻosi ʻa e paʻanga).",
  "rev.summary.failed": "Naʻe ʻikai foaki ʻe he ʻeiseniti ha fakamatala nounou he taimi ni.",
- "tb.b.quietTop": "🌙 Fakaʻuli"
+ "tb.b.quietTop": "🌙 Fakaʻuli",
+ "board.team.quiet": "Ko e taimi ni 'oku 'ikai ha taha 'oku ngāue.",
+ "board.team.showall": "Fakahā kotoa ({n})",
+ "board.team.active": "Fakahā pē 'a e kau ngāue",
+ "fy.testsdone": "Kuo ngata 'a e ngaahi sivi kotoa",
+ "srv.discord.hello": "Mālō e lelei {name}, tali mai 'i heni ke fai ha pōpoaki ki ho'o ngaahi timi AI-gile",
+ "dc.hello.idlabel": "Ho'o Discord user ID",
+ "dc.hello.idhelp": "Ke kope'i: 'i he Discord, 'ai 'a e Developer Mode (Settings > Advanced), lomi-to'omata'u ho hingoa, pea fili 'a e Copy User ID.",
+ "dc.hello.btn": "Fekau mai ha DM mālō e lelei",
+ "dc.hello.why": "'Oku 'uluaki lea 'a e bot, ke ke lava 'o tali.",
+ "dc.hello.sent": "Kuo fekau 'a e mālō e lelei: sio ki ho'o Discord DM pea tali 'i he'ene.",
+ "dc.hello.needid": "Tānaki 'uluaki ho'o Discord user ID (sio ki he \"or paste a User ID\").",
+ "dc.hello.noserver": "'Oku fakangofua pē 'e Discord 'a e bot ke fekau atu ha pōpoaki kapau 'oku mo 'i ha server tatau. Tānaki 'a e bot ki ha server 'oku ke 'i ai, pea toe feinga.",
+ "dc.hello.invite": "Tānaki 'a e bot ki ho'o server",
+ "dc.hello.retry": "Toe feinga"
 }

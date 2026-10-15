@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Meminta agen siaga…",
  "rev.summary.noai": "Tidak ada ringkasan: AI nonaktif (Mode Tanpa Token, Tanpa AI, atau anggaran terlampaui).",
  "rev.summary.failed": "Agen tidak memberikan ringkasan kali ini.",
- "tb.b.quietTop": "🌙 Mode senyap"
+ "tb.b.quietTop": "🌙 Mode senyap",
+ "board.team.quiet": "Saat ini tidak ada yang bekerja.",
+ "board.team.showall": "Tampilkan semua ({n})",
+ "board.team.active": "Tampilkan yang aktif saja",
+ "fy.testsdone": "Semua tes selesai",
+ "srv.discord.hello": "Halo {name}, balas di sini untuk mengirim pesan ke tim AI-gile kamu",
+ "dc.hello.idlabel": "ID pengguna Discord kamu",
+ "dc.hello.idhelp": "Cara menyalinnya: di Discord aktifkan Mode Pengembang (Pengaturan > Lanjutan), klik kanan namamu, lalu Salin ID Pengguna.",
+ "dc.hello.btn": "Kirimi aku DM sapaan",
+ "dc.hello.why": "Bot menyapa lebih dulu, jadi kamu bisa membalasnya.",
+ "dc.hello.sent": "Sapaan terkirim: cek DM Discord kamu dan balas di sana.",
+ "dc.hello.needid": "Tambahkan ID pengguna Discord kamu dulu (lihat \"atau tempel ID Pengguna\").",
+ "dc.hello.noserver": "Discord hanya mengizinkan bot mengirim pesan kepadamu jika kalian berada di server yang sama. Tambahkan bot ke server yang kamu ikuti, lalu coba lagi.",
+ "dc.hello.invite": "Tambahkan bot ke servermu",
+ "dc.hello.retry": "Coba lagi"
 }

@@ -3840,5 +3840,19 @@
  "rev.summary.busy": "Küsin valveagendilt...",
  "rev.summary.noai": "Kokkuvõtet pole: AI on väljas (Tokenivaba režiim, AI-vaba või eelarve ületatud).",
  "rev.summary.failed": "Agent ei andnud seekord kokkuvõtet.",
- "tb.b.quietTop": "🌙 Jään vait"
+ "tb.b.quietTop": "🌙 Jään vait",
+ "board.team.quiet": "Praegu ei tööta keegi.",
+ "board.team.showall": "Näita kõiki ({n})",
+ "board.team.active": "Näita ainult aktiivseid",
+ "fy.testsdone": "Kõik testid tehtud",
+ "srv.discord.hello": "Tere {name}, vasta siin, et kirjutada oma AI-gile'i tiimidele",
+ "dc.hello.idlabel": "Sinu Discordi kasutaja ID",
+ "dc.hello.idhelp": "Kopeerimiseks: lülita Discordis sisse arendajarežiim (Seaded > Täpsemalt), tee oma nimel paremklõps ja vali Kopeeri kasutaja ID.",
+ "dc.hello.btn": "Saada mulle tervitus-DM",
+ "dc.hello.why": "Bot tervitab esimesena, et saaksid talle vastata.",
+ "dc.hello.sent": "Tervitus saadetud: vaata oma Discordi DM-e ja vasta seal.",
+ "dc.hello.needid": "Lisa esmalt oma Discordi kasutaja ID (vaata \"või kleebi kasutaja ID\").",
+ "dc.hello.noserver": "Discord lubab botil sulle kirjutada ainult siis, kui jagate serverit. Lisa bot serverisse, kus oled, ja proovi uuesti.",
+ "dc.hello.invite": "Lisa bot oma serverisse",
+ "dc.hello.retry": "Proovi uuesti"
 }

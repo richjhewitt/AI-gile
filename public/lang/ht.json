@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "N ap mande ajan sou gad la...",
  "rev.summary.noai": "Pa gen rezime: AI fèmen (No Token Mode, No AI oswa bidjè depase).",
  "rev.summary.failed": "Ajan an pa t bay rezime an fwa sa a.",
- "tb.b.quietTop": "🌙 Ale an silans"
+ "tb.b.quietTop": "🌙 Ale an silans",
+ "board.team.quiet": "Pa gen moun k ap travay kounye a.",
+ "board.team.showall": "Montre tout ({n})",
+ "board.team.active": "Montre sa k aktif sèlman",
+ "fy.testsdone": "Tout tès fini",
+ "srv.discord.hello": "Bonjou {name}, reponn isit la pou voye mesaj bay ekip AI-gile ou yo",
+ "dc.hello.idlabel": "ID itilizatè Discord ou",
+ "dc.hello.idhelp": "Pou kopye l: nan Discord limen Developer Mode (Settings > Advanced), klike dwat sou non ou, apre sa Copy User ID.",
+ "dc.hello.btn": "Voye yon DM bonjou ban mwen",
+ "dc.hello.why": "Bot la di bonjou anvan, pou ou ka reponn li.",
+ "dc.hello.sent": "Bonjou voye: gade DM Discord ou yo epi reponn la a.",
+ "dc.hello.needid": "Ajoute ID itilizatè Discord ou an anvan (gade \"oswa kole yon ID itilizatè\").",
+ "dc.hello.noserver": "Discord sèlman kite bot la voye w mesaj si nou pataje yon sèvè. Ajoute bot la nan yon sèvè ou ladan l, epi eseye ankò.",
+ "dc.hello.invite": "Ajoute bot la nan sèvè ou a",
+ "dc.hello.retry": "Eseye ankò"
 }

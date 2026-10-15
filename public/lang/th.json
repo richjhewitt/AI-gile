@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "กำลังขอให้ on-call agent...",
  "rev.summary.noai": "ไม่มีสรุป: AI ปิดอยู่ (No Token Mode, No AI หรือเกินงบ)",
  "rev.summary.failed": "เอเจนต์ไม่ได้ให้สรุปในครั้งนี้",
- "tb.b.quietTop": "🌙 กำลังเงียบลง"
+ "tb.b.quietTop": "🌙 กำลังเงียบลง",
+ "board.team.quiet": "ตอนนี้ไม่มีใครกำลังทำงาน",
+ "board.team.showall": "แสดงทั้งหมด ({n})",
+ "board.team.active": "แสดงเฉพาะที่กำลังทำงาน",
+ "fy.testsdone": "ทดสอบเสร็จทั้งหมดแล้ว",
+ "srv.discord.hello": "สวัสดี {name} ตอบกลับที่นี่เพื่อส่งข้อความถึงทีม AI-gile ของคุณ",
+ "dc.hello.idlabel": "ID ผู้ใช้ Discord ของคุณ",
+ "dc.hello.idhelp": "วิธีคัดลอก: ใน Discord เปิด Developer Mode (Settings > Advanced) คลิกขวาที่ชื่อของคุณ แล้วเลือก Copy User ID",
+ "dc.hello.btn": "ส่ง DM ทักทายมาหาฉัน",
+ "dc.hello.why": "บอทจะทักทายก่อน คุณจะได้ตอบกลับได้",
+ "dc.hello.sent": "ส่งคำทักทายแล้ว: ไปดู DM ใน Discord แล้วตอบกลับที่นั่น",
+ "dc.hello.needid": "เพิ่ม ID ผู้ใช้ Discord ของคุณก่อน (ดู \"or paste a User ID\")",
+ "dc.hello.noserver": "Discord ให้บอทส่งข้อความหาคุณได้ก็ต่อเมื่ออยู่เซิร์ฟเวอร์เดียวกัน เพิ่มบอทลงในเซิร์ฟเวอร์ที่คุณอยู่ แล้วลองอีกครั้ง",
+ "dc.hello.invite": "เพิ่มบอทลงในเซิร์ฟเวอร์ของคุณ",
+ "dc.hello.retry": "ลองอีกครั้ง"
 }

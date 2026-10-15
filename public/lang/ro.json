@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Se cere agentului de gardă...",
  "rev.summary.noai": "Fără rezumat: AI-ul e oprit (Modul Fără Token, Fără AI sau peste buget).",
  "rev.summary.failed": "Agentul n-a dat un rezumat de data asta.",
- "tb.b.quietTop": "🌙 Mă retrag"
+ "tb.b.quietTop": "🌙 Mă retrag",
+ "board.team.quiet": "Nimeni nu lucrează acum.",
+ "board.team.showall": "Arată toate ({n})",
+ "board.team.active": "Arată doar active",
+ "fy.testsdone": "Toate testele sunt gata",
+ "srv.discord.hello": "Salut {name}, răspunde aici ca să scrii echipelor tale AI-gile",
+ "dc.hello.idlabel": "ID-ul tău de utilizator Discord",
+ "dc.hello.idhelp": "Ca să-l copiezi: în Discord activează Developer Mode (Settings > Advanced), dă clic dreapta pe numele tău, apoi alege Copy User ID.",
+ "dc.hello.btn": "Trimite-mi un DM de salut",
+ "dc.hello.why": "Botul salută primul, ca să-i poți răspunde.",
+ "dc.hello.sent": "Salut trimis: verifică DM-urile din Discord și răspunde acolo.",
+ "dc.hello.needid": "Adaugă mai întâi ID-ul tău de utilizator Discord (vezi „sau lipește un User ID”).",
+ "dc.hello.noserver": "Discord permite botului să-ți scrie doar dacă aveți un server în comun. Adaugă botul pe un server în care ești, apoi încearcă din nou.",
+ "dc.hello.invite": "Adaugă botul pe serverul tău",
+ "dc.hello.retry": "Încearcă din nou"
 }

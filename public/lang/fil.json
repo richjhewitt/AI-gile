@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Hinihingi sa on-call agent...",
  "rev.summary.noai": "Walang summary: naka-off ang AI (No Token Mode, No AI, o lampas sa budget).",
  "rev.summary.failed": "Walang naibigay na summary ang agent sa pagkakataong ito.",
- "tb.b.quietTop": "🌙 Going quiet"
+ "tb.b.quietTop": "🌙 Going quiet",
+ "board.team.quiet": "Walang nagtatrabaho ngayon.",
+ "board.team.showall": "Ipakita lahat ({n})",
+ "board.team.active": "Ipakita lang ang aktibo",
+ "fy.testsdone": "Tapos na ang lahat ng test",
+ "srv.discord.hello": "Hi {name}, mag-reply dito para mag-message sa mga AI-gile team mo",
+ "dc.hello.idlabel": "Ang Discord user ID mo",
+ "dc.hello.idhelp": "Para kopyahin ito: sa Discord, i-on ang Developer Mode (Settings > Advanced), mag-right-click sa pangalan mo, tapos piliin ang Copy User ID.",
+ "dc.hello.btn": "Padalhan mo ako ng hello DM",
+ "dc.hello.why": "Ang bot ang unang bumabati, para makapag-reply ka sa kanya.",
+ "dc.hello.sent": "Naipadala na ang hello: tingnan ang mga Discord DM mo at mag-reply doon.",
+ "dc.hello.needid": "Idagdag muna ang Discord user ID mo (tingnan ang \"o i-paste ang User ID\").",
+ "dc.hello.noserver": "Pinapayagan lang ng Discord na i-message ka ng bot kung may server kayong pareho. Idagdag ang bot sa server na kasama ka, tapos subukan ulit.",
+ "dc.hello.invite": "Idagdag ang bot sa server mo",
+ "dc.hello.retry": "Subukan ulit"
 }

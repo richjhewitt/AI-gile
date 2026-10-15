@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "E tono ana ki te kaimahi on-call...",
  "rev.summary.noai": "Kāore he whakarāpopototanga: kua kati te AI (Te Mātāpono Kore Tohu, Kore AI, tahua hoki kua pau).",
  "rev.summary.failed": "Kāore i tukuna e te kaimahi tētahi whakarāpopototanga i tēnei wā.",
- "tb.b.quietTop": "🌙 Te whakanoho ki te noho puku"
+ "tb.b.quietTop": "🌙 Te whakanoho ki te noho puku",
+ "board.team.quiet": "Kāore he tangata e mahi ana i tēnei wā.",
+ "board.team.showall": "Whakaatu katoa ({n})",
+ "board.team.active": "Whakaatu kua mahi noa",
+ "fy.testsdone": "Kua oti ngā whakamātautau katoa",
+ "srv.discord.hello": "Kia ora {name}, whakahoki kōrero ki konei hei tuku karere ki ōu rōpū AI-gile",
+ "dc.hello.idlabel": "Tō ID kaiwhakamahi Discord",
+ "dc.hello.idhelp": "Hei tārua: i Discord whakaara i te Developer Mode (Settings > Advanced), pāwhiri-matau ki tō ingoa, ka tohua Copy User ID.",
+ "dc.hello.btn": "Tukua mai he DM mihi ki ahau",
+ "dc.hello.why": "Mihi tuatahi te pot, kia taea ai e koe te whakahoki kōrero.",
+ "dc.hello.sent": "Kua tukua te mihi: tirohia ō Discord DM, ka whakahoki kōrero ki reira.",
+ "dc.hello.needid": "Tāpirihia tō ID kaiwhakamahi Discord i te tuatahi (tirohia “ranei whakapiri he User ID”).",
+ "dc.hello.noserver": "Ka whakaaetia anake e Discord te pot ki te tuku karere ki a koe mēnā kei te rōpū tahi kōrua i tētahi tūmau. Tāpirihia te pot ki tētahi tūmau kei reira koe, ka whakamātau anō.",
+ "dc.hello.invite": "Tāpirihia te pot ki tō tūmau",
+ "dc.hello.retry": "Whakamātau anō"
 }

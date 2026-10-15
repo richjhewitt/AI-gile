@@ -3861,5 +3861,19 @@
  "rev.summary.busy": "Spyr vaktmanninn...",
  "rev.summary.noai": "Engin samantekt: gervigreind er af (Engin tákn-hátr, Engin gervigreind eða yfir fjárhagsáætlun).",
  "rev.summary.failed": "Umboðsmaðrinn gaf enga samantekt í þetta sinn.",
- "tb.b.quietTop": "🌙 Verðr hljótt"
+ "tb.b.quietTop": "🌙 Verðr hljótt",
+ "board.team.quiet": "Engi vinnr nú.",
+ "board.team.showall": "Sýna alla ({n})",
+ "board.team.active": "Sýna einungis virka",
+ "fy.testsdone": "Öll próf lokit",
+ "srv.discord.hello": "Heill, {name}, svara hér til at senda boð liðum þínum í AI-gile",
+ "dc.hello.idlabel": "Notendanúmer þitt á Discord",
+ "dc.hello.idhelp": "Til at afrita: kveyk á Developer Mode í Discord (Settings > Advanced), hœgrismelltu á nafn þitt, ok veldu Copy User ID.",
+ "dc.hello.btn": "Send mér kveðju-DM",
+ "dc.hello.why": "Vélmennit kveðr fyrst, svá at þú megir svara því.",
+ "dc.hello.sent": "Kveðja send: lít á Discord-DM þín ok svara þar.",
+ "dc.hello.needid": "Bœt fyrst við notendanúmeri þínu á Discord (sjá „eða lím User ID“).",
+ "dc.hello.noserver": "Discord leyfir vélmenninu einungis at rita þér ef þit eruð á sama netþjóni. Bœt vélmenninu á netþjón, þar er þú ert á, ok reyn aptr.",
+ "dc.hello.invite": "Bœt vélmenninu á netþjón þinn",
+ "dc.hello.retry": "Reyn aptr"
 }

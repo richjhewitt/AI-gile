@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "on-call ඒජන්ට්ගෙන් ඉල්ලමින්...",
  "rev.summary.noai": "සාරාංශයක් නැත: AI ක්‍රියාවිරහිතයි (No Token Mode, No AI, හෝ අයවැයෙන් ඉක්මවා).",
  "rev.summary.failed": "ඒජන්ට් මෙවර සාරාංශයක් දුන්නේ නැත.",
- "tb.b.quietTop": "🌙 නිශ්ශබ්ද වෙමින්"
+ "tb.b.quietTop": "🌙 නිශ්ශබ්ද වෙමින්",
+ "board.team.quiet": "දැන් කිසිවෙක් වැඩ කරන්නේ නැහැ.",
+ "board.team.showall": "සියල්ල පෙන්වන්න ({n})",
+ "board.team.active": "වැඩ කරන අය පමණක් පෙන්වන්න",
+ "fy.testsdone": "සියලු පරීක්ෂණ අවසන්",
+ "srv.discord.hello": "හායි {name}, ඔබේ AI-gile කණ්ඩායම්වලට පණිවිඩයක් යවන්න මෙතැනින් පිළිතුරු දෙන්න",
+ "dc.hello.idlabel": "ඔබේ Discord පරිශීලක ID එක",
+ "dc.hello.idhelp": "පිටපත් කරන්න: Discord හි Developer Mode ක්‍රියාත්මක කරන්න (Settings > Advanced), ඔබේ නම මත දකුණු-ක්ලික් කර Copy User ID තෝරන්න.",
+ "dc.hello.btn": "මට හෙලෝ DM එකක් එවන්න",
+ "dc.hello.why": "බොට් මුලින්ම හෙලෝ කියනවා, එවිට ඔබට ඊට පිළිතුරු දිය හැක.",
+ "dc.hello.sent": "හෙලෝ යැව්වා: ඔබේ Discord DM බලා එහිම පිළිතුරු දෙන්න.",
+ "dc.hello.needid": "මුලින්ම ඔබේ Discord පරිශීලක ID එක එක් කරන්න (\"or paste a User ID\" බලන්න).",
+ "dc.hello.noserver": "ඔබත් බොට්ත් එකම සර්වරයක ඉන්නවා නම් පමණක් Discord බොට්ට ඔබට පණිවිඩ යවන්න දෙයි. ඔබ ඉන්න සර්වරයකට බොට් එක් කර නැවත උත්සාහ කරන්න.",
+ "dc.hello.invite": "බොට් මගේ සර්වරයට එක් කරන්න",
+ "dc.hello.retry": "නැවත උත්සාහ කරන්න"
 }

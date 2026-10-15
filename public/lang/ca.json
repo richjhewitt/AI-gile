@@ -3816,5 +3816,19 @@
  "rev.summary.noai": "Sense resum: la IA està desactivada (Mode sense tokens, Sense IA o pressupost superat).",
  "rev.summary.failed": "Aquesta vegada l'agent no ha donat cap resum.",
  "tb.b.quietTop": "🌙 Entrant en silenci",
- "srv.pir.rb.next": "Revisió publicada. {name}: ara proposa un runbook perquè la propera vegada sigui més ràpid: aigile pir-runbook {slug} {id} <short-name> --text \"els passos, un per línia\" --as {name}. Quan el propietari digui Go, el fitxer s'escriurà a docs/runbooks/<short-name>.md a la carpeta del projecte."
+ "srv.pir.rb.next": "Revisió publicada. {name}: ara proposa un runbook perquè la propera vegada sigui més ràpid: aigile pir-runbook {slug} {id} <short-name> --text \"els passos, un per línia\" --as {name}. Quan el propietari digui Go, el fitxer s'escriurà a docs/runbooks/<short-name>.md a la carpeta del projecte.",
+ "board.team.quiet": "Ara mateix ningú està treballant.",
+ "board.team.showall": "Mostra-ho tot ({n})",
+ "board.team.active": "Mostra només els actius",
+ "fy.testsdone": "Totes les proves fetes",
+ "srv.discord.hello": "Hola {name}, respon aquí per escriure als teus equips d'AI-gile",
+ "dc.hello.idlabel": "El teu ID d'usuari de Discord",
+ "dc.hello.idhelp": "Per copiar-lo: a Discord activa el mode de desenvolupador (Configuració > Avançat), fes clic dret al teu nom i tria Copia l'ID d'usuari.",
+ "dc.hello.btn": "Envia'm un DM de salutació",
+ "dc.hello.why": "El bot saluda primer, així li pots respondre.",
+ "dc.hello.sent": "Salutació enviada: mira els teus DM de Discord i respon allà.",
+ "dc.hello.needid": "Afegeix primer el teu ID d'usuari de Discord (mira \"o enganxa un ID d'usuari\").",
+ "dc.hello.noserver": "Discord només deixa que el bot t'escrigui si compartiu un servidor. Afegeix el bot a un servidor on siguis i torna-ho a provar.",
+ "dc.hello.invite": "Afegeix el bot al teu servidor",
+ "dc.hello.retry": "Torna-ho a provar"
 }

@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Icela isikhulumeli esilindile…",
  "rev.summary.noai": "Akukho sifinyezo: I-AI ivaliwe (Imodi Yokungasebenzisi Ama-token, Ayikho i-AI noma kudlule isabelo).",
  "rev.summary.failed": "Isikhulumeli asinikanga isifinyezo kulokhu.",
- "tb.b.quietTop": "🌙 Kuya ekuthuleni"
+ "tb.b.quietTop": "🌙 Kuya ekuthuleni",
+ "board.team.quiet": "Akekho osebenzayo manje.",
+ "board.team.showall": "Bonisa konke ({n})",
+ "board.team.active": "Bonisa abasebenzayo kuphela",
+ "fy.testsdone": "Wonke amasivivinyo aphelile",
+ "srv.discord.hello": "Sawubona {name}, phendula lapha ukuze uthumele umlayezo emaqenjini akho e-AI-gile",
+ "dc.hello.idlabel": "I-ID yakho yomsebenzisi we-Discord",
+ "dc.hello.idhelp": "Ukuyikopisha: ku-Discord vula i-Developer Mode (Settings > Advanced), chofoza ngakwesokudla igama lakho, bese ukhetha Copy User ID.",
+ "dc.hello.btn": "Ngithumelele i-DM yokubingelela",
+ "dc.hello.why": "Ibhothi ibingelela kuqala, ukuze uphendule kuyo.",
+ "dc.hello.sent": "Ukubingelela kuthunyelwe: bheka ama-DM akho e-Discord uphendule lapho.",
+ "dc.hello.needid": "Qala ngokungeza i-ID yakho yomsebenzisi we-Discord (bheka \"or paste a User ID\").",
+ "dc.hello.noserver": "I-Discord ivumela ibhothi ukuthi ikuthumelele imiyalezo kuphela uma nabelana ngeseva. Engeza ibhothi eseveni ohlala kuyo, bese uzama futhi.",
+ "dc.hello.invite": "Engeza ibhothi eseveni yakho",
+ "dc.hello.retry": "Zama futhi"
 }

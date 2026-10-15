@@ -3860,5 +3860,19 @@
  "rev.summary.busy": "Jearrá gohččumis agentas...",
  "rev.summary.noai": "Ii čoahkkáigeassu: AI lea olggos (No Token Mode, No AI dahje bušeahtta badjel).",
  "rev.summary.failed": "Agenta ii addán čoahkkáigeasu dán háve.",
- "tb.b.quietTop": "🌙 Jaskkodan"
+ "tb.b.quietTop": "🌙 Jaskkodan",
+ "board.team.quiet": "Ii oktage bargga dál.",
+ "board.team.showall": "Čájet buot ({n})",
+ "board.team.active": "Čájet dušše aktiivvaid",
+ "fy.testsdone": "Buot iehčanasat ráhkaduvvon",
+ "srv.discord.hello": "Bures {name}, vástit dás vai sáhtát čálihit iežat AI-gile joavkkuide",
+ "dc.hello.idlabel": "Du Discord-geavaheaddji-ID",
+ "dc.hello.idhelp": "Kopiere dan nu: bija Discordas Developer Mode ollisii (Settings > Advanced), deaddil olgeš boallu namain ja válljes Copy User ID.",
+ "dc.hello.btn": "Sádde munnje dearvvuođa-DM",
+ "dc.hello.why": "Bot dearvvuhastá vuosttažin, nu ahte sáhtát vástidit sutnje.",
+ "dc.hello.sent": "Dearvvuohta sáddejuvvon: dárkkis Discord-DMaid ja vástit doppe.",
+ "dc.hello.needid": "Lasit vuos iežat Discord-geavaheaddji-ID (geahča \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord diktá botii čálihit dutnje dušše jos leat seamma servera siste. Lasit boahta servvii mas don leat, ja geahččal fas.",
+ "dc.hello.invite": "Lasit boahta mu servvii",
+ "dc.hello.retry": "Geahččal fas"
 }

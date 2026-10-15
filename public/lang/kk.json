@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Кезекші агентке сұрау жіберілуде...",
  "rev.summary.noai": "Қорытынды жоқ: AI өшірулі (No Token Mode, No AI немесе бюджеттен асып кеткен).",
  "rev.summary.failed": "Агент бұл жолы қорытынды бермеді.",
- "tb.b.quietTop": "🌙 Тыныш режим"
+ "tb.b.quietTop": "🌙 Тыныш режим",
+ "board.team.quiet": "Қазір ешкім жұмыс істеп жатқан жоқ.",
+ "board.team.showall": "Барлығын көрсету ({n})",
+ "board.team.active": "Тек белсенділерді көрсету",
+ "fy.testsdone": "Барлық тесттер аяқталды",
+ "srv.discord.hello": "Сәлем, {name}, AI-gile командаларыңа хабарлама жіберу үшін осында жауап бер",
+ "dc.hello.idlabel": "Сенің Discord пайдаланушы ID-іңді",
+ "dc.hello.idhelp": "Көшіру үшін: Discord-та Developer Mode қос (Settings > Advanced), атыңды тінтуірдің оң жағымен бас, содан кейін Copy User ID таңда.",
+ "dc.hello.btn": "Маған сәлемдесу DM жібер",
+ "dc.hello.why": "Бот алдымен сәлемдеседі, сонда оған жауап бере аласың.",
+ "dc.hello.sent": "Сәлем жіберілді: Discord DM-дерінді тексеріп, сол жерде жауап бер.",
+ "dc.hello.needid": "Алдымен Discord пайдаланушы ID-іңді қос (\"немесе пайдаланушы ID қой\" қара).",
+ "dc.hello.noserver": "Discord бот саған тек ортақ серверде болсаңдар ғана жаза алады. Ботты өзің бар серверге қос та, қайта көр.",
+ "dc.hello.invite": "Ботты серверіңе қосу",
+ "dc.hello.retry": "Қайталап көру"
 }

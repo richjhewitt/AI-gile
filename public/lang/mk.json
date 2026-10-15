@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Се бара од агентот на дежурство...",
  "rev.summary.noai": "Нема резиме: AI е исклучен (Режим без токени, Без AI или буџетот е надминат).",
  "rev.summary.failed": "Агентот овој пат не даде резиме.",
- "tb.b.quietTop": "🌙 Тивок режим"
+ "tb.b.quietTop": "🌙 Тивок режим",
+ "board.team.quiet": "Моментално никој не работи.",
+ "board.team.showall": "Прикажи ги сите ({n})",
+ "board.team.active": "Прикажи само активни",
+ "fy.testsdone": "Сите тестови се готови",
+ "srv.discord.hello": "Здраво {name}, одговори овде за да им пишеш на твоите AI-gile тимови",
+ "dc.hello.idlabel": "Твојот Discord кориснички ID",
+ "dc.hello.idhelp": "За да го копираш: во Discord вклучи го Developer Mode (Settings > Advanced), кликни со десното копче на твоето име и избери Copy User ID.",
+ "dc.hello.btn": "Испрати ми DM со здраво",
+ "dc.hello.why": "Ботот прв те поздравува, за да можеш да му одговориш.",
+ "dc.hello.sent": "Поздравот е испратен: провери ги Discord DM и одговори таму.",
+ "dc.hello.needid": "Прво додај го твојот Discord кориснички ID (види „или залепи User ID“).",
+ "dc.hello.noserver": "Discord му дозволува на ботот да ти пишува само ако делите сервер. Додај го ботот на сервер во кој си и обиди се повторно.",
+ "dc.hello.invite": "Додај го ботот на твојот сервер",
+ "dc.hello.retry": "Обиди се повторно"
 }

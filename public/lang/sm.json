@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Ua ou fesili i le sooupu i le tiute...",
  "rev.summary.noai": "E leai se aotelega: ua tapunia le AI (No Token Mode, No AI poʻo ua sili atu i le tupe).",
  "rev.summary.failed": "Na leʻi tuuina mai e le sooupu se aotelega i lenei taimi.",
- "tb.b.quietTop": "🌙 Filemu"
+ "tb.b.quietTop": "🌙 Filemu",
+ "board.team.quiet": "E leai se tasi o galulue i le taimi nei.",
+ "board.team.showall": "Faaali uma ({n})",
+ "board.team.active": "Faaali na o ē o galulue",
+ "fy.testsdone": "Ua uma uma suega",
+ "srv.discord.hello": "Talofa {name}, tali mai iinei e fesoasoani atu i au AI-gile 'au",
+ "dc.hello.idlabel": "Lau Discord user ID",
+ "dc.hello.idhelp": "E kopi ai: i le Discord, tatala le Developer Mode (Settings > Advanced), kiliki-taumatau i lou igoa, ona filifili lea o Copy User ID.",
+ "dc.hello.btn": "Auina mai se DM talofa",
+ "dc.hello.why": "E muamua talofa le bot, ina ia mafai ai ona e tali atu.",
+ "dc.hello.sent": "Ua auina atu le talofa: vaai i au Discord DM ma tali i ai iina.",
+ "dc.hello.needid": "Faaopoopo muamua lau Discord user ID (vaai i le \"or paste a User ID\").",
+ "dc.hello.noserver": "E na o le taimi e te i ai i se server tutusa ma le bot e mafai ai e Discord ona auina atu ni feau ia te oe. Faaopoopo le bot i se server o loo e i ai, ona toe taumafai lea.",
+ "dc.hello.invite": "Faaopoopo le bot i lau server",
+ "dc.hello.retry": "Toe taumafai"
 }

@@ -3849,5 +3849,19 @@
  "rev.summary.busy": "Pedende a s'agente de gùardia...",
  "rev.summary.noai": "Perunu resumu: IA est istudada (Modu Sena Tokens, Sena IA o budget superadu).",
  "rev.summary.failed": "S'agente no at dadu perunu resumu custa borta.",
- "tb.b.quietTop": "🌙 In calma"
+ "tb.b.quietTop": "🌙 In calma",
+ "board.team.quiet": "Como nissunu traballat.",
+ "board.team.showall": "Ammustra totu ({n})",
+ "board.team.active": "Ammustra isceti sos ativos",
+ "fy.testsdone": "Totu sas proas fatas",
+ "srv.discord.hello": "Salude {name}, risponde inoghe pro iscrìere a sas iscuadras AI-gile tuas",
+ "dc.hello.idlabel": "S'ID de utente Discord tuo",
+ "dc.hello.idhelp": "Pro lu copiare: in Discord ativa Developer Mode (Settings > Advanced), clica cun su botone dereta subra de su nùmene tuo e tando sèbera Copy User ID.",
+ "dc.hello.btn": "Imbiami unu DM de salude",
+ "dc.hello.why": "Su bot saludat in antis, gasi bi podes rispondere.",
+ "dc.hello.sent": "Salude imbiada: controlla sos DM tuos de Discord e risponde in ibe.",
+ "dc.hello.needid": "Annanghe in antis s'ID de utente Discord tuo (vide \"o incolla un User ID\").",
+ "dc.hello.noserver": "Discord permitit a su bot de t'iscrìere isceti si cumpartzides unu serbidore cun issu. Annanghe su bot a unu serbidore in ue ses, tando proa torra.",
+ "dc.hello.invite": "Annanghe su bot a su serbidore tuo",
+ "dc.hello.retry": "Proa torra"
 }

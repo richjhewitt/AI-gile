@@ -3815,5 +3815,20 @@
  "rev.summary.busy": "Питам дежурния агент...",
  "rev.summary.noai": "Няма резюме: AI е изключен (режим без токени, без AI или над бюджета).",
  "rev.summary.failed": "Агентът не даде резюме този път.",
- "tb.b.quietTop": "🌙 Затихване"
+ "tb.b.quietTop": "🌙 Затихване",
+ "board.team.quiet": "В момента никой не работи.",
+ "board.team.showall": "Покажи всички ({n})",
+ "board.team.active": "Покажи само активните",
+ "fy.testsdone": "Всички тестове са готови",
+ "srv.discord.hello": "Здравей, {name}, отговори тук, за да пишеш на AI-gile екипите си",
+ "dc.hello.idlabel": "Твоето Discord потребителско ID",
+ "dc.hello.idhelp": "За да го копираш: в Discord включи Developer Mode (Settings > Advanced), кликни с десния бутон върху името си и избери Copy User ID.",
+ "dc.hello.btn": "Прати ми поздрав в DM",
+ "dc.hello.why": "Ботът поздравява пръв, за да можеш да му отговориш.",
+ "dc.hello.sent": "Поздравът е изпратен: провери личните си съобщения в Discord и отговори там.",
+ "dc.hello.needid": "Първо добави своето Discord потребителско ID (виж \"или постави User ID\").",
+ "dc.hello.noserver": "Discord позволява на бота да ти пише само ако споделяте сървър. Добави бота към сървър, в който си, и опитай пак.",
+ "dc.hello.invite": "Добави бота към сървъра си",
+ "dc.hello.retry": "Опитай пак",
+ "srv.pir.rb.next": "Прегледът е публикуван. {name}: сега предложи runbook, за да е по-бързо следващия път: aigile pir-runbook {slug} {id} <short-name> --text \"стъпките, по една на ред\" --as {name}. Собственикът казва Go и файлът се записва в docs/runbooks/<short-name>.md в папката на проекта."
 }

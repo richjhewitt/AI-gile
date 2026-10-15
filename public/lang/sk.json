@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Pýtam sa pohotovostného agenta...",
  "rev.summary.noai": "Žiadne zhrnutie: AI je vypnutá (Režim bez tokenov, bez AI alebo nad rozpočtom).",
  "rev.summary.failed": "Agent tentoraz nedal žiadne zhrnutie.",
- "tb.b.quietTop": "🌙 Stíchnuť"
+ "tb.b.quietTop": "🌙 Stíchnuť",
+ "board.team.quiet": "Práve nikto nepracuje.",
+ "board.team.showall": "Zobraziť všetko ({n})",
+ "board.team.active": "Zobraziť len aktívnych",
+ "fy.testsdone": "Všetky testy hotové",
+ "srv.discord.hello": "Ahoj {name}, odpovedz sem a napíšeš svojim tímom v AI-gile",
+ "dc.hello.idlabel": "Tvoje používateľské ID na Discorde",
+ "dc.hello.idhelp": "Skopíruješ ho tak: na Discorde zapni Developer Mode (Settings > Advanced), klikni pravým tlačidlom na svoje meno a zvoľ Copy User ID.",
+ "dc.hello.btn": "Pošli mi pozdravné DM",
+ "dc.hello.why": "Bot pozdraví ako prvý, aby si mu mohol odpovedať.",
+ "dc.hello.sent": "Pozdrav odoslaný: pozri si DM na Discorde a odpovedz tam.",
+ "dc.hello.needid": "Najprv pridaj svoje používateľské ID na Discorde (pozri \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord dovolí botovi písať ti, len ak s ním zdieľaš server. Pridaj bota na server, na ktorom si, a skús to znova.",
+ "dc.hello.invite": "Pridať bota na tvoj server",
+ "dc.hello.retry": "Skúsiť znova"
 }

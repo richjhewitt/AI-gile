@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Ke noi nei i ka ʻelele on-call…",
  "rev.summary.noai": "ʻAʻohe hōʻuluʻulu: pani ʻia ka AI (No Token Mode, No AI a i ʻole ua ʻoi aku ma mua o ka waihona).",
  "rev.summary.failed": "ʻAʻole i hāʻawi ka ʻelele i ka hōʻuluʻulu i kēia manawa.",
- "tb.b.quietTop": "🌙 Ke noho hāmau nei"
+ "tb.b.quietTop": "🌙 Ke noho hāmau nei",
+ "board.team.quiet": "ʻAʻohe mea e hana ana i kēia manawa.",
+ "board.team.showall": "Hōʻike i nā mea āpau ({n})",
+ "board.team.active": "Hōʻike i nā mea hana wale nō",
+ "fy.testsdone": "Ua pau nā hōʻike āpau",
+ "srv.discord.hello": "Aloha {name}, pane ma ʻaneʻi e hoʻouna i ka leka i kāu mau hui AI-gile",
+ "dc.hello.idlabel": "Kāu helu ID Discord",
+ "dc.hello.idhelp": "E kope ai: ma Discord, e hoʻā i ke Developer Mode (Settings > Advanced), kaomi ʻākau i kou inoa, a laila Copy User ID.",
+ "dc.hello.btn": "Hoʻouna mai i leka DM aloha",
+ "dc.hello.why": "Aloha mua ka bot, i hiki iā ʻoe ke pane iā ia.",
+ "dc.hello.sent": "Ua hoʻouna ʻia ke aloha: nānā i kāu mau DM Discord a pane ma laila.",
+ "dc.hello.needid": "E hoʻohui mua i kāu ID Discord (nānā \"a i ʻole e hoʻopili i kahi ID\").",
+ "dc.hello.noserver": "Ke ʻae nei ʻo Discord i ka bot e leka iā ʻoe inā ma ka server hoʻokahi ʻolua. E hoʻohui i ka bot i kahi server āu e noho ai, a laila e hoʻāʻo hou.",
+ "dc.hello.invite": "Hoʻohui i ka bot i kāu server",
+ "dc.hello.retry": "Hoʻāʻo hou"
 }

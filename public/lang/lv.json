@@ -3848,5 +3848,19 @@
  "rev.summary.busy": "Jautāju dežurējošajam aģentam...",
  "rev.summary.noai": "Nav kopsavilkuma: AI ir izslēgts (Bez žetonu režīms, Bez AI vai pārsniegts budžets).",
  "rev.summary.failed": "Aģents šoreiz nedeva kopsavilkumu.",
- "tb.b.quietTop": "🌙 Došanās klusumā"
+ "tb.b.quietTop": "🌙 Došanās klusumā",
+ "board.team.quiet": "Pašlaik neviens nestrādā.",
+ "board.team.showall": "Rādīt visus ({n})",
+ "board.team.active": "Rādīt tikai aktīvos",
+ "fy.testsdone": "Visi testi pabeigti",
+ "srv.discord.hello": "Sveiki, {name}! Atbildiet šeit, lai rakstītu savām AI-gile komandām",
+ "dc.hello.idlabel": "Jūsu Discord lietotāja ID",
+ "dc.hello.idhelp": "Kā nokopēt: Discord ieslēdziet Developer Mode (Settings > Advanced), ar peles labo pogu noklikšķiniet uz sava vārda un izvēlieties Copy User ID.",
+ "dc.hello.btn": "Atsūtīt man sveiciena DM",
+ "dc.hello.why": "Bots sasveicinās pirmais, lai jūs varētu tam atbildēt.",
+ "dc.hello.sent": "Sveiciens nosūtīts: pārbaudiet savus Discord DM un atbildiet tur.",
+ "dc.hello.needid": "Vispirms pievienojiet savu Discord lietotāja ID (skatiet „vai ielīmējiet User ID”).",
+ "dc.hello.noserver": "Discord ļauj botam rakstīt jums tikai tad, ja esat vienā serverī ar to. Pievienojiet botu serverim, kurā esat, un mēģiniet vēlreiz.",
+ "dc.hello.invite": "Pievienot botu savam serverim",
+ "dc.hello.retry": "Mēģināt vēlreiz"
 }

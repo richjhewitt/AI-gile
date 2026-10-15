@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Bertanya ejen on-call...",
  "rev.summary.noai": "Tiada ringkasan: AI dimatikan (No Token Mode, No AI atau melebihi bajet).",
  "rev.summary.failed": "Ejen tidak memberi ringkasan kali ini.",
- "tb.b.quietTop": "🌙 Senyap"
+ "tb.b.quietTop": "🌙 Senyap",
+ "board.team.quiet": "Tiada sesiapa yang sedang bekerja sekarang.",
+ "board.team.showall": "Papar semua ({n})",
+ "board.team.active": "Papar yang aktif sahaja",
+ "fy.testsdone": "Semua ujian selesai",
+ "srv.discord.hello": "Hai {name}, balas di sini untuk mesej pasukan AI-gile anda",
+ "dc.hello.idlabel": "ID pengguna Discord anda",
+ "dc.hello.idhelp": "Cara salin: dalam Discord hidupkan Developer Mode (Settings > Advanced), klik kanan nama anda, kemudian pilih Copy User ID.",
+ "dc.hello.btn": "Hantar DM salam kepada saya",
+ "dc.hello.why": "Bot memberi salam dahulu, supaya anda boleh membalasnya.",
+ "dc.hello.sent": "Salam dihantar: semak DM Discord anda dan balas di sana.",
+ "dc.hello.needid": "Tambah ID pengguna Discord anda dahulu (lihat \"atau tampal User ID\").",
+ "dc.hello.noserver": "Discord hanya membenarkan bot mesej anda jika anda berkongsi pelayan dengannya. Tambah bot ke pelayan yang anda sertai, kemudian cuba lagi.",
+ "dc.hello.invite": "Tambah bot ke pelayan anda",
+ "dc.hello.retry": "Cuba lagi"
 }

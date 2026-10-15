@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Chiedo all'agente di reperibilità...",
  "rev.summary.noai": "Nessun riepilogo: l'IA è disattivata (modalità No Token, No IA o oltre il budget).",
  "rev.summary.failed": "L'agente questa volta non ha dato un riepilogo.",
- "tb.b.quietTop": "🌙 Modalità silenziosa"
+ "tb.b.quietTop": "🌙 Modalità silenziosa",
+ "board.team.quiet": "Al momento nessuno sta lavorando.",
+ "board.team.showall": "Mostra tutti ({n})",
+ "board.team.active": "Mostra solo gli attivi",
+ "fy.testsdone": "Tutti i test completati",
+ "srv.discord.hello": "Ciao {name}, rispondi qui per scrivere ai tuoi team AI-gile",
+ "dc.hello.idlabel": "Il tuo ID utente Discord",
+ "dc.hello.idhelp": "Per copiarlo: in Discord attiva la Modalità sviluppatore (Impostazioni > Avanzate), clicca con il tasto destro sul tuo nome, poi Copia ID utente.",
+ "dc.hello.btn": "Mandami un DM di saluto",
+ "dc.hello.why": "Il bot saluta per primo, così puoi rispondergli.",
+ "dc.hello.sent": "Saluto inviato: controlla i tuoi DM di Discord e rispondi lì.",
+ "dc.hello.needid": "Aggiungi prima il tuo ID utente Discord (vedi \"oppure incolla un ID utente\").",
+ "dc.hello.noserver": "Discord permette al bot di scriverti solo se condividete un server. Aggiungi il bot a un server in cui sei presente, poi riprova.",
+ "dc.hello.invite": "Aggiungi il bot al tuo server",
+ "dc.hello.retry": "Riprova"
 }

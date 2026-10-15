@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Ji ajana bersivdar dipirse...",
  "rev.summary.noai": "Kurte tune: AI girtî ye (Moda Bê Token, Bê AI, an budçe zêde ye).",
  "rev.summary.failed": "Ajanê vê carê kurte neda.",
- "tb.b.quietTop": "🌙 Bêdeng bibe"
+ "tb.b.quietTop": "🌙 Bêdeng bibe",
+ "board.team.quiet": "Niha kes naxebite.",
+ "board.team.showall": "Hemûyan nîşan bide ({n})",
+ "board.team.active": "Tenê çalakan nîşan bide",
+ "fy.testsdone": "Hemû ceribandin qediyan",
+ "srv.discord.hello": "Silav {name}, li vir bersiv bide da ku peyamê ji tîmên xwe yên AI-gile re bişînî",
+ "dc.hello.idlabel": "ID-ya bikarhênerê te ya Discord",
+ "dc.hello.idhelp": "Ji bo kopîkirinê: di Discord de Developer Mode vekî (Settings > Advanced), li ser navê xwe bi rastê bitikîne, paşê Copy User ID hilbijêre.",
+ "dc.hello.btn": "DM-yeke silavê ji min re bişîne",
+ "dc.hello.why": "Bot pêşî silav dide, da ku tu bikaribî bersivê bidî wî.",
+ "dc.hello.sent": "Silav hat şandin: DM-yên xwe yên Discord kontrol bike û li wir bersiv bide.",
+ "dc.hello.needid": "Pêşî ID-ya bikarhênerê xwe ya Discord zêde bike (binêre \"an ID-yeke bikarhêner bixe\").",
+ "dc.hello.noserver": "Discord tenê dihêle ku bot ji te re binivîse eger hûn serverekê parve bikin. Bot li serverekê ya ku tu tê de yî zêde bike, paşê dîsa biceribîne.",
+ "dc.hello.invite": "Bot li serverê xwe zêde bike",
+ "dc.hello.retry": "Dîsa biceribîne"
 }

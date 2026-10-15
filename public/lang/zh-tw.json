@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "正在詢問值班代理…",
  "rev.summary.noai": "沒有摘要：AI 已關閉（無 Token 模式、無 AI 或超出預算）。",
  "rev.summary.failed": "這次代理沒有提供摘要。",
- "tb.b.quietTop": "🌙 進入安靜模式"
+ "tb.b.quietTop": "🌙 進入安靜模式",
+ "board.team.quiet": "現在沒有人在工作。",
+ "board.team.showall": "顯示全部（{n}）",
+ "board.team.active": "只顯示活躍的",
+ "fy.testsdone": "所有測試已完成",
+ "srv.discord.hello": "你好 {name}，在這裡回覆即可傳訊息給你的 AI-gile 團隊",
+ "dc.hello.idlabel": "你的 Discord 使用者 ID",
+ "dc.hello.idhelp": "複製方法：在 Discord 中開啟開發者模式（Settings > Advanced），在你的名字上按右鍵，然後選擇 Copy User ID。",
+ "dc.hello.btn": "傳一則問候私訊給我",
+ "dc.hello.why": "機器人會先打招呼，這樣你就可以回覆它了。",
+ "dc.hello.sent": "問候已傳送：請查看你的 Discord 私訊並在那裡回覆。",
+ "dc.hello.needid": "請先新增你的 Discord 使用者 ID（見 \"or paste a User ID\"）。",
+ "dc.hello.noserver": "只有你和機器人在同一個伺服器裡，Discord 才允許機器人傳訊息給你。請把機器人加入你所在的伺服器，然後再試一次。",
+ "dc.hello.invite": "把機器人加入你的伺服器",
+ "dc.hello.retry": "重試"
 }

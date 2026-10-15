@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "on-call agent ထံ မေးနေတယ်...",
  "rev.summary.noai": "အကျဉ်းချုပ် မရှိပါ: AI ပိတ်ထားက (No Token Mode၊ No AI ဒါမှမဟုတ် ဘတ်ဂျက် ကျော်လွန်)။",
  "rev.summary.failed": "agent က ဒီအကြိမ် အကျဉ်းချုပ် မပေးနိုင်ပါ။",
- "tb.b.quietTop": "🌙 တိတ်ဆိတ်သွားပြီ"
+ "tb.b.quietTop": "🌙 တိတ်ဆိတ်သွားပြီ",
+ "board.team.quiet": "အခု ဘယ်သူမှ အလုပ်မလုပ်နေပါဘူး။",
+ "board.team.showall": "အားလုံးပြရန် ({n})",
+ "board.team.active": "လုပ်ဆောင်နေသူများကိုသာ ပြရန်",
+ "fy.testsdone": "စမ်းသပ်မှုအားလုံး ပြီးပါပြီ",
+ "srv.discord.hello": "ဟိုင်း {name}၊ သင့် AI-gile အဖွဲ့တွေကို မက်ဆေ့ချ်ပို့ဖို့ ဒီမှာ ပြန်ပြောပါ",
+ "dc.hello.idlabel": "သင့် Discord အသုံးပြုသူ ID",
+ "dc.hello.idhelp": "ကူးယူရန်- Discord မှာ Developer Mode ဖွင့်ပါ (Settings > Advanced)၊ သင့်နာမည်ပေါ်မှာ right-click နှိပ်ပြီး Copy User ID ကို ရွေးပါ။",
+ "dc.hello.btn": "ကျွန်ုပ်ထံ ဟလို DM ပို့ပါ",
+ "dc.hello.why": "ဘော့က အရင် နှုတ်ဆက်မှာမို့ သင် ပြန်ပြောလို့ရပါတယ်။",
+ "dc.hello.sent": "ဟလို ပို့ပြီးပါပြီ- သင့် Discord DM တွေကို စစ်ပြီး အဲဒီမှာ ပြန်ပြောပါ။",
+ "dc.hello.needid": "သင့် Discord အသုံးပြုသူ ID ကို အရင် ထည့်ပါ (\"သို့မဟုတ် User ID ကို ကူးထည့်ပါ\" ကို ကြည့်ပါ)။",
+ "dc.hello.noserver": "သင်နဲ့ ဘော့ ဆာဗာတူတူ ရှိမှသာ Discord က ဘော့ကို သင့်ဆီ မက်ဆေ့ချ်ပို့ခွင့်ပေးပါတယ်။ ဘော့ကို သင်ရှိတဲ့ ဆာဗာတစ်ခုမှာ ထည့်ပြီး ထပ်ကြိုးစားပါ။",
+ "dc.hello.invite": "ဘော့ကို သင့်ဆာဗာမှာ ထည့်ရန်",
+ "dc.hello.retry": "ထပ်ကြိုးစားပါ"
 }

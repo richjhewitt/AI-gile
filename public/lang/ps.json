@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "له ډیوټۍ اجنټ څخه پوښتل کیږي...",
  "rev.summary.noai": "لنډیز نشته: AI بند دی (د ټوکنو پرته حالت، AI پرته یا بودجه تېره شوې).",
  "rev.summary.failed": "اجنټ دا ځل لنډیز ورنکړ.",
- "tb.b.quietTop": "🌙 غلی کیږم"
+ "tb.b.quietTop": "🌙 غلی کیږم",
+ "board.team.quiet": "اوس هیڅوک کار نه کوي.",
+ "board.team.showall": "ټول وښایه ({n})",
+ "board.team.active": "یوازې فعال وښایه",
+ "fy.testsdone": "ټول ازمایښتونه بشپړ شول",
+ "srv.discord.hello": "سلام {name}، دلته ځواب ورکړئ ترڅو خپلو AI-gile ټیمونو ته پیغام ولیږئ",
+ "dc.hello.idlabel": "ستاسو د Discord کارن ID",
+ "dc.hello.idhelp": "د کاپي کولو لپاره: په Discord کې Developer Mode فعال کړئ (Settings > Advanced)، پر خپل نوم ښي کلیک وکړئ، بیا Copy User ID وټاکئ.",
+ "dc.hello.btn": "ماته د سلام DM ولېږئ",
+ "dc.hello.why": "بوټ لومړی سلام کوي، ترڅو تاسو ورته ځواب ورکړئ.",
+ "dc.hello.sent": "سلام ولېږل شو: خپل Discord DM وګورئ او هلته ځواب ورکړئ.",
+ "dc.hello.needid": "لومړی خپل Discord کارن ID اضافه کړئ (\"یا User ID پیسټ کړئ\" وګورئ).",
+ "dc.hello.noserver": "Discord یوازې هغه وخت بوټ ته اجازه ورکوي چې تاسو ته پیغام ولیږي چې تاسو ورسره یو سرور شریک کړئ. بوټ هغه سرور ته اضافه کړئ چې تاسو پکې یاست، بیا بیا هڅه وکړئ.",
+ "dc.hello.invite": "بوټ خپل سرور ته اضافه کړئ",
+ "dc.hello.retry": "بیا هڅه وکړئ"
 }

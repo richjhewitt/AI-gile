@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Тражим од дежурног агента...",
  "rev.summary.noai": "Нема резимеа: AI је искључен (Режим без токена, Без AI-ја или преко буџета).",
  "rev.summary.failed": "Агент овог пута није дао резиме.",
- "tb.b.quietTop": "🌙 Прелазим на тишину"
+ "tb.b.quietTop": "🌙 Прелазим на тишину",
+ "board.team.quiet": "Тренутно нико не ради.",
+ "board.team.showall": "Прикажи све ({n})",
+ "board.team.active": "Прикажи само активне",
+ "fy.testsdone": "Сви тестови су готови",
+ "srv.discord.hello": "Здраво {name}, одговори овде да пишеш својим тимовима у AI-gile",
+ "dc.hello.idlabel": "Твој Discord кориснички ID",
+ "dc.hello.idhelp": "Да га копираш: у Discord-у укључи Developer Mode (Settings > Advanced), кликни десним тастером на своје име, па изабери Copy User ID.",
+ "dc.hello.btn": "Пошаљи ми поздравни DM",
+ "dc.hello.why": "Бот први поздравља, да би могао да му одговориш.",
+ "dc.hello.sent": "Поздрав је послат: погледај своје DM-ове на Discord-у и одговори тамо.",
+ "dc.hello.needid": "Прво додај свој Discord кориснички ID (види \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord дозвољава боту да ти пише само ако делите сервер. Додај бота на сервер на ком си, па покушај поново.",
+ "dc.hello.invite": "Додај бота на свој сервер",
+ "dc.hello.retry": "Покушај поново"
 }

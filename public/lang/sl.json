@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Vprašam dežurnega agenta...",
  "rev.summary.noai": "Ni povzetka: AI je izklopljena (način brez žetonov, brez AI ali čez proračun).",
  "rev.summary.failed": "Agent tokrat ni dal povzetka.",
- "tb.b.quietTop": "🌙 Odklop"
+ "tb.b.quietTop": "🌙 Odklop",
+ "board.team.quiet": "Trenutno nihče ne dela.",
+ "board.team.showall": "Pokaži vse ({n})",
+ "board.team.active": "Pokaži samo aktivne",
+ "fy.testsdone": "Vsi testi opravljeni",
+ "srv.discord.hello": "Živjo {name}, odgovori tukaj, da pišeš svojim ekipam v AI-gile",
+ "dc.hello.idlabel": "Tvoj uporabniški ID na Discordu",
+ "dc.hello.idhelp": "Kopiraš ga tako: v Discordu vklopi Developer Mode (Settings > Advanced), z desnim klikom klikni svoje ime in izberi Copy User ID.",
+ "dc.hello.btn": "Pošlji mi pozdravno DM",
+ "dc.hello.why": "Bot pozdravi prvi, da mu lahko odgovoriš.",
+ "dc.hello.sent": "Pozdrav poslan: poglej svoja DM na Discordu in odgovori tam.",
+ "dc.hello.needid": "Najprej dodaj svoj uporabniški ID na Discordu (glej \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord dovoli botu, da ti piše, samo če imata skupen strežnik. Dodaj bota na strežnik, v katerem si, in poskusi znova.",
+ "dc.hello.invite": "Dodaj bota na svoj strežnik",
+ "dc.hello.retry": "Poskusi znova"
 }

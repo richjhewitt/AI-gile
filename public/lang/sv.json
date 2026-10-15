@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Frågar jouragenten...",
  "rev.summary.noai": "Ingen sammanfattning: AI är av (Inget token-läge, Inget AI eller över budget).",
  "rev.summary.failed": "Agenten gav ingen sammanfattning den här gången.",
- "tb.b.quietTop": "🌙 Går tyst"
+ "tb.b.quietTop": "🌙 Går tyst",
+ "board.team.quiet": "Ingen jobbar just nu.",
+ "board.team.showall": "Visa alla ({n})",
+ "board.team.active": "Visa bara aktiva",
+ "fy.testsdone": "Alla tester klara",
+ "srv.discord.hello": "Hej {name}, svara här för att skriva till dina AI-gile-team",
+ "dc.hello.idlabel": "Ditt användar-ID på Discord",
+ "dc.hello.idhelp": "Så kopierar du det: slå på Developer Mode i Discord (Settings > Advanced), högerklicka på ditt namn och välj Copy User ID.",
+ "dc.hello.btn": "Skicka ett hälsnings-DM till mig",
+ "dc.hello.why": "Boten hälsar först, så att du kan svara den.",
+ "dc.hello.sent": "Hälsning skickad: kolla dina DM på Discord och svara där.",
+ "dc.hello.needid": "Lägg först till ditt användar-ID på Discord (se \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord låter bara boten skriva till dig om ni delar en server. Lägg till boten på en server du är med i och försök igen.",
+ "dc.hello.invite": "Lägg till boten på din server",
+ "dc.hello.retry": "Försök igen"
 }

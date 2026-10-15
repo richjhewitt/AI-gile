@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Spør vakthavende agent...",
  "rev.summary.noai": "Ingen oppsummering: KI er av (Ingen tokenmodus, Ingen KI eller over budsjett).",
  "rev.summary.failed": "Agenten ga ingen oppsummering denne gangen.",
- "tb.b.quietTop": "🌙 Går stille"
+ "tb.b.quietTop": "🌙 Går stille",
+ "board.team.quiet": "Ingen jobber akkurat nå.",
+ "board.team.showall": "Vis alle ({n})",
+ "board.team.active": "Vis bare aktive",
+ "fy.testsdone": "Alle tester er ferdige",
+ "srv.discord.hello": "Hei {name}, svar her for å sende melding til AI-gile-teamene dine",
+ "dc.hello.idlabel": "Din Discord-bruker-ID",
+ "dc.hello.idhelp": "Slik kopierer du den: slå på Developer Mode i Discord (Settings > Advanced), høyreklikk navnet ditt og velg Copy User ID.",
+ "dc.hello.btn": "Send meg en hei-DM",
+ "dc.hello.why": "Boten sier hei først, så du kan svare den.",
+ "dc.hello.sent": "Hei sendt: sjekk Discord-DM-ene dine og svar der.",
+ "dc.hello.needid": "Legg til Discord-bruker-ID-en din først (se «eller lim inn en User ID»).",
+ "dc.hello.noserver": "Discord lar bare boten sende deg melding hvis dere er på samme server. Legg boten til en server du er på, og prøv igjen.",
+ "dc.hello.invite": "Legg boten til serveren din",
+ "dc.hello.retry": "Prøv igjen"
 }

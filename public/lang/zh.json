@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "正在询问值班智能体…",
  "rev.summary.noai": "无摘要：AI 已关闭（无 Token 模式、无 AI 或超出预算）。",
  "rev.summary.failed": "这次智能体未给出摘要。",
- "tb.b.quietTop": "🌙 进入安静模式"
+ "tb.b.quietTop": "🌙 进入安静模式",
+ "board.team.quiet": "现在没有人在工作。",
+ "board.team.showall": "显示全部（{n}）",
+ "board.team.active": "只显示活跃的",
+ "fy.testsdone": "所有测试已完成",
+ "srv.discord.hello": "你好 {name}，在这里回复即可给你的 AI-gile 团队发消息",
+ "dc.hello.idlabel": "你的 Discord 用户 ID",
+ "dc.hello.idhelp": "复制方法：在 Discord 中打开开发者模式（Settings > Advanced），右键点击你的名字，然后选择 Copy User ID。",
+ "dc.hello.btn": "给我发一条问候私信",
+ "dc.hello.why": "机器人会先打招呼，这样你就可以回复它了。",
+ "dc.hello.sent": "问候已发送：请查看你的 Discord 私信并在那里回复。",
+ "dc.hello.needid": "请先添加你的 Discord 用户 ID（见 \"or paste a User ID\"）。",
+ "dc.hello.noserver": "只有你和机器人在同一个服务器里，Discord 才允许机器人给你发消息。请把机器人添加到你所在的服务器，然后重试。",
+ "dc.hello.invite": "把机器人添加到你的服务器",
+ "dc.hello.retry": "重试"
 }

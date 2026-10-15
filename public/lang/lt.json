@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Klausiama budinčio agento...",
  "rev.summary.noai": "Santraukos nėra: AI išjungtas (Be žetonų režimas, Be AI arba viršytas biudžetas).",
  "rev.summary.failed": "Šį kartą agentas santraukos nepateikė.",
- "tb.b.quietTop": "🌙 Ramybės režimas"
+ "tb.b.quietTop": "🌙 Ramybės režimas",
+ "board.team.quiet": "Šiuo metu niekas nedirba.",
+ "board.team.showall": "Rodyti visus ({n})",
+ "board.team.active": "Rodyti tik aktyvius",
+ "fy.testsdone": "Visi testai baigti",
+ "srv.discord.hello": "Sveiki, {name}, atsakykite čia, kad parašytumėte savo AI-gile komandoms",
+ "dc.hello.idlabel": "Jūsų Discord naudotojo ID",
+ "dc.hello.idhelp": "Kaip nukopijuoti: Discord įjunkite Developer Mode (Settings > Advanced), dešiniuoju pelės mygtuku spustelėkite savo vardą ir pasirinkite Copy User ID.",
+ "dc.hello.btn": "Atsiųsti man sveikinimo DM",
+ "dc.hello.why": "Botas pasisveikina pirmas, todėl galite jam atsakyti.",
+ "dc.hello.sent": "Sveikinimas išsiųstas: patikrinkite savo Discord DM ir atsakykite ten.",
+ "dc.hello.needid": "Pirmiausia įveskite savo Discord naudotojo ID (žr. „arba įklijuokite User ID“).",
+ "dc.hello.noserver": "Discord leidžia botui rašyti jums tik tada, jei esate tame pačiame serveryje. Pridėkite botą prie serverio, kuriame esate, ir bandykite dar kartą.",
+ "dc.hello.invite": "Pridėti botą prie savo serverio",
+ "dc.hello.retry": "Bandyti dar kartą"
 }

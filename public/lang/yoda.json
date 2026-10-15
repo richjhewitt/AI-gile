@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Asking the on-call agent, we are...",
  "rev.summary.noai": "No summary, there is: AI is off (No Token Mode, No AI or over budget, it is).",
  "rev.summary.failed": "The agent gave no summary this time, it did not.",
- "tb.b.quietTop": "🌙 Going quiet"
+ "tb.b.quietTop": "🌙 Going quiet",
+ "board.team.quiet": "Working right now, no one is.",
+ "board.team.showall": "Show all, ({n}) you will",
+ "board.team.active": "Show only active ones, you will",
+ "fy.testsdone": "All tests done, they are",
+ "srv.discord.hello": "Hello {name}, reply here you must, to message your AI-gile teams",
+ "dc.hello.idlabel": "Your Discord user ID, this is",
+ "dc.hello.idhelp": "To copy it: in Discord turn on Developer Mode (Settings > Advanced), right-click your name, then Copy User ID, you must.",
+ "dc.hello.btn": "Send me a hello DM, you will",
+ "dc.hello.why": "First says hello, the bot does, so reply to it you can.",
+ "dc.hello.sent": "Hello sent, it is: check your Discord DMs, and reply there, you must.",
+ "dc.hello.needid": "Add your Discord user ID first, you must (see \"or paste a User ID\").",
+ "dc.hello.noserver": "Message you, the bot can only if a server with it you share. Add the bot to a server you are in, then try again, you must.",
+ "dc.hello.invite": "Add the bot to your server, you will",
+ "dc.hello.retry": "Try again, you must"
 }

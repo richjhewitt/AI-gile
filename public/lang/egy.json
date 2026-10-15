@@ -3861,5 +3861,19 @@
  "rev.summary.busy": "𓅱𓆑𓃭𓇋𓈖 𓇌𓅱𓀀 𓏏𓉔𓇋 𓅓𓄿𓋴𓏏𓅱𓋴…",
  "rev.summary.noai": "𓈖𓅱 𓅱𓆑𓃭𓇋𓈖: AI 𓅱𓆑𓃭𓇋𓈖 (𓏏𓉔𓇋 𓅱𓆑𓃭𓇋𓈖 𓈖𓅱 tokens, 𓈖𓅱 AI 𓅱𓆑𓃭𓇋𓈖 𓅱𓆑𓃭𓇋𓈖 𓅱𓈖𓅱𓋴𓏏).",
  "rev.summary.failed": "𓏏𓉔𓇋 𓅓𓄿𓋴𓏏𓅱𓋴 𓅱𓆑𓃭𓇋𓈖 𓈖𓅱 𓅱𓆑𓃭𓇋𓈖 𓇌𓅱𓀀 𓏏𓉔𓇋 𓅱𓆑𓃭𓇋𓈖.",
- "tb.b.quietTop": "🌙 𓅱𓆑𓃭𓇋𓈖"
+ "tb.b.quietTop": "🌙 𓅱𓆑𓃭𓇋𓈖",
+ "board.team.quiet": "𓈖𓅱 𓅱𓈖𓇋 𓇋𓋴 𓅱𓅱𓂋𓎡𓇋𓈖𓎼 𓂋𓇋𓎼𓉔𓏏 𓈖𓅱𓅱.",
+ "board.team.showall": "𓋴𓉔𓅱𓅱 𓄿𓃭𓃭 ({n})",
+ "board.team.active": "𓋴𓉔𓅱𓅱 𓄿𓎡𓏏𓇋𓆑𓇋 𓅱𓈖𓃭𓇌",
+ "fy.testsdone": "𓄿𓃭𓃭 𓏏𓇋𓋴𓏏𓋴 𓂧𓅱𓈖𓇋",
+ "srv.discord.hello": "𓉔𓇋 {name}, 𓂋𓇋𓊪𓃭𓇌 𓉔𓇋𓂋𓇋 𓏏𓅱 𓅓𓇋𓋴𓋴𓄿𓎼𓇋 𓇌𓅱𓅱𓂋 AI-gile 𓏏𓇋𓄿𓅓𓋴",
+ "dc.hello.idlabel": "𓇌𓅱𓅱𓂋 Discord 𓅱𓋴𓇋𓂋 𓇋𓂧",
+ "dc.hello.idhelp": "𓏏𓅱 𓎡𓅱𓊪𓇌 𓇋𓏏: 𓇋𓈖 Discord 𓏏𓅱𓂋𓈖 𓅱𓈖 Developer Mode (Settings > Advanced), 𓂋𓇋𓎼𓉔𓏏-𓎡𓃭𓇋𓎡𓎡 𓇌𓅱𓅱𓂋 𓈖𓄿𓅓𓇋, 𓏏𓉔𓇋𓈖 Copy User ID.",
+ "dc.hello.btn": "𓋴𓇋𓈖𓂧 𓅓𓇋 𓄿 𓉔𓇋𓃭𓃭𓅱 DM",
+ "dc.hello.why": "𓏏𓉔𓇋 𓃀𓅱𓏏 𓋴𓄿𓇌𓋴 𓉔𓇋𓃭𓃭𓅱 𓆑𓇋𓂋𓋴𓏏, 𓋴𓅱 𓇌𓅱𓅱 𓎡𓄿𓈖 𓂋𓇋𓊪𓃭𓇌 𓏏𓅱 𓇋𓏏.",
+ "dc.hello.sent": "𓉔𓇋𓃭𓃭𓅱 𓋴𓇋𓈖𓏏: 𓎡𓉔𓇋𓎡𓎡 𓇌𓅱𓅱𓂋 Discord DMs 𓄿𓈖𓂧 𓂋𓇋𓊪𓃭𓇌 𓏏𓉔𓇋𓂋𓇋.",
+ "dc.hello.needid": "𓄿𓂧𓂧 𓇌𓅱𓅱𓂋 Discord 𓅱𓋴𓇋𓂋 𓇋𓂧 𓆑𓇋𓂋𓋴𓏏 (𓋴𓇋𓇋 \"𓅱𓂋 𓊪𓄿𓋴𓏏𓇋 𓄿 User ID\").",
+ "dc.hello.noserver": "Discord 𓅱𓈖𓃭𓇌 𓃭𓇋𓏏𓋴 𓏏𓉔𓇋 𓃀𓅱𓏏 𓅓𓇋𓋴𓋴𓄿𓎼𓇋 𓇌𓅱𓅱 𓇋𓆑 𓇌𓅱𓅱 𓋴𓉔𓄿𓂋𓇋 𓄿 𓋴𓇋𓂋𓆑𓇋𓂋 𓅱𓇋𓏏𓉔 𓇋𓏏. 𓄿𓂧𓂧 𓏏𓉔𓇋 𓃀𓅱𓏏 𓏏𓅱 𓄿 𓋴𓇋𓂋𓆑𓇋𓂋 𓇌𓅱𓅱 𓄿𓂋𓇋 𓇋𓈖, 𓏏𓉔𓇋𓈖 𓏏𓂋𓇌 𓄿𓎼𓄿𓇋𓈖.",
+ "dc.hello.invite": "𓄿𓂧𓂧 𓏏𓉔𓇋 𓃀𓅱𓏏 𓏏𓅱 𓇌𓅱𓅱𓂋 𓋴𓇋𓂋𓆑𓇋𓂋",
+ "dc.hello.retry": "𓏏𓂋𓇌 𓄿𓎼𓄿𓇋𓈖"
 }

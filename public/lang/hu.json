@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Kérés az ügyeletes ügynöktől…",
  "rev.summary.noai": "Nincs összefoglaló: az AI ki van kapcsolva (Tokenmentes mód, AI nélkül, vagy túllépett keret).",
  "rev.summary.failed": "Az ügynök ezúttal nem adott összefoglalót.",
- "tb.b.quietTop": "🌙 Csendes mód"
+ "tb.b.quietTop": "🌙 Csendes mód",
+ "board.team.quiet": "Most senki sem dolgozik.",
+ "board.team.showall": "Összes megjelenítése ({n})",
+ "board.team.active": "Csak az aktívak megjelenítése",
+ "fy.testsdone": "Minden teszt kész",
+ "srv.discord.hello": "Szia {name}! Itt válaszolj, hogy üzenhess az AI-gile csapataidnak",
+ "dc.hello.idlabel": "A Discord felhasználói azonosítód",
+ "dc.hello.idhelp": "Másoláshoz: a Discordban kapcsold be a Fejlesztői módot (Beállítások > Speciális), kattints jobb gombbal a nevedre, majd Felhasználói azonosító másolása.",
+ "dc.hello.btn": "Küldj nekem egy köszönő DM-et",
+ "dc.hello.why": "A bot köszön először, így tudsz neki válaszolni.",
+ "dc.hello.sent": "Köszönés elküldve: nézd meg a Discord DM-eidet, és ott válaszolj.",
+ "dc.hello.needid": "Először add meg a Discord felhasználói azonosítódat (lásd \"vagy illessz be egy felhasználói azonosítót\").",
+ "dc.hello.noserver": "A Discord csak akkor engedi, hogy a bot üzenjen neked, ha közös szerveren vagytok. Add hozzá a botot egy szerverhez, amelyen te is rajta vagy, aztán próbáld újra.",
+ "dc.hello.invite": "Add hozzá a botot a szerveredhez",
+ "dc.hello.retry": "Próbáld újra"
 }

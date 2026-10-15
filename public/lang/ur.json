@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "آن کال ایجنٹ سے پوچھا جا رہا ہے...",
  "rev.summary.noai": "کوئی خلاصہ نہیں: AI بند ہے (No Token Mode، No AI یا بجٹ سے زیادہ)۔",
  "rev.summary.failed": "ایجنٹ نے اس بار کوئی خلاصہ نہیں دیا۔",
- "tb.b.quietTop": "🌙 خاموش موڈ"
+ "tb.b.quietTop": "🌙 خاموش موڈ",
+ "board.team.quiet": "اس وقت کوئی کام نہیں کر رہا۔",
+ "board.team.showall": "سب دکھائیں ({n})",
+ "board.team.active": "صرف فعال دکھائیں",
+ "fy.testsdone": "تمام ٹیسٹ مکمل",
+ "srv.discord.hello": "سلام {name}، اپنی AI-gile ٹیموں کو پیغام بھیجنے کے لیے یہاں جواب دیں",
+ "dc.hello.idlabel": "آپ کی Discord صارف ID",
+ "dc.hello.idhelp": "کاپی کرنے کے لیے: Discord میں Developer Mode آن کریں (Settings > Advanced)، اپنے نام پر رائٹ کلک کریں، پھر Copy User ID چنیں۔",
+ "dc.hello.btn": "مجھے سلام کا DM بھیجیں",
+ "dc.hello.why": "بوٹ پہلے سلام کرتا ہے، تاکہ آپ اسے جواب دے سکیں۔",
+ "dc.hello.sent": "سلام بھیج دیا گیا: اپنے Discord DMs دیکھیں اور وہیں جواب دیں۔",
+ "dc.hello.needid": "پہلے اپنی Discord صارف ID شامل کریں (\"or paste a User ID\" دیکھیں)۔",
+ "dc.hello.noserver": "Discord بوٹ کو آپ کو پیغام بھیجنے کی اجازت صرف تب دیتا ہے جب آپ دونوں ایک ہی سرور میں ہوں۔ بوٹ کو اپنے کسی سرور میں شامل کریں، پھر دوبارہ کوشش کریں۔",
+ "dc.hello.invite": "بوٹ کو اپنے سرور میں شامل کریں",
+ "dc.hello.retry": "دوبارہ کوشش کریں"
 }

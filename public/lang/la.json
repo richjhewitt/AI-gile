@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Agentem excubiarum rogo...",
  "rev.summary.noai": "Nullum summarium: AI exstincta est (Modus Sine Tokenis, Sine AI, vel super sumptum).",
  "rev.summary.failed": "Agens hac vice nullum summarium dedit.",
- "tb.b.quietTop": "🌙 Silere"
+ "tb.b.quietTop": "🌙 Silere",
+ "board.team.quiet": "Nemo nunc laborat.",
+ "board.team.showall": "Omnia ostende ({n})",
+ "board.team.active": "Activa tantum ostende",
+ "fy.testsdone": "Omnes probationes peractae",
+ "srv.discord.hello": "Salve {name}, hic responde ut nuntium ad cohortes tuas AI-gile mittas",
+ "dc.hello.idlabel": "Tuum Discord nomen usoris (ID)",
+ "dc.hello.idhelp": "Ut id exscribas: in Discord modum auctoris accende (Optiones > Provectae), nomen tuum dextro cliccato preme, deinde Exscribe ID usoris.",
+ "dc.hello.btn": "Mitte mihi DM salutationis",
+ "dc.hello.why": "Bot primus salutat, ut ei respondere possis.",
+ "dc.hello.sent": "Salutatio missa: DM Discord tua inspice et ibi responde.",
+ "dc.hello.needid": "Primum tuum ID usoris Discord adde (vide \"vel ID usoris inscribe\").",
+ "dc.hello.noserver": "Discord botum tibi scribere sinit solum si servitorem communem habetis. Botum ad servitorem in quo es adde, deinde iterum tenta.",
+ "dc.hello.invite": "Botum ad servitorem tuum adde",
+ "dc.hello.retry": "Iterum tenta"
 }

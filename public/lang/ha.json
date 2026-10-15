@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Ana tambayar wakilin kan kira…",
  "rev.summary.noai": "Babu taƙaitawa: AI a kashe yake (No Token Mode, No AI ko kasafin kuɗi ya wuce).",
  "rev.summary.failed": "Wakilin bai ba da taƙaitawa ba wannan lokacin.",
- "tb.b.quietTop": "🌙 Yin shiru"
+ "tb.b.quietTop": "🌙 Yin shiru",
+ "board.team.quiet": "Babu wanda ke aiki yanzu.",
+ "board.team.showall": "Nuna duka ({n})",
+ "board.team.active": "Nuna masu aiki kawai",
+ "fy.testsdone": "An gama duk gwaje-gwaje",
+ "srv.discord.hello": "Sannu {name}, amsa a nan don aika saƙo ga ƙungiyoyin AI-gile naka",
+ "dc.hello.idlabel": "ID ɗin mai amfani da Discord naka",
+ "dc.hello.idhelp": "Don kwafa: a Discord kunna Developer Mode (Settings > Advanced), danna dama kan sunanka, sannan Copy User ID.",
+ "dc.hello.btn": "Aiko mini da DM na sannu",
+ "dc.hello.why": "Bot ɗin yana fara gaisuwa, don ka iya amsa masa.",
+ "dc.hello.sent": "An aika gaisuwa: duba DM ɗin Discord naka ka amsa a can.",
+ "dc.hello.needid": "Fara ƙara ID ɗin mai amfani da Discord naka (duba \"ko ka liƙa ID ɗin mai amfani\").",
+ "dc.hello.noserver": "Discord yana barin bot ya yi maka saƙo ne kawai idan kuna cikin uwar garke ɗaya. Ƙara bot ɗin zuwa uwar garken da kake ciki, sannan ka sake gwadawa.",
+ "dc.hello.invite": "Ƙara bot ɗin zuwa uwar garkenka",
+ "dc.hello.retry": "Sake gwadawa"
 }

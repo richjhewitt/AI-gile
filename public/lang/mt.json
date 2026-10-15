@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Qed nistaqsi lill-aġent on-call...",
  "rev.summary.noai": "L-ebda sommarju: l-AI hija mitfija (No Token Mode, No AI jew over budget).",
  "rev.summary.failed": "L-aġent ma tax sommarju din id-darba.",
- "tb.b.quietTop": "🌙 Qed isir kwiet"
+ "tb.b.quietTop": "🌙 Qed isir kwiet",
+ "board.team.quiet": "Ħadd ma qed jaħdem bħalissa.",
+ "board.team.showall": "Uri kollha ({n})",
+ "board.team.active": "Uri biss dawk attivi",
+ "fy.testsdone": "It-testijiet kollha lesti",
+ "srv.discord.hello": "Ħellow {name}, wieġeb hawn biex tibgħat messaġġ lit-timijiet AI-gile tiegħek",
+ "dc.hello.idlabel": "L-ID tal-utent tiegħek ta' Discord",
+ "dc.hello.idhelp": "Biex tikkopjaha: f'Discord ixgħel id-Developer Mode (Settings > Advanced), agħfas il-lemin fuq ismek, imbagħad agħżel Copy User ID.",
+ "dc.hello.btn": "Ibgħatli DM ta' merħba",
+ "dc.hello.why": "Il-bot jgħid ħellow l-ewwel, biex tkun tista' twieġbu.",
+ "dc.hello.sent": "Is-saluti intbagħtu: ara d-DMs tiegħek ta' Discord u wieġeb hemm.",
+ "dc.hello.needid": "Żid l-ID tal-utent tiegħek ta' Discord l-ewwel (ara \"jew waħħal User ID\").",
+ "dc.hello.noserver": "Discord iħalli lill-bot jibgħatlek messaġġ biss jekk taqsmu server miegħu. Żid il-bot ma' server li int fih, imbagħad erġa' pprova.",
+ "dc.hello.invite": "Żid il-bot mas-server tiegħek",
+ "dc.hello.retry": "Erġa' pprova"
 }

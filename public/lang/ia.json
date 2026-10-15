@@ -3849,5 +3849,19 @@
  "rev.summary.busy": "Demandante al agente de guardia…",
  "rev.summary.noai": "Nulle summario: IA es non active (Modo Sin Tokens, Sin IA, o budget excedite).",
  "rev.summary.failed": "Le agente non da un summario iste vice.",
- "tb.b.quietTop": "🌙 Passar a silentio"
+ "tb.b.quietTop": "🌙 Passar a silentio",
+ "board.team.quiet": "Nulle persona labora al momento.",
+ "board.team.showall": "Monstrar totes ({n})",
+ "board.team.active": "Monstrar solmente le activos",
+ "fy.testsdone": "Tote le tests es finite",
+ "srv.discord.hello": "Salute {name}, responde hic pro inviar messages a tu equipas AI-gile",
+ "dc.hello.idlabel": "Tu ID de usator de Discord",
+ "dc.hello.idhelp": "Pro copiar lo: in Discord activa le Modo de disveloppator (Parametros > Avantiate), clicca con le button dextre super tu nomine, postea Copiar ID de usator.",
+ "dc.hello.btn": "Invia me un DM de salute",
+ "dc.hello.why": "Le bot saluta primo, assi tu pote responder a ille.",
+ "dc.hello.sent": "Salute inviate: controla tu DMs de Discord e responde la.",
+ "dc.hello.needid": "Adde primo tu ID de usator de Discord (vide \"o colla un ID de usator\").",
+ "dc.hello.noserver": "Discord permitte al bot de scriber te solmente si vos condivide un servitor. Adde le bot a un servitor in le qual tu es, postea retenta.",
+ "dc.hello.invite": "Adde le bot a tu servitor",
+ "dc.hello.retry": "Retentar"
 }

@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Oñeporandu agente on-call-pe...",
  "rev.summary.noai": "Ndaipóri ñemombyky: AI ojeheja (No Token Mode, No AI térã presupuesto opa).",
  "rev.summary.failed": "Pe agente ndome'ẽi ñemombyky ko jey.",
- "tb.b.quietTop": "🌙 Aiko mo'ã"
+ "tb.b.quietTop": "🌙 Aiko mo'ã",
+ "board.team.quiet": "Ni peteĩ nomba'apói ko'ágã.",
+ "board.team.showall": "Eguenohẽ opavave ({n})",
+ "board.team.active": "Eguenohẽ umi hembiapóva añoite",
+ "fy.testsdone": "Opa umi mba'e ñeha'ã",
+ "srv.discord.hello": "Mba'éichapa {name}, eikuaa'ã ápe emondo hag̃ua marandu nde mba'apohárape AI-gile",
+ "dc.hello.idlabel": "Nde ID puruhára Discord",
+ "dc.hello.idhelp": "Eguerekóta hag̃ua: Discord-pe emyandy Modo Desarrollador (Ñemoĩ > Avanzado), eity po akatúa nde réra ári, upéi Copiar ID de usuario.",
+ "dc.hello.btn": "Emondo chéve peteĩ DM mba'éichapa",
+ "dc.hello.why": "Pe bot oñepyrũ oñe'ẽ ypy, ikatu hag̃uáicha reikuaa'ã chupe.",
+ "dc.hello.sent": "Mba'éichapa mondopyre: ehecha nde DM Discord-pe ha embohovái upépe.",
+ "dc.hello.needid": "Emoĩ ypy nde ID puruhára Discord (ehecha \"térã emoĩ peteĩ ID puruhára\").",
+ "dc.hello.noserver": "Discord ohejáne pe bot omondo marandu ndéve ramo nde reiko peteĩ servidor-pe hendive. Emoĩ pe bot peteĩ servidor reiko haguépe, upéi eha'ã jey.",
+ "dc.hello.invite": "Emoĩ pe bot ne servidor-pe",
+ "dc.hello.retry": "Eha'ã jey"
 }

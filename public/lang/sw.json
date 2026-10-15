@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Inamuuliza wakala wa zamu...",
  "rev.summary.noai": "Hakuna muhtasari: AI imezimwa (Hali Isiyo na Tokeni, Bila AI au bajeti imezidi).",
  "rev.summary.failed": "Wakala hakutoa muhtasari wakati huu.",
- "tb.b.quietTop": "🌙 Kwenda kimya"
+ "tb.b.quietTop": "🌙 Kwenda kimya",
+ "board.team.quiet": "Hakuna anayefanya kazi sasa hivi.",
+ "board.team.showall": "Onyesha wote ({n})",
+ "board.team.active": "Onyesha wanaofanya kazi tu",
+ "fy.testsdone": "Majaribio yote yamekamilika",
+ "srv.discord.hello": "Habari {name}, jibu hapa ili kutuma ujumbe kwa timu zako za AI-gile",
+ "dc.hello.idlabel": "Kitambulisho chako cha mtumiaji wa Discord",
+ "dc.hello.idhelp": "Ili kukinakili: kwenye Discord washa Developer Mode (Settings > Advanced), bofya kulia jina lako, kisha chagua Copy User ID.",
+ "dc.hello.btn": "Nitumie DM ya salamu",
+ "dc.hello.why": "Bot husalimia kwanza, ili uweze kuijibu.",
+ "dc.hello.sent": "Salamu imetumwa: angalia DM zako za Discord na ujibu huko.",
+ "dc.hello.needid": "Weka kwanza kitambulisho chako cha mtumiaji wa Discord (tazama \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord huruhusu bot kukutumia ujumbe tu ikiwa mko kwenye seva moja. Ongeza bot kwenye seva uliyomo, kisha ujaribu tena.",
+ "dc.hello.invite": "Ongeza bot kwenye seva yako",
+ "dc.hello.retry": "Jaribu tena"
 }

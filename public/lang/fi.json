@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Pyydetään päivystysagentilta...",
  "rev.summary.noai": "Ei yhteenvetoa: tekoäly on pois päältä (Ei tokeneita -tila, Ei tekoälyä tai budjetti ylitetty).",
  "rev.summary.failed": "Agentti ei antanut yhteenvetoa tällä kertaa.",
- "tb.b.quietTop": "🌙 Hiljennys"
+ "tb.b.quietTop": "🌙 Hiljennys",
+ "board.team.quiet": "Kukaan ei työskentele juuri nyt.",
+ "board.team.showall": "Näytä kaikki ({n})",
+ "board.team.active": "Näytä vain aktiiviset",
+ "fy.testsdone": "Kaikki testit tehty",
+ "srv.discord.hello": "Hei {name}, vastaa tässä lähettääksesi viestin AI-gile-tiimeillesi",
+ "dc.hello.idlabel": "Discord-käyttäjätunnuksesi",
+ "dc.hello.idhelp": "Kopioi se näin: ota Discordissa käyttöön kehittäjätila (Asetukset > Lisäasetukset), napsauta nimeäsi hiiren kakkospainikkeella ja valitse Kopioi käyttäjätunnus.",
+ "dc.hello.btn": "Lähetä minulle tervehdys-DM",
+ "dc.hello.why": "Botti tervehtii ensin, jotta voit vastata sille.",
+ "dc.hello.sent": "Tervehdys lähetetty: katso Discordin yksityisviestisi ja vastaa siellä.",
+ "dc.hello.needid": "Lisää ensin Discord-käyttäjätunnuksesi (katso \"tai liitä käyttäjätunnus\").",
+ "dc.hello.noserver": "Discord sallii botin viestiä sinulle vain, jos jaat sen kanssa palvelimen. Lisää botti palvelimelle, jolla olet, ja yritä uudelleen.",
+ "dc.hello.invite": "Lisää botti palvelimellesi",
+ "dc.hello.retry": "Yritä uudelleen"
 }

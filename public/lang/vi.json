@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Đang nhờ agent trực...",
  "rev.summary.noai": "Không có tóm tắt: AI đang tắt (Chế độ không token, Không AI hoặc vượt ngân sách).",
  "rev.summary.failed": "Lần này agent không đưa ra tóm tắt nào.",
- "tb.b.quietTop": "🌙 Đang im lặng"
+ "tb.b.quietTop": "🌙 Đang im lặng",
+ "board.team.quiet": "Hiện không có ai đang làm việc.",
+ "board.team.showall": "Hiện tất cả ({n})",
+ "board.team.active": "Chỉ hiện người đang làm việc",
+ "fy.testsdone": "Đã xong tất cả bài kiểm tra",
+ "srv.discord.hello": "Chào {name}, hãy trả lời tại đây để nhắn cho các nhóm AI-gile của bạn",
+ "dc.hello.idlabel": "ID người dùng Discord của bạn",
+ "dc.hello.idhelp": "Để sao chép: trong Discord, bật Developer Mode (Settings > Advanced), nhấp chuột phải vào tên bạn, rồi chọn Copy User ID.",
+ "dc.hello.btn": "Gửi cho tôi một DM chào",
+ "dc.hello.why": "Bot sẽ chào trước, để bạn có thể trả lời nó.",
+ "dc.hello.sent": "Đã gửi lời chào: hãy xem DM Discord của bạn và trả lời ở đó.",
+ "dc.hello.needid": "Hãy thêm ID người dùng Discord của bạn trước (xem \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord chỉ cho bot nhắn tin cho bạn nếu hai bên ở chung một máy chủ. Hãy thêm bot vào một máy chủ bạn đang tham gia, rồi thử lại.",
+ "dc.hello.invite": "Thêm bot vào máy chủ của bạn",
+ "dc.hello.retry": "Thử lại"
 }

@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Bið gervigreindarvaktmanninn...",
  "rev.summary.noai": "Engin samantekt: gervigreind er slökkt (No Token Mode, No AI eða yfir kvóta).",
  "rev.summary.failed": "Gervigreindin skilaði engri samantekt að þessu sinni.",
- "tb.b.quietTop": "🌙 Fara í ró"
+ "tb.b.quietTop": "🌙 Fara í ró",
+ "board.team.quiet": "Enginn er að vinna núna.",
+ "board.team.showall": "Sýna allt ({n})",
+ "board.team.active": "Sýna aðeins virk",
+ "fy.testsdone": "Öllum prófum lokið",
+ "srv.discord.hello": "Halló {name}, svaraðu hér til að senda skilaboð til AI-gile teymanna þinna",
+ "dc.hello.idlabel": "Discord notandaauðkennið þitt",
+ "dc.hello.idhelp": "Til að afrita það: kveiktu á þróunarhami í Discord (Stillingar > Ítarlegt), hægri-smelltu á nafnið þitt og veldu svo Afrita notandaauðkenni.",
+ "dc.hello.btn": "Sendu mér kveðju-DM",
+ "dc.hello.why": "Vélmennið heilsar fyrst svo þú getir svarað því.",
+ "dc.hello.sent": "Kveðja send: athugaðu Discord DM-in þín og svaraðu þar.",
+ "dc.hello.needid": "Bættu fyrst við Discord notandaauðkenninu þínu (sjá \"eða límdu notandaauðkenni\").",
+ "dc.hello.noserver": "Discord leyfir vélmenninu aðeins að senda þér skilaboð ef þið deilið netþjóni. Bættu vélmenninu við netþjón sem þú ert á og reyndu aftur.",
+ "dc.hello.invite": "Bæta vélmenninu við netþjóninn þinn",
+ "dc.hello.retry": "Reyna aftur"
 }

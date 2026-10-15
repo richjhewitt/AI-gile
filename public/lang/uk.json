@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Запитуємо агента чергової зміни...",
  "rev.summary.noai": "Підсумку немає: ШІ вимкнено (режим без токенів, без ШІ або понад бюджетом).",
  "rev.summary.failed": "Цього разу агент не дав підсумку.",
- "tb.b.quietTop": "🌙 Тихий режим"
+ "tb.b.quietTop": "🌙 Тихий режим",
+ "board.team.quiet": "Зараз ніхто не працює.",
+ "board.team.showall": "Показати всіх ({n})",
+ "board.team.active": "Показати лише активних",
+ "fy.testsdone": "Усі тести завершено",
+ "srv.discord.hello": "Привіт, {name}! Відповідай тут, щоб писати своїм командам в AI-gile",
+ "dc.hello.idlabel": "Твій ID користувача Discord",
+ "dc.hello.idhelp": "Щоб скопіювати: у Discord увімкни Developer Mode (Settings > Advanced), клацни правою кнопкою на своє ім'я, потім вибери Copy User ID.",
+ "dc.hello.btn": "Надішли мені привітальне DM",
+ "dc.hello.why": "Бот вітається першим, щоб ти міг йому відповісти.",
+ "dc.hello.sent": "Привітання надіслано: зазирни в DM у Discord і відповідай там.",
+ "dc.hello.needid": "Спершу додай свій ID користувача Discord (див. \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord дозволяє боту писати тобі, лише якщо ви на одному сервері. Додай бота на сервер, де ти є, і спробуй ще раз.",
+ "dc.hello.invite": "Додати бота на твій сервер",
+ "dc.hello.retry": "Спробувати ще раз"
 }

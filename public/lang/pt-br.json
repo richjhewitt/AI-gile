@@ -3848,5 +3848,19 @@
  "rev.summary.busy": "Pedindo ao agente de plantão...",
  "rev.summary.noai": "Sem resumo: a IA está desligada (Modo Sem Token, Sem IA ou acima do orçamento).",
  "rev.summary.failed": "O agente não deu resumo desta vez.",
- "tb.b.quietTop": "🌙 Ficando offline"
+ "tb.b.quietTop": "🌙 Ficando offline",
+ "board.team.quiet": "Ninguém está trabalhando agora.",
+ "board.team.showall": "Mostrar tudo ({n})",
+ "board.team.active": "Mostrar só os ativos",
+ "fy.testsdone": "Todos os testes concluídos",
+ "srv.discord.hello": "Oi {name}, responda aqui para enviar mensagem para suas equipes AI-gile",
+ "dc.hello.idlabel": "Seu ID de usuário do Discord",
+ "dc.hello.idhelp": "Para copiar: no Discord, ative o Developer Mode (Settings > Advanced), clique com o botão direito no seu nome e depois em Copy User ID.",
+ "dc.hello.btn": "Enviar um DM de oi para mim",
+ "dc.hello.why": "O bot diz oi primeiro, para você poder responder.",
+ "dc.hello.sent": "Oi enviado: confira seus DMs do Discord e responda por lá.",
+ "dc.hello.needid": "Adicione primeiro seu ID de usuário do Discord (veja \"ou cole um User ID\").",
+ "dc.hello.noserver": "O Discord só deixa o bot enviar mensagem para você se vocês estiverem no mesmo servidor. Adicione o bot a um servidor em que você esteja e tente de novo.",
+ "dc.hello.invite": "Adicionar o bot ao seu servidor",
+ "dc.hello.retry": "Tentar de novo"
 }

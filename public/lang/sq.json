@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Po kërkohet nga agjenti i gatishëm...",
  "rev.summary.noai": "Pa përmbledhje: AI është e fikur (Modaliteti pa token, Pa AI ose mbi buxhet).",
  "rev.summary.failed": "Agjenti nuk dha përmbledhje këtë herë.",
- "tb.b.quietTop": "🌙 Po heshtoj"
+ "tb.b.quietTop": "🌙 Po heshtoj",
+ "board.team.quiet": "Tani askush nuk po punon.",
+ "board.team.showall": "Shfaq të gjitha ({n})",
+ "board.team.active": "Shfaq vetëm aktivët",
+ "fy.testsdone": "Të gjitha testet u kryen",
+ "srv.discord.hello": "Përshëndetje {name}, përgjigju këtu për t'u shkruar ekipeve të tua në AI-gile",
+ "dc.hello.idlabel": "ID-ja jote e përdoruesit në Discord",
+ "dc.hello.idhelp": "Për ta kopjuar: në Discord aktivizo Developer Mode (Settings > Advanced), kliko me të djathtën emrin tënd, pastaj zgjidh Copy User ID.",
+ "dc.hello.btn": "Dërgom një DM përshëndetjeje",
+ "dc.hello.why": "Boti përshëndet i pari, që t'i përgjigjesh.",
+ "dc.hello.sent": "Përshëndetja u dërgua: shiko DM-të e tua në Discord dhe përgjigju atje.",
+ "dc.hello.needid": "Shto së pari ID-në tënde të përdoruesit në Discord (shih \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord e lejon botin të të shkruajë vetëm nëse ndani një server me të. Shtoje botin në një server ku je ti, pastaj provo përsëri.",
+ "dc.hello.invite": "Shtoje botin në serverin tënd",
+ "dc.hello.retry": "Provo përsëri"
 }

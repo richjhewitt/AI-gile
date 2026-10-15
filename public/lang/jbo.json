@@ -3819,5 +3819,19 @@
  "rev.summary.busy": "mi ca'o cpedu lo AI sidju poi ca'o jdika...",
  "rev.summary.noai": "no nu stidi: lo AI cu sisti (No Token Mode ja No AI ja ba'o lo jimte)",
  "rev.summary.failed": "lo AI sidju na dunda lo nu stidi ca ti roi",
- "tb.b.quietTop": "🌙 ko sisti lo sance"
+ "tb.b.quietTop": "🌙 ko sisti lo sance",
+ "board.team.quiet": ".i ca no da zukte",
+ "board.team.showall": "ro lo se jarco ({n})",
+ "board.team.active": "ro lo ca zukte po'o cu se jarco",
+ "fy.testsdone": "ro lo ceha'u cu mulno",
+ "srv.discord.hello": "coi {name} .i ko ciska fi vi pa jai se danre ja'e lo nu do benji lo notci lo do gunma be la AI-gile",
+ "dc.hello.idlabel": "lo judri be do be la Discord",
+ "dc.hello.idhelp": "lo nu kopi: ca la Discord ko ka'e kakne sazri (Settings > Advanced) .i ko kurji'e vi lo do cmene .i ba ku ko cuxna lo nu Copy User ID",
+ "dc.hello.btn": "ko benji lo coi DM mi",
+ "dc.hello.why": "la bot cu cuxna ri pa moi lo nu cusku fi coi .i ja'e bo do ka'e danre",
+ "dc.hello.sent": "la coi vo'a se benji .i ko catlu lo do DM be la Discord .i ko danre vi",
+ "dc.hello.needid": "ko pa moi jmina lo judri be do be la Discord (ko catlu \"ja ko ricyfa'i lo judri\")",
+ "dc.hello.noserver": "la Discord na curmi lo nu la bot cu notci do ja'e bo do ku jmina lo samse'u .i ko jmina la bot lo samse'u poi do se jmina .i ba bo ko za'u re'u troci",
+ "dc.hello.invite": "ko jmina la bot lo do samse'u",
+ "dc.hello.retry": "ko za'u re'u troci"
 }

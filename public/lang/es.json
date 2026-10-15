@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Pidiendo el resumen al agente de guardia...",
  "rev.summary.noai": "Sin resumen: la IA está desactivada (modo Sin tokens, Sin IA o presupuesto excedido).",
  "rev.summary.failed": "El agente no dio un resumen esta vez.",
- "tb.b.quietTop": "🌙 Me desconecto"
+ "tb.b.quietTop": "🌙 Me desconecto",
+ "board.team.quiet": "Ahora mismo no trabaja nadie.",
+ "board.team.showall": "Mostrar todo ({n})",
+ "board.team.active": "Mostrar solo activos",
+ "fy.testsdone": "Todas las pruebas hechas",
+ "srv.discord.hello": "Hola {name}, responde aquí para escribir a tus equipos de AI-gile",
+ "dc.hello.idlabel": "Tu ID de usuario de Discord",
+ "dc.hello.idhelp": "Para copiarlo: en Discord activa el Modo desarrollador (Ajustes > Avanzado), haz clic derecho en tu nombre y elige Copiar ID de usuario.",
+ "dc.hello.btn": "Envíame un DM de saludo",
+ "dc.hello.why": "El bot saluda primero, así puedes responderle.",
+ "dc.hello.sent": "Saludo enviado: mira tus DM de Discord y responde allí.",
+ "dc.hello.needid": "Añade primero tu ID de usuario de Discord (mira \"o pega un ID de usuario\").",
+ "dc.hello.noserver": "Discord solo deja que el bot te escriba si compartís un servidor. Añade el bot a un servidor en el que estés e inténtalo de nuevo.",
+ "dc.hello.invite": "Añadir el bot a tu servidor",
+ "dc.hello.retry": "Intentar de nuevo"
 }

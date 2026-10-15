@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Nöbetçi ajana soruluyor...",
  "rev.summary.noai": "Özet yok: yapay zekâ kapalı (Token Yok Modu, Yapay zekâ yok ya da bütçe aşıldı).",
  "rev.summary.failed": "Ajan bu sefer özet vermedi.",
- "tb.b.quietTop": "🌙 Mola veriyorum"
+ "tb.b.quietTop": "🌙 Mola veriyorum",
+ "board.team.quiet": "Şu anda kimse çalışmıyor.",
+ "board.team.showall": "Hepsini göster ({n})",
+ "board.team.active": "Yalnızca etkin olanları göster",
+ "fy.testsdone": "Tüm testler bitti",
+ "srv.discord.hello": "Merhaba {name}, AI-gile ekiplerine yazmak için buraya yanıt ver",
+ "dc.hello.idlabel": "Discord kullanıcı kimliğin",
+ "dc.hello.idhelp": "Kopyalamak için: Discord'da Developer Mode'u aç (Settings > Advanced), adına sağ tıkla, sonra Copy User ID'yi seç.",
+ "dc.hello.btn": "Bana merhaba DM'i gönder",
+ "dc.hello.why": "Bot önce merhaba der, böylece ona yanıt verebilirsin.",
+ "dc.hello.sent": "Merhaba gönderildi: Discord DM'lerine bak ve orada yanıt ver.",
+ "dc.hello.needid": "Önce Discord kullanıcı kimliğini ekle (\"or paste a User ID\" bölümüne bak).",
+ "dc.hello.noserver": "Discord, botun sana mesaj atmasına yalnızca onunla aynı sunucuda olursan izin verir. Botu bulunduğun bir sunucuya ekle, sonra tekrar dene.",
+ "dc.hello.invite": "Botu sunucuna ekle",
+ "dc.hello.retry": "Tekrar dene"
 }

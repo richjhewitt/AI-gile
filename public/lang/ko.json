@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "당직 에이전트에게 묻는 중...",
  "rev.summary.noai": "요약 없음: AI가 꺼져 있어요 (토큰 없음 모드, AI 없음, 또는 예산 초과).",
  "rev.summary.failed": "이번에는 에이전트가 요약을 주지 않았어요.",
- "tb.b.quietTop": "🌙 조용히 쉬러 가기"
+ "tb.b.quietTop": "🌙 조용히 쉬러 가기",
+ "board.team.quiet": "지금은 아무도 작업하고 있지 않아요.",
+ "board.team.showall": "모두 보기 ({n})",
+ "board.team.active": "활성만 보기",
+ "fy.testsdone": "모든 테스트 완료",
+ "srv.discord.hello": "안녕하세요 {name}님, 여기에 답장하면 AI-gile 팀에 메시지를 보낼 수 있어요",
+ "dc.hello.idlabel": "내 Discord 사용자 ID",
+ "dc.hello.idhelp": "복사하는 방법: Discord에서 개발자 모드를 켜고(설정 > 고급), 내 이름을 마우스 오른쪽 버튼으로 클릭한 다음 사용자 ID 복사를 누르세요.",
+ "dc.hello.btn": "인사 DM 보내기",
+ "dc.hello.why": "봇이 먼저 인사하니까 그 메시지에 답장할 수 있어요.",
+ "dc.hello.sent": "인사를 보냈어요: Discord DM을 확인하고 거기서 답장하세요.",
+ "dc.hello.needid": "먼저 Discord 사용자 ID를 추가하세요(\"또는 사용자 ID 붙여넣기\" 참고).",
+ "dc.hello.noserver": "Discord에서는 봇과 같은 서버에 있어야만 봇이 메시지를 보낼 수 있어요. 내가 있는 서버에 봇을 추가한 다음 다시 시도하세요.",
+ "dc.hello.invite": "봇을 내 서버에 추가",
+ "dc.hello.retry": "다시 시도"
 }

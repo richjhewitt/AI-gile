@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Guardia agentemanta mañashan...",
  "rev.summary.noai": "Mana pisichasqa: AI wisq'asqa (No Token Mode, No AI utaq presupuesto tukusqa).",
  "rev.summary.failed": "Agente manan kay kutipi pisichasqata qorqanchu.",
- "tb.b.quietTop": "🌙 Upallay"
+ "tb.b.quietTop": "🌙 Upallay",
+ "board.team.quiet": "Kunan mana pipas llamk'anchu.",
+ "board.team.showall": "Llapanta rikuchiy ({n})",
+ "board.team.active": "Llamk'ajkunallata rikuchiy",
+ "fy.testsdone": "Llapa pruebakuna tukusqa",
+ "srv.discord.hello": "Rimaykullayki {name}, kaypi kutichiy AI-gile huñuykikunaman willanaykipaq",
+ "dc.hello.idlabel": "Discord ruwaqniykipa ID-n",
+ "dc.hello.idhelp": "Copiananpaq: Discord-pi Developer Mode-ta kichay (Settings > Advanced), sutiykipi paña click ruway, chaymanta Copy User ID akllay.",
+ "dc.hello.btn": "Rimaykuy DM kachamuway",
+ "dc.hello.why": "Bot ñawpaqta rimaykun, chhaynapi kutichiyta atinki.",
+ "dc.hello.sent": "Rimay kachasqa: Discord DM-niykita qhaway, chaypi kutichiy.",
+ "dc.hello.needid": "Ñawpaqta Discord ruwaqniykipa ID-ta yapay (qhaway \"icha User ID llapchiy\").",
+ "dc.hello.noserver": "Discord botqa qanman willakunanpaqmi, huk servidorpi kankichis chayllapi. Botta servidorman yapay, maypi kasqaykipi, hinaspa musuqmanta ruway.",
+ "dc.hello.invite": "Botta servidorniykiman yapay",
+ "dc.hello.retry": "Musuqmanta ruway"
 }

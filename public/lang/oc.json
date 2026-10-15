@@ -3849,5 +3849,19 @@
  "rev.summary.busy": "Demanda a l'agent de gàrdia...",
  "rev.summary.noai": "Pas de resumit : l'IA es desactivada (Mòde sens tokens, Sens IA o budget depassat).",
  "rev.summary.failed": "L'agent a pas donat de resumit aquesta fes.",
- "tb.b.quietTop": "🌙 Se fa silenciós"
+ "tb.b.quietTop": "🌙 Se fa silenciós",
+ "board.team.quiet": "Degun trabalha pas pel moment.",
+ "board.team.showall": "Mostrar tot ({n})",
+ "board.team.active": "Mostrar sonque los actius",
+ "fy.testsdone": "Totes los tèsts son acabats",
+ "srv.discord.hello": "Adieu {name}, respond aicí per escriure a tas esquipas AI-gile",
+ "dc.hello.idlabel": "Ton ID d'utilizaire Discord",
+ "dc.hello.idhelp": "Per lo copiar : dins Discord activa Developer Mode (Settings > Advanced), clica a drecha sul tieu nom, puèi causís Copy User ID.",
+ "dc.hello.btn": "Mandar-me un DM de salut",
+ "dc.hello.why": "Lo bòt dison bonjorn en primièr, que puguèssas li respondre.",
+ "dc.hello.sent": "Salut mandat : agacha tos DM Discord e respond lai.",
+ "dc.hello.needid": "Ajusta d'en primièr ton ID d'utilizaire Discord (vei « o pegar un User ID »).",
+ "dc.hello.noserver": "Discord daissa lo bòt escriure pas qu'a una persona que partatja un servidor amb el. Ajusta lo bòt a un servidor ont siás, puèi ensaja tornar.",
+ "dc.hello.invite": "Ajustar lo bòt a ton servidor",
+ "dc.hello.retry": "Ensajar tornar"
 }

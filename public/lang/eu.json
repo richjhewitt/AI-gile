@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "Guardia-agenteari eskatzen...",
  "rev.summary.noai": "Laburpenik ez: AI itzalita dago (Tokenik Gabeko modua, AI gabe edo aurrekontua gainditua).",
  "rev.summary.failed": "Agenteak ez du laburpenik eman oraingoan.",
- "tb.b.quietTop": "🌙 Isiltzen"
+ "tb.b.quietTop": "🌙 Isiltzen",
+ "board.team.quiet": "Une honetan ez dago inor lanean.",
+ "board.team.showall": "Erakutsi guztia ({n})",
+ "board.team.active": "Erakutsi aktiboak bakarrik",
+ "fy.testsdone": "Proba guztiak eginda",
+ "srv.discord.hello": "Kaixo {name}, erantzun hemen zure AI-gile taldeei mezua bidaltzeko",
+ "dc.hello.idlabel": "Zure Discord erabiltzaile IDa",
+ "dc.hello.idhelp": "Kopiatzeko: Discorden aktibatu Garatzaile modua (Ezarpenak > Aurreratuak), egin klik eskuineko botoiarekin zure izenean eta aukeratu Kopiatu erabiltzailearen IDa.",
+ "dc.hello.btn": "Bidali iezadazu agurrezko DM bat",
+ "dc.hello.why": "Botak lehenengo agurtzen du, erantzun ahal izateko.",
+ "dc.hello.sent": "Agurra bidali da: begiratu zure Discord DMak eta erantzun han.",
+ "dc.hello.needid": "Gehitu lehenengo zure Discord erabiltzaile IDa (ikusi \"edo itsatsi erabiltzaile ID bat\").",
+ "dc.hello.noserver": "Discordek botak mezua bidaltzea baimentzen du zerbitzari bat partekatzen baduzue bakarrik. Gehitu bota zu zauden zerbitzari batera eta saiatu berriro.",
+ "dc.hello.invite": "Gehitu bota zure zerbitzarira",
+ "dc.hello.retry": "Saiatu berriro"
 }

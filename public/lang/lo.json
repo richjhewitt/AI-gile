@@ -3816,5 +3816,19 @@
  "rev.summary.busy": "ກຳລັງຂໍໃຫ້ Agent ທີ່ເຝົ້າເວນ...",
  "rev.summary.noai": "ບໍ່ມີສະຫຼຸບ: AI ປິດຢູ່ (ໂໝດບໍ່ໃຊ້ Token, ບໍ່ມີ AI ຫຼື ເກີນງົບ).",
  "rev.summary.failed": "Agent ບໍ່ໄດ້ໃຫ້ສະຫຼຸບຄັ້ງນີ້.",
- "tb.b.quietTop": "🌙 ກຳລັງພັກ"
+ "tb.b.quietTop": "🌙 ກຳລັງພັກ",
+ "board.team.quiet": "ດຽວນີ້ບໍ່ມີໃຜກຳລັງເຮັດວຽກ.",
+ "board.team.showall": "ສະແດງທັງໝົດ ({n})",
+ "board.team.active": "ສະແດງສະເພາະຜູ້ທີ່ກຳລັງເຮັດ",
+ "fy.testsdone": "ທົດສອບແລ້ວທັງໝົດ",
+ "srv.discord.hello": "ສະບາຍດີ {name}, ຕອບກັບທີ່ນີ້ເພື່ອສົ່ງຂໍ້ຄວາມຫາທີມ AI-gile ຂອງທ່ານ",
+ "dc.hello.idlabel": "ID ຜູ້ໃຊ້ Discord ຂອງທ່ານ",
+ "dc.hello.idhelp": "ວິທີຄັດລອກ: ໃນ Discord ເປີດ Developer Mode (Settings > Advanced), ຄລິກຂວາໃສ່ຊື່ຂອງທ່ານ, ແລ້ວເລືອກ Copy User ID.",
+ "dc.hello.btn": "ສົ່ງ DM ທັກທາຍຫາຂ້ອຍ",
+ "dc.hello.why": "ບອດທັກທາຍກ່ອນ ທ່ານຈຶ່ງຕອບກັບໄດ້.",
+ "dc.hello.sent": "ສົ່ງຄຳທັກທາຍແລ້ວ: ກວດເບິ່ງ DM ໃນ Discord ແລ້ວຕອບກັບຢູ່ທີ່ນັ້ນ.",
+ "dc.hello.needid": "ເພີ່ມ ID ຜູ້ໃຊ້ Discord ຂອງທ່ານກ່ອນ (ເບິ່ງ \"ຫຼື ວາງ User ID\").",
+ "dc.hello.noserver": "Discord ອະນຸຍາດໃຫ້ບອດສົ່ງຂໍ້ຄວາມຫາທ່ານໄດ້ ກໍຕໍ່ເມື່ອທ່ານຢູ່ເຊີບເວີດຽວກັບບອດ. ເພີ່ມບອດເຂົ້າເຊີບເວີທີ່ທ່ານຢູ່ ແລ້ວລອງໃໝ່.",
+ "dc.hello.invite": "ເພີ່ມບອດເຂົ້າເຊີບເວີຂອງທ່ານ",
+ "dc.hello.retry": "ລອງໃໝ່"
 }

@@ -3816,5 +3816,19 @@
  "rev.summary.noai": "Nema sažetka: AI je isključen (Režim bez tokena, Bez AI ili preko budžeta).",
  "rev.summary.failed": "Agent ovaj put nije dao sažetak.",
  "tb.b.quietTop": "🌙 Prelazak u tišinu",
- "srv.pir.rb.next": "Revizija objavljena. {name}: sada predloži runbook da bude brže sljedeći put: aigile pir-runbook {slug} {id} <short-name> --text \"koraci, jedan po liniji\" --as {name}. Kad vlasnik kaže Go, fajl će biti napisan u docs/runbooks/<short-name>.md u folderu projekta."
+ "srv.pir.rb.next": "Revizija objavljena. {name}: sada predloži runbook da bude brže sljedeći put: aigile pir-runbook {slug} {id} <short-name> --text \"koraci, jedan po liniji\" --as {name}. Kad vlasnik kaže Go, fajl će biti napisan u docs/runbooks/<short-name>.md u folderu projekta.",
+ "board.team.quiet": "Trenutno niko ne radi.",
+ "board.team.showall": "Prikaži sve ({n})",
+ "board.team.active": "Prikaži samo aktivne",
+ "fy.testsdone": "Svi testovi su gotovi",
+ "srv.discord.hello": "Zdravo {name}, odgovori ovdje da pošalješ poruku svojim AI-gile timovima",
+ "dc.hello.idlabel": "Tvoj Discord korisnički ID",
+ "dc.hello.idhelp": "Da ga kopiraš: u Discordu uključi Developer Mode (Postavke > Napredno), desni klik na svoje ime, pa Kopiraj korisnički ID.",
+ "dc.hello.btn": "Pošalji mi DM s pozdravom",
+ "dc.hello.why": "Bot prvi pozdravlja, tako da mu možeš odgovoriti.",
+ "dc.hello.sent": "Pozdrav poslan: provjeri svoje Discord DM-ove i odgovori tamo.",
+ "dc.hello.needid": "Prvo dodaj svoj Discord korisnički ID (vidi \"ili zalijepi korisnički ID\").",
+ "dc.hello.noserver": "Discord dozvoljava botu da ti piše samo ako dijelite server. Dodaj bota na server na kojem si, pa pokušaj ponovo.",
+ "dc.hello.invite": "Dodaj bota na svoj server",
+ "dc.hello.retry": "Pokušaj ponovo"
 }

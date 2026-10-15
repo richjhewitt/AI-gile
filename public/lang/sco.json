@@ -3849,5 +3849,19 @@
  "rev.summary.busy": "Askin the on-call agent...",
  "rev.summary.noai": "Nae summary: AI is aff (No Token Mode, No AI or ower budget).",
  "rev.summary.failed": "The agent gied nae summary this time.",
- "tb.b.quietTop": "🌙 Gaun quiet"
+ "tb.b.quietTop": "🌙 Gaun quiet",
+ "board.team.quiet": "Naebody's warkin richt noo.",
+ "board.team.showall": "Shaw aw ({n})",
+ "board.team.active": "Shaw active anly",
+ "fy.testsdone": "Aw tests duin",
+ "srv.discord.hello": "Hullo {name}, reply here tae message yer AI-gile teams",
+ "dc.hello.idlabel": "Yer Discord user ID",
+ "dc.hello.idhelp": "Tae copy it: in Discord turn on Developer Mode (Settings > Advanced), richt-click yer name, then Copy User ID.",
+ "dc.hello.btn": "Send me a hullo DM",
+ "dc.hello.why": "The bot says hullo first, sae ye can reply tae it.",
+ "dc.hello.sent": "Hullo sent: check yer Discord DMs an reply there.",
+ "dc.hello.needid": "Add yer Discord user ID first (see \"or paste a User ID\").",
+ "dc.hello.noserver": "Discord anly lets the bot message ye if ye share a server wi it. Add the bot tae a server ye're in, then try again.",
+ "dc.hello.invite": "Add the bot tae yer server",
+ "dc.hello.retry": "Try again"
 }
