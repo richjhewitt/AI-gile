@@ -200,11 +200,11 @@ function dirBytes(dir, budget = { n: 200000 }) {
   return total;
 }
 async function health() {
-  const cpus = os.cpus().length || 1, load = os.loadavg()[0];
+  const cpus = os.cpus().length || 1, [load, l5, l15] = os.loadavg();
   let disk = null, diskFree = null;
   try { const st = await fs.promises.statfs(DATA); const tot = st.blocks * st.bsize; diskFree = st.bavail * st.bsize; disk = tot ? Math.round((1 - st.bavail / st.blocks) * 1000) / 10 : null; } catch {}
   const mem = Math.round((1 - os.freemem() / os.totalmem()) * 1000) / 10;
-  return { ok: true, cpu: Math.round(load / cpus * 1000) / 10, load: Math.round(load * 100) / 100, cpus, mem, disk, diskFree, storage: dirBytes(DATA), uptime: Math.round(os.uptime()), relayUptime: Math.round(process.uptime()) };
+  return { ok: true, cpu: Math.round(load / cpus * 1000) / 10, load: Math.round(load * 100) / 100, load5: Math.round(l5 * 100) / 100, load15: Math.round(l15 * 100) / 100, cpu15: Math.round(l15 / cpus * 1000) / 10, cpus, mem, disk, diskFree, storage: dirBytes(DATA), uptime: Math.round(os.uptime()), relayUptime: Math.round(process.uptime()) };
 }
 
 /* ---------- http ---------- */

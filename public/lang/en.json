@@ -2676,6 +2676,8 @@
  "emoji.save.done": ":{name}: is now one of your emojis.",
  "srv.health.title": "Server: time to upgrade ({why})",
  "srv.health.body": "Smizflark Server 2.0 is running hot: {why}. It has been high for a while, so it is time to look at a bigger plan or a clean-up before it fills up or slows down. The numbers are under Setup > My servers.",
+ "srv.health.cpulong": "The CPU has been above {limit}% for about {mins} minutes. The 15-minute average is {avg}%.",
+ "srv.health.cpurun": "The CPU has been above {limit}% for about {mins} minutes in a row.",
  "srv.health.sshtitle": "{name}: time to upgrade ({why})",
  "srv.health.sshbody": "{name} is running hot: {why}. It has been high for a while, so it is time to look at a bigger plan or a clean-up before it fills up or slows down. The numbers are under Setup > My servers.",
  "servers.health": "{name}: CPU {cpu}, memory {mem}, disk {disk} full, {size} stored, up {days} days (read {when})",
