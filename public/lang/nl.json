@@ -3799,5 +3799,6 @@
  "rev.summary.title": "Vraag de dienstdoende agent om een samenvatting van deze maand in twee regels",
  "rev.summary.busy": "De dienstdoende agent wordt gevraagd...",
  "rev.summary.noai": "Geen samenvatting: AI staat uit (No Token Mode, Geen AI of budget op).",
- "rev.summary.failed": "De agent gaf deze keer geen samenvatting."
+ "rev.summary.failed": "De agent gaf deze keer geen samenvatting.",
+ "tb.b.quietTop": "🌙 Even weg"
 }

@@ -3799,5 +3799,6 @@
  "rev.summary.title": "Ask the on-call agent for a two-line summary of this month",
  "rev.summary.busy": "Asking the on-call agent...",
  "rev.summary.noai": "No summary: AI is off (No Token Mode, No AI or over budget).",
- "rev.summary.failed": "The agent gave no summary this time."
+ "rev.summary.failed": "The agent gave no summary this time.",
+ "tb.b.quietTop": "🌙 Going quiet"
 }
