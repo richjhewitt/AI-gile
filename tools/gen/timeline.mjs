@@ -38,7 +38,7 @@ async function firstChat() {
 
 const firstCommit = () => new Date(execFileSync('git', ['log', '--reverse', '--format=%aI'], { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 << 20 }).split('\n')[0]).toISOString();
 
-const res = await fetch(`${URL_BASE}/api/projects/${SLUG}`);
+const res = await fetch(`${URL_BASE}/api/projects/${SLUG}?full=1`);
 if (!res.ok) { console.error('board not reachable: ' + res.status); process.exit(1); }
 const cards = (await res.json()).cards;
 const iso = s => new Date(s).toISOString();

@@ -106,7 +106,7 @@ export async function startServer(extraEnv = {}, port = PORT, root = ROOT) {   /
 // Seed helpers (through the API).
 export const mkProject = (s, name, key, extra = {}) => s.ok('POST', '/api/projects', { name, key, ...extra });
 export const mkCard = (s, slug, title, extra = {}) => s.ok('POST', `/api/projects/${slug}/cards`, { title, ...extra });
-export const getCard = async (s, slug, id) => (await s.ok('GET', `/api/projects/${slug}`)).cards.find(c => c.id === id);
+export const getCard = async (s, slug, id) => (await s.ok('GET', `/api/projects/${slug}?full=1`)).cards.find(c => c.id === id);   // ?full=1: done cards whole (AIG-1100)
 export const say = (s, slug, id, author, text, extra = {}) => s.ok('POST', `/api/projects/${slug}/cards/${id}/comments`, { author, text, ...extra });
 
 // A browser page that records page errors.

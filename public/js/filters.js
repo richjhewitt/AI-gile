@@ -16,9 +16,25 @@ function matchesFilter(c, slug) {
   if (f.who && (c.assignee || '') !== f.who) return false;
   if (f.sprint && (c.sprint || '') !== f.sprint) return false;
   if (f.group && (c.group || '') !== f.group) return false;
-  if (f.q) { const q = f.q.toLowerCase(); if (![c.id, c.title, c.description, c.assignee, c.sprint, c.group].some(x => String(x || '').toLowerCase().includes(q))) return false; }
+  if (f.q) { const q = f.q.toLowerCase(); if (![c.id, c.title, c.description, c.assignee, c.sprint, c.group].some(x => String(x || '').toLowerCase().includes(q)) && !(c.light && DoneFind.has(slug, q, c.id))) return false; }
   return true;
 }
+// ⚡ A light done card has no description here (AIG-1100): the server says which done cards' descriptions hold the
+// search text, one call per search (after a short pause in typing); the board redraws when it answers.
+const DoneFind = (() => {
+  let key = '', ids = new Set(), timer = 0;
+  function has(slug, q, id) {
+    const k = slug + '|' + q;
+    if (k !== key) {
+      key = k; ids = new Set(); clearTimeout(timer);
+      timer = setTimeout(async () => {
+        try { const r = await api('GET', `/api/projects/${slug}/find?q=${encodeURIComponent(q)}`); if (key === k && r.ids.length) { ids = new Set(r.ids); renderBoardOnly(); paintFilterBar(); } } catch {}
+      }, 300);
+    }
+    return ids.has(id);
+  }
+  return { has };
+})();
 function paintFilterBar() {
   const bar = $('filterbar');
   if (state.route.view !== 'project' || !state.project) { if (bar.innerHTML) { bar.innerHTML = ''; bar.dataset.slug = ''; } return; }

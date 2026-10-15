@@ -190,16 +190,24 @@ function columnsHtml(p, pool) {
   return colsOf(p).filter(c => !c.hidden && (!fyFocus(p.slug) || c.key === 'verify')).map(col => {
     const k = col.key, label = (col.emoji ? col.emoji + ' ' : '') + col.name, tint = col.color ? ` style="--colc:${esc(col.color)}"` : '';
     if (k === 'verify') return forYouColumn(p, label, tint, pool, col.wip);
-    const cs = pool.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => (a.sortPos || 1e9) - (b.sortPos || 1e9) || b.updated.localeCompare(a.updated));   // sortPos: 🧭 Scrum Master /sort (AIG-730)
+    const cs = pool.filter(c => c.status === k && !forYou(c) && matchesFilter(c, p.slug)).sort((a, b) => k === 'done' ? String(b.updated).localeCompare(String(a.updated)) : (a.sortPos || 1e9) - (b.sortPos || 1e9) || b.updated.localeCompare(a.updated));   // sortPos: 🧭 Scrum Master /sort (AIG-730); Done: newest first
     const all = p.cards.filter(c => c.status === k && !forYou(c)).length;   // the limit counts the whole column (AIG-118)
+    // ⚡ Done shows the newest 50, then Load more (AIG-1100): a long-lived board has a thousand done cards.
+    const lim = k === 'done' ? doneShown(p.slug) : Infinity, left = cs.length - lim, vis = left > 0 ? cs.slice(0, lim) : cs;
+    const more = left > 0 ? `<button type="button" class="done-more" onclick="doneMore('${esc(p.slug)}')">${esc(t('board.done.more', { n: left }))}</button>` : '';
     // Your own steps (AIG-117): one sub-column per step; cards with no or an old step sit in the first.
     if (col.steps.length) return col.steps.map((st, i) => {
-      const mine = cs.filter(c => c.step === st || (i === 0 && !col.steps.includes(c.step)));
-      return `<div class="column step ${wipClass(all, col.wip)}" data-status="${k}" data-step="${esc(st)}"${tint}><h3><span>${esc(label)} · ${esc(st)}</span><span>${i ? mine.length : countHtml(mine.length, all, col.wip)}</span></h3>${mine.map(cardHtml).join('')}</div>`;
+      const mine = vis.filter(c => c.step === st || (i === 0 && !col.steps.includes(c.step)));
+      return `<div class="column step ${wipClass(all, col.wip)}" data-status="${k}" data-step="${esc(st)}"${tint}><h3><span>${esc(label)} · ${esc(st)}</span><span>${i ? mine.length : countHtml(mine.length, all, col.wip)}</span></h3>${mine.map(cardHtml).join('')}${i === col.steps.length - 1 ? more : ''}</div>`;
     }).join('');
-    return `<div class="column ${wipClass(all, col.wip)}" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, col.wip)} ${['todo', 'doing', 'review', 'team'].includes(k) && cs.length ? `<button class="colbtn" title="${esc(t('board.pokeall'))}" onclick="pokeColumn('${k}', this)">👉</button> ` : ''}<button class="colbtn" title="${esc(t('board.newin', { col: label }))}" onclick="newCard({status:'${k}'})">+</button></span></h3>${cs.map(cardHtml).join('')}</div>`;
+    return `<div class="column ${wipClass(all, col.wip)}" data-status="${k}"${tint}><h3><span>${esc(label)}</span><span>${countHtml(cs.length, all, col.wip)} ${['todo', 'doing', 'review', 'team'].includes(k) && cs.length ? `<button class="colbtn" title="${esc(t('board.pokeall'))}" onclick="pokeColumn('${k}', this)">👉</button> ` : ''}<button class="colbtn" title="${esc(t('board.newin', { col: label }))}" onclick="newCard({status:'${k}'})">+</button></span></h3>${vis.map(cardHtml).join('')}${more}</div>`;
   }).join('');
 }
+
+// How many Done cards show, per project, for this page only (AIG-1100).
+const DONE_STEP = 50;
+function doneShown(s) { state.doneShown = state.doneShown || {}; return state.doneShown[s] || DONE_STEP; }
+function doneMore(s) { state.doneShown[s] = doneShown(s) + DONE_STEP; refresh(true); }
 
 /* ---------- For you column (AIG-106) ---------- */
 // Everything waiting on the owner, whatever its status: tests, questions, tasks and blocks. Those cards show
@@ -272,7 +280,7 @@ function metaHtml(c, show = CARD_SHOW) {
       ${c.blocked ? `<span class="pill blocked">${esc(t('card.blocked'))}</span>` : ''}
       ${c.status === 'verify' && c.morning && state.setup && state.setup.tiredNow ? `<span class="pill snoozed">${esc(t('card.morning'))}</span>` : ''}
       ${snoozed(c) ? `<span class="pill snoozed">${esc(t('card.backat', { time: new Date(c.snoozedUntil).toLocaleTimeString(i18n.locale, { hour: '2-digit', minute: '2-digit' }) }))}</span><button class="poke" onclick="event.preventDefault();event.stopPropagation();bringBack('${c.id}')">${esc(t('card.bringback'))}</button>` : ''}
-      ${show.comments && c.comments.length ? `<span class="pill">💬 ${c.comments.length}</span>` : ''}
+      ${show.comments && (c.nComments || c.comments.length) ? `<span class="pill">💬 ${c.nComments || c.comments.length}</span>` : ''}
       ${show.age ? `<span class="pill age" title="${esc(t('card.lastupdated'))}">🕒 ${ago(c.updated)}</span>` : ''}`;
 }
 
