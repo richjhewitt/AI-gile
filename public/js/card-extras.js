@@ -12,6 +12,12 @@ function checklistUi(p, c) {
     ${list.length ? `<ul class="chk-list">${items}</ul>` : ''}${hidden.size ? `<div class="chk-more muted" id="chk-more">${esc(t('check.more', { n: hidden.size }))} <button type="button" class="link" onclick="chkAll.add(cardId()); refresh(true)">${esc(t('check.more.all'))}</button></div>` : ''}
     <div class="chk-add"><input id="chk-new" placeholder="${esc(t('check.add.ph'))}" onkeydown="if(event.key==='Enter'){event.preventDefault();checkAdd()}"> <button type="button" id="chk-add-btn" onclick="checkAdd()">${esc(t('check.add'))}</button></div></div>`;
 }
+// An empty Checklist and Waits for sit behind one small link (AIG-1133); a card that has either shows them as before.
+function extrasUi(p, c) {
+  if ((c.checklist || []).length || (c.waitsFor || []).length || state.extrasFor === c.id) return checklistUi(p, c) + waitsUi(p, c);
+  if (c.status === 'done') return '';
+  return `<div class="extras-link"><button type="button" class="link" id="extras-btn" onclick="state.extrasFor = cardId(); rerender()">+ ${esc(t('check.h'))} / ${esc(t('wait.h'))}</button></div>`;
+}
 const cardUrl = () => `/api/projects/${slug()}/cards/${cardId()}`;
 async function checkTick(i, on) {
   try { await api('POST', cardUrl() + '/check', on ? { tick: [i + 1] } : { untick: [i + 1] }); refresh(true); } catch (e) { alert(e.message); refresh(true); }

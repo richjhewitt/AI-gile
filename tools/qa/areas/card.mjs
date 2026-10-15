@@ -433,6 +433,13 @@ def('testpile', 'testing pile: "3 of 12 left" line on the card while working thr
   await mkProject(s, 'Alpha', 'ALP');
   for (const n of ['One', 'Two', 'Three']) await mkCard(s, 'alpha', 'Pile ' + n, { status: 'verify', testSteps: 'Step ' + n });
   const page = await openPage(ctx, '#/p/alpha/ALP-1');
+  // AIG-1133: How to test sits inside the Your call box; an empty Checklist and Waits for sit behind one link.
+  await page.waitForSelector('.verdict .v-steps');
+  check('How to test is inside the Your call box, above Accept', /Step One/.test(await page.textContent('.verdict .v-steps')) && await page.evaluate(() => { const v = document.querySelector('.verdict'); return v.querySelector('.v-steps').compareDocumentPosition(v.querySelector('button.good')) & Node.DOCUMENT_POSITION_FOLLOWING; }));
+  check('an empty Checklist and Waits for are behind one link', (await page.locator('#chk-box').count()) === 0 && (await page.locator('#extras-btn').count()) === 1);
+  await page.click('#extras-btn');
+  await page.waitForSelector('#chk-box');
+  check('the link brings Checklist and Waits for back', (await page.locator('#wf-box').count()) === 1);
   await page.waitForSelector('#pileLeft');
   check('first card shows 3 of 3 left', (await page.textContent('#pileLeft')).trim() === '3 of 3 left', await page.textContent('#pileLeft'));
   await page.click('button.good');
