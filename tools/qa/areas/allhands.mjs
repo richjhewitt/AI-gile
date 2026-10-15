@@ -10,6 +10,7 @@ def('allhands', 'All hands: broadcast to active projects, lock Send, show latest
   await page.click('#dmRail [data-dms]');
   await page.waitForSelector('[data-dm="_allhands"]');
   check('All hands is the first chat', await page.locator('#dmPanel .dm-list [data-dm]').first().getAttribute('data-dm') === '_allhands');
+  check('with no messages yet, each fixed row has a grey hint line (AIG-1085)', (await page.locator('[data-dm="_allhands"] .dm-hint').count()) === 1 && (await page.locator('[data-dm="_assistant"] .dm-hint').count()) === 1 && /Every team/.test(await page.textContent('[data-dm="_allhands"] .dm-hint')));
   await page.click('[data-dm="_allhands"]');
   await page.fill('#dmText', '   ');
   await page.click('#allHandsSend');

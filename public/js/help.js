@@ -42,10 +42,17 @@ async function helpMenu() {
   m.id = 'helpMenu'; m.setAttribute('role', 'menu');
   m.style.top = r.bottom + 6 + 'px'; m.style.right = Math.max(8, innerWidth - r.right) + 'px';
   const item = (id, fn, key) => `<button type="button" role="menuitem" id="${id}" onclick="helpMenuClose(); ${fn}">${esc(t(key))}</button>`;
-  m.innerHTML = item('hmIntro', 'introOpen()', 'help.m.intro') + item('hmTour', 'tourDialog()', 'help.m.tour') + item('hmDemo', 'startTrial()', 'help.m.demo')
+  m.innerHTML = item('hmStart', 'gettingStarted()', 'help.m.start') + item('hmIntro', 'introOpen()', 'help.m.intro') + item('hmTour', 'tourDialog()', 'help.m.tour') + item('hmDemo', 'startTrial()', 'help.m.demo')
     + item('hmGloss', "location.hash = '#/glossary'", 'help.m.gloss') + item('hmInstall', 'installHint()', 'help.m.install') + item('hmIncidents', 'incidentsGuide()', 'help.m.incidents') + `<div class="help-sep"></div><div class="help-lvl-h muted">${esc(t('help.m.level'))}</div>`
     + HELP_LEVELS.map(v => `<button type="button" role="menuitemradio" aria-checked="${v === HELP.level}" id="hmLevel${v}" class="${v === HELP.level ? 'on' : ''}" onclick="helpSetLevel('${v}')">${v === HELP.level ? '✓ ' : ''}${esc(t('help.level.' + v))}</button>`).join('');
   document.body.append(m);
+}
+// 👋 Getting started (AIG-1084): what AI-gile is and the first five minutes, in a dialog.
+function gettingStarted() {
+  openDialog(`<h2>${esc(t('help.start.h'))}</h2><p>${esc(t('help.start.p'))}</p>
+    <ol id="gettingStarted">${[1, 2, 3, 4].map(n => `<li>${esc(t('help.start.' + n))}</li>`).join('')}</ol>
+    <p class="muted">${esc(t('help.start.more'))}</p>
+    <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
 }
 // 🔥 Incidents and problems guide (AIG-863, AIG-888): the guide page in a dialog (English for now).
 async function incidentsGuide() {

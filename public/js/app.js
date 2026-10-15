@@ -106,8 +106,9 @@ async function checkBuild() {
     Assumptions.watch();   // the count on the 🌙 Assumptions link (AIG-477)
     Mail.watch();   // ✉️ the Mail link shows once a mailbox is set up (AIG-902)
     WhatsNew.check();   // ✨ a note once after an update (AIG-562)
-    // A new install opens Setup first (AIG-91).
-    if (loadedBuild === null && m.setupNeeded && !/^#\/setup/.test(location.hash)) location.hash = '#/setup';
+    // A new install opens Setup first (AIG-91), once and only from the home page (AIG-1068); after that Home shows a 'Finish setup' line and links open where they point.
+    if (loadedBuild === null && m.setupNeeded && /^(#\/?)?$/.test(location.hash)) { let once = false; try { once = !localStorage.getItem('aigile.setupSent'); if (once) localStorage.setItem('aigile.setupSent', '1'); } catch {} if (once) location.hash = '#/setup'; }
+    if (!!m.setupNeeded !== !!state.setupNeeded) { state.setupNeeded = !!m.setupNeeded; if (state.route && state.route.view === 'home') refresh(true); }
     if (loadedBuild === null) { loadedBuild = m.build; return; }
     // While you're quiet (AIG-224): a new board or page code reloads by itself, unless something is half-typed.
     if (m.quiet && m.build !== loadedBuild && !hasUnsent()) { location.reload(); return; }

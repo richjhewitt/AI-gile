@@ -40,6 +40,11 @@
   .dialog { width: 100%; max-height: 92vh; overflow-y: auto; }
   .overlay.center { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }   /* a dialog's buttons sit above the DM bar, not under it (AIG-423) */
   .overlay.center .dialog { max-height: calc(100vh - 70px - env(safe-area-inset-bottom)); }
+  /* the stand-up question sits above the DM bar, and its three buttons stay on one line (AIG-1078) */
+  #suPrompt { bottom: calc(66px + env(safe-area-inset-bottom)); }
+  body.pop #suPrompt, body.poplist #suPrompt { bottom: 12px; }
+  #suPrompt .su-pill > b { flex-basis: 100%; }
+  #suPrompt .su-pill button { white-space: nowrap; padding-inline: 10px; }
   pre, table { max-width: 100%; overflow-x: auto; }
   img, video { max-width: 100%; height: auto; }
   /* 🪐 spaces (AIG-434): the rail's folders run sideways; the fold arrows and ⋯ are big enough for a finger */

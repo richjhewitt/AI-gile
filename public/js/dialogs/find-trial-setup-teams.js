@@ -63,12 +63,19 @@ async function importFound() {
 // A fresh, empty copy of the board on its own port, with made-up projects to find: opens in a new window.
 // From Setup (a button) or the ❓ Help menu (none). With all the help on, the new window starts with the Agile intro, in this language (AIG-328).
 // The demo board speaks your language (AIG-488): it is sent along and opened with ?lang=.
+// A small note at the bottom of the page: '' removes it.
+function trialNote(msg, bad) {
+  let n = $('trialNote'); if (!msg) { if (n) n.remove(); return; }
+  if (!n) { n = document.createElement('div'); n.id = 'trialNote'; n.setAttribute('role', 'status'); n.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9999;padding:8px 14px;border-radius:8px;background:var(--panel,#222);color:var(--text,#fff);border:1px solid var(--line,#888);box-shadow:0 2px 12px #0006;max-width:90vw'; document.body.append(n); }
+  n.textContent = (bad ? '⚠️ ' : '') + msg; clearTimeout(n._t); n._t = setTimeout(() => n.remove(), bad ? 8000 : 4000);
+}
 async function startTrial(btn) {
   const was = btn && btn.textContent, err = $('trial-err');
   if (btn) { btn.disabled = true; btn.textContent = t('trial.busy'); }
   if (err) err.textContent = '';
-  try { const r = await api('POST', '/api/trial', { code: LP.code, window: LP.win, lang: chosenLang() }); launchOpen(r.url + '?lang=' + encodeURIComponent(chosenLang()) + (HELP.level === '1' ? '&intro=1' : ''));   }
-  catch (e) { if (err) err.textContent = e.message; else alert(e.message); }
+  if (!btn) trialNote(t('trial.opening'));   // from the Help menu there is no button to show it (AIG-1084)
+  try { const r = await api('POST', '/api/trial', { code: LP.code, window: LP.win, lang: chosenLang() }); const w = launchOpen(r.url + '?lang=' + encodeURIComponent(chosenLang()) + (HELP.level === '1' ? '&intro=1' : '')); if (!btn) trialNote(w === null ? t('trial.blocked') : '');   }
+  catch (e) { if (err) err.textContent = e.message; else trialNote(e.message, true); }
   if (btn) { btn.disabled = false; btn.textContent = was; }
 }
 

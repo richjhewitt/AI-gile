@@ -43,8 +43,8 @@ def('poke', 'asleep teams with work and stuck teams show as needing a poke', asy
   check('no work, no poke', ps.find(p => p.slug === 'empty').attention === null);
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('#pokeTop .pokebadge', { timeout: 7000 }).catch(() => {});
-  check('top-bar badge shows', /1 team needs a poke/.test(await page.textContent('#pokeTop')), await page.textContent('#pokeTop'));
-  check('home tile says why, with a Wake button', /Needs a poke/.test(await page.textContent('.proj.needs-poke')) && !!(await page.$('.proj.needs-poke button.primary')));
+  check('top-bar badge shows', /1 team to wake up/.test(await page.textContent('#pokeTop')), await page.textContent('#pokeTop'));
+  check('home tile says why, with a Wake button', /To wake up/.test(await page.textContent('.proj.needs-poke')) && !!(await page.$('.proj.needs-poke button.primary')));
   await page.click('#pokeTop .pokebadge');
   await new Promise(r => setTimeout(r, 1500));
   check('tapping the badge wakes the asleep team', /started/.test((await s.ok('GET', '/api/projects/sleepy/agentlog')).text));

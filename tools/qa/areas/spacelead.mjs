@@ -21,8 +21,8 @@ def('spacelead', '🪐 space lead: off = the space keeps its own lead; on = spac
   // Off (no field): unchanged, the space's own lead answers.
   check('a space has no lead set by default', !(await s.ok('GET', '/api/projects/fleet')).spaceLead);
   const idea0 = await mkCard(s, 'fleet', 'Idea: a lighthouse', { status: 'team', createdBy: 'Owner' });
-  await until(async () => (await logOf('fleet')).some(t => t.startsWith(idea0.id + ' -> ')));
-  check('off: a space idea goes to the space\'s own lead', (await logOf('fleet')).some(t => t.startsWith(idea0.id + ' -> Admiral')), await logOf('fleet'));
+  await until(async () => (await logOf('fleet')).some(t => t.startsWith(idea0.id + ' sent to ')));
+  check('off: a space idea goes to the space\'s own lead', (await logOf('fleet')).some(t => t.startsWith(idea0.id + ' sent to Admiral')), await logOf('fleet'));
   check('off: nothing reaches the child\'s lead', !(await logOf('ship')).length, await logOf('ship'));
   await idle('fleet');
 
@@ -52,15 +52,15 @@ def('spacelead', '🪐 space lead: off = the space keeps its own lead; on = spac
   await idle('fleet'); await idle('ship');
   fs.rmSync(s.wakeOut, { force: true });
   await s.ok('POST', '/api/projects/fleet/leadchat', { author: 'Owner', text: 'Who is on watch tonight?' });
-  await until(async () => (await logOf('ship')).some(t => t.startsWith('chat (space fleet) -> ')));
-  check('on: a space DM goes to the named lead', (await logOf('ship')).some(t => t.startsWith('chat (space fleet) -> Skipper')), await logOf('ship'));
+  await until(async () => (await logOf('ship')).some(t => t.startsWith('chat (space fleet) sent to ')));
+  check('on: a space DM goes to the named lead', (await logOf('ship')).some(t => t.startsWith('chat (space fleet) sent to Skipper')), await logOf('ship'));
   let out = '';
   for (let i = 0; i < 60 && !(out = stub()).includes('Space Fleet (fleet)'); i++) await sleep(250);
   check('on: the child\'s team is woken in its own folder, told about the space', out.includes('Space Fleet (fleet) has news') && out.includes('project ship'), out.slice(0, 600));
   await idle('ship');
   const idea = await mkCard(s, 'fleet', 'Idea: a second mast', { status: 'team', createdBy: 'Owner' });
-  await until(async () => (await logOf('ship')).some(t => t.startsWith(idea.id + ' (space fleet) -> ')));
-  check('on: a space idea goes to the named lead', (await logOf('ship')).some(t => t.startsWith(idea.id + ' (space fleet) -> Skipper')), await logOf('ship'));
+  await until(async () => (await logOf('ship')).some(t => t.startsWith(idea.id + ' (space fleet) sent to ')));
+  check('on: a space idea goes to the named lead', (await logOf('ship')).some(t => t.startsWith(idea.id + ' (space fleet) sent to Skipper')), await logOf('ship'));
   check('on: the space\'s own lead is not woken for it', !(await logOf('fleet')).some(t => t.startsWith(idea.id + ' ')), await logOf('fleet'));
   await idle('ship');
 
@@ -94,6 +94,6 @@ def('spacelead', '🪐 space lead: off = the space keeps its own lead; on = spac
   await s.ok('PATCH', '/api/projects/fleet', { spaceLead: 'ship' });
   await s.ok('PATCH', '/api/projects/ship', { parent: '' });
   const idea2 = await mkCard(s, 'fleet', 'Idea: a flag', { status: 'team', createdBy: 'Owner' });
-  await until(async () => (await logOf('fleet')).some(t => t.startsWith(idea2.id + ' -> ')));
-  check('a lead that left the space no longer leads it (the space\'s own lead again)', (await logOf('fleet')).some(t => t.startsWith(idea2.id + ' -> Admiral')) && !(await logOf('ship')).some(t => t.startsWith(idea2.id)), [await logOf('fleet'), await logOf('ship')]);
+  await until(async () => (await logOf('fleet')).some(t => t.startsWith(idea2.id + ' sent to ')));
+  check('a lead that left the space no longer leads it (the space\'s own lead again)', (await logOf('fleet')).some(t => t.startsWith(idea2.id + ' sent to Admiral')) && !(await logOf('ship')).some(t => t.startsWith(idea2.id)), [await logOf('fleet'), await logOf('ship')]);
 }, true);
