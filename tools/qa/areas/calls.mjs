@@ -9,6 +9,7 @@ import { freePort, startRelay, until, check, tmp, startServer, openPage, noError
 
 const SECDIR = tmp('callsec');
 const SECRET = 'qa-livekit-secret-Zx81', KEY = 'APIqaKey123', URL = 'wss://livekit.example.test';
+const SECRET2 = 'qa-livekit-secret-Bb22', KEY2 = 'APIqaKeyB', URL2 = 'wss://livekit-b.example.test';   // B's own (AIG-1171)
 const claims = tok => JSON.parse(Buffer.from(tok.split('.')[1], 'base64url').toString('utf8'));
 const signedWith = (tok, secret) => { const [h, p, sig] = tok.split('.'); return JSON.parse(Buffer.from(h, 'base64url')).alg === 'HS256' && crypto.createHmac('sha256', secret).update(h + '.' + p).digest('base64url') === sig; };
 // AIG-1171: a fake guest token (any secret: B cannot check A's signature, it checks the claims).
@@ -35,7 +36,7 @@ const roomFor = (m1, m2) => 'aigile-dm-' + crypto.createHash('sha256').update('a
 
 def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route refuses non-participants / teams / not set up, token claims and room correct, the friend joins with the guest token (AIG-1162)', async (s, ctx) => {
   const relay = await startRelay({ RELAY_RATE: '100000' });
-  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, await freePort());
+  const b = await startServer({ AIGILE_DM_POLL_MS: '300', AIGILE_SECRETS_DIR: tmp('callsecb') }, await freePort());
   const a = s;
   const as = (method, url, headers, body) => fetch(a.base + url, { method, headers: { 'Content-Type': 'application/json', ...headers }, body: body && JSON.stringify(body) }).then(r => r.status);
   try {
@@ -62,7 +63,7 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     // refused: not set up, not a contact, a team, a background run
     const notset = await a.api('POST', `/api/calls/dm/${cb.id}/token`, {});
     check('not set up: the token route refuses (409) and says so', notset.status === 409 && /not set up/.test(notset.body.error || ''), notset);
-    check('not set up: the state says so', JSON.stringify(await a.ok('GET', `/api/calls/dm/${cb.id}`)) === JSON.stringify({ set: false, invite: false }));
+    check('not set up: the state says so', JSON.stringify(await a.ok('GET', `/api/calls/dm/${cb.id}`)) === JSON.stringify({ set: false, invite: false, theirs: false }));
     check('saving without the secrets page token is refused', (await a.api('POST', '/api/calls', { url: URL, key: KEY, secret: SECRET })).status === 403);
     const tok = (await a.ok('GET', '/api/secrets/token')).token;
     check('a bad address is refused', (await a.api('POST', '/api/calls', { url: 'javascript:alert(1)', key: KEY, secret: SECRET, token: tok })).status === 400);
@@ -117,6 +118,20 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     check('a blocked friend: refused (409)', (await a.api('POST', `/api/calls/dm/${cb.id}/token`, {})).status === 409);
     await a.ok('PATCH', `/api/dms/contacts/${cb.id}`, { blocked: false });
 
+    // AIG-1171: both press Call at once, each with their own LiveKit: the lower mailbox's server is where they meet
+    await b.ok('POST', '/api/calls', { url: URL2, key: KEY2, secret: SECRET2, token: (await b.ok('GET', '/api/secrets/token')).token });
+    fs.rmSync(invFile);   // as if B pressed Call before A's ring arrived
+    const tb = await b.ok('POST', `/api/calls/dm/${ca.id}/token`, {});
+    check('B (own LiveKit, no invite yet) joins its own server and rings A', tb.theirs === false && tb.url === URL2 && tb.room === room, tb);
+    fs.writeFileSync(invFile, invOk);   // ...and A's ring arrives at B too
+    await until(async () => (await a.ok('GET', `/api/calls/dm/${cb.id}`)).invite);
+    const aWins = onA.mailbox < onB.mailbox, win = aWins ? [a, cb.id, URL] : [b, ca.id, URL2], lose = aWins ? [b, ca.id] : [a, cb.id];
+    const sw = await win[0].ok('GET', `/api/calls/dm/${win[1]}`), sl = await lose[0].ok('GET', `/api/calls/dm/${lose[1]}`);
+    check('the tie-break: the winner stays, the other is told to move to the winner\'s call', sw.invite && sw.theirs === false && sl.invite && sl.theirs === true, { aWins, sw, sl });
+    const kw = await win[0].ok('POST', `/api/calls/dm/${win[1]}/token`, { ring: false }), kl = await lose[0].ok('POST', `/api/calls/dm/${lose[1]}/token`, { ring: false });
+    check('both now get a token for the same server and room (the winner\'s)', kw.theirs === false && kl.theirs === true && kw.url === win[2] && kl.url === win[2] && kw.room === kl.room, { kw: kw.url, kl: kl.url });
+    await b.ok('POST', '/api/calls', { clear: true, token: (await b.ok('GET', '/api/secrets/token')).token });
+
     // Setup shows the section, set up
     const setup = await openPage(ctx, '#/setup/calls');
     await setup.waitForSelector('#callSetState');
@@ -139,6 +154,15 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     await pg.evaluate(async () => { window.lkHold = false; Call.join({ title: 'Bea', getToken: async () => lkTk }); });
     await pg.waitForFunction(() => Call.active() && lkLog.mic === 1);
     check('and a new call joins straight after (not stuck busy)', await pg.evaluate(() => lkLog.rooms.length === 3 && !lkLog.rooms[2].gone));
+    // AIG-1171: alone on my own server, the page asks the board and moves to the friend's call when theirs wins; not when someone is with me
+    await pg.evaluate(async () => { await Call.leave(); window.lkSwaps = 0; let n = 0; Call.join({ title: 'Bea', getToken: async () => ({ url: 'wss://x', token: 'sw' + (++n), room: 'r1', theirs: n > 1 }), swap: async () => (++lkSwaps, true) }); });
+    await pg.waitForFunction(() => lkLog.connects.includes('sw2') && Call.active(), null, { timeout: 15000 });
+    const swp = await pg.evaluate(() => ({ old: lkLog.rooms[lkLog.connects.indexOf('sw1')].gone, now: Call.room === lkLog.rooms[lkLog.connects.indexOf('sw2')] }));
+    check('alone on my server and the board says theirs wins: left mine, joined theirs', swp.old && swp.now, swp);
+    await pg.evaluate(async () => { await Call.leave(); window.lkSwaps = 0; Call.join({ title: 'Bea', getToken: async () => ({ url: 'wss://x', token: 'sw3', room: 'r1' }), swap: async () => (++lkSwaps, true) }); });
+    await pg.waitForFunction(() => Call.active());
+    await pg.evaluate(async () => { Call.room.remoteParticipants.set('bea', new LivekitClient.P('bea')); await new Promise(r => setTimeout(r, 4000)); });
+    check('with someone in my call already: no move, not even asked', await pg.evaluate(() => lkSwaps === 0 && Call.room === lkLog.rooms[lkLog.rooms.length - 1]));
     noErrors(page); noErrors(setup); noErrors(pg);
     const cleared = await a.ok('POST', '/api/calls', { clear: true, token: tok });
     check('Remove clears it all', cleared.set === false && cleared.secret === false && !cleared.url);

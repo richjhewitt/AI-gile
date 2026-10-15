@@ -4,6 +4,7 @@
 // Meeting Room later) only says how to get one. livekit-client comes from jsDelivr, pinned, with SRI (like xterm in terminal.js).
 // Screen share is video only: no system audio, so the other callers' voices never echo back to them.
 const Call = (() => {
+  const SWAP_MS = 3000;   // AIG-1171: alone in a call on my own server, ask this often whether to move to the friend's (opts.swap)
   const LIB = ['https://cdn.jsdelivr.net/npm/livekit-client@2.22.3/dist/livekit-client.umd.js', 'sha384-G/xxtkVytOx/ia9Q8MXxM+V0ohsaY1fZAgVP3iSGTPz4wJ0s3+ulJNKXh/gnzEDZ'];
   // gen: bumped by every join and every leave, so a join that was left (or replaced) while it waited stops there (AIG-1171).
   // pending: the room still connecting, so Leave can disconnect it. busy: the gen of the join under way (0: none).
@@ -61,7 +62,8 @@ const Call = (() => {
   const err = e => { const x = el('callErr'); if (x) x.textContent = (e && e.message) || String(e); };
 
   /* ---------- joining and leaving ---------- */
-  // opts: { title, getToken: async () => ({ url, token }) }. One call at a time: a second join leaves the first.
+  // opts: { title, getToken: async () => ({ url, token, room?, theirs? }), swap?: async () => bool }. One call at a time: a second
+  // join leaves the first. swap (AIG-1171): while alone in a call on my own server (not theirs), true = leave it and join again.
   async function join(opts) {
     if (busy) return;
     const g = busy = ++gen; let r = null;
@@ -86,10 +88,23 @@ const Call = (() => {
       pending = null; room = r; paint();
       try { await r.localParticipant.setMicrophoneEnabled(true); } catch (e) { err(e); }   // no mic (or it was refused): still in the call, listening
       if (g === gen) paint();
+      if (opts.swap && !tk.theirs) watch(g, r, opts);
     } catch (e) {
       if (g === gen) { room = null; note(t('lkcall.h'), (e && e.message) || String(e)); }
       else if (r) { try { await r.disconnect(); } catch {} }   // left meanwhile: no message, just make sure it is gone
     } finally { if (pending === r) pending = null; if (busy === g) busy = 0; }
+  }
+  // Both pressed Call at once: each is alone on their own server. The board says whose server wins; the one that loses moves.
+  function watch(g, r, opts) {
+    const tick = async () => {
+      if (g !== gen || room !== r) return;
+      if (!busy && !r.remoteParticipants.size) {
+        let go = false; try { go = await opts.swap(); } catch {}
+        if (go && g === gen && room === r && !busy && !r.remoteParticipants.size) return join(opts);
+      }
+      setTimeout(tick, SWAP_MS);
+    };
+    setTimeout(tick, SWAP_MS);
   }
   const toggle = async (fn, opts) => { if (!room) return; try { await fn(room.localParticipant, opts); } catch (e) { err(e); } paint(); };
   const mic = () => toggle(lp => lp.setMicrophoneEnabled(!lp.isMicrophoneEnabled));
@@ -108,7 +123,8 @@ async function dmCall(cid, name) {
   let st;
   try { st = await api('GET', `/api/calls/dm/${encodeURIComponent(cid)}`); } catch (e) { return Call.note(t('lkcall.h'), e.message); }
   if (!st.set && !st.invite) return Call.note(t('lkcall.h'), t('lkcall.notset', { name }), { href: '#/setup/calls', text: t('lkcall.notset.go') });
-  Call.join({ title: name, getToken: () => api('POST', `/api/calls/dm/${encodeURIComponent(cid)}/token`, {}) });
+  Call.join({ title: name, getToken: () => api('POST', `/api/calls/dm/${encodeURIComponent(cid)}/token`, {}),
+    swap: async () => (await api('GET', `/api/calls/dm/${encodeURIComponent(cid)}`)).theirs === true });
 }
 
 /* ---------- Setup > Calls (LiveKit) ---------- */
