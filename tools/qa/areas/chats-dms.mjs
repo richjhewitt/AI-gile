@@ -390,7 +390,7 @@ def('dmchats', 'friends\' private DMs show as chats next to the team leads, with
     await page.waitForSelector('#dmPanel [data-dmfilter]');
     check('the chosen filter is still there when you come back to the list', await page.locator('#dmPanel [data-dmfilter="all"].on').count() === 1);
     await page.click('#dmPanel [data-dm="alpha"]');
-    await page.waitForSelector('#dmGo');
+    await page.waitForSelector('#dmGo', { state: 'attached' });
     check('a lead\'s chat still has its own Go button', /Go/.test(await page.textContent('#dmGo')));
     noErrors(page);
   } finally { b.stop(); relay.stop(); }
