@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const net = require('net');
+const { clampBounds, pickBackground, THEMES, badgeCount, badgeBitmap } = require('./winstate');
 
 // Packaged (AppImage): the board's files sit in resources/aigile and its data goes to the user's own folder (the AppImage is read-only).
 const ROOT = app.isPackaged ? path.join(process.resourcesPath, 'aigile') : path.resolve(__dirname, '..');
@@ -91,6 +92,28 @@ async function ensureServer() {
 }
 
 let win = null, twitchWin = null, tray = null;
+/* ---------- window memory and start-up colour (AIG-1272, AIG-1273) ---------- */
+// The main window's size, spot and maximised state, and the theme pick, are kept in the app's own folder (window-state.json).
+// The theme is the page's own pick, sent over with aigile://theme/, so the window can be the right colour before the page loads.
+const STATE = () => path.join(app.getPath('userData'), 'window-state.json');
+let ui = {};   // read in startLook (the AIGILE_PROFILE folder is only set later in the file)
+let uiTimer = null;
+function saveUi() { clearTimeout(uiTimer); uiTimer = null; try { fs.writeFileSync(STATE(), JSON.stringify(ui)); } catch {} }
+function rememberWindow() {
+  try {
+    if (!win || win.isDestroyed() || win.isMinimized() || win.isFullScreen()) return;
+    ui.max = win.isMaximized(); ui.bounds = win.getNormalBounds();   // the normal size even while maximised, so un-maximising comes back right
+    if (!uiTimer) uiTimer = setTimeout(saveUi, 500);
+  } catch {}
+}
+// Called once the app is ready (screens are only known then). Anything unreadable falls back to the old 1400 x 900.
+function startLook() {
+  try { ui = JSON.parse(fs.readFileSync(STATE(), 'utf8')) || {}; } catch { ui = {}; }
+  if (THEMES.includes(ui.theme)) nativeTheme.themeSource = ui.theme === 'black' ? 'dark' : ui.theme;
+  let size = { width: 1400, height: 900 };
+  try { size = clampBounds(ui.bounds, screen.getAllDisplays().map(d => d.workArea)) || size; } catch {}
+  return { size, max: ui.max === true, backgroundColor: pickBackground(ui.theme, nativeTheme.shouldUseDarkColors) };
+}
 /* ---------- popped-out cards survive a restart (AIG-144) ---------- */
 // Open pop-outs (address and position) are kept in the app's own folder; closing one yourself forgets it.
 const POPS = () => path.join(app.getPath('userData'), 'popouts.json');
@@ -156,7 +179,7 @@ function wire(w) {
   w.webContents.on('will-navigate', (e, url) => {
     if (url === 'aigile://restart') { e.preventDefault(); quitting = true; savePops(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
     // The page's theme pick (AIG-143): the window buttons and every window follow it.
-    if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark', 'black'].includes(t)) nativeTheme.themeSource = t === 'black' ? 'dark' : t; return; }
+    if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark', 'black'].includes(t)) { nativeTheme.themeSource = t === 'black' ? 'dark' : t; ui.theme = t; saveUi(); } return; }
     // Goodnight (AIG-228): only the night glance stays on screen.
     if (url === 'aigile://minimize') { e.preventDefault(); w.minimize(); return; }
     // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).
@@ -168,7 +191,10 @@ function wire(w) {
 // Start with Windows (AIG-1250): the login item starts the app with --hidden, so it sits in the tray with no window.
 const HIDDEN = process.argv.includes('--hidden');
 function open(ok) {
-  win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', backgroundColor: '#ffffff', show: !HIDDEN, ...chrome() });
+  const look = startLook();
+  win = new BrowserWindow({ ...look.size, title: 'AI-gile', backgroundColor: look.backgroundColor, show: !HIDDEN, ...chrome() });
+  if (look.max) win.maximize();   // AIG-1272: maximised stays maximised (its normal size is kept for un-maximising)
+  for (const ev of ['resize', 'move', 'maximize', 'unmaximize']) win.on(ev, rememberWindow);
   wire(win);
   // Popped-out cards (AIG-122) get the same handling as the main window.
   win.webContents.on('did-create-window', (child, d) => {
@@ -191,7 +217,7 @@ function open(ok) {
   win.on('page-title-updated', (e, title) => { try { const i = /^\(\d+\)/.test(title) ? custom('icon-waiting.png') || ICON_WAITING : appIcon(); win.setIcon(i); if (tray) tray.setImage(i); } catch {} });
   // X hides the main window to the tray (AIG-849); pop-outs stay. Quit (tray menu) closes the app, pop-outs too, and remembers them for next time.
   win.on('session-end', () => { quitting = true; savePops(); });
-  win.on('close', e => { if (!quitting) { e.preventDefault(); win.hide(); return; } quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); if (twitchWin && !twitchWin.isDestroyed()) twitchWin.close(); });
+  win.on('close', e => { rememberWindow(); saveUi(); if (!quitting) { e.preventDefault(); win.hide(); return; } quitting = true; savePops(); for (const w of pops.keys()) if (!w.isDestroyed()) w.close(); if (twitchWin && !twitchWin.isDestroyed()) twitchWin.close(); });
   win.on('closed', () => { win = null; });
   makeTray();
 }
@@ -257,6 +283,21 @@ function autoStart() {
     return state();
   });
 }
+
+/* ---------- unread count on the taskbar icon (AIG-1274) ---------- */
+// The page counts what waits on you (For you + unread messages) and tells us through the preload. Windows: a red number as the
+// overlay icon (the purple diamond window icon stays); macOS and Linux: the dock/launcher badge. Only the main window may set it.
+let lastBadge = -1;
+function setBadge(n) {
+  n = badgeCount(n); if (n === lastBadge) return; lastBadge = n;
+  try {
+    if (process.platform === 'win32') {
+      const b = badgeBitmap(n);
+      if (win && !win.isDestroyed()) win.setOverlayIcon(b ? nativeImage.createFromBitmap(b.buffer, { width: b.width, height: b.height }) : null, n ? n + ' waiting' : '');
+    } else app.setBadgeCount(n);
+  } catch {}
+}
+ipcMain.on('aigile:badge', (e, n) => { if (win && !win.isDestroyed() && e.sender === win.webContents) setBadge(n); });
 
 // New build of the app itself (AIG-83): when any of its own files is newer than at start, the page shows a
 // 🔄 Restart app pill (asked again every few seconds, so it survives a page refresh).
