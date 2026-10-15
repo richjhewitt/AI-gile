@@ -35,7 +35,11 @@ def('groupdm', '👥 group chats: ＋ New group in Messages, the owner\'s messag
   await page.click('#dmPanel [data-dmnewgroup]');
   await page.waitForSelector('#grpPick [data-grpi]');
   check('the New group dialog sits above the Messages panel (AIG-1130)', await page.evaluate(() => { const r = document.querySelector('#grpName').getBoundingClientRect(), e = document.elementFromPoint(r.x + 5, r.y + 5); return !!e && e.id === 'grpName'; }));
-  check('the picker shows name · project · engine', /Pixel · Pix · Codex/.test(await page.textContent('#grpPick')) && /Claudia · Clo · Claude/.test(await page.textContent('#grpPick')));
+  const pk = await page.textContent('#grpPick');
+  check('the picker groups by project and names the engine only when it is not Claude (AIG-1131)', /Pix/.test(pk) && /Clo/.test(pk) && /Pixel[\s\S]*· Codex/.test(pk) && !/Claude/.test(pk));
+  await page.fill('#grpSearch', 'claud');
+  check('the picker search hides the rest', await page.evaluate(() => [...document.querySelectorAll('#grpPick .grp-cand')].filter(l => !l.hidden).map(l => l.textContent).join('|').includes('Claudia') && ![...document.querySelectorAll('#grpPick .grp-cand')].some(l => !l.hidden && /Pixel/.test(l.textContent))));
+  await page.fill('#grpSearch', '');
   await page.fill('#grpName', 'IRL logo');
   await page.click('#grpCreate');
   check('fewer than two picked is refused in the dialog', /two/.test(await page.textContent('#grpErr')));

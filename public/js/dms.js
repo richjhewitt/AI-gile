@@ -147,10 +147,20 @@ const Dms = (() => {
     try { grpCands = await api('GET', '/api/chats/_groups/candidates'); } catch (e) { alert(e.message || String(e)); return; }
     openDialog(`<h2>${esc(t('grp.new.h'))}</h2><p class="muted">${esc(t('grp.new.help'))}</p>
       <label>${esc(t('grp.name'))}<input id="grpName" maxlength="80" autocomplete="off"></label>
-      <div class="grp-pick" id="grpPick"><b>${esc(t('grp.members'))}</b>${grpCands.length ? grpCands.map((c, i) => `<label class="grp-cand"><input type="checkbox" data-grpi="${i}"> ${esc(c.name)} · ${esc(c.projectName)} · ${esc(c.engineLabel)}${c.role ? ` <span class="muted">(${esc(c.role)})</span>` : ''}</label>`).join('') : `<p class="muted">${esc(t('grp.none'))}</p>`}</div>
+      <b>${esc(t('grp.members'))}</b>${grpCands.length ? `<input id="grpSearch" type="search" class="grp-search" placeholder="${esc(t('grp.search'))}" autocomplete="off" oninput="Dms.grpFilter()">` : ''}
+      <div class="grp-pick" id="grpPick">${grpCands.length ? grpCands.map((c, i) => (i && grpCands[i - 1].project === c.project ? '' : `<div class="grp-proj muted">${esc(c.projectName)}</div>`) + `<label class="grp-cand" data-q="${esc([c.name, c.projectName, c.role, c.engineLabel].join(' ').toLowerCase())}"><input type="checkbox" data-grpi="${i}"> ${esc(c.name)}${c.role ? ` <span class="muted">(${esc(c.role)})</span>` : ''}${c.engine !== 'claude' ? ` <span class="muted">· ${esc(c.engineLabel)}</span>` : ''}</label>`).join('') : `<p class="muted">${esc(t('grp.none'))}</p>`}</div>
       <div class="err" id="grpErr"></div>
       <div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button><button type="button" class="primary" id="grpCreate" onclick="Dms.createGroup()">${esc(t('grp.create'))}</button></div>`);
     const n = el('grpName'); if (n) n.focus();
+  }
+  // AIG-1131: the search box hides rows that do not match; a project heading stays only while one of its rows shows.
+  function grpFilter() {
+    const q = (el('grpSearch').value || '').trim().toLowerCase(); let head = null, any = false;
+    for (const n of document.querySelectorAll('#grpPick > *')) {
+      if (n.classList.contains('grp-proj')) { if (head) head.hidden = !any; head = n; any = false; continue; }
+      const hit = !q || (n.dataset.q || '').includes(q); n.hidden = !hit; if (hit) any = true;
+    }
+    if (head) head.hidden = !any;
   }
   async function createGroup() {
     const name = el('grpName').value.trim(), members = [...document.querySelectorAll('#grpPick [data-grpi]:checked')].map(x => grpCands[+x.dataset.grpi]).map(c => ({ project: c.project, name: c.name }));
@@ -517,5 +527,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   PagePoll.every(async () => { await loadRail(); if (open) await loadThread(); }, 3000);
   loadRail();
-  return { follow, show, back, close, send, ask, askTeams, aim, reply, reload, smNight, smPush, requestForm, requestSend, newGroup, createGroup };
+  return { follow, show, back, close, send, ask, askTeams, aim, reply, reload, smNight, smPush, requestForm, requestSend, newGroup, createGroup, grpFilter };
 })();
