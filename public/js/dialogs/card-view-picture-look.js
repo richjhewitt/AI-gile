@@ -136,7 +136,7 @@ function lookServiceHtml(p) {
       <label class="f"><span>${esc(t('svc.url'))}</span><input type="url" id="look-svc-url" maxlength="500" value="${esc(s.url || '')}" placeholder="https://..."></label>
       <label class="f"><span>${esc(t('svc.oncall.h'))}</span>${team.length ? '' : `<small class="muted">${esc(t('svc.oncall.none'))}</small>`}<select id="look-svc-oncall" ${team.length ? '' : 'hidden'}>${team.map(m => `<option value="${esc(m.name)}" ${m.name === (s.onCall || lead) ? 'selected' : ''}>${esc(m.name)}${m.name === lead ? ' (' + esc(t('svc.lead')) + ')' : ''}</option>`).join('')}</select></label>
       <label class="f"><span>${esc(t('svc.tokencap'))}</span><input type="text" inputmode="numeric" id="look-svc-cap" maxlength="13" value="${s.tokenCap ? esc(s.tokenCap) : ''}" placeholder="${esc(t('svc.tokencap.ph'))}"></label>
-      <p><a href="#/ci/${esc(p.slug)}" onclick="closeDialog()">${esc(t('ci.btn'))}</a></p>
+      <p><a href="#/ci/${esc(p.slug)}" onclick="closeDialog()">${esc(t('ci.btn'))}</a>${s.on ? ` · <a href="#/review/${esc(p.slug)}" onclick="closeDialog()">${esc(t('rev.btn'))}</a>` : ''}</p>
       <label class="chk"><input type="checkbox" id="look-svc-public" ${s.public ? 'checked' : ''}> ${esc(t('svc.public'))} <span class="muted">${esc(t('svc.public.sub'))}</span></label>
     </div></div>`;
 }
