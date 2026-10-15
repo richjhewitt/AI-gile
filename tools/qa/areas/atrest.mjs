@@ -25,6 +25,18 @@ def('atrest', '🔒 chats at rest: DM and group chat files sealed on disk, read 
     check('the sender\'s chat file is sealed, no plaintext on disk', disk(fa).startsWith(PREFIX) && !disk(fa).includes('pineapple'), disk(fa).slice(0, 60));
     check('the receiver\'s chat file is sealed, no plaintext on disk', disk(fb).startsWith(PREFIX) && !disk(fb).includes('pineapple'));
     check('and it reads back on both boards', got && got.text === secret && (await s.ok('GET', `/api/dms/contacts/${cb.id}/messages`)).some(m => m.text === secret));
+    // AIG-1172: a chat write that fails on B (here its temp file is a folder, so the write errors like a full or locked disk):
+    // the envelope is not acked, so nothing is lost; once the disk is fine it comes again and is saved.
+    const block = fb + '.tmp';
+    fs.mkdirSync(block, { recursive: true });
+    await s.ok('POST', `/api/dms/contacts/${cb.id}/messages`, { text: 'saved after all 31' });
+    const failedPoll = await until(async () => { const st = await b.ok('GET', '/api/dms'); return st.lastPoll && st.lastPoll.ok === false && st.lastPoll; });
+    check('a failing chat write makes the poll report an error', !!failedPoll, failedPoll);
+    check('and the message is not in the chat yet', !(await b.ok('GET', `/api/dms/contacts/${ca.id}/messages`)).some(m => m.text === 'saved after all 31'));
+    fs.rmSync(block, { recursive: true, force: true });
+    const again = await until(async () => (await b.ok('GET', `/api/dms/contacts/${ca.id}/messages`)).find(m => m.text === 'saved after all 31'));
+    check('the envelope was left on the relay: once writes work it comes again and is saved', !!again && again.verified === true);
+
     check('the key is not in the data in plain hex', !Object.values(JSON.parse(disk(path.join(s.data, 'secrets', 'kept.json')) || '{}')).some(v => /^[0-9a-f]{64}$/.test(String(v))));
 
     // Old plaintext chat: read as it is, sealed on the next write with both messages kept.
