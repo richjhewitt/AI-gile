@@ -73,7 +73,7 @@ def('dminvite', 'Setup: invite a friend (code + Copy), add a friend (paste + nam
 
     for (const lng of ['nl', 'nl-BE']) {
       await pa.evaluate(l => localStorage.setItem('aigile.lang', l), lng); await pa.reload(); await pa.waitForSelector('#dmfInvite');
-      check('texts in ' + lng, /Een vriend uitnodigen/.test(await pa.textContent('#dmfBody')));
+      check('texts in ' + lng, /Vriend heeft AI-gile al/.test(await pa.textContent('#dmfBody')));
     }
     await pa.evaluate(() => localStorage.setItem('aigile.lang', 'en'));
     check('no page errors on board A (the expected 409 aside)', pa.errors.filter(e => !/409/.test(e)).length === 0, pa.errors); check('no page errors on board B', pb.errors.length === 0, pb.errors);

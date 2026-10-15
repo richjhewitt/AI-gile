@@ -24,6 +24,8 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   check('Bring back clears the label', !(await getCard(s, 'alpha', sv.id)).snoozedUntil && !/back at/.test(await page.textContent(`.card[data-id="${sv.id}"]`)));
   check('drag moves the card (page)', (await page.locator('.column[data-status=review] .card[data-id="ALP-1"]').count()) === 1);
 
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Pixel', role: 'Frontend' });   // with a crew + New goes to For the team (none: Backlog, AIG-1181)
+  await page.reload(); await page.waitForSelector('.toolbar button.primary');
   await page.click('.toolbar button.primary');
   await page.waitForSelector('#dialog #f-title');
   check('+ New defaults to For the team', (await page.inputValue('#f-status')) === 'team');
