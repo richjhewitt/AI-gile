@@ -1,5 +1,5 @@
 // AI-gile desktop (AIG-76): the board in its own window. Starts the board server if it isn't running
-// (left running on quit, so teams keep their board), then shows http://localhost:<port>.
+// (left running on quit, so teams keep their board), then shows http://127.0.0.1:<port>.
 const { app, BrowserWindow, shell, nativeTheme, nativeImage, screen, Tray, Menu } = require('electron');
 const fs = require('fs');
 const path = require('path');
@@ -10,7 +10,7 @@ const net = require('net');
 const ROOT = app.isPackaged ? path.join(process.resourcesPath, 'aigile') : path.resolve(__dirname, '..');
 if (app.isPackaged && !process.env.AIGILE_DATA) process.env.AIGILE_DATA = path.join(app.getPath('userData'), 'data');
 const PORT = Number(process.env.AIGILE_PORT) || 4321;
-const BASE = `http://localhost:${PORT}`;
+const BASE = `http://127.0.0.1:${PORT}`;   // the board listens on 127.0.0.1 only: "localhost" tries IPv6 first (+210 ms) (AIG-1091)
 const ICON = path.join(__dirname, 'icon.png'), ICON_WAITING = path.join(__dirname, 'icon-waiting.png');
 // App logo (AIG-175): if one is set in Setup (png, jpg or ico), it is the window icon; else the default.
 const DATA = path.resolve(process.env.AIGILE_DATA || path.join(ROOT, 'data'));

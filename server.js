@@ -236,7 +236,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 // The port goes in a file next to the data (AIG-252), so the teams' commands find a board that isn't on 4321.
-metadataReady.finally(() => server.listen(PORT, HOST, () => { console.log(`AI-gile running at http://localhost:${PORT}`); try { fs.writeFileSync(path.join(DATA, 'board.port'), String(PORT)); } catch {} require('./lib/phonetunnel').start(PORT); }));   // 🔌 the phone tunnel, only when Setup saved one (AIG-1008)
+metadataReady.finally(() => server.listen(PORT, HOST, () => { console.log(`AI-gile running at http://127.0.0.1:${PORT}`); try { fs.writeFileSync(path.join(DATA, 'board.port'), String(PORT)); } catch {} require('./lib/phonetunnel').start(PORT); }));   // 🔌 the phone tunnel, only when Setup saved one (AIG-1008)
 // Private DMs: collect this board's relay mailbox every few seconds while DMs are on (lib/dm.js).
 require('./lib/dm').startDms();
 require('./lib/timed').start();   // timed cards come back (AIG-385)
