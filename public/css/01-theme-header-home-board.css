@@ -43,6 +43,9 @@ a { color: inherit; text-decoration: none; }
 header { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; z-index: 5; }
 header h1 { font-size: 17px; margin: 0; }
 header .crumb { color: var(--muted); }
+/* A project colour set inline can be near-black on a dark page: lift it there so the project name stays readable. */
+@media (prefers-color-scheme: dark) { :root:not([data-theme=light]) header .crumb[style*="color"] { filter: brightness(1.9); } }
+:root[data-theme=dark] header .crumb[style*="color"], :root[data-theme=black] header .crumb[style*="color"] { filter: brightness(1.9); }
 header .alpha-tag { font-size: 11px; color: var(--muted); white-space: nowrap; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; cursor: help; }
 header .spacer { flex: 1; }
 .navlink { font-size: 13px; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--line); background: var(--col); }
