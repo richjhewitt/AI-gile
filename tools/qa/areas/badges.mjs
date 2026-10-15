@@ -11,6 +11,11 @@ def('badges', '🎨 badge maker: SVG served, aigile avatar badge sets one and li
   check('the badge is served as an SVG', r.status === 200 && /image\/svg\+xml/.test(r.headers.get('content-type')) && body.startsWith('<svg') && body.includes('#3bb3b0'), body.slice(0, 80));
   check('every animal and accessory draws', (await Promise.all(lib.badge.animals.map(a => fetch(`${BASE}/api/avatars/badge/${a}/blue/none`).then(x => x.status)))).every(c => c === 200) && (await Promise.all(lib.badge.accessories.map(a => fetch(`${BASE}/api/avatars/badge/cat/pink/${a}`).then(x => x.status)))).every(c => c === 200));
   check('an unknown badge is a 404', (await fetch(BASE + '/api/avatars/badge/dodo/teal/none')).status === 404);
+  // The shipped set (AIG-393): 24 small SVGs always in the library, listed by the CLI and served by name.
+  const shipped = lib.pictures.filter(x => /^(role|pal)-.*.svg$/.test(x.file));
+  const sv = shipped.length ? await fetch(BASE + shipped[0].url) : { status: 0, headers: new Headers() };
+  check('24 shipped badges are in the library and served', shipped.length === 24 && sv.status === 200 && /svg/.test(sv.headers.get('content-type') || '') && (await sv.text()).length < 4096, shipped.length);
+  check('aigile avatar lists the shipped set', /role-lead.svg/.test(s.cli(['avatar', 'zoo', '--as', 'Pixel']).out) && /pal-fox.svg/.test(s.cli(['avatar', 'zoo', '--as', 'Pixel']).out));
 
   // The brief invites a new member to choose (not on the cheapest plan), the list explains the maker.
   await s.ok('POST', '/api/setup', { prefs: { plan: 'normal' } });
