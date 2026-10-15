@@ -44,7 +44,7 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .today-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .today-row:last-child { border-bottom: 0; }
 .today-btns { display: flex; flex-wrap: wrap; gap: 4px; }
-.today-w.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.today-w.on { background: var(--accent); color: var(--on-fill); border-color: var(--accent); }
 .today-badge { font-size: 14px; vertical-align: 1px; }
 .today-bar { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin: 6px 0; font-size: 12px; }
 .today-bn { flex: 0 0 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -55,7 +55,7 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 @media (min-width: 700px) { .today-bv { flex: 0 0 auto; } }
 /* ⏳ the chain across a space's projects (AIG-450) */
 .space-chain { margin-top: 10px; } .space-chain ul { margin: 4px 0; padding-left: 18px; } .space-chain li { margin: 3px 0; overflow-wrap: anywhere; }
-.today-ai.on { background: var(--danger); color: #fff; border-color: var(--danger); }
+.today-ai.on { background: var(--danger); color: var(--on-fill); border-color: var(--danger); }
 .aioff { font-size: 14px; vertical-align: 1px; }
 .today-pctrow { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
 .today-pctrow span { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; }

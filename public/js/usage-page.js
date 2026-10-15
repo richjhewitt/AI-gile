@@ -43,7 +43,7 @@ const uz = {
   .uz-bar-head h2 { flex: 1; min-width: 200px; }
   .uz-ranges { display: flex; gap: 6px; flex-wrap: wrap; }
   .uz-ranges button, .uz-toggle { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 99px; border: 1px solid var(--line); background: var(--col); color: var(--text); cursor: pointer; }
-  .uz-ranges button[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .uz-ranges button[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--on-fill); font-weight: 600; }
   .uz-chart { position: relative; margin: 6px 0; }
   .uz-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
   .uz-chart svg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }

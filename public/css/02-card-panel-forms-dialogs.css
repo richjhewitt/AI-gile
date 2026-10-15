@@ -10,10 +10,10 @@
 /* ---------- buttons and forms ---------- */
 button { font: inherit; cursor: pointer; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--text); padding: 5px 10px; }
 button:hover { border-color: var(--accent); }
-button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-button.bug { background: var(--danger); border-color: var(--danger); color: #fff; font-weight: 600; }
-button.good { background: var(--done); border-color: var(--done); color: #fff; font-weight: 600; }
-button.warn { background: var(--warn); border-color: var(--warn); color: #fff; font-weight: 600; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-fill); }
+button.bug { background: var(--danger); border-color: var(--danger); color: var(--on-fill); font-weight: 600; }
+button.good { background: var(--done); border-color: var(--done); color: var(--on-fill); font-weight: 600; }
+button.warn { background: var(--warn); border-color: var(--warn); color: var(--on-fill); font-weight: 600; }
 button.danger { color: var(--danger); }
 button:disabled { opacity: .5; cursor: default; }
 /* AIG-930: the file picker's button looks like ours in both themes; 'Alerts blocked' is a state, so it stays readable. */
@@ -119,7 +119,7 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 /* Phone pairing: numbered steps (AIG-941) */
 .ph-steps { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 14px; }
 .ph-step { display: flex; gap: 12px; align-items: flex-start; }
-.ph-n { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; }
+.ph-n { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--on-fill); display: inline-flex; align-items: center; justify-content: center; font-size: 15px; }
 .ph-body { flex: 1; min-width: 0; }
 .ph-body label { display: block; margin: 4px 0; }
 .ph-body input { max-width: 100%; }
@@ -167,7 +167,7 @@ label.f[hidden], .runin-blind[hidden] { display: none; }   /* where teams run (A
 /* ---------- For you column (AIG-106) ---------- */
 .fy-chips { display: flex; flex-wrap: wrap; gap: 4px; margin: -2px 0 8px; }
 .fy-chip { font-size: 12px; padding: 2px 8px; border-radius: 99px; }
-.fy-chip.on { background: var(--you); color: #fff; border-color: var(--you); }
+.fy-chip.on { background: var(--you); color: var(--on-fill); border-color: var(--you); }
 
 /* ---------- popped-out card (AIG-122): the card fills its own window ---------- */
 body.pop header, body.pop #filterbar, body.pop #updateTop { display: none; }
@@ -278,7 +278,7 @@ textarea.grow { max-height: 85vh; resize: vertical; }
 /* 🎥 streamer mode (AIG-590): the DM and friends parts go; the switch lights up; the notice sits bottom left */
 html[data-stream-dms] .dm-railbtn[data-dms], html[data-stream-dms] #dmPanel, html[data-stream-dms] #dmsRelayBox, html[data-stream-dms] #pretendBox, html[data-stream-friends] #ibShare, html[data-stream-friends] #ibAsk, html[data-stream-friends] #dmsFriendsBox { display: none !important; }
 .stream-hide { border: 1px solid var(--line, #8883); border-radius: 8px; margin: 6px 0; padding: 4px 10px; } .stream-hide legend { font-size: 13px; padding: 0 4px; } .stream-hide .chk { display: flex; align-items: center; gap: 6px; min-height: 36px; flex-wrap: wrap; }
-#streamBtn.stream-on { background: var(--danger, #d33); color: #fff; border-radius: 6px; }
+#streamBtn.stream-on { background: var(--danger, #d33); color: var(--on-fill); border-radius: 6px; }
 #streamNote { position: fixed; inset-inline-start: 12px; bottom: 12px; z-index: 60; max-width: min(92vw, 420px); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--bg, #fff); color: var(--text, #111); border: 1px solid var(--line, #8886); box-shadow: var(--shadow, 0 4px 16px #0004); font-size: 13px; } #streamNote button { min-height: 36px; }
 html[data-stream-secrets] #serversBox input[data-srv="name"], html[data-stream-secrets] #serversBox input[data-srv="value"], html[data-stream-secrets] #serversBox input[data-srv="host"], html[data-stream-secrets] #serversBox input[data-srv="user"], html[data-stream-secrets] #serversBox input[data-srv="key"], html[data-stream-secrets] #serversBox input[data-srv="folder"] { -webkit-text-security: disc; text-security: disc; }
 .pub-btn .muted { font-size: 12px; } .lic-row { border: 1px solid var(--line, #8883); border-radius: 8px; padding: 8px 10px; margin: 6px 0; } .lic-letter { width: 100%; box-sizing: border-box; font: 12px/1.4 ui-monospace, monospace; margin: 6px 0; } .lic-row button { min-height: 36px; }

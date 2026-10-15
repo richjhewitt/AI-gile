@@ -1,5 +1,5 @@
 /* ---------- AI tester's evidence (AIG-163) ---------- */
-.pill.ai.pass { background: var(--good, #2e9e5b); color: #fff; } .pill.ai.fail { background: var(--danger); color: #fff; } .pill.ai.skip { background: var(--col); }
+.pill.ai.pass { background: var(--good, #2e9e5b); color: var(--on-fill); } .pill.ai.fail { background: var(--danger); color: var(--on-fill); } .pill.ai.skip { background: var(--col); }
 .ai-ev { margin: 8px 0; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); border-inline-start: 4px solid var(--muted); }
 .ai-ev.pass { border-inline-start-color: var(--good, #2e9e5b); } .ai-ev.fail { border-inline-start-color: var(--danger); }
 .ai-ev .att-shown img { max-height: 160px; }
