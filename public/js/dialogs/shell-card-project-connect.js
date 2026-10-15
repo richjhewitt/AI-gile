@@ -36,7 +36,11 @@ async function newCard(preset = {}) {
   try { (await api('GET', '/api/chats')).forEach(c => { leads[c.slug] = c.lead; }); } catch {}
   const bug = preset.type === 'bug';
   // The owner's new cards go straight to the team (AIG-51); the + on a column still picks that column.
-  const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: 'team', assignee: '', sprint: '', ...preset };
+  // AIG-1181: with no team members yet there is nobody to hand it to: the card starts in Backlog until a team exists.
+  const noTeam = s => { const q = projects.find(x => x.slug === s); return !!q && !(q.crew || []).length; };
+  newCard.noTeam = noTeam;
+  const c = { title: '', description: '', testSteps: '', type: 'feature', priority: 'normal', status: noTeam(slug()) ? 'backlog' : 'team', assignee: '', sprint: '', ...preset };
+  newCard.startStatus = c.status;
   Attach.clear('new:' + slug());
   // 🏡 Real life (AIG-394): the switch shows the life types; a Life board (🎨 Look) starts with it on.
   const lifeOn = !bug && (preset.lifeType || (state.project && state.project.lifeBoard && !preset.type));
@@ -90,6 +94,7 @@ async function createCard(e) {
   try {
     const sel = $('nc-project'), target = sel && sel.value || slug();
     const attachments = await Attach.upload('new:' + slug(), target);
+    if (target !== slug() && body.status === newCard.startStatus && newCard.noTeam) body.status = newCard.noTeam(target) ? 'backlog' : 'team';   // AIG-1181: untouched status follows the chosen project
     const c = await api('POST', `/api/projects/${target}/cards`, { ...body, createdBy: me(), attachments });
     if ($('nc-send') && $('nc-send').checked) api('POST', '/api/bugreport', { title: body.title, text: body.description }).catch(e => alert(t('bug.send.err', { msg: e.message })));   // 🐞 to the AI-gile team (AIG-561)
     Attach.clear('new:' + slug());
@@ -198,7 +203,7 @@ async function createProject(e) {
   const show = () => { $('p-done').innerHTML = `<ul>${done.map(d => `<li>✅ ${esc(d)}</li>`).join('')}${fails.map(d => `<li>⚠️ ${esc(d)}</li>`).join('')}</ul>`; };
   if (folder) {
     try { const r = await api('POST', `/api/projects/${p.slug}/connect`, { path: folder, create: true, wake: true }); done.push(...r.done); }
-    catch (err) { fails.push(t('dlg.np.err.folder', { msg: err.message })); }
+    catch (err) { done.shift(); fails.push(t('dlg.np.err.folder', { msg: err.message })); } // the warning already says the project exists (AIG-1181)
     show();
   }
   // 🪐 A space with child projects in one go (AIG-435): each child sits in the new project, gets its own folder inside the
