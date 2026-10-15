@@ -169,8 +169,38 @@ const hasUnsent = () => [...document.querySelectorAll('textarea, input[type=text
 // (a half-filled new-card form, pending attachments) asks first, in the app's own small box. Resolves true to carry on.
 const hasUndrafted = () => [...document.querySelectorAll('textarea:not([data-draft]), input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
   || !!document.querySelector('.att-chip');
+// AIG-1297: a reload (language switch, Refresh, update, restart) keeps what you typed: unsent text in boxes with an id or name is
+// carried over in this tab's sessionStorage and put back when the same box shows again, so nothing asks first.
+const CARRY_KEY = 'aigile.carry';
+function carryUnsent() {
+  const keep = [...document.querySelectorAll('textarea:not([data-draft]), input[type=text]')]
+    .filter(el => el.value.trim() && el.value !== el.defaultValue && (el.id || el.name)).map(el => ({ id: el.id, name: el.name, v: el.value, hash: location.hash }));
+  const newcard = keep.some(k => /^f-/.test(k.id) && document.querySelector('#dialog #' + CSS.escape(k.id)));   // a half-filled New card form opens again
+  try { if (keep.length) sessionStorage.setItem(CARRY_KEY, JSON.stringify({ at: Date.now(), keep, newcard })); } catch {}
+}
+(function restoreCarried() {
+  let c; try { c = JSON.parse(sessionStorage.getItem(CARRY_KEY) || 'null'); sessionStorage.removeItem(CARRY_KEY); } catch { return; }
+  if (!c || !Array.isArray(c.keep) || Date.now() - c.at > 120e3) return;
+  let left = c.keep;
+  const put = () => {
+    left = left.filter(k => {
+      const el = k.id ? document.getElementById(k.id) : document.querySelector(`[name="${CSS.escape(k.name)}"]`);
+      if (!el || !('value' in el)) return true;
+      if (!el.value.trim() || el.value === el.defaultValue) { el.value = k.v; el.dispatchEvent(new Event('input', { bubbles: true })); }
+      return false;
+    });
+    if (!left.length) mo.disconnect();
+  };
+  const mo = new MutationObserver(put);
+  let tries = 0;
+  const start = () => {
+    if (c.newcard) { if (!(typeof i18n !== 'undefined' && i18n.ready && typeof state !== 'undefined' && state.route && typeof newCard === 'function')) { if (++tries < 150) setTimeout(start, 200); return; } c.newcard = false; newCard(); }
+    put(); if (left.length) { mo.observe(document.body, { childList: true, subtree: true }); setTimeout(() => mo.disconnect(), 30e3); } };
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start, { once: true }) : start();
+})();
 function okToLeave(what) {
-  if (!hasUndrafted()) return Promise.resolve(true);
+  carryUnsent();
+  if (!document.querySelector('.att-chip')) return Promise.resolve(true);   // only files waiting to be sent can't be carried over
   return new Promise(res => {
     const box = document.createElement('div'); box.id = 'leaveBox'; box.className = 'overlay center top'; box.style.position = 'fixed';
     const done = v => { box.remove(); document.removeEventListener('keydown', onKey, true); res(v); };
