@@ -19,7 +19,7 @@ function popFeatures(kind, w, h) {
 // Never inside a pop-out, never on a phone-width screen or phone, and a blocked popup falls back to inline.
 let popAutoPref = false;
 const popAutoLoad = () => PagePoll.get('/api/setup').then(s => { popAutoPref = !!((s && s.prefs) || {}).autoPop; }, () => {});
-popAutoLoad(); PagePoll.every(popAutoLoad, 10000);
+popAutoLoad(); PagePoll.every(popAutoLoad, 10000, { home: true });
 function popAutoOn() {
   const p = state.setup && state.setup.prefs, on = p ? !!p.autoPop : popAutoPref;
   if (!on || /^#\/pop/.test(location.hash) || (state.route && (state.route.pop || state.route.view === 'dlg'))) return false;

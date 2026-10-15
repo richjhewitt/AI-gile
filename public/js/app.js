@@ -60,7 +60,7 @@ PagePoll.every(async () => {
   const now = Date.now(), liveView = state.route && (state.route.view === 'inbox' || state.route.view === 'project' && state.route.card);
   if (liveView || now - lastPageTick >= 3000) { lastPageTick = now; await refresh(); await ScrumGlance.tick(); }
 }, 1000);
-PagePoll.every(() => OpenCard.tick(), 1000);
+PagePoll.every(() => OpenCard.tick(), 1000, { home: true });
 setTimeout(morningPrompt, 1500);   // the day's first "Call stand-ups?" (AIG-136)
 
 // Dev builds: when the server or page changes, a small 🆕 Refresh pill floats at the top (AIG-78), above any open
