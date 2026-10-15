@@ -70,6 +70,12 @@ abbr.devw { text-decoration: underline dotted var(--muted); text-underline-offse
 .gloss { max-width: 760px; margin: 0 auto; } .gloss input[type=search] { width: 100%; margin: 8px 0 16px; }
 .gloss-list { margin: 0; } .gloss-item { padding: 10px 0; border-bottom: 1px solid var(--line); } .gloss-item[hidden] { display: none; }
 .gloss-item dt { font-weight: 700; } .gloss-item dd { margin: 2px 0 0; color: var(--muted); }
+/* AIG-1296: groups with their own heading; the count under the search box is read out as you type */
+.gloss input[type=search] { box-sizing: border-box; margin-bottom: 4px; } .gloss-count { margin: 0 0 8px; font-size: 13px; }
+.gloss-count.zero { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.gloss-group { margin-top: 18px; } .gloss-group[hidden] { display: none; }
+.gloss-group h3 { margin: 0; padding-bottom: 6px; font-size: 16px; border-bottom: 2px solid var(--line); }
+abbr.devw:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 3px; }
 
 /* 🎓 Guided tour (AIG-95): a spotlight on one part of the board and a bubble beside it */
 #tourLayer { position: fixed; inset: 0; z-index: 60; pointer-events: none; }

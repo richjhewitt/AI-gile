@@ -21,6 +21,43 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
   const tip = await page.getAttribute('abbr.devw', 'title').catch(() => '');
   check('with the switch on, dev words get a plain explanation', !!tip && tip.length > 20, tip);
   check('typing boxes are left alone', (await page.locator('input abbr, textarea abbr').count()) === 0);
+  // AIG-1296: service, incident, problem and change words, in groups
+  const en = JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'lang', 'en.json'), 'utf8'));
+  await mkCard(s, 'alpha', 'Major incident: the status page shows red after the backup', { status: 'todo' });
+  await page.goto(BASE + '/#/p/alpha'); await page.waitForSelector('.board');
+  await page.waitForFunction(() => [...document.querySelectorAll('abbr.devw')].some(a => /status page/i.test(a.textContent)), null, { timeout: 5000 }).catch(() => {});
+  const marked = await page.$$eval('abbr.devw', e => e.filter(x => /shows red after/.test(x.parentElement.textContent)).map(x => x.textContent.replace(/\s+/g, ' ').toLowerCase()));
+  check('multi-word terms are underlined as one, the longest wins ("Major incident", not just "incident"; "status page")', marked.join() === 'major incident,status page,backup', marked);
+  check('...with the plain explanation of the longer term', (await page.$$eval('abbr.devw', e => (e.find(x => /^major\s+incident$/i.test(x.textContent)) || {}).title)) === en['gloss.major.text']);
+  await page.goto(BASE + '/#/glossary'); await page.waitForSelector('.gloss-item');
+  const g = await page.evaluate(() => ({
+    hs: [...document.querySelectorAll('.gloss h2, .gloss h3')].map(h => h.tagName + ':' + h.textContent),
+    groups: [...document.querySelectorAll('.gloss-group')].map(x => x.dataset.group),
+    loose: document.querySelectorAll('.gloss-item').length - document.querySelectorAll('.gloss-group .gloss-item').length,
+    n: document.querySelectorAll('.gloss-item').length,
+    labelled: [...document.querySelectorAll('.gloss-group')].every(x => document.getElementById(x.getAttribute('aria-labelledby'))?.tagName === 'H3'),
+    status: document.getElementById('glossCount')?.getAttribute('role'),
+    count: document.getElementById('glossCount')?.textContent,
+  }));
+  check('the glossary has 45+ words in four groups, each under its own h3 after the page h2', g.n >= 45 && g.loose === 0 && g.groups.join() === 'build,change,run,team' && g.labelled && g.hs[0] === 'H2:' + en['gloss.title'] && g.hs.slice(1).every(h => h.startsWith('H3:')) && g.hs.length === 5, g);
+  check('a status line says how many words there are', g.status === 'status' && g.count === g.n + ' words', g);
+  for (const id of ['service', 'uptime', 'statuspage', 'incident', 'major', 'problem', 'change', 'risk', 'oncall', 'replyby', 'postmortem', 'backup', 'restore', 'release', 'rollback', 'live', 'swarm', 'peerreview', 'retro', 'dod', 'testpile'])
+    if (!(await page.locator(`.gloss-item[data-id="${id}"]`).count())) check('the word ' + id + ' is in the glossary', false);
+  await page.focus('#glossQ'); await page.keyboard.type('incident');
+  const hit = await page.evaluate(() => ({ ids: [...document.querySelectorAll('.gloss-item:not([hidden])')].map(x => x.dataset.id), groups: [...document.querySelectorAll('.gloss-group:not([hidden])')].map(x => x.dataset.group), count: document.getElementById('glossCount').textContent }));
+  check('search runs across every group (typed from the keyboard), empty groups fold away, and the count follows', hit.ids.includes('incident') && hit.ids.includes('major') && hit.ids.includes('postmortem') && !hit.groups.includes('build') && hit.count === hit.ids.length + (hit.ids.length === 1 ? ' word' : ' words'), hit);
+  await page.fill('#glossQ', 'production'); await page.dispatchEvent('#glossQ', 'input');
+  check('search finds a word by its other names too ("production": Live)', (await page.$$eval('.gloss-item:not([hidden])', e => e.map(x => x.dataset.id))).includes('live'));
+  await page.fill('#glossQ', 'zzqx'); await page.dispatchEvent('#glossQ', 'input');
+  check('no match: it says so, once on screen and once to screen readers', !(await page.$eval('#glossNone', e => e.hidden)) && (await page.textContent('#glossCount')) === en['gloss.none'] && (await page.$eval('#glossCount', e => e.getBoundingClientRect().width <= 1)));
+  const noai = await page.evaluate(() => { NoAi.apply(true); const h = renderGlossary(); NoAi.apply(false); return h; });
+  check('No AI mode leaves out the words about AI agents (Agent, Token, Hook, Peer review)', !/data-id="(agent|token|hook|peerreview)"/.test(noai) && /data-id="incident"/.test(noai) && noai.includes(en['gloss.g.team.noai']));
+  // phone width, dark mode, right to left
+  await page.setViewportSize({ width: 390, height: 800 }); await page.emulateMedia({ colorScheme: 'dark' });
+  await page.evaluate(() => { document.documentElement.dir = 'rtl'; $('app').innerHTML = renderGlossary(); });
+  const look = await page.evaluate(() => { const h = document.querySelector('.gloss-group h3'), r = document.querySelector('.gloss').getBoundingClientRect(); return { scroll: document.documentElement.scrollWidth <= innerWidth, fits: r.right <= innerWidth + 1 && r.left >= -1, dir: getComputedStyle(h).direction, bg: getComputedStyle(document.body).backgroundColor }; });
+  check('phone width (390px), dark, right to left: the glossary fits, no sideways scroll, headings read right to left', look.scroll && look.fits && look.dir === 'rtl' && (look.bg.match(/\d+/g) || []).slice(0, 3).every(n => +n < 80), look);
+  await page.evaluate(() => { document.documentElement.dir = 'ltr'; });
   noErrors(page);
 }, true);
 

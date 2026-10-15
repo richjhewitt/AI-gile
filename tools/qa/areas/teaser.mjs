@@ -148,8 +148,21 @@ def('teaserwords', 'site/index.html (file://): 📖 Dev words button and dialog 
   await page.fill('#words-q', 'snapshot');
   const shown = () => page.$$eval('#words-list .words-item:not([hidden]) dt', e => e.map(x => x.textContent));
   check('search finds words by their explanation too ("snapshot": Commit)', (await shown()).includes('Commit') && (await page.$eval('#words-none', e => e.hidden)), await shown());
+  // AIG-1296: the words in groups (h3 under the dialog's h2), a count read out as you search, search across all groups
+  const enApp = JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'lang', 'en.json'), 'utf8'));
+  check('the bundles carry the groups: build, change, run, team, every word in one, and the count in plural forms', en.groups.map(g => g.id).join() === 'build,change,run,team' && en.list.length >= 45 && en.list.every(w => en.groups.some(g => g.id === w.g)) && en.count && en.count.other === enApp['gloss.count'].other, en.groups);
+  const grp = await page.evaluate(() => ({ hs: [...document.querySelectorAll('#words-dlg h2, #words-dlg h3')].map(h => h.tagName + ':' + h.textContent), secs: [...document.querySelectorAll('#words-list .words-group')].map(x => x.dataset.group), labelled: [...document.querySelectorAll('#words-list .words-group')].every(x => document.getElementById(x.getAttribute('aria-labelledby'))?.tagName === 'H3') }));
+  check('the dialog shows the words under group headings in order: h2, then an h3 per group', grp.secs.join() === 'build,change,run,team' && grp.labelled && grp.hs[0].startsWith('H2:') && grp.hs.length === 5 && grp.hs.slice(1).every((h, i) => h === 'H3:' + en.groups[i].name), grp);
+  await page.fill('#words-q', '');
+  check('a status line under the search box says how many words there are', (await page.getAttribute('#words-count', 'role')) === 'status' && (await page.textContent('#words-count')) === en.list.length + ' words' && (await page.getAttribute('#words-q', 'aria-describedby')) === 'words-count');
+  await page.focus('#words-q'); await page.keyboard.type('incident');
+  const hitIds = await page.$$eval('#words-list .words-item:not([hidden])', e => e.map(x => x.dataset.id));
+  check('search runs across every group (from the keyboard), empty groups fold away, the count follows', hitIds.includes('incident') && hitIds.includes('major') && hitIds.includes('postmortem') && (await page.$$eval('#words-list .words-group:not([hidden])', e => e.map(x => x.dataset.group))).every(g => g !== 'build') && (await page.textContent('#words-count')) === hitIds.length + ' words', hitIds);
+  await page.fill('#words-q', 'production');
+  check('search finds a word by its other names ("production": Live)', (await page.$$eval('#words-list .words-item:not([hidden])', e => e.map(x => x.dataset.id))).includes('live'));
   await page.fill('#words-q', 'zzqx');
   check('no match: the list empties and says so', (await shown()).length === 0 && !(await page.$eval('#words-none', e => e.hidden)));
+  check('...and the status line reads it out without showing it twice', (await page.textContent('#words-count')) === en.none && (await page.$eval('#words-count', e => e.getBoundingClientRect().width <= 1)));
   await page.keyboard.press('Escape');
   check('Esc closes it and focus goes back to the button', !(await dlgOpen()) && (await page.evaluate(() => document.activeElement.id)) === 'words-btn');
   await page.click('#words-btn'); await page.click('#words-close');
@@ -163,6 +176,12 @@ def('teaserwords', 'site/index.html (file://): 📖 Dev words button and dialog 
   const marked = () => page.$$eval('abbr.devw', e => e.map(x => x.textContent.toLowerCase()));
   check('"Underline these words on the page" puts dotted lines under them (agents...), not in links or buttons', (await marked()).includes('agents') && await page.$$eval('abbr.devw', e => e.every(x => !x.closest('a,button,dialog'))), await marked());
   check('the choice is remembered (localStorage)', (await page.evaluate(() => localStorage.getItem('aigile-site-devwords'))) === '1');
+  // AIG-1296: terms of more words are underlined as one, the longest first
+  await page.evaluate(() => document.querySelector('main').insertAdjacentHTML('beforeend', '<p id="qa-mw">A major  incident put the status page on red until the backup came back.</p>'));
+  await page.waitForSelector('#qa-mw abbr.devw', { timeout: 5000 }).catch(() => {});
+  const mw = await page.$$eval('#qa-mw abbr.devw', e => e.map(x => x.textContent.replace(/\s+/g, ' ').toLowerCase() + '=' + (x.getAttribute('data-tip') || '').length));
+  check('multi-word terms are underlined as one, the longest wins ("major incident", "status page"), with their explanation', mw.map(x => x.split('=')[0]).join() === 'major incident,status page,backup' && mw.every(x => +x.split('=')[1] > 10), mw);
+  await page.evaluate(() => document.getElementById('qa-mw').remove());
   const a = await page.$('abbr.devw');
   await a.hover();
   const tip = () => page.evaluate(() => { const t = document.getElementById('words-tip'); return t && !t.hidden ? t.textContent : ''; });
