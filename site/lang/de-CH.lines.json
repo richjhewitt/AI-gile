@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Roboter.",
+      "Delegiert."
+    ] },
+    { "n": 2, "texts": [
+      "Kanban, automatisiert.",
+      "Agenten, geordnet.",
+      "Ideen, gebaut."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban für Roboter.",
+      "Ideen werden Features.",
+      "Kostenloses Kanban, lokal."
+    ] },
+    { "n": 5, "texts": [
+      "Ein Kanban-Board, das Agenten abarbeiten.",
+      "Du schreibst Karten. Agenten bauen.",
+      "Kostenlos, lokal, getestet, leicht albern."
+    ] },
+    { "n": 8, "texts": [
+      "Ein kostenloses Kanban-Board, auf dem KI-Agenten richtig arbeiten.",
+      "Schreib eine Idee. Agenten bauen sie. Du nimmst ab.",
+      "Agil für einen Menschen und viele geduldige Roboter."
+    ] },
+    { "n": 13, "texts": [
+      "Ein Kanban-Board auf deinem Computer, bei dem KI-Agenten die Karten übernehmen und abarbeiten.",
+      "Schreib eine Idee. Ein Agententeam baut sie. Ein Tester prüft sie. Du sagst Ja.",
+      "Kostenlos, ohne Konten, ohne Tracker: ein Board, ein paar Roboter, und du hast das Sagen."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile ist ein Kanban-Board für die Arbeit mit KI-Coding-Agenten. Sie übernehmen die Karten; du testest sie und nimmst sie ab.",
+      "Jedes Projekt bekommt einen Lead und ein Team aus KI-Agenten. Kommentiere irgendeine Karte, und schon legt das Team los.",
+      "Ein kostenloses, persönliches To-do-Board, das auf deinem eigenen Computer läuft. Die Arbeiter sind Roboter. Wer Ja sagt, bist du."
+    ] },
+    { "n": 34, "texts": [
+      "Du legst Ideen auf ein Board. Ein Team aus KI-Agenten macht daraus funktionierende Features, testet sie und gibt sie dir zurück, samt Schritten zum Ausprobieren. Erledigt ist erst, was du als erledigt erklärst.",
+      "AI-gile ist ein selbstgebautes Kanban-Board. Rich hat es mit viel Hilfe genau der Agenten gebaut, die es heute verwaltet. Es ist kostenlos, läuft auf deinem Computer und wird mit Freunden geteilt, nicht verkauft.",
+      "Stell dir ein ganz normales Kanban-Board vor, mit Spalten von Backlog bis Erledigt, nur dass die Karten von KI-Agenten bearbeitet werden. Sie melden den Fortschritt, fragen nach, wenn sie hängen, und warten immer auf dein Okay."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile ist ein Kanban-Board, dessen Team aus KI-Agenten besteht. Jedes Projekt hat einen Lead, der die Arbeit plant, und Helfer, die sie bauen. Ist ein Feature fertig, probiert ein KI-Tester es aus und macht einen Screenshot, dann landet es auf deinem Stapel. Nimm es ab, oder kommentiere, und sie überarbeiten es.",
+      "Es fing als Weg eines einzelnen Menschen an, den Überblick über viele KI-Coding-Sitzungen gleichzeitig zu behalten, und wuchs zu einem richtigen Board heran. Es läuft auf deinem Rechner, braucht kein Konto und hat keine Tracker. Für Freunde und Neugierige ist es kostenlos. Es ist auch unfertig, also rechne mit Ecken, Kanten und der einen oder anderen Überraschung.",
+      "Hier die ehrliche Version. Die Ideen musst du immer noch selbst haben, und die Ergebnisse musst du immer noch selbst prüfen. Alles dazwischen übernimmt AI-gile: Es hält die Karten in Ordnung, weckt den richtigen Agenten, wenn du kommentierst, zeigt genau, was sich geändert hat, und legt alles auf einen kurzen Stapel für dich."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile ist ein kostenloses Kanban-Board, das du auf deinem eigenen Computer laufen lässt. Statt Menschen hat jedes Projekt ein Team aus KI-Agenten: einen Lead, der deine Ideen in Karten und einen Plan verwandelt, und Helfer, die die Karten der Priorität nach abarbeiten. Ist etwas gebaut, folgt ein KI-Tester den Testschritten und zeigt dir, was er gesehen hat. Dann wartet es auf einem Stapel mit dem Namen Für dich. Du nimmst es ab, oder du kommentierst und das Team versucht es noch einmal. Nichts landet je ohne dich bei Erledigt.",
+      "Ein paar Dinge, die du vielleicht nicht erwartest. Eine Nachtwache hält die Spalte Zu tun gefüllt, während du schläfst, und wählt Karten, für die sie keine Antwort von dir braucht. Ein Token-Zähler zeigt, wie viel die Agenten heute und diese Woche verbraucht haben, und der Kein-Token-Modus sagt ihnen, dass sie nichts mehr ausgeben sollen. Du kannst Freunden schreiben, und private Nachrichten sind Ende-zu-Ende-verschlüsselt. Das Board spricht etwa 120 Sprachen, darunter Niederländisch, Flämisch, Piratisch und Klingonisch. Nichts davon kostet einen Cent, und niemand versucht, es dir zu verkaufen.",
+      "AI-gile ist ein kleines, persönliches Projekt, kein Unternehmen. Rich wollte mehrere KI-Coding-Projekte betreuen, ohne jede App zu öffnen, um nachzusehen. Also haben er und die Agenten ein Board dafür gebaut und dann mit dem Board den Rest von ihm selbst. Es ist in der geschlossenen Pre-Alpha, das heisst: Es funktioniert, meistens, für eine Handvoll Freunde. Es gibt keine Preisseite, keinen Newsletter und keinen Wachstumsplan. Klingt es nützlich, kannst du fragen, ob du es ausprobieren darfst, sobald es sich etwas weiter öffnet."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile ist ein Kanban-Board für einen Menschen und viele KI-Agenten. Es läuft auf deinem eigenen Computer und ist völlig kostenlos. Du legst Projekte an, und jedes Projekt bekommt einen Lead und ein kleines Team. Mit dem Lead chattest du, ein bisschen wie bei Discord, und beschreibst eine Idee; der Lead macht daraus Karten und einen Plan und wartet, bis du auf Los drückst. Das Team arbeitet die Karten der Priorität nach ab, mit einer einfachen Kommandozeile, die für Sprachmodelle gemacht ist. Bevor etwas zu dir zurückkommt, folgt ein KI-Tester den Schritten in einer Kopie der App und hängt einen Screenshot an. Fertige Arbeit landet auf deinem Stapel, samt geänderten Dateien und Diff. Du nimmst sie ab, oder du hinterlässt einen Kommentar, und das Team wacht auf und versucht es erneut. Nur du kannst eine Karte nach Erledigt schieben.",
+      "Ein Tag mit AI-gile, grob gesagt. Am Abend hinterlässt du ein paar Kommentare: Dieser Knopf sitzt am falschen Platz, jene Liste sollte sortiert sein, könnten wir einen Dunkelmodus haben? Du gehst ins Bett. Die Agenten lesen die Kommentare, ändern, was gewünscht ist, testen es und geben es dir zurück. Läuft Zu tun leer, füllt die Nachtwache es aus dem Backlog mit Karten auf, die keine Antwort von dir brauchen. Am Morgen wartet ein kurzer Stapel: ein paar Fragen und ein paar Dinge zum Ausprobieren, jeweils mit Schritten, denen ein verschlafener Mensch folgen kann, und einem Screenshot, der zeigt, dass es funktioniert. Du klickst dich durch, nimmst die guten ab und schickst den Rest zurück. Ein Token-Zähler zeigt, was das alles gekostet hat, und der Kein-Token-Modus ist für magere Wochen da. Dann frühstückst du, wobei dir die Agenten noch nicht helfen können.",
+      "Zuerst, was AI-gile nicht ist. Es ist kein Start-up, es steht nicht zum Verkauf, und niemand sammelt deine Daten. Es ist ein kostenloses Board, das auf deinem Computer läuft, ohne Konten, ohne Tracker und ohne Cookies. Was es ist: ein ordentlicher Ort, um alle KI-Coding-Projekte auf einmal zu sehen, mit einem Team aus Agenten, das die Karten erledigt, und du triffst die Entscheidungen. Es fasst verwandte Karten zusammen, repariert wirre Titel und achtet darauf, wie schlank der Code bleibt. Es spricht etwa 120 Sprachen, von Niederländisch und Flämisch bis Piratisch und Klingonisch. Freunde können sich privat und verschlüsselt schreiben. Gebaut haben es Rich und sehr viele geduldige Agenten, meistens mit sich selbst. Es ist in der geschlossenen Pre-Alpha und deshalb an manchen Stellen rau. Klingt das nach Spass, frag freundlich, dann kommst du vielleicht früh hinein."
+    ] }
+  ],
+  "quips": {
+    "1": "Ein Wort. Mutig. Vielleicht zu mutig.",
+    "3": "Drei Wörter. Schon ehrlicher als die meisten Produktseiten.",
+    "8": "Acht Wörter. Immer noch kürzer als ein Stand-up.",
+    "21": "Die Längen sind übrigens Story Points. Natürlich sind sie das.",
+    "55": "Fünfundfünfzig Wörter. Zwei Karten wurden fertig, während du das gelesen hast.",
+    "144": "Das war die lange Version. Eine 233 gibt es nicht. Die Agenten sind schlafen gegangen."
+  }
+}

@@ -90,7 +90,7 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
   const nl = { ...read('nl.json'), 'home.newproject': '+ NIEUW PROJECT' }; delete nl['home.find'];
   const b = ctx.browser();
   // Outside Belgium (time zone and browser language), so the picker offers Nederlands, not Vlaams.
-  const pctx = await b.newContext({ viewport: { width: 1400, height: 900 }, locale: 'en-US', timezoneId: 'America/New_York' });
+  const pctx = await b.newContext({ viewport: { width: 1400, height: 900 }, locale: 'en-CA', timezoneId: 'America/New_York' });
   const page = await pctx.newPage();
   page.errors = [];
   page.on('pageerror', e => page.errors.push('pageerror: ' + e.message));
@@ -167,7 +167,7 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
     return out === '1 карточка|3 карточки|5 карточек|21 карточка';
   }));
   check('a plural key with no count uses the one form, a plain string still works', await page.evaluate(() => t('inbox.g.count') === '{count} card' && t('lang.title') === 'Language'));
-  check('English dates follow the browser region (en-US here)', (await page.evaluate(() => i18n.locale)) === 'en-US');
+  check('English dates follow the browser region (en-CA here: no en-CA file, so English with Canadian dates)', (await page.evaluate(() => i18n.locale)) === 'en-CA');
   noErrors(page);
 
   // No saved pick (AIG-352): the device language decides, nl-BE before nl before en; an explicit pick wins.
@@ -193,6 +193,16 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
   check('a nl-NL device with no pick starts in Dutch, with Dutch dates', du.lang === 'nl' && du.locale === 'nl-NL' && !du.names.includes('nl-BE'), du);
   check('plain nl in the Brussels time zone starts in Flemish', (await startIn('nl', null, { timezoneId: 'Europe/Brussels' })).lang === 'nl-BE');
   check('a fr-BE device with no pick starts in French, not Flemish', (await startIn('fr-BE')).lang === 'fr');
+  // AIG-1286: US English, Mexican Spanish, Canadian French, Swiss German: picked by region, listed for everyone.
+  const regions = [['en-US', 'en', 'US'], ['es-MX', 'es', 'MX'], ['fr-CA', 'fr', 'CA'], ['de-CH', 'de', 'CH']];
+  check('languages.json has en-US, es-MX, fr-CA and de-CH, each with its region and base, listed anywhere', regions.every(([c, b, r]) => list.some(l => l.code === c && l.base === b && l.region === r && l.anywhere === true && /\((US|México|Canada|Schweiz)\)/.test(l.name))));
+  for (const [c] of regions) { const r = await startIn(c); check(`a ${c} device with no pick starts in ${c}, with ${c} dates`, r.lang === c && r.html === c && r.locale === c, r); }
+  check('plain de in the Zurich time zone starts in Swiss German', (await startIn('de', null, { timezoneId: 'Europe/Zurich' })).lang === 'de-CH');
+  check('plain en in London stays British English, de-DE stays German', (await startIn('en-GB', null, { timezoneId: 'Europe/London' })).lang === 'en' && (await startIn('de-DE', null, { timezoneId: 'Europe/Berlin' })).lang === 'de');
+  const uk = await startIn('en-GB', null, { timezoneId: 'Europe/London' });
+  check('outside those regions the picker still lists all four', regions.every(([c]) => uk.names.includes(c)), uk.names);
+  const enUS = read('en-US.json'), deCH = read('de-CH.json'), esMX = read('es-MX.json'), frCA = read('fr-CA.json');
+  check('en-US says color and canceled; de-CH has no ß; es-MX says computadora; fr-CA says courriel', enUS['cols.colour'] === 'Color' && enUS['join.cancelled'] === 'canceled' && !JSON.stringify(deCH).includes('ß') && /computadora/.test(esMX['nav.setup.title']) && frCA['life.call'] === 'Appel ou courriel');
   const saved = await startIn('nl-BE', 'en');
   check('a saved en pick wins over a nl-BE device', saved.lang === 'en', saved.lang);
   check('no page errors in the device-language starts', saved.errors.length === 0, saved.errors);
