@@ -3,7 +3,7 @@
 // status labels, live; per role (Alpha tester, Member, Tester, Viewer, Reporter) what the friend's board shows and which
 // buttons exist; the friend's actions land on the owner's side as the same share messages; nothing wakes either team.
 import fs from 'node:fs';
-import { freePort, check, sleep, startServer, mkProject, mkCard, noErrors, def } from '../lib.mjs';
+import { freePort, check, sleep, startServer, mkProject, mkCard, noErrors, def, tbClick } from '../lib.mjs';
 import { startRelay, pair, until } from './share.mjs';
 
 def('shareboard', "a shared project as its own board on the friend's side, shaped by their role: whole board or ticked cards, live columns, raise / comment / status / verdict per role, nothing wakes (AIG-324/325)", async (a, ctx) => {
@@ -161,8 +161,7 @@ def('shareboard', "a shared project as its own board on the friend's side, shape
     await pa.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); if (!localStorage.getItem('aigile.lang')) localStorage.setItem('aigile.lang', 'en'); } catch {} });
     await a.ok('PATCH', `/api/shares/${id}`, { role: 'alpha', scope: 'project' });
     await pa.goto(a.base + '/#/p/lima');
-    await pa.waitForSelector('#shareBtn');
-    await pa.click('#shareBtn');
+    await tbClick(pa, '#shareBtn');
     await pa.waitForSelector('#shareBoard');
     check("owner's dialog: 📋 Show Beatrix my whole board, off", !(await pa.isChecked('#shareBoard')) && /whole board/.test(await pa.textContent('label:has(#shareBoard)')));
     await pa.check('#shareBoard');

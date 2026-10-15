@@ -140,3 +140,12 @@ export async function clickBar(page, sel) {
   if (hidden) await page.click('#tbMoreBtn');
   await page.click(sel);
 }
+// AIG-1149: click a board toolbar button; on a compact toolbar (no cards, AIG-1076) it sits behind the ⋯ More popover (#tbDots), so open that first.
+// target: a selector (#shareBtn) or plain button text (Look, Permissions).
+export async function tbClick(page, target) {
+  const sel = /^[#.\[]|:has-text|^button/.test(target) ? target : `button:has-text("${target}")`;
+  const loc = page.locator(sel).first();
+  await loc.waitFor({ state: 'attached', timeout: 15000 });
+  if (!(await loc.isVisible().catch(() => false)) && await page.isVisible('#tbDots')) { await page.click('#tbDots'); await page.waitForTimeout(200); }
+  await loc.click();
+}

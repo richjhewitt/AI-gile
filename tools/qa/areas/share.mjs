@@ -4,7 +4,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, BASE, freePort, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, freePort, check, sleep, tmp, startServer, mkProject, openPage, noErrors, def, tbClick } from '../lib.mjs';
 import { shareCards } from './share-cards.mjs';
 import { shareMore } from './share-more.mjs';
 import { shareRoles } from './share-roles.mjs';
@@ -164,9 +164,8 @@ def('share', 'sharing a project with a friend: offer / accept over the DMs, need
     await mkProject(a, 'Delta', 'DEL');
     await a.ok('PATCH', `/api/dms/contacts/${cb.id}`, { checked: false });
     const page = await openPage(ctx, '#/p/delta');
-    await page.waitForSelector('#shareBtn');
     check('the board has 🔗 Share with...', /Share with/.test(await page.textContent('#shareBtn')));
-    await page.click('#shareBtn');
+    await tbClick(page, '#shareBtn');
     await page.waitForSelector('#dialog .share-safety');
     check('dialog: an unchecked contact shows the 6 words, Send is off', (await page.textContent('#dialog .share-words')).trim() === cb.safety && await page.isDisabled('#shareSend'));
     await page.click('#dialog .share-safety button');
@@ -182,7 +181,7 @@ def('share', 'sharing a project with a friend: offer / accept over the DMs, need
     await until(async () => (await sh(a)).find(l => l.id === od.id && l.state === 'live'));
     await page.waitForFunction(() => /Linked: Beatrix/.test(document.querySelector('#shareBtn').textContent), null, { timeout: 6000 }).catch(() => {});
     check('the button shows the link', /Linked: Beatrix/.test(await page.textContent('#shareBtn')));
-    await page.click('#shareBtn');
+    await tbClick(page, '#shareBtn');
     await page.waitForSelector('#shareOn');
     await page.uncheck('#shareOn');
     await until(async () => (await sh(a, '?slug=delta'))[0].on === false);
