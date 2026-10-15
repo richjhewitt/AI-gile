@@ -35,7 +35,7 @@ def('urgentbtn', '🔥 button: a tile click makes the card urgent, a second clic
   const q = await mkCard(s, 'alpha', 'Question card', { status: 'doing' });
   s.cli(['ask', 'alpha', q.id, 'Go?', '--as', 'Lead']);
   await s.ok('POST', '/api/projects/alpha/leadchat', { text: 'hello lead' });
-  s.cli(['chat', 'alpha', 'Reply for you', '--as', 'Lead']);
+  s.cli(['chat', 'alpha', 'Reply for you?', '--ask', '--as', 'Lead']);   // only a Lead chat line that asks you reaches the inbox (AIG-1219)
   const ib = await openPage(ctx, '#/inbox');
   await ib.waitForSelector(`.ib-item[data-id="${q.id}"]`);
   await ib.waitForSelector('.ib-item[data-id="chat"]');

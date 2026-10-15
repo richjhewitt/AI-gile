@@ -376,7 +376,9 @@ def('quick', '👀 What\'s happening? summarises the board; 💬 Ask the team se
   const q = (await s.ok('GET', '/api/projects/alpha')).cards.find(c => c.quick);
   check('question card goes to the team', q && q.status === 'team' && q.title === '💬 Where are we with the login page?', q);
   s.cli(['comment', 'alpha', q.id, 'Nearly done, testing now', '--as', 'Lead']);
-  check('the answer lands in your Messages', (await getCard(s, 'alpha', q.id)).needsYou === true && (await s.ok('GET', '/api/inbox')).some(c => c.id === q.id));
+  check('a plain reply on your own 💬 stays off your Messages: it is an instruction to the team (AIG-1215)', (await getCard(s, 'alpha', q.id)).needsYou !== true);
+  s.cli(['ask', 'alpha', q.id, 'Shall I ship it?', '--as', 'Lead']);
+  check('a real question back lands in your Messages', (await getCard(s, 'alpha', q.id)).needsYou === true && (await s.ok('GET', '/api/inbox')).some(c => c.id === q.id));
   // Team picker (AIG-414): defaults to this board; picking another project sends the question there.
   await page.click('button:has-text("Ask the team")');
   await page.waitForSelector('#ask-to');
