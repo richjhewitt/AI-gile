@@ -175,10 +175,19 @@ const Dms = (() => {
   function foldsHtml() {
     const groups = new Map();
     for (const m of thread.messages) { if (!groups.has(m.card)) groups.set(m.card, []); groups.get(m.card).push(m); }
-    const list = [...groups].sort((a, b) => (b[0] === '_lead') - (a[0] === '_lead') || a[1].at(-1).at.localeCompare(b[1].at(-1).at));   // AIG-872: the Lead chat is pinned at the top
+    const list = [...groups].filter(([id]) => !((thread.cards || {})[id] || {}).agentMsg).sort((a, b) => (b[0] === '_lead') - (a[0] === '_lead') || a[1].at(-1).at.localeCompare(b[1].at(-1).at));   // AIG-872: the Lead chat is pinned at the top
     // AIG-1025: folds of cards that are done/accepted sit under a collapsed "Done (N)" toggle; unread, waiting and in-progress ones stay.
     const isDone = id => id !== '_lead' && !thread.watchman && !!((thread.cards || {})[id] || {}).done && !thread.open.some(o => o.id === id) && groups.get(id).some(m => m.mine);   // a done card you never answered (a lead's note) still counts as unread
-    const doneN = list.filter(([id]) => isDone(id)).length, vis = showDone ? list : list.filter(([id]) => !isDone(id));
+    // AIG-1116: a fold stays only while it is current: waiting on you, unread (the lead spoke last and you never answered), or in progress with a message from the last 24 h. Agent-to-agent cards never show.
+    const CUR_MS = 24 * 3600000, current = ([id, msgs]) => {
+      const c = (thread.cards || {})[id] || {}, last = msgs.at(-1);
+      if (id === '_lead' || thread.watchman || thread.assistant || thread.group || c.waiting || thread.open.some(o => o.id === id)) return true;
+      if (c.done) return !msgs.some(m => m.mine);
+      if (c.kind === 'test') return true;
+      return (!last.mine && !msgs.some(m => m.mine)) || Date.now() - Date.parse(last.at) < CUR_MS;
+    };
+    const stale = e => isDone(e[0]) || !current(e);
+    const doneN = list.filter(stale).length, vis = showDone ? list : list.filter(e => !stale(e));
     if (!vis.some(([id]) => id === fold)) fold = (target && vis.some(([id]) => id === target) ? target : null) || (vis.length ? vis.at(-1)[0] : null);
     const doneBox = doneN ? `<div class="dm-closed dm-donebox"><button class="dm-closedlink" data-dmshowdone="1" aria-expanded="${showDone}">${esc(t(showDone ? 'dms.done.hide' : 'dms.done.show', { n: doneN }))}</button></div>` : '';
     return doneBox + vis.map(([id, msgs]) => {
