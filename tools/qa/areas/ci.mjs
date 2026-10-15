@@ -96,5 +96,15 @@ def('ci', '🗂️ configuration items: per project list, add/edit/remove, key n
   await page.click('li[data-ci="ci-2"] button[data-rm]');
   await page.waitForFunction(() => !document.querySelector('li[data-ci="ci-2"]'));
   check('remove on the page deletes it', !(await s.ok('GET', '/api/projects/cfg/ci')).items.some(x => x.id === 'ci-2'));
+  // AIG-1160: a background refresh does not wipe a half-filled item form
+  await page.click('#ci-add');
+  await page.fill('#ci-name', 'half typed');
+  await page.click('#ci-detail');   // focus leaves the name, so only the unsaved text protects the form
+  await s.ok('POST', '/api/projects/cfg/ci', { kind: 'other', name: 'changed elsewhere' });
+  await page.evaluate(() => refresh());
+  await page.waitForTimeout(1500);
+  check('a background refresh keeps a half-filled item form', (await page.inputValue('#ci-name')) === 'half typed');
+  await page.click('.ci-form button[type=button]');
+  await page.waitForSelector('li.ci-row:has-text("changed elsewhere")');
   await noErrors(page);
 }, true);
