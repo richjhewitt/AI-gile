@@ -1,0 +1,101 @@
+{
+ "unit": "words",
+ "sizes": [
+  {
+   "n": 1,
+   "texts": [
+    "Kanban.",
+    "Robotak.",
+    "Delegatuta."
+   ]
+  },
+  {
+   "n": 2,
+   "texts": [
+    "Robotak lanean.",
+    "Agenteak, antolatuta.",
+    "Ideiak, eraikita."
+   ]
+  },
+  {
+   "n": 3,
+   "texts": [
+    "Kanbana robotentzat.",
+    "Ideiak ezaugarri bihurtzen.",
+    "Agente-kanban doakoa."
+   ]
+  },
+  {
+   "n": 5,
+   "texts": [
+    "Agenteek zuzendutako kanban taula.",
+    "Zuk idatzi, agenteek eraiki.",
+    "Doakoa, lokala, probatua, apur bat zentzugabea."
+   ]
+  },
+  {
+   "n": 8,
+   "texts": [
+    "AA agenteek lan egiten duten kanban taula doakoa.",
+    "Idatzi ideia bat. Agenteek eraikiko dute. Zuk onartu.",
+    "Agile gizaki batentzat eta robot pazientzia handiko askorentzat."
+   ]
+  },
+  {
+   "n": 13,
+   "texts": [
+    "Zure ordenagailuko kanban taula, non AA agenteek txartelak hartzen eta lana egiten duten.",
+    "Idatzi ideia bat. Agenteen talde batek eraikiko du. Probatzaile batek egiaztatuko du.",
+    "Doakoa, konturik gabe, aztarnaririk gabe: taula bat, robot batzuk, eta zu agintean."
+   ]
+  },
+  {
+   "n": 21,
+   "texts": [
+    "AI-gile AA bidezko programazio-agenteekin lan egiteko kanban taula bat da. Haiek hartzen dituzte txartelak; zuk probatu eta onartzen dituzu.",
+    "Proiektu bakoitzak taldeburu bat eta AA agenteen talde bat izaten ditu. Egin iruzkina edozein txartelean eta taldea lanean hasiko da.",
+    "Zure ordenagailuan exekutatzen den zeregin-taula pertsonal eta doakoa, konturik eta aztarnarik gabekoa. Langileak robotak dira. Baiezkoa ematen duena zu zara."
+   ]
+  },
+  {
+   "n": 34,
+   "texts": [
+    "Ideiak taulan jartzen dituzu. AA agenteen talde batek ezaugarri funtzionaletan bihurtzen ditu, probatu egiten ditu eta probatzeko urratsekin itzultzen dizkizu. Ezer ez da bukatutzat jotzen zuk esan arte.",
+    "AI-gile etxean egindako kanban taula bat da, Richek eraiki zuena orain kudeatzen dituen agenteen laguntza handiarekin. Doakoa da, zure ordenagailuan exekutatzen da eta lagunekin partekatzen da, ez saltzen.",
+    "Imajinatu ohiko kanban taula bat, Backlogetik Eginda arteko zutabeekin, baina txartelak AA agenteek hartzen dituztela. Aurrerapenaren berri ematen dute, galdetzen dute trabatuta daudenean, eta beti zure baiezkoaren zain geratzen dira."
+   ]
+  },
+  {
+   "n": 55,
+   "texts": [
+    "AI-gile kanban taula bat da, eta bertako taldea AA agenteek osatzen dute. Proiektu bakoitzak lana planifikatzen duen taldeburu bat eta eraikitzen duten laguntzaile batzuk ditu. Ezaugarri bat prest dagoenean, AA probatzaile batek probatu eta pantaila-argazkia ateratzen du, eta gero zure pilara iristen da. Onartu, edo egin iruzkina eta berriro lantzen dute.",
+    "Pertsona baten modua izan zen aldi berean AA bidezko programazio-saio asko jarraitzeko, eta benetako taula bihurtu zen. Zure makinan exekutatzen da, ez du konturik behar eta ez dauka aztarnaririk. Doakoa da lagunentzat eta jakin-minez daudenentzat. Bukatu gabe ere badago, beraz espero ertz latz batzuk eta noizbehinkako sorpresaren bat.",
+    "Hau da bertsio zintzoa. Zuk bururatu behar dituzu oraindik ideiak, eta zuk egiaztatu behar dituzu emaitzak. AI-gilek tartean dagoen guztia egiten du: txartelak ordenean mantentzen ditu, agente egokia esnatzen du iruzkina egitean, zehazki zer aldatu den erakusten du, eta dena pila labur batean uzten du zuretzat."
+   ]
+  },
+  {
+   "n": 89,
+   "texts": [
+    "AI-gile zure ordenagailuan exekutatzen duzun kanban taula doakoa da. Pertsonen ordez, proiektu bakoitzak AA agenteen talde bat du: zure ideiak txartel eta plan bihurtzen dituen taldeburu bat, eta txartelak lehentasun-ordenan hartzen dituzten laguntzaileak. Zerbait eraikita dagoenean, AA probatzaile batek proba-urratsak jarraitzen ditu eta ikusi duena erakusten dizu. Gero Zuretzat izeneko pila batean geratzen da zain. Onartzen duzu, edo iruzkina egiten duzu eta taldeak berriro saiatzen da. Ezer ez da inoiz Eginda zutabera iristen zu gabe.",
+    "Ez dituzun espero agian gauza batzuk. Gaueko zaintzak Egiteko zutabea beteta mantentzen du zu lo zaudela, zure erantzunik behar ez duten txartelak aukeratuz. Token-kontagailuak erakusten du agenteek gaur eta aste honetan zenbat erabili duten, eta Token-gabeko Moduak gastatzeari uzteko esaten die. Lagunei mezuak bidal diezazkiezu, eta mezu pribatuak muturretik muturrera zifratuta daude. Taulak 120 hizkuntza inguru hitz egiten ditu, nederlandera, flandestarra, pirata eta klingonera barne. Horietako ezerk ez du zentimorik balio, eta inork ez dizu saltzen saiatzen ere.",
+    "AI-gile proiektu txiki eta pertsonala da, ez enpresa bat. Richek AA bidezko programazio-proiektu batzuk zaindu nahi zituen aplikazio bakoitza irekitzeke zer moduz zeuden begiratzeko, beraz berak eta agenteek horretarako taula bat eraiki zuten, eta gero taula bera erabili zuten gainerakoa eraikitzeko. Aurre-alfa itxian dago, hau da, funtzionatzen du, gehienetan, lagun sorta txiki batentzat. Ez dago prezio-orririk, ez albisteak bidaltzen dituenik eta ez hazkunde-planik. Erabilgarria iruditzen bazaizu, probatzeko eskatu dezakezu apur bat gehiago irekitzen denean."
+   ]
+  },
+  {
+   "n": 144,
+   "texts": [
+    "AI-gile gizaki bakar batentzako eta AA agente askorentzako kanban taula bat da. Zure ordenagailuan exekutatzen da eta guztiz doakoa da. Proiektuak gehitzen dituzu, eta proiektu bakoitzak taldeburu bat eta talde txiki bat izaten ditu. Taldeburuarekin berriketan aritzen zara, Discorden antzera, eta ideia bat deskribatzen duzu; taldeburuak txartel eta plan bihurtzen du, eta Go sakatzeko zain geratzen da. Taldeak txartelak lehentasun-ordenan egiten ditu, hizkuntza-ereduentzat egindako komando-lerro sinple bat erabiliz. Ezer zuregana itzuli aurretik, AA probatzaile batek aplikazioaren kopia batean urratsak jarraitzen ditu eta pantaila-argazki bat eransten du. Amaitutako lana zure pilara iristen da, aldatutako fitxategiekin eta diff-arekin. Onartzen duzu, edo iruzkin bat uzten duzu eta taldea esnatu eta berriro saiatzen da. Zuk bakarrik mugi dezakezu txartel bat Eginda zutabera.",
+    "AI-gilerekin egun bat, gutxi gorabehera. Arratsaldean iruzkin batzuk uzten dituzu: botoi hau toki okerrean dago, zerrenda hori ordenatu beharko litzateke, modu iluna izan genezake. Ohera zoaz. Agenteek iruzkinak irakurtzen dituzte, aldaketak egiten dituzte, probatzen dituzte eta itzultzen dizkizute. Egiteko zutabea hustuz gero, gaueko zaintzak backlogetik betetzen du, zure erantzunik behar ez duten txartelekin. Goizean pila labur bat dago: galdera pare bat eta probatzeko gauza batzuk, bakoitza lo gaizto dagoen pertsona batek jarrai ditzakeen urratsekin eta funtzionatzen duela erakusten duen pantaila-argazkiarekin. Klik eginez igarotzen zara, onak onartzen dituzu eta gainerakoak itzultzen dituzu. Token-kontagailuak erakusten du horrek guztiak zer erabili duen, eta Token-gabeko Modua aste mehe horietarako dago. Gero gosaltzen duzu, agenteek oraindik laguntzen ezin dutena. Kafea, berriz, lasai edan dezakezu.",
+    "Lehenik, zer ez den AI-gile. Ez da startup bat, ez dago salgai, eta inork ez ditu zure datuak biltzen. Zure ordenagailuan exekutatzen den taula doakoa da, konturik gabe, aztarnaririk gabe eta cookierik gabe. Zer den: AA bidezko programazio-proiektu guztiak aldi berean ikusteko leku txukun bat, agente-talde batek txartelak egiten dituela eta zuk erabakiak hartzen dituzula. Lotutako txartelak batzen ditu, titulu nahasiak zuzentzen ditu, eta kodea zein arin mantentzen den zaintzen du. 120 hizkuntza inguru hitz egiten ditu, nederlandera eta flandestarretik pirata eta klingonera. Lagunek elkarri mezuak bidal diezazkiokete, pribatuki eta zifratuta. Richek eta agente pazientzia handiko askok eraiki zuten, gehienbat bera bera erabiliz. Aurre-alfa itxian dago, beraz toki batzuetan latza da. Dibertigarria dirudiela uste baduzu, eskatu ondo eta agian goiz sartuko zara."
+   ]
+  }
+ ],
+ "quips": {
+  "1": "Hitz bat. Ausarta. Agian gehiegi.",
+  "3": "Hiru hitz. Produktu-orri gehienak baino zintzoagoa jada.",
+  "8": "Zortzi hitz. Zutik egindako bilera bat baino laburragoa oraindik.",
+  "21": "Luzerak story point-ak dira, bide batez. Noski baietz.",
+  "55": "Berrogeita hamabost hitz. Bi txartel bukatu dira hau irakurtzen ari zinen bitartean.",
+  "144": "Hori da luzea. Ez dago 233rik. Agenteak ohera joan dira."
+ }
+}
