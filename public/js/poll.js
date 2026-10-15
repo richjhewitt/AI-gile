@@ -25,6 +25,9 @@ const PagePoll = (() => {
   // A caller's signal stops that caller waiting; a shared read carries on for the others.
   const until = (p, signal) => !signal ? p : signal.aborted ? Promise.reject(signal.reason || new DOMException('Aborted', 'AbortError'))
     : Promise.race([p, new Promise((_, no) => signal.addEventListener('abort', () => no(signal.reason || new DOMException('Aborted', 'AbortError')), { once: true }))]);
+  // AIG-1193: posts that change no board data (the Discord "which project is open" ping fires on every project opened; { quiet: true } for the page's own dark-mode report) must not
+  // throw away every shared read, or the inbox, projects and chats were downloaded again each time.
+  const NO_CHANGE = /^\/api\/presence\/open/;
   async function request(method, url, body, options = {}) {
     const key = epoch + ':' + url;
     if (method === 'GET' && flights.has(key)) return until(flights.get(key), options.signal);
@@ -37,7 +40,7 @@ const PagePoll = (() => {
       let j; try { j = JSON.parse(text); } catch { throw new Error(r.statusText || 'Invalid response'); }
       if (!r.ok) throw new Error(j.error || r.statusText);
       if (j && typeof j === 'object') signatures.set(j, fingerprint(text));
-      if (method !== 'GET') invalidate();
+      if (method !== 'GET' && !options.quiet && !NO_CHANGE.test(url)) invalidate();
       return j;
     })();
     if (method !== 'GET') return work;
