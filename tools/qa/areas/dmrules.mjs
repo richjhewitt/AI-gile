@@ -71,6 +71,9 @@ def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park,
   check('a CLI comment is stored as an AI one (auto false)', (s.cli(['comment', 'rules', c.id, 'Sure, on it', '--as', 'Lead']).code === 0) && (await getCard(s, 'rules', c.id)).comments.at(-1).auto === false);
   const pg = await openPage(ctx, '#/');
   await pg.click('#dmRail [data-dms]'); await pg.click('#dmPanel [data-dm="rules"]');
+  // Only one fold is open at a time (AIG-157/1116), so open the card that holds the rule reply and the CLI comment.
+  await pg.waitForSelector(`#dmList .dm-fold-h[data-fold="${c.id}"]`, { timeout: 6000 }).catch(() => {});
+  await pg.click(`#dmList .dm-fold-h[data-fold="${c.id}"] .dm-tag`).catch(() => {});
   await pg.waitForSelector('#dmList .dm-origin.ai', { timeout: 6000 }).catch(() => {});
   check('a rule reply shows the ⚙ Automated, free chip', /Automated, free/.test(await pg.textContent('#dmList .dm-origin.auto').catch(() => '')));
   check('a CLI comment shows the ✨ AI, uses tokens chip', /AI, uses tokens/.test(await pg.textContent('#dmList .dm-origin.ai').catch(() => '')));
