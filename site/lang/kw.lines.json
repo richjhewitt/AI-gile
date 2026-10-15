@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Robots.",
+      "Delegys."
+    ] },
+    { "n": 2, "texts": [
+      "Kanban robots.",
+      "Ajentys, ordenys.",
+      "Tybyansow, gwrys."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban rag robots.",
+      "Tybyansow a dheu gwryansow.",
+      "Kanban ajentys, heb pris."
+    ] },
+    { "n": 5, "texts": [
+      "Bord kanban dhyworth ajentys gorrys.",
+      "Ty a skriv. Ajentys a wrella.",
+      "Heb pris, lokel, previs, nebes gokki."
+    ] },
+    { "n": 8, "texts": [
+      "Bord kanban heb pris ma ajentys AI a ober ynno.",
+      "Skriv tybyans. Ajentys a'n gwra. Ty a'n asta.",
+      "Agile rag unn den ha lies robot a dal."
+    ] },
+    { "n": 13, "texts": [
+      "Bord kanban war dha gonpoder, ajentys AI ow kemmer kardys, ty an penn.",
+      "Skriv tybyans. Bagas a ajentys a'n gwra. Prevyer a'n whythra. Ty a lever eth.",
+      "Heb akontys, heb holyoryon: bord, nebes robots, ha ty yw an gwarden."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile yw bord kanban rag ober gans ajentys kodya AI. Y a gemmer an kardys; ty a'ga previ hag a'ga asta.",
+      "Pub towl a gav penn ha bagas a ajentys AI. Notya war onan vyth a'n kardys, ha'n bagas a dhallath ober.",
+      "Bord a oberow personek heb pris, ow tos war dha gonpoder dha honan. An oberoryon yw robots. An den a lever eth yw ty."
+    ] },
+    { "n": 34, "texts": [
+      "Ty a worr tybyansow war an bord. Bagas a ajentys AI a'ga gwra gwryansow a ober, a'ga prov, ha'ga dri war-dhelergh gans gradhow dhe asaya. Nyns yw tra vyth gwrys erna lever ty.",
+      "AI-gile yw bord kanban gwrys y'n chi a wrug Rich gans gweres bras a'n ajentys a wra ev lywya lemmyn. Heb pris yw, ow tos war dha gonpoder ha kevrennys gans mikyow, ny'n gwerthir.",
+      "Gwel bord kanban kemmyn, gans colonnow dhyworth Backlog bys yn Done, marnas ajentys AI a gemmer an kardys. Y a wra derivas aga fordh, govyn pan vons stak, ha gortos pup prys dha vawl wartha."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile yw bord kanban le may ma an bagas gwrys a ajentys AI. Pub towl a'n jeus penn a wra towl an ober, ha gweresoryon a'n gwra. Pan yw parys an gwryans, prevyer AI a'n prov hag a gemmer skeusenn skrin, ena ev a dheu dhe'th pil. Asta ev, po notya, ha'n bagas a wra arta.",
+      "Dallath a wrug dre unn den a vynna holya lies sesyon kodya AI war unn prys, ha tevi a wrug dhe bord gwir. A dheu war dha gonpoder, ny'n jeus res a akont, ha nyns eus holyoryon. Heb pris yw rag mikyow ha tus a'n jeus hwans. Nyns yw gorfednys hwath, ytho gwayt bleydhow kales ha taclow dyannedhys.",
+      "Ottomma an versyon wir. Res yw dhis hwath kavos an tybyansow, ha res yw dhis hwath whythra an dyvres. An pyth a wra AI-gile yw pub tra yn-dann: ev a with an kardys yn ordyr, a dhifun an ajent ewn pan wredh notya, a dhiskwedh poran an pyth a chanjyas, hag a'n kuntell oll yn unn pil berr ragos."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile yw bord kanban heb pris a dheu war dha gonpoder dha honan. Yn le tus, pub towl a'n jeus bagas a ajentys AI: penn a wra dha dybyansow kardys ha towl, ha gweresoryon a gemmer an kardys herwydh poos. Pan yw tra gwrys, prevyer AI a holya gradhow an previ hag a dhiskwedh an pyth a welas. Ena ev a wayt yn unn pil henwys Ragos. Ty a'n asta, po notya, ha'n bagas a assay arta. Nyns usi tra vyth ow tos dhe Done hebdhos.",
+      "Nebes tuchyow na wayt ty martesen. Golvan nos a with an golonn Dhe wul leun hag ty ow kweskes, ow tewis kardys na wra whansa gorthyp dhyworth dhis. Kontyer tokenys a dhiskwedh pygemmys a wrug an ajentys usya hedhyw ha'n seythun ma, ha No Token Mode a lever dhedha hedhi. Ty a yll skrifa dhe vikyow, ha messajys privedh yw kodys a-dhiwedh dhe dhiwedh. An bord a gews dro dhe 120 yeth, Iseldiryek, Flemmyk, pirat ha Klingon ynna. Nyns yw tra vyth anodho pris, ha nyns eus den ow whilas y werthi dhis.",
+      "AI-gile yw towl byghan personek, nyns yw kowethas. Rich a vynna gwitha lies towl kodya AI heb ygeri pub app dhe wellas, ytho ev hag an ajentys a wrug bord rag hedna, ena ev a usyas an bord dhe wul an remnant anodho y honan. Yma yn pre-alfa ken, hag a wra ober, an brassa rann, rag nebes mikyow. Nyns eus folen prisyow, lyther-nowodhow na towl kressya. Mar hevel ev da dhis, ty a yll govyn pan wra ygeri nebes moy dhe'y brevi."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile yw bord kanban rag unn den ha lies ajent AI. A dheu war dha gonpoder dha honan hag yw heb pris yn tien. Ty a worr towlow, ha pub towl a gav penn ha bagas byghan. Ty a gows gans an penn, nebes avel Discord, ha deskrifa tybyans; an penn a'n gwra kardys ha towl, ena ev a wayt erna wrello ty wul Ke. An bagas a oberi dre an kardys herwydh poos, dre linen gomment sempel gwrys rag modellow yeth. Kens es tra vyth dhe dhehweles dhis, prevyer AI a holya an gradhow y'n kopi a'n app hag a worr skeusenn skrin. Ober gorfednys a dheu dhe'th pil gans an fylennow chanjys ha'n dyffrans. Ty a'n asta, po gasa notya, ha'n bagas a dhifun hag assaya arta. Yn unnik ty a yll gorra kard dhe Done. Oll hemma a dheu war dha gonpoder, heb akontys, heb holyoryon, heb koogyow.",
+      "Dydh gans AI-gile, a-dro. Der an gordhuwher ty a asa nebes notyow: an boton ma yw yn le kamm, an rol na a res bos ordenys, a yllyn kavos tema tewl. Ty a dhe dhe gwetha. An ajentys a red an notyow, gul an chanjyow, aga previ hag aga dri dhis arta. Mars yw gwag Dhe wul, an golvan nos a'n leun dhyworth an backlog gans kardys na wra whansa gorthyp dhyworth dhis. Y'n myttin yma unn pil berr: dew wovynn ha nebes taclow dhe brevi, pub onan gans gradhow a yll den kyskus aga holya ha skeusenn skrin ow tiskwedhes y fia ober. Ty a glyck dre oll, asta an re dha ha danvon an remnant war-dhelergh. Kontyer tokenys a dhiskwedh pyth a wrug oll hemma usya, ha No Token Mode yw rag seythunyow tynn. Ena ty a dhebry dha vyttin, na yll an ajentys gweres ynny hwath.",
+      "A-varth, an pyth nyns yw AI-gile. Nyns yw startup, ny'n gwerthir, ha nyns eus den ow kuntell dha dhata. Bord heb pris yw a dheu war dha gonpoder, heb akontys, heb holyoryon, heb koogyow. An pyth yw: unn le kemmys ordenys dhe weles pub towl kodya AI warbarth, gans bagas a ajentys ow ober an kardys ha ty ow tesedha. Ev a gelmy kardys a-dro, ewnhe titelys kemmyskys, ha gwitha golvan dhe bell may kemmer an kod skav. A gews dro dhe 120 yeth, dhyworth Iseldiryek ha Flemmyk bys yn pirat ha Klingon. Mikyow a yll skrifa an eyl dhe'n gela, yn privedh ha kodys. Gwrys veu gans Rich ha niver bras a ajentys a dhal, an brassa rann ow usya y honan. Yma yn pre-alfa ken, ytho kales yw yn nebes plasow. Mar tykki ev hwek, pys yn ewn, ha martesen ty a dheu yn abarth."
+    ] }
+  ],
+  "quips": {
+    "1": "Unn ger. Bold. Martesen re vold.",
+    "3": "Tri ger. Kens onest es an brassa rann a folennow produkt.",
+    "8": "Eth ger. Hwath berrach es sevel.",
+    "21": "An hirderow yw poyntys hwedhel, dre an fordh. Yn sur y'ns y.",
+    "55": "Pymp ha hanter-kans ger. Dew gard a veu gorfednys ha ty ow redya.",
+    "144": "Hemma yw an hirra. Nyns eus 233. An ajentys eth dhe gwetha."
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "unit": "words",
+  "sizes": [
+    {
+      "n": 1,
+      "texts": [
+        "Kanban.",
+        "Roboteren.",
+        "Delegéiert."
+      ]
+    },
+    {
+      "n": 2,
+      "texts": [
+        "Roboteren schaffen.",
+        "Agenten, organiséiert.",
+        "Iddien, gebaut."
+      ]
+    },
+    {
+      "n": 3,
+      "texts": [
+        "Kanban fir Roboteren.",
+        "Iddie ginn Funktiounen.",
+        "Gratis Agent-Kanban."
+      ]
+    },
+    {
+      "n": 5,
+      "texts": [
+        "Kanban-Tafel, vun Agenten ugedriwwen.",
+        "Du schreifs Kaarten. Agenten bauen.",
+        "Gratis, lokal, getest, e bësse domm."
+      ]
+    },
+    {
+      "n": 8,
+      "texts": [
+        "Eng gratis Kanban-Tafel, op där KI-Agenten schaffen.",
+        "Schreif eng Iddi. Agenten bauen se. Du hëlls un.",
+        "Agile fir ee Mënsch a vill gedëlleg Roboteren."
+      ]
+    },
+    {
+      "n": 13,
+      "texts": [
+        "Eng Kanban-Tafel op dengem Computer, där KI-Agenten d'Kaarten ofschaffen, während s du de Chef bleifs.",
+        "Schreif eng Iddi. E Team vun Agenten baut se. En Tester kontrolléiert se. Du seess Jo.",
+        "Keng Konten, keng Tracker: eng Tafel, e puer Roboteren an du, deen d'Say huet."
+      ]
+    },
+    {
+      "n": 21,
+      "texts": [
+        "AI-gile ass eng Kanban-Tafel fir d'Zesummenaarbecht mat KI-Programméieragenten. Si huelen d'Kaarten, du testes se a hëlls se un.",
+        "All Projet kritt e Lead an e Team vun KI-Agenten. Kommentéier iergendeng Kaart, an d'Team mécht sech un d'Aarbecht.",
+        "Eng gratis, perséinlech To-do-Tafel, déi op dengem eegene Computer leeft. D'Aarbechter sinn Roboteren. Deen, dee Jo seet, bass du."
+      ]
+    },
+    {
+      "n": 34,
+      "texts": [
+        "Du leess Iddie op eng Tafel. E Team vun KI-Agenten mécht se zu funktionéierende Funktiounen, testet se a gëtt se der zeréck, mat Schrëtt zum Probéieren. Näischt zielt als fäerdeg, bis du et seess.",
+        "AI-gile ass eng hausgemaachte Kanban-Tafel, déi de Rich mat vill Hëllef vun den Agenten gebaut huet, déi se elo verwalt. Si ass gratis, leeft op dengem Computer a gëtt mat Frënn gedeelt, net verkaaft.",
+        "Stell der eng ganz normal Kanban-Tafel vir, mat Kolonnen vu Backlog bis Done, nëmmen datt d'Kaarten vun KI-Agenten opgeholl ginn. Si bréngen Neiegkeeten, froen no, wa se festhänken, a waarden ëmmer op däin Daum no uewen."
+      ]
+    },
+    {
+      "n": 55,
+      "texts": [
+        "AI-gile ass eng Kanban-Tafel, wou d'Team aus KI-Agenten besteet. All Projet huet e Lead, deen d'Aarbecht plangt, an Hëllefer, déi se bauen. Wann eng Funktioun prett ass, probéiert en KI-Tester se aus a mécht e Screenshot, duerno landet se an dengem Stapel. Huel se un, oder kommentéier, an d'Team schafft se nei.",
+        "Et huet ugefaange mat enger Persoun, déi vill KI-Programméiersessiounen op eemol am Bléck wollt behalen, a gouf zu enger richteger Tafel. Si leeft op dengem Computer, brauch kee Kont a läit keng Tracker un. Si ass gratis fir Frënn a fir all, deen nei giereg ass. Si ass nach net fäerdeg, also erwaart rau Kanten an heiansdo eng Iwwerraschung.",
+        "Hei ass déi éierlech Versioun. Du muss nach ëmmer d'Iddie hunn, an du muss d'Resultater nach ëmmer kontrolléieren. Wat AI-gile mécht, ass alles dertëscht: et hält d'Kaarten an der Rei, erweckt dee richtegen Agent, wann s du kommentéiers, weist genee, wat geännert gouf, a sammelt alles an engem kuerze Stapel fir dech."
+      ]
+    },
+    {
+      "n": 89,
+      "texts": [
+        "AI-gile ass eng gratis Kanban-Tafel, déi s du op dengem eegene Computer lafe léiss. Amplaz vu Leit huet all Projet e Team vun KI-Agenten: e Lead, deen deng Iddien a Kaarten an e Plang ëmwandelt, an Hëllefer, déi d'Kaarten no Prioritéit ofschaffen. Wann eppes gebaut ass, geet en KI-Tester d'Testschrëtt duerch a weist dir, wat en gesinn huet. Dunn waart et an engem Stapel mam Numm Fir dech. Du hëlls et un, oder du kommentéiers, an d'Team probéiert et nach eng Kéier. Näischt kënnt ouni dech bei Done.",
+        "E puer Funktiounen, un déi s du vläicht net denks. Eng Nuechtwuecht hält d'Kolonn Ze maachen gefëllt, während s du schléifs, a wielt Kaarten aus, déi keng Äntwert vun dir brauchen. En Token-Zieler weist, wéi vill d'Agenten haut an dës Woch gebraucht hunn, an de No Token Mode seet hinnen, si sollen oppassen. Du kanns Frënn schreiwen, a privat Noriichte sinn Enn-zu-Enn verschlësselt. D'Tafel schwätzt ongeféier 120 Sproochen, dorënner Hollännesch, Flämesch, Piroten a Klingonesch. Näischt dovun kascht eppes, a keen probéiert dir et ze verkafen.",
+        "AI-gile ass e klengt, perséinlecht Projet, keng Firma. De Rich wollt e puer KI-Programméierprojete bedreien, ouni all App opzemaachen, fir no all ze kucken, also hunn hien an d'Agenten eng Tafel dofir gebaut an duerno mat där Tafel de Rescht vun hirem Selwer. Si ass an der zouener Pre-Alpha, dat heescht, si funktionéiert, meeschtens, fir eng Handvoll Frënn. Et gëtt keng Präisssäit, keen Newsletter a kee Wuesstemsplang. Wann et nëtzlech kléngt, kanns du froen, ob s du et probéiere kanns, wann et e bësse méi opgeet."
+      ]
+    },
+    {
+      "n": 144,
+      "texts": [
+        "AI-gile ass eng Kanban-Tafel fir ee Mënsch a ganz vill KI-Agenten. Si leeft op dengem eegene Computer a ass komplett gratis. Du setz Projeten un, an all Projet kritt e Lead an e klengt Team. Du schwätz mam Lead, ongeféier wéi bei Discord, a beschreifs eng Iddi; de Lead mécht Kaarten an e Plang dorausser a waart dann, bis s du op Go dréckss. D'Team schafft d'Kaarten no Prioritéit of, mat enger einfacher Kommandozeil, déi fir Sproochmodeller gemaach ass. Ier eppes bei dech zeréckkënnt, geet en KI-Tester d'Schrëtt an enger Kopie vun der App duerch a mécht e Screenshot derbäi. Fäerdeg Aarbecht landet an dengem Stapel, mat de geännerten Dateien an dem Ënnerscheed. Du hëlls se un, oder du léiss e Kommentar, an d'Team erwächt a probéiert et nach eng Kéier. Nëmmen du kanns eng Kaart op Done réckelen. Alles dat leeft op dengem Computer, ouni Konten, ouni Tracker an ouni Cookien.",
+        "E Dag mat AI-gile, ongeféier. Owes léiss du e puer Kommentarer: dëse Knäppchen ass um falsche Plaz, déi Lëscht soll sortéiert sinn, kéinte mir en donkelen Design hunn. Du gees schlofen. D'Agenten liesen d'Kommentarer, maache d'Ännerungen, testen se a ginn se dir zeréck. Wann Ze maachen eidel gëtt, fëllt d'Nuechtwuecht et aus dem Backlog mat Kaarten, déi keng Äntwert vun dir brauchen. Moies ass do ee kuerze Stapel: e puer Froen an e puer Saachen zum Probéieren, jidd mat Schrëtt, déi e schläfrege Mënsch kann nogoen, an engem Screenshot, dee weist, datt et funktionéiert. Du klicks dech duerch, hëlls dat Gutt un a schéckss de Rescht zeréck. En Token-Zieler weist, wat dat alles gebraucht huet, an de No Token Mode ass fir schmuel Wochen do. Dann hues du Fréistuck, wou d'Agenten nach net kënne hëllefen. An der Zäit schaffe se virun, an du hues ëmmer dat lescht Wuert.",
+        "Als Éischt, wat AI-gile net ass. Et ass kee Startup, et ass net ze verkafen, a keen sammelt deng Daten. Et ass eng gratis Tafel, déi op dengem Computer leeft, ouni Konten, ouni Tracker an ouni Cookien. Wat et ass: eng ordentlech Plaz, fir all KI-Programméierprojet op eemol ze gesinn, mat engem Team vun Agenten, dat d'Kaarten ofschafft, an dir, deen d'Decisiounen trëfft. Et fält verwandte Kaarten zesummen, flécket duerchenee Titelen a passt op, datt de Code schlank bleift. Et schwätzt ongeféier 120 Sproochen, vum Hollännesche a Flämesche bis zu Piroten a Klingonesch. Frënn kënnen sech schreiwen, privat a verschlësselt. Et gouf vum Rich a ganz villen gedëlleg Agenten gebaut, meeschtens mat sech selwer. Et ass an der zouener Pre-Alpha, dofir ass et op e puer Plazen rau. Wann et nom Spaass kléngt, frot léif, a vläicht kënns du fréi eran."
+      ]
+    }
+  ],
+  "quips": {
+    "1": "Ee Wuert. Mutteg. Vläicht ze mutteg.",
+    "3": "Dräi Wierder. Elo schonn éierlecher wéi déi meescht Produktsäiten.",
+    "8": "Aacht Wierder. Ëmmer nach méi kuerz wéi e Stand-up.",
+    "21": "D'Längte sinn iwwregens Story Points. Natierlech sinn et dat.",
+    "55": "Fënnefafofzeg Wierder. Zwou Kaarten si fäerdeg ginn, während s du dat gelies hues.",
+    "144": "Dat ass déi laang. Et gëtt keng 233. D'Agenten sinn schlofe gaang."
+  }
+}
