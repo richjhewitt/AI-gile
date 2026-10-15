@@ -76,6 +76,23 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
     const l = [...document.querySelectorAll('#famous-list li')], s = [...document.querySelectorAll('#famous-sources li')];
     return l.length >= 4 && s.length === l.length && s.every(x => /^https:/.test(x.querySelector('a')?.href)) && document.getElementById('famous-n').textContent === '37' && document.documentElement.scrollWidth <= innerWidth;
   })); } // the famous apps section is off since AIG-1222: only checked while it is on the page
+
+  // AIG-1295: the feature grid has whole rows (no gap) on desktop, tablet and phone, also right-to-left; the service card is in it
+  const grid = () => page.$eval('.features', g => {
+    const cols = getComputedStyle(g).gridTemplateColumns.split(' ').length, cards = [...g.children], gr = g.getBoundingClientRect(), last = cards[cards.length - 1].getBoundingClientRect();
+    const rtl = getComputedStyle(g).direction === 'rtl', edge = rtl ? Math.abs(last.left - gr.left) : Math.abs(gr.right - last.right);
+    return { cols, n: cards.length, edge: Math.round(edge), wide: document.documentElement.scrollWidth <= innerWidth };
+  });
+  check('the service card is on the teaser (AIG-1295)', await page.$eval('[data-i18n="f.service.h"]', e => e.textContent.trim().length > 5 && !!e.closest('.features')).catch(() => false));
+  for (const [w, cols] of [[1400, 3], [768, 2], [390, 1]]) {
+    await page.setViewportSize({ width: w, height: 900 });
+    const g = await grid();
+    check('at ' + w + 'px the feature grid has ' + cols + ' columns and no gap in the last row (AIG-1295)', g.cols === cols && g.edge <= 1 && g.wide, g);
+  }
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await page.evaluate(() => document.documentElement.setAttribute('dir', 'rtl'));
+  { const g = await grid(); check('right-to-left: the feature grid still has no gap (AIG-1295)', g.cols === 3 && g.edge <= 1 && g.n % 3 === 0, g); }
+  await page.evaluate(() => document.documentElement.removeAttribute('dir'));
   check('no page errors', errs.length === 0, errs);
 
   const p2 = await ctx.newPage();

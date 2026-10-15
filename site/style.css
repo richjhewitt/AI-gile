@@ -57,7 +57,10 @@ h1{font-size:clamp(2rem,8vw,3.75rem);line-height:1.1;margin:24px 0 12px;font-wei
 .btn.soon small{color:var(--muted)}
 .secondary{margin-top:24px;color:var(--muted);font-size:14px}
 
-.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px;padding:32px 0}
+.features{display:grid;grid-template-columns:1fr;gap:16px;padding:32px 0}
+/* AIG-1295: whole rows at every width: 3 columns on desktop, 2 on tablet with an odd last card across both, 1 on phones */
+@media (min-width:600px){.features{grid-template-columns:repeat(2,1fr)}.features>.card:last-child:nth-child(odd){grid-column:1/-1}}
+@media (min-width:900px){.features{grid-template-columns:repeat(3,1fr)}.features>.card:last-child:nth-child(odd){grid-column:auto}}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px;position:relative}
 .card .ic{font-size:28px;line-height:1;display:block;margin-bottom:8px}
 .card h2{margin:0 0 8px;font-size:21px}
