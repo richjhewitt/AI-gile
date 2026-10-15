@@ -66,3 +66,14 @@
 
 /* AIG-1086: no windows on a phone, so no Pop out in the new card, the dialogs or the open card */
 @media (max-width: 600px) { .dlg-pop, .card-pop { display: none !important; } }
+
+/* AIG-1199: a thumb on every target (about 40px): brand, Inbox, search and form inputs, folds, column + and fire, DM close and back */
+@media (max-width: 760px) {
+  #brand, .ib-btn, a.ib-bin { display: inline-flex; align-items: center; min-height: 40px; }
+  input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]):not([type=color]) { min-height: 40px; box-sizing: border-box; }
+  .bdetails summary, details.nc-more > summary { padding-block: 10px; }
+  .toolbar .tb-dots { min-height: 40px; }
+  .colbtn, .urg-btn, .card .urg-btn { min-width: 40px; }
+  .dm-head button, .dm-rowx { min-width: 40px; }
+}
+@media (hover: none) { .dm-rowx { opacity: .7; } }

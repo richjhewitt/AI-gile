@@ -11,3 +11,12 @@ function installHint() {
     <p class="muted"><small>${esc(t('pwa.note'))}</small></p>
     <div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
 }
+
+// AIG-1199: a phone's keyboard covers the input you tapped (a chat box sits at the bottom edge): once it is up, scroll the box into view
+(() => {
+  if (!window.visualViewport || !window.matchMedia || !matchMedia('(hover: none)').matches) return;
+  let last = null;
+  const show = () => { if (last && document.activeElement === last) { try { last.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch {} } };
+  document.addEventListener('focusin', e => { if (e.target.matches && e.target.matches('textarea, input[type=text], input[type=search], input:not([type])')) { last = e.target; setTimeout(show, 350); } });
+  visualViewport.addEventListener('resize', show);
+})();
