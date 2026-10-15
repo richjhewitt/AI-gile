@@ -25,6 +25,22 @@ const PagePoll = (() => {
   // A caller's signal stops that caller waiting; a shared read carries on for the others.
   const until = (p, signal) => !signal ? p : signal.aborted ? Promise.reject(signal.reason || new DOMException('Aborted', 'AbortError'))
     : Promise.race([p, new Promise((_, no) => signal.addEventListener('abort', () => no(signal.reason || new DOMException('Aborted', 'AbortError')), { once: true }))]);
+  // AIG-1194: what the person reads when something fails: plain words, never "Error:", a status code, stack text or JSON.
+  const say = (key, fallback) => { try { const v = t(key); if (v !== key) return v; } catch {} return fallback; };
+  const friendly = (kind) => {
+    const e = new Error(kind === 'unreachable' ? say('err.unreachable', "Can't reach AI-gile right now. Check that it is still running; this page keeps trying.")
+      : kind === 'slow' ? say('err.slow', 'AI-gile took too long to answer. Please try again in a moment.')
+      : kind === 'relay' ? say('err.relay', "Can't reach the relay (the go-between for friends, shares and messages). Check your internet connection and try again.")
+      : say('err.server', 'Something went wrong inside AI-gile, so that did not work. Please try again.'));
+    e.kind = kind; e.unreachable = kind === 'unreachable' || kind === 'slow'; return e;
+  };
+  // A message the board wrote: kept when it reads as a sentence, swapped for plain words when it is a code, a stack line or JSON.
+  const plain = (msg, status) => {
+    const m = String(msg == null ? '' : msg).trim();
+    if (/relay said|fetch failed|ECONN|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|EHOSTUNREACH|ENETUNREACH|UND_ERR|socket hang up|network|could not reach it|the relay answered|no answer within/i.test(m)) return friendly('relay').message;
+    if (!m || /^[A-Za-z]*Error\b|\bat \S+ \(.*:\d+|\bat async\b|^[{[]|"error"|<\/?[a-z]+|\[object|^undefined$|^null$|Unexpected token|is not valid JSON|^\d{3}$|^(Internal Server Error|Bad Gateway|Service Unavailable|Gateway Timeout|Not Found|Failed to fetch|Load failed|NetworkError|AbortError|TimeoutError)/i.test(m)) return friendly(status === 404 ? 'notfound' : 'server').message;
+    return m;
+  };
   async function request(method, url, body, options = {}) {
     const key = epoch + ':' + url;
     if (method === 'GET' && flights.has(key)) return until(flights.get(key), options.signal);
@@ -32,10 +48,16 @@ const PagePoll = (() => {
     const timeout = options.timeout ?? (method === 'GET' ? 15000 : 0), tsig = timeout ? AbortSignal.timeout(timeout) : undefined;
     const signal = method === 'GET' ? tsig : (tsig && options.signal ? AbortSignal.any([tsig, options.signal]) : tsig || options.signal);
     const work = (async () => {
-      const r = await fetch(url, { method, signal, cache: 'no-store', headers: { 'Content-Type': 'application/json' }, body: body === undefined || body === null ? undefined : JSON.stringify(body) });
-      const text = await r.text();
-      let j; try { j = JSON.parse(text); } catch { throw new Error(r.statusText || 'Invalid response'); }
-      if (!r.ok) throw new Error(j.error || r.statusText);
+      let r, text;
+      try {
+        r = await fetch(url, { method, signal, cache: 'no-store', headers: { 'Content-Type': 'application/json' }, body: body === undefined || body === null ? undefined : JSON.stringify(body) });
+        text = await r.text();
+      } catch (e) {
+        if (options.signal && options.signal.aborted) throw e;   // the caller stopped waiting: not a failure to explain
+        throw friendly(e && e.name === 'TimeoutError' ? 'slow' : 'unreachable');
+      }
+      let j; try { j = JSON.parse(text); } catch { throw friendly('server'); }
+      if (!r.ok) { const e = new Error(plain(j && j.error, r.status)); e.status = r.status; throw e; }
       if (j && typeof j === 'object') signatures.set(j, fingerprint(text));
       if (method !== 'GET') invalidate();
       return j;
@@ -113,5 +135,5 @@ const PagePoll = (() => {
     return () => { if (!stopped && alerts) alertTimers--; stopped = true; clearTimeout(timer); document.removeEventListener('visibilitychange', visible); };
   }
   function remember(data) { if (data && typeof data === 'object' && !signatures.has(data)) signatures.set(data, fingerprint(JSON.stringify(data))); return data; }
-  return { get, request, signature, remember, invalidate, every, revision, get generation() { return epoch; } };
+  return { get, request, plain, signature, remember, invalidate, every, revision, get generation() { return epoch; } };
 })();

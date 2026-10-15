@@ -54,7 +54,7 @@
     const hadPage = !!el('ib');
     try { await IB.load(force); } catch (e) {   // force: e.g. the swarm's "show other projects" changes the list without moving the stamp
       if (parseRoute().view !== 'inbox') return;
-      el('live').className = 'live off'; el('live').textContent = t('live.offline', { msg: e.message }); return;
+      el('live').className = 'live off'; el('live').textContent = liveError(e); return;
     }
     if (parseRoute().view !== 'inbox') return;
     el('live').className = 'live'; el('live').textContent = t('live.ok');

@@ -3807,5 +3807,11 @@
  "rev.summary.busy": "De dienstdoende agent wordt gevraagd...",
  "rev.summary.noai": "Geen samenvatting: AI staat uit (No Token Mode, Geen AI of budget op).",
  "rev.summary.failed": "De agent gaf deze keer geen samenvatting.",
- "tb.b.quietTop": "🌙 Even weg"
+ "tb.b.quietTop": "🌙 Even weg",
+ "live.cantreach": "AI-gile is niet bereikbaar, ik probeer het opnieuw…",
+ "live.trouble": "AI-gile had een probleem, ik probeer het opnieuw…",
+ "err.unreachable": "AI-gile is nu niet bereikbaar. Controleer of het nog draait; deze pagina blijft het proberen.",
+ "err.slow": "AI-gile antwoordde te langzaam. Probeer het zo meteen opnieuw.",
+ "err.relay": "De relay (de tussenschakel voor vrienden, delen en berichten) is niet bereikbaar. Controleer je internetverbinding en probeer het opnieuw.",
+ "err.server": "Er ging iets mis in AI-gile, dus dat is niet gelukt. Probeer het opnieuw."
 }

@@ -86,7 +86,7 @@ def('boot', '⏳ start-up survives a bad load: broken or 503 script, failed lang
   await page.evaluate(() => { window.qaRenderHome = renderHome; renderHome = () => { throw new Error('qa render boom'); }; refresh(true); });
   await page.waitForSelector('#app .render-note', { timeout: 5000 }).catch(() => {});
   const note = await page.evaluate(() => { const n = document.querySelector('#app .render-note'); return n && { text: n.textContent, btn: (n.querySelector('button') || {}).textContent }; });
-  check('render() throwing shows the error note with a Reload button', note && note.text.includes('qa render boom') && note.btn === '🔄 Reload', note);
+  check('render() throwing shows the error note with a Reload button, in plain words (AIG-1194: the raw message stays in the console)', note && !note.text.includes('qa render boom') && note.btn === '🔄 Reload', note);
   check('... and logs the error to the console', page.errors.some(e => e.includes('qa render boom')), page.errors);
   await sleep(1500);
   check('... the note stays while render keeps failing', (await page.locator('#app .render-note').count()) === 1);

@@ -187,6 +187,8 @@ const RISKS = ['small', 'normal', 'risky'];   // AIG-612
 const state = { route: null, projects: [], inbox: [], project: null, openCard: null, showArchived: false, editing: false, dragging: false, lastSig: null };
 try { state.showArchived = localStorage.getItem('aigile.showArchived') === '1'; } catch {}
 
+// AIG-1194: the small status in the top bar when a refresh fails: calm, plain, and it says the page keeps trying.
+const liveError = e => t(e && e.unreachable ? 'live.cantreach' : 'live.trouble');
 const api = async (method, url, body, options = {}) => {
   // PagePoll.request: shared GETs, a 15 s timeout on reads (a stalled connection cannot hold the refresh queue), the caller's signal.
   const j = await PagePoll.request(method, url, body, options);
@@ -448,7 +450,7 @@ async function refreshStaged(force, liveState, state, api) {
   } catch (e) {
     if (JSON.stringify(parseRoute()) !== route) return;
     $('live').className = 'live off';
-    $('live').textContent = t('live.offline', { msg: e.message });
+    $('live').textContent = liveError(e);
     if (!$('app').firstElementChild) Boot.note();   // nothing drawn yet (AIG-517): say so; the 1s poll tries again
     return;
   }
@@ -474,8 +476,8 @@ async function refreshStaged(force, liveState, state, api) {
   try { render(); }
   catch (e) {
     state.lastSig = state.lastBoardSig = null;
-    $('live').className = 'live off'; $('live').textContent = t('live.offline', { msg: e.message });
-    const h = `<div class="render-note" role="alert" style="padding:24px"><p>${esc(t('boot.broke'))}</p><p class="muted"><code>${esc(e.message)}</code></p><button class="primary" onclick="location.reload()">${esc(t('boot.reload'))}</button></div>`;
+    $('live').className = 'live off'; $('live').textContent = t('live.trouble');
+    const h = `<div class="render-note" role="alert" style="padding:24px"><p>${esc(t('boot.broke'))}</p><button class="primary" onclick="location.reload()">${esc(t('boot.reload'))}</button></div>`;
     if ($('app').dataset.broke !== h || !$('app').querySelector('.render-note')) { $('app').innerHTML = h; $('app').dataset.broke = h; }
     console.error(e);
     return;
