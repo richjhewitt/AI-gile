@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title data-i18n="privacy.title">AI-gile: what we keep</title>
+<link rel="icon" type="image/png" href="assets/icon.png">
+<script src="lang/languages.js"></script>
+<script src="lang/en.js"></script>
+<script src="i18n.js"></script>
+<style>
+:root{color-scheme:light dark;--bg:#f6f7f9;--card:#fff;--text:#1d2330;--muted:#677085;--line:#dde1e8}
+@media (prefers-color-scheme:dark){:root{--bg:#12151b;--card:#20262f;--text:#e6e9ef;--muted:#8b93a7;--line:#2a303c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:24px 16px}
+h1{font-size:22px;margin:0 0 16px}
+.intro{color:var(--muted);margin:-8px 0 16px}
+ul{list-style:none;margin:0;padding:0}
+li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;overflow-wrap:anywhere}
+.top{display:flex;justify-content:flex-end;margin:0 0 8px}
+footer{margin-top:20px;font-size:14px;color:var(--muted)}
+a{color:inherit}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><span id="lang-slot"></span></div>
+<h1 data-i18n="privacy.h1">What we keep</h1>
+<p class="intro" data-i18n="privacy.lede">Short version: only what you send us, and not for long.</p>
+<ul id="list">
+  <li data-i18n="privacy.only">Only what you send us: what you type into a form, like your email. Nothing else about you.</li>
+  <li data-i18n="privacy.sealed">It is sealed so our server can't read it: in your browser before it leaves (on an older browser, the moment it arrives). Only our own board can open it.</li>
+  <li data-i18n="privacy.server">It is deleted from the server as soon as it reaches our board. Anything still there after 30 days is deleted anyway.</li>
+  <li data-i18n="privacy.board">We keep it on our board only until we've replied to you, then delete it there too.</li>
+  <li data-i18n="privacy.none">No trackers, no cookies, no analytics.</li>
+  <li data-i18n="privacy.local">Your language and light or dark choice stay in your own browser. They are never sent to us.</li>
+</ul>
+<p data-i18n="privacy.ask">Want it gone sooner? Reply to our email and say so.</p>
+<footer><a href="index.html" data-i18n="back">← Back to AI-gile</a></footer>
+</main>
+</body>
+</html>

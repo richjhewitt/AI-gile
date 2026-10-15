@@ -5,7 +5,7 @@ Each language needs three files in `site/lang/`, and one script made from them:
 
 | File | What it is |
 |---|---|
-| `<code>.json` | Every text on the pages (index, interest, licence, status), flat keys, as in `en.json` |
+| `<code>.json` | Every text on the pages (index, interest, licence, status, privacy), flat keys, as in `en.json` |
 | `<code>.lines.json` | The "AI-gile in as many words as you like" slider: its own texts for every length |
 | `<code>.timeline.json` | Stage names and one-liners of the timeline, by stage id (dates and card counts stay in `site/timeline.json`) |
 | `<code>.js` | Made by the generator from the three files: never edit it by hand |

@@ -72,10 +72,13 @@
   "footer.tag": "AI-gile. No trackers, no cookies, no stand-up coffee.",
   "footer.licence": "Business licence",
   "footer.status": "Status",
+  "footer.privacy": "What we keep",
 
   "form.sending": "Sending…",
   "form.failed": "That didn't work: try again later.",
   "form.offline": "Couldn't reach AI-gile: try again later.",
+  "form.keep": "We only use this to reply to you, then delete it. No trackers, no cookies.",
+  "form.keepLink": "What we keep",
 
   "interest.title": "AI-gile: tell me when the alpha opens",
   "interest.description": "Leave your email to hear when AI-gile's closed alpha or beta opens.",
@@ -88,7 +91,6 @@
   "interest.both": "Either, whichever comes first",
   "interest.submit": "Put me on the list",
   "interest.thanks": "Thanks! You're on the list.",
-  "interest.kept": "Only your email and the test you picked are kept, for this list only. No newsletter, no trackers.",
 
   "licence.title": "AI-gile: business licence",
   "licence.description": "Using AI-gile in your business? Apply for a free business licence.",
@@ -124,6 +126,16 @@
   "status.min": "{n} min ago",
   "status.hours": "{n} h ago",
   "status.days": "{n} d ago",
+  "privacy.title": "AI-gile: what we keep",
+  "privacy.h1": "What we keep",
+  "privacy.lede": "Short version: only what you send us, and not for long.",
+  "privacy.only": "Only what you send us: what you type into a form, like your email. Nothing else about you.",
+  "privacy.sealed": "It is sealed so our server can't read it: in your browser before it leaves (on an older browser, the moment it arrives). Only our own board can open it.",
+  "privacy.server": "It is deleted from the server as soon as it reaches our board. Anything still there after 30 days is deleted anyway.",
+  "privacy.board": "We keep it on our board only until we've replied to you, then delete it there too.",
+  "privacy.none": "No trackers, no cookies, no analytics.",
+  "privacy.local": "Your language and light or dark choice stay in your own browser. They are never sent to us.",
+  "privacy.ask": "Want it gone sooner? Reply to our email and say so.",
 
   "live.h2": "Watch it being built, live",
   "live.caption": "Every card is hidden: you see the shape of the work, not the words.",
