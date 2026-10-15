@@ -37,7 +37,7 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .hm-menu[hidden] { display: none; }
 .colbtn { padding: 0 7px; line-height: 20px; font-size: 13px; }
 .done-more { display: block; width: 100%; margin-top: 6px; }   /* ⚡ Done: Load more (AIG-1100) */
-.overlay.center { align-items: center; justify-content: center; padding: 12px; z-index: 20; }
+.overlay.center { align-items: center; justify-content: center; padding: 12px; z-index: 26; }   /* AIG-1130: above the Messages panel (24) */
 .dialog.wide { width: min(900px, 100%); resize: horizontal; min-width: min(420px, 100%); max-width: 100%; }
 .md table { border-collapse: collapse; margin: 8px 0; } .md td, .md th { border: 1px solid var(--line); padding: 4px 8px; }
 .md pre { background: var(--col); padding: 10px; border-radius: 8px; overflow: auto; } .md code { font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
@@ -100,10 +100,14 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .setup { max-width: 720px; margin: 24px auto; }
 .setup small { display: block; margin-top: 3px; }
 /* Setup index and section cards (AIG-934): one sticky row of links, each part of the page a card with a real heading */
-.set-index { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 0; margin: 0 0 14px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.set-index { position: sticky; top: 0; z-index: 4; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 0; margin: 0 0 14px; background: var(--bg); border-bottom: 1px solid var(--line); }
 .set-index a { display: inline-block; padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--text); text-decoration: none; font-size: 13px; white-space: nowrap; }
 .set-index a:hover, .set-index a:focus-visible { border-color: var(--accent); }
 .set-sec { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 16px 10px; margin: 0 0 18px; }
+.set-wiz { padding: 12px 16px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; } .set-wiz small { margin: 0; flex: 1 1 260px; }
+/* AIG-1148: a tick box and its words on one line, the hint below (not squeezed into a narrow column) */
+.setup label.f.chk { display: block; }
+.setup label.f.chk > span { display: block; font-size: 14px; }
 .set-h { font-size: 20px; margin: 12px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
 .mail-note { color: var(--muted); }
 /* Phone pairing: numbered steps (AIG-941) */
