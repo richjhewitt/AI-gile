@@ -441,7 +441,7 @@ const Dms = (() => {
     if (!text && !Attach.has(key)) { el('dmErr').textContent = t('dms.empty'); return; }
     busy = true; el('dmErr').textContent = '';
     try {
-      const attachments = fixed ? [] : await Attach.read(key);
+      const attachments = fixed ? [] : await Attach.read(key, thread.id);   // uploaded in pieces first (AIG-1165)
       await api('POST', `/api/dms/contacts/${thread.id}/messages`, { text, attachments });
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
       await loadThread(true); loadRail();
