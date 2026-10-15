@@ -4,6 +4,7 @@
 .st-tile.st-wide { grid-column: span 2; }
 .st-tile .st-v { font-size: 20px; font-weight: 600; overflow-wrap: anywhere; }
 .st-tile.st-done .st-v { color: var(--done); }
+.st-tile .st-v { overflow-wrap: break-word; }
 .st-tile .st-k { color: var(--muted); font-size: 12px; }
 .st-chart { width: 100%; max-width: 560px; height: auto; display: block; }
 .st-bar { fill: var(--accent); }

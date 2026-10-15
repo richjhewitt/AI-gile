@@ -94,11 +94,13 @@ async function lookDialog() {
   let dod = { ready: [], done: [] }; try { dod = await api('GET', '/api/projects/' + slug() + '/dod'); } catch {}   // AIG-864: the saved lists, else the defaults
   let cwin = { windows: [] }; try { cwin = await api('GET', '/api/projects/' + slug() + '/change-windows'); } catch {}   // AIG-859: when changes may go live
   const cwText = cwin.windows.map(x => `${x.day} ${x.from}-${x.to}${x.label ? ' ' + x.label : ''}`).join('\n');
-  popNext('look'); openDialog(`<h2>${esc(t('board.look'))}</h2>
+  popNext('look'); openDialog(`<h2>${esc(t('look.dlg.h'))}</h2>
     <p class="muted">${esc(t('look.intro', { name: p.name }))}</p>
+    <h3 class="look-sec">${esc(t('look.sec.look'))}</h3>
     <div class="row"><label class="f"><span>${esc(t('cols.emoji'))}</span><input type="text" id="look-emoji" value="${esc(p.emoji)}" maxlength="8"></label>
     <label class="f"><span>${esc(t('cols.colour'))}</span><input type="color" id="look-color" value="${esc(p.color)}"></label></div>
     <div class="f"><span>${esc(t('logo.title'))}</span>${logoEditor('look-logo', p.logo)}</div>
+    <h3 class="look-sec">${esc(t('look.sec.privacy'))}</h3>
     <label class="chk ai-only"><input type="checkbox" id="look-chatty" ${p.chatty ? 'checked' : ''}> ${esc(t('look.chatty'))} <span class="muted">${esc(t('look.chatty.cost'))}</span></label>
     <label class="chk"><input type="checkbox" id="look-private" ${p.private ? 'checked' : ''} onchange="Pub.tick('private')"> 🔒 ${esc(t('look.private'))} <span class="muted">${esc(t('look.private.sub'))}</span></label>
     ${Pub.lookHtml(p)}
@@ -107,10 +109,12 @@ async function lookDialog() {
     <label class="chk ai-only"><input type="checkbox" id="look-second" ${p.secondLead ? 'checked' : ''}> ${esc(t('look.second'))} <span class="muted">${esc(t('look.second.sub'))}</span></label>
     ${lookSpaceLeadHtml(p)}
     <label class="chk"><input type="checkbox" id="look-life" ${p.lifeBoard ? 'checked' : ''}> ${esc(t('look.life'))} <span class="muted">${esc(t('look.life.sub'))}</span></label>
+    <h3 class="look-sec">${esc(t('look.sec.where'))}</h3>
     <label class="f ai-only"><span>${esc(t('look.runin'))}</span>${runInSelect('look-runin', p.runIn || '', 'lookRunIn()', def)}${runInBlind(w)}</label>
     <label class="f ai-only" id="look-runcmd-box" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="look-runcmd" value="${esc(p.runCmd || '')}" placeholder="${esc(leadPrefs().runCmd || 'cursor "{folder}"')}"><small class="muted">${esc(t('runin.cmd.look'))}</small></label>
     <div class="f" id="look-server"><span>🖥️ ${esc(t('look.server'))}</span><div>${lookServerHtml(p)}</div><small class="muted">${esc(t('look.server.sub'))}</small></div>
     <div class="f" id="look-roles"><span>${esc(t('tm.h'))}</span><div><button type="button" onclick="teamDialog()">${esc(t('look.team.open'))}</button></div><small class="muted">${esc(t('look.team.moved'))}</small></div>
+    <h3 class="look-sec">${esc(t('look.sec.quality'))}</h3>
     <div class="f" id="look-dod"><span>${esc(t('dod.h'))}</span><small class="muted">${esc(t('dod.intro'))}</small>
       <label class="f"><span>${esc(t('dod.ready'))}</span><textarea id="look-dod-ready" rows="3">${esc(dod.ready.join('\n'))}</textarea></label>
       <label class="f"><span>${esc(t('dod.done'))}</span><textarea id="look-dod-done" rows="4">${esc(dod.done.join('\n'))}</textarea></label></div>
@@ -124,20 +128,21 @@ async function lookDialog() {
 // 🛎️ Service details (AIG-1046): off by default; the fields show when the box is ticked. On-call picks from the roster, default the lead.
 function lookServiceHtml(p) {
   const s = p.service || {}, team = (p.team || []).filter(m => !/retired/i.test(m.status || '') && m.kind !== 'person'), lead = (team.find(m => /lead/i.test(m.name + ' ' + (m.role || ''))) || team[0] || {}).name || '';
-  return `<div class="f" id="look-service"><span>🛎️ ${esc(t('svc.h'))}</span>
+  return `<h3 class="look-sec">🛎️ ${esc(t('svc.h'))}</h3><div class="f" id="look-service"><span hidden>🛎️ ${esc(t('svc.h'))}</span>
     <label class="chk"><input type="checkbox" id="look-svc-on" ${s.on ? 'checked' : ''} onchange="$('look-svc-box').hidden=!this.checked"> ${esc(t('svc.on'))}</label>
     <div id="look-svc-box" ${s.on ? '' : 'hidden'}>
       <label class="f"><span>${esc(t('svc.offers'))}</span><input type="text" id="look-svc-offers" maxlength="200" value="${esc(s.offers || '')}" placeholder="${esc(t('svc.offers.ph'))}"></label>
       <label class="f"><span>${esc(t('svc.users'))}</span><input type="text" id="look-svc-users" maxlength="200" value="${esc(s.users || '')}" placeholder="${esc(t('svc.users.ph'))}"></label>
       <label class="f"><span>${esc(t('svc.url'))}</span><input type="url" id="look-svc-url" maxlength="500" value="${esc(s.url || '')}" placeholder="https://..."></label>
-      <label class="f"><span>${esc(t('svc.oncall.h'))}</span><select id="look-svc-oncall">${team.map(m => `<option value="${esc(m.name)}" ${m.name === (s.onCall || lead) ? 'selected' : ''}>${esc(m.name)}${m.name === lead ? ' (' + esc(t('svc.lead')) + ')' : ''}</option>`).join('')}</select></label>
+      <label class="f"><span>${esc(t('svc.oncall.h'))}</span>${team.length ? '' : `<small class="muted">${esc(t('svc.oncall.none'))}</small>`}<select id="look-svc-oncall" ${team.length ? '' : 'hidden'}>${team.map(m => `<option value="${esc(m.name)}" ${m.name === (s.onCall || lead) ? 'selected' : ''}>${esc(m.name)}${m.name === lead ? ' (' + esc(t('svc.lead')) + ')' : ''}</option>`).join('')}</select></label>
+      <label class="f"><span>${esc(t('svc.tokencap'))}</span><input type="text" inputmode="numeric" id="look-svc-cap" maxlength="13" value="${s.tokenCap ? esc(s.tokenCap) : ''}" placeholder="${esc(t('svc.tokencap.ph'))}"></label>
       <p><a href="#/ci/${esc(p.slug)}" onclick="closeDialog()">${esc(t('ci.btn'))}</a>${s.on ? ` · <a href="#/review/${esc(p.slug)}" onclick="closeDialog()">${esc(t('rev.btn'))}</a>` : ''}</p>
       <label class="chk"><input type="checkbox" id="look-svc-public" ${s.public ? 'checked' : ''}> ${esc(t('svc.public'))} <span class="muted">${esc(t('svc.public.sub'))}</span></label>
     </div></div>`;
 }
 function lookServiceValue() {
   const on = $('look-svc-on').checked, oc = $('look-svc-oncall');
-  return { on, offers: $('look-svc-offers').value, users: $('look-svc-users').value, url: $('look-svc-url').value, onCall: oc ? oc.value : '', public: $('look-svc-public').checked };
+  return { on, offers: $('look-svc-offers').value, users: $('look-svc-users').value, url: $('look-svc-url').value, onCall: oc ? oc.value : '', public: $('look-svc-public').checked, tokenCap: $('look-svc-cap').value };
 }
 // 👥 The roles on this project moved to their own dialog (AIG-423, dialogs/team-profile.js); Look only opens it.
 async function saveLook(auto) {

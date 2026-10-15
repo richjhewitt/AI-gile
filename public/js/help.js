@@ -43,7 +43,7 @@ async function helpMenu() {
   m.style.top = r.bottom + 6 + 'px'; m.style.right = Math.max(8, innerWidth - r.right) + 'px';
   const item = (id, fn, key) => `<button type="button" role="menuitem" id="${id}" onclick="helpMenuClose(); ${fn}">${esc(t(key))}</button>`;
   m.innerHTML = item('hmStart', 'gettingStarted()', 'help.m.start') + item('hmIntro', 'introOpen()', 'help.m.intro') + item('hmTour', 'tourDialog()', 'help.m.tour') + item('hmDemo', 'startTrial()', 'help.m.demo')
-    + item('hmGloss', "location.hash = '#/glossary'", 'help.m.gloss') + item('hmInstall', 'installHint()', 'help.m.install') + item('hmIncidents', 'incidentsGuide()', 'help.m.incidents') + `<div class="help-sep"></div><div class="help-lvl-h muted">${esc(t('help.m.level'))}</div>`
+    + item('hmGloss', "location.hash = '#/glossary'", 'help.m.gloss') + item('hmInstall', 'installHint()', 'help.m.install') + item('hmIncidents', 'incidentsGuide()', 'help.m.incidents') + item('hmService', 'serviceGuide()', 'help.m.service') + item('hmImprove', "location.hash = '#/improvements'", 'help.m.improve') + `<div class="help-sep"></div><div class="help-lvl-h muted">${esc(t('help.m.level'))}</div>`
     + HELP_LEVELS.map(v => `<button type="button" role="menuitemradio" aria-checked="${v === HELP.level}" id="hmLevel${v}" class="${v === HELP.level ? 'on' : ''}" onclick="helpSetLevel('${v}')">${v === HELP.level ? '✓ ' : ''}${esc(t('help.level.' + v))}</button>`).join('');
   document.body.append(m);
 }
@@ -54,11 +54,27 @@ function gettingStarted() {
     <p class="muted">${esc(t('help.start.more'))}</p>
     <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
 }
-// 🔥 Incidents and problems guide (AIG-863, AIG-888): the guide page in a dialog (English for now).
-async function incidentsGuide() {
-  let r; try { r = await api('GET', '/api/guide/incidents'); } catch (e) { alert(e.message); return; }
-  openDialog(`<div class="guide-md" id="incGuide">${md(r.md)}</div><div class="actions"><button onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
+// 🔥 Incidents and problems guide (AIG-863, AIG-888) and 🛎️ Service management guide (AIG-1158): a guide page in a dialog (English for now).
+// Only the level picked in Help shows (all the help = full course, some = step by step, none = highlights); "Show more" adds the next one; the command line sits in a fold for agents (AIG-1143).
+// pre is 'inc' or 'svc': it names the box (incGuide), the button (incMore), the fold (incAgents) and the texts (help.inc.more).
+async function guideOpen(pre, url, titleKey) {
+  let r; try { r = await api('GET', url); } catch (e) { alert(e.message); return; }
+  const src = String(r.md).replace(/\r/g, '').replace(/^---\n[\s\S]*?\n---\n/, ''), parts = src.split(/^## /m).slice(1), sec = {};
+  parts.forEach(p => { const [h, ...rest] = p.split('\n'); sec[h.trim()] = rest.join('\n').trim(); });
+  openDialog(`<h2>${esc(t(titleKey))}</h2><div class="guide-md" id="${pre}Guide"></div><div class="actions"><button id="${pre}More" onclick="guideMore('${pre}')">${esc(t('help.' + pre + '.more'))}</button><button onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
+  (window._guide = window._guide || {})[pre] = { sec, shown: HELP.level === '1' ? 2 : HELP.level === '3' ? 0 : 1 };
+  guideDraw(pre);
 }
+function guideMore(pre) { if (window._guide[pre].shown < 2) window._guide[pre].shown++; guideDraw(pre); }
+function guideDraw(pre) {
+  const { sec, shown } = window._guide[pre], box = $(pre + 'Guide'); if (!box) return;
+  const lv = ['Highlights', 'Step by step', 'Full course'][shown];
+  box.innerHTML = `<h3>${esc(lv)}</h3>` + md(sec[lv] || '')
+    + (shown >= 1 && sec['For agents'] ? `<details id="${pre}Agents"><summary>${esc(t('help.' + pre + '.agents'))}</summary>${md(sec['For agents'])}</details>` : '');
+  const m = $(pre + 'More'); if (m) m.hidden = shown >= 2;
+}
+const incidentsGuide = () => guideOpen('inc', '/api/guide/incidents', 'help.m.incidents');
+const serviceGuide = () => guideOpen('svc', '/api/guide/service', 'help.m.service');
 document.addEventListener('click', e => { if ($('helpMenu') && !e.target.closest('#helpMenu, #helpBtn')) helpMenuClose(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') helpMenuClose(); });
 

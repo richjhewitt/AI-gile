@@ -7,6 +7,7 @@ const PagePoll = (() => {
   // A pop-out window (#/pop...) runs only the polls it needs; timers marked { home: true } (rail, home, inbox glance, background
   // glances) stay off there (AIG-1103).
   const inPop = () => typeof location !== 'undefined' && /^#\/pop/.test(location.hash);
+  let alertTimers = 0;   // live { alerts: true } timers: while one runs, the revision check keeps its normal pace when hidden (AIG-1153)
   let epoch = 0, rev = null, revAt = 0, revFlight = null, retryRevAt = 0;
   function fingerprint(text) {
     // waitingMs is a clock, not a board change. Hash the downloaded text once, never
@@ -48,7 +49,7 @@ const PagePoll = (() => {
     const now = Date.now();
     const cadence = typeof location !== 'undefined' && (/^#\/(?:p|pop)\/[^/]+\/[^/]+/.test(location.hash) || /^#\/(?:inbox$|pop-inbox\/[qkt]$)/.test(location.hash)) ? 1000 : REV_MS;
     // A hidden window checks at most every 30 s; the focused one keeps its pace (AIG-1103).
-    if (now < retryRevAt || now - revAt < (typeof document !== 'undefined' && document.hidden ? HIDDEN_MS : cadence)) return rev;
+    if (now < retryRevAt || now - revAt < (typeof document !== 'undefined' && document.hidden && !alertTimers ? HIDDEN_MS : cadence)) return rev;
     if (revFlight) return revFlight;
     revFlight = (async () => {
       try {
@@ -92,9 +93,11 @@ const PagePoll = (() => {
     return JSON.stringify(value, (k, v) => k === 'waitingMs' ? undefined :
       v && typeof v === 'object' && signatures.has(v) ? { payload: signatures.get(v) } : v);
   }
-  function every(fn, ms, { hidden = 0, immediate = false, home = false } = {}) {
+  function every(fn, ms, { hidden = 0, immediate = false, home = false, alerts = false } = {}) {
     let timer, running = false, stopped = false;
-    if (hidden) hidden = Math.max(hidden, HIDDEN_MS);   // a hidden window polls at most every 30 s
+    // { alerts: true } is for the few polls that raise a desktop notification or the title/badge count: they keep their pace when hidden (AIG-1153).
+    if (alerts) { hidden = hidden || ms; alertTimers++; }
+    else if (hidden) hidden = Math.max(hidden, HIDDEN_MS);   // a hidden window polls at most every 30 s
     const schedule = () => { clearTimeout(timer); const delay = home && inPop() ? Math.max(ms, 30000) : document.hidden ? hidden : ms; if (!stopped && delay) timer = setTimeout(tick, delay); };
     async function tick() {
       clearTimeout(timer);
@@ -107,7 +110,7 @@ const PagePoll = (() => {
     const visible = () => { clearTimeout(timer); if (!document.hidden) tick(); else schedule(); };
     document.addEventListener('visibilitychange', visible);
     if (immediate && (!document.hidden || hidden)) tick(); else schedule();
-    return () => { stopped = true; clearTimeout(timer); document.removeEventListener('visibilitychange', visible); };
+    return () => { if (!stopped && alerts) alertTimers--; stopped = true; clearTimeout(timer); document.removeEventListener('visibilitychange', visible); };
   }
   function remember(data) { if (data && typeof data === 'object' && !signatures.has(data)) signatures.set(data, fingerprint(JSON.stringify(data))); return data; }
   return { get, request, signature, remember, invalidate, every, revision, get generation() { return epoch; } };

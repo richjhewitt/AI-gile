@@ -128,7 +128,9 @@ function renderBoard(p) {
       ${p.service && p.service.on ? `<button onclick="location.hash='#/review/${esc(p.slug)}'" title="${esc(t('rev.btn.title'))}">${esc(t('rev.btn'))}</button>` : ''}
       <button onclick="raiseChange()" title="${esc(t('chg.raise.title'))}">${esc(t('chg.raise'))}</button>
       <button onclick="location.hash='#/risks/${esc(p.slug)}'" title="${esc(t('risks.btn.title'))}">${esc(t('risks.title'))}</button>
+      <button onclick="location.hash='#/releases/${esc(p.slug)}'" title="${esc(t('rel.btn.title'))}">${esc(t('rel.btn'))}</button>
       <button onclick="location.hash='#/known-errors/${esc(p.slug)}'" title="${esc(t('ke.btn.title'))}">${esc(t('ke.title'))}</button>
+      <button onclick="location.hash='#/improvements'" title="${esc(t('imp.btn.title'))}">${esc(t('imp.title'))}</button>
       ${Swarm.btn(p.slug, 'swarmBtn')}
       <span class="grow"></span>
       ${NoAi.on && p.lifeBoard && !p.path ? '' : `<button onclick="connectDialog()" title="${p.path && p.pathMissing ? esc(t('srv.folder.missing', { path: p.path })) : p.path ? esc(t('board.connected.title', { path: p.path })) : esc(t('board.connect.title'))}">${esc(p.path && p.pathMissing ? t('board.connected.missing') : p.path ? t('board.connected') : t('board.connect'))}</button>`}
