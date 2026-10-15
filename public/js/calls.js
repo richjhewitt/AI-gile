@@ -135,11 +135,12 @@ const Call = (() => {
 })();
 
 /* ---------- 📞 in a friend's DM ---------- */
-// Asks the board what this DM can do: my own LiveKit (Setup), or a call the friend started (their guest token). Neither: say how.
+// Asks the board what this DM can do: the relay's call server or my own LiveKit, or a call the friend started (their guest token).
+// None of those: calls are not available right now (AIG-1218).
 async function dmCall(cid, name) {
   let st;
   try { st = await api('GET', `/api/calls/dm/${encodeURIComponent(cid)}`); } catch (e) { return Call.note(t('lkcall.h'), e.message); }
-  if (!st.set && !st.invite) return Call.note(t('lkcall.h'), t('lkcall.notset', { name }), { href: '#/setup/calls', text: t('lkcall.notset.go') });
+  if (!st.set && !st.invite) return Call.note(t('lkcall.h'), t('lkcall.off'), { href: '#/setup/calls', text: t('lkcall.notset.go') });
   Call.join({ title: name, getToken: () => api('POST', `/api/calls/dm/${encodeURIComponent(cid)}/token`, {}),
     swap: async () => (await api('GET', `/api/calls/dm/${encodeURIComponent(cid)}`)).theirs === true });
 }
@@ -148,19 +149,24 @@ async function dmCall(cid, name) {
 async function meetingCall(slug, name) {
   let st;
   try { st = await api('GET', `/api/calls/meeting/${encodeURIComponent(slug)}`); } catch (e) { return Call.note(t('lkcall.h'), e.message); }
-  if (!st.set) return Call.note(t('lkcall.h'), t('meet.notset'), { href: '#/setup/calls', text: t('lkcall.notset.go') });
+  if (!st.set) return Call.note(t('lkcall.h'), t('lkcall.off'), { href: '#/setup/calls', text: t('lkcall.notset.go') });
   Call.join({ title: name, getToken: () => api('POST', `/api/calls/meeting/${encodeURIComponent(slug)}/token`, {}) });
 }
 
 /* ---------- Setup > Calls (LiveKit) ---------- */
-// The address and API key are shown; the API secret is saved with the secrets page token and never comes back to the page.
+// AIG-1218: calls work out of the box through AI-gile's own call server (the relay hands out passes); this box only says so.
+// "Use my own LiveKit server" is folded under Advanced: the address and API key are shown; the API secret is saved with the
+// secrets page token and never comes back to the page.
 const CallSetup = (() => {
-  const S = { st: null, msg: '', ok: '' };
+  const S = { st: null, msg: '', ok: '', adv: false };
   const el = id => document.getElementById(id);
   function html() {
-    if (!S.st) { queueMicrotask(load); return `<span>${esc(t('lkcall.set.h'))}</span>`; }
+    if (!S.st) { queueMicrotask(load); return `<span>${esc(t('lkcall.set.title'))}</span>`; }
     const st = S.st;
-    return `<span>${esc(t('lkcall.set.h'))}</span> <b id="callSetState" class="pill">${esc(t(st.set ? 'lkcall.set.on' : 'lkcall.set.off'))}</b>
+    const head = `<span>${esc(t('lkcall.set.title'))}</span> <b id="callSetState" class="pill">${esc(t(st.relay ? 'lkcall.set.works' : 'lkcall.set.na'))}</b>
+      <small class="muted">${esc(t(st.relay ? 'lkcall.set.works.help' : 'lkcall.set.na.help'))}${st.own ? ' ' + esc(t('lkcall.set.own')) : ''}</small>`;
+    return head + `<details id="callSetAdv"${st.own || S.adv ? ' open' : ''} ontoggle="CallSetup.adv(this.open)" style="margin-top:6px"><summary>${esc(t('lkcall.set.adv'))}</summary>
+      <b id="callOwnState" class="pill">${esc(t(st.own ? 'lkcall.set.on' : 'lkcall.set.off'))}</b>
       <small class="muted">${esc(t('lkcall.set.help'))} <a href="https://docs.livekit.io/home/get-started/intro-to-livekit/" target="_blank" rel="noopener noreferrer">${esc(t('lkcall.set.link'))}</a></small>
       <div style="display:flex;flex-direction:column;gap:6px;margin:6px 0;max-width:460px">
         <input type="text" id="callSetUrl" maxlength="300" spellcheck="false" value="${esc(st.url)}" placeholder="wss://livekit.example.com" aria-label="${esc(t('lkcall.set.url'))}" title="${esc(t('lkcall.set.url'))}">
@@ -168,15 +174,15 @@ const CallSetup = (() => {
         <input type="password" id="callSetSecret" maxlength="200" spellcheck="false" autocomplete="off" placeholder="${esc(t(st.secret ? 'lkcall.set.secret.kept' : 'lkcall.set.secret'))}" aria-label="${esc(t('lkcall.set.secret'))}">
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="callSetSave" onclick="CallSetup.save()">${esc(t('common.save'))}</button>${st.url || st.secret ? `<button type="button" id="callSetClear" onclick="CallSetup.save(true)">${esc(t('lkcall.set.clear'))}</button>` : ''}</div>
-      ${S.msg ? `<div class="err" id="callSetErr">${esc(S.msg)}</div>` : ''}${S.ok ? `<div class="muted" id="callSetOk">${esc(S.ok)}</div>` : ''}`;
+      ${S.msg ? `<div class="err" id="callSetErr">${esc(S.msg)}</div>` : ''}${S.ok ? `<div class="muted" id="callSetOk">${esc(S.ok)}</div>` : ''}</details>`;
   }
   const paint = () => { const b = el('callsBox'); if (b) b.innerHTML = html(); };
-  async function load() { try { S.st = await api('GET', '/api/calls'); } catch { S.st = { set: false, url: '', key: '', secret: false }; } paint(); }
+  async function load() { try { S.st = await api('GET', '/api/calls'); } catch { S.st = { set: false, own: false, relay: false, url: '', key: '', secret: false }; } paint(); }
   async function save(clear) {
     const v = id => ((el(id) || {}).value || '').trim();
     try { S.st = await api('POST', '/api/calls', clear ? { clear: true, token: await secToken() } : { url: v('callSetUrl'), key: v('callSetKey'), secret: v('callSetSecret'), token: await secToken() }); S.msg = ''; S.ok = t('lkcall.set.saved'); }
     catch (e) { S.msg = e.message; S.ok = ''; }
     paint();
   }
-  return { html: () => { S.msg = ''; S.ok = ''; return html(); }, reset: () => { S.st = null; }, save, load };
+  return { html: () => { S.msg = ''; S.ok = ''; return html(); }, reset: () => { S.st = null; }, save, load, adv: v => { S.adv = !!v; } };
 })();
