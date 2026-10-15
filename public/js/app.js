@@ -215,7 +215,7 @@ async function pokeAll(b) {
     try { await api('POST', `/api/projects/${p.slug}/${act}`); } catch (e) { failed.push(p.name + ': ' + e.message); }
   }
   if (failed.length) openDialog(`<h2>${esc(t('poke.failed'))}</h2><p style="white-space:pre-wrap">${esc(failed.join('\n'))}</p><div class="actions"><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
-  location.hash = '#/'; refresh(true);
+  b.disabled = false; refresh(true);
 }
 
 // A quiet time from the change calendar (AIG-615, set in Setup): a small chip, only while it lasts.
