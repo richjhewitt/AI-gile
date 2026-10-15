@@ -2114,6 +2114,7 @@
  "mt.pick": "Begin met een team…",
  "mt.engine": "Modellen voor",
  "board.pokeall": "Geef elke kaart in deze kolom een duwtje: nog nieuws?",
+ "board.done.more": "Meer laden (nog {n})",
  "dms.sendanyway": "Toch versturen? (Het kan het beetje plan gebruiken dat je nog hebt.)",
  "srv.saver.hold": "verbruiksbespaarder: de {name}-limiet staat op {pct}% (bespaarder {save}%), dus alleen projecten met een ⭐ cruciale kaart draaien",
  "srv.saver.say": "💾 Verbruiksbespaarder: de {name}-limiet staat op {pct}% (bespaarder {save}%). Teams, de AI-tester en mijn eigen AI-runs leggen het werk neer, behalve voor ⭐ cruciale kaarten. Het werk start vanzelf weer als het verbruik daalt of wordt gereset.",

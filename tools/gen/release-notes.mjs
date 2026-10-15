@@ -15,7 +15,7 @@ const [VERSION = 'v0.42', SINCE = 'v0.1'] = process.argv.slice(2);
 const SHOW = 12;   // titles per stage; the rest are counted
 
 const since = new Date(execFileSync('git', ['log', '-1', '--format=%aI', SINCE], { cwd: ROOT, encoding: 'utf8' }).trim());
-const res = await fetch(`${URL_BASE}/api/projects/${SLUG}`);
+const res = await fetch(`${URL_BASE}/api/projects/${SLUG}?full=1`);
 if (!res.ok) { console.error(`board answered ${res.status} on ${URL_BASE}`); process.exit(1); }
 const cards = (await res.json()).cards;
 const chore = c => /^(💬|📣|🧹)/u.test(c.title);   // DMs, stand-ups and tidy-ups are not features
