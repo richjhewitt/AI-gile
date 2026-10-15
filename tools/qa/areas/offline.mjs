@@ -34,6 +34,27 @@ def('offline', '📦 share a project offline: save as .aigile and open it (round
   check('picture is stored in the new project', att && att.name === 'map.png' && att.path.includes('travel-plans-2') && fs.readFileSync(att.path).equals(png), att);
   check('a card can be added with the next number', (await mkCard(s, 'travel-plans-2', 'Next')).id === back.key + '-3');
 
+  // AIG-1160: configuration items, releases and the service fields on cards travel too, and card ids inside them follow a new key.
+  const svc = { format: 'aigile-project', version: 1, project: { name: 'Service Pack', key: 'SVP', nextId: 3, ci: [{ id: 'ci-4', kind: 'server', name: 'db-1', detail: '', backup: { where: 'S3', everyDays: 7, since: '2026-09-01' }, links: ['SVP-1', { card: 'SVP-1', type: 'incident', at: '2026-09-02T00:00:00.000Z' }] }], ciN: 4,
+    releases: [{ name: 'v1.0', at: '2026-09-03T00:00:00.000Z', by: 'owner', cards: ['SVP-1', 'SVP-2'], notes: 'n', rollback: 'SVP-2' }],
+    cards: [{ id: 'SVP-1', title: 'Db down', status: 'done', type: 'incident', ci: ['ci-4'], major: { at: '2026-09-02T00:00:00.000Z', by: 'Owner', swarm: false, alerted: true },
+      review: { state: 'posted', at: '2026-09-03T00:00:00.000Z', by: 'Lead', timeline: 't', helped: 'h', actions: [{ text: 'fix', card: 'SVP-2' }], runbook: 'SVP-2' }, runbook: 'db-restore', desk: { kind: 'incident', auto: true, dup: { id: 'SVP-2', how: 'text' } } },
+      { id: 'SVP-2', title: 'Runbook', status: 'todo', runbookProposal: { name: 'db-restore', text: 'x', from: 'SVP-1', file: '/home/secret/x.md' } }] } };
+  const sp = await s.ok('POST', '/api/projects/import', { file: svc }), sp2 = await s.ok('POST', '/api/projects/import', { file: svc });
+  const g1 = await s.ok('GET', '/api/projects/' + sp.slug + '?full=1'), g2 = await s.ok('GET', '/api/projects/' + sp2.slug + '?full=1');
+  const e1 = await s.ok('GET', '/api/projects/' + sp.slug + '/export'), a1 = e1.project.cards[0];
+  check('items, the counter and releases come back, and go out again', g1.ci.length === 1 && g1.ciN === 4 && g1.ci[0].backup.since === '2026-09-01' && g1.releases.length === 1 && e1.project.ci.length === 1 && e1.project.releases[0].name === 'v1.0', [g1.ci, g1.releases]);
+  check('card fields come back: review, runbook, ci, desk, major', a1.review.state === 'posted' && a1.review.actions[0].text === 'fix' && a1.runbook === 'db-restore' && a1.ci[0] === 'ci-4' && a1.desk.dup.id === 'SVP-2' && a1.major.alerted === true, a1);
+  check('the runbook file path is left out', !JSON.stringify(e1).includes('secret') && !('file' in e1.project.cards[1].runbookProposal) && e1.project.cards[1].runbookProposal.name === 'db-restore');
+  check('with a new key the card ids inside follow it', g2.key !== 'SVP' && g2.cards[0].review.actions[0].card === g2.key + '-2' && g2.cards[0].review.runbook === g2.key + '-2' && g2.cards[0].desk.dup.id === g2.key + '-2' && g2.cards[1].runbookProposal.from === g2.key + '-1'
+    && g2.releases[0].cards.join() === g2.key + '-1,' + g2.key + '-2' && g2.releases[0].rollback === g2.key + '-2' && g2.ci[0].links[1].card === g2.key + '-1', [g2.key, g2.releases, g2.ci]);
+  const bad2 = async (what, fn, re) => { const f = JSON.parse(JSON.stringify(svc)); fn(f); const r = await s.api('POST', '/api/projects/import', { file: f }); check('refused: ' + what, r.status >= 400 && re.test(r.body.error), [r.status, r.body.error]); };
+  await bad2('a bad item kind', f => { f.project.ci[0].kind = 'cloud'; }, /kind/);
+  await bad2('a bad backup interval', f => { f.project.ci[0].backup.everyDays = 0; }, /interval/);
+  await bad2('a bad review state', f => { f.project.cards[0].review.state = 'x'; }, /state/);
+  await bad2('a card item id that is not an item id', f => { f.project.cards[0].ci = ['../x']; }, /item id/);
+  await bad2('a release card that is not a card id', f => { f.project.releases[0].cards = ['nope']; }, /card id/);
+
   // Bad files are refused and write nothing.
   const bad = async (what, f, re) => { const r = await s.api('POST', '/api/projects/import', { file: f }); check('refused: ' + what, r.status >= 400 && (!re || re.test(r.body.error)), [r.status, r.body.error]); };
   const mod = fn => { const f = JSON.parse(text); fn(f); return f; };
@@ -49,7 +70,7 @@ def('offline', '📦 share a project offline: save as .aigile and open it (round
   await bad('picture data is not base64', mod(f => { f.project.cards[0].comments.find(m => m.attachments).attachments[0].data = '***'; }), /damaged/);
   await bad('picture size does not match', mod(f => { f.project.cards[0].comments.find(m => m.attachments).attachments[0].size = 5; }), /damaged/);
   await bad('title is a number', mod(f => { f.project.cards[0].title = 5; }), /text/);
-  check('refused files made no project', (await s.ok('GET', '/api/projects')).length === 2);
+  check('refused files made no project', (await s.ok('GET', '/api/projects')).length === 4);
   check('no attachment folder was left behind', fs.readdirSync(path.join(s.data, 'attachments')).sort().join() === 'travel-plans,travel-plans-2');
 
   // Over the cap: more than 20 MB of pictures cannot be saved, with a clear error.
