@@ -127,6 +127,7 @@ function renderBoard(p) {
       <button onclick="location.hash='#/ci/${esc(p.slug)}'" title="${esc(t('ci.btn.title'))}">${esc(t('ci.btn'))}</button>
       <button onclick="raiseChange()" title="${esc(t('chg.raise.title'))}">${esc(t('chg.raise'))}</button>
       <button onclick="location.hash='#/risks/${esc(p.slug)}'" title="${esc(t('risks.btn.title'))}">${esc(t('risks.title'))}</button>
+      <button onclick="location.hash='#/releases/${esc(p.slug)}'" title="${esc(t('rel.btn.title'))}">${esc(t('rel.btn'))}</button>
       <button onclick="location.hash='#/known-errors/${esc(p.slug)}'" title="${esc(t('ke.btn.title'))}">${esc(t('ke.title'))}</button>
       ${Swarm.btn(p.slug, 'swarmBtn')}
       <span class="grow"></span>
