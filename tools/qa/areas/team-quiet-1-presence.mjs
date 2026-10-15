@@ -98,7 +98,8 @@ def('quiet', 'Going quiet messages teams with work, wakes sleeping ones, night t
   await mkProject(s, 'Idle', 'IDL');
   const page = await openPage(ctx, '#/');
   page.on('dialog', d => d.accept());
-  await page.click('text=🌙 Going quiet');
+  if (await page.locator('#homeMenu').isHidden()) await page.click('#homeMoreBtn');   // Home > More (AIG-937); the top bar's More has it too (AIG-1183)
+  await page.click('#homeMenu >> text=🌙 Going quiet');
   await page.waitForSelector('#dialog [data-watch]');
   check('it asks which projects the night watchman watches, all ticked (AIG-199)', (await page.locator('#dialog [data-watch]').count()) === 2 && (await page.locator('#dialog [data-watch]:checked').count()) === 2);
   await page.click('#dialog .primary');

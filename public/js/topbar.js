@@ -31,7 +31,7 @@ const Topbar = (() => {
   // AIG-931/932: only Inbox, Help and Setup (and the things that appear when there is something to act on) stay in the bar;
   // the rest sit under "More" (on a phone, one menu for everything but the logo and Inbox). The same elements are moved, so ids and handlers stay.
   const PKEY = 'aigile.topbar.pinned';
-  const MORE_EXTRA = ['twitchBtn', 'mailNav', 'immWrap'];
+  const MORE_EXTRA = ['twitchBtn', 'mailNav', 'immWrap', 'quietTop'];   // AIG-1183: 🌙 Going quiet also here, not only on the home page's More
   const PINNABLE = [...IDS, ...MORE_EXTRA];
   const PIN_DEF = ['bugBtn', 'ideaBtn', 'helpBtn', 'inboxTop', 'setupNav', 'pokeTop', 'nightTop', 'teamTop', 'statusBtn', 'usageNav'];
   // AIG-984: the status button joins a saved pin list once (unpinning it later sticks); AIG-1169: so does Usage (No AI still hides it)
