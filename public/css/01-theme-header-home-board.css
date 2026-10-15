@@ -1,6 +1,6 @@
 /* ---------- theme tokens ---------- */
 :root {
-  --bg: #f6f7f9; --panel: #fff; --col: #eef0f3; --text: #1d2330; --muted: #677085; --line: #dde1e8;
+  --bg: #f6f7f9; --panel: #fff; --col: #eef0f3; --text: #1d2330; --muted: #5f697d; --line: #dde1e8;
   --accent: #3b6cf6; --done: #1f9d61; --warn: #d97706; --danger: #dc2626; --you: #9333ea;
   --shadow: 0 1px 2px rgba(20,30,50,.08);
   --radius: 10px;

@@ -9,8 +9,8 @@
 header { flex-wrap: wrap; row-gap: 6px; } header > * { flex-shrink: 0; white-space: nowrap; } header .crumb { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .setup-theme { font-size: 14px; border-radius: 6px; padding: 6px 8px; align-self: flex-start; }
 /* Unread counts on the rail are purple diamonds, like the taskbar icon (AIG-181). */
-.dm-unread { background: #a855f7; border-radius: 0; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); width: 24px; min-width: 0; height: 24px; padding: 0; line-height: 24px; font-size: 10px; inset-inline-end: -6px; bottom: -6px; }
-.dm-row .dm-unread { width: 22px; height: 22px; line-height: 22px; border-radius: 50%; clip-path: none; background: var(--accent); font-size: 11px; }   /* AIG-1138: in the Messages list a blue circle, like the Inbox's Messages count */
+.dm-unread { background: #a855f7; color: #14061f; border-radius: 0; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); width: 24px; min-width: 0; height: 24px; padding: 0; line-height: 24px; font-size: 10px; inset-inline-end: -6px; bottom: -6px; }
+.dm-row .dm-unread { color: var(--on-fill); width: 22px; height: 22px; line-height: 22px; border-radius: 50%; clip-path: none; background: var(--accent); font-size: 11px; }   /* AIG-1138: in the Messages list a blue circle, like the Inbox's Messages count */
 /* Columns dialog (AIG-116): the colour picker stays small so the name box gets the room. */
 .colrow input[type=color] { flex: 0 0 44px; width: 44px; min-width: 0; padding: 2px; height: 34px; }
 .colrow input[type=text]:not(.emoji):not(.steps) { flex: 2 1 120px; min-width: 100px; }
