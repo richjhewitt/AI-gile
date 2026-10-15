@@ -50,10 +50,13 @@ const FyFold = (() => {
   function after(n) {
     const row = n && document.querySelector('#fyfList .fyf-row[data-id="' + n.dataset.id + '"]'); if (!row) return;   // n itself may be gone already
     const list = row.parentNode, k = list.parentNode.dataset.kind;
+    const wasOpen = k === 't' && row.classList.contains('open'), next = wasOpen ? row.nextElementSibling : null;   // a test answered in the list: the next test opens straight away (AIG-1212)
     row.remove();
     try { refresh(true); } catch {}   // the board's For you count follows (AIG-1067)
-    if (!list.children.length) { closeDialog(); return; }
+    if (!list.children.length) { closeDialog(); if (wasOpen) IB.toast(t('fy.testsdone')); return; }
     head(k, list.children.length);
+    if (next) { toggle(next, true); next.scrollIntoView({ block: 'nearest' }); }
+    else if (wasOpen) IB.toast(t('fy.testsdone'));   // the last in the list order: say so, back to the list
   }
   return { open, after };
 })();
