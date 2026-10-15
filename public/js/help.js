@@ -59,13 +59,8 @@ function gettingStarted() {
 const INC_LEVELS = ['Highlights', 'Step by step', 'Full course'];
 async function incidentsGuide() {
   let r; try { r = await api('GET', '/api/guide/incidents'); } catch (e) { alert(e.message); return; }
-  const src = String(r.md).replace(//g, '').replace(/^---
-[\s\S]*?
----
-/, ''), parts = src.split(/^## /m).slice(1), sec = {};
-  parts.forEach(p => { const [h, ...rest] = p.split('
-'); sec[h.trim()] = rest.join('
-').trim(); });
+  const src = String(r.md).replace(/\r/g, '').replace(/^---\n[\s\S]*?\n---\n/, ''), parts = src.split(/^## /m).slice(1), sec = {};
+  parts.forEach(p => { const [h, ...rest] = p.split('\n'); sec[h.trim()] = rest.join('\n').trim(); });
   const title = t('help.m.incidents'), start = HELP.level === '1' ? 2 : HELP.level === '3' ? 0 : 1;
   openDialog(`<h2>${esc(title)}</h2><div class="guide-md" id="incGuide"></div><div class="actions"><button id="incMore" onclick="incidentsMore()">${esc(t('help.inc.more'))}</button><button onclick="closeDialog()">${esc(t('help.close'))}</button></div>`);
   window._inc = { sec, shown: start };
