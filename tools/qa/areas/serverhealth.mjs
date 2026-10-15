@@ -36,6 +36,7 @@ def('serverhealth', 'Server health (AIG-660, AIG-1125): relay /health is signed,
     const r = await fetch(relay.base + '/health', { headers: sign() });
     const j = await r.json();
     check('signed /health gives cpu, memory, disk, storage and uptime', r.ok && ['cpu', 'mem', 'disk', 'storage', 'uptime'].every(k => typeof j[k] === 'number'), j);
+    check('signed /health also gives the 5- and 15-minute load and cpu15 (AIG-1227)', ['load5', 'load15', 'cpu15'].every(k => typeof j[k] === 'number' && j[k] >= 0) && Math.abs(j.cpu15 - j.load15 / j.cpus * 100) < 0.1, j);
     const other = crypto.generateKeyPairSync('ed25519'), ox = other.publicKey.export({ format: 'jwk' }).x;
     const h = sign(); h['x-relay-key'] = ox;
     check('signed by another key is refused', (await fetch(relay.base + '/health', { headers: h })).status === 401);
@@ -99,4 +100,23 @@ def('serverhealth', 'Server health (AIG-660, AIG-1125): relay /health is signed,
   const l2 = await page2.textContent('#srv-health-0');
   check('Setup > My servers shows the second server CPU and disk', /^Web: CPU 20%/.test(l2) && /memory 40%/.test(l2) && /disk 84%/.test(l2) && /up 12 days/.test(l2), l2);
   noErrors(page2); await page2.close();
+
+  // AIG-1227: a short spike is not "running hot"; sustained high CPU is, once, with plain words
+  const { createRequire } = await import('node:module');
+  const { verdict } = createRequire(import.meta.url)('../../../lib/serverhealth.js');
+  const T0 = Date.parse('2026-01-01T10:00:00Z'), R = (m, o) => ({ at: new Date(T0 + m * 6e4).toISOString(), cpu: 10, cpu15: null, mem: 40, disk: 30, ...o });
+  check('one CPU spike (15-minute average low) is not running hot', verdict([R(0), R(15), R(30, { cpu: 100, cpu15: 30 })]) === '');
+  check('a 15-minute average of 90% or more is running hot', verdict([R(0), R(15, { cpu: 100, cpu15: 95 })]) === 'CPU 95%');
+  check('old relay (no cpu15): 3 high readings over 30 minutes is running hot', verdict([R(0, { cpu: 100 }), R(15, { cpu: 100 }), R(30, { cpu: 100 })]) === 'CPU 100%');
+  check('old relay: 3 high readings squeezed into 20 minutes is not', verdict([R(0, { cpu: 100 }), R(10, { cpu: 100 }), R(20, { cpu: 100 })]) === '');
+  check('old relay: 2 high readings are not', verdict([R(0), R(15, { cpu: 100 }), R(30, { cpu: 100 })]) === '');
+  const now = Date.now(), at = m => new Date(now - m * 6e4).toISOString();
+  put({ at: at(30), cpu: 100, cpu15: 30, mem: 50, disk: 30, storage: 9e9, uptime: 1e5 });
+  await s.ok('POST', '/api/serverhealth/poll');
+  check('a spike poll leaves the open card as it was', (await cards()).length === 1 && (await cards())[0].title === 'Server: time to upgrade (disk 88%)');
+  put({ at: at(0), cpu: 100, cpu15: 96, mem: 50, disk: 30, storage: 9e9, uptime: 1e5 });
+  await s.ok('POST', '/api/serverhealth/poll');
+  cs = await cards();
+  const note = cs[0] && cs[0].comments.map(c => c.text).join(' ');
+  check('sustained CPU keeps one card and says how long and the 15-minute figure', cs.length === 1 && cs[0].title === 'Server: time to upgrade (CPU 96%)' && /above 90% for about 30 minutes/.test(note) && /15-minute average is 96%/.test(note), { cs, note });
 }, true, { AIGILE_HEALTH_STUB: stub, AIGILE_NO_HEALTH_POLL: '1', AIGILE_LOCAL: local, AIGILE_SSH_STUB: sshStub });
