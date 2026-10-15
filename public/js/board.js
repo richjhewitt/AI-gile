@@ -355,3 +355,35 @@ app.addEventListener('drop', async e => {
   catch (err) { alert(t('board.movefail', { msg: err.message })); }
   rerender();
 });
+
+/* ---------- long-press Move to sheet (AIG-1200): touch only, the mouse keeps drag ---------- */
+// ~500 ms on a board card with no movement opens a sheet of columns; a column PATCHes the card like the ⋯ menu's Move to.
+(() => {
+  const coarse = () => window.matchMedia && matchMedia('(pointer: coarse)').matches;
+  let timer = 0, from = null, fired = false, firedAt = 0;
+  const stop = () => { clearTimeout(timer); timer = 0; from = null; };
+  window.cardMoveSheet = id => {
+    const c = state.project?.cards.find(x => x.id === id); if (!c) return;
+    const cols = colsOf(state.project).filter(x => !x.hidden && x.key !== c.status);
+    openDialog(`<h2>${esc(t('card.moveto'))}</h2><p class="muted">${esc(c.id)} · ${esc(c.title)}</p><div class="mv-sheet">${cols.map(x => `<button type="button" data-mvcol="${esc(x.key)}">${esc(((x.emoji ? x.emoji + ' ' : '') + x.name).trim())}</button>`).join('')}</div><div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
+    document.querySelectorAll('[data-mvcol]').forEach(b => b.onclick = async () => {
+      const status = b.dataset.mvcol; closeDialog();
+      const body = { status };
+      if (status === 'done' && c.type === 'incident' && c.status !== 'done') { body.postmortem = await postmortemAsk(); if (!body.postmortem) return rerender(); }
+      try { await api('PATCH', `/api/projects/${slug()}/cards/${id}`, body); } catch (err) { alert(t('board.movefail', { msg: err.message })); }
+      rerender();
+    });
+  };
+  app.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'touch' || !coarse()) return;
+    const el = e.target.closest?.('.card[data-id]'); if (!el || e.target.closest('button')) return;
+    stop(); fired = false; from = { x: e.clientX, y: e.clientY };
+    timer = setTimeout(() => { timer = 0; fired = true; firedAt = Date.now(); cardMoveSheet(el.dataset.id); }, 500);
+  });
+  app.addEventListener('touchmove', e => { const p = e.touches[0]; if (from && p && Math.hypot(p.clientX - from.x, p.clientY - from.y) > 8) { stop(); } }, { passive: true });   // a scroll or a drag of the finger cancels the press
+  for (const n of ['pointerup', 'touchend']) app.addEventListener(n, e => { stop(); });
+  app.addEventListener('dragstart', e => { if (coarse() && e.target.closest?.('.card')) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);   // a finger never drags (a held touch would start one and cancel the press)
+  app.addEventListener('contextmenu', e => { if (coarse() && e.target.closest?.('.card')) e.preventDefault(); });
+  document.addEventListener('pointerdown', () => { fired = false; }, true);
+  document.addEventListener('click', e => { if (fired && Date.now() - firedAt < 1500) { e.preventDefault(); e.stopPropagation(); } fired = false; }, true);   // the lift of the finger must not open the card or close the sheet
+})();

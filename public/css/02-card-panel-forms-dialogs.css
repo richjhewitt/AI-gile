@@ -320,3 +320,7 @@ html.qa-menu .card-menu, html.qa-menu .card-menu[hidden] { display: flex; positi
 html.qa-menu .card-menu-wrap, html.qa-menu .card-acts { display: contents; }   /* QA only: the other areas click these buttons directly */
 details.nc-more { margin: 8px 0; }
 details.nc-more > summary { cursor: pointer; font-weight: 600; color: var(--muted); padding: 6px 0; }
+
+/* AIG-1200: long-press Move to sheet on a phone board */
+.mv-sheet { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+.mv-sheet button { min-height: 44px; text-align: left; padding: 8px 12px; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; font: inherit; }

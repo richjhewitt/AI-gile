@@ -37,6 +37,24 @@ def('touch', 'on a phone, by touch only: add, move, reply, accept, Inbox, Messag
     await page.tap(`.card:has-text("${title}")`); await page.waitForSelector('#cm-btn'); await look('open card');
     const was = (await cards()).find(x => x.title === title).status; await page.tap('#cm-btn'); await page.selectOption('#mv-to', { index: 1 });
     check(tag + 'Move to (in the ⋯ menu) moves it with a finger', !!(await until(async () => (await cards()).find(x => x.title === title && x.status !== was))));
+    // AIG-1200: a long-press (~500 ms, finger held still) on a board card opens the Move to sheet; a tap still opens the card.
+    await page.goto(BASE + '/#/p/tunio'); await page.waitForSelector(`.card:has-text("${title}")`);
+    const cdp = await page.context().newCDPSession(page);
+    await page.locator(`.card:has-text("${title}")`).first().scrollIntoViewIfNeeded(); const box = await page.locator(`.card:has-text("${title}")`).first().boundingBox();
+    const fx = Math.round(box.x + box.width / 2), fy = Math.round(box.y + Math.min(box.height / 2, 30));
+    const touch = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts });
+    await touch('touchStart', [{ x: fx, y: fy }]); await sleep(150); await touch('touchMove', [{ x: fx, y: fy + 30 }]); await sleep(600); await touch('touchEnd', []);
+    await sleep(200);
+    check(tag + 'moving the finger before 500 ms does not open the Move to sheet', !(await page.locator('[data-mvcol]').count()));
+    await page.goto(BASE + '/#/p/tunio'); await page.waitForSelector(`.card:has-text("${title}")`);
+    await page.locator(`.card:has-text("${title}")`).first().scrollIntoViewIfNeeded(); const b2 = await page.locator(`.card:has-text("${title}")`).first().boundingBox(); const gx = Math.round(b2.x + b2.width / 2), gy = Math.round(b2.y + Math.min(b2.height / 2, 30));
+    const was2 = (await cards()).find(x => x.title === title).status;
+    await touch('touchStart', [{ x: gx, y: gy }]); await sleep(700);
+    check(tag + 'a long-press opens the Move to sheet', await page.locator('[data-mvcol]').first().isVisible().catch(() => false));
+    if (dev === 'iPhone 13') { const sh = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/thumbs2'; try { await page.screenshot({ path: sh + '/move-sheet.png' }); } catch {} }
+    await touch('touchEnd', []); await sleep(100);
+    await page.tap('[data-mvcol]');
+    check(tag + 'a column in the sheet moves the card', !!(await until(async () => (await cards()).find(x => x.title === title && x.status !== was2))));
     await page.goto(BASE + '/#/p/tunio/' + (await cards()).find(x => x.title === title).id); await page.waitForSelector('[data-ctab=reply]');
     await page.tap('[data-ctab=reply]'); await page.tap('#r-text'); await page.fill('#r-text', 'reply by thumb');
     await page.tap('.reply button.primary');
