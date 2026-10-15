@@ -19,7 +19,7 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   const after = await setup();
   check('wing it leaves every default and marks the wizard answered', strip(after.prefs) === before && after.prefs.wizardSeen === true && !after.fields.find(f => f.key === 'owner').value, JSON.stringify(after.prefs));
   await page.waitForSelector('#homeMoreBtn', { timeout: 5000 }).catch(() => {});
-  check('Just let me in lands on Home, not Setup (AIG-1069)', !/#\/setup/.test(page.url()) && await page.isVisible('.toolbar #homeMoreBtn') && (await page.textContent('#homeEmpty')).includes('New project'), page.url());
+  check('Just let me in lands on Home, not Setup (AIG-1069)', !/#\/setup/.test(page.url()) && await page.isVisible('.toolbar #homeMoreBtn') && (await page.textContent('#homeWelcome')).includes('New project'), page.url());
   await page.goto(s.base + '/#/setup'); await page.reload(); await page.waitForSelector('#setupForm'); await sleep(500);
   check('it does not come back by itself', !(await page.isVisible('#wzYes')));
 
