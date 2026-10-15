@@ -129,6 +129,16 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     const wr = await pg.evaluate(() => ({ note: document.getElementById('callNote').textContent, mic: lkLog.mic, gone: lkLog.rooms[0].gone, active: Call.active() }));
     check('a token that lands in another room: left at once, mic never on, says so', /different call/.test(wr.note) && wr.mic === 0 && wr.gone && !wr.active, wr);
     await pg.evaluate(() => { Call.close(); window.lkRoomName = 'r1'; });
+    // AIG-1171: Leave while still connecting: the join stops there, the room is left and the mic never goes on
+    await pg.evaluate(() => { window.lkHold = true; window.lkTk = { url: 'wss://x', token: 'a.b.c', room: 'r1' }; Call.join({ title: 'Bea', getToken: async () => lkTk }); });
+    await pg.waitForFunction(() => lkLog.rooms.length === 2 && document.getElementById('callLeave'));
+    await pg.click('#callLeave');
+    await pg.evaluate(async () => { lkLog.rooms[1].ok(); await new Promise(r => setTimeout(r, 200)); });
+    const lv = await pg.evaluate(() => ({ mic: lkLog.mic, gone: lkLog.rooms[1].gone, active: Call.active(), shown: !document.getElementById('callPanel').hidden }));
+    check('Leave while connecting: left, mic never on, no panel', lv.mic === 0 && lv.gone && !lv.active && !lv.shown, lv);
+    await pg.evaluate(async () => { window.lkHold = false; Call.join({ title: 'Bea', getToken: async () => lkTk }); });
+    await pg.waitForFunction(() => Call.active() && lkLog.mic === 1);
+    check('and a new call joins straight after (not stuck busy)', await pg.evaluate(() => lkLog.rooms.length === 3 && !lkLog.rooms[2].gone));
     noErrors(page); noErrors(setup); noErrors(pg);
     const cleared = await a.ok('POST', '/api/calls', { clear: true, token: tok });
     check('Remove clears it all', cleared.set === false && cleared.secret === false && !cleared.url);

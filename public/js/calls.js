@@ -5,7 +5,9 @@
 // Screen share is video only: no system audio, so the other callers' voices never echo back to them.
 const Call = (() => {
   const LIB = ['https://cdn.jsdelivr.net/npm/livekit-client@2.22.3/dist/livekit-client.umd.js', 'sha384-G/xxtkVytOx/ia9Q8MXxM+V0ohsaY1fZAgVP3iSGTPz4wJ0s3+ulJNKXh/gnzEDZ'];
-  let lib = null, room = null, title = '', busy = false;
+  // gen: bumped by every join and every leave, so a join that was left (or replaced) while it waited stops there (AIG-1171).
+  // pending: the room still connecting, so Leave can disconnect it. busy: the gen of the join under way (0: none).
+  let lib = null, room = null, title = '', busy = 0, gen = 0, pending = null;
   const el = id => document.getElementById(id);
   const load = () => lib || (lib = new Promise((ok, no) => {
     if (window.LivekitClient) return ok(window.LivekitClient);
@@ -61,33 +63,41 @@ const Call = (() => {
   /* ---------- joining and leaving ---------- */
   // opts: { title, getToken: async () => ({ url, token }) }. One call at a time: a second join leaves the first.
   async function join(opts) {
-    if (busy) return; busy = true;
+    if (busy) return;
+    const g = busy = ++gen; let r = null;
     try {
-      if (room) await leave();
-      title = opts.title || ''; room = null; paint();
+      const old = room || pending; room = null; pending = null;
+      if (old) { try { await old.disconnect(); } catch {} cleanup(); }
+      if (g !== gen) return;
+      title = opts.title || ''; paint();
       const LK = await load(), tk = await opts.getToken();
-      const r = new LK.Room({ adaptiveStream: true, dynacast: true, publishDefaults: { simulcast: true, dtx: true, red: true } });
+      if (g !== gen) return;   // left while the token came
+      r = pending = new LK.Room({ adaptiveStream: true, dynacast: true, publishDefaults: { simulcast: true, dtx: true, red: true } });
       const E = LK.RoomEvent, again = () => { if (room === r) tiles(); };
-      r.on(E.TrackSubscribed, (track, pub, p) => { if (track.kind === 'audio') { const a = track.attach(); a.className = 'call-audio'; a.dataset.who = p.identity; a.hidden = true; document.body.appendChild(a); } again(); })
+      r.on(E.TrackSubscribed, (track, pub, p) => { if (g !== gen) return; if (track.kind === 'audio') { const a = track.attach(); a.className = 'call-audio'; a.dataset.who = p.identity; a.hidden = true; document.body.appendChild(a); } again(); })
         .on(E.TrackUnsubscribed, track => { track.detach().forEach(x => x.remove()); again(); })
         .on(E.ParticipantConnected, again).on(E.ParticipantDisconnected, again).on(E.ActiveSpeakersChanged, again)
         .on(E.TrackMuted, again).on(E.TrackUnmuted, again).on(E.LocalTrackPublished, () => room === r && paint()).on(E.LocalTrackUnpublished, () => room === r && paint())
         .on(E.Disconnected, () => { if (room === r) { room = null; cleanup(); } });
       await r.connect(tk.url, tk.token);
+      if (g !== gen) { try { await r.disconnect(); } catch {} return; }   // Leave was pressed while connecting: never turn the mic on
       // AIG-1171: the board said which room this token is for; a token for any other room is left before the mic goes on.
       if (tk.room && r.name !== tk.room) { try { await r.disconnect(); } catch {} throw new Error(t('lkcall.wrongroom')); }
-      room = r; paint();
+      pending = null; room = r; paint();
       try { await r.localParticipant.setMicrophoneEnabled(true); } catch (e) { err(e); }   // no mic (or it was refused): still in the call, listening
-      paint();
-    } catch (e) { room = null; note(t('lkcall.h'), (e && e.message) || String(e)); }
-    finally { busy = false; }
+      if (g === gen) paint();
+    } catch (e) {
+      if (g === gen) { room = null; note(t('lkcall.h'), (e && e.message) || String(e)); }
+      else if (r) { try { await r.disconnect(); } catch {} }   // left meanwhile: no message, just make sure it is gone
+    } finally { if (pending === r) pending = null; if (busy === g) busy = 0; }
   }
   const toggle = async (fn, opts) => { if (!room) return; try { await fn(room.localParticipant, opts); } catch (e) { err(e); } paint(); };
   const mic = () => toggle(lp => lp.setMicrophoneEnabled(!lp.isMicrophoneEnabled));
   const cam = () => toggle(lp => lp.setCameraEnabled(!lp.isCameraEnabled));
   const screen = () => toggle(lp => lp.setScreenShareEnabled(!lp.isScreenShareEnabled, { audio: false }));
   function cleanup() { document.querySelectorAll('.call-audio').forEach(a => a.remove()); const p = el('callPanel'); if (p) { p.hidden = true; p.innerHTML = ''; } }
-  async function leave() { const r = room; room = null; if (r) { try { await r.disconnect(); } catch {} } cleanup(); }
+  // Leave also stops a join still on its way: its room is disconnected, and the join sees gen moved on.
+  async function leave() { gen++; busy = 0; const r = room || pending; room = null; pending = null; if (r) { try { await r.disconnect(); } catch {} } cleanup(); }
   function close() { if (!room) cleanup(); }
   return { join, leave, close, note, mic, cam, screen, active: () => !!room, get room() { return room; } };
 })();
