@@ -2,8 +2,10 @@
 // "Keep yesterday's", order for the Scrum Master and the night watchman, 💤 only waking for the owner's comments, the day's token
 // split by weight and the slow-down of a project past its share. The page: the 🎯 Today link, the badge on the project cards.
 import fs from 'node:fs';
+import http from 'node:http';
+import zlib from 'node:zlib';
 import path from 'node:path';
-import { check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def, PORT } from '../lib.mjs';
 
 def('today', '🎯 Today: weights per project, reset each morning, order, 💤 rest only wakes for the owner, token split by weight and slow-down (AIG-595/596/597)', async (s, ctx) => {
   for (const [n, k] of [['Aa', 'AAA'], ['Bb', 'BBB'], ['Cc', 'CCC'], ['Dd', 'DDD'], ['Ee', 'EEE']]) await mkProject(s, n, k, { path: tmp('today-' + n) });
@@ -228,3 +230,20 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   await pg.click('#dialog .actions button >> nth=0');
   await s.ok('POST', '/api/setup', { prefs: { todayPick: false } });
 }, true);
+
+def('speed', '⚡ /api/today answers from a 2 s cache; big JSON comes gzipped when asked (AIG-1091)', async s => {
+  await mkProject(s, 'Zed', 'ZED', { path: tmp('speed-zed') });
+  const a = await s.ok('GET', '/api/today'), b = await s.ok('GET', '/api/today');
+  check('a second /api/today within 2 s is served from the cache', typeof a.at === 'number' && a.at === b.at, [a.at, b.at]);
+  await s.ok('POST', '/api/today', { slug: 'zed', weight: 'high' });
+  const c = await s.ok('GET', '/api/today');
+  check('a change drops the cache', c.at !== b.at && c.projects.find(p => p.slug === 'zed').weight === 'high');
+  await mkCard(s, 'zed', 'Big card', { testSteps: '1. ' + 'step '.repeat(12000) });
+  const get = (p, headers) => new Promise(res => {
+    http.get({ host: '127.0.0.1', port: PORT, path: p, headers }, x => { const ch = []; x.on('data', d => ch.push(d)); x.on('end', () => res({ h: x.headers, buf: Buffer.concat(ch) })); });
+  });
+  const plain = await get('/api/projects/zed', {}), gz = await get('/api/projects/zed', { 'Accept-Encoding': 'gzip' }), small = await get('/api/meta', { 'Accept-Encoding': 'gzip' });
+  check('over 32 KB and asked: gzipped, Vary set, same JSON', plain.buf.length > 32768 && gz.h['content-encoding'] === 'gzip' && /Accept-Encoding/i.test(gz.h.vary || '') && gz.buf.length < plain.buf.length / 3 && zlib.gunzipSync(gz.buf).toString() === plain.buf.toString(), [plain.buf.length, gz.buf.length]);
+  check('not asked: sent plain', !plain.h['content-encoding']);
+  check('small answers stay plain', !small.h['content-encoding']);
+});
