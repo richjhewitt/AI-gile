@@ -3815,5 +3815,6 @@
  "rev.summary.busy": "Demande à l'agent d'astreinte…",
  "rev.summary.noai": "Pas de résumé : l'IA est désactivée (No Token Mode, Sans IA ou budget dépassé).",
  "rev.summary.failed": "L'agent n'a pas fourni de résumé cette fois.",
- "tb.b.quietTop": "🌙 Mode silencieux"
+ "tb.b.quietTop": "🌙 Mode silencieux",
+ "srv.pir.rb.next": "Revue publiée. {name} : propose maintenant un runbook pour que ce soit plus rapide la prochaine fois : aigile pir-runbook {slug} {id} <short-name> --text \"les étapes, une par ligne\" --as {name}. Le propriétaire dit Go et le fichier est écrit dans docs/runbooks/<short-name>.md dans le dossier du projet."
 }
