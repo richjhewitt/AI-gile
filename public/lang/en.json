@@ -3502,6 +3502,8 @@
  "sc.keyhelp": "Show or hide this list",
  "help.m.incidents": "🔥 Incidents and problems",
  "help.close": "Close",
+ "help.inc.more": "Show more",
+ "help.inc.agents": "For agents (command line)",
  "int.h": "📝 Alpha / beta interest ({n})",
  "int.which.alpha": "alpha",
  "int.which.beta": "beta",

@@ -3472,6 +3472,8 @@
  "sc.keyhelp": "Deze lijst tonen of verbergen",
  "help.m.incidents": "🔥 Incidenten en problemen",
  "help.close": "Sluiten",
+ "help.inc.more": "Meer tonen",
+ "help.inc.agents": "Voor agents (opdrachtregel)",
  "int.h": "📝 Interesse in alfa / bèta ({n})",
  "int.which.alpha": "alfa",
  "int.which.beta": "bèta",
