@@ -3600,6 +3600,8 @@
  "ci.backup.days": "Backup every (days)",
  "ci.backup.line": "backup {where} every {days} days",
  "ci.links": "Links (card ids or web addresses, comma separated)",
+ "ciw.expiry.title": "Renew {name} by {date}",
+ "ciw.expiry.body": "{name} runs out on {date} ({days} days from today). Please renew it before then.",
  "ci.links.ph": "AIG-12, https://...",
  "desk.label": "Desk:",
  "desk.kind.request": "Request",

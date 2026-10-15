@@ -3600,6 +3600,8 @@
  "ci.backup.days": "Back-up elke (dagen)",
  "ci.backup.line": "back-up {where} elke {days} dagen",
  "ci.links": "Koppelingen (kaart-id's of webadressen, door komma's gescheiden)",
+ "ciw.expiry.title": "Verleng {name} voor {date}",
+ "ciw.expiry.body": "{name} verloopt op {date} (over {days} dagen). Verleng het voor die tijd.",
  "ci.links.ph": "AIG-12, https://...",
  "desk.label": "Servicedesk:",
  "desk.kind.request": "Verzoek",
