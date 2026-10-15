@@ -1,5 +1,6 @@
 {
-  "about": "One self-contained description of AI-gile per length (in words, story-point sizes). Each text is written for its own length, not cut from a longer one. After editing run: node tools/gen/teaser-lines.mjs",
+  "_note": "Slider lines for the teaser (AIG-1117, AIG-1226): one self-contained description of AI-gile per length, each written fresh for its own length (never cut from a longer one), 2-3 versions per length. n is the length in words (story-point sizes). unit \"words\": every text has n words (space-separated). unit \"chars\": for languages written without spaces (zh, zh-tw, ja, th, lo, km, my) the length is in characters, 2 characters per word, so n=5 means about 10 characters (letters only: spaces, digits, punctuation and combining marks do not count). Tolerance: within 20% of the target (exact for 1 and 2 words, at least 1 character). Quips are optional, by n. Keys starting with _ are ignored by the site. After editing: node tools/gen/site-lang.mjs; check: node tools/site-i18n-check.mjs",
+  "unit": "words",
   "sizes": [
     { "n": 1, "texts": [
       "Kanban.",

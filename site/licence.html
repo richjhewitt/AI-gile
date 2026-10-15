@@ -3,34 +3,38 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI-gile: business licence</title>
-<meta name="description" content="Using AI-gile in your business? Apply for a free business licence.">
+<title data-i18n="licence.title">AI-gile: business licence</title>
+<meta name="description" content="Using AI-gile in your business? Apply for a free business licence." data-i18n-attr="content:licence.description">
 <meta name="theme-color" content="#12151b">
 <link rel="icon" type="image/png" href="assets/icon.png">
 <link rel="stylesheet" href="style.css">
 <script>
 try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}
 </script>
+<script src="lang/languages.js"></script>
+<script src="lang/en.js"></script>
+<script src="i18n.js"></script>
 </head>
 <body>
 <div class="wrap">
 <header class="top">
   <a class="brand" href="/"><img src="assets/icon.png" alt="" width="40" height="40">AI-gile</a>
+  <span id="lang-slot"></span>
 </header>
 <main id="main" class="form-page">
-  <h1>📜 Business licence</h1>
-  <p class="lede">Using AI-gile at work? Tell us who you are and what you do. If it does some good, the licence is free.</p>
-  <form data-post="/apply" data-thanks="Thanks! We'll reply by email.">
-    <label>Company<input name="company" required maxlength="120" autocomplete="organization"></label>
-    <label>Website<input name="website" type="url" maxlength="200" placeholder="https://"></label>
-    <label>What you do<textarea name="what" required maxlength="1000" rows="3"></textarea></label>
-    <label>How it helps the world<textarea name="how" required maxlength="1000" rows="3"></textarea></label>
-    <label>Email<input name="email" type="email" required maxlength="160" autocomplete="email"></label>
-    <button type="submit" class="btn">Apply</button>
+  <h1 data-i18n="licence.h1">📜 Business licence</h1>
+  <p class="lede" data-i18n="licence.lede">Using AI-gile at work? Tell us who you are and what you do. If it does some good, the licence is free.</p>
+  <form data-post="/apply" data-thanks="Thanks! We'll reply by email." data-i18n-attr="data-thanks:licence.thanks">
+    <label><span data-i18n="licence.company">Company</span><input name="company" required maxlength="120" autocomplete="organization"></label>
+    <label><span data-i18n="licence.website">Website</span><input name="website" type="url" maxlength="200" placeholder="https://"></label>
+    <label><span data-i18n="licence.what">What you do</span><textarea name="what" required maxlength="1000" rows="3"></textarea></label>
+    <label><span data-i18n="licence.how">How it helps the world</span><textarea name="how" required maxlength="1000" rows="3"></textarea></label>
+    <label><span data-i18n="licence.email">Email</span><input name="email" type="email" required maxlength="160" autocomplete="email"></label>
+    <button type="submit" class="btn" data-i18n="licence.submit">Apply</button>
     <p class="form-msg" role="status" aria-live="polite"></p>
   </form>
 </main>
-<footer><a href="/">← Back to AI-gile</a></footer>
+<footer><a href="/" data-i18n="back">← Back to AI-gile</a></footer>
 </div>
 <script src="forms.js"></script>
 </body>
