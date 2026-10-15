@@ -3603,6 +3603,14 @@
  "ci.backup.days": "Backup every (days)",
  "ci.backup.line": "backup {where} every {days} days",
  "ci.links": "Links (card ids or web addresses, comma separated)",
+ "ciw.expiry.title": "Renew {name} by {date}",
+ "ciw.expiry.body": "{name} runs out on {date} ({days} days from today). Please renew it before then.",
+ "ciw.backup.title": "Backup of {name} is {days} days old",
+ "ciw.backup.body": "{name} was last backed up {days} days ago and should be backed up every {every} days (to {where}). Do it, then mark it \"Backed up today\" on its item page (or aigile ci <project> backed-up <id>).",
+ "ciw.restore.title": "Restore test for {name}",
+ "ciw.restore.body": "Once a month: restore the backup of {name} (from {where}) somewhere safe and check that it works.",
+ "ci.backup.last": "last backup {day}",
+ "ci.backedup": "Backed up today",
  "ci.links.ph": "AIG-12, https://...",
  "desk.label": "Desk:",
  "desk.kind.request": "Request",
@@ -3615,5 +3623,6 @@
  "desk.looks": "looks like {id}",
  "desk.link": "Link",
  "desk.linked": "Linked to {id}",
- "srv.desk.linked": "Linked: this looks like the same thing as {id}."
+ "srv.desk.linked": "Linked: this looks like the same thing as {id}.",
+ "ci.affects": "Affects:"
 }
