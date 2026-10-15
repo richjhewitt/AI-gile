@@ -181,6 +181,12 @@ def('teaserwords', 'site/index.html (file://): 📖 Dev words button and dialog 
   check('reduced motion: no opening animation', geo.anim === 'none', geo);
   await page.uncheck('#words-underline');
   check('switching the underline off removes every dotted word and the saved choice', (await page.$$('abbr.devw')).length === 0 && (await page.evaluate(() => localStorage.getItem('aigile-site-devwords'))) === null);
+  // AIG-1288: the same switch one click away on the page, next to 📖
+  if (await page.$eval('#words-dlg', d => d.open)) await page.keyboard.press('Escape');
+  await page.click('#words-ul'); await sleep(300);
+  check('the Abc switch on the page turns the underline on in one click: pressed, named in the page language, remembered, and the dialog box ticks with it (AIG-1288)', (await page.getAttribute('#words-ul', 'aria-pressed')) === 'true' && ((await page.getAttribute('#words-ul', 'aria-label')) || '').trim().length > 0 && (await page.evaluate(() => localStorage.getItem('aigile-site-devwords'))) === '1' && await page.$eval('#words-underline', b => b.checked));
+  await page.click('#words-ul'); await sleep(300);
+  check('and off again in one click', (await page.$$('abbr.devw')).length === 0 && (await page.getAttribute('#words-ul', 'aria-pressed')) === 'false');
   check('no page errors', errs.length === 0, errs);
   await page.close();
 }, true);

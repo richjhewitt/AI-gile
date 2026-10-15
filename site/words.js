@@ -24,6 +24,7 @@
     ".words-list{margin:0;padding:0;overflow-y:auto;min-height:80px;border-top:1px solid var(--line)}"+
     ".words-item{padding:10px 2px;border-bottom:1px solid var(--line)}"+
     ".words-item dt{font-weight:700}.words-item dd{margin:2px 0 0;color:var(--text)}"+
+    ".words-ul{padding-inline:12px}.words-ul .words-abc{text-decoration:underline dotted;text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700}.words-ul[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent)}.words-ul[aria-pressed=true] .words-abc{text-decoration-style:solid}"+
     "abbr.devw{text-decoration:underline dotted var(--muted);text-decoration-thickness:1.5px;text-underline-offset:3px;cursor:help;border-radius:3px}"+
     "abbr.devw:focus-visible{outline:2px solid var(--focus);outline-offset:1px}"+
     ".words-tip{position:fixed;z-index:30;max-width:min(300px,calc(100vw - 32px));padding:8px 10px;border-radius:8px;background:var(--text);color:var(--bg);font-size:14px;line-height:1.4;box-shadow:var(--shadow-lg);text-align:start;pointer-events:none}";
@@ -31,12 +32,13 @@
 
   function isOn(){try{return localStorage.getItem(KEY)==="1"}catch(e){return false}}
   function save(v){try{v?localStorage.setItem(KEY,"1"):localStorage.removeItem(KEY)}catch(e){}}
+  function setOn(v){save(v);if(box)box.checked=v;if(ul)ul.setAttribute("aria-pressed",v?"true":"false");v?mark():unmark()}
   function el(tag,cls){var e=document.createElement(tag);if(cls)e.className=cls;return e}
   function W(){return I.words()||{list:[]}}
   function fold(s){s=String(s||"").toLowerCase();try{s=s.normalize("NFD").replace(/[̀-ͯ]/g,"")}catch(e){}return s}
 
   /* ---------- the dialog ---------- */
-  var btn,label,dlg,h,intro,input,opt,box,optText,help,dl,none,x;
+  var btn,ul,label,dlg,h,intro,input,opt,box,optText,help,dl,none,x;
   function paint(){
     var w=W(),full=w.button||"📖 Dev words";
     label.textContent=full.replace(/^[^\p{L}\p{N}]+/u,"")||full;
@@ -44,7 +46,7 @@
     h.textContent=w.h||full;intro.textContent=w.intro||"";
     input.placeholder=w.search||"";input.setAttribute("aria-label",w.search||full);
     none.textContent=w.none||"";x.setAttribute("aria-label",w.close||"Close");x.title=x.getAttribute("aria-label");
-    optText.textContent=I.t("words.underline");help.textContent=I.t("words.underlineHelp");
+    optText.textContent=I.t("words.underline");ul.title=I.t("words.underline");ul.setAttribute("aria-label",I.t("words.underline"));help.textContent=I.t("words.underlineHelp");
     list();
   }
   function list(){
@@ -67,6 +69,9 @@
     var slot=document.getElementById("words-slot");if(!slot)return;
     btn=el("button","lang-btn words-btn");btn.type="button";btn.id="words-btn";btn.setAttribute("aria-haspopup","dialog");
     btn.appendChild(document.createTextNode("📖"));label=el("span","words-label");btn.appendChild(label);slot.appendChild(btn);
+    // AIG-1288: the underline switch one click away on the page, next to the button (a dotted Abc reads in every language)
+    ul=el("button","lang-btn words-ul");ul.type="button";ul.id="words-ul";var abc=el("span","words-abc");abc.textContent="Abc";abc.setAttribute("aria-hidden","true");ul.appendChild(abc);ul.setAttribute("aria-pressed",isOn()?"true":"false");slot.appendChild(ul);
+    ul.addEventListener("click",function(){setOn(!isOn())});
     dlg=el("dialog","words-dlg");dlg.id="words-dlg";dlg.setAttribute("aria-labelledby","words-h");dlg.setAttribute("data-nowords","");
     var inner=el("div","words-in"),head=el("div","words-head");
     h=el("h2");h.id="words-h";x=el("button","words-x");x.type="button";x.id="words-close";x.textContent="×";
@@ -85,7 +90,7 @@
     // Esc closes at once, also from the search box (which would otherwise only clear itself first).
     dlg.addEventListener("keydown",function(e){if(e.key==="Escape"){e.preventDefault();dlg.close()}});
     input.addEventListener("input",filter);
-    box.addEventListener("change",function(){save(box.checked);box.checked?mark():unmark()});
+    box.addEventListener("change",function(){setOn(box.checked)});
     paint();
   }
 
