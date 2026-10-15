@@ -9,13 +9,34 @@ import { freePort, startRelay, until, check, tmp, startServer, openPage, noError
 
 const SECDIR = tmp('callsec');
 const SECRET = 'qa-livekit-secret-Zx81', KEY = 'APIqaKey123', URL = 'wss://livekit.example.test';
+const SECRET2 = 'qa-livekit-secret-Bb22', KEY2 = 'APIqaKeyB', URL2 = 'wss://livekit-b.example.test';   // B's own (AIG-1171)
 const claims = tok => JSON.parse(Buffer.from(tok.split('.')[1], 'base64url').toString('utf8'));
 const signedWith = (tok, secret) => { const [h, p, sig] = tok.split('.'); return JSON.parse(Buffer.from(h, 'base64url')).alg === 'HS256' && crypto.createHmac('sha256', secret).update(h + '.' + p).digest('base64url') === sig; };
+// AIG-1171: a fake guest token (any secret: B cannot check A's signature, it checks the claims).
+const fakeTok = (c, alg = 'HS256') => { const b = x => Buffer.from(JSON.stringify(x)).toString('base64url'), body = b({ alg, typ: 'JWT' }) + '.' + b(c); return body + '.' + crypto.createHmac('sha256', 'x').update(body).digest('base64url'); };
+// AIG-1171: a stand-in for livekit-client in the page, so the call panel's joining, leaving and tiles can be checked without a LiveKit.
+// window.lkHold: connect() waits until the test calls lkLog.rooms[i].ok(); window.lkRoomName: the room name the "server" answers with.
+function stubLivekit() {
+  const log = window.lkLog = { attach: 0, detach: 0, mic: 0, connects: [], disconnects: 0, rooms: [] };
+  class Track { constructor(kind, source) { this.kind = kind; this.source = source; this.els = []; }
+    attach() { log.attach++; const v = document.createElement(this.kind === 'audio' ? 'audio' : 'video'); this.els.push(v); return v; }
+    detach(el) { const out = el ? this.els.filter(x => x === el) : this.els.slice(); this.els = this.els.filter(x => !out.includes(x)); log.detach += out.length; return out; } }
+  class P { constructor(id) { this.identity = id; this.name = id; this.pubs = new Map(); this.isMicrophoneEnabled = false; this.isCameraEnabled = false; this.isScreenShareEnabled = false; this.isSpeaking = false; }
+    getTrackPublication(s) { return this.pubs.get(s); }
+    async setMicrophoneEnabled(v) { log.mic++; this.isMicrophoneEnabled = v; } async setCameraEnabled(v) { this.isCameraEnabled = v; } async setScreenShareEnabled(v) { this.isScreenShareEnabled = v; } }
+  class Room { constructor() { this.h = {}; this.localParticipant = new P('me'); this.remoteParticipants = new Map(); this.name = ''; this.gone = false; log.rooms.push(this); }
+    on(e, f) { (this.h[e] = this.h[e] || []).push(f); return this; }
+    emit(e, ...a) { (this.h[e] || []).forEach(f => f(...a)); }
+    connect(url, token) { log.connects.push(token); return new Promise(ok => { this.ok = () => { this.name = window.lkRoomName || 'r1'; ok(); }; if (!window.lkHold) this.ok(); }); }
+    async disconnect() { log.disconnects++; this.gone = true; } }
+  const E = ['TrackSubscribed', 'TrackUnsubscribed', 'ParticipantConnected', 'ParticipantDisconnected', 'ActiveSpeakersChanged', 'TrackMuted', 'TrackUnmuted', 'LocalTrackPublished', 'LocalTrackUnpublished', 'Disconnected'];
+  window.LivekitClient = { Room, RoomEvent: Object.fromEntries(E.map(e => [e, e])), Track: { Source: { Camera: 'camera', ScreenShare: 'screen_share', Microphone: 'microphone' } }, Track_: Track, P };
+}
 const roomFor = (m1, m2) => 'aigile-dm-' + crypto.createHash('sha256').update('aigile-call-v1|' + [m1, m2].sort().join('|')).digest('hex').slice(0, 32);
 
 def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route refuses non-participants / teams / not set up, token claims and room correct, the friend joins with the guest token (AIG-1162)', async (s, ctx) => {
   const relay = await startRelay({ RELAY_RATE: '100000' });
-  const b = await startServer({ AIGILE_DM_POLL_MS: '300' }, await freePort());
+  const b = await startServer({ AIGILE_DM_POLL_MS: '300', AIGILE_SECRETS_DIR: tmp('callsecb') }, await freePort());
   const a = s;
   const as = (method, url, headers, body) => fetch(a.base + url, { method, headers: { 'Content-Type': 'application/json', ...headers }, body: body && JSON.stringify(body) }).then(r => r.status);
   try {
@@ -42,7 +63,7 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     // refused: not set up, not a contact, a team, a background run
     const notset = await a.api('POST', `/api/calls/dm/${cb.id}/token`, {});
     check('not set up: the token route refuses (409) and says so', notset.status === 409 && /not set up/.test(notset.body.error || ''), notset);
-    check('not set up: the state says so', JSON.stringify(await a.ok('GET', `/api/calls/dm/${cb.id}`)) === JSON.stringify({ set: false, invite: false }));
+    check('not set up: the state says so', JSON.stringify(await a.ok('GET', `/api/calls/dm/${cb.id}`)) === JSON.stringify({ set: false, invite: false, theirs: false }));
     check('saving without the secrets page token is refused', (await a.api('POST', '/api/calls', { url: URL, key: KEY, secret: SECRET })).status === 403);
     const tok = (await a.ok('GET', '/api/secrets/token')).token;
     check('a bad address is refused', (await a.api('POST', '/api/calls', { url: 'javascript:alert(1)', key: KEY, secret: SECRET, token: tok })).status === 400);
@@ -79,6 +100,17 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     const t2 = await b.ok('POST', `/api/calls/dm/${ca.id}/token`, {});
     const c2 = claims(t2.token);
     check('B\'s token is A\'s guest token: same room, B\'s identity, signed by A\'s secret', t2.theirs === true && t2.room === room && c2.video.room === room && c2.sub === onB.mailbox && c2.iss === KEY && signedWith(t2.token, SECRET), c2);
+    // AIG-1171: B keeps a guest token only when its own claims are for this DM's room, for B, and live (not the envelope's word)
+    const invFile = path.join(b.data, 'calls', 'invites.json'), invOk = fs.readFileSync(invFile, 'utf8');
+    const nowS = Math.floor(Date.now() / 1000), good = { iss: KEY, sub: onB.mailbox, nbf: nowS - 10, exp: nowS + 3600, video: { room, roomJoin: true } };
+    const forged = { 'another room': { ...good, video: { room: 'aigile-dm-0123456789abcdef0123456789abcdef', roomJoin: true } }, 'someone else (A\'s identity)': { ...good, sub: onA.mailbox },
+      'expired': { ...good, exp: nowS - 5 }, 'living for days': { ...good, exp: nowS + 5 * 86400 }, 'not yet valid': { ...good, nbf: nowS + 3600 }, 'no join grant': { ...good, video: { room } } };
+    const kept = async tokn => { const all = JSON.parse(invOk); all[ca.id].token = tokn; fs.writeFileSync(invFile, JSON.stringify(all)); const st = await b.ok('GET', `/api/calls/dm/${ca.id}`); const tk = await b.api('POST', `/api/calls/dm/${ca.id}/token`, {}); return st.invite || tk.body.token === tokn; };
+    const took = []; for (const [k, c] of Object.entries(forged)) if (await kept(fakeTok(c))) took.push(k);
+    if (await kept(fakeTok(good, 'none'))) took.push('alg none');
+    check('a guest token for another room / another person / expired / too long / not yet valid / no join / alg none is never used', took.length === 0, took);
+    check('a guest token with the right claims is used (the check is on the claims, not the signature)', await kept(fakeTok(good)));
+    fs.writeFileSync(invFile, invOk);
     check('B\'s chat shows the call line', (await b.ok('GET', `/api/dms/contacts/${ca.id}/messages`)).some(m => m.kind === 'call' && m.dir === 'in'));
 
     // blocked: no token
@@ -86,11 +118,65 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     check('a blocked friend: refused (409)', (await a.api('POST', `/api/calls/dm/${cb.id}/token`, {})).status === 409);
     await a.ok('PATCH', `/api/dms/contacts/${cb.id}`, { blocked: false });
 
+    // AIG-1171: both press Call at once, each with their own LiveKit: the lower mailbox's server is where they meet
+    await b.ok('POST', '/api/calls', { url: URL2, key: KEY2, secret: SECRET2, token: (await b.ok('GET', '/api/secrets/token')).token });
+    fs.rmSync(invFile);   // as if B pressed Call before A's ring arrived
+    const tb = await b.ok('POST', `/api/calls/dm/${ca.id}/token`, {});
+    check('B (own LiveKit, no invite yet) joins its own server and rings A', tb.theirs === false && tb.url === URL2 && tb.room === room, tb);
+    fs.writeFileSync(invFile, invOk);   // ...and A's ring arrives at B too
+    await until(async () => (await a.ok('GET', `/api/calls/dm/${cb.id}`)).invite);
+    const aWins = onA.mailbox < onB.mailbox, win = aWins ? [a, cb.id, URL] : [b, ca.id, URL2], lose = aWins ? [b, ca.id] : [a, cb.id];
+    const sw = await win[0].ok('GET', `/api/calls/dm/${win[1]}`), sl = await lose[0].ok('GET', `/api/calls/dm/${lose[1]}`);
+    check('the tie-break: the winner stays, the other is told to move to the winner\'s call', sw.invite && sw.theirs === false && sl.invite && sl.theirs === true, { aWins, sw, sl });
+    const kw = await win[0].ok('POST', `/api/calls/dm/${win[1]}/token`, { ring: false }), kl = await lose[0].ok('POST', `/api/calls/dm/${lose[1]}/token`, { ring: false });
+    check('both now get a token for the same server and room (the winner\'s)', kw.theirs === false && kl.theirs === true && kw.url === win[2] && kl.url === win[2] && kw.room === kl.room, { kw: kw.url, kl: kl.url });
+    await b.ok('POST', '/api/calls', { clear: true, token: (await b.ok('GET', '/api/secrets/token')).token });
+
     // Setup shows the section, set up
     const setup = await openPage(ctx, '#/setup/calls');
     await setup.waitForSelector('#callSetState');
     check('Setup → Calls shows Ready and the address, the secret box empty', /Ready/.test(await setup.locator('#callSetState').innerText()) && await setup.locator('#callSetUrl').inputValue() === URL && await setup.locator('#callSetSecret').inputValue() === '');
-    noErrors(page); noErrors(setup);
+    // AIG-1171: the page checks the joined room is the one the board named, before the mic goes on
+    const pg = await openPage(ctx, '#/');
+    await pg.evaluate(stubLivekit);
+    await pg.evaluate(() => { window.lkRoomName = 'someone-elses-room'; Call.join({ title: 'Bea', getToken: async () => ({ url: 'wss://x', token: 'a.b.c', room: 'r1' }) }); });
+    await pg.waitForSelector('#callNote');
+    const wr = await pg.evaluate(() => ({ note: document.getElementById('callNote').textContent, mic: lkLog.mic, gone: lkLog.rooms[0].gone, active: Call.active() }));
+    check('a token that lands in another room: left at once, mic never on, says so', /different call/.test(wr.note) && wr.mic === 0 && wr.gone && !wr.active, wr);
+    await pg.evaluate(() => { Call.close(); window.lkRoomName = 'r1'; });
+    // AIG-1171: Leave while still connecting: the join stops there, the room is left and the mic never goes on
+    await pg.evaluate(() => { window.lkHold = true; window.lkTk = { url: 'wss://x', token: 'a.b.c', room: 'r1' }; Call.join({ title: 'Bea', getToken: async () => lkTk }); });
+    await pg.waitForFunction(() => lkLog.rooms.length === 2 && document.getElementById('callLeave'));
+    await pg.click('#callLeave');
+    await pg.evaluate(async () => { lkLog.rooms[1].ok(); await new Promise(r => setTimeout(r, 200)); });
+    const lv = await pg.evaluate(() => ({ mic: lkLog.mic, gone: lkLog.rooms[1].gone, active: Call.active(), shown: !document.getElementById('callPanel').hidden }));
+    check('Leave while connecting: left, mic never on, no panel', lv.mic === 0 && lv.gone && !lv.active && !lv.shown, lv);
+    await pg.evaluate(async () => { window.lkHold = false; Call.join({ title: 'Bea', getToken: async () => lkTk }); });
+    await pg.waitForFunction(() => Call.active() && lkLog.mic === 1);
+    check('and a new call joins straight after (not stuck busy)', await pg.evaluate(() => lkLog.rooms.length === 3 && !lkLog.rooms[2].gone));
+    // AIG-1171: alone on my own server, the page asks the board and moves to the friend's call when theirs wins; not when someone is with me
+    await pg.evaluate(async () => { await Call.leave(); window.lkSwaps = 0; let n = 0; Call.join({ title: 'Bea', getToken: async () => ({ url: 'wss://x', token: 'sw' + (++n), room: 'r1', theirs: n > 1 }), swap: async () => (++lkSwaps, true) }); });
+    await pg.waitForFunction(() => lkLog.connects.includes('sw2') && Call.active(), null, { timeout: 15000 });
+    const swp = await pg.evaluate(() => ({ old: lkLog.rooms[lkLog.connects.indexOf('sw1')].gone, now: Call.room === lkLog.rooms[lkLog.connects.indexOf('sw2')] }));
+    check('alone on my server and the board says theirs wins: left mine, joined theirs', swp.old && swp.now, swp);
+    await pg.evaluate(async () => { await Call.leave(); window.lkSwaps = 0; Call.join({ title: 'Bea', getToken: async () => ({ url: 'wss://x', token: 'sw3', room: 'r1' }), swap: async () => (++lkSwaps, true) }); });
+    await pg.waitForFunction(() => Call.active());
+    await pg.evaluate(async () => { Call.room.remoteParticipants.set('bea', new LivekitClient.P('bea')); await new Promise(r => setTimeout(r, 4000)); });
+    check('with someone in my call already: no move, not even asked', await pg.evaluate(() => lkSwaps === 0 && Call.room === lkLog.rooms[lkLog.rooms.length - 1]));
+    // AIG-1171: repainting the tiles reuses each video (attached once); a track that goes away is detached and its video removed
+    await pg.evaluate(async () => {
+      const r = Call.room, bea = r.remoteParticipants.get('bea'), tr = window.lkCam = new LivekitClient.Track_('video', 'camera');
+      bea.pubs.set('camera', { track: tr, isMuted: false, source: 'camera' }); lkLog.attach = 0; lkLog.detach = 0;
+      for (let i = 0; i < 5; i++) r.emit('ActiveSpeakersChanged');
+      await Call.mic(); await Call.mic(); r.emit('LocalTrackPublished');   // whole-panel repaints too
+    });
+    const v1 = await pg.evaluate(() => ({ attach: lkLog.attach, held: lkCam.els.length, shown: document.querySelectorAll('#callTiles video').length, same: document.querySelector('#callTiles video') === lkCam.els[0] }));
+    check('many repaints: the camera is attached once and its one video reused', v1.attach === 1 && v1.held === 1 && v1.shown === 1 && v1.same, v1);
+    await pg.evaluate(() => { Call.room.remoteParticipants.get('bea').pubs.delete('camera'); Call.room.emit('TrackMuted'); });
+    const v2 = await pg.evaluate(() => ({ detach: lkLog.detach, held: lkCam.els.length, shown: document.querySelectorAll('#callTiles video').length, av: !!document.querySelector('#callTiles [data-who="bea"] .call-av') }));
+    check('the camera goes: detached, its video gone, the name tile back', v2.detach === 1 && v2.held === 0 && v2.shown === 0 && v2.av, v2);
+    await pg.evaluate(() => Call.leave());
+    noErrors(page); noErrors(setup); noErrors(pg);
     const cleared = await a.ok('POST', '/api/calls', { clear: true, token: tok });
     check('Remove clears it all', cleared.set === false && cleared.secret === false && !cleared.url);
   } finally { b.stop(); relay.stop(); }

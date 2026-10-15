@@ -3,7 +3,7 @@
 // brings one back, newest first, plain-text previews. Dates are set relative to now.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
+import { check, mkProject, mkCard, openPage, noErrors, def, readChat, writeChat } from '../lib.mjs';
 
 def('msgux', 'Messages: Lead chat defaults to a plain message, Go only on a Go? question; All hands asks first; quiet chats hide; plain previews (AIG-936/943/946)', async (s, ctx) => {
   const day = 86400000, ago = ms => new Date(Date.now() - ms).toISOString();
@@ -14,7 +14,7 @@ def('msgux', 'Messages: Lead chat defaults to a plain message, Go only on a Go? 
   await s.ok('POST', `/api/projects/mux-chat/cards/${yn.id}/comments`, { author: 'Lead', text: 'Which colour do you want?', needsYou: true, mark: 'ask' });
   const say = (slug, text) => s.ok('POST', `/api/projects/${slug}/leadchat`, { text, author: 'Lead' });
   await say('mux-old', 'ancient news'); await say('mux-mid', 'two hours old'); await say('mux-new', '- **Bold plan** for `today`\n- second bullet');
-  const back = (slug, ms) => { const f = path.join(s.data, slug + '.chat'), j = JSON.parse(fs.readFileSync(f, 'utf8')); j.msgs.forEach(m => { m.at = ago(ms); }); j.readAt = ago(ms - 1000); fs.writeFileSync(f, JSON.stringify(j)); };
+  const back = (slug, ms) => { const f = path.join(s.data, slug + '.chat'), j = readChat(s, f); j.msgs.forEach(m => { m.at = ago(ms); }); j.readAt = ago(ms - 1000); writeChat(s, f, j); };   // sealed on disk (AIG-1170)
   back('mux-old', 5 * day); back('mux-mid', 2 * 3600000);
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('#dmRail [data-dms]');
