@@ -3,14 +3,22 @@
 // no card title or text leaks; the page is plain, phone width, dark mode, "All quiet" when empty.
 import path from 'node:path';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { freePort, startRelay, startServer, until, check, sleep, mkProject, mkCard, say, ROOT, def } from '../lib.mjs';
 
 const SECRET = 'SECRET-CARD-TITLE', SECRET_TXT = 'SECRET-COMMENT-TEXT';
 
 def('statuspage', '🟢 status page: public services reach the relay /status.json (red major, amber open incident, green), a non-public one never, no titles leak; site/status.html rows, All quiet, phone width, dark (AIG-1050)', async (s, ctx) => {
-  const relay = await startRelay(), b = await startServer({ AIGILE_DM_POLL_MS: '300', AIGILE_PUBLIC_MS: '300' }, await freePort());
+  const key = (await s.ok('GET', '/api/licences')).key;   // only the operator's board (RELAY_STATS_KEY) may publish (AIG-1119)
+  const relay = await startRelay({ RELAY_STATS_KEY: key }), b = await startServer({ AIGILE_DM_POLL_MS: '300', AIGILE_PUBLIC_MS: '300' }, await freePort());
   try {
+    // a stranger's self-signed POST is refused, even on a fresh relay (no trust on first use)
+    const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519'), x = publicKey.export({ format: 'jwk' }).x;
+    const bad = JSON.stringify({ services: [{ name: 'Hijack', state: 'red' }] }), ts = String(Date.now()), nonce = crypto.randomBytes(12).toString('base64url');
+    const sig = crypto.sign(null, Buffer.from(['aigile-relay-v1', 'POST', '/status', ts, nonce, crypto.createHash('sha256').update(bad).digest('hex')].join('\n')), privateKey).toString('base64url');
+    const hj = await fetch(relay.base + '/status', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-relay-key': x, 'x-relay-ts': ts, 'x-relay-nonce': nonce, 'x-relay-sig': sig }, body: bad });
+    check('a stranger key cannot claim or publish the status page', hj.status === 403, hj.status);
     await s.ok('POST', '/api/dms/settings', { relay: relay.base });
     const json = async () => (await fetch(relay.base + '/status.json')).json();
     const empty = await fetch(relay.base + '/status.json');
