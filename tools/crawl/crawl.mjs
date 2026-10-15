@@ -1,5 +1,5 @@
 // Feature crawl (AIG-981): re-checks every feature on docs/features/features.json and writes docs/reports/crawl-YYYY-MM-DD.md.
-//   node tools/crawl/crawl.mjs [--only <text>] [--json]      (CRAWL_PORT, default 4988; QA_PLAYWRIGHT as for the QA runner)
+//   node tools/crawl/crawl.mjs [--only <text>] [--json] [--no-qa: skip the qa-area checks]      (CRAWL_PORT, default 4988; QA_PLAYWRIGHT as for the QA runner)
 // One QA server (temp data folder, stub agent) answers the api, ui and cli checks; the qa checks run through tools/qa/qa.mjs once, at the end.
 import '../qa/hide-windows.mjs';
 import fs from 'node:fs';
@@ -8,7 +8,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { ROOT, CHROME, loadPw, startServer, mkProject, mkCard, pinAllInit, sleep } from '../qa/lib.mjs';
 
 const args = process.argv.slice(2);
-const wantJson = args.includes('--json');
+const wantJson = args.includes('--json'), noQa = args.includes('--no-qa');
 const oi = args.indexOf('--only'), only = oi >= 0 ? (args[oi + 1] || '').toLowerCase() : '';
 const PORT = Number(process.env.CRAWL_PORT) || 4988;
 const features = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs', 'features', 'features.json'), 'utf8'));
@@ -67,7 +67,7 @@ try {
         finally { await p.close().catch(() => {}); }
       });
     } else if (c.kind === 'qa') {
-      if (c.area && known.has(c.area)) r.status = 'pending';
+      if (c.area && known.has(c.area)) { if (noQa) r.why = 'qa area skipped (--no-qa)'; else r.status = 'pending'; }
     }
   }
   if (ctx) await ctx.close().catch(() => {});
