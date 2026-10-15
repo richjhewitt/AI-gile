@@ -2,7 +2,7 @@
 // live agents (read from the roster), plus a Join call button on the same call module with a room worked out on the board
 // (this board + the project). Owner only for the call; an archived or unknown project has no room.
 import crypto from 'node:crypto';
-import { check, tmp, mkProject, openPage, noErrors, def, sleep } from '../lib.mjs';
+import { check, tmp, mkProject, openPage, noErrors, def, sleep, startRelay } from '../lib.mjs';
 
 const SECDIR = tmp('meetsec');
 const claims = tok => JSON.parse(Buffer.from(tok.split('.')[1], 'base64url').toString('utf8'));
@@ -40,7 +40,7 @@ def('meeting', '🎥 Meeting Room per project: listed in Messages with the roste
   // the call: not set up first
   check('call state: not set up', (await s.ok('GET', '/api/calls/meeting/pix')).set === false);
   const ns = await s.api('POST', '/api/calls/meeting/pix/token', {});
-  check('no LiveKit: the token route says so (409)', ns.status === 409 && /not set up/.test(ns.body.error || ''), ns);
+  check('no call server: the token route says so (409)', ns.status === 409 && /not available/.test(ns.body.error || ''), ns);
 
   // the page: head button, not-set-up note, phone width
   const page = await openPage(ctx, '#/');
@@ -53,7 +53,7 @@ def('meeting', '🎥 Meeting Room per project: listed in Messages with the roste
   await page.waitForSelector('#dmMeetBtn');
   await page.click('#dmMeetBtn');
   await page.waitForSelector('#callNote');
-  check('not set up: plain English pointing at Setup → Calls', /not set up/.test(await page.locator('#callNote').innerText()) && await page.locator('#callNoteGo').count() === 1);
+  check('not available: plain English pointing at Setup → Calls', /not available/.test(await page.locator('#callNote').innerText()) && await page.locator('#callNoteGo').count() === 1);
   const fit = await page.evaluate(() => { const h = document.querySelector('#dmPanel .dm-head'), b = document.getElementById('dmMeetBtn').getBoundingClientRect(); return { over: document.documentElement.scrollWidth > innerWidth, btnRight: Math.round(b.right), head: Math.round(h.getBoundingClientRect().right), w: innerWidth }; });
   check('phone width (390): no sideways scroll, the button inside the screen', !fit.over && fit.btnRight <= fit.w, fit);
   await page.emulateMedia({ colorScheme: 'dark' });
@@ -65,6 +65,25 @@ def('meeting', '🎥 Meeting Room per project: listed in Messages with the roste
   const after = await page.evaluate(() => PagePoll.get('/api/chats/_meetings'));
   check('a new line in a room shows in the next poll of the rooms list', !before.find(g => g.id === 'meeting-pix').lastText.includes('papaya') && after.find(g => g.id === 'meeting-pix').lastText.includes('papaya'), after.map(g => g.lastText));
   noErrors(page);
+
+  // AIG-1218: out of the box through the relay's call server (a relay without one = 404 = not available)
+  const RL_SECRET = 'qa-meet-relay-secret-5', relayOff = await startRelay(), relayOn = await startRelay({ RELAY_LIVEKIT_URL: 'wss://call.example.test', RELAY_LIVEKIT_KEY: 'APIqaMeetRelay', RELAY_LIVEKIT_SECRET: RL_SECRET });
+  try {
+    await s.ok('POST', '/api/dms/settings', { relay: relayOff.base });
+    check('a relay without a call server: still not available', (await s.ok('GET', '/api/calls/meeting/pix')).set === false && (await s.api('POST', '/api/calls/meeting/pix/token', {})).status === 409);
+    await s.ok('POST', '/api/dms/settings', { relay: relayOn.base });
+    check('a relay with a call server: calls work, nothing set up (DMs can stay off)', (await s.ok('GET', '/api/calls/meeting/pix')).set === true);
+    const r1 = await s.ok('POST', '/api/calls/meeting/pix/token', { room: 'someone-elses-room' }), rc = claims(r1.token);
+    const rwant = 'aigile-meet-' + crypto.createHash('sha256').update('aigile-meet-v1|' + rc.sub + '|pix').digest('hex').slice(0, 32);
+    const [rh, rp, rs] = r1.token.split('.');
+    check('relay pass: signed by the relay\'s secret, this board\'s Meeting Room (own mailbox + slug), its URL', crypto.createHmac('sha256', RL_SECRET).update(rh + '.' + rp).digest('base64url') === rs && r1.room === rwant && rc.video.room === rwant && rc.iss === 'APIqaMeetRelay' && r1.url === 'wss://call.example.test', rc);
+    check('relay pass: another project is another room', (await s.ok('POST', '/api/calls/meeting/clo/token', {})).room !== r1.room);
+    check('relay pass: still owner only (403 for a team)', await as('POST', '/api/calls/meeting/pix/token', { 'X-Aigile-Where': 'cli', 'X-Aigile-As': 'Pixel' }, {}) === 403);
+    const pg = await openPage(ctx, '#/setup/calls');
+    await pg.waitForSelector('#callSetState');
+    check('Setup → Calls: "Calls work out of the box", own server folded', /out of the box/.test(await pg.locator('#callSetState').innerText()) && !(await pg.locator('#callSetAdv').evaluate(d => d.open)));
+    noErrors(pg);
+  } finally { relayOff.stop(); }
 
   // set up, then the token
   const tok = (await s.ok('GET', '/api/secrets/token')).token;
@@ -84,4 +103,5 @@ def('meeting', '🎥 Meeting Room per project: listed in Messages with the roste
   check('a team call cannot read the state either (403)', await as('GET', '/api/calls/meeting/pix', { 'X-Aigile-Where': 'cli', 'X-Aigile-As': 'Pixel' }) === 403);
 
   await s.ok('POST', '/api/calls', { clear: true, token: tok });
+  relayOn.stop();
 }, true, { AIGILE_SECRETS_DIR: SECDIR });

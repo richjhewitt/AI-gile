@@ -70,6 +70,11 @@ Copy the new `relay.js` across (step 1) and run step 3 again. It is safe to re-r
 - The relay also serves public boards at `/b/<name>` (page), `/b/<name>.json` and `/b/<name>/live` (live events), and takes licence applications at `POST /apply`. To show them at `ai-gile.lol/b/`, proxy that path to the relay on that site: in nginx `location /b/ { proxy_pass http://127.0.0.1:4500; proxy_buffering off; }` and `location = /apply { proxy_pass http://127.0.0.1:4500; }` (Caddy: `reverse_proxy /b/* /apply 127.0.0.1:4500`). Then add `"publicBase": "https://ai-gile.lol"` to `aigile.local.json` so Copy public link gives that address.
 - To read applications in Setup > Business licences, set `RELAY_STATS_KEY` in the systemd unit to the key Setup shows there, and restart the relay.
 
+## Calls for everyone (AIG-1218)
+- Calls work with no setup on any board: one LiveKit server runs next to the relay and the relay hands out call passes (`POST /call/token`, signed by the board's relay key, only for a room made from that board's own mailbox). No board holds LiveKit keys.
+- Install it with `sudo bash install-livekit.sh call.example.com` (official livekit-server binary, `/etc/livekit.yaml` with a new key and secret, systemd unit `livekit`, one nginx site with certbot proxying wss to port 7880; opens TCP 7881 and UDP 50000-60000 if ufw is on). It prints `RELAY_LIVEKIT_URL`, `RELAY_LIVEKIT_KEY` and `RELAY_LIVEKIT_SECRET`: put them in a drop-in for `aigile-relay` (the script shows how) and restart the relay. `curl https://<relay>/call` then answers `{"ok":true,...}`; without the three values both call routes are 404 and boards say "Calls are not available right now".
+- Passes last 2 hours; `RELAY_CALL_RATE` (60) passes per hour per board key.
+
 ## What gets installed
 - `/opt/aigile-relay/relay.js`, run by systemd as the `aigile-relay` user (no login, no shell), starting on boot and restarting if it stops.
 - The relay listens on `127.0.0.1:4500` only; the outside world reaches it through nginx (or Caddy) on port 443.

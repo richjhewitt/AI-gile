@@ -32,6 +32,11 @@
 //   GET  /bug, POST /bug/ack { ids }: the operator's board collects reports and deletes them (signed by RELAY_STATS_KEY)
 //   GET  /health           { ok } for anyone; signed by RELAY_STATS_KEY it adds cpu, mem, disk, storage, uptime (AIG-660)
 //   GET  /stats            { envelopes, bytes }: only if RELAY_STATS_KEY (the operator's public signing key) is set, and signed by it
+//   Call passes (AIG-1218): one LiveKit server run with this relay (RELAY_LIVEKIT_URL, RELAY_LIVEKIT_KEY, RELAY_LIVEKIT_SECRET), so no
+//   board holds LiveKit keys. Without all three both routes are 404.
+//   GET  /call             { ok, url }: calls work through this relay
+//   POST /call/token       { room, name, mailbox, peer | slug } signed by the mailbox's owner key: { url, token, room }, a 2-hour pass
+//                          for that one room, worked out here as the board does (a DM: both mailboxes; a Meeting Room: own mailbox + slug)
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -117,6 +122,42 @@ function owner(req, box, pathname, body, onlyKey) {
   }
 }
 
+/* ---------- call passes (AIG-1218) ---------- */
+// The board never gets a pass for a room it is not in: the room is worked out from the signed mailbox (and the friend's, or the
+// project slug) exactly as lib/calls.js does, and any other room is refused. Passes per board key: RELAY_CALL_RATE an hour.
+const LK = { url: process.env.RELAY_LIVEKIT_URL || '', key: process.env.RELAY_LIVEKIT_KEY || '', secret: process.env.RELAY_LIVEKIT_SECRET || '' };
+const LK_TTL_S = 2 * 3600;
+const CALL_RATE = Number(process.env.RELAY_CALL_RATE) || 60;
+const callHits = new Map();   // board key -> pass times in the last hour
+const dmRoom = (a, b) => 'aigile-dm-' + sha256('aigile-call-v1|' + [a, b].sort().join('|')).slice(0, 32);
+const meetRoom = (box, slug) => 'aigile-meet-' + sha256('aigile-meet-v1|' + box + '|' + slug).slice(0, 32);
+// A LiveKit access token: HS256, iss = API key, sub = the board's mailbox; join, publish (mic, camera, screen), subscribe, data.
+function lkToken(identity, name, room) {
+  const t = Math.floor(Date.now() / 1000), b = x => Buffer.from(JSON.stringify(x)).toString('base64url');
+  const body = b({ alg: 'HS256', typ: 'JWT' }) + '.' + b({ iss: LK.key, sub: identity, name, nbf: t - 10, exp: t + LK_TTL_S,
+    video: { room, roomJoin: true, canPublish: true, canSubscribe: true, canPublishData: true, canPublishSources: ['microphone', 'camera', 'screen_share'] } });
+  return body + '.' + crypto.createHmac('sha256', LK.secret).update(body).digest('base64url');
+}
+async function calls(req, res, pathname) {
+  if (!(LK.url && LK.key && LK.secret)) throw fail('calls are not set up on this relay', 404);
+  if (req.method === 'GET' && pathname === '/call') return send(res, 200, { ok: true, url: LK.url });
+  if (req.method !== 'POST' || pathname !== '/call/token') throw fail('not found', 404);
+  const body = await readBody(req, 4096);
+  let o; try { o = JSON.parse(body); } catch { throw fail('send JSON', 400); }
+  if (!o || typeof o !== 'object' || !isBox(String(o.mailbox || ''))) throw fail('send { room, name, mailbox, peer | slug }', 400);
+  owner(req, o.mailbox, pathname, body);   // 401 unsigned / bad signature, 403 another board's mailbox
+  const key = String(req.headers['x-relay-key']), t = Date.now(), seen = (callHits.get(key) || []).filter(x => t - x < 3600e3);
+  if (seen.length >= CALL_RATE) throw fail('too many call passes: try again later', 429);
+  seen.push(t); callHits.set(key, seen);
+  let want;
+  if (o.peer != null) { if (!isBox(String(o.peer)) || o.peer === o.mailbox) throw fail('bad peer', 400); want = dmRoom(o.mailbox, o.peer); }
+  else if (o.slug != null) { if (!/^[a-z0-9-]{1,80}$/.test(String(o.slug))) throw fail('bad slug', 400); want = meetRoom(o.mailbox, o.slug); }
+  else throw fail('send { room, name, mailbox, peer | slug }', 400);
+  if (o.room !== want) throw fail('not your call', 403);
+  return send(res, 200, { url: LK.url, token: lkToken(o.mailbox, str(o.name, 60), want), room: want });
+}
+setInterval(() => { const t = Date.now(); for (const [k, l] of callHits) if (!l.some(x => t - x < 3600e3)) callHits.delete(k); }, 600e3).unref();
+
 /* ---------- public status page (AIG-1050) ---------- */
 // The operator's board posts { services: [{ name, offers, state, line, at }] }, signed by RELAY_STATS_KEY like /apply and /bug (never
 // "the first key claims it": a stranger could claim a fresh relay); anyone reads /status.json (CORS *, cached 30 s) (AIG-1119).
@@ -196,6 +237,7 @@ async function handle(req, res) {
   }
   if (req.method === 'GET' && pathname === '/stats' && STATS_KEY) { owner(req, null, pathname, '', STATS_KEY); sweep(); return send(res, 200, { envelopes: count, bytes: used }); }
   if (pathname === '/status' || pathname === '/status.json') return statusPage(req, res, pathname);   // 🟢 public status page (AIG-1050)
+  if (pathname === '/call' || pathname === '/call/token') return calls(req, res, pathname);   // 📞 call passes (AIG-1218)
   if (pathname.startsWith('/b/')) return board(req, res, pathname, ip);
   if (pathname.startsWith('/f/')) return feedback(req, res, pathname, ip);   // public feedback (AIG-968)
   if (pathname === '/apply') return apply(req, res, pathname, ip);

@@ -10,6 +10,7 @@ import { freePort, startRelay, until, check, tmp, startServer, openPage, noError
 const SECDIR = tmp('callsec');
 const SECRET = 'qa-livekit-secret-Zx81', KEY = 'APIqaKey123', URL = 'wss://livekit.example.test';
 const SECRET2 = 'qa-livekit-secret-Bb22', KEY2 = 'APIqaKeyB', URL2 = 'wss://livekit-b.example.test';   // B's own (AIG-1171)
+const RL_SECRET = 'qa-relay-lk-secret-R9', RL_KEY = 'APIqaRelay', RL_URL = 'wss://call.example.test';   // the relay's (AIG-1218)
 const claims = tok => JSON.parse(Buffer.from(tok.split('.')[1], 'base64url').toString('utf8'));
 const signedWith = (tok, secret) => { const [h, p, sig] = tok.split('.'); return JSON.parse(Buffer.from(h, 'base64url')).alg === 'HS256' && crypto.createHmac('sha256', secret).update(h + '.' + p).digest('base64url') === sig; };
 // AIG-1171: a fake guest token (any secret: B cannot check A's signature, it checks the claims).
@@ -35,13 +36,14 @@ function stubLivekit() {
 const roomFor = (m1, m2) => 'aigile-dm-' + crypto.createHash('sha256').update('aigile-call-v1|' + [m1, m2].sort().join('|')).digest('hex').slice(0, 32);
 
 def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route refuses non-participants / teams / not set up, token claims and room correct, the friend joins with the guest token (AIG-1162)', async (s, ctx) => {
-  const relay = await startRelay({ RELAY_RATE: '100000' });
+  // AIG-1218: the relay runs the call server (a stand-in key and secret): calls work with no setup, own server is the Advanced choice
+  const relay = await startRelay({ RELAY_RATE: '100000', RELAY_LIVEKIT_URL: RL_URL, RELAY_LIVEKIT_KEY: RL_KEY, RELAY_LIVEKIT_SECRET: RL_SECRET });
   const b = await startServer({ AIGILE_DM_POLL_MS: '300', AIGILE_SECRETS_DIR: tmp('callsecb') }, await freePort());
   const a = s;
   const as = (method, url, headers, body) => fetch(a.base + url, { method, headers: { 'Content-Type': 'application/json', ...headers }, body: body && JSON.stringify(body) }).then(r => r.status);
   try {
     const st0 = await a.ok('GET', '/api/calls');
-    check('calls start not set up, and the page is never told a secret', st0.set === false && st0.secret === false && Object.keys(st0).sort().join() === 'key,secret,set,url', st0);
+    check('calls start not set up (no relay yet), and the page is never told a secret', st0.set === false && st0.own === false && st0.relay === false && st0.secret === false && Object.keys(st0).sort().join() === 'key,own,relay,secret,set,url', st0);
     check('a token with DMs off is refused', (await a.api('POST', '/api/calls/dm/0123456789ab/token', {})).status === 409);
 
     // pair A and B through the relay
@@ -52,23 +54,38 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     const cb = await until(async () => (await a.ok('GET', '/api/dms/contacts'))[0]);
     check('A and B are friends', !!cb && cb.mailbox === onB.mailbox && ca.mailbox === onA.mailbox);
 
-    // the page says how when calls are not set up
+    // AIG-1218: out of the box, through the relay: nobody set anything up
+    const room = roomFor(onA.mailbox, onB.mailbox);
+    const st1r = await a.ok('GET', '/api/calls');
+    check('with the relay\'s call server: calls work, no own server', st1r.set === true && st1r.relay === true && st1r.own === false, st1r);
+    check('the DM state says calls work', JSON.stringify(await a.ok('GET', `/api/calls/dm/${cb.id}`)) === JSON.stringify({ set: true, invite: false, theirs: false }));
     const page = await openPage(ctx, '#/');
+    await page.evaluate(stubLivekit);
+    await page.evaluate(r => { window.lkRoomName = r; }, room);
     await page.evaluate(id => Dms.show('dm:' + id), cb.id);
     await page.waitForSelector('#dmCallBtn');
     await page.click('#dmCallBtn');
-    await page.waitForSelector('#callNote');
-    check('📞 not set up: plain English pointing at Setup → Calls', /not set up/.test(await page.locator('#callNote').innerText()) && await page.locator('#callNoteGo').count() === 1);
+    await page.waitForFunction(() => Call.active() && lkLog.connects.length === 1);
+    const pr = claims(await page.evaluate(() => lkLog.connects[0]));
+    check('📞 joins at once with the relay\'s pass: the DM room, me, signed by the relay\'s key', pr.iss === RL_KEY && pr.sub === onA.mailbox && pr.video.room === room && pr.video.canPublish === true && pr.video.canPublishSources.includes('screen_share'), pr);
+    await page.evaluate(() => Call.leave());
+    const tr1 = await a.ok('POST', `/api/calls/dm/${cb.id}/token`, { room: 'someone-elses-room' });
+    check('relay pass: HS256 signed with the relay\'s LiveKit secret (the board holds none), its URL, the DM room, 2 hours', signedWith(tr1.token, RL_SECRET) && tr1.url === RL_URL && tr1.room === room && tr1.theirs === false && Math.abs(claims(tr1.token).exp - Date.now() / 1000 - 7200) < 30, tr1);
+    check('B sees the call line (no pass in it: B asks the relay)', !!await until(async () => (await b.ok('GET', `/api/dms/contacts/${ca.id}/messages`)).some(m => m.kind === 'call' && m.dir === 'in')));
+    const sbr = await b.ok('GET', `/api/calls/dm/${ca.id}`);
+    check('B (no setup) can call too, no invite needed', sbr.set === true && sbr.invite === false && sbr.theirs === false, sbr);
+    const tr2 = await b.ok('POST', `/api/calls/dm/${ca.id}/token`, { ring: false });
+    const cr2 = claims(tr2.token);
+    check('B gets its own relay pass for the same DM room, as B', signedWith(tr2.token, RL_SECRET) && tr2.room === room && cr2.video.room === room && cr2.sub === onB.mailbox && tr2.url === RL_URL, cr2);
+    check('no LiveKit secret is ever in either board\'s settings', ![a.dir, b.dir].some(d => fs.readFileSync(path.join(d, 'aigile.local.json'), 'utf8').includes(RL_SECRET)));
 
-    // refused: not set up, not a contact, a team, a background run
-    const notset = await a.api('POST', `/api/calls/dm/${cb.id}/token`, {});
-    check('not set up: the token route refuses (409) and says so', notset.status === 409 && /not set up/.test(notset.body.error || ''), notset);
-    check('not set up: the state says so', JSON.stringify(await a.ok('GET', `/api/calls/dm/${cb.id}`)) === JSON.stringify({ set: false, invite: false, theirs: false }));
+    // refused: not a contact, a team, a background run
     check('saving without the secrets page token is refused', (await a.api('POST', '/api/calls', { url: URL, key: KEY, secret: SECRET })).status === 403);
     const tok = (await a.ok('GET', '/api/secrets/token')).token;
     check('a bad address is refused', (await a.api('POST', '/api/calls', { url: 'javascript:alert(1)', key: KEY, secret: SECRET, token: tok })).status === 400);
     check('no secret at all is refused', (await a.api('POST', '/api/calls', { url: URL, key: KEY, token: tok })).status === 400);
     const st1 = await a.ok('POST', '/api/calls', { url: URL, key: KEY, secret: SECRET, token: tok });
+    check('saved: own server on, address and key shown', st1.own === true, st1);
     check('saved: ready, address and key shown, secret only as "there is one"', st1.set === true && st1.url === URL && st1.key === KEY && st1.secret === true && !JSON.stringify(st1).includes(SECRET), st1);
     const leaks = [path.join(a.dir, 'aigile.local.json'), path.join(SECDIR, 'secrets', 'kept.json')].filter(f => fs.readFileSync(f, 'utf8').includes(SECRET));
     check('the secret is not in plain text in the settings file or the secrets store', leaks.length === 0, leaks);
@@ -84,7 +101,7 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
 
     // the token
     const t1 = await a.ok('POST', `/api/calls/dm/${cb.id}/token`, { room: 'someone-elses-room' });
-    const c1 = claims(t1.token), room = roomFor(onA.mailbox, onB.mailbox);
+    const c1 = claims(t1.token);
     check('the token is HS256, signed with the API secret', signedWith(t1.token, SECRET));
     check('claims: iss = API key, sub = my mailbox, my name', c1.iss === KEY && c1.sub === onA.mailbox && c1.name === 'Owner', c1);
     check('claims: the room is the DM\'s own (server-side, the page cannot pick one)', t1.room === room && c1.video.room === room && t1.url === URL, [t1.room, c1.video]);
@@ -94,9 +111,9 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     const mine = await a.ok('GET', `/api/dms/contacts/${cb.id}/messages`);
     check('my chat shows I started a call (no token in it)', mine.some(m => m.kind === 'call' && m.dir === 'out') && !JSON.stringify(mine).includes(t1.token.split('.')[2]));
 
-    // the friend's board: no LiveKit, joins with the guest token it was sent
+    // the friend's board: no LiveKit of its own, joins A's own server with the guest token it was sent (not the relay's)
     const sb = await until(async () => { const x = await b.ok('GET', `/api/calls/dm/${ca.id}`); return x.invite ? x : null; });
-    check('B got the call invite (B has no LiveKit)', sb && sb.set === false && sb.invite === true, sb);
+    check('B got the call invite (B has no LiveKit of its own: the invite wins over the relay)', sb && sb.invite === true && sb.theirs === true, sb);
     const t2 = await b.ok('POST', `/api/calls/dm/${ca.id}/token`, {});
     const c2 = claims(t2.token);
     check('B\'s token is A\'s guest token: same room, B\'s identity, signed by A\'s secret', t2.theirs === true && t2.room === room && c2.video.room === room && c2.sub === onB.mailbox && c2.iss === KEY && signedWith(t2.token, SECRET), c2);
@@ -135,7 +152,8 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     // Setup shows the section, set up
     const setup = await openPage(ctx, '#/setup/calls');
     await setup.waitForSelector('#callSetState');
-    check('Setup → Calls shows Ready and the address, the secret box empty', /Ready/.test(await setup.locator('#callSetState').innerText()) && await setup.locator('#callSetUrl').inputValue() === URL && await setup.locator('#callSetSecret').inputValue() === '');
+    check('Setup → Calls: works out of the box, and Advanced (own server) is open while one is set', /out of the box/.test(await setup.locator('#callSetState').innerText()) && await setup.locator('#callSetAdv').evaluate(d => d.open));
+    check('Setup → Calls shows Ready and the address, the secret box empty', /Ready/.test(await setup.locator('#callOwnState').innerText()) && await setup.locator('#callSetUrl').inputValue() === URL && await setup.locator('#callSetSecret').inputValue() === '');
     // AIG-1171: the page checks the joined room is the one the board named, before the mic goes on
     const pg = await openPage(ctx, '#/');
     await pg.evaluate(stubLivekit);
@@ -178,6 +196,13 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     await pg.evaluate(() => Call.leave());
     noErrors(page); noErrors(setup); noErrors(pg);
     const cleared = await a.ok('POST', '/api/calls', { clear: true, token: tok });
-    check('Remove clears it all', cleared.set === false && cleared.secret === false && !cleared.url);
+    check('Remove clears it all (calls still work, through the relay)', cleared.own === false && cleared.secret === false && !cleared.url && cleared.set === true, cleared);
+    fs.rmSync(path.join(a.data, 'calls', 'invites.json'), { force: true });   // B's ring from the tie-break above (B's own server)
+    const after = await a.ok('POST', `/api/calls/dm/${cb.id}/token`, { ring: false });
+    check('after Remove the pass comes from the relay again', signedWith(after.token, RL_SECRET) && after.url === RL_URL, after.url);
+    const fold = await openPage(ctx, '#/setup/calls');
+    await fold.waitForSelector('#callSetState');
+    check('Setup → Calls with no own server: out of the box, Advanced folded', /out of the box/.test(await fold.locator('#callSetState').innerText()) && !(await fold.locator('#callSetAdv').evaluate(d => d.open)));
+    noErrors(fold);
   } finally { b.stop(); relay.stop(); }
 }, true, { AIGILE_SECRETS_DIR: SECDIR, AIGILE_DM_POLL_MS: '300' });
