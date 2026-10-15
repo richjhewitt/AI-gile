@@ -1094,6 +1094,8 @@
  "ng.open": "🌙 Night glance",
  "ng.open.title": "A small, calm window for a second screen: the watchman at a glance",
  "restart.queued": "⏳ Restarts when {names} finish",
+ "callhold.note": "Update waiting until your call ends",
+ "callhold.btn": "⏳ Waiting for your call to end",
  "quiz.h": "🧭 What kind of lead do you want?",
  "quiz.sub": "Six quick picks. Each one switches a setting; you can change any of them by hand later in Setup.",
  "quiz.tidy": "Do your cards come out quick and messy?",

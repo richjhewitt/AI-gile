@@ -1137,6 +1137,8 @@
  "ng.open": "🌙 Nachtblik",
  "ng.open.title": "Een klein, rustig venster voor een tweede scherm: de nachtwacht in één blik",
  "restart.queued": "⏳ Herstart zodra {names} klaar zijn",
+ "callhold.note": "Update wacht tot uw gesprek afgelopen is",
+ "callhold.btn": "⏳ Wacht tot uw gesprek afgelopen is",
  "quiz.h": "🧭 Wat voor teamleider wil je?",
  "quiz.sub": "Zes snelle keuzes. Elke keuze zet een instelling; je kan ze later allemaal zelf aanpassen bij Instellingen.",
  "quiz.tidy": "Schrijf je je kaarten snel en wat slordig?",

@@ -23,7 +23,7 @@ const WhatsNew = (() => {
     return `<div class="uz"><h2>${esc(t('wn.title'))}</h2>${banner}` + d.map(r => `<div class="uz-card wn-rel"><b>${esc(r.title || r.id)}</b> <span class="muted">· ${esc(String(r.at || '').slice(0, 10))}</span>${backBtn(r)}`
       + list(t('wn.features'), r.features) + list(t('wn.fixes'), r.fixes) + `</div>`).join('') + `</div>`;
   };
-  const after = () => setTimeout(() => location.reload(), 5000);
+  const after = () => setTimeout(() => (typeof afterCall === 'function' ? afterCall('reload', () => location.reload()) : location.reload()), 5000);   // AIG-1242: not on a call
   W.goBack = async commit => {
     if (!confirm(t('wn.back.sure'))) return;
     try { await api('POST', '/api/rollback', { commit }); alert(t('wn.restarting')); after(); } catch (e) { alert(e.message); }

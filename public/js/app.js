@@ -111,7 +111,7 @@ async function checkBuild() {
     if (!!m.setupNeeded !== !!state.setupNeeded) { state.setupNeeded = !!m.setupNeeded; if (state.route && state.route.view === 'home') refresh(true); }
     if (loadedBuild === null) { loadedBuild = m.build; return; }
     // While you're quiet (AIG-224): a new board or page code reloads by itself, unless something is half-typed.
-    if (m.quiet && m.build !== loadedBuild && !hasUnsent()) { location.reload(); return; }
+    if (m.quiet && m.build !== loadedBuild && !hasUnsent()) { afterCall('reload', () => location.reload()); return; }
     // A newer version on GitHub (AIG-92): an ⬆ Update pill, until it's applied.
     const u = m.update || {}, upd = u.behind ? `<button class="primary" onclick="applyUpdatePage()" title="${esc((u.subjects || []).join('\n'))}">${esc(t('update.btn'))}</button>` : '';
     if ($('upUpdate').dataset.sig !== upd && !$('upUpdate').dataset.busy) { $('upUpdate').dataset.sig = upd; $('upUpdate').innerHTML = upd; }
@@ -128,17 +128,38 @@ async function checkBuild() {
 // After a queued restart: reload as soon as a new board (a new start time in its build id) answers.
 function waitForNewBoard() {
   const startedOf = b => String(b || "").split("-")[0], was = startedOf(loadedBuild);
-  const tick = PagePoll.every(async () => { try { const m = await api("GET", "/api/meta"); if (startedOf(m.build) !== was) { tick(); location.reload(); } } catch {} }, 3000);
+  const tick = PagePoll.every(async () => { try { const m = await api("GET", "/api/meta"); if (startedOf(m.build) !== was) { tick(); afterCall('reload', () => location.reload()); } } catch {} }, 3000);
 }
 async function restartBoard(btn) {
+  if (onCall()) { btn.disabled = true; btn.textContent = t('callhold.btn'); afterCall('restart', () => restartBoard(btn)); return; }   // AIG-1242: not while on a call
   const box = $('upRestart'); box.dataset.busy = '1'; btn.disabled = true; btn.textContent = t('restart.busy');
   try {
     const r = await api('POST', '/api/restart');
     // Teams busy (AIG-213): it waits for them, then restarts by itself; the page reloads once the new board answers.
     if (r.queued) { btn.textContent = t('restart.queued', { names: r.waitingFor.join(', ') }); waitForNewBoard(); }
-    else setTimeout(() => location.reload(), 3500);
+    else setTimeout(() => afterCall('reload', () => location.reload()), 3500);
   }
   catch (e) { alert(e.message); box.dataset.busy = ''; btn.disabled = false; btn.textContent = t('restart.btn'); }
+}
+// AIG-1242: nothing reloads or restarts the page while you are on a call (it would drop it). afterCall runs fn now, or once the call ends
+// (one waiting action per key) and shows a small note meanwhile. Call.active() is in calls.js.
+const onCall = () => typeof Call !== 'undefined' && !!Call.active && Call.active();
+const heldAfterCall = new Map(); let heldTimer = 0;
+function heldNote() {
+  let n = document.getElementById('callHold');
+  if (!heldAfterCall.size) { if (n) n.remove(); return; }
+  if (!n) { n = document.createElement('div'); n.id = 'callHold'; n.setAttribute('role', 'status'); n.style.cssText = 'position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;max-width:calc(100vw - 32px);padding:6px 14px;border-radius:99px;font-size:13px;background:var(--panel);color:var(--text);border:1px solid var(--line);box-shadow:var(--shadow);text-align:center'; document.body.appendChild(n); }
+  n.textContent = t('callhold.note');
+}
+function afterCall(key, fn) {
+  if (!onCall()) { fn(); return false; }
+  heldAfterCall.set(key, fn); heldNote();
+  if (!heldTimer) heldTimer = setInterval(() => {
+    if (onCall()) return;
+    clearInterval(heldTimer); heldTimer = 0;
+    const fns = [...heldAfterCall.values()]; heldAfterCall.clear(); heldNote(); fns.forEach(f => f());
+  }, 1000);
+  return true;
 }
 // Unsent text anywhere (a reply, an answer, a dialog) or pending attachments: ask before losing it.
 const hasUnsent = () => [...document.querySelectorAll('textarea, input[type=text]')].some(el => el.value.trim() && el.value !== el.defaultValue)
@@ -162,19 +183,20 @@ function okToLeave(what) {
 // Applies the update; the server restarts itself, so wait a few seconds and reload.
 async function applyUpdatePage() {
   if (!(await okToLeave(t('update.what.update')))) return;
+  if (onCall()) { afterCall('update', applyUpdatePage); return; }   // AIG-1242
   const box = $('upUpdate'); box.dataset.busy = '1'; box.innerHTML = '<button class="primary" disabled>' + esc(t('update.busy')) + '</button>';
-  try { await api('POST', '/api/update/apply'); setTimeout(() => location.reload(), 5000); }
+  try { await api('POST', '/api/update/apply'); setTimeout(() => afterCall('reload', () => location.reload()), 5000); }
   catch (e) { delete box.dataset.busy; box.dataset.sig = ''; alert(t('update.failed', { msg: e.message })); }
 }
-async function refreshPage() { if (await okToLeave(t('update.what.refresh'))) location.reload(); }
+async function refreshPage() { if (await okToLeave(t('update.what.refresh'))) afterCall('reload', () => location.reload()); }
 // Desktop app only (AIG-83): the app calls this when its own files changed; the pill asks the app to restart itself.
 // A restart reloads the page too, so Refresh is hidden while Restart shows (AIG-130).
 window.showRestartApp = () => {
   // While you're quiet (AIG-224) the app restarts itself; your pop-outs come back where they were.
-  if (document.documentElement.hasAttribute('data-night') && !hasUnsent()) { location.href = 'aigile://restart'; return; }
+  if (document.documentElement.hasAttribute('data-night') && !hasUnsent()) { afterCall('app', () => { location.href = 'aigile://restart'; }); return; }
   $('upRefresh').hidden = true;
   if (!$('upRestart').firstChild)
-    $('upRestart').innerHTML = `<button class="primary" onclick="okToLeave(t('update.what.restart')).then(ok => { if (ok) location.href = 'aigile://restart'; })" title="${esc(t('update.restart.title'))}">${esc(t('update.restart'))}</button>`;
+    $('upRestart').innerHTML = `<button class="primary" onclick="okToLeave(t('update.what.restart')).then(ok => { if (ok) afterCall('app', () => { location.href = 'aigile://restart'; }); })" title="${esc(t('update.restart.title'))}">${esc(t('update.restart'))}</button>`;
 };
 
 
