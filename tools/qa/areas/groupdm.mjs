@@ -93,5 +93,17 @@ def('groupdm', '👥 group chats: ＋ New group in Messages, the owner\'s messag
   check('No Token Mode: nobody is woken', r3.woke.every(w => w.skipped) && starts(kPix) === 2, r3);
   check('and the thread says so', (await s.ok('GET', '/api/chats/_groups/' + g.id)).messages.some(m => /Pixel was not woken/.test(m.text)));
   await s.ok('POST', '/api/notokens', { on: false });
+
+  // AIG-1121: the max parallel runs setting holds for group members: limit 1 and 3 members, one runs, the others queue and run after
+  await s.ok('POST', '/api/projects/pix/team', { name: 'Zed', role: 'Designer', model: 'sonnet' });
+  const g2 = await s.ok('POST', '/api/chats/_groups', { name: 'Capped', members: [{ project: 'pix', name: 'Pixel' }, { project: 'clo', name: 'Claudia' }, { project: 'pix', name: 'Zed' }] });
+  const k2 = ['pix#grp-' + g2.id + '-pixel', 'clo#grp-' + g2.id + '-claudia', 'pix#grp-' + g2.id + '-zed'];
+  await s.ok('POST', '/api/setup', { prefs: { maxRuns: 1 } });
+  const r4 = await s.ok('POST', '/api/chats/_groups/' + g2.id, { text: 'one at a time' });
+  check('limit 1: one member starts, the others queue', r4.woke.filter(w => w.started).length === 1 && r4.woke.filter(w => w.queued).length === 2, r4);
+  await until(() => k2.every(k => starts(k) >= 1), 30000);
+  await sleep(2000);
+  check('the queued members ran after, exactly once each', k2.every(k => starts(k) === 1), k2.map(starts));
+  await s.ok('POST', '/api/setup', { prefs: { maxRuns: 0 } });
   noErrors(page);
 }, true, { AIGILE_ENGINE_STUB: stub });
