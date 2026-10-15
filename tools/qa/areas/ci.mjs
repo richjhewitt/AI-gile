@@ -29,6 +29,14 @@ def('ci', '🗂️ configuration items: per project list, add/edit/remove, key n
   check('empty expires and null backup are cleared', !('expires' in u2) && !('backup' in u2) && u2.name === 'prod-1', u2);
   check('unknown id is 404', (await s.api('PATCH', '/api/projects/cfg/ci/ci-99', { name: 'x' })).status === 404 && (await s.api('DELETE', '/api/projects/cfg/ci/ci-99')).status === 404);
 
+  // AIG-1160: a deleted item's id is never reused
+  await mkProject(s, 'Ids', 'IDS');
+  await s.ok('POST', '/api/projects/ids/ci', { kind: 'domain', name: 'one.example' });
+  const two = await s.ok('POST', '/api/projects/ids/ci', { kind: 'domain', name: 'two.example' });
+  await s.ok('DELETE', '/api/projects/ids/ci/' + two.id);
+  const three = await s.ok('POST', '/api/projects/ids/ci', { kind: 'domain', name: 'three.example' });
+  check('deleting the highest item and adding a new one does not reuse the id', two.id === 'ci-2' && three.id === 'ci-3', [two.id, three.id]);
+
   // CLI
   const ls = s.cli(['ci', 'cfg']);
   check('CLI lists the items', ls.code === 0 && /ci-1 \[server\] prod-1/.test(ls.out) && /ci-2 \[domain\] example.com/.test(ls.out), ls);
@@ -88,5 +96,15 @@ def('ci', '🗂️ configuration items: per project list, add/edit/remove, key n
   await page.click('li[data-ci="ci-2"] button[data-rm]');
   await page.waitForFunction(() => !document.querySelector('li[data-ci="ci-2"]'));
   check('remove on the page deletes it', !(await s.ok('GET', '/api/projects/cfg/ci')).items.some(x => x.id === 'ci-2'));
+  // AIG-1160: a background refresh does not wipe a half-filled item form
+  await page.click('#ci-add');
+  await page.fill('#ci-name', 'half typed');
+  await page.click('#ci-detail');   // focus leaves the name, so only the unsaved text protects the form
+  await s.ok('POST', '/api/projects/cfg/ci', { kind: 'other', name: 'changed elsewhere' });
+  await page.evaluate(() => refresh());
+  await page.waitForTimeout(1500);
+  check('a background refresh keeps a half-filled item form', (await page.inputValue('#ci-name')) === 'half typed');
+  await page.click('.ci-form button[type=button]');
+  await page.waitForSelector('li.ci-row:has-text("changed elsewhere")');
   await noErrors(page);
 }, true);

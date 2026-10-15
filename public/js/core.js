@@ -285,12 +285,18 @@ function parseRoute() {
 // busy() = a dialog is open, a card is being edited, a drag is running, a field has focus,
 // or any field in the panel holds unsent text. While busy we skip re-rendering (data is re-fetched
 // when changed and renders as soon as the owner is done, because the signature differs).
+// The item form on #/ci/<slug> lives in #app, not #modal: a half-filled one must not be wiped by a background refresh (AIG-1160).
+function ciFormDirty() {
+  return [...document.querySelectorAll('#app .ci-form input, #app .ci-form textarea')].some(el => el.value !== el.defaultValue)
+    || [...document.querySelectorAll('#app .ci-form select')].some(el => [...el.options].some(o => o.selected !== o.defaultSelected));
+}
 function busy() {
   if (state.dragging || state.editing || $('dialog').firstChild) return true;
   const a = document.activeElement;
   if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && $('modal').contains(a)) return true;
   // An input with no type is a text box too (the checklist's "add a step"); an open ⏰ picker holds a half-made choice.
   if (document.querySelector('#modal #tm-box:not([hidden])')) return true;
+  if (ciFormDirty()) return true;
   return [...document.querySelectorAll('#modal textarea, #modal input[type=text], #modal input:not([type])')].some(el => el.value !== el.defaultValue);
 }
 
@@ -487,7 +493,7 @@ function renderBoardOnly() {
   if (state.route.view === 'stats') { $('app').innerHTML = StatsPage.render(); return; }
   if (state.route.view === 'risks') { $('app').innerHTML = RisksPage.render(); return; }
   if (state.route.view === 'releases') { $('app').innerHTML = ReleasesPage.render(); return; }
-  if (state.route.view === 'ci') { $('app').innerHTML = CiPage.render(); return; }
+  if (state.route.view === 'ci') { if (!ciFormDirty()) $('app').innerHTML = CiPage.render(); return; }
   if (state.route.view === 'review') { $('app').innerHTML = ReviewPage.render(); return; }
   if (state.route.view === 'knownerrors') { $('app').innerHTML = KnownErrors.render(); return; }
   if (state.route.view === 'life') { $('app').innerHTML = LifeAdmin.render(); return; }

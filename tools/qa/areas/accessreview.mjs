@@ -61,7 +61,9 @@ def('accessreview', '🔐 every 90 days one card lists share links, friends\' ro
   const c2 = (await s.ok('GET', '/api/projects/arview')).cards.filter(c => c.from === 'access review').pop();
   const v = await s.ok('GET', `/api/projects/arview/accessreview/${c2.id}`);
   const sec = v.items.find(x => x.name === 'QA_TOKEN');
-  await s.ok('POST', `/api/projects/arview/accessreview/${c2.id}`, { item: sec.n, action: 'remove' });
+  // AIG-1159: rows are found by their stable key (rk), so a stale row number after a refresh cannot hit another row
+  const ra = await s.ok('POST', `/api/projects/arview/accessreview/${c2.id}`, { item: 999, rk: sec.rk, action: 'remove' });
+  check('a row key wins over a stale row number: that row is the one removed', sec.rk && ra.items.find(x => x.rk === sec.rk).decision === 'removed' && ra.items.filter(x => x.decision).length === 1, ra.items);
   check('Remove deleted the secret', !(await s.ok('GET', '/api/secrets')).items.some(x => x.name === 'QA_TOKEN'));
   check('the value is in no file under data', !JSON.stringify(fs.readdirSync(s.data)).includes(VALUE));
 }, true, { AIGILE_SECRETS_DIR: SECDIR, AIGILE_ACCESS_PROJECT: 'arview', AIGILE_NO_ACCESS_REVIEW: '1' });

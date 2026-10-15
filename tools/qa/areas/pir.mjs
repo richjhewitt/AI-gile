@@ -4,7 +4,7 @@
 // "write it yourself" prompt and no wake. Then the runbook (AIG-1109): a 🚦 Go card, Go writes docs/runbooks/<name>.md, Not yet writes nothing.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, sleep, until, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, until, tmp, mkProject, mkCard, getCard, openPage, noErrors, def, ROOT } from '../lib.mjs';
 
 def('pir', '📝 post-incident review of a closed major incident: on-call agent ordered + woken, review with action ticks and Make a card, plain prompt with AI off; runbook proposed from the review, Go writes docs/runbooks/<name>.md (AIG-1108, AIG-1109)', async (s, ctx) => {
   const folder = tmp('pir'), log = path.join(s.data, 'logs', 'pir.log');
@@ -100,6 +100,15 @@ def('pir', '📝 post-incident review of a closed major incident: on-call agent 
   await pg2.waitForSelector('.pirbox', { timeout: 8000 });
   check('the review box links the runbook card', (await pg2.innerText('.pirbox')).includes(rb4.id));
   noErrors(pg2); await pg2.close();
+  // AIG-1159: QA/tester boards keep real project paths, so Go must not write a runbook into a folder outside the temp dir
+  const real = fs.mkdtempSync(path.join(ROOT, 'tools', 'qa', '.pirreal-')), pf = path.join(s.data, 'pir.json');
+  try {
+    const pj = JSON.parse(fs.readFileSync(pf, 'utf8')), was = pj.path; pj.path = real; fs.writeFileSync(pf, JSON.stringify(pj));
+    await s.ok('POST', `/api/projects/pir/cards/${rb4.id}/comments`, { author: 'Owner', text: 'go' });
+    const rr = await getCard(s, 'pir', rb4.id);
+    check('Go in a real folder on a QA board writes nothing and keeps the card open (sandbox)', fs.readdirSync(real).length === 0 && rr.status !== 'done' && /sandbox/.test(rr.comments.at(-1).text), rr.comments.at(-1));
+    const pj2 = JSON.parse(fs.readFileSync(pf, 'utf8')); pj2.path = was; fs.writeFileSync(pf, JSON.stringify(pj2));
+  } finally { fs.rmSync(real, { recursive: true, force: true }); }
 
   // AI off: plain prompt, no wake
   const inc2 = await mkCard(s, 'pir', 'Mail down', { type: 'incident', status: 'doing', assignee: 'Lead' });
