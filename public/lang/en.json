@@ -3520,5 +3520,9 @@
  "desk.filter.all": "Desk: all",
  "desk.filter.request": "Desk: requests",
  "desk.filter.incident": "Desk: incidents",
- "desk.filter.idea": "Desk: ideas"
+ "desk.filter.idea": "Desk: ideas",
+ "desk.looks": "looks like {id}",
+ "desk.link": "Link",
+ "desk.linked": "Linked to {id}",
+ "srv.desk.linked": "Linked: this looks like the same thing as {id}."
 }

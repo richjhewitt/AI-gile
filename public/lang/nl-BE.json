@@ -3520,5 +3520,9 @@
  "desk.filter.all": "Servicedesk: alles",
  "desk.filter.request": "Servicedesk: verzoeken",
  "desk.filter.incident": "Servicedesk: incidenten",
- "desk.filter.idea": "Servicedesk: ideeën"
+ "desk.filter.idea": "Servicedesk: ideeën",
+ "desk.looks": "lijkt op {id}",
+ "desk.link": "Koppel",
+ "desk.linked": "Gekoppeld aan {id}",
+ "srv.desk.linked": "Gekoppeld: dit lijkt hetzelfde als {id}."
 }

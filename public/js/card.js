@@ -50,8 +50,11 @@ const problemHtml = (p, c) => c.type === 'problem' ? `<div class="problem"><h3>$
   : c.problemId ? `<div class="problem"><p><b>${esc(t('prob.of'))}</b> ${cardLinkHtml(p, c.problemId)}</p></div>` : '';
 // 🚨 Major incident button (AIG-1049): on an open incident card; pressed again it ends the major incident.
 // 🛎️ Service desk kind (AIG-1104): a badge on the board card, a picker on the open card (owner)
-const deskBadge = c => c.desk && c.desk.kind ? `<div class="desk-badge desk-${esc(c.desk.kind)}">${esc(t('desk.kind.' + c.desk.kind))}</div>` : '';
-const deskHtml = c => !c.desk || !c.desk.kind ? '' : `<div class="desk"><label>${esc(t('desk.label'))} <select id="desk-kind" onchange="setDeskKind('${esc(c.id)}', this.value)">${['request', 'incident', 'idea'].map(k => `<option value="${k}" ${k === c.desk.kind ? 'selected' : ''}>${esc(t('desk.kind.' + k))}</option>`).join('')}</select></label></div>`;
+const deskBadge = c => c.desk && c.desk.kind ? `<div class="desk-badge desk-${esc(c.desk.kind)}">${esc(t('desk.kind.' + c.desk.kind))}${c.desk.dup ? ` · ${esc(t('desk.looks', { id: c.desk.dup.id }))}` : ''}</div>` : '';
+const deskHtml = c => !c.desk || !c.desk.kind ? '' : `<div class="desk"><label>${esc(t('desk.label'))} <select id="desk-kind" onchange="setDeskKind('${esc(c.id)}', this.value)">${['request', 'incident', 'idea'].map(k => `<option value="${k}" ${k === c.desk.kind ? 'selected' : ''}>${esc(t('desk.kind.' + k))}</option>`).join('')}</select></label>${c.desk.dup ? ` <span class="desk-dup">${esc(t('desk.looks', { id: '' }))}<a href="#/p/${slug()}/${esc(c.desk.dup.id)}">${esc(c.desk.dup.id)}</a></span> <button type="button" class="desk-link" onclick="linkDesk('${esc(c.id)}')">${esc(t('desk.link'))}</button>` : ''}${c.desk.linked ? ` <span class="muted desk-linked">${esc(t('desk.linked', { id: c.desk.linked }))}</span>` : ''}</div>`;
+async function linkDesk(id) {
+  try { await api('POST', `/api/projects/${slug()}/cards/${id}/desk-link`, {}); refresh(true); } catch (e) { alert(e.message); }
+}
 async function setDeskKind(id, kind) {
   try { await api('POST', `/api/projects/${slug()}/cards/${id}/desk`, { kind }); refresh(true); } catch (e) { alert(e.message); }
 }
