@@ -18,7 +18,8 @@ def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> pa
     const ip = await mkCard(s, 'pub-board', 'Server 192.168.1.9 is down, mail dave@example.com');
     const hid = await mkCard(s, 'pub-board', 'Hidden plan', { hidePublic: true });
     await mkCard(s, 'pub-board', 'Buy milk', { type: 'task', lifeType: 'shopping', assignee: 'Owner' });
-    await s.ok('POST', '/api/projects/pub-board/team', { name: 'Forge', role: 'Full-stack' });
+    await s.ok('POST', '/api/projects/pub-board/team', { name: 'Forge', role: 'Full-stack', status: 'working' });
+    await s.ok('POST', '/api/projects/pub-board/team', { name: 'Old Timer', role: 'Tester', status: 'idle' });
     check('Hide from public is a card field', (await s.ok('GET', '/api/projects/pub-board')).cards.find(c => c.id === hid.id).hidePublic === true);
 
     // Private is the default; Public and Private exclude each other
@@ -38,6 +39,7 @@ def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> pa
     check('no description or comment anywhere in it', !text.includes(DESC) && !text.includes(CMT) && !/description|comments|testSteps/.test(text));
     check('IP and email in a title are masked', j.cards.some(c => c.title === 'Server •••• is down, mail ••••') && !text.includes('192.168') && !text.includes('dave@'), j.cards.map(c => c.title));
     check('the hidden card and the life card are absent', !j.cards.some(c => c.title === 'Hidden plan' || c.title === 'Buy milk'));
+    check('only the active team goes out: working and updated lately, not the old helper (AIG-1257)', j.team.some(m => m.name === 'Forge') && !j.team.some(m => m.name === 'Old Timer'), j.team);
     check('pictures are links or nothing', j.team.every(m => m.avatar === '' || /^https:/.test(m.avatar)));
 
     // The page, no external scripts
@@ -66,6 +68,7 @@ def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> pa
     await s.ok('PATCH', `/api/projects/pub-board/cards/${a.id}`, { status: 'review' });
     await view.waitForSelector('.c[data-id="' + a.id + '"][data-col="review"]', { timeout: 10000 });
     check('and moves it when the card moves (highlighted as it lands)', await view.evaluate(id => document.querySelector('.c[data-id="' + id + '"]').classList.contains('new'), a.id));
+    check('the page says when a card last moved (AIG-1255)', /^Last card moved (just now|\d+ min ago)$/.test(await view.textContent('#last')), await view.textContent('#last'));
     check('the page shows the viewer count', /viewer/.test(await view.textContent('#v')));
     check('the page has no description or comment', !(await view.content()).includes(DESC) && !(await view.content()).includes(CMT));
 

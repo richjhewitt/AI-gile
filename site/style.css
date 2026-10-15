@@ -129,8 +129,9 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 /* Live board (AIG-1232): every card a bar, sized by its length, coloured by type; the section scrolls sideways on a phone, the page never */
 .live{max-width:62rem;margin:0 auto;padding:32px 0;text-align:center}
 .live h2{font-size:28px;margin:0 0 8px}
-.live-stat{margin:0 0 12px;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.live-stat{margin:0 0 4px;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
 .live-stat:first-letter{color:#22c55e}
+.live-last{margin:0 0 12px;color:var(--muted);font-size:14px}
 .live-scroll{overflow-x:auto;text-align:start;padding-bottom:8px}
 .lv-cols{display:flex;gap:10px;align-items:flex-start;min-width:max-content}
 .live{--c-bug:#dc2626;--c-task:#9333ea;--c-feat:#3b6cf6;--c-inc:#d97706;--c-done:#1f9d61;--c-mute:#5f697d}

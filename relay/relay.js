@@ -418,11 +418,11 @@ main{display:flex;gap:12px;padding:14px;overflow-x:auto;align-items:flex-start}
 @media (max-width:600px){.col{flex-basis:80vw}.sp{display:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
-<header><h1 id="t">Board</h1><span class="muted" id="v"></span><span class="team" id="team"></span><span class="sp"></span><span class="themes" id="themes" role="group" aria-label="Theme"></span></header>
+<header><h1 id="t">Board</h1><span class="muted" id="v"></span><span class="muted" id="last" hidden></span><span class="team" id="team"></span><span class="sp"></span><span class="themes" id="themes" role="group" aria-label="Theme"></span></header>
 <div id="msg" hidden></div><main id="cols"></main>
 <script>
 (function(){
-var name="__NAME__",$=function(i){return document.getElementById(i)},pos={},first=true,es;
+var name="__NAME__",$=function(i){return document.getElementById(i)},pos={},first=true,es,at=0;
 var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches,root=document.documentElement;
 var KEY="aigile-board-theme",TH=[["system","System"],["light","Light"],["dark","Dark"],["black","Black"]];
 var COLK={backlog:"var(--muted)",todo:"var(--accent)",doing:"var(--warn)",review:"var(--you)",verify:"var(--danger)",team:"var(--you)",done:"var(--done)"},CYC=["var(--accent)","var(--warn)","var(--you)","var(--done)","var(--danger)"];
@@ -434,9 +434,15 @@ TH.forEach(function(p){var b=el("button",null,p[1]);b.type="button";b.dataset.t=
 setTheme(getTheme());
 function brand(s){var h=0,t=String(s.title||name);for(var i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))%360;
   root.style.setProperty("--brand",/^#[0-9a-f]{6}$/i.test(s.color||"")?s.color:"hsl("+h+" 70% 42%)")}
-function gone(){$("cols").textContent="";$("team").textContent="";$("t").textContent="Board";$("v").textContent="";$("msg").hidden=false;$("msg").textContent="This board is private now."}
+// AIG-1255: "Last card moved 3 min ago" from the snapshot time, refreshed every minute.
+function paintLast(){
+  var l=$("last");if(!at||isNaN(at)){l.hidden=true;return}
+  var m=Math.max(0,Math.floor((Date.now()-at)/60000)),n=m<60?m:m<1440?Math.floor(m/60):Math.floor(m/1440),u=m<60?" min":m<1440?(n===1?" hour":" hours"):(n===1?" day":" days");
+  l.textContent=m<1?"Last card moved just now":"Last card moved "+n+u+" ago";l.hidden=false}
+setInterval(function(){if(!document.hidden)paintLast()},60000);
+function gone(){at=0;paintLast();$("cols").textContent="";$("team").textContent="";$("t").textContent="Board";$("v").textContent="";$("msg").hidden=false;$("msg").textContent="This board is private now."}
 function draw(s){
-  $("msg").hidden=true;$("t").textContent=s.title||name;document.title=(s.title||name)+" (live)";brand(s);
+  at=Date.parse(s.at);paintLast();$("msg").hidden=true;$("t").textContent=s.title||name;document.title=(s.title||name)+" (live)";brand(s);
   $("v").textContent=s.viewers!=null?(s.viewers+(s.viewers===1?" viewer":" viewers")):"";
   var tm=$("team");tm.textContent="";(s.team||[]).forEach(function(m){var w=el("span","who");if(m.avatar){var i=el("img");i.src=m.avatar;i.alt="";i.referrerPolicy="no-referrer";i.onerror=function(){i.remove()};w.appendChild(i)}w.appendChild(el("span",null,m.name+(m.role?" · "+m.role:"")));tm.appendChild(w)});
   var before={};document.querySelectorAll(".c").forEach(function(c){before[c.dataset.id]=c.getBoundingClientRect()});
@@ -457,13 +463,17 @@ function draw(s){
       c.style.transition="none";c.style.transform="translate("+(b.left-r.left)+"px,"+(b.top-r.top)+"px)";c.style.zIndex=2;
       requestAnimationFrame(function(){requestAnimationFrame(function(){c.style.transition="transform .6s ease";c.style.transform="none"})})}});
   first=false;pos=now}
+// AIG-1254: no stream in a hidden tab (the relay counts every open one as a viewer); it reopens, and redraws from the .json, when the tab is shown.
 function start(){
+  if(es||document.hidden)return;
   es=new EventSource("/b/"+name+"/live");
   es.addEventListener("snapshot",function(e){draw(JSON.parse(e.data))});
   es.addEventListener("viewers",function(e){var n=JSON.parse(e.data).viewers;$("v").textContent=n+(n===1?" viewer":" viewers")});
   es.addEventListener("private",gone);
 }
-fetch("/b/"+name+".json").then(function(r){if(!r.ok){gone();return null}return r.json()}).then(function(s){if(s){draw(s)}start()}).catch(start);
+function load(){return fetch("/b/"+name+".json",{cache:"no-store"}).then(function(r){if(!r.ok){gone();return null}return r.json()}).then(function(s){if(s){draw(s)}start()}).catch(start)}
+document.addEventListener("visibilitychange",function(){if(document.hidden){if(es){es.close();es=null}}else load()});
+load();
 })();
 </script></body></html>`;
 
