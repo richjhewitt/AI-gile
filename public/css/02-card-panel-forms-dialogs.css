@@ -84,6 +84,10 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .att-shown { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .att-shown img { max-width: 220px; max-height: 160px; border: 1px solid var(--line); border-radius: 6px; display: block; }
 .att-file { font-size: 13px; }
+/* AIG-1165: a resumable upload's progress and Cancel, in the reply box */
+.att-prog { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.att-prog progress { width: 120px; height: 8px; }
+.att-prog .att-pct { max-width: 220px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
 /* ---------- new build: Refresh pill (AIG-78), above open cards and dialogs ---------- */
 #updateTop { position: fixed; top: 8px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; gap: 8px; }

@@ -173,7 +173,92 @@ const Dms = (() => {
   // acts: answer buttons under the message (AIG-176), only on the latest one still waiting on you.
   // AIG-975: a ★ on a message starred in the phone app (thread.stars holds "chat|at").
   const starHtml = m => (thread.stars || []).includes(m.card + '|' + m.at) ? ' <span class="dm-star" aria-hidden="true">★</span>' : '';
-  const msgHtml = (m, acts = '') => `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta">${face(m.author, thread.team)}<b>${esc(m.author)}</b> ${ago(m.at)}${starHtml(m)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${originHtml(m)}${acts}${pickHtml(m)}</div>`;
+  // 👥 a group's lines carry an id (AIG-1164): reply, react, and edit or delete your own.
+  const msgHtml = (m, acts = '') => thread.group && m.id
+    ? `<div class="dm-msg ${m.mine ? 'mine' : ''} ${m.deleted ? 'dm-gone' : ''}" data-mid="${esc(m.id)}"><div class="dm-meta">${face(m.author, thread.team)}<b>${esc(m.author)}</b> ${ago(m.at)}${m.edited && !m.deleted ? ` <span class="dm-edited">${esc(t('dms.edited'))}</span>` : ''}</div>${quoteHtml(m.reply, id => { const q = thread.messages.find(x => x.id === id); return q && { who: q.author, text: q.deleted ? '' : q.text }; })}<div class="dm-bubble">${m.deleted ? `<i class="muted">${esc(t('dms.deleted'))}</i>` : linkify(m.text || '', thread)}</div>${m.deleted ? '' : chipsHtml((m.reacts || []).map(r => ({ e: r.e, n: r.who.length, mine: r.mine, who: r.who })))}${m.deleted ? '' : lineActs(m.mine)}${acts}</div>`
+    : `<div class="dm-msg ${m.mine ? 'mine' : ''}"><div class="dm-meta">${face(m.author, thread.team)}<b>${esc(m.author)}</b> ${ago(m.at)}${starHtml(m)}</div><div class="dm-bubble">${linkify(m.text || '', thread)}${Attach.shown(m, thread.slug)}</div>${originHtml(m)}${acts}${pickHtml(m)}</div>`;
+  /* ---------- reply, react, edit, delete, typing (AIG-1164, lifted from ChilledChat) ---------- */
+  // Friends' chats and 👥 groups: a small bar on each line (↩ 😊, and ✏️ 🗑 on your own), chips under the bubble, a quote over a reply.
+  const QUICK = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀', '🙏', '✅'];
+  let replyTo = null, editing = null, typedAt = 0;   // { id, who, text } / the line being edited / when I last said I was typing
+  const lineActs = own => `<div class="dm-lineacts">${[['reply', '↩'], ['react', '😊'], ...(own ? [['edit', '✏️'], ['del', '🗑']] : [])].map(([a, i]) => `<button type="button" data-dmact="${a}" title="${esc(t('dms.act.' + a))}" aria-label="${esc(t('dms.act.' + a))}">${i}</button>`).join('')}</div>`;
+  const chipsHtml = list => list.length ? `<div class="dm-reacts">${list.map(r => `<button type="button" class="dm-react ${r.mine ? 'mine' : ''}" data-dmreact="${esc(r.e)}" title="${esc(r.who.join(', '))}" aria-pressed="${!!r.mine}">${esc(r.e)} <span>${r.n}</span></button>`).join('')}</div>` : '';
+  // The quoted line: the one still in the chat when it is (so an edit or delete shows), else the words saved with the reply.
+  const quoteHtml = (r, find) => { if (!r) return ''; const q = find(r.id); const who = q ? q.who : r.author || ''; const text = q ? q.text : r.text; return `<div class="dm-quote" data-dmquote="${esc(r.id)}">↩ ${who ? `<b>${esc(who)}</b> ` : ''}<span>${text ? esc(plain(text).slice(0, 80)) : `<i>${esc(t('dms.deleted'))}</i>`}</span></div>`; };
+  const personChips = (m, name) => { const r = m.reacts || {}, mine = r.mine || [], theirs = r.theirs || []; return chipsHtml([...new Set([...mine, ...theirs])].map(e => ({ e, n: mine.includes(e) + theirs.includes(e), mine: mine.includes(e), who: [...(mine.includes(e) ? [me()] : []), ...(theirs.includes(e) ? [name] : [])] }))); };
+  const lineUrl = mid => thread.person ? `/api/dms/contacts/${thread.id}/messages/${encodeURIComponent(mid)}` : `/api/chats/_groups/${thread.groupId}/msgs/${encodeURIComponent(mid)}`;
+  const lineOf = mid => thread && (thread.messages || []).find(m => m.id === mid);
+  const lineWho = m => thread.person ? (m.dir === 'out' ? me() : thread.name) : m.author;
+  async function lineDo(fn) {
+    el('dmErr').textContent = '';
+    try { await fn(); } catch (e) { el('dmErr').textContent = e.message || String(e); }
+    const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread();
+  }
+  function pickReaction(mid, btn) {
+    document.querySelectorAll('.dm-picker').forEach(x => x.remove());
+    const p = document.createElement('div'); p.className = 'dm-picker'; p.dataset.mid = mid; p.setAttribute('role', 'menu');
+    p.innerHTML = QUICK.map(e => `<button type="button" data-dmpick="${e}" role="menuitem">${e}</button>`).join('');
+    btn.closest('.dm-msg').appendChild(p);
+  }
+  const react = (mid, emoji) => lineDo(() => api('POST', lineUrl(mid) + '/react', { emoji }));
+  function startReply(mid) {
+    const m = lineOf(mid); if (!m) return;
+    replyTo = { id: mid, who: lineWho(m), text: m.text || '' };
+    paintReplyBar(); const ta = el('dmText'); if (ta) ta.focus();
+  }
+  function paintReplyBar() {
+    const bar = el('dmReplyBar'); if (!bar) return;
+    bar.hidden = !replyTo;
+    bar.innerHTML = replyTo ? `<span>↩ ${esc(t('dms.replying', { name: replyTo.who }))}</span> <span class="muted dm-replytext">${esc(plain(replyTo.text).slice(0, 80))}</span><button type="button" data-dmreplyx="1" title="${esc(t('dms.reply.cancel'))}" aria-label="${esc(t('dms.reply.cancel'))}">✕</button>` : '';
+  }
+  function startEdit(mid) {
+    const m = lineOf(mid), row = document.querySelector(`#dmList .dm-msg[data-mid="${CSS.escape(mid)}"]`); if (!m || !row) return;
+    editing = mid;
+    row.querySelector('.dm-bubble').innerHTML = `<textarea class="dm-edit" rows="2" aria-label="${esc(t('dms.act.edit'))}">${esc(m.text || '')}</textarea><div class="actions"><button type="button" class="primary" data-dmeditsave="1">${esc(t('common.save'))}</button><button type="button" data-dmeditx="1">${esc(t('common.cancel'))}</button></div>`;
+    const ta = row.querySelector('.dm-edit'); ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+  }
+  function saveEdit() {
+    const ta = document.querySelector('#dmList .dm-edit'), mid = editing; if (!ta || !mid) return;
+    const text = ta.value.trim(); if (!text) return;
+    editing = null; lineDo(() => api('PATCH', lineUrl(mid), { text }));
+  }
+  function stopEdit() { editing = null; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
+  function delLine(mid) { if (confirm(t('dms.delete.confirm'))) lineDo(() => api('DELETE', lineUrl(mid))); }
+  // Who is typing: a friend (their board told mine, kept a few seconds) or a 👥 member whose run for the group is going.
+  function paintTyping() {
+    const box = el('dmTyping'); if (!box || !thread) return;
+    const names = thread.person ? ((people.find(c => c.id === thread.id) || {}).typing ? [thread.name] : []) : thread.group ? thread.typing || [] : [];
+    const txt = !names.length ? '' : names.length === 1 ? t('dms.typing.one', { name: names[0] }) : names.length === 2 ? t('dms.typing.two', { a: names[0], b: names[1] }) : t('dms.typing.many', { n: names.length });
+    if (box.dataset.sig === txt) return;
+    box.dataset.sig = txt; box.innerHTML = txt ? `<span class="dm-dots" aria-hidden="true"><span></span><span></span><span></span></span> ${esc(txt)}` : '';
+  }
+  // Typing in a friend's chat tells their board, at most every 4 seconds (the server keeps it to that too).
+  function typed() {
+    if (!thread || !thread.person || Date.now() - typedAt < 4000 || !el('dmText').value.trim()) return;
+    typedAt = Date.now(); api('POST', `/api/dms/contacts/${thread.id}/typing`, {}).catch(() => {});
+  }
+  document.addEventListener('input', e => { if (e.target && e.target.id === 'dmText') typed(); });
+  document.addEventListener('keydown', e => {
+    if (!e.target.matches || !e.target.matches('#dmList .dm-edit')) return;
+    if (e.key === 'Escape') { e.preventDefault(); stopEdit(); }
+    else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEdit(); }
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest) return;
+    if (!e.target.closest('.dm-picker,[data-dmact="react"]')) document.querySelectorAll('.dm-picker').forEach(x => x.remove());
+    const row = e.target.closest('#dmList .dm-msg[data-mid]'), mid = row && row.dataset.mid;
+    const a = e.target.closest('#dmList [data-dmact]');
+    if (a && mid) { e.preventDefault(); const k = a.dataset.dmact; if (k === 'reply') startReply(mid); else if (k === 'react') pickReaction(mid, a); else if (k === 'edit') startEdit(mid); else if (k === 'del') delLine(mid); return; }
+    const pk = e.target.closest('#dmList [data-dmpick]');
+    if (pk && mid) { e.preventDefault(); document.querySelectorAll('.dm-picker').forEach(x => x.remove()); react(mid, pk.dataset.dmpick); return; }
+    const ch = e.target.closest('#dmList [data-dmreact]');
+    if (ch && mid) { e.preventDefault(); react(mid, ch.dataset.dmreact); return; }
+    if (e.target.closest('#dmList [data-dmeditsave]')) { e.preventDefault(); saveEdit(); return; }
+    if (e.target.closest('#dmList [data-dmeditx]')) { e.preventDefault(); stopEdit(); return; }
+    if (e.target.closest('#dmPanel [data-dmreplyx]')) { e.preventDefault(); replyTo = null; paintReplyBar(); return; }
+    const qt = e.target.closest('#dmList [data-dmquote]');
+    if (qt) { const to = document.querySelector(`#dmList .dm-msg[data-mid="${CSS.escape(qt.dataset.dmquote)}"]`); if (to) { to.scrollIntoView({ block: 'center', behavior: 'smooth' }); to.classList.add('dm-flash'); setTimeout(() => to.classList.remove('dm-flash'), 1200); } }
+  });
   // AIG-566: a small chip on a reply: made by rules (free) or written by an AI (uses tokens). Old comments carry no marker, so no chip.
   const originHtml = m => m.mine || typeof m.auto !== 'boolean' ? '' : m.auto
     ? `<span class="dm-origin auto" title="${esc(t('dms.origin.auto.title'))}">${esc(t('dms.origin.auto'))}</span>`
@@ -214,8 +299,9 @@ const Dms = (() => {
   }
   // A friend's chat: plain bubbles, no cards or folds.
   function personHtml(msgs, name, em) {
-    return msgs.map(m => `<div class="dm-msg ${m.dir === 'out' ? 'mine' : ''} ${m.kind ? 'dm-' + esc(m.kind) : ''}"><div class="dm-meta">${face(m.dir === 'out' ? me() : name, [])}<b>${esc(m.dir === 'out' ? me() : name)}</b> ${ago(m.at)}${m.status === 'failed' ? ' · ' + esc(m.reason || t('dms.failed')) : m.status === 'sending' ? ' · ' + esc(t('dms.sending')) : ''}</div>
-      ${askTag(m, name)}<div class="dm-bubble">${m.verified === false ? `<i class="muted">${esc(t('dms.unverified'))}</i>` : m.kind === 'answer' && m.no ? `<i>${esc(t(m.dir === 'out' ? 'ask.no.out' : 'ask.no.in', { name }))}</i>` : m.kind === 'ask' && m.dir === 'in' ? esc(m.text || '') : m.dir === 'in' ? withFriendEmojis(thread.id, em, () => linkify(m.text || '', thread)) : linkify(m.text || '', thread)}${Attach.shown(m, '', `/api/dms/contacts/${thread.id}/files`)}</div></div>`).join('');
+    const find = id => { const q = msgs.find(x => x.id === id); return q && { who: q.dir === 'out' ? me() : name, text: q.deleted ? '' : q.text || (q.attachments ? '📎' : '') }; };   // AIG-1164
+    return msgs.map(m => `<div class="dm-msg ${m.dir === 'out' ? 'mine' : ''} ${m.kind ? 'dm-' + esc(m.kind) : ''} ${m.deleted ? 'dm-gone' : ''}" data-mid="${esc(m.id)}"><div class="dm-meta">${face(m.dir === 'out' ? me() : name, [])}<b>${esc(m.dir === 'out' ? me() : name)}</b> ${ago(m.at)}${m.edited && !m.deleted ? ` <span class="dm-edited">${esc(t('dms.edited'))}</span>` : ''}${m.status === 'failed' ? ' · ' + esc(m.reason || t('dms.failed')) : m.status === 'sending' ? ' · ' + esc(t('dms.sending')) : ''}</div>
+      ${askTag(m, name)}${quoteHtml(m.reply, find)}<div class="dm-bubble">${m.deleted ? `<i class="muted">${esc(t('dms.deleted'))}</i>` : m.verified === false ? `<i class="muted">${esc(t('dms.unverified'))}</i>` : m.kind === 'answer' && m.no ? `<i>${esc(t(m.dir === 'out' ? 'ask.no.out' : 'ask.no.in', { name }))}</i>` : m.kind === 'ask' && m.dir === 'in' ? esc(m.text || '') : m.dir === 'in' ? withFriendEmojis(thread.id, em, () => linkify(m.text || '', thread)) : linkify(m.text || '', thread)}${m.deleted ? '' : Attach.shown(m, '', `/api/dms/contacts/${thread.id}/files`)}</div>${m.deleted || m.verified === false ? '' : personChips(m, name) + lineActs(m.dir === 'out' && !m.kind)}</div>`).join('');
   }
   // Ask a mate (AIG-210): a question for someone's AI, and its answer, get a small tag over the bubble. A question
   // a friend sent me is shown as plain text (no links) until I deal with it in the inbox.
@@ -236,7 +322,8 @@ const Dms = (() => {
     if (msgs.some(m => m.dir === 'in' && /:[a-z0-9_]{1,32}:/.test(m.text || ''))) { try { em = await PagePoll.get(`/api/dms/contacts/${thread.id}/emojis`); } catch {} }
     if (!thread || thread.id !== open.slice(3)) return;
     const html = personHtml(msgs, thread.name, em) || `<p class="muted dm-empty">${esc(t('dms.nomsgperson', { name: thread.name }))}</p>`;
-    if (list.dataset.sig !== html) {
+    paintTyping();
+    if (list.dataset.sig !== html && !editing) {   // AIG-1164: a line being edited is not painted over
       const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
       list.dataset.sig = html; list.innerHTML = html;
       if (scroll || atBottom) list.scrollTop = list.scrollHeight;
@@ -273,12 +360,13 @@ const Dms = (() => {
     thread.open.forEach(o => waitingSeen.add(o.id));
     if (fresh && target !== GENERAL) fold = fresh.id;   // AIG-936: a new question opens in the chat, but the typing box stays a plain message
     const html = foldsHtml() || `<p class="muted dm-empty">${esc(t(thread.group ? 'grp.empty' : chats.some(x => x.slug === open && x.watchman) ? 'dms.nomsgs.watch' : 'dms.nomsgs'))}</p>`;
+    paintTyping();
     // AIG-757: the card open in the chat can be answered too, not only cards waiting on you: a reply to a 💬 card the
     // lead had answered used to start a new card.
     const fc0 = (thread.cards || {})[fold];
     thread.answer = !thread.watchman && fc0 && !fc0.done && fc0.kind !== 'test' && fold !== '_lead' && !thread.open.some(o => o.id === fold) ? [...thread.open, { id: fold, title: fc0.title }] : thread.open;
     if (target !== GENERAL && !thread.answer.some(o => o.id === target)) target = GENERAL;   // AIG-936: the Lead chat itself unless you pick a card
-    if (list.dataset.sig !== html) {
+    if (list.dataset.sig !== html && !editing) {
       const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40;
       list.dataset.sig = html; list.innerHTML = html;
       if (scroll || atBottom) list.scrollTop = list.scrollHeight;
@@ -374,7 +462,7 @@ const Dms = (() => {
     if (slug === '_allhands') return showAllHands();
     if (isTw(slug)) { open = slug; listOpen = true; thread = null; TwitchTab.show(slug); loadRail(); return; }
     if (isDc(slug)) { open = slug; listOpen = true; thread = null; DiscordTab.show(slug); loadRail(); return; }
-    open = slug; listOpen = true;
+    open = slug; listOpen = true; replyTo = null; editing = null;
     const who = isPerson(slug) ? people.find(x => 'dm:' + x.id === slug) || { id: slug.slice(3), name: t('dms.person') } : null;
     thread = who ? { person: true, id: who.id, slug, name: who.name, messages: [], open: [] } : null;
     const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || (isGrp(slug) ? (g => ({ slug, name: g ? g.members.map(m => m.name + ' (' + m.engineLabel + ')').join(', ') : '', lead: g ? g.name : slug.slice(4), emoji: '👥', group: true }))(groups.find(x => 'grp:' + x.id === slug)) : null) || (slug === '_assistant' ? { slug, name: paName || t('pa.name'), lead: paName || t('pa.name'), emoji: '💚', assistant: true } : { slug, name: slug });
@@ -384,7 +472,9 @@ const Dms = (() => {
       <div class="dm-list" id="dmList"></div>
       <div id="dmFollow"></div>
       ${c.noAi ? smCmdsHtml() : ''}
+      <div class="dm-typing muted" id="dmTyping" aria-live="polite"></div>
       <div class="dm-compose"><div class="dm-to muted" id="dmTo"></div>
+        ${who || c.group ? '<div class="dm-replybar" id="dmReplyBar" hidden></div>' : ''}
         <textarea id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(EnterSend.is(event,'${who ? 'dm' : 'chat'}')){event.preventDefault();Dms.send()}"></textarea>
         <div class="err" id="dmErr"></div>
         <div class="actions"><button class="good" id="dmGo" ${who ? `onclick="Dms.send('👍')" title="${esc(t('dms.like.title'))}">${esc(t('dms.like'))}` : `onclick="Dms.send('GO')" title="${esc(t('dms.go.title'))}">${esc(t('dms.go'))}`}</button><button class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button>${c.group ? '' : who ? `<button id="dmAsk" onclick="Dms.ask()" title="${esc(t('ask.btn.title', { name: who.name }))}">${esc(t('ask.btn', { name: who.name }))}</button>` : ''}${c.group ? '' : Attach.boxHtml('dm:' + slug)}</div></div>`;
@@ -420,7 +510,7 @@ const Dms = (() => {
     busy = true; el('dmErr').textContent = '';
     try {
       const attachments = fixed || thread.group ? [] : await Attach.upload(key, thread.slug);
-      if (thread.group) await api('POST', '/api/chats/_groups/' + thread.groupId, { text });   // 👥 each member is woken once (AIG-1027)
+      if (thread.group) await api('POST', '/api/chats/_groups/' + thread.groupId, { text, ...(replyTo ? { reply: replyTo.id } : {}) });   // 👥 each member is woken once (AIG-1027)
       else if (thread.assistant) { const r = await api('POST', '/api/chats/_assistant', { text }); if (r && r.openDay && typeof MyDay !== 'undefined') MyDay.open(); }   // 💚 AIG-1021
       else if (thread.noAi) await api('POST', '/api/chats/_watchman', { text, project: here() });   // 🧭 no AI: plain code answers at once (AIG-729)
       else if (thread.watchman) {   // Send anyway (AIG-531): No Token Mode / budget refuse it, but it is the owner's call
@@ -430,6 +520,7 @@ const Dms = (() => {
       else if (q && !(fold === '_lead' && target === GENERAL)) await api('POST', `/api/projects/${thread.slug}/cards/${q.id}/comments`, { author: me(), text, attachments });
       else { await api('POST', `/api/projects/${thread.slug}/leadchat`, { author: me(), text, attachments }); fold = '_lead'; }   // AIG-872: the one Lead chat, not a 💬 card per message
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
+      if (thread.group) { replyTo = null; paintReplyBar(); }
       await loadThread(true); loadRail();
     } catch (e) { el('dmErr').textContent = e.message || String(e); }
     busy = false;
@@ -441,9 +532,10 @@ const Dms = (() => {
     if (!text && !Attach.has(key)) { el('dmErr').textContent = t('dms.empty'); return; }
     busy = true; el('dmErr').textContent = '';
     try {
-      const attachments = fixed ? [] : await Attach.read(key);
-      await api('POST', `/api/dms/contacts/${thread.id}/messages`, { text, attachments });
+      const attachments = fixed ? [] : await Attach.read(key, thread.id);   // uploaded in pieces first (AIG-1165)
+      await api('POST', `/api/dms/contacts/${thread.id}/messages`, { text, attachments, ...(replyTo ? { reply: replyTo.id } : {}) });
       if (!fixed) { el('dmText').value = ''; Attach.clear(key); clearDraft('dm/' + thread.slug); }
+      replyTo = null; paintReplyBar(); typedAt = 0;
       await loadThread(true); loadRail();
     } catch (e) { el('dmErr').textContent = e.message || String(e); }
     busy = false;
