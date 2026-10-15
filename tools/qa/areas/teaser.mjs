@@ -94,6 +94,40 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
   await page.evaluate(() => document.documentElement.setAttribute('dir', 'rtl'));
   { const g = await grid(); check('right-to-left: the feature grid still has no gap (AIG-1295)', g.cols === 3 && g.edge <= 1 && g.n % 3 === 0, g); }
   await page.evaluate(() => document.documentElement.removeAttribute('dir'));
+  // AIG-1304: a 4th "Messenger for your phone" button (Coming soon, not a link) and a Messenger section with a drawn phone
+  {
+    const dl = () => page.$eval('.downloads', d => { const b = [...d.children].map(e => e.getBoundingClientRect()), tops = [...new Set(b.map(r => Math.round(r.top)))];
+      const ph = document.querySelector('.messenger .phone').getBoundingClientRect();
+      return { n: b.length, rows: tops.length, perRow: tops.map(t => b.filter(r => Math.round(r.top) === t).length), same: b.every(r => Math.abs(r.width - b[0].width) <= 1), wide: document.documentElement.scrollWidth <= innerWidth, phone: ph.left >= 0 && ph.right <= innerWidth }; });
+    const m = await page.$eval('.downloads', d => { const a = d.querySelector('[data-i18n="dl.messenger"]')?.closest('a'); return { n: d.children.length, txt: a?.textContent, soon: !!a?.classList.contains('soon') && a.getAttribute('aria-disabled') === 'true', third: d.children[2] === a, last: d.lastElementChild.getAttribute('href') }; });
+    check('the download row has 4 buttons; the 3rd is "📱 Messenger for your phone · Coming soon", not clickable like the other two (AIG-1304)', m.n === 4 && m.txt === '📱 Messenger for your phone' + 'Coming soon' && m.soon && m.third && m.last === 'interest.html', m);
+    const u0 = page.url(); await page.click('.downloads [data-i18n="dl.messenger"]'); check('clicking the Messenger button goes nowhere', page.url() === u0, page.url());
+    const sec = await page.evaluate(() => { const s = document.getElementById('messenger'), h = s?.querySelector('h2'), hs = [...document.querySelectorAll('main h1,main h2,main h3')].map(e => +e.tagName[1]);
+      return { h: h?.textContent, label: s?.getAttribute('aria-labelledby') === h?.id, after: !!s && document.querySelector('.features').compareDocumentPosition(s) === Node.DOCUMENT_POSITION_FOLLOWING, text: s?.querySelector('.msgr-text').textContent, hidden: s?.querySelector('.phone').getAttribute('aria-hidden') === 'true', bubs: s?.querySelectorAll('.phone .bub').length, order: hs.every((l, i) => i === 0 || l <= hs[i - 1] + 1) }; });
+    check('the Messenger section follows the features: its heading, what it does, Android first then web and iPhone (AIG-1304)', sec.h === 'AI-gile Messenger: your team in your pocket' && sec.label && sec.after && /from your phone/.test(sec.text) && /QR code/.test(sec.text) && /Android first, then a web version for phones and iPhone/.test(sec.text) && /Coming soon/.test(sec.text), sec);
+    check('the phone drawing is hidden from screen readers (the text says it all), with chat bubbles; headings stay in order', sec.hidden && sec.bubs === 3 && sec.order, sec);
+    for (const [w, per] of [[1400, [4]], [768, [2, 2]], [390, [2, 2]]]) {
+      await page.setViewportSize({ width: w, height: 900 });
+      const r = await dl();
+      check('at ' + w + 'px the download row is ' + per.join(' + ') + ' equal buttons, no lonely one, no sideways scroll; the phone fits (AIG-1304)', r.n === 4 && JSON.stringify(r.perRow) === JSON.stringify(per) && r.same && r.wide && r.phone, r);
+    }
+    await page.evaluate(() => document.documentElement.setAttribute('dir', 'rtl'));
+    { const r = await page.evaluate(() => { const me = document.querySelector('.bub.me').getBoundingClientRect(), them = document.querySelector('.bub.them').getBoundingClientRect(); return { flip: me.left < them.left, wide: document.documentElement.scrollWidth <= innerWidth }; });
+      check('right-to-left at 390px: your bubble moves to the other side, no sideways scroll', r.flip && r.wide, r); }
+    await page.evaluate(() => document.documentElement.removeAttribute('dir'));
+    const look = () => page.evaluate(() => { const c = e => getComputedStyle(document.querySelector(e)); return { body: getComputedStyle(document.body).backgroundColor, phone: c('.phone').backgroundColor, them: c('.bub.them').backgroundColor, themText: c('.bub.them').color, me: c('.bub.me').backgroundColor, meText: c('.bub.me').color, anim: c('.bub.me').animationName }; });
+    const root = (t, b) => page.evaluate(([t, b]) => { const r = document.documentElement; r.setAttribute('data-theme', t); if (b) r.setAttribute('data-black', ''); else r.removeAttribute('data-black'); }, [t, b]);
+    await root('light', false); const li = await look();
+    await root('dark', false); const dk = await look();
+    await root('dark', true); const bk = await look();
+    const ok = x => x.phone === x.body && x.them !== x.phone && x.themText !== x.them && x.meText !== x.me;
+    check('the phone follows the theme: light, dark and black (true #000 screen), bubbles readable in each (AIG-1304)', ok(li) && ok(dk) && ok(bk) && li.phone !== dk.phone && bk.phone === 'rgb(0, 0, 0)' && dk.them !== li.them, { li, dk, bk });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    check('reduced motion: the bubbles just show, no slide-in', (await look()).anim === 'none');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await root('light', false);
+    await page.setViewportSize({ width: 1400, height: 900 });
+  }
   // AIG-1301: the theme button cycles light -> dark -> black; black is true #000 and survives a reload
   {
     const st = () => page.evaluate(() => ({ th: document.documentElement.getAttribute('data-theme'), black: document.documentElement.hasAttribute('data-black'), bg: getComputedStyle(document.body).backgroundColor, saved: localStorage.getItem('aigile-site-theme'), tip: document.getElementById('theme').title }));
