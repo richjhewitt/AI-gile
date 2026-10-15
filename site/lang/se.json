@@ -113,5 +113,12 @@
  "live.watching.one": "njuolga: {n} čuovvu",
  "live.watching.other": "njuolga: {n} čuovvu",
  "live.offline": "Njuolgabeavdi vuoiŋŋasta veaháš. Bija fas čađa dalle.",
- "live.cols": "Backlog|Dahkat|Barggus|Joavku dárkkista|Dutnje testit|Joavkku|Gárvvis"
+ "live.cols": "Backlog|Dahkat|Barggus|Joavku dárkkista|Dutnje testit|Joavkku|Gárvvis",
+ "live.last.now": "Maŋimus kortta lea sirdojuvvon dál",
+ "live.last.min.one": "Maŋimus kortta sirdojuvvui {n} minuhtta áigi",
+ "live.last.min.other": "Maŋimus kortta sirdojuvvui {n} minuhta áigi",
+ "live.last.hour.one": "Maŋimus kortta sirdojuvvui {n} diimmu áigi",
+ "live.last.hour.other": "Maŋimus kortta sirdojuvvui {n} diimmu áigi",
+ "live.last.day.one": "Maŋimus kortta sirdojuvvui {n} beaivvi áigi",
+ "live.last.day.other": "Maŋimus kortta sirdojuvvui {n} beaivvi áigi"
 }

@@ -108,5 +108,12 @@
  "live.watching.one": "livenä: {n} katsoo",
  "live.watching.other": "livenä: {n} katsoo",
  "live.offline": "Live-taulu pitää pienen tauon. Käy katsomassa pian uudelleen.",
- "live.cols": "Backlog|Tehtävänä|Työn alla|Tiimi tarkistaa|Sinun testattavasi|Tiimille|Valmis"
+ "live.cols": "Backlog|Tehtävänä|Työn alla|Tiimi tarkistaa|Sinun testattavasi|Tiimille|Valmis",
+ "live.last.now": "Viimeisin kortti siirrettiin juuri nyt",
+ "live.last.min.one": "Viimeisin kortti siirrettiin {n} min sitten",
+ "live.last.min.other": "Viimeisin kortti siirrettiin {n} min sitten",
+ "live.last.hour.one": "Viimeisin kortti siirrettiin {n} tunti sitten",
+ "live.last.hour.other": "Viimeisin kortti siirrettiin {n} tuntia sitten",
+ "live.last.day.one": "Viimeisin kortti siirrettiin {n} päivä sitten",
+ "live.last.day.other": "Viimeisin kortti siirrettiin {n} päivää sitten"
 }

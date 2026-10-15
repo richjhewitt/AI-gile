@@ -108,5 +108,12 @@
  "live.watching.one": "ola: {n} o matamata",
  "live.watching.other": "ola: {n} o matamata",
  "live.offline": "O lo'o malolo sina le fa'amaumauga ola. Toe afio mai a e le'i umi.",
- "live.cols": "Backlog|E fai|O loʻo faia|O loʻo siaki e le 'au|Mo oe e test|Mo le 'au|Ua uma"
+ "live.cols": "Backlog|E fai|O loʻo faia|O loʻo siaki e le 'au|Mo oe e test|Mo le 'au|Ua uma",
+ "live.last.now": "Na sii le kata mulimuli i le taimi nei lava",
+ "live.last.min.one": "Na sii le kata mulimuli i le {n} minute ua mavae",
+ "live.last.min.other": "Na sii le kata mulimuli i minute e {n} ua mavae",
+ "live.last.hour.one": "Na sii le kata mulimuli i le {n} itula ua mavae",
+ "live.last.hour.other": "Na sii le kata mulimuli i itula e {n} ua mavae",
+ "live.last.day.one": "Na sii le kata mulimuli i le {n} aso ua mavae",
+ "live.last.day.other": "Na sii le kata mulimuli i aso e {n} ua mavae"
 }

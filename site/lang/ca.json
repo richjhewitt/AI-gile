@@ -108,5 +108,12 @@
  "live.watching.one": "en directe: {n} mirant",
  "live.watching.other": "en directe: {n} mirant",
  "live.offline": "El tauler en directe es pren un respir. Torna d'aquí a poc.",
- "live.cols": "Backlog|Per fer|En curs|L'equip ho revisa|Et toca provar|Per a l'equip|Fet"
+ "live.cols": "Backlog|Per fer|En curs|L'equip ho revisa|Et toca provar|Per a l'equip|Fet",
+ "live.last.now": "L'última targeta s'ha mogut ara mateix",
+ "live.last.min.one": "L'última targeta s'ha mogut fa {n} min",
+ "live.last.min.other": "L'última targeta s'ha mogut fa {n} min",
+ "live.last.hour.one": "L'última targeta s'ha mogut fa {n} hora",
+ "live.last.hour.other": "L'última targeta s'ha mogut fa {n} hores",
+ "live.last.day.one": "L'última targeta s'ha mogut fa {n} dia",
+ "live.last.day.other": "L'última targeta s'ha mogut fa {n} dies"
 }

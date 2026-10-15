@@ -108,5 +108,12 @@
  "live.watching.one": "élő: {n} nézi",
  "live.watching.other": "élő: {n} nézi",
  "live.offline": "Az élő tábla kicsit pihen. Nézz vissza hamarosan.",
- "live.cols": "Backlog|Teendő|Folyamatban|A csapat ellenőrzi|Neked kell tesztelni|A csapatnak|Kész"
+ "live.cols": "Backlog|Teendő|Folyamatban|A csapat ellenőrzi|Neked kell tesztelni|A csapatnak|Kész",
+ "live.last.now": "Az utolsó kártya épp most mozdult",
+ "live.last.min.one": "Az utolsó kártya {n} perce mozdult",
+ "live.last.min.other": "Az utolsó kártya {n} perce mozdult",
+ "live.last.hour.one": "Az utolsó kártya {n} órája mozdult",
+ "live.last.hour.other": "Az utolsó kártya {n} órája mozdult",
+ "live.last.day.one": "Az utolsó kártya {n} napja mozdult",
+ "live.last.day.other": "Az utolsó kártya {n} napja mozdult"
 }

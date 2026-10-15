@@ -108,5 +108,12 @@
  "live.watching.one": "moja kwa moja: {n} wanatazama",
  "live.watching.other": "moja kwa moja: {n} wanatazama",
  "live.offline": "Ubao wa moja kwa moja unapumzika kidogo. Rudi tena hivi karibuni.",
- "live.cols": "Backlog|Za kufanya|Zinaendelea|Timu inakagua|Zako za kujaribu|Kwa timu|Zimekamilika"
+ "live.cols": "Backlog|Za kufanya|Zinaendelea|Timu inakagua|Zako za kujaribu|Kwa timu|Zimekamilika",
+ "live.last.now": "Kadi ya mwisho ilihamishwa muda mfupi uliopita",
+ "live.last.min.one": "Kadi ya mwisho ilihamishwa dakika {n} iliyopita",
+ "live.last.min.other": "Kadi ya mwisho ilihamishwa dakika {n} zilizopita",
+ "live.last.hour.one": "Kadi ya mwisho ilihamishwa saa {n} iliyopita",
+ "live.last.hour.other": "Kadi ya mwisho ilihamishwa saa {n} zilizopita",
+ "live.last.day.one": "Kadi ya mwisho ilihamishwa siku {n} iliyopita",
+ "live.last.day.other": "Kadi ya mwisho ilihamishwa siku {n} zilizopita"
 }

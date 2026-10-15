@@ -108,5 +108,12 @@
  "live.watching.one": "otse: {n} vaatab",
  "live.watching.other": "otse: {n} vaatab",
  "live.offline": "Otsetahvel võtab väikese hingetõmbe. Vaata varsti uuesti.",
- "live.cols": "Backlog|Tegemata|Töös|Tiim kontrollib|Sinu testida|Tiimile|Valmis"
+ "live.cols": "Backlog|Tegemata|Töös|Tiim kontrollib|Sinu testida|Tiimile|Valmis",
+ "live.last.now": "Viimane kaart liigutati just nüüd",
+ "live.last.min.one": "Viimane kaart liigutati {n} min tagasi",
+ "live.last.min.other": "Viimane kaart liigutati {n} min tagasi",
+ "live.last.hour.one": "Viimane kaart liigutati {n} tund tagasi",
+ "live.last.hour.other": "Viimane kaart liigutati {n} tundi tagasi",
+ "live.last.day.one": "Viimane kaart liigutati {n} päev tagasi",
+ "live.last.day.other": "Viimane kaart liigutati {n} päeva tagasi"
 }

@@ -108,5 +108,12 @@
  "live.watching.one": "bukhoma: {n} uyabuka",
  "live.watching.other": "bukhoma: {n} bayabuka",
  "live.offline": "Ibhodi elibukhoma lithatha ikhefu elifushane. Buya maduze.",
- "live.cols": "Backlog|Okufanele kwenziwe|Kuyaqhubeka|Iqembu liyahlola|Kuwe ukuthi test|Kweqembu|Kuphelile"
+ "live.cols": "Backlog|Okufanele kwenziwe|Kuyaqhubeka|Iqembu liyahlola|Kuwe ukuthi test|Kweqembu|Kuphelile",
+ "live.last.now": "Ikhadi lokugcina lihanjiswe nje manje",
+ "live.last.min.one": "Ikhadi lokugcina lihanjiswe umzuzu ongu-{n} owedlule",
+ "live.last.min.other": "Ikhadi lokugcina lihanjiswe imizuzu engu-{n} edlule",
+ "live.last.hour.one": "Ikhadi lokugcina lihanjiswe ihora elingu-{n} eledlule",
+ "live.last.hour.other": "Ikhadi lokugcina lihanjiswe amahora angu-{n} edlule",
+ "live.last.day.one": "Ikhadi lokugcina lihanjiswe usuku olungu-{n} olwedlule",
+ "live.last.day.other": "Ikhadi lokugcina lihanjiswe izinsuku ezingu-{n} ezedlule"
 }

@@ -108,5 +108,12 @@
  "live.watching.one": "vivum: {n} spectat",
  "live.watching.other": "vivum: {n} spectant",
  "live.offline": "Tabula viva paulum quiescit. Mox revertere.",
- "live.cols": "Backlog|Agenda|In opere|Turma inspicit|Tibi testandum|Turmae|Confecta"
+ "live.cols": "Backlog|Agenda|In opere|Turma inspicit|Tibi testandum|Turmae|Confecta",
+ "live.last.now": "Ultima tabella modo mota est",
+ "live.last.min.one": "Ultima tabella ante {n} minutum mota est",
+ "live.last.min.other": "Ultima tabella ante {n} minuta mota est",
+ "live.last.hour.one": "Ultima tabella ante {n} horam mota est",
+ "live.last.hour.other": "Ultima tabella ante {n} horas mota est",
+ "live.last.day.one": "Ultima tabella ante {n} diem mota est",
+ "live.last.day.other": "Ultima tabella ante {n} dies mota est"
 }

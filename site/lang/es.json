@@ -108,5 +108,12 @@
  "live.watching.one": "en directo: {n} mirando",
  "live.watching.other": "en directo: {n} mirando",
  "live.offline": "El tablero en directo está tomando aire. Vuelve pronto.",
- "live.cols": "Backlog|Por hacer|En curso|El equipo revisa|Para que lo pruebes|Para el equipo|Hecho"
+ "live.cols": "Backlog|Por hacer|En curso|El equipo revisa|Para que lo pruebes|Para el equipo|Hecho",
+ "live.last.now": "Última tarjeta movida hace un momento",
+ "live.last.min.one": "Última tarjeta movida hace {n} min",
+ "live.last.min.other": "Última tarjeta movida hace {n} min",
+ "live.last.hour.one": "Última tarjeta movida hace {n} hora",
+ "live.last.hour.other": "Última tarjeta movida hace {n} horas",
+ "live.last.day.one": "Última tarjeta movida hace {n} día",
+ "live.last.day.other": "Última tarjeta movida hace {n} días"
 }

@@ -108,5 +108,12 @@
  "live.watching.one": "regstreeks: {n} kyk",
  "live.watching.other": "regstreeks: {n} kyk",
  "live.offline": "Die lewendige bord haal asem. Kom kyk gou weer.",
- "live.cols": "Backlog|Om te doen|Besig|Span kontroleer|Vir jou om te toets|Vir die span|Klaar"
+ "live.cols": "Backlog|Om te doen|Besig|Span kontroleer|Vir jou om te toets|Vir die span|Klaar",
+ "live.last.now": "Laaste kaart pas verskuif",
+ "live.last.min.one": "Laaste kaart {n} min gelede verskuif",
+ "live.last.min.other": "Laaste kaart {n} min gelede verskuif",
+ "live.last.hour.one": "Laaste kaart {n} uur gelede verskuif",
+ "live.last.hour.other": "Laaste kaart {n} uur gelede verskuif",
+ "live.last.day.one": "Laaste kaart {n} dag gelede verskuif",
+ "live.last.day.other": "Laaste kaart {n} dae gelede verskuif"
 }

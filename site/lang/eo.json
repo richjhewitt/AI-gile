@@ -108,5 +108,12 @@
  "live.watching.one": "rekte: {n} rigardas",
  "live.watching.other": "rekte: {n} rigardas",
  "live.offline": "La viva tabulo iom ripozas. Revenu baldaŭ.",
- "live.cols": "Backlog|Farotaj|Farata|Teamo kontrolas|Por ke vi testu|Por la teamo|Farite"
+ "live.cols": "Backlog|Farotaj|Farata|Teamo kontrolas|Por ke vi testu|Por la teamo|Farite",
+ "live.last.now": "Lasta karto movita ĵus",
+ "live.last.min.one": "Lasta karto movita antaŭ {n} min",
+ "live.last.min.other": "Lasta karto movita antaŭ {n} min",
+ "live.last.hour.one": "Lasta karto movita antaŭ {n} horo",
+ "live.last.hour.other": "Lasta karto movita antaŭ {n} horoj",
+ "live.last.day.one": "Lasta karto movita antaŭ {n} tago",
+ "live.last.day.other": "Lasta karto movita antaŭ {n} tagoj"
 }

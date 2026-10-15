@@ -108,5 +108,12 @@
  "live.watching.one": "beinleiðis: {n} hyggja",
  "live.watching.other": "beinleiðis: {n} hyggja",
  "live.offline": "Beinleiðis talvan tekur sær eina løtu at kvíla. Kom aftur skjótt.",
- "live.cols": "Backlog|At gera|Í gerð|Toymið kannar|Fyri teg at testa|Fyri toymið|Liðugt"
+ "live.cols": "Backlog|At gera|Í gerð|Toymið kannar|Fyri teg at testa|Fyri toymið|Liðugt",
+ "live.last.now": "Seinasta kort flutt júst nú",
+ "live.last.min.one": "Seinasta kort flutt fyri {n} min síðani",
+ "live.last.min.other": "Seinasta kort flutt fyri {n} min síðani",
+ "live.last.hour.one": "Seinasta kort flutt fyri {n} tíma síðani",
+ "live.last.hour.other": "Seinasta kort flutt fyri {n} tímum síðani",
+ "live.last.day.one": "Seinasta kort flutt fyri {n} degi síðani",
+ "live.last.day.other": "Seinasta kort flutt fyri {n} døgum síðani"
 }

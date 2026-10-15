@@ -108,5 +108,12 @@
  "live.watching.one": "实时：{n} 人正在看",
  "live.watching.other": "实时：{n} 人正在看",
  "live.offline": "实时看板正在稍作休息，请稍后再来看看。",
- "live.cols": "Backlog|待办|进行中|团队检查中|待你测试|交给团队|已完成"
+ "live.cols": "Backlog|待办|进行中|团队检查中|待你测试|交给团队|已完成",
+ "live.last.now": "最近一张卡片刚刚移动",
+ "live.last.min.one": "最近一张卡片在 {n} 分钟前移动",
+ "live.last.min.other": "最近一张卡片在 {n} 分钟前移动",
+ "live.last.hour.one": "最近一张卡片在 {n} 小时前移动",
+ "live.last.hour.other": "最近一张卡片在 {n} 小时前移动",
+ "live.last.day.one": "最近一张卡片在 {n} 天前移动",
+ "live.last.day.other": "最近一张卡片在 {n} 天前移动"
 }

@@ -108,5 +108,12 @@
  "live.watching.one": "trực tiếp: {n} người đang xem",
  "live.watching.other": "trực tiếp: {n} người đang xem",
  "live.offline": "Bảng trực tiếp đang nghỉ một chút. Hãy quay lại sớm nhé.",
- "live.cols": "Backlog|Cần làm|Đang làm|Nhóm kiểm tra|Bạn cần test|Cho nhóm|Xong"
+ "live.cols": "Backlog|Cần làm|Đang làm|Nhóm kiểm tra|Bạn cần test|Cho nhóm|Xong",
+ "live.last.now": "Thẻ cuối cùng vừa được chuyển xong",
+ "live.last.min.one": "Thẻ cuối cùng được chuyển {n} phút trước",
+ "live.last.min.other": "Thẻ cuối cùng được chuyển {n} phút trước",
+ "live.last.hour.one": "Thẻ cuối cùng được chuyển {n} giờ trước",
+ "live.last.hour.other": "Thẻ cuối cùng được chuyển {n} giờ trước",
+ "live.last.day.one": "Thẻ cuối cùng được chuyển {n} ngày trước",
+ "live.last.day.other": "Thẻ cuối cùng được chuyển {n} ngày trước"
 }

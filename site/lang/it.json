@@ -108,5 +108,12 @@
  "live.watching.one": "dal vivo: {n} spettatore",
  "live.watching.other": "dal vivo: {n} spettatori",
  "live.offline": "La bacheca dal vivo si prende una pausa. Torna presto.",
- "live.cols": "Backlog|Da fare|In corso|Il team controlla|Per te da testare|Per il team|Fatto"
+ "live.cols": "Backlog|Da fare|In corso|Il team controlla|Per te da testare|Per il team|Fatto",
+ "live.last.now": "Ultima scheda spostata proprio ora",
+ "live.last.min.one": "Ultima scheda spostata {n} minuto fa",
+ "live.last.min.other": "Ultima scheda spostata {n} minuti fa",
+ "live.last.hour.one": "Ultima scheda spostata {n} ora fa",
+ "live.last.hour.other": "Ultima scheda spostata {n} ore fa",
+ "live.last.day.one": "Ultima scheda spostata {n} giorno fa",
+ "live.last.day.other": "Ultima scheda spostata {n} giorni fa"
 }

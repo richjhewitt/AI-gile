@@ -118,5 +118,12 @@
  "live.watching.one": "bio: {n} jeeaghyn",
  "live.watching.other": "bio: {n} jeeaghyn",
  "live.offline": "Ta'n clar bio goaill anmagh veg. Tar back dy gerrid.",
- "live.cols": "Backlog|Dy yannoo|Ayns obbyr|Yn possan jeeaghyn|Dhyts dy testail|Son y possan|Jeant"
+ "live.cols": "Backlog|Dy yannoo|Ayns obbyr|Yn possan jeeaghyn|Dhyts dy testail|Son y possan|Jeant",
+ "live.last.now": "Va'n cardey s'jerree scughit nish dy lhean",
+ "live.last.min.one": "Va'n cardey s'jerree scughit {n} minnid er dy henney",
+ "live.last.min.other": "Va'n cardey s'jerree scughit {n} minnid er dy henney",
+ "live.last.hour.one": "Va'n cardey s'jerree scughit {n} oor er dy henney",
+ "live.last.hour.other": "Va'n cardey s'jerree scughit {n} oor er dy henney",
+ "live.last.day.one": "Va'n cardey s'jerree scughit {n} laa er dy henney",
+ "live.last.day.other": "Va'n cardey s'jerree scughit {n} laa er dy henney"
 }

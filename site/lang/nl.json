@@ -108,5 +108,12 @@
  "live.watching.one": "live: {n} kijkt mee",
  "live.watching.other": "live: {n} kijken mee",
  "live.offline": "Het live bord neemt even een adempauze. Kom straks nog eens terug.",
- "live.cols": "Backlog|Te doen|Bezig|Team checkt|Jij test|Voor het team|Klaar"
+ "live.cols": "Backlog|Te doen|Bezig|Team checkt|Jij test|Voor het team|Klaar",
+ "live.last.now": "Laatste kaart zojuist verplaatst",
+ "live.last.min.one": "Laatste kaart {n} min geleden verplaatst",
+ "live.last.min.other": "Laatste kaart {n} min geleden verplaatst",
+ "live.last.hour.one": "Laatste kaart {n} uur geleden verplaatst",
+ "live.last.hour.other": "Laatste kaart {n} uur geleden verplaatst",
+ "live.last.day.one": "Laatste kaart {n} dag geleden verplaatst",
+ "live.last.day.other": "Laatste kaart {n} dagen geleden verplaatst"
 }

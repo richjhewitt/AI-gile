@@ -108,5 +108,12 @@
  "live.watching.one": "en directo: {n} mirando",
  "live.watching.other": "en directo: {n} mirando",
  "live.offline": "O taboleiro en directo está collendo folgos. Volve pronto.",
- "live.cols": "Backlog|Por facer|En curso|O equipo revisa|Por probar|Para o equipo|Feito"
+ "live.cols": "Backlog|Por facer|En curso|O equipo revisa|Por probar|Para o equipo|Feito",
+ "live.last.now": "Última tarxeta movida hai un momento",
+ "live.last.min.one": "Última tarxeta movida hai {n} min",
+ "live.last.min.other": "Última tarxeta movida hai {n} min",
+ "live.last.hour.one": "Última tarxeta movida hai {n} hora",
+ "live.last.hour.other": "Última tarxeta movida hai {n} horas",
+ "live.last.day.one": "Última tarxeta movida hai {n} día",
+ "live.last.day.other": "Última tarxeta movida hai {n} días"
 }

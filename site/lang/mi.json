@@ -108,5 +108,12 @@
  "live.watching.one": "ora: {n} e matakitaki ana",
  "live.watching.other": "ora: {n} e matakitaki ana",
  "live.offline": "Kei te okioki paku te papa ora. Hoki mai a muri nei.",
- "live.cols": "Backlog|Hei mahi|E mahi ana|E arotakengia ana e te rōpū|Māu e test|Mā te rōpū|Oti"
+ "live.cols": "Backlog|Hei mahi|E mahi ana|E arotakengia ana e te rōpū|Māu e test|Mā te rōpū|Oti",
+ "live.last.now": "I nekehia te kāri whakamutunga inaianei tonu",
+ "live.last.min.one": "I nekehia te kāri whakamutunga {n} meneti kua pahure",
+ "live.last.min.other": "I nekehia te kāri whakamutunga {n} meneti kua pahure",
+ "live.last.hour.one": "I nekehia te kāri whakamutunga {n} haora kua pahure",
+ "live.last.hour.other": "I nekehia te kāri whakamutunga {n} haora kua pahure",
+ "live.last.day.one": "I nekehia te kāri whakamutunga {n} rā kua pahure",
+ "live.last.day.other": "I nekehia te kāri whakamutunga {n} rā kua pahure"
 }

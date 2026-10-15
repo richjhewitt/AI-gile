@@ -113,5 +113,12 @@
  "live.watching.one": "tiešraidē: {n} skatās",
  "live.watching.other": "tiešraidē: {n} skatās",
  "live.offline": "Tiešraides tāfele mazliet atpūšas. Ieskaties drīz vēlreiz.",
- "live.cols": "Backlogs|Darāmais|Procesā|Komanda pārbauda|Gaida tavu testu|Komandai|Izdarīts"
+ "live.cols": "Backlogs|Darāmais|Procesā|Komanda pārbauda|Gaida tavu testu|Komandai|Izdarīts",
+ "live.last.now": "Pēdējā kartīte pārvietota tikko",
+ "live.last.min.one": "Pēdējā kartīte pārvietota pirms {n} min.",
+ "live.last.min.other": "Pēdējā kartīte pārvietota pirms {n} min.",
+ "live.last.hour.one": "Pēdējā kartīte pārvietota pirms {n} st.",
+ "live.last.hour.other": "Pēdējā kartīte pārvietota pirms {n} st.",
+ "live.last.day.one": "Pēdējā kartīte pārvietota pirms {n} d.",
+ "live.last.day.other": "Pēdējā kartīte pārvietota pirms {n} d."
 }

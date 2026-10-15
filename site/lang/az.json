@@ -108,5 +108,12 @@
  "live.watching.one": "canlı: {n} izləyir",
  "live.watching.other": "canlı: {n} izləyir",
  "live.offline": "Canlı lövhə bir az nəfəs alır. Tezliklə yenidən baxın.",
- "live.cols": "Backlog|Görüləcək|İcrada|Komanda yoxlayır|Sənin test etməyin üçün|Komanda üçün|Hazırdır"
+ "live.cols": "Backlog|Görüləcək|İcrada|Komanda yoxlayır|Sənin test etməyin üçün|Komanda üçün|Hazırdır",
+ "live.last.now": "Son kart indicə köçürüldü",
+ "live.last.min.one": "Son kart {n} dəq əvvəl köçürüldü",
+ "live.last.min.other": "Son kart {n} dəq əvvəl köçürüldü",
+ "live.last.hour.one": "Son kart {n} saat əvvəl köçürüldü",
+ "live.last.hour.other": "Son kart {n} saat əvvəl köçürüldü",
+ "live.last.day.one": "Son kart {n} gün əvvəl köçürüldü",
+ "live.last.day.other": "Son kart {n} gün əvvəl köçürüldü"
 }

@@ -118,5 +118,12 @@
  "live.watching.one": "live: {n} qed josservaw",
  "live.watching.other": "live: {n} qed josservaw",
  "live.offline": "Il-bord live qed jieħu nifs. Erġa' ejja dalwaqt.",
- "live.cols": "Backlog|Biex isir|Għaddej|It-tim qed jivverifika|Għalik biex tittestja|Għat-tim|Lest"
+ "live.cols": "Backlog|Biex isir|Għaddej|It-tim qed jivverifika|Għalik biex tittestja|Għat-tim|Lest",
+ "live.last.now": "L-aħħar karta tmexxiet ftit ilu",
+ "live.last.min.one": "L-aħħar karta tmexxiet {n} minuta ilu",
+ "live.last.min.other": "L-aħħar karta tmexxiet {n} minuti ilu",
+ "live.last.hour.one": "L-aħħar karta tmexxiet {n} siegħa ilu",
+ "live.last.hour.other": "L-aħħar karta tmexxiet {n} sigħat ilu",
+ "live.last.day.one": "L-aħħar karta tmexxiet {n} jum ilu",
+ "live.last.day.other": "L-aħħar karta tmexxiet {n} jiem ilu"
 }

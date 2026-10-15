@@ -108,5 +108,12 @@
  "live.watching.one": "drejtpërdrejt: {n} po shikon",
  "live.watching.other": "drejtpërdrejt: {n} po shikojnë",
  "live.offline": "Tabela drejtpërdrejt po merr pak pushim. Kthehu së shpejti.",
- "live.cols": "Backlog|Për t'u bërë|Në punë|Ekipi po kontrollon|Për ty ta testosh|Për ekipin|Kryer"
+ "live.cols": "Backlog|Për t'u bërë|Në punë|Ekipi po kontrollon|Për ty ta testosh|Për ekipin|Kryer",
+ "live.last.now": "Karta e fundit u zhvendos pak më parë",
+ "live.last.min.one": "Karta e fundit u zhvendos {n} minutë më parë",
+ "live.last.min.other": "Karta e fundit u zhvendos {n} minuta më parë",
+ "live.last.hour.one": "Karta e fundit u zhvendos {n} orë më parë",
+ "live.last.hour.other": "Karta e fundit u zhvendos {n} orë më parë",
+ "live.last.day.one": "Karta e fundit u zhvendos {n} ditë më parë",
+ "live.last.day.other": "Karta e fundit u zhvendos {n} ditë më parë"
 }

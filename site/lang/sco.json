@@ -108,5 +108,12 @@
  "live.watching.one": "live: {n} watchin",
  "live.watching.other": "live: {n} watchin",
  "live.offline": "The live board's takkin a wee breather. Come back suin.",
- "live.cols": "Backlog|Tae dae|Gaun on|Team checkin|For ye tae test|For the team|Duin"
+ "live.cols": "Backlog|Tae dae|Gaun on|Team checkin|For ye tae test|For the team|Duin",
+ "live.last.now": "Last caird moved jist noo",
+ "live.last.min.one": "Last caird moved {n} min syne",
+ "live.last.min.other": "Last caird moved {n} min syne",
+ "live.last.hour.one": "Last caird moved {n} oor syne",
+ "live.last.hour.other": "Last caird moved {n} oors syne",
+ "live.last.day.one": "Last caird moved {n} day syne",
+ "live.last.day.other": "Last caird moved {n} days syne"
 }

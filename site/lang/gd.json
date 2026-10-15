@@ -118,5 +118,12 @@
  "live.watching.one": "beò: {n} a’ coimhead",
  "live.watching.other": "beò: {n} a’ coimhead",
  "live.offline": "Tha am bòrd beò a’ gabhail anail. Till a dh’aithghearr.",
- "live.cols": "Backlog|Ri dhèanamh|Ga dhèanamh|An sgioba a’ sgrùdadh|Dhutsa ri test|Dhan sgioba|Deiseil"
+ "live.cols": "Backlog|Ri dhèanamh|Ga dhèanamh|An sgioba a’ sgrùdadh|Dhutsa ri test|Dhan sgioba|Deiseil",
+ "live.last.now": "Chaidh a’ chairt mu dheireadh a ghluasad an-dràsta fhèin",
+ "live.last.min.one": "Chaidh a’ chairt mu dheireadh a ghluasad o {n} mhionaid",
+ "live.last.min.other": "Chaidh a’ chairt mu dheireadh a ghluasad o {n} mionaidean",
+ "live.last.hour.one": "Chaidh a’ chairt mu dheireadh a ghluasad o {n} uair a thìde",
+ "live.last.hour.other": "Chaidh a’ chairt mu dheireadh a ghluasad o {n} uairean a thìde",
+ "live.last.day.one": "Chaidh a’ chairt mu dheireadh a ghluasad o {n} latha",
+ "live.last.day.other": "Chaidh a’ chairt mu dheireadh a ghluasad o {n} làithean"
 }

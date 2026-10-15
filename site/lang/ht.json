@@ -108,5 +108,12 @@
  "live.watching.one": "an dirèk: {n} ap gade",
  "live.watching.other": "an dirèk: {n} ap gade",
  "live.offline": "Tablo an dirèk la ap pran yon ti repo. Tounen talè.",
- "live.cols": "Backlog|Pou fè|Ap fèt|Ekip la ap verifye|Pou ou test|Pou ekip la|Fini"
+ "live.cols": "Backlog|Pou fè|Ap fèt|Ekip la ap verifye|Pou ou test|Pou ekip la|Fini",
+ "live.last.now": "Dènye kat la deplase jis kounye a",
+ "live.last.min.one": "Dènye kat la deplase {n} minit de sa",
+ "live.last.min.other": "Dènye kat la deplase {n} minit de sa",
+ "live.last.hour.one": "Dènye kat la deplase {n} è de sa",
+ "live.last.hour.other": "Dènye kat la deplase {n} è de sa",
+ "live.last.day.one": "Dènye kat la deplase {n} jou de sa",
+ "live.last.day.other": "Dènye kat la deplase {n} jou de sa"
 }

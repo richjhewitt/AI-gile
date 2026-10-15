@@ -108,5 +108,12 @@
  "live.watching.one": "en dirècte : {n} agacha",
  "live.watching.other": "en dirècte : {n} agachan",
  "live.offline": "Lo tablèu en dirècte pren un pauc d'alen. Torna d'aquí un moment.",
- "live.cols": "Backlog|A far|En cors|Verificacion de l'equipa|Per tu de testar|Per l'equipa|Fach"
+ "live.cols": "Backlog|A far|En cors|Verificacion de l'equipa|Per tu de testar|Per l'equipa|Fach",
+ "live.last.now": "Darrièra carta desplaçada pas qu'ara",
+ "live.last.min.one": "Darrièra carta desplaçada fa {n} min",
+ "live.last.min.other": "Darrièra carta desplaçada fa {n} min",
+ "live.last.hour.one": "Darrièra carta desplaçada fa {n} ora",
+ "live.last.hour.other": "Darrièra carta desplaçada fa {n} oras",
+ "live.last.day.one": "Darrièra carta desplaçada fa {n} jorn",
+ "live.last.day.other": "Darrièra carta desplaçada fa {n} jorns"
 }

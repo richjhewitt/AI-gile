@@ -108,5 +108,12 @@
  "live.watching.one": "mo'ui: {n} 'oku sio",
  "live.watching.other": "mo'ui: {n} 'oku sio",
  "live.offline": "'Oku mālōlō si'i e palaoti mo'ui. Foki mai 'i he vave.",
- "live.cols": "Backlog|Ke fai|ʻOku fakahoko|Sivi ʻe he kautaha|Maʻau ke test|Maʻá e kautaha|Kuo fai"
+ "live.cols": "Backlog|Ke fai|ʻOku fakahoko|Sivi ʻe he kautaha|Maʻau ke test|Maʻá e kautaha|Kuo fai",
+ "live.last.now": "Naʻe ʻosi pē hono ʻave ʻa e kaati fakaʻosi",
+ "live.last.min.one": "Naʻe ʻave ʻa e kaati fakaʻosi miniti ʻe {n} kuo hili",
+ "live.last.min.other": "Naʻe ʻave ʻa e kaati fakaʻosi miniti ʻe {n} kuo hili",
+ "live.last.hour.one": "Naʻe ʻave ʻa e kaati fakaʻosi houa ʻe {n} kuo hili",
+ "live.last.hour.other": "Naʻe ʻave ʻa e kaati fakaʻosi houa ʻe {n} kuo hili",
+ "live.last.day.one": "Naʻe ʻave ʻa e kaati fakaʻosi ʻaho ʻe {n} kuo hili",
+ "live.last.day.other": "Naʻe ʻave ʻa e kaati fakaʻosi ʻaho ʻe {n} kuo hili"
 }

@@ -108,5 +108,12 @@
  "live.watching.one": "𓃭𓇋𓆑𓇋: {n} 𓅱𓄿𓏏𓎡𓉔𓇋𓈖𓎼",
  "live.watching.other": "𓃭𓇋𓆑𓇋: {n} 𓅱𓄿𓏏𓎡𓉔𓇋𓈖𓎼",
  "live.offline": "𓏏𓉔𓇋 𓃭𓇋𓆑𓇋 𓃀𓅱𓄿𓂋𓂧 𓇋𓋴 𓏏𓄿𓎡𓇋𓈖𓎼 𓄿 𓃀𓂋𓇋𓄿𓏏𓉔𓇋𓂋. 𓎡𓉔𓇋𓎡𓎡 𓃀𓄿𓎡𓎡 𓋴𓅱𓅱𓈖.",
- "live.cols": "Backlog|𓏏𓅱 𓂧𓅱|𓇋𓈖 𓊪𓂋𓅱𓎼𓂋𓋴|𓏏𓅓𓀀 𓍿𓎡𓇋𓈖𓎼𓁹|𓆑𓅱𓂋 𓇌𓅱𓀀 𓏏𓅱 test|𓆑𓅱𓂋 𓏏𓉔𓇋 𓏏𓅓𓀀|𓂧𓅱𓈖𓋹"
+ "live.cols": "Backlog|𓏏𓅱 𓂧𓅱|𓇋𓈖 𓊪𓂋𓅱𓎼𓂋𓋴|𓏏𓅓𓀀 𓍿𓎡𓇋𓈖𓎼𓁹|𓆑𓅱𓂋 𓇌𓅱𓀀 𓏏𓅱 test|𓆑𓅱𓂋 𓏏𓉔𓇋 𓏏𓅓𓀀|𓂧𓅱𓈖𓋹",
+ "live.last.now": "𓃭𓄿𓋴𓏏 𓎡𓄿𓂋𓂧 𓅓𓅱𓆑𓂧 𓂧𓅱𓋴𓏏 𓈖𓅱𓅱",
+ "live.last.min.one": "𓃭𓄿𓋴𓏏 𓎡𓄿𓂋𓂧 𓅓𓅱𓆑𓂧 {n} 𓅓𓇋𓈖 𓄿𓎼𓅱",
+ "live.last.min.other": "𓃭𓄿𓋴𓏏 𓎡𓄿𓂋𓂧 𓅓𓅱𓆑𓂧 {n} 𓅓𓇋𓈖 𓄿𓎼𓅱",
+ "live.last.hour.one": "𓃭𓄿𓋴𓏏 𓎡𓄿𓂋𓂧 𓅓𓅱𓆑𓂧 {n} 𓉔𓅱𓅱𓂋 𓄿𓎼𓅱",
+ "live.last.hour.other": "𓃭𓄿𓋴𓏏 𓎡𓄿𓂋𓂧 𓅓𓅱𓆑𓂧 {n} 𓉔𓅱𓅱𓂋𓋴 𓄿𓎼𓅱",
+ "live.last.day.one": "𓃭𓄿𓋴𓏏 𓎡𓄿𓂋𓂧 𓅓𓅱𓆑𓂧 {n} 𓂧𓄿𓇌 𓄿𓎼𓅱",
+ "live.last.day.other": "𓃭𓄿𓋴𓏏 𓎡𓄿𓂋𓂧 𓅓𓅱𓆑𓂧 {n} 𓂧𓄿𓇌𓋴 𓄿𓎼𓅱"
 }

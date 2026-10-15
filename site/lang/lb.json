@@ -108,5 +108,12 @@
  "live.watching.one": "live: {n} kuckt",
  "live.watching.other": "live: {n} kucken",
  "live.offline": "D'Live-Board mécht eng kleng Paus. Kuck geschwë nees vir.",
- "live.cols": "Backlog|Ze maachen|Amgaang|Team kontrolléiert|Fir dech zum Testen|Fir d'Team|Fäerdeg"
+ "live.cols": "Backlog|Ze maachen|Amgaang|Team kontrolléiert|Fir dech zum Testen|Fir d'Team|Fäerdeg",
+ "live.last.now": "Lescht Kaart grad elo geréckelt",
+ "live.last.min.one": "Lescht Kaart viru {n} Minutt geréckelt",
+ "live.last.min.other": "Lescht Kaart viru {n} Minutte geréckelt",
+ "live.last.hour.one": "Lescht Kaart viru {n} Stonn geréckelt",
+ "live.last.hour.other": "Lescht Kaart viru {n} Stonne geréckelt",
+ "live.last.day.one": "Lescht Kaart viru {n} Dag geréckelt",
+ "live.last.day.other": "Lescht Kaart viru {n} Deeg geréckelt"
 }

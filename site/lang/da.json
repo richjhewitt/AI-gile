@@ -108,5 +108,12 @@
  "live.watching.one": "live: {n} kigger med",
  "live.watching.other": "live: {n} kigger med",
  "live.offline": "Live-tavlen holder en lille pause. Kig forbi igen snart.",
- "live.cols": "Backlog|To do|I gang|Teamet tjekker|Til dig at teste|Til teamet|Færdig"
+ "live.cols": "Backlog|To do|I gang|Teamet tjekker|Til dig at teste|Til teamet|Færdig",
+ "live.last.now": "Sidste kort flyttet lige nu",
+ "live.last.min.one": "Sidste kort flyttet for {n} min. siden",
+ "live.last.min.other": "Sidste kort flyttet for {n} min. siden",
+ "live.last.hour.one": "Sidste kort flyttet for {n} time siden",
+ "live.last.hour.other": "Sidste kort flyttet for {n} timer siden",
+ "live.last.day.one": "Sidste kort flyttet for {n} dag siden",
+ "live.last.day.other": "Sidste kort flyttet for {n} dage siden"
 }

@@ -108,5 +108,12 @@
  "live.watching.one": "ライブ：{n}人が見ています",
  "live.watching.other": "ライブ：{n}人が見ています",
  "live.offline": "ライブボードは少し休憩中です。またすぐのぞいてください。",
- "live.cols": "バックログ|やること|進行中|チーム確認中|あなたがテストする番|チームの番|完了"
+ "live.cols": "バックログ|やること|進行中|チーム確認中|あなたがテストする番|チームの番|完了",
+ "live.last.now": "最後のカードがたった今移動されました",
+ "live.last.min.one": "最後のカードが{n}分前に移動されました",
+ "live.last.min.other": "最後のカードが{n}分前に移動されました",
+ "live.last.hour.one": "最後のカードが{n}時間前に移動されました",
+ "live.last.hour.other": "最後のカードが{n}時間前に移動されました",
+ "live.last.day.one": "最後のカードが{n}日前に移動されました",
+ "live.last.day.other": "最後のカードが{n}日前に移動されました"
 }

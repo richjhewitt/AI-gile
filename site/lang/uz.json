@@ -108,5 +108,12 @@
  "live.watching.one": "jonli: {n} kuzatmoqda",
  "live.watching.other": "jonli: {n} kuzatmoqda",
  "live.offline": "Jonli taxta biroz dam olyapti. Tez orada yana kiring.",
- "live.cols": "Backlog|Bajarilishi kerak|Jarayonda|Jamoa tekshirmoqda|Siz test qilishingiz kerak|Jamoa uchun|Bajarildi"
+ "live.cols": "Backlog|Bajarilishi kerak|Jarayonda|Jamoa tekshirmoqda|Siz test qilishingiz kerak|Jamoa uchun|Bajarildi",
+ "live.last.now": "Oxirgi karta hozirgina koʻchirildi",
+ "live.last.min.one": "Oxirgi karta {n} daqiqa oldin koʻchirildi",
+ "live.last.min.other": "Oxirgi karta {n} daqiqa oldin koʻchirildi",
+ "live.last.hour.one": "Oxirgi karta {n} soat oldin koʻchirildi",
+ "live.last.hour.other": "Oxirgi karta {n} soat oldin koʻchirildi",
+ "live.last.day.one": "Oxirgi karta {n} kun oldin koʻchirildi",
+ "live.last.day.other": "Oxirgi karta {n} kun oldin koʻchirildi"
 }

@@ -108,5 +108,12 @@
  "live.watching.one": "l1v3: {n} w47ch1ng",
  "live.watching.other": "l1v3: {n} w47ch1ng",
  "live.offline": "7h3 l1v3 b04rd 15 74k1ng 4 br347h3r. Ch3ck b4ck 500n.",
- "live.cols": "B4ckl0g|70 d0|1n pr0gr355|734m ch3ck1ng|F0r y0u 70 7357|F0r 7h3 734m|D0n3"
+ "live.cols": "B4ckl0g|70 d0|1n pr0gr355|734m ch3ck1ng|F0r y0u 70 7357|F0r 7h3 734m|D0n3",
+ "live.last.now": "L457 c4rd m0v3d ju57 n0w",
+ "live.last.min.one": "L457 c4rd m0v3d {n} m1n 4g0",
+ "live.last.min.other": "L457 c4rd m0v3d {n} m1n 4g0",
+ "live.last.hour.one": "L457 c4rd m0v3d {n} h0ur 4g0",
+ "live.last.hour.other": "L457 c4rd m0v3d {n} h0ur5 4g0",
+ "live.last.day.one": "L457 c4rd m0v3d {n} d4y 4g0",
+ "live.last.day.other": "L457 c4rd m0v3d {n} d4y5 4g0"
 }

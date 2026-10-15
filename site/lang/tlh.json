@@ -108,5 +108,12 @@
  "live.watching.one": "DaH: {n} legh",
  "live.watching.other": "DaH: {n} legh",
  "live.offline": "DaH board latlh QaQ. tugh vaj yIjatlh.",
- "live.cols": "Backlog|To do|In progress|Team checking|For you to test|For the team|Qapla'"
+ "live.cols": "Backlog|To do|In progress|Team checking|For you to test|For the team|Qapla'",
+ "live.last.now": "card pem ghIj DaH",
+ "live.last.min.one": "card pem ghIj {n} min ago",
+ "live.last.min.other": "card pem ghIj {n} min ago",
+ "live.last.hour.one": "card pem ghIj {n} hour ago",
+ "live.last.hour.other": "card pem ghIj {n} hours ago",
+ "live.last.day.one": "card pem ghIj {n} day ago",
+ "live.last.day.other": "card pem ghIj {n} days ago"
 }

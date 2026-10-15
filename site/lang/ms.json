@@ -108,5 +108,12 @@
  "live.watching.one": "langsung: {n} menonton",
  "live.watching.other": "langsung: {n} menonton",
  "live.offline": "Papan langsung sedang berehat sebentar. Datang lagi nanti.",
- "live.cols": "Backlog|Untuk dibuat|Sedang dibuat|Pasukan menyemak|Untuk anda uji|Untuk pasukan|Selesai"
+ "live.cols": "Backlog|Untuk dibuat|Sedang dibuat|Pasukan menyemak|Untuk anda uji|Untuk pasukan|Selesai",
+ "live.last.now": "Kad terakhir dialihkan sebentar tadi",
+ "live.last.min.one": "Kad terakhir dialihkan {n} minit lalu",
+ "live.last.min.other": "Kad terakhir dialihkan {n} minit lalu",
+ "live.last.hour.one": "Kad terakhir dialihkan {n} jam lalu",
+ "live.last.hour.other": "Kad terakhir dialihkan {n} jam lalu",
+ "live.last.day.one": "Kad terakhir dialihkan {n} hari lalu",
+ "live.last.day.other": "Kad terakhir dialihkan {n} hari lalu"
 }

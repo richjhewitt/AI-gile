@@ -108,5 +108,12 @@
  "live.watching.one": "in directo: {n} observa",
  "live.watching.other": "in directo: {n} observa",
  "live.offline": "Le tabula in directo prende un pauco de respiro. Retorna tosto.",
- "live.cols": "Backlog|A facer|In curso|Le equipa verifica|Pro que tu lo teste|Pro le equipa|Facite"
+ "live.cols": "Backlog|A facer|In curso|Le equipa verifica|Pro que tu lo teste|Pro le equipa|Facite",
+ "live.last.now": "Ultime carta displaciate justo ora",
+ "live.last.min.one": "Ultime carta displaciate {n} min retro",
+ "live.last.min.other": "Ultime carta displaciate {n} min retro",
+ "live.last.hour.one": "Ultime carta displaciate {n} hora retro",
+ "live.last.hour.other": "Ultime carta displaciate {n} horas retro",
+ "live.last.day.one": "Ultime carta displaciate {n} die retro",
+ "live.last.day.other": "Ultime carta displaciate {n} dies retro"
 }

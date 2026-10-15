@@ -108,5 +108,12 @@
  "live.watching.one": "war-eeun: {n} o sellout",
  "live.watching.other": "war-eeun: {n} o sellout",
  "live.offline": "Ur pennad diskuizh a gemer an daolenn war-eeun. Distroit a-benn nebeut.",
- "live.cols": "Backlog|Da ober|O vont war-raok|Ar skipailh a wiriañ|Evidoc'h da test|Evit ar skipailh|Graet"
+ "live.cols": "Backlog|Da ober|O vont war-raok|Ar skipailh a wiriañ|Evidoc'h da test|Evit ar skipailh|Graet",
+ "live.last.now": "Ar gartenn ziwezhañ a zo bet dilec'hiet bremañ",
+ "live.last.min.one": "Ar gartenn ziwezhañ a zo bet dilec'hiet {n} min zo",
+ "live.last.min.other": "Ar gartenn ziwezhañ a zo bet dilec'hiet {n} min zo",
+ "live.last.hour.one": "Ar gartenn ziwezhañ a zo bet dilec'hiet {n} eur zo",
+ "live.last.hour.other": "Ar gartenn ziwezhañ a zo bet dilec'hiet {n} eur zo",
+ "live.last.day.one": "Ar gartenn ziwezhañ a zo bet dilec'hiet {n} deiz zo",
+ "live.last.day.other": "Ar gartenn ziwezhañ a zo bet dilec'hiet {n} devezh zo"
 }

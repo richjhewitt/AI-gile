@@ -108,5 +108,12 @@
  "live.watching.one": "rasterast: {n} dibîne",
  "live.watching.other": "rasterast: {n} dibînin",
  "live.offline": "Tabloya rasterast hinekî dimîne. Zû dîsa werin.",
- "live.cols": "Backlog|Ji bo kirinê|Di xebatê de|Tîm kontrol dike|Ji bo te ku test bikî|Ji bo tîmê|Qediya"
+ "live.cols": "Backlog|Ji bo kirinê|Di xebatê de|Tîm kontrol dike|Ji bo te ku test bikî|Ji bo tîmê|Qediya",
+ "live.last.now": "Karta dawî nû hat guhastin",
+ "live.last.min.one": "Karta dawî {n} deqe berê hat guhastin",
+ "live.last.min.other": "Karta dawî {n} deqe berê hat guhastin",
+ "live.last.hour.one": "Karta dawî {n} saet berê hat guhastin",
+ "live.last.hour.other": "Karta dawî {n} saet berê hat guhastin",
+ "live.last.day.one": "Karta dawî {n} roj berê hat guhastin",
+ "live.last.day.other": "Karta dawî {n} roj berê hat guhastin"
 }

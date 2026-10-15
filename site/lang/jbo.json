@@ -108,5 +108,12 @@
  "live.watching.one": "zasti: {n} catlu",
  "live.watching.other": "zasti: {n} catlu",
  "live.offline": "le zasti jvinu cu denpa .i ko ze'u ba tcica",
- "live.cols": "Backlog|ba zukte|ca'o zukte|le gunma cu ca viska|fi do poi ba cipra|fi le gunma|mulno"
+ "live.cols": "Backlog|ba zukte|ca'o zukte|le gunma cu ca viska|fi do poi ba cipra|fi le gunma|mulno",
+ "live.last.now": "le mulno karda cu ca'o cizra",
+ "live.last.min.one": "le mulno karda cu cizra pu lo mentu be li {n}",
+ "live.last.min.other": "le mulno karda cu cizra pu lo mentu be li {n}",
+ "live.last.hour.one": "le mulno karda cu cizra pu lo cacra be li {n}",
+ "live.last.hour.other": "le mulno karda cu cizra pu lo cacra be li {n}",
+ "live.last.day.one": "le mulno karda cu cizra pu lo djedi be li {n}",
+ "live.last.day.other": "le mulno karda cu cizra pu lo djedi be li {n}"
 }

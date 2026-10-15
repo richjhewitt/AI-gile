@@ -108,5 +108,12 @@
  "live.watching.one": "alive: {n} beholding",
  "live.watching.other": "alive: {n} beholding",
  "live.offline": "The living board doth take a breath. Return anon, good friend.",
- "live.cols": "Backlog|To be done|Afoot|The company doth review|For thee to test|For the company|Done"
+ "live.cols": "Backlog|To be done|Afoot|The company doth review|For thee to test|For the company|Done",
+ "live.last.now": "Last card moved but now",
+ "live.last.min.one": "Last card moved {n} minute ago",
+ "live.last.min.other": "Last card moved {n} minutes ago",
+ "live.last.hour.one": "Last card moved {n} hour ago",
+ "live.last.hour.other": "Last card moved {n} hours ago",
+ "live.last.day.one": "Last card moved {n} day ago",
+ "live.last.day.other": "Last card moved {n} days ago"
 }

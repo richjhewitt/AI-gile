@@ -113,5 +113,12 @@
  "live.watching.one": "tiesiogiai: {n} stebi",
  "live.watching.other": "tiesiogiai: {n} stebi",
  "live.offline": "Tiesioginė lenta trumpam ilsisi. Užsukite netrukus.",
- "live.cols": "Backlog|Reikia padaryti|Vykdoma|Komanda tikrina|Tau išbandyti|Komandai|Atlikta"
+ "live.cols": "Backlog|Reikia padaryti|Vykdoma|Komanda tikrina|Tau išbandyti|Komandai|Atlikta",
+ "live.last.now": "Paskutinė kortelė perkelta ką tik",
+ "live.last.min.one": "Paskutinė kortelė perkelta prieš {n} min.",
+ "live.last.min.other": "Paskutinė kortelė perkelta prieš {n} min.",
+ "live.last.hour.one": "Paskutinė kortelė perkelta prieš {n} val.",
+ "live.last.hour.other": "Paskutinė kortelė perkelta prieš {n} val.",
+ "live.last.day.one": "Paskutinė kortelė perkelta prieš {n} d.",
+ "live.last.day.other": "Paskutinė kortelė perkelta prieš {n} d."
 }

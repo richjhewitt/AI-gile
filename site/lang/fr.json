@@ -108,5 +108,12 @@
  "live.watching.one": "en direct : {n} spectateur",
  "live.watching.other": "en direct : {n} spectateurs",
  "live.offline": "Le tableau en direct fait une petite pause. Revenez bientôt.",
- "live.cols": "Backlog|À faire|En cours|L'équipe vérifie|À tester par toi|Pour l'équipe|Terminé"
+ "live.cols": "Backlog|À faire|En cours|L'équipe vérifie|À tester par toi|Pour l'équipe|Terminé",
+ "live.last.now": "Dernière carte déplacée à l'instant",
+ "live.last.min.one": "Dernière carte déplacée il y a {n} min",
+ "live.last.min.other": "Dernière carte déplacée il y a {n} min",
+ "live.last.hour.one": "Dernière carte déplacée il y a {n} heure",
+ "live.last.hour.other": "Dernière carte déplacée il y a {n} heures",
+ "live.last.day.one": "Dernière carte déplacée il y a {n} jour",
+ "live.last.day.other": "Dernière carte déplacée il y a {n} jours"
 }

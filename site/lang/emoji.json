@@ -108,5 +108,12 @@
  "live.watching.one": "🟢 live: {n} 👀",
  "live.watching.other": "🟢 live: {n} 👀",
  "live.offline": "😮‍💨 The live board is taking a breather. Check back soon.",
- "live.cols": "🗃️ Backlog|📝 To do|🔨 Doing|👀 Team check|🙋 For you to test|👥 For the team|✅ Done"
+ "live.cols": "🗃️ Backlog|📝 To do|🔨 Doing|👀 Team check|🙋 For you to test|👥 For the team|✅ Done",
+ "live.last.now": "🃏 Last card moved just now",
+ "live.last.min.one": "🃏 Last card moved {n} min ago",
+ "live.last.min.other": "🃏 Last card moved {n} min ago",
+ "live.last.hour.one": "🃏 Last card moved {n} hour ago",
+ "live.last.hour.other": "🃏 Last card moved {n} hours ago",
+ "live.last.day.one": "🃏 Last card moved {n} day ago",
+ "live.last.day.other": "🃏 Last card moved {n} days ago"
 }

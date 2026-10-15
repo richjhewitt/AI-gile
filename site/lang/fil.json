@@ -108,5 +108,12 @@
  "live.watching.one": "live: {n} ang nanonood",
  "live.watching.other": "live: {n} ang nanonood",
  "live.offline": "Nagpapahinga muna ang live board. Balik ka ulit mamaya.",
- "live.cols": "Backlog|Gagawin|Ginagawa|Chine-check ng team|Para sa iyo na i-test|Para sa team|Tapos na"
+ "live.cols": "Backlog|Gagawin|Ginagawa|Chine-check ng team|Para sa iyo na i-test|Para sa team|Tapos na",
+ "live.last.now": "Kalilipat lang ng huling card",
+ "live.last.min.one": "Nailipat ang huling card {n} min ang nakalipas",
+ "live.last.min.other": "Nailipat ang huling card {n} min ang nakalipas",
+ "live.last.hour.one": "Nailipat ang huling card {n} oras ang nakalipas",
+ "live.last.hour.other": "Nailipat ang huling card {n} oras ang nakalipas",
+ "live.last.day.one": "Nailipat ang huling card {n} araw ang nakalipas",
+ "live.last.day.other": "Nailipat ang huling card {n} araw ang nakalipas"
 }

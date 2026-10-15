@@ -108,5 +108,12 @@
  "live.watching.one": "live: {n} schaut zu",
  "live.watching.other": "live: {n} schauen zu",
  "live.offline": "Das Live-Board macht kurz Pause. Schau bald wieder vorbei.",
- "live.cols": "Backlog|Zu tun|In Arbeit|Team prüft|Zum Testen für dich|Fürs Team|Erledigt"
+ "live.cols": "Backlog|Zu tun|In Arbeit|Team prüft|Zum Testen für dich|Fürs Team|Erledigt",
+ "live.last.now": "Letzte Karte gerade eben verschoben",
+ "live.last.min.one": "Letzte Karte vor {n} Min. verschoben",
+ "live.last.min.other": "Letzte Karte vor {n} Min. verschoben",
+ "live.last.hour.one": "Letzte Karte vor {n} Stunde verschoben",
+ "live.last.hour.other": "Letzte Karte vor {n} Stunden verschoben",
+ "live.last.day.one": "Letzte Karte vor {n} Tag verschoben",
+ "live.last.day.other": "Letzte Karte vor {n} Tagen verschoben"
 }

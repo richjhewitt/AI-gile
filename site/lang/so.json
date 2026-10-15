@@ -108,5 +108,12 @@
  "live.watching.one": "tooska: {n} ayaa daawanaya",
  "live.watching.other": "tooska: {n} ayaa daawanaya",
  "live.offline": "Looxa tooska ah wuxuu qaadanayaa nasasho yar. Dhawaan dib u soo eeg.",
- "live.cols": "Backlog|Waxa la sameeyo|Socda|Kooxdu way eegaysaa|Adiga oo test samaynaya|Kooxda|La dhammeeyay"
+ "live.cols": "Backlog|Waxa la sameeyo|Socda|Kooxdu way eegaysaa|Adiga oo test samaynaya|Kooxda|La dhammeeyay",
+ "live.last.now": "Kaarkii ugu dambeeyay waa la dhaqaajiyay hadda",
+ "live.last.min.one": "Kaarkii ugu dambeeyay waa la dhaqaajiyay {n} daqiiqo ka hor",
+ "live.last.min.other": "Kaarkii ugu dambeeyay waa la dhaqaajiyay {n} daqiiqo ka hor",
+ "live.last.hour.one": "Kaarkii ugu dambeeyay waa la dhaqaajiyay {n} saac ka hor",
+ "live.last.hour.other": "Kaarkii ugu dambeeyay waa la dhaqaajiyay {n} saacadood ka hor",
+ "live.last.day.one": "Kaarkii ugu dambeeyay waa la dhaqaajiyay {n} maalin ka hor",
+ "live.last.day.other": "Kaarkii ugu dambeeyay waa la dhaqaajiyay {n} maalmood ka hor"
 }

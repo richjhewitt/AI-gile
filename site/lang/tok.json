@@ -108,5 +108,12 @@
  "live.watching.one": "tenpo ni: jan {n} li lukin",
  "live.watching.other": "tenpo ni: jan {n} li lukin",
  "live.offline": "supa tenpo ni li awen lili. sina ken kama sin lon tenpo lili.",
- "live.cols": "Backlog|pali kama|pali lon|kulupu li lukin|tawa sina: o lukin e pona|tawa kulupu|pini"
+ "live.cols": "Backlog|pali kama|pali lon|kulupu li lukin|tawa sina: o lukin e pona|tawa kulupu|pini",
+ "live.last.now": "lipu pini li tawa lon tenpo lili ni",
+ "live.last.min.one": "lipu pini li tawa lon tenpo: minute {n}",
+ "live.last.min.other": "lipu pini li tawa lon tenpo: minute {n}",
+ "live.last.hour.one": "lipu pini li tawa lon tenpo: hour {n}",
+ "live.last.hour.other": "lipu pini li tawa lon tenpo: hour {n}",
+ "live.last.day.one": "lipu pini li tawa lon tenpo: suno {n}",
+ "live.last.day.other": "lipu pini li tawa lon tenpo: suno {n}"
 }

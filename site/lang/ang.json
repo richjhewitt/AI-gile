@@ -108,5 +108,12 @@
  "live.watching.one": "libbende: {n} behealdað",
  "live.watching.other": "libbende: {n} behealdað",
  "live.offline": "Þæt libbende bord hæfþ ane hwile ēstes. Cum eft sōna.",
- "live.cols": "Backlog|To donne|On weorce|Weorodes eahtung|For þē tō fandianne|For þǣm weorode|Gedōn"
+ "live.cols": "Backlog|To donne|On weorce|Weorodes eahtung|For þē tō fandianne|For þǣm weorode|Gedōn",
+ "live.last.now": "Se ytemesta ċearta wearþ nū ġewend",
+ "live.last.min.one": "Se ytemesta ċearta wearþ ġewend ǣr {n} mynūte",
+ "live.last.min.other": "Se ytemesta ċearta wearþ ġewend ǣr {n} mynūtum",
+ "live.last.hour.one": "Se ytemesta ċearta wearþ ġewend ǣr {n} tīman",
+ "live.last.hour.other": "Se ytemesta ċearta wearþ ġewend ǣr {n} tīmum",
+ "live.last.day.one": "Se ytemesta ċearta wearþ ġewend ǣr {n} dæge",
+ "live.last.day.other": "Se ytemesta ċearta wearþ ġewend ǣr {n} dagum"
 }

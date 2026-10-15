@@ -108,5 +108,12 @@
  "live.watching.one": "í beinni: {n} fylgist með",
  "live.watching.other": "í beinni: {n} fylgjast með",
  "live.offline": "Beina taflan tekur sér smá pásu. Kíktu aftur fljótlega.",
- "live.cols": "Backlog|Á dagskrá|Í vinnslu|Teymið yfirfer|Fyrir þig að prófa|Fyrir teymið|Lokið"
+ "live.cols": "Backlog|Á dagskrá|Í vinnslu|Teymið yfirfer|Fyrir þig að prófa|Fyrir teymið|Lokið",
+ "live.last.now": "Síðasta spjald var fært rétt í þessu",
+ "live.last.min.one": "Síðasta spjald var fært fyrir {n} mínútu",
+ "live.last.min.other": "Síðasta spjald var fært fyrir {n} mínútum",
+ "live.last.hour.one": "Síðasta spjald var fært fyrir {n} klukkustund",
+ "live.last.hour.other": "Síðasta spjald var fært fyrir {n} klukkustundum",
+ "live.last.day.one": "Síðasta spjald var fært fyrir {n} degi",
+ "live.last.day.other": "Síðasta spjald var fært fyrir {n} dögum"
 }

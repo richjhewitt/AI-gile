@@ -113,5 +113,12 @@
  "live.watching.one": "uživo: {n} gleda",
  "live.watching.other": "uživo: {n} gleda",
  "live.offline": "Ploča uživo malo odmara. Svratite uskoro.",
- "live.cols": "Backlog|Na redu|U tijeku|Tim provjerava|Za tvoje testiranje|Za tim|Gotovo"
+ "live.cols": "Backlog|Na redu|U tijeku|Tim provjerava|Za tvoje testiranje|Za tim|Gotovo",
+ "live.last.now": "Zadnja kartica premještena upravo sada",
+ "live.last.min.one": "Zadnja kartica premještena prije {n} min",
+ "live.last.min.other": "Zadnja kartica premještena prije {n} min",
+ "live.last.hour.one": "Zadnja kartica premještena prije {n} sat",
+ "live.last.hour.other": "Zadnja kartica premještena prije {n} sati",
+ "live.last.day.one": "Zadnja kartica premještena prije {n} dan",
+ "live.last.day.other": "Zadnja kartica premještena prije {n} dana"
 }

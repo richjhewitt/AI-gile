@@ -108,5 +108,12 @@
  "live.watching.one": "yn fyw: {n} ow kolyewi",
  "live.watching.other": "yn fyw: {n} ow kolyewi",
  "live.offline": "An bord yn fyw a gemmer sesyans byghan. Dewgh arta a-berth hir.",
- "live.cols": "Backlog|Dhe wul|Yn hwel|An bagas ow whythra|Rag ty dhe testya|Rag an bagas|Gwrys"
+ "live.cols": "Backlog|Dhe wul|Yn hwel|An bagas ow whythra|Rag ty dhe testya|Rag an bagas|Gwrys",
+ "live.last.now": "An kard dhiwettha a veu removys poran lemmyn",
+ "live.last.min.one": "An kard dhiwettha a veu removys {n} mynysen alebma",
+ "live.last.min.other": "An kard dhiwettha a veu removys {n} mynysen alebma",
+ "live.last.hour.one": "An kard dhiwettha a veu removys {n} our alebma",
+ "live.last.hour.other": "An kard dhiwettha a veu removys {n} our alebma",
+ "live.last.day.one": "An kard dhiwettha a veu removys {n} dydh alebma",
+ "live.last.day.other": "An kard dhiwettha a veu removys {n} dydh alebma"
 }

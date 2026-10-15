@@ -118,5 +118,18 @@
  "live.watching.one": "v živo: gleda {n}",
  "live.watching.other": "v živo: gledata {n}",
  "live.offline": "Tabla v živo si malo oddahne. Poglejte kmalu znova.",
- "live.cols": "Backlog|Na vrsti|V teku|Ekipa preverja|Zate, v testiranje|Za ekipo|Končano"
+ "live.cols": "Backlog|Na vrsti|V teku|Ekipa preverja|Zate, v testiranje|Za ekipo|Končano",
+ "live.last.now": "Zadnja kartica premaknjena pravkar",
+ "live.last.min.one": "Zadnja kartica premaknjena pred {n} minuto",
+ "live.last.min.two": "Zadnja kartica premaknjena pred {n} minutama",
+ "live.last.min.few": "Zadnja kartica premaknjena pred {n} minutami",
+ "live.last.min.other": "Zadnja kartica premaknjena pred {n} minutami",
+ "live.last.hour.one": "Zadnja kartica premaknjena pred {n} uro",
+ "live.last.hour.two": "Zadnja kartica premaknjena pred {n} urama",
+ "live.last.hour.few": "Zadnja kartica premaknjena pred {n} urami",
+ "live.last.hour.other": "Zadnja kartica premaknjena pred {n} urami",
+ "live.last.day.one": "Zadnja kartica premaknjena pred {n} dnevom",
+ "live.last.day.two": "Zadnja kartica premaknjena pred {n} dnevoma",
+ "live.last.day.few": "Zadnja kartica premaknjena pred {n} dnevi",
+ "live.last.day.other": "Zadnja kartica premaknjena pred {n} dnevi"
 }

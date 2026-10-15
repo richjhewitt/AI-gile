@@ -108,5 +108,12 @@
  "live.watching.one": "ola: {n} e nānā ana",
  "live.watching.other": "ola: {n} e nānā ana",
  "live.offline": "Ke hoʻomaha iki nei ka papa ola. E hoʻi mai koke.",
- "live.cols": "Backlog|E hana|Ke hana nei|Ke nānā nei ka pūʻulu|No ʻoe e test|No ka pūʻulu|Pau"
+ "live.cols": "Backlog|E hana|Ke hana nei|Ke nānā nei ka pūʻulu|No ʻoe e test|No ka pūʻulu|Pau",
+ "live.last.now": "Ua neʻe ka pā hope loa i kēia manawa",
+ "live.last.min.one": "Ua neʻe ka pā hope loa {n} minuke aku nei",
+ "live.last.min.other": "Ua neʻe ka pā hope loa {n} minuke aku nei",
+ "live.last.hour.one": "Ua neʻe ka pā hope loa {n} hola aku nei",
+ "live.last.hour.other": "Ua neʻe ka pā hope loa {n} hola aku nei",
+ "live.last.day.one": "Ua neʻe ka pā hope loa {n} lā aku nei",
+ "live.last.day.other": "Ua neʻe ka pā hope loa {n} lā aku nei"
 }

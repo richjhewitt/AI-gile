@@ -108,5 +108,12 @@
  "live.watching.one": "live: {n} sjocht",
  "live.watching.other": "live: {n} sjogge",
  "live.offline": "It live-boerd nimt efkes in azem. Sjoch gau wer.",
- "live.cols": "Backlog|Te dwaan|Dwaande|Team kontrolearret|Foar dy om te test|Foar it team|Klear"
+ "live.cols": "Backlog|Te dwaan|Dwaande|Team kontrolearret|Foar dy om te test|Foar it team|Klear",
+ "live.last.now": "Lêste kaart krekt ferpleatst",
+ "live.last.min.one": "Lêste kaart {n} min lyn ferpleatst",
+ "live.last.min.other": "Lêste kaart {n} min lyn ferpleatst",
+ "live.last.hour.one": "Lêste kaart {n} oere lyn ferpleatst",
+ "live.last.hour.other": "Lêste kaart {n} oeren lyn ferpleatst",
+ "live.last.day.one": "Lêste kaart {n} dei lyn ferpleatst",
+ "live.last.day.other": "Lêste kaart {n} dagen lyn ferpleatst"
 }

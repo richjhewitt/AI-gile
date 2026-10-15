@@ -108,5 +108,12 @@
  "live.watching.one": "live: watching, {n} are",
  "live.watching.other": "live: watching, {n} are",
  "live.offline": "A breather, the live board takes. Back soon, you should come.",
- "live.cols": "Backlog|To do, this is|In progress, it is|Checking, the team is|For you to test, this is|For the team|Done, it is"
+ "live.cols": "Backlog|To do, this is|In progress, it is|Checking, the team is|For you to test, this is|For the team|Done, it is",
+ "live.last.now": "Just now, the last card moved",
+ "live.last.min.one": "Last card moved {n} min ago, it did",
+ "live.last.min.other": "Last card moved {n} min ago, it did",
+ "live.last.hour.one": "Last card moved {n} hour ago, it did",
+ "live.last.hour.other": "Last card moved {n} hours ago, it did",
+ "live.last.day.one": "Last card moved {n} day ago, it did",
+ "live.last.day.other": "Last card moved {n} days ago, it did"
 }

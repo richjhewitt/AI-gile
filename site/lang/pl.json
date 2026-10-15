@@ -118,5 +118,12 @@
  "live.watching.one": "na żywo: ogląda {n}",
  "live.watching.other": "na żywo: oglądają {n}",
  "live.offline": "Tablica na żywo bierze krótki oddech. Zajrzyj wkrótce ponownie.",
- "live.cols": "Backlog|Do zrobienia|W toku|Zespół sprawdza|Do przetestowania przez Ciebie|Dla zespołu|Gotowe"
+ "live.cols": "Backlog|Do zrobienia|W toku|Zespół sprawdza|Do przetestowania przez Ciebie|Dla zespołu|Gotowe",
+ "live.last.now": "Ostatnia karta przesunięta przed chwilą",
+ "live.last.min.one": "Ostatnia karta przesunięta {n} min temu",
+ "live.last.min.other": "Ostatnia karta przesunięta {n} min temu",
+ "live.last.hour.one": "Ostatnia karta przesunięta {n} godz. temu",
+ "live.last.hour.other": "Ostatnia karta przesunięta {n} godz. temu",
+ "live.last.day.one": "Ostatnia karta przesunięta {n} dzień temu",
+ "live.last.day.other": "Ostatnia karta przesunięta {n} dni temu"
 }

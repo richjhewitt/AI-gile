@@ -118,5 +118,18 @@
  "live.watching.one": "naživo: sleduje {n}",
  "live.watching.other": "naživo: sledujú {n}",
  "live.offline": "Živá tabuľa si dáva pauzu. Skúste to čoskoro znova.",
- "live.cols": "Backlog|Na urobenie|Rozrobené|Tím kontroluje|Čaká na tvoj test|Pre tím|Hotovo"
+ "live.cols": "Backlog|Na urobenie|Rozrobené|Tím kontroluje|Čaká na tvoj test|Pre tím|Hotovo",
+ "live.last.now": "Posledná karta presunutá práve teraz",
+ "live.last.min.one": "Posledná karta presunutá pred {n} minútou",
+ "live.last.min.few": "Posledná karta presunutá pred {n} minútami",
+ "live.last.min.many": "Posledná karta presunutá pred {n} minúty",
+ "live.last.min.other": "Posledná karta presunutá pred {n} minútami",
+ "live.last.hour.one": "Posledná karta presunutá pred {n} hodinou",
+ "live.last.hour.few": "Posledná karta presunutá pred {n} hodinami",
+ "live.last.hour.many": "Posledná karta presunutá pred {n} hodiny",
+ "live.last.hour.other": "Posledná karta presunutá pred {n} hodinami",
+ "live.last.day.one": "Posledná karta presunutá pred {n} dňom",
+ "live.last.day.few": "Posledná karta presunutá pred {n} dňami",
+ "live.last.day.many": "Posledná karta presunutá pred {n} dňa",
+ "live.last.day.other": "Posledná karta presunutá pred {n} dňami"
 }

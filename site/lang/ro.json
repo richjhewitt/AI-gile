@@ -113,5 +113,12 @@
  "live.watching.one": "în direct: {n} privește",
  "live.watching.other": "în direct: {n} privesc",
  "live.offline": "Tabloul live ia o mică pauză. Revino în curând.",
- "live.cols": "Backlog|De făcut|În lucru|Echipa verifică|Așteaptă testul tău|Pentru echipă|Gata"
+ "live.cols": "Backlog|De făcut|În lucru|Echipa verifică|Așteaptă testul tău|Pentru echipă|Gata",
+ "live.last.now": "Ultimul card a fost mutat chiar acum",
+ "live.last.min.one": "Ultimul card a fost mutat acum {n} min",
+ "live.last.min.other": "Ultimul card a fost mutat acum {n} min",
+ "live.last.hour.one": "Ultimul card a fost mutat acum {n} oră",
+ "live.last.hour.other": "Ultimul card a fost mutat acum {n} ore",
+ "live.last.day.one": "Ultimul card a fost mutat acum {n} zi",
+ "live.last.day.other": "Ultimul card a fost mutat acum {n} zile"
 }

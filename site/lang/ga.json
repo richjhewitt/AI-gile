@@ -123,5 +123,12 @@
  "live.watching.one": "beo: {n} ag breathnú",
  "live.watching.other": "beo: {n} ag breathnú",
  "live.offline": "Tá an clár beo ag glacadh sos beag. Fill go luath.",
- "live.cols": "Backlog|Le déanamh|Ar siúl|An fhoireann ag seiceáil|Le test agatsa|Don fhoireann|Déanta"
+ "live.cols": "Backlog|Le déanamh|Ar siúl|An fhoireann ag seiceáil|Le test agatsa|Don fhoireann|Déanta",
+ "live.last.now": "Bogadh an cárta deireanach díreach anois",
+ "live.last.min.one": "Bogadh an cárta deireanach {n} nóiméad ó shin",
+ "live.last.min.other": "Bogadh an cárta deireanach {n} nóiméad ó shin",
+ "live.last.hour.one": "Bogadh an cárta deireanach {n} uair ó shin",
+ "live.last.hour.other": "Bogadh an cárta deireanach {n} uair ó shin",
+ "live.last.day.one": "Bogadh an cárta deireanach {n} lá ó shin",
+ "live.last.day.other": "Bogadh an cárta deireanach {n} lá ó shin"
 }

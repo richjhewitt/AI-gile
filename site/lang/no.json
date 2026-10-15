@@ -108,5 +108,12 @@
  "live.watching.one": "direkte: {n} ser på",
  "live.watching.other": "direkte: {n} ser på",
  "live.offline": "Direktetavlen tar en liten pause. Kom innom igjen snart.",
- "live.cols": "Backlog|Å gjøre|Pågår|Teamet sjekker|Du skal teste|Til teamet|Ferdig"
+ "live.cols": "Backlog|Å gjøre|Pågår|Teamet sjekker|Du skal teste|Til teamet|Ferdig",
+ "live.last.now": "Siste kort ble flyttet nettopp",
+ "live.last.min.one": "Siste kort ble flyttet for {n} min. siden",
+ "live.last.min.other": "Siste kort ble flyttet for {n} min. siden",
+ "live.last.hour.one": "Siste kort ble flyttet for {n} time siden",
+ "live.last.hour.other": "Siste kort ble flyttet for {n} timer siden",
+ "live.last.day.one": "Siste kort ble flyttet for {n} dag siden",
+ "live.last.day.other": "Siste kort ble flyttet for {n} dager siden"
 }

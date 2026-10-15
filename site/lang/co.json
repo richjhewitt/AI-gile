@@ -108,5 +108,12 @@
  "live.watching.one": "in diretta: {n} chì guardanu",
  "live.watching.other": "in diretta: {n} chì guardanu",
  "live.offline": "U tavulone in diretta piglia un pocu di risu. Turnate prestu.",
- "live.cols": "Backlog|À fà|In corsu|Verificazione di a squadra|Per tè da testà|Per a squadra|Fattu"
+ "live.cols": "Backlog|À fà|In corsu|Verificazione di a squadra|Per tè da testà|Per a squadra|Fattu",
+ "live.last.now": "L'ultima carta hè stata spostata ghjustu avà",
+ "live.last.min.one": "L'ultima carta hè stata spostata {n} min fà",
+ "live.last.min.other": "L'ultima carta hè stata spostata {n} min fà",
+ "live.last.hour.one": "L'ultima carta hè stata spostata {n} ora fà",
+ "live.last.hour.other": "L'ultima carta hè stata spostata {n} ore fà",
+ "live.last.day.one": "L'ultima carta hè stata spostata {n} ghjornu fà",
+ "live.last.day.other": "L'ultima carta hè stata spostata {n} ghjorni fà"
 }

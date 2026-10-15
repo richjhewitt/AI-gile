@@ -108,5 +108,12 @@
  "live.watching.one": "yn fyw: {n} yn gwylio",
  "live.watching.other": "yn fyw: {n} yn gwylio",
  "live.offline": "Mae'r bwrdd byw yn cael hoe fach. Dewch yn ôl yn fuan.",
- "live.cols": "Backlog|I'w wneud|Ar y gweill|Y tîm yn gwirio|I ti i'w test|I'r tîm|Wedi'i wneud"
+ "live.cols": "Backlog|I'w wneud|Ar y gweill|Y tîm yn gwirio|I ti i'w test|I'r tîm|Wedi'i wneud",
+ "live.last.now": "Symudwyd y cerdyn olaf eiliad yn ôl",
+ "live.last.min.one": "Symudwyd y cerdyn olaf {n} munud yn ôl",
+ "live.last.min.other": "Symudwyd y cerdyn olaf {n} munud yn ôl",
+ "live.last.hour.one": "Symudwyd y cerdyn olaf {n} awr yn ôl",
+ "live.last.hour.other": "Symudwyd y cerdyn olaf {n} awr yn ôl",
+ "live.last.day.one": "Symudwyd y cerdyn olaf {n} diwrnod yn ôl",
+ "live.last.day.other": "Symudwyd y cerdyn olaf {n} diwrnod yn ôl"
 }
