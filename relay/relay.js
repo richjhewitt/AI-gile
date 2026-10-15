@@ -326,6 +326,9 @@ async function board(req, res, pathname, ip) {
   const m = pathname.match(/^\/b\/([a-z0-9-]+)(\.json|\/live)?$/);
   if (!m || !isName(m[1])) throw fail('not found', 404);
   const name = m[1], kind = m[2] || '';
+  // The read-only feeds (.json, /live) may be read by other sites (the teaser's live board window, AIG-1232); nothing private is in them.
+  if (kind) res.setHeader('Access-Control-Allow-Origin', '*');
+  if (kind && req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Access-Control-Max-Age': '600' }); return res.end(); }
   if (req.method === 'GET' && !kind) {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer',
       'Content-Security-Policy': "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src https: data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" });
