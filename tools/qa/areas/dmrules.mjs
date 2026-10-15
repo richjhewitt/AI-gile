@@ -32,7 +32,7 @@ def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park,
   let r = await dm('Help');
   check('help lists the commands (any case), flagged automated', r.reply && /status/.test(r.reply.text) && /move/.test(r.reply.text) && r.reply.auto === true, JSON.stringify(r.card.comments));
   check('the reply is from the lead', r.reply && r.reply.author === 'Lead', r.reply && r.reply.author);
-  r = await dm('status');
+  r = await dm('Status');
   check('status counts the columns and names what is doing', r.reply && /Doing 1/.test(r.reply.text) && new RegExp(doing.id).test(r.reply.text) && /To do 1/.test(r.reply.text), r.reply && r.reply.text);
   r = await dm('LIST todo');
   check('list todo shows the To do cards', r.reply && new RegExp(todo.id).test(r.reply.text) && !new RegExp(doing.id).test(r.reply.text), r.reply && r.reply.text);
