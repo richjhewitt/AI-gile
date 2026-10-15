@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Roboti.",
+      "Deleģēts."
+    ] },
+    { "n": 2, "texts": [
+      "Robotu kanban.",
+      "Aģenti, sakārtoti.",
+      "Idejas, uzbūvētas."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban robotiem.",
+      "Idejas kļūst funkcijās.",
+      "Bezmaksas aģentu kanban."
+    ] },
+    { "n": 5, "texts": [
+      "Kanban tāfele, ko vada aģenti.",
+      "Tu raksti kartītes. Aģenti būvē.",
+      "Bezmaksas, vietēja, pārbaudīta, mazliet jocīga."
+    ] },
+    { "n": 8, "texts": [
+      "Bezmaksas kanban tāfele, kur strādā MI aģenti.",
+      "Uzraksti ideju. Aģenti to uzbūvē. Tu to pieņem.",
+      "Agile vienam cilvēkam un daudziem pacietīgiem robotiem."
+    ] },
+    { "n": 13, "texts": [
+      "Kanban tāfele tavā datorā, kurā kartītes pa vienai paņem MI aģenti, kamēr tu atpūties.",
+      "Uzraksti ideju. To uzbūvē aģentu komanda. Pēc tam testētājs to rūpīgi pārbauda un parāda.",
+      "Bez kontiem, bez izsekotājiem: tāfele, daži roboti un tu, kas visu izlemj."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile ir kanban tāfele darbam ar MI programmēšanas aģentiem. Viņi paņem kartītes, bet tu tās pārbaudi un pieņem.",
+      "Katram projektam ir savs līderis un MI aģentu komanda. Komentē jebkuru kartīti, un komanda uzreiz ķeras pie darba.",
+      "Bezmaksas personīga darāmo lietu tāfele, kas darbojas tavā datorā. Darbinieki ir roboti. Tas, kurš saka jā, esi tu."
+    ] },
+    { "n": 34, "texts": [
+      "Tu liec idejas uz tāfeles. MI aģentu komanda pārvērš tās strādājošās funkcijās, pārbauda un atdod atpakaļ ar soļiem, kā izmēģināt. Nekas nav gatavs, kamēr tu to neesi pateicis.",
+      "AI-gile ir mājās darināta kanban tāfele, ko uzbūvēja Rich, lielā mērā ar to aģentu palīdzību, kurus tā tagad vada. Tā ir bezmaksas, darbojas tavā datorā un tiek dalīta ar draugiem, nevis pārdota.",
+      "Iedomājies parastu kanban tāfeli ar kolonnām no Backloga līdz Izdarītam, tikai kartītes paņem MI aģenti. Viņi ziņo par progresu, jautā, kad iestrēguši, un vienmēr gaida tavu īkšķi uz augšu."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile ir kanban tāfele, kurā komanda sastāv no MI aģentiem. Katram projektam ir līderis, kas plāno darbu, un palīgi, kas to būvē. Kad funkcija ir gatava, MI testētājs to izmēģina un uzņem ekrānuzņēmumu, tad tā nonāk tavā kaudzītē. Pieņem to vai komentē, un viņi darbu pārstrādā.",
+      "Tas sākās kā viena cilvēka veids, kā sekot daudzām MI programmēšanas sesijām vienlaikus, un izauga par īstu tāfeli. Tā darbojas tavā datorā, nevajag konta un nav izsekotāju. Tā ir bezmaksas draugiem un ikvienam ziņkārīgajam. Tā ir arī nepabeigta, tāpēc gaidi raupjas malas un reizēm kādu pārsteigumu.",
+      "Lūk, godīgā versija. Idejas tev joprojām jāizdomā, un rezultāti tev joprojām jāpārbauda. AI-gile dara visu pa vidu: tur kārtībā kartītes, pamodina īsto aģentu, kad tu komentē, parāda, kas tieši mainījies, un visu savāc vienā īsā kaudzītē, lai tev nav jāmeklē pa visiem projektiem un jāpārslēdzas starp lietotnēm."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile ir bezmaksas kanban tāfele, ko tu palaid savā datorā. Cilvēku vietā katram projektam ir sava MI aģentu komanda: līderis, kas tavas idejas pārvērš kartītēs un plānā, un palīgi, kas kartītes ķer pēc prioritātes. Kad kaut kas uzbūvēts, MI testētājs izpilda testa soļus un parāda, ko redzēja. Tad tas gaida vienā kaudzītē ar nosaukumu Tev. Tu to pieņem vai komentē, un komanda mēģina vēlreiz, ja vajag. Līdz Izdarīts nekas nenonāk bez tevis.",
+      "Dažas lietas, ko varbūt negaidi. Nakts sardze, kamēr tu guli, papildina kolonnu Darāmais ar kartītēm, kurām nevajag tavu atbildi. Tokenu skaitītājs rāda, cik aģenti šodien un šonedēļ iztērējuši, un režīms Bez tokeniem liek viņiem pārstāt tērēt. Tu vari rakstīt draugiem, un privātās ziņas ir šifrētas no gala līdz galam. Tāfele runā aptuveni 120 valodās, tostarp holandiešu, flāmu, pirātu un klingonu. Nekas no tā nemaksā ne santīma, un neviens arī necenšas tev to pārdot.",
+      "AI-gile ir neliels personīgs projekts, nevis uzņēmums. Rich gribēja pieskatīt vairākus MI programmēšanas projektus, neatverot katru lietotni, tāpēc viņš un aģenti uzbūvēja tāfeli, un tad ar to uzbūvēja pārējo pašu. Tā ir slēgtā pirmsalfā, kas nozīmē, ka lielākoties tā darbojas, bet to izmēģina tikai daži draugi. Neviens neko nepārdod, neviens nevāc tavus datus. Nav cenu lapas, nav jaunumu vēstuļu un nav izaugsmes plāna. Ja šķiet noderīgi, vari pieteikties izmēģināt, kad tā atvērsies nedaudz plašāk."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile ir kanban tāfele vienam cilvēkam un daudziem MI aģentiem. Tā darbojas tavā paša datorā un ir pilnīgi bezmaksas. Tu pievieno projektus, un katram projektam ir līderis un neliela komanda. Tu tērzē ar līderi, mazliet kā Discord, un apraksti ideju; līderis to pārvērš kartītēs un plānā, un tad gaida, kad nospiedīsi Aiziet. Komanda kartītes izstrādā pēc prioritātes, izmantojot vienkāršu komandrindu, kas radīta valodas modeļiem. Pirms kaut kas atgriežas pie tevis, MI testētājs izpilda soļus lietotnes kopijā un pievieno ekrānuzņēmumu. Pabeigtais darbs nonāk tavā kaudzītē kopā ar mainītajiem failiem un atšķirībām. Tu to pieņem vai atstāj komentāru, un komanda pamostas un mēģina vēlreiz. Tāfele sevi arī uzkopj: saistītās kartītes tiek apvienotas, un juceklīgi nosaukumi sakārtoti. Kartīti uz Izdarīts var pārvietot tikai tu. Neviens cits to nevar, pat visizcilākais aģents ne.",
+      "Aptuveni tāda ir diena ar AI-gile. Vakarā tu atstāj dažus komentārus: šī poga ir nepareizā vietā, šis saraksts jākārto, vai varētu būt tumšais režīms. Tu ej gulēt. Aģenti izlasa komentārus, veic izmaiņas, pārbauda tās un atdod tev atpakaļ. Ja Darāmais izsīkst, nakts sardze to papildina no backloga ar kartītēm, kurām nevajag tavu atbildi. Rītā ir viena īsa kaudzīte: pāris jautājumu un dažas lietas, ko izmēģināt, katrai ar soļiem, ko var izpildīt miegains cilvēks, un ekrānuzņēmumu, kā tas strādā. Tu pārklikšķini, pieņem labās un atsūti atpakaļ pārējās. Ja kaut kas nav skaidrs, tu vienkārši komentē, un tas atkal nonāk pie komandas. Tokenu skaitītājs rāda, cik tas viss patērēja, un režīms Bez tokeniem ir tievām nedēļām. Tad tu brokasto, kam aģenti vēl nevar palīdzēt.",
+      "Vispirms, kas AI-gile nav. Tas nav jaunuzņēmums, tas netiek pārdots, un neviens nevāc tavus datus. Tā ir bezmaksas tāfele, kas darbojas tavā datorā, bez kontiem, bez izsekotājiem un bez sīkdatnēm. Kas tā ir: viena kārtīga vieta, kur uzreiz redzēt visus MI programmēšanas projektus, kur kartītes dara aģentu komanda, bet lēmumus pieņem tu. Tajā ir arī nakts sardze, kas kartītes sagatavo, kamēr tu guli. Tā apvieno saistītās kartītes, sakārto juceklīgus nosaukumus un pieskata, cik kompakts paliek kods. Tā runā aptuveni 120 valodās, no holandiešu un flāmu līdz pirātu un klingonu. Draugi var sūtīt viens otram ziņas, privāti un šifrēti. To uzbūvēja Rich un liels pulks pacietīgu aģentu, galvenokārt izmantojot pašu tāfeli. Tā ir slēgtā pirmsalfā, tāpēc dažviet vēl ir raupja. Ja šķiet jautri, pieklājīgi pajautā, un varbūt tiksi iekšā agrāk."
+    ] }
+  ],
+  "quips": {
+    "1": "Viens vārds. Drosmīgi. Varbūt pat pārāk drosmīgi.",
+    "3": "Trīs vārdi. Jau godīgāk nekā vairums produktu lapu.",
+    "8": "Astoņi vārdi. Joprojām īsāk par stand-up.",
+    "21": "Garumi, starp citu, ir stāstu punkti. Protams, ka ir.",
+    "55": "Piecdesmit pieci vārdi. Kamēr tu to lasīji, divas kartītes tika pabeigtas.",
+    "144": "Tas ir garais. 233 nav. Aģenti ir aizgājuši gulēt."
+  }
+}

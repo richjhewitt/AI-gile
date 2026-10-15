@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Robot.",
+      "Diwakilkan."
+    ] },
+    { "n": 2, "texts": [
+      "Kanban robot.",
+      "Ejen, tersusun.",
+      "Idea, terbina."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban untuk robot.",
+      "Idea jadi fungsi.",
+      "Kanban ejen percuma."
+    ] },
+    { "n": 5, "texts": [
+      "Papan kanban dijalankan oleh ejen.",
+      "Anda tulis kad. Ejen membina.",
+      "Percuma, setempat, teruji, agak lucu."
+    ] },
+    { "n": 8, "texts": [
+      "Papan kanban percuma tempat ejen AI bekerja.",
+      "Tulis idea. Ejen membinanya. Anda menerima.",
+      "Agile untuk seorang manusia dan ramai robot sabar."
+    ] },
+    { "n": 13, "texts": [
+      "Papan kanban pada komputer anda di mana ejen AI mengambil kad satu demi satu.",
+      "Tulis satu idea. Pasukan ejen membinanya. Seorang penguji menyemaknya dan menunjukkan hasilnya.",
+      "Tiada akaun, tiada penjejak: sebuah papan, beberapa robot, dan anda yang menentukan segalanya."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile ialah papan kanban untuk bekerja dengan ejen pengekodan AI. Mereka mengambil kad satu demi satu; anda menguji dan menerimanya.",
+      "Setiap projek ada seorang ketua dan pasukan ejen AI. Beri komen pada mana-mana kad dan pasukan itu terus mula bekerja.",
+      "Papan tugasan peribadi yang percuma dan berjalan pada komputer anda sendiri. Pekerjanya robot. Yang berkata ya ialah anda."
+    ] },
+    { "n": 34, "texts": [
+      "Anda letak idea pada papan. Pasukan ejen AI mengubahnya menjadi ciri yang berfungsi, mengujinya, dan menyerahkannya semula dengan langkah untuk dicuba. Tiada apa dikira siap sehingga anda berkata begitu.",
+      "AI-gile ialah papan kanban buatan sendiri yang dibina oleh Rich dengan banyak bantuan daripada ejen yang kini diuruskannya. Ia percuma, berjalan pada komputer anda, dan dikongsi dengan kawan, bukan dijual.",
+      "Bayangkan papan kanban biasa dengan lajur dari Backlog hingga Selesai, cuma kadnya diambil oleh ejen AI. Mereka melapor kemajuan, bertanya apabila tersangkut, dan sentiasa menunggu persetujuan anda dahulu."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile ialah papan kanban yang pasukannya terdiri daripada ejen AI. Setiap projek ada seorang ketua yang merancang kerja dan pembantu yang membinanya. Apabila sesuatu ciri siap, seorang penguji AI mencubanya dan mengambil tangkapan skrin, kemudian ia sampai ke longgokan anda. Terima, atau beri komen dan mereka mengerjakannya semula.",
+      "Ia bermula sebagai cara seorang untuk menjejak banyak sesi pengekodan AI serentak, lalu membesar menjadi papan sebenar. Ia berjalan pada mesin anda, tidak perlukan akaun, dan tiada penjejak. Ia percuma untuk kawan dan sesiapa yang ingin tahu. Ia juga belum siap, jadi jangan terkejut dengan tepi yang kasar dan kejutan sekali-sekala.",
+      "Inilah versi jujurnya. Anda masih perlu memikirkan idea, dan anda masih perlu menyemak hasilnya. AI-gile melakukan semua yang di antaranya: ia menyusun kad, membangunkan ejen yang betul apabila anda memberi komen, menunjukkan apa yang tepat berubah, dan mengumpulkan semuanya dalam satu longgokan pendek untuk anda, supaya anda tak perlu berlari antara aplikasi."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile ialah papan kanban percuma yang anda jalankan pada komputer anda sendiri. Bukannya orang, setiap projek ada pasukan ejen AI: seorang ketua yang mengubah idea anda menjadi kad dan pelan, dan pembantu yang mengambil kad mengikut keutamaan. Apabila sesuatu siap dibina, penguji AI mengikut langkah ujian dan menunjukkan apa yang dilihatnya. Kemudian ia menunggu dalam satu longgokan bernama Untuk anda. Anda menerimanya, atau beri komen dan pasukan itu mencuba lagi. Tiada apa sampai ke Selesai tanpa anda.",
+      "Beberapa perkara yang mungkin tidak anda sangka. Rondaan malam memastikan lajur Untuk dibuat sentiasa terisi semasa anda tidur, memilih kad yang tidak memerlukan jawapan daripada anda. Pembilang token menunjukkan berapa banyak yang ejen gunakan hari ini dan minggu ini, dan Mod Tanpa Token menyuruh mereka berhenti menggunakan token. Anda boleh menghantar mesej kepada kawan, dan mesej peribadi disulitkan hujung ke hujung. Papan ini bertutur dalam kira-kira 120 bahasa, termasuk Belanda, Flemish, lanun dan Klingon. Semua ini percuma, dan tiada sesiapa cuba menjualnya kepada anda.",
+      "AI-gile ialah projek peribadi yang kecil, bukan syarikat. Rich mahu menjaga beberapa projek pengekodan AI tanpa membuka setiap aplikasi untuk menyemaknya, maka dia dan ejen membina sebuah papan untuknya, kemudian menggunakan papan itu untuk membina selebihnya sendiri. Ia dalam pra-alfa tertutup, bermakna ia berfungsi, kebanyakannya, untuk segelintir kawan. Tiada halaman harga, tiada surat berita dan tiada pelan pertumbuhan. Tiada sesiapa mengumpul data anda. Jika kedengaran berguna, anda boleh minta untuk mencubanya apabila ia dibuka sedikit lagi."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile ialah papan kanban untuk seorang manusia dan ramai ejen AI. Ia berjalan pada komputer anda sendiri dan sepenuhnya percuma. Anda menambah projek, dan setiap projek mendapat seorang ketua dan pasukan kecil. Anda berbual dengan ketua, sedikit seperti Discord, dan menerangkan idea; ketua mengubahnya menjadi kad dan pelan, kemudian menunggu anda menekan Mula. Pasukan mengerjakan kad mengikut keutamaan, menggunakan barisan arahan ringkas yang dibuat untuk model bahasa. Sebelum apa-apa kembali kepada anda, penguji AI mengikut langkah dalam salinan aplikasi dan melampirkan tangkapan skrin. Kerja yang siap sampai ke longgokan anda bersama fail yang berubah dan perbezaannya. Anda menerimanya, atau meninggalkan komen dan pasukan itu bangun dan mencuba lagi. Papan ini juga mengemas sendiri: kad yang berkaitan digabungkan. Hanya anda yang boleh menggerakkan kad ke Selesai.",
+      "Begini lebih kurang sehari dengan AI-gile. Waktu petang anda tinggalkan beberapa komen: butang ini salah tempat, senarai itu patut diisih, boleh tak ada mod gelap. Anda pergi tidur. Ejen membaca komen, membuat perubahan, mengujinya dan menyerahkannya semula kepada anda. Jika Untuk dibuat kehabisan, rondaan malam mengisinya daripada backlog dengan kad yang tidak memerlukan jawapan anda. Pada waktu pagi ada satu longgokan pendek: beberapa soalan dan beberapa perkara untuk dicuba, setiap satu dengan langkah yang boleh diikuti oleh orang mengantuk dan tangkapan skrin ia berfungsi. Anda klik, terima yang baik dan hantar balik selebihnya. Jika ada yang kurang jelas, anda cuma beri komen dan ia kembali kepada pasukan. Pembilang token menunjukkan berapa banyak digunakan, dan Mod Tanpa Token ada untuk minggu yang jimat. Kemudian anda bersarapan, yang ejen belum boleh bantu.",
+      "Pertama, apa yang AI-gile bukan. Ia bukan syarikat permulaan, ia tidak dijual, dan tiada sesiapa mengumpul data anda. Ia papan percuma yang berjalan pada komputer anda, tanpa akaun, tanpa penjejak dan tanpa kuki. Apa dia: satu tempat kemas untuk melihat setiap projek pengekodan AI sekali gus, dengan pasukan ejen membuat kad dan anda membuat keputusan. Ada juga rondaan malam yang menyediakan kad semasa anda tidur. Ia menggabungkan kad yang berkaitan, membetulkan tajuk yang kusut, dan memerhati supaya kod kekal ringkas. Ia bertutur dalam kira-kira 120 bahasa, dari Belanda dan Flemish hingga lanun dan Klingon. Kawan boleh bermesej sesama sendiri, secara peribadi dan disulitkan. Ia dibina oleh Rich dan ramai ejen yang sabar, kebanyakannya menggunakan papan itu sendiri. Ia dalam pra-alfa tertutup, jadi ada bahagian yang kasar. Jika kedengaran menyeronokkan, minta dengan baik dan mungkin anda masuk awal."
+    ] }
+  ],
+  "quips": {
+    "1": "Satu perkataan. Berani. Mungkin terlalu berani.",
+    "3": "Tiga perkataan. Sudah lebih jujur daripada kebanyakan halaman produk.",
+    "8": "Lapan perkataan. Masih lebih pendek daripada satu stand-up.",
+    "21": "Panjang ini ialah story point, by the way. Sudah tentu.",
+    "55": "Lima puluh lima perkataan. Dua kad siap semasa anda membaca itu.",
+    "144": "Itulah yang panjang. Tiada 233. Ejen sudah pergi tidur."
+  }
+}

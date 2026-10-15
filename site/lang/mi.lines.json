@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Karetao.",
+      "Tukuna."
+    ] },
+    { "n": 2, "texts": [
+      "Kanban karetao.",
+      "Whakaaro, hangaia.",
+      "Mahi tukuna."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban mō karetao.",
+      "Whakaaro hei āhuatanga.",
+      "Kanban kaiwhakahaere koreutu."
+    ] },
+    { "n": 5, "texts": [
+      "Papa kanban, ngā kaiwhakahaere hanga.",
+      "Tuhia ngā kāri. Hangaia e rātou.",
+      "Koreutu, ā-rorohiko, kua whakamātauria, āhua porangi."
+    ] },
+    { "n": 8, "texts": [
+      "He papa kanban koreutu e mahi ai ngā kaiwhakahaere AI.",
+      "Tuhia he whakaaro. Ka hangaia e ngā kaiwhakahaere. Whakaaetia.",
+      "Agile mō te tangata kotahi me te tini karetao manawanui."
+    ] },
+    { "n": 13, "texts": [
+      "He papa kanban i tō rorohiko e tango ai ngā kaiwhakahaere AI i ngā kāri.",
+      "Tuhia he whakaaro. Ka hangaia e tētahi rōpū kaiwhakahaere. Ka tirotirohia e tētahi kaiwhakamātau.",
+      "Kāore he kāute, kāore he kaiwhai: he papa, he karetao, ā, ko koe te rangatira."
+    ] },
+    { "n": 21, "texts": [
+      "He papa kanban a AI-gile hei mahi tahi ki ngā kaiwhakahaere waehere AI. Ka tango rātou i ngā kāri; mā koe e whakamātau, e whakaae.",
+      "He kaihautū me tētahi rōpū kaiwhakahaere AI tō ia kaupapa. Tāpiri kōrero ki tētahi kāri, ka tīmata te rōpū ki te mahi.",
+      "He papa mahi tūmataiti, koreutu, e rere ana i tō rorohiko. Ko ngā kaimahi he karetao. Ko koe te kaiwhakaae."
+    ] },
+    { "n": 34, "texts": [
+      "Ka whakatakotoria e koe ngā whakaaro ki te papa. Ka huria e tētahi rōpū kaiwhakahaere AI hei āhuatanga e mahi ana, ka whakamātauria, ka hoatu me ngā hikoi hei whakamātau. Kāore he mea e oti kia kore koe e kī.",
+      "He papa kanban i hangaia ā-ringa e Rich, me te āwhina nui a ngā kaiwhakahaere e whakahaerehia ana e ia inaianei. He koreutu, e rere ana i tō rorohiko, ā, ka tukua ki ngā hoa, ehara i te hoko.",
+      "Whakaarohia he papa kanban, he pou mai i te Backlog ki te Oti, engari ko ngā kaiwhakahaere AI ngā kaitango i ngā kāri. Ka kōrero rātou mō te ahunga whakamua, ka pātai ina piri, ā, ka tatari ki tō tohu pai."
+    ] },
+    { "n": 55, "texts": [
+      "He papa kanban a AI-gile e mahi ai ngā kaiwhakahaere AI hei rōpū. He kaihautū tō ia kaupapa hei whakamahere i te mahi, me ngā kaiāwhina hei hanga. Ina rite tētahi āhuatanga, ka whakamātauria e te kaiwhakamātau AI, ka tango tānga mata, ā, ka tae ki tō puranga. Whakaaetia, kōrerotia rānei, ā, ka mahi anō rātou.",
+      "I tīmata mai hei huarahi mā tētahi tangata ki te aroturuki i te maha o ngā wā mahi waehere AI i te wā kotahi, ā, i tupu hei papa tika. Ka rere i tō rorohiko, kāore he kāute e hiahiatia, kāore he kaiwhai. He koreutu mō ngā hoa me te hunga hihiri. Kāore anō kia oti, ka kitea ētahi tapa taratara me tētahi ohorere.",
+      "Anei te putanga pono. Māu tonu e whakaaro ngā whakaaro, māu tonu e tirotiro ngā putanga. Ko te mahi a AI-gile ko ngā mea katoa kei waenganui: ka tiaki i ngā kāri kia tōtika, ka whakaoho i te kaiwhakahaere tika ina kōrero koe, ka whakaatu he aha te mea kua rerekē, ka whakahaere i te katoa ki tētahi puranga poto mōu."
+    ] },
+    { "n": 89, "texts": [
+      "He papa kanban koreutu a AI-gile e rere ana i tō ake rorohiko. Hei utu mō ngā tāngata, he rōpū kaiwhakahaere AI tō ia kaupapa: he kaihautū hei huri i ō whakaaro hei kāri me tētahi mahere, me ngā kaiāwhina hei tango i ngā kāri i te raupapa matua. Ina oti tētahi mea te hanga, ka whai te kaiwhakamātau AI i ngā hikoi whakamātau, ka whakaatu i tāna i kite ai. Kātahi ka tatari ki roto i tētahi puranga e kīia ana Māu. Whakaaetia, kōrerotia rānei, ā, ka whakamātau anō te rōpū. Kāore he mea e tae ki Oti ki te kore koe.",
+      "Ētahi āhuatanga kāore pea koe e tūmanako. Ka whakakī te kaitiaki pō i te pou Hei mahi i a koe e moe ana, mā te kōwhiri i ngā kāri kāore e hiahia ana ki tō whakautu. Ka whakaatu te kaiwhakatatau tohu i te nui o tā ngā kaiwhakahaere whakamahi i tēnei rā, i tēnei wiki hoki. Ka taea e koe te tuku karere ki ngā hoa, ā, he hunahuna ngā karere tūmataiti mai i tētahi pito ki tētahi. E kōrero ana te papa i te 120 reo, tae atu ki te Tati, te kaipahua me te Klingon. Kāore tētahi o ēnei e utu moni.",
+      "He kaupapa iti, whaiaro a AI-gile, ehara i te kamupene. I hiahia a Rich ki te tiaki i ētahi kaupapa waehere AI me te kore e whakatuwhera i ia taupānga hei tirotiro, nā reira ka hangaia e ia me ngā kaiwhakahaere he papa mō tērā, ā, ka whakamahia taua papa ki te hanga i te toenga o ia ake. Kei te pre-alpha kati, arā, ka mahi, te nuinga o te wā, mō ētahi hoa torutoru. Kāore he whārangi utu, kāore he pānuitanga, kāore he mahere tipu. Mēnā he whai take, ka taea e koe te tono kia whakamātau ina tuwhera whānui ake."
+    ] },
+    { "n": 144, "texts": [
+      "He papa kanban a AI-gile mō tētahi tangata me te tini o ngā kaiwhakahaere AI. Ka rere i tō ake rorohiko, ā, he koreutu rawa. Ka kōrero koe ki te kaihautū, pērā i a Discord, ka whakaahua i tētahi whakaaro; ka huri te kaihautū hei kāri me tētahi mahere, ā, ka tatari kia pēhia e koe te Haere. Ka mahi te rōpū i ngā kāri i te raupapa matua, mā tētahi rārangi whakahau ngāwari i hangaia mō ngā tauira reo. I mua i te hokinga mai ki a koe, ka whai te kaiwhakamātau AI i ngā hikoi i runga i tētahi kape o te taupānga, ka tāpiri i tētahi tānga mata. Ka tae te mahi kua oti ki tō puranga me ngā kōnae kua rerekē me te rerekētanga. Ka whakaae koe, ka waiho rānei he kōrero, ā, ka oho te rōpū, ka whakamātau anō. Ko koe anake e taea te nuku i tētahi kāri ki Oti.",
+      "Anei te āhua o tētahi rā me AI-gile. I te ahiahi ka waiho e koe ētahi kōrero: kei te wāhi hē tēnei pātene, me whakarōpū tērā rārangi, me whai aratau pōuri pea. Ka haere koe ki te moe. Ka pānui ngā kaiwhakahaere i ngā kōrero, ka whakarerekē, ka whakamātau, ka hoatu anō ki a koe. Mēnā ka maroke te Hei mahi, ka whakakī te kaitiaki pō i a ia mai i te backlog ki ngā kāri kāore e hiahia ana ki tō whakautu. I te ata he puranga poto kotahi: tētahi rua pātai me ētahi mea hei whakamātau, tēnā me tēnā me ngā hikoi e taea e te tangata ngenge, me tētahi tānga mata e whakaatu ana kei te mahi. Ka pāwhiri koe, ka whakaae i ngā mea pai, ka whakahoki i te toenga. Ka whakaatu te kaiwhakatatau tohu i te nui o te pau, ā, kei reira te Aratau Kore Tohu mō ngā wiki kōmaki. Kātahi koe ka kai parakuihi, kāore anō kia taea e ngā kaiwhakahaere te āwhina.",
+      "Tuatahi, ehara a AI-gile i te aha. Ehara i te kamupene hōu, ehara i te mea e hokona ana, ā, kāore he tangata e kohi ana i ō raraunga. He papa koreutu e rere ana i tō rorohiko, kāore he kāute, kāore he kaiwhai, kāore he pihikete. Ko te mea ia: kotahi te wāhi tōtika hei tiro i ngā kaupapa waehere AI katoa i te wā kotahi, ko tētahi rōpū kaiwhakahaere e mahi ana i ngā kāri, ā, māu ngā whakatau. E kōrero ana i te 120 reo, mai i te Tati ki te kaipahua me te Klingon. I hangaia e Rich me te tini o ngā kaiwhakahaere manawanui, te nuinga mā te whakamahi i a ia ake. Kei te pre-alpha kati, nō reira he taratara ētahi wāhi. Mēnā he hākinakina, pātai atu i runga i te mihi, ā, tērā pea ka uru wawe koe."
+    ] }
+  ],
+  "quips": {
+    "1": "Kotahi te kupu. Pakari. Tērā pea he nui rawa te pakari.",
+    "3": "E toru ngā kupu. Kua pono ake i te nuinga o ngā whārangi hua.",
+    "8": "E waru ngā kupu. He poto tonu i tētahi stand-up.",
+    "21": "He tohu kōrero ngā roa, nā. Ae rā.",
+    "55": "E rima tekau mā rima ngā kupu. E rua ngā kāri i oti i a koe e pānui ana.",
+    "144": "Koinei te mea roa. Kāore he 233. Kua haere ngā kaiwhakahaere ki te moe."
+  }
+}
