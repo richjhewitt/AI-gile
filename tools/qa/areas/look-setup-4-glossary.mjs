@@ -24,7 +24,7 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
   noErrors(page);
 }, true);
 
-def('tour', '🎓 guided tour: three levels, a spotlight per stop, Next / Back / Skip (AIG-95)', async (s, ctx) => {
+def('tour', '🎓 guided tour: three levels, eight stops from First steps to Help, keyboard, focus, phone, dark, RTL, No AI (AIG-95, AIG-1299)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('button:has-text("🎓")');
@@ -35,17 +35,79 @@ def('tour', '🎓 guided tour: three levels, a spotlight per stop, Next / Back /
   await page.waitForSelector('.tour-bubble');
   check('it starts with a welcome and says how many stops', /Welcome/.test(await page.textContent('.tour-bubble')) && /Stop 1 of 8/.test(await page.textContent('.tour-step')));
   check('new to this also switches the dev words on', (await page.evaluate(() => localStorage.getItem('aigile.explain'))) === '1');
+  // AIG-1299: the stops in order, at most eight, the last one pointing at Help.
+  check('the stops: welcome, First steps, rail, inbox, For you, Messages, Setup, Help', (await page.evaluate(() => tour.steps.map(s => s.id).join())) === 'welcome,firststeps,rail,inbox,foryou,chat,setup,help', await page.evaluate(() => tour.steps.map(s => s.id).join()));
+  const foc = () => page.evaluate(() => { const a = document.activeElement, b = document.querySelector('.tour-bubble'); return { on: a === b, inside: !!b && b.contains(a), name: b && document.getElementById(b.getAttribute('aria-labelledby'))?.textContent, desc: b && b.getAttribute('aria-describedby'), role: b && b.getAttribute('role') }; });
+  let f = await foc();
+  check('focus moves to the stop\'s text, named by its title for screen readers', f.on && /Welcome/.test(f.name) && f.role === 'dialog' && /tourP/.test(f.desc || ''), f);
   await page.click('.tour-bubble .primary');
-  check('the next stop puts a spotlight on the left rail', /Your projects/.test(await page.textContent('.tour-bubble')) && await page.locator('.tour-spot').isVisible());
-  await page.click('.tour-bubble .primary'); await page.click('.tour-bubble .primary');
+  check('the next stop puts a spotlight on First steps', /First steps/.test(await page.textContent('.tour-bubble h3')) && await page.locator('.tour-spot').isVisible());
+  check('...and focus moved with it', (await foc()).on && /First steps/.test((await foc()).name));
+  await page.keyboard.press('ArrowRight'); await sleep(150);
+  check('the right arrow goes on to the rail', /Your projects/.test(await page.textContent('.tour-bubble h3')));
+  await page.keyboard.press('ArrowLeft'); await sleep(150);
+  check('the left arrow goes back', /First steps/.test(await page.textContent('.tour-bubble h3')));
+  for (let k = 0; k < 5; k++) await page.keyboard.press('Tab');
+  check('Tab stays inside the bubble', (await foc()).inside);
+  await page.focus('.tour-bubble .primary'); await page.keyboard.press('Enter'); await sleep(150);
+  check('Enter on Next goes on', /Your projects/.test(await page.textContent('.tour-bubble h3')));
+  // A stop with nothing to point at is skipped in the direction you go: Back from the rail past a gone First steps lands on the welcome.
+  await page.evaluate(() => { tour.steps[1] = { ...tour.steps[1], sel: '#noSuchThing' }; });
+  await page.click('.tour-bubble button:not(.primary):not(.tour-skip)'); await sleep(300);
+  check('Back skips a stop that is not on screen and lands on the one before', await page.evaluate(() => tour && tour.i === 0) && /Welcome/.test(await page.textContent('.tour-bubble h3')));
+  for (let k = 0; k < 3; k++) { await page.keyboard.press('ArrowRight'); await sleep(300); }   // past the gone First steps: rail, inbox, For you
   await page.waitForFunction(() => /For you/.test(document.querySelector('.tour-bubble h3')?.textContent || ''), null, { timeout: 6000 }).catch(() => {});
   check('a board stop opens a board on its own', /#\/p\/alpha/.test(page.url()) && /For you/.test(await page.textContent('.tour-bubble h3')));
+  await page.keyboard.press('Escape');
+  check('Esc ends it', (await page.locator('#tourLayer').count()) === 0 && await page.evaluate(() => tour === null));
+  await page.evaluate(() => startTour('anyway')); await page.waitForSelector('.tour-bubble');
   await page.click('.tour-skip');
   check('Skip ends it', (await page.locator('#tourLayer').count()) === 0);
+  await page.evaluate(() => startTour('refresh')); await page.waitForSelector('.tour-bubble');
+  check('the quick refresher keeps the main stops only', (await page.evaluate(() => tour.steps.map(s => s.id).join())) === 'welcome,rail,inbox,foryou,chat,help');
+  await page.keyboard.press('Escape');
+  await page.goto(BASE + '/#/'); await page.waitForSelector('#app .space-tree');
+  await page.evaluate(() => localStorage.setItem('aigile.firstSteps', 'hide'));
+  await page.evaluate(() => startTour('new')); await page.waitForSelector('.tour-bubble');
+  check('with First steps hidden the tour leaves that stop out', !(await page.evaluate(() => tour.steps.some(s => s.id === 'firststeps'))) && /Stop 1 of 7/.test(await page.textContent('.tour-step')));
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => localStorage.removeItem('aigile.firstSteps'));
+  // The last stop: ❓ Help, pointing at the Help button, naming the glossary; its button says Done and ends the tour.
+  await page.evaluate(() => startTour('anyway')); await page.waitForSelector('.tour-bubble');
+  await page.evaluate(() => { tour.i = tour.steps.length - 1; showStop(); }); await sleep(300);
+  const hb = await page.evaluate(() => { const r = document.querySelector('#helpBtn').getBoundingClientRect(), s = document.querySelector('.tour-spot').getBoundingClientRect(); return { h: document.querySelector('.tour-bubble h3').textContent, p: document.querySelector('#tourP').textContent, spot: Math.abs(r.left - 6 - s.left) < 2, btn: document.querySelector('.tour-bubble .primary').textContent }; });
+  check('the last stop is Help, spotlights the Help button and names the 📖 glossary', /Help/.test(hb.h) && hb.spot && /📖/.test(hb.p) && /Done/.test(hb.btn), hb);
+  await page.click('.tour-bubble .primary');
+  check('Done ends the tour', (await page.locator('#tourLayer').count()) === 0);
+  // Reduced motion: the bubble does not fade in.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.evaluate(() => startTour('anyway')); await page.waitForSelector('.tour-bubble');
+  check('with reduced motion the bubble keeps still', (await page.evaluate(() => getComputedStyle(document.querySelector('.tour-bubble')).animationName)) === 'none');
+  await page.keyboard.press('Escape'); await page.emulateMedia({ reducedMotion: 'no-preference' });
+  // Right to left: the right arrow steps back, the left arrow on, and every bubble stays on screen.
+  await page.evaluate(() => { document.documentElement.dir = 'rtl'; startTour('anyway'); }); await page.waitForSelector('.tour-bubble');
+  await page.keyboard.press('ArrowLeft'); await sleep(200);
+  check('right to left: the left arrow goes on', await page.evaluate(() => tour && tour.i === 1));
+  const rtlIn = [];
+  for (let k = 0; k < 4; k++) { await sleep(250); rtlIn.push(await page.evaluate(() => { const r = document.querySelector('.tour-bubble').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth + 1 && r.top >= 0; })); await page.keyboard.press('ArrowLeft'); }
+  check('right to left: every bubble stays on screen', rtlIn.every(Boolean), rtlIn);
+  await page.keyboard.press('Escape'); await page.evaluate(() => { document.documentElement.dir = 'ltr'; });
+  noErrors(page);
+  // No AI mode: the welcome and Messages stops speak of you, your team and your friends, not of AI leads.
+  await s.ok('POST', '/api/setup', { prefs: { noAi: true } });
+  await page.goto(BASE + '/#/'); await page.reload(); await page.waitForSelector('#app .space-tree');
+  await page.evaluate(() => startTour('new')); await page.waitForSelector('.tour-bubble');
+  const welNo = await page.textContent('#tourP');
+  await page.evaluate(() => { tour.i = tour.steps.findIndex(s => s.id === 'chat'); showStop(); }); await sleep(400);
+  const chatNo = await page.evaluate(() => tour && tour.steps[tour.i].id === 'chat' && document.querySelector('#tourP').textContent);
+  check('No AI mode: the welcome says you and your team', /you and your team/.test(welNo), welNo);
+  check('No AI mode: Messages speaks of friends only', !!chatNo && /friends/.test(chatNo) && !/lead/i.test(chatNo), chatNo);
+  await page.keyboard.press('Escape');
+  await s.ok('POST', '/api/setup', { prefs: { noAi: false } });
   noErrors(page);
   // AIG-1201: every stop points at something visible now, on a desktop and on a phone (menus opened by the tour itself).
   for (const [w, h] of [[1280, 800], [390, 800]]) {
-    const c = await ctx.browser().newContext({ viewport: { width: w, height: h } });
+    const c = await ctx.browser().newContext({ viewport: { width: w, height: h }, colorScheme: w < 600 ? 'dark' : 'light' });   // the phone run is in dark mode too
     await c.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
     const p = await c.newPage();
     await p.goto(BASE + '/#/'); await p.waitForSelector('#app > *');
@@ -57,19 +119,23 @@ def('tour', '🎓 guided tour: three levels, a spotlight per stop, Next / Back /
       await sleep(250);
       const st = await p.evaluate(() => {
         if (!tour) return null;
-        const s = tour.steps[tour.i]; if (!s.sel) return { id: s.id, ok: true };
+        const s = tour.steps[tour.i], bub = document.querySelector('.tour-bubble'), b = bub.getBoundingClientRect();
+        const look = { bubbleIn: b.left >= 0 && b.right <= innerWidth + 1 && b.top >= 0 && b.bottom <= innerHeight + 1 && document.documentElement.scrollWidth <= innerWidth + 1, bg: getComputedStyle(bub).backgroundColor };
+        if (!s.sel) return { id: s.id, ok: true, ...look };
         const e = document.querySelector(s.sel), r = e && e.getBoundingClientRect(), sp = document.querySelector('.tour-spot').getBoundingClientRect();
         const cs = e && getComputedStyle(e);
         const vis = !!e && r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight;
         const cx = r.left + r.width / 2, cy = Math.min(r.top + r.height / 2, innerHeight - 2), top = vis && document.elementFromPoint(cx, cy);
-        return { id: s.id, ok: vis && !!top && (e === top || e.contains(top) || top.contains(e)) && sp.width > 0 && sp.height > 0 };
+        return { id: s.id, ok: vis && !!top && (e === top || e.contains(top) || top.contains(e)) && sp.width > 0 && sp.height > 0, ...look };
       });
       if (!st) break;
       seen.push(st.id);
       check(`tour stop "${st.id}" points at a visible target at ${w}px`, st.ok, st);
+      check(`tour stop "${st.id}": the bubble fits on screen at ${w}px`, st.bubbleIn, st);
+      if (w < 600) check(`tour stop "${st.id}": the bubble is dark in dark mode`, (m => !!m && (+m[1] + +m[2] + +m[3]) < 200)(/rgba?\((\d+), (\d+), (\d+)/.exec(st.bg)), st.bg);
       await p.click('.tour-bubble .primary').catch(() => {});
     }
-    check(`the tour at ${w}px keeps its main stops`, ['welcome', 'rail', 'inbox', 'setup', 'done'].every(x => seen.includes(x)), seen);
+    check(`the tour at ${w}px keeps its main stops`, ['welcome', 'firststeps', 'rail', 'inbox', 'foryou', 'chat', 'setup', 'help'].every(x => seen.includes(x)), seen);
     check(`...and closes the More menu when done at ${w}px`, await p.evaluate(() => { const m = document.getElementById('tbMoreMenu'); return !m || m.hidden; }));
     await c.close();
   }
