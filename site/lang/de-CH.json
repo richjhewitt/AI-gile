@@ -141,5 +141,7 @@
  "live.last.day.one": "Letzte Karte vor {n} Tag verschoben",
  "live.last.day.other": "Letzte Karte vor {n} Tagen verschoben",
  "live.offline": "Das Live-Board macht kurz Pause. Schau bald wieder vorbei.",
- "live.cols": "Backlog|Zu tun|In Arbeit|Team prüft|Zum Testen für dich|Fürs Team|Erledigt"
+ "live.cols": "Backlog|Zu tun|In Arbeit|Team prüft|Zum Testen für dich|Fürs Team|Erledigt",
+ "f.service.h": "Von der Idee zum echten Service",
+ "f.service.p": "Mit KI etwas gebaut, das Leute jetzt nutzen? Markiere es als Service, und das Board hilft dir, es gut zu betreiben: Uptime-Checks, eine öffentliche Statusseite, Vorfälle mit Nachbetrachtung, Änderungen, die ein Go brauchen, täglich geprüfte Sicherungen. Die Hilfe erklärt jeden Schritt, während du vorangehst."
 }

@@ -55,6 +55,8 @@
  "f.private.li3": "Žádné účty, žádné sledování, žádné cookies.",
  "f.lang.h": "Ve tvém jazyce",
  "f.lang.p": "Přes 120 jazyků, od nizozemštiny, velštiny a japonštiny po pirátštinu, Yodu a klingonštinu, s rychlým přepnutím zpět do angličtiny kvůli vývojářským slovům.",
+ "f.service.h": "Od nápadu ke skutečné službě",
+ "f.service.p": "Postavil jsi s AI něco, co teď lidé používají? Označ to jako službu a nástěnka ti pomůže ji dobře provozovat: kontroly dostupnosti, veřejná stavová stránka, incidenty se sepsaným rozborem, změny, které potřebují Go, zálohy kontrolované každý den. Nápověda tě naučí každý krok průběžně.",
  "tl.aria": "Časová osa od prvního rozhovoru po plán dalšího vývoje",
  "tl.h2": "Od prvního chatu k tomu, co bude dál",
  "tl.lede": "Skutečná data a časy ve tvém časovém pásmu. Po dnešku je to plán, bez slíbených termínů.",

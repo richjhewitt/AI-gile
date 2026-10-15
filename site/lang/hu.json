@@ -55,6 +55,8 @@
  "f.private.li3": "Nincs fiók, nincs követő, nincs süti.",
  "f.lang.h": "A te nyelveden",
  "f.lang.p": "Több mint 120 nyelv, a hollandtól, a walestől és a japántól a kalózig, Yodáig és klingonig, gyors visszaváltással angolra a fejlesztői szavakhoz.",
+ "f.service.h": "Egy ötlettől egy igazi szolgáltatásig",
+ "f.service.p": "Építettél valamit MI-vel, amit most mások használnak? Jelöld meg szolgáltatásként, és a tábla segít jól üzemeltetni: elérhetőség-ellenőrzés, nyilvános állapotoldal, incidensek leírt áttekintéssel, Go-t igénylő változtatások, naponta ellenőrzött biztonsági mentések. A Súgó menet közben minden lépést megtanít.",
  "tl.aria": "Idővonal az első beszélgetéstől az útitervig",
  "tl.h2": "Az első beszélgetéstől a következő lépésekig",
  "tl.lede": "Valódi dátumok és időpontok, a saját időzónádban. A mai nap után már csak a terv van, ígért dátumok nélkül.",

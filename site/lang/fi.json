@@ -55,6 +55,8 @@
  "f.private.li3": "Ei tilejä, ei seurantaa, ei evästeitä.",
  "f.lang.h": "Omalla kielelläsi",
  "f.lang.p": "Yli 120 kieltä hollannista, kymristä ja japanista merirosvoon, Yodaan ja klingoniin, ja nopea paluu englantiin kehittäjien sanoja varten.",
+ "f.service.h": "Ideasta oikeaksi palveluksi",
+ "f.service.p": "Rakensitko tekoälyn kanssa jotain, mitä ihmiset nyt käyttävät? Merkitse se palveluksi, niin taulu auttaa sinua ylläpitämään sitä hyvin: käytettävyystarkistukset, julkinen tilasivu, häiriöt ja niiden jälkipuinnit, muutokset, jotka tarvitsevat Go:n, ja päivittäin tarkistetut varmuuskopiot. Ohje opastaa jokaisen vaiheen matkan varrella.",
  "tl.aria": "Aikajana ensimmäisestä keskustelusta tiekarttaan",
  "tl.h2": "Ensimmäisestä keskustelusta seuraaviin askeliin",
  "tl.lede": "Oikeat päivämäärät ja kellonajat omalla aikavyöhykkeelläsi. Tämän päivän jälkeen on suunnitelma, jossa ei luvata päivämääriä.",

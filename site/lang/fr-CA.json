@@ -141,5 +141,7 @@
  "live.last.day.one": "Dernière carte déplacée il y a {n} jour",
  "live.last.day.other": "Dernière carte déplacée il y a {n} jours",
  "live.offline": "Le tableau en direct fait une petite pause. Revenez bientôt.",
- "live.cols": "Backlog|À faire|En cours|L'équipe vérifie|À tester par toi|Pour l'équipe|Terminé"
+ "live.cols": "Backlog|À faire|En cours|L'équipe vérifie|À tester par toi|Pour l'équipe|Terminé",
+ "f.service.h": "D’une idée à un vrai service",
+ "f.service.p": "Tu as construit avec l’IA quelque chose que des gens utilisent maintenant ? Marque-le comme service et le tableau t’aide à bien le faire tourner : contrôles de disponibilité, page d’état publique, incidents avec un compte rendu, changements qui demandent un Go, sauvegardes vérifiées chaque jour. L’aide t’explique chaque étape au fur et à mesure."
 }

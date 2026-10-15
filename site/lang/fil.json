@@ -55,6 +55,8 @@
  "f.private.li3": "Walang account, walang tracker, walang cookie.",
  "f.lang.h": "Sa wika mo",
  "f.lang.p": "Mahigit 120 wika, mula Dutch, Welsh at Japanese hanggang pirate, Yoda at Klingon, may mabilis na balik sa English para sa mga salita ng developer.",
+ "f.service.h": "Mula sa ideya tungo sa totoong service",
+ "f.service.p": "May nabuo ka gamit ang AI na ginagamit na ng mga tao? Markahan ito bilang service at tutulungan ka ng board na patakbuhin ito nang maayos: mga uptime check, pampublikong status page, mga incident na may write-up, mga pagbabagong kailangan ng Go, at mga backup na sinusuri araw-araw. Itinuturo ng Help ang bawat hakbang habang ginagawa mo.",
  "tl.aria": "Timeline mula sa unang usapan hanggang sa roadmap",
  "tl.h2": "Mula sa unang chat hanggang sa susunod",
  "tl.lede": "Totoong petsa at oras, sa sarili mong time zone. Pagkatapos ng ngayon, plano na ito, walang pinangakong petsa.",

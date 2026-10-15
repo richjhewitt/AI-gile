@@ -55,6 +55,8 @@
  "f.private.li3": "Sense comptes, sense rastrejadors, sense galetes.",
  "f.lang.h": "En el teu idioma",
  "f.lang.p": "Més de 120 idiomes, del neerlandès, el gal·lès i el japonès fins al pirata, en Yoda i el klingon, amb un canvi ràpid cap a l'anglès per a les paraules de desenvolupador.",
+ "f.service.h": "D'una idea a un servei de debò",
+ "f.service.p": "Has construït amb IA alguna cosa que la gent ja fa servir? Marca-la com a servei i el tauler t'ajuda a gestionar-la bé: comprovacions de disponibilitat, una pàgina d'estat pública, incidències amb un informe, canvis que necessiten un Go, còpies de seguretat comprovades cada dia. L'ajuda t'ensenya cada pas sobre la marxa.",
  "tl.aria": "Cronologia des de la primera conversa fins al full de ruta",
  "tl.h2": "Del primer xat a què ve ara",
  "tl.lede": "Dates i hores reals, a la teva zona horària. A partir d'avui és el pla, sense dates promeses.",

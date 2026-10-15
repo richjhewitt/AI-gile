@@ -141,5 +141,7 @@
  "live.last.day.one": "Última tarjeta movida hace {n} día",
  "live.last.day.other": "Última tarjeta movida hace {n} días",
  "live.offline": "El tablero en directo está tomando aire. Vuelve pronto.",
- "live.cols": "Backlog|Por hacer|En curso|El equipo revisa|Para que lo pruebes|Para el equipo|Hecho"
+ "live.cols": "Backlog|Por hacer|En curso|El equipo revisa|Para que lo pruebes|Para el equipo|Hecho",
+ "f.service.h": "De una idea a un servicio de verdad",
+ "f.service.p": "¿Has construido con IA algo que ya usa la gente? Márcalo como servicio y el tablero te ayuda a mantenerlo bien: comprobaciones de disponibilidad, una página de estado pública, incidentes con su análisis, cambios que necesitan un Go y copias de seguridad comprobadas a diario. La Ayuda te enseña cada paso sobre la marcha."
 }
