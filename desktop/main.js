@@ -165,8 +165,10 @@ function wire(w) {
     if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); }
   });
 }
+// Start with Windows (AIG-1250): the login item starts the app with --hidden, so it sits in the tray with no window.
+const HIDDEN = process.argv.includes('--hidden');
 function open(ok) {
-  win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', backgroundColor: '#ffffff', ...chrome() });
+  win = new BrowserWindow({ width: 1400, height: 900, title: 'AI-gile', backgroundColor: '#ffffff', show: !HIDDEN, ...chrome() });
   wire(win);
   // Popped-out cards (AIG-122) get the same handling as the main window.
   win.webContents.on('did-create-window', (child, d) => {
@@ -242,6 +244,20 @@ function sharePicker() {
   ipcMain.on('aigile:share-picked', (e, a) => { const id = Number(a && a.id), p = picks.get(id); if (p && p.wc === e.sender) endPick(id, a.source); });
 }
 
+/* ---------- start with Windows (AIG-1250) ---------- */
+// Opt-in, off by default, and only the board's own page may ask (exact origin). Only an installed app registers: a dev run would
+// register electron.exe itself. Windows reads the login item from the registry, so a tick here survives updates and reboots.
+function autoStart() {
+  const can = app.isPackaged && process.platform === 'win32';
+  const state = () => ({ can, on: can ? !!app.getLoginItemSettings({ args: ['--hidden'] }).openAtLogin : false });
+  ipcMain.handle('aigile:autostart-get', e => originOf(e.senderFrame && e.senderFrame.url) === ORIGIN ? state() : { can: false, on: false });
+  ipcMain.handle('aigile:autostart-set', (e, on) => {
+    if (originOf(e.senderFrame && e.senderFrame.url) !== ORIGIN || !can) return state();
+    try { app.setLoginItemSettings({ openAtLogin: on === true, args: ['--hidden'] }); } catch {}
+    return state();
+  });
+}
+
 // New build of the app itself (AIG-83): when any of its own files is newer than at start, the page shows a
 // 🔄 Restart app pill (asked again every few seconds, so it survives a page refresh).
 const OWN = () => fs.readdirSync(__dirname).filter(f => /\.(js|json|png|ico)$/.test(f)).map(f => fs.statSync(path.join(__dirname, f)).mtimeMs);
@@ -257,7 +273,7 @@ if (!app.requestSingleInstanceLock()) app.quit();
 else {
   app.setAppUserModelId('AI-gile');
   app.on('second-instance', showMain);
-  app.whenReady().then(async () => { sharePicker(); open(await ensureServer()); });
+  app.whenReady().then(async () => { sharePicker(); autoStart(); open(await ensureServer()); });
   app.on('before-quit', () => { quitting = true; });
   app.on('window-all-closed', () => app.quit());
 }

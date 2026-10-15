@@ -82,6 +82,18 @@ def('join', 'closed alpha invites: signed codes (unsigned refused), Download pag
     const stored = fs.readFileSync(path.join(join.data, 'codes.json'), 'utf8');
     check('the service keeps no DM invite after use, and no names', !stored.includes(inv.dm) && !/Beatrix/.test(stored));
 
+    // AIG-1249: cancel a link nobody used: the link reads as run out, the download is refused, a used one cannot be cancelled.
+    const cx = await s.ok('POST', '/api/join/codes', { help: '2', name: 'Wrongperson' });
+    check('an open link lists with a way to cancel it', (await s.ok('GET', '/api/join')).codes.some(c => c.code === cx.code && !c.used && !c.cancelled));
+    check('cancel needs a code made here', (await s.api('POST', '/api/join/cancel', { code: 'ZZZZ-ZZZZ-ZZZZ' })).status === 404);
+    await s.ok('POST', '/api/join/cancel', { code: cx.code });
+    const cxr = await fetch(cx.link);
+    check('a cancelled link says it ran out', cxr.status === 410 && /run out/.test(await cxr.text()));
+    check('a cancelled link cannot be downloaded', (await fetch(join.base + '/join/download', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'code=' + cx.code })).status === 410);
+    const cxl = (await s.ok('GET', '/api/join')).codes.find(c => c.code === cx.code);
+    check('the board lists it as cancelled, and the service no longer holds the DM invite', cxl.cancelled === true && !/"dm":"[^"]/.test(JSON.stringify(JSON.parse(fs.readFileSync(path.join(join.data, 'codes.json'), 'utf8'))[cx.code])));
+    check('a used link cannot be cancelled', (await s.api('POST', '/api/join/cancel', { code: made.code })).status === 502);
+
     // AIG-1231: the Windows installer. The page offers it first (the zip as the fallback), with plain steps in en, nl and nl-BE.
     const form = (code, what) => fetch(join.base + '/join/download', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'code=' + code + (what ? '&what=' + what : '') });
     const w1 = await s.ok('POST', '/api/join/codes', { help: '1', name: 'Cleo' });
@@ -130,6 +142,10 @@ def('join', 'closed alpha invites: signed codes (unsigned refused), Download pag
     await pf.fill('#claimCode', 'abcd-ef23'); await pf.click('#claimGo');
     await pf.waitForFunction(() => /not right/.test(document.getElementById('claim-err').textContent));
     check('a wrong code says so in plain words', /check it and try again/.test(await pf.textContent('#claim-err')));
+    // AIG-1248: the claim errors come in the friend's language (the page sends its own, as a fresh app has saved none).
+    const nlErr = async code => ((await friend3.api('POST', '/api/join/claim', { code, lang: 'nl' })).body || {}).error || '';
+    check('claim errors speak Dutch: wrong code and bad shape', /klopt niet/.test(await nlErr('ABCD-EF24')) && /8 letters en cijfers/.test(await nlErr('nope')));
+    check('claim errors speak nl-BE and fall back to English', /controleer hem en probeer opnieuw/.test(((await friend3.api('POST', '/api/join/claim', { code: 'ABCD-EF24', lang: 'nl-BE' })).body || {}).error || '') && /check it and try again/.test(((await friend3.api('POST', '/api/join/claim', { code: 'ABCD-EF24', lang: 'xx' })).body || {}).error || ''));
     await pf.fill('#claimCode', claim2.toLowerCase().replace('-', ' ')); await pf.press('#claimCode', 'Enter');
     await pf.waitForSelector('#claimWho', { timeout: 15000 });
     check('the right code (any case, any spacing) says welcome and who they are linked to', /linked to Owner/.test(await pf.textContent('#claimWho')) && /They match/.test(await pf.textContent('.dialog')) && /don't need an AI program/.test(await pf.textContent('.dialog')));

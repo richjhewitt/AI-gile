@@ -25,6 +25,7 @@
 // default 90). nginx asks GET /join/site/check on every request (auth_request): 204 with a good pass, else 401, which the
 // site turns into a redirect to the public teaser. Only a hash of each pass is stored (JOIN_DATA/passes.json).
 //   GET  /join/site?code=...   POST /join/site (the Open button)   GET /join/site/check   POST /join/site/out (sign out)
+//   POST /join/revoke          the owner cancels an unused app link (signed): { code }; it then reads as run out
 //   POST /join/site/revoke     the owner ends every pass made from a code (signed): { code }
 // Signed requests carry x-join-key (Ed25519 public key, base64url), x-join-ts (ms), x-join-nonce and x-join-sig:
 // an Ed25519 signature over "aigile-join-v1\n<METHOD>\n<path>\n<ts>\n<nonce>\n<sha256 hex of the body>".
@@ -360,6 +361,20 @@ async function handle(req, res) {
     if (codes[code] && !codes[code].used) codes[code].used = Date.now();   // an unused link stops working too
     save(); savePasses();
     return send(res, 200, { ok: true, ended: n });
+  }
+  // The owner cancels an app link nobody used (AIG-1249): it reads as run out, and the DM invite it holds is dropped.
+  if (req.method === 'POST' && pathname === '/join/revoke') {
+    const body = await readBody(req);
+    owner(req, pathname, body);
+    let b; try { b = JSON.parse(body); } catch { throw fail('send JSON', 400); }
+    const code = String(b && b.code || '');
+    if (!isCode(code)) throw fail('send { code }', 400);
+    const v = codes[code];
+    if (!v || v.kind === 'site') throw fail('no such link', 404);
+    if (v.used) throw fail('that link was already used', 409);
+    v.exp = Date.now() - 1; delete v.dm; v.cancelled = Date.now();
+    save();
+    return send(res, 200, { ok: true });
   }
   // The owner adds a code: an app download { code, help, dm?, from?, days? } or a site pass (AIG-699) { code, kind: 'site', from?, days? }.
   if (req.method === 'POST' && pathname === '/join/codes') {

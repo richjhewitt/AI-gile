@@ -144,6 +144,7 @@ function renderSetup() {
     <div class="f noai-box" id="noAiBox">${noAiBoxHtml()}</div>
     <div class="f" id="selfcareBox">${SelfCare.html()}</div>
     <div class="f" id="channelBox">${Channel.html()}</div>
+    <div class="f" id="autoStartBox">${AutoStart.html()}</div>
     <div class="f" id="streamerBox">${Streamer.setupHtml()}</div>
     <div class="f" id="licencesBox">${(Lic.reset(), Lic.html())}</div>
     <div class="f" id="secretsBox">${(SEC.list = null, secretsBoxHtml())}</div>

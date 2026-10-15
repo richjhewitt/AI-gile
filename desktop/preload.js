@@ -8,4 +8,9 @@ ipcRenderer.on('aigile:share-pick', (_e, req) => {
   if (!handler) { answer(null); return; }
   try { handler(req.sources, answer); } catch { answer(null); }
 });
-contextBridge.exposeInMainWorld('aigileDesktop', { onSharePick: fn => { handler = typeof fn === 'function' ? fn : null; } });
+// AIG-1250: Setup's "Start with Windows" tick reads and sets the login item through main.js.
+contextBridge.exposeInMainWorld('aigileDesktop', {
+  onSharePick: fn => { handler = typeof fn === 'function' ? fn : null; },
+  getAutoStart: () => ipcRenderer.invoke('aigile:autostart-get'),
+  setAutoStart: on => ipcRenderer.invoke('aigile:autostart-set', on === true),
+});
