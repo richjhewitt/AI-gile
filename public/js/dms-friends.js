@@ -64,7 +64,7 @@ function joinHtml() {
   const row = c => `<div class="join-c" data-code="${esc(c.code)}"><b>${esc(c.kind === 'site' ? '🌐' : ['', '🐣', '🙂', '😎'][c.help] || '')} ${esc(c.name || c.code)}</b> <code>${esc(c.code)}</code>
       <small class="muted">${esc(joinExpiry(c))}</small>${c.inv ? ' ' + fpHtml(c.inv, c.pic && c.pic.pic, c.pic && c.pic.mine) : ''}
       ${c.kind === 'site' && (c.passes || (!c.used && c.exp > Date.now())) ? `<button type="button" class="join-end" data-code="${esc(c.code)}">${esc(t('join.site.end'))}</button>` : ''}</div>`;
-  return `<div class="dmf-sec" id="joinSec"><b>${esc(t('join.h'))}</b><small class="muted">${esc(t('join.help'))}</small>
+  return `<div class="dmf-sec" id="joinSec"><b>${esc(t('join.h2'))}</b><small class="muted">${esc(t('join.for'))} ${esc(t('join.help'))}</small>
       <select id="joinHelp">${['1', '2', '3'].map(n => `<option value="${n}" ${keep.h === n ? 'selected' : ''}>${esc(['', '🐣', '🙂', '😎'][n] + ' ' + t('join.level.' + n))}</option>`).join('')}</select>
       <input type="text" id="joinName" value="${esc(keep.n)}" placeholder="${esc(t('dmf.invite.name'))}" autocomplete="off">
       <div class="actions"><button type="button" id="joinMake">${esc(t('join.btn'))}</button> <button type="button" id="joinSite" title="${esc(t('join.site.help'))}">${esc(t('join.site.btn'))}</button></div>
@@ -145,7 +145,7 @@ function dmsFriendsPaint() {
   box.className = '';
   box.innerHTML = `<label class="chk"><input type="checkbox" id="dmfOn" ${d.on ? 'checked' : ''}> ${esc(t('dmf.on'))}</label>
     ${joinHtml()}
-    <div class="dmf-sec"><b>${esc(t('dmf.invite.h'))}</b><small class="muted">${esc(t('dmf.invite.help'))}</small>
+    <div class="dmf-sec"><b>${esc(t('dmf.invite.h2'))}</b><small class="muted">${esc(t('dmf.invite.for'))} ${esc(t('dmf.invite.help'))}</small>
       <input type="text" id="dmfInvName" value="${esc(keep.i)}" placeholder="${esc(t('dmf.invite.name'))}" autocomplete="off">
       <div class="actions"><button type="button" id="dmfInvite">${esc(t('dmf.invite.btn'))}</button></div>
       ${DF.code ? `<textarea id="dmfMade" readonly rows="3" onclick="this.select()">${esc(DF.code)}</textarea><small class="muted">${esc(t('dmf.invite.send'))}</small>

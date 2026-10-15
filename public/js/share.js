@@ -304,7 +304,7 @@ const Share = (function () {
       ${l.checked ? '' : safetyHtml(l)}
       <label class="f"><span>${esc(t('share.offer.into'))}</span><select data-share-into>
         ${free.map(p => `<option value="${esc(p.slug)}">${esc(p.name)}</option>`).join('')}<option value="_new">${esc(t('share.offer.new'))}</option></select></label>
-      <input type="text" data-share-new placeholder="${esc(t('share.offer.newname'))}" value="${esc(l.theirName)}">
+      <label class="f"><span>${esc(t('share.offer.newlabel'))}</span><input type="text" data-share-new placeholder="${esc(t('share.offer.newname'))}" value="${esc(l.theirName)}"></label>
       <div class="share-ticks">${ticks('a-' + l.id + '-', DEFAULT)}</div>
       <div class="ib-err" data-share-err></div>
       <div class="actions"><button class="good" data-share-yes ${l.checked ? '' : 'disabled'} onclick="Share.acceptOffer('${l.id}')">${esc(t('share.offer.yes'))}</button>
