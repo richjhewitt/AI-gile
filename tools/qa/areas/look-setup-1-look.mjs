@@ -76,6 +76,7 @@ def('logos', 'a project picture and an app logo replace the emoji / 🗂️: upl
   check('home card shows the picture, not the emoji', !(await page.textContent('a.proj[href="#/p/tunio"] h2')).includes('🔭'));
   // Through the Look dialog: pick a file, then Remove.
   await page.goto(BASE + '/#/p/tunio');
+  if (!(await page.locator('button:has-text("Look")').first().isVisible().catch(() => false))) { await page.click('#tbDots'); await sleep(200); }   // Look is in the toolbar's More popover (AIG-1076)
   await page.click('button:has-text("Look")');
   const before = await page.getAttribute('#look-logo img.pic', 'src');
   await page.setInputFiles('#look-logo-file', file);
