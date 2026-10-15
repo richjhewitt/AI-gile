@@ -96,10 +96,32 @@ main { padding: 20px; }
 .column { background: var(--col); border-radius: var(--radius); padding: 10px; min-height: 120px; }
 .column h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); display: flex; justify-content: space-between; }
 /* AIG-1211: on a desktop a column scrolls inside itself, so Team and Log sit just under the board; its header stays in view. */
+/* AIG-1217: every column ends on the same line (the tallest one, at most down to the window bottom: --board-top is measured
+   by boardFit()); a slim scrollbar sits inside a 2px border, so the dashed For you / For the team edge is a border, never drawn
+   over the scrollbar or the cards; a soft fade at the bottom while there is more to scroll (.more, set by boardFit). */
 @media (min-width: 761px) {
-  .board { align-items: start; }
-  .board:not(.focus) .column { max-height: calc(100vh - 130px); overflow-y: auto; overscroll-behavior: contain; }
-  .board:not(.focus) .column h3 { position: sticky; top: -10px; z-index: 2; margin: -10px -10px 8px; padding: 10px 10px 6px; background: var(--col); }
+  .board:not(.focus) { align-items: stretch; }
+  .board:not(.focus) .column { max-height: max(360px, calc(100vh - var(--board-top, 130px) - 24px)); overflow-y: auto; overscroll-behavior: contain;
+    border: 2px solid transparent; padding: 8px; scrollbar-gutter: stable; scrollbar-width: auto; scrollbar-color: auto; }
+  .board:not(.focus) .column h3 { position: sticky; top: -8px; z-index: 2; margin: -8px -8px 8px; padding: 8px 8px 6px; min-height: 36px; box-sizing: border-box; background: var(--col); }
+  .board:not(.focus) .column.scrolled h3 { box-shadow: 0 1px 0 var(--line); }   /* cards slide under the header: a hairline marks its edge */
+  :where(:root[data-theme=black]) .board:not(.focus) .column { border-color: color-mix(in srgb, var(--line) 75%, transparent); }   /* black columns are the page colour: a thin line shows where each ends */
+  .board:not(.focus) .column[data-status=verify] { outline: 0; border: 2px dashed var(--you); }
+  .board:not(.focus) .column[data-status=team] { outline: 0; border: 2px dashed #e11d74; }
+  .board:not(.focus) .column.dragover { outline: 0; border: 2px dashed var(--accent); }
+  .board:not(.focus) .column::-webkit-scrollbar { width: 8px; }
+  .board:not(.focus) .column::-webkit-scrollbar-track { background: transparent; margin: 34px 0 6px; }
+  .board:not(.focus) .column::-webkit-scrollbar-thumb { background-color: color-mix(in srgb, var(--muted) 30%, transparent); border-radius: 99px; border: 2px solid transparent; background-clip: padding-box; }
+  .board:not(.focus) .column:hover::-webkit-scrollbar-thumb { background-color: color-mix(in srgb, var(--muted) 55%, transparent); }
+  .board:not(.focus) .column::-webkit-scrollbar-thumb:hover { background-color: var(--muted); }
+  .board:not(.focus) .column.foryou::-webkit-scrollbar-thumb { background-color: color-mix(in srgb, var(--you) 45%, transparent); }
+  .board:not(.focus) .column.foryou:hover::-webkit-scrollbar-thumb { background-color: color-mix(in srgb, var(--you) 75%, transparent); }
+  .board:not(.focus) .column.more::after { content: ""; display: block; position: sticky; bottom: -8px; z-index: 1; height: 36px; margin: -36px -8px -8px; pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--col) 85%); }
+  .board:not(.focus) .column[style] { border-top: 4px solid var(--colc); }
+}
+@supports not selector(::-webkit-scrollbar) {   /* Firefox: no ::-webkit-scrollbar, so the standard thin one in the theme colour */
+  @media (min-width: 761px) { .board:not(.focus) .column { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent; } }
 }
 .team-all { margin-top: 8px; }
 .column h3 { gap: 6px; align-items: center; }   /* AIG-1083: the name takes one line with an ellipsis, the count and buttons stay on the right */

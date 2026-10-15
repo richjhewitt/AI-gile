@@ -329,8 +329,22 @@ async function poke(id) {
 }
 
 
+/* ---------- board fit (AIG-1217) ---------- */
+// The columns end at the window bottom, wherever the board starts (the toolbar wraps to one or more rows): --board-top
+// is the board's top on the page. A column with more below its fold gets .more (the soft fade at its bottom).
+const colFade = c => { c.classList.toggle('more', c.scrollHeight - c.scrollTop - c.clientHeight > 4); c.classList.toggle('scrolled', c.scrollTop > 2); };
+function boardFit(again = true) {
+  const b = document.querySelector('.board'); if (!b) return;
+  const top = Math.round(b.getBoundingClientRect().top + window.scrollY) + 'px', root = document.documentElement.style;
+  if (root.getPropertyValue('--board-top') !== top) root.setProperty('--board-top', top);
+  document.querySelectorAll('.board .column').forEach(colFade);
+  if (again) requestAnimationFrame(() => boardFit(false));   // the filter bar and top bar paint just after the board: measure once more
+}
+window.addEventListener('resize', () => boardFit());
+
 /* ---------- drag and drop (native HTML5) ---------- */
 const app = $('app');
+app.addEventListener('scroll', e => { if (e.target.classList?.contains('column')) colFade(e.target); }, true);
 app.addEventListener('dragstart', e => {
   const el = e.target.closest?.('.card'); if (!el) return;
   state.dragging = true;
