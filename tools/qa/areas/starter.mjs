@@ -19,7 +19,8 @@ def('starter', '📥 Import without AI: starter cards from README to-dos, TODO/F
   await s.ok('POST', '/api/notokens', { on: true });
   const r = await s.ok('POST', `/api/projects/${slug}/starter`, { lang: 'en' });
   await s.ok('POST', '/api/notokens', { on: false });
-  const cards = (await s.ok('GET', '/api/projects/' + slug)).cards, titles = cards.map(c => c.title);
+  const whole = async (sl, list) => Promise.all(list.map(c => c.light ? s.ok('GET', `/api/projects/${sl}/cards/${c.id}`) : c)); // done cards come light (AIG-1100)
+  const cards = await whole(slug, (await s.ok('GET', '/api/projects/' + slug)).cards), titles = cards.map(c => c.title);
   check('starter cards made while No Token Mode is on, all marked from import', r.added === cards.length && cards.length > 5 && cards.every(c => c.from === 'import' && /^From import/.test(c.description) && c.title.startsWith('📥')), titles);
   const done = cards.find(c => /Recently done/.test(c.title));
   check('recent history is one done card with the commit subjects', done && done.status === 'done' && /change number 5/.test(done.description) && /- first/.test(done.description), done);
@@ -36,7 +37,7 @@ def('starter', '📥 Import without AI: starter cards from README to-dos, TODO/F
   commit(big, 'init'); for (const b of 'abcdefgh') g(big, 'branch', 'br-' + b);
   g(big, 'checkout', '-q', '-b', 'side'); fs.writeFileSync(path.join(big, 'z'), '1'); commit(big, 'side'); g(big, 'checkout', '-q', '-');
   const s2 = await mk('Big One', 'BIG', big.replace(/\\/g, '/')); await s.ok('POST', `/api/projects/${s2}/starter`, { lang: 'nl-BE' });
-  const bc = (await s.ok('GET', '/api/projects/' + s2)).cards;
+  const bc = await whole(s2, (await s.ok('GET', '/api/projects/' + s2)).cards);
   check('capped at 25 cards with short titles', bc.length <= 25 && bc.length >= 15 && bc.every(c => c.title.length <= 82), bc.length);
   check('Dutch texts for nl-BE', bc.some(c => /Wek het team/.test(c.title)) && bc.some(c => /Onlangs klaar/.test(c.title)) && bc.every(c => /^Uit import/.test(c.description)));
   const nl = await s.ok('POST', `/api/projects/${slug}/starter`, { lang: 'nl' });
