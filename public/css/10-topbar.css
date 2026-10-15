@@ -86,6 +86,10 @@ body.no-power :is(#streamBtn, #twitchBtn, #ntBtn, #tiredBtn, #assumeNav, #glance
 #tbMoreMenu > .navlink, #tbMoreMenu > .theme-pick, #tbMoreMenu > button { display: flex; align-items: center; justify-content: flex-start; text-align: start; }
 #tbMoreMenu > span:empty, #tbMoreMenu > [hidden] { display: none; }
 #tbMoreMenu > .imm-wrap:not([hidden]) { display: flex; }
+#tbMoreMenu > .tb-custom { margin-top: 4px; border-top: 1px solid var(--line); padding-top: 8px; }
+#topbarBox.tb-flash { animation: tbFlash 1.6s ease-out 1; border-radius: 8px; }
+@keyframes tbFlash { from { box-shadow: 0 0 0 3px var(--accent); } to { box-shadow: 0 0 0 3px transparent; } }
+@media (prefers-reduced-motion: reduce) { #topbarBox.tb-flash { animation: none; outline: 2px solid var(--accent); } }
 .tb-pins { margin-top: 12px; } .tb-pinlist { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; }
 .tb-pin { display: inline-flex; align-items: center; gap: 4px; }
 @media (max-width: 600px) {

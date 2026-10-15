@@ -83,7 +83,7 @@ async function startTrial(btn) {
 // ---- setup: your name and where the agent lives on this computer, saved to aigile.local.json ----
 function renderSetup() {
   const s = state.setup;
-  const secs = ["lang","look","plan","teams","discord","mail","servers","phone","storage","you","more"];
+  const secs = ["lang","look","plan","teams","discord","mail","servers","phone","calls","storage","you","more"];
   return `<div class="setup">${state.route && state.route.pop ? '' : `<button type="button" class="dlg-pop" id="setupPop" title="${esc(t('popout.title'))}" onclick="popOutSetup()">${esc(t('popout.btn'))}</button>`}<h2>${esc(t('setup.h'))}</h2>
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>
     <div class="set-sec set-wiz" id="wizBox"><button type="button" id="wzRun" onclick="wizardStart()">${esc(t('wz.btn'))}</button><small class="muted">${esc(t('wz.btn.help'))}</small></div>
@@ -123,6 +123,9 @@ function renderSetup() {
     </section>
     <section class="set-sec" id="sec-phone"><h3 class="set-h">${esc(t('setup.sec.phone'))}</h3>
     <div class="f" id="phoneBox">${Phone.html()}</div>
+    </section>
+    <section class="set-sec" id="sec-calls"><h3 class="set-h">${esc(t('setup.sec.calls'))}</h3>
+    <div class="f" id="callsBox">${(CallSetup.reset(), CallSetup.html())}</div>
     </section>
     <section class="set-sec" id="sec-storage"><h3 class="set-h">${esc(t('setup.sec.storage'))}</h3>
     <div class="f" id="storageBox">${(Storage.d = undefined, Storage.html())}</div>
