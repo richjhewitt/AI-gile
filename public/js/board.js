@@ -125,6 +125,7 @@ function renderBoard(p) {
       ${compact ? '' : `<button onclick="askTeamDialog()" title="${esc(t('board.ask.title'))}">${esc(t('board.ask'))}</button>`}
       <select class="lanesel" title="${esc(t('lanes.title'))}" onchange="setLanes(this.value)">${lanesList().map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
       ${compact ? '' : `<button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>`}
+      <button type="button" id="pickBtn" class="${state.pickMode ? 'primary' : ''}" aria-pressed="${state.pickMode ? 'true' : 'false'}" onclick="togglePickMode()" title="${esc(t('pick.mode.title'))}">${esc(t('pick.mode'))}</button>
       ${standupButtons(p)}
       <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
       <button onclick="location.hash='#/stats/${esc(p.slug)}'" title="${esc(t('stats.btn.title'))}">${esc(t('stats.title'))}</button>
@@ -155,6 +156,7 @@ function renderBoard(p) {
     ${Spaces.boardHtml(p, projCard)}
     ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path || (NoAi.on && p.lifeBoard) ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.start', { add: esc(t('board.new')), connect: esc(t('board.connect')) })}</div>`}
     ${board}
+    ${pickBarHtml(p)}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}${team.length ? `<button class="bm-btn" onclick="badgeDialog()" title="${esc(t('badge.title.hint'))}">${esc(t('badge.title'))}</button>` : ''}</h3>${shownTeam.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${shownTeam.map(m =>
         `<tr><td><span onclick="badgeDialog('${esc(m.name).replace(/'/g, '&#39;')}')" style="cursor:pointer">${face(m.name, team)}</span><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t(team.length ? 'board.team.quiet' : 'board.team.none'))}</p>`}${folded ? `<button type="button" class="team-all" onclick="toggleTeamAll()">${esc(showAll ? t('board.team.active') : t('board.team.showall', { n: folded }))}</button>` : ''}</div>
@@ -307,10 +309,10 @@ function cardHtml(c) {
   const live = ['doing', 'review'].includes(c.status), heard = live && lastHeard(c);
   const stale = live && Date.now() - new Date(heard.at) > STALE_MS;
   const view = cardViewOf(state.project);
-  const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : '', c.priority === 'urgent' && c.status !== 'done' ? 'is-urgent' : '', c.type === 'incident' && c.status !== 'done' ? 'is-incident' : '', isWaitingCard(c) ? 'is-waiting' : ''].join(' ');
+  const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : '', c.priority === 'urgent' && c.status !== 'done' ? 'is-urgent' : '', c.type === 'incident' && c.status !== 'done' ? 'is-incident' : '', isWaitingCard(c) ? 'is-waiting' : '', isPicked(c.id) ? 'picked' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}"${forYou(c) ? ` onclick="return fyCardClick(event, '${c.id}')"` : ''} data-id="${c.id}" draggable="true" style="display:block">
     <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${c.forFriend ? ` <span class="share-mark">${esc(t('featreq.for', { name: c.forFriend }))}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}${urgentBtn(c, state.project.slug)}${forYou(c) ? `<button class="ib-popone" title="${esc(t('inbox.popone'))}" onclick="event.preventDefault();event.stopPropagation();window.open('#/pop/${state.project.slug}/${c.id}', 'aigile-${state.project.slug}-${c.id}', 'width=560,height=780')">⤢</button>` : ''}</div>${forYou(c) ? queueChips(c) : ''}
-    <div class="t">${esc(c.title)}</div>${deskBadge(c)}
+    <div class="t">${esc(c.title)}</div>${deskBadge(c)}${inCommentOnly(c, state.project.slug) ? `<div class="incomment muted">${esc(t('filter.incomment'))}</div>` : ''}
     ${live ? `<div class="heard">💬 ${esc(heard.who)} ${ago(heard.at)}${heard.text ? ': ' + esc(heard.text.slice(0, 60).replace(/\n/g, ' ')) : ''}</div>` : ''}
     <div class="meta">${metaHtml(c, view.show)}${live ? `<button class="poke ai-only${stale ? ' hot' : ''}" title="${esc(t('card.poke.title'))}" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">${esc(t('card.poke'))}</button>` : ''}</div></a>`;
 }
@@ -378,6 +380,74 @@ app.addEventListener('drop', async e => {
   try { await api('PATCH', `/api/projects/${slug()}/cards/${id}`, { status, step }); }
   catch (err) { alert(t('board.movefail', { msg: err.message })); }
   rerender();
+});
+
+/* ---------- pick several cards, move them together (AIG-1266) ---------- */
+// Ctrl/Cmd-click ticks a card, Shift-click ticks the run from the last one in the same column, and the ☑ Pick button makes
+// every plain click a tick (touch). A bar then shows "N picked", the columns to move them to, and Clear; Esc clears.
+// The move is one PATCH per card; one ↩ Undo (js/undo.js custom) puts them all back.
+const isPicked = id => !!(state.picked && state.picked.ids.has(id));
+function pickedIds(p) {
+  if (!state.picked || state.picked.slug !== p.slug) return [];
+  const have = new Set(p.cards.map(c => c.id));
+  for (const id of [...state.picked.ids]) if (!have.has(id)) state.picked.ids.delete(id);
+  return [...state.picked.ids];
+}
+function pickBarHtml(p) {
+  const ids = pickedIds(p); if (!ids.length) return '';
+  const cols = colsOf(p).filter(x => !x.hidden);
+  return `<div class="pickbar" id="pickBar" role="region" aria-label="${esc(t('pick.n', { n: ids.length }))}"><b id="pickN">${esc(t('pick.n', { n: ids.length }))}</b> <span class="muted">${esc(t('pick.moveto'))}</span>${cols.map(x => `<button type="button" data-pickcol="${esc(x.key)}" onclick="pickMove('${esc(x.key)}')">${esc(((x.emoji ? x.emoji + ' ' : '') + x.name).trim())}</button>`).join('')}<button type="button" id="pickClear" onclick="pickClear()">${esc(t('pick.clear'))}</button></div>`;
+}
+function pickClear() { state.picked = null; state.pickAnchor = null; renderBoardOnly(); }
+function togglePickMode() { state.pickMode = !state.pickMode; renderBoardOnly(); }
+function pickToggle(id, range) {
+  const p = state.project; if (!p) return;
+  if (!state.picked || state.picked.slug !== p.slug) state.picked = { slug: p.slug, ids: new Set() };
+  const el = document.querySelector(`.card[data-id="${id}"]`), col = el && el.closest('.column'), a = state.pickAnchor;
+  if (range && a && col && a.col === col.dataset.status + '|' + (col.dataset.step || '')) {
+    const list = [...col.querySelectorAll('.card[data-id]')].map(x => x.dataset.id), i = list.indexOf(a.id), j = list.indexOf(id);
+    if (i >= 0 && j >= 0) for (const x of list.slice(Math.min(i, j), Math.max(i, j) + 1)) state.picked.ids.add(x);
+  } else if (state.picked.ids.has(id)) state.picked.ids.delete(id);
+  else state.picked.ids.add(id);
+  if (col) state.pickAnchor = { id, col: col.dataset.status + '|' + (col.dataset.step || '') };
+  if (!state.picked.ids.size) state.picked = null;
+  renderBoardOnly();
+}
+async function pickMove(status) {
+  const p = state.project, ids = pickedIds(p); if (!ids.length) return;
+  const slugNow = p.slug, moved = [];
+  let skipped = 0;
+  for (const id of ids) {
+    const c = p.cards.find(x => x.id === id); if (!c) continue;
+    if (c.status === status) continue;
+    if (c.type === 'incident' && status === 'done') { skipped++; continue; }   // an incident needs its post-mortem: move it by hand
+    moved.push({ id, status: c.status, step: c.step || '' });
+    c.status = status; c.step = ''; c.updated = new Date().toISOString();
+  }
+  state.picked = null; state.pickAnchor = null; render();
+  let failed = 0;
+  const done = [];
+  for (const m of moved) {
+    try { await api('PATCH', `/api/projects/${slugNow}/cards/${m.id}`, { status, step: '' }); done.push(m); } catch { failed++; }
+  }
+  if (failed) alert(t('board.movefail', { msg: failed + ' / ' + moved.length }));
+  if (skipped) note(t('pick.skipped', { n: skipped }));
+  if (done.length && window.Undo) Undo.custom(t('pick.moved', { n: done.length, col: Undo.colName(slugNow, status) }), async () => {
+    for (const m of done) await api('PATCH', `/api/projects/${slugNow}/cards/${m.id}`, { status: m.status, step: m.step });
+  });
+  rerender();
+}
+app.addEventListener('mousedown', e => { if (e.shiftKey && e.target.closest?.('.card[data-id]')) e.preventDefault(); });   // Shift-click would select text
+app.addEventListener('click', e => {
+  const el = e.target.closest?.('.card[data-id]'); if (!el || !el.closest('.board') || e.target.closest('button, select, input')) return;
+  const ctrl = e.ctrlKey || e.metaKey;
+  if (!(ctrl || e.shiftKey || state.pickMode)) return;
+  e.preventDefault(); e.stopPropagation(); pickToggle(el.dataset.id, e.shiftKey && !ctrl);
+}, true);
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || !state.picked || document.querySelector('#dialog .dialog')) return;
+  const x = e.target, tag = x && x.tagName; if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag) || (x && x.isContentEditable)) return;
+  pickClear();
 });
 
 /* ---------- long-press Move to sheet (AIG-1200): touch only, the mouse keeps drag ---------- */

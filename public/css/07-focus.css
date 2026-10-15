@@ -22,3 +22,9 @@ html[data-focus] body { overflow: hidden; }
 .undo-bar[hidden] { display: none; }
 .undo-bar button { background: transparent; color: #93c5fd; border: 1px solid #93c5fd; border-radius: 8px; padding: 3px 10px; cursor: pointer; font-weight: 600; }
 .undo-bar button:empty { display: none; }
+/* AIG-1265: card found only in a comment; AIG-1266: picked cards and the pick bar */
+.card .incomment { font-size: 11px; margin-top: 2px; }
+.card.picked { outline: 2px solid var(--accent); outline-offset: -2px; background: color-mix(in srgb, var(--accent) 12%, var(--panel)); }
+.pickbar { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 9998; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 10px 14px; border-radius: 10px; background: var(--panel); color: var(--text); border: 1px solid var(--accent); box-shadow: 0 6px 24px rgba(0,0,0,.35); font-size: 14px; max-width: 94vw; }
+.pickbar button { padding: 3px 10px; }
+@media (max-width: 600px) { .pickbar { left: 8px; right: 8px; transform: none; max-width: none; bottom: 8px; } }
