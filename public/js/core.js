@@ -508,6 +508,7 @@ function renderBoardOnly() {
   if (state.route.view !== 'home' && !(state.route.view === 'project' && state.project)) return;
   $('app').innerHTML = state.route.view === 'home' ? renderHome() : renderBoard(state.project);
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
+  boardFit();   // AIG-1217: columns end at the window bottom, fade while there is more
   for (const [key, y] of keepCols) if (y) { const c = [...document.querySelectorAll('.column')].find(c => c.dataset.status + '|' + (c.dataset.step || '') === key); if (c) c.scrollTop = y; }
 }
 
@@ -571,6 +572,7 @@ function render() {
   if (!card) state.editing = false;
   paintModal(card ? renderCard(p, card) : '');
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
+  boardFit();   // AIG-1217
   for (const [key, y] of keepCols) if (y) { const c = [...document.querySelectorAll('.column')].find(c => c.dataset.status + '|' + (c.dataset.step || '') === key); if (c) c.scrollTop = y; }
   const pn = document.querySelector('#modal .panel'); if (pn) pn.scrollTop = keepScroll;
 }

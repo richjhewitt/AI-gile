@@ -412,6 +412,12 @@ def('boardscroll', 'columns scroll inside themselves on a desktop, Team stays in
   await page.reload(); await page.waitForSelector('.side');
   const col = await page.$eval('.column[data-status=todo]', e => ({ sh: e.scrollHeight, ch: e.clientHeight, oy: getComputedStyle(e).overflowY }));
   check('a long column scrolls inside itself', col.oy === 'auto' && col.sh > col.ch, col);
+  // AIG-1217: every column ends on the same line, inside the window; the For you dashed edge is a border, so the scrollbar sits inside it.
+  const fit = await page.$$eval('.board .column', cs => cs.map(c => { const r = c.getBoundingClientRect(); return [Math.round(r.bottom), Math.round(r.height)]; }));
+  check('all columns end on the same line, inside the window (or at their 360px floor)', new Set(fit.map(f => f[0])).size === 1 && (fit[0][0] <= 800 || fit[0][1] <= 362), fit);
+  const fy = await page.$eval('.column[data-status=verify]', e => { const s = getComputedStyle(e); return s.borderTopStyle + ' ' + s.outlineStyle; });
+  check('the For you dashed edge is a border, not an outline over the scrollbar', fy === 'dashed none', fy);
+  check('a column with more below its fold fades at the bottom', await page.$eval('.column[data-status=todo]', e => e.classList.contains('more')));
   const top = await page.$eval('.side', e => e.getBoundingClientRect().top);
   const bt = await page.$eval('.board', e => e.getBoundingClientRect().top);
   check('Team and Log sit within one screen of the board, not 60 cards down', top - bt < 800, [bt, top]);
