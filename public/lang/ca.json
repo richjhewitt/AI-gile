@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Afegeix primer el teu ID d'usuari de Discord (mira \"o enganxa un ID d'usuari\").",
  "dc.hello.noserver": "Discord només deixa que el bot t'escrigui si compartiu un servidor. Afegeix el bot a un servidor on siguis i torna-ho a provar.",
  "dc.hello.invite": "Afegeix el bot al teu servidor",
- "dc.hello.retry": "Torna-ho a provar"
+ "dc.hello.retry": "Torna-ho a provar",
+ "phone.tun.on": "Activa",
+ "phone.tun.step2.h": "Vincula un telèfon",
+ "phone.tun.pairwait": "Activa primer el túnel i després crea el codi aquí.",
+ "phone.tun.why.auth": "el servidor no ha acceptat la clau (comprova el fitxer de clau a Els meus servidors)",
+ "phone.tun.why.net": "no s'ha pogut arribar al servidor (comprova'n l'adreça i la teva connexió)",
+ "phone.tun.why.port": "el port ja s'està fent servir al servidor",
+ "phone.tun.why.gone": "aquest servidor ja no està desat a Els meus servidors",
+ "phone.alt.h": "Altres maneres (Tailscale)"
 }

@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Fara ƙara ID ɗin mai amfani da Discord naka (duba \"ko ka liƙa ID ɗin mai amfani\").",
  "dc.hello.noserver": "Discord yana barin bot ya yi maka saƙo ne kawai idan kuna cikin uwar garke ɗaya. Ƙara bot ɗin zuwa uwar garken da kake ciki, sannan ka sake gwadawa.",
  "dc.hello.invite": "Ƙara bot ɗin zuwa uwar garkenka",
- "dc.hello.retry": "Sake gwadawa"
+ "dc.hello.retry": "Sake gwadawa",
+ "phone.tun.on": "Kunna",
+ "phone.tun.step2.h": "Haɗa waya",
+ "phone.tun.pairwait": "Fara kunna ramin da farko, sannan ka yi lambar a nan.",
+ "phone.tun.why.auth": "uwar garken ba ta karɓi maɓallin ba (duba fayil ɗin maɓalli a cikin Uwar garkena)",
+ "phone.tun.why.net": "ba a iya isa ga uwar garken ba (duba adireshinta da haɗin intanet ɗinka)",
+ "phone.tun.why.port": "ana amfani da tashar jiragen ruwa a uwar garken tuni",
+ "phone.tun.why.gone": "ba a adana wannan uwar garken a cikin Uwar garkena ba yanzu",
+ "phone.alt.h": "Wasu hanyoyi (Tailscale)"
 }

@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Ychwanegwch eich ID defnyddiwr Discord yn gyntaf (gweler \"neu gludwch ID Defnyddiwr\").",
  "dc.hello.noserver": "Dim ond os ydych chi'n rhannu gweinydd gyda'r bot y mae Discord yn gadael iddo anfon neges atoch. Ychwanegwch y bot at weinydd rydych chi ynddo, yna rhowch gynnig arall arni.",
  "dc.hello.invite": "Ychwanegu'r bot at eich gweinydd",
- "dc.hello.retry": "Rhoi cynnig arall arni"
+ "dc.hello.retry": "Rhoi cynnig arall arni",
+ "phone.tun.on": "Troi ymlaen",
+ "phone.tun.step2.h": "Paru ffôn",
+ "phone.tun.pairwait": "Trowch y twnnel ymlaen yn gyntaf, yna gwnewch y cod yma.",
+ "phone.tun.why.auth": "ni dderbyniodd y gweinydd yr allwedd (gwiriwch ffeil yr allwedd yn Fy ngweinyddion)",
+ "phone.tun.why.net": "doedd dim modd cyrraedd y gweinydd (gwiriwch ei gyfeiriad a'ch cysylltiad)",
+ "phone.tun.why.port": "mae'r porth eisoes yn cael ei ddefnyddio ar y gweinydd",
+ "phone.tun.why.gone": "nid yw'r gweinydd hwnnw wedi'i gadw yn Fy ngweinyddion bellach",
+ "phone.alt.h": "Ffyrdd eraill (Tailscale)"
 }

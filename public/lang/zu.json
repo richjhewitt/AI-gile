@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Qala ngokungeza i-ID yakho yomsebenzisi we-Discord (bheka \"or paste a User ID\").",
  "dc.hello.noserver": "I-Discord ivumela ibhothi ukuthi ikuthumelele imiyalezo kuphela uma nabelana ngeseva. Engeza ibhothi eseveni ohlala kuyo, bese uzama futhi.",
  "dc.hello.invite": "Engeza ibhothi eseveni yakho",
- "dc.hello.retry": "Zama futhi"
+ "dc.hello.retry": "Zama futhi",
+ "phone.tun.on": "Vula",
+ "phone.tun.step2.h": "Bhanqa ifoni",
+ "phone.tun.pairwait": "Qala ngokuvula umhume, bese wenza ikhodi lapha.",
+ "phone.tun.why.auth": "iseva ayamukelanga ukhiye (hlola ifayela likakhiye ku-My servers)",
+ "phone.tun.why.net": "iseva ayikwazanga ukufinyelelwa (hlola ikheli layo nokuxhumeka kwakho)",
+ "phone.tun.why.port": "imbobo isivele isetshenziswa kuseva",
+ "phone.tun.why.gone": "leyo seva ayisagcinwe ku-My servers",
+ "phone.alt.h": "Ezinye izindlela (Tailscale)"
 }

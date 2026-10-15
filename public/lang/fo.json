@@ -3863,5 +3863,13 @@
  "dc.hello.needid": "Legg fyrst títt Discord brúkara-ID aftrat (sí \"ella set brúkara-ID inn\").",
  "dc.hello.noserver": "Discord letur botturin bert senda tær boð, um tit deila ein ambætara. Legg botturin til ein ambætara, sum tú ert á, og royn aftur.",
  "dc.hello.invite": "Legg botturin til ambætaran hjá tær",
- "dc.hello.retry": "Royn aftur"
+ "dc.hello.retry": "Royn aftur",
+ "phone.tun.on": "Tendra",
+ "phone.tun.step2.h": "Para ein telefon",
+ "phone.tun.pairwait": "Tendra tunnilin fyrst, ger síðani koduna her.",
+ "phone.tun.why.auth": "ambætarin góðtók ikki lykilin (kanna lykilfílu í Mínir ambætarar)",
+ "phone.tun.why.net": "ambætarin kundi ikki røkkast (kanna adressuna og sambandið hjá tær)",
+ "phone.tun.why.port": "portin er longu í brúki á ambætaranum",
+ "phone.tun.why.gone": "hesin ambætarin er ikki longur goymdur í Mínir ambætarar",
+ "phone.alt.h": "Aðrar mátar (Tailscale)"
 }

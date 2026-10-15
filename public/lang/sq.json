@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Shto së pari ID-në tënde të përdoruesit në Discord (shih \"or paste a User ID\").",
  "dc.hello.noserver": "Discord e lejon botin të të shkruajë vetëm nëse ndani një server me të. Shtoje botin në një server ku je ti, pastaj provo përsëri.",
  "dc.hello.invite": "Shtoje botin në serverin tënd",
- "dc.hello.retry": "Provo përsëri"
+ "dc.hello.retry": "Provo përsëri",
+ "phone.tun.on": "Ndize",
+ "phone.tun.step2.h": "Çifto një telefon",
+ "phone.tun.pairwait": "Ndiz së pari tunelin, pastaj krijo kodin këtu.",
+ "phone.tun.why.auth": "serveri nuk e pranoi çelësin (kontrollo skedarin e çelësit te My servers)",
+ "phone.tun.why.net": "serveri nuk u arrit dot (kontrollo adresën e tij dhe lidhjen tënde)",
+ "phone.tun.why.port": "porta është tashmë në përdorim në server",
+ "phone.tun.why.gone": "ai server nuk është më i ruajtur te My servers",
+ "phone.alt.h": "Mënyra të tjera (Tailscale)"
 }

@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Pêşî ID-ya bikarhênerê xwe ya Discord zêde bike (binêre \"an ID-yeke bikarhêner bixe\").",
  "dc.hello.noserver": "Discord tenê dihêle ku bot ji te re binivîse eger hûn serverekê parve bikin. Bot li serverekê ya ku tu tê de yî zêde bike, paşê dîsa biceribîne.",
  "dc.hello.invite": "Bot li serverê xwe zêde bike",
- "dc.hello.retry": "Dîsa biceribîne"
+ "dc.hello.retry": "Dîsa biceribîne",
+ "phone.tun.on": "Vekirin",
+ "phone.tun.step2.h": "Têlefonekê girê bide",
+ "phone.tun.pairwait": "Pêşî tunelê vekin, paşê kodê li vir çêkin.",
+ "phone.tun.why.auth": "server mifte qebûl nekir (pelê mifteyê di My servers de kontrol bike)",
+ "phone.tun.why.net": "gihîştina serverê nebû (navnîşana wê û girêdana xwe kontrol bike)",
+ "phone.tun.why.port": "port jixwe li ser serverê tê bikaranîn",
+ "phone.tun.why.gone": "ew server êdî di My servers de nehatiye tomarkirin",
+ "phone.alt.h": "Rêyên din (Tailscale)"
 }

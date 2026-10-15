@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "4dd y0ur D15c0rd u53r 1D f1r57 (533 \"0r p4573 4 U53r 1D\").",
  "dc.hello.noserver": "D15c0rd 0nly l37s 7h3 b07 m3554g3 y0u 1f y0u 5h4r3 4 53rv3r w17h 17. 4dd 7h3 b07 70 4 53rv3r y0u 4r3 1n, 7h3n 7ry 4g41n.",
  "dc.hello.invite": "4dd 7h3 b07 70 y0ur 53rv3r",
- "dc.hello.retry": "7ry 4g41n"
+ "dc.hello.retry": "7ry 4g41n",
+ "phone.tun.on": "7urn 0n",
+ "phone.tun.step2.h": "P41r 4 ph0n3",
+ "phone.tun.pairwait": "7urn 0n 7h3 7unn3l f1r57, 7h3n m4k3 7h3 c0d3 h3r3.",
+ "phone.tun.why.auth": "7h3 53rv3r d1d n07 4cc3p7 7h3 k3y (ch3ck 7h3 k3y f1l3 1n My 53rv3r5)",
+ "phone.tun.why.net": "7h3 53rv3r c0uld n07 b3 r34ch3d (ch3ck 175 4ddr355 4nd y0ur c0nn3c710n)",
+ "phone.tun.why.port": "7h3 p0r7 15 4lr34dy 1n u53 0n 7h3 53rv3r",
+ "phone.tun.why.gone": "7h47 53rv3r 15 n0 l0ng3r 54v3d 1n My 53rv3r5",
+ "phone.alt.h": "07h3r w4y5 (Tailscale)"
 }

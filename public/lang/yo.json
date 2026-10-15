@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Kọ́kọ́ fi ID olùlò Discord rẹ kún un (wo \"or paste a User ID\").",
  "dc.hello.noserver": "Discord máa ń jẹ́ kí bot fi ìfiranṣẹ́ ránṣẹ́ sí ọ nìkan tí ẹ bá wà ní sẹ́fà kan náà. Fi bot kún sẹ́fà tí o wà, lẹ́yìn náà gbìyànjú lẹ́ẹ̀kan sí i.",
  "dc.hello.invite": "Fi bot kún sẹ́fà rẹ",
- "dc.hello.retry": "Gbìyànjú lẹ́ẹ̀kan sí i"
+ "dc.hello.retry": "Gbìyànjú lẹ́ẹ̀kan sí i",
+ "phone.tun.on": "Tan",
+ "phone.tun.step2.h": "So foonu pọ̀",
+ "phone.tun.pairwait": "Kọ́kọ́ tan ọ̀nà abẹ́lẹ̀ náà, lẹ́yìn náà ṣẹ̀dá kóòdù níbí.",
+ "phone.tun.why.auth": "olupin kò gba kọ́kọ́rọ́ náà (ṣàyẹ̀wò fáìlì kọ́kọ́rọ́ nínú My servers)",
+ "phone.tun.why.net": "a kò lè dé ọ̀dọ̀ olupin náà (ṣàyẹ̀wò àdírẹ́ẹ̀sì rẹ̀ àti asopọ̀ rẹ)",
+ "phone.tun.why.port": "ibudo náà ti wà ní lílò lórí olupin",
+ "phone.tun.why.gone": "olupin yẹn kò sí ní fipamọ́ mọ́ nínú My servers",
+ "phone.alt.h": "Àwọn ọ̀nà míì (Tailscale)"
 }

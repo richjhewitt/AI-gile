@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Tambahkan ID pengguna Discord kamu dulu (lihat \"atau tempel ID Pengguna\").",
  "dc.hello.noserver": "Discord hanya mengizinkan bot mengirim pesan kepadamu jika kalian berada di server yang sama. Tambahkan bot ke server yang kamu ikuti, lalu coba lagi.",
  "dc.hello.invite": "Tambahkan bot ke servermu",
- "dc.hello.retry": "Coba lagi"
+ "dc.hello.retry": "Coba lagi",
+ "phone.tun.on": "Nyalakan",
+ "phone.tun.step2.h": "Pasangkan ponsel",
+ "phone.tun.pairwait": "Nyalakan terowongan dulu, lalu buat kodenya di sini.",
+ "phone.tun.why.auth": "server tidak menerima kunci (cek berkas kunci di Server saya)",
+ "phone.tun.why.net": "server tidak dapat dijangkau (cek alamatnya dan koneksimu)",
+ "phone.tun.why.port": "port sudah dipakai di server",
+ "phone.tun.why.gone": "server itu tidak lagi tersimpan di Server saya",
+ "phone.alt.h": "Cara lain (Tailscale)"
 }

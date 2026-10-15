@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Najprej dodaj svoj uporabniški ID na Discordu (glej \"or paste a User ID\").",
  "dc.hello.noserver": "Discord dovoli botu, da ti piše, samo če imata skupen strežnik. Dodaj bota na strežnik, v katerem si, in poskusi znova.",
  "dc.hello.invite": "Dodaj bota na svoj strežnik",
- "dc.hello.retry": "Poskusi znova"
+ "dc.hello.retry": "Poskusi znova",
+ "phone.tun.on": "Vklopi",
+ "phone.tun.step2.h": "Seznani telefon",
+ "phone.tun.pairwait": "Najprej vklopite tunel, nato tukaj ustvarite kodo.",
+ "phone.tun.why.auth": "strežnik ni sprejel ključa (preverite datoteko s ključem v My servers)",
+ "phone.tun.why.net": "do strežnika ni bilo mogoče dostopati (preverite njegov naslov in svojo povezavo)",
+ "phone.tun.why.port": "vrata na strežniku so že v uporabi",
+ "phone.tun.why.gone": "ta strežnik ni več shranjen v My servers",
+ "phone.alt.h": "Drugi načini (Tailscale)"
 }

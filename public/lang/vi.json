@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Hãy thêm ID người dùng Discord của bạn trước (xem \"or paste a User ID\").",
  "dc.hello.noserver": "Discord chỉ cho bot nhắn tin cho bạn nếu hai bên ở chung một máy chủ. Hãy thêm bot vào một máy chủ bạn đang tham gia, rồi thử lại.",
  "dc.hello.invite": "Thêm bot vào máy chủ của bạn",
- "dc.hello.retry": "Thử lại"
+ "dc.hello.retry": "Thử lại",
+ "phone.tun.on": "Bật",
+ "phone.tun.step2.h": "Ghép nối điện thoại",
+ "phone.tun.pairwait": "Hãy bật đường hầm trước, rồi tạo mã ở đây.",
+ "phone.tun.why.auth": "máy chủ không chấp nhận khóa (kiểm tra tệp khóa trong My servers)",
+ "phone.tun.why.net": "không thể kết nối tới máy chủ (kiểm tra địa chỉ của nó và kết nối của bạn)",
+ "phone.tun.why.port": "cổng đã được dùng trên máy chủ",
+ "phone.tun.why.gone": "máy chủ đó không còn được lưu trong My servers",
+ "phone.alt.h": "Cách khác (Tailscale)"
 }

@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Cuir do ID úsáideora Discord leis ar dtús (féach \"nó greamaigh ID Úsáideora\").",
  "dc.hello.noserver": "Ní ligeann Discord don bhot teachtaireacht a sheoladh chugat ach amháin má roinneann tú freastalaí leis. Cuir an bot le freastalaí a bhfuil tú ann, ansin bain triail eile as.",
  "dc.hello.invite": "Cuir an bot le do fhreastalaí",
- "dc.hello.retry": "Bain triail eile as"
+ "dc.hello.retry": "Bain triail eile as",
+ "phone.tun.on": "Cuir ar siúl",
+ "phone.tun.step2.h": "Péireáil guthán",
+ "phone.tun.pairwait": "Cuir an tollán ar siúl ar dtús, ansin déan an cód anseo.",
+ "phone.tun.why.auth": "níor ghlac an freastalaí leis an eochair (seiceáil comhad na heochrach i Mo fhreastalaithe)",
+ "phone.tun.why.net": "níorbh fhéidir teacht ar an bhfreastalaí (seiceáil a sheoladh agus do nasc)",
+ "phone.tun.why.port": "tá an port in úsáid cheana féin ar an bhfreastalaí",
+ "phone.tun.why.gone": "níl an freastalaí sin sábháilte i Mo fhreastalaithe a thuilleadh",
+ "phone.alt.h": "Bealaí eile (Tailscale)"
 }

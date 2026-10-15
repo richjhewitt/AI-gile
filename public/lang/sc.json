@@ -3863,5 +3863,13 @@
  "dc.hello.needid": "Annanghe in antis s'ID de utente Discord tuo (vide \"o incolla un User ID\").",
  "dc.hello.noserver": "Discord permitit a su bot de t'iscrìere isceti si cumpartzides unu serbidore cun issu. Annanghe su bot a unu serbidore in ue ses, tando proa torra.",
  "dc.hello.invite": "Annanghe su bot a su serbidore tuo",
- "dc.hello.retry": "Proa torra"
+ "dc.hello.retry": "Proa torra",
+ "phone.tun.on": "Atzende",
+ "phone.tun.step2.h": "Aparella unu telèfonu",
+ "phone.tun.pairwait": "Atzende primu su tùnnel, a pustis crea su còdighe inoghe.",
+ "phone.tun.why.auth": "su serbidore no at atzetadu sa crae (controlla su file de sa crae in My servers)",
+ "phone.tun.why.net": "no est istadu possibile a ghetare a su serbidore (controlla s'indiritzu suo e sa connessione tua)",
+ "phone.tun.why.port": "sa porta est giai impreada in su serbidore",
+ "phone.tun.why.gone": "cussu serbidore no est prus sarvadu in My servers",
+ "phone.alt.h": "Àteras maneras (Tailscale)"
 }

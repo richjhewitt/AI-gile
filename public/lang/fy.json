@@ -3863,5 +3863,13 @@
  "dc.hello.needid": "Foegje earst jo Discord-brûkers-ID ta (sjoch \"of plak in brûkers-ID\").",
  "dc.hello.noserver": "Discord lit de bot jo allinnich berjochtsje as jo in tsjinner diele. Foegje de bot ta oan in tsjinner dêr't jo yn sitte en besykje it nochris.",
  "dc.hello.invite": "De bot tafoegje oan jo tsjinner",
- "dc.hello.retry": "Besykje it nochris"
+ "dc.hello.retry": "Besykje it nochris",
+ "phone.tun.on": "Oanmeitsje",
+ "phone.tun.step2.h": "Keppelje in tillefoan",
+ "phone.tun.pairwait": "Set earst de tunnel oan en meitsje dan de koade hjir.",
+ "phone.tun.why.auth": "de server akseptearre de kaai net (kontrolearje it kaaibestân yn Myn servers)",
+ "phone.tun.why.net": "de server wie net te berikken (kontrolearje it adres en jo ferbining)",
+ "phone.tun.why.port": "de poarte is al yn gebrûk op de server",
+ "phone.tun.why.gone": "dy server is net mear bewarre yn Myn servers",
+ "phone.alt.h": "Oare manieren (Tailscale)"
 }

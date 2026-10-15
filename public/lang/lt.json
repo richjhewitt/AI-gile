@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Pirmiausia įveskite savo Discord naudotojo ID (žr. „arba įklijuokite User ID“).",
  "dc.hello.noserver": "Discord leidžia botui rašyti jums tik tada, jei esate tame pačiame serveryje. Pridėkite botą prie serverio, kuriame esate, ir bandykite dar kartą.",
  "dc.hello.invite": "Pridėti botą prie savo serverio",
- "dc.hello.retry": "Bandyti dar kartą"
+ "dc.hello.retry": "Bandyti dar kartą",
+ "phone.tun.on": "Įjungti",
+ "phone.tun.step2.h": "Susieti telefoną",
+ "phone.tun.pairwait": "Pirmiausia įjunkite tunelį, tada čia sukurkite kodą.",
+ "phone.tun.why.auth": "serveris nepriėmė rakto (patikrinkite rakto failą skiltyje My servers)",
+ "phone.tun.why.net": "nepavyko pasiekti serverio (patikrinkite jo adresą ir ryšį)",
+ "phone.tun.why.port": "prievadas serveryje jau naudojamas",
+ "phone.tun.why.gone": "to serverio daugiau nėra išsaugoto skiltyje My servers",
+ "phone.alt.h": "Kiti būdai (Tailscale)"
 }

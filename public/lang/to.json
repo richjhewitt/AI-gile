@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Tānaki 'uluaki ho'o Discord user ID (sio ki he \"or paste a User ID\").",
  "dc.hello.noserver": "'Oku fakangofua pē 'e Discord 'a e bot ke fekau atu ha pōpoaki kapau 'oku mo 'i ha server tatau. Tānaki 'a e bot ki ha server 'oku ke 'i ai, pea toe feinga.",
  "dc.hello.invite": "Tānaki 'a e bot ki ho'o server",
- "dc.hello.retry": "Toe feinga"
+ "dc.hello.retry": "Toe feinga",
+ "phone.tun.on": "Tuku",
+ "phone.tun.step2.h": "Fakahoko ha telefoni",
+ "phone.tun.pairwait": "Tuku mua e ngaahi tunnel, pea ngaohi ai e koté ‘i heni.",
+ "phone.tun.why.auth": "na‘e ‘ikai tali ‘e he server ‘a e kī (sivi‘i e faile kī ‘i My servers)",
+ "phone.tun.why.net": "na‘e ‘ikai lava ‘o a‘u ki he server (sivi‘i hono tu‘asila mo ho‘o fehokotaki)",
+ "phone.tun.why.port": "kuo ‘osi ngāue‘aki e port ‘i he server",
+ "phone.tun.why.gone": "na‘e ‘ikai toe tauhi e server ko iá ‘i My servers",
+ "phone.alt.h": "Ngaahi founga kehe (Tailscale)"
 }

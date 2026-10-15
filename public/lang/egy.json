@@ -3875,5 +3875,13 @@
  "dc.hello.needid": "𓄿𓂧𓂧 𓇌𓅱𓅱𓂋 Discord 𓅱𓋴𓇋𓂋 𓇋𓂧 𓆑𓇋𓂋𓋴𓏏 (𓋴𓇋𓇋 \"𓅱𓂋 𓊪𓄿𓋴𓏏𓇋 𓄿 User ID\").",
  "dc.hello.noserver": "Discord 𓅱𓈖𓃭𓇌 𓃭𓇋𓏏𓋴 𓏏𓉔𓇋 𓃀𓅱𓏏 𓅓𓇋𓋴𓋴𓄿𓎼𓇋 𓇌𓅱𓅱 𓇋𓆑 𓇌𓅱𓅱 𓋴𓉔𓄿𓂋𓇋 𓄿 𓋴𓇋𓂋𓆑𓇋𓂋 𓅱𓇋𓏏𓉔 𓇋𓏏. 𓄿𓂧𓂧 𓏏𓉔𓇋 𓃀𓅱𓏏 𓏏𓅱 𓄿 𓋴𓇋𓂋𓆑𓇋𓂋 𓇌𓅱𓅱 𓄿𓂋𓇋 𓇋𓈖, 𓏏𓉔𓇋𓈖 𓏏𓂋𓇌 𓄿𓎼𓄿𓇋𓈖.",
  "dc.hello.invite": "𓄿𓂧𓂧 𓏏𓉔𓇋 𓃀𓅱𓏏 𓏏𓅱 𓇌𓅱𓅱𓂋 𓋴𓇋𓂋𓆑𓇋𓂋",
- "dc.hello.retry": "𓏏𓂋𓇌 𓄿𓎼𓄿𓇋𓈖"
+ "dc.hello.retry": "𓏏𓂋𓇌 𓄿𓎼𓄿𓇋𓈖",
+ "phone.tun.on": "𓇋𓏏𓂋𓃀",
+ "phone.tun.step2.h": "𓅱𓆑𓃭𓇋𓈖 𓋴𓅱𓅓𓅱𓋴",
+ "phone.tun.pairwait": "𓇋𓏏𓂋𓃀 𓏏𓉔𓇋 𓊪𓂋𓅱𓆓 𓅱𓆑𓃭𓇋𓈖 𓋴𓅱𓅓𓅱𓋴",
+ "phone.tun.why.auth": "𓋴𓅱𓅓𓅱𓋴 𓃭𓇋𓈖 𓅱𓆑𓃭 𓊪𓂋𓅱𓆓 (𓏏𓉔𓇋 𓋴𓅱𓅓𓅱𓋴)",
+ "phone.tun.why.net": "𓋴𓅱𓅓𓅱𓋴 𓃭𓇋𓈖 𓅱𓆑𓃭 𓏏𓉔𓇋 (𓊪𓂋𓅱𓆓)",
+ "phone.tun.why.port": "𓊪𓂋𓅱𓆓 𓅱𓆑𓃭𓇋𓈖 𓋴𓅱𓅓𓅱𓋴",
+ "phone.tun.why.gone": "𓋴𓅱𓅓𓅱𓋴 𓃭𓇋𓈖 𓅱𓆑𓃭𓇋𓈖 𓊪𓂋𓅱𓆓",
+ "phone.alt.h": "𓅱𓆑𓃭𓇋𓈖 𓋴𓅱𓅓𓅱𓋴 (Tailscale)"
 }

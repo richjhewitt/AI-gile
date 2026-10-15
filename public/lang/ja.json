@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "先に Discord のユーザー ID を追加してください(「またはユーザー ID を貼り付け」を参照)。",
  "dc.hello.noserver": "Discord では、ボットとサーバーを共有している場合にだけボットからメッセージを送れます。あなたが参加しているサーバーにボットを追加してから、もう一度お試しください。",
  "dc.hello.invite": "ボットをサーバーに追加",
- "dc.hello.retry": "もう一度試す"
+ "dc.hello.retry": "もう一度試す",
+ "phone.tun.on": "オンにする",
+ "phone.tun.step2.h": "スマホをペアリング",
+ "phone.tun.pairwait": "先にトンネルをオンにしてから、ここでコードを作ってください。",
+ "phone.tun.why.auth": "サーバーがキーを受け付けませんでした(「自分のサーバー」のキーファイルを確認してください)",
+ "phone.tun.why.net": "サーバーに接続できませんでした(アドレスと接続を確認してください)",
+ "phone.tun.why.port": "そのポートはサーバーですでに使われています",
+ "phone.tun.why.gone": "そのサーバーは「自分のサーバー」にもう保存されていません",
+ "phone.alt.h": "ほかの方法(Tailscale)"
 }

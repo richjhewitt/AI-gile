@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Lägg först till ditt användar-ID på Discord (se \"or paste a User ID\").",
  "dc.hello.noserver": "Discord låter bara boten skriva till dig om ni delar en server. Lägg till boten på en server du är med i och försök igen.",
  "dc.hello.invite": "Lägg till boten på din server",
- "dc.hello.retry": "Försök igen"
+ "dc.hello.retry": "Försök igen",
+ "phone.tun.on": "Slå på",
+ "phone.tun.step2.h": "Para ihop en telefon",
+ "phone.tun.pairwait": "Slå först på tunneln och skapa sedan koden här.",
+ "phone.tun.why.auth": "servern godtog inte nyckeln (kontrollera nyckelfilen i My servers)",
+ "phone.tun.why.net": "servern gick inte att nå (kontrollera dess adress och din anslutning)",
+ "phone.tun.why.port": "porten används redan på servern",
+ "phone.tun.why.gone": "den servern är inte längre sparad i My servers",
+ "phone.alt.h": "Andra sätt (Tailscale)"
 }

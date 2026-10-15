@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Prvo dodaj svoj Discord korisnički ID (vidi \"ili zalijepi korisnički ID\").",
  "dc.hello.noserver": "Discord dozvoljava botu da ti piše samo ako dijelite server. Dodaj bota na server na kojem si, pa pokušaj ponovo.",
  "dc.hello.invite": "Dodaj bota na svoj server",
- "dc.hello.retry": "Pokušaj ponovo"
+ "dc.hello.retry": "Pokušaj ponovo",
+ "phone.tun.on": "Uključi",
+ "phone.tun.step2.h": "Upari telefon",
+ "phone.tun.pairwait": "Prvo uključi tunel, zatim napravi kod ovdje.",
+ "phone.tun.why.auth": "server nije prihvatio ključ (provjeri datoteku ključa u Moji serveri)",
+ "phone.tun.why.net": "server nije bilo moguće dosegnuti (provjeri njegovu adresu i svoju vezu)",
+ "phone.tun.why.port": "port se već koristi na serveru",
+ "phone.tun.why.gone": "taj server više nije spremljen u Moji serveri",
+ "phone.alt.h": "Drugi načini (Tailscale)"
 }

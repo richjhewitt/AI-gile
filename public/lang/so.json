@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Marka hore ku dar aqoonsigaaga isticmaale ee Discord (eeg \"or paste a User ID\").",
  "dc.hello.noserver": "Discord wuxuu u ogolyahay botka inuu ku soo diro fariin kaliya haddii aad la wadaagtaan server. Ku dar botka server aad ku jirto, kaddibna isku day mar kale.",
  "dc.hello.invite": "Ku dar botka serverkaaga",
- "dc.hello.retry": "Isku day mar kale"
+ "dc.hello.retry": "Isku day mar kale",
+ "phone.tun.on": "Daar",
+ "phone.tun.step2.h": "Isku xidh taleefan",
+ "phone.tun.pairwait": "Marka hore daar tunnelka, ka dib halkan ka samee koodka.",
+ "phone.tun.why.auth": "serverku ma aqbalin furaha (hubi faylka furaha ee My servers)",
+ "phone.tun.why.net": "serverka lama gaadhi karin (hubi cinwaankiisa iyo isku xirkaaga)",
+ "phone.tun.why.port": "dekedda hore ayaa looga isticmaalayaa serverka",
+ "phone.tun.why.gone": "serverkaas mar dambe kuma kaydsana My servers",
+ "phone.alt.h": "Hababka kale (Tailscale)"
 }

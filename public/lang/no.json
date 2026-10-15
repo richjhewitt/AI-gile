@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Legg til Discord-bruker-ID-en din først (se «eller lim inn en User ID»).",
  "dc.hello.noserver": "Discord lar bare boten sende deg melding hvis dere er på samme server. Legg boten til en server du er på, og prøv igjen.",
  "dc.hello.invite": "Legg boten til serveren din",
- "dc.hello.retry": "Prøv igjen"
+ "dc.hello.retry": "Prøv igjen",
+ "phone.tun.on": "Slå på",
+ "phone.tun.step2.h": "Koble til en telefon",
+ "phone.tun.pairwait": "Slå på tunnelen først, og lag så koden her.",
+ "phone.tun.why.auth": "serveren godtok ikke nøkkelen (sjekk nøkkelfilen i My servers)",
+ "phone.tun.why.net": "serveren kunne ikke nås (sjekk adressen og tilkoblingen din)",
+ "phone.tun.why.port": "porten er allerede i bruk på serveren",
+ "phone.tun.why.gone": "den serveren er ikke lenger lagret i My servers",
+ "phone.alt.h": "Andre måter (Tailscale)"
 }

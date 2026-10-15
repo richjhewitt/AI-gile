@@ -3854,5 +3854,13 @@
  "dc.hello.needid": "Lisa esmalt oma Discordi kasutaja ID (vaata \"või kleebi kasutaja ID\").",
  "dc.hello.noserver": "Discord lubab botil sulle kirjutada ainult siis, kui jagate serverit. Lisa bot serverisse, kus oled, ja proovi uuesti.",
  "dc.hello.invite": "Lisa bot oma serverisse",
- "dc.hello.retry": "Proovi uuesti"
+ "dc.hello.retry": "Proovi uuesti",
+ "phone.tun.on": "Lülita sisse",
+ "phone.tun.step2.h": "Seo telefon",
+ "phone.tun.pairwait": "Lülita kõigepealt tunnel sisse, siis tee kood siin.",
+ "phone.tun.why.auth": "server ei võtnud võtit vastu (kontrolli võtmefaili jaotises Minu serverid)",
+ "phone.tun.why.net": "serverini ei jõutud (kontrolli selle aadressi ja oma ühendust)",
+ "phone.tun.why.port": "port on serveris juba kasutusel",
+ "phone.tun.why.gone": "seda serverit pole enam jaotises Minu serverid salvestatud",
+ "phone.alt.h": "Muud viisid (Tailscale)"
 }

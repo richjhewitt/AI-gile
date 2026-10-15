@@ -3842,5 +3842,13 @@
  "dc.hello.needid": "o pana e nimi ID Discord sina pini (o lukin e \"or paste a User ID\").",
  "dc.hello.noserver": "Discord li ken e toki tan jan bot taso la sina en ona li lon ma sama. o pana e jan bot lon ma sina, o toki sin.",
  "dc.hello.invite": "o pana e jan bot tawa ma sina",
- "dc.hello.retry": "o toki sin"
+ "dc.hello.retry": "o toki sin",
+ "phone.tun.on": "o open",
+ "phone.tun.step2.h": "o wan e ilo toki",
+ "phone.tun.pairwait": "o open e nasin anpa ni pi ilo, tan ni la o pali e nanpa ni lon ni.",
+ "phone.tun.why.auth": "ma ilo li kama ala e ijo open (o lukin e lipu open lon My servers)",
+ "phone.tun.why.net": "ilo ma li ken ala kute (o lukin e nasin ona e nasin sina)",
+ "phone.tun.why.port": "kulupu nasin li kepeken lon ilo ma",
+ "phone.tun.why.gone": "ilo ma ni li lon ala My servers",
+ "phone.alt.h": "nasin ante (Tailscale)"
 }

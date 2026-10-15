@@ -3863,5 +3863,13 @@
  "dc.hello.needid": "Unue aldonu vian Discord-uzantidentigilon (vidu \"aŭ algluu uzantidentigilon\").",
  "dc.hello.noserver": "Discord permesas al la roboto mesaĝi vin nur se vi kunhavas servilon kun ĝi. Aldonu la roboton al servilo, en kiu vi estas, poste provu denove.",
  "dc.hello.invite": "Aldoni la roboton al via servilo",
- "dc.hello.retry": "Provi denove"
+ "dc.hello.retry": "Provi denove",
+ "phone.tun.on": "Ŝalti",
+ "phone.tun.step2.h": "Parigi telefonon",
+ "phone.tun.pairwait": "Unue ŝaltu la tunelon, poste kreu la kodon ĉi tie.",
+ "phone.tun.why.auth": "la servilo ne akceptis la ŝlosilon (kontrolu la ŝlosilan dosieron en Miaj serviloj)",
+ "phone.tun.why.net": "la servilo ne estis atingebla (kontrolu ĝian adreson kaj vian konekton)",
+ "phone.tun.why.port": "la pordo jam estas uzata ĉe la servilo",
+ "phone.tun.why.gone": "tiu servilo ne plu estas konservita en Miaj serviloj",
+ "phone.alt.h": "Aliaj manieroj (Tailscale)"
 }

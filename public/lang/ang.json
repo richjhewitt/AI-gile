@@ -3842,5 +3842,13 @@
  "dc.hello.needid": "Tōlecge ǣrest þīn Discord brūcendes ID (sēh \"oþþe þrēat ān Brūcendes ID\").",
  "dc.hello.noserver": "Discord lǣt þone bot þē ǣrendgewritan ānum gif gē ān server gemǣne habbaþ. Tōlecge þone bot tō servere þe þū on eart, and fandige eft.",
  "dc.hello.invite": "Tōlecge þone bot tō þīnum servere",
- "dc.hello.retry": "Fandige eft"
+ "dc.hello.retry": "Fandige eft",
+ "phone.tun.on": "Ontynd",
+ "phone.tun.step2.h": "Gesamna sīmtōl",
+ "phone.tun.pairwait": "Ontynd ǣrest þone tunnel, gewyrc þonne þā racu hēr.",
+ "phone.tun.why.auth": "se þēow ne underfēng þone cǣg (sēc þā cǣgfeol on Mīnum þēowum)",
+ "phone.tun.why.net": "se þēow ne meahte beón gerǣced (sēc his ānweald and þīne geþīode)",
+ "phone.tun.why.port": "se port is ǣr on brūcunge on þǣm þēowe",
+ "phone.tun.why.gone": "se þēow nis nū māra gehealden on Mīnum þēowum",
+ "phone.alt.h": "Ōþre wegas (Tailscale)"
 }

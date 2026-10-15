@@ -3875,5 +3875,13 @@
  "dc.hello.needid": "Bœt fyrst við notendanúmeri þínu á Discord (sjá „eða lím User ID“).",
  "dc.hello.noserver": "Discord leyfir vélmenninu einungis at rita þér ef þit eruð á sama netþjóni. Bœt vélmenninu á netþjón, þar er þú ert á, ok reyn aptr.",
  "dc.hello.invite": "Bœt vélmenninu á netþjón þinn",
- "dc.hello.retry": "Reyn aptr"
+ "dc.hello.retry": "Reyn aptr",
+ "phone.tun.on": "Kveik á",
+ "phone.tun.step2.h": "Para síma",
+ "phone.tun.pairwait": "Kveik fyrst á göngunum, gerðu síðan kóðann hér.",
+ "phone.tun.why.auth": "þjónninn tók eigi við lykli (sjá lykilskrá í My servers)",
+ "phone.tun.why.net": "eigi náðisk til þjónsins (sjá heimilisfang hans ok tengingu þína)",
+ "phone.tun.why.port": "gáttin er þegar í notkun á þjóninum",
+ "phone.tun.why.gone": "sá þjónn er eigi lengr vistaðr í My servers",
+ "phone.alt.h": "Aðrar leiðir (Tailscale)"
 }

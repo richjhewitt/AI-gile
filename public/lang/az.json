@@ -3830,5 +3830,13 @@
  "dc.hello.noserver": "Discord botun sənə yalnız onunla ortaq serverdə olduqda yazmasına icazə verir. Botu üzv olduğun serverə əlavə et, sonra yenidən cəhd et.",
  "dc.hello.invite": "Botu serverinə əlavə et",
  "dc.hello.retry": "Yenidən cəhd et",
- "srv.pir.rb.next": "Rəy yazıldı. {name}: indi növbəti dəfə daha sürətli olsun deyə runbook təklif et: aigile pir-runbook {slug} {id} <short-name> --text \"addımlar, hər sətirdə biri\" --as {name}. Sahib Go deyir və fayl layihə qovluğunda docs/runbooks/<short-name>.md kimi yazılır."
+ "srv.pir.rb.next": "Rəy yazıldı. {name}: indi növbəti dəfə daha sürətli olsun deyə runbook təklif et: aigile pir-runbook {slug} {id} <short-name> --text \"addımlar, hər sətirdə biri\" --as {name}. Sahib Go deyir və fayl layihə qovluğunda docs/runbooks/<short-name>.md kimi yazılır.",
+ "phone.tun.on": "Aç",
+ "phone.tun.step2.h": "Telefon qoş",
+ "phone.tun.pairwait": "Əvvəlcə tuneli aç, sonra kodu burada yarat.",
+ "phone.tun.why.auth": "server açarı qəbul etmədi (Serverlərim bölməsindəki açar faylını yoxla)",
+ "phone.tun.why.net": "serverə çatmaq mümkün olmadı (ünvanını və bağlantını yoxla)",
+ "phone.tun.why.port": "port serverdə artıq istifadə olunur",
+ "phone.tun.why.gone": "bu server artıq Serverlərim bölməsində saxlanmır",
+ "phone.alt.h": "Digər yollar (Tailscale)"
 }

@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Gehitu lehenengo zure Discord erabiltzaile IDa (ikusi \"edo itsatsi erabiltzaile ID bat\").",
  "dc.hello.noserver": "Discordek botak mezua bidaltzea baimentzen du zerbitzari bat partekatzen baduzue bakarrik. Gehitu bota zu zauden zerbitzari batera eta saiatu berriro.",
  "dc.hello.invite": "Gehitu bota zure zerbitzarira",
- "dc.hello.retry": "Saiatu berriro"
+ "dc.hello.retry": "Saiatu berriro",
+ "phone.tun.on": "Piztu",
+ "phone.tun.step2.h": "Parekatu telefono bat",
+ "phone.tun.pairwait": "Piztu lehenik tunela, gero sortu kodea hemen.",
+ "phone.tun.why.auth": "zerbitzariak ez du gakoa onartu (begiratu gako-fitxategia Nire zerbitzariak atalean)",
+ "phone.tun.why.net": "ezin izan da zerbitzariarekin konektatu (begiratu bere helbidea eta zure konexioa)",
+ "phone.tun.why.port": "portua jada erabiltzen ari da zerbitzarian",
+ "phone.tun.why.gone": "zerbitzari hori ez dago jada gordeta Nire zerbitzariak atalean",
+ "phone.alt.h": "Beste modu batzuk (Tailscale)"
 }

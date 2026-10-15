@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Cur dty ID ymmydeyr Discord ry-hoshiaght (jeeagh \"ny pasteil ID ymmydeyr\").",
  "dc.hello.noserver": "Cha lhig Discord da'n bot screeu dhyt mannagh vel oo ayns saaseyr cooidjagh rish. Cur y bot gys saaseyr t'ou ayn, eisht jean prowal reesht.",
  "dc.hello.invite": "Cur y bot gys dty hothaar",
- "dc.hello.retry": "Jean prowal reesht"
+ "dc.hello.retry": "Jean prowal reesht",
+ "phone.tun.on": "Cur er",
+ "phone.tun.step2.h": "Cuir fon marish",
+ "phone.tun.pairwait": "Cur er yn tunnel ayns toshiaght, eisht jean y code ayns shoh.",
+ "phone.tun.why.auth": "cha ren y server cur rish y chlaid (jeeagh er coadan y chlaid ayns My servallyn)",
+ "phone.tun.why.net": "cha row oikoil y chosney er y server (jeeagh er y chaghteraght echey as dty chochiangley)",
+ "phone.tun.why.port": "ta'n phoyrt er ny hoi ayns ymmyd er y server",
+ "phone.tun.why.gone": "cha vel y server shen er ny reaghey ayns My servallyn arragh",
+ "phone.alt.h": "Raaidyn elley (Tailscale)"
 }

@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Avval Discord foydalanuvchi ID'ingizni qo'shing (\"or paste a User ID\" ga qarang).",
  "dc.hello.noserver": "Discord botga sizga yozishga faqat siz u bilan bir serverda bo'lsangiz ruxsat beradi. Botni o'zingiz bor serverga qo'shing, so'ng qayta urinib ko'ring.",
  "dc.hello.invite": "Botni serveringizga qo'shish",
- "dc.hello.retry": "Qayta urinish"
+ "dc.hello.retry": "Qayta urinish",
+ "phone.tun.on": "Yoqish",
+ "phone.tun.step2.h": "Telefonni ulash",
+ "phone.tun.pairwait": "Avval tunnelni yoqing, keyin kodni shu yerda yarating.",
+ "phone.tun.why.auth": "server kalitni qabul qilmadi (My servers ichidagi kalit faylini tekshiring)",
+ "phone.tun.why.net": "serverga ulanib bo‘lmadi (uning manzilini va ulanishingizni tekshiring)",
+ "phone.tun.why.port": "port serverda allaqachon band",
+ "phone.tun.why.gone": "bu server endi My servers ichida saqlanmagan",
+ "phone.alt.h": "Boshqa usullar (Tailscale)"
 }

@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Ouzhpennit ho ID implijer Discord da gentañ (gwelit \"pe pegit un ID implijer\").",
  "dc.hello.noserver": "Discord ne ro ket an aotre d'ar bot da skrivañ deoc'h nemet ma rannit ur servijer gantañ. Ouzhpennit ar bot d'ur servijer m'emaoc'h ennañ, ha klaskit en-dro.",
  "dc.hello.invite": "Ouzhpennañ ar bot d'ho servijer",
- "dc.hello.retry": "Klask en-dro"
+ "dc.hello.retry": "Klask en-dro",
+ "phone.tun.on": "Lakaat da vont",
+ "phone.tun.step2.h": "Kengejañ ur pellgomzer",
+ "phone.tun.pairwait": "Lakaat an tunell da vont da gentañ, goude sevel ar c'hod amañ.",
+ "phone.tun.why.auth": "ar servijer n'en deus ket degemeret an alc'hwez (gwiriañ restr an alc'hwez e Ma servijerioù)",
+ "phone.tun.why.net": "n'eus ket bet gallet tizhout ar servijer (gwiriañ e chomlec'h hag ho kevreadenn)",
+ "phone.tun.why.port": "implijet eo dija ar porzh war ar servijer",
+ "phone.tun.why.gone": "n'eo ket miret ken ar servijer-se e Ma servijerioù",
+ "phone.alt.h": "Doareoù all (Tailscale)"
 }

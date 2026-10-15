@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Prvo dodaj svoj Discord korisnički ID (vidi \"ili zalijepi korisnički ID\").",
  "dc.hello.noserver": "Discord dopušta botu da ti piše samo ako dijelite poslužitelj. Dodaj bota na poslužitelj na kojem si, pa pokušaj ponovno.",
  "dc.hello.invite": "Dodaj bota na svoj poslužitelj",
- "dc.hello.retry": "Pokušaj ponovno"
+ "dc.hello.retry": "Pokušaj ponovno",
+ "phone.tun.on": "Uključi",
+ "phone.tun.step2.h": "Upari telefon",
+ "phone.tun.pairwait": "Prvo uključi tunel, a zatim ovdje napravi kod.",
+ "phone.tun.why.auth": "poslužitelj nije prihvatio ključ (provjeri datoteku ključa u Moji poslužitelji)",
+ "phone.tun.why.net": "poslužitelj nije bio dostupan (provjeri njegovu adresu i svoju vezu)",
+ "phone.tun.why.port": "port se već koristi na poslužitelju",
+ "phone.tun.why.gone": "taj poslužitelj više nije spremljen u Moji poslužitelji",
+ "phone.alt.h": "Drugi načini (Tailscale)"
 }

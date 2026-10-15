@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "请先添加你的 Discord 用户 ID（见 \"or paste a User ID\"）。",
  "dc.hello.noserver": "只有你和机器人在同一个服务器里，Discord 才允许机器人给你发消息。请把机器人添加到你所在的服务器，然后重试。",
  "dc.hello.invite": "把机器人添加到你的服务器",
- "dc.hello.retry": "重试"
+ "dc.hello.retry": "重试",
+ "phone.tun.on": "开启",
+ "phone.tun.step2.h": "配对手机",
+ "phone.tun.pairwait": "请先开启隧道，再在这里生成代码。",
+ "phone.tun.why.auth": "服务器不接受这个密钥（请检查 My servers 里的密钥文件）",
+ "phone.tun.why.net": "无法连接到服务器（请检查它的地址和你的网络连接）",
+ "phone.tun.why.port": "服务器上的端口已被占用",
+ "phone.tun.why.gone": "那台服务器已不再保存在 My servers 中",
+ "phone.alt.h": "其他方式 (Tailscale)"
 }

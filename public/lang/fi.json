@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Lisää ensin Discord-käyttäjätunnuksesi (katso \"tai liitä käyttäjätunnus\").",
  "dc.hello.noserver": "Discord sallii botin viestiä sinulle vain, jos jaat sen kanssa palvelimen. Lisää botti palvelimelle, jolla olet, ja yritä uudelleen.",
  "dc.hello.invite": "Lisää botti palvelimellesi",
- "dc.hello.retry": "Yritä uudelleen"
+ "dc.hello.retry": "Yritä uudelleen",
+ "phone.tun.on": "Kytke päälle",
+ "phone.tun.step2.h": "Yhdistä puhelin",
+ "phone.tun.pairwait": "Kytke tunneli ensin päälle ja tee sitten koodi tässä.",
+ "phone.tun.why.auth": "palvelin ei hyväksynyt avainta (tarkista avaintiedosto kohdassa Omat palvelimeni)",
+ "phone.tun.why.net": "palvelinta ei tavoitettu (tarkista sen osoite ja yhteytesi)",
+ "phone.tun.why.port": "portti on jo käytössä palvelimella",
+ "phone.tun.why.gone": "tätä palvelinta ei ole enää tallennettu kohtaan Omat palvelimeni",
+ "phone.alt.h": "Muita tapoja (Tailscale)"
 }

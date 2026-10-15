@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Idagdag muna ang Discord user ID mo (tingnan ang \"o i-paste ang User ID\").",
  "dc.hello.noserver": "Pinapayagan lang ng Discord na i-message ka ng bot kung may server kayong pareho. Idagdag ang bot sa server na kasama ka, tapos subukan ulit.",
  "dc.hello.invite": "Idagdag ang bot sa server mo",
- "dc.hello.retry": "Subukan ulit"
+ "dc.hello.retry": "Subukan ulit",
+ "phone.tun.on": "I-on",
+ "phone.tun.step2.h": "Mag-pair ng phone",
+ "phone.tun.pairwait": "I-on muna ang tunnel, tapos gawin dito ang code.",
+ "phone.tun.why.auth": "hindi tinanggap ng server ang key (tingnan ang key file sa Mga server ko)",
+ "phone.tun.why.net": "hindi maabot ang server (tingnan ang address nito at ang koneksyon mo)",
+ "phone.tun.why.port": "ginagamit na ang port sa server",
+ "phone.tun.why.gone": "hindi na naka-save ang server na iyon sa Mga server ko",
+ "phone.alt.h": "Iba pang paraan (Tailscale)"
 }

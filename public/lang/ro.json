@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Adaugă mai întâi ID-ul tău de utilizator Discord (vezi „sau lipește un User ID”).",
  "dc.hello.noserver": "Discord permite botului să-ți scrie doar dacă aveți un server în comun. Adaugă botul pe un server în care ești, apoi încearcă din nou.",
  "dc.hello.invite": "Adaugă botul pe serverul tău",
- "dc.hello.retry": "Încearcă din nou"
+ "dc.hello.retry": "Încearcă din nou",
+ "phone.tun.on": "Pornește",
+ "phone.tun.step2.h": "Asociază un telefon",
+ "phone.tun.pairwait": "Pornește mai întâi tunelul, apoi creează codul aici.",
+ "phone.tun.why.auth": "serverul nu a acceptat cheia (verifică fișierul cheii din My servers)",
+ "phone.tun.why.net": "serverul nu a putut fi contactat (verifică adresa lui și conexiunea ta)",
+ "phone.tun.why.port": "portul este deja folosit pe server",
+ "phone.tun.why.gone": "acel server nu mai este salvat în My servers",
+ "phone.alt.h": "Alte variante (Tailscale)"
 }

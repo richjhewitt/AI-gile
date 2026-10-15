@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Najprv pridaj svoje používateľské ID na Discorde (pozri \"or paste a User ID\").",
  "dc.hello.noserver": "Discord dovolí botovi písať ti, len ak s ním zdieľaš server. Pridaj bota na server, na ktorom si, a skús to znova.",
  "dc.hello.invite": "Pridať bota na tvoj server",
- "dc.hello.retry": "Skúsiť znova"
+ "dc.hello.retry": "Skúsiť znova",
+ "phone.tun.on": "Zapnúť",
+ "phone.tun.step2.h": "Spárovať telefón",
+ "phone.tun.pairwait": "Najprv zapnite tunel, potom tu vytvorte kód.",
+ "phone.tun.why.auth": "server neprijal kľúč (skontrolujte súbor kľúča v My servers)",
+ "phone.tun.why.net": "server sa nepodarilo kontaktovať (skontrolujte jeho adresu a svoje pripojenie)",
+ "phone.tun.why.port": "port na serveri sa už používa",
+ "phone.tun.why.gone": "tento server už nie je uložený v My servers",
+ "phone.alt.h": "Iné spôsoby (Tailscale)"
 }

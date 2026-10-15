@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Először add meg a Discord felhasználói azonosítódat (lásd \"vagy illessz be egy felhasználói azonosítót\").",
  "dc.hello.noserver": "A Discord csak akkor engedi, hogy a bot üzenjen neked, ha közös szerveren vagytok. Add hozzá a botot egy szerverhez, amelyen te is rajta vagy, aztán próbáld újra.",
  "dc.hello.invite": "Add hozzá a botot a szerveredhez",
- "dc.hello.retry": "Próbáld újra"
+ "dc.hello.retry": "Próbáld újra",
+ "phone.tun.on": "Bekapcsolás",
+ "phone.tun.step2.h": "Telefon párosítása",
+ "phone.tun.pairwait": "Először kapcsold be az alagutat, aztán itt hozd létre a kódot.",
+ "phone.tun.why.auth": "a szerver nem fogadta el a kulcsot (nézd meg a kulcsfájlt a Saját szerverek között)",
+ "phone.tun.why.net": "a szerver nem érhető el (ellenőrizd a címét és a kapcsolatodat)",
+ "phone.tun.why.port": "a port már használatban van a szerveren",
+ "phone.tun.why.gone": "ez a szerver már nincs elmentve a Saját szerverek között",
+ "phone.alt.h": "Más módok (Tailscale)"
 }

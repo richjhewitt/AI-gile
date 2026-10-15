@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Tilføj først dit Discord-bruger-id (se \"eller indsæt et bruger-id\").",
  "dc.hello.noserver": "Discord lader kun botten skrive til dig, hvis I deler en server. Tilføj botten til en server, du er på, og prøv igen.",
  "dc.hello.invite": "Tilføj botten til din server",
- "dc.hello.retry": "Prøv igen"
+ "dc.hello.retry": "Prøv igen",
+ "phone.tun.on": "Slå til",
+ "phone.tun.step2.h": "Par en telefon",
+ "phone.tun.pairwait": "Slå tunnelen til først, og lav så koden her.",
+ "phone.tun.why.auth": "serveren accepterede ikke nøglen (tjek nøglefilen i Mine servere)",
+ "phone.tun.why.net": "serveren kunne ikke nås (tjek dens adresse og din forbindelse)",
+ "phone.tun.why.port": "porten er allerede i brug på serveren",
+ "phone.tun.why.gone": "den server er ikke længere gemt i Mine servere",
+ "phone.alt.h": "Andre måder (Tailscale)"
 }

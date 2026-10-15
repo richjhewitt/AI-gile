@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Primum tuum ID usoris Discord adde (vide \"vel ID usoris inscribe\").",
  "dc.hello.noserver": "Discord botum tibi scribere sinit solum si servitorem communem habetis. Botum ad servitorem in quo es adde, deinde iterum tenta.",
  "dc.hello.invite": "Botum ad servitorem tuum adde",
- "dc.hello.retry": "Iterum tenta"
+ "dc.hello.retry": "Iterum tenta",
+ "phone.tun.on": "Accende",
+ "phone.tun.step2.h": "Telephonum coniunge",
+ "phone.tun.pairwait": "Prius cuniculum accende, deinde codicem hic crea.",
+ "phone.tun.why.auth": "servus clavem non accepit (tabulam clavis in My servers inspice)",
+ "phone.tun.why.net": "ad servum perveniri non potuit (inspice inscriptionem eius et nexum tuum)",
+ "phone.tun.why.port": "porta iam in servo adhibetur",
+ "phone.tun.why.gone": "ille servus iam non servatur in My servers",
+ "phone.alt.h": "Aliae viae (Tailscale)"
 }

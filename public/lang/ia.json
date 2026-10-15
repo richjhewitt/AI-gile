@@ -3863,5 +3863,13 @@
  "dc.hello.needid": "Adde primo tu ID de usator de Discord (vide \"o colla un ID de usator\").",
  "dc.hello.noserver": "Discord permitte al bot de scriber te solmente si vos condivide un servitor. Adde le bot a un servitor in le qual tu es, postea retenta.",
  "dc.hello.invite": "Adde le bot a tu servitor",
- "dc.hello.retry": "Retentar"
+ "dc.hello.retry": "Retentar",
+ "phone.tun.on": "Activar",
+ "phone.tun.step2.h": "Parear un telephono",
+ "phone.tun.pairwait": "Activa primo le tunnel, postea crea le codice hic.",
+ "phone.tun.why.auth": "le servitor non ha acceptate le clave (verifica le file del clave in Mi servitores)",
+ "phone.tun.why.net": "le servitor non poteva esser attingite (verifica su adresse e tu connexion)",
+ "phone.tun.why.port": "le porta es ja in uso sur le servitor",
+ "phone.tun.why.gone": "ille servitor non es plus salvate in Mi servitores",
+ "phone.alt.h": "Altere manieras (Tailscale)"
 }

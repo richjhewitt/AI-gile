@@ -3874,5 +3874,13 @@
  "dc.hello.needid": "Lasit vuos iežat Discord-geavaheaddji-ID (geahča \"or paste a User ID\").",
  "dc.hello.noserver": "Discord diktá botii čálihit dutnje dušše jos leat seamma servera siste. Lasit boahta servvii mas don leat, ja geahččal fas.",
  "dc.hello.invite": "Lasit boahta mu servvii",
- "dc.hello.retry": "Geahččal fas"
+ "dc.hello.retry": "Geahččal fas",
+ "phone.tun.on": "Rahpa",
+ "phone.tun.step2.h": "Hukse telefovnna",
+ "phone.tun.pairwait": "Rahpa vuos tunneala, de ráhkat koda dása.",
+ "phone.tun.why.auth": "server ii dohkkehan nøkkela (iska nøkkelfiilla My servers:s)",
+ "phone.tun.why.net": "serveriin ii beasan (iska dan čujuhusa ja du oktavuođa)",
+ "phone.tun.why.port": "porta lea juo atnimis serveris",
+ "phone.tun.why.gone": "dat server ii leat šat seivejuvvon My servers:s",
+ "phone.alt.h": "Eará vuogit (Tailscale)"
 }

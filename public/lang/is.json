@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Bættu fyrst við Discord notandaauðkenninu þínu (sjá \"eða límdu notandaauðkenni\").",
  "dc.hello.noserver": "Discord leyfir vélmenninu aðeins að senda þér skilaboð ef þið deilið netþjóni. Bættu vélmenninu við netþjón sem þú ert á og reyndu aftur.",
  "dc.hello.invite": "Bæta vélmenninu við netþjóninn þinn",
- "dc.hello.retry": "Reyna aftur"
+ "dc.hello.retry": "Reyna aftur",
+ "phone.tun.on": "Kveikja",
+ "phone.tun.step2.h": "Para síma",
+ "phone.tun.pairwait": "Kveiktu fyrst á göngunum og búðu svo til kóðann hér.",
+ "phone.tun.why.auth": "netþjónninn tók ekki við lyklinum (athugaðu lyklaskrána í Netþjónarnir mínir)",
+ "phone.tun.why.net": "ekki náðist í netþjóninn (athugaðu heimilisfang hans og tenginguna þína)",
+ "phone.tun.why.port": "gáttin er þegar í notkun á netþjóninum",
+ "phone.tun.why.gone": "þessi netþjónn er ekki lengur vistaður í Netþjónarnir mínir",
+ "phone.alt.h": "Aðrar leiðir (Tailscale)"
 }

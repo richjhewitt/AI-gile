@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Keworra dha ID devnydhyer Discord yn kynsa (gwel \"po peusta ID devnydhyer\").",
  "dc.hello.noserver": "Discord a asow dhe'n bot skrifa dhis yn unnik mar kevrenny hwi servyer. Keworra an bot dhe servyer may fydh, ena assay arta.",
  "dc.hello.invite": "Keworra an bot dhe'th servyer",
- "dc.hello.retry": "Assaya arta"
+ "dc.hello.retry": "Assaya arta",
+ "phone.tun.on": "Enyewi",
+ "phone.tun.step2.h": "Junya an téléfon",
+ "phone.tun.pairwait": "Enyewhewgh an tonel kynsa, ena gwrewgh an kodh omma.",
+ "phone.tun.why.auth": "ny wrug an servyer receva an alhwedh (hwithrewgh restren an alhwedh in My servers)",
+ "phone.tun.why.net": "ny veu possybyl cavos an servyer (hwithrewgh y trigva ha'th junyans)",
+ "phone.tun.why.port": "an porth yw devnydhys seulabrys war an servyer",
+ "phone.tun.why.gone": "na veu an servyer na sylwys na moy in My servers",
+ "phone.alt.h": "Fordhow aral (Tailscale)"
 }

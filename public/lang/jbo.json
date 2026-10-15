@@ -3833,5 +3833,13 @@
  "dc.hello.needid": "ko pa moi jmina lo judri be do be la Discord (ko catlu \"ja ko ricyfa'i lo judri\")",
  "dc.hello.noserver": "la Discord na curmi lo nu la bot cu notci do ja'e bo do ku jmina lo samse'u .i ko jmina la bot lo samse'u poi do se jmina .i ba bo ko za'u re'u troci",
  "dc.hello.invite": "ko jmina la bot lo do samse'u",
- "dc.hello.retry": "ko za'u re'u troci"
+ "dc.hello.retry": "ko za'u re'u troci",
+ "phone.tun.on": "ko zbasu le nu kalri",
+ "phone.tun.step2.h": "ko mixre le fonxa",
+ "phone.tun.pairwait": "ko pa mai zbasu le nu kalri le tunla .i ba ko zbasu le lerpoi ti",
+ "phone.tun.why.auth": "le sarji na fitytcica le ckiku (ko catlu le fatci pe le ckiku ne'i lo mi sarji)",
+ "phone.tun.why.net": "mi na ka'e jorne le sarji (ko catlu le jufra ke'a .e le do jorne)",
+ "phone.tun.why.port": "le porta ba'o se pilno le sarji",
+ "phone.tun.why.gone": "le sarji na ba'o se vreji ne'i lo mi sarji",
+ "phone.alt.h": "drata tadji (Tailscale)"
 }

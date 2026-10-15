@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "먼저 Discord 사용자 ID를 추가하세요(\"또는 사용자 ID 붙여넣기\" 참고).",
  "dc.hello.noserver": "Discord에서는 봇과 같은 서버에 있어야만 봇이 메시지를 보낼 수 있어요. 내가 있는 서버에 봇을 추가한 다음 다시 시도하세요.",
  "dc.hello.invite": "봇을 내 서버에 추가",
- "dc.hello.retry": "다시 시도"
+ "dc.hello.retry": "다시 시도",
+ "phone.tun.on": "켜기",
+ "phone.tun.step2.h": "휴대폰 연결",
+ "phone.tun.pairwait": "먼저 터널을 켠 다음, 여기서 코드를 만드세요.",
+ "phone.tun.why.auth": "서버가 키를 받아들이지 않았어요 (내 서버의 키 파일을 확인하세요)",
+ "phone.tun.why.net": "서버에 연결할 수 없었어요 (서버 주소와 인터넷 연결을 확인하세요)",
+ "phone.tun.why.port": "서버에서 해당 포트를 이미 사용 중이에요",
+ "phone.tun.why.gone": "그 서버는 더 이상 내 서버에 저장되어 있지 않아요",
+ "phone.alt.h": "다른 방법 (Tailscale)"
 }

@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Ajoute ID itilizatè Discord ou an anvan (gade \"oswa kole yon ID itilizatè\").",
  "dc.hello.noserver": "Discord sèlman kite bot la voye w mesaj si nou pataje yon sèvè. Ajoute bot la nan yon sèvè ou ladan l, epi eseye ankò.",
  "dc.hello.invite": "Ajoute bot la nan sèvè ou a",
- "dc.hello.retry": "Eseye ankò"
+ "dc.hello.retry": "Eseye ankò",
+ "phone.tun.on": "Limen",
+ "phone.tun.step2.h": "Konekte yon telefòn",
+ "phone.tun.pairwait": "Limen tinèl la anvan, apresa fè kòd la isit la.",
+ "phone.tun.why.auth": "sèvè a pa aksepte kle a (tcheke fichye kle a nan Sèvè mwen yo)",
+ "phone.tun.why.net": "pa t posib rive jwenn sèvè a (tcheke adrès li ak koneksyon ou)",
+ "phone.tun.why.port": "pò a deja an itilizasyon sou sèvè a",
+ "phone.tun.why.gone": "sèvè sa a pa anrejistre ankò nan Sèvè mwen yo",
+ "phone.alt.h": "Lòt fason (Tailscale)"
 }

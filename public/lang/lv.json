@@ -3862,5 +3862,13 @@
  "dc.hello.needid": "Vispirms pievienojiet savu Discord lietotāja ID (skatiet „vai ielīmējiet User ID”).",
  "dc.hello.noserver": "Discord ļauj botam rakstīt jums tikai tad, ja esat vienā serverī ar to. Pievienojiet botu serverim, kurā esat, un mēģiniet vēlreiz.",
  "dc.hello.invite": "Pievienot botu savam serverim",
- "dc.hello.retry": "Mēģināt vēlreiz"
+ "dc.hello.retry": "Mēģināt vēlreiz",
+ "phone.tun.on": "Ieslēgt",
+ "phone.tun.step2.h": "Savienot tālruni",
+ "phone.tun.pairwait": "Vispirms ieslēdziet tuneli, tad šeit izveidojiet kodu.",
+ "phone.tun.why.auth": "serveris nepieņēma atslēgu (pārbaudiet atslēgas failu sadaļā My servers)",
+ "phone.tun.why.net": "serveri nevarēja sasniegt (pārbaudiet tā adresi un savienojumu)",
+ "phone.tun.why.port": "ports serverī jau tiek izmantots",
+ "phone.tun.why.gone": "šis serveris vairs nav saglabāts sadaļā My servers",
+ "phone.alt.h": "Citi veidi (Tailscale)"
 }

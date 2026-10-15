@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Weka kwanza kitambulisho chako cha mtumiaji wa Discord (tazama \"or paste a User ID\").",
  "dc.hello.noserver": "Discord huruhusu bot kukutumia ujumbe tu ikiwa mko kwenye seva moja. Ongeza bot kwenye seva uliyomo, kisha ujaribu tena.",
  "dc.hello.invite": "Ongeza bot kwenye seva yako",
- "dc.hello.retry": "Jaribu tena"
+ "dc.hello.retry": "Jaribu tena",
+ "phone.tun.on": "Washa",
+ "phone.tun.step2.h": "Oanisha simu",
+ "phone.tun.pairwait": "Washa handaki kwanza, kisha tengeneza msimbo hapa.",
+ "phone.tun.why.auth": "seva haikukubali ufunguo (angalia faili ya ufunguo katika My servers)",
+ "phone.tun.why.net": "seva haikuweza kufikiwa (angalia anwani yake na muunganisho wako)",
+ "phone.tun.why.port": "mlango tayari unatumika kwenye seva",
+ "phone.tun.why.gone": "seva hiyo haijahifadhiwa tena katika My servers",
+ "phone.alt.h": "Njia nyingine (Tailscale)"
 }

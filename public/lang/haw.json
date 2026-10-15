@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "E hoʻohui mua i kāu ID Discord (nānā \"a i ʻole e hoʻopili i kahi ID\").",
  "dc.hello.noserver": "Ke ʻae nei ʻo Discord i ka bot e leka iā ʻoe inā ma ka server hoʻokahi ʻolua. E hoʻohui i ka bot i kahi server āu e noho ai, a laila e hoʻāʻo hou.",
  "dc.hello.invite": "Hoʻohui i ka bot i kāu server",
- "dc.hello.retry": "Hoʻāʻo hou"
+ "dc.hello.retry": "Hoʻāʻo hou",
+ "phone.tun.on": "E hoʻā",
+ "phone.tun.step2.h": "E hoʻopili i kelepona",
+ "phone.tun.pairwait": "E hoʻā mua i ka tunnel, a laila e hana i ke kumu ma ʻaneʻi.",
+ "phone.tun.why.auth": "ʻaʻole i ʻae ke kikowaena i ke kī (e nānā i ka waihona kī ma Kaʻu mau kikowaena)",
+ "phone.tun.why.net": "ʻaʻole i loaʻa ke kikowaena (e nānā i kona helu wahi a me kāu pilina)",
+ "phone.tun.why.port": "ke hoʻohana ʻia nei ke awa ma ke kikowaena",
+ "phone.tun.why.gone": "ʻaʻole i mālama hou ʻia kēlā kikowaena ma Kaʻu mau kikowaena",
+ "phone.alt.h": "Nā ala ʻē aʻe (Tailscale)"
 }

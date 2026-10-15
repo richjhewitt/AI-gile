@@ -3863,5 +3863,13 @@
  "dc.hello.needid": "Aghjunghje prima u to ID d'utilizatore Discord (vede \"o incolla un ID d'utilizatore\").",
  "dc.hello.noserver": "Discord lascia scrive u bot solu s'è vo spartite un servore. Aghjunghje u bot à un servore induve sì, poi prova torna.",
  "dc.hello.invite": "Aghjunghje u bot à u to servore",
- "dc.hello.retry": "Prova torna"
+ "dc.hello.retry": "Prova torna",
+ "phone.tun.on": "Accende",
+ "phone.tun.step2.h": "Accoppia un telefunu",
+ "phone.tun.pairwait": "Accende prima u tunnel, poi faci u codice quì.",
+ "phone.tun.why.auth": "u servitore ùn hà micca accettatu a chjave (cuntrolla u schedariu di a chjave in I mo servitori)",
+ "phone.tun.why.net": "u servitore ùn hè statu raghjuntu (cuntrolla u so indirizzu è a to cunnessione)",
+ "phone.tun.why.port": "a porta hè digià in usu nantu à u servitore",
+ "phone.tun.why.gone": "quellu servitore ùn hè più salvatu in I mo servitori",
+ "phone.alt.h": "Altri modi (Tailscale)"
 }

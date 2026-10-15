@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "請先新增你的 Discord 使用者 ID（見 \"or paste a User ID\"）。",
  "dc.hello.noserver": "只有你和機器人在同一個伺服器裡，Discord 才允許機器人傳訊息給你。請把機器人加入你所在的伺服器，然後再試一次。",
  "dc.hello.invite": "把機器人加入你的伺服器",
- "dc.hello.retry": "重試"
+ "dc.hello.retry": "重試",
+ "phone.tun.on": "開啟",
+ "phone.tun.step2.h": "配對手機",
+ "phone.tun.pairwait": "請先開啟通道，再在這裡產生代碼。",
+ "phone.tun.why.auth": "伺服器不接受這把金鑰（請檢查 My servers 裡的金鑰檔案）",
+ "phone.tun.why.net": "無法連上伺服器（請檢查它的位址和你的連線）",
+ "phone.tun.why.port": "伺服器上的連接埠已被使用",
+ "phone.tun.why.gone": "那台伺服器已不在 My servers 中儲存",
+ "phone.alt.h": "其他方式 (Tailscale)"
 }

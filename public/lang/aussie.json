@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Add your Discord user ID first (see \"or paste a User ID\").",
  "dc.hello.noserver": "Discord only lets the bot message you if you share a server with it. Add the bot to a server you're in, then have another go.",
  "dc.hello.invite": "Add the bot to your server",
- "dc.hello.retry": "Have another go"
+ "dc.hello.retry": "Have another go",
+ "phone.tun.on": "Switch on",
+ "phone.tun.step2.h": "Pair a phone, mate",
+ "phone.tun.pairwait": "Switch the tunnel on first, then make the code here.",
+ "phone.tun.why.auth": "the server didn't accept the key (check the key file in My servers)",
+ "phone.tun.why.net": "couldn't reach the server (check its address and your connection)",
+ "phone.tun.why.port": "the port's already in use on the server",
+ "phone.tun.why.gone": "that server's no longer saved in My servers",
+ "phone.alt.h": "Other ways (Tailscale)"
 }

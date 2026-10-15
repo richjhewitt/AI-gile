@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Żid l-ID tal-utent tiegħek ta' Discord l-ewwel (ara \"jew waħħal User ID\").",
  "dc.hello.noserver": "Discord iħalli lill-bot jibgħatlek messaġġ biss jekk taqsmu server miegħu. Żid il-bot ma' server li int fih, imbagħad erġa' pprova.",
  "dc.hello.invite": "Żid il-bot mas-server tiegħek",
- "dc.hello.retry": "Erġa' pprova"
+ "dc.hello.retry": "Erġa' pprova",
+ "phone.tun.on": "Ixgħel",
+ "phone.tun.step2.h": "Qabbad telefon",
+ "phone.tun.pairwait": "L-ewwel ixgħel il-mina, imbagħad oħloq il-kodiċi hawn.",
+ "phone.tun.why.auth": "is-server ma aċċettax iċ-ċavetta (iċċekkja l-fajl taċ-ċavetta f'My servers)",
+ "phone.tun.why.net": "ma setax jintlaħaq is-server (iċċekkja l-indirizz tiegħu u l-konnessjoni tiegħek)",
+ "phone.tun.why.port": "il-port diġà qed jintuża fuq is-server",
+ "phone.tun.why.gone": "dak is-server m'għadux salvat f'My servers",
+ "phone.alt.h": "Modi oħra (Tailscale)"
 }

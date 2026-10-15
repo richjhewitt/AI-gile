@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Voeg eers jou Discord-gebruiker-ID by (sien \"of plak 'n gebruiker-ID\").",
  "dc.hello.noserver": "Discord laat die bot jou net boodskap as julle 'n bediener deel. Voeg die bot by 'n bediener waarin jy is en probeer weer.",
  "dc.hello.invite": "Voeg die bot by jou bediener",
- "dc.hello.retry": "Probeer weer"
+ "dc.hello.retry": "Probeer weer",
+ "phone.tun.on": "Skakel aan",
+ "phone.tun.step2.h": "Koppel 'n foon",
+ "phone.tun.pairwait": "Skakel eers die tonnel aan, maak dan die kode hier.",
+ "phone.tun.why.auth": "die bediener het nie die sleutel aanvaar nie (kyk na die sleutellêer in My bedieners)",
+ "phone.tun.why.net": "die bediener kon nie bereik word nie (kyk na sy adres en jou verbinding)",
+ "phone.tun.why.port": "die poort is reeds in gebruik op die bediener",
+ "phone.tun.why.gone": "daardie bediener is nie meer in My bedieners gestoor nie",
+ "phone.alt.h": "Ander maniere (Tailscale)"
 }

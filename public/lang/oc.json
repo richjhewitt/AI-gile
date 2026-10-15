@@ -3863,5 +3863,13 @@
  "dc.hello.needid": "Ajusta d'en primièr ton ID d'utilizaire Discord (vei « o pegar un User ID »).",
  "dc.hello.noserver": "Discord daissa lo bòt escriure pas qu'a una persona que partatja un servidor amb el. Ajusta lo bòt a un servidor ont siás, puèi ensaja tornar.",
  "dc.hello.invite": "Ajustar lo bòt a ton servidor",
- "dc.hello.retry": "Ensajar tornar"
+ "dc.hello.retry": "Ensajar tornar",
+ "phone.tun.on": "Activar",
+ "phone.tun.step2.h": "Aparelhar un telefòn",
+ "phone.tun.pairwait": "Activatz d'en primièr lo tunèl, puèi creatz lo còde aicí.",
+ "phone.tun.why.auth": "lo servidor a pas acceptat la clau (verificatz lo fichièr de clau dins My servers)",
+ "phone.tun.why.net": "lo servidor a pas pogut èsser atenhut (verificatz son adreça e vòstra connexion)",
+ "phone.tun.why.port": "lo pòrt es ja utilizat sul servidor",
+ "phone.tun.why.gone": "aquel servidor es pas mai enregistrat dins My servers",
+ "phone.alt.h": "Autras manièras (Tailscale)"
 }

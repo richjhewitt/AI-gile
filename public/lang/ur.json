@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "پہلے اپنی Discord صارف ID شامل کریں (\"or paste a User ID\" دیکھیں)۔",
  "dc.hello.noserver": "Discord بوٹ کو آپ کو پیغام بھیجنے کی اجازت صرف تب دیتا ہے جب آپ دونوں ایک ہی سرور میں ہوں۔ بوٹ کو اپنے کسی سرور میں شامل کریں، پھر دوبارہ کوشش کریں۔",
  "dc.hello.invite": "بوٹ کو اپنے سرور میں شامل کریں",
- "dc.hello.retry": "دوبارہ کوشش کریں"
+ "dc.hello.retry": "دوبارہ کوشش کریں",
+ "phone.tun.on": "آن کریں",
+ "phone.tun.step2.h": "فون جوڑیں",
+ "phone.tun.pairwait": "پہلے سرنگ آن کریں، پھر یہاں کوڈ بنائیں۔",
+ "phone.tun.why.auth": "سرور نے کلید قبول نہیں کی (My servers میں کلید فائل چیک کریں)",
+ "phone.tun.why.net": "سرور تک رسائی نہیں ہو سکی (اس کا پتہ اور اپنا کنکشن چیک کریں)",
+ "phone.tun.why.port": "سرور پر پورٹ پہلے ہی استعمال میں ہے",
+ "phone.tun.why.gone": "وہ سرور اب My servers میں محفوظ نہیں ہے",
+ "phone.alt.h": "دوسرے طریقے (Tailscale)"
 }

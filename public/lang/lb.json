@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Füügt fir d'éischt deng Discord-Benotzer-ID derbäi (kuck \"oder paste eng Benotzer-ID\").",
  "dc.hello.noserver": "Discord léisst de Bot der nëmme schreiwen, wann dir e Server deelt. Füügt de Bot op e Server derbäi, op deem Dir sidd, a probéiert nach eng Kéier.",
  "dc.hello.invite": "De Bot op däi Server derbäifügen",
- "dc.hello.retry": "Nach eng Kéier probéieren"
+ "dc.hello.retry": "Nach eng Kéier probéieren",
+ "phone.tun.on": "Uschalten",
+ "phone.tun.step2.h": "Telefon verbannen",
+ "phone.tun.pairwait": "Schalt fir d'éischt den Tunnel un, dann erstell de Code hei.",
+ "phone.tun.why.auth": "de Server huet de Schlëssel net ugeholl (kuck d'Schlësselfichier ënner My servers)",
+ "phone.tun.why.net": "de Server konnt net erreecht ginn (kuck seng Adress an deng Verbindung)",
+ "phone.tun.why.port": "de Port gëtt um Server schonn benotzt",
+ "phone.tun.why.gone": "dee Server ass net méi an My servers gespäichert",
+ "phone.alt.h": "Aner Weeër (Tailscale)"
 }

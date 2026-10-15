@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Faaopoopo muamua lau Discord user ID (vaai i le \"or paste a User ID\").",
  "dc.hello.noserver": "E na o le taimi e te i ai i se server tutusa ma le bot e mafai ai e Discord ona auina atu ni feau ia te oe. Faaopoopo le bot i se server o loo e i ai, ona toe taumafai lea.",
  "dc.hello.invite": "Faaopoopo le bot i lau server",
- "dc.hello.retry": "Toe taumafai"
+ "dc.hello.retry": "Toe taumafai",
+ "phone.tun.on": "Tatala",
+ "phone.tun.step2.h": "Fa'afesoota'i se telefoni",
+ "phone.tun.pairwait": "Tatala muamua le alavai, ona fai lea o le numera iinei.",
+ "phone.tun.why.auth": "e le'i talia e le server le ki (siaki le faila o le ki i My servers)",
+ "phone.tun.why.net": "e le mafai ona o'o i le server (siaki lona tuatusi ma lau fesoota'iga)",
+ "phone.tun.why.port": "ua uma ona fa'aogaina le uafu i le server",
+ "phone.tun.why.gone": "ua le toe teuina lena server i My servers",
+ "phone.alt.h": "Isi auala (Tailscale)"
 }

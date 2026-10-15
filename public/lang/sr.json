@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Прво додај свој Discord кориснички ID (види \"or paste a User ID\").",
  "dc.hello.noserver": "Discord дозвољава боту да ти пише само ако делите сервер. Додај бота на сервер на ком си, па покушај поново.",
  "dc.hello.invite": "Додај бота на свој сервер",
- "dc.hello.retry": "Покушај поново"
+ "dc.hello.retry": "Покушај поново",
+ "phone.tun.on": "Укључи",
+ "phone.tun.step2.h": "Упари телефон",
+ "phone.tun.pairwait": "Прво укључите тунел, па овде направите код.",
+ "phone.tun.why.auth": "сервер није прихватио кључ (проверите датотеку кључа у My servers)",
+ "phone.tun.why.net": "сервер није доступан (проверите његову адресу и своју везу)",
+ "phone.tun.why.port": "порт је већ у употреби на серверу",
+ "phone.tun.why.gone": "тај сервер више није сачуван у My servers",
+ "phone.alt.h": "Други начини (Tailscale)"
 }

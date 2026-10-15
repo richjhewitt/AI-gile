@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Tambah ID pengguna Discord anda dahulu (lihat \"atau tampal User ID\").",
  "dc.hello.noserver": "Discord hanya membenarkan bot mesej anda jika anda berkongsi pelayan dengannya. Tambah bot ke pelayan yang anda sertai, kemudian cuba lagi.",
  "dc.hello.invite": "Tambah bot ke pelayan anda",
- "dc.hello.retry": "Cuba lagi"
+ "dc.hello.retry": "Cuba lagi",
+ "phone.tun.on": "Hidupkan",
+ "phone.tun.step2.h": "Pasangkan telefon",
+ "phone.tun.pairwait": "Hidupkan terowong dahulu, kemudian jana kod di sini.",
+ "phone.tun.why.auth": "pelayan tidak menerima kunci (semak fail kunci dalam My servers)",
+ "phone.tun.why.net": "pelayan tidak dapat dicapai (semak alamatnya dan sambungan anda)",
+ "phone.tun.why.port": "port sudah digunakan pada pelayan",
+ "phone.tun.why.gone": "pelayan itu tidak lagi disimpan dalam My servers",
+ "phone.alt.h": "Cara lain (Tailscale)"
 }

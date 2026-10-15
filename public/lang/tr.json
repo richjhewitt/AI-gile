@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Önce Discord kullanıcı kimliğini ekle (\"or paste a User ID\" bölümüne bak).",
  "dc.hello.noserver": "Discord, botun sana mesaj atmasına yalnızca onunla aynı sunucuda olursan izin verir. Botu bulunduğun bir sunucuya ekle, sonra tekrar dene.",
  "dc.hello.invite": "Botu sunucuna ekle",
- "dc.hello.retry": "Tekrar dene"
+ "dc.hello.retry": "Tekrar dene",
+ "phone.tun.on": "Aç",
+ "phone.tun.step2.h": "Telefon eşleştir",
+ "phone.tun.pairwait": "Önce tüneli aç, sonra kodu burada oluştur.",
+ "phone.tun.why.auth": "sunucu anahtarı kabul etmedi (My servers içindeki anahtar dosyasını kontrol et)",
+ "phone.tun.why.net": "sunucuya ulaşılamadı (adresini ve bağlantını kontrol et)",
+ "phone.tun.why.port": "port sunucuda zaten kullanılıyor",
+ "phone.tun.why.gone": "bu sunucu artık My servers içinde kayıtlı değil",
+ "phone.alt.h": "Diğer yollar (Tailscale)"
 }

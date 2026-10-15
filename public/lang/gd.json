@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Cuir an ID cleachdaiche Discord agad ris an toiseach (faic \"no cuir ID cleachdaiche an sàs\").",
  "dc.hello.noserver": "Chan eil Discord a' leigeil leis a' bhot teachdaireachd a chur thugad ach ma tha thu ann an seerbhear còmhla ris. Cuir am bot ri seerbhear sa bheil thu, an uair sin feuch a-rithist.",
  "dc.hello.invite": "Cuir am bot ris an t-seerbhear agad",
- "dc.hello.retry": "Feuch a-rithist"
+ "dc.hello.retry": "Feuch a-rithist",
+ "phone.tun.on": "Cuir air",
+ "phone.tun.step2.h": "Paidhrig fòn",
+ "phone.tun.pairwait": "Cuir an tunail air an toiseach, an uairsin dèan an còd an seo.",
+ "phone.tun.why.auth": "cha do ghabh am frithealaiche ris an iuchair (thoir sùil air faidhle na h-iuchrach ann am Na frithealaichean agam)",
+ "phone.tun.why.net": "cha b' urrainnear ruigsinn air am frithealaiche (thoir sùil air an seòladh aige agus do cheangal)",
+ "phone.tun.why.port": "tha am port ga chleachdadh mu thràth air am frithealaiche",
+ "phone.tun.why.gone": "chan eil am frithealaiche sin air a shàbhaladh ann am Na frithealaichean agam tuilleadh",
+ "phone.alt.h": "Dòighean eile (Tailscale)"
 }

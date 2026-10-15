@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Tāpirihia tō ID kaiwhakamahi Discord i te tuatahi (tirohia “ranei whakapiri he User ID”).",
  "dc.hello.noserver": "Ka whakaaetia anake e Discord te pot ki te tuku karere ki a koe mēnā kei te rōpū tahi kōrua i tētahi tūmau. Tāpirihia te pot ki tētahi tūmau kei reira koe, ka whakamātau anō.",
  "dc.hello.invite": "Tāpirihia te pot ki tō tūmau",
- "dc.hello.retry": "Whakamātau anō"
+ "dc.hello.retry": "Whakamātau anō",
+ "phone.tun.on": "Whakakā",
+ "phone.tun.step2.h": "Honoa he waea",
+ "phone.tun.pairwait": "Tīmataria te kauhanga i te tuatahi, ka hanga i te waehere i konei.",
+ "phone.tun.why.auth": "kāore te tūmau i whakaae ki te kī (tirohia te konae kī i My servers)",
+ "phone.tun.why.net": "kāore i taea te tūhono ki te tūmau (tirohia tōna wāhitau me tō hononga)",
+ "phone.tun.why.port": "kei te whakamahia kētia te tauranga i runga i te tūmau",
+ "phone.tun.why.gone": "kāore taua tūmau e tiakina ana ki My servers",
+ "phone.alt.h": "Ētahi atu huarahi (Tailscale)"
 }

@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Füge zuerst deine Discord-Nutzer-ID hinzu (siehe \"oder Nutzer-ID einfügen\").",
  "dc.hello.noserver": "Discord erlaubt dem Bot nur, dir zu schreiben, wenn ihr einen Server teilt. Füge den Bot zu einem Server hinzu, auf dem du bist, und versuche es dann noch einmal.",
  "dc.hello.invite": "Bot zu deinem Server hinzufügen",
- "dc.hello.retry": "Noch einmal versuchen"
+ "dc.hello.retry": "Noch einmal versuchen",
+ "phone.tun.on": "Einschalten",
+ "phone.tun.step2.h": "Handy koppeln",
+ "phone.tun.pairwait": "Schalte zuerst den Tunnel ein, dann erstelle hier den Code.",
+ "phone.tun.why.auth": "der Server hat den Schlüssel nicht akzeptiert (prüf die Schlüsseldatei unter Meine Server)",
+ "phone.tun.why.net": "der Server war nicht erreichbar (prüf seine Adresse und deine Verbindung)",
+ "phone.tun.why.port": "der Port wird auf dem Server schon benutzt",
+ "phone.tun.why.gone": "dieser Server ist nicht mehr unter Meine Server gespeichert",
+ "phone.alt.h": "Andere Wege (Tailscale)"
 }

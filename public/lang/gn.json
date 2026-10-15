@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Emoĩ ypy nde ID puruhára Discord (ehecha \"térã emoĩ peteĩ ID puruhára\").",
  "dc.hello.noserver": "Discord ohejáne pe bot omondo marandu ndéve ramo nde reiko peteĩ servidor-pe hendive. Emoĩ pe bot peteĩ servidor reiko haguépe, upéi eha'ã jey.",
  "dc.hello.invite": "Emoĩ pe bot ne servidor-pe",
- "dc.hello.retry": "Eha'ã jey"
+ "dc.hello.retry": "Eha'ã jey",
+ "phone.tun.on": "Emyandy",
+ "phone.tun.step2.h": "Emoirũ peteĩ pumbyry",
+ "phone.tun.pairwait": "Emyandy raẽ pe túnel, upéi ejapo pe código ápe.",
+ "phone.tun.why.auth": "pe servidor ndojurujái pe mbotapo (ehecha pe marandurenda mbotapo Che servidor-kuérape)",
+ "phone.tun.why.net": "ndaikatúi ojejapo pe servidor-pe (ehecha hekoha ha nde ñembojoaju)",
+ "phone.tun.why.port": "pe ora oñemoã ko'ágã pe servidor-pe",
+ "phone.tun.why.gone": "pe servidor ndojejokuaái Che servidor-kuérape",
+ "phone.alt.h": "Ambue tape (Tailscale)"
 }

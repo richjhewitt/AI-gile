@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Ñawpaqta Discord ruwaqniykipa ID-ta yapay (qhaway \"icha User ID llapchiy\").",
  "dc.hello.noserver": "Discord botqa qanman willakunanpaqmi, huk servidorpi kankichis chayllapi. Botta servidorman yapay, maypi kasqaykipi, hinaspa musuqmanta ruway.",
  "dc.hello.invite": "Botta servidorniykiman yapay",
- "dc.hello.retry": "Musuqmanta ruway"
+ "dc.hello.retry": "Musuqmanta ruway",
+ "phone.tun.on": "Kichay",
+ "phone.tun.step2.h": "Telefonuta tinkichiy",
+ "phone.tun.pairwait": "Raqmanta tunelta kichay, chaymantataq kodikuta kaypi ruray.",
+ "phone.tun.why.auth": "servidorqa mana llavita chaskirqachu (My servers nisqapi llave willayta qhaway)",
+ "phone.tun.why.net": "servidorman mana chayayta atirqachu (chaypa ñanninta hinallataq tinkiyniykita qhaway)",
+ "phone.tun.why.port": "chay punku servidorpi ñachá llamk'achkan",
+ "phone.tun.why.gone": "chay servidorqa manaña My servers nisqapi waqaychasqachu",
+ "phone.alt.h": "Huk ñankuna (Tailscale)"
 }

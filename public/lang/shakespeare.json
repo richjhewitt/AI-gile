@@ -3830,5 +3830,13 @@
  "dc.hello.needid": "Add thy Discord user ID first (see \"or paste a User ID\").",
  "dc.hello.noserver": "Discord alloweth the bot to message thee only if thou sharest a server with it. Bring the bot to a server wherein thou art, then try again.",
  "dc.hello.invite": "Bring the bot to thy server",
- "dc.hello.retry": "Try once more"
+ "dc.hello.retry": "Try once more",
+ "phone.tun.on": "Switch on",
+ "phone.tun.step2.h": "Pair a phone, good sir",
+ "phone.tun.pairwait": "Light the tunnel first, then forge the code here.",
+ "phone.tun.why.auth": "the server did refuse thy key (check the key file in My servers)",
+ "phone.tun.why.net": "the server could not be reached (check its address and thy connection)",
+ "phone.tun.why.port": "the port is already in use upon the server",
+ "phone.tun.why.gone": "that server is no longer kept in My servers",
+ "phone.alt.h": "Other ways (Tailscale)"
 }
