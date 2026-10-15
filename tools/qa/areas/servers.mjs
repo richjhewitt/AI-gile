@@ -36,6 +36,10 @@ def('servers', 'My servers in Setup (Desktop shortcut finder), 🖥️ tasks sho
   await sleep(500);
   const saved = JSON.parse(fs.readFileSync(local, 'utf8')).servers;
   check('the server is saved in the local settings file', saved && saved.length === 1 && saved[0].name === 'My Server' && /My Server\.lnk$/.test(saved[0].value), saved);
+  // AIG-1141: every field has a label above it, and the delete is a text button
+  const srvLabels = await setup.$$eval('#serversBox .srv-row > label.f > span', x => x.map(e => e.textContent.trim()));
+  check('each server field has a small label (Name, Type, Address)', ['Name', 'Type', 'Address'].every(l => srvLabels.includes(l)), srvLabels);
+  check('removing a server is a text button, not a lone ✕', /Remove this server/.test(await setup.textContent('#serversBox .srv-del')) && !/✕/.test(await setup.textContent('#serversBox')));
   check('a path with shell characters is refused', (await s.api('POST', '/api/setup', { prefs: { servers: [{ name: 'x', kind: 'path', value: 'C:/a%PATH%.lnk' }] } })).status === 400);
 
   // the task shows Open <name>; clicking calls the opener with the saved path only

@@ -252,6 +252,7 @@ metadataReady.finally(() => server.listen(PORT, HOST, () => { console.log(`AI-gi
 require('./lib/dm').startDms();
 require('./lib/timed').start();   // timed cards come back (AIG-385)
 require('./lib/major').start();   // 🚨 a status line every 30 min while a major incident is open (AIG-1049)
+require('./lib/ciwatch').start();   // 👁️ cards for items about to expire and for old backups (AIG-1124, AIG-1126)
 require('./lib/accessreview').start();   // 🔐 a card to review who has access, every 90 days (AIG-1127)
 require('./lib/join').applyInvite().catch(() => {});   // a friend's first start: invite.json from the zip (AIG-347)
 if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();
