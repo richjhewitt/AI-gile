@@ -11,11 +11,11 @@ How to run what you have built so the people using it get a reliable service. Th
 - When a service stops answering, the board raises **one incident** by itself. A card that waits too long shows a red ⏰ "reply by" clock.
 - A really bad incident gets the **🚨 Major** button: one click wakes the right agent and tells you. A public status page shows friends what is up.
 - What you learn is kept: **🧩 Known errors**, **📖 Runbooks** (how to fix X) and a **📝 Post-incident review** on each major incident.
-- Keep an eye on the **🗂️ Items** your service stands on (expiry dates, backups), the **🔐 Access review** every 90 days, **🚀 Releases** and the **📈 Improvements** list.
+- Keep an eye on the **🗂️ Items** your service stands on (expiry dates, backups), the **🔐 Access review** every 90 days, **🚀 Releases**, the **📈 Improvements** list and, once a month, the **📆 Review** (with an optional monthly token cap).
 
 ## Step by step
 1. On the project board click **🎨 Look**. In the **Project settings** dialog find the **🛎️ Service** section. Tick **This project is a service** and fill in what it offers, who uses it and its web address.
-2. Choose the **On-call agent** (the lead by default) and tick **Public** if friends may see it on the status page. Click **Save**.
+2. Choose the **On-call agent** (the lead by default) and tick **Public** if friends may see it on the status page. Optionally type a **Monthly token cap** so one project cannot eat the whole budget. Click **Save**.
 3. Look at the project's dot on the home page: green means the address answers. If it stops answering, an incident card appears by itself.
 4. Open that incident card. A bad one? Click **🚨 Major**. Click **End major incident** when it is over.
 5. Cards that wait too long show a red ⏰. Open them first. The inbox filter **Desk: incidents** shows only incidents from friends and the feedback form.
@@ -23,7 +23,8 @@ How to run what you have built so the people using it get a reliable service. Th
 7. On an incident card, look at the **📖 Runbooks** box: it lists the how-to notes that match. Click **Open** to read one.
 8. After a major incident is done, its card shows **📝 Post-incident review**. Read the timeline, then click **Make a card** next to each thing worth changing.
 9. Click **⋯ More**, then **🧩 Known errors** to see problems that have a workaround. Click **🚀 Releases**, type a name like v1.3 and click **🚀 New release** to gather the done cards into notes. **↩ Roll back** files an undo checklist card.
-10. Click **⋯ More**, then **📈 Improvements** (also in the **❓ Help** menu) to see retro ideas, review actions and problem fixes in one list. In **Setup**, click **Run access review now** to see who can get in, then **Keep** or **Remove** each one.
+10. Click **⋯ More**, then **📆 Review** once a month: use **← Earlier** and **Later →** to change month, and **✍️ Summary** for a two-line summary from the on-call agent.
+11. Click **⋯ More**, then **📈 Improvements** (also in the **❓ Help** menu) to see retro ideas, review actions and problem fixes in one list. In **Setup**, click **Run access review now** to see who can get in, then **Keep** or **Remove** each one.
 
 ## Full course
 - **Service details:** in **🎨 Look**, **Project settings**, **🛎️ Service** you say what a project offers, to whom, at what web address and who is on call. Only projects you tick count as services.
@@ -41,7 +42,9 @@ How to run what you have built so the people using it get a reliable service. Th
 - **🔐 Access review:** every 90 days one card lists share links, friends' roles and kept secrets (names only), each with **Keep** or **Remove**. Run it now from **Setup**.
 - **🚀 Releases:** a release is a named bundle of the cards that became done since the last one, with short notes. **↩ Roll back** files a checklist card with the undo steps.
 - **📈 Improvements:** retro suggestions, review actions and problem fixes in one list, filterable by project, so good ideas do not get lost between retros.
-- **Good habits:** fill in the service details first, keep the web address correct, look at the status dot daily, write up every major incident and check the improvements list after each retro.
+- **📆 Monthly review:** one page per service for one month: incidents opened and closed, average time to fix, cards that met their reply-by target, uptime, tokens used and server peaks. Open it from **⋯ More → 📆 Review** or from **Project settings → Service**.
+- **Monthly token cap:** in **Project settings → Service** you can set a monthly limit of tokens. At 80% the daily brief warns you; at 100% background runs for that project wait until next month or until you raise the cap. Your own Wake still works.
+- **Good habits:** fill in the service details first, keep the web address correct, look at the status dot daily, write up every major incident and check the improvements list after each retro, and read the monthly review while the month is fresh.
 
 ## For agents
 - Raise an incident: `aigile add <proj> "Site is down" --type incident`
