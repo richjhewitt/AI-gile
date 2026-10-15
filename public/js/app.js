@@ -108,6 +108,7 @@ async function checkBuild() {
     WhatsNew.check();   // ✨ a note once after an update (AIG-562)
     // A new install opens Setup first (AIG-91), once and only from the home page (AIG-1068); after that Home shows a 'Finish setup' line and links open where they point.
     if (loadedBuild === null && m.setupNeeded && /^(#\/?)?$/.test(location.hash)) { let once = false; try { once = !localStorage.getItem('aigile.setupSent'); if (once) localStorage.setItem('aigile.setupSent', '1'); } catch {} if (once) location.hash = '#/setup'; }
+    if (JSON.stringify(m.damaged || []) !== JSON.stringify(state.damaged || [])) { state.damaged = m.damaged || []; if (state.route && state.route.view === 'home') refresh(true); }   // ⚠️ a damaged board or settings file (AIG-1261)
     if (!!m.setupNeeded !== !!state.setupNeeded) { state.setupNeeded = !!m.setupNeeded; if (state.route && state.route.view === 'home') refresh(true); }
     if (loadedBuild === null) { loadedBuild = m.build; return; }
     // While you're quiet (AIG-224): a new board or page code reloads by itself, unless something is half-typed.
