@@ -63,10 +63,17 @@ function logoUpload(id) {
 }
 const logoUsePath = id => $(id + '-path').value.trim() && logoSend(id, 'POST', { path: $(id + '-path').value.trim() });
 const logoRemove = id => logoSend(id, 'DELETE');
+// A library picture's friendly name (AIG-393): role-docs.svg reads Docs, pal-fox.svg Fox, any other file its cleaned-up name.
+function picName(f) {
+  const m = /^(role|pal)-(.+)\.svg$/i.exec(f);
+  if (m) { const k = 'av.' + m[1].toLowerCase() + '.' + m[2].toLowerCase(); if (tk(k, '')) return t(k); }
+  const c = String(f).replace(/\.[^.]+$/, '').replace(/^(role|pal)-/i, '').replace(/[-_]+/g, ' ').trim();
+  return c.charAt(0).toUpperCase() + c.slice(1);
+}
 // The agents' picture library (AIG-150): the folder, and each picture with who wears it.
 function libraryHtml(l) {
   l = l || { dir: '', pictures: [] };
-  return `<div class="face-lib">${l.pictures.map(x => `<figure title="${esc(x.file)}"><img class="face" src="${esc(x.url)}" alt=""><figcaption class="muted">${esc(x.usedBy.map(u => u.name).join(', ') || t('face.free'))}</figcaption></figure>`).join('') || `<span class="muted">${esc(t('face.empty'))}</span>`}</div>
+  return `<div class="face-lib">${l.pictures.map(x => `<figure title="${esc(picName(x.file))}"><img class="face" src="${esc(x.url)}" alt="${esc(picName(x.file))}"><figcaption class="muted">${esc(x.usedBy.map(u => u.name).join(', ') || t('face.free'))}</figcaption></figure>`).join('') || `<span class="muted">${esc(t('face.empty'))}</span>`}</div>
     <small class="muted">${esc(t('face.lib.help', { dir: l.dir }))}</small>`;
 }
 
