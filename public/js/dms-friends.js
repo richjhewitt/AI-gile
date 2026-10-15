@@ -18,7 +18,7 @@ function fpUpload(id, f) {
   if (!f) return;
   if (f.size > 1024 * 1024) { FP.err = t('logo.toobig'); return dmsFriendsPaint(), joinPaint(); }
   const rd = new FileReader();
-  rd.onload = () => fpSend(id, 'POST', { name: f.name || '', type: f.type, data: String(rd.result).split(',')[1] });
+  rd.onload = async () => fpSend(id, 'POST', { name: f.name || '', type: f.type, data: String(rd.result).split(',')[1], ...await makeThumb(f, 128) });
   rd.readAsDataURL(f);
 }
 document.addEventListener('click', ev => {

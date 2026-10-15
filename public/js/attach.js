@@ -24,7 +24,7 @@ const Attach = (() => {
     const lb = document.createElement('div');
     lb.className = 'att-lightbox'; lb.title = t('attach.close');
     const img = document.createElement('img'); lb.appendChild(img);
-    const show = () => { img.src = imgs[at].src; img.alt = imgs[at].alt || ''; };
+    const show = () => { img.src = imgs[at].dataset.full || imgs[at].src; img.alt = imgs[at].alt || ''; };
     const close = () => { lb.remove(); document.removeEventListener('keydown', key_, true); };
     const key_ = e => {
       if (e.key === 'Escape') { e.stopPropagation(); close(); }
@@ -50,7 +50,7 @@ const Attach = (() => {
     if (e.target.closest('.att-btn')) box.querySelector('input[type=file]').click();
     if (e.target.closest('.att-gif')) gifPicker(e.target.closest('.att-gif'), box);
     const view = e.target.closest('[data-att-view]');
-    if (view) preview(view.src);
+    if (view) preview(view.dataset.full || view.src);
     const del = e.target.closest('[data-att-del]');
     if (del) { const k = box.dataset.attKey, l = list(k); l.splice(+del.dataset.attDel, 1).forEach(revoke); pending.set(k, l); paint(k); }
   });
@@ -124,7 +124,7 @@ const Attach = (() => {
     for (const f of list(key)) {
       if (f.size > MAX) throw new Error(t('attach.toobig', { name: f.name }));
       const data = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(f); });
-      const a = await api('POST', `/api/projects/${slug}/attachments`, { name: f.name, type: f.type, data });
+      const a = await api('POST', `/api/projects/${slug}/attachments`, { name: f.name, type: f.type, data, ...await makeThumb(f, 320) });
       out.push({ id: a.id, type: a.type });
     }
     return out;
@@ -144,7 +144,7 @@ const Attach = (() => {
   // Under a comment: thumbnails for images (click for full size), links for other files.
   const shown = (m, slug, base = `/api/projects/${slug}/attachments`) => m.attachments && m.attachments.length ? `<div class="att-shown">${m.attachments.map(a => {
     const u = `${base}/${encodeURIComponent(a.id)}`;
-    return isImg(a) ? `<a href="${u}" target="_blank" title="${esc(a.name)}"><img src="${u}" alt="${esc(a.name)}" loading="lazy"></a>` : `<a href="${u}" target="_blank" class="att-file">📎 ${esc(a.name)}</a>`;
+    return isImg(a) ? `<a href="${u}" target="_blank" title="${esc(a.name)}"><img src="${a.thumb ? u + '?thumb=1' : u}" data-full="${u}" alt="${esc(a.name)}" loading="lazy"></a>` : `<a href="${u}" target="_blank" class="att-file">📎 ${esc(a.name)}</a>`;
   }).join('')}</div>` : '';
 
   return { boxHtml, upload, read, clear, has, shown };
