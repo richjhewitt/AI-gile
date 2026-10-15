@@ -109,6 +109,10 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 .btn-lite:hover{background:var(--hover)}
 .board-count{margin:24px 0 0;color:var(--muted)}
 .board-count b{color:var(--diamond);font-size:1.4em;font-variant-numeric:tabular-nums}
+/* Humans and Agents (AIG-1314) */
+.people-count{margin:6px 0 0;color:var(--muted)}
+.people-count b{color:var(--diamond);font-variant-numeric:tabular-nums}
+.people-count .sep{margin:0 .4em}
 /* Timeline (AIG-778/779): one vertical line, newest at the bottom, the plan after "Today" */
 .timeline{max-width:42rem;margin:0 auto;padding:32px 0;text-align:center}
 .timeline h2{font-size:28px;margin:0 0 8px}

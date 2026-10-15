@@ -35,6 +35,7 @@
 //   GET  /bug, POST /bug/ack { ids }: the operator's board collects reports and deletes them (signed by RELAY_STATS_KEY)
 //   GET  /health           { ok } for anyone; signed by RELAY_STATS_KEY it adds cpu, mem, disk, storage, uptime (AIG-660)
 //   GET  /stats            { envelopes, bytes }: only if RELAY_STATS_KEY (the operator's public signing key) is set, and signed by it
+//   POST /people           { humans, agents, working }: three counts for the website (signed by RELAY_STATS_KEY); GET /people.json for anyone (AIG-1314)
 //   Call passes (AIG-1218): one LiveKit server run with this relay (RELAY_LIVEKIT_URL, RELAY_LIVEKIT_KEY, RELAY_LIVEKIT_SECRET), so no
 //   board holds LiveKit keys. Without all three both routes are 404.
 //   GET  /call             { ok, url }: calls work through this relay
@@ -206,6 +207,35 @@ async function statusPage(req, res, pathname) {
   throw fail('not found', 404);
 }
 
+/* ---------- humans and agents (AIG-1314) ---------- */
+// The operator's board posts { humans, agents, working } (three counts, no names), signed by RELAY_STATS_KEY only; anyone reads
+// /people.json (CORS *, cached 30 s): {} until the first post.
+const PEOPLE_FILE = path.join(DATA, 'people.json');
+let peopleCache = { at: 0, text: '{}' };
+const tally = v => Math.max(0, Math.min(1e6, Math.round(Number(v) || 0)));
+async function people(req, res, pathname) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'GET, OPTIONS', 'Access-Control-Max-Age': '600' }); return res.end(); }
+  if (req.method === 'GET' && pathname === '/people.json') {
+    if (Date.now() - peopleCache.at > 30e3) { let text = '{}'; try { text = fs.readFileSync(PEOPLE_FILE, 'utf8'); } catch {} peopleCache = { at: Date.now(), text }; }
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=30', 'X-Content-Type-Options': 'nosniff' });
+    return res.end(peopleCache.text);
+  }
+  if (req.method === 'POST' && pathname === '/people') {
+    if (!STATS_KEY) throw fail('not found', 404);
+    const body = await readBody(req, 4 * 1024);
+    owner(req, null, pathname, body, STATS_KEY);
+    let o; try { o = JSON.parse(body); } catch { throw fail('send JSON', 400); }
+    if (!o || typeof o !== 'object') throw fail('send JSON', 400);
+    const agents = tally(o.agents), text = JSON.stringify({ humans: Math.max(1, tally(o.humans)), agents, working: Math.min(agents, tally(o.working)), at: new Date().toISOString() });
+    fs.mkdirSync(DATA, { recursive: true });
+    fs.writeFileSync(PEOPLE_FILE + '.tmp', text); fs.renameSync(PEOPLE_FILE + '.tmp', PEOPLE_FILE);
+    peopleCache = { at: 0, text };
+    return send(res, 201, { ok: true });
+  }
+  throw fail('not found', 404);
+}
+
 /* ---------- health (AIG-660) ---------- */
 // The numbers the operator's board watches to warn before this server needs a bigger plan. Node built-ins only.
 function dirBytes(dir, budget = { n: 200000 }) {
@@ -256,6 +286,7 @@ async function handle(req, res) {
   }
   if (req.method === 'GET' && pathname === '/stats' && STATS_KEY) { owner(req, null, pathname, '', STATS_KEY); sweep(); return send(res, 200, { envelopes: count, bytes: used }); }
   if (pathname === '/status' || pathname === '/status.json') return statusPage(req, res, pathname);   // 🟢 public status page (AIG-1050)
+  if (pathname === '/people' || pathname === '/people.json') return people(req, res, pathname);   // 👥 humans and agents (AIG-1314)
   if (pathname === '/call' || pathname === '/call/token') return calls(req, res, pathname);   // 📞 call passes (AIG-1218)
   if (pathname.startsWith('/b/')) return board(req, res, pathname, ip);
   if (pathname.startsWith('/f/')) return feedback(req, res, pathname, ip);   // public feedback (AIG-968)
