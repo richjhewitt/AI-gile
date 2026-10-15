@@ -18,6 +18,8 @@
     ".words-x{flex:none;width:44px;height:44px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;font-size:20px;line-height:1;cursor:pointer}"+
     ".words-x:hover{background:var(--hover)}"+
     ".words-intro,.words-help,.words-none{margin:0;color:var(--muted);font-size:14px}"+
+    ".words-count{margin:-4px 0 0;color:var(--muted);font-size:13px}.words-zero{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}"+
+    ".words-group[hidden]{display:none}.words-gh{margin:14px 0 0;padding:0 2px 6px;font-size:16px;border-bottom:2px solid var(--line)}.words-group:first-child .words-gh{margin-top:6px}.words-gl{margin:0}"+
     ".words-q{width:100%;box-sizing:border-box;font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text)}"+
     ".words-opt{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;font-weight:600}"+
     ".words-opt input{width:20px;height:20px;margin:0;accent-color:var(--accent);flex:none}"+
@@ -38,7 +40,7 @@
   function fold(s){s=String(s||"").toLowerCase();try{s=s.normalize("NFD").replace(/[̀-ͯ]/g,"")}catch(e){}return s}
 
   /* ---------- the dialog ---------- */
-  var btn,ul,label,dlg,h,intro,input,opt,box,optText,help,dl,none,x;
+  var btn,ul,label,dlg,h,intro,input,opt,box,optText,help,dl,none,count,x;
   function paint(){
     var w=W(),full=w.button||"📖 Dev words";
     label.textContent=full.replace(/^[^\p{L}\p{N}]+/u,"")||full;
@@ -49,20 +51,36 @@
     optText.textContent=I.t("words.underline");ul.title=I.t("words.underline");ul.setAttribute("aria-label",I.t("words.underline"));help.textContent=I.t("words.underlineHelp");
     list();
   }
+  // AIG-1296: a heading per group (h3 under the dialog's h2), A to Z inside each; the search runs across them all.
   function list(){
-    var loc=I.locale(),items=W().list.slice().sort(function(a,b){try{return a.word.localeCompare(b.word,loc)}catch(e){return a.word<b.word?-1:1}});
+    var w=W(),loc=I.locale(),groups=(w.groups&&w.groups.length?w.groups:[{id:"",name:""}]);
+    var cmp=function(a,b){try{return a.word.localeCompare(b.word,loc)}catch(e){return a.word<b.word?-1:1}};
     dl.textContent="";
-    items.forEach(function(w){
-      var d=el("div","words-item"),dt=el("dt"),dd=el("dd");
-      dt.textContent=w.word;dd.textContent=w.text;d.appendChild(dt);d.appendChild(dd);
-      d._k=fold([w.word,w.text].concat(w.also||[]).join(" "));d.setAttribute("data-id",w.id);dl.appendChild(d);
+    groups.forEach(function(g){
+      var items=w.list.filter(function(x){return !g.id||x.g===g.id}).sort(cmp);if(!items.length)return;
+      var sec=el("section","words-group"),gl=el("dl","words-gl");sec.setAttribute("data-group",g.id);
+      if(g.name){var h3=el("h3","words-gh");h3.id="words-g-"+g.id;h3.textContent=g.name;sec.appendChild(h3);sec.setAttribute("aria-labelledby",h3.id)}
+      items.forEach(function(x){
+        var d=el("div","words-item"),dt=el("dt"),dd=el("dd");
+        dt.textContent=x.word;dd.textContent=x.text;d.appendChild(dt);d.appendChild(dd);
+        d._k=fold([x.word,x.text].concat(x.also||[]).join(" "));d.setAttribute("data-id",x.id);gl.appendChild(d);
+      });
+      sec.appendChild(gl);dl.appendChild(sec);
     });
     filter();
   }
+  function counted(n){
+    var c=W().count;if(!c)return String(n);
+    var k="other";try{k=new Intl.PluralRules(I.locale()).select(n)}catch(e){}
+    return String(c[k]||c.other).replace("{count}",n.toLocaleString?n.toLocaleString(I.locale()):n);
+  }
   function filter(){
     var q=fold(input.value.trim()),n=0;
-    [].forEach.call(dl.children,function(d){var hit=!q||d._k.indexOf(q)>=0;d.hidden=!hit;if(hit)n++});
+    [].forEach.call(dl.querySelectorAll(".words-item"),function(d){var hit=!q||d._k.indexOf(q)>=0;d.hidden=!hit;if(hit)n++});
+    [].forEach.call(dl.querySelectorAll(".words-group"),function(s){s.hidden=!s.querySelector(".words-item:not([hidden])")});
     none.hidden=n>0;
+    // With no match the visible "no word matches" line says it; the count line still reads it out, unseen.
+    count.textContent=n?counted(n):(W().none||"");count.classList.toggle("words-zero",!n);
   }
   function open(){input.value="";filter();box.checked=isOn();hideTip();dlg.showModal();input.focus()}
   function mount(){
@@ -79,8 +97,11 @@
     intro=el("p","words-intro");intro.id="words-intro";dlg.setAttribute("aria-describedby","words-intro");
     input=el("input","words-q");input.type="search";input.id="words-q";input.autocomplete="off";
     opt=el("label","words-opt");box=el("input");box.type="checkbox";box.id="words-underline";optText=el("span");opt.appendChild(box);opt.appendChild(optText);
-    help=el("p","words-help");dl=el("dl","words-list");dl.id="words-list";none=el("p","words-none");none.id="words-none";none.hidden=true;none.setAttribute("role","status");
-    [head,intro,input,opt,help,dl,none].forEach(function(e){inner.appendChild(e)});
+    help=el("p","words-help");dl=el("div","words-list");dl.id="words-list";none=el("p","words-none");none.id="words-none";none.hidden=true;
+    // AIG-1296: how many words the search shows, read out as you type (and "no match" when none).
+    count=el("p","words-count");count.id="words-count";count.setAttribute("role","status");count.setAttribute("aria-live","polite");count.setAttribute("aria-atomic","true");
+    input.setAttribute("aria-describedby","words-count");
+    [head,intro,input,count,opt,help,dl,none].forEach(function(e){inner.appendChild(e)});
     dlg.appendChild(inner);document.body.appendChild(dlg);
     btn.addEventListener("click",open);
     x.addEventListener("click",function(){dlg.close()});
@@ -99,10 +120,13 @@
   var re=null,texts=null,tip=null,tipFor=null,timer=null;
   var SKIP=/^(INPUT|TEXTAREA|SELECT|OPTION|SCRIPT|STYLE|CODE|PRE|ABBR|BUTTON|A|DIALOG|LABEL|OUTPUT|TIME)$/;
   var NOSPACE=/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}\p{Script=Lao}\p{Script=Khmer}\p{Script=Myanmar}]/u;
+  function key(v){return String(v).trim().replace(/\s+/g," ").toLowerCase()}
   function index(){
     texts={};
-    W().list.forEach(function(w){if(w.noTip)return;[w.word].concat(w.also||[]).forEach(function(v){var k=String(v).trim().toLowerCase();if(k)texts[k]=w.text})});
-    var q=function(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")},all=Object.keys(texts).sort(function(a,b){return b.length-a.length});
+    // AIG-1296: terms of more words ("major incident") match across any run of spaces; the longest term wins where
+    // several start at the same place ("major incident" over "incident"), so they are tried longest first.
+    W().list.forEach(function(w){if(w.noTip)return;[w.word].concat(w.also||[]).forEach(function(v){var k=key(v);if(k&&!texts[k])texts[k]=w.text})});
+    var q=function(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/ /g,"\\s+")},all=Object.keys(texts).sort(function(a,b){return b.length-a.length});
     var sp=all.filter(function(w){return!NOSPACE.test(w)}).map(q),bare=all.filter(function(w){return NOSPACE.test(w)}).map(q),parts=[];
     if(sp.length)parts.push("(?<![\\p{L}\\p{N}])(?:"+sp.join("|")+")(?![\\p{L}\\p{N}])");
     if(bare.length)parts.push("(?:"+bare.join("|")+")");
@@ -121,7 +145,7 @@
         var f=document.createDocumentFragment(),s=n.nodeValue,last=0,m;re.lastIndex=0;
         while((m=re.exec(s))){
           f.appendChild(document.createTextNode(s.slice(last,m.index)));
-          var a=el("abbr","devw");a.tabIndex=0;a.setAttribute("data-tip",texts[m[0].toLowerCase()]||"");a.textContent=m[0];f.appendChild(a);
+          var a=el("abbr","devw");a.tabIndex=0;a.setAttribute("data-tip",texts[key(m[0])]||"");a.textContent=m[0];f.appendChild(a);
           last=m.index+m[0].length;
         }
         f.appendChild(document.createTextNode(s.slice(last)));n.parentNode.replaceChild(f,n);

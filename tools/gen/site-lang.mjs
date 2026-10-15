@@ -40,20 +40,31 @@ export function codesWithFiles() {
 // AIG-1285: the app's dev words in one language, so the site has no second copy to translate. The ids, and the words that
 // get no underline, come from public/js/glossary.js; each text is the language's own, else its base language's, else English.
 const APP_LANG = path.join(ROOT, 'public', 'lang');
+const glossarySrc = () => fs.readFileSync(path.join(ROOT, 'public', 'js', 'glossary.js'), 'utf8');
 function glossaryIds(name) {
-  const m = new RegExp('const ' + name + ' = \\[([^\\]]*)\\]').exec(fs.readFileSync(path.join(ROOT, 'public', 'js', 'glossary.js'), 'utf8'));
+  const m = new RegExp('const ' + name + ' = \\[([^\\]]*)\\]').exec(glossarySrc());
   return m ? [...m[1].matchAll(/'([^']+)'/g)].map(x => x[1]) : [];
 }
+// AIG-1296: the groups in order, each with its ids, from: const GLOSS_GROUPS = { build: ['repo', ...], ... };
+export function glossaryGroups() {
+  const m = /const GLOSS_GROUPS = \{([\s\S]*?)\n\};/.exec(glossarySrc().replace(/\r\n/g, '\n'));
+  return m ? [...m[1].matchAll(/(\w+):\s*\[([^\]]*)\]/g)].map(g => ({ id: g[1], ids: [...g[2].matchAll(/'([^']+)'/g)].map(x => x[1]) })) : [];
+}
 // The dialog's texts, borrowed from the app: button, title, intro, search box, no match, close.
-export const WORD_TEXTS = { button: 'scale.words', h: 'gloss.h', intro: 'gloss.intro', search: 'gloss.search', none: 'gloss.none', close: 'common.close' };
+export const WORD_TEXTS = { button: 'scale.words', h: 'gloss.title', intro: 'gloss.about', search: 'gloss.search', none: 'gloss.none', close: 'common.close' };
 export function devWords(code) {
   const base = (languages().find(l => l.code === code) || {}).base;
   const files = [code, base, 'en'].filter((c, i, a) => c && a.indexOf(c) === i).map(c => readIf(path.join(APP_LANG, c + '.json'))).filter(Boolean);
   const t = k => { for (const j of files) if (typeof j[k] === 'string' && j[k].trim()) return j[k]; return ''; };
   const noTip = glossaryIds('NO_TIP'), out = {};
   for (const [k, key] of Object.entries(WORD_TEXTS)) out[k] = t(key);
-  out.list = glossaryIds('GLOSSARY').map(id => {
-    const w = { id, word: t('gloss.' + id + '.word'), text: t('gloss.' + id + '.text') }, also = t('gloss.' + id + '.also');
+  // AIG-1296: "{count} words" (plural forms) for the search, and the groups: name and ids, every word tagged with its group.
+  const tp = k => { for (const j of files) if (j[k] && typeof j[k] === 'object' && j[k].other) return j[k]; return null; };
+  out.count = tp('gloss.count');
+  const groups = glossaryGroups(), groupOf = {};
+  out.groups = groups.map(g => { g.ids.forEach(id => { groupOf[id] = g.id; }); return { id: g.id, name: t('gloss.g.' + g.id) }; });
+  out.list = groups.flatMap(g => g.ids).map(id => {
+    const w = { id, g: groupOf[id], word: t('gloss.' + id + '.word'), text: t('gloss.' + id + '.text') }, also = t('gloss.' + id + '.also');
     if (also) w.also = also.split(',').map(x => x.trim()).filter(Boolean);
     if (noTip.includes(id)) w.noTip = 1;
     return w;

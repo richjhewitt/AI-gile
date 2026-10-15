@@ -542,7 +542,7 @@ function render() {
   if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'news') { $('app').innerHTML = renderNews(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'watch') { renderWatch(); $('modal').innerHTML = ''; return; }
-  if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.h'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.title'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'shared') { $('crumb').textContent = '/ 🔗 ' + (state.sboard ? state.sboard.theirName || state.sboard.friend : ''); $('crumb').style.color = ''; $('app').innerHTML = ShareBoard.render(state.sboard); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'mail') { $('crumb').textContent = '/ ' + t('mail.title'); $('app').innerHTML = Mail.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'bin') { $('crumb').textContent = '/ ' + t('bin.title'); $('app').innerHTML = Bin.render(); $('modal').innerHTML = ''; return; }
