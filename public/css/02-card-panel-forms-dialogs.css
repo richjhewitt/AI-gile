@@ -24,6 +24,8 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); ou
 input[type=checkbox], input[type=radio] { width: auto; }   /* a radio at 100% pushed its label aside (AIG-921) */
 textarea { resize: vertical; min-height: 70px; }
 label.f { display: block; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
+h3.look-sec { margin: 18px 0 8px; font-size: 15px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+#look-dod > span, #look-chgwin > span, #look-call > span, #look-server > span, #look-roles > span { display: block; font-weight: 600; color: var(--text); font-size: 13px; margin-bottom: 2px; }
 label.f > :not(span) { margin-top: 3px; font-size: 14px; }
 label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-end: 14px; color: var(--text); font-size: 13px; }
 .row { display: flex; gap: 10px; flex-wrap: wrap; } .row > * { flex: 1 1 120px; }
