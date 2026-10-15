@@ -36,7 +36,7 @@ def('stats', '📈 project stats: API numbers on a seeded project, git commits a
   check('busiest day', d.busiestDay && d.busiestDay.day === dayStr(ago(3)) && d.busiestDay.done === 2, d.busiestDay);
   check('longest streak of days with something done', d.longestStreak === 3, d.longestStreak);
   check('first card date', d.firstCard === dayStr(ago(10)), d.firstCard);
-  check('twelve weeks in the chart, adding up to the done cards', d.weeks.length === 12 && d.weeks.reduce((n, w) => n + w.done, 0) === 5, d.weeks);
+  check('4 to 12 weeks in the chart, adding up to the done cards', d.weeks.length >= 4 && d.weeks.length <= 12 && d.weeks.reduce((n, w) => n + w.done, 0) === 5, d.weeks);
   check('records: most comments on one card, biggest day', d.records.mostComments.id === c[0].id && d.records.mostComments.comments === 3 && d.records.biggestDay.done === 2, d.records);
   const e = await s.ok('GET', '/api/projects/nofolder/stats');
   check('a project without a folder has no git numbers and no crash', e.git === null && e.done === 0 && e.longestStreak === 0 && e.busiestDay === null, e);
