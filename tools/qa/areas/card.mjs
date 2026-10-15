@@ -445,10 +445,12 @@ def('testpile', 'testing pile: "3 of 12 left" line on the card while working thr
   await page.click('button.good');
   await page.waitForFunction(() => !location.hash.endsWith('ALP-1') && /2 of 3 left/.test((document.querySelector('#pileLeft') || {}).textContent || '')).catch(() => {});
   check('after Accept the next card shows 2 of 3 left', (await page.textContent('#pileLeft')).trim() === '2 of 3 left', await page.textContent('#pileLeft'));
+  check('the next card says what just happened (AIG-1135)', /Accepted ALP-1/.test(await page.textContent('#moved-note')) && /next card in your pile/.test(await page.textContent('#moved-note')), await page.textContent('#moved-note').catch(() => ''));
   const cur = page.url().split('/').pop();
   await page.fill('#v-text', 'not right');
   await page.click('button.warn');
   await page.waitForFunction(c => !location.hash.endsWith(c) && /1 of 3 left/.test((document.querySelector('#pileLeft') || {}).textContent || ''), cur).catch(() => {});
+  check('after Send back the next card says Sent back', /Sent back/.test(await page.textContent('#moved-note')), await page.textContent('#moved-note').catch(() => ''));
   check('after Send back the next card shows 1 of 3 left', (await page.textContent('#pileLeft')).trim() === '1 of 3 left', await page.textContent('#pileLeft'));
   // Enter sends off for card replies: Enter is a new line, Ctrl+Enter sends
   await mkCard(s, 'alpha', 'Chatty', { status: 'doing', assignee: 'Forge' });

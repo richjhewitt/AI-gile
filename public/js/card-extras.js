@@ -76,7 +76,7 @@ async function timerClear() {
 }
 async function waitAndSee() {
   const next = nextForYou();
-  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next); } catch (err) { setErr('v-err', err); }
+  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next, 'card.next.later'); } catch (err) { setErr('v-err', err); }
 }
 // 📖 To read (AIG-392): Got it accepts (a typed note goes along); Reply tells the team and keeps the card here.
 async function gotIt() { return verdict(true); }
@@ -99,6 +99,6 @@ async function verdict(accept, btn) {
     Attach.clear(key);
     clearDraft(slug() + '/' + cardId() + '/verdict');
     if (!accept) rememberPop(slug(), cardId());
-    doneWithCard(next);
+    doneWithCard(next, accept ? 'card.next.accepted' : 'card.next.sentback');
   } catch (err) { setErr('v-err', err); }
 }

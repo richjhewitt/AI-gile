@@ -78,6 +78,7 @@ function qaGateHtml(c) {
   const red = q.result === 'fail' || q.full === 'fail', bits = [(q.areas || []).join(', '), q.full ? t('qa.full.' + q.full) : ''].filter(Boolean).join('; ');
   return `<div class="qa-gate ${red ? 'red' : 'green'}" title="${esc([q.by, q.at && ago(q.at)].filter(Boolean).join(' · '))}">${esc(t(red ? 'qa.red' : 'qa.green'))}${bits ? ` <span class="muted">(${esc(bits)})</span>` : ''}${q.note ? ` <span class="muted">${esc(q.note)}</span>` : ''}</div>`;
 }
+const movedBanner = c => { const m = state.moved; if (!m) return ''; if (m.to !== c.id) { state.moved = null; return ''; } return `<div class="moved-note" id="moved-note" role="status">✓ ${esc(m.text)} ${esc(t('card.next.now'))}</div>`; };
 function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
@@ -119,7 +120,7 @@ function renderCard(p, c) {
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
   return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel" ${Term.panelAttr(p, c)}>
-    <div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    ${movedBanner(c)}<div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
     ${deskHtml(c)}${majorHtml(c)}${reviewHtml(p, c)}
@@ -235,8 +236,9 @@ function pileLeft(p, c) {
   return `<div class="muted pile-left" id="pileLeft">${esc(t('pile.left', { n: left, total: state.pileRun.total }))}</div>`;
 }
 function nextForYou() { const q = forYouQueue(state.project).map(c => c.id), i = q.indexOf(cardId()); return i < 0 ? null : q[i + 1] || q[i - 1] || null; }
-function doneWithCard(next) {
-  if (next && !state.route.pop) { state.editing = false; location.hash = '#/p/' + slug() + '/' + next; } else closeCard();
+// The card opens the next one in your pile: say what just happened, so the swap is never silent (AIG-1135).
+function doneWithCard(next, msgKey) {
+  if (next && !state.route.pop) { state.editing = false; state.pileFrom = next; state.moved = { to: next, text: t(msgKey || 'card.next.done', { id: cardId() }) }; location.hash = '#/p/' + slug() + '/' + next; } else closeCard();
 }
 async function sendReply(fixed) {
   const next = nextForYou(), txt = fixed || $('r-text').value.trim(), key = slug() + '/' + cardId();
@@ -251,6 +253,6 @@ async function sendReply(fixed) {
       setErr('r-err', ''); refresh(true);
       return;
     }
-    doneWithCard(next);
+    doneWithCard(next, 'card.next.replied');
   } catch (err) { setErr('r-err', err); }
 }
