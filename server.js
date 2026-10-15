@@ -33,14 +33,16 @@ async function newest(dir, jsOnly = false) {
   }));
   return Math.max(0, ...times);
 }
-let buildId = STARTED + '-0', serverStale = false, scanningBuild = false;
-const build = () => buildId;
+let buildId = STARTED + '-0', serverStale = false, scanningBuild = false, scannedAt = 0;
+// Outside dev (AIG-1090) nothing scans on a timer: the first ask after 10 s of quiet starts a scan, so an update (git merge) still shows within a poll or two.
+const lazyScan = () => { if (!DEV && Date.now() - scannedAt > 10000) refreshBuild(); };
+const build = () => { lazyScan(); return buildId; };
 
 // Server code newer than this running server (AIG-206): the page offers 🔄 Restart the board instead of failing on new routes.
-const stale = () => serverStale;
+const stale = () => { lazyScan(); return serverStale; };
 async function refreshBuild() {
   if (scanningBuild) return;
-  scanningBuild = true;
+  scanningBuild = true; scannedAt = Date.now();
   try {
     const [pageTime, libTime, serverStat] = await Promise.all([newest(PUBLIC), newest(path.join(__dirname, 'lib'), true), fs.promises.stat(__filename)]);
     buildId = STARTED + '-' + pageTime;
@@ -49,7 +51,7 @@ async function refreshBuild() {
   finally { scanningBuild = false; }
 }
 const metadataReady = refreshBuild();
-setInterval(refreshBuild, 2000).unref();
+if (DEV) setInterval(refreshBuild, 2000).unref();   // only the people building AI-gile need every save noticed within 2 s (AIG-1090)
 
 const routes = makeRoutes(() => ({ dev: DEV, build: build(), stale: stale() }));
 
@@ -209,7 +211,13 @@ const server = http.createServer(async (req, res) => {
           if (out && out.__file) {
             // download: a friend's attachment (AIG-306), always saved, never shown or run by the browser.
             if (out.download) return streamFile(out.__file, res, { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="${String(out.download).replace(/[^\w.\- ]/g, '_')}"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'" });
-            return streamFile(out.__file, res, { 'Content-Type': ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...(out.__file.toLowerCase().endsWith('.svg') ? { 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" } : {}) });
+            // Pictures and files are cached by the browser (AIG-1090): an ETag from size + mtime, 304 on If-None-Match; attachment ids never change.
+            const st = await fs.promises.stat(out.__file).catch(() => null);
+            const etag = st ? `"${st.size.toString(16)}-${Math.floor(st.mtimeMs).toString(16)}"` : '';
+            const immutable = /^\/api\/projects\/[^/]+\/attachments\/[^/]+$/.test(pathname);
+            const cache = { 'Cache-Control': immutable ? 'private, max-age=31536000, immutable' : 'private, max-age=86400', ...(etag ? { ETag: etag } : {}) };
+            if (etag && (req.headers['if-none-match'] || '').split(',').some(x => x.trim().replace(/^W\//, '') === etag)) { res.writeHead(304, { ...cache, 'X-Content-Type-Options': 'nosniff' }); return res.end(); }
+            return streamFile(out.__file, res, { 'Content-Type': ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', ...cache, 'X-Content-Type-Options': 'nosniff', ...(out.__file.toLowerCase().endsWith('.svg') ? { 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" } : {}) });
           }
           return send(res, 200, out);
         }

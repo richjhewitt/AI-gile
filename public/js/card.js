@@ -62,7 +62,7 @@ function qaGateHtml(c) {
 function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
-  const popBtn = pop ? '' : `<button onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
+  const popBtn = pop ? '' : `<button class="card-pop" onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;
   const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}</div>`;
   // AIG-935: title first; Close, Edit (and Reopen) stay in view, every other action sits in the one ⋯ menu (same buttons, same ids).
   // ⧉ Pop out stays in view too (AIG-1012): in the ⋯ menu nobody found it.

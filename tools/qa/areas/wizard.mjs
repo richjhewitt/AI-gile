@@ -18,8 +18,21 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   await sleep(200);
   const after = await setup();
   check('wing it leaves every default and marks the wizard answered', strip(after.prefs) === before && after.prefs.wizardSeen === true && !after.fields.find(f => f.key === 'owner').value, JSON.stringify(after.prefs));
-  await page.reload(); await page.waitForSelector('#setupForm'); await sleep(500);
+  await page.waitForSelector('#homeMoreBtn', { timeout: 5000 }).catch(() => {});
+  check('Just let me in lands on Home, not Setup (AIG-1069)', !/#\/setup/.test(page.url()) && await page.isVisible('.toolbar #homeMoreBtn') && (await page.textContent('#homeEmpty')).includes('New project'), page.url());
+  await page.goto(s.base + '/#/setup'); await page.reload(); await page.waitForSelector('#setupForm'); await sleep(500);
   check('it does not come back by itself', !(await page.isVisible('#wzYes')));
+
+  // AIG-1068: only the first load of the home page goes to Setup; then Home shows a Finish setup line and deep links stay put.
+  await page.goto(s.base + '/'); await page.waitForFunction(() => /#\/setup/.test(location.hash), null, { timeout: 8000 }).catch(() => {});
+  check('the first home load goes to Setup once', /#\/setup/.test(page.url()), page.url());
+  await page.goto(s.base + '/#/'); await page.reload(); await page.waitForSelector('#finishSetup'); await sleep(300);
+  check('after that Home stays and shows Finish setup', !/#\/setup/.test(page.url()) && (await page.textContent('#finishSetup')).includes('Finish setup'), page.url());
+  await page.goto(s.base + '/#/standups'); await page.reload(); await sleep(800);
+  check('a deep link opens where it points', /#\/standups/.test(page.url()), page.url());
+  await page.goto(s.base + '/#/'); await page.waitForSelector('#finishSetup'); await page.click('#finishSetup a'); await page.waitForSelector('#setupForm');
+  check('Finish setup goes to the boxes', /#\/setup\/you/.test(page.url()));
+  await page.goto(s.base + '/#/setup'); await page.waitForSelector('#setupForm');
 
   // The wizard from Setup.
   await page.click('#wzRun');
@@ -32,7 +45,8 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   check('without a name there is no Skip', !(await page.isVisible('#wzSkip')));
   await page.click('#wzNext'); await sleep(200);
   check('Next without a name stays and says so', await page.isVisible('#wz-name') && (await page.textContent('#wz-err')).length > 0);
-  const guess = (await page.isVisible('#wzUse')) ? await page.textContent('.suggest code') : '';   // AIG-940: the found one is a button, the placeholder only a hint
+  const guess = (await page.isVisible('#wzUse')) ? await page.getAttribute('#wzUse', 'title') : '';   // AIG-940: the found one is a button, the placeholder only a hint
+  check('the found agent never shows a wildcard path (AIG-1071)', !(await page.isVisible('#wzUse')) || !(await page.textContent('.wizard .suggest')).includes('*'), await page.textContent('.wizard .suggest'));
   check('the agent guess is not typed in; the placeholder is a short hint', (await page.inputValue('#wz-agent')) === '' && (await page.getAttribute('#wz-agent', 'placeholder')) !== guess);
   await page.fill('#wz-name', 'Wiz');
   await page.click('#wzNext'); await page.waitForSelector('[name=wz-style]');
@@ -46,6 +60,7 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   await page.check('[name=wz-plan][value=fly]');
   await page.click('#wzNext'); await page.waitForSelector('#wzDone');
   check('last screen points to Setup', (await page.textContent('.wizard')).includes('Setup'));
+  check('last screen names the empty boxes and links to them (AIG-1070)', (await page.textContent('#wzMissing')).includes('Agent notes file') && await page.isVisible('#wzGoSetup'));
   let st = await setup();
   check('the careful style is saved', st.prefs.go === 'ask' && st.prefs.chatty === false && st.prefs.tidyCards === true && st.prefs.watchAll === false, JSON.stringify(st.prefs));
   check('the spend plan is saved', st.prefs.plan === 'fly' && st.prefs.budgetH5 === st.plans.fly.budgetH5 && st.prefs.maxRuns === 1);

@@ -66,6 +66,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/serverhealth.js` (AIG-660): 🩺 polls the relay's signed `GET /health` (cpu, mem, disk, storage, uptime; `health()` in relay.js) every 15 min, keeps 7 days in `data/serverhealth.conf`, one bumped "Server: time to upgrade (...)" card in the ai-gile project when high for 3 polls or the disk trends to full in 14 days; `latest()` feeds Setup > My servers (`health` in the setup status, `healthLine` in find-trial-setup-teams.js); `POST /api/serverhealth/poll`, `GET /api/serverhealth`; `AIGILE_HEALTH_STUB` (JSON reading), `AIGILE_HEALTH_PROJECT`, `AIGILE_NO_HEALTH_POLL`; QA `serverhealth`
 - `lib/limits.js`, `lib/usage.js`, `lib/usagecheck.js`: plan usage, tokens, check usage now
 - `lib/trial.js`, `tools/trial/pretend-team.js`: 🧪 try it as a new user
+- `lib/sample.js` (AIG-1072): 🧸 sample project for demos (`sample: true`, slug `sample-project`, no folder or agent runs); `POST/DELETE /api/sample-project` (meta.js); buttons on empty home + New project (`addSample`/`removeSample` in shell-card-project-connect.js), Sample pill (home.js), Remove on its board (board.js); texts `sample.*`; QA `sample`
 - `lib/pretend.js`: 🧪 pretend friend (AIG-322): local relay + second board "Davy" (nl-BE) on free ports, invite swapped, stop keeps or wipes his data
 - `lib/tester.js`: 🤖 AI tester runs
 - `lib/dispatch.js`: who is woken for the owner's card or comment (rules, then Haiku)

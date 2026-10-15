@@ -68,6 +68,14 @@ def('topmenu', 'Top bar: Inbox/Help/Setup + More on desktop, one row with a ☰ 
   check('the menu starts closed', await page.locator('#tbMoreMenu').isHidden());
   await page.locator('#tbMoreBtn').click();
   check('More opens', await page.locator('#tbMoreMenu').isVisible() && await page.locator('#tbMoreBtn').getAttribute('aria-expanded') === 'true');
+  const hid = ids => page.evaluate(ids => ids.every(i => { const e = document.getElementById(i); return e && getComputedStyle(e).display === 'none'; }), ids);
+  check('first run: Streamer, Twitch chat, No Token Mode, Tired mode, Assumptions, ScrumGlance stay out of the menu (AIG-1077)', await hid(['streamBtn', 'twitchBtn', 'ntBtn', 'tiredBtn', 'assumeNav', 'glanceBtn']));
+  await page.locator('#tbMoreBtn').click();
+  await page.goto(page.url().split('#')[0] + '#/setup'); await page.waitForSelector('#powerTools');
+  await page.locator('#powerTools').check();
+  check('Setup > More settings: show my power tools brings them back', !(await hid(['streamBtn', 'glanceBtn'])));
+  await page.goto(page.url().split('#')[0] + '#/');
+  await page.locator('#tbMoreBtn').click();
   await page.locator('#glanceBtn').click();
   check('a button inside works (ScrumGlance opens) and the menu closes', await page.locator('#tbMoreMenu').isHidden() && await page.evaluate(() => !!document.getElementById('glancePanel') || document.body.innerText.length > 0));
   // Setup: pin it back
@@ -81,6 +89,7 @@ def('topmenu', 'Top bar: Inbox/Help/Setup + More on desktop, one row with a ☰ 
   check('phone: the bar is one row (' + h + 'px)', h < 70);
   await page.locator('#tbMoreBtn').click();
   check('phone: the menu opens and holds Help, Setup and Theme', await page.locator('#tbMoreMenu').isVisible() && await page.evaluate(() => ['helpBtn', 'setupNav', 'themeBtn'].every(i => document.getElementById(i).closest('#tbMoreMenu'))));
+  check('phone: the gear is called Setup, not Settings gear (AIG-1077)', (await page.locator('#setupNav .tbm-label').textContent()) === 'Setup');
   check('phone: every visible menu item has a label (AIG-955)', await page.evaluate(() => [...document.querySelectorAll('#tbMoreMenu > *')].filter(e => getComputedStyle(e).display !== 'none').every(e => e.innerText.trim() !== '')), await page.evaluate(() => [...document.querySelectorAll('#tbMoreMenu > *')].filter(e => getComputedStyle(e).display !== 'none').map(e => e.id + '=' + JSON.stringify(e.innerText)).join(' | ')));
   check('phone: no sideways scroll', await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth));
   await page.screenshot({ path: 'R:/wt/shot-topbar-phone.png' });
