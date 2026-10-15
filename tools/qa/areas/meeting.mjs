@@ -10,21 +10,22 @@ const claims = tok => JSON.parse(Buffer.from(tok.split('.')[1], 'base64url').toS
 def('meeting', '🎥 Meeting Room per project: listed in Messages with the roster as members, chat works, Join call gets a per-project room token (owner only, not set up -> 409), page head button fits a phone (AIG-1168)', async (s, ctx) => {
   const as = (method, url, headers, body) => fetch(s.base + url, { method, headers: { 'Content-Type': 'application/json', ...headers }, body: body && JSON.stringify(body) }).then(r => r.status);
   await mkProject(s, 'Pix', 'PIX'); await mkProject(s, 'Clo', 'CLO'); await mkProject(s, 'Solo', 'SOL');
-  await s.ok('POST', '/api/projects/pix/team', { name: 'Pixel', role: 'Designer' });
+  await s.ok('POST', '/api/projects/pix/team', { name: 'Pixel', role: 'Lead' });
   await s.ok('POST', '/api/projects/pix/team', { name: 'Pat', role: 'Reviewer' });
-  await s.ok('POST', '/api/projects/clo/team', { name: 'Claudia', role: 'Designer' });
+  await s.ok('POST', '/api/projects/clo/team', { name: 'Claudia', role: 'Lead' });
+  await s.ok('POST', '/api/projects/solo/team', { name: 'Solly', role: 'Tester' });
 
   const list = await s.ok('GET', '/api/chats/_meetings');
   const px = list.find(g => g.meeting === 'pix'), cl = list.find(g => g.meeting === 'clo');
-  check('each project with an agent has its room in the list (none for one without; the groups list stays groups only)', !!px && !!cl && !list.some(g => g.meeting === 'sol'), list.map(g => g.id));
+  check('each project with a lead has its room in the list (none for one without; the groups list stays groups only)', !!px && !!cl && !list.some(g => g.meeting === 'solo'), list.map(g => g.id));
   check('the plain groups list has no rooms in it', !(await s.ok('GET', '/api/chats/_groups')).some(g => g.meeting));
   check('the room is named for the project, id meeting-<slug>', px.id === 'meeting-pix' && /Meeting Room: Pix/.test(px.name), px);
-  check('its members are that project\'s agents only', px.members.map(m => m.name).sort().join() === 'Pat,Pixel' && cl.members.map(m => m.name).join() === 'Claudia', [px.members, cl.members]);
+  check('its members are that project\'s leads only (helpers are not woken)', px.members.map(m => m.name).join() === 'Pixel' && cl.members.map(m => m.name).join() === 'Claudia', [px.members, cl.members]);
   check('nothing is saved until the first word', !(await s.ok('GET', '/api/chats/_groups/meeting-pix')).messages.length);
 
-  // the roster follows: a new agent is a member at once
-  await s.ok('POST', '/api/projects/pix/team', { name: 'Newt', role: 'Tester' });
-  check('a new agent on the roster is in the room', (await s.ok('GET', '/api/chats/_groups/meeting-pix')).members.some(m => m.name === 'Newt'));
+  // the roster follows: a new lead is a member at once
+  await s.ok('POST', '/api/projects/pix/team', { name: 'Newt', role: 'Co-lead' });
+  check('a new lead on the roster is in the room', (await s.ok('GET', '/api/chats/_groups/meeting-pix')).members.some(m => m.name === 'Newt'));
 
   // chat: the owner writes, a member answers, anybody reads
   const w = await s.ok('POST', '/api/chats/_groups/meeting-pix', { text: 'stand-up in five' });
