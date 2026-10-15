@@ -27,7 +27,8 @@
 //   POST /apply            { company, website, what, how, email }: one file in DATA/apply/ (5 per hour per address, 8 KB at most)
 //   GET  /apply            the applications, only if RELAY_STATS_KEY is set and the request is signed by it (the operator's board)
 //   POST /interest         { email, which: alpha|beta|both }: register interest from the website (AIG-754); one file per email
-//                          in DATA/interest/ (a repeat replaces it), 5 per hour per address; GET /interest signed like GET /apply
+//                          in DATA/interest/ (a repeat replaces it), 5 per hour per address; GET /interest signed like GET /apply.
+//                          Sealed to RELAY_OWNER_XPUB, the operator board's X25519 key (AIG-1235); without it sign-ups get 503
 //   POST /bug              { title, text, build, channel }: a Live tester's bug report (10 per hour per address, 8 KB at most)
 //   GET  /bug, POST /bug/ack { ids }: the operator's board collects reports and deletes them (signed by RELAY_STATS_KEY)
 //   GET  /health           { ok } for anyone; signed by RELAY_STATS_KEY it adds cpu, mem, disk, storage, uptime (AIG-660)
@@ -591,22 +592,73 @@ async function apply(req, res, pathname, ip) {
   return send(res, 201, { ok: true });
 }
 
-// 📝 Interest in the alpha and beta (AIG-754): the website form posts an email and which test. One file per email (named by
-// its hash, so a second sign-up replaces the first and the list holds no duplicates). Read only by the operator's board.
+// 📝 Interest in the alpha and beta (AIG-754): the website form posts an email and which test. Sealed on arrival (AIG-1235) to the
+// operator board's X25519 key (RELAY_OWNER_XPUB), in the board's own DM envelope format (lib/dm.js seal, without the signature:
+// the relay has no signing key), so this server never keeps a readable email; only that board can open them. One file per email,
+// named by HMAC-SHA256(email) with a random per-relay secret (DATA/interest/.key, mode 600): a second sign-up replaces the first
+// without the plain email or a guessable hash on disk. No RELAY_OWNER_XPUB: sign-ups are refused (503), never stored plain.
+// Read only by the operator's board (GET /interest signed by RELAY_STATS_KEY), as the sealed items.
 const INTEREST = path.join(DATA, 'interest');
 const interestHits = new Map();   // ip -> times in the last hour
+const SEAL_V = 'aigile-dm-v1';
+const ownerXKey = (() => {
+  const x = process.env.RELAY_OWNER_XPUB || '';
+  if (!x) return null;
+  try { if (!/^[A-Za-z0-9_-]{43}$/.test(x)) throw 0; return { x, key: crypto.createPublicKey({ key: { kty: 'OKP', crv: 'X25519', x }, format: 'jwk' }) }; }
+  catch { console.error('RELAY_OWNER_XPUB is not an X25519 public key (43 base64url characters): sign-ups are paused'); return null; }
+})();
+const b64u = buf => Buffer.from(buf).toString('base64url');
+// The same envelope as lib/dm.js seal(): header [V, v, to, from, id, ts, epk] as the AAD, key = HKDF-SHA256(X25519(epk, owner),
+// salt epk || owner key, info V|msg), AES-256-GCM (tag appended). to/from name what it is; the board opens it with its xPriv.
+function sealForOwner(payload) {
+  const eph = crypto.generateKeyPairSync('x25519'), epk = eph.publicKey.export({ format: 'jwk' }).x;
+  const head = { v: 1, to: 'interest', from: 'relay', id: b64u(crypto.randomBytes(16)), ts: Date.now(), epk };
+  const shared = crypto.diffieHellman({ privateKey: eph.privateKey, publicKey: ownerXKey.key });
+  const key = Buffer.from(crypto.hkdfSync('sha256', shared, Buffer.concat([Buffer.from(epk, 'base64url'), Buffer.from(ownerXKey.x, 'base64url')]), SEAL_V + '|msg', 32));
+  const iv = crypto.randomBytes(12), ci = crypto.createCipheriv('aes-256-gcm', key, iv);
+  ci.setAAD(Buffer.from([SEAL_V, head.v, head.to, head.from, head.id, head.ts, head.epk].join('\n')));
+  const ct = Buffer.concat([ci.update(JSON.stringify(payload), 'utf8'), ci.final(), ci.getAuthTag()]);
+  return { ...head, iv: b64u(iv), ct: b64u(ct) };
+}
+let interestKey = null;
+function interestName(email) {
+  if (!interestKey) {
+    fs.mkdirSync(INTEREST, { recursive: true });
+    const f = path.join(INTEREST, '.key');
+    try { fs.writeFileSync(f, crypto.randomBytes(32).toString('hex'), { mode: 0o600, flag: 'wx' }); } catch (e) { if (e.code !== 'EEXIST') throw e; }
+    interestKey = Buffer.from(fs.readFileSync(f, 'utf8').trim(), 'hex');
+    if (interestKey.length !== 32) throw new Error('DATA/interest/.key is damaged');
+  }
+  return crypto.createHmac('sha256', interestKey).update(email).digest('hex').slice(0, 32) + '.json';
+}
+const interestFiles = () => { try { return fs.readdirSync(INTEREST).filter(f => /^[0-9a-f]{32}\.json$/.test(f)); } catch { return []; } };
+const readItem = n => { try { return JSON.parse(fs.readFileSync(path.join(INTEREST, n), 'utf8')); } catch { return null; } };
+const writeSealed = (name, it) => fs.writeFileSync(path.join(INTEREST, name), JSON.stringify({ v: 2, sealed: sealForOwner(it), at: it.at }), { mode: 0o600 });
+// Once on start: old plain { email, which, at } files are sealed, renamed to the keyed name and the plain ones deleted.
+function migrateInterest() {
+  const plain = interestFiles().filter(n => { const o = readItem(n); return o && typeof o.email === 'string'; });
+  if (!plain.length) return;
+  if (!ownerXKey) return console.log(`interest: ${plain.length} plain sign-ups wait for RELAY_OWNER_XPUB to be sealed`);
+  for (const f of plain) {
+    const o = readItem(f), email = String(o.email).trim().toLowerCase(), name = interestName(email);
+    const it = { email, which: String(o.which || ''), at: String(o.at || '') };
+    const have = name !== f && readItem(name);
+    if (!have || String(have.at) < it.at) writeSealed(name, it);   // a newer sign-up for the same email wins
+    if (name !== f) fs.rmSync(path.join(INTEREST, f), { force: true });
+  }
+  console.log(`interest: sealed ${plain.length} plain sign-ups`);
+}
 async function interest(req, res, pathname, ip) {
   res.setHeader('Access-Control-Allow-Origin', '*');   // the form lives on the website, not on the relay
   if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' }); return res.end(); }
   if (req.method === 'GET') {
     if (!STATS_KEY) throw fail('not found', 404);
     owner(req, null, pathname, '', STATS_KEY);
-    let names = []; try { names = fs.readdirSync(INTEREST).filter(f => /^[0-9a-f]{32}\.json$/.test(f)); } catch {}
-    const items = [];
-    for (const n of names) { try { items.push(JSON.parse(fs.readFileSync(path.join(INTEREST, n), 'utf8'))); } catch {} }
+    const items = interestFiles().map(readItem).filter(Boolean);
     return send(res, 200, { interest: items.sort((a, b) => String(a.at).localeCompare(String(b.at))) });
   }
   if (req.method !== 'POST') throw fail('not found', 404);
+  if (!ownerXKey) throw fail('sign-ups are paused', 503);
   const now = Date.now(), recent = (interestHits.get(ip) || []).filter(t => now - t < 3600e3);
   if (recent.length >= 5) throw fail('too many sign-ups from here: try again later', 429);
   const body = await readBody(req, 2 * 1024);
@@ -615,11 +667,9 @@ async function interest(req, res, pathname, ip) {
   const email = str(o.email, 160).trim().toLowerCase(), which = str(o.which, 10);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw fail('a valid email is needed', 400);
   if (!['alpha', 'beta', 'both'].includes(which)) throw fail('pick alpha, beta or both', 400);
-  const name = crypto.createHash('sha256').update(email).digest('hex').slice(0, 32) + '.json';
-  let have = 0; try { have = fs.readdirSync(INTEREST).length; } catch {}
-  if (have >= 5000 && !fs.existsSync(path.join(INTEREST, name))) throw fail('the list is full', 507);
-  fs.mkdirSync(INTEREST, { recursive: true });
-  fs.writeFileSync(path.join(INTEREST, name), JSON.stringify({ email, which, at: new Date().toISOString() }), { mode: 0o600 });
+  const name = interestName(email);
+  if (interestFiles().length >= 5000 && !fs.existsSync(path.join(INTEREST, name))) throw fail('the list is full', 507);
+  writeSealed(name, { email, which, at: new Date().toISOString() });
   recent.push(now); interestHits.set(ip, recent);
   return send(res, 201, { ok: true });
 }
@@ -670,5 +720,6 @@ const server = http.createServer((req, res) => {
 });
 server.requestTimeout = 60e3;
 sweep();
+migrateInterest();
 setInterval(sweep, 3600e3).unref();
 server.listen(PORT, HOST, () => console.log(`AI-gile relay on ${HOST}:${PORT}, data in ${DATA}`));
