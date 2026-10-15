@@ -11,6 +11,7 @@ ipcRenderer.on('aigile:share-pick', (_e, req) => {
 // AIG-1250: Setup's "Start with Windows" tick reads and sets the login item through main.js.
 contextBridge.exposeInMainWorld('aigileDesktop', {
   onSharePick: fn => { handler = typeof fn === 'function' ? fn : null; },
+  setBadge: n => { try { ipcRenderer.send('aigile:badge', Number(n) || 0); } catch {} },   // AIG-1274: the taskbar unread count
   getAutoStart: () => ipcRenderer.invoke('aigile:autostart-get'),
   setAutoStart: on => ipcRenderer.invoke('aigile:autostart-set', on === true),
 });

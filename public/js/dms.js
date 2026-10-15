@@ -83,6 +83,8 @@ const Dms = (() => {
     const cur = here(), p = projects.find(x => x.slug === cur);
     if (p) seen.set(cur, p.updated);   // looking at it now counts as seen
     const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + groups.concat(meets).reduce((n, g) => n + grpUnread(g), 0) + people.reduce((n, c) => n + c.unread, 0) + DiscordTab.unread();
+    // AIG-1274: the desktop app's taskbar count = For you (the inbox) + unread messages; nothing while going quiet or focusing (like the tab title)
+    if (window.aigileDesktop && aigileDesktop.setBadge) { const H = document.documentElement; aigileDesktop.setBadge(H.hasAttribute('data-night') || H.hasAttribute('data-focus') || typeof IB === 'undefined' ? 0 : (IB.items || []).length + IB.friends() + dmUnread); }
     const btn = (attrs, inner, on, title) => `<button class="dm-railbtn ${on ? 'on' : ''}" ${attrs} title="${esc(title)}">${inner}</button>`;
     const html = btn('data-go="#/"', '<span class="dm-av">🏠</span>', location.hash === '#/' || location.hash === '', t('dms.home'))
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
