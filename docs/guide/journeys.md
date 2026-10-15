@@ -81,6 +81,7 @@ One line each: verb the thing, then its page. Add a line when a new journey appe
 - Open in a browser: [Run in the browser](outline/09-look/run-in-browser.md)
 
 ## Help and later
+- Run a project as a service: watch it, handle trouble, learn from it: [Service management](outline/10-help/service-management.md) (status: new)
 - Fix a common problem: [Troubleshooting](outline/10-help/troubleshooting.md)
 - Look up a word: [Glossary](outline/10-help/glossary.md)
 - Use AI-gile on a phone: [On your phone later](outline/10-help/mobile.md)

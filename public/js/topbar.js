@@ -80,7 +80,7 @@ const Topbar = (() => {
       if (isPhone()) for (const e of [...document.querySelector('header').children]) { if (e.matches('h1,.spacer,#inboxTop,#tbMore,.alpha-tag,.crumb')) continue; mm.appendChild(e); }
       else {
         for (const id of ['hfTop', 'quietTimeTop', 'liveBtn']) { const e = $(id); if (e && e.closest('#tbMoreMenu')) end.parentNode.insertBefore(e, end); }
-        const en = $('enBtn'); if (en && (en.closest('#tbMoreMenu') || en.previousElementSibling !== more)) more.after(en);   // AIG-1066: the 🌐 button stays on the bar (it shows itself only while the quick English switch is on)
+        const en = $('enBtn'), ib = $('ideaBtn'), anchor = ib && !ib.closest('#tbMoreMenu') && ib.parentNode === more.parentNode ? ib : more; if (en && (en.closest('#tbMoreMenu') || en.previousElementSibling !== anchor)) anchor.after(en);   // AIG-1066/AIG-1087: the 🌐 button stays on the bar, right after Idea (after More if Idea is tucked away); it shows itself only while the quick English switch is on
         const lv = $('live'); if (lv && lv.closest('#tbMoreMenu')) lv.closest('header').appendChild(lv);
       }
     }

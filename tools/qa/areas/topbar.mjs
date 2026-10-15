@@ -112,6 +112,7 @@ def('topbaren', 'Top bar: 🌐 quick English button on the bar and flips to Engl
   check('Dutch + quick switch on: the 🌐 button is visible on the bar (not under Meer)', on);
   const sib = await page.evaluate(() => document.getElementById('bugBtn').nextElementSibling === document.getElementById('ideaBtn'));
   check('Idea is the next sibling of Raise bug', sib);
+  check('🌐 is the next sibling of Idea (Raise bug, Idea, 🌐) (AIG-1087)', await page.evaluate(() => document.getElementById('ideaBtn').nextElementSibling === document.getElementById('enBtn')));
   check('Idea shows on the bar by default', await page.evaluate(() => !document.getElementById('ideaBtn').closest('#tbMoreMenu') && document.getElementById('ideaBtn').getClientRects().length > 0));
   await page.click('#enBtn');
   await page.waitForFunction(() => document.documentElement.lang === 'en' && document.getElementById('enBtn') && /NL/.test(document.getElementById('enBtn').textContent), null, { timeout: 8000 }).catch(() => {});

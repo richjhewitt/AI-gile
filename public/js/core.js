@@ -245,6 +245,8 @@ function parseRoute() {
   if (relMatch) return { view: 'releases', slug: relMatch[1] };   // releases (AIG-1154)
   const ciMatch = location.hash.match(/^#\/ci\/([a-z0-9-]+)$/);
   if (ciMatch) return { view: 'ci', slug: ciMatch[1] };   // configuration items (AIG-1122)
+  const rvMatch = location.hash.match(/^#\/review\/([a-z0-9-]+)(?:\?month=(\d{4}-\d{2}))?$/);
+  if (rvMatch) return { view: 'review', slug: rvMatch[1], month: rvMatch[2] || '' };   // monthly service review (AIG-1155)
   const keMatch = location.hash.match(/^#\/known-errors(?:\/([a-z0-9-]+))?$/);
   if (keMatch) return { view: 'knownerrors', slug: keMatch[1] || '' };   // known errors list (AIG-1106)
   if (location.hash === '#/improvements') return { view: 'improvements' };   // 📈 improvement list (AIG-1157)
@@ -414,6 +416,9 @@ async function refreshStaged(force, liveState, state, api) {
     } else if (state.route.view === 'ci') {
       await CiPage.load(state.route.slug);
       sig = renderSig([state.route, CiPage.data, i18n.lang]);
+    } else if (state.route.view === 'review') {
+      await ReviewPage.load(state.route.slug, state.route.month);
+      sig = renderSig([state.route, ReviewPage.data, ReviewPage.summary, i18n.lang]);
     } else if (state.route.view === 'knownerrors') {
       await KnownErrors.load(state.route.slug);
       sig = renderSig([state.route, KnownErrors.data, i18n.lang]);
@@ -489,6 +494,7 @@ function renderBoardOnly() {
   if (state.route.view === 'risks') { $('app').innerHTML = RisksPage.render(); return; }
   if (state.route.view === 'releases') { $('app').innerHTML = ReleasesPage.render(); return; }
   if (state.route.view === 'ci') { if (!ciFormDirty()) $('app').innerHTML = CiPage.render(); return; }
+  if (state.route.view === 'review') { $('app').innerHTML = ReviewPage.render(); return; }
   if (state.route.view === 'knownerrors') { $('app').innerHTML = KnownErrors.render(); return; }
   if (state.route.view === 'life') { $('app').innerHTML = LifeAdmin.render(); return; }
   if (state.route.view === 'today') { $('app').innerHTML = TodayPage.render(); return; }
@@ -530,6 +536,7 @@ function render() {
   if (state.route.view === 'assumptions') { $('crumb').textContent = '/ ' + t('assume.nav'); $('app').innerHTML = Assumptions.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'stats') { $('crumb').textContent = '/ ' + t('stats.title'); $('app').innerHTML = StatsPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'risks') { $('crumb').textContent = '/ ' + t('risks.title'); $('app').innerHTML = RisksPage.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'review') { $('crumb').textContent = '/ ' + t('rev.title'); $('app').innerHTML = ReviewPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'releases') { $('crumb').textContent = '/ ' + t('rel.title'); $('app').innerHTML = ReleasesPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'ci') { $('crumb').textContent = '/ ' + t('ci.title'); $('app').innerHTML = CiPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'knownerrors') { $('crumb').textContent = '/ ' + t('ke.title'); $('app').innerHTML = KnownErrors.render(); $('modal').innerHTML = ''; return; }

@@ -3,6 +3,7 @@
 // AI-run cap and No Token Mode, the role in the team (no launching) with its 🌙 night watch switch (AIG-476), and the hang watchdog restarts a silent run.
 import fs from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { check, sleep, until, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def, ROOT } from '../lib.mjs';
 
 // The stub agent: in the Lead Scrum Master's folder it notes the model and answers with watchsay; in a "hang" project it
@@ -18,6 +19,11 @@ fs.writeFileSync(local, JSON.stringify({ owner: 'Owner', agent: { command: 'x', 
 const callList = () => { try { return fs.readFileSync(calls, 'utf8').split('\n').filter(Boolean); } catch { return []; } };
 
 def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-later ideas by rules, wakes teams with To do, daily AI-run cap, No Token Mode, team role + night watch switch, hang watchdog (AIG-359)', async (s, ctx) => {
+  // AIG-1159: Haiku's answer to "which project?" matches whole slugs only ("none" is not project "one")
+  const { pickSlug } = createRequire(import.meta.url)(ROOT + '/lib/scrummaster.js');
+  const ps = [{ slug: 'one' }, { slug: 'web-app' }, { slug: 'app' }];
+  check('Haiku saying "none" picks no project, even with a project "one"', pickSlug('none', ps) === null && pickSlug('None.', ps) === null);
+  check('a whole slug in the answer is picked, a slug inside another is not', pickSlug('one', ps).slug === 'one' && pickSlug(' web-app.', ps).slug === 'web-app' && pickSlug('webapp', ps) === null && pickSlug(null, ps) === null);
   await mkProject(s, 'Alpha', 'ALP', { path: tmp('alpha') });
   await mkProject(s, 'Beta', 'BET', { path: tmp('beta') });
   await mkProject(s, 'Gamma', 'GAM', { path: tmp('gamma') });
