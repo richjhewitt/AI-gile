@@ -63,7 +63,7 @@ function joinExpiry(c) {
 function joinHtml() {
   const d = JN.data, keep = { n: ($('joinName') || {}).value || '', h: ($('joinHelp') || {}).value || JN.help };
   const row = c => `<div class="join-c" data-code="${esc(c.code)}"><b>${esc(c.kind === 'site' ? '🌐' : ['', '🐣', '🙂', '😎'][c.help] || '')} ${esc(c.name || c.code)}</b> <code>${esc(c.code)}</code>
-      <small class="muted">${esc(joinExpiry(c))}</small>${c.inv ? ' ' + fpHtml(c.inv, c.pic && c.pic.pic, c.pic && c.pic.mine) : ''}
+      <small class="muted">${esc(joinExpiry(c))}</small>${c.shared ? ` <small class="join-shared" title="${esc((c.sharedWith || []).join(', '))}">${esc(t('join.shared', { count: c.shared, n: c.shared }))}</small>` : ''}${c.inv ? ' ' + fpHtml(c.inv, c.pic && c.pic.pic, c.pic && c.pic.mine) : ''}
       ${c.kind === 'site' && (c.passes || (!c.used && c.exp > Date.now())) ? `<button type="button" class="join-end" data-code="${esc(c.code)}">${esc(t('join.site.end'))}</button>` : ''}
       ${c.kind !== 'site' && !c.used && !c.cancelled && c.exp > Date.now() ? `<button type="button" class="join-cancel" data-code="${esc(c.code)}">${esc(t('join.cancel'))}</button>` : ''}</div>`;
   return `<div class="dmf-sec" id="joinSec"><b>${esc(t('join.h2'))}</b><small class="muted">${esc(t('join.for'))} ${esc(t('join.help'))}</small>
