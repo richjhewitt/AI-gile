@@ -139,10 +139,21 @@ function conflicted(file, st) {
   return m;
 }
 
-function send(res, code, body) {
+const zlib = require('zlib');
+const GZIP_MIN = 32 * 1024;   // AIG-1091: JSON over this size goes out gzipped when the browser or CLI asks (the project is 3.8 MB)
+function send(res, code, body, req) {
   if (res.destroyed) return;
-  res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-  res.end(JSON.stringify(body));   // compact (AIG-920): pretty-printing added 20% to every poll
+  const text = JSON.stringify(body);   // compact (AIG-920): pretty-printing added 20% to every poll
+  const head = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', Vary: 'Accept-Encoding' };
+  if (req && text.length > GZIP_MIN && /\bgzip\b/i.test(String(req.headers['accept-encoding'] || ''))) {
+    return zlib.gzip(text, (err, buf) => {
+      if (res.destroyed) return;
+      if (err) { res.writeHead(code, head); return res.end(text); }
+      res.writeHead(code, { ...head, 'Content-Encoding': 'gzip' }); res.end(buf);
+    });
+  }
+  res.writeHead(code, head);
+  res.end(text);
 }
 
 function readBody(req, max = 1e6) {
@@ -219,7 +230,7 @@ const server = http.createServer(async (req, res) => {
             if (etag && (req.headers['if-none-match'] || '').split(',').some(x => x.trim().replace(/^W\//, '') === etag)) { res.writeHead(304, { ...cache, 'X-Content-Type-Options': 'nosniff' }); return res.end(); }
             return streamFile(out.__file, res, { 'Content-Type': ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', ...cache, 'X-Content-Type-Options': 'nosniff', ...(out.__file.toLowerCase().endsWith('.svg') ? { 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" } : {}) });
           }
-          return send(res, 200, out);
+          return send(res, 200, out, req);
         }
       }
       throw bad('no such endpoint: ' + req.method + ' ' + pathname, 404);
