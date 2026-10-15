@@ -280,6 +280,7 @@ require('./lib/major').start();   // 🚨 a status line every 30 min while a maj
 require('./lib/ciwatch').start();   // 👁️ cards for items about to expire and for old backups (AIG-1124, AIG-1126)
 require('./lib/accessreview').start();   // 🔐 a card to review who has access, every 90 days (AIG-1127)
 require('./lib/join').applyInvite().catch(() => {});   // a friend's first start: invite.json from the zip (AIG-347)
+require('./lib/join').autoClaim().catch(() => {});   // or the claim code in the installer's file name (AIG-1231)
 if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();
 require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anything while you are going quiet (AIG-199)
 require('./lib/scrummaster').startScrumMaster();   // 🧭 day rounds, only when it is in the team (AIG-359)

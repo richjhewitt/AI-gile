@@ -3,11 +3,18 @@
 //   node join.js     (JOIN_PORT default 4600, JOIN_HOST default 0.0.0.0, JOIN_DATA default ./join-data next to this file)
 //   JOIN_OWNER_KEY   the owner's public signing key (base64url, shown in the board's Invite a friend box): only it may add codes
 //   JOIN_ZIP         the release zip to hand out (default ./AI-gile.zip next to this file)
+//   JOIN_EXE         the Windows installer to hand out (AIG-1231; default AI-gile-Setup.exe next to the zip). Without it only the zip is offered.
 //
 // No usernames, no passwords: the one-use link is the only key. It stores only codes (with created / expiry / used
 // times and what the code carries) in JOIN_DATA/codes.json. It never logs who asked for anything.
 //   GET  /join?code=XXXX-XXXX-XXXX   a friendly page with a Download button (valid, unused, not expired), else a plain reason
 //   POST /join/download              the button: marks the code used and serves the zip with invite.json added inside
+//                                    (what=exe, AIG-1231: marks it used and shows a claim code XXXX-XXXX instead, see below)
+//   GET  /join/exe?claim=XXXX-XXXX   the Windows installer, named "AI-gile Setup (XXXX-XXXX).exe" (while the claim code lasts)
+//   POST /join/claim                 { code: "XXXX-XXXX" }: the installed app fetches its invite with the claim code, once
+// The installer is one file for everyone (so it can be signed later), so the invite cannot ride inside it: the Download
+// button keeps the invite under a short claim code instead, shown on the page and put in the file name. The app reads the
+// code from the name of the file it was installed from, or asks for it, and fetches the invite once (JOIN_CLAIM_DAYS, default 7).
 //   POST /join/codes             the owner adds a code (signed): { code, help, dm?, from?, days? }
 //   GET  /join/codes             the owner lists codes and whether they were used (signed)
 //   GET  /health   (and /join/health)
@@ -40,6 +47,11 @@ const KEEP_USED_MS = 30 * 24 * 3600e3;                      // used or expired c
 const TRUST_PROXY = /^(1|true|yes)$/i.test(process.env.JOIN_TRUST_PROXY || '');   // behind a reverse proxy: use X-Forwarded-For
 
 const isCode = s => /^[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(s);
+const isClaim = s => /^[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(s);
+const EXE = path.resolve(process.env.JOIN_EXE || path.join(path.dirname(ZIP), 'AI-gile-Setup.exe'));
+const CLAIM_DAYS = Number(process.env.JOIN_CLAIM_DAYS) || 7;
+const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // no I, O, 0 or 1: easy to read and type
+const newClaim = () => { const c = [...crypto.randomBytes(8)].map(n => ALPHABET[n % 32]).join(''); return c.slice(0, 4) + '-' + c.slice(4); };
 const isKey = s => /^[A-Za-z0-9_-]{43}$/.test(s);
 const sha256 = d => crypto.createHash('sha256').update(d).digest('hex');
 const fail = (msg, code) => Object.assign(new Error(msg), { code });
@@ -64,7 +76,24 @@ function sweep() {
   let gone = false;
   for (const [h, p] of Object.entries(passes)) if (p.exp < Date.now()) { delete passes[h]; gone = true; }
   if (gone) savePasses();
+  let cl = false;
+  for (const [c, v] of Object.entries(claims)) {
+    if ((v.used || v.exp) < old) { delete claims[c]; cl = true; }
+    else if (v.dm && v.exp < Date.now()) { delete v.dm; cl = true; }   // a claim code that ran out drops the DM invite it held
+  }
+  if (cl) saveClaims();
 }
+
+/* ---------- claim codes (AIG-1231): { "<XXXX-XXXX>": { created, exp, used?, help, dm?, from? } } ---------- */
+const CLAIMS = path.join(DATA, 'claims.json');
+let claims = {};
+try { claims = JSON.parse(fs.readFileSync(CLAIMS, 'utf8')); } catch {}
+function saveClaims() {
+  const tmp = CLAIMS + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(claims), { mode: 0o600 });
+  fs.renameSync(tmp, CLAIMS);
+}
+const claimState = c => { const v = claims[c]; return !v ? 'unknown' : v.used ? 'used' : v.exp < Date.now() ? 'expired' : 'valid'; };
 
 /* ---------- site passes (AIG-699): { "<sha256 of the cookie>": { code, created, exp } } ---------- */
 const PASSES = path.join(DATA, 'passes.json');
@@ -144,18 +173,27 @@ function addToZip(zip, name, data) {
 /* ---------- the page ---------- */
 const TEXT = {
   en: { title: 'AI-gile: your invitation', h: "You're invited to AI-gile", p: 'A board where AI teams build your projects, and you just say GO and test what they make. This link works once, for you.',
-    btn: 'Download AI-gile', steps: ['You need Node.js (LTS, from nodejs.org) and Claude Code, signed in.', 'Right-click the zip, choose Extract All.', 'Open the AI-gile folder and double-click start-aigile.bat.', 'Your board starts already linked to the person who invited you.'],
-    note: 'Once you press Download this link is used up. Keep the zip safe.',
+    btn: 'Download AI-gile', steps: ['Download it.', 'Open it. Windows may warn you: click More info > Run anyway.', 'Type your code if it asks.'],
+    note: 'This link works once. After you press Download you get a short code: keep it.',
+    zipH: 'Not on Windows?', zipBtn: 'Download the zip instead', zipSteps: ['You need Node.js (LTS, from nodejs.org) and Claude Code, signed in.', 'Right-click the zip, choose Extract All.', 'Open the AI-gile folder and double-click start-aigile.bat.', 'Your board starts already linked to the person who invited you.'],
+    zipNote: 'Once you press Download this link is used up. Keep the zip safe.',
+    codeTitle: 'AI-gile: your code', codeH: 'Your code: {code}', codeP: 'Your download starts now. Write the code down: AI-gile may ask for it when it opens.', codeAgain: 'Download did not start?', codeBtn: 'Download AI-gile again', codeNote: 'The code works once and runs out in {days} days. Keep it to yourself.',
     used: 'This link has already been used.', expired: 'This link has run out.', unknown: 'This link is not valid.', ask: 'Ask the person who sent it for a new one.', down: 'The download is not ready yet. Try again later.',
     sTitle: 'AI-gile: test site', sH: "You're invited to the AI-gile test site", sP: 'An early look at what we are building. This link works once, for you, and lets this browser in for 90 days.', sBtn: 'Open the test site', sOk: 'This browser already has a pass.', sGo: 'Go to the test site' },
   nl: { title: 'AI-gile: je uitnodiging', h: 'Je bent uitgenodigd voor AI-gile', p: 'Een bord waar AI-teams je projecten bouwen, en jij zegt alleen GO en test wat ze maken. Deze link werkt één keer, voor jou.',
-    btn: 'Download AI-gile', steps: ['Je hebt Node.js nodig (LTS, van nodejs.org) en Claude Code, ingelogd.', 'Klik met rechts op het zipbestand en kies Alles uitpakken.', 'Open de map AI-gile en dubbelklik op start-aigile.bat.', 'Je bord start al gekoppeld aan degene die je uitnodigde.'],
-    note: 'Zodra je op Download drukt, is deze link op. Bewaar het zipbestand goed.',
+    btn: 'Download AI-gile', steps: ['Download het.', 'Open het. Windows kan je waarschuwen: klik op Meer informatie > Toch uitvoeren.', 'Typ je code als erom gevraagd wordt.'],
+    note: 'Deze link werkt één keer. Na Download krijg je een korte code: bewaar die.',
+    zipH: 'Geen Windows?', zipBtn: 'Download dan het zipbestand', zipSteps: ['Je hebt Node.js nodig (LTS, van nodejs.org) en Claude Code, ingelogd.', 'Klik met rechts op het zipbestand en kies Alles uitpakken.', 'Open de map AI-gile en dubbelklik op start-aigile.bat.', 'Je bord start al gekoppeld aan degene die je uitnodigde.'],
+    zipNote: 'Zodra je op Download drukt, is deze link op. Bewaar het zipbestand goed.',
+    codeTitle: 'AI-gile: je code', codeH: 'Je code: {code}', codeP: 'Je download begint nu. Schrijf de code op: AI-gile kan erom vragen als het opent.', codeAgain: 'Begint de download niet?', codeBtn: 'Download AI-gile opnieuw', codeNote: 'De code werkt één keer en verloopt na {days} dagen. Houd hem voor jezelf.',
     used: 'Deze link is al gebruikt.', expired: 'Deze link is verlopen.', unknown: 'Deze link klopt niet.', ask: 'Vraag degene die hem stuurde om een nieuwe.', down: 'De download is nog niet klaar. Probeer het later opnieuw.',
     sTitle: 'AI-gile: testsite', sH: 'Je bent uitgenodigd voor de AI-gile-testsite', sP: 'Een vroege blik op wat we bouwen. Deze link werkt één keer, voor jou, en laat deze browser 90 dagen binnen.', sBtn: 'Open de testsite', sOk: 'Deze browser heeft al een pas.', sGo: 'Naar de testsite' },
   'nl-BE': { title: 'AI-gile: je uitnodiging', h: 'Je bent uitgenodigd voor AI-gile', p: 'Een bord waar AI-teams je projecten bouwen, en jij zegt enkel GO en test wat ze maken. Deze link werkt één keer, voor jou.',
-    btn: 'AI-gile downloaden', steps: ['Je hebt Node.js nodig (LTS, van nodejs.org) en Claude Code, aangemeld.', 'Klik met rechts op het zipbestand en kies Alles uitpakken.', 'Open de map AI-gile en dubbelklik op start-aigile.bat.', 'Je bord start al gekoppeld aan wie je uitnodigde.'],
-    note: 'Zodra je op Downloaden drukt, is deze link op. Bewaar het zipbestand goed.',
+    btn: 'AI-gile downloaden', steps: ['Download het.', 'Open het. Windows kan een waarschuwing tonen: klik op Meer informatie > Toch uitvoeren.', 'Typ je code als het gevraagd wordt.'],
+    note: 'Deze link werkt één keer. Na Downloaden krijg je een korte code: hou die goed bij.',
+    zipH: 'Geen Windows?', zipBtn: 'Download dan het zipbestand', zipSteps: ['Je hebt Node.js nodig (LTS, van nodejs.org) en Claude Code, aangemeld.', 'Klik met rechts op het zipbestand en kies Alles uitpakken.', 'Open de map AI-gile en dubbelklik op start-aigile.bat.', 'Je bord start al gekoppeld aan wie je uitnodigde.'],
+    zipNote: 'Zodra je op Downloaden drukt, is deze link op. Bewaar het zipbestand goed.',
+    codeTitle: 'AI-gile: je code', codeH: 'Je code: {code}', codeP: 'Je download start nu. Schrijf de code op: AI-gile kan erom vragen als het opent.', codeAgain: 'Start de download niet?', codeBtn: 'AI-gile opnieuw downloaden', codeNote: 'De code werkt één keer en vervalt na {days} dagen. Hou hem voor jezelf.',
     used: 'Deze link is al gebruikt.', expired: 'Deze link is verlopen.', unknown: 'Deze link klopt niet.', ask: 'Vraag aan wie hem stuurde om een nieuwe.', down: 'De download is nog niet klaar. Probeer het later opnieuw.',
     sTitle: 'AI-gile: testsite', sH: 'Je bent uitgenodigd voor de AI-gile-testsite', sP: 'Een vroege blik op wat we bouwen. Deze link werkt één keer, voor jou, en laat deze browser 90 dagen binnen.', sBtn: 'Testsite openen', sOk: 'Deze browser heeft al een pas.', sGo: 'Naar de testsite' },
 };
@@ -170,14 +208,31 @@ function page(res, code, tx, body) {
   res.end(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>${esc(tx.title)}</title><style>body{font:16px/1.6 system-ui,sans-serif;max-width:560px;margin:40px auto;padding:0 16px;color:#1d2330;background:#f6f7f9}
 button.dl{background:#3b6cf6;color:#fff;border:0;padding:12px 22px;border-radius:12px;font:inherit;font-weight:600;cursor:pointer}li{margin:6px 0}.muted{color:#6b7385;font-size:14px}
-@media (prefers-color-scheme:dark){body{background:#12151b;color:#e6e9ef}.muted{color:#9aa3b5}}</style>${body}`);
+button.alt{background:none;color:inherit;border:1px solid #9aa3b5;padding:8px 16px;border-radius:10px;font:inherit;cursor:pointer}ol.big{font-size:18px}h2{font-size:17px;margin-top:32px}
+.code{display:inline-block;font:700 30px/1.3 ui-monospace,Consolas,monospace;letter-spacing:2px;background:#fff;border:2px dashed #3b6cf6;border-radius:12px;padding:4px 14px;user-select:all}
+@media (prefers-color-scheme:dark){body{background:#12151b;color:#e6e9ef}.muted{color:#9aa3b5}.code{background:#1b2029}}</style>${body}`);
 }
 function joinPage(req, res, code, lang) {
   const tx = TEXT[lang], st = codes[code] && codes[code].kind === 'site' ? 'unknown' : stateOf(code);   // a site pass never downloads the app
   if (st !== 'valid') return page(res, st === 'unknown' ? 404 : 410, tx, `<h1>🗂️ AI-gile</h1><p>${esc(tx[st])}</p><p class="muted">${esc(tx.ask)}</p>`);
+  const form = (what, cls, label) => `<form method="post" action="/join/download"><input type="hidden" name="code" value="${esc(code)}"><input type="hidden" name="lng" value="${esc(lang)}">${what ? `<input type="hidden" name="what" value="${what}">` : ''}<button class="${cls}" type="submit">${esc(label)}</button></form>`;
+  const ol = (list, cls = '') => `<ol${cls ? ` class="${cls}"` : ''}>${list.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`;
+  // AIG-1231: the Windows installer first, the zip (needs Node and an AI program) as the fallback; with no installer on the server, the zip as before.
+  if (!fs.existsSync(EXE)) return page(res, 200, tx, `<h1>🗂️ ${esc(tx.h)}</h1><p>${esc(tx.p)}</p>
+${form('', 'dl', '⬇ ' + tx.btn)}
+<p class="muted">${esc(tx.zipNote)}</p>${ol(tx.zipSteps)}`);
   page(res, 200, tx, `<h1>🗂️ ${esc(tx.h)}</h1><p>${esc(tx.p)}</p>
-<form method="post" action="/join/download"><input type="hidden" name="code" value="${esc(code)}"><input type="hidden" name="lng" value="${esc(lang)}"><button class="dl" type="submit">⬇ ${esc(tx.btn)}</button></form>
-<p class="muted">${esc(tx.note)}</p><ol>${tx.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>`);
+${form('exe', 'dl', '⬇ ' + tx.btn)}
+${ol(tx.steps, 'big')}<p class="muted">${esc(tx.note)}</p>
+<h2>${esc(tx.zipH)}</h2>${form('zip', 'alt', tx.zipBtn)}${ol(tx.zipSteps, 'muted')}`);
+}
+// After Download (what=exe): the claim code, big, and the installer starting by itself (the page stays, so the code stays on screen).
+function codePage(res, claim, lang) {
+  const tx = TEXT[lang], file = `/join/exe?claim=${claim}`;
+  page(res, 200, { ...tx, title: tx.codeTitle }, `<meta http-equiv="refresh" content="1;url=${file}">
+<h1>🗂️ ${esc(tx.codeH.replace('{code}', ''))}<span class="code" id="claim">${esc(claim)}</span></h1><p>${esc(tx.codeP)}</p>
+<ol class="big">${tx.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
+<p>${esc(tx.codeAgain)} <a href="${file}">${esc(tx.codeBtn)}</a></p><p class="muted">${esc(tx.codeNote.replace('{days}', CLAIM_DAYS))}</p>`);
 }
 
 // The site pass page (AIG-699). A browser that already has a pass just gets a link to the site; the code stays unused.
@@ -230,6 +285,17 @@ async function handle(req, res) {
     const form = new URLSearchParams(await readBody(req));
     const code = String(form.get('code') || '').toUpperCase().trim(), lang = langOf(req, form.get('lng'));
     if (!isCode(code) || stateOf(code) !== 'valid' || codes[code].kind === 'site') return joinPage(req, res, isCode(code) ? code : '', lang);
+    // AIG-1231: the installer. The link is used up now and its invite moves to a claim code, which the installed app fetches once.
+    if (form.get('what') === 'exe') {
+      if (!fs.existsSync(EXE)) return page(res, 503, TEXT[lang], `<h1>🗂️ AI-gile</h1><p>${esc(TEXT[lang].down)}</p>`);
+      const v = codes[code];
+      let claim; do claim = newClaim(); while (claims[claim]);
+      claims[claim] = { created: Date.now(), exp: Date.now() + CLAIM_DAYS * 24 * 3600e3, help: v.help, dm: v.dm || '', from: v.from || '' };
+      saveClaims();
+      v.used = Date.now(); delete v.dm;
+      save();
+      return codePage(res, claim, lang);
+    }
     const zip = zipFile();
     if (!zip) return page(res, 503, TEXT[lang], `<h1>🗂️ AI-gile</h1><p>${esc(TEXT[lang].down)}</p>`);
     const v = codes[code];
@@ -240,6 +306,29 @@ async function handle(req, res) {
     save();
     res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Length': out.length, 'Content-Disposition': `attachment; filename="${path.basename(ZIP).replace(/[^\w.\-]/g, '_')}"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
     return res.end(out);
+  }
+  // The installer (AIG-1231), named after the claim code so the app can read it from the file name. The file itself holds no
+  // invite, so it can be fetched again while the claim code lasts (a download that broke off), but only with a live claim code.
+  if (req.method === 'GET' && pathname === '/join/exe') {
+    const claim = String(url.searchParams.get('claim') || '').toUpperCase().trim(), lang = langOf(req, url.searchParams.get('lng'));
+    const st = isClaim(claim) ? claimState(claim) : 'unknown';
+    if (st === 'unknown' || st === 'expired') return page(res, st === 'unknown' ? 404 : 410, TEXT[lang], `<h1>🗂️ AI-gile</h1><p>${esc(TEXT[lang][st])}</p><p class="muted">${esc(TEXT[lang].ask)}</p>`);
+    let size; try { size = fs.statSync(EXE).size; } catch { return page(res, 503, TEXT[lang], `<h1>🗂️ AI-gile</h1><p>${esc(TEXT[lang].down)}</p>`); }
+    res.writeHead(200, { 'Content-Type': 'application/vnd.microsoft.portable-executable', 'Content-Length': size, 'Content-Disposition': `attachment; filename="AI-gile Setup (${claim}).exe"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+    return fs.createReadStream(EXE).pipe(res);
+  }
+  // The installed app fetches its invite: { code } -> { v, help, dm, from }, once. Used, run out or unknown: refused.
+  if (req.method === 'POST' && pathname === '/join/claim') {
+    let b; try { b = JSON.parse(await readBody(req)); } catch { throw fail('send JSON', 400); }
+    const claim = String(b && b.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/^(.{4})(.{4})$/, '$1-$2');
+    if (!isClaim(claim)) throw fail('that code is not valid', 400);
+    const st = claimState(claim);
+    if (st === 'unknown') throw fail('that code is not valid', 404);
+    if (st !== 'valid') throw fail(st === 'used' ? 'that code was already used' : 'that code has run out', 410);
+    const v = claims[claim], out = { v: 1, help: v.help, dm: v.dm || '', from: v.from || '' };
+    v.used = Date.now(); delete v.dm;   // used up; the DM invite it carried is not kept
+    saveClaims();
+    return send(res, 200, out);
   }
   // Site passes (AIG-699): the page, the Open button (uses the code up, sets the cookie), and sign out.
   if (req.method === 'GET' && pathname === '/join/site') {

@@ -133,6 +133,19 @@ You should see `{"ok":true}`.
 ## New release
 Copy the new zip across and run step 2 again. Links already made keep working and now give the new zip.
 
+## The Windows installer (AIG-1231)
+With an installer on the server the invite page offers it first (the zip stays as the fallback for other computers). Build it on Windows with `cd desktop && npm ci && npm run win`; it lands in `desktop/dist/AI-gile Setup <version>.exe`. The friend's Download button uses the link up and shows a short claim code (`XXXX-XXXX`, works once, 7 days); the file is named `AI-gile Setup (XXXX-XXXX).exe`, and the installed app reads the code from that name or asks for it, then fetches the invite once (`POST /join/claim`). The installer is not signed yet: Windows shows "Windows protected your PC", and the page tells the friend to click More info, then Run anyway.
+
+```
+scp relay/join.js "desktop/dist/AI-gile Setup 1.0.0.exe" you@YOUR-VPS-IP:~
+ssh you@YOUR-VPS-IP
+sudo install -o root -g root -m 644 ~/join.js /opt/aigile-join/join.js
+sudo install -o aigile-join -g aigile-join -m 600 ~/"AI-gile Setup 1.0.0.exe" /var/lib/aigile-join/AI-gile-Setup.exe
+sudo systemctl restart aigile-join
+curl https://aigile.lol/join/health
+```
+A new installer: copy it to the same place (no restart needed). Claim codes are kept in `data/claims.json`; a claimed or run-out code no longer holds the DM invite.
+
 ## Looking after it
 - Is it running: `sudo systemctl status aigile-join`
 - Logs: `sudo journalctl -u aigile-join` shows only startup lines. The nginx access log is off for `/join`.

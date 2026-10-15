@@ -9,7 +9,8 @@
     "start": "electron .",
     "shortcut": "powershell -NoProfile -ExecutionPolicy Bypass -File make-shortcut.ps1",
     "appimage": "electron-builder --linux AppImage",
-    "mac": "electron-builder --mac dmg zip"
+    "mac": "electron-builder --mac dmg zip",
+    "win": "electron-builder --win nsis"
   },
   "devDependencies": {
     "electron": "^38.0.0",
@@ -23,6 +24,8 @@
     "extraResources": [
       { "from": "..", "to": "aigile", "filter": ["server.js", "aigile.js", "statusline.js", "package.json", "lib/**", "public/**", "profiles/**", "docs/starter/**"] }
     ],
+    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }], "icon": "icon.ico" },
+    "nsis": { "oneClick": true, "perMachine": false, "allowElevation": false, "createDesktopShortcut": "always", "createStartMenuShortcut": true, "shortcutName": "AI-gile", "runAfterFinish": true, "deleteAppDataOnUninstall": false, "artifactName": "AI-gile Setup ${version}.${ext}", "include": "installer.nsh" },
     "linux": { "target": ["AppImage"], "icon": "icon.png", "category": "Development", "executableName": "aigile" },
     "mac": { "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }, { "target": "zip", "arch": ["x64", "arm64"] }], "icon": "../public/icons/icon-512.png", "category": "public.app-category.developer-tools", "identity": null, "hardenedRuntime": false, "gatekeeperAssess": false, "notarize": false }
   }

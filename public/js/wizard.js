@@ -31,6 +31,43 @@ function wizardMaybe() {
   if (back && s && !$('dialog').firstChild) { WZ.shown = true; advResume(ADV_SCREENS[ADV_SCREENS.indexOf(back) + 1] || 'summary'); return; }
   if (WZ.shown || !s || !s.needed || (s.prefs || {}).wizardSeen || $('dialog').firstChild) return;
   WZ.shown = true;
+  wzFirst();
+}
+// AIG-1231: a friend's installed app first asks for the code from the join page (unless it came in the installer's
+// file name), then says welcome and who they are linked to; then the usual three choices. Any other board goes straight there.
+async function wzFirst() {
+  let c = null; try { c = await api('GET', '/api/join/claim'); } catch {}
+  if (c && c.done) return wzWelcome(c.done);
+  if (c && c.ask) return wzClaimAsk(c.code);
+  wzChoices();
+}
+function wzClaimAsk(code) {
+  openDialog(`<h2>${esc(t('claim.h'))}</h2><p>${esc(t('claim.sub'))}</p>
+    <label class="f"><span>${esc(t('claim.label'))}</span><input type="text" id="claimCode" value="${esc(code || '')}" placeholder="ABCD-EF23" maxlength="12" autocomplete="off" spellcheck="false" style="font:600 22px/1.3 ui-monospace,Consolas,monospace;letter-spacing:2px;text-transform:uppercase" onkeydown="if (event.key === 'Enter') wzClaimGo()"></label>
+    <div class="err" id="claim-err"></div>
+    <div class="actions"><button id="claimSkip" onclick="wzClaimSkip()">${esc(t('claim.skip'))}</button><button class="primary" id="claimGo" onclick="wzClaimGo()">${esc(t('claim.go'))}</button></div>`, 'wizard wz-first');
+}
+async function wzClaimGo() {
+  const b = $('claimGo'); if (!b || b.disabled) return;
+  b.disabled = true; setErr('claim-err', '');
+  try { wzWelcome(await api('POST', '/api/join/claim', { code: $('claimCode').value })); }
+  catch (e) { setErr('claim-err', e); b.disabled = false; }
+}
+async function wzClaimSkip() { try { await api('POST', '/api/join/claim/skip'); } catch {} wzChoices(); }
+function wzWelcome(d) {
+  const who = d.linked || '';
+  openDialog(`<h2>${esc(t('claim.welcome.h'))}</h2>
+    <p id="claimWho">${esc(who ? t('claim.welcome.linked', { name: who }) : t('claim.welcome.plain'))}</p>
+    ${who ? `<p class="muted">${esc(t('claim.welcome.match', { name: who }))}</p>` : d.error ? `<p class="muted">${esc(t('claim.welcome.err'))}</p>` : ''}
+    <p>${esc(t('claim.welcome.next'))}</p>
+    <div class="actions"><button class="primary" id="claimOn" onclick="wzWelcomeOn()">${esc(t('claim.welcome.go'))}</button></div>`, 'wizard wz-first');
+}
+async function wzWelcomeOn() {
+  try { await api('POST', '/api/join/claim/seen'); } catch {}
+  try { state.setup = await api('GET', '/api/setup'); const h = (state.setup.prefs || {}).helpLevel; if (h) helpApply(h); } catch {}   // the invite set the help level
+  wzChoices();
+}
+function wzChoices() {
   const ch = (id, fn, k, pri) => `<button class="wz-choice${pri ? ' primary' : ''}" id="${id}" onclick="${fn}"><b>${esc(t('wz.ask.b.' + k))}</b><small class="muted">${esc(t('wz.ask.b.' + k + '.help'))}</small></button>`;
   openDialog(`<h2>${esc(t('wz.ask.h'))}</h2><p>${esc(t('wz.ask.pick'))}</p>
     <div class="wz-choices">${ch('wzYes', 'wizardStart()', 'wizard', true)}${ch('wzTour', 'wizardTour()', 'tour')}${ch('wzNo', 'wizardWing()', 'in')}</div>

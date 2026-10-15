@@ -9,6 +9,18 @@ const net = require('net');
 // Packaged (AppImage): the board's files sit in resources/aigile and its data goes to the user's own folder (the AppImage is read-only).
 const ROOT = app.isPackaged ? path.join(process.resourcesPath, 'aigile') : path.resolve(__dirname, '..');
 if (app.isPackaged && !process.env.AIGILE_DATA) process.env.AIGILE_DATA = path.join(app.getPath('userData'), 'data');
+// AIG-1231 (Windows installer): settings live next to the data too, as an update replaces the install folder (an older
+// install that kept them in resources/aigile keeps using that file), and new projects go to Documents/AI-gile projects.
+if (app.isPackaged && !process.env.AIGILE_LOCAL && !fs.existsSync(path.join(ROOT, 'aigile.local.json'))) {
+  process.env.AIGILE_LOCAL = path.join(app.getPath('userData'), 'aigile.local.json');
+  if (!fs.existsSync(process.env.AIGILE_LOCAL)) try { fs.mkdirSync(app.getPath('userData'), { recursive: true }); fs.writeFileSync(process.env.AIGILE_LOCAL, JSON.stringify({ projectsFolder: path.join(app.getPath('documents'), 'AI-gile projects') }, null, 2)); } catch {}
+}
+// The installer writes its own file name ("AI-gile Setup (XXXX-XXXX).exe") next to the app: the board claims that invite
+// code on its first start, and asks for the code when there was none (lib/join.js).
+if (app.isPackaged && process.platform === 'win32') {
+  if (!process.env.AIGILE_SETUP_NAME) process.env.AIGILE_SETUP_NAME = path.join(path.dirname(process.execPath), 'setup-name.txt');
+  if (!process.env.AIGILE_CLAIM) process.env.AIGILE_CLAIM = '1';
+}
 const PORT = Number(process.env.AIGILE_PORT) || 4321;
 const BASE = `http://localhost:${PORT}`;   // keep "localhost": saved looks (theme, quick English, drafts) belong to this address (AIG-1092)
 // AIG-1091/1092: resolve localhost straight to 127.0.0.1 (the board listens there only), skipping the slow IPv6 try
@@ -56,8 +68,10 @@ async function ensureServer() {
   if (await up()) return true;
   // An unhealthy listener still owns the port; do not start a competing board.
   if (await portOccupied()) return false;
-  const node = process.env.AIGILE_NODE || 'node', env = { ...process.env };   // dev mode comes from aigile.local.json now (AIG-253)
+  const node = process.env.AIGILE_NODE || (app.isPackaged ? process.execPath : 'node'), env = { ...process.env };   // dev mode comes from aigile.local.json now (AIG-253)
   delete env.ELECTRON_RUN_AS_NODE;
+  // AIG-1231: the installed app needs no Node of its own: the board runs on the Node inside this app.
+  if (node === process.execPath) env.ELECTRON_RUN_AS_NODE = '1';
   // AIG-995: an app opened from the macOS Finder gets a bare PATH, so look where Homebrew and the node installer put node
   if (process.platform === 'darwin') env.PATH = [env.PATH, '/opt/homebrew/bin', '/usr/local/bin'].filter(Boolean).join(':');
   let failed = false;
@@ -168,7 +182,7 @@ function open(ok) {
     wire(child); trackPop(child, d.url);
   });
   if (ok) { win.loadURL(BASE); reopenPops(); }
-  else win.loadURL('data:text/html,' + encodeURIComponent(`<body style="font:15px system-ui;padding:24px"><h2>AI-gile didn't start</h2><p>Couldn't reach ${BASE}. Run <code>start-aigile.bat</code> in ${ROOT.replace(/</g, '')} and reopen this window.</p></body>`));
+  else win.loadURL('data:text/html,' + encodeURIComponent(`<body style="font:15px system-ui;padding:24px"><h2>AI-gile didn't start</h2><p>Couldn't reach ${BASE}. ${app.isPackaged ? 'Quit AI-gile (right-click its icon by the clock, Quit) and open it again.' : `Run <code>start-aigile.bat</code> in ${ROOT.replace(/</g, '')} and reopen this window.`}</p></body>`));
   // Taskbar badge: the page puts what's waiting on the owner in its title, "(3) AI-gile"; then the icon gets a purple diamond.
   // It's the window icon, not an overlay: small taskbar buttons draw overlays as a dot, and a count is unreadable there.
   // A missing or broken icon file must never show an error box (AIG-81): keep the current icon instead.
