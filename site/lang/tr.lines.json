@@ -1,0 +1,101 @@
+{
+ "unit": "words",
+ "sizes": [
+  {
+   "n": 1,
+   "texts": [
+    "Kanban.",
+    "Robotlar.",
+    "Devredildi."
+   ]
+  },
+  {
+   "n": 2,
+   "texts": [
+    "Robot kanban.",
+    "Düzenli ajanlar.",
+    "Fikirler, yapıldı."
+   ]
+  },
+  {
+   "n": 3,
+   "texts": [
+    "Robotlar için kanban.",
+    "Fikirler özelliğe dönüşür.",
+    "Ücretsiz ajan kanbanı."
+   ]
+  },
+  {
+   "n": 5,
+   "texts": [
+    "Ajanların çalıştırdığı kanban panosu.",
+    "Sen kart yaz. Ajanlar yapsın.",
+    "Ücretsiz, yerel, test edilmiş, biraz komik."
+   ]
+  },
+  {
+   "n": 8,
+   "texts": [
+    "Yapay zekâ ajanlarının çalıştığı ücretsiz bir kanban panosu.",
+    "Fikri yaz. Ajanlar yapar. Sen onaylarsın.",
+    "Bir insan ve sabırlı robotlar için çevik yöntem."
+   ]
+  },
+  {
+   "n": 13,
+   "texts": [
+    "Bilgisayarındaki bir kanban panosu; kartları yapay zekâ ajanları alıp işler.",
+    "Bir fikir yaz. Ajan ekibi yapar. Bir test edici kontrol eder.",
+    "Ücretsiz, hesapsız, izleyicisiz: bir pano, birkaç robot ve işin başındaki sen."
+   ]
+  },
+  {
+   "n": 21,
+   "texts": [
+    "AI-gile, yapay zekâ kodlama ajanlarıyla çalışmak için bir kanban panosu. Kartları onlar alır; sen denersin ve onaylarsın.",
+    "Her projenin bir lideri ve bir ajan ekibi var. İstediğin karta yorum yaz, ekip hemen işe koyulsun.",
+    "Kendi bilgisayarında çalışan, ücretsiz, kişisel bir yapılacaklar panosu. Çalışanlar robot, ama evet ya da hayır diyen yine sen."
+   ]
+  },
+  {
+   "n": 34,
+   "texts": [
+    "Fikirlerini bir panoya koyarsın. Yapay zekâ ajanlarından oluşan bir ekip onları çalışan özelliklere çevirir, test eder ve denemen için adımlarla birlikte sana geri verir. Sen demeden hiçbir şey bitmiş sayılmaz.",
+    "AI-gile, Rich'in bugün yönettiği ajanların büyük yardımıyla evde yaptığı bir kanban panosu. Ücretsiz, senin bilgisayarında çalışıyor ve satılmıyor; yalnızca arkadaşlarla paylaşılıyor, hiç kimseden de bir kuruş istenmiyor.",
+    "Sıradan bir kanban panosu düşün: Backlog'dan Bitti'ye uzanan sütunlar var, ama kartları yapay zekâ ajanları alıyor. Nasıl gittiğini haber verirler, takılınca soru sorarlar ve her zaman senin onay işaretini beklerler."
+   ]
+  },
+  {
+   "n": 55,
+   "texts": [
+    "AI-gile, ekibi yapay zekâ ajanlarından oluşan bir kanban panosu. Her projenin işi planlayan bir lideri ve işi yapan yardımcıları var. Bir özellik hazır olunca bir yapay zekâ test edici onu dener, ekran görüntüsü alır ve iş senin yığınına düşer. Onayla, ya da yorum yaz; yeniden çalışırlar.",
+    "Her şey bir kişinin aynı anda açık duran bir sürü yapay zekâ kodlama oturumunu karıştırmadan takip etme isteğiyle başladı, sonra gerçek bir panoya dönüştü. Makinende çalışır, hesap istemez ve izleyicisi yoktur. Arkadaşlar ve meraklılar için ücretsiz. Henüz bitmedi de; yani pürüzler ve ara sıra küçük sürprizler çıkabilir.",
+    "Dürüst anlatım şöyle: fikirleri yine sen bulacaksın, sonuçlara da yine sen bakacaksın. AI-gile bu ikisinin arasındaki her şeyi üstlenir: kartları sıralı tutar, sen bir yorum yazınca doğru ajanı uyandırır, tam olarak neyin değiştiğini gösterir ve bunların hepsini senin için kısacık, tek bir yığında toplar."
+   ]
+  },
+  {
+   "n": 89,
+   "texts": [
+    "AI-gile, kendi bilgisayarında çalıştırdığın ücretsiz bir kanban panosu. İnsanlar yerine her projenin bir yapay zekâ ajanı ekibi var: fikirlerini kartlara ve bir plana çeviren bir lider, bu kartları öncelik sırasıyla alan yardımcılar. Bir şey yapılınca bir yapay zekâ test edici test adımlarını izler ve gördüğünü sana gösterir. Sonra Senin için yazan tek bir yığında bekler. Onaylarsın, ya da yorum yazarsın ve ekip bir kez daha dener. Sen olmadan hiçbir şey Bitti'ye varmaz.",
+    "Beklemeyebileceğin birkaç özellik de var. Bir gece nöbetçisi, sen uyurken senden yanıt gerektirmeyen kartları seçip Yapılacak sütununu dolu tutar. Bir token sayacı ajanların bugün ve bu hafta ne kadar harcadığını gösterir; Token Yok Modu ise onlara harcamayı bırakmalarını söyler. Arkadaşlarına mesaj yazabilirsin ve özel mesajlar uçtan uca şifrelidir. Pano yaklaşık 120 dil konuşur; Felemenkçe, Flamanca, korsan ve Klingon bile var. Hiçbiri tek kuruş tutmuyor, üstelik kimse sana bir şey satmaya da çalışmıyor.",
+    "AI-gile küçük ve kişisel bir proje, bir şirket değil. Rich birkaç yapay zekâ kodlama projesine göz kulak olmak istiyordu, ama bunun için her uygulamayı tek tek açıp bakmak istemiyordu. Bu yüzden ajanlarla birlikte bunun için bir pano yaptılar, sonra panonun geri kalanını da o panoyla yaptılar. Şimdi kapalı ön alfada: yani bir avuç arkadaş için çoğunlukla çalışıyor. Fiyat sayfası yok, bülten yok, büyüme planı da yok. Sana faydalı geliyorsa, biraz daha açıldığında denemek için sorabilirsin."
+   ]
+  },
+  {
+   "n": 144,
+   "texts": [
+    "AI-gile, bir insan ve çok sayıda yapay zekâ ajanı için bir kanban panosu. Tamamen ücretsizdir ve kendi bilgisayarında çalışır. Projeleri eklersin; her projeye bir lider ve küçük bir ekip düşer. Liderle biraz Discord'daki gibi sohbet eder, bir fikri anlatırsın; lider onu kartlara ve bir plana çevirir, sonra senin Başla düğmesine basmanı bekler. Ekip kartları öncelik sırasına göre tek tek işler. Bunun için dil modelleri adına yapılmış basit bir komut satırı kullanır. Sana dönmeden önce bir yapay zekâ test edici, uygulamanın bir kopyasında adımları izler ve ekran görüntüsü ekler. Biten iş, değişen dosyalar ve farkla birlikte senin yığınına düşer. Onaylarsın ya da bir yorum bırakırsın; ekip uyanır ve yeniden dener. Bir kartı Bitti sütununa yalnızca sen taşıyabilirsin.",
+    "AI-gile ile kabaca bir gün şöyle geçer. Akşam birkaç yorum bırakırsın: bu düğme yanlış yerde, şu liste sıralı olsun, bir de koyu tema olabilir mi. Sonra yatmaya gidersin. Ajanlar yorumlarını okur, değişiklikleri yapar, hepsini test eder ve sana geri verir. Yapılacak sütunu boşalırsa gece nöbetçisi onu backlogdan, senden yanıt gerektirmeyen kartlarla yeniden doldurur. Sabah karşında kısa bir yığın durur: birkaç soru ve denenecek birkaç şey; her biri uykulu birinin bile izleyebileceği adımlarla ve işlediğini gösteren bir ekran görüntüsüyle gelir. Tek tek tıklar, iyileri onaylar, kalanları geri gönderirsin. Bir token sayacı bunların hepsinin neye mal olduğunu gösterir, sade geçecek haftalar için de Token Yok Modu hazırdır. Sonra kahvaltı edersin; ajanlar buna henüz yardım edemiyor, ne yazık ki.",
+    "Önce AI-gile'ın ne olmadığını söyleyeyim: bir girişim değil, satılık değil ve hiç kimse verilerini toplamıyor. Bilgisayarında çalışan, hesapsız, izleyicisiz ve çerezsiz, ücretsiz bir pano. Peki ne? Bütün yapay zekâ kodlama projelerini aynı anda gördüğün tek ve düzenli bir yer: kartları bir ajan ekibi yapar, kararları ise sen verirsin. İlgili kartları birleştirir, karışık başlıkları düzeltir ve kodun ne kadar sade kaldığına da göz kulak olur. Felemenkçeden ve Flamancadan korsan diline, hatta Klingon'a kadar yaklaşık 120 dil konuşur. Arkadaşlar birbirlerine özel ve şifreli mesajlar yazabilir. Onu Rich ile çok sayıda sabırlı ajan yaptı, çoğunlukla da kendi kendini kullanarak. Şimdilik kapalı ön alfada, yani yer yer pürüzlü, arada bir de şaşırtıcı. Eğlenceli geliyorsa kibarca iste; belki herkesten önce erkenden içeri girersin."
+   ]
+  }
+ ],
+ "quips": {
+  "1": "Tek sözcük. Cesur. Belki fazla cesur.",
+  "3": "Üç sözcük. Çoğu ürün sayfasından zaten daha dürüst.",
+  "8": "Sekiz sözcük. Yine de bir ayaküstü toplantıdan kısa.",
+  "21": "Bu arada uzunluklar hikâye puanı. Tabii ki öyle.",
+  "55": "Elli beş sözcük. Sen okurken iki kart bitti.",
+  "144": "Bu en uzunu. 233 yok. Ajanlar yatmaya gitti."
+ }
+}

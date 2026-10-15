@@ -1,0 +1,101 @@
+{
+ "unit": "words",
+ "sizes": [
+  {
+   "n": 1,
+   "texts": [
+    "Kanban.",
+    "Robot.",
+    "Agent."
+   ]
+  },
+  {
+   "n": 2,
+   "texts": [
+    "Kanban robot.",
+    "Giao agent.",
+    "Việc xong."
+   ]
+  },
+  {
+   "n": 3,
+   "texts": [
+    "Kanban cho robot.",
+    "Ý thành tính năng.",
+    "Kanban agent miễn phí."
+   ]
+  },
+  {
+   "n": 5,
+   "texts": [
+    "Bảng kanban do agent vận hành.",
+    "Bạn viết thẻ. Agent làm.",
+    "Miễn phí, tại máy, hơi ngộ."
+   ]
+  },
+  {
+   "n": 8,
+   "texts": [
+    "Bảng kanban miễn phí, nơi các agent AI làm việc.",
+    "Viết ý tưởng. Agent làm ra. Bạn chấp nhận.",
+    "Agile cho một con người và nhiều robot kiên nhẫn."
+   ]
+  },
+  {
+   "n": 13,
+   "texts": [
+    "Một bảng kanban trên máy bạn, nơi các agent AI nhận thẻ về làm.",
+    "Viết một ý tưởng. Một nhóm agent làm ra. Người kiểm thử xem lại.",
+    "Miễn phí, không tài khoản, không theo dõi: một bảng, vài robot, và bạn làm chủ."
+   ]
+  },
+  {
+   "n": 21,
+   "texts": [
+    "AI-gile là bảng kanban để làm việc cùng các agent lập trình AI. Họ nhận thẻ về làm; bạn thử và chấp nhận chúng.",
+    "Mỗi dự án có một trưởng nhóm và các agent AI. Bình luận vào thẻ bất kỳ, cả nhóm bắt tay vào việc.",
+    "Một bảng việc cần làm cá nhân, miễn phí, chạy ngay trên máy bạn. Người làm là robot. Người gật đầu là bạn."
+   ]
+  },
+  {
+   "n": 34,
+   "texts": [
+    "Bạn đặt ý tưởng lên bảng. Một nhóm agent AI biến chúng thành tính năng chạy được, kiểm thử, rồi giao lại kèm các bước để thử. Chưa gì được tính là xong cho đến khi bạn nói vậy.",
+    "AI-gile là bảng kanban tự chế mà Rich làm với rất nhiều sự giúp đỡ của chính các agent mà nó đang quản lý. Miễn phí, chạy trên máy bạn, và chia sẻ cho bạn bè chứ không bán.",
+    "Hình dung một bảng kanban bình thường, với các cột từ Backlog đến Xong, chỉ khác là thẻ do các agent AI nhận làm. Họ báo cáo tiến độ, hỏi khi bị kẹt, và luôn chờ bạn giơ ngón tay cái."
+   ]
+  },
+  {
+   "n": 55,
+   "texts": [
+    "AI-gile là một bảng kanban mà cả nhóm đều là agent AI. Mỗi dự án có một trưởng nhóm lên kế hoạch công việc và những người trợ giúp làm ra nó. Khi một tính năng sẵn sàng, một người kiểm thử AI thử nó và chụp màn hình, rồi nó rơi vào chồng của bạn. Chấp nhận, hoặc bình luận để họ làm lại.",
+    "Nó bắt đầu từ cách một người theo dõi cùng lúc thật nhiều phiên lập trình AI, rồi lớn thành một chiếc bảng đúng nghĩa. Nó chạy trên máy bạn, không cần tài khoản, không có trình theo dõi. Miễn phí cho bạn bè và những ai tò mò. Nó cũng chưa xong, nên hãy chờ vài chỗ gồ ghề và đôi bất ngờ.",
+    "Đây là phiên bản thành thật. Bạn vẫn phải có ý tưởng, và vẫn phải kiểm tra kết quả. Việc AI-gile làm là mọi thứ ở giữa: giữ các thẻ có thứ tự, đánh thức đúng agent khi bạn bình luận, cho thấy chính xác điều gì đã đổi, và gom tất cả vào một chồng ngắn dành cho bạn."
+   ]
+  },
+  {
+   "n": 89,
+   "texts": [
+    "AI-gile là một bảng kanban miễn phí chạy ngay trên máy tính của bạn. Thay vì con người, mỗi dự án có một nhóm agent AI: một trưởng nhóm biến ý tưởng của bạn thành thẻ và kế hoạch, cùng những người trợ giúp nhận thẻ theo thứ tự ưu tiên. Khi có thứ gì đó làm xong, một người kiểm thử AI làm theo các bước thử và cho bạn xem điều đã thấy. Rồi nó chờ trong một chồng mang tên Cho bạn. Bạn chấp nhận, hoặc bình luận và cả nhóm thử lại. Không có gì đến được cột Xong nếu thiếu bạn.",
+    "Có vài tính năng bạn có thể không ngờ tới. Một người gác đêm giữ cột Cần làm luôn đầy khi bạn ngủ, chọn những thẻ không cần bạn trả lời. Bộ đếm token cho thấy các agent đã dùng bao nhiêu hôm nay và tuần này, còn Chế độ Không Token bảo họ ngừng tiêu. Bạn có thể nhắn tin cho bạn bè, và tin nhắn riêng được mã hóa đầu cuối. Bảng nói khoảng 120 ngôn ngữ, gồm tiếng Hà Lan, Flemish, cướp biển và Klingon. Không thứ nào tốn một xu, và cũng chẳng ai đang cố bán gì cho bạn.",
+    "AI-gile là một dự án nhỏ, cá nhân, không phải một công ty. Rich muốn trông nom vài dự án lập trình AI mà không phải mở từng ứng dụng ra xem, nên anh và các agent làm một chiếc bảng cho việc đó, rồi dùng chính chiếc bảng ấy để làm nốt phần còn lại. Nó đang ở giai đoạn tiền alpha kín, nghĩa là phần lớn chạy được, cho một nhúm bạn bè. Không có trang bảng giá, không bản tin, không kế hoạch tăng trưởng. Nếu nghe hữu ích, bạn có thể xin thử khi nó mở rộng hơn một chút."
+   ]
+  },
+  {
+   "n": 144,
+   "texts": [
+    "AI-gile là một bảng kanban cho một con người và rất nhiều agent AI. Nó chạy trên máy tính của bạn và hoàn toàn miễn phí. Bạn thêm các dự án, và mỗi dự án có một trưởng nhóm cùng một nhóm nhỏ. Bạn trò chuyện với trưởng nhóm, hơi giống Discord, và mô tả một ý tưởng; trưởng nhóm biến nó thành thẻ và kế hoạch, rồi chờ bạn bấm Bắt đầu. Cả nhóm làm lần lượt các thẻ theo thứ tự ưu tiên, bằng một dòng lệnh đơn giản làm riêng cho các mô hình ngôn ngữ. Trước khi bất cứ thứ gì quay lại với bạn, một người kiểm thử AI làm theo các bước trong một bản sao của ứng dụng và đính kèm ảnh chụp màn hình. Việc xong rơi vào chồng của bạn cùng các tệp đã đổi và phần khác biệt. Bạn chấp nhận, hoặc để lại bình luận và cả nhóm thức dậy làm lại. Chỉ bạn mới chuyển được thẻ sang Xong.",
+    "Một ngày với AI-gile, đại khái thế này. Buổi tối bạn để lại vài bình luận: nút này sai chỗ, danh sách kia nên được sắp xếp, có thể thêm chế độ tối không. Bạn đi ngủ. Các agent đọc bình luận, sửa, kiểm thử rồi giao lại cho bạn. Nếu cột Cần làm cạn, người gác đêm sẽ lấy từ backlog những thẻ không cần bạn trả lời để lấp đầy. Sáng ra chỉ có một chồng ngắn: vài câu hỏi và vài thứ để thử, mỗi cái kèm các bước mà người còn ngái ngủ cũng làm theo được và một ảnh chụp màn hình cho thấy nó chạy. Bạn bấm qua, chấp nhận cái tốt và gửi trả phần còn lại. Bộ đếm token cho thấy tất cả tốn bao nhiêu, và Chế độ Không Token dành cho những tuần phải tiết kiệm. Rồi bạn ăn sáng, việc mà các agent chưa giúp được.",
+    "Trước hết, AI-gile không phải là gì. Nó không phải công ty khởi nghiệp, không bán, và không ai thu thập dữ liệu của bạn. Nó là một bảng miễn phí chạy trên máy bạn, không tài khoản, không trình theo dõi, không cookie. Còn nó là gì: một nơi gọn gàng để thấy mọi dự án lập trình AI cùng lúc, với một nhóm agent làm thẻ và bạn là người quyết định. Nó gộp các thẻ liên quan, sửa tiêu đề rối, và để mắt xem mã còn gọn đến đâu. Nó nói khoảng 120 ngôn ngữ, từ tiếng Hà Lan và Flemish đến cướp biển và Klingon. Bạn bè có thể nhắn nhau, riêng tư và được mã hóa. Nó do Rich và rất nhiều agent kiên nhẫn làm ra, phần lớn bằng cách tự dùng chính nó. Nó đang ở giai đoạn tiền alpha kín, nên có chỗ còn thô. Nếu nghe vui, hãy hỏi lịch sự, biết đâu bạn vào sớm."
+   ]
+  }
+ ],
+ "quips": {
+  "1": "Một từ. Táo bạo. Có lẽ hơi quá táo bạo.",
+  "3": "Ba từ. Đã thật thà hơn đa số trang sản phẩm.",
+  "8": "Tám từ. Vẫn ngắn hơn một buổi họp đứng.",
+  "21": "Nhân tiện, các độ dài là story point. Dĩ nhiên rồi.",
+  "55": "Năm mươi lăm từ. Trong lúc bạn đọc, hai thẻ đã xong.",
+  "144": "Đó là bản dài nhất. Không có 233. Các agent đi ngủ rồi."
+ }
+}

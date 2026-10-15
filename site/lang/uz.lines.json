@@ -1,0 +1,101 @@
+{
+ "unit": "words",
+ "sizes": [
+  {
+   "n": 1,
+   "texts": [
+    "Kanban.",
+    "Robotlar.",
+    "Topshirildi."
+   ]
+  },
+  {
+   "n": 2,
+   "texts": [
+    "Robotlar kanbani.",
+    "Agentlar, tartibda.",
+    "Gʻoyalar, bajarildi."
+   ]
+  },
+  {
+   "n": 3,
+   "texts": [
+    "Robotlar uchun kanban.",
+    "Gʻoyalar funksiyaga aylanadi.",
+    "Bepul agent kanbani."
+   ]
+  },
+  {
+   "n": 5,
+   "texts": [
+    "Agentlar yuritadigan kanban doskasi.",
+    "Siz karta yozasiz. Agentlar quradi.",
+    "Bepul, mahalliy, sinalgan, biroz kulgili."
+   ]
+  },
+  {
+   "n": 8,
+   "texts": [
+    "Sun’iy intellekt agentlari ishlaydigan bepul kanban doskasi.",
+    "Gʻoyani yozing. Agentlar quradi. Siz qabul qilasiz.",
+    "Bitta odam va koʻp sabrli robotlar uchun agile."
+   ]
+  },
+  {
+   "n": 13,
+   "texts": [
+    "Kompyuteringizdagi kanban doskasi: kartalarni olib ishlaydiganlar esa sun’iy intellekt agentlari.",
+    "Gʻoya yozing. Agentlar jamoasi uni quradi. Tekshiruvchi esa sinab koʻradi.",
+    "Bepul, akkauntlarsiz, kuzatuvchilarsiz: bitta doska, bir nechta robot va hamma narsaga siz rahbar."
+   ]
+  },
+  {
+   "n": 21,
+   "texts": [
+    "AI-gile — sun’iy intellekt dasturchi agentlari bilan ishlash uchun kanban doskasi. Kartalarni ular olib ishlaydi; siz esa ularni sinab koʻrasiz va qabul qilasiz.",
+    "Har bir loyihaning bitta rahbari va sun’iy intellekt agentlaridan iborat jamoasi bor. Istalgan kartaga izoh yozing, jamoa darhol ishga kirishadi.",
+    "Oʻz kompyuteringizda ishlaydigan bepul va shaxsiy vazifalar doskasi. Ishlaydiganlar — robotlar. Oxirida «ha» deydigan esa faqat siz, hamma vaqt."
+   ]
+  },
+  {
+   "n": 34,
+   "texts": [
+    "Siz gʻoyalarni doskaga qoʻyasiz. Sun’iy intellekt agentlaridan iborat jamoa ularni ishlaydigan funksiyalarga aylantiradi, sinab koʻradi va sinab koʻrish uchun qadamlar bilan sizga qaytaradi. Siz aytmaguningizcha hech narsa tayyor hisoblanmaydi.",
+    "AI-gile — Rich hozir oʻzi boshqaradigan agentlarning katta yordami bilan uyda yasagan kanban doskasi. U bepul, sizning kompyuteringizda ishlaydi va sotilmaydi, balki shunchaki doʻstlar bilan ulashiladi, hech kimdan pul soʻralmaydi.",
+    "Oddiy kanban doskasini tasavvur qiling: ustunlar Backlogdan Bajarildigacha, faqat kartalarni sun’iy intellekt agentlari olib ishlaydi. Ular yutuqlar haqida xabar beradi, tiqilib qolsa soʻraydi va doimo sizning roziligingizni kutadi."
+   ]
+  },
+  {
+   "n": 55,
+   "texts": [
+    "AI-gile — jamoasi sun’iy intellekt agentlaridan iborat kanban doskasi. Har bir loyihada ishni rejalashtiradigan rahbar va uni bajaradigan yordamchilar bor. Funksiya tayyor boʻlganda sun’iy intellekt tekshiruvchisi uni sinab koʻradi va skrinshot oladi, keyin u sizning toʻplamingizga tushadi. Qabul qiling yoki izoh yozing, ular qayta ishlaydi.",
+    "Bu bir kishi bir vaqtda koʻplab sun’iy intellekt kod yozish seanslarini kuzatib borish yoʻli sifatida boshlandi va chinakam doskaga aylandi. U sizning kompyuteringizda ishlaydi, akkaunt talab qilmaydi va kuzatuvchilari yoʻq. Doʻstlar va qiziquvchilar uchun bepul. U hali tugallanmagan ham, shuning uchun dagʻalliklar va goho kutilmagan holatlarni kuting.",
+    "Mana, halol variant. Gʻoyalarni baribir siz oʻylab topasiz, natijalarni ham baribir siz tekshirasiz. AI-gile esa oraliqdagi hamma narsani qiladi: kartalarni tartibda saqlaydi, siz izoh yozganingizda kerakli agentni uygʻotadi, aynan nima oʻzgarganini koʻrsatadi va hammasini faqat siz uchun bitta qisqa toʻplamga yigʻadi. Boshqa hech narsa shart emas."
+   ]
+  },
+  {
+   "n": 89,
+   "texts": [
+    "AI-gile — oʻz kompyuteringizda ishga tushiradigan bepul kanban doskasi. Har bir loyihada odamlar oʻrniga sun’iy intellekt agentlaridan iborat jamoa bor: gʻoyalaringizni kartalar va rejaga aylantiradigan rahbar hamda kartalarni ustuvorlik tartibida oladigan yordamchilar. Biror narsa qurib boʻlinganda sun’iy intellekt tekshiruvchisi sinov qadamlarini bajaradi va nimani koʻrganini sizga koʻrsatadi. Keyin u «Siz uchun» deb nomlangan bitta toʻplamda kutadi. Siz qabul qilasiz yoki izoh yozasiz, jamoa esa yana urinib koʻradi. Siz boʻlmasangiz, hech narsa «Bajarildi»ga yetmaydi.",
+    "Kutilmagan ba’zi imkoniyatlar ham bor. Tungi qorovul siz uxlaganingizda «Bajarilishi kerak» ustunini toʻldirib turadi va sizdan javob talab qilmaydigan kartalarni tanlaydi. Token hisoblagichi agentlar bugun va shu hafta qancha sarflaganini koʻrsatadi, «Tokensiz rejim» esa ularga sarflashni toʻxtatishni buyuradi. Doʻstlaringizga xabar yozishingiz mumkin, shaxsiy xabarlar esa boshidan oxirigacha shifrlangan. Doska taxminan 120 tilda gapiradi, jumladan golland, flamand, qaroqchi va klingon tillarida. Bularning hech biri bir tiyin turmaydi, hech kim sizga biror narsa sotmoqchi ham emas.",
+    "AI-gile — kichik, shaxsiy loyiha, kompaniya emas. Rich bir nechta sun’iy intellektli kod loyihasini har bir ilovani alohida ochmasdan kuzatib borishni xohladi, shuning uchun agentlar bilan birga buning uchun doska yasadi, keyin esa qolgan qismini ham oʻsha doska bilan qurdi. U hozir yopiq pre-alfada, ya’ni bir hovuch doʻstlar uchun asosan ishlaydi. Narxlar sahifasi yoʻq, axborot byulleteni yoʻq, oʻsish rejasi ham yoʻq. Agar bularning hammasi foydali tuyulsa, u bir oz kengroq ochilganda sinab koʻrishni soʻrashingiz mumkin."
+   ]
+  },
+  {
+   "n": 144,
+   "texts": [
+    "AI-gile — bitta odam va koʻplab sun’iy intellekt agentlari uchun kanban doskasi. U oʻz kompyuteringizda ishlaydi va butunlay bepul. Siz loyihalar qoʻshasiz, har bir loyiha esa oʻz rahbari va kichik jamoasini oladi. Rahbar bilan Discord’dagiga oʻxshab suhbatlashasiz va gʻoyani tasvirlab berasiz; rahbar uni kartalar va rejaga aylantiradi, keyin «Boshlash» tugmasini bosishingizni kutadi. Jamoa kartalarni ustuvorlik tartibida birma-bir ishlab chiqadi, buning uchun til modellari uchun yasalgan oddiy buyruq qatoridan foydalanadi. Biror narsa sizga qaytishidan oldin sun’iy intellekt tekshiruvchisi ilovaning nusxasida barcha qadamlarni bajaradi va skrinshot biriktiradi. Tayyor ish oʻzgargan fayllar va farq bilan sizning toʻplamingizga tushadi. Siz uni qabul qilasiz yoki izoh qoldirasiz, jamoa esa uygʻonib, qayta urinib koʻradi. Kartani «Bajarildi» ustuniga faqat siz va faqat oʻzingiz koʻchira olasiz.",
+    "AI-gile bilan taxminan bir kun shunday oʻtadi. Kechqurun bir nechta izoh qoldirasiz: bu tugma notoʻgʻri joyda turibdi, u roʻyxatni saralash kerak, qorongʻi mavzu boʻlsa-chi. Siz uxlashga ketasiz. Agentlar izohlarni oʻqiydi, oʻzgartirishlarni qiladi, hammasini sinab koʻradi va sizga qaytaradi. «Bajarilishi kerak» boʻshab qolsa, tungi qorovul uni backlogdan sizdan javob talab qilmaydigan kartalar bilan toʻldiradi. Ertalab bitta qisqa toʻplam kutadi: bir nechta savol va sinab koʻriladigan bir nechta narsa, har biri uyqusirab turgan odam ham bajara oladigan qadamlar va ishlayotganini koʻrsatadigan skrinshot bilan. Siz birma-bir bosib chiqasiz, yaxshilarini qabul qilasiz, qolganlarini qaytarasiz. Token hisoblagichi bularning hammasi qancha sarflaganini koʻrsatadi, «Tokensiz rejim» esa tejamkor haftalar uchun tayyor turadi. Keyin nonushta qilasiz, bunda agentlar hozircha afsuski yordam bera olmaydi.",
+    "Avval AI-gile nima emasligi haqida. U startap emas, sotuvga qoʻyilmagan va hech kim maʼlumotlaringizni yigʻmaydi. U kompyuteringizda ishlaydigan, akkauntsiz, kuzatuvchisiz va kukisiz bepul doska. U nima esa: barcha sun’iy intellektli kod loyihalarini bir vaqtda koʻrish uchun yagona saranjom joy, bunda kartalarni agentlar jamoasi bajaradi, qarorlarni esa siz qabul qilasiz. U bogʻliq kartalarni birlashtiradi, chalkash sarlavhalarni tuzatadi va kod qanchalik yengil qolayotganini kuzatib turadi. U taxminan 120 tilda gapiradi, golland va flamand tillaridan tortib qaroqchi va klingon tillarigacha. Doʻstlar bir-biriga shaxsiy va shifrlangan xabar yozishi mumkin. Uni Rich va juda koʻp sabrli agentlar yaratdi, asosan oʻzidan oʻzi foydalanib. U hozir yopiq pre-alfada, shuning uchun ba’zi joylari dagʻal. Qiziq tuyulsa, yaxshilab soʻrang, balki boshqalardan erta kirib qolarsiz."
+   ]
+  }
+ ],
+ "quips": {
+  "1": "Bitta soʻz. Jasur. Balki juda jasur.",
+  "3": "Uchta soʻz. Allaqachon koʻp mahsulot sahifalaridan halolroq.",
+  "8": "Sakkizta soʻz. Baribir bitta stend-apdan qisqa.",
+  "21": "Aytgancha, uzunliklar story point’lar. Albatta-da.",
+  "55": "Ellik beshta soʻz. Siz oʻqiguncha ikkita karta tugadi.",
+  "144": "Bu eng uzuni. 233 yoʻq. Agentlar uxlashga ketdi."
+ }
+}
