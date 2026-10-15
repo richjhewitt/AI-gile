@@ -111,7 +111,7 @@ async function runSealed(req, body) {
     if (out && out.__cookie) delete out.__cookie;
     if (out && out.__sse) throw bad('a live stream is not sealed', 400);
     if (out && out.__svg) b = { ct: 'image/svg+xml', data: Buffer.from(out.__svg).toString('base64') };
-    else if (out && out.__file) b = { ct: out.download ? 'application/octet-stream' : ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', data: fs.readFileSync(out.__file).toString('base64') };
+    else if (out && out.__file) b = { ct: out.download ? 'application/octet-stream' : ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', data: (out.bytes || fs.readFileSync(out.__file)).toString('base64') };   // bytes: a sealed DM attachment, already opened (AIG-1170)
     else b = out === undefined ? null : JSON.parse(JSON.stringify(out));
   } catch (e) { s = e.code >= 400 && e.code < 600 ? e.code : 500; b = { error: e.message }; }
   return seal.close(d, s, b);
@@ -180,6 +180,8 @@ function readBody(req, max = 1e6) {
 }
 
 // Stream errors arrive after the route's try/catch. Handle them without killing the board.
+// A route that answers { __file, bytes } (a sealed DM attachment, AIG-1170) sends the opened bytes; __file still names it (type, ETag).
+function sendFile(out, res, headers) { if (!Buffer.isBuffer(out.bytes)) return streamFile(out.__file, res, headers); res.writeHead(200, headers); res.end(out.bytes); }
 function streamFile(file, res, headers) {
   const stream = fs.createReadStream(file);
   stream.on('error', error => {
@@ -211,7 +213,7 @@ const server = http.createServer(async (req, res) => {
         const m = pathname.match(re);
         if (m && method === req.method) {
           // Attachment uploads are base64 files up to 10 MB, so they get a bigger body limit; opening a project file (AIG-446) up to 20 MB of them.
-          const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, pathname === '/api/projects/import' ? 40e6 : (pathname.endsWith('/attachments') || /^\/api\/dms\/contacts\/[^/]+\/messages$/.test(pathname)) ? 15e6 : /\/((app-)?logo|me-picture)$/.test(pathname) ? 2e6 : 1e6) : {};
+          const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, pathname === '/api/projects/import' ? 40e6 : (pathname.endsWith('/attachments') || /^\/api\/dms\/contacts\/[^/]+\/messages$/.test(pathname)) ? 15e6 : /\/((app-)?logo|me-picture)$/.test(pathname) || /\/uploads\/[0-9a-f]{32}\/\d+$/.test(pathname) ? 2e6 : 1e6) : {};   // a resumable upload's piece: 1 MB as base64 (AIG-1165)
           if (req.aigilePhone) phone.deniedBody(body);   // a phone sets no command for a team to run (AIG-868)
           const out = await fn(m.slice(1), body, url.searchParams, req);   // DM routes talk to the relay, so they may be async; req: who is asking (share.ownerOnly)
           // A route can answer with a file instead of JSON: { __file: absolute path }.
@@ -221,14 +223,14 @@ const server = http.createServer(async (req, res) => {
           if (out && out.__svg) { res.writeHead(200, { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" }); return res.end(out.__svg); }
           if (out && out.__file) {
             // download: a friend's attachment (AIG-306), always saved, never shown or run by the browser.
-            if (out.download) return streamFile(out.__file, res, { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="${String(out.download).replace(/[^\w.\- ]/g, '_')}"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'" });
+            if (out.download) return sendFile(out, res, { 'Content-Type': 'application/octet-stream', 'Content-Disposition': `attachment; filename="${String(out.download).replace(/[^\w.\- ]/g, '_')}"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "sandbox; default-src 'none'" });
             // Pictures and files are cached by the browser (AIG-1090): an ETag from size + mtime, 304 on If-None-Match; attachment ids never change.
             const st = await fs.promises.stat(out.__file).catch(() => null);
             const etag = st ? `"${st.size.toString(16)}-${Math.floor(st.mtimeMs).toString(16)}"` : '';
             const immutable = /^\/api\/projects\/[^/]+\/attachments\/[^/]+$/.test(pathname);
             const cache = { 'Cache-Control': immutable ? 'private, max-age=31536000, immutable' : 'private, max-age=86400', ...(etag ? { ETag: etag } : {}) };
             if (etag && (req.headers['if-none-match'] || '').split(',').some(x => x.trim().replace(/^W\//, '') === etag)) { res.writeHead(304, { ...cache, 'X-Content-Type-Options': 'nosniff' }); return res.end(); }
-            return streamFile(out.__file, res, { 'Content-Type': ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', ...cache, 'X-Content-Type-Options': 'nosniff', ...(out.__file.toLowerCase().endsWith('.svg') ? { 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" } : {}) });
+            return sendFile(out, res, { 'Content-Type': ATTACH_MIME[path.extname(out.__file).toLowerCase()] || 'application/octet-stream', ...cache, 'X-Content-Type-Options': 'nosniff', ...(out.__file.toLowerCase().endsWith('.svg') ? { 'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'" } : {}) });
           }
           return send(res, 200, out, req);
         }
