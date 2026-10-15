@@ -1,0 +1,68 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": [
+      "Kanban.",
+      "Robots.",
+      "Delegado."
+    ] },
+    { "n": 2, "texts": [
+      "Kanban robótico.",
+      "Agentes, ordenados.",
+      "Ideas, construidas."
+    ] },
+    { "n": 3, "texts": [
+      "Kanban para robots.",
+      "Ideas que funcionan.",
+      "Kanban gratis, local."
+    ] },
+    { "n": 5, "texts": [
+      "Un tablero kanban llevado por agentes.",
+      "Tú escribes. Los agentes construyen.",
+      "Gratis, local, probado, algo disparatado."
+    ] },
+    { "n": 8, "texts": [
+      "Un tablero kanban gratuito donde trabajan agentes de IA.",
+      "Escribe una idea. Los agentes la construyen. Tú aceptas.",
+      "Agilidad para una persona y muchos robots pacientes."
+    ] },
+    { "n": 13, "texts": [
+      "Un tablero kanban en tu computadora donde los agentes de IA recogen las tarjetas.",
+      "Escribe una idea. Un equipo de agentes la construye. Un tester la revisa.",
+      "Gratis, sin cuentas ni rastreadores: un tablero, unos cuantos robots y tú al mando."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile es un tablero kanban para trabajar con agentes de programación con IA. Ellos recogen las tarjetas; tú las pruebas y las aceptas.",
+      "Cada proyecto tiene un líder y un equipo de agentes de IA. Comenta cualquier tarjeta y el equipo se pone manos a la obra.",
+      "Un tablero personal y gratuito de tareas que funciona en tu propia computadora. Quienes trabajan son robots. Quien dice que sí eres tú."
+    ] },
+    { "n": 34, "texts": [
+      "Pones ideas en un tablero. Un equipo de agentes de IA las convierte en funciones que andan, las prueba y te las devuelve con pasos para probarlas. Nada se da por hecho hasta que tú lo digas.",
+      "AI-gile es un tablero kanban casero que Rich construyó con mucha ayuda de los agentes que ahora gestiona. Es gratis, funciona en tu computadora y se comparte con amigos, no se vende.",
+      "Imagina un tablero kanban normal, con columnas desde el Backlog hasta Hecho, salvo que las tarjetas las recogen agentes de IA. Cuentan cómo van, preguntan cuando se atascan y siempre esperan tu visto bueno."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile es un tablero kanban cuyo equipo está hecho de agentes de IA. Cada proyecto tiene un líder que planifica el trabajo y ayudantes que lo construyen. Cuando una función está lista, un tester de IA la prueba y hace una captura, y luego llega a tu montón. Acéptala, o comenta y la rehacen.",
+      "Empezó como la forma que tenía una persona de seguir muchas sesiones de programación con IA a la vez, y acabó siendo un tablero de verdad. Funciona en tu equipo, no pide cuenta y no tiene rastreadores. Es gratis para amigos y curiosos. También está sin terminar, así que espera aristas y alguna sorpresa.",
+      "Esta es la versión sincera. Las ideas tienes que tenerlas tú, y los resultados tienes que comprobarlos tú. Lo que hay entre medias lo hace AI-gile: ordena las tarjetas, despierta al agente adecuado cuando comentas, enseña exactamente qué ha cambiado y lo reúne todo en un montón corto para ti."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile es un tablero kanban gratuito que funciona en tu propia computadora. En lugar de personas, cada proyecto tiene un equipo de agentes de IA: un líder que convierte tus ideas en tarjetas y un plan, y ayudantes que las recogen por orden de prioridad. Cuando algo está construido, un tester de IA sigue los pasos de prueba y te enseña lo que vio. Después espera en un único montón llamado Para ti. Lo aceptas, o comentas y el equipo lo intenta otra vez. Nada llega nunca a Hecho sin ti.",
+      "Algunas cosas que quizá no esperas. Una guardia nocturna mantiene llena la columna Por hacer mientras duermes, eligiendo tarjetas que no necesitan una respuesta tuya. Un contador de tokens muestra cuánto han gastado los agentes hoy y esta semana, y el Modo sin tokens les dice que dejen de gastar. Puedes escribir a tus amigos, y los mensajes privados van cifrados de extremo a extremo. El tablero habla unos 120 idiomas, entre ellos neerlandés, flamenco, pirata y klingon. Nada de esto cuesta un céntimo, y nadie intenta vendértelo.",
+      "AI-gile es un proyecto pequeño y personal, no una empresa. Rich quería cuidar varios proyectos de programación con IA sin abrir cada app para ver cómo iban, así que él y los agentes construyeron un tablero para eso y luego lo usaron para construir el resto de sí mismo. Está en preálfa cerrada, lo que significa que funciona, casi siempre, para un puñado de amigos. No hay página de precios, ni boletín, ni plan de crecimiento. Si te suena útil, puedes pedir probarlo cuando se abra un poco más."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile es un tablero kanban para una persona y muchos agentes de IA. Funciona en tu propia computadora y es totalmente gratis. Agregas proyectos, y cada proyecto recibe un líder y un pequeño equipo. Platicas con el líder, un poco como en Discord, y le describes una idea; el líder la convierte en tarjetas y un plan, y espera a que presiones Adelante. El equipo va despachando las tarjetas por orden de prioridad, con una sencilla línea de comandos pensada para modelos de lenguaje. Antes de que nada vuelva a ti, un tester de IA sigue los pasos en una copia de la app y adjunta una captura. El trabajo terminado llega a tu montón con los archivos cambiados y el diff. Lo aceptas, o dejas un comentario y el equipo se despierta y vuelve a intentarlo. Solo tú puedes mover una tarjeta a Hecho.",
+      "Un día con AI-gile, más o menos. Por la tarde dejas unos cuantos comentarios: este botón está donde no toca, esa lista debería ir ordenada, ¿podríamos tener un modo oscuro? Te vas a la cama. Los agentes leen los comentarios, hacen los cambios, los prueban y te los devuelven. Si Por hacer se queda vacía, la guardia nocturna la llena desde el backlog con tarjetas que no necesitan respuesta tuya. Por la mañana hay un único montón corto: un par de preguntas y unas cuantas cosas que probar, cada una con pasos que una persona dormida puede seguir y una captura de que funciona. Vas pasando, aceptas las buenas y devuelves el resto. Un contador de tokens muestra lo que se gastó, y el Modo sin tokens está para las semanas justas. Luego desayunas, algo en lo que los agentes todavía no pueden ayudar.",
+      "Primero, lo que AI-gile no es. No es una startup, no está a la venta y nadie recoge tus datos. Es un tablero gratuito que funciona en tu computadora, sin cuentas, sin rastreadores y sin cookies. Lo que sí es: un único sitio ordenado para ver todos tus proyectos de programación con IA a la vez, con un equipo de agentes que hace las tarjetas y tú tomando las decisiones. Une las tarjetas relacionadas, arregla los títulos enrevesados y vigila lo ligero que se mantiene el código. Habla unos 120 idiomas, del neerlandés y el flamenco al pirata y el klingon. Los amigos pueden escribirse en privado y cifrado. Lo construyeron Rich y un gran número de agentes pacientes, casi siempre usándose a sí mismo. Está en preálfa cerrada, así que es tosco en algunos puntos. Si te parece divertido, pídelo con educación y quizá entres pronto."
+    ] }
+  ],
+  "quips": {
+    "1": "Una palabra. Atrevido. Quizá demasiado.",
+    "3": "Tres palabras. Ya más sincero que la mayoría de las páginas de producto.",
+    "8": "Ocho palabras. Aún más corto que un stand-up.",
+    "21": "Por cierto, las longitudes son puntos de historia. Cómo no.",
+    "55": "Cincuenta y cinco palabras. Mientras las leías se terminaron dos tarjetas.",
+    "144": "Esa es la larga. No existe el 233. Los agentes se han ido a dormir."
+  }
+}

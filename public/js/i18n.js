@@ -17,11 +17,15 @@ const langOf = c => LANG_LIST.find(l => l.code === c);
 const ls = k => { try { return localStorage.getItem(k); } catch { return null; } };
 // Regions (as LocoRadio): an entry with "region": "BE" is only offered there, "notRegion": "BE" is hidden there. You are in a
 // region when a browser language tag names it (nl-BE, en-BE), else by the time zone (Belgium: Europe/Brussels).
+// AIG-1286: "anywhere": true (en-US, es-MX, fr-CA, de-CH) is still picked by region, but listed for everyone.
 const prefsList = () => { try { return navigator.languages && navigator.languages.length ? [...navigator.languages] : [navigator.language || 'en']; } catch { return ['en']; } };
 const tagRegion = p => (String(p).split(/[-_]/).slice(1).find(x => /^[A-Za-z]{2}$/.test(x)) || '').toUpperCase();
-const ZONES = { BE: 'Europe/Brussels' };
-const inRegion = r => prefsList().some(p => tagRegion(p) === r) || (() => { try { return !!ZONES[r] && Intl.DateTimeFormat().resolvedOptions().timeZone === ZONES[r]; } catch { return false; } })();
-const regional = l => (!l.region || inRegion(l.region)) && !(l.notRegion && inRegion(l.notRegion));
+const ZONES = { BE: ['Europe/Brussels'], CH: ['Europe/Zurich'],
+  US: ['America/New_York', 'America/Chicago', 'America/Denver', 'America/Phoenix', 'America/Los_Angeles', 'America/Anchorage', 'Pacific/Honolulu', 'America/Detroit', 'America/Indiana/Indianapolis', 'America/Boise'],
+  MX: ['America/Mexico_City', 'America/Monterrey', 'America/Merida', 'America/Cancun', 'America/Chihuahua', 'America/Tijuana', 'America/Hermosillo', 'America/Mazatlan', 'America/Matamoros', 'America/Bahia_Banderas'],
+  CA: ['America/Toronto', 'America/Montreal', 'America/Moncton', 'America/Halifax', 'America/Winnipeg', 'America/Edmonton', 'America/Vancouver', 'America/Regina', 'America/St_Johns'] };
+const inRegion = r => prefsList().some(p => tagRegion(p) === r) || (() => { try { return (ZONES[r] || []).includes(Intl.DateTimeFormat().resolvedOptions().timeZone); } catch { return false; } })();
+const regional = l => (!l.region || l.anywhere || inRegion(l.region)) && !(l.notRegion && inRegion(l.notRegion));
 // No pick saved yet (AIG-352): the first device language that has a file, with LocoRadio's fallbacks: nl-BE (or plain nl in
 // Belgium) gets Flemish, nl-NL Dutch; zh-Hant/TW/HK/MO Traditional Chinese, pt-BR Brazilian, tl Filipino, nb/nn Norwegian, iw Hebrew.
 // Fun languages are never picked by themselves; fr-BE with no French file gets English.
