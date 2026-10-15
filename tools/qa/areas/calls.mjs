@@ -24,13 +24,16 @@ function stubLivekit() {
     detach(el) { const out = el ? this.els.filter(x => x === el) : this.els.slice(); this.els = this.els.filter(x => !out.includes(x)); log.detach += out.length; return out; } }
   class P { constructor(id) { this.identity = id; this.name = id; this.pubs = new Map(); this.isMicrophoneEnabled = false; this.isCameraEnabled = false; this.isScreenShareEnabled = false; this.isSpeaking = false; }
     getTrackPublication(s) { return this.pubs.get(s); }
-    async setMicrophoneEnabled(v) { log.mic++; this.isMicrophoneEnabled = v; } async setCameraEnabled(v) { this.isCameraEnabled = v; } async setScreenShareEnabled(v) { this.isScreenShareEnabled = v; } }
+    async setMicrophoneEnabled(v) { log.mic++; if (window.lkMicErr) throw Object.assign(new Error(window.lkMicErr === 'NotFoundError' ? 'Requested device not found' : 'Permission denied'), { name: window.lkMicErr }); this.isMicrophoneEnabled = v; } async setCameraEnabled(v) { this.isCameraEnabled = v; } async setScreenShareEnabled(v) { this.isScreenShareEnabled = v; } }
   class Room { constructor() { this.h = {}; this.localParticipant = new P('me'); this.remoteParticipants = new Map(); this.name = ''; this.gone = false; log.rooms.push(this); }
     on(e, f) { (this.h[e] = this.h[e] || []).push(f); return this; }
     emit(e, ...a) { (this.h[e] || []).forEach(f => f(...a)); }
     connect(url, token) { log.connects.push(token); return new Promise(ok => { this.ok = () => { this.name = window.lkRoomName || 'r1'; ok(); }; if (!window.lkHold) this.ok(); }); }
-    async disconnect() { log.disconnects++; this.gone = true; } }
-  const E = ['TrackSubscribed', 'TrackUnsubscribed', 'ParticipantConnected', 'ParticipantDisconnected', 'ActiveSpeakersChanged', 'TrackMuted', 'TrackUnmuted', 'LocalTrackPublished', 'LocalTrackUnpublished', 'Disconnected'];
+    async disconnect() { log.disconnects++; this.gone = true; }
+    static async getLocalDevices(k) { return k === 'audiooutput' ? [{ deviceId: 'spk1', label: 'Speakers' }] : [{ deviceId: k + '1', label: 'Default ' + k }, { deviceId: k + '2', label: 'Headset ' + k }]; }
+    getActiveDevice(k) { return (log.dev || {})[k] || k + '1'; }
+    async switchActiveDevice(k, id) { (log.dev = log.dev || {})[k] = id; } }
+  const E = ['TrackSubscribed', 'TrackUnsubscribed', 'ParticipantConnected', 'ParticipantDisconnected', 'ActiveSpeakersChanged', 'TrackMuted', 'TrackUnmuted', 'LocalTrackPublished', 'LocalTrackUnpublished', 'Disconnected', 'Reconnecting', 'Reconnected'];
   window.LivekitClient = { Room, RoomEvent: Object.fromEntries(E.map(e => [e, e])), Track: { Source: { Camera: 'camera', ScreenShare: 'screen_share', Microphone: 'microphone' } }, Track_: Track, P };
 }
 const roomFor = (m1, m2) => 'aigile-dm-' + crypto.createHash('sha256').update('aigile-call-v1|' + [m1, m2].sort().join('|')).digest('hex').slice(0, 32);
@@ -193,6 +196,34 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     await pg.evaluate(() => { Call.room.remoteParticipants.get('bea').pubs.delete('camera'); Call.room.emit('TrackMuted'); });
     const v2 = await pg.evaluate(() => ({ detach: lkLog.detach, held: lkCam.els.length, shown: document.querySelectorAll('#callTiles video').length, av: !!document.querySelector('#callTiles [data-who="bea"] .call-av') }));
     check('the camera goes: detached, its video gone, the name tile back', v2.detach === 1 && v2.held === 0 && v2.shown === 0 && v2.av, v2);
+    // AIG-1240..1246: calls panel polish
+    const pn = await pg.evaluate(async () => {
+      const r = Call.room, out = {}, $ = id => document.getElementById(id), wait = ms => new Promise(x => setTimeout(x, ms));
+      out.aria = $('callPanel').getAttribute('aria-label'); out.live = !!document.querySelector('#callPanel [aria-live]');
+      out.timer = /^\d+:\d\d$/.test($('callTime').textContent);
+      out.muteGone = !document.querySelector('#callTiles [data-who="me"] .call-mute'); await Call.mic();
+      out.muteMine = !!document.querySelector('#callTiles [data-who="me"] .call-mute'); await Call.mic();
+      out.muteGone = out.muteGone && !document.querySelector('#callTiles [data-who="me"] .call-mute');
+      r.emit('Reconnecting'); out.recon = $('callState').textContent; r.emit('Reconnected'); out.back = $('callState').textContent;
+      $('callMini').click(); out.mini = $('callPanel').classList.contains('mini'); out.tilesHidden = getComputedStyle($('callTiles')).display === 'none'; out.pill = ['callMic', 'callLeave'].every(i => getComputedStyle($(i)).display !== 'none');
+      $('callMini').click(); out.open = !$('callPanel').classList.contains('mini');
+      $('callDevBtn').click(); await wait(100);
+      out.sels = document.querySelectorAll('#callDevs select').length; const sel = document.querySelector('#callDevs select[data-kind="audioinput"]'); sel.value = 'audioinput2'; sel.dispatchEvent(new Event('change')); await wait(50); out.picked = lkLog.dev.audioinput;
+      document.documentElement.dir = 'rtl'; out.rtlLeft = parseFloat(getComputedStyle($('callPanel')).left) < 40; document.documentElement.dir = 'ltr';
+      r.emit('Disconnected', 3); out.ended = $('callNote') && $('callNote').textContent; out.active = Call.active();
+      Call.close(); window.lkMicErr = 'NotAllowedError'; Call.join({ title: 'Bea', getToken: async () => ({ url: 'wss://x', token: 'mb', room: 'r1' }) });
+      await wait(400); out.blocked = $('callErr').textContent; out.stillIn = Call.active(); window.lkMicErr = 'NotFoundError';
+      await Call.mic(); out.none = $('callErr').textContent; window.lkMicErr = '';
+      return out;
+    });
+    check('call panel: named for screen readers, announces people, timer shows', /Bea/.test(pn.aria) && pn.live && pn.timer, pn);
+    check('a muted mic is marked on its tile, and the mark goes when unmuted', pn.muteMine && pn.muteGone, pn);
+    check('Reconnecting shows and goes away again', /Reconnecting/.test(pn.recon) && /in the call/.test(pn.back), pn);
+    check('shrink: a pill with mute and Leave, no tiles; click opens it again', pn.mini && pn.tilesHidden && pn.pill && pn.open, pn);
+    check('devices: mic, camera and speaker listed, switching mid-call works', pn.sels === 3 && pn.picked === 'audioinput2', pn);
+    check('right-to-left: the panel sits on the start side', pn.rtlLeft, pn);
+    check('the call ending on its own says so with a reason (not a silent close)', /closed/.test(pn.ended || '') && !pn.active, pn);
+    check('mic blocked / missing: plain words, still in the call', /blocked the microphone/.test(pn.blocked) && pn.stillIn && /No microphone found/.test(pn.none), pn);
     await pg.evaluate(() => Call.leave());
     noErrors(page); noErrors(setup); noErrors(pg);
     const cleared = await a.ok('POST', '/api/calls', { clear: true, token: tok });
