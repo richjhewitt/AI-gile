@@ -99,5 +99,5 @@
     if (perm === 'granted') { pref.set(true); beep(); }
     paintTop();
   }
-  Object.assign(IB, { paintTop, announce, toggleAlerts });
+  Object.assign(IB, { paintTop, announce, toggleAlerts, beep, alertsOn });   // beep + alertsOn: friend messages too (AIG-1251, dms.js)
 })();
