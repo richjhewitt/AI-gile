@@ -4022,5 +4022,6 @@
  "dlg.multi.ask": "Dat liket op in list fan {n} rigels.",
  "dlg.multi.make": "{n} kaarten meitsje",
  "dlg.multi.one": "As ien kaart hâlde",
- "dlg.multi.done": "{n} kaarten makke"
+ "dlg.multi.done": "{n} kaarten makke",
+ "lic.delete": "Antwurde: wiskje"
 }

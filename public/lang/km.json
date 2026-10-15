@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "នោះមើលទៅដូចជាបញ្ជីមាន {n} បន្ទាត់។",
  "dlg.multi.make": "បង្កើតកាត {n}",
  "dlg.multi.one": "ទុកជាកាតតែមួយ",
- "dlg.multi.done": "បានបង្កើតកាត {n}"
+ "dlg.multi.done": "បានបង្កើតកាត {n}",
+ "lic.delete": "បានឆ្លើយ៖ លុប"
 }

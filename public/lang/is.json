@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Þetta lítur út eins og listi með {n} línum.",
  "dlg.multi.make": "Búa til {n} spjöld",
  "dlg.multi.one": "Halda sem einu spjaldi",
- "dlg.multi.done": "{n} spjöld búin til"
+ "dlg.multi.done": "{n} spjöld búin til",
+ "lic.delete": "Svarað: eyða"
 }

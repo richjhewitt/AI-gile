@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "આ {n} લીટીઓની યાદી જેવું લાગે છે.",
  "dlg.multi.make": "{n} કાર્ડ બનાવો",
  "dlg.multi.one": "એક જ કાર્ડ રાખો",
- "dlg.multi.done": "{n} કાર્ડ બનાવ્યા"
+ "dlg.multi.done": "{n} કાર્ડ બનાવ્યા",
+ "lic.delete": "જવાબ આપ્યો: ડિલીટ કરો"
 }

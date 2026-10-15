@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Iso parece unha lista de {n} liñas.",
  "dlg.multi.make": "Crear {n} tarxetas",
  "dlg.multi.one": "Manter como unha tarxeta",
- "dlg.multi.done": "Creáronse {n} tarxetas"
+ "dlg.multi.done": "Creáronse {n} tarxetas",
+ "lic.delete": "Respondido: borrar"
 }

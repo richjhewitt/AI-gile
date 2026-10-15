@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Ta shen jeeaghyn myr rolley jeh {n} linnaghyn.",
  "dlg.multi.make": "Jean {n} carteyn",
  "dlg.multi.one": "Freill myr un chart",
- "dlg.multi.done": "Jeant {n} carteyn"
+ "dlg.multi.done": "Jeant {n} carteyn",
+ "lic.delete": "Freggyrit: scryss ass"
 }

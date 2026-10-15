@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "يبدو هذا كقائمة من {n} أسطر.",
  "dlg.multi.make": "إنشاء {n} بطاقات",
  "dlg.multi.one": "إبقاؤها بطاقة واحدة",
- "dlg.multi.done": "أُنشئت {n} بطاقات"
+ "dlg.multi.done": "أُنشئت {n} بطاقات",
+ "lic.delete": "تم الرد: احذف"
 }

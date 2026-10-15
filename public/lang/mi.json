@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Ko te āhua nei he rārangi o ngā raina {n}.",
  "dlg.multi.make": "Hangaia ngā kāri {n}",
  "dlg.multi.one": "Waiho hei kāri kotahi",
- "dlg.multi.done": "Kua hangaia ngā kāri {n}"
+ "dlg.multi.done": "Kua hangaia ngā kāri {n}",
+ "lic.delete": "Kua whakautua: mukua"
 }

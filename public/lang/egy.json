@@ -4034,5 +4034,6 @@
  "dlg.multi.ask": "𓏏𓉔𓄿𓏏 𓃭𓅱𓎡𓋴𓁹 𓃭𓇋𓎡 𓄿 𓃭𓇋𓋴𓏏𓏛 𓅱𓆑 {n} 𓃭𓇋𓈖𓋴.",
  "dlg.multi.make": "𓅓𓄿𓎡 {n} 𓎡𓄿𓂋𓂧𓋴𓏛",
  "dlg.multi.one": "𓎡𓊪 𓄿𓋴 𓅱𓈖𓏤 𓎡𓄿𓂋𓂧𓏛",
- "dlg.multi.done": "𓅓𓄿𓂧 {n} 𓎡𓄿𓂋𓂧𓋴𓏛"
+ "dlg.multi.done": "𓅓𓄿𓂧 {n} 𓎡𓄿𓂋𓂧𓋴𓏛",
+ "lic.delete": "𓂋𓊪𓃭𓇋𓂧: 𓂧𓃭𓏏𓏏"
 }

@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "On dirait une liste de {n} lignes.",
  "dlg.multi.make": "Créer {n} cartes",
  "dlg.multi.one": "Garder une seule carte",
- "dlg.multi.done": "{n} cartes créées"
+ "dlg.multi.done": "{n} cartes créées",
+ "lic.delete": "Répondu : supprimer"
 }

@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "A list of {n} lines, that looks like.",
  "dlg.multi.make": "{n} cards, make",
  "dlg.multi.one": "As one card, keep",
- "dlg.multi.done": "{n} cards, made I have"
+ "dlg.multi.done": "{n} cards, made I have",
+ "lic.delete": "Replied, we have: delete"
 }

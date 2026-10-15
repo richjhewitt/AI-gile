@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Das sieht nach einer Liste mit {n} Zeilen aus.",
  "dlg.multi.make": "{n} Karten anlegen",
  "dlg.multi.one": "Als eine Karte lassen",
- "dlg.multi.done": "{n} Karten angelegt"
+ "dlg.multi.done": "{n} Karten angelegt",
+ "lic.delete": "Beantwortet: löschen"
 }

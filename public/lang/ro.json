@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Pare o listă de {n} rânduri.",
  "dlg.multi.make": "Creează {n} carduri",
  "dlg.multi.one": "Păstrează ca un singur card",
- "dlg.multi.done": "Am creat {n} carduri"
+ "dlg.multi.done": "Am creat {n} carduri",
+ "lic.delete": "Răspuns: șterge"
 }

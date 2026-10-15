@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Dit lyk soos 'n lys van {n} reëls.",
  "dlg.multi.make": "Maak {n} kaarte",
  "dlg.multi.one": "Hou as een kaart",
- "dlg.multi.done": "{n} kaarte gemaak"
+ "dlg.multi.done": "{n} kaarte gemaak",
+ "lic.delete": "Geantwoord: vee uit"
 }

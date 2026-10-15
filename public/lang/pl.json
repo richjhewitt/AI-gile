@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "To wygląda na listę (wiersze: {n}).",
  "dlg.multi.make": "Utwórz karty ({n})",
  "dlg.multi.one": "Zostaw jako jedną kartę",
- "dlg.multi.done": "Utworzono karty ({n})"
+ "dlg.multi.done": "Utworzono karty ({n})",
+ "lic.delete": "Odpowiedziano: usuń"
 }

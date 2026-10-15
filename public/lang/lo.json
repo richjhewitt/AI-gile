@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "ນີ້ເບິ່ງຄືລາຍການ {n} ແຖວ.",
  "dlg.multi.make": "ສ້າງ {n} ບັດ",
  "dlg.multi.one": "ເກັບເປັນບັດດຽວ",
- "dlg.multi.done": "ສ້າງ {n} ບັດແລ້ວ"
+ "dlg.multi.done": "ສ້າງ {n} ບັດແລ້ວ",
+ "lic.delete": "ຕອບແລ້ວ: ລຶບ"
 }

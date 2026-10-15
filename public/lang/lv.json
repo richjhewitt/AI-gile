@@ -4021,5 +4021,6 @@
  "dlg.multi.ask": "Izskatās pēc saraksta ar {n} rindām.",
  "dlg.multi.make": "Izveidot kartītes ({n})",
  "dlg.multi.one": "Paturēt kā vienu kartīti",
- "dlg.multi.done": "Izveidotas kartītes: {n}"
+ "dlg.multi.done": "Izveidotas kartītes: {n}",
+ "lic.delete": "Atbildēts: dzēst"
 }

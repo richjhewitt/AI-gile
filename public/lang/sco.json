@@ -4022,5 +4022,6 @@
  "dlg.multi.ask": "That looks like a list o {n} lines.",
  "dlg.multi.make": "Mak {n} cairds",
  "dlg.multi.one": "Keep as ane caird",
- "dlg.multi.done": "Made {n} cairds"
+ "dlg.multi.done": "Made {n} cairds",
+ "lic.delete": "Replied: delete"
 }

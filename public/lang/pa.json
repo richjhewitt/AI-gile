@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "ਇਹ {n} ਲਾਈਨਾਂ ਦੀ ਸੂਚੀ ਲੱਗਦੀ ਹੈ।",
  "dlg.multi.make": "{n} ਕਾਰਡ ਬਣਾਓ",
  "dlg.multi.one": "ਇੱਕੋ ਕਾਰਡ ਰੱਖੋ",
- "dlg.multi.done": "{n} ਕਾਰਡ ਬਣਾਏ"
+ "dlg.multi.done": "{n} ਕਾਰਡ ਬਣਾਏ",
+ "lic.delete": "ਜਵਾਬ ਦੇ ਦਿੱਤਾ: ਮਿਟਾਓ"
 }

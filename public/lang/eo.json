@@ -4022,5 +4022,6 @@
  "dlg.multi.ask": "Tio aspektas kiel listo de {n} linioj.",
  "dlg.multi.make": "Fari {n} kartojn",
  "dlg.multi.one": "Teni kiel unu karton",
- "dlg.multi.done": "Faris {n} kartojn"
+ "dlg.multi.done": "Faris {n} kartojn",
+ "lic.delete": "Respondita: forigi"
 }

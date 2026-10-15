@@ -4022,5 +4022,6 @@
  "dlg.multi.ask": "Hetta sær út sum ein listi við {n} linjum.",
  "dlg.multi.make": "Ger {n} kort",
  "dlg.multi.one": "Halt sum eitt kort",
- "dlg.multi.done": "Gjørdi {n} kort"
+ "dlg.multi.done": "Gjørdi {n} kort",
+ "lic.delete": "Svarað: strika"
 }

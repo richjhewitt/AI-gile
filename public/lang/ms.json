@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Itu nampak seperti senarai {n} baris.",
  "dlg.multi.make": "Buat {n} kad",
  "dlg.multi.one": "Kekalkan sebagai satu kad",
- "dlg.multi.done": "{n} kad dibuat"
+ "dlg.multi.done": "{n} kad dibuat",
+ "lic.delete": "Sudah dibalas: padam"
 }

@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Kjo duket si një listë me {n} rreshta.",
  "dlg.multi.make": "Krijo {n} karta",
  "dlg.multi.one": "Mbaje si një kartë",
- "dlg.multi.done": "U krijuan {n} karta"
+ "dlg.multi.done": "U krijuan {n} karta",
+ "lic.delete": "U përgjigjëm: fshi"
 }

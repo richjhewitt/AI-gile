@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "這看起來是一份 {n} 行的清單。",
  "dlg.multi.make": "建立 {n} 張卡片",
  "dlg.multi.one": "保留為一張卡片",
- "dlg.multi.done": "已建立 {n} 張卡片"
+ "dlg.multi.done": "已建立 {n} 張卡片",
+ "lic.delete": "已回覆：刪除"
 }

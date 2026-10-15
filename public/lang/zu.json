@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Lokho kubukeka njengohlu lwemigqa engu-{n}.",
  "dlg.multi.make": "Yenza amakhadi angu-{n}",
  "dlg.multi.one": "Kugcine kube yikhadi elilodwa",
- "dlg.multi.done": "Kwenziwe amakhadi angu-{n}"
+ "dlg.multi.done": "Kwenziwe amakhadi angu-{n}",
+ "lic.delete": "Siphendulile: susa"
 }

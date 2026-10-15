@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Sepertinya itu daftar berisi {n} baris.",
  "dlg.multi.make": "Buat {n} kartu",
  "dlg.multi.one": "Biarkan jadi satu kartu",
- "dlg.multi.done": "{n} kartu dibuat"
+ "dlg.multi.done": "{n} kartu dibuat",
+ "lic.delete": "Sudah dibalas: hapus"
 }

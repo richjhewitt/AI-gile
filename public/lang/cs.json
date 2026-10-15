@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Vypadá to jako seznam o {n} řádcích.",
  "dlg.multi.make": "Vytvořit karty: {n}",
  "dlg.multi.one": "Nechat jako jednu kartu",
- "dlg.multi.done": "Vytvořeno karet: {n}"
+ "dlg.multi.done": "Vytvořeno karet: {n}",
+ "lic.delete": "Odpovězeno: smazat"
 }

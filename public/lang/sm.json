@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "E foliga o se lisi e {n} laina.",
  "dlg.multi.make": "Fai kāte e {n}",
  "dlg.multi.one": "Tuʻu o se kāte e tasi",
- "dlg.multi.done": "Ua fai kāte e {n}"
+ "dlg.multi.done": "Ua fai kāte e {n}",
+ "lic.delete": "Ua tali: tape"
 }

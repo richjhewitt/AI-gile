@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "{n}줄짜리 목록 같아요.",
  "dlg.multi.make": "카드 {n}개 만들기",
  "dlg.multi.one": "카드 하나로 두기",
- "dlg.multi.done": "카드 {n}개를 만들었어요"
+ "dlg.multi.done": "카드 {n}개를 만들었어요",
+ "lic.delete": "답장함: 삭제"
 }

@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Bu, {n} sətirlik siyahıya oxşayır.",
  "dlg.multi.make": "{n} kart yarat",
  "dlg.multi.one": "Bir kart kimi saxla",
- "dlg.multi.done": "{n} kart yaradıldı"
+ "dlg.multi.done": "{n} kart yaradıldı",
+ "lic.delete": "Cavablandı: sil"
 }

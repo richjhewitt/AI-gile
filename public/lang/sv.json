@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Det där ser ut som en lista med {n} rader.",
  "dlg.multi.make": "Skapa {n} kort",
  "dlg.multi.one": "Behåll som ett kort",
- "dlg.multi.done": "Skapade {n} kort"
+ "dlg.multi.done": "Skapade {n} kort",
+ "lic.delete": "Besvarad: ta bort"
 }

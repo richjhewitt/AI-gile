@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Bu {n} qatorli roʻyxatga oʻxshaydi.",
  "dlg.multi.make": "{n} ta karta yaratish",
  "dlg.multi.one": "Bitta karta sifatida qoldirish",
- "dlg.multi.done": "{n} ta karta yaratildi"
+ "dlg.multi.done": "{n} ta karta yaratildi",
+ "lic.delete": "Javob berildi: oʻchirish"
 }

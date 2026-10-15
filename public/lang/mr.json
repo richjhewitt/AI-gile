@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "ही {n} ओळींची यादी दिसते.",
  "dlg.multi.make": "{n} कार्ड बनवा",
  "dlg.multi.one": "एकच कार्ड ठेवा",
- "dlg.multi.done": "{n} कार्ड बनवली"
+ "dlg.multi.done": "{n} कार्ड बनवली",
+ "lic.delete": "उत्तर दिले: हटवा"
 }

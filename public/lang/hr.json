@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "To izgleda kao popis od {n} redaka.",
  "dlg.multi.make": "Napravi kartice ({n})",
  "dlg.multi.one": "Zadrži kao jednu karticu",
- "dlg.multi.done": "Napravljeno kartica: {n}"
+ "dlg.multi.done": "Napravljeno kartica: {n}",
+ "lic.delete": "Odgovoreno: obriši"
 }

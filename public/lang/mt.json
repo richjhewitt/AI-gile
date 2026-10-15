@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Jidher li din hija lista ta' {n} linji.",
  "dlg.multi.make": "Agħmel {n} karti",
  "dlg.multi.one": "Żommha karta waħda",
- "dlg.multi.done": "Saru {n} karti"
+ "dlg.multi.done": "Saru {n} karti",
+ "lic.delete": "Wieġibna: ħassar"
 }

@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Có vẻ đây là danh sách {n} dòng.",
  "dlg.multi.make": "Tạo {n} thẻ",
  "dlg.multi.one": "Giữ thành một thẻ",
- "dlg.multi.done": "Đã tạo {n} thẻ"
+ "dlg.multi.done": "Đã tạo {n} thẻ",
+ "lic.delete": "Đã trả lời: xóa"
 }

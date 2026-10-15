@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Sa sanble yon lis {n} liy.",
  "dlg.multi.make": "Fè {n} kat",
  "dlg.multi.one": "Kenbe l kòm yon sèl kat",
- "dlg.multi.done": "{n} kat fèt"
+ "dlg.multi.done": "{n} kat fèt",
+ "lic.delete": "Reponn: efase"
 }

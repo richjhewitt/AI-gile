@@ -3992,5 +3992,6 @@
  "dlg.multi.ask": "ti simlu lo ka liste lo {n} linji",
  "dlg.multi.make": "ko zbasu {n} karda",
  "dlg.multi.one": "ko ralte pa karda",
- "dlg.multi.done": "{n} karda cu se zbasu"
+ "dlg.multi.done": "{n} karda cu se zbasu",
+ "lic.delete": "pu spuda: vimcu"
 }

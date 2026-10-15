@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Ez egy {n} soros listának tűnik.",
  "dlg.multi.make": "{n} kártya létrehozása",
  "dlg.multi.one": "Maradjon egy kártya",
- "dlg.multi.done": "{n} kártya létrehozva"
+ "dlg.multi.done": "{n} kártya létrehozva",
+ "lic.delete": "Megválaszolva: törlés"
 }

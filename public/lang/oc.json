@@ -4022,5 +4022,6 @@
  "dlg.multi.ask": "Sembla una lista de {n} linhas.",
  "dlg.multi.make": "Far {n} cartas",
  "dlg.multi.one": "Gardar coma una sola carta",
- "dlg.multi.done": "{n} cartas fachas"
+ "dlg.multi.done": "{n} cartas fachas",
+ "lic.delete": "Respondut: suprimir"
 }

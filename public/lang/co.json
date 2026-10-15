@@ -4022,5 +4022,6 @@
  "dlg.multi.ask": "Pare una lista di {n} linee.",
  "dlg.multi.make": "Fà {n} schede",
  "dlg.multi.one": "Tene cum'è una sola scheda",
- "dlg.multi.done": "{n} schede fatte"
+ "dlg.multi.done": "{n} schede fatte",
+ "lic.delete": "Rispostu: scancellà"
 }

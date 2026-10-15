@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "{n} lerroko zerrenda bat dirudi.",
  "dlg.multi.make": "Sortu {n} txartel",
  "dlg.multi.one": "Utzi txartel bakar gisa",
- "dlg.multi.done": "{n} txartel sortu dira"
+ "dlg.multi.done": "{n} txartel sortu dira",
+ "lic.delete": "Erantzunda: ezabatu"
 }

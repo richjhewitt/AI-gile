@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Taasi waxay u egtahay liis {n} sadar ah.",
  "dlg.multi.make": "Samee {n} kaar",
  "dlg.multi.one": "U daa hal kaar",
- "dlg.multi.done": "{n} kaar ayaa la sameeyay"
+ "dlg.multi.done": "{n} kaar ayaa la sameeyay",
+ "lic.delete": "Waa la jawaabay: tirtir"
 }

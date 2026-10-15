@@ -4013,5 +4013,6 @@
  "dlg.multi.ask": "See näeb välja nagu {n}-realine loend.",
  "dlg.multi.make": "Tee {n} kaarti",
  "dlg.multi.one": "Jäta üheks kaardiks",
- "dlg.multi.done": "Tehti {n} kaarti"
+ "dlg.multi.done": "Tehti {n} kaarti",
+ "lic.delete": "Vastatud: kustuta"
 }

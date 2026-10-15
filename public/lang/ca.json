@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Sembla una llista de {n} línies.",
  "dlg.multi.make": "Crea {n} targetes",
  "dlg.multi.one": "Deixa-ho com una sola targeta",
- "dlg.multi.done": "S'han creat {n} targetes"
+ "dlg.multi.done": "S'han creat {n} targetes",
+ "lic.delete": "Respost: esborra"
 }

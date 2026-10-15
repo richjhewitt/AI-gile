@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Hii inaonekana kama orodha ya mistari {n}.",
  "dlg.multi.make": "Tengeneza kadi {n}",
  "dlg.multi.one": "Iache kama kadi moja",
- "dlg.multi.done": "Kadi {n} zimetengenezwa"
+ "dlg.multi.done": "Kadi {n} zimetengenezwa",
+ "lic.delete": "Imejibiwa: futa"
 }

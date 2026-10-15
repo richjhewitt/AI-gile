@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Panašu į {n} eilučių sąrašą.",
  "dlg.multi.make": "Sukurti kortelių: {n}",
  "dlg.multi.one": "Palikti kaip vieną kortelę",
- "dlg.multi.done": "Sukurta kortelių: {n}"
+ "dlg.multi.done": "Sukurta kortelių: {n}",
+ "lic.delete": "Atsakyta: ištrinti"
 }

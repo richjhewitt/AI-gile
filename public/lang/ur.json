@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "یہ {n} سطروں کی فہرست لگتی ہے۔",
  "dlg.multi.make": "{n} کارڈ بنائیں",
  "dlg.multi.one": "ایک ہی کارڈ رہنے دیں",
- "dlg.multi.done": "{n} کارڈ بن گئے"
+ "dlg.multi.done": "{n} کارڈ بن گئے",
+ "lic.delete": "جواب دے دیا: حذف کریں"
 }

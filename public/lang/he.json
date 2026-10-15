@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "נראה שזו רשימה של {n} שורות.",
  "dlg.multi.make": "יצירת {n} כרטיסים",
  "dlg.multi.one": "להשאיר ככרטיס אחד",
- "dlg.multi.done": "נוצרו {n} כרטיסים"
+ "dlg.multi.done": "נוצרו {n} כרטיסים",
+ "lic.delete": "נענה: למחוק"
 }

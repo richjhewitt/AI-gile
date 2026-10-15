@@ -4034,5 +4034,6 @@
  "dlg.multi.ask": "Þetta lítr út sem listi með {n} línum.",
  "dlg.multi.make": "Gera {n} spjöld",
  "dlg.multi.one": "Halda sem eitt spjald",
- "dlg.multi.done": "Gerði {n} spjöld"
+ "dlg.multi.done": "Gerði {n} spjöld",
+ "lic.delete": "Svarat: eyða"
 }

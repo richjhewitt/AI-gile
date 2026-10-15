@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Mae hwnna'n edrych fel rhestr o {n} llinell.",
  "dlg.multi.make": "Gwneud {n} cerdyn",
  "dlg.multi.one": "Cadw fel un cerdyn",
- "dlg.multi.done": "Gwnaed {n} cerdyn"
+ "dlg.multi.done": "Gwnaed {n} cerdyn",
+ "lic.delete": "Wedi ateb: dileu"
 }

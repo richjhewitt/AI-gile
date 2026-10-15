@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "To je videti kot seznam z {n} vrsticami.",
  "dlg.multi.make": "Naredi kartice ({n})",
  "dlg.multi.one": "Pusti kot eno kartico",
- "dlg.multi.done": "Narejene kartice: {n}"
+ "dlg.multi.done": "Narejene kartice: {n}",
+ "lic.delete": "Odgovorjeno: izbriši"
 }

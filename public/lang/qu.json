@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Kayqa {n} siq'iyuq lista hina rikch'akun.",
  "dlg.multi.make": "{n} kartakunata ruray",
  "dlg.multi.one": "Huk karta hina waqaychay",
- "dlg.multi.done": "{n} kartakuna rurasqa"
+ "dlg.multi.done": "{n} kartakuna rurasqa",
+ "lic.delete": "Kutichisqa: qulluy"
 }

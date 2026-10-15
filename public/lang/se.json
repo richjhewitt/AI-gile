@@ -4033,5 +4033,6 @@
  "dlg.multi.ask": "Dát orru leamen listu mas leat {n} linjá.",
  "dlg.multi.make": "Ráhkat {n} gortta",
  "dlg.multi.one": "Doala ovtta kortan",
- "dlg.multi.done": "Ráhkadii {n} gortta"
+ "dlg.multi.done": "Ráhkadii {n} gortta",
+ "lic.delete": "Vástiduvvon: sihko"
 }

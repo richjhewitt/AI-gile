@@ -4021,5 +4021,6 @@
  "dlg.multi.ask": "Isso parece uma lista de {n} linhas.",
  "dlg.multi.make": "Criar {n} cards",
  "dlg.multi.one": "Manter como um card só",
- "dlg.multi.done": "{n} cards criados"
+ "dlg.multi.done": "{n} cards criados",
+ "lic.delete": "Respondido: excluir"
 }

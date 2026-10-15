@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Tämä näyttää {n} rivin luettelolta.",
  "dlg.multi.make": "Tee {n} korttia",
  "dlg.multi.one": "Pidä yhtenä korttina",
- "dlg.multi.done": "Tehtiin {n} korttia"
+ "dlg.multi.done": "Tehtiin {n} korttia",
+ "lic.delete": "Vastattu: poista"
 }

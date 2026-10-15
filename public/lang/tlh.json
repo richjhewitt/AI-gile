@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "{n} tlhegh tet rur.",
  "dlg.multi.make": "{n} navmey yIchenmoH",
  "dlg.multi.one": "nav wa' yIpol",
- "dlg.multi.done": "{n} navmey chenmoHlu'"
+ "dlg.multi.done": "{n} navmey chenmoHlu'",
+ "lic.delete": "Replied: delete"
 }

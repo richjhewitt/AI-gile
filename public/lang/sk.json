@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Vyzerá to ako zoznam s {n} riadkami.",
  "dlg.multi.make": "Vytvoriť karty ({n})",
  "dlg.multi.one": "Nechať ako jednu kartu",
- "dlg.multi.done": "Vytvorené karty: {n}"
+ "dlg.multi.done": "Vytvorené karty: {n}",
+ "lic.delete": "Odpovedané: zmazať"
 }

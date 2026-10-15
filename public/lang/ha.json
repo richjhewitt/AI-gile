@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Wannan yana kama da jerin layuka {n}.",
  "dlg.multi.make": "Yi kati {n}",
  "dlg.multi.one": "Bar shi kati ɗaya",
- "dlg.multi.done": "An yi kati {n}"
+ "dlg.multi.done": "An yi kati {n}",
+ "lic.delete": "An amsa: goge"
 }

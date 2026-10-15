@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Ev dişibe lîsteyeke {n} rêzan.",
  "dlg.multi.make": "{n} kartan çêke",
  "dlg.multi.one": "Wekî yek kart bihêle",
- "dlg.multi.done": "{n} kart hatin çêkirin"
+ "dlg.multi.done": "{n} kart hatin çêkirin",
+ "lic.delete": "Bersiv hat dayîn: jê bibe"
 }

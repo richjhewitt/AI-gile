@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "ʻOku hangē ia ha lisi ʻo e laine ʻe {n}.",
  "dlg.multi.make": "Ngaohi ʻa e kaati ʻe {n}",
  "dlg.multi.one": "Tuku ko e kaati ʻe taha",
- "dlg.multi.done": "Kuo ngaohi ʻa e kaati ʻe {n}"
+ "dlg.multi.done": "Kuo ngaohi ʻa e kaati ʻe {n}",
+ "lic.delete": "Kuo tali: tamateʻi"
 }

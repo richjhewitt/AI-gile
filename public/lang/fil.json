@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Mukhang listahan ito ng {n} linya.",
  "dlg.multi.make": "Gumawa ng {n} card",
  "dlg.multi.one": "Gawing iisang card",
- "dlg.multi.done": "Nakagawa ng {n} card"
+ "dlg.multi.done": "Nakagawa ng {n} card",
+ "lic.delete": "Nasagot na: i-delete"
 }

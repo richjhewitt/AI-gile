@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Bu {n} satırlık bir listeye benziyor.",
  "dlg.multi.make": "{n} kart oluştur",
  "dlg.multi.one": "Tek kart olarak bırak",
- "dlg.multi.done": "{n} kart oluşturuldu"
+ "dlg.multi.done": "{n} kart oluşturuldu",
+ "lic.delete": "Yanıtlandı: sil"
 }

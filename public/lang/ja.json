@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "{n}行のリストのようです。",
  "dlg.multi.make": "{n}枚のカードを作成",
  "dlg.multi.one": "1枚のカードのままにする",
- "dlg.multi.done": "{n}枚のカードを作成しました"
+ "dlg.multi.done": "{n}枚のカードを作成しました",
+ "lic.delete": "返信済み:削除"
 }

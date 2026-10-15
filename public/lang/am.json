@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "ይህ የ{n} መስመሮች ዝርዝር ይመስላል።",
  "dlg.multi.make": "{n} ካርዶችን ፍጠር",
  "dlg.multi.one": "እንደ አንድ ካርድ አቆይ",
- "dlg.multi.done": "{n} ካርዶች ተፈጥረዋል"
+ "dlg.multi.done": "{n} ካርዶች ተፈጥረዋል",
+ "lic.delete": "ተመልሷል፦ አጥፋ"
 }

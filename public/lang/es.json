@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Parece una lista de {n} líneas.",
  "dlg.multi.make": "Crear {n} tarjetas",
  "dlg.multi.one": "Dejarla como una sola tarjeta",
- "dlg.multi.done": "{n} tarjetas creadas"
+ "dlg.multi.done": "{n} tarjetas creadas",
+ "lic.delete": "Respondida: eliminar"
 }

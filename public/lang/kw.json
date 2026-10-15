@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Hemma a hevel bos rol a {n} linenn.",
  "dlg.multi.make": "Gul {n} kard",
  "dlg.multi.one": "Gwitha avel unn kard",
- "dlg.multi.done": "Gwrys {n} kard"
+ "dlg.multi.done": "Gwrys {n} kard",
+ "lic.delete": "Gorthebys: dilea"
 }

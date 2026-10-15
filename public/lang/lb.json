@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Dat gesäit aus wéi eng Lëscht mat {n} Linnen.",
  "dlg.multi.make": "{n} Kaarte maachen",
  "dlg.multi.one": "Als eng Kaart halen",
- "dlg.multi.done": "{n} Kaarte gemaach"
+ "dlg.multi.done": "{n} Kaarte gemaach",
+ "lic.delete": "Geäntwert: läschen"
 }

@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Hoc videtur index {n} versuum.",
  "dlg.multi.make": "Fac {n} chartas",
  "dlg.multi.one": "Serva ut unam chartam",
- "dlg.multi.done": "{n} chartae factae"
+ "dlg.multi.done": "{n} chartae factae",
+ "lic.delete": "Responsum: dele"
 }

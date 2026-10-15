@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Is cosúil gur liosta {n} líne é sin.",
  "dlg.multi.make": "Déan {n} cárta",
  "dlg.multi.one": "Coinnigh mar chárta amháin",
- "dlg.multi.done": "Rinneadh {n} cárta"
+ "dlg.multi.done": "Rinneadh {n} cárta",
+ "lic.delete": "Freagartha: scrios"
 }

@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Ojogua peteĩ lista {n} línea rehegua.",
  "dlg.multi.make": "Ejapo {n} kuatia",
  "dlg.multi.one": "Ejoko peteĩ kuatia ramo",
- "dlg.multi.done": "Ojejapo {n} kuatia"
+ "dlg.multi.done": "Ojejapo {n} kuatia",
+ "lic.delete": "Oñembohováima: mboguete"
 }

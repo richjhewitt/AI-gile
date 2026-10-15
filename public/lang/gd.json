@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Tha coltas liosta de {n} loidhnichean air sin.",
  "dlg.multi.make": "Dèan {n} cairtean",
  "dlg.multi.one": "Cùm mar aon chairt",
- "dlg.multi.done": "Chaidh {n} cairtean a dhèanamh"
+ "dlg.multi.done": "Chaidh {n} cairtean a dhèanamh",
+ "lic.delete": "Air freagairt: sguab às"
 }

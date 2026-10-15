@@ -4001,5 +4001,6 @@
  "dlg.multi.ask": "ni li sama kulupu pi linja {n}.",
  "dlg.multi.make": "o pali e lipu {n}",
  "dlg.multi.one": "o awen e lipu wan",
- "dlg.multi.done": "mi pali e lipu {n}"
+ "dlg.multi.done": "mi pali e lipu {n}",
+ "lic.delete": "mi toki sin: o weka"
 }

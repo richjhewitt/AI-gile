@@ -4022,5 +4022,6 @@
  "dlg.multi.ask": "Paret una lista de {n} lìnias.",
  "dlg.multi.make": "Faghe {n} cartas",
  "dlg.multi.one": "Mantene comente una carta sola",
- "dlg.multi.done": "Fatas {n} cartas"
+ "dlg.multi.done": "Fatas {n} cartas",
+ "lic.delete": "Rispostu: cantzella"
 }

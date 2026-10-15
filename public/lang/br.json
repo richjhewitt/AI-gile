@@ -3989,5 +3989,6 @@
  "dlg.multi.ask": "Heñvel eo ouzh ur roll a {n} linenn.",
  "dlg.multi.make": "Krouiñ {n} kartenn",
  "dlg.multi.one": "Mirout evel ur gartenn hepken",
- "dlg.multi.done": "{n} kartenn krouet"
+ "dlg.multi.done": "{n} kartenn krouet",
+ "lic.delete": "Respontet: lemel"
 }
