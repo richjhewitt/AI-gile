@@ -4097,7 +4097,7 @@
  "tour.chat.text.noai": "Juttele täällä ystäviesi kanssa. Avaa ystävän keskustelu soittaaksesi hänelle, videolla ja näytön jakamisella.",
  "tour.chat.short.noai": "Keskustelut ystävien kanssa. Soita jollekulle hänen keskustelustaan.",
  "tour.chat.why.noai": "Puhu asiat läpi ihan työn vieressä, ilman muuta sovellusta.",
- "lkcall.credit": "Puhelut perustuvat {name}-palveluun 💙",
+ "lkcall.credit": "{name}-aallolla",
  "help.m.thanks": "💙 Kiitokset",
  "help.thanks.h": "💙 Kiitokset",
  "help.thanks.chilled": "Puhelut, näytön jakaminen, vastaukset, reaktiot ja kirjoituspisteet tulevat {name}-palvelusta. Kiitos!",

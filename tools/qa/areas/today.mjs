@@ -113,6 +113,11 @@ def('today', '🎯 Today: weights per project, reset each morning, order, 💤 r
   await page.goto(page.url().replace('#/today', '#/usage'));
   await page.waitForSelector('.today-usage', { timeout: 8000 }).catch(() => {});
   check('the usage page shows each project\'s share and use', (await page.$$('.today-usage .today-bar')).length === 5);
+  // AIG-1315: a resting project leaves the list; one line counts them and links to 🎯 Today
+  await s.ok('POST', '/api/today', { slug: 'bb', weight: 'rest' });
+  await page.reload(); await page.waitForSelector('.today-usage', { timeout: 8000 }).catch(() => {});
+  check('Usage shows only today\'s active projects, resting ones fold into one line with a 🎯 Today link (AIG-1315)', (await page.$$('.today-usage .today-bar')).length === 4 && /1 projects hidden today/.test(await page.textContent('.today-usage .today-restsum')) && !!(await page.$('.today-usage .today-restsum a[href="#/today"]')));
+  await s.ok('POST', '/api/today', { slug: 'bb', weight: 'low' });
   // AIG-607: exact shares replace the weight split, add up to 100, stay across days; at its share a project pauses, ⭐ crucial still runs.
   const bad1 = await s.api('POST', '/api/today/shares', { pct: { aa: 60, bb: 30 } });
   check('shares that do not add up to 100 are refused, with the total', bad1.status === 400 && /90/.test(JSON.stringify(bad1.body)), bad1);

@@ -4121,7 +4121,7 @@
  "tour.chat.text.noai": "Vestle siin oma sõpradega. Ava sõbra vestlus, et talle helistada, video ja ekraanijagamisega.",
  "tour.chat.short.noai": "Vestlused sõpradega. Helista kellelegi tema vestlusest.",
  "tour.chat.why.noai": "Aruta asjad läbi otse töö kõrval, ilma teise rakenduseta.",
- "lkcall.credit": "Kõned on ehitatud {name} peale 💙",
+ "lkcall.credit": "{name} lainel",
  "help.m.thanks": "💙 Tänud",
  "help.thanks.h": "💙 Tänud",
  "help.thanks.chilled": "Kõned, ekraanijagamine, vastused, reaktsioonid ja trükkimistäpid tulevad {name} kaudu. Aitäh!",

@@ -4097,7 +4097,7 @@
  "tour.chat.text.noai": "ここで友だちとチャットできます。友だちのチャットを開けば、ビデオや画面共有つきで通話できます。",
  "tour.chat.short.noai": "友だちとのチャット。チャットから通話できます。",
  "tour.chat.why.noai": "ほかのアプリを使わず、作業のすぐ横で話し合えます。",
- "lkcall.credit": "通話は{name}で作られています 💙",
+ "lkcall.credit": "{name}に乗って",
  "help.m.thanks": "💙 謝辞",
  "help.thanks.h": "💙 謝辞",
  "help.thanks.chilled": "通話、画面共有、返信、リアクション、入力中の点は{name}のおかげです。ありがとうございます！",

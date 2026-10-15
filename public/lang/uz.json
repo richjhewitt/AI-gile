@@ -4097,7 +4097,7 @@
  "tour.chat.text.noai": "Bu yerda doʻstlaringiz bilan suhbatlashing. Doʻstingizga qoʻngʻiroq qilish uchun uning chatini oching, video va ekranni ulashish bilan.",
  "tour.chat.short.noai": "Doʻstlar bilan chatlar. Toʻgʻridan-toʻgʻri chatdan qoʻngʻiroq qiling.",
  "tour.chat.why.noai": "Boshqa ilovasiz, ish yonida gaplashib oling.",
- "lkcall.credit": "Qoʻngʻiroqlar {name} asosida qurilgan 💙",
+ "lkcall.credit": "{name} toʻlqinida",
  "help.m.thanks": "💙 Rahmat",
  "help.thanks.h": "💙 Rahmat",
  "help.thanks.chilled": "Qoʻngʻiroqlar, ekranni ulashish, javoblar, reaksiyalar va yozish nuqtalari {name} dan keladi. Rahmat!",
