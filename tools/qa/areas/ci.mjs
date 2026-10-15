@@ -29,6 +29,14 @@ def('ci', '🗂️ configuration items: per project list, add/edit/remove, key n
   check('empty expires and null backup are cleared', !('expires' in u2) && !('backup' in u2) && u2.name === 'prod-1', u2);
   check('unknown id is 404', (await s.api('PATCH', '/api/projects/cfg/ci/ci-99', { name: 'x' })).status === 404 && (await s.api('DELETE', '/api/projects/cfg/ci/ci-99')).status === 404);
 
+  // AIG-1160: a deleted item's id is never reused
+  await mkProject(s, 'Ids', 'IDS');
+  await s.ok('POST', '/api/projects/ids/ci', { kind: 'domain', name: 'one.example' });
+  const two = await s.ok('POST', '/api/projects/ids/ci', { kind: 'domain', name: 'two.example' });
+  await s.ok('DELETE', '/api/projects/ids/ci/' + two.id);
+  const three = await s.ok('POST', '/api/projects/ids/ci', { kind: 'domain', name: 'three.example' });
+  check('deleting the highest item and adding a new one does not reuse the id', two.id === 'ci-2' && three.id === 'ci-3', [two.id, three.id]);
+
   // CLI
   const ls = s.cli(['ci', 'cfg']);
   check('CLI lists the items', ls.code === 0 && /ci-1 \[server\] prod-1/.test(ls.out) && /ci-2 \[domain\] example.com/.test(ls.out), ls);
