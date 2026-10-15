@@ -135,22 +135,32 @@ const Dms = (() => {
     const fresh = !chats.some(c => c.last) && !people.some(c => c.last);   // nothing written yet: say what each row is for (AIG-1085)
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
-      <div class="dm-list">${filter === 'drafts' ? draftRows() : `${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.allhands'))}</span>` : ''}</span></button><button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(paName || t('pa.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.assistant'))}</span>` : ''}</span></button>${groupsHtml()}` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}`}</div>`;
+      <div class="dm-list">${filter === 'drafts' ? draftRows() : `${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.allhands'))}</span>` : ''}</span></button><button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(paName || t('pa.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.assistant'))}</span>` : ''}</span></button>${groupsHtml()}${rows.length ? `<div class="dm-groups-h dm-leads-h"><span class="muted">${esc(t('dms.leadchats'))}</span></div>` : ''}` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}`}</div>`;
     const panel = el('dmPanel');
     if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
     panel.hidden = false;
   }
 
   // 👥 Groups (AIG-1027): their own part of the All / Agents list, with ＋ New group.
-  const groupsHtml = () => `<div class="dm-groups"><div class="dm-groups-h"><span class="muted">${esc(t('grp.section'))}</span><button class="dm-newgroup" data-dmnewgroup="1">${esc(t('grp.new'))}</button></div>${groups.map(g => `<div class="dm-rowwrap ${grpUnread(g) ? 'unread' : ''}"><button class="dm-row" data-dm="grp:${esc(g.id)}"><span class="dm-av">👥</span><span class="dm-rowtext"><b>${esc(g.name)}</b><span class="muted">${esc([plain(g.lastText).slice(0, 60) || g.members.map(m => m.name).join(', '), g.lastText ? ago(g.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(grpUnread(g))}</button></div>`).join('')}</div>`;
+  const groupsHtml = () => `<div class="dm-groups"><div class="dm-groups-h"><span class="muted">${esc(t('grp.section'))}</span><button class="dm-newgroup" data-dmnewgroup="1">${esc(t('grp.new'))}</button></div>${groups.length ? '' : `<p class="muted dm-empty dm-nogroups">${esc(t('grp.nogroups'))}</p>`}${groups.map(g => `<div class="dm-rowwrap ${grpUnread(g) ? 'unread' : ''}"><button class="dm-row" data-dm="grp:${esc(g.id)}"><span class="dm-av">👥</span><span class="dm-rowtext"><b>${esc(g.name)}</b><span class="muted">${esc([plain(g.lastText).slice(0, 60) || g.members.map(m => m.name).join(', '), g.lastText ? ago(g.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(grpUnread(g))}</button></div>`).join('')}</div>`;
   async function newGroup() {
     try { grpCands = await api('GET', '/api/chats/_groups/candidates'); } catch (e) { alert(e.message || String(e)); return; }
     openDialog(`<h2>${esc(t('grp.new.h'))}</h2><p class="muted">${esc(t('grp.new.help'))}</p>
       <label>${esc(t('grp.name'))}<input id="grpName" maxlength="80" autocomplete="off"></label>
-      <div class="grp-pick" id="grpPick"><b>${esc(t('grp.members'))}</b>${grpCands.length ? grpCands.map((c, i) => `<label class="grp-cand"><input type="checkbox" data-grpi="${i}"> ${esc(c.name)} · ${esc(c.projectName)} · ${esc(c.engineLabel)}${c.role ? ` <span class="muted">(${esc(c.role)})</span>` : ''}</label>`).join('') : `<p class="muted">${esc(t('grp.none'))}</p>`}</div>
+      <b>${esc(t('grp.members'))}</b>${grpCands.length ? `<input id="grpSearch" type="search" class="grp-search" placeholder="${esc(t('grp.search'))}" autocomplete="off" oninput="Dms.grpFilter()">` : ''}
+      <div class="grp-pick" id="grpPick">${grpCands.length ? grpCands.map((c, i) => (i && grpCands[i - 1].project === c.project ? '' : `<div class="grp-proj muted">${esc(c.projectName)}</div>`) + `<label class="grp-cand" data-q="${esc([c.name, c.projectName, c.role, c.engineLabel].join(' ').toLowerCase())}"><input type="checkbox" data-grpi="${i}"> ${esc(c.name)}${c.role ? ` <span class="muted">(${esc(c.role)})</span>` : ''}${c.engine !== 'claude' ? ` <span class="muted">· ${esc(c.engineLabel)}</span>` : ''}</label>`).join('') : `<p class="muted">${esc(t('grp.none'))}</p>`}</div>
       <div class="err" id="grpErr"></div>
       <div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button><button type="button" class="primary" id="grpCreate" onclick="Dms.createGroup()">${esc(t('grp.create'))}</button></div>`);
     const n = el('grpName'); if (n) n.focus();
+  }
+  // AIG-1131: the search box hides rows that do not match; a project heading stays only while one of its rows shows.
+  function grpFilter() {
+    const q = (el('grpSearch').value || '').trim().toLowerCase(); let head = null, any = false;
+    for (const n of document.querySelectorAll('#grpPick > *')) {
+      if (n.classList.contains('grp-proj')) { if (head) head.hidden = !any; head = n; any = false; continue; }
+      const hit = !q || (n.dataset.q || '').includes(q); n.hidden = !hit; if (hit) any = true;
+    }
+    if (head) head.hidden = !any;
   }
   async function createGroup() {
     const name = el('grpName').value.trim(), members = [...document.querySelectorAll('#grpPick [data-grpi]:checked')].map(x => grpCands[+x.dataset.grpi]).map(c => ({ project: c.project, name: c.name }));
@@ -517,5 +527,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   PagePoll.every(async () => { await loadRail(); if (open) await loadThread(); }, 3000);
   loadRail();
-  return { follow, show, back, close, send, ask, askTeams, aim, reply, reload, smNight, smPush, requestForm, requestSend, newGroup, createGroup };
+  return { follow, show, back, close, send, ask, askTeams, aim, reply, reload, smNight, smPush, requestForm, requestSend, newGroup, createGroup, grpFilter };
 })();

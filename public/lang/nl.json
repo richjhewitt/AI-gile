@@ -3520,6 +3520,9 @@
  "grp.err.name": "Geef de groep een naam.",
  "grp.err.two": "Kies minstens twee agents.",
  "grp.none": "Nog geen agents op een rooster.",
+ "grp.nogroups": "Nog geen groepen.",
+ "dms.leadchats": "Leadchats",
+ "grp.search": "Zoek agents of projecten",
  "grp.empty": "Nog geen berichten. Schrijf iets: iedereen in de groep wordt gewekt om te antwoorden.",
  "grp.to": "Aan iedereen in {name}",
  "srv.grp.skip": "{name} is niet gewekt: {why}",
@@ -3603,6 +3606,14 @@
  "ci.backup.days": "Back-up elke (dagen)",
  "ci.backup.line": "back-up {where} elke {days} dagen",
  "ci.links": "Koppelingen (kaart-id's of webadressen, door komma's gescheiden)",
+ "ciw.expiry.title": "Verleng {name} voor {date}",
+ "ciw.expiry.body": "{name} verloopt op {date} (over {days} dagen). Verleng het voor die tijd.",
+ "ciw.backup.title": "Back-up van {name} is {days} dagen oud",
+ "ciw.backup.body": "{name} is {days} dagen geleden voor het laatst gebackupt en moet elke {every} dagen (naar {where}). Doe het en markeer het daarna als \"Vandaag gebackupt\" op de itempagina (of aigile ci <project> backed-up <id>).",
+ "ciw.restore.title": "Herstelproef voor {name}",
+ "ciw.restore.body": "Eén keer per maand: zet de back-up van {name} (van {where}) ergens veilig terug en controleer dat het werkt.",
+ "ci.backup.last": "laatste back-up {day}",
+ "ci.backedup": "Vandaag gebackupt",
  "ci.links.ph": "AIG-12, https://...",
  "desk.label": "Servicedesk:",
  "desk.kind.request": "Verzoek",
@@ -3615,5 +3626,6 @@
  "desk.looks": "lijkt op {id}",
  "desk.link": "Koppel",
  "desk.linked": "Gekoppeld aan {id}",
- "srv.desk.linked": "Gekoppeld: dit lijkt hetzelfde als {id}."
+ "srv.desk.linked": "Gekoppeld: dit lijkt hetzelfde als {id}.",
+ "ci.affects": "Raakt:"
 }

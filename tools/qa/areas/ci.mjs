@@ -1,6 +1,6 @@
 // QA area: ci (AIG-1122): configuration items per project. API add/patch/remove/list (p.ci only when set), validation (kind, date, backup,
 // key = a Secrets name never a value), CLI list/add/set/rm, and the page #/ci/<slug> with add, edit and remove.
-import { check, mkProject, def, openPage, noErrors } from '../lib.mjs';
+import { check, mkProject, mkCard, def, openPage, noErrors } from '../lib.mjs';
 
 const getProject = (s, slug) => s.ok('GET', '/api/projects/' + slug + '?full=1');
 
@@ -39,6 +39,24 @@ def('ci', '🗂️ configuration items: per project list, add/edit/remove, key n
   check('CLI add with a bad kind fails', s.cli(['ci', 'cfg', 'add', 'cloud', 'x', '--as', 'Owner'], { AIGILE_BACKGROUND: '', AIGILE_ROLE: '' }).code !== 0);
   const rm = s.cli(['ci', 'cfg', 'rm', 'ci-4', '--as', 'Owner'], { AIGILE_BACKGROUND: '', AIGILE_ROLE: '' });
   check('CLI rm removes it', rm.code === 0 && (await s.ok('GET', '/api/projects/cfg/ci')).items.length === 3, rm);
+
+  // Affects (AIG-1123): an incident linked to a server item, shown on the item page, unlinked again
+  const inc = await mkCard(s, 'cfg', 'Prod is down', { type: 'incident', status: 'todo' });
+  const feat = await mkCard(s, 'cfg', 'Just a feature', { type: 'feature', status: 'todo' });
+  check('only incident, problem and change cards can be linked', (await s.api('POST', '/api/projects/cfg/ci/ci-1/link', { card: feat.id })).status === 400);
+  const lk = s.cli(['ci', 'cfg', 'link', 'ci-1', inc.id, '--as', 'Owner'], { AIGILE_BACKGROUND: '', AIGILE_ROLE: '' });
+  check('CLI link works', lk.code === 0 && /linked to/.test(lk.out), lk);
+  const pc = await getProject(s, 'cfg');
+  check('the card holds the item and the item holds the card', pc.cards.find(c => c.id === inc.id).ci.join() === 'ci-1' && pc.ci.find(x => x.id === 'ci-1').links.some(l => l.card === inc.id && l.type === 'incident' && l.at), pc.ci);
+  const hp = await openPage(ctx, '#/ci/cfg');
+  await hp.waitForSelector('li[data-ci="ci-1"] li[data-hist="' + inc.id + '"]');
+  check('the item page lists the incident with its status', /Prod is down/.test(await hp.innerText('li[data-ci="ci-1"] li[data-hist]')) && /todo/.test(await hp.innerText('li[data-hist]')));
+  const cp = await openPage(ctx, '#/p/cfg/' + inc.id);
+  await cp.waitForSelector('.affects input[data-affects="ci-1"]:checked');
+  await cp.click('.affects input[data-affects="ci-1"]');
+  await cp.waitForSelector('.affects input[data-affects="ci-1"]:not(:checked)');
+  const pu = await getProject(s, 'cfg');
+  check('unlinking removes it from both sides', !pu.cards.find(c => c.id === inc.id).ci && !pu.ci.find(x => x.id === 'ci-1').links.some(l => l && l.card), pu.ci);
 
   // Page
   const page = await openPage(ctx, '#/ci/cfg');
