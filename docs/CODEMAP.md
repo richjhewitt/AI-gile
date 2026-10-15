@@ -73,6 +73,7 @@ Index of where things live. Detail per area is in `docs/codemap/*.md`; read only
 - `lib/tester.js`: 🤖 AI tester runs
 - `lib/dispatch.js`: who is woken for the owner's card or comment (rules, then Haiku)
 - `aigile.js` (CLI entry) + `lib/cli/*.js` (core, help, command groups), `statusline.js`, `desktop/` (Electron)
+- `desktop/preload.js` + `public/js/sharepick.js` (AIG-1163): getDisplayMedia in the desktop app; main.js `sharePicker` (setDisplayMediaRequestHandler, board origin only, exact compare) sends the screens and windows (desktopCapturer thumbnails) over IPC `aigile:share-pick`, the page answers `aigile:share-picked` with a source id or null; texts `sharepick.*`
 
 ## Page ([page.md](codemap/page.md): `public/`, classic scripts in one global scope, `app.js` last)
 - `css/01..05-*.css` (linked in order from index.html); `js/core.js` (state, api, router, render); `js/format.js` (card text, md); `js/i18n.js` (languages, the 🌍 immersion button); `js/immersion.js` (Setup: learning languages, language days, random)
