@@ -48,6 +48,15 @@ const problemHtml = (p, c) => c.type === 'problem' ? `<div class="problem"><h3>$
   <p><b>${esc(t('prob.incidents'))}</b> ${(c.incidents || []).length ? c.incidents.map(i => cardLinkHtml(p, i)).join(', ') : `<span class="muted">${esc(t('prob.none'))}</span>`}</p>
   <p><b>${esc(t('prob.change'))}</b> ${c.changeId ? cardLinkHtml(p, c.changeId) : `<span class="muted">${esc(t('prob.none'))}</span>`}</p></div>`
   : c.problemId ? `<div class="problem"><p><b>${esc(t('prob.of'))}</b> ${cardLinkHtml(p, c.problemId)}</p></div>` : '';
+// 📝 Post-incident review (AIG-1108): on a done major incident. The owner ticks the action items; "Make a card" turns one into a card.
+const reviewHtml = (p, c) => {
+  const r = c.review; if (!r) return '';
+  if (r.state !== 'posted') return `<div class="postmortem pirbox"><h3>${esc(t('pir.heading'))}</h3><p class="muted">${esc(t(r.state === 'manual' ? 'pir.manual' : 'pir.waiting', { name: r.by || '' }))}</p></div>`;
+  const acts = (r.actions || []).map((a, i) => `<li class="pir-action"><label><input type="checkbox" ${a.ok ? 'checked' : ''} onchange="pirTick('${esc(c.id)}', ${i}, this.checked)"> ${esc(a.text)}</label> ${a.card ? cardLinkHtml(p, a.card) : `<button type="button" class="pir-make" onclick="pirMake('${esc(c.id)}', ${i})">${esc(t('pir.make'))}</button>`}</li>`).join('');
+  return `<div class="postmortem pirbox"><h3>${esc(t('pir.heading'))}</h3><p><b>${esc(t('pir.timeline'))}</b> ${esc(r.timeline)}</p><p><b>${esc(t('pir.helped'))}</b> ${esc(r.helped)}</p><p><b>${esc(t('pir.actions'))}</b></p><ul class="pir-actions">${acts}</ul></div>`;
+};
+async function pirTick(id, i, on) { try { await api('POST', `/api/projects/${slug()}/cards/${id}/review/tick`, { i, on }); } catch (e) { alert(e.message); refresh(true); } }
+async function pirMake(id, i) { try { await api('POST', `/api/projects/${slug()}/cards/${id}/review/card`, { i }); refresh(true); } catch (e) { alert(e.message); } }
 // 🚨 Major incident button (AIG-1049): on an open incident card; pressed again it ends the major incident.
 const majorHtml = c => c.type !== 'incident' || c.status === 'done' ? '' : `<div class="major">${c.major ? `<span class="major-on">${esc(t('major.on', { by: c.major.by || '', when: ago(c.major.at) }))}</span> ` : ''}<button type="button" class="${c.major ? '' : 'danger'}" onclick="pressMajor('${esc(c.id)}')" title="${esc(t('major.title'))}">${esc(t(c.major ? 'major.end' : 'major.btn'))}</button></div>`;
 async function pressMajor(id) {
@@ -102,7 +111,7 @@ function renderCard(p, c) {
     <div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
-    ${majorHtml(c)}
+    ${majorHtml(c)}${reviewHtml(p, c)}
     ${c.status === 'verify' ? verdict : ''}
     ${checklistUi(p, c)}${waitsUi(p, c)}${secretsUi(p, c)}
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
