@@ -3556,5 +3556,20 @@
  "rb.open": "Openen",
  "rb.nomatch": "Geen runbook past bij deze titel.",
  "rb.link": "Gekoppeld runbook:",
- "rb.nolink": "geen"
+ "rb.nolink": "geen",
+ "acc.title": "🔐 Toegangscontrole",
+ "acc.body": "Tijd om te kijken wie er binnen kan: hieronder staan de deellinks, rollen van vrienden en bewaarde geheimen (alleen namen). Bewaar of verwijder elk.",
+ "acc.none": "Op dit moment geeft niets iemand toegang.",
+ "acc.heading": "🔐 Toegangscontrole",
+ "acc.keep": "Bewaren",
+ "acc.remove": "Verwijderen",
+ "acc.kept": "Bewaard",
+ "acc.removed": "Verwijderd",
+ "acc.line.link": "Deellink: {who} op {project} als {role} (sinds {created})",
+ "acc.line.role": "Rol van vriend: {who} is {role} bij {project}",
+ "acc.line.secret": "Geheim: {name} {project}",
+ "acc.setup.h": "Toegangscontrole",
+ "acc.setup.note": "Elke 90 dagen toont één kaart de deellinks, rollen van vrienden en bewaarde geheimen met naam, elk om te bewaren of te verwijderen.",
+ "acc.run": "Toegangscontrole nu uitvoeren",
+ "acc.ran": "Kaart voor toegangscontrole gemaakt:"
 }
