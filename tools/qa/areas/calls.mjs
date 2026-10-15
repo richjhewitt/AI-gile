@@ -206,7 +206,7 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
       out.muteGone = out.muteGone && !document.querySelector('#callTiles [data-who="me"] .call-mute');
       r.emit('Reconnecting'); out.recon = $('callState').textContent; r.emit('Reconnected'); out.back = $('callState').textContent;
       // AIG-1300: the quiet thanks line at the bottom of the open panel, not announced, hidden in the pill
-      const cr = $('callCredit'); out.credit = !!cr && cr.textContent === 'Calls built on ChilledChat 💙' && $('callPanel').lastElementChild === cr && !cr.closest('[aria-live]') && !cr.hasAttribute('role');
+      const cr = $('callCredit'); out.credit = !!cr && cr.textContent === 'riding ChilledChat' && (cr.querySelector('a') || {}).href === 'https://chat.chilleddvs.com/' && $('callPanel').lastElementChild === cr && !cr.closest('[aria-live]') && !cr.hasAttribute('role');
       $('callMini').click(); out.creditMini = getComputedStyle(cr).display === 'none'; $('callMini').click();
       $('callMini').click(); out.mini = $('callPanel').classList.contains('mini'); out.tilesHidden = getComputedStyle($('callTiles')).display === 'none'; out.pill = ['callMic', 'callLeave'].every(i => getComputedStyle($(i)).display !== 'none');
       $('callMini').click(); out.open = !$('callPanel').classList.contains('mini');
@@ -227,7 +227,7 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     check('right-to-left: the panel sits on the start side', pn.rtlLeft, pn);
     check('the call ending on its own says so with a reason (not a silent close)', /closed/.test(pn.ended || '') && !pn.active, pn);
     check('mic blocked / missing: plain words, still in the call', /blocked the microphone/.test(pn.blocked) && pn.stillIn && /No microphone found/.test(pn.none), pn);
-    check('an open call ends with a quiet "Calls built on ChilledChat 💙" line, not announced, hidden in the pill (AIG-1300)', pn.credit && pn.creditMini, pn);
+    check('an open call ends with a quiet "riding ChilledChat" credit linking to chat.chilleddvs.com, not announced, hidden in the pill (AIG-1300, AIG-1312)', pn.credit && pn.creditMini, pn);
     {
       const vp = pg.viewportSize(); await pg.setViewportSize({ width: 390, height: 844 }); await pg.emulateMedia({ colorScheme: 'dark' });
       const cf = await pg.evaluate(() => { const c = document.getElementById('callCredit'), r = c.getBoundingClientRect(), s = getComputedStyle(c); return { shown: r.height > 0, inside: r.left >= 0 && r.right <= innerWidth, oneLine: r.height < 30, color: s.color, bg: getComputedStyle(document.getElementById('callPanel')).backgroundColor }; });

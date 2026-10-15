@@ -4,8 +4,8 @@
 // Meeting Room later) only says how to get one. livekit-client comes from jsDelivr, pinned, with SRI (like xterm in terminal.js).
 // Screen share is video only: no system audio, so the other callers' voices never echo back to them.
 // AIG-1300: thanks to ChilledChat (calls, screen share, replies, reactions, typing). Its web address goes here once there is one; empty = the name as plain text.
-const CHILLEDCHAT_URL = '';
-const chilledChat = () => CHILLEDCHAT_URL ? `<a href="${esc(CHILLEDCHAT_URL)}" target="_blank" rel="noopener noreferrer">ChilledChat</a>` : 'ChilledChat';
+const CHILLEDCHAT_URL = 'https://chat.chilleddvs.com';   // AIG-1312: the in-call credit, like the radio's 'riding Chilled Frequencies'
+const chilledChat = () => CHILLEDCHAT_URL ? `<a href="${esc(CHILLEDCHAT_URL)}" target="_blank" rel="noopener noreferrer"><strong>ChilledChat</strong></a>` : '<strong>ChilledChat</strong>';
 const Call = (() => {
   const SWAP_MS = 3000;   // AIG-1171: alone in a call on my own server, ask this often whether to move to the friend's (opts.swap)
   const LIB = ['https://cdn.jsdelivr.net/npm/livekit-client@2.22.3/dist/livekit-client.umd.js', 'sha384-G/xxtkVytOx/ia9Q8MXxM+V0ohsaY1fZAgVP3iSGTPz4wJ0s3+ulJNKXh/gnzEDZ'];

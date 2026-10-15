@@ -54,7 +54,7 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
   const before = await txt();
   await page.click('#pitch-dice');
   check('another version swaps the text and keeps the length', (await txt()) !== before && (await cnt()).startsWith('5 words'), [await cnt(), await txt()]);
-  check('the footer thanks ChilledChat for calls, like the other footer bits (AIG-1300)', await page.$eval('footer [data-i18n="footer.thanks"]', e => e.textContent === 'Calls thanks to ChilledChat').catch(() => false));
+  check('the ChilledChat credit lives in the call itself, not the teaser footer (AIG-1312)', !(await page.$('footer [data-i18n="footer.thanks"]')));
   await page.setViewportSize({ width: 360, height: 700 });
   check('no sideways scroll at phone width', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await page.emulateMedia({ colorScheme: 'dark' });
