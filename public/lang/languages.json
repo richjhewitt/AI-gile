@@ -105,7 +105,7 @@
   { "code": "yi", "label": "YI", "name": "ייִדיש", "locale": "yi", "dir": "rtl" },
   { "code": "ckb", "label": "CKB", "name": "کوردی", "locale": "ckb-IQ-u-nu-latn", "dir": "rtl" },
   { "code": "pirate", "label": "ARR", "name": "Pirate 🏴‍☠️", "locale": "en-GB", "fun": true },
-  { "code": "aussie", "label": "AU", "name": "Aussie English 🦘", "locale": "en-AU", "fun": true },
+  { "code": "aussie", "label": "EN-AU", "name": "Aussie English 🦘", "locale": "en-AU", "fun": true },
   { "code": "eo", "label": "EO", "name": "Esperanto", "locale": "eo", "fun": true },
   { "code": "ia", "label": "IA", "name": "Interlingua", "locale": "ia", "fun": true },
   { "code": "tlh", "label": "TLH", "name": "tlhIngan Hol (Klingon)", "locale": "en-GB", "fun": true },

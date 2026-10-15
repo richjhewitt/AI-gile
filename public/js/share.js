@@ -331,7 +331,7 @@ const Share = (function () {
     try { await api('POST', `/api/shares/${id}/decline`); sig = ''; await load(); } catch (e) { const x = document.querySelector(`[data-share="${id}"] [data-share-err]`); if (x) x.textContent = e.message; }
   }
 
-  PagePoll.every(() => { if (typeof i18n !== 'undefined' && i18n.ready) return load(); }, 3000, { hidden: 30000 });
+  PagePoll.every(() => { if (typeof i18n !== 'undefined' && i18n.ready) return load(); }, 3000, { hidden: 30000, home: true });
   return { load, button, dialog, offer, setOn, setTeamRead, setBoard, setApprovals, setPeerReview, setRole, setLabels, simplePreset, setChange, assign, testDialog, sendTest, verdict, ping, unlink, markChecked, paintInbox, acceptOffer, declineOffer, offers,
     laneHtml, cardBtn, cardComments, commentMark, previewCard, sendCard, unshareCard, sendHeld, laneCard, laneReply, takeCard };
 })();

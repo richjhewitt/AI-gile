@@ -392,9 +392,10 @@ async function refreshStaged(force, liveState, state, api) {
       sig = renderSig([state.route, uzSig()]);
     } else {
       state.project = await api('GET', '/api/projects/' + state.route.slug);
+      const whole = await FullCard.fill(state.project, state.route.card);   // ⚡ done cards come light: the open one is fetched whole (AIG-1100)
       await loadDocs(state.route.slug, { signal: refreshController.signal });
       await loadProfiles({ signal: refreshController.signal });   // the role templates, for roles added from a team (AIG-423)
-      sig = renderSig([state.route, state.project]);
+      sig = renderSig([state.route, state.project, whole]);
     }
   } catch (e) {
     if (JSON.stringify(parseRoute()) !== route) return;
@@ -517,6 +518,30 @@ const rerender = () => refresh(true);
 const slug = () => state.route.slug;
 const cardId = () => state.route.card;
 const curCard = () => state.project.cards.find(c => c.id === cardId());
+// ⚡ Light done cards (AIG-1100): the board GET sends done cards without comments, description, proof, test steps,
+// attachments or AI check (`light: true`, `nComments`). Whatever needs the whole card asks here: one GET per card,
+// kept by id + updated. fill() swaps the whole card into the project's list and returns it (null when it was not light).
+const FullCard = (() => {
+  const cache = new Map();
+  async function get(s, id, updated) {
+    const k = s + '/' + id, hit = cache.get(k);
+    if (hit && (!updated || hit.updated === updated)) return hit.card;
+    const c = await api('GET', `/api/projects/${s}/cards/${encodeURIComponent(id)}`);
+    cache.delete(k); cache.set(k, { updated: c.updated, card: c });
+    if (cache.size > 200) cache.delete(cache.keys().next().value);
+    return c;
+  }
+  async function fill(p, id) {
+    const i = id && p && Array.isArray(p.cards) ? p.cards.findIndex(c => c.id === id) : -1;
+    if (i < 0) return null;
+    const c = p.cards[i];
+    if (c.filled) return c;
+    if (!c.light) return null;
+    try { p.cards[i] = { ...(await get(p.slug, id, c.updated)), filled: true }; } catch { return null; }   // offline: the light card still opens
+    return p.cards[i];
+  }
+  return { get, fill };
+})();
 const setErr = (id, e) => { const el = $(id); if (el) el.textContent = e ? (e.message || e) : ''; };
 
 // A small note at the bottom that fades by itself (AIG-259), instead of a Windows alert box for good news.

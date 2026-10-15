@@ -3,7 +3,10 @@
 // caches after an owner action; no board data is copied through browser storage.
 const PagePoll = (() => {
   const reads = new Map(), flights = new Map(), signatures = new WeakMap();
-  const SAFETY_MS = 30000, REV_MS = 3000;
+  const SAFETY_MS = 30000, REV_MS = 3000, HIDDEN_MS = 30000;
+  // A pop-out window (#/pop...) runs only the polls it needs; timers marked { home: true } (rail, home, inbox glance, background
+  // glances) stay off there (AIG-1103).
+  const inPop = () => typeof location !== 'undefined' && /^#\/pop/.test(location.hash);
   let epoch = 0, rev = null, revAt = 0, revFlight = null, retryRevAt = 0;
   function fingerprint(text) {
     // waitingMs is a clock, not a board change. Hash the downloaded text once, never
@@ -44,7 +47,8 @@ const PagePoll = (() => {
   async function revision() {
     const now = Date.now();
     const cadence = typeof location !== 'undefined' && (/^#\/(?:p|pop)\/[^/]+\/[^/]+/.test(location.hash) || /^#\/(?:inbox$|pop-inbox\/[qkt]$)/.test(location.hash)) ? 1000 : REV_MS;
-    if (now < retryRevAt || now - revAt < cadence) return rev;
+    // A hidden window checks at most every 30 s; the focused one keeps its pace (AIG-1103).
+    if (now < retryRevAt || now - revAt < (typeof document !== 'undefined' && document.hidden ? HIDDEN_MS : cadence)) return rev;
     if (revFlight) return revFlight;
     revFlight = (async () => {
       try {
@@ -88,13 +92,15 @@ const PagePoll = (() => {
     return JSON.stringify(value, (k, v) => k === 'waitingMs' ? undefined :
       v && typeof v === 'object' && signatures.has(v) ? { payload: signatures.get(v) } : v);
   }
-  function every(fn, ms, { hidden = 0, immediate = false } = {}) {
+  function every(fn, ms, { hidden = 0, immediate = false, home = false } = {}) {
     let timer, running = false, stopped = false;
-    const schedule = () => { clearTimeout(timer); const delay = document.hidden ? hidden : ms; if (!stopped && delay) timer = setTimeout(tick, delay); };
+    if (hidden) hidden = Math.max(hidden, HIDDEN_MS);   // a hidden window polls at most every 30 s
+    const schedule = () => { clearTimeout(timer); const delay = home && inPop() ? Math.max(ms, 30000) : document.hidden ? hidden : ms; if (!stopped && delay) timer = setTimeout(tick, delay); };
     async function tick() {
       clearTimeout(timer);
       if (stopped || running) return;
       if (document.hidden && !hidden) return schedule();
+      if (home && inPop()) return schedule();
       running = true;
       try { await fn(); } catch {} finally { running = false; schedule(); }
     }

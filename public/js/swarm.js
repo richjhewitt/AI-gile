@@ -35,6 +35,6 @@ const Swarm = (() => {
     if (!confirm(t('swarm.confirm', { name: (state.project && state.project.slug === slug && state.project.name) || slug }))) return;
     try { set(await api('POST', '/api/swarm', { slug })); } catch (e) { alert(e.message); }
   }
-  function start() { PagePoll.every(poll, 3000, { immediate: true }); }
+  function start() { PagePoll.every(poll, 3000, { immediate: true, home: true }); }
   return { start, off, btn, toggleFor, poll, toggle, only, redraw, get on() { return !!st.on; }, get hiding() { return !!focus(); } };
 })();

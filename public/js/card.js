@@ -202,7 +202,7 @@ async function reopenPops() {
   }
   reopenSave(l);
 }
-PagePoll.every(reopenPops, 5000);
+PagePoll.every(reopenPops, 5000, { home: true });
 
 // After dealing with a For you card, open the next one in the queue instead of closing (AIG-141).
 // "3 of 12 left" (AIG-633): while working through the For you to test pile, a small line on the card. The total is the

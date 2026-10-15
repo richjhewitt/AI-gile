@@ -210,6 +210,7 @@
  "dms.go": "👍 Go",
  "dms.send": "Send",
  "board.pokeall": "Poke every card in this column: any update?",
+ "board.done.more": "Load more ({n} more)",
  "editor.btn": "✏️ Edit file",
  "editor.title": "Edit a file in this project's folder (for example the .claude permission files)",
  "editor.path.ph": "File in the project folder, e.g. .claude/settings.local.json",

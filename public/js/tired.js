@@ -29,6 +29,6 @@ const Tired = (() => {
   async function toggle() {
     try { take(await api('POST', '/api/setup', { prefs: { tiredFlip: true } })); } catch (e) { alert(e.message); }
   }
-  function start() { PagePoll.every(() => { if (isDark() !== sentDark) return poll(); }, 2000); PagePoll.every(poll, 20000, { immediate: true }); }
+  function start() { PagePoll.every(() => { if (isDark() !== sentDark) return poll(); }, 2000, { home: true }); PagePoll.every(poll, 20000, { immediate: true, home: true }); }
   return { start, toggle, poll, get now() { return now; } };
 })();

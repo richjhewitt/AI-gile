@@ -36,6 +36,7 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .hm-menu { order: 9; flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
 .hm-menu[hidden] { display: none; }
 .colbtn { padding: 0 7px; line-height: 20px; font-size: 13px; }
+.done-more { display: block; width: 100%; margin-top: 6px; }   /* ⚡ Done: Load more (AIG-1100) */
 .overlay.center { align-items: center; justify-content: center; padding: 12px; z-index: 20; }
 .dialog.wide { width: min(900px, 100%); resize: horizontal; min-width: min(420px, 100%); max-width: 100%; }
 .md table { border-collapse: collapse; margin: 8px 0; } .md td, .md th { border: 1px solid var(--line); padding: 4px 8px; }

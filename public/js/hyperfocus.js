@@ -13,6 +13,6 @@ const Hyperfocus = (() => {
   async function poll() { try { set(await PagePoll.get('/api/hyperfocus')); } catch {} }
   async function on(slug) { try { set(await api('POST', '/api/hyperfocus', { slug })); } catch (e) { alert(e.message); } }
   async function off() { try { set(await api('POST', '/api/hyperfocus', { off: true })); } catch (e) { alert(e.message); } }
-  function start() { PagePoll.every(poll, 3000, { immediate: true }); }
+  function start() { PagePoll.every(poll, 3000, { immediate: true, home: true }); }
   return { start, on, off, poll, get slug() { return st.on ? st.slug : ''; } };
 })();
