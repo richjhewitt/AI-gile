@@ -1,5 +1,5 @@
 /* 📞 Calls (AIG-1162): the floating call panel (public/js/calls.js) */
-.call-panel { position: fixed; right: 16px; bottom: 16px; z-index: 9000; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--panel); color: var(--text); border: 1px solid var(--line); box-shadow: 0 6px 28px #0007; }
+.call-panel { position: fixed; inset-inline-end: 16px; bottom: 16px; z-index: 9000; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--panel); color: var(--text); border: 1px solid var(--line); box-shadow: 0 6px 28px #0007; }
 .call-panel[hidden] { display: none; }
 .call-head { display: flex; align-items: center; gap: 8px; }
 .call-note { margin: 4px 0; line-height: 1.4; }
@@ -7,10 +7,22 @@
 .call-tile { position: relative; aspect-ratio: 16 / 10; border-radius: 8px; overflow: hidden; background: var(--col); border: 2px solid transparent; display: flex; align-items: center; justify-content: center; }
 .call-tile.speaking { border-color: var(--done); }
 .call-tile video { width: 100%; height: 100%; object-fit: contain; background: #000; }
-.call-tile video + video { position: absolute; right: 6px; bottom: 26px; width: 34%; height: auto; border-radius: 6px; }
+.call-tile video + video { position: absolute; inset-inline-end: 6px; bottom: 26px; width: 34%; height: auto; border-radius: 6px; }
 .call-tile video.mirror { transform: scaleX(-1); }
 .call-av { font-size: 34px; font-weight: 600; opacity: .7; }
-.call-name { position: absolute; left: 6px; bottom: 4px; font-size: 12px; padding: 1px 6px; border-radius: 6px; background: #000a; color: #fff; max-width: calc(100% - 12px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.call-name { position: absolute; inset-inline-start: 6px; bottom: 4px; font-size: 12px; padding: 1px 6px; border-radius: 6px; background: #000a; color: #fff; max-width: calc(100% - 12px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.call-mute { position: absolute; inset-inline-end: 6px; top: 4px; font-size: 14px; line-height: 1; padding: 2px 4px; border-radius: 6px; background: #000a; color: #fff; }
+.call-head #callTime { font-variant-numeric: tabular-nums; }
+.call-devs { display: flex; flex-direction: column; gap: 6px; }
+.call-devs[hidden] { display: none; }
+.call-devs label { display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
+.call-devs select { max-width: 100%; }
+.call-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.call-panel.mini { width: auto; max-width: calc(100vw - 32px); flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 6px 12px; border-radius: 999px; }
+.call-panel.mini .call-head { cursor: pointer; }
+.call-panel.mini .call-tiles, .call-panel.mini .call-devs, .call-panel.mini #callCam, .call-panel.mini #callScreen, .call-panel.mini #callDevBtn { display: none; }
+.call-panel.mini .call-bar { flex-wrap: nowrap; }
+.call-panel.mini .err:empty { display: none; }
 .call-bar { display: flex; gap: 8px; flex-wrap: wrap; }
 .call-bar button.on { outline: 2px solid var(--accent); }
 .call-bar button.bad { background: var(--danger); color: var(--on-fill); border-color: var(--danger); }

@@ -9,6 +9,8 @@ const Call = (() => {
   // gen: bumped by every join and every leave, so a join that was left (or replaced) while it waited stops there (AIG-1171).
   // pending: the room still connecting, so Leave can disconnect it. busy: the gen of the join under way (0: none).
   let lib = null, room = null, title = '', busy = 0, gen = 0, pending = null;
+  // AIG-1241/1243/1244/1245: recon = the connection dropped and is coming back; t0 = when the call started (the timer); mini = the panel folded to a pill; tick = the timer's interval; devs = the device picker is open
+  let recon = false, t0 = 0, mini = false, tick = 0, devs = false;
   const el = id => document.getElementById(id);
   const load = () => lib || (lib = new Promise((ok, no) => {
     if (window.LivekitClient) return ok(window.LivekitClient);
@@ -22,25 +24,34 @@ const Call = (() => {
   function panel() {
     let p = el('callPanel');
     if (!p) { p = document.createElement('div'); p.id = 'callPanel'; p.className = 'call-panel'; p.setAttribute('role', 'dialog'); document.body.appendChild(p); }
+    p.setAttribute('aria-label', t('lkcall.aria', { name: title }));
+    p.classList.toggle('mini', mini);
     return p;
   }
   // Just a message (calls not set up, or an error) with a Close button.
   function note(head, text, link) {
-    const p = panel(); dropVids();
+    mini = false; devs = false; stopTick(); const p = panel(); dropVids();
     p.innerHTML = `<div class="call-head"><b>${esc(head)}</b><span style="flex:1"></span><button type="button" class="call-x" onclick="Call.close()" title="${esc(t('common.close'))}">✕</button></div>
       <p class="call-note" id="callNote">${esc(text)}</p>${link ? `<div class="actions"><button type="button" id="callNoteGo" onclick="Call.close();location.hash='${esc(link.href)}'">${esc(link.text)}</button></div>` : ''}`;
     p.hidden = false;
   }
+  // AIG-1243: mm:ss (h:mm:ss after an hour)
+  const clock = () => { const s = t0 ? Math.max(0, Math.floor((Date.now() - t0) / 1000)) : 0, h = Math.floor(s / 3600), m = String(Math.floor(s / 60) % 60).padStart(h ? 2 : 1, '0'), x = String(s % 60).padStart(2, '0'); return (h ? h + ':' : '') + m + ':' + x; };
+  const stopTick = () => { if (tick) clearInterval(tick); tick = 0; t0 = 0; recon = false; };
+  const stateText = () => recon ? t('lkcall.reconnecting') : room ? t('lkcall.people', { n: 1 + room.remoteParticipants.size }) : t('lkcall.joining');
+  const live = text => { const x = el('callLive'); if (x) x.textContent = text; };   // AIG-1246: said aloud by screen readers
   function paint() {
     const p = panel(), lp = room && room.localParticipant;
     const on = lp ? { mic: lp.isMicrophoneEnabled, cam: lp.isCameraEnabled, screen: lp.isScreenShareEnabled } : {};
     const b = (id, key, act, pressed) => `<button type="button" id="${id}" class="${pressed ? 'on' : ''}" aria-pressed="${!!pressed}" onclick="Call.${act}()">${esc(t(key))}</button>`;
-    const head = `<div class="call-head"><b>📞 ${esc(title)}</b> <span class="muted" id="callState">${esc(room ? t('lkcall.people', { n: 1 + room.remoteParticipants.size }) : t('lkcall.joining'))}</span><span style="flex:1"></span></div>`;
-    const bar = `<div class="call-bar">${b('callMic', on.mic ? 'lkcall.mic.off' : 'lkcall.mic.on', 'mic', on.mic)}${b('callCam', on.cam ? 'lkcall.cam.off' : 'lkcall.cam.on', 'cam', on.cam)}${b('callScreen', on.screen ? 'lkcall.screen.off' : 'lkcall.screen.on', 'screen', on.screen)}<button type="button" id="callLeave" class="bad" onclick="Call.leave()">${esc(t('lkcall.leave'))}</button></div>`;
+    const head = `<div class="call-head"${mini ? ' onclick="Call.mini(false)" title="' + esc(t('lkcall.open')) + '"' : ''}><b>📞 ${esc(title)}</b> <span class="muted" id="callState" role="status">${esc(stateText())}</span>${room ? `<span class="muted" id="callTime">${clock()}</span>` : ''}<span style="flex:1"></span><button type="button" id="callMini" class="call-x" aria-expanded="${!mini}" onclick="Call.mini(!${mini})" title="${esc(t(mini ? 'lkcall.open' : 'lkcall.shrink'))}" aria-label="${esc(t(mini ? 'lkcall.open' : 'lkcall.shrink'))}">${mini ? '▢' : '▁'}</button></div>`;
+    const bar = `<div class="call-bar">${b('callMic', on.mic ? 'lkcall.mic.off' : 'lkcall.mic.on', 'mic', on.mic)}${b('callCam', on.cam ? 'lkcall.cam.off' : 'lkcall.cam.on', 'cam', on.cam)}${b('callScreen', on.screen ? 'lkcall.screen.off' : 'lkcall.screen.on', 'screen', on.screen)}<button type="button" id="callDevBtn" class="call-x" aria-pressed="${devs}" aria-label="${esc(t('lkcall.dev'))}" title="${esc(t('lkcall.dev'))}" onclick="Call.devices()">⚙</button><button type="button" id="callLeave" class="bad" onclick="Call.leave()">${esc(t('lkcall.leave'))}</button></div>`;
     // AIG-1171: the tiles box stays when it is there (its videos keep playing); only the head and the buttons are redrawn
     if (el('callTiles') && p.contains(el('callTiles'))) { p.querySelector('.call-head').outerHTML = head; p.querySelector('.call-bar').outerHTML = bar; }
-    else { dropVids(); p.innerHTML = head + '<div class="call-tiles" id="callTiles"></div>' + bar + '<div class="err" id="callErr"></div>'; }
+    else { dropVids(); p.innerHTML = head + '<div class="call-tiles" id="callTiles"></div>' + bar + '<div class="call-devs" id="callDevs"' + (devs ? '' : ' hidden') + '></div><div class="err" id="callErr" role="alert"></div><div class="call-live" id="callLive" aria-live="polite"></div>'; }
+    p.setAttribute('aria-label', t('lkcall.aria', { name: title })); p.classList.toggle('mini', mini);
     p.hidden = false;
+    if (devs) devList();
     tiles();
   }
   // One tile per person: their camera (or screen share) if any, else their name. Audio plays from hidden elements.
@@ -67,16 +78,48 @@ const Call = (() => {
         return v;
       });
       if (!pubs.length) { const a = tile.querySelector('.call-av') || Object.assign(document.createElement('div'), { className: 'call-av' }); a.textContent = (p.name || p.identity || '?').slice(0, 1).toUpperCase(); kids.push(a); }
-      const n = tile.querySelector('.call-name') || Object.assign(document.createElement('div'), { className: 'call-name' }); n.textContent = (p.name || p.identity) + (local ? ' ' + t('lkcall.you') : '') + (p.isMicrophoneEnabled ? '' : ' 🔇'); kids.push(n);
+      const n = tile.querySelector('.call-name') || Object.assign(document.createElement('div'), { className: 'call-name' }); n.textContent = (p.name || p.identity) + (local ? ' ' + t('lkcall.you') : ''); kids.push(n);
+      // AIG-1243: a muted mic is marked on the tile (and named for screen readers)
+      let mk = tile.querySelector('.call-mute');
+      if (!p.isMicrophoneEnabled) { if (!mk) { mk = Object.assign(document.createElement('div'), { className: 'call-mute', textContent: '🔇' }); mk.setAttribute('role', 'img'); } mk.setAttribute('aria-label', t('lkcall.muted', { name: p.name || p.identity })); kids.push(mk); }
       kids.forEach((k, j) => { if (tile.children[j] !== k) tile.insertBefore(k, tile.children[j] || null); });   // only moves what is out of place
       while (tile.children.length > kids.length) tile.lastElementChild.remove();
       if (box.children[i] !== tile) box.insertBefore(tile, box.children[i] || null);
     });
     old.forEach(x => x.remove());
     dropVids(keep);
-    const st = el('callState'); if (st) st.textContent = t('lkcall.people', { n: people.length });
+    const st = el('callState'); if (st) st.textContent = stateText();
   }
-  const err = e => { const x = el('callErr'); if (x) x.textContent = PagePoll.plain((e && e.message) || String(e), 0); };
+  // AIG-1240: the browser's NotAllowedError / NotFoundError in plain words, for the mic and the camera (kind: mic | cam | screen)
+  function plainErr(e, kind) {
+    const nm = (e && e.name) || '', msg = String((e && e.message) || e || '');
+    if (kind === 'screen' && nm === 'NotAllowedError') return '';   // the person just closed the share picker
+    if (kind === 'mic' || kind === 'cam') {
+      if (/NotAllowed|Security|PermissionDenied/i.test(nm) || /permission|not allowed|denied/i.test(msg)) return t('lkcall.err.' + kind + '.blocked');
+      if (/NotFound|Overconstrained|DevicesNotFound/i.test(nm) || /not found|no (device|camera|microphone)|requested device/i.test(msg)) return t('lkcall.err.' + kind + '.none');
+      if (/NotReadable|TrackStart|Abort/i.test(nm)) return t('lkcall.err.' + kind + '.busy');
+    }
+    return PagePoll.plain(msg, 0);
+  }
+  const err = (e, kind) => { const x = el('callErr'); if (x) x.textContent = e ? plainErr(e, kind) : ''; };
+  // AIG-1245: pick the microphone, camera and speaker (browsers that cannot switch the speaker simply list none)
+  async function devList() {
+    const box = el('callDevs'), LK = window.LivekitClient; if (!box || !room || !LK) return;
+    const kinds = [['audioinput', 'lkcall.dev.mic'], ['videoinput', 'lkcall.dev.cam'], ['audiooutput', 'lkcall.dev.spk']], r = room;
+    const rows = [];
+    for (const [k, key] of kinds) {
+      let list = []; try { list = await LK.Room.getLocalDevices(k); } catch {}
+      if (!list.length) continue;
+      let cur = ''; try { cur = r.getActiveDevice(k) || ''; } catch {}
+      rows.push(`<label>${esc(t(key))} <select data-kind="${k}" onchange="Call.pick(this.dataset.kind, this.value)">${list.map((d, i) => `<option value="${esc(d.deviceId)}"${d.deviceId === cur ? ' selected' : ''}>${esc(d.label || t(key) + ' ' + (i + 1))}</option>`).join('')}</select></label>`);
+    }
+    if (room === r && el('callDevs') === box) box.innerHTML = rows.join('') || `<span class="muted">${esc(t('lkcall.dev.none'))}</span>`;
+  }
+  async function pick(kind, id) { if (!room) return; err(''); try { await room.switchActiveDevice(kind, id); } catch (e) { err(e, kind === 'audioinput' ? 'mic' : kind === 'videoinput' ? 'cam' : ''); } }
+  function devices() { devs = !devs; const b = el('callDevs'); if (b) b.hidden = !devs; const g = el('callDevBtn'); if (g) g.setAttribute('aria-pressed', devs); if (devs) devList(); }
+  function shrink(v) { mini = !!v; if (room) paint(); }
+  // why a call ended on its own (LiveKit's DisconnectReason numbers); anything else = the connection was lost
+  const endWhy = n => ({ 2: 'lkcall.end.dup', 3: 'lkcall.end.closed', 4: 'lkcall.end.removed', 5: 'lkcall.end.closed' })[n] || 'lkcall.end.lost';
 
   /* ---------- joining and leaving ---------- */
   // opts: { title, getToken: async () => ({ url, token, room?, theirs? }), swap?: async () => bool }. One call at a time: a second
@@ -95,15 +138,17 @@ const Call = (() => {
       const E = LK.RoomEvent, again = () => { if (room === r) tiles(); };
       r.on(E.TrackSubscribed, (track, pub, p) => { if (g !== gen) return; if (track.kind === 'audio') { const a = track.attach(); a.className = 'call-audio'; a.dataset.who = p.identity; a.hidden = true; document.body.appendChild(a); } again(); })
         .on(E.TrackUnsubscribed, track => { track.detach().forEach(x => x.remove()); again(); })
-        .on(E.ParticipantConnected, again).on(E.ParticipantDisconnected, again).on(E.ActiveSpeakersChanged, again)
+        .on(E.ParticipantConnected, p => { again(); live(t('lkcall.joined', { name: p.name || p.identity })); }).on(E.ParticipantDisconnected, p => { again(); live(t('lkcall.left', { name: p.name || p.identity })); }).on(E.ActiveSpeakersChanged, again)
         .on(E.TrackMuted, again).on(E.TrackUnmuted, again).on(E.LocalTrackPublished, () => room === r && paint()).on(E.LocalTrackUnpublished, () => room === r && paint())
-        .on(E.Disconnected, () => { if (room === r) { room = null; cleanup(); } });
+        .on(E.Reconnecting, () => { if (room === r) { recon = true; const st = el('callState'); if (st) st.textContent = stateText(); } })
+        .on(E.Reconnected, () => { if (room === r) { recon = false; const st = el('callState'); if (st) st.textContent = stateText(); } })
+        .on(E.Disconnected, reason => { if (room === r) { room = null; cleanup(); note(t('lkcall.ended'), t(endWhy(reason))); } });
       await r.connect(tk.url, tk.token);
       if (g !== gen) { try { await r.disconnect(); } catch {} return; }   // Leave was pressed while connecting: never turn the mic on
       // AIG-1171: the board said which room this token is for; a token for any other room is left before the mic goes on.
       if (tk.room && r.name !== tk.room) { try { await r.disconnect(); } catch {} throw new Error(t('lkcall.wrongroom')); }
-      pending = null; room = r; paint();
-      try { await r.localParticipant.setMicrophoneEnabled(true); } catch (e) { err(e); }   // no mic (or it was refused): still in the call, listening
+      pending = null; room = r; t0 = Date.now(); recon = false; mini = false; devs = false; if (tick) clearInterval(tick); tick = setInterval(() => { const x = el('callTime'); if (x) x.textContent = clock(); }, 1000); paint();
+      try { await r.localParticipant.setMicrophoneEnabled(true); } catch (e) { err(e, 'mic'); }   // no mic (or it was refused): still in the call, listening
       if (g === gen) paint();
       if (opts.swap && !tk.theirs) watch(g, r, opts);
     } catch (e) {
@@ -123,15 +168,15 @@ const Call = (() => {
     };
     setTimeout(tick, SWAP_MS);
   }
-  const toggle = async (fn, opts) => { if (!room) return; err(''); try { await fn(room.localParticipant, opts); } catch (e) { err(e); } paint(); };
-  const mic = () => toggle(lp => lp.setMicrophoneEnabled(!lp.isMicrophoneEnabled));
-  const cam = () => toggle(lp => lp.setCameraEnabled(!lp.isCameraEnabled));
-  const screen = () => toggle(lp => lp.setScreenShareEnabled(!lp.isScreenShareEnabled, { audio: false }));
-  function cleanup() { dropVids(); document.querySelectorAll('.call-audio').forEach(a => a.remove()); const p = el('callPanel'); if (p) { p.hidden = true; p.innerHTML = ''; } }
+  const toggle = async (fn, kind) => { if (!room) return; err(''); let bad = null; try { await fn(room.localParticipant); } catch (e) { bad = e; } paint(); if (bad) err(bad, kind); };
+  const mic = () => toggle(lp => lp.setMicrophoneEnabled(!lp.isMicrophoneEnabled), 'mic');
+  const cam = () => toggle(lp => lp.setCameraEnabled(!lp.isCameraEnabled), 'cam');
+  const screen = () => toggle(lp => lp.setScreenShareEnabled(!lp.isScreenShareEnabled, { audio: false }), 'screen');
+  function cleanup() { stopTick(); mini = false; devs = false; dropVids(); document.querySelectorAll('.call-audio').forEach(a => a.remove()); const p = el('callPanel'); if (p) { p.hidden = true; p.innerHTML = ''; p.classList.remove('mini'); } }
   // Leave also stops a join still on its way: its room is disconnected, and the join sees gen moved on.
   async function leave() { gen++; busy = 0; const r = room || pending; room = null; pending = null; if (r) { try { await r.disconnect(); } catch {} } cleanup(); }
   function close() { if (!room) cleanup(); }
-  return { join, leave, close, note, mic, cam, screen, active: () => !!room, get room() { return room; } };
+  return { join, leave, close, note, mic, cam, screen, mini: shrink, devices, pick, active: () => !!room, get room() { return room; } };
 })();
 
 /* ---------- 📞 in a friend's DM ---------- */
