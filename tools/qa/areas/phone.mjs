@@ -101,7 +101,7 @@ def('phone', '📱 every page fits a phone (390x844, 412x915): no sideways scrol
       await s.ok('POST', '/api/focus/done').catch(() => {});
 
       // AIG-1275: share a link/text from another app -> the new-card dialog opens prefilled; the shared text leaves the address bar
-      await page.goto(BASE + '/?share=1&title=' + encodeURIComponent('Cool read') + '&text=' + encodeURIComponent('Worth a look') + '&url=' + encodeURIComponent('https://example.com/a'));
+      await page.goto(BASE + '/?title=' + encodeURIComponent('Cool read') + '&text=' + encodeURIComponent('Worth a look') + '&url=' + encodeURIComponent('https://example.com/a'));
       await page.waitForSelector('#f-title', { timeout: 10000 }).catch(() => {});
       const sh = await page.evaluate(() => ({ t: (document.getElementById('f-title') || {}).value, d: (document.getElementById('f-description') || {}).value, search: location.search }));
       check(D + ': a shared link opens New card with title and text+link filled in', sh.t === 'Cool read' && /Worth a look/.test(sh.d || '') && /https:\/\/example\.com\/a/.test(sh.d || ''), sh);

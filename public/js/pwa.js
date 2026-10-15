@@ -26,7 +26,8 @@ function installHint() {
 // auth guard (server.js guardPhone: paired cookie) already covers them; the card itself is made by the usual dialog and POST.
 (() => {
   const q = new URLSearchParams(location.search);
-  const launch = q.get('launch'), share = q.has('share') ? { title: (q.get('title') || '').trim(), text: (q.get('text') || '').trim(), url: (q.get('url') || '').trim() } : null;
+  // the phone's share sheet sends only title/text/url, so any of them (or share) means a share (AIG-1275)
+  const launch = q.get('launch'), share = ['share', 'title', 'text', 'url'].some(k => q.has(k)) ? { title: (q.get('title') || '').trim(), text: (q.get('text') || '').trim(), url: (q.get('url') || '').trim() } : null;
   if (!share && !['new', 'inbox', 'messages'].includes(launch)) return;
   try { history.replaceState(null, '', location.pathname + location.hash); } catch {}   // the shared text never stays in the address bar or history
   const parts = share ? [share.text, share.url].filter((x, i, a) => x && a.indexOf(x) === i) : [];
