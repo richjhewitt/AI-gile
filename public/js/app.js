@@ -212,11 +212,11 @@ function setNight(since) {
 // Going quiet asks which projects the 🌙 night watchman should watch: every active one is ticked (AIG-199),
 // or none when the owner picked quiet nights in Setup (AIG-235).
 async function goQuiet() {
-  let ps = [], all = true, dstart = '09:00'; try { ps = (await api('GET', '/api/projects')).filter(p => !p.archived); const pf = (await api('GET', '/api/setup')).prefs; all = pf.watchAll !== false; dstart = (pf.day || {}).start || '09:00'; } catch {}
+  let ps = [], all = true; try { ps = (await api('GET', '/api/projects')).filter(p => !p.archived); const pf = (await api('GET', '/api/setup')).prefs; all = pf.watchAll !== false; } catch {}
   openDialog(`<h2>${esc(t('quiet.h'))}</h2><p class="muted">${esc(t('quiet.confirm'))}</p>
     <h3>${esc(t('watch.h'))}</h3><p class="muted">${esc(t('watch.help'))}</p>
     <div class="watch-list">${ps.map(p => `<label class="chk"><input type="checkbox" data-watch="${esc(p.slug)}" ${all ? 'checked' : ''}> ${pic(p.logo, p.emoji)} ${esc(p.name)}</label>`).join('')}</div>
-    <label class="chk">${esc(t('quiet.until'))} <input type="time" id="quietUntil" value="${esc(dstart)}"></label><p class="muted">${esc(t('quiet.until.help'))}</p>
+    <label class="chk">${esc(t('quiet.until'))} <input type="time" id="quietUntil" value=""></label><p class="muted">${esc(t('quiet.until.help'))}</p>
     <div class="actions"><button class="primary" onclick="goQuietNow()">${esc(t('quiet.go'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
 async function goQuietNow() {
