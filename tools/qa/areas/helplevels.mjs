@@ -115,7 +115,7 @@ def('helplevels', '❓ help levels: each level\'s first run, the Help menu, the 
   check('service guide, some help: opens on Step by step, no raw front matter', /Step by step/.test(g) && /Project settings/.test(g) && !/^---/.test(g) && (await p1.locator('#svcAgents').count()) === 1);
   await p1.click('#svcMore');
   g = await p1.textContent('#svcGuide');
-  check('service guide: Show more gives the Full course and hides the button', /Full course/.test(g) && /Uptime dot/.test(g) && /Post-incident review/.test(g) && await p1.locator('#svcMore').isHidden());
+  check('service guide: Show more gives the Full course and hides the button', /Full course/.test(g) && /Uptime dot/.test(g) && /Post-incident review/.test(g) && /Monthly token cap/.test(g) && /Monthly review/.test(g) && await p1.locator('#svcMore').isHidden());
   check('service guide: the command line sits in the agents fold', /For agents [(]command line[)]/.test(await p1.textContent('#svcAgents summary')) && /aigile ci/.test(await p1.textContent("#svcAgents")) && /aigile release/.test(await p1.textContent("#svcAgents")));
   await p1.keyboard.press('Escape');
   await s.ok('POST', '/api/setup', { prefs: { helpLevel: '3' } });
