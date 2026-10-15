@@ -19,6 +19,15 @@ def('dmrules', '💬 DM housekeeping without AI: help, status, list, move, park,
   const plain = await dm('status');
   check('with AI allowed, no automated reply', !plain.reply, JSON.stringify(plain.card.comments));
   await sleep(1200); fs.rmSync(s.wakeOut, { force: true });
+  // AIG-1215: the owner's own 💬 ending with "?" is an instruction to the team, not a question waiting on him.
+  { const q = await s.ok('POST', '/api/projects/rules/cards', { title: '💬 can the team plan this in?', description: 'can the team plan this in?', type: 'task', status: 'team', createdBy: 'Owner', quick: true });
+    const cm = body => s.ok('POST', '/api/projects/rules/cards/' + q.id + '/comments', body);
+    check('owner 💬 ending with ? is not NEEDS-OWNER', (await getCard(s, 'rules', q.id)).needsYou === false);
+    await cm({ author: 'Lead', text: '- Done: planned in' });
+    const after = await getCard(s, 'rules', q.id);
+    check('a plain team reply does not flag it, and it stays For the team', after.needsYou === false && after.status === 'team', JSON.stringify(after));
+    await cm({ author: 'Lead', text: 'Which sprint?', mark: 'ask' });
+    check('a team ask still flags it NEEDS-OWNER', (await getCard(s, 'rules', q.id)).needsYou === true); }
   for (let i = 0; i < 40 && (await s.ok('GET', '/api/projects/rules')).presence.running; i++) await sleep(250);
   fs.rmSync(s.wakeOut, { force: true });
 
