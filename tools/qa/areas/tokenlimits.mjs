@@ -68,7 +68,8 @@ def('tokenlimits', '🪙 helper cap by spend scale, nightly token budget stops a
   const notes = c => (c.comments || []).filter(m => /Token budget reached/.test(m.text));
   check('the card in progress gets a "budget reached" note', notes(p.cards.find(c => c.id === card.id)).length === 1, p.cards.map(c => c.comments));
   check('and the team log says so', /token budget reached/.test(fs.readFileSync(path.join(s.data, 'logs', 'night.log'), 'utf8')));
-  fs.writeFileSync(path.join(s.data, 'logs', '_runs.jsonl'), JSON.stringify({ slug: 'night', start: Date.now() - 3e6, end: Date.now() - 2e6, fresh: 10, cw: 0, out: 1.6e6, cache: 0, in: 10 }) + '\n');
+  const tonight = +node(`console.log(require(${B}).nightStart())`).out;   // the night begins at 18:00; keep the finished run inside it at any hour
+  fs.writeFileSync(path.join(s.data, 'logs', '_runs.jsonl'), JSON.stringify({ slug: 'night', start: tonight, end: Math.min(Date.now() - 1, tonight + 1000), fresh: 10, cw: 0, out: 1.6e6, cache: 0, in: 10 }) + '\n');
   put(100e3);
   g = JSON.parse(go().out || '{}');
   check('finished runs tonight count too (8M earlier + 0.5M now)', g.r.join() === 'night', g);
