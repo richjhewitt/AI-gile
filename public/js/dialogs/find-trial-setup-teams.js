@@ -144,6 +144,7 @@ function renderSetup() {
     <div class="f" id="streamerBox">${Streamer.setupHtml()}</div>
     <div class="f" id="licencesBox">${(Lic.reset(), Lic.html())}</div>
     <div class="f" id="secretsBox">${(SEC.list = null, secretsBoxHtml())}</div>
+    <div class="f" id="accessReviewBox">${AccessReview.html()}</div>
     <div class="f" id="twitchBox">${TwitchTab.setupHtml()}</div>
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
@@ -258,9 +259,10 @@ async function setIconColors(part) {
 let srvDraft = null, srvFound = null;
 // 🩺 The relay's latest numbers (AIG-660): one small line under the list.
 function healthLine() {
-  const h = (state.setup || {}).health; if (!h) return '';
+  const st = state.setup || {}, h = st.health, fl = st.serverHealth || [];
   const p = v => v == null ? '?' : Math.round(v) + '%', gb = v => v == null ? '?' : v >= 1e9 ? (v / 1e9).toFixed(1) + ' GB' : Math.round(v / 1e6) + ' MB';
-  return `<small class="muted" id="srv-health">${esc(t('servers.health', { name: h.server || '', cpu: p(h.cpu), mem: p(h.mem), disk: p(h.disk), size: gb(h.storage), days: h.uptime == null ? '?' : Math.floor(h.uptime / 86400), when: new Date(h.at).toLocaleString() }))}</small>`;
+  const line = (x, id) => `<small class="muted" id="${id}">${esc(t('servers.health', { name: x.server || '', cpu: p(x.cpu), mem: p(x.mem), disk: p(x.disk), size: gb(x.storage), days: x.uptime == null ? '?' : Math.floor(x.uptime / 86400), when: new Date(x.at).toLocaleString() }))}</small>`;
+  return [h ? line(h, 'srv-health') : '', ...fl.map((x, i) => line(x, 'srv-health-' + i))].filter(Boolean).join('<br>');
 }
 // AIG-773: an ssh server is host + user (saved together as value, user@host) with optional port, key file and default folder.
 const srvSplit = v => { const m = String(v || '').match(/^(ssh:\/\/)?(?:([^@/]+)@)?(.*)$/); return { uri: m[1] || '', user: m[2] || '', host: m[3] || '' }; };
