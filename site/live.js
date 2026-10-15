@@ -6,13 +6,20 @@
   var T=SiteI18n.t, reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   var cols=document.getElementById("live-cols"), stat=document.getElementById("live-stat"), msg=document.getElementById("live-msg");
   var STD=["Backlog","To do","In progress","Team checking","For you to test","For the team","Done"];
-  var MAX=40, els={}, snap=null, viewers=null, es=null, got=false;
+  var MAX=40, els={}, snap=null, viewers=null, es=null, got=false, last=document.getElementById("live-last");
   function mk(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
   function label(l){var i=STD.indexOf(l),tr=T("live.cols").split("|");return i>=0&&tr.length===STD.length&&tr[i]?tr[i]:l}
-  function fallback(on){msg.hidden=!on;msg.textContent=on?T("live.offline"):"";cols.hidden=on;stat.hidden=on;if(on)sec.classList.add("off");else sec.classList.remove("off")}
+  function fallback(on){if(on&&last)last.hidden=true;msg.hidden=!on;msg.textContent=on?T("live.offline"):"";cols.hidden=on;stat.hidden=on;if(on)sec.classList.add("off");else sec.classList.remove("off")}
   function paintStat(){if(viewers==null){stat.textContent="";return}stat.textContent="● "+T("live.watching",{n:viewers});stat.hidden=false}
+  // AIG-1255: "Last card moved 3 min ago" from the snapshot time (the relay stamps `at` on every change), refreshed every minute.
+  function paintLast(){
+    var t=snap&&Date.parse(snap.at);if(!last)return;if(!t||isNaN(t)){last.hidden=true;return}
+    var m=Math.max(0,Math.floor((Date.now()-t)/60000)),k=m<1?"live.last.now":m<60?"live.last.min":m<1440?"live.last.hour":"live.last.day";
+    var n=m<60?m:m<1440?Math.floor(m/60):Math.floor(m/1440);
+    last.textContent=T(k,{n:n});last.hidden=false;
+  }
   function draw(s){
-    snap=s;got=true;fallback(false);
+    snap=s;paintLast();got=true;fallback(false);
     var before={};Object.keys(els).forEach(function(id){if(els[id].isConnected)before[id]=els[id].getBoundingClientRect()});
     var seen={};cols.textContent="";
     (s.columns||[]).forEach(function(c){
@@ -40,17 +47,19 @@
     });
   }
   function start(){
-    if(!window.EventSource)return;
+    if(!window.EventSource||es||document.hidden)return;
     es=new EventSource(RELAY+"/b/"+NAME+"/live");
     es.addEventListener("snapshot",function(e){try{var s=JSON.parse(e.data);viewers=s.viewers;draw(s);paintStat()}catch(x){}});
     es.addEventListener("viewers",function(e){try{viewers=JSON.parse(e.data).viewers;paintStat()}catch(x){}});
     es.addEventListener("private",function(){fallback(true)});
   }
-  var ok=false;
-  try{
-    fetch(RELAY+"/b/"+NAME+".json").then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(s){
-      viewers=s.viewers;draw(s);paintStat();sec.hidden=false;start();
-    }).catch(function(){sec.hidden=false;fallback(true)});
-  }catch(e){sec.hidden=false;fallback(true)}
+  // AIG-1254: no stream in a hidden tab (the relay counts every open one as a viewer); it reopens, and redraws from the .json, when the tab is shown.
+  function stop(){if(es){es.close();es=null}}
+  function load(){
+    return fetch(RELAY+"/b/"+NAME+".json",{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(s){viewers=s.viewers;draw(s);paintStat();sec.hidden=false;start()}).catch(function(){sec.hidden=false;fallback(true)});
+  }
+  document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else load()});
+  setInterval(function(){if(!document.hidden)paintLast()},60000);
+  try{load()}catch(e){sec.hidden=false;fallback(true)}
   SiteI18n.on(function(){if(snap&&got){var s=snap;draw(s);paintStat()}else if(!msg.hidden)msg.textContent=T("live.offline")});
 })();

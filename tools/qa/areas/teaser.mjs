@@ -19,7 +19,7 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
     // AIG-1226: the English slider lines come from lang/en.js; the stub keeps its texts and swaps in these lines.
     let real = { ui: {} }; const D = {}; Object.defineProperty(D, 'en', { get: () => ({ ...real, lines }), set: v => { real = v; }, enumerable: true });
     window.SITE_LANG_DATA = D;
-    window.fetch = u => { window.__urls.push(String(u)); const body = /\/b\/ai-gile\.json$/.test(u) ? board : /timeline\.json$/.test(u) ? tl : null;
+    window.fetch = u => { window.__urls.push(String(u)); const body = /\/b\/ai-gile\.json$/.test(u) ? board : /\/b\/aigile\.json$/.test(u) ? { at: new Date(Date.now() - 3 * 60000).toISOString(), viewers: 1, columns: [{ id: 'todo', label: 'To do' }], cards: [{ id: 'A-1', status: 'todo' }] } : /timeline\.json$/.test(u) ? tl : null;
       return Promise.resolve(body ? { ok: true, json: () => Promise.resolve(body) } : { ok: false, json: () => Promise.reject(new Error('404')) }); };
   }, [LINES, BOARD, TL]);
   await page.goto(pathToFileURL(path.join(ROOT, 'site', 'index.html')).href);
@@ -27,6 +27,14 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
   const txt = () => page.$eval('#pitch-text', e => e.textContent);
   const cnt = () => page.$eval('#pitch-count', e => e.textContent);
   const quip = () => page.$eval('#pitch-quip', e => e.textContent);
+
+  // AIG-1255: the live board says when a card last moved; AIG-1253: link preview tags
+  await page.waitForSelector('#live-last:not([hidden])', { timeout: 5000 });
+  check('the live board says "Last card moved 3 min ago" (AIG-1255)', (await page.$eval('#live-last', e => e.textContent)) === 'Last card moved 3 min ago');
+  const og = n => page.$eval('meta[property="' + n + '"],meta[name="' + n + '"]', e => e.content).catch(() => '');
+  check('link preview: Open Graph and Twitter card tags (AIG-1253)', (await og('og:title')).length > 5 && (await og('og:description')).length > 20 && /^https:.*preview\.png$/.test(await og('og:image')) && (await og('twitter:card')) === 'summary_large_image' && (await og('twitter:image')) === (await og('og:image')));
+  const png = (await import('node:fs')).readFileSync(path.join(ROOT, 'site', 'assets', 'preview.png'));
+  check('assets/preview.png is 1200x630', png.readUInt32BE(16) === 1200 && png.readUInt32BE(20) === 630);
 
   const set = v => page.$eval('#pitch-range', (e, v) => { e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); }, v);
   check('starts at one word; the label counts words and letters', /^1 word \u00B7 2 letters$/.test(await cnt()) && /^s1a[12]$/.test(await txt()), [await cnt(), await txt()]);
