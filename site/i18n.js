@@ -169,6 +169,8 @@
       return d?{code:code,unit:d.unit==="chars"?"chars":"words",sizes:d.sizes,quips:d.quips||{}}:null},
     // A timeline text (id.name / id.line) in the page's language, else the fallback (timeline.json's English).
     timeline:function(id,field,fb){var m=cur.data.timeline,v=m&&m[id+"."+field];return v!=null&&v!==""?v:fb},
+    // AIG-1285: the app's dev words in the page's language, else English: {button, h, intro, search, none, close, list:[{id, word, text, also?, noTip?}]}.
+    words:function(){var w=cur.data.words&&Array.isArray(cur.data.words.list)&&cur.data.words.list.length?cur.data.words:EN.words;return w||null},
     // f(code) runs now if the page is translated already, and again after every language change.
     on:function(f){listeners.push(f);if(applied)try{f(cur.code)}catch(e){}},
     set:pick

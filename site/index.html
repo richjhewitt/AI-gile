@@ -28,6 +28,7 @@ try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark")d
 <script src="lang/languages.js"></script>
 <script src="lang/en.js"></script>
 <script src="i18n.js"></script>
+<script src="words.js"></script>
 </head>
 <body>
 <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
@@ -35,6 +36,7 @@ try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark")d
 <header class="top">
   <a class="brand" href="/"><img src="assets/icon.png" alt="" width="40" height="40">AI-gile</a>
   <div class="top-end">
+    <span id="words-slot"></span>
     <span id="lang-slot"></span>
     <button class="toggle" id="theme" type="button" aria-label="Switch between light and dark theme" data-i18n-attr="aria-label:theme.aria">&#9788;</button>
   </div>

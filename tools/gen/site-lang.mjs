@@ -2,7 +2,8 @@
 // Builds the website's language scripts (AIG-1226) from the JSON files translators edit:
 //   site/lang/languages.js    every language the app has (public/lang/languages.json), for the language button
 //   site/lang/en.timeline.json the English timeline texts by stage id, from site/timeline.json (the source translators copy)
-//   site/lang/<code>.js       <code>.json + <code>.lines.json + <code>.timeline.json in one script (works over https and from a file)
+//   site/lang/<code>.js       <code>.json + <code>.lines.json + <code>.timeline.json in one script (works over https and from a file),
+//                             plus the app's dev words (gloss.* in public/lang/<code>.json) for the 📖 Dev words button (AIG-1285)
 // Run: node tools/gen/site-lang.mjs [code ...]   (no codes = every language that has a file; check: node tools/site-i18n-check.mjs)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -36,10 +37,33 @@ export function codesWithFiles() {
   for (const f of fs.readdirSync(LANG)) { const m = /^(.+?)(\.lines|\.timeline)?\.json$/.exec(f); if (m) out.add(m[1]); }
   return [...out].sort();
 }
+// AIG-1285: the app's dev words in one language, so the site has no second copy to translate. The ids, and the words that
+// get no underline, come from public/js/glossary.js; each text is the language's own, else its base language's, else English.
+const APP_LANG = path.join(ROOT, 'public', 'lang');
+function glossaryIds(name) {
+  const m = new RegExp('const ' + name + ' = \\[([^\\]]*)\\]').exec(fs.readFileSync(path.join(ROOT, 'public', 'js', 'glossary.js'), 'utf8'));
+  return m ? [...m[1].matchAll(/'([^']+)'/g)].map(x => x[1]) : [];
+}
+// The dialog's texts, borrowed from the app: button, title, intro, search box, no match, close.
+export const WORD_TEXTS = { button: 'scale.words', h: 'gloss.h', intro: 'gloss.intro', search: 'gloss.search', none: 'gloss.none', close: 'common.close' };
+export function devWords(code) {
+  const base = (languages().find(l => l.code === code) || {}).base;
+  const files = [code, base, 'en'].filter((c, i, a) => c && a.indexOf(c) === i).map(c => readIf(path.join(APP_LANG, c + '.json'))).filter(Boolean);
+  const t = k => { for (const j of files) if (typeof j[k] === 'string' && j[k].trim()) return j[k]; return ''; };
+  const noTip = glossaryIds('NO_TIP'), out = {};
+  for (const [k, key] of Object.entries(WORD_TEXTS)) out[k] = t(key);
+  out.list = glossaryIds('GLOSSARY').map(id => {
+    const w = { id, word: t('gloss.' + id + '.word'), text: t('gloss.' + id + '.text') }, also = t('gloss.' + id + '.also');
+    if (also) w.also = also.split(',').map(x => x.trim()).filter(Boolean);
+    if (noTip.includes(id)) w.noTip = 1;
+    return w;
+  }).filter(w => w.word && w.text);
+  return out;
+}
 export function bundleJs(code) {
   const f = s => path.join(LANG, code + s);
-  const data = { ui: strip(readIf(f('.json'))) || {}, lines: strip(readIf(f('.lines.json'))), timeline: strip(code === 'en' ? enTimeline() : readIf(f('.timeline.json'))) };
-  return '// Made by tools/gen/site-lang.mjs from site/lang/' + code + '.json, .lines.json and .timeline.json: do not edit by hand.\n'
+  const data = { ui: strip(readIf(f('.json'))) || {}, lines: strip(readIf(f('.lines.json'))), timeline: strip(code === 'en' ? enTimeline() : readIf(f('.timeline.json'))), words: devWords(code) };
+  return '// Made by tools/gen/site-lang.mjs from site/lang/' + code + '.json, .lines.json, .timeline.json and the dev words in public/lang: do not edit by hand.\n'
     + '(window.SITE_LANG_DATA = window.SITE_LANG_DATA || {})[' + JSON.stringify(code) + '] = ' + JSON.stringify(data) + ';\n';
 }
 export function build(codes) {
