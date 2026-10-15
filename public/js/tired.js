@@ -22,7 +22,7 @@ const Tired = (() => {
   async function poll() {
     try {
       const d = isDark();
-      take(d !== sentDark ? await api('POST', '/api/setup', { prefs: { tiredDark: d } }) : await PagePoll.get('/api/setup'));
+      take(d !== sentDark ? await api('POST', '/api/setup', { prefs: { tiredDark: d } }, { quiet: true }) : await PagePoll.get('/api/setup'));
       sentDark = d;
     } catch {}
   }

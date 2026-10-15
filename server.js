@@ -156,6 +156,27 @@ function send(res, code, body, req) {
   res.end(text);
 }
 
+// AIG-1193: page files (124 scripts, 1.4 MB, plus the 213 KB language file) went out whole and uncached on every load. Now each carries an ETag
+// (size + mtime: a changed file is a new tag at once, so a new build is never hidden), a repeat load answers 304, and text files are gzipped
+// (the packed copy is kept per tag). The service worker file stays no-store.
+const GZ_TYPES = new Set(['.js', '.css', '.json', '.html', '.svg', '.txt', '.md']), gzCache = new Map();
+function sendStatic(file, req, res) {
+  const st = fs.statSync(file), ext = path.extname(file), type = (MIME[ext] || 'application/octet-stream') + '; charset=utf-8';
+  if (path.basename(file) === 'sw.js') return streamFile(file, res, { 'Content-Type': type, 'Cache-Control': 'no-store' });
+  const etag = `"${st.size.toString(16)}-${Math.floor(st.mtimeMs).toString(16)}"`, head = { 'Content-Type': type, 'Cache-Control': 'no-cache', ETag: etag, Vary: 'Accept-Encoding' };
+  if (String(req.headers['if-none-match'] || '').split(',').some(x => x.trim().replace(/^W\//, '') === etag)) { res.writeHead(304, head); return res.end(); }
+  if (GZ_TYPES.has(ext) && st.size > 1024 && /\bgzip\b/i.test(String(req.headers['accept-encoding'] || ''))) {
+    const hit = gzCache.get(file);
+    const done = buf => { if (res.destroyed) return; res.writeHead(200, { ...head, 'Content-Encoding': 'gzip' }); res.end(buf); };
+    if (hit && hit.etag === etag) return done(hit.buf);
+    return fs.readFile(file, (err, raw) => {
+      if (err) return send(res, err.code === 'ENOENT' ? 404 : 500, { error: 'Could not read file' });
+      zlib.gzip(raw, (e2, buf) => { if (e2) { if (res.destroyed) return; res.writeHead(200, head); return res.end(raw); } gzCache.set(file, { etag, buf }); done(buf); });
+    });
+  }
+  return streamFile(file, res, head);
+}
+
 function readBody(req, max = 1e6) {
   return new Promise((resolve, reject) => {
     let chunks = [], size = 0, finished = false;
@@ -242,7 +263,7 @@ const server = http.createServer(async (req, res) => {
     if (!file.startsWith(PUBLIC)) throw bad('nope', 403);
     if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) file = path.join(PUBLIC, 'index.html');
     if (conflicted(file, fs.statSync(file))) { res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8', 'Retry-After': '2', 'Cache-Control': 'no-store' }); return res.end('mid-update: try again in a moment'); }
-    streamFile(file, res, { 'Content-Type': (MIME[path.extname(file)] || 'application/octet-stream') + '; charset=utf-8', 'Cache-Control': 'no-store' });
+    return sendStatic(file, req, res);
   } catch (e) {
     send(res, e.code && e.code >= 400 && e.code < 600 ? e.code : 500, { error: e.message });
   }

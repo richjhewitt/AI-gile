@@ -41,6 +41,9 @@ const PagePoll = (() => {
     if (!m || /^[A-Za-z]*Error\b|\bat \S+ \(.*:\d+|\bat async\b|^[{[]|"error"|<\/?[a-z]+|\[object|^undefined$|^null$|Unexpected token|is not valid JSON|^\d{3}$|^(Internal Server Error|Bad Gateway|Service Unavailable|Gateway Timeout|Not Found|Failed to fetch|Load failed|NetworkError|AbortError|TimeoutError)/i.test(m)) return friendly(status === 404 ? 'notfound' : 'server').message;
     return m;
   };
+  // AIG-1193: posts that change no board data (the Discord "which project is open" ping fires on every project opened; { quiet: true } for the page's own dark-mode report) must not
+  // throw away every shared read, or the inbox, projects and chats were downloaded again each time.
+  const NO_CHANGE = /^\/api\/presence\/open/;
   async function request(method, url, body, options = {}) {
     const key = epoch + ':' + url;
     if (method === 'GET' && flights.has(key)) return until(flights.get(key), options.signal);
@@ -59,7 +62,7 @@ const PagePoll = (() => {
       let j; try { j = JSON.parse(text); } catch { throw friendly('server'); }
       if (!r.ok) { const e = new Error(plain(j && j.error, r.status)); e.status = r.status; throw e; }
       if (j && typeof j === 'object') signatures.set(j, fingerprint(text));
-      if (method !== 'GET') invalidate();
+      if (method !== 'GET' && !options.quiet && !NO_CHANGE.test(url)) invalidate();
       return j;
     })();
     if (method !== 'GET') return work;
