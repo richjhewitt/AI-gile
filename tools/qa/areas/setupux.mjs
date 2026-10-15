@@ -20,6 +20,14 @@ def('setupux', 'Setup index: section links scroll to their section, #/setup/<sec
   const mailTop = await page.evaluate(() => document.getElementById('sec-mail').getBoundingClientRect().top);
   check('a link scrolls to its section', mailTop >= 0 && mailTop < 260 && (await page.evaluate(() => window.scrollY)) > 100, String(mailTop));
   check('the address shows the section', (await page.evaluate(() => location.hash)) === '#/setup/mail');
+  // AIG-1140: the bar follows the top bar's height and the heading lands fully below it
+  await page.evaluate(() => { const h = document.querySelector('body > header'); h.style.paddingBottom = '60px'; }); await sleep(300);
+  const bar = await page.evaluate(() => { const h = document.querySelector('body > header'), i = document.getElementById('setIndex'); return { hb: h.getBoundingClientRect().bottom, top: parseFloat(i.style.top), z: +getComputedStyle(i).zIndex, zh: +getComputedStyle(h).zIndex }; });
+  check('the index bar sits under a taller top bar, not over it', Math.abs(bar.top - (bar.hb - 0)) < 2 || bar.top >= bar.hb - 2, JSON.stringify(bar));
+  await page.click('#setIndex a[data-sec="teams"]'); await sleep(400);
+  const gap = await page.evaluate(() => document.querySelector('#sec-teams .set-h').getBoundingClientRect().top - document.getElementById('setIndex').getBoundingClientRect().bottom);
+  check('the section heading lands below the index bar', gap >= 0, String(gap));
+  await page.evaluate(() => { document.querySelector('body > header').style.paddingBottom = ''; });
 
   // Deep link from another page lands on the section, and plain Setup is at the top again.
   await page.evaluate(() => { location.hash = '#/'; }); await sleep(400);

@@ -170,9 +170,16 @@ function setupJump(sec) {
   setupScrollTo(sec); return false;
 }
 // After a render of Setup: land on the section of the link (again once the async boxes have filled in), else stay at the top.
-function setupLand() {
+// AIG-1140: the index sits just under the top bar, whatever height that has (it wraps to two rows when chips load).
+let setupRO = null;
+function setupSyncTop() {
   const ix = $('setIndex'), hdr = document.querySelector('body > header');
   if (ix) ix.style.top = (hdr && getComputedStyle(hdr).position !== 'static' ? hdr.offsetHeight : 0) + 'px';
+}
+function setupLand() {
+  const hdr = document.querySelector('body > header');
+  setupSyncTop();
+  if (hdr && window.ResizeObserver && !setupRO) { setupRO = new ResizeObserver(setupSyncTop); setupRO.observe(hdr, { box: 'border-box' }); }
   const sec = state.route.sec; if (!sec || state.setupLanded === location.hash) return;
   state.setupLanded = location.hash;
   let n = 0; const go = () => { if (setupScrollTo(sec)) { setTimeout(() => setupScrollTo(sec), 400); setTimeout(() => setupScrollTo(sec), 1200); } else if (++n < 50) setTimeout(go, 100); };

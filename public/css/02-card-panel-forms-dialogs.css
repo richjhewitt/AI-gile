@@ -100,7 +100,7 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .setup { max-width: 720px; margin: 24px auto; }
 .setup small { display: block; margin-top: 3px; }
 /* Setup index and section cards (AIG-934): one sticky row of links, each part of the page a card with a real heading */
-.set-index { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 0; margin: 0 0 14px; background: var(--bg); border-bottom: 1px solid var(--line); }
+.set-index { position: sticky; top: 0; z-index: 4; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 0; margin: 0 0 14px; background: var(--bg); border-bottom: 1px solid var(--line); }
 .set-index a { display: inline-block; padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--text); text-decoration: none; font-size: 13px; white-space: nowrap; }
 .set-index a:hover, .set-index a:focus-visible { border-color: var(--accent); }
 .set-sec { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 16px 10px; margin: 0 0 18px; }
