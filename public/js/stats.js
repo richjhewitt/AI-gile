@@ -35,7 +35,7 @@ const StatsPage = (() => {
     const r = d.records || {};
     const tiles = tile('stats.done', num(d.done), 'st-done') + tile('stats.made', num(d.made), '') + tile('stats.comments', num(d.comments), '')
       + tile('stats.commits', d.git ? num(d.git.commits) : '–', '') + tile('stats.lines', d.git ? num(d.git.lines) : '–', '')
-      + tile('stats.busiest', d.busiestDay ? t('stats.busiest.v', { n: d.busiestDay.done }) : '–', 'st-wide', d.busiestDay ? dayLabel(d.busiestDay.day) : '')
+      + tile('stats.busiest', d.busiestDay ? t('stats.busiest.n', { n: d.busiestDay.done }) : '–', 'st-wide', d.busiestDay ? dayLabel(d.busiestDay.day) : '')
       + tile('stats.streak', d.longestStreak ? t('stats.streak.v', { count: d.longestStreak }) : '–', '')
       + tile('stats.first', d.firstCard ? dayLabel(d.firstCard) : '–', '');
     return `<div class="uz st-page"><p>${back}</p><h2>${esc(t('stats.title'))}: ${esc(d.project)}</h2>
