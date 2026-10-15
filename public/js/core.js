@@ -192,6 +192,22 @@ const api = async (method, url, body, options = {}) => {
   const j = await PagePoll.request(method, url, body, options);
   return typeof Streamer !== 'undefined' && Streamer.on() ? PagePoll.remember(await Streamer.filter(method, url, j)) : j;   // 🎥 streamer mode (AIG-590)
 };
+// A small copy of a picture, made in the page before upload (AIG-1101): { thumb: base64, thumbType } to spread into the upload body,
+// or {} when the file is not a png/jpeg/webp, is already small, or the browser cannot draw it (the original is then used everywhere).
+async function makeThumb(file, maxW) {
+  try {
+    if (!/^image\/(png|jpeg|webp)$/.test(file.type || '')) return {};
+    const bmp = await createImageBitmap(file);
+    if (bmp.width <= maxW) { bmp.close && bmp.close(); return {}; }
+    const c = document.createElement('canvas'); c.width = maxW; c.height = Math.max(1, Math.round(bmp.height * maxW / bmp.width));
+    const g = c.getContext('2d'); g.drawImage(bmp, 0, 0, c.width, c.height); bmp.close && bmp.close();
+    const type = file.type === 'image/jpeg' ? 'image/jpeg' : 'image/webp';   // pictures with see-through parts keep it in webp
+    const blob = await new Promise(res => c.toBlob(res, type, 0.82));
+    if (!blob || blob.type !== type || blob.size >= file.size) return {};
+    const thumb = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(blob); });
+    return { thumb, thumbType: type };
+  } catch { return {}; }
+}
 // A project's picture, or its emoji when it has none (AIG-175). Round, one em, so it sits where the emoji sat.
 function pic(logo, emoji) { return logo ? `<img class="pic" src="${esc(logo)}" alt="">` : esc(emoji || ''); }
 // Profile pictures (AIG-150): yours from Setup (meta.ownerPic), an agent's from the picture library (m.avatar on the team).

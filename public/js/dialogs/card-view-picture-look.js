@@ -58,7 +58,7 @@ function logoUpload(id) {
   const f = $(id + '-file').files[0]; if (!f) return;
   if (f.size > 1024 * 1024) return setErr(id + '-err', new Error(t('logo.toobig')));
   const rd = new FileReader();
-  rd.onload = () => logoSend(id, 'POST', { name: f.name, type: f.type, data: String(rd.result).split(',')[1] });
+  rd.onload = async () => logoSend(id, 'POST', { name: f.name, type: f.type, data: String(rd.result).split(',')[1], ...await makeThumb(f, 128) });
   rd.readAsDataURL(f);
 }
 const logoUsePath = id => $(id + '-path').value.trim() && logoSend(id, 'POST', { path: $(id + '-path').value.trim() });
