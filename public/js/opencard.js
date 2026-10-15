@@ -2,6 +2,16 @@
 // `aigile open <proj> <id> --as NAME` asks the board to show a card. The 1s tick (app.js) asks GET /api/opencard and says
 // whether this window is in front: if so, new requests open the card's in-app pop-out; if not they wait as a chip
 // (bottom left) that opens the card when clicked. Only the main window asks (never a pop-out).
+// A desktop notification was clicked (AIG-1221): bring the app window forward (the desktop app shows + focuses its window,
+// even from the tray or minimised), then go where it was about: a card (slug + id) or a chat thread (key).
+function notifyGo(what) {
+  try { window.focus(); } catch {}
+  if (/Electron/.test(navigator.userAgent)) location.href = 'aigile://show';
+  if (!what) return;
+  if (what.card && what.slug) location.hash = `#/p/${what.slug}/${what.card}`;
+  else if (what.chat && typeof Dms !== 'undefined') Dms.show(what.chat);
+  else if (what.hash) location.hash = what.hash;
+}
 const OpenCard = (() => {
   let busyNow = false, chips = [], shown = '';
   const front = () => !document.hidden && document.hasFocus();

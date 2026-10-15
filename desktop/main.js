@@ -146,6 +146,7 @@ function wire(w) {
     // Goodnight (AIG-228): only the night glance stays on screen.
     if (url === 'aigile://minimize') { e.preventDefault(); w.minimize(); return; }
     // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).
+    if (url === 'aigile://show') { e.preventDefault(); showMain(); return; }   // a notification was clicked (AIG-1221)
     if (url === 'aigile://refocus') { e.preventDefault(); w.blur(); w.focus(); w.webContents.focus(); return; }
     if (!url.startsWith(BASE)) { e.preventDefault(); shell.openExternal(url); }
   });

@@ -80,7 +80,9 @@
     });
     n.onclick = () => {
       try { window.focus(); } catch {}
-      IB.flashKey = one ? keyOf(one) : null;
+      if (one && one.project && one.id) { notifyGo({ slug: one.project, card: one.id }); n.close(); return; }   // one question: open its card (AIG-1221)
+      notifyGo();
+      IB.flashKey = null;
       IB.tab = 'all';   // so the question is visible whatever tab was open
       if (onInboxPage()) IB.show(true); else location.hash = '#/inbox';
       n.close();

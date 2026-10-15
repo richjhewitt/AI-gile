@@ -55,7 +55,7 @@ const Weed = (() => {
     try {
       if (document.documentElement.hasAttribute('data-break')) return;
       if (typeof Notification === 'undefined' || Notification.permission !== 'granted' || localStorage.getItem('aigile.alerts') !== '1') return;
-      const n = new Notification(msg, { tag: 'aigile-420' }); n.onclick = () => { try { window.focus(); } catch {} n.close(); };
+      const n = new Notification(msg, { tag: 'aigile-420' }); n.onclick = () => { notifyGo(); n.close(); };
     } catch {}
   }
   // Once per minute-event across all open windows of this browser.

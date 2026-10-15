@@ -83,5 +83,19 @@ def('discordtab', 'Discord tab in the DM window: hidden with no bot, chats and c
     await np.waitForFunction(() => window.__notes.length > 0, null, { timeout: 10000 }).catch(() => {});
     const notes = await np.evaluate(() => window.__notes);
     check('a hidden page gets a browser notification with who and what', notes.length >= 1 && /Rich|Discord/.test(notes[0][0]) && /ping while away/.test(notes[0][1]), JSON.stringify(notes));
+
+    // Clicking a notification opens what it was about (AIG-1221)
+    const cp = await ctx.newPage(); cp.errors = [];
+    await cp.addInitScript(() => {
+      localStorage.setItem('aigile.alerts', '1'); window.__ns = [];
+      window.Notification = class { constructor(t, o) { window.__ns.push(this); } close() {} static get permission() { return 'granted'; } static requestPermission() { return Promise.resolve('granted'); } };
+    });
+    await cp.goto(s.base + '/#/'); await cp.waitForSelector('#app > *');
+    await cp.evaluate(() => IB.announce([{ project: 'alpha', id: 'ALP-7', projectName: 'Alpha', title: 'q', comments: [{ author: 'Lead', text: 'Which way?' }] }]));
+    const hit = await cp.evaluate(() => { const n = window.__ns[window.__ns.length - 1]; if (n && n.onclick) n.onclick(); return !!n; });
+    check('a question notification click opens that card', hit && await cp.evaluate(() => location.hash) === '#/p/alpha/ALP-7', await cp.evaluate(() => location.hash));
+    await cp.evaluate(() => { location.hash = '#/'; window.__shown = []; Dms.show = k => window.__shown.push(k); notifyGo({ chat: 'dc:Helper|DM1' }); });
+    check('a chat notification click opens that thread', JSON.stringify(await cp.evaluate(() => window.__shown)) === '["dc:Helper|DM1"]');
+    await cp.close();
   } finally { stub.close(); }
 }, true, { AIGILE_DISCORD_API: `http://127.0.0.1:${port}`, AIGILE_DISCORD_GATEWAY: 'ws://127.0.0.1:9', AIGILE_DISCORD_STUB: '1' });
