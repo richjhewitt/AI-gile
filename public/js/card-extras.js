@@ -12,6 +12,12 @@ function checklistUi(p, c) {
     ${list.length ? `<ul class="chk-list">${items}</ul>` : ''}${hidden.size ? `<div class="chk-more muted" id="chk-more">${esc(t('check.more', { n: hidden.size }))} <button type="button" class="link" onclick="chkAll.add(cardId()); refresh(true)">${esc(t('check.more.all'))}</button></div>` : ''}
     <div class="chk-add"><input id="chk-new" placeholder="${esc(t('check.add.ph'))}" onkeydown="if(event.key==='Enter'){event.preventDefault();checkAdd()}"> <button type="button" id="chk-add-btn" onclick="checkAdd()">${esc(t('check.add'))}</button></div></div>`;
 }
+// An empty Checklist and Waits for sit behind one small link (AIG-1133); a card that has either shows them as before.
+function extrasUi(p, c) {
+  if ((c.checklist || []).length || (c.waitsFor || []).length || state.extrasFor === c.id) return checklistUi(p, c) + waitsUi(p, c);
+  if (c.status === 'done') return '';
+  return `<div class="extras-link"><button type="button" class="link" id="extras-btn" onclick="state.extrasFor = cardId(); rerender()">+ ${esc(t('check.h'))} / ${esc(t('wait.h'))}</button></div>`;
+}
 const cardUrl = () => `/api/projects/${slug()}/cards/${cardId()}`;
 async function checkTick(i, on) {
   try { await api('POST', cardUrl() + '/check', on ? { tick: [i + 1] } : { untick: [i + 1] }); refresh(true); } catch (e) { alert(e.message); refresh(true); }
@@ -45,7 +51,7 @@ function waitDrop(id) { waitSave((curCard().waitsFor || []).filter(x => x !== id
 /* ---------- timed card (AIG-385): ⏰ come back at ---------- */
 function timerUi(c) {
   if (c.status === 'done') return '';
-  const label = timed(c) ? '⏰ ' + timedWhen(c.timedUntil) : '⏰';
+  const label = timed(c) ? '⏰ ' + timedWhen(c.timedUntil) : t('timed.btn');
   return `<button id="tm-btn" onclick="timerToggle()" title="${esc(t('timed.title'))}">${esc(label)}</button>
     <span id="tm-box" hidden><select id="tm-pre" onchange="timerPre()"><option value="">${esc(t('timed.pick'))}</option><option value="1h">${esc(t('timed.p.1h'))}</option><option value="3h">${esc(t('timed.p.3h'))}</option><option value="tom">${esc(t('timed.p.tom'))}</option><option value="mon">${esc(t('timed.p.mon'))}</option></select>
     <input type="datetime-local" id="tm-at" aria-label="${esc(t('timed.at'))}"> <button class="primary" onclick="timerSet()">${esc(t('timed.set'))}</button>${timed(c) ? ` <button onclick="timerClear()">${esc(t('timed.clear'))}</button>` : ''}</span>`;
@@ -70,7 +76,7 @@ async function timerClear() {
 }
 async function waitAndSee() {
   const next = nextForYou();
-  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next); } catch (err) { setErr('v-err', err); }
+  try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next, 'card.next.later'); } catch (err) { setErr('v-err', err); }
 }
 // 📖 To read (AIG-392): Got it accepts (a typed note goes along); Reply tells the team and keeps the card here.
 async function gotIt() { return verdict(true); }
@@ -93,6 +99,6 @@ async function verdict(accept, btn) {
     Attach.clear(key);
     clearDraft(slug() + '/' + cardId() + '/verdict');
     if (!accept) rememberPop(slug(), cardId());
-    doneWithCard(next);
+    doneWithCard(next, accept ? 'card.next.accepted' : 'card.next.sentback');
   } catch (err) { setErr('v-err', err); }
 }

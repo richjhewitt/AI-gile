@@ -94,6 +94,9 @@ const INBOX_CSS = `
 .ib-empty .big { font-size: 26px; font-weight: 700; }
 .ib-empty p { color: var(--muted); margin: 8px 0 0; }
 .ib-err { color: var(--danger); font-size: 13px; margin-top: 6px; }
+.ib-sb { display: flex; gap: 6px; align-items: flex-start; margin-top: 8px; }
+.ib-sb[hidden] { display: none; }
+.ib-sb textarea { flex: 1; min-width: 0; margin: 0; }
 .ib-hint { font-size: 12px; color: var(--muted); }
 /* card groups (AIG-386) */
 .ib-group .ib-gcard { margin-top: 8px; } .ib-group .ib-gcard > a { font-weight: 600; text-decoration: underline; }

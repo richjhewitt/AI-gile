@@ -433,16 +433,24 @@ def('testpile', 'testing pile: "3 of 12 left" line on the card while working thr
   await mkProject(s, 'Alpha', 'ALP');
   for (const n of ['One', 'Two', 'Three']) await mkCard(s, 'alpha', 'Pile ' + n, { status: 'verify', testSteps: 'Step ' + n });
   const page = await openPage(ctx, '#/p/alpha/ALP-1');
-  await page.waitForSelector('#pileLeft');
-  check('first card shows 3 of 3 left', (await page.textContent('#pileLeft')).trim() === '3 of 3 left', await page.textContent('#pileLeft'));
+  // AIG-1133: How to test sits inside the Your call box; an empty Checklist and Waits for sit behind one link.
+  await page.waitForSelector('.verdict .v-steps');
+  check('How to test is inside the Your call box, above Accept', /Step One/.test(await page.textContent('.verdict .v-steps')) && await page.evaluate(() => { const v = document.querySelector('.verdict'); return v.querySelector('.v-steps').compareDocumentPosition(v.querySelector('button.good')) & Node.DOCUMENT_POSITION_FOLLOWING; }));
+  check('an empty Checklist and Waits for are behind one link', (await page.locator('#chk-box').count()) === 0 && (await page.locator('#extras-btn').count()) === 1);
+  await page.click('#extras-btn');
+  await page.waitForSelector('#chk-box');
+  check('the link brings Checklist and Waits for back', (await page.locator('#wf-box').count()) === 1);
+  check('a card opened straight from a link has no pile counter (AIG-1147)', (await page.locator('#pileLeft').count()) === 0);
   await page.click('button.good');
-  await page.waitForFunction(() => !location.hash.endsWith('ALP-1') && /2 of 3 left/.test((document.querySelector('#pileLeft') || {}).textContent || '')).catch(() => {});
-  check('after Accept the next card shows 2 of 3 left', (await page.textContent('#pileLeft')).trim() === '2 of 3 left', await page.textContent('#pileLeft'));
+  await page.waitForFunction(() => !location.hash.endsWith('ALP-1') && /2 of 3 in your test pile/.test((document.querySelector('#pileLeft') || {}).textContent || '')).catch(() => {});
+  check('after Accept the next card shows 2 of 3 in your test pile', (await page.textContent('#pileLeft')).trim() === '2 of 3 in your test pile', await page.textContent('#pileLeft'));
+  check('the next card says what just happened (AIG-1135)', /Accepted ALP-1/.test(await page.textContent('#moved-note')) && /next card in your pile/.test(await page.textContent('#moved-note')), await page.textContent('#moved-note').catch(() => ''));
   const cur = page.url().split('/').pop();
   await page.fill('#v-text', 'not right');
   await page.click('button.warn');
-  await page.waitForFunction(c => !location.hash.endsWith(c) && /1 of 3 left/.test((document.querySelector('#pileLeft') || {}).textContent || ''), cur).catch(() => {});
-  check('after Send back the next card shows 1 of 3 left', (await page.textContent('#pileLeft')).trim() === '1 of 3 left', await page.textContent('#pileLeft'));
+  await page.waitForFunction(c => !location.hash.endsWith(c) && /3 of 3 in your test pile/.test((document.querySelector('#pileLeft') || {}).textContent || ''), cur).catch(() => {});
+  check('after Send back the next card says Sent back', /Sent back/.test(await page.textContent('#moved-note')), await page.textContent('#moved-note').catch(() => ''));
+  check('after Send back the next card shows 3 of 3 in your test pile', (await page.textContent('#pileLeft')).trim() === '3 of 3 in your test pile', await page.textContent('#pileLeft'));
   // Enter sends off for card replies: Enter is a new line, Ctrl+Enter sends
   await mkCard(s, 'alpha', 'Chatty', { status: 'doing', assignee: 'Forge' });
   await say(s, 'alpha', 'ALP-4', 'Forge', 'working on it');

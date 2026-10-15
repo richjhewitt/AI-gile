@@ -78,8 +78,8 @@ function onAssignee(sel) {
 
 // ⭐ Crucial (AIG-549): kept running while the usage saver is on.
 // 🔥 One click to mark a card urgent (AIG-899); click again to put the old priority back.
-const urgentBtn = (c, s) => { if (c.leadChat || c.id === 'chat' || !/-\d+$/.test(c.id || '')) return '';   // only real cards
-  const on = c.priority === 'urgent'; return `<button type="button" class="urg-btn${on ? ' on' : ''}" data-urgent="${esc(s || (state.project && state.project.slug))}/${esc(c.id)}" aria-pressed="${on}" title="${esc(t(on ? 'urgent.unmark' : 'urgent.mark'))}">🔥</button>`; };
+const urgentBtn = (c, s, labelled) => { if (c.leadChat || c.id === 'chat' || !/-\d+$/.test(c.id || '')) return '';   // only real cards
+  const on = c.priority === 'urgent'; return `<button type="button" class="urg-btn${labelled ? " urg-lab" : ""}${on ? ' on' : ''}" data-urgent="${esc(s || (state.project && state.project.slug))}/${esc(c.id)}" aria-pressed="${on}" title="${esc(t(on ? 'urgent.unmark' : 'urgent.mark'))}">🔥${labelled ? " " + esc(t(on ? 'urgent.unmark' : 'urgent.mark')) : ""}</button>`; };
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-urgent]'); if (!b) return;
   e.preventDefault(); e.stopPropagation();
