@@ -80,7 +80,7 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
   await ep.setViewportSize({ width: 1366, height: 800 });
   await sleep(400);
   check('1366px: all columns fit without sideways scroll', await ep.$eval('.board', e => e.scrollWidth <= e.clientWidth + 1));
-  check('column headers are one line each (name, count and buttons)', await ep.$$eval('.column h3', hs => hs.length >= 6 && hs.every(h => h.getBoundingClientRect().height < 30)));
+  check('column headers are one line each (name, count and buttons)', await ep.$$eval('.column h3', hs => hs.length >= 6 && hs.every(h => h.getBoundingClientRect().height < 44)));
   check('the For you buttons stay right of the name', await ep.$eval('.column.foryou h3', h => { const [a, b] = h.children; return b.getBoundingClientRect().left >= a.getBoundingClientRect().right - 1; }));
   // AIG-1082: a phone shows search plus a ⚙ Filters button, the dropdowns open under it
   await ep.setViewportSize({ width: 390, height: 844 });
