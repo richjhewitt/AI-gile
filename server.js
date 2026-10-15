@@ -143,7 +143,7 @@ const zlib = require('zlib');
 const GZIP_MIN = 32 * 1024;   // AIG-1091: JSON over this size goes out gzipped when the browser or CLI asks (the project is 3.8 MB)
 function send(res, code, body, req) {
   if (res.destroyed) return;
-  const text = JSON.stringify(body);   // compact (AIG-920): pretty-printing added 20% to every poll
+  const text = JSON.stringify(body) ?? '';   // compact (AIG-920): pretty-printing added 20% to every poll. A route answering nothing sends an empty body, as before the gzip check (AIG-1150)
   const head = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', Vary: 'Accept-Encoding' };
   if (req && text.length > GZIP_MIN && /\bgzip\b/i.test(String(req.headers['accept-encoding'] || ''))) {
     return zlib.gzip(text, (err, buf) => {

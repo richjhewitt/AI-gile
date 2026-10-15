@@ -3,6 +3,7 @@
 import { check, sleep, openPage, noErrors, def } from '../lib.mjs';
 
 def('daystart', '🌅 Setup: when your day starts and stops (default 09:00), saved, kept on reload, Going quiet uses it, phone + dark (AIG-678)', async (s, ctx) => {
+  await s.ok('POST', '/api/setup', { prefs: { day: { start: '' } } });   // AIG-1150: the QA board starts its day at 00:00 (AIG-1063); clear it to see the real default
   let st = await s.ok('GET', '/api/setup');
   check('default: day starts 09:00, no stop time', st.prefs.day.start === '09:00' && st.prefs.day.stop === '');
   const page = await openPage(ctx, '#/setup');

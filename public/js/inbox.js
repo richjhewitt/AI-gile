@@ -9,10 +9,13 @@
   style.textContent = INBOX_CSS;
   document.head.appendChild(style);
 
+  // Send back greys out until a reason is typed (AIG-1136).
+  document.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.sb !== undefined) { const b = e.target.closest('.ib-sb').querySelector('[data-act=sbsend]'); if (b) b.disabled = !e.target.value.trim(); } });
   function onKey(e) {
     if (e.target.tagName === 'TEXTAREA' && EnterSend.is(e, 'card')) {
       const n = e.target.closest('.ib-item'); if (!n) return;   // ⚡ Decide's own box (#dcText) has its own Enter (AIG-445)
       e.preventDefault();
+      if (e.target.dataset.sb !== undefined) { if (e.target.value.trim()) IB.sendBack(n); return; }   // a test row's Send back reason (AIG-1136)
       if (n.classList.contains('k')) IB.taskDone(n); else if (n.querySelector('[data-act="inforeply"]')) IB.infoReply(n); else IB.send(n);   // 📖 To read: Enter is its Reply (AIG-392)
     }
   }
@@ -38,6 +41,8 @@
     if (tb) { IB.tab = tb.dataset.tab; tabPref.set(IB.tab); IB.paintPage(); return; }
     const b = e.target.closest('button[data-act]'); if (!b) return;
     const n = b.closest('.ib-item'), act = b.dataset.act;
+    if (act === 'sbopen' || act === 'sbcancel') { const box = n.querySelector('.ib-sb'), open = act === 'sbopen' ? box.hidden : false; box.hidden = !open; n.querySelector('[data-act=sbopen]').setAttribute('aria-expanded', String(open)); if (open) box.querySelector('textarea').focus(); else box.querySelector('textarea').value = ''; return; }
+    if (act === 'sbsend') { IB.sendBack(n); return; }
     if (act === 'open') { openIt(n.dataset.project, n.dataset.id, b); return; }
     if (act === 'send') IB.send(n); else if (act === 'go') IB.send(n, 'GO'); else if (act === 'accept') { if (acceptSure(b, IB.raw.find(c => IB.keyOf(c) === n.dataset.project + '/' + n.dataset.id))) IB.accept(n); } else if (act === 'gotit') IB.gotIt(n); else if (act === 'inforeply') IB.infoReply(n); else if (act === 'wait') IB.waitAndSee(n); else if (act === 'letsgo') IB.letsGo(n); else if (act === 'taskdone') IB.taskDone(n); else if (act === 'lifedone') IB.lifeDone(n); else if (act === 'gaccept') IB.groupAct(n, 'accept'); else if (act === 'gwait') IB.groupAct(n, 'wait'); else if (act === 'gcaccept') IB.cardAct(b, 'accept'); else if (act === 'gcreply') IB.cardAct(b, 'reply'); else if (act === 'gcback') IB.cardAct(b, 'back');
   }
@@ -61,7 +66,7 @@
   }
 
   // Own poll so counts, tab title and alerts keep working on every page, even in a background tab.
-  PagePoll.every(() => IB.load(), 3000, { hidden: 30000 });
+  PagePoll.every(() => IB.load(), 3000, { alerts: true });   // title count and desktop alerts: keep their pace when hidden (AIG-1153)
   window.addEventListener('hashchange', IB.paintTop);
   IB.load().catch(() => {});
   window.Inbox = { show, repaint: IB.repaint };

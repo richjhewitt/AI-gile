@@ -2,7 +2,7 @@
 // project's brief, tells the others to stop at a safe point; swarm off wakes the held teams.
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, sleep, until, tmp, mkProject, mkCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, until, tmp, mkProject, mkCard, say, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 // A fake agent that just waits a while (AIG-827), so a team is "running" while the swarm button is pressed.
 const stubDir = tmp('swarmbtn'), win = process.platform === 'win32';
@@ -39,9 +39,8 @@ def('swarm', '🚨 swarm: other projects wait, the swarm project gets no helper 
   const page = await openPage(ctx, '#/p/hive');
   const asked = [];
   page.on('dialog', d => { asked.push(d.message()); d.accept(); });
-  await page.waitForSelector('#swarmBtn');
   check('the board toolbar has the button', /Swarm this/.test(await page.textContent('#swarmBtn')), await page.textContent('#swarmBtn'));
-  await page.click('#swarmBtn');
+  await tbClick(page, '#swarmBtn');
   await until(async () => (await s.ok('GET', '/api/swarm')).slug === 'hive', 6000);
   check('it asked first', asked.length === 1 && /Swarm Hive/.test(asked[0]), asked);
   await page.waitForSelector('#swarmBar:not([hidden])');
@@ -51,7 +50,7 @@ def('swarm', '🚨 swarm: other projects wait, the swarm project gets no helper 
   const busy = await s.ok('GET', '/api/projects/busy');
   check('the running team got the safe-stop note, not a kill', (busy.agentMsgs || []).some(m => /Swarm on Hive: finish your current step, commit, then stop/.test(m.text)) && (await s.ok('GET', '/api/projects/busy')).presence.running, busy.agentMsgs);
   check('the idle project got no note', !((await s.ok('GET', '/api/projects/quiet')).agentMsgs || []).length);
-  await page.click('#swarmBtn');
+  await tbClick(page, '#swarmBtn');
   await until(async () => !(await s.ok('GET', '/api/swarm')).on, 6000);
   await page.waitForFunction(() => /Swarm this/.test(document.getElementById('swarmBtn').textContent));
   check('Turn off swarm ends it with no confirm', asked.length === 1);

@@ -2,7 +2,7 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { BASE, ROOT, check, sleep, tmp, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, ROOT, check, sleep, tmp, mkProject, mkCard, openPage, noErrors, def, tbClick } from '../lib.mjs';
 // The clipboard text, with Windows line ends (\r\n) read back as \n.
 const clip = page => page.evaluate(() => navigator.clipboard.readText()).then(t => t.replace(/\r\n/g, '\n'));
 
@@ -197,7 +197,7 @@ def('perms', '🔐 Permissions: ticks follow the rules, save keeps hooks, new fo
   check('new folder gets run, edit, push-asks and ways', ['Bash', 'Edit', ways].every(x => r.allow.includes(x)) && r.ask.includes('Bash(git push:*)') && !r.allow.includes('WebFetch'), r);
   check('ways rule is an absolute read of the board folder', /^Read\(\/\/[a-z]\/.*\/\*\*\)$/.test(ways), ways);
   const page = await openPage(ctx, '#/p/alpha');
-  await page.click('button:has-text("Permissions")');
+  await tbClick(page, 'Permissions');
   await page.waitForSelector('#perm-ticks input');
   const ticked = async k => page.isChecked(`#perm-ticks input[data-k="${k}"]`);
   check('ticks match the file', (await ticked('run')) && (await ticked('ways')) && !(await ticked('web')));

@@ -74,10 +74,11 @@ async function pressMajor(id) {
 }
 // The merge gate (AIG-613): 🟢 QA green (areas, full suite) / 🔴 QA red / ⚪ no QA yet. Set with aigile qa.
 function qaGateHtml(c) {
-  const q = c.qa; if (!q) return `<div class="qa-gate none">${esc(t('qa.none'))}</div>`;
+  const q = c.qa; if (!q) return `<div class="qa-gate none" title="${esc(t('qa.none.title'))}">${esc(t('qa.none'))}</div>`;
   const red = q.result === 'fail' || q.full === 'fail', bits = [(q.areas || []).join(', '), q.full ? t('qa.full.' + q.full) : ''].filter(Boolean).join('; ');
   return `<div class="qa-gate ${red ? 'red' : 'green'}" title="${esc([q.by, q.at && ago(q.at)].filter(Boolean).join(' · '))}">${esc(t(red ? 'qa.red' : 'qa.green'))}${bits ? ` <span class="muted">(${esc(bits)})</span>` : ''}${q.note ? ` <span class="muted">${esc(q.note)}</span>` : ''}</div>`;
 }
+const movedBanner = c => { const m = state.moved; if (!m) return ''; if (m.to !== c.id) { state.moved = null; return ''; } return `<div class="moved-note" id="moved-note" role="status">✓ ${esc(m.text)} ${esc(t('card.next.now'))}</div>`; };
 function renderCard(p, c) {
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
@@ -85,7 +86,7 @@ function renderCard(p, c) {
   const head = `<div class="actions" style="margin-top:0"><button onclick="${close}">${esc(t('card.close'))}</button>${popBtn}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}</div>`;
   // AIG-935: title first; Close, Edit (and Reopen) stay in view, every other action sits in the one ⋯ menu (same buttons, same ids).
   // ⧉ Pop out stays in view too (AIG-1012): in the ⋯ menu nobody found it.
-  const menu = `<div class="card-menu" id="card-menu" ${state.cardMenu ? '' : 'hidden'}>${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}<button id="remind-btn" onclick="remindToggle()" title="${esc(t('remind.title'))}">${esc(t('remind.btn'))}</button>${timerUi(c)}${crucialBtn(c)}${urgentBtn(c, p.slug)}${Focus.btn(p, c)}${Term.btn(c, 'term-btn')}${moveUi(p, c, 'selects')}<button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button></div>`;
+  const menu = `<div class="card-menu" id="card-menu" ${state.cardMenu ? '' : 'hidden'}>${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}<button id="remind-btn" onclick="remindToggle()" title="${esc(t('remind.title'))}">${esc(t('remind.btn'))}</button>${timerUi(c)}${crucialBtn(c)}${urgentBtn(c, p.slug, true)}${Focus.btn(p, c)}${Term.btn(c, 'term-btn')}${moveUi(p, c, 'selects')}<button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button></div>`;
   const topActs = `<div class="card-acts"><button onclick="${close}">${esc(t('card.close'))}</button>${moveUi(p, c, 'reopen')}<button onclick="editCard()">${esc(t('card.edit'))}</button>${popBtn}<span class="card-menu-wrap"><button type="button" id="cm-btn" class="cm-btn" aria-haspopup="true" aria-expanded="${!!state.cardMenu}" title="${esc(t('card.menu.title'))}" aria-label="${esc(t('card.menu.title'))}" onclick="cardMenuToggle()">${esc(t('card.menu'))}</button>${menu}</span></div>`;
   if (state.editing) {
     return `<div class="overlay"><div class="panel">${head}
@@ -102,6 +103,7 @@ function renderCard(p, c) {
       <div class="actions"><button class="good" onclick="gotIt()">${esc(t('info.gotit'))}</button><button onclick="infoReply()" title="${esc(t('info.reply.title'))}">${esc(t('info.reply'))}</button>${Attach.boxHtml(p.slug + '/' + c.id + '#verdict')}</div></div>`
     : c.status === 'verify' ? `<div class="verdict"><h3>${esc(t('verdict.h'))}</h3>${pileLeft(p, c)}${aiEvidence(c, p.slug)}
       <div class="muted">${esc(t('verdict.waiting'))}${c.testSteps ? esc(t('verdict.steps')) : ''}.</div>
+      ${c.testSteps ? `<div class="v-steps"><h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div></div>` : ''}
       <label class="f" style="margin-top:8px"><span>${esc(t('verdict.comment'))}</span><textarea id="v-text" data-draft="${esc(p.slug + '/' + c.id)}/verdict" rows="3" placeholder="${esc(t('verdict.placeholder'))}" onkeydown="if(EnterSend.is(event,'card')){event.preventDefault();verdict(false)}"></textarea></label>
       <div class="err" id="v-err"></div>
       ${c.openUrl ? `<div class="actions" style="margin-top:0"><button class="primary" onclick="openIt('${p.slug}', '${c.id}', this)" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button><span class="muted">${esc(c.openUrl)}</span></div>` : ''}
@@ -118,12 +120,12 @@ function renderCard(p, c) {
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
   return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel" ${Term.panelAttr(p, c)}>
-    <div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    ${movedBanner(c)}<div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
     ${deskHtml(c)}${majorHtml(c)}${CiPage.affects(p, c)}${reviewHtml(p, c)}
     ${c.status === 'verify' ? verdict : ''}
-    ${checklistUi(p, c)}${waitsUi(p, c)}${secretsUi(p, c)}${accessReviewHtml(p, c)}
+    ${extrasUi(p, c)}${secretsUi(p, c)}${accessReviewHtml(p, c)}
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
       ${Share.cardComments(p, c)}
@@ -136,7 +138,7 @@ function renderCard(p, c) {
     ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>
       ${c.proof ? proofHtml(c.proof) : ''}
       ${notes.length ? `<h3>${esc(t('card.fromteam'))}</h3>${notesHtml(notes, msg)}` : ''}
-      ${c.testSteps ? `<h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
+      ${c.testSteps && c.status !== 'verify' ? `<h3>${esc(t('card.howtotest'))}</h3><div class="desc">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}
   </div></div>`;
 }
 
@@ -230,12 +232,13 @@ function pileLeft(p, c) {
   const left = forYouQueue(p).filter(x => x.status === 'verify' && kindOf(x) === 't').length;
   if (!state.pileRun || state.pileRun.slug !== p.slug) state.pileRun = { slug: p.slug, total: left };
   state.pileRun.total = Math.max(state.pileRun.total, left);
-  if (left < 1 || state.pileRun.total < 2) return '';
-  return `<div class="muted pile-left" id="pileLeft">${esc(t('pile.left', { n: left, total: state.pileRun.total }))}</div>`;
+  if (left < 1 || state.pileRun.total < 2 || state.pileFrom !== c.id) return '';   // only when you came on from the pile, not from a link (AIG-1147)
+  return `<div class="muted pile-left" id="pileLeft" title="${esc(t('pile.left.title'))}">${esc(t('pile.at', { i: state.pileRun.total - left + 1, total: state.pileRun.total }))}</div>`;
 }
 function nextForYou() { const q = forYouQueue(state.project).map(c => c.id), i = q.indexOf(cardId()); return i < 0 ? null : q[i + 1] || q[i - 1] || null; }
-function doneWithCard(next) {
-  if (next && !state.route.pop) { state.editing = false; location.hash = '#/p/' + slug() + '/' + next; } else closeCard();
+// The card opens the next one in your pile: say what just happened, so the swap is never silent (AIG-1135).
+function doneWithCard(next, msgKey) {
+  if (next && !state.route.pop) { state.editing = false; state.pileFrom = next; state.moved = { to: next, text: t(msgKey || 'card.next.done', { id: cardId() }) }; location.hash = '#/p/' + slug() + '/' + next; } else closeCard();
 }
 async function sendReply(fixed) {
   const next = nextForYou(), txt = fixed || $('r-text').value.trim(), key = slug() + '/' + cardId();
@@ -250,6 +253,6 @@ async function sendReply(fixed) {
       setErr('r-err', ''); refresh(true);
       return;
     }
-    doneWithCard(next);
+    doneWithCard(next, 'card.next.replied');
   } catch (err) { setErr('r-err', err); }
 }

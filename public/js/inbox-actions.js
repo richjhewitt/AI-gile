@@ -48,6 +48,15 @@
     try { await post('POST', base(n) + '/verdict', { accept: true }); done(n, t('inbox.toast.accepted', { id: n.dataset.id })); }
     catch (e) { fail(n, e); }
   }
+  // 🔁 Send back from the row (AIG-1136): a one-line reason, the same verdict as on the card.
+  async function sendBack(n) {
+    if (n.dataset.sending) return;
+    const text = n.querySelector('[data-sb]').value.trim();
+    if (!text) { n.querySelector('.ib-err').textContent = t('verdict.err'); return; }
+    lock(n);
+    try { await post('POST', base(n) + '/verdict', { accept: false, text }); done(n, t('inbox.toast.sentback', { id: n.dataset.id })); }
+    catch (e) { fail(n, e); }
+  }
   // 📖 To read (AIG-392): Got it accepts; Reply sends the note to the team and the card stays.
   async function gotIt(n) {
     lock(n);
@@ -103,10 +112,14 @@
     if (IB.flick < 0 || !el('ibAi') || el('ibAi').hidden || /TEXTAREA|INPUT|SELECT/.test(e.target.tagName)) return;
     if (arrowStep(e) > 0) flickAct('next'); else if (arrowStep(e) < 0) flickAct('prev'); else if (e.key === 'a' || e.key === 'A') flickAct('accept'); else if (e.key === 'Escape') flickAct('exit');
   });
+  // Later (1 h) (AIG-1137): the row fades out at once, the answer then raises the Undo bar (js/undo.js); a failure brings it back.
   async function waitAndSee(n) {
-    lock(n);
-    try { await post('POST', base(n) + '/snooze'); n.dataset.sending = ''; await IB.load(); IB.toast(t('inbox.toast.hidden', { id: n.dataset.id })); if (typeof FyFold !== 'undefined') FyFold.after(n); return true; }
-    catch (e) { fail(n, e); return false; }
+    if (n.dataset.sending) return false;
+    lock(n); n.style.transition = 'opacity .2s'; n.style.opacity = '0';
+    const key = n.dataset.key;
+    IB.raw = IB.raw.filter(c => keyOf(c) !== key); IB.items = IB.view(); IB.paintTop();
+    try { await post('POST', base(n) + '/snooze'); n.remove(); IB.toast(t('inbox.toast.hidden', { id: n.dataset.id })); if (IB.onInboxPage()) IB.paintPage(); IB.load().catch(() => {}); if (typeof FyFold !== 'undefined') FyFold.after(n); return true; }
+    catch (e) { n.style.opacity = ''; fail(n, e); IB.load().catch(() => {}); return false; }
   }
   // "Right, let's do this" on a life reminder (AIG-838): a shower reminder starts shower mode, any other just puts it off like Snooze (never done).
   async function letsGo(n) {
@@ -127,5 +140,5 @@
     row.querySelectorAll("button").forEach(b => b.disabled = true);
     try { await post("PATCH", `/api/projects/${row.dataset.project}/cards/${row.dataset.id}`, { status: "verify" }); IB.toast(t("trust.reopened", { id: row.dataset.id })); await IB.load(); IB.paintPage(); } catch (e) { IB.toast(e.message || String(e)); }
   }
-  Object.assign(IB, { testerDone, reopenTested, send, taskDone, lifeDone, accept, gotIt, infoReply, waitAndSee, letsGo, startTester, acceptAiPassed, flickAct });
+  Object.assign(IB, { testerDone, reopenTested, send, sendBack, taskDone, lifeDone, accept, gotIt, infoReply, waitAndSee, letsGo, startTester, acceptAiPassed, flickAct });
 })();

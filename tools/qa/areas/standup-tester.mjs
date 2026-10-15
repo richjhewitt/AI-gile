@@ -3,7 +3,7 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with the CLI, the report page shows blockers first and updates live, the morning prompt shows once a day (AIG-133..136)', async (s, ctx) => {
   const folder = tmp('standup');
@@ -14,8 +14,7 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
   // ---- 133: call one ----
   const page = await openPage(ctx, '#/p/alpha');
   page.on('dialog', d => d.accept());
-  if (!(await page.isVisible('button:has-text("📣 Stand-up")')) && await page.isVisible('#tbDots')) await page.click('#tbDots');   // AIG-1076: a new project's toolbar keeps it under ⋯ More
-  await page.click('button:has-text("📣 Stand-up")');
+  await tbClick(page, 'button:has-text("📣 Stand-up")');
   await page.waitForFunction(() => location.hash === '#/standups/alpha');
   const a = await cardsOf('alpha');
   check('one project: stand-up card in For the team, marked', a.length === 1 && a[0].status === 'team' && a[0].title === '📣 Stand-up' && !!a[0].standup.at && a[0].createdBy === 'Owner', a);
@@ -193,4 +192,3 @@ def('aitester', 'AI tester: lists unchecked tests, posts pass/fail/skip with evi
   check("a tester run leaves the project's teamSeenAt unchanged", !!marked && after === marked, { marked, after });
   check("the owner's news is still unseen after a tester run", (await s.ok('GET', '/api/projects/alpha/updates')).cards.some(c => c.id === news.id), 'news card');
 }, true);
-

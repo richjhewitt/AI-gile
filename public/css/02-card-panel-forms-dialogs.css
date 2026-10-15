@@ -298,6 +298,11 @@ html[data-stream-secrets] #serversBox input[data-srv="name"], html[data-stream-s
 .mention-item.on, .mention-item:hover { background: var(--col); }
 
 /* AIG-935: open card: title first, Close / Edit / ⋯ at the top right, every other action in the ⋯ menu */
+  .moved-note { background: var(--panel); border: 1px solid var(--accent); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 10px; font-size: 14px; }
+.extras-link { margin: 6px 0; font-size: 13px; }
+.extras-link .link { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; text-decoration: underline; }
+.v-steps { margin-top: 10px; }
+.v-steps h3 { margin: 0 0 4px; font-size: 14px; }
 .card-head { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
 .card-title { flex: 1 1 240px; min-width: 0; }
 .card-acts { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
