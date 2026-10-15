@@ -45,6 +45,16 @@ const d = require(root + '/lib/discord'), bot = d.bots()[0];
   global.fetch = async u => ({ ok: true, status: 200, json: async () => u.endsWith('/applications/@me') ? { id: '4242' } : guilds });
   r.in0 = (await d.statusFull())[0]; guilds = [{ id: '1' }]; r.cached = (await d.statusFull())[0].inServer;
   d.saveConfig([{ name: 'lead', users: '123456789', target: 't' }]); r.in1 = (await d.statusFull())[0];
+  // Hello DM (AIG-482): connect opens the DM to the stored user id and says hello; no shared server (50007) gives the invite link
+  const hs = [];
+  global.fetch = async (u, o) => { hs.push([o && o.method, u.replace(/.*v10/, ''), o && o.body ? JSON.parse(o.body) : null]); return { ok: true, status: 200, json: async () => u.endsWith('/applications/@me') ? { id: '4242' } : { id: 'CH9' } }; };
+  r.hello = await d.hello('lead'); r.helloCalls = hs.slice();
+  global.fetch = async (u) => u.endsWith('/applications/@me') ? { ok: true, status: 200, json: async () => ({ id: '4242' }) } : { ok: false, status: 403, json: async () => ({ code: 50007, message: 'Cannot send messages to this user' }) };
+  console.warn = () => {};
+  r.helloNo = await d.hello('lead');
+  d.saveConfig([{ name: 'lead', users: '', target: 't' }]); r.helloNoId = await d.hello('lead');
+  global.fetch = async () => ({ ok: false, status: 400, json: async () => ({ code: 50033, message: 'Invalid Recipient(s)' }) });
+  d.saveConfig([{ name: 'lead', users: '123456789', target: 't' }]);
   global.fetch = async () => ({ ok: false, status: 400, json: async () => ({ code: 50033, message: 'Invalid Recipient(s)' }) });
   console.warn = () => {};
   try { await d.test('lead'); r.err = 'none'; } catch (e) { r.err = e.message; }
