@@ -144,6 +144,7 @@ function renderSetup() {
     <div class="f" id="streamerBox">${Streamer.setupHtml()}</div>
     <div class="f" id="licencesBox">${(Lic.reset(), Lic.html())}</div>
     <div class="f" id="secretsBox">${(SEC.list = null, secretsBoxHtml())}</div>
+    <div class="f" id="accessReviewBox">${AccessReview.html()}</div>
     <div class="f" id="twitchBox">${TwitchTab.setupHtml()}</div>
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
     <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
