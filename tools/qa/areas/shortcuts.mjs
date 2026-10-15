@@ -80,10 +80,14 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   for (let i = 0; i < 20 && (await getCard(s, 'alpha', first)).status === 'verify'; i++) await sleep(250);
   check('a accepts the open card', (await getCard(s, 'alpha', first)).status === 'done');
 
+  // Accepting a test opens the next one (AIG-1212): wait for that before unfolding more, or a click can race it and fold ALP-2 shut.
+  await page.waitForSelector('#fyfList .fyf-row.open[data-id="ALP-2"]');
+  check('accepting opens the next test row', (await page.locator('#fyfList .fyf-row[data-id="ALP-1"]').count()) === 0);
   // Several rows unfolded: a/b act on the focused row only, or do nothing when none is focused.
   const rowOpen = async id => { if (!(await page.locator(`#fyfList .fyf-row.open[data-id="${id}"]`).count())) await page.click(`#fyfList .fyf-row[data-id="${id}"] [data-fyrow]`); };
   await rowOpen('ALP-2'); await rowOpen('ALP-4');
   await page.evaluate(() => document.activeElement.blur());
+  check('ALP-2 and ALP-4 are both unfolded', (await page.locator('#fyfList .fyf-row.open').count()) === 2);
   await page.keyboard.press('a'); await sleep(800);
   check('two rows unfolded and none focused: a does nothing', (await getCard(s, 'alpha', 'ALP-2')).status === 'verify' && (await getCard(s, 'alpha', 'ALP-4')).status === 'verify');
   await page.focus('#fyfList .fyf-row[data-id="ALP-4"] [data-act="accept"]');
@@ -143,6 +147,9 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   await page.keyboard.press('Shift+ArrowLeft');
   for (let i = 0; i < 20 && (await getCard(s, 'alpha', mid)).status === st1; i++) await sleep(250);
   check('Shift+Left moves it back', (await getCard(s, 'alpha', mid)).status === st0);
+  await page.focus(`a.card[data-id="${mid}"]`);
+  await page.evaluate(async () => { state.lastSig = state.lastBoardSig = null; await refresh(true); });
+  check('a board redraw keeps the focused card focused (AIG-1289)', (await page.evaluate(() => document.activeElement.dataset && document.activeElement.dataset.id)) === mid);
   await page.keyboard.press('?');
   check('cheat sheet lists move, edit and comment', /Shift\+←/.test(await page.locator('#dialog').innerText()) && (await page.locator('.sc-t kbd', { hasText: /^e$/ }).count()) === 1);
   await page.keyboard.press('Escape');
