@@ -66,7 +66,8 @@
     if (typeof Share !== 'undefined') Share.paintInbox();   // link offers from friends (AIG-304)
     if (typeof Approvals !== 'undefined') Approvals.paintInbox();   // cards waiting for my OK (AIG-815)
     if (typeof Ask !== 'undefined') Ask.paintInbox();   // friends' questions for my AI (AIG-210)
-    el('ibEmpty').innerHTML = IB.items.length || IB.hidden || IB.offers || IB.asks || IB.approvals ? '' : `<div class="ib-empty"><div class="big">${esc(t('inbox.empty.title'))}</div><p>${esc(t('inbox.empty.text'))}</p></div>`;
+    if (typeof ShareNotes !== 'undefined') ShareNotes.paintInbox();   // "Davy shared AI-gile with Sam" (AIG-1311)
+    el('ibEmpty').innerHTML = IB.items.length || IB.hidden || IB.offers || IB.asks || IB.approvals || IB.sharenotes ? '' : `<div class="ib-empty"><div class="big">${esc(t('inbox.empty.title'))}</div><p>${esc(t('inbox.empty.text'))}</p></div>`;
     if (IB.flashKey) {
       const n = [...document.querySelectorAll('.ib-item')].find(x => x.dataset.key === IB.flashKey);
       if (n) { n.scrollIntoView({ block: 'center' }); n.classList.add('flash'); const t = n.querySelector('textarea'); if (t) t.focus({ preventScroll: true }); IB.flashKey = null; }

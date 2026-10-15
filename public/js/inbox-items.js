@@ -63,6 +63,7 @@
       <section class="ib-sec share" id="ibShare" hidden></section>
       <section class="ib-sec ask" id="ibAsk" hidden></section>
       <section class="ib-sec appr" id="ibApprovals" hidden></section>
+      <section class="ib-sec sn" id="ibShareNotes" hidden aria-live="polite"></section>
       <section class="ib-sec ib-td" id="ibTd" hidden></section>
       <div id="ibEmpty"></div>
       <section class="ib-sec q" id="ibQ"><h3><button class="ib-popbtn" data-poplist="q" title="${esc(t('inbox.popout'))}">⧉</button>${esc(t('inbox.messages'))} <span class="ib-badge q" id="ibQn"></span></h3><div class="ib-chat"><div class="ib-chats" id="ibChats"></div><div class="list ib-thread"></div></div><div class="ib-hint" id="ibMore" hidden></div></section>

@@ -15,7 +15,13 @@
 // The installer is one file for everyone (so it can be signed later), so the invite cannot ride inside it: the Download
 // button keeps the invite under a short claim code instead, shown on the page and put in the file name. The app reads the
 // code from the name of the file it was installed from, or asks for it, and fetches the invite once (JOIN_CLAIM_DAYS, default 7).
-//   POST /join/codes             the owner adds a code (signed): { code, help, dm?, from?, days? }
+// Friendly leaks (AIG-1311): a claim code keeps working after it was claimed, for someone the friend shares their installer
+// with. Their app gets the friend's first name (nothing else), a fresh start, and one of the friend's Friends invites if the
+// friend's board left some here; at most JOIN_SHARE_MAX (default 20) shares per code, for JOIN_SHARE_DAYS (default 365).
+//   POST /join/claim  { code } on a claimed code -> 410 { share: true, friend }; { code, name } -> { v, shared, friend, help, dm }
+//   POST /join/share  { token, add?: [Friends invite codes] }: the friend's board (the token came with its claim) keeps up to
+//                     3 invites here for newcomers and reads who it shared with: { pool, shares: [{ name, at }] }
+//   POST /join/codes             the owner adds a code (signed): { code, help, dm?, from?, friend?, days? }
 //   GET  /join/codes             the owner lists codes and whether they were used (signed)
 //   GET  /health   (and /join/health)
 // A page GET never uses a code up (link previews in chat apps fetch pages), only the Download button does.
@@ -57,6 +63,11 @@ const isKey = s => /^[A-Za-z0-9_-]{43}$/.test(s);
 const sha256 = d => crypto.createHash('sha256').update(d).digest('hex');
 const fail = (msg, code) => Object.assign(new Error(msg), { code });
 const FILE = path.join(DATA, 'codes.json');
+const SHARE_MAX = Number(process.env.JOIN_SHARE_MAX) || 20;          // newcomers per claim code (a code posted publicly can't flood)
+const SHARE_MS = (Number(process.env.JOIN_SHARE_DAYS) || 365) * 24 * 3600e3;
+const POOL_MAX = 3;                                                 // Friends invites a friend's board keeps here for newcomers
+const firstName = s => String(s || '').replace(/[\u0000-\u001f<>"&]/g, '').trim().split(/\s+/)[0].slice(0, 24);
+const inviteExp = c => { try { const a = JSON.parse(Buffer.from(c, 'base64url').toString('utf8')); return Array.isArray(a) && typeof a[6] === 'number' ? a[6] : 0; } catch { return 0; } };
 
 fs.mkdirSync(DATA, { recursive: true });
 
@@ -79,13 +90,16 @@ function sweep() {
   if (gone) savePasses();
   let cl = false;
   for (const [c, v] of Object.entries(claims)) {
-    if ((v.used || v.exp) < old) { delete claims[c]; cl = true; }
-    else if (v.dm && v.exp < Date.now()) { delete v.dm; cl = true; }   // a claim code that ran out drops the DM invite it held
+    if (v.used ? v.used < Date.now() - Math.max(SHARE_MS, KEEP_USED_MS) : v.exp < old) { delete claims[c]; cl = true; continue; }   // a claimed code can still be shared (AIG-1311)
+    if (v.dm && v.exp < Date.now()) { delete v.dm; cl = true; }   // a claim code that ran out drops the DM invite it held
+    if (v.pool && v.pool.some(p => inviteExp(p) < Date.now())) { v.pool = v.pool.filter(p => inviteExp(p) > Date.now()); cl = true; }
   }
   if (cl) saveClaims();
 }
 
-/* ---------- claim codes (AIG-1231): { "<XXXX-XXXX>": { created, exp, used?, help, dm?, from? } } ---------- */
+/* ---------- claim codes (AIG-1231): { "<XXXX-XXXX>": { created, exp, used?, help, dm?, from?, friend?, link?, share?, pool?, shares? } } ---------- */
+// friend: the friend's first name; link: the invite link code it came from (the owner's count); share: sha256 of the friend
+// board's token; pool: Friends invites for newcomers; shares: [{ name, at }] the newcomers' first names (AIG-1311).
 const CLAIMS = path.join(DATA, 'claims.json');
 let claims = {};
 try { claims = JSON.parse(fs.readFileSync(CLAIMS, 'utf8')); } catch {}
@@ -291,9 +305,9 @@ async function handle(req, res) {
       if (!fs.existsSync(EXE)) return page(res, 503, TEXT[lang], `<h1>🗂️ AI-gile</h1><p>${esc(TEXT[lang].down)}</p>`);
       const v = codes[code];
       let claim; do claim = newClaim(); while (claims[claim]);
-      claims[claim] = { created: Date.now(), exp: Date.now() + CLAIM_DAYS * 24 * 3600e3, help: v.help, dm: v.dm || '', from: v.from || '' };
+      claims[claim] = { created: Date.now(), exp: Date.now() + CLAIM_DAYS * 24 * 3600e3, help: v.help, dm: v.dm || '', from: v.from || '', friend: v.friend || '', link: code };
       saveClaims();
-      v.used = Date.now(); delete v.dm;
+      v.used = Date.now(); delete v.dm; delete v.friend;
       save();
       return codePage(res, claim, lang);
     }
@@ -303,7 +317,7 @@ async function handle(req, res) {
     let out;
     try { out = addToZip(zip, 'AI-gile/invite.json', Buffer.from(JSON.stringify({ v: 1, help: v.help, dm: v.dm || '', from: v.from || '' }, null, 2) + '\n')); }
     catch { return page(res, 503, TEXT[lang], `<h1>🗂️ AI-gile</h1><p>${esc(TEXT[lang].down)}</p>`); }
-    v.used = Date.now(); delete v.dm;   // used up; the DM invite it carried is not kept
+    v.used = Date.now(); delete v.dm; delete v.friend;   // used up; the DM invite (and the name) it carried is not kept
     save();
     res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Length': out.length, 'Content-Disposition': `attachment; filename="${path.basename(ZIP).replace(/[^\w.\-]/g, '_')}"`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
     return res.end(out);
@@ -325,11 +339,37 @@ async function handle(req, res) {
     if (!isClaim(claim)) throw fail('that code is not valid', 400);
     const st = claimState(claim);
     if (st === 'unknown') throw fail('that code is not valid', 404);
+    const v = claims[claim];
+    // AIG-1311: claimed already, so someone the friend shared the installer with. Asked first (nothing counted), then with a name.
+    if (st === 'used' && v.used > Date.now() - SHARE_MS) {
+      const shares = v.shares || [];
+      if (shares.length >= SHARE_MAX) throw fail('this code has been shared too often', 429);
+      const name = firstName(b.name);
+      if (!name) return send(res, 410, { error: 'that code was already used', share: true, friend: v.friend || '' });
+      const pool = (v.pool || []).filter(p => inviteExp(p) > Date.now()), dm = pool.shift() || '';
+      v.pool = pool;
+      v.shares = [...shares, { name, at: Date.now() }];
+      saveClaims();
+      return send(res, 200, { v: 1, shared: true, friend: v.friend || '', help: v.help, dm });   // never the owner's or the friend's details
+    }
     if (st !== 'valid') throw fail(st === 'used' ? 'that code was already used' : 'that code has run out', 410);
-    const v = claims[claim], out = { v: 1, help: v.help, dm: v.dm || '', from: v.from || '' };
-    v.used = Date.now(); delete v.dm;   // used up; the DM invite it carried is not kept
+    const token = crypto.randomBytes(32).toString('base64url');
+    const out = { v: 1, help: v.help, dm: v.dm || '', from: v.from || '', friend: v.friend || '', share: token };
+    v.used = Date.now(); delete v.dm; v.share = sha256(token);   // used up; the DM invite it carried is not kept
     saveClaims();
     return send(res, 200, out);
+  }
+  // AIG-1311: the friend's board (with the token its claim gave it) leaves Friends invites for newcomers, and reads who came.
+  if (req.method === 'POST' && pathname === '/join/share') {
+    let b; try { b = JSON.parse(await readBody(req)); } catch { throw fail('send JSON', 400); }
+    const token = String(b && b.token || '');
+    if (!/^[A-Za-z0-9_-]{43}$/.test(token)) throw fail('send { token }', 400);
+    const h = sha256(token), v = Object.values(claims).find(x => x.share === h);
+    if (!v) throw fail('no such share', 404);
+    const add = Array.isArray(b.add) ? b.add.slice(0, POOL_MAX).filter(c => typeof c === 'string' && /^[A-Za-z0-9_-]{40,1000}$/.test(c) && inviteExp(c) > Date.now()) : [];
+    const pool = [...(v.pool || []).filter(p => inviteExp(p) > Date.now()), ...add].slice(-POOL_MAX);
+    if (add.length || pool.length !== (v.pool || []).length) { v.pool = pool; saveClaims(); }
+    return send(res, 200, { pool: pool.length, max: POOL_MAX, shares: (v.shares || []).map(s => ({ name: s.name, at: s.at })) });
   }
   // Site passes (AIG-699): the page, the Open button (uses the code up, sets the cookie), and sign out.
   if (req.method === 'GET' && pathname === '/join/site') {
@@ -387,14 +427,16 @@ async function handle(req, res) {
     if (Object.keys(codes).length >= MAX_CODES) throw fail('too many codes', 507);
     const days = Math.min(30, Math.max(0.00001, Number(b.days) || DAYS));
     codes[b.code] = site ? { created: Date.now(), exp: Date.now() + days * 24 * 3600e3, kind: 'site' }
-      : { created: Date.now(), exp: Date.now() + days * 24 * 3600e3, help: String(b.help), dm: String(b.dm || '').slice(0, 4000), from: String(b.from || '').replace(/[\u0000-\u001f]/g, '').slice(0, 40) };
+      : { created: Date.now(), exp: Date.now() + days * 24 * 3600e3, help: String(b.help), dm: String(b.dm || '').slice(0, 4000), from: String(b.from || '').replace(/[\u0000-\u001f]/g, '').slice(0, 40), ...(firstName(b.friend) ? { friend: firstName(b.friend) } : {}) };
     save();
     return send(res, 201, { ok: true, exp: codes[b.code].exp });
   }
   if (req.method === 'GET' && pathname === '/join/codes') {
     owner(req, pathname, '');
     const live = code => Object.values(passes).filter(p => p.code === code && p.exp > Date.now()).length;
-    return send(res, 200, { codes: Object.entries(codes).map(([code, v]) => ({ code, created: v.created, exp: v.exp, used: v.used || null, help: v.help, ...(v.kind === 'site' ? { kind: 'site', passes: live(code) } : {}) })) });
+    const shares = {};   // AIG-1311: who each invite was shared with, by the link code (first names only)
+    for (const v of Object.values(claims)) if (v.link && v.shares && v.shares.length) shares[v.link] = [...(shares[v.link] || []), ...v.shares.map(s => ({ name: s.name, at: s.at }))];
+    return send(res, 200, { codes: Object.entries(codes).map(([code, v]) => ({ code, created: v.created, exp: v.exp, used: v.used || null, help: v.help, ...(v.kind === 'site' ? { kind: 'site', passes: live(code) } : {}) })), shares });
   }
   throw fail('not found', 404);
 }

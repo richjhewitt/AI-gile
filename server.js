@@ -282,6 +282,7 @@ require('./lib/accessreview').start();   // 🔐 a card to review who has access
 require('./lib/backup').start();   // 🗄️ a copy of the boards and settings once a day, the last 7 kept (AIG-1258)
 require('./lib/join').applyInvite().catch(() => {});   // a friend's first start: invite.json from the zip (AIG-347)
 require('./lib/join').autoClaim().catch(() => {});   // or the claim code in the installer's file name (AIG-1231)
+require('./lib/join').startShares();   // AIG-1311: invites for whoever a friend shares their copy with, and the owner's "shared with" notes
 if (!process.env.AIGILE_NO_USAGE_AUTO) require('./lib/usagecheck').startAuto();
 require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anything while you are going quiet (AIG-199)
 require('./lib/scrummaster').startScrumMaster();   // 🧭 day rounds, only when it is in the team (AIG-359)

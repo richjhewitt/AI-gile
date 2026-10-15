@@ -38,6 +38,7 @@ function wizardMaybe() {
 async function wzFirst() {
   let c = null; try { c = await api('GET', '/api/join/claim'); } catch {}
   if (c && c.done) return wzWelcome(c.done);
+  if (c && c.share) return wzShare(c.share);   // AIG-1311: a friend shared their copy with this person
   if (c && c.ask) return wzClaimAsk(c.code);
   wzChoices();
 }
@@ -50,14 +51,37 @@ function wzClaimAsk(code) {
 async function wzClaimGo() {
   const b = $('claimGo'); if (!b || b.disabled) return;
   b.disabled = true; setErr('claim-err', '');
-  try { wzWelcome(await api('POST', '/api/join/claim', { code: $('claimCode').value, lang: langCode() })); }
+  try { const d = await api('POST', '/api/join/claim', { code: $('claimCode').value, lang: langCode() }); d.share ? wzShare(d.share) : wzWelcome(d); }
   catch (e) { setErr('claim-err', e); b.disabled = false; }
+}
+// AIG-1311: the code was claimed by the friend already, so whoever runs it now was given it: a warm hello, their own fresh
+// copy, and their name (the friend only ever learns their first name).
+function wzShare(s) {
+  const who = s.friend || t('claim.share.yourFriend');
+  openDialog(`<h2 id="shareHi">${esc(t('claim.share.h'))}</h2>
+    <p id="shareWho">${esc(t('claim.share.glad', { name: who }))}</p>
+    <p class="muted">${esc(t('claim.share.fresh', { name: who }))}</p>
+    <label class="f"><span>${esc(t('claim.share.name'))}</span><input type="text" id="shareName" maxlength="40" autocomplete="given-name" onkeydown="if (event.key === 'Enter') wzShareGo()"></label>
+    <div class="err" id="share-err" role="alert"></div>
+    <div class="actions"><button class="primary" id="shareGo" onclick="wzShareGo()">${esc(t('claim.share.go'))}</button></div>`, 'wizard wz-first');
+  setTimeout(() => { const i = $('shareName'); if (i) i.focus(); }, 50);
+}
+async function wzShareGo() {
+  const b = $('shareGo'); if (!b || b.disabled) return;
+  if (!$('shareName').value.trim()) { setErr('share-err', t('claim.share.need')); $('shareName').focus(); return; }
+  b.disabled = true; setErr('share-err', '');
+  try { wzWelcome(await api('POST', '/api/join/claim/share', { name: $('shareName').value, lang: langCode() })); }
+  catch (e) { setErr('share-err', e); b.disabled = false; }
 }
 async function wzClaimSkip() { try { await api('POST', '/api/join/claim/skip'); } catch {} wzChoices(); }
 function wzWelcome(d) {
   const who = d.linked || '';
-  openDialog(`<h2>${esc(t('claim.welcome.h'))}</h2>
-    <p id="claimWho">${esc(who ? t('claim.welcome.linked', { name: who }) : t('claim.welcome.plain'))}</p>
+  // AIG-1311: the friend's own copy greets them by name; a shared copy greets the newcomer and says how they link up.
+  const h = d.shared ? t('claim.share.welcome', { name: d.me || '' }) : d.friend ? t('claim.welcome.mine', { name: d.friend }) : t('claim.welcome.h');
+  const line = d.shared ? (who ? t('claim.share.linked', { name: who }) : t('claim.share.nolink', { name: d.friend || t('claim.share.yourFriend') }))
+    : who ? t('claim.welcome.linked', { name: who }) : t('claim.welcome.plain');
+  openDialog(`<h2 id="claimHi">${esc(h)}</h2>
+    <p id="claimWho">${esc(line)}</p>
     ${who ? `<p class="muted">${esc(t('claim.welcome.match', { name: who }))}</p>` : d.error ? `<p class="muted">${esc(t('claim.welcome.err'))}</p>` : ''}
     <p>${esc(t('claim.welcome.next'))}</p>
     <div class="actions"><button class="primary" id="claimOn" onclick="wzWelcomeOn()">${esc(t('claim.welcome.go'))}</button></div>`, 'wizard wz-first');
