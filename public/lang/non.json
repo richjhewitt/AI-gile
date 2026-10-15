@@ -4146,5 +4146,14 @@
  "help.m.thanks": "💙 Þakkir",
  "help.thanks.h": "💙 Þakkir",
  "help.thanks.chilled": "Símtöl, skjádeiling, svör, viðbrögð ok ritdeplar koma frá {name}. Hafðu þökk!",
- "help.thanks.livekit": "Símtöl renna á {name}, opnum símtalaþjóni."
+ "help.thanks.livekit": "Símtöl renna á {name}, opnum símtalaþjóni.",
+ "dlg.np.team": "Hef með sveit (Leiðtoga) ok möppu. Tak brott merkit fyrir verk með spjöldum einum.",
+ "noteam.line": "Engi sveit er hér enn, því er ekki unnit.",
+ "noteam.start": "Hef sveit",
+ "noteam.folder": "Sveit þarf möppu at vinna í.",
+ "noteam.nofolder": "Sveitin þarf möppu at vinna í, því er ekki unnit enn.",
+ "noteam.choose": "Vel möppu",
+ "noteam.make": "Ger eina fyrir mik",
+ "noteam.pill": "Engi sveit enn",
+ "noteam.pill.folder": "Engi mappa enn"
 }

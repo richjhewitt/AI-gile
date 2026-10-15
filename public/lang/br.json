@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Trugarez",
  "help.thanks.h": "💙 Trugarez",
  "help.thanks.chilled": "Ar galvoù, rannañ ar skramm, ar respontoù, an daskemmoù hag ar pikoù skrivañ a zeu eus {name}. Trugarez deoc'h!",
- "help.thanks.livekit": "Ar galvoù a dro war {name}, ar servijer galvoù digor."
+ "help.thanks.livekit": "Ar galvoù a dro war {name}, ar servijer galvoù digor.",
+ "dlg.np.team": "Kregiñ gant ur skipailh (ur penn) hag un teuliad. Lamit ar merk evit ur raktres gant kartennoù hepken.",
+ "noteam.line": "N'eus skipailh ebet amañ c'hoazh, neuze ne vez labouret war netra.",
+ "noteam.start": "Krouiñ ur skipailh",
+ "noteam.folder": "Ezhomm en deus ur skipailh eus un teuliad evit labourat ennañ.",
+ "noteam.nofolder": "Ezhomm en deus ar skipailh eus un teuliad evit labourat ennañ, neuze ne vez labouret war netra c'hoazh.",
+ "noteam.choose": "Dibab un teuliad",
+ "noteam.make": "Krouit unan evidon",
+ "noteam.pill": "Skipailh ebet c'hoazh",
+ "noteam.pill.folder": "Teuliad ebet c'hoazh"
 }

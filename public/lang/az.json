@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Təşəkkürlər",
  "help.thanks.h": "💙 Təşəkkürlər",
  "help.thanks.chilled": "Zənglər, ekran paylaşımı, cavablar, reaksiyalar və yazı nöqtələri {name} sayəsindədir. Təşəkkür edirik!",
- "help.thanks.livekit": "Zənglər açıq mənbəli zəng serveri olan {name} üzərində işləyir."
+ "help.thanks.livekit": "Zənglər açıq mənbəli zəng serveri olan {name} üzərində işləyir.",
+ "dlg.np.team": "Komanda (lider) və qovluqla başla. Yalnız kartlardan ibarət layihə üçün işarəni götür.",
+ "noteam.line": "Burada hələ komanda yoxdur, ona görə heç nə üzərində işlənmir.",
+ "noteam.start": "Komanda qur",
+ "noteam.folder": "Komandaya işləmək üçün qovluq lazımdır.",
+ "noteam.nofolder": "Komandaya işləmək üçün qovluq lazımdır, ona görə hələ heç nə üzərində işlənmir.",
+ "noteam.choose": "Qovluq seç",
+ "noteam.make": "Mənim üçün yarat",
+ "noteam.pill": "Hələ komanda yoxdur",
+ "noteam.pill.folder": "Hələ qovluq yoxdur"
 }

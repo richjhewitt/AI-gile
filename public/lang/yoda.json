@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Thanks",
  "help.thanks.h": "💙 Thanks",
  "help.thanks.chilled": "Calls, screen share, replies, reactions and typing dots, from {name} they come. Thank you, we do!",
- "help.thanks.livekit": "On {name}, the open-source call server, calls run."
+ "help.thanks.livekit": "On {name}, the open-source call server, calls run.",
+ "dlg.np.team": "With a team (a Lead) and a folder, start you will. Untick, for a cards-only project.",
+ "noteam.line": "No team here yet, there is. Worked on, nothing gets.",
+ "noteam.start": "Start a team",
+ "noteam.folder": "A folder to work in, a team needs.",
+ "noteam.nofolder": "A folder to work in, the team needs. Worked on yet, nothing gets.",
+ "noteam.choose": "Choose a folder",
+ "noteam.make": "Make one for me",
+ "noteam.pill": "No team yet",
+ "noteam.pill.folder": "No folder yet"
 }

@@ -4123,5 +4123,14 @@
  "help.m.thanks": "💙 Remerciements",
  "help.thanks.h": "💙 Remerciements",
  "help.thanks.chilled": "Les appels, le partage d'écran, les réponses, les réactions et les points de saisie viennent de {name}. Merci !",
- "help.thanks.livekit": "Les appels tournent sur {name}, le serveur d'appels open source."
+ "help.thanks.livekit": "Les appels tournent sur {name}, le serveur d'appels open source.",
+ "dlg.np.team": "Démarrer avec une équipe (un chef) et un dossier. Décoche pour un projet avec seulement des cartes.",
+ "noteam.line": "Pas encore d'équipe ici, donc rien n'avance.",
+ "noteam.start": "Créer une équipe",
+ "noteam.folder": "Une équipe a besoin d'un dossier où travailler.",
+ "noteam.nofolder": "L'équipe a besoin d'un dossier où travailler, donc rien n'avance encore.",
+ "noteam.choose": "Choisir un dossier",
+ "noteam.make": "Crée-m'en un",
+ "noteam.pill": "Pas encore d'équipe",
+ "noteam.pill.folder": "Pas encore de dossier"
 }

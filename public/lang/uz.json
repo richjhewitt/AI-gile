@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Rahmat",
  "help.thanks.h": "💙 Rahmat",
  "help.thanks.chilled": "Qoʻngʻiroqlar, ekranni ulashish, javoblar, reaksiyalar va yozish nuqtalari {name} dan keladi. Rahmat!",
- "help.thanks.livekit": "Qoʻngʻiroqlar ochiq kodli qoʻngʻiroq serveri {name} da ishlaydi."
+ "help.thanks.livekit": "Qoʻngʻiroqlar ochiq kodli qoʻngʻiroq serveri {name} da ishlaydi.",
+ "dlg.np.team": "Jamoa (rahbar bilan) va papka bilan boshlash. Faqat kartalardan iborat loyiha uchun belgini olib tashlang.",
+ "noteam.line": "Bu yerda hali jamoa yoʻq, shuning uchun hech narsa ustida ishlanmayapti.",
+ "noteam.start": "Jamoa tuzish",
+ "noteam.folder": "Jamoaga ishlash uchun papka kerak.",
+ "noteam.nofolder": "Jamoaga ishlash uchun papka kerak, shuning uchun hozircha hech narsa ustida ishlanmayapti.",
+ "noteam.choose": "Papka tanlash",
+ "noteam.make": "Men uchun yarating",
+ "noteam.pill": "Hali jamoa yoʻq",
+ "noteam.pill.folder": "Hali papka yoʻq"
 }

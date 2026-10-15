@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Taing",
  "help.thanks.h": "💙 Taing",
  "help.thanks.chilled": "Tha gairmean, co-roinneadh sgrìn, freagairtean, ath-bhualaidhean agus na dotagan sgrìobhaidh a’ tighinn bho {name}. Mòran taing!",
- "help.thanks.livekit": "Tha gairmean a’ ruith air {name}, am frithealaiche ghairmean le còd fosgailte."
+ "help.thanks.livekit": "Tha gairmean a’ ruith air {name}, am frithealaiche ghairmean le còd fosgailte.",
+ "dlg.np.team": "Tòisich le sgioba (stiùiriche) agus pasgan. Thoir air falbh a’ chromag airson pròiseact le cairtean a-mhàin.",
+ "noteam.line": "Chan eil sgioba an seo fhathast, mar sin chan eil obair ga dèanamh air dad.",
+ "noteam.start": "Tòisich sgioba",
+ "noteam.folder": "Feumaidh sgioba pasgan airson obrachadh ann.",
+ "noteam.nofolder": "Feumaidh an sgioba pasgan airson obrachadh ann, mar sin chan eil obair ga dèanamh air dad fhathast.",
+ "noteam.choose": "Tagh pasgan",
+ "noteam.make": "Dèan fear dhomh",
+ "noteam.pill": "Gun sgioba fhathast",
+ "noteam.pill.folder": "Gun phasgan fhathast"
 }

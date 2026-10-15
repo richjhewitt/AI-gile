@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Thanks, hearties",
  "help.thanks.h": "💙 Thanks, hearties",
  "help.thanks.chilled": "Calls, screen share, replies, reactions an' typin' dots come from {name}. Thank ye kindly!",
- "help.thanks.livekit": "Calls sail on {name}, the open-source call server."
+ "help.thanks.livekit": "Calls sail on {name}, the open-source call server.",
+ "dlg.np.team": "Set sail with a crew (a Captain) an' a folder. Untick fer a cards-only project.",
+ "noteam.line": "No crew aboard yet, so nothin' gets worked on.",
+ "noteam.start": "Muster a crew",
+ "noteam.folder": "A crew needs a folder to work in.",
+ "noteam.nofolder": "The crew needs a folder to work in, so nothin' be worked on yet.",
+ "noteam.choose": "Pick a folder",
+ "noteam.make": "Make one fer me",
+ "noteam.pill": "No crew yet",
+ "noteam.pill.folder": "No folder yet"
 }

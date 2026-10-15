@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Ačiū",
  "help.thanks.h": "💙 Ačiū",
  "help.thanks.chilled": "Skambučiai, ekrano bendrinimas, atsakymai, reakcijos ir rašymo taškeliai – iš {name}. Ačiū!",
- "help.thanks.livekit": "Skambučiai veikia per {name} – atvirojo kodo skambučių serverį."
+ "help.thanks.livekit": "Skambučiai veikia per {name} – atvirojo kodo skambučių serverį.",
+ "dlg.np.team": "Pradėk su komanda (Vadovu) ir aplanku. Nuimk varnelę, jei nori projekto tik su kortelėmis.",
+ "noteam.line": "Čia dar nėra komandos, tad prie nieko nedirbama.",
+ "noteam.start": "Sukurti komandą",
+ "noteam.folder": "Komandai reikia aplanko, kuriame dirbti.",
+ "noteam.nofolder": "Komandai reikia aplanko, kuriame dirbti, tad kol kas prie nieko nedirbama.",
+ "noteam.choose": "Pasirinkti aplanką",
+ "noteam.make": "Sukurk man",
+ "noteam.pill": "Dar nėra komandos",
+ "noteam.pill.folder": "Dar nėra aplanko"
 }

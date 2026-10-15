@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Shukrani",
  "help.thanks.h": "💙 Shukrani",
  "help.thanks.chilled": "Simu, kushiriki skrini, majibu, maoni ya hisia na vitone vya kuandika vinatoka kwa {name}. Asante!",
- "help.thanks.livekit": "Simu zinaendeshwa na {name}, seva ya simu ya chanzo huria."
+ "help.thanks.livekit": "Simu zinaendeshwa na {name}, seva ya simu ya chanzo huria.",
+ "dlg.np.team": "Anza na timu (Kiongozi) na folda. Ondoa alama kwa mradi wa kadi tu.",
+ "noteam.line": "Bado hakuna timu hapa, kwa hivyo hakuna kinachofanyiwa kazi.",
+ "noteam.start": "Anzisha timu",
+ "noteam.folder": "Timu inahitaji folda ya kufanyia kazi.",
+ "noteam.nofolder": "Timu inahitaji folda ya kufanyia kazi, kwa hivyo bado hakuna kinachofanyiwa kazi.",
+ "noteam.choose": "Chagua folda",
+ "noteam.make": "Niundie moja",
+ "noteam.pill": "Bado hakuna timu",
+ "noteam.pill.folder": "Bado hakuna folda"
 }

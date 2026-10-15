@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Þakkir",
  "help.thanks.h": "💙 Þakkir",
  "help.thanks.chilled": "Símtöl, skjádeiling, svör, viðbrögð og innsláttarpunktar koma frá {name}. Takk fyrir!",
- "help.thanks.livekit": "Símtöl keyra á {name}, símtalaþjóni með opnum kóða."
+ "help.thanks.livekit": "Símtöl keyra á {name}, símtalaþjóni með opnum kóða.",
+ "dlg.np.team": "Byrja með teymi (teymisstjóra) og möppu. Taktu hakið af fyrir verkefni með spjöldum eingöngu.",
+ "noteam.line": "Ekkert teymi hér enn, svo ekki er unnið í neinu.",
+ "noteam.start": "Stofna teymi",
+ "noteam.folder": "Teymi þarf möppu til að vinna í.",
+ "noteam.nofolder": "Teymið þarf möppu til að vinna í, svo ekki er enn unnið í neinu.",
+ "noteam.choose": "Velja möppu",
+ "noteam.make": "Búðu til eina fyrir mig",
+ "noteam.pill": "Ekkert teymi enn",
+ "noteam.pill.folder": "Engin mappa enn"
 }

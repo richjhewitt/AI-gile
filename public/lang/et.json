@@ -4125,5 +4125,14 @@
  "help.m.thanks": "💙 Tänud",
  "help.thanks.h": "💙 Tänud",
  "help.thanks.chilled": "Kõned, ekraanijagamine, vastused, reaktsioonid ja trükkimistäpid tulevad {name} kaudu. Aitäh!",
- "help.thanks.livekit": "Kõned töötavad {name} peal, mis on avatud lähtekoodiga kõneserver."
+ "help.thanks.livekit": "Kõned töötavad {name} peal, mis on avatud lähtekoodiga kõneserver.",
+ "dlg.np.team": "Alusta tiimi (juhi) ja kaustaga. Eemalda linnuke, kui projektis on ainult kaardid.",
+ "noteam.line": "Siin pole veel tiimi, nii et millegi kallal ei tööta keegi.",
+ "noteam.start": "Loo tiim",
+ "noteam.folder": "Tiim vajab kausta, kus töötada.",
+ "noteam.nofolder": "Tiim vajab kausta, kus töötada, nii et veel ei tööta keegi millegi kallal.",
+ "noteam.choose": "Vali kaust",
+ "noteam.make": "Tee mulle üks",
+ "noteam.pill": "Tiimi veel pole",
+ "noteam.pill.folder": "Kausta veel pole"
 }

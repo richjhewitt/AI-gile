@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Takk",
  "help.thanks.h": "💙 Takk",
  "help.thanks.chilled": "Samtaler, skjermdeling, svar, reaksjoner og skriveprikker kommer fra {name}. Tusen takk!",
- "help.thanks.livekit": "Samtalene kjører på {name}, samtaleserveren med åpen kildekode."
+ "help.thanks.livekit": "Samtalene kjører på {name}, samtaleserveren med åpen kildekode.",
+ "dlg.np.team": "Start med et team (en leder) og en mappe. Fjern haken for et prosjekt med bare kort.",
+ "noteam.line": "Ingen team her ennå, så ingenting blir jobbet med.",
+ "noteam.start": "Start et team",
+ "noteam.folder": "Et team trenger en mappe å jobbe i.",
+ "noteam.nofolder": "Teamet trenger en mappe å jobbe i, så ingenting blir jobbet med ennå.",
+ "noteam.choose": "Velg en mappe",
+ "noteam.make": "Lag en for meg",
+ "noteam.pill": "Ingen team ennå",
+ "noteam.pill.folder": "Ingen mappe ennå"
 }

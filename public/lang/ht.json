@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Mèsi",
  "help.thanks.h": "💙 Mèsi",
  "help.thanks.chilled": "Apèl, pataje ekran, repons, reyaksyon ak ti pwen k ap tape yo soti nan {name}. Mèsi anpil!",
- "help.thanks.livekit": "Apèl yo mache sou {name}, sèvè apèl sous louvri a."
+ "help.thanks.livekit": "Apèl yo mache sou {name}, sèvè apèl sous louvri a.",
+ "dlg.np.team": "Kòmanse ak yon ekip (yon chèf) ak yon dosye. Retire tchèk la pou yon pwojè ki gen kat sèlman.",
+ "noteam.line": "Poko gen ekip isit, kidonk pèsonn pa travay sou anyen.",
+ "noteam.start": "Kreye yon ekip",
+ "noteam.folder": "Yon ekip bezwen yon dosye pou l travay ladan l.",
+ "noteam.nofolder": "Ekip la bezwen yon dosye pou l travay ladan l, kidonk pèsonn poko travay sou anyen.",
+ "noteam.choose": "Chwazi yon dosye",
+ "noteam.make": "Fè youn pou mwen",
+ "noteam.pill": "Poko gen ekip",
+ "noteam.pill.folder": "Poko gen dosye"
 }

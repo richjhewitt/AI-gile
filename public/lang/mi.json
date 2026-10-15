@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Ngā mihi",
  "help.thanks.h": "💙 Ngā mihi",
  "help.thanks.chilled": "Nō {name} ngā waea, te tohatoha mata, ngā whakautu, ngā tauhohenga me ngā ira patopato. Tēnā koe!",
- "help.thanks.livekit": "Ka rere ngā waea i runga i {name}, te tūmau waea puna tuwhera."
+ "help.thanks.livekit": "Ka rere ngā waea i runga i {name}, te tūmau waea puna tuwhera.",
+ "dlg.np.team": "Tīmata me tētahi rōpū (he Kaihautū) me tētahi kōpaki. Tangohia te tohu mō tētahi kaupapa kāri anake.",
+ "noteam.line": "Kāore anō he rōpū i konei, nō reira kāore he mahi e mahia ana.",
+ "noteam.start": "Tīmata he rōpū",
+ "noteam.folder": "Me whai kōpaki te rōpū hei wāhi mahi.",
+ "noteam.nofolder": "Me whai kōpaki te rōpū hei wāhi mahi, nō reira kāore anō he mahi e mahia ana.",
+ "noteam.choose": "Kōwhiria he kōpaki",
+ "noteam.make": "Hangaia mōku",
+ "noteam.pill": "Kāore anō he rōpū",
+ "noteam.pill.folder": "Kāore anō he kōpaki"
 }

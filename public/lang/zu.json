@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Siyabonga",
  "help.thanks.h": "💙 Siyabonga",
  "help.thanks.chilled": "Amakholi, ukwabelana ngesikrini, izimpendulo, ukusabela namachashaza okuthayipha kuvela ku-{name}. Siyabonga!",
- "help.thanks.livekit": "Amakholi asebenza ku-{name}, iseva yamakholi yomthombo ovulekile."
+ "help.thanks.livekit": "Amakholi asebenza ku-{name}, iseva yamakholi yomthombo ovulekile.",
+ "dlg.np.team": "Qala ngeqembu (elinoMholi) nefolda. Susa uphawu ukuze uthole iphrojekthi enamakhadi kuphela.",
+ "noteam.line": "Alikabi bikho iqembu lapha, ngakho akukho okusetshenzwayo.",
+ "noteam.start": "Qala iqembu",
+ "noteam.folder": "Iqembu lidinga ifolda yokusebenzela.",
+ "noteam.nofolder": "Iqembu lidinga ifolda yokusebenzela, ngakho akukho okusetshenzwayo okwamanje.",
+ "noteam.choose": "Khetha ifolda",
+ "noteam.make": "Ngenzele eyodwa",
+ "noteam.pill": "Akukabi neqembu",
+ "noteam.pill.folder": "Akukabi nefolda"
 }

@@ -4134,5 +4134,14 @@
  "help.m.thanks": "💙 Takk",
  "help.thanks.h": "💙 Takk",
  "help.thanks.chilled": "Samtalur, skerm-deiling, svar, viðbrøgd og skrivi-prikkar koma frá {name}. Takk fyri!",
- "help.thanks.livekit": "Samtalurnar koyra á {name}, sum er ein samtaluambætari við opnari keldu."
+ "help.thanks.livekit": "Samtalurnar koyra á {name}, sum er ein samtaluambætari við opnari keldu.",
+ "dlg.np.team": "Byrja við einum toymi (einum leiðara) og eini mappu. Tak krossin burtur fyri eina verkætlan við bara kortum.",
+ "noteam.line": "Einki toymi her enn, so einki verður arbeitt við.",
+ "noteam.start": "Stovna toymi",
+ "noteam.folder": "Eitt toymi hevur brúk fyri eini mappu at arbeiða í.",
+ "noteam.nofolder": "Toymið hevur brúk fyri eini mappu at arbeiða í, so einki verður arbeitt við enn.",
+ "noteam.choose": "Vel eina mappu",
+ "noteam.make": "Ger eina til mín",
+ "noteam.pill": "Einki toymi enn",
+ "noteam.pill.folder": "Eingin mappa enn"
 }

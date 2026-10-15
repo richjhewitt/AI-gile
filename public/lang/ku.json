@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Spas",
  "help.thanks.h": "💙 Spas",
  "help.thanks.chilled": "Bang, parvekirina dîmenê, bersiv, reaksiyon û xalên nivîsandinê ji {name} tên. Spas!",
- "help.thanks.livekit": "Bang li ser {name} dixebitin, servera bangan a çavkaniya vekirî."
+ "help.thanks.livekit": "Bang li ser {name} dixebitin, servera bangan a çavkaniya vekirî.",
+ "dlg.np.team": "Bi tîmekê (lîderek) û peldankekê dest pê bike. Ji bo projeyeke tenê bi kartan, nîşanê rake.",
+ "noteam.line": "Hê li vir tîm tune ye, ji ber vê yekê li ser tiştekî nayê xebitîn.",
+ "noteam.start": "Tîmekê ava bike",
+ "noteam.folder": "Tîm ji bo xebatê peldankekê hewce dike.",
+ "noteam.nofolder": "Tîm ji bo xebatê peldankekê hewce dike, ji ber vê yekê hê li ser tiştekî nayê xebitîn.",
+ "noteam.choose": "Peldankekê hilbijêre",
+ "noteam.make": "Ji min re yekê çêke",
+ "noteam.pill": "Hê tîm tune",
+ "noteam.pill.folder": "Hê peldank tune"
 }

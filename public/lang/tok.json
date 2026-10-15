@@ -4113,5 +4113,14 @@
  "help.m.thanks": "💙 pona tawa sina",
  "help.thanks.h": "💙 pona tawa sina",
  "help.thanks.chilled": "toki kalama, pana sitelen lukin, toki sin, pilin en sike pi sitelen lon li tan {name}. pona tawa sina!",
- "help.thanks.livekit": "toki kalama li tawa kepeken {name}, ilo pi toki kalama pi open ale."
+ "help.thanks.livekit": "toki kalama li tawa kepeken {name}, ilo pi toki kalama pi open ale.",
+ "dlg.np.team": "o open kepeken kulupu (jan lawa li lon) en poki. sina wile e lipu taso la o weka e sitelen.",
+ "noteam.line": "kulupu li lon ala. tan ni la jan ala li pali.",
+ "noteam.start": "o open e kulupu",
+ "noteam.folder": "kulupu li wile e poki tawa pali.",
+ "noteam.nofolder": "kulupu li wile e poki tawa pali. tan ni la jan ala li pali.",
+ "noteam.choose": "o wile e poki",
+ "noteam.make": "o pali e poki tawa mi",
+ "noteam.pill": "kulupu ala",
+ "noteam.pill.folder": "poki ala"
 }

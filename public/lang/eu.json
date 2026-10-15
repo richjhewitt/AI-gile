@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Eskerrak",
  "help.thanks.h": "💙 Eskerrak",
  "help.thanks.chilled": "Deiak, pantaila partekatzea, erantzunak, erreakzioak eta idazte-puntuak {name}-tik datoz. Eskerrik asko!",
- "help.thanks.livekit": "Deiak {name}-en gainean dabiltza, kode irekiko dei-zerbitzaria."
+ "help.thanks.livekit": "Deiak {name}-en gainean dabiltza, kode irekiko dei-zerbitzaria.",
+ "dlg.np.team": "Hasi talde batekin (taldeburu batekin) eta karpeta batekin. Kendu marka txartelak soilik dituen proiektu baterako.",
+ "noteam.line": "Oraindik ez dago talderik hemen, beraz, ez da ezer lantzen.",
+ "noteam.start": "Sortu talde bat",
+ "noteam.folder": "Talde batek karpeta bat behar du lan egiteko.",
+ "noteam.nofolder": "Taldeak karpeta bat behar du lan egiteko, beraz, oraindik ez da ezer lantzen.",
+ "noteam.choose": "Aukeratu karpeta",
+ "noteam.make": "Sortu niretzat",
+ "noteam.pill": "Talderik ez oraindik",
+ "noteam.pill.folder": "Karpetarik ez oraindik"
 }

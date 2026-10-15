@@ -4104,5 +4104,14 @@
  "help.m.thanks": "💙 ki'e",
  "help.thanks.h": "💙 ki'e",
  "help.thanks.chilled": "lo fonxa .e lo nu jarco lo vidni .e lo spuda .e lo frati .e lo tcita be lo nu ciska cu se krasi {name} .i ki'e do",
- "help.thanks.livekit": "lo fonxa cu se samru'e fi {name} noi kalri fonxa samse'u"
+ "help.thanks.livekit": "lo fonxa cu se samru'e fi {name} noi kalri fonxa samse'u",
+ "dlg.np.team": "ko cfari fi lo gunma (lo jitro) .e lo datnyveimei .i ko na cuxna tezu'e lo selplatu be lo karda po'o",
+ "noteam.line": "no gunma cu zvati .i se ki'u bo no da se gunka",
+ "noteam.start": "ko cfari lo gunma",
+ "noteam.folder": "lo gunma cu nitcu lo datnyveimei tezu'e lo nu gunka",
+ "noteam.nofolder": "le gunma cu nitcu lo datnyveimei tezu'e lo nu gunka .i se ki'u bo no da ca se gunka",
+ "noteam.choose": "ko cuxna lo datnyveimei",
+ "noteam.make": "ko zbasu pa ri",
+ "noteam.pill": "no gunma",
+ "noteam.pill.folder": "no datnyveimei"
 }

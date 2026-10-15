@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 致谢",
  "help.thanks.h": "💙 致谢",
  "help.thanks.chilled": "通话、屏幕共享、回复、表情回应和正在输入的小圆点都来自 {name}。谢谢！",
- "help.thanks.livekit": "通话运行在开源通话服务器 {name} 上。"
+ "help.thanks.livekit": "通话运行在开源通话服务器 {name} 上。",
+ "dlg.np.team": "从一个团队（含负责人）和一个文件夹开始。取消勾选则创建只有卡片的项目。",
+ "noteam.line": "这里还没有团队，所以没有任何工作在进行。",
+ "noteam.start": "组建团队",
+ "noteam.folder": "团队需要一个文件夹来工作。",
+ "noteam.nofolder": "团队需要一个文件夹来工作，所以目前没有任何工作在进行。",
+ "noteam.choose": "选择文件夹",
+ "noteam.make": "帮我创建一个",
+ "noteam.pill": "还没有团队",
+ "noteam.pill.folder": "还没有文件夹"
 }

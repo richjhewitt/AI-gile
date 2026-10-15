@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Agraïments",
  "help.thanks.h": "💙 Agraïments",
  "help.thanks.chilled": "Les trucades, la pantalla compartida, les respostes, les reaccions i els punts d'escriptura vénen de {name}. Gràcies!",
- "help.thanks.livekit": "Les trucades funcionen amb {name}, el servidor de trucades de codi obert."
+ "help.thanks.livekit": "Les trucades funcionen amb {name}, el servidor de trucades de codi obert.",
+ "dlg.np.team": "Comença amb un equip (un líder) i una carpeta. Desmarca-ho per a un projecte només de targetes.",
+ "noteam.line": "Aquí encara no hi ha cap equip, així que no es treballa en res.",
+ "noteam.start": "Crea un equip",
+ "noteam.folder": "Un equip necessita una carpeta on treballar.",
+ "noteam.nofolder": "L'equip necessita una carpeta on treballar, així que encara no es treballa en res.",
+ "noteam.choose": "Tria una carpeta",
+ "noteam.make": "Crea-me'n una",
+ "noteam.pill": "Encara sense equip",
+ "noteam.pill.folder": "Encara sense carpeta"
 }

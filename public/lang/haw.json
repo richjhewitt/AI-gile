@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Mahalo",
  "help.thanks.h": "💙 Mahalo",
  "help.thanks.chilled": "No {name} mai nā kelepona, ke kaʻana like pale, nā pane, nā hōʻike manaʻo a me nā kiko kikokiko. Mahalo nui!",
- "help.thanks.livekit": "Holo nā kelepona ma luna o {name}, ke kikowaena kelepona kumu hāmama."
+ "help.thanks.livekit": "Holo nā kelepona ma luna o {name}, ke kikowaena kelepona kumu hāmama.",
+ "dlg.np.team": "E hoʻomaka me kekahi pūʻulu (he alakaʻi) a me kekahi waihona. Wehe i ka māka no ka papahana kāleka wale nō.",
+ "noteam.line": "ʻAʻohe pūʻulu ma ʻaneʻi i kēia manawa, no laila ʻaʻohe hana e hana ʻia.",
+ "noteam.start": "Hoʻomaka i pūʻulu",
+ "noteam.folder": "Pono ka pūʻulu i waihona e hana ai.",
+ "noteam.nofolder": "Pono ka pūʻulu i waihona e hana ai, no laila ʻaʻohe hana e hana ʻia i kēia manawa.",
+ "noteam.choose": "Koho i waihona",
+ "noteam.make": "Hana i hoʻokahi noʻu",
+ "noteam.pill": "ʻAʻohe pūʻulu",
+ "noteam.pill.folder": "ʻAʻohe waihona"
 }

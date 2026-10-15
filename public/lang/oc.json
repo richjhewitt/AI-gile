@@ -4134,5 +4134,14 @@
  "help.m.thanks": "💙 Mercés",
  "help.thanks.h": "💙 Mercés",
  "help.thanks.chilled": "Las sonadas, lo partatge d'ecran, las responsas, las reaccions e los punts de picada venon de {name}. Mercés plan !",
- "help.thanks.livekit": "Las sonadas foncionan sus {name}, lo servidor de sonadas de còdi dobèrt."
+ "help.thanks.livekit": "Las sonadas foncionan sus {name}, lo servidor de sonadas de còdi dobèrt.",
+ "dlg.np.team": "Començar amb una equipa (un Cap) e un dossièr. Desmarca per un projècte sonque de cartas.",
+ "noteam.line": "Pas encara d'equipa aquí, doncas res es pas trabalhat.",
+ "noteam.start": "Començar una equipa",
+ "noteam.folder": "Una equipa a besonh d'un dossièr per trabalhar.",
+ "noteam.nofolder": "L'equipa a besonh d'un dossièr per trabalhar, doncas res es pas encara trabalhat.",
+ "noteam.choose": "Causir un dossièr",
+ "noteam.make": "Fai-me'n un",
+ "noteam.pill": "Pas encara d'equipa",
+ "noteam.pill.folder": "Pas encara de dossièr"
 }

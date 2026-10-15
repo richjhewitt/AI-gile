@@ -4134,5 +4134,14 @@
  "help.m.thanks": "💙 Tank",
  "help.thanks.h": "💙 Tank",
  "help.thanks.chilled": "Gesprekken, skermdieling, antwurden, reaksjes en typpuntsjes komme fan {name}. Tige tank!",
- "help.thanks.livekit": "Gesprekken rinne op {name}, de iepen-boarne gespreksserver."
+ "help.thanks.livekit": "Gesprekken rinne op {name}, de iepen-boarne gespreksserver.",
+ "dlg.np.team": "Begjin mei in team (in lieder) en in map. Helje it finkje fuort foar in projekt mei allinnich kaarten.",
+ "noteam.line": "Hjir is noch gjin team, dus der wurdt oan neat wurke.",
+ "noteam.start": "Begjin in team",
+ "noteam.folder": "In team hat in map nedich om yn te wurkjen.",
+ "noteam.nofolder": "It team hat in map nedich om yn te wurkjen, dus der wurdt noch oan neat wurke.",
+ "noteam.choose": "Kies in map",
+ "noteam.make": "Meitsje der ien foar my",
+ "noteam.pill": "Noch gjin team",
+ "noteam.pill.folder": "Noch gjin map"
 }

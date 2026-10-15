@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Gratiae",
  "help.thanks.h": "💙 Gratiae",
  "help.thanks.chilled": "Vocationes, visio communicata, responsa, motus animi et puncta scribendi a {name} veniunt. Gratias agimus!",
- "help.thanks.livekit": "Vocationes in {name} currunt, servitore vocationum fontis aperti."
+ "help.thanks.livekit": "Vocationes in {name} currunt, servitore vocationum fontis aperti.",
+ "dlg.np.team": "Incipe cum turma (duce) et domo fasciculorum. Signum tolle pro incepto chartarum tantum.",
+ "noteam.line": "Nulla adhuc turma hic est, itaque nihil agitur.",
+ "noteam.start": "Turmam conde",
+ "noteam.folder": "Turmae opus est domo fasciculorum in qua laboret.",
+ "noteam.nofolder": "Turmae opus est domo fasciculorum in qua laboret, itaque nihil adhuc agitur.",
+ "noteam.choose": "Domum elige",
+ "noteam.make": "Fac mihi unam",
+ "noteam.pill": "Nondum turma",
+ "noteam.pill.folder": "Nondum domus"
 }

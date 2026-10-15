@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 致謝",
  "help.thanks.h": "💙 致謝",
  "help.thanks.chilled": "通話、螢幕分享、回覆、表情回應和輸入中的小圓點都來自 {name}。謝謝！",
- "help.thanks.livekit": "通話運行在開源通話伺服器 {name} 上。"
+ "help.thanks.livekit": "通話運行在開源通話伺服器 {name} 上。",
+ "dlg.np.team": "從一個團隊（含負責人）和一個資料夾開始。取消勾選則建立只有卡片的專案。",
+ "noteam.line": "這裡還沒有團隊，所以沒有任何工作在進行。",
+ "noteam.start": "組建團隊",
+ "noteam.folder": "團隊需要一個資料夾來工作。",
+ "noteam.nofolder": "團隊需要一個資料夾來工作，所以目前沒有任何工作在進行。",
+ "noteam.choose": "選擇資料夾",
+ "noteam.make": "幫我建立一個",
+ "noteam.pill": "還沒有團隊",
+ "noteam.pill.folder": "還沒有資料夾"
 }

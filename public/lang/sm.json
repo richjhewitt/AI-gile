@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Faafetai",
  "help.thanks.h": "💙 Faafetai",
  "help.thanks.chilled": "O valaʻau, faasoaina o le lau, tali, faʻaaliga ma togitogi o le taina e sau mai {name}. Faafetai!",
- "help.thanks.livekit": "E faʻagaoioia valaʻau i luga o {name}, le server valaʻau e matala lona puna."
+ "help.thanks.livekit": "E faʻagaoioia valaʻau i luga o {name}, le server valaʻau e matala lona puna.",
+ "dlg.np.team": "Amata i se 'au (se Taʻitaʻi) ma se pusa faila. Aveese le faʻailoga mo se poloketi e na o kāte.",
+ "noteam.line": "E leʻi i ai se 'au iinei, o lea e leai se mea o galue ai.",
+ "noteam.start": "Amata se 'au",
+ "noteam.folder": "E manaʻomia e le 'au se pusa faila e galulue ai.",
+ "noteam.nofolder": "E manaʻomia e le 'au se pusa faila e galulue ai, o lea e leʻi i ai se mea o galue ai.",
+ "noteam.choose": "Filifili se pusa faila",
+ "noteam.make": "Fai se tasi mo aʻu",
+ "noteam.pill": "Leai se 'au",
+ "noteam.pill.folder": "Leai se pusa faila"
 }

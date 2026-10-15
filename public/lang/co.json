@@ -4134,5 +4134,14 @@
  "help.m.thanks": "💙 Grazie",
  "help.thanks.h": "💙 Grazie",
  "help.thanks.chilled": "E chjame, a cundivisione di schermu, e risposte, e reazzione è i punti di scrittura venenu da {name}. Grazie!",
- "help.thanks.livekit": "E chjame giranu nant'à {name}, u servitore di chjame open source."
+ "help.thanks.livekit": "E chjame giranu nant'à {name}, u servitore di chjame open source.",
+ "dlg.np.team": "Principià cù una squadra (un capu) è un cartulare. Toglie a spunta per un prughjettu solu di carte.",
+ "noteam.line": "Ùn ci hè ancu nisuna squadra quì, allora nunda ùn hè travagliatu.",
+ "noteam.start": "Crià una squadra",
+ "noteam.folder": "Una squadra hà bisognu di un cartulare per travaglià.",
+ "noteam.nofolder": "A squadra hà bisognu di un cartulare per travaglià, allora nunda ùn hè ancu travagliatu.",
+ "noteam.choose": "Sceglie un cartulare",
+ "noteam.make": "Fanne unu per mè",
+ "noteam.pill": "Nisuna squadra per avà",
+ "noteam.pill.folder": "Nisunu cartulare per avà"
 }

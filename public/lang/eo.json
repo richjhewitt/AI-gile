@@ -4134,5 +4134,14 @@
  "help.m.thanks": "💙 Dankon",
  "help.thanks.h": "💙 Dankon",
  "help.thanks.chilled": "Vokoj, ekrankunhavigo, respondoj, reagoj kaj tajpopunktoj venas de {name}. Dankon!",
- "help.thanks.livekit": "Vokoj funkcias per {name}, la malfermitkoda vokservilo."
+ "help.thanks.livekit": "Vokoj funkcias per {name}, la malfermitkoda vokservilo.",
+ "dlg.np.team": "Komencu kun teamo (estro) kaj dosierujo. Malmarku por projekto nur kun kartoj.",
+ "noteam.line": "Ankoraŭ neniu teamo ĉi tie, do oni laboras pri nenio.",
+ "noteam.start": "Krei teamon",
+ "noteam.folder": "Teamo bezonas dosierujon por labori en ĝi.",
+ "noteam.nofolder": "La teamo bezonas dosierujon por labori en ĝi, do oni ankoraŭ laboras pri nenio.",
+ "noteam.choose": "Elekti dosierujon",
+ "noteam.make": "Kreu unu por mi",
+ "noteam.pill": "Ankoraŭ sen teamo",
+ "noteam.pill.folder": "Ankoraŭ sen dosierujo"
 }

@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Merci",
  "help.thanks.h": "💙 Merci",
  "help.thanks.chilled": "Uriff, Bildschierm deelen, Äntwerten, Reaktiounen an d'Tipp-Pünktercher kommen vu {name}. Merci!",
- "help.thanks.livekit": "D'Uriff lafen op {name}, dem Open-Source-Uruffserver."
+ "help.thanks.livekit": "D'Uriff lafen op {name}, dem Open-Source-Uruffserver.",
+ "dlg.np.team": "Mat engem Team (engem Lead) an engem Dossier ufänken. Hokes ewechhuele fir e Projet nëmme mat Kaarten.",
+ "noteam.line": "Hei gëtt et nach keen Team, also gëtt un näischt geschafft.",
+ "noteam.start": "Team starten",
+ "noteam.folder": "En Team brauch en Dossier, fir dran ze schaffen.",
+ "noteam.nofolder": "D'Team brauch en Dossier, fir dran ze schaffen, also gëtt nach un näischt geschafft.",
+ "noteam.choose": "Dossier wielen",
+ "noteam.make": "Maach mer een",
+ "noteam.pill": "Nach keen Team",
+ "noteam.pill.folder": "Nach keen Dossier"
 }

@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Terima kasih",
  "help.thanks.h": "💙 Terima kasih",
  "help.thanks.chilled": "Panggilan, kongsi skrin, balasan, reaksi dan titik menaip datang daripada {name}. Terima kasih!",
- "help.thanks.livekit": "Panggilan berjalan pada {name}, pelayan panggilan sumber terbuka."
+ "help.thanks.livekit": "Panggilan berjalan pada {name}, pelayan panggilan sumber terbuka.",
+ "dlg.np.team": "Mula dengan pasukan (seorang Ketua) dan folder. Nyahtanda untuk projek kad sahaja.",
+ "noteam.line": "Belum ada pasukan di sini, jadi tiada apa-apa yang dikerjakan.",
+ "noteam.start": "Mulakan pasukan",
+ "noteam.folder": "Pasukan perlukan folder untuk bekerja.",
+ "noteam.nofolder": "Pasukan perlukan folder untuk bekerja, jadi belum ada apa-apa yang dikerjakan.",
+ "noteam.choose": "Pilih folder",
+ "noteam.make": "Buatkan untuk saya",
+ "noteam.pill": "Belum ada pasukan",
+ "noteam.pill.folder": "Belum ada folder"
 }

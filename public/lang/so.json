@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Mahadsanid",
  "help.thanks.h": "💙 Mahadsanid",
  "help.thanks.chilled": "Wicitaanada, wadaagista shaashadda, jawaabaha, falcelinta iyo dhibcaha qoraalka waxay ka yimaadaan {name}. Mahadsanid!",
- "help.thanks.livekit": "Wicitaanadu waxay ku shaqeeyaan {name}, server-ka wicitaanada ee il-furan."
+ "help.thanks.livekit": "Wicitaanadu waxay ku shaqeeyaan {name}, server-ka wicitaanada ee il-furan.",
+ "dlg.np.team": "Ku bilow koox (Hoggaamiye) iyo folder. Calaamadda ka saar mashruuc kaararka oo keliya ah.",
+ "noteam.line": "Weli koox halkan ma joogto, sidaa darteed waxba lagama shaqeeyo.",
+ "noteam.start": "Bilow koox",
+ "noteam.folder": "Kooxdu waxay u baahan tahay folder ay ka shaqeyso.",
+ "noteam.nofolder": "Kooxdu waxay u baahan tahay folder ay ka shaqeyso, sidaa darteed weli waxba lagama shaqeeyo.",
+ "noteam.choose": "Dooro folder",
+ "noteam.make": "Ii samee mid",
+ "noteam.pill": "Weli koox ma jirto",
+ "noteam.pill.folder": "Weli folder ma jiro"
 }

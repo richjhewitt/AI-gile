@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Tack",
  "help.thanks.h": "💙 Tack",
  "help.thanks.chilled": "Samtal, skärmdelning, svar, reaktioner och skrivprickar kommer från {name}. Tack!",
- "help.thanks.livekit": "Samtalen körs på {name}, samtalsservern med öppen källkod."
+ "help.thanks.livekit": "Samtalen körs på {name}, samtalsservern med öppen källkod.",
+ "dlg.np.team": "Börja med ett team (en Lead) och en mapp. Bocka ur för ett projekt med bara kort.",
+ "noteam.line": "Inget team här än, så inget blir gjort.",
+ "noteam.start": "Starta ett team",
+ "noteam.folder": "Ett team behöver en mapp att jobba i.",
+ "noteam.nofolder": "Teamet behöver en mapp att jobba i, så inget blir gjort än.",
+ "noteam.choose": "Välj en mapp",
+ "noteam.make": "Skapa en åt mig",
+ "noteam.pill": "Inget team än",
+ "noteam.pill.folder": "Ingen mapp än"
 }

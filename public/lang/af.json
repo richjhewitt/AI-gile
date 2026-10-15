@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Dankie",
  "help.thanks.h": "💙 Dankie",
  "help.thanks.chilled": "Oproepe, skermdeling, antwoorde, reaksies en tikkolletjies kom van {name}. Baie dankie!",
- "help.thanks.livekit": "Oproepe loop op {name}, die oopbron-oproepbediener."
+ "help.thanks.livekit": "Oproepe loop op {name}, die oopbron-oproepbediener.",
+ "dlg.np.team": "Begin met 'n span ('n Leier) en 'n gids. Haal die regmerkie af vir 'n projek met net kaarte.",
+ "noteam.line": "Nog geen span hier nie, so niks word aan gewerk nie.",
+ "noteam.start": "Begin 'n span",
+ "noteam.folder": "'n Span het 'n gids nodig om in te werk.",
+ "noteam.nofolder": "Die span het 'n gids nodig om in te werk, so niks word nog aan gewerk nie.",
+ "noteam.choose": "Kies 'n gids",
+ "noteam.make": "Maak een vir my",
+ "noteam.pill": "Nog geen span nie",
+ "noteam.pill.folder": "Nog geen gids nie"
 }

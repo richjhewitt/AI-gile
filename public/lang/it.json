@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Ringraziamenti",
  "help.thanks.h": "💙 Ringraziamenti",
  "help.thanks.chilled": "Chiamate, condivisione dello schermo, risposte, reazioni e puntini di scrittura arrivano da {name}. Grazie!",
- "help.thanks.livekit": "Le chiamate girano su {name}, il server di chiamate open source."
+ "help.thanks.livekit": "Le chiamate girano su {name}, il server di chiamate open source.",
+ "dlg.np.team": "Inizia con un team (un Lead) e una cartella. Togli la spunta per un progetto solo di card.",
+ "noteam.line": "Qui non c'è ancora un team, quindi non si lavora a niente.",
+ "noteam.start": "Crea un team",
+ "noteam.folder": "Un team ha bisogno di una cartella in cui lavorare.",
+ "noteam.nofolder": "Il team ha bisogno di una cartella in cui lavorare, quindi non si lavora ancora a niente.",
+ "noteam.choose": "Scegli una cartella",
+ "noteam.make": "Creane una per me",
+ "noteam.pill": "Ancora nessun team",
+ "noteam.pill.folder": "Ancora nessuna cartella"
 }

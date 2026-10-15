@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Faleminderit",
  "help.thanks.h": "💙 Faleminderit",
  "help.thanks.chilled": "Thirrjet, ndarja e ekranit, përgjigjet, reagimet dhe pikat e shkrimit vijnë nga {name}. Faleminderit!",
- "help.thanks.livekit": "Thirrjet funksionojnë mbi {name}, serverin e thirrjeve me burim të hapur."
+ "help.thanks.livekit": "Thirrjet funksionojnë mbi {name}, serverin e thirrjeve me burim të hapur.",
+ "dlg.np.team": "Fillo me një ekip (një Drejtues) dhe një dosje. Hiqe shenjën për një projekt vetëm me karta.",
+ "noteam.line": "Ende nuk ka ekip këtu, ndaj nuk punohet për asgjë.",
+ "noteam.start": "Krijo një ekip",
+ "noteam.folder": "Ekipi ka nevojë për një dosje ku të punojë.",
+ "noteam.nofolder": "Ekipi ka nevojë për një dosje ku të punojë, ndaj ende nuk punohet për asgjë.",
+ "noteam.choose": "Zgjidh një dosje",
+ "noteam.make": "Krijo një për mua",
+ "noteam.pill": "Ende pa ekip",
+ "noteam.pill.folder": "Ende pa dosje"
 }

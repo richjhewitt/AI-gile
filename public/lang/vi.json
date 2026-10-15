@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Lời cảm ơn",
  "help.thanks.h": "💙 Lời cảm ơn",
  "help.thanks.chilled": "Cuộc gọi, chia sẻ màn hình, trả lời, biểu cảm và dấu chấm đang gõ đến từ {name}. Cảm ơn!",
- "help.thanks.livekit": "Cuộc gọi chạy trên {name}, máy chủ gọi mã nguồn mở."
+ "help.thanks.livekit": "Cuộc gọi chạy trên {name}, máy chủ gọi mã nguồn mở.",
+ "dlg.np.team": "Bắt đầu với một nhóm (có Trưởng nhóm) và một thư mục. Bỏ chọn nếu chỉ muốn dự án có thẻ.",
+ "noteam.line": "Ở đây chưa có nhóm nên chưa có việc gì được làm.",
+ "noteam.start": "Lập nhóm",
+ "noteam.folder": "Nhóm cần một thư mục để làm việc.",
+ "noteam.nofolder": "Nhóm cần một thư mục để làm việc nên chưa có việc gì được làm.",
+ "noteam.choose": "Chọn thư mục",
+ "noteam.make": "Tạo giúp tôi",
+ "noteam.pill": "Chưa có nhóm",
+ "noteam.pill.folder": "Chưa có thư mục"
 }

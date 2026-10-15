@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Godiya",
  "help.thanks.h": "💙 Godiya",
  "help.thanks.chilled": "Kira, raba allo, amsoshi, martani da ɗigon rubutu sun fito daga {name}. Mun gode!",
- "help.thanks.livekit": "Kira suna gudana akan {name}, sabar kira mai buɗaɗɗen tushe."
+ "help.thanks.livekit": "Kira suna gudana akan {name}, sabar kira mai buɗaɗɗen tushe.",
+ "dlg.np.team": "Fara da ƙungiya (jagora) da babban fayil. Cire alama don aikin katuna kawai.",
+ "noteam.line": "Babu ƙungiya a nan tukuna, don haka ba a aiki a kan komai.",
+ "noteam.start": "Fara ƙungiya",
+ "noteam.folder": "Ƙungiya na buƙatar babban fayil don yin aiki a ciki.",
+ "noteam.nofolder": "Ƙungiyar na buƙatar babban fayil don yin aiki a ciki, don haka ba a aiki a kan komai tukuna.",
+ "noteam.choose": "Zaɓi babban fayil",
+ "noteam.make": "Yi mini ɗaya",
+ "noteam.pill": "Babu ƙungiya tukuna",
+ "noteam.pill.folder": "Babu babban fayil tukuna"
 }

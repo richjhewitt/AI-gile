@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Podziękowania",
  "help.thanks.h": "💙 Podziękowania",
  "help.thanks.chilled": "Rozmowy, udostępnianie ekranu, odpowiedzi, reakcje i kropki pisania pochodzą z {name}. Dziękujemy!",
- "help.thanks.livekit": "Rozmowy działają na {name}, otwartoźródłowym serwerze połączeń."
+ "help.thanks.livekit": "Rozmowy działają na {name}, otwartoźródłowym serwerze połączeń.",
+ "dlg.np.team": "Zacznij z zespołem (Liderem) i folderem. Odznacz, jeśli projekt ma mieć tylko karty.",
+ "noteam.line": "Nie ma tu jeszcze zespołu, więc nikt nad niczym nie pracuje.",
+ "noteam.start": "Utwórz zespół",
+ "noteam.folder": "Zespół potrzebuje folderu do pracy.",
+ "noteam.nofolder": "Zespół potrzebuje folderu do pracy, więc na razie nikt nad niczym nie pracuje.",
+ "noteam.choose": "Wybierz folder",
+ "noteam.make": "Utwórz go za mnie",
+ "noteam.pill": "Brak zespołu",
+ "noteam.pill.folder": "Brak folderu"
 }

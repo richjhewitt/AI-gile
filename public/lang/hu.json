@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Köszönet",
  "help.thanks.h": "💙 Köszönet",
  "help.thanks.chilled": "A hívásokat, a képernyőmegosztást, a válaszokat, a reakciókat és a gépelést jelző pöttyöket a {name} adja. Köszönjük!",
- "help.thanks.livekit": "A hívások a {name} nyílt forráskódú hívásszerveren futnak."
+ "help.thanks.livekit": "A hívások a {name} nyílt forráskódú hívásszerveren futnak.",
+ "dlg.np.team": "Kezdés csapattal (egy vezetővel) és mappával. Vedd ki a pipát, ha csak kártyás projektet szeretnél.",
+ "noteam.line": "Itt még nincs csapat, így senki nem dolgozik semmin.",
+ "noteam.start": "Csapat indítása",
+ "noteam.folder": "A csapatnak kell egy mappa, amelyben dolgozhat.",
+ "noteam.nofolder": "A csapatnak kell egy mappa, amelyben dolgozhat, így egyelőre senki nem dolgozik semmin.",
+ "noteam.choose": "Mappa kiválasztása",
+ "noteam.make": "Készíts nekem egyet",
+ "noteam.pill": "Még nincs csapat",
+ "noteam.pill.folder": "Még nincs mappa"
 }

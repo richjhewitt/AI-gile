@@ -4133,5 +4133,14 @@
  "help.m.thanks": "💙 Agradecimentos",
  "help.thanks.h": "💙 Agradecimentos",
  "help.thanks.chilled": "Chamadas, compartilhamento de tela, respostas, reações e os pontinhos de digitação vêm do {name}. Obrigado!",
- "help.thanks.livekit": "As chamadas rodam no {name}, o servidor de chamadas de código aberto."
+ "help.thanks.livekit": "As chamadas rodam no {name}, o servidor de chamadas de código aberto.",
+ "dlg.np.team": "Começar com uma equipe (um Líder) e uma pasta. Desmarque para um projeto só de cards.",
+ "noteam.line": "Ainda não há equipe aqui, então nada está sendo feito.",
+ "noteam.start": "Montar uma equipe",
+ "noteam.folder": "A equipe precisa de uma pasta para trabalhar.",
+ "noteam.nofolder": "A equipe precisa de uma pasta para trabalhar, então nada está sendo feito ainda.",
+ "noteam.choose": "Escolher uma pasta",
+ "noteam.make": "Criar uma para mim",
+ "noteam.pill": "Sem equipe ainda",
+ "noteam.pill.folder": "Sem pasta ainda"
 }

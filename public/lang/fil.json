@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Salamat",
  "help.thanks.h": "💙 Salamat",
  "help.thanks.chilled": "Galing sa {name} ang mga call, screen share, reply, reaction at typing dots. Salamat!",
- "help.thanks.livekit": "Tumatakbo ang mga call sa {name}, ang open-source na call server."
+ "help.thanks.livekit": "Tumatakbo ang mga call sa {name}, ang open-source na call server.",
+ "dlg.np.team": "Magsimula sa isang team (isang Lead) at isang folder. Alisin ang tsek para sa project na card lang.",
+ "noteam.line": "Wala pang team dito, kaya walang natatrabaho.",
+ "noteam.start": "Magsimula ng team",
+ "noteam.folder": "Kailangan ng team ng folder na pagtatrabahuhan.",
+ "noteam.nofolder": "Kailangan ng team ng folder na pagtatrabahuhan, kaya wala pang natatrabaho.",
+ "noteam.choose": "Pumili ng folder",
+ "noteam.make": "Gawan mo ako",
+ "noteam.pill": "Wala pang team",
+ "noteam.pill.folder": "Wala pang folder"
 }

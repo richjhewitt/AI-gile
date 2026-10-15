@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Terima kasih",
  "help.thanks.h": "💙 Terima kasih",
  "help.thanks.chilled": "Panggilan, berbagi layar, balasan, reaksi, dan titik-titik mengetik berasal dari {name}. Terima kasih!",
- "help.thanks.livekit": "Panggilan berjalan di {name}, server panggilan open-source."
+ "help.thanks.livekit": "Panggilan berjalan di {name}, server panggilan open-source.",
+ "dlg.np.team": "Mulai dengan tim (seorang Lead) dan folder. Hapus centang untuk proyek yang hanya berisi kartu.",
+ "noteam.line": "Belum ada tim di sini, jadi belum ada yang dikerjakan.",
+ "noteam.start": "Buat tim",
+ "noteam.folder": "Tim butuh folder untuk bekerja.",
+ "noteam.nofolder": "Tim butuh folder untuk bekerja, jadi belum ada yang dikerjakan.",
+ "noteam.choose": "Pilih folder",
+ "noteam.make": "Buatkan untukku",
+ "noteam.pill": "Belum ada tim",
+ "noteam.pill.folder": "Belum ada folder"
 }

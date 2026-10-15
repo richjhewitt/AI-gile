@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 감사의 말",
  "help.thanks.h": "💙 감사의 말",
  "help.thanks.chilled": "통화, 화면 공유, 답장, 반응, 입력 중 표시는 {name}에서 왔어요. 고마워요!",
- "help.thanks.livekit": "통화는 오픈 소스 통화 서버인 {name}에서 돌아가요."
+ "help.thanks.livekit": "통화는 오픈 소스 통화 서버인 {name}에서 돌아가요.",
+ "dlg.np.team": "팀(리드 한 명)과 폴더로 시작해요. 카드만 쓰는 프로젝트라면 체크를 해제하세요.",
+ "noteam.line": "아직 팀이 없어서 진행되는 작업이 없어요.",
+ "noteam.start": "팀 만들기",
+ "noteam.folder": "팀이 작업할 폴더가 필요해요.",
+ "noteam.nofolder": "팀이 작업할 폴더가 필요해서 아직 진행되는 작업이 없어요.",
+ "noteam.choose": "폴더 선택",
+ "noteam.make": "새로 만들어 줘",
+ "noteam.pill": "아직 팀 없음",
+ "noteam.pill.folder": "아직 폴더 없음"
 }

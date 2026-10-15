@@ -4113,5 +4113,14 @@
  "help.m.thanks": "💙 Þancas",
  "help.thanks.h": "💙 Þancas",
  "help.thanks.chilled": "Clypunga, scīnan-dǣl, andsweru, onbryrdnessa and wrītpricas cumaþ fram {name}. Þancas þē!",
- "help.thanks.livekit": "Clypunga yrnaþ on {name}, þǣm openan clypunge-þegne."
+ "help.thanks.livekit": "Clypunga yrnaþ on {name}, þǣm openan clypunge-þegne.",
+ "dlg.np.team": "Onġinn mid weorode (ānum Ealdormenn) and gewrithorde. Nim þone tācn onweġ for weorce mid lēafum āna.",
+ "noteam.line": "Nis hēr nān weorod ġīet, swā nāht ne biþ ġeworht.",
+ "noteam.start": "Onġinn weorod",
+ "noteam.folder": "Weorod behōfaþ gewrithordes tō wyrċenne on.",
+ "noteam.nofolder": "Þæt weorod behōfaþ gewrithordes tō wyrċenne on, swā nāht ne biþ ġīet ġeworht.",
+ "noteam.choose": "Ċēos gewrithord",
+ "noteam.make": "Wyrċ ān for mē",
+ "noteam.pill": "Nān weorod ġīet",
+ "noteam.pill.folder": "Nān gewrithord ġīet"
 }

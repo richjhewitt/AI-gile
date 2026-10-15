@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Mulțumiri",
  "help.thanks.h": "💙 Mulțumiri",
  "help.thanks.chilled": "Apelurile, partajarea ecranului, răspunsurile, reacțiile și punctele de tastare vin de la {name}. Mulțumim!",
- "help.thanks.livekit": "Apelurile rulează pe {name}, serverul de apeluri open-source."
+ "help.thanks.livekit": "Apelurile rulează pe {name}, serverul de apeluri open-source.",
+ "dlg.np.team": "Începe cu o echipă (un Lider) și un dosar. Debifează pentru un proiect doar cu carduri.",
+ "noteam.line": "Încă nu e nicio echipă aici, deci nu se lucrează la nimic.",
+ "noteam.start": "Pornește o echipă",
+ "noteam.folder": "Echipa are nevoie de un dosar în care să lucreze.",
+ "noteam.nofolder": "Echipa are nevoie de un dosar în care să lucreze, deci încă nu se lucrează la nimic.",
+ "noteam.choose": "Alege un dosar",
+ "noteam.make": "Fă-mi unul",
+ "noteam.pill": "Încă fără echipă",
+ "noteam.pill.folder": "Încă fără dosar"
 }

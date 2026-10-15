@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Sulpayki",
  "help.thanks.h": "💙 Sulpayki",
  "help.thanks.chilled": "Llamadakuna, pantalla rakinakuy, kutichiykuna, reaccionkuna, qillqashaq puntitokunapas {name}manta hamun. Sulpayki!",
- "help.thanks.livekit": "Llamadakuna {name} patapi purin, kichasqa código llamada servidor."
+ "help.thanks.livekit": "Llamadakuna {name} patapi purin, kichasqa código llamada servidor.",
+ "dlg.np.team": "Huk ayllu (huk Pusaq) hinallataq huk folder-wan qallariy. Kartakunallawan proyectopaq tikita urquy.",
+ "noteam.line": "Manaraq kaypi ayllu kanchu, chayrayku mana imapas llamk'akunchu.",
+ "noteam.start": "Ayllu qallariy",
+ "noteam.folder": "Ayllu llamk'anapaq huk folder-ta munan.",
+ "noteam.nofolder": "Ayllu llamk'anapaq huk folder-ta munan, chayrayku manaraq imapas llamk'akunchu.",
+ "noteam.choose": "Folder-ta akllay",
+ "noteam.make": "Ñuqapaq ruray",
+ "noteam.pill": "Manaraq ayllu",
+ "noteam.pill.folder": "Manaraq folder"
 }

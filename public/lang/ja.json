@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 謝辞",
  "help.thanks.h": "💙 謝辞",
  "help.thanks.chilled": "通話、画面共有、返信、リアクション、入力中の点は{name}のおかげです。ありがとうございます！",
- "help.thanks.livekit": "通話はオープンソースの通話サーバー{name}で動いています。"
+ "help.thanks.livekit": "通話はオープンソースの通話サーバー{name}で動いています。",
+ "dlg.np.team": "チーム（リード）とフォルダ付きで始めます。カードだけのプロジェクトならチェックを外してください。",
+ "noteam.line": "まだチームがいないので、何も進みません。",
+ "noteam.start": "チームを作る",
+ "noteam.folder": "チームには作業するフォルダが必要です。",
+ "noteam.nofolder": "チームには作業するフォルダが必要なので、まだ何も進みません。",
+ "noteam.choose": "フォルダを選ぶ",
+ "noteam.make": "おまかせで作成",
+ "noteam.pill": "チームなし",
+ "noteam.pill.folder": "フォルダなし"
 }

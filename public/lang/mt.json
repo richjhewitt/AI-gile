@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Grazzi",
  "help.thanks.h": "💙 Grazzi",
  "help.thanks.chilled": "Is-sejħiet, il-qsim tal-iskrin, it-tweġibiet, ir-reazzjonijiet u t-tikek tat-tajpjar ġejjin minn {name}. Grazzi!",
- "help.thanks.livekit": "Is-sejħiet jaħdmu fuq {name}, is-server tas-sejħiet open-source."
+ "help.thanks.livekit": "Is-sejħiet jaħdmu fuq {name}, is-server tas-sejħiet open-source.",
+ "dlg.np.team": "Ibda b'tim (Lead) u folder. Neħħi l-marka għal proġett b'karti biss.",
+ "noteam.line": "Għad m'hawn ebda tim, allura ħadd mhu qed jaħdem fuq xejn.",
+ "noteam.start": "Ibda tim",
+ "noteam.folder": "It-tim jeħtieġ folder biex jaħdem fih.",
+ "noteam.nofolder": "It-tim jeħtieġ folder biex jaħdem fih, allura għalissa ħadd mhu qed jaħdem fuq xejn.",
+ "noteam.choose": "Agħżel folder",
+ "noteam.make": "Agħmilli wieħed",
+ "noteam.pill": "Għad m'hemm tim",
+ "noteam.pill.folder": "Għad m'hemm folder"
 }

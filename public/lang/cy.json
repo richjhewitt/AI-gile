@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Diolch",
  "help.thanks.h": "💙 Diolch",
  "help.thanks.chilled": "Daw galwadau, rhannu sgrin, atebion, ymatebion a dotiau teipio o {name}. Diolch!",
- "help.thanks.livekit": "Mae galwadau'n rhedeg ar {name}, y gweinydd galwadau cod agored."
+ "help.thanks.livekit": "Mae galwadau'n rhedeg ar {name}, y gweinydd galwadau cod agored.",
+ "dlg.np.team": "Dechrau gyda thîm (arweinydd) a ffolder. Dad-dicia ar gyfer prosiect cardiau yn unig.",
+ "noteam.line": "Does dim tîm yma eto, felly does dim byd yn cael ei wneud.",
+ "noteam.start": "Dechrau tîm",
+ "noteam.folder": "Mae angen ffolder ar dîm i weithio ynddi.",
+ "noteam.nofolder": "Mae angen ffolder ar y tîm i weithio ynddi, felly does dim byd yn cael ei wneud eto.",
+ "noteam.choose": "Dewis ffolder",
+ "noteam.make": "Gwna un i mi",
+ "noteam.pill": "Dim tîm eto",
+ "noteam.pill.folder": "Dim ffolder eto"
 }

@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Grazas",
  "help.thanks.h": "💙 Grazas",
  "help.thanks.chilled": "As chamadas, a pantalla compartida, as respostas, as reaccións e os puntos de escritura veñen de {name}. Grazas!",
- "help.thanks.livekit": "As chamadas funcionan sobre {name}, o servidor de chamadas de código aberto."
+ "help.thanks.livekit": "As chamadas funcionan sobre {name}, o servidor de chamadas de código aberto.",
+ "dlg.np.team": "Comeza cun equipo (un líder) e un cartafol. Desmarca para un proxecto só de tarxetas.",
+ "noteam.line": "Aínda non hai equipo aquí, así que non se traballa en nada.",
+ "noteam.start": "Crear un equipo",
+ "noteam.folder": "Un equipo precisa un cartafol no que traballar.",
+ "noteam.nofolder": "O equipo precisa un cartafol no que traballar, así que aínda non se traballa en nada.",
+ "noteam.choose": "Escoller un cartafol",
+ "noteam.make": "Faime un",
+ "noteam.pill": "Aínda sen equipo",
+ "noteam.pill.folder": "Aínda sen cartafol"
 }

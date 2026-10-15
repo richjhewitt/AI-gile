@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 7h4nk5",
  "help.thanks.h": "💙 7h4nk5",
  "help.thanks.chilled": "C4ll5, 5cr33n 5h4r3, r3pl135, r34c710n5 4nd 7yp1ng d075 c0m3 fr0m {name}. 7h4nk y0u!",
- "help.thanks.livekit": "C4ll5 run 0n {name}, 7h3 0p3n-50urc3 c4ll 53rv3r."
+ "help.thanks.livekit": "C4ll5 run 0n {name}, 7h3 0p3n-50urc3 c4ll 53rv3r.",
+ "dlg.np.team": "574r7 w17h 4 734m (4 L34d) 4nd 4 f0ld3r. Un71ck f0r 4 c4rd5-0nly pr0j3c7.",
+ "noteam.line": "N0 734m h3r3 y37, 50 n07h1ng g375 w0rk3d 0n.",
+ "noteam.start": "574r7 4 734m",
+ "noteam.folder": "4 734m n33d5 4 f0ld3r 70 w0rk 1n.",
+ "noteam.nofolder": "7h3 734m n33d5 4 f0ld3r 70 w0rk 1n, 50 n07h1ng g375 w0rk3d 0n y37.",
+ "noteam.choose": "Ch0053 4 f0ld3r",
+ "noteam.make": "M4k3 0n3 f0r m3",
+ "noteam.pill": "N0 734m y37",
+ "noteam.pill.folder": "N0 f0ld3r y37"
 }

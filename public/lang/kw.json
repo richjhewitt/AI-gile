@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Meur ras",
  "help.thanks.h": "💙 Meur ras",
  "help.thanks.chilled": "Gelwansow, rannya skrin, gorthebow, gwrythyansow ha'n poyntys skrifa a dheu dhyworth {name}. Meur ras!",
- "help.thanks.livekit": "Gelwansow a res war {name}, an servyer gelwansow fenten-ygor."
+ "help.thanks.livekit": "Gelwansow a res war {name}, an servyer gelwansow fenten-ygor.",
+ "dlg.np.team": "Dalleth gans bagas (penn) ha fylder. Dilea an merk rag towl gans kardys hepken.",
+ "noteam.line": "Nyns eus bagas omma hwath, ytho ny vydh obereth war travyth.",
+ "noteam.start": "Dalleth bagas",
+ "noteam.folder": "Edhom a'n jeves bagas a fylder rag oberi ynno.",
+ "noteam.nofolder": "Edhom a'n jeves an bagas a fylder rag oberi ynno, ytho ny vydh obereth war travyth hwath.",
+ "noteam.choose": "Dewis fylder",
+ "noteam.make": "Gwra onan ragov vy",
+ "noteam.pill": "Heb bagas hwath",
+ "noteam.pill.folder": "Heb fylder hwath"
 }

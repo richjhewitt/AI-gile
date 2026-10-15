@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Thanks",
  "help.thanks.h": "💙 Thanks",
  "help.thanks.chilled": "Calls, screen share, replies, reactions and typing dots come from {name}. Thank you, blood of my blood!",
- "help.thanks.livekit": "Calls run on {name}, the open-source call server."
+ "help.thanks.livekit": "Calls run on {name}, the open-source call server.",
+ "dlg.np.team": "Start with a khalasar (a Lead) and a folder. Untick for a cards-only project.",
+ "noteam.line": "No khalasar here yet, so nothing gets worked on.",
+ "noteam.start": "Start a khalasar",
+ "noteam.folder": "A khalasar needs a folder to work in.",
+ "noteam.nofolder": "The khalasar needs a folder to work in, so nothing gets worked on yet.",
+ "noteam.choose": "Choose a folder",
+ "noteam.make": "Make one for me",
+ "noteam.pill": "No khalasar yet",
+ "noteam.pill.folder": "No folder yet"
 }

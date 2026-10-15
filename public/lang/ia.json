@@ -4134,5 +4134,14 @@
  "help.m.thanks": "💙 Gratias",
  "help.thanks.h": "💙 Gratias",
  "help.thanks.chilled": "Appellos, compartimento de schermo, responsas, reactiones e le punctos de scriber veni de {name}. Gratias!",
- "help.thanks.livekit": "Le appellos functiona super {name}, le servitor de appellos de codice aperte."
+ "help.thanks.livekit": "Le appellos functiona super {name}, le servitor de appellos de codice aperte.",
+ "dlg.np.team": "Comencia con un equipa (un capo) e un dossier. Dismarca pro un projecto con solmente cartas.",
+ "noteam.line": "Il non ha ancora un equipa hic, dunque nihil es laborate.",
+ "noteam.start": "Crear un equipa",
+ "noteam.folder": "Un equipa ha besonio de un dossier pro laborar.",
+ "noteam.nofolder": "Le equipa ha besonio de un dossier pro laborar, dunque nihil es ancora laborate.",
+ "noteam.choose": "Seliger un dossier",
+ "noteam.make": "Face un pro me",
+ "noteam.pill": "Nulle equipa ancora",
+ "noteam.pill.folder": "Nulle dossier ancora"
 }

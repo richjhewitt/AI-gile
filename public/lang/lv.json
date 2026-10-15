@@ -4133,5 +4133,14 @@
  "help.m.thanks": "💙 Paldies",
  "help.thanks.h": "💙 Paldies",
  "help.thanks.chilled": "Zvani, ekrāna kopīgošana, atbildes, reakcijas un rakstīšanas punktiņi nāk no {name}. Paldies!",
- "help.thanks.livekit": "Zvani darbojas ar {name}, atvērtā koda zvanu serveri."
+ "help.thanks.livekit": "Zvani darbojas ar {name}, atvērtā koda zvanu serveri.",
+ "dlg.np.team": "Sāc ar komandu (Vadītāju) un mapi. Noņem ķeksi, ja gribi projektu tikai ar kartītēm.",
+ "noteam.line": "Šeit vēl nav komandas, tāpēc nekas netiek darīts.",
+ "noteam.start": "Izveidot komandu",
+ "noteam.folder": "Komandai vajag mapi, kurā strādāt.",
+ "noteam.nofolder": "Komandai vajag mapi, kurā strādāt, tāpēc pagaidām nekas netiek darīts.",
+ "noteam.choose": "Izvēlēties mapi",
+ "noteam.make": "Izveido man",
+ "noteam.pill": "Vēl nav komandas",
+ "noteam.pill.folder": "Vēl nav mapes"
 }

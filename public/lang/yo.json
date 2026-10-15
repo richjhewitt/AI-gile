@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Ọpẹ́",
  "help.thanks.h": "💙 Ọpẹ́",
  "help.thanks.chilled": "Àwọn ìpè, pípín ìboju, àwọn èsì, àwọn ìfèsì ìmọ̀lára àti àmì ìtẹ̀wé wá láti {name}. A dúpẹ́!",
- "help.thanks.livekit": "Àwọn ìpè ń ṣiṣẹ́ lórí {name}, olupin ìpè orísun-ṣíṣí."
+ "help.thanks.livekit": "Àwọn ìpè ń ṣiṣẹ́ lórí {name}, olupin ìpè orísun-ṣíṣí.",
+ "dlg.np.team": "Bẹ̀rẹ̀ pẹ̀lú ẹgbẹ́ kan (Olórí kan) àti fódà kan. Yọ àmì kúrò fún iṣẹ́ àkànṣe tó jẹ́ káàdì nìkan.",
+ "noteam.line": "Kò tíì sí ẹgbẹ́ níbí, nítorí náà kò sí ohun tí à ń ṣiṣẹ́ lé lórí.",
+ "noteam.start": "Bẹ̀rẹ̀ ẹgbẹ́ kan",
+ "noteam.folder": "Ẹgbẹ́ nílò fódà láti ṣiṣẹ́ nínú rẹ̀.",
+ "noteam.nofolder": "Ẹgbẹ́ náà nílò fódà láti ṣiṣẹ́ nínú rẹ̀, nítorí náà kò tíì sí ohun tí à ń ṣiṣẹ́ lé lórí.",
+ "noteam.choose": "Yan fódà kan",
+ "noteam.make": "Ṣe ọ̀kan fún mi",
+ "noteam.pill": "Kò tíì sí ẹgbẹ́",
+ "noteam.pill.folder": "Kò tíì sí fódà"
 }

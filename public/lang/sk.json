@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Poďakovanie",
  "help.thanks.h": "💙 Poďakovanie",
  "help.thanks.chilled": "Hovory, zdieľanie obrazovky, odpovede, reakcie a bodky pri písaní pochádzajú z {name}. Ďakujeme!",
- "help.thanks.livekit": "Hovory bežia na {name}, open-source serveri pre hovory."
+ "help.thanks.livekit": "Hovory bežia na {name}, open-source serveri pre hovory.",
+ "dlg.np.team": "Začni s tímom (vedúcim) a priečinkom. Odškrtni pre projekt len s kartami.",
+ "noteam.line": "Zatiaľ tu nie je tím, takže sa na ničom nepracuje.",
+ "noteam.start": "Založiť tím",
+ "noteam.folder": "Tím potrebuje priečinok, v ktorom bude pracovať.",
+ "noteam.nofolder": "Tím potrebuje priečinok, v ktorom bude pracovať, takže sa zatiaľ na ničom nepracuje.",
+ "noteam.choose": "Vybrať priečinok",
+ "noteam.make": "Vytvor mi ho",
+ "noteam.pill": "Zatiaľ bez tímu",
+ "noteam.pill.folder": "Zatiaľ bez priečinka"
 }

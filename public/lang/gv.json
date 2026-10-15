@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Gura mie ayd",
  "help.thanks.h": "💙 Gura mie ayd",
  "help.thanks.chilled": "Ta eamyn, rannee screen, ansoorynyn, freggyrtyn as pongyn screeuee cheet veih {name}. Gura mie ayd!",
- "help.thanks.livekit": "Ta eamyn roie er {name}, yn sharvaalagh eamyn foshlit."
+ "help.thanks.livekit": "Ta eamyn roie er {name}, yn sharvaalagh eamyn foshlit.",
+ "dlg.np.team": "Toshee lesh possan (leeideilagh) as pillagh. Gow ersooyl y cowrey son pryjeck lesh carteyn ynrican.",
+ "noteam.line": "Cha nel possan ayns shoh foast, myr shen cha nel obbyr jeant er veg.",
+ "noteam.start": "Toshee possan",
+ "noteam.folder": "Ta feme ec possan er pillagh dy obbraghey ayn.",
+ "noteam.nofolder": "Ta feme ec y possan er pillagh dy obbraghey ayn, myr shen cha nel obbyr jeant er veg foast.",
+ "noteam.choose": "Reih pillagh",
+ "noteam.make": "Jean fer dou",
+ "noteam.pill": "Gyn possan foast",
+ "noteam.pill.folder": "Gyn pillagh foast"
 }

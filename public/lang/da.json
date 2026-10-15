@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Tak",
  "help.thanks.h": "💙 Tak",
  "help.thanks.chilled": "Opkald, skærmdeling, svar, reaktioner og skriveprikker kommer fra {name}. Tak!",
- "help.thanks.livekit": "Opkaldene kører på {name}, open source-serveren til opkald."
+ "help.thanks.livekit": "Opkaldene kører på {name}, open source-serveren til opkald.",
+ "dlg.np.team": "Start med et team (en lead) og en mappe. Fjern fluebenet for et projekt kun med kort.",
+ "noteam.line": "Intet team her endnu, så der bliver ikke arbejdet på noget.",
+ "noteam.start": "Start et team",
+ "noteam.folder": "Et team skal have en mappe at arbejde i.",
+ "noteam.nofolder": "Teamet skal have en mappe at arbejde i, så der bliver ikke arbejdet på noget endnu.",
+ "noteam.choose": "Vælg en mappe",
+ "noteam.make": "Lav en til mig",
+ "noteam.pill": "Intet team endnu",
+ "noteam.pill.folder": "Ingen mappe endnu"
 }

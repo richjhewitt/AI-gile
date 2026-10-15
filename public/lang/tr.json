@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Teşekkürler",
  "help.thanks.h": "💙 Teşekkürler",
  "help.thanks.chilled": "Aramalar, ekran paylaşımı, yanıtlar, tepkiler ve yazıyor noktaları {name} sayesinde. Teşekkürler!",
- "help.thanks.livekit": "Aramalar, açık kaynak arama sunucusu {name} üzerinde çalışır."
+ "help.thanks.livekit": "Aramalar, açık kaynak arama sunucusu {name} üzerinde çalışır.",
+ "dlg.np.team": "Bir ekip (bir Lider) ve bir klasörle başla. Yalnızca kartlardan oluşan bir proje için işareti kaldır.",
+ "noteam.line": "Burada henüz ekip yok, o yüzden hiçbir şey üzerinde çalışılmıyor.",
+ "noteam.start": "Ekip kur",
+ "noteam.folder": "Ekibin çalışacağı bir klasör gerekiyor.",
+ "noteam.nofolder": "Ekibin çalışacağı bir klasör gerekiyor, o yüzden henüz hiçbir şey üzerinde çalışılmıyor.",
+ "noteam.choose": "Klasör seç",
+ "noteam.make": "Benim için oluştur",
+ "noteam.pill": "Henüz ekip yok",
+ "noteam.pill.folder": "Henüz klasör yok"
 }

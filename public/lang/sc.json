@@ -4134,5 +4134,14 @@
  "help.m.thanks": "💙 Gràtzias",
  "help.thanks.h": "💙 Gràtzias",
  "help.thanks.chilled": "Chiamadas, cumpartzidura de sa pantalla, rispostas, reatziones e puntigheddos de iscritura benint dae {name}. Gràtzias!",
- "help.thanks.livekit": "Sas chiamadas funtzionant cun {name}, su serbidore de chiamadas a còdighe abertu."
+ "help.thanks.livekit": "Sas chiamadas funtzionant cun {name}, su serbidore de chiamadas a còdighe abertu.",
+ "dlg.np.team": "Cumintza cun un'iscuadra (unu Cabu) e una cartella. Boga su sinnu pro unu progetu isceti de cartas.",
+ "noteam.line": "Inoghe non b'at galu iscuadra, duncas nemos traballat a nudda.",
+ "noteam.start": "Cumintza un'iscuadra",
+ "noteam.folder": "S'iscuadra tenet bisòngiu de una cartella pro traballare.",
+ "noteam.nofolder": "S'iscuadra tenet bisòngiu de una cartella pro traballare, duncas nemos traballat galu a nudda.",
+ "noteam.choose": "Sèbera una cartella",
+ "noteam.make": "Crea una pro me",
+ "noteam.pill": "Galu nissuna iscuadra",
+ "noteam.pill.folder": "Galu nissuna cartella"
 }

@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Mālō",
  "help.thanks.h": "💙 Mālō",
  "help.thanks.chilled": "Ko e ngaahi fetuʻutaki, vahevahe sikilini, tali, ngaahi fakahā ongo mo e ngaahi toti tohi ʻoku haʻu mei he {name}. Mālō ʻaupito!",
- "help.thanks.livekit": "ʻOku lele ʻa e ngaahi fetuʻutaki ʻi he {name}, ko e sēvea fetuʻutaki ʻoku ʻatā hono maʻuʻanga."
+ "help.thanks.livekit": "ʻOku lele ʻa e ngaahi fetuʻutaki ʻi he {name}, ko e sēvea fetuʻutaki ʻoku ʻatā hono maʻuʻanga.",
+ "dlg.np.team": "Kamata mo ha kautaha (ha Taki) mo ha folda. Toʻo ʻa e fakaʻilonga ki ha poloseki kaati pē.",
+ "noteam.line": "ʻOku teʻeki ai ha kautaha heni, ko ia ʻoku ʻikai ha meʻa ʻoku ngāueʻi.",
+ "noteam.start": "Kamata ha kautaha",
+ "noteam.folder": "ʻOku fiemaʻu ʻe ha kautaha ha folda ke ngāue ai.",
+ "noteam.nofolder": "ʻOku fiemaʻu ʻe he kautaha ha folda ke ngāue ai, ko ia ʻoku teʻeki ai ha meʻa ʻoku ngāueʻi.",
+ "noteam.choose": "Fili ha folda",
+ "noteam.make": "Ngaohi ha taha maʻaku",
+ "noteam.pill": "Teʻeki ha kautaha",
+ "noteam.pill.folder": "Teʻeki ha folda"
 }

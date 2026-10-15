@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Buíochas",
  "help.thanks.h": "💙 Buíochas",
  "help.thanks.chilled": "Is ó {name} a thagann glaonna, roinnt scáileáin, freagraí, frithghníomhartha agus na poncanna clóscríofa. Go raibh maith agaibh!",
- "help.thanks.livekit": "Ritheann glaonna ar {name}, an freastalaí glaonna foinse oscailte."
+ "help.thanks.livekit": "Ritheann glaonna ar {name}, an freastalaí glaonna foinse oscailte.",
+ "dlg.np.team": "Tosaigh le foireann (ceannaire) agus fillteán. Bain an tic do thionscadal le cártaí amháin.",
+ "noteam.line": "Níl foireann ar bith anseo fós, mar sin níl aon obair á déanamh.",
+ "noteam.start": "Cruthaigh foireann",
+ "noteam.folder": "Tá fillteán ag teastáil ó fhoireann le hobair ann.",
+ "noteam.nofolder": "Tá fillteán ag teastáil ón bhfoireann le hobair ann, mar sin níl aon obair á déanamh fós.",
+ "noteam.choose": "Roghnaigh fillteán",
+ "noteam.make": "Déan ceann dom",
+ "noteam.pill": "Gan foireann fós",
+ "noteam.pill.folder": "Gan fillteán fós"
 }

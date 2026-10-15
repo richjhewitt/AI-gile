@@ -4145,5 +4145,14 @@
  "help.m.thanks": "💙 Giitu",
  "help.thanks.h": "💙 Giitu",
  "help.thanks.chilled": "Riŋgemat, skearru juohkin, vástádusat, reakšuvnnat ja čállinčuoggát bohtet {name}:as. Giitu!",
- "help.thanks.livekit": "Riŋgemat jođihuvvojit {name}:in, mii lea rabas gáldokoda riŋgenbálvá."
+ "help.thanks.livekit": "Riŋgemat jođihuvvojit {name}:in, mii lea rabas gáldokoda riŋgenbálvá.",
+ "dlg.np.team": "Álgga joavkkuin (Jođiheaddjiin) ja máhpain. Váldde merkoma eret, jos prošeavttas galget leat dušše karttat.",
+ "noteam.line": "Dáppe ii leat vel joavku, nu ahte ii oktage bargga maidege.",
+ "noteam.start": "Álggat joavkku",
+ "noteam.folder": "Joavku dárbbaša máhpa man siste bargat.",
+ "noteam.nofolder": "Joavku dárbbaša máhpa man siste bargat, nu ahte ii oktage bargga vel maidege.",
+ "noteam.choose": "Vállje máhpa",
+ "noteam.make": "Ráhkat munnje",
+ "noteam.pill": "Ii vel joavku",
+ "noteam.pill.folder": "Ii vel máhppa"
 }

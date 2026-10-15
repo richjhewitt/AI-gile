@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Aguyje",
  "help.thanks.h": "💙 Aguyje",
  "help.thanks.chilled": "Henói, pantalla emoherakuã, mbohovái, reacción ha kuatiaha kyta ou {name} guive. Aguyje!",
- "help.thanks.livekit": "Henói oiko {name} ári, henói servidor código abierto."
+ "help.thanks.livekit": "Henói oiko {name} ári, henói servidor código abierto.",
+ "dlg.np.team": "Eñepyrũ peteĩ atyha (peteĩ atyguasu) ha peteĩ folder ndive. Embogue pe marca tembiapo kuatia año g̃uarã.",
+ "noteam.line": "Ndaipóri gueteri atyha ko'ápe, upévare ndojejapói mba'eve.",
+ "noteam.start": "Emoñepyrũ atyha",
+ "noteam.folder": "Atyha oikotevẽ peteĩ folder omba'apo haguã.",
+ "noteam.nofolder": "Atyha oikotevẽ peteĩ folder omba'apo haguã, upévare ndojejapói gueteri mba'eve.",
+ "noteam.choose": "Eiporavo folder",
+ "noteam.make": "Ejapo peteĩ chéve",
+ "noteam.pill": "Ndaipóri gueteri atyha",
+ "noteam.pill.folder": "Ndaipóri gueteri folder"
 }

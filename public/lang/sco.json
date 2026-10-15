@@ -4134,5 +4134,14 @@
  "help.m.thanks": "💙 Thanks",
  "help.thanks.h": "💙 Thanks",
  "help.thanks.chilled": "Calls, screen share, replies, reactions an typin dots come frae {name}. Thank ye!",
- "help.thanks.livekit": "Calls rin on {name}, the open-source call server."
+ "help.thanks.livekit": "Calls rin on {name}, the open-source call server.",
+ "dlg.np.team": "Stairt wi a team (a Lead) an a folder. Untick for a cairds-only project.",
+ "noteam.line": "Nae team here yet, sae naethin gets wrocht on.",
+ "noteam.start": "Stairt a team",
+ "noteam.folder": "A team needs a folder tae wark in.",
+ "noteam.nofolder": "The team needs a folder tae wark in, sae naethin gets wrocht on yet.",
+ "noteam.choose": "Pick a folder",
+ "noteam.make": "Mak ane for me",
+ "noteam.pill": "Nae team yet",
+ "noteam.pill.folder": "Nae folder yet"
 }

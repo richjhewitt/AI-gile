@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Hvala",
  "help.thanks.h": "💙 Hvala",
  "help.thanks.chilled": "Pozivi, dijeljenje ekrana, odgovori, reakcije i tačkice kucanja dolaze od {name}. Hvala!",
- "help.thanks.livekit": "Pozivi rade na {name}, serveru za pozive otvorenog koda."
+ "help.thanks.livekit": "Pozivi rade na {name}, serveru za pozive otvorenog koda.",
+ "dlg.np.team": "Počni s timom (voditeljem) i folderom. Odznači za projekat samo s karticama.",
+ "noteam.line": "Ovdje još nema tima, pa se ni na čemu ne radi.",
+ "noteam.start": "Pokreni tim",
+ "noteam.folder": "Timu treba folder u kojem radi.",
+ "noteam.nofolder": "Timu treba folder u kojem radi, pa se još ni na čemu ne radi.",
+ "noteam.choose": "Odaberi folder",
+ "noteam.make": "Napravi mi jedan",
+ "noteam.pill": "Još nema tima",
+ "noteam.pill.folder": "Još nema foldera"
 }

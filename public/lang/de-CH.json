@@ -4122,5 +4122,14 @@
  "help.m.thanks": "💙 Danke",
  "help.thanks.h": "💙 Danke",
  "help.thanks.chilled": "Anrufe, Bildschirmfreigabe, Antworten, Reaktionen und Tipp-Punkte kommen von {name}. Danke!",
- "help.thanks.livekit": "Anrufe laufen über {name}, den Open-Source-Anrufserver."
+ "help.thanks.livekit": "Anrufe laufen über {name}, den Open-Source-Anrufserver.",
+ "dlg.np.team": "Mit einem Team (einem Lead) und einem Ordner starten. Haken raus für ein Projekt nur mit Karten.",
+ "noteam.line": "Hier gibt es noch kein Team, also wird an nichts gearbeitet.",
+ "noteam.start": "Team starten",
+ "noteam.folder": "Ein Team braucht einen Ordner, in dem es arbeitet.",
+ "noteam.nofolder": "Das Team braucht einen Ordner, in dem es arbeitet, also wird noch an nichts gearbeitet.",
+ "noteam.choose": "Ordner wählen",
+ "noteam.make": "Leg mir einen an",
+ "noteam.pill": "Noch kein Team",
+ "noteam.pill.folder": "Noch kein Ordner"
 }

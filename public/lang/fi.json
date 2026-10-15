@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Kiitokset",
  "help.thanks.h": "💙 Kiitokset",
  "help.thanks.chilled": "Puhelut, näytön jakaminen, vastaukset, reaktiot ja kirjoituspisteet tulevat {name}-palvelusta. Kiitos!",
- "help.thanks.livekit": "Puhelut toimivat {name}-palvelimella, joka on avoimen lähdekoodin puhelupalvelin."
+ "help.thanks.livekit": "Puhelut toimivat {name}-palvelimella, joka on avoimen lähdekoodin puhelupalvelin.",
+ "dlg.np.team": "Aloita tiimillä (vetäjällä) ja kansiolla. Poista valinta, jos projektissa on vain kortteja.",
+ "noteam.line": "Täällä ei ole vielä tiimiä, joten mitään ei tehdä.",
+ "noteam.start": "Perusta tiimi",
+ "noteam.folder": "Tiimi tarvitsee kansion, jossa työskennellä.",
+ "noteam.nofolder": "Tiimi tarvitsee kansion, jossa työskennellä, joten mitään ei vielä tehdä.",
+ "noteam.choose": "Valitse kansio",
+ "noteam.make": "Luo minulle uusi",
+ "noteam.pill": "Ei vielä tiimiä",
+ "noteam.pill.folder": "Ei vielä kansiota"
 }

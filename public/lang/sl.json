@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Zahvala",
  "help.thanks.h": "💙 Zahvala",
  "help.thanks.chilled": "Klici, deljenje zaslona, odgovori, odzivi in pike med tipkanjem prihajajo iz {name}. Hvala!",
- "help.thanks.livekit": "Klici tečejo na {name}, odprtokodnem strežniku za klice."
+ "help.thanks.livekit": "Klici tečejo na {name}, odprtokodnem strežniku za klice.",
+ "dlg.np.team": "Začni z ekipo (vodjo) in mapo. Odkljukaj za projekt samo s karticami.",
+ "noteam.line": "Tu še ni ekipe, zato se ne dela na ničemer.",
+ "noteam.start": "Ustvari ekipo",
+ "noteam.folder": "Ekipa potrebuje mapo, v kateri dela.",
+ "noteam.nofolder": "Ekipa potrebuje mapo, v kateri dela, zato se zaenkrat ne dela na ničemer.",
+ "noteam.choose": "Izberi mapo",
+ "noteam.make": "Ustvari jo zame",
+ "noteam.pill": "Še brez ekipe",
+ "noteam.pill.folder": "Še brez mape"
 }

@@ -4101,5 +4101,14 @@
  "help.m.thanks": "💙 Poděkování",
  "help.thanks.h": "💙 Poděkování",
  "help.thanks.chilled": "Hovory, sdílení obrazovky, odpovědi, reakce a tečky psaní pocházejí z {name}. Díky!",
- "help.thanks.livekit": "Hovory běží na {name}, open-source serveru pro hovory."
+ "help.thanks.livekit": "Hovory běží na {name}, open-source serveru pro hovory.",
+ "dlg.np.team": "Začni s týmem (vedoucím) a složkou. Odškrtni pro projekt jen s kartami.",
+ "noteam.line": "Zatím tu není žádný tým, takže se na ničem nepracuje.",
+ "noteam.start": "Založit tým",
+ "noteam.folder": "Tým potřebuje složku, ve které bude pracovat.",
+ "noteam.nofolder": "Tým potřebuje složku, ve které bude pracovat, takže se zatím na ničem nepracuje.",
+ "noteam.choose": "Vybrat složku",
+ "noteam.make": "Vytvoř mi ji",
+ "noteam.pill": "Zatím bez týmu",
+ "noteam.pill.folder": "Zatím bez složky"
 }
