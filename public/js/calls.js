@@ -76,7 +76,7 @@ const Call = (() => {
     dropVids(keep);
     const st = el('callState'); if (st) st.textContent = t('lkcall.people', { n: people.length });
   }
-  const err = e => { const x = el('callErr'); if (x) x.textContent = (e && e.message) || String(e); };
+  const err = e => { const x = el('callErr'); if (x) x.textContent = PagePoll.plain((e && e.message) || String(e), 0); };
 
   /* ---------- joining and leaving ---------- */
   // opts: { title, getToken: async () => ({ url, token, room?, theirs? }), swap?: async () => bool }. One call at a time: a second
@@ -107,7 +107,7 @@ const Call = (() => {
       if (g === gen) paint();
       if (opts.swap && !tk.theirs) watch(g, r, opts);
     } catch (e) {
-      if (g === gen) { room = null; note(t('lkcall.h'), (e && e.message) || String(e)); }
+      if (g === gen) { room = null; note(t('lkcall.h'), PagePoll.plain((e && e.message) || String(e), 0)); }
       else if (r) { try { await r.disconnect(); } catch {} }   // left meanwhile: no message, just make sure it is gone
     } finally { if (pending === r) pending = null; if (busy === g) busy = 0; }
   }

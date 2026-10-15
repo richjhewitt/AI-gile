@@ -57,6 +57,13 @@ def('errors', 'when things go wrong every screen says plainly what: relay down (
     await pi.fill('#dmfInvName', 'Cleo'); await pi.click('#dmfInvite'); await sleep(1500);
     const invTxt = await pi.evaluate(() => document.getElementById('dmfBody').innerText); see('invite', [invTxt, pi.seen]);
     check('relay down: making an invite shows nothing raw', !RAW.test(invTxt) && !pi.seen.some(x => RAW.test(x)), [invTxt, pi.seen]);
+    // 2b. Setup's relay check against a dead address: a plain sentence, the technical reason only in the small details line (AIG-1197).
+    await pi.fill('#dmsRelay', 'http://127.0.0.1:1'); await pi.click('#dmsRelayCheck');
+    await pi.waitForFunction(() => /❌/.test(document.getElementById('dmsRelay-msg').textContent), null, { timeout: 15000 });
+    const rc = await pi.evaluate(() => { const m = document.getElementById('dmsRelay-msg'), d = m.querySelector('small'); return { main: [...m.childNodes].filter(n => n !== d).map(n => n.textContent).join(''), det: d ? d.textContent : '' }; });
+    see('relaycheck', rc); await shot(pi, 'errors-2b-relay-check');
+    check('relay check: a plain sentence, no raw codes outside the details line', /Can't reach the relay at that address/.test(rc.main) && !RAW.test(rc.main) && !/could not reach/.test(rc.main), rc);
+    check('relay check: the technical reason is kept in a small details line', /^Details: /.test(rc.det), rc);
     // 3. Shared board with the relay down: a raise.
     await pb.click('[data-sb-raise]'); await pb.fill('#sbTitle', 'Snag'); await pb.click('#sbRaiseSend'); await sleep(1500);
     const sbTxt = await body(pb); see('sharedboard', [sbTxt.slice(-500), pb.seen]);

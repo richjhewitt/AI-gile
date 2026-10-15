@@ -202,9 +202,12 @@ async function saveDmsRelay() {
   try { const d = await api('POST', '/api/dms/settings', { relay: $('dmsRelay').value.trim() }); $('dmsRelay').value = d.relay || ''; $('dmsRelay-msg').textContent = t('setup.saved.short'); }
   catch (e) { setErr('dmsRelay-err', e); }
 }
+// AIG-1197: the relay check says in plain words what is wrong; the technical reason stays in a small details line.
+const relayWhy = r => { const k = 'dmsrelay.why.' + (r.kind || 'unreachable'), v = t(k); return v !== k ? v : PagePoll.plain(r.reason, 0); };
 async function checkDmsRelay() {
   setErr('dmsRelay-err', ''); const m = $('dmsRelay-msg'); m.textContent = t('dmsrelay.checking');
-  try { const r = await api('POST', '/api/dms/check', { relay: $('dmsRelay').value.trim() }); m.textContent = r.ok ? t('dmsrelay.ok') : t('dmsrelay.bad', { why: r.reason }); }
+  try { const r = await api('POST', '/api/dms/check', { relay: $('dmsRelay').value.trim() }); m.textContent = r.ok ? t('dmsrelay.ok') : t('dmsrelay.bad', { why: relayWhy(r) });
+    if (!r.ok && r.reason) { const d = document.createElement('small'); d.className = 'muted'; d.style.display = 'block'; d.textContent = t('dmsrelay.details', { why: r.reason }); m.appendChild(d); } }
   catch (e) { m.textContent = ''; setErr('dmsRelay-err', e); }
 }
 // A suggested value goes into the box only when the owner says so (AIG-334); Save then keeps it.
