@@ -41,6 +41,7 @@ def('phone', '📱 every page fits a phone (390x844, 412x915): no sideways scrol
   check('manifest is served as JSON with name, short name, standalone, start_url, theme colour', mf.status === 200 && /json/.test(mf.headers.get('content-type')) && man.name && man.short_name && man.display === 'standalone' && man.start_url && man.theme_color && man.background_color, man);
   const icons = man.icons || [];
   check('manifest has 192 and 512 png icons, and they are served', icons.some(i => i.sizes === '192x192') && icons.some(i => i.sizes === '512x512') && (await Promise.all(icons.map(i => fetch(BASE + '/' + i.src.replace(/^\//, ''))))).every(r => r.status === 200 && /png/.test(r.headers.get('content-type'))), icons);
+  check('manifest has New card, Inbox and Messages shortcuts and a GET share target (AIG-1275/1276)', ['new', 'inbox', 'messages'].every(k => (man.shortcuts || []).some(x => x.url === '/?launch=' + k && x.name)) && man.share_target && man.share_target.method === 'GET' && man.share_target.action === '/' && man.share_target.params && man.share_target.params.url === 'url', man.share_target);
   const sw = await fetch(BASE + '/sw.js');
   check('service worker is served as JavaScript, never cached', sw.status === 200 && /javascript/.test(sw.headers.get('content-type')) && /no-store/.test(sw.headers.get('cache-control')));
   const swText = await sw.text();
@@ -98,6 +99,22 @@ def('phone', '📱 every page fits a phone (390x844, 412x915): no sideways scrol
       await fits(page, D + ' focus mode');
       await tapSize(page, '#focusScreen button', D + ' focus button');
       await s.ok('POST', '/api/focus/done').catch(() => {});
+
+      // AIG-1275: share a link/text from another app -> the new-card dialog opens prefilled; the shared text leaves the address bar
+      await page.goto(BASE + '/?share=1&title=' + encodeURIComponent('Cool read') + '&text=' + encodeURIComponent('Worth a look') + '&url=' + encodeURIComponent('https://example.com/a'));
+      await page.waitForSelector('#f-title', { timeout: 10000 }).catch(() => {});
+      const sh = await page.evaluate(() => ({ t: (document.getElementById('f-title') || {}).value, d: (document.getElementById('f-description') || {}).value, search: location.search }));
+      check(D + ': a shared link opens New card with title and text+link filled in', sh.t === 'Cool read' && /Worth a look/.test(sh.d || '') && /https:\/\/example\.com\/a/.test(sh.d || ''), sh);
+      check(D + ': the shared text is cleared from the address bar', sh.search === '');
+      await fits(page, D + ' shared new card');
+      // AIG-1276: the long-press shortcuts
+      await page.goto(BASE + '/?launch=inbox'); await sleep(1500);
+      check(D + ': the Inbox shortcut opens the inbox', await page.evaluate(() => location.hash === '#/inbox' && !location.search));
+      await page.goto(BASE + '/#/p/alpha'); await sleep(300);
+      await page.goto(BASE + '/?launch=new'); await page.waitForSelector('#f-title', { timeout: 10000 }).catch(() => {});
+      check(D + ': the New card shortcut opens an empty New card', await page.evaluate(() => { const e = document.getElementById('f-title'); return !!e && e.value === ''; }));
+      await page.goto(BASE + '/?launch=messages'); await page.waitForSelector('#dmPanel:not([hidden])', { timeout: 10000 }).catch(() => {});
+      check(D + ': the Messages shortcut opens the messages list', await page.evaluate(() => !document.getElementById('dmPanel').hidden));
     } finally { await ctx.close().catch(() => {}); }
   }
 }, true);
