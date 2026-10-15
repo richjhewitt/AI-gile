@@ -102,7 +102,7 @@ def('helplevels', '❓ help levels: each level\'s first run, the Help menu, the 
   check('demo mode with some help is a plain window', o2.length === 2 && o2[1] === 'http://127.0.0.1:9/?lang=en', o2);   // no intro; the language still goes along (AIG-488)
   await p1.evaluate(() => { window.open = () => null; });   // a blocked window says so (AIG-1084)
   await p1.click('#helpBtn'); await p1.click('#hmDemo');
-  await p1.waitForSelector('#trialNote', { timeout: 4000 }).catch(() => {});
+  await p1.waitForFunction(() => /blocked/i.test((document.getElementById('trialNote') || {}).textContent || ''), null, { timeout: 4000 }).catch(() => {});   // the "Opening" note shows first
   check('a blocked demo window says so in the page', /blocked/i.test(await p1.textContent('#trialNote').catch(() => '')));
   await p1.click('#helpBtn');
   check('Help menu starts with Getting started, which opens a short list', (await p1.locator('#helpMenu button').first().getAttribute('id')) === 'hmStart');

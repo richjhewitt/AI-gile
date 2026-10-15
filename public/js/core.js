@@ -241,10 +241,13 @@ function parseRoute() {
   if (stMatch) return { view: 'stats', slug: stMatch[1] };   // project stats (AIG-726)
   const rkMatch = location.hash.match(/^#\/risks\/([a-z0-9-]+)$/);
   if (rkMatch) return { view: 'risks', slug: rkMatch[1] };   // risk register (AIG-863)
+  const relMatch = location.hash.match(/^#\/releases\/([a-z0-9-]+)$/);
+  if (relMatch) return { view: 'releases', slug: relMatch[1] };   // releases (AIG-1154)
   const ciMatch = location.hash.match(/^#\/ci\/([a-z0-9-]+)$/);
   if (ciMatch) return { view: 'ci', slug: ciMatch[1] };   // configuration items (AIG-1122)
   const keMatch = location.hash.match(/^#\/known-errors(?:\/([a-z0-9-]+))?$/);
   if (keMatch) return { view: 'knownerrors', slug: keMatch[1] || '' };   // known errors list (AIG-1106)
+  if (location.hash === '#/improvements') return { view: 'improvements' };   // 📈 improvement list (AIG-1157)
   if (location.hash === '#/life') return { view: 'life' };   // 🏡 life admin without tokens (AIG-798)
   if (location.hash === '#/today') return { view: 'today' };   // Today: Today's project weights (AIG-595)
   if (location.hash === '#/whats-new') return { view: 'whatsnew' };   // ✨ release notes (AIG-562)
@@ -396,6 +399,9 @@ async function refreshStaged(force, liveState, state, api) {
       if (StatsPage.slug !== state.route.slug || !StatsPage.data) { StatsPage.slug = state.route.slug; StatsPage.data = null; state.lastSig = state.lastBoardSig = null; liveState.route = state.route; render(); }
       await StatsPage.load(state.route.slug, { signal: refreshController.signal });
       sig = renderSig([state.route, StatsPage.data, i18n.lang]);
+    } else if (state.route.view === 'releases') {
+      await ReleasesPage.load(state.route.slug);
+      sig = renderSig([state.route, ReleasesPage.data, ReleasesPage.err, i18n.lang]);
     } else if (state.route.view === 'risks') {
       await RisksPage.load(state.route.slug);
       sig = renderSig([state.route, RisksPage.data, i18n.lang]);
@@ -405,6 +411,9 @@ async function refreshStaged(force, liveState, state, api) {
     } else if (state.route.view === 'knownerrors') {
       await KnownErrors.load(state.route.slug);
       sig = renderSig([state.route, KnownErrors.data, i18n.lang]);
+    } else if (state.route.view === 'improvements') {
+      await Improvements.load();
+      sig = renderSig([state.route, Improvements.data, Improvements.slug, i18n.lang]);
     } else if (state.route.view === 'life') {
       await LifeAdmin.load();
       sig = renderSig([state.route, LifeAdmin.data, LifeAdmin.err, i18n.lang]);
@@ -472,6 +481,7 @@ function renderBoardOnly() {
   if (state.route.view === 'mail') { $('app').innerHTML = Mail.render(); return; }
   if (state.route.view === 'stats') { $('app').innerHTML = StatsPage.render(); return; }
   if (state.route.view === 'risks') { $('app').innerHTML = RisksPage.render(); return; }
+  if (state.route.view === 'releases') { $('app').innerHTML = ReleasesPage.render(); return; }
   if (state.route.view === 'ci') { $('app').innerHTML = CiPage.render(); return; }
   if (state.route.view === 'knownerrors') { $('app').innerHTML = KnownErrors.render(); return; }
   if (state.route.view === 'life') { $('app').innerHTML = LifeAdmin.render(); return; }
@@ -514,8 +524,10 @@ function render() {
   if (state.route.view === 'assumptions') { $('crumb').textContent = '/ ' + t('assume.nav'); $('app').innerHTML = Assumptions.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'stats') { $('crumb').textContent = '/ ' + t('stats.title'); $('app').innerHTML = StatsPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'risks') { $('crumb').textContent = '/ ' + t('risks.title'); $('app').innerHTML = RisksPage.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'releases') { $('crumb').textContent = '/ ' + t('rel.title'); $('app').innerHTML = ReleasesPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'ci') { $('crumb').textContent = '/ ' + t('ci.title'); $('app').innerHTML = CiPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'knownerrors') { $('crumb').textContent = '/ ' + t('ke.title'); $('app').innerHTML = KnownErrors.render(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'improvements') { $('crumb').textContent = '/ ' + t('imp.title'); $('app').innerHTML = Improvements.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'life') { $('crumb').textContent = '/ ' + t('la.title'); $('app').innerHTML = LifeAdmin.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'today') { $('crumb').textContent = '/ ' + t('today.title'); $('app').innerHTML = TodayPage.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'whatsnew') { $('crumb').textContent = '/ ' + t('wn.title'); $('app').innerHTML = WhatsNew.render(); $('modal').innerHTML = ''; return; }
