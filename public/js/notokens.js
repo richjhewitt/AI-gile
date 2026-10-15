@@ -22,6 +22,6 @@ const NoTokens = (() => {
     try { st = await api('POST', '/api/notokens', { on: !st.on }); } catch (e) { alert(e.message); return; }
     paint(); refresh(true);
   }
-  function start() { PagePoll.every(poll, 3000, { immediate: true }); }
+  function start() { PagePoll.every(poll, 3000, { immediate: true, home: true }); }
   return { start, toggle, poll, get on() { return !!st.on; } };
 })();

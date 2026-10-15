@@ -33,6 +33,6 @@ const UsageGlance = (() => {
     a.title = tips.join('\n');
   }
   async function poll() { try { d = await api('GET', '/api/limits/latest'); } catch { return; } paint(); }
-  function start() { PagePoll.every(poll, 60e3, { immediate: true }); PagePoll.every(paint, 5000); }
+  function start() { PagePoll.every(poll, 60e3, { immediate: true, home: true }); PagePoll.every(paint, 5000, { home: true }); }
   return { start, poll, paint, vals, homeHtml };
 })();

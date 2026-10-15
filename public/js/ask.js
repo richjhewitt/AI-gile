@@ -46,6 +46,6 @@ const Ask = (function () {
   const yes = key => act(key, 'yes');
   const no = key => act(key, 'no');
 
-  PagePoll.every(() => { if (typeof i18n !== 'undefined' && i18n.ready) return load(); }, 3000, { hidden: 30000 });
+  PagePoll.every(() => { if (typeof i18n !== 'undefined' && i18n.ready) return load(); }, 3000, { hidden: 30000, home: true });
   return { load, paintInbox, yes, no };
 })();

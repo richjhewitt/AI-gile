@@ -81,6 +81,6 @@ const TwitchTab = (() => {
     if (sig !== html || list.dataset.sig !== html) { const atBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 40; sig = html; list.dataset.sig = html; list.innerHTML = html; if (scroll || atBottom) list.scrollTop = list.scrollHeight; }
   }
   function stop() { cur = null; }
-  PagePoll.every(poll, 3000, { immediate: true });
+  PagePoll.every(poll, 3000, { immediate: true, home: true });
   return { signIn, signOut, send, popOut, popView, show, load, stop, rowsHtml, setupHtml, save, poll, linked: () => !!cfg.channel };
 })();
