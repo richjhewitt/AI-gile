@@ -397,3 +397,38 @@ def('tidynew', 'New card with only a description: with Tidy cards on it gets a t
   fs.writeFileSync(local, JSON.stringify({ ...base, lead: { ...(base.lead || {}), tidyCards: true, chatty: false } }));
   return { AIGILE_LOCAL: local };
 })());
+
+// AIG-1211: a long board scrolls inside its columns (Team sits just under it); the Team panel lists only who is working now.
+def('boardscroll', 'columns scroll inside themselves on a desktop, Team stays in view with 60 cards; quiet members fold under Show all (AIG-1211)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  for (let i = 0; i < 60; i++) await mkCard(s, 'alpha', 'Card ' + i, { status: 'todo' });
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Pixel', role: 'Frontend', status: 'working', task: 'busy' });
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Sleepy', role: 'Backend', status: 'idle' });
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Checker', role: 'QA', status: 'in review', task: 'looking' });
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.waitForSelector('.column[data-status=todo] .card');
+  await page.evaluate(() => { try { localStorage.removeItem('aigile.teamAll'); } catch {} });
+  await page.reload(); await page.waitForSelector('.side');
+  const col = await page.$eval('.column[data-status=todo]', e => ({ sh: e.scrollHeight, ch: e.clientHeight, oy: getComputedStyle(e).overflowY }));
+  check('a long column scrolls inside itself', col.oy === 'auto' && col.sh > col.ch, col);
+  const top = await page.$eval('.side', e => e.getBoundingClientRect().top);
+  const bt = await page.$eval('.board', e => e.getBoundingClientRect().top);
+  check('Team and Log sit within one screen of the board, not 60 cards down', top - bt < 800, [bt, top]);
+  const hy = await page.$eval('.column[data-status=todo]', e => { e.scrollTop = 600; return e.querySelector('h3').getBoundingClientRect().top - e.getBoundingClientRect().top; });
+  check('the column header stays visible when it scrolls', hy >= -1 && hy < 12, hy);
+  await page.waitForTimeout(1600);
+  check('the column keeps its scroll through the redraw', (await page.$eval('.column[data-status=todo]', e => e.scrollTop)) > 300);
+  const names = async () => page.$$eval('.side .box:first-child tr td:first-child b', els => els.map(e => e.textContent));
+  check('working and in-review members are listed', JSON.stringify((await names()).sort()) === JSON.stringify(['Checker', 'Pixel']), await names());
+  check('the idle one is folded under Show all (1)', (await page.textContent('.team-all')) === 'Show all (1)');
+  await page.click('.team-all');
+  await page.waitForTimeout(300);
+  check('Show all lists everyone', (await names()).length === 3);
+  await page.reload(); await page.waitForSelector('.side');
+  check('the choice is remembered in this browser', (await names()).length === 3);
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.waitForTimeout(300);
+  check('a phone keeps its columns unclipped', (await page.$eval('.column[data-status=todo]', e => getComputedStyle(e).overflowY)) === 'visible');
+  noErrors(page);
+}, true);

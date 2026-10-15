@@ -105,6 +105,10 @@ function renderBoard(p) {
   // Helpers idle for 12 hours are from an earlier session: left off, so they don't look like a sleeping team (AIG-269).
   const stale = m => /idle/i.test(m.status || '') && !/lead/i.test(m.name + ' ' + (m.role || '')) && Date.now() - Date.parse(m.updated || 0) > 12 * 3600e3;
   const team = (p.team || []).filter(m => !/retired/i.test(m.status || '') && !stale(m));
+  // AIG-1211: the Team panel lists who is working now (working / in review, and running or heard of in the last 12 hours); the rest fold under Show all.
+  const running = !!(p.presence && p.presence.running), flying = new Set(flightList(p).map(c => (c.assignee || '').toLowerCase()));
+  const live = m => /working|review/i.test(m.status || '') && (running || flying.has(String(m.name).toLowerCase()) || Date.now() - Date.parse(m.updated || 0) < 12 * 3600e3);
+  const showAll = teamAll(), folded = team.filter(m => !live(m)).length, shownTeam = showAll ? team : team.filter(live);
   const log = (p.log || []).slice().reverse().slice(0, 50);
   // AIG-1076: an empty (new) project keeps + New, Docs, Ask the team and Views on the bar; the rest sits behind ⋯ More (on a phone everything does, AIG-933).
   const compact = !p.cards.length && !(window.matchMedia && matchMedia('(max-width: 600px)').matches);
@@ -152,12 +156,16 @@ function renderBoard(p) {
     ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path || (NoAi.on && p.lifeBoard) ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.start', { add: esc(t('board.new')), connect: esc(t('board.connect')) })}</div>`}
     ${board}
     <div class="side">
-      <div class="box"><h3>${esc(t('board.team'))}${team.length ? `<button class="bm-btn" onclick="badgeDialog()" title="${esc(t('badge.title.hint'))}">${esc(t('badge.title'))}</button>` : ''}</h3>${team.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${team.map(m =>
-        `<tr><td><span onclick="badgeDialog('${esc(m.name).replace(/'/g, '&#39;')}')" style="cursor:pointer">${face(m.name, team)}</span><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t('board.team.none'))}</p>`}</div>
+      <div class="box"><h3>${esc(t('board.team'))}${team.length ? `<button class="bm-btn" onclick="badgeDialog()" title="${esc(t('badge.title.hint'))}">${esc(t('badge.title'))}</button>` : ''}</h3>${shownTeam.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${shownTeam.map(m =>
+        `<tr><td><span onclick="badgeDialog('${esc(m.name).replace(/'/g, '&#39;')}')" style="cursor:pointer">${face(m.name, team)}</span><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t(team.length ? 'board.team.quiet' : 'board.team.none'))}</p>`}${folded ? `<button type="button" class="team-all" onclick="toggleTeamAll()">${esc(showAll ? t('board.team.active') : t('board.team.showall', { n: folded }))}</button>` : ''}</div>
       <div class="box"><h3>${esc(t('board.log'))}</h3>${log.length ? `<ul class="log">${log.map(l =>
         `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}</div>
     </div>`;
 }
+
+// Show all team members, not just the active ones (AIG-1211): remembered in this browser.
+function teamAll() { try { return localStorage.getItem('aigile.teamAll') === '1'; } catch { return !!state.teamAll; } }
+function toggleTeamAll() { const v = !teamAll(); state.teamAll = v; try { v ? localStorage.setItem('aigile.teamAll', '1') : localStorage.removeItem('aigile.teamAll'); } catch {} refresh(true); }
 
 /* ---------- WIP limits (AIG-118) ---------- */
 // The limit counts every card in the column, even ones a filter hides, so the header can't hide a full column.
@@ -340,6 +348,8 @@ app.addEventListener('dragover', e => {
   e.preventDefault(); e.dataTransfer.dropEffect = 'move';
   document.querySelectorAll('.dragover').forEach(x => x !== col && x.classList.remove('dragover'));
   col.classList.add('dragover');
+  // AIG-1211: a column that scrolls inside itself follows the pointer near its top or bottom edge.
+  if (col.scrollHeight > col.clientHeight) { const r = col.getBoundingClientRect(); if (e.clientY > r.bottom - 50) col.scrollTop += 14; else if (e.clientY < r.top + 50) col.scrollTop -= 14; }
 });
 app.addEventListener('drop', async e => {
   const col = e.target.closest?.('.column'); if (!col || !state.dragging) return;
