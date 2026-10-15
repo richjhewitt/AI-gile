@@ -118,7 +118,8 @@ function owner(req, box, pathname, body, onlyKey) {
 }
 
 /* ---------- public status page (AIG-1050) ---------- */
-// The board posts { services: [{ name, offers, state, line, at }] } (signed, the first key claims it); anyone reads /status.json (CORS *, cached 30 s).
+// The operator's board posts { services: [{ name, offers, state, line, at }] }, signed by RELAY_STATS_KEY like /apply and /bug (never
+// "the first key claims it": a stranger could claim a fresh relay); anyone reads /status.json (CORS *, cached 30 s) (AIG-1119).
 const STATUS_DIR = path.join(DATA, 'statuspage');
 let statusCache = { at: 0, text: '{"services":[]}' };
 async function statusPage(req, res, pathname) {
@@ -130,8 +131,10 @@ async function statusPage(req, res, pathname) {
     return res.end(statusCache.text);
   }
   if (req.method === 'POST' && pathname === '/status') {
+    if (!STATS_KEY) throw fail('not found', 404);
     const body = await readBody(req, 64 * 1024);
-    owner(req, { dir: STATUS_DIR }, pathname, body);
+    owner(req, null, pathname, body, STATS_KEY);
+    fs.mkdirSync(STATUS_DIR, { recursive: true });
     let o; try { o = JSON.parse(body); } catch { throw fail('send JSON', 400); }
     const services = (Array.isArray(o && o.services) ? o.services : []).slice(0, 50).filter(x => x && typeof x === 'object').map(x => ({
       name: str(x.name, 80), offers: str(x.offers, 200), state: ['green', 'amber', 'red'].includes(x.state) ? x.state : 'green', line: str(x.line, 200), at: str(x.at, 40) }));

@@ -150,6 +150,16 @@ def('autopop', 'the Open in their own window switch: cards pop out by themselves
   await page.evaluate(() => { window.open = () => null; });
   await go(page, '#/p/alpha/' + c.id);
   check('blocked popup: opens inline', (await page.evaluate(() => location.hash)) === '#/p/alpha/' + c.id);
+  // AIG-1120: a dialog pops out after its caller has finished (no error), and stays inline when the popup is blocked
+  await page.evaluate(() => { window.__opened = []; window.open = (...a) => { window.__opened.push(a); return {}; }; });
+  await page.evaluate(() => { openDialog('<p id="apX">x</p>', '', 'bug'); });
+  await sleep(300);
+  check('on: a dialog pops out once the caller is done', (await page.evaluate(() => window.__opened.length)) === 1 && /pop-dlg\/bug/.test(await page.evaluate(() => window.__opened[0][0])) && (await page.locator('#apX').count()) === 0);
+  await page.evaluate(() => { window.open = () => null; openDialog('<p id="apY">y</p>', '', 'bug'); });
+  await sleep(300);
+  check('blocked popup: the dialog stays inline', (await page.locator('#apY').count()) === 1);
+  await page.evaluate(() => closeDialog());
+  noErrors(page);
   // inside a pop-out: never pops again
   const pop = await ctx.newPage(); await pop.goto(BASE + '/#/pop/alpha/' + c.id);
   await pop.waitForSelector('.panel h2');

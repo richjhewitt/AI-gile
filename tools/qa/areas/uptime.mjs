@@ -26,11 +26,11 @@ def('uptime', '🟢 Uptime checks: 3 down polls open one incident for the on-cal
   put({ [URL1]: 'down', [URL2]: 'down' });
   await poll(); await poll();
   check('2 down polls make no incident', (await inc()).length === 0);
-  await poll();
+  await Promise.all([poll(), poll()]);   // AIG-1121: two polls at once at fail 2 = one poll, one incident
   let cs = await inc();
   check('3 down polls make exactly one incident, assigned to on-call, error in the description', cs.length === 1 && cs[0].title === 'Down: ' + URL1 && cs[0].assignee === 'Up Night' && /stub: down/.test(cs[0].description), cs);
   u = await s.ok('GET', '/api/uptime');
-  check('/api/uptime says down with 3 fails', u.up.up === false && u.up.fails === 3 && !!u.up.since, u);
+  check('/api/uptime says down with 3 fails', u.up.up === false && u.up.fails >= 3 && !!u.up.since, u);
   await poll();
   check('the 4th poll makes no new card', (await inc()).length === 1);
   check('a non-service project is never polled (no card, not listed)', ((await s.ok('GET', '/api/projects/plain')).cards || []).length === 0 && !(await s.ok('GET', '/api/uptime')).plain);

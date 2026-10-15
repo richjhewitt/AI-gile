@@ -63,8 +63,8 @@ const POP_DLG = {
 };
 const inPopDlg = () => state.route && state.route.view === 'dlg';
 function popDlg(kind) {
-  popOut('dlg-' + kind, `#/pop-dlg/${kind}/${slug() || '-'}`, 'aigile-dlg-' + kind, 560, 720);
-  closeDialog();
+  // AIG-1120: the dialog closes only when the window really opened (a blocked popup leaves it inline).
+  if (popOut('dlg-' + kind, `#/pop-dlg/${kind}/${slug() || '-'}`, 'aigile-dlg-' + kind, 560, 720)) closeDialog();
 }
 const popBtnHtml = kind => `<button type="button" class="dlg-pop" data-popdlg="${esc(kind)}" title="${esc(t('popout.title'))}" onclick="popDlg('${esc(kind)}')">${esc(t('popout.btn'))}</button>`;
 // popNext('kind') just before an openDialog(...) gives that dialog the button (taken by the very next openDialog).
@@ -74,7 +74,8 @@ const popTake = () => { const k = popNextKind; popNextKind = ''; return k; };
 // openDialog calls this for a dialog that has a kind: the shared button, top right.
 function popAddBtn(kind) {
   if (!kind || inPopDlg() || !POP_DLG[kind]) return;
-  if (popAutoOn()) { popDlg(kind); return; }
+  // AIG-1120: auto pop-out waits until the caller has finished setting the dialog up, then pops it out if it is still the open one.
+  if (popAutoOn()) { const d = $('dialog').firstChild; setTimeout(() => { if (d && $('dialog').firstChild === d) popDlg(kind); }, 0); return; }
   const d = $('dialog').querySelector('.dialog'); if (d) d.insertAdjacentHTML('afterbegin', popBtnHtml(kind));
 }
 // The pop window's page (route #/pop-dlg/<kind>/<slug>): the dialog alone, filling the window; closing it closes the window.
