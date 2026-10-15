@@ -43,6 +43,8 @@ def('keepgoing', '🌙 keeps every team on task: the every-minute look picks up 
   await mkProject(s, 'Idle', 'IDL', { path: tmp('idle') });
   const mid = await mkCard(s, 'half', 'Half done', { status: 'doing' });
   const todo = await mkCard(s, 'idle', 'Buildable', { status: 'todo' });
+  const stuck = await mkCard(s, 'idle', 'Blocked but urgent', { status: 'todo', priority: 'urgent' });
+  await s.ok('PATCH', `/api/projects/idle/cards/${stuck.id}`, { blocked: true });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['half', 'idle'] });
   await runsEnd(s, ["half", "idle"]);   // going quiet wakes both teams; wait until those runs end
   await s.ok('GET', '/api/projects/idle/updates?wait=1');   // the Idle session now sits in 'aigile wait'
@@ -50,6 +52,7 @@ def('keepgoing', '🌙 keeps every team on task: the every-minute look picks up 
   await s.ok('POST', '/api/watchman/quick');
   check('the every-minute look picks up a card left in progress', /Picked back up/.test((await getCard(s, 'half', mid.id)).comments.at(-1)?.text || ''));
   check('an idle session with work it can do gets a keep-going nudge', /Keep going/.test((await getCard(s, 'idle', todo.id)).comments.at(-1)?.text || ''));
+  check('the nudge never lands on a blocked card, however urgent', !(await getCard(s, 'idle', stuck.id)).comments.some(m => /Keep going/.test(m.text)));
   const u = await s.ok('GET', '/api/projects/idle/updates?wait=1');
   check('the nudge ends its wait', u.cards.some(c => c.id === todo.id), u);
   await s.ok('POST', '/api/watchman/quick');
