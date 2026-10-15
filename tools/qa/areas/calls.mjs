@@ -163,6 +163,19 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     await pg.waitForFunction(() => Call.active());
     await pg.evaluate(async () => { Call.room.remoteParticipants.set('bea', new LivekitClient.P('bea')); await new Promise(r => setTimeout(r, 4000)); });
     check('with someone in my call already: no move, not even asked', await pg.evaluate(() => lkSwaps === 0 && Call.room === lkLog.rooms[lkLog.rooms.length - 1]));
+    // AIG-1171: repainting the tiles reuses each video (attached once); a track that goes away is detached and its video removed
+    await pg.evaluate(async () => {
+      const r = Call.room, bea = r.remoteParticipants.get('bea'), tr = window.lkCam = new LivekitClient.Track_('video', 'camera');
+      bea.pubs.set('camera', { track: tr, isMuted: false, source: 'camera' }); lkLog.attach = 0; lkLog.detach = 0;
+      for (let i = 0; i < 5; i++) r.emit('ActiveSpeakersChanged');
+      await Call.mic(); await Call.mic(); r.emit('LocalTrackPublished');   // whole-panel repaints too
+    });
+    const v1 = await pg.evaluate(() => ({ attach: lkLog.attach, held: lkCam.els.length, shown: document.querySelectorAll('#callTiles video').length, same: document.querySelector('#callTiles video') === lkCam.els[0] }));
+    check('many repaints: the camera is attached once and its one video reused', v1.attach === 1 && v1.held === 1 && v1.shown === 1 && v1.same, v1);
+    await pg.evaluate(() => { Call.room.remoteParticipants.get('bea').pubs.delete('camera'); Call.room.emit('TrackMuted'); });
+    const v2 = await pg.evaluate(() => ({ detach: lkLog.detach, held: lkCam.els.length, shown: document.querySelectorAll('#callTiles video').length, av: !!document.querySelector('#callTiles [data-who="bea"] .call-av') }));
+    check('the camera goes: detached, its video gone, the name tile back', v2.detach === 1 && v2.held === 0 && v2.shown === 0 && v2.av, v2);
+    await pg.evaluate(() => Call.leave());
     noErrors(page); noErrors(setup); noErrors(pg);
     const cleared = await a.ok('POST', '/api/calls', { clear: true, token: tok });
     check('Remove clears it all', cleared.set === false && cleared.secret === false && !cleared.url);
