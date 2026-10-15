@@ -7,6 +7,7 @@
 // friend's chat has the same typing box, 👍 and attachments. A friend's chat key is 'dm:<contact id>'.
 const Dms = (() => {
   let paName = '', projects = [], chats = [], people = [], closed = {}, showClosed = false, showQuiet = false, showDone = false, askAll = false, filter = 'all', open = null, listOpen = false, thread = null, threadSeq = 0, busy = false;
+  let q = '', notified = null;   // AIG-1252: the chat list search; AIG-1251: each friend's newest incoming message already announced
   let groups = [], meets = [], grpCands = [];   // 👥 group chats (AIG-1027): key 'grp:<id>'
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
   const QUIET_MS = 6 * 3600000;   // AIG-946, AIG-1021: a chat with nothing unread and no message for 6 hours hides until a new one
@@ -73,6 +74,7 @@ const Dms = (() => {
     try { paName = (await PagePoll.get('/api/assistant')).name; } catch {}
     try { groups = NoAi.on ? [] : await PagePoll.get('/api/chats/_groups'); } catch { groups = []; }
     try { meets = NoAi.on ? [] : await PagePoll.get('/api/chats/_meetings'); } catch { meets = []; }   // 🎥 each project's Meeting Room (AIG-1168)
+    notifyFriends();
     const fp = Object.fromEntries(people.filter(c => c.pic).map(c => [c.name.trim().toLowerCase(), c.pic]));   // friends' pictures for their comments and DMs (AIG-883)
     if (JSON.stringify(fp) !== JSON.stringify(state.friendPics || {})) { state.friendPics = fp; if (typeof refresh === 'function') refresh(true); }
     if (Swarm.hiding) boards = [];   // 🚨 swarm: friends' boards wait too (AIG-880)
@@ -93,6 +95,22 @@ const Dms = (() => {
     if (listOpen && !open) paintList();
   }
 
+  // AIG-1251: a new message from a friend beeps and pops a desktop notification, with the same alert switch as team questions;
+  // quiet in focus mode, on a break and when going quiet. A click opens that chat. The first read only sets the baseline.
+  function notifyFriends() {
+    const first = !notified; notified = notified || {};
+    const root = document.documentElement, front = !document.hidden && document.hasFocus();
+    for (const c of people) {
+      const prev = notified[c.id] || ''; notified[c.id] = c.lastIn || prev;
+      if (first || !c.lastIn || c.lastIn <= prev) continue;
+      if (open === 'dm:' + c.id && front) continue;   // you are looking at it
+      if (typeof IB === 'undefined' || !IB.alertsOn || !IB.alertsOn() || ['data-focus', 'data-break', 'data-night'].some(a => root.hasAttribute(a))) continue;
+      if (typeof Streamer !== 'undefined' && Streamer.on && Streamer.on()) continue;
+      IB.beep();
+      const n = new Notification(t('dms.notify', { who: c.name }), { body: plain(c.lastText).slice(0, 160), tag: 'aigile-dm-' + c.id });
+      n.onclick = () => { notifyGo({ chat: 'dm:' + c.id }); n.close(); };
+    }
+  }
   // 🪐 The projects as a tree (AIG-434): a space and its projects in a folder like Discord's, with a fold arrow; a folded
   // space's red count adds up what waits on you inside it. Nested Spaces.MAX levels deep, like the home page.
   function railTree(list, cur, btn) {
@@ -124,28 +142,35 @@ const Dms = (() => {
     if (filter === 'meet' && !meets.length) filter = 'all';   // AIG-1188: Meeting Rooms are their own tab, shown while there are any
     if (filter === 'drafts' && !listDrafts().length) filter = 'all';   // AIG-1043: Drafts is its own tab, shown while there are any
     // AIG-917: newest message first (any side), unread rows stand out, a ✕ closes a chat (hidden, history kept, back on a newer message).
-    const entry = (key, last, unread, inner, waiting) => ({ key, last: last || '', unread, hidden: !!closed[key] && !waiting && (!last || last <= closed[key]), quiet: !!last && !unread && !waiting && Date.now() - Date.parse(last) > QUIET_MS, html: `<div class="dm-rowwrap ${unread ? 'unread' : ''}"><button class="dm-row" data-dm="${esc(key)}">${inner}</button><button class="dm-rowx" data-dmclose="${esc(key)}" title="${esc(t('dms.close.title'))}" aria-label="${esc(t('dms.close.title'))}">✕</button></div>` });
-    const all = (filter === 'people' || filter === 'twitch' || filter === 'discord' || filter === 'meet' ? [] : chats.map(c => entry(c.slug, c.last, c.unread, `${c.watchman || c.noAi ? leadAv(c) : avatar(c)}<span class="dm-rowtext"><b>${esc(c.watchman || c.noAi ? leadName(c) : chatName(c))}</b><span class="muted">${esc([c.watchman || c.noAi ? '' : leadName(c), plain(c.lastText).slice(0, 60) || (c.watchman || c.noAi ? '' : t('dms.hint.lead')), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`, c.unread > 0)))
-      .concat(filter === 'agents' || filter === 'twitch' || filter === 'discord' || filter === 'meet' ? [] : people.map(c => entry('dm:' + c.id, c.last, c.unread, `${personAv(c)}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc([plain(c.lastText).slice(0, 60) || t('dms.person'), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`)))
+    const qs = q.trim().toLowerCase(), hit = (...a) => !qs || a.some(x => String(x || '').toLowerCase().includes(qs));   // AIG-1252
+    const entry = (key, last, unread, inner, waiting, text) => ({ ok: hit(...text), key, last: last || '', unread, hidden: !!closed[key] && !waiting && (!last || last <= closed[key]), quiet: !!last && !unread && !waiting && Date.now() - Date.parse(last) > QUIET_MS, html: `<div class="dm-rowwrap ${unread ? 'unread' : ''}"><button class="dm-row" data-dm="${esc(key)}">${inner}</button><button class="dm-rowx" data-dmclose="${esc(key)}" title="${esc(t('dms.close.title'))}" aria-label="${esc(t('dms.close.title'))}">✕</button></div>` });
+    const all = (filter === 'people' || filter === 'twitch' || filter === 'discord' || filter === 'meet' ? [] : chats.map(c => entry(c.slug, c.last, c.unread, `${c.watchman || c.noAi ? leadAv(c) : avatar(c)}<span class="dm-rowtext"><b>${esc(c.watchman || c.noAi ? leadName(c) : chatName(c))}</b><span class="muted">${esc([c.watchman || c.noAi ? '' : leadName(c), plain(c.lastText).slice(0, 60) || (c.watchman || c.noAi ? '' : t('dms.hint.lead')), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`, c.unread > 0, [chatName(c), leadName(c), c.name, c.lastText])))
+      .concat(filter === 'agents' || filter === 'twitch' || filter === 'discord' || filter === 'meet' ? [] : people.map(c => entry('dm:' + c.id, c.last, c.unread, `${personAv(c)}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc([plain(c.lastText).slice(0, 60) || t('dms.person'), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`, false, [c.name, c.lastText])))
+      .filter(r => r.ok)
       .sort((x, y) => (Date.parse(y.last) || 0) - (Date.parse(x.last) || 0));   // newest activity first
-    const shut = all.filter(r => r.hidden), quietRows = all.filter(r => !r.hidden && r.quiet), shown = all.filter(r => !r.hidden && (showQuiet || !r.quiet));
+    const shut = all.filter(r => r.hidden), quietRows = qs ? [] : all.filter(r => !r.hidden && r.quiet), shown = all.filter(r => !r.hidden && (qs || showQuiet || !r.quiet));   // searching shows quiet chats that match
     const rows = filter === 'twitch' ? TwitchTab.rowsHtml() : filter === 'discord' ? DiscordTab.rowsHtml() : shown.map(r => r.html);
     const closedBox = shut.length ? `<div class="dm-closed"><button class="dm-closedlink" data-dmshowclosed="1" aria-expanded="${showClosed}">${esc(t('dms.closed.show', { n: shut.length }))}</button>${showClosed ? shut.map(r => r.html.replace('data-dmclose=', 'data-dmreopen=').replace(/title="[^"]*" aria-label="[^"]*">✕/, `title="${esc(t('dms.closed.reopen'))}" aria-label="${esc(t('dms.closed.reopen'))}">↩`)).join('') : ''}</div>` : '';
     const quietBox = quietRows.length && filter !== 'twitch' && filter !== 'discord' ? `<div class="dm-closed dm-quiet"><button class="dm-closedlink" data-dmshowquiet="1" aria-expanded="${showQuiet}">${esc(showQuiet ? t('dms.quiet.hide') : t(quietRows.length === 1 ? 'dms.quiet.show.one' : 'dms.quiet.show', { n: quietRows.length }))}</button></div>` : '';
-    const none = filter === 'meet' ? t('meet.none') : filter === 'twitch' ? t('tw.nonone') : filter === 'discord' ? t('dc.nonone') : filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) && !shut.length && !quietRows.length ? t('dms.nonone') : t('dms.noleads');
+    const none = qs && (filter === 'all' || filter === 'agents' || filter === 'people' || filter === 'meet') ? t('dms.search.none', { q: q.trim() }) : filter === 'meet' ? t('meet.none') : filter === 'twitch' ? t('tw.nonone') : filter === 'discord' ? t('dc.nonone') : filter === 'people' ? t('dms.nopeople') : filter === 'agents' ? t('dms.noleads') : (chats.length || people.length) && !shut.length && !quietRows.length ? t('dms.nonone') : t('dms.noleads');
     const chips = ['all', 'agents', 'people', ...(DiscordTab.linked() ? ['discord'] : []), ...(TwitchTab.linked() ? ['twitch'] : []), ...(meets.length ? ['meet'] : []), ...(listDrafts().length ? ['drafts'] : [])].map(f => `<button class="dm-chip ${f === filter ? 'on' : ''}" data-dmfilter="${f}" aria-pressed="${f === filter}">${esc(t(f === 'drafts' ? 'dms.drafts' : 'dms.filter.' + f))}${f === 'discord' ? badge(DiscordTab.unread()) : ''}</button>`).join('');
     const fresh = !chats.some(c => c.last) && !people.some(c => c.last);   // nothing written yet: say what each row is for (AIG-1085)
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+      ${['all', 'agents', 'people', 'meet'].includes(filter) ? `<div class="dm-searchrow"><input id="dmSearch" type="search" class="dm-search" value="${esc(q)}" placeholder="${esc(t('dms.search'))}" aria-label="${esc(t('dms.search'))}" autocomplete="off"></div>` : ''}
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
-      <div class="dm-list">${filter === 'drafts' ? draftRows() : filter === 'meet' ? meetsHtml() : `${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.allhands'))}</span>` : ''}</span></button><button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(paName || t('pa.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.assistant'))}</span>` : ''}</span></button>${groupsHtml()}${rows.length ? `<div class="dm-groups-h dm-leads-h"><span class="muted">${esc(t('dms.leadchats'))}</span></div>` : ''}` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}`}</div>`;
-    const panel = el('dmPanel');
-    if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
+      <div class="dm-list">${filter === 'drafts' ? draftRows() : filter === 'meet' ? meetsHtml(qs) : `${filter === 'all' || filter === 'agents' ? `${hit(t('allhands.name')) ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.allhands'))}</span>` : ''}</span></button>` : ''}${hit(paName || t('pa.name')) ? `<button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(paName || t('pa.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.assistant'))}</span>` : ''}</span></button>` : ''}${groupsHtml(qs)}${rows.length ? `<div class="dm-groups-h dm-leads-h"><span class="muted">${esc(t('dms.leadchats'))}</span></div>` : ''}` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}`}</div>`;
+    const panel = el('dmPanel'), ae = document.activeElement, kept = ae && ae.id === 'dmSearch' ? [ae.selectionStart, ae.selectionEnd] : null;
+    if (panel.dataset.sig !== html) {
+      panel.dataset.sig = html; panel.innerHTML = html;
+      const sb = kept && el('dmSearch'); if (sb) { sb.focus(); try { sb.setSelectionRange(kept[0], kept[1]); } catch {} }   // a repaint keeps your place in the search box
+    }
     panel.hidden = false;
   }
 
   // 👥 Groups (AIG-1027): their own part of the All / Agents list, with ＋ New group.
-  const groupsHtml = () => `<div class="dm-groups"><div class="dm-groups-h"><span class="muted">${esc(t('grp.section'))}</span><button class="dm-newgroup" data-dmnewgroup="1">${esc(t('grp.new'))}</button></div>${groups.length ? '' : `<p class="muted dm-empty dm-nogroups">${esc(t('grp.nogroups'))}</p>`}${groups.map(g => `<div class="dm-rowwrap ${grpUnread(g) ? 'unread' : ''}"><button class="dm-row" data-dm="grp:${esc(g.id)}"><span class="dm-av">👥</span><span class="dm-rowtext"><b>${esc(g.name)}</b><span class="muted">${esc([plain(g.lastText).slice(0, 60) || g.members.map(m => m.name).join(', '), g.lastText ? ago(g.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(grpUnread(g))}</button></div>`).join('')}</div>`;
-  const meetsHtml = () => !meets.length ? '' : `<div class="dm-groups"><div class="dm-groups-h"><span class="muted">${esc(t('meet.section'))}</span></div>${[...meets].sort((a, b) => (b.last || '').localeCompare(a.last || '')).map(g => `<div class="dm-rowwrap ${grpUnread(g) ? 'unread' : ''}"><button class="dm-row" data-dm="grp:${esc(g.id)}"><span class="dm-av">🎥</span><span class="dm-rowtext"><b>${esc(g.name)}</b><span class="muted">${esc([plain(g.lastText).slice(0, 60) || g.members.map(m => m.name).join(', '), g.lastText ? ago(g.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(grpUnread(g))}</button></div>`).join('')}</div>`;
+  const grpHit = (g, qs) => !qs || [g.name, g.lastText, ...g.members.map(m => m.name)].some(x => String(x || '').toLowerCase().includes(qs));   // AIG-1252
+  const groupsHtml = qs => `<div class="dm-groups"><div class="dm-groups-h"><span class="muted">${esc(t('grp.section'))}</span><button class="dm-newgroup" data-dmnewgroup="1">${esc(t('grp.new'))}</button></div>${groups.length || qs ? '' : `<p class="muted dm-empty dm-nogroups">${esc(t('grp.nogroups'))}</p>`}${groups.filter(g => grpHit(g, qs)).map(g => `<div class="dm-rowwrap ${grpUnread(g) ? 'unread' : ''}"><button class="dm-row" data-dm="grp:${esc(g.id)}"><span class="dm-av">👥</span><span class="dm-rowtext"><b>${esc(g.name)}</b><span class="muted">${esc([plain(g.lastText).slice(0, 60) || g.members.map(m => m.name).join(', '), g.lastText ? ago(g.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(grpUnread(g))}</button></div>`).join('')}</div>`;
+  const meetsHtml = qs => !meets.length ? '' : `<div class="dm-groups"><div class="dm-groups-h"><span class="muted">${esc(t('meet.section'))}</span></div>${meets.filter(g => grpHit(g, qs)).sort((a, b) => (b.last || '').localeCompare(a.last || '')).map(g => `<div class="dm-rowwrap ${grpUnread(g) ? 'unread' : ''}"><button class="dm-row" data-dm="grp:${esc(g.id)}"><span class="dm-av">🎥</span><span class="dm-rowtext"><b>${esc(g.name)}</b><span class="muted">${esc([plain(g.lastText).slice(0, 60) || g.members.map(m => m.name).join(', '), g.lastText ? ago(g.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(grpUnread(g))}</button></div>`).join('')}</div>`;
   async function newGroup() {
     try { grpCands = await api('GET', '/api/chats/_groups/candidates'); } catch (e) { alert(e.message || String(e)); return; }
     openDialog(`<h2>${esc(t('grp.new.h'))}</h2><p class="muted">${esc(t('grp.new.help'))}</p>
@@ -617,6 +642,19 @@ const Dms = (() => {
     if ((e.key !== 'Enter' && e.key !== ' ') || e.target.closest('a')) return;
     const f = e.target.closest && e.target.closest('#dmPanel .dm-fold-h[data-fold]'); if (!f) return;
     e.preventDefault(); openFold(f.dataset.fold);
+  });
+  // AIG-1252: the search box filters as you type; Esc clears it, Enter opens the first chat, the arrow keys walk the rows.
+  document.addEventListener('input', e => { if (e.target && e.target.id === 'dmSearch') { q = e.target.value; paintList(); } });
+  document.addEventListener('keydown', e => {
+    const box = e.target && e.target.closest && e.target.closest('#dmPanel'); if (!box || !el('dmSearch') || e.target.closest('#dmText')) return;
+    const rows = [...box.querySelectorAll('.dm-list .dm-row[data-dm]')], i = rows.indexOf(document.activeElement);
+    if (e.target.id === 'dmSearch') {
+      if (e.key === 'Escape' && q) { e.preventDefault(); q = ''; e.target.value = ''; paintList(); }
+      else if (e.key === 'Enter' && rows[0]) { e.preventDefault(); show(rows[0].dataset.dm); }
+      else if (e.key === 'ArrowDown' && rows[0]) { e.preventDefault(); rows[0].focus(); }
+    } else if (i >= 0 && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      e.preventDefault(); const n = rows[i + (e.key === 'ArrowDown' ? 1 : -1)]; if (n) n.focus(); else if (e.key === 'ArrowUp') el('dmSearch').focus();
+    }
   });
   window.addEventListener('hashchange', () => setTimeout(loadRail, 50));
   // Live: the rail every few seconds; an open chat a little more often.
