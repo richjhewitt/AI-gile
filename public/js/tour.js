@@ -25,7 +25,16 @@ function startTour(level) {
   tour = { level, steps: TOUR.filter(s => s.skip !== level), i: 0 };
   showStop();
 }
-function endTour() { tour = null; const o = document.getElementById('tourLayer'); if (o) o.remove(); }
+// A stop must point at something on screen: the target counts only if it has a size and is not hidden.
+function tourSeen(e) { if (!e) return false; const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none'; }
+// A target that sits in the top bar's closed More menu (a phone, or Setup unpinned): open the menu first.
+function tourTarget(sel) {
+  const e = document.querySelector(sel), m = document.getElementById('tbMoreMenu');
+  if (e && m && m.contains(e) && m.hidden && typeof Topbar !== 'undefined') Topbar.menu(true);
+  else if (m && !m.hidden && !(e && m.contains(e)) && typeof Topbar !== 'undefined') Topbar.menu(false);
+  return tourSeen(e) ? e : null;
+}
+function endTour() { if (typeof Topbar !== 'undefined') Topbar.menu(false); tour = null; const o = document.getElementById('tourLayer'); if (o) o.remove(); }
 function tourMove(d) { if (!tour) return; tour.i += d; if (tour.i < 0) tour.i = 0; if (tour.i >= tour.steps.length) return endTour(); showStop(); }
 
 async function showStop() {
@@ -35,7 +44,9 @@ async function showStop() {
     const ps = state.projects && state.projects.length ? state.projects : await api('GET', '/api/projects').catch(() => []);
     if (ps[0]) { location.hash = '#/p/' + ps[0].slug; for (let n = 0; n < 30 && !document.querySelector(s.sel); n++) await new Promise(r => setTimeout(r, 100)); }
   }
-  const target = s.sel && document.querySelector(s.sel);
+  let target = s.sel && tourTarget(s.sel);
+  // A menu opened by this very Next click would be closed again by the page's click-away handler: open it again after the click.
+  if (target && target.closest('#tbMoreMenu')) { await new Promise(r => setTimeout(r, 0)); if (!tour || tour.steps[tour.i] !== s) return; target = tourTarget(s.sel); }
   if (s.sel && !target) return tourMove(1);   // nothing to point at here: skip the stop
   let layer = document.getElementById('tourLayer');
   if (!layer) { layer = document.createElement('div'); layer.id = 'tourLayer'; document.body.append(layer); }

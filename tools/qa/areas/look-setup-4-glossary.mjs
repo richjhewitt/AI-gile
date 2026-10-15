@@ -43,6 +43,36 @@ def('tour', '🎓 guided tour: three levels, a spotlight per stop, Next / Back /
   await page.click('.tour-skip');
   check('Skip ends it', (await page.locator('#tourLayer').count()) === 0);
   noErrors(page);
+  // AIG-1201: every stop points at something visible now, on a desktop and on a phone (menus opened by the tour itself).
+  for (const [w, h] of [[1280, 800], [390, 800]]) {
+    const c = await ctx.browser().newContext({ viewport: { width: w, height: h } });
+    await c.addInitScript(() => { try { localStorage.setItem('aigile.standupAsked', new Date().toLocaleDateString('sv')); } catch {} });
+    const p = await c.newPage();
+    await p.goto(BASE + '/#/'); await p.waitForSelector('#app > *');
+    await p.evaluate(() => startTour('anyway')); await p.waitForSelector('.tour-bubble');
+    const n = await p.evaluate(() => tour.steps.length);
+    const seen = [];
+    for (let i = 0; i < n; i++) {
+      await p.waitForFunction(k => tour && tour.i >= k, i, { timeout: 8000 }).catch(() => {});
+      await sleep(250);
+      const st = await p.evaluate(() => {
+        if (!tour) return null;
+        const s = tour.steps[tour.i]; if (!s.sel) return { id: s.id, ok: true };
+        const e = document.querySelector(s.sel), r = e && e.getBoundingClientRect(), sp = document.querySelector('.tour-spot').getBoundingClientRect();
+        const cs = e && getComputedStyle(e);
+        const vis = !!e && r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight;
+        const cx = r.left + r.width / 2, cy = Math.min(r.top + r.height / 2, innerHeight - 2), top = vis && document.elementFromPoint(cx, cy);
+        return { id: s.id, ok: vis && !!top && (e === top || e.contains(top) || top.contains(e)) && sp.width > 0 && sp.height > 0 };
+      });
+      if (!st) break;
+      seen.push(st.id);
+      check(`tour stop "${st.id}" points at a visible target at ${w}px`, st.ok, st);
+      await p.click('.tour-bubble .primary').catch(() => {});
+    }
+    check(`the tour at ${w}px keeps its main stops`, ['welcome', 'rail', 'inbox', 'setup', 'done'].every(x => seen.includes(x)), seen);
+    check(`...and closes the More menu when done at ${w}px`, await p.evaluate(() => { const m = document.getElementById('tbMoreMenu'); return !m || m.hidden; }));
+    await c.close();
+  }
 }, true);
 
 def('trial', '🧪 try it as a new user: a fresh empty board with made-up projects on its own port (AIG-201..203)', async (s, ctx) => {
