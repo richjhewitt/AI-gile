@@ -20,3 +20,23 @@ function installHint() {
   document.addEventListener('focusin', e => { if (e.target.matches && e.target.matches('textarea, input[type=text], input[type=search], input:not([type])')) { last = e.target; setTimeout(show, 350); } });
   visualViewport.addEventListener('resize', show);
 })();
+
+// AIG-1275 / AIG-1276: the home-screen icon's long-press shortcuts (/?launch=new|inbox|messages) and "Share to AI-gile" from another
+// phone app (/?share=1&title=&text=&url=, a GET share target in manifest.webmanifest). Both are plain page loads, so the phone
+// auth guard (server.js guardPhone: paired cookie) already covers them; the card itself is made by the usual dialog and POST.
+(() => {
+  const q = new URLSearchParams(location.search);
+  const launch = q.get('launch'), share = q.has('share') ? { title: (q.get('title') || '').trim(), text: (q.get('text') || '').trim(), url: (q.get('url') || '').trim() } : null;
+  if (!share && !['new', 'inbox', 'messages'].includes(launch)) return;
+  try { history.replaceState(null, '', location.pathname + location.hash); } catch {}   // the shared text never stays in the address bar or history
+  const parts = share ? [share.text, share.url].filter((x, i, a) => x && a.indexOf(x) === i) : [];
+  const preset = share ? { title: (share.title || (share.text || share.url).split(/\r?\n/)[0]).slice(0, 120), description: parts.join('\n\n') } : null;
+  let tries = 0;
+  const go = () => {
+    if (!(typeof i18n !== 'undefined' && i18n.ready && typeof state !== 'undefined' && state.route && typeof newCard === 'function')) { if (++tries < 150) setTimeout(go, 200); return; }
+    if (share || launch === 'new') newCard(preset || {});
+    else if (launch === 'inbox') location.hash = '#/inbox';
+    else { const b = document.querySelector('#dmRail [data-dms]'); if (b) b.click(); }
+  };
+  go();
+})();
