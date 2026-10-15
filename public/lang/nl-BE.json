@@ -2571,6 +2571,7 @@
   "lic.copy": "Kopieer de brief",
   "lic.approved": "Goedgekeurd. De licentiebrief staat hieronder.",
   "lic.declined": "Afgewezen.",
+  "lic.delete": "Beantwoord: verwijderen",
   "bug.send": "Stuur hem ook naar het AI-gile-team",
   "bug.send.title": "Je zit op het 🧪 Live-kanaal: de titel en tekst gaan naar de makers van AI-gile (geen namen, geen bestanden)",
   "bug.send.err": "De bug staat op je bord, maar naar het AI-gile-team sturen lukte niet: {msg}",

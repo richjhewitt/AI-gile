@@ -23,12 +23,14 @@
 //   types, priorities, assignees, team names), nothing else. Viewers need no login.
 //   Public feedback (AIG-968, AIG-970): POST /f/:name is a visitor's report, only while the board switched it on (5 per hour per address);
 //   POST /f/:name/config { on }, GET /f/:name/pull, POST /f/:name/ack { ids } are signed; GET /f/:name/form.js is the button and form
-//   Business licence applications (AIG-601):
-//   POST /apply            { company, website, what, how, email }: one file in DATA/apply/ (5 per hour per address, 8 KB at most)
-//   GET  /apply            the applications, only if RELAY_STATS_KEY is set and the request is signed by it (the operator's board)
-//   POST /interest         { email, which: alpha|beta|both }: register interest from the website (AIG-754); one file per email
-//                          in DATA/interest/ (a repeat replaces it), 5 per hour per address; GET /interest signed like GET /apply.
-//                          Sealed to RELAY_OWNER_XPUB, the operator board's X25519 key (AIG-1235); without it sign-ups get 503
+//   Website forms (AIG-601 licence, AIG-754 interest, AIG-1282 sealed): never kept readable. The browser seals the form to
+//   RELAY_OWNER_XPUB (the operator board's X25519 key) and posts { sealed }; a browser that can't is sealed here on arrival.
+//   Without RELAY_OWNER_XPUB both forms get 503. Each item is deleted once the board acks it, else after 30 days.
+//   GET  /owner.pub        { x }: the owner key the website seals to (anyone, CORS)
+//   POST /apply            { sealed } or { company, website, what, how, email }: one file in DATA/apply/ (5 per hour per address, 8 KB)
+//   GET  /apply, POST /apply/ack { ids }: the operator's board collects the sealed items and deletes them (signed by RELAY_STATS_KEY)
+//   POST /interest         { sealed } or { email, which: alpha|beta|both } (AIG-754): one file in DATA/interest/ (a plain repeat
+//                          replaces it), 5 per hour per address; GET /interest, POST /interest/ack { ids } signed like /apply.
 //   POST /bug              { title, text, build, channel }: a Live tester's bug report (10 per hour per address, 8 KB at most)
 //   GET  /bug, POST /bug/ack { ids }: the operator's board collects reports and deletes them (signed by RELAY_STATS_KEY)
 //   GET  /health           { ok } for anyone; signed by RELAY_STATS_KEY it adds cpu, mem, disk, storage, uptime (AIG-660)
@@ -257,8 +259,9 @@ async function handle(req, res) {
   if (pathname === '/call' || pathname === '/call/token') return calls(req, res, pathname);   // 📞 call passes (AIG-1218)
   if (pathname.startsWith('/b/')) return board(req, res, pathname, ip);
   if (pathname.startsWith('/f/')) return feedback(req, res, pathname, ip);   // public feedback (AIG-968)
-  if (pathname === '/apply') return apply(req, res, pathname, ip);
-  if (pathname === '/interest') return interest(req, res, pathname, ip);   // 📝 alpha / beta interest (AIG-754)
+  if (pathname === '/owner.pub') return ownerPub(req, res);   // 🔒 the key the website seals forms to (AIG-1282)
+  if (pathname === '/apply' || pathname === '/apply/ack') return apply(req, res, pathname, ip);
+  if (pathname === '/interest' || pathname === '/interest/ack') return interest(req, res, pathname, ip);   // 📝 alpha / beta interest (AIG-754)
   if (pathname === '/bug' || pathname === '/bug/ack') return bugs(req, res, pathname, ip);   // 🐞 Live testers (AIG-561)
   const m = pathname.match(/^\/m\/([^/]+)(\/ack)?$/);
   if (!m || !isBox(m[1])) throw fail('not found', 404);
@@ -619,36 +622,90 @@ if(document.body)add();else document.addEventListener("DOMContentLoaded",add);
 })();
 `;
 
+/* ---------- website forms, sealed (AIG-601, AIG-754, AIG-1282) ---------- */
+// Both forms are kept only as envelopes sealed to the operator board's key: the browser seals (site/forms.js, WebCrypto) or, for a
+// browser without X25519, this relay seals on arrival; plain text is never written. The board collects (GET, signed), opens and
+// saves them, then acks: the file is deleted here. Anything not collected is deleted after 30 days (RELAY_FORMS_KEEP_DAYS).
+const FORMS_KEEP_MS = (Number(process.env.RELAY_FORMS_KEEP_DAYS) || 30) * 864e5;
+const FORM_ID = /^(\d{13}-[0-9a-f]{16}|[0-9a-f]{32})$/;
+const formFiles = dir => { try { return fs.readdirSync(dir).filter(f => f.endsWith('.json') && FORM_ID.test(f.slice(0, -5))).sort(); } catch { return []; } };
+function formsSweep() {
+  for (const dir of [APPLY, INTEREST]) for (const n of formFiles(dir)) {
+    const f = path.join(dir, n);
+    try { if (Date.now() - fs.statSync(f).mtimeMs > FORMS_KEEP_MS) fs.rmSync(f, { force: true }); } catch {}
+  }
+}
+// A browser-sealed envelope (site/forms.js seal()): the shape of lib/dm.js seal() without a signature, from "web" to the form.
+const isSealedIn = (e, to) => !!e && typeof e === 'object' && !Array.isArray(e) && e.v === 1 && e.to === to && e.from === 'web'
+  && /^[A-Za-z0-9_-]{22}$/.test(e.id) && Number.isSafeInteger(e.ts) && e.ts > 0 && /^[A-Za-z0-9_-]{43}$/.test(e.epk)
+  && /^[A-Za-z0-9_-]{16}$/.test(e.iv) && typeof e.ct === 'string' && /^[A-Za-z0-9_-]{23,11000}$/.test(e.ct);
+const cleanSealed = e => ({ v: 1, to: e.to, from: e.from, id: e.id, ts: e.ts, epk: e.epk, iv: e.iv, ct: e.ct });
+const writeForm = (dir, name, sealed) => { fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, name), JSON.stringify({ v: 2, sealed, at: new Date().toISOString() }), { mode: 0o600 }); };
+const newFormId = () => Date.now() + '-' + crypto.randomBytes(8).toString('hex');
+const cors = (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');   // the forms live on the website, not on the relay
+  if (req.method !== 'OPTIONS') return false;
+  res.writeHead(204, { 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' }); res.end(); return true;
+};
+function ownerPub(req, res) {
+  if (cors(req, res)) return;
+  if (req.method !== 'GET' || !ownerXKey) throw fail('not found', 404);
+  return send(res, 200, { x: ownerXKey.x, v: SEAL_V });
+}
+// The operator's board: GET the sealed items (with their ids), POST <form>/ack { ids } deletes them.
+async function collectOrAck(req, res, pathname, dir, field, limit) {
+  if (!STATS_KEY) throw fail('not found', 404);
+  const body = req.method === 'POST' ? await readBody(req, 256 * 1024) : '';
+  owner(req, null, pathname, body, STATS_KEY);
+  if (req.method === 'POST') {
+    let ids = []; try { ids = JSON.parse(body).ids || []; } catch {}
+    for (const id of [].concat(ids).slice(0, 5000)) if (FORM_ID.test(String(id))) fs.rmSync(path.join(dir, id + '.json'), { force: true });
+    return send(res, 200, { ok: true });
+  }
+  formsSweep();
+  const items = [];
+  for (const n of formFiles(dir).slice(0, limit)) { try { items.push({ ...JSON.parse(fs.readFileSync(path.join(dir, n), 'utf8')), id: n.slice(0, -5) }); } catch {} }
+  return send(res, 200, { [field]: items });
+}
+
 /* ---------- business licence applications (AIG-601) ---------- */
 const APPLY = path.join(DATA, 'apply');
 const applyHits = new Map();   // ip -> times in the last hour
 async function apply(req, res, pathname, ip) {
-  res.setHeader('Access-Control-Allow-Origin', '*');   // the licence form lives on the website, not on the relay
-  if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' }); return res.end(); }
-  if (req.method === 'GET') {
-    if (!STATS_KEY) throw fail('not found', 404);
-    owner(req, null, pathname, '', STATS_KEY);
-    let names = []; try { names = fs.readdirSync(APPLY).filter(f => /^\d{13}-[0-9a-f]{16}\.json$/.test(f)).sort(); } catch {}
-    const items = [];
-    for (const n of names.slice(-500)) { try { items.push({ id: n.slice(0, -5), ...JSON.parse(fs.readFileSync(path.join(APPLY, n), 'utf8')) }); } catch {} }
-    return send(res, 200, { applications: items });
-  }
+  if (cors(req, res)) return;
+  if (req.method === 'GET' || pathname === '/apply/ack') return collectOrAck(req, res, pathname, APPLY, 'applications', 500);
   if (req.method !== 'POST') throw fail('not found', 404);
+  if (!ownerXKey) throw fail('applications are paused', 503);
   const now = Date.now(), recent = (applyHits.get(ip) || []).filter(t => now - t < 3600e3);
   if (recent.length >= 5) throw fail('too many applications from here: try again later', 429);
   const body = await readBody(req, 8 * 1024);
   let o; try { o = JSON.parse(body); } catch { throw fail('send the application as JSON', 400); }
   if (!o || typeof o !== 'object' || Array.isArray(o)) throw fail('send the application as JSON', 400);
-  const a = { company: str(o.company, 120), website: str(o.website, 200), what: str(o.what, 1000), how: str(o.how, 1000), email: str(o.email, 160) };
-  if (!a.company || !a.what || !a.how) throw fail('company, what you do and how it helps the world are needed', 400);
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a.email)) throw fail('a valid email is needed', 400);
-  let have = 0; try { have = fs.readdirSync(APPLY).length; } catch {}
-  if (have >= 2000) throw fail('the list is full', 507);
-  fs.mkdirSync(APPLY, { recursive: true });
-  const id = Date.now() + '-' + crypto.randomBytes(8).toString('hex');
-  fs.writeFileSync(path.join(APPLY, id + '.json'), JSON.stringify({ ...a, at: new Date().toISOString() }), { mode: 0o600 });
+  let sealed;
+  if (o.sealed !== undefined) {   // sealed in the browser: only its outside can be checked here
+    if (!isSealedIn(o.sealed, 'apply')) throw fail('not a sealed application', 400);
+    sealed = cleanSealed(o.sealed);
+  } else {
+    const a = { company: str(o.company, 120), website: str(o.website, 200), what: str(o.what, 1000), how: str(o.how, 1000), email: str(o.email, 160) };
+    if (!a.company || !a.what || !a.how) throw fail('company, what you do and how it helps the world are needed', 400);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a.email)) throw fail('a valid email is needed', 400);
+    sealed = sealForOwner({ ...a, at: new Date().toISOString() }, 'apply');
+  }
+  if (formFiles(APPLY).length >= 2000) throw fail('the list is full', 507);
+  writeForm(APPLY, newFormId() + '.json', sealed);
   recent.push(now); applyHits.set(ip, recent);
   return send(res, 201, { ok: true });
+}
+// Once on start: old plain applications (before AIG-1282) are sealed in place, under the same id.
+function migrateApply() {
+  const plain = formFiles(APPLY).filter(n => { try { return !JSON.parse(fs.readFileSync(path.join(APPLY, n), 'utf8')).sealed; } catch { return false; } });
+  if (!plain.length) return;
+  if (!ownerXKey) return console.log(`apply: ${plain.length} plain applications wait for RELAY_OWNER_XPUB to be sealed`);
+  for (const n of plain) {
+    const f = path.join(APPLY, n), o = JSON.parse(fs.readFileSync(f, 'utf8')), at = String(o.at || new Date().toISOString());
+    fs.writeFileSync(f, JSON.stringify({ v: 2, sealed: sealForOwner(o, 'apply'), at }), { mode: 0o600 });
+  }
+  console.log(`apply: sealed ${plain.length} plain applications`);
 }
 
 // 📝 Interest in the alpha and beta (AIG-754): the website form posts an email and which test. Sealed on arrival (AIG-1235) to the
@@ -669,9 +726,9 @@ const ownerXKey = (() => {
 const b64u = buf => Buffer.from(buf).toString('base64url');
 // The same envelope as lib/dm.js seal(): header [V, v, to, from, id, ts, epk] as the AAD, key = HKDF-SHA256(X25519(epk, owner),
 // salt epk || owner key, info V|msg), AES-256-GCM (tag appended). to/from name what it is; the board opens it with its xPriv.
-function sealForOwner(payload) {
+function sealForOwner(payload, to = 'interest') {
   const eph = crypto.generateKeyPairSync('x25519'), epk = eph.publicKey.export({ format: 'jwk' }).x;
-  const head = { v: 1, to: 'interest', from: 'relay', id: b64u(crypto.randomBytes(16)), ts: Date.now(), epk };
+  const head = { v: 1, to, from: 'relay', id: b64u(crypto.randomBytes(16)), ts: Date.now(), epk };
   const shared = crypto.diffieHellman({ privateKey: eph.privateKey, publicKey: ownerXKey.key });
   const key = Buffer.from(crypto.hkdfSync('sha256', shared, Buffer.concat([Buffer.from(epk, 'base64url'), Buffer.from(ownerXKey.x, 'base64url')]), SEAL_V + '|msg', 32));
   const iv = crypto.randomBytes(12), ci = crypto.createCipheriv('aes-256-gcm', key, iv);
@@ -690,7 +747,7 @@ function interestName(email) {
   }
   return crypto.createHmac('sha256', interestKey).update(email).digest('hex').slice(0, 32) + '.json';
 }
-const interestFiles = () => { try { return fs.readdirSync(INTEREST).filter(f => /^[0-9a-f]{32}\.json$/.test(f)); } catch { return []; } };
+const interestFiles = () => formFiles(INTEREST);   // keyed-hash names (sealed here) and <ms>-<hex> (sealed in the browser)
 const readItem = n => { try { return JSON.parse(fs.readFileSync(path.join(INTEREST, n), 'utf8')); } catch { return null; } };
 const writeSealed = (name, it) => fs.writeFileSync(path.join(INTEREST, name), JSON.stringify({ v: 2, sealed: sealForOwner(it), at: it.at }), { mode: 0o600 });
 // Once on start: old plain { email, which, at } files are sealed, renamed to the keyed name and the plain ones deleted.
@@ -708,14 +765,8 @@ function migrateInterest() {
   console.log(`interest: sealed ${plain.length} plain sign-ups`);
 }
 async function interest(req, res, pathname, ip) {
-  res.setHeader('Access-Control-Allow-Origin', '*');   // the form lives on the website, not on the relay
-  if (req.method === 'OPTIONS') { res.writeHead(204, { 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' }); return res.end(); }
-  if (req.method === 'GET') {
-    if (!STATS_KEY) throw fail('not found', 404);
-    owner(req, null, pathname, '', STATS_KEY);
-    const items = interestFiles().map(readItem).filter(Boolean);
-    return send(res, 200, { interest: items.sort((a, b) => String(a.at).localeCompare(String(b.at))) });
-  }
+  if (cors(req, res)) return;
+  if (req.method === 'GET' || pathname === '/interest/ack') return collectOrAck(req, res, pathname, INTEREST, 'interest', 5000);
   if (req.method !== 'POST') throw fail('not found', 404);
   if (!ownerXKey) throw fail('sign-ups are paused', 503);
   const now = Date.now(), recent = (interestHits.get(ip) || []).filter(t => now - t < 3600e3);
@@ -723,6 +774,13 @@ async function interest(req, res, pathname, ip) {
   const body = await readBody(req, 2 * 1024);
   let o; try { o = JSON.parse(body); } catch { throw fail('send it as JSON', 400); }
   if (!o || typeof o !== 'object' || Array.isArray(o)) throw fail('send it as JSON', 400);
+  if (o.sealed !== undefined) {   // sealed in the browser (AIG-1282): the board finds repeats once it has opened them
+    if (!isSealedIn(o.sealed, 'interest')) throw fail('not a sealed sign-up', 400);
+    if (interestFiles().length >= 5000) throw fail('the list is full', 507);
+    writeForm(INTEREST, newFormId() + '.json', cleanSealed(o.sealed));
+    recent.push(now); interestHits.set(ip, recent);
+    return send(res, 201, { ok: true });
+  }
   const email = str(o.email, 160).trim().toLowerCase(), which = str(o.which, 10);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw fail('a valid email is needed', 400);
   if (!['alpha', 'beta', 'both'].includes(which)) throw fail('pick alpha, beta or both', 400);
@@ -780,5 +838,7 @@ const server = http.createServer((req, res) => {
 server.requestTimeout = 60e3;
 sweep();
 migrateInterest();
-setInterval(sweep, 3600e3).unref();
+migrateApply();
+formsSweep();
+setInterval(() => { sweep(); formsSweep(); }, 3600e3).unref();
 server.listen(PORT, HOST, () => console.log(`AI-gile relay on ${HOST}:${PORT}, data in ${DATA}`));

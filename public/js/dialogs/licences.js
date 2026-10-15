@@ -8,17 +8,18 @@ const Lic = (() => {
     const rows = data.items.map(a => `<div class="lic-row" data-lic="${esc(a.id)}"><b>${esc(a.company)}</b> <span class="pill">${esc(t('lic.status.' + a.status))}</span> <span class="muted">${esc(when(a.at))}</span>
       <div class="muted">${a.website ? esc(a.website) + ' · ' : ''}${esc(a.email)}</div><div>${esc(a.what)}</div><div class="muted">${esc(a.how)}</div>
       ${a.status === 'approved' ? `<textarea class="lic-letter" readonly rows="9">${esc(a.letter)}</textarea><button type="button" onclick="Lic.copy('${esc(a.id)}', this)">${esc(t('lic.copy'))}</button>`
-        : a.status === 'new' ? `<button type="button" class="primary lic-approve" onclick="Lic.decide('${esc(a.id)}','approve')">${esc(t('lic.approve'))}</button> <button type="button" class="lic-decline" onclick="Lic.decide('${esc(a.id)}','decline')">${esc(t('lic.decline'))}</button>` : ''}</div>`).join('');
+        : a.status === 'new' ? `<button type="button" class="primary lic-approve" onclick="Lic.decide('${esc(a.id)}','approve')">${esc(t('lic.approve'))}</button> <button type="button" class="lic-decline" onclick="Lic.decide('${esc(a.id)}','decline')">${esc(t('lic.decline'))}</button>` : ''}
+      <button type="button" class="lic-del" onclick="Lic.remove('${esc(a.id)}')">${esc(t('lic.delete'))}</button></div>`).join('');
     return `<span>${esc(t('lic.h'))}</span><small class="muted">${esc(t('lic.help', { key: data.key }))}</small>
-      ${data.error ? `<small class="err" id="lic-err">${esc(data.error)}</small>` : data.items.length ? `<div class="lic-list">${rows}</div>` : `<small class="muted" id="lic-none">${esc(t('lic.none'))}</small>`}
+      ${data.error ? `<small class="err" id="lic-err">${esc(data.error)}</small>` : ''}${data.items.length ? `<div class="lic-list">${rows}</div>` : data.error ? '' : `<small class="muted" id="lic-none">${esc(t('lic.none'))}</small>`}
       <div class="muted">${esc(msg)}</div>${intHtml()}`;
   }
   // 📝 Alpha / beta interest (AIG-754): emails from the website form, newest first, with a Copy all emails button.
   function intHtml() {
     if (!interest) return '';
-    const rows = interest.items.map(x => `<li class="int-row">${esc(x.email)} <span class="pill">${esc(t('int.which.' + x.which))}</span> <span class="muted">${esc(when(x.at))}</span></li>`).join('');
+    const rows = interest.items.map(x => `<li class="int-row">${esc(x.email)} <span class="pill">${esc(t('int.which.' + x.which))}</span> <span class="muted">${esc(when(x.at))}</span> <button type="button" class="int-del" data-email="${esc(x.email)}" onclick="Lic.removeEmail(this.dataset.email)">${esc(t('lic.delete'))}</button></li>`).join('');
     return `<span style="display:block;margin-top:12px">${esc(t('int.h', { n: interest.items.length }))}</span>
-      ${interest.error ? `<small class="err" id="int-err">${esc(interest.error)}</small>` : interest.items.length ? `<ul class="int-list" id="intList">${rows}</ul><button type="button" id="intCopy" onclick="Lic.copyEmails(this)">${esc(t('int.copy'))}</button>` : `<small class="muted" id="int-none">${esc(t('int.none'))}</small>`}`;
+      ${interest.error ? `<small class="err" id="int-err">${esc(interest.error)}</small>` : ''}${interest.items.length ? `<ul class="int-list" id="intList">${rows}</ul><button type="button" id="intCopy" onclick="Lic.copyEmails(this)">${esc(t('int.copy'))}</button>` : interest.error ? '' : `<small class="muted" id="int-none">${esc(t('int.none'))}</small>`}`;
   }
   const paint = () => { const b = $('licencesBox'); if (b) b.innerHTML = html(); };
   async function load() {
@@ -34,10 +35,13 @@ const Lic = (() => {
     try { await api('POST', '/api/licences/' + encodeURIComponent(id), { decision }); msg = t(decision === 'approve' ? 'lic.approved' : 'lic.declined'); } catch (e) { msg = e.message; }
     await load();
   }
+  // Replied (AIG-1282): the row goes from this board too.
+  async function remove(id) { try { await api('DELETE', '/api/licences/' + encodeURIComponent(id)); msg = ''; } catch (e) { msg = e.message; } await load(); }
+  async function removeEmail(email) { try { await api('DELETE', '/api/interest/' + encodeURIComponent(email)); } catch (e) { msg = e.message; } await load(); }
   async function copy(id, btn) {
     const a = data.items.find(x => x.id === id); if (!a) return;
     try { await navigator.clipboard.writeText(a.letter); } catch { const ta = btn.previousElementSibling; ta.select(); document.execCommand('copy'); }
     const was = btn.textContent; btn.textContent = t('format.copied'); setTimeout(() => { btn.textContent = was; }, 1500);
   }
-  return { html, decide, copy, copyEmails, reset: () => { data = null; interest = null; } };
+  return { html, decide, remove, removeEmail, copy, copyEmails, reset: () => { data = null; interest = null; } };
 })();
