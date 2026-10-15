@@ -485,6 +485,11 @@ async function refreshStaged(force, liveState, state, api) {
   delete $('app').dataset.broke;
 }
 
+// A board redraw replaces every card: the keyboard focus goes back on the same card, or j/k and Shift+arrows lose their place (AIG-1289).
+function keepCardFocus() {
+  const a = document.activeElement, id = a && a.matches && a.matches('#app a.card[data-id]') ? a.dataset.id : null;
+  return () => { const n = id && document.querySelector(`#app a.card[data-id="${CSS.escape(id)}"]`); if (n && n !== document.activeElement) n.focus({ preventScroll: true }); };
+}
 function renderBoardOnly() {
   queueMicrotask(paintFilterBar);
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
@@ -506,7 +511,9 @@ function renderBoardOnly() {
   if (state.route.view === 'shared') { $('app').innerHTML = ShareBoard.render(state.sboard); return; }
   // Only the home page and a board are painted here; Setup, the inbox and the rest paint themselves (AIG-335: no project yet on a fresh board).
   if (state.route.view !== 'home' && !(state.route.view === 'project' && state.project)) return;
+  const refocus = keepCardFocus();
   $('app').innerHTML = state.route.view === 'home' ? renderHome() : renderBoard(state.project);
+  refocus();
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
   boardFit();   // AIG-1217: columns end at the window bottom, fade while there is more
   for (const [key, y] of keepCols) if (y) { const c = [...document.querySelectorAll('.column')].find(c => c.dataset.status + '|' + (c.dataset.step || '') === key); if (c) c.scrollTop = y; }
@@ -567,7 +574,9 @@ function render() {
   // 🪐 The spaces it sits in come first (AIG-434): / Idea Playground / JointPassingBot.
   $('crumb').textContent = '/ ' + ((p.space && p.space.up) || []).map(u => u.name + ' / ').join('') + (p.emoji ? p.emoji + ' ' : '') + p.name;
   $('crumb').style.color = p.color || '';
+  const refocus = keepCardFocus();
   $('app').innerHTML = renderBoard(p);
+  refocus();
   const card = state.route.card && p.cards.find(c => c.id === state.route.card);
   if (!card) state.editing = false;
   paintModal(card ? renderCard(p, card) : '');
