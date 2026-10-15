@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- AIG-1291: the saved theme before the first paint, so a restart never flashes the system colours first (app.js theme() takes over) -->
+<script>try { var th = localStorage.getItem('aigile.theme'); if (th && th !== 'system') document.documentElement.dataset.theme = th; } catch (e) {}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AI-gile</title>
 <link rel="manifest" href="manifest.webmanifest">

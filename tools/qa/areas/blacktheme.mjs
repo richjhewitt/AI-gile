@@ -19,6 +19,18 @@ def('blacktheme', '⚫ Black theme for OLED: in the Setup picker and the top bar
   await page.reload(); await page.waitForSelector('#themeBtn'); await sleep(300);
   l = await look();
   check('black survives a reload', l.attr === 'black' && l.body === 'rgb(0, 0, 0)', JSON.stringify(l));
+  // AIG-1291: black from the first paint, before app.js has loaded (a restart used to flash the system colours first)
+  {
+    const c2 = await ctx.browser().newContext({ serviceWorkers: 'block' }), p2 = await c2.newPage();
+    await p2.addInitScript(() => { try { localStorage.setItem('aigile.theme', 'black'); } catch {} });
+    let release; const held = new Promise(r => { release = r; });
+    await p2.route('**/js/app.js*', async route => { await held; await route.continue(); });
+    await p2.goto(page.url().split('#')[0], { waitUntil: 'commit' });
+    await p2.waitForSelector('body', { state: 'attached' }); await sleep(500);
+    const early = await p2.evaluate(() => ({ attr: document.documentElement.dataset.theme || '', body: getComputedStyle(document.body).backgroundColor, app: typeof theme === 'function' }));
+    release(); await c2.close();
+    check('black is there before app.js loads: no flash of the system colours on a restart (AIG-1291)', !early.app && early.attr === 'black' && early.body === 'rgb(0, 0, 0)', JSON.stringify(early));
+  }
   const label = (await page.textContent('#themeBtn')).trim();
   check('the top bar button names it', /Black|Zwart/.test(label), label);
   await page.click('#themeBtn'); await sleep(200);
