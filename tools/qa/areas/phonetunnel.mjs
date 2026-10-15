@@ -87,16 +87,34 @@ def('phonetunnel', 'phone tunnel: Setup > Phone > Over my server saves phone.tun
   // The Setup box.
   const page = await openPage(ctx, '#/setup');
   await page.waitForSelector('#phTun');
+  // Over my server leads: first in the page, Turn on/Save, state with a plain word, Tailscale gone while the tunnel is up
   check('Setup: Over my server shows the server, host and Tunnel up', (await page.inputValue('#phTunSrv')) === 'Smizflark' && (await page.inputValue('#phTunHost')) === HOST && /Tunnel up/.test(await page.textContent('#phTunState')), await page.textContent('#phTun'));
-  await page.fill('#phTunPort', '14400');
+  check('Setup: the tunnel comes before Pair a phone', await page.evaluate(() => !!(document.querySelector('#phTun').compareDocumentPosition(document.querySelector('#phPair')) & Node.DOCUMENT_POSITION_FOLLOWING)));
+  check('Setup: tunnel up: no Tailscale fold, no tailscale line, no Tailscale host field', !(await page.$('#phAlt')) && !(await page.$('#phHost')) && !/tailscale serve/.test(await page.textContent('#phBody')));
+  await page.click('#phPair');
+  await page.waitForSelector('#phLink');
+  const lnk = await page.getAttribute('#phLink', 'href');
+  check('Setup: the link and QR use https://<tunnel host>/_pair/<code>', lnk.startsWith(ORIGIN + '/_pair/') && !!(await page.$('svg.phone-qr')) && !/ts\.net/.test(await page.textContent('#phBody')), lnk);
+  await page.setViewportSize({ width: 390, height: 800 });
+  check('Setup at 390px: no sideways scroll', await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+  await page.emulateMedia({ colorScheme: 'dark' });
+  check('Setup in dark: the state line is readable (not the page background)', await page.evaluate(() => { const c = getComputedStyle(document.querySelector('#phTunState')).color, b = getComputedStyle(document.body).backgroundColor; return c !== b; }));
+  await page.screenshot({ path: path.join(dir, 'setup-dark-390.png') });
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.setViewportSize({ width: 1280, height: 800 });
   await page.click('#phTunSave');
-  await page.waitForFunction(() => document.querySelector('#phTunPort') && document.querySelector('#phTunPort').value === '14400');
   for (let i = 0; i < 40 && runs().length < 2; i++) await sleep(100);
-  check('Save: the tunnel restarts on the new port', runs().length === 2 && runs()[1].argv.join(' ').includes(`-R 127.0.0.1:14400:127.0.0.1:${PORT}`), runs().map(r => r.argv));
+  check('Save: the tunnel restarts', runs().length === 2 && runs()[1].argv.join(' ').includes(`-R 127.0.0.1:14321:127.0.0.1:${PORT}`), runs().map(r => r.argv));
   await page.click('#phTunOff');
   await page.waitForFunction(() => !document.querySelector('#phTunOff'));
   const off = await s.ok('GET', '/api/phone');
   check('Turn off: no tunnel, the host and its phone stay', off.tunnel === null && off.hosts.includes(HOST) && off.devices.some(d => d.host === HOST));
   check('Turn off: removed from aigile.local.json', !('tunnel' in JSON.parse(fs.readFileSync(path.join(s.dir, 'aigile.local.json'), 'utf8')).phone));
+  check('Turn off: Over my server still first, Turn on offered, prefilled, Tailscale folded (closed)', /Turn on/.test(await page.textContent('#phTunSave')) && (await page.inputValue('#phTunSrv')) === 'Smizflark' && (await page.inputValue('#phTunHost')) === HOST
+    && await page.evaluate(() => { const d = document.querySelector('#phAlt'); return !!d && !d.open && !!document.querySelector('#phTun').compareDocumentPosition(d); }));
+  check('Turn off: Pair a phone waits for Turn on', await page.isDisabled('#phPair'));
+  await page.click('#phTunSave');
+  await page.waitForFunction(() => /Tunnel up/.test((document.querySelector('#phTunState') || {}).textContent || ''), null, { timeout: 15000 });
+  check('Turn on: saves the tunnel, shows it up, Tailscale fold gone', (await s.ok('GET', '/api/phone')).tunnel.host === HOST && !(await page.$('#phAlt')) && !(await page.isDisabled('#phPair')));
   noErrors(page);
 }, true, { AIGILE_NO_TAILSCALE: '1', AIGILE_SSH_STUB: stub, AIGILE_TUNNEL_UP_MS: '300' });

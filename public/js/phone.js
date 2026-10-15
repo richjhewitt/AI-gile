@@ -5,7 +5,7 @@
 const Phone = (() => {
   const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
   const PAIR = /^#\/pair\/([A-Za-z0-9_-]{10,100})$/;
-  const P = { data: null, host: '', link: null, app: null, err: '', busy: false };   // app: the Android app's QR, shown once (AIG-907)
+  const P = { data: null, host: '', name: '', tunSrv: '', tunHost: '', tsOpen: false, link: null, app: null, err: '', busy: false };   // app: the Android app's QR, shown once (AIG-907)
   let blocked = !LOCAL;   // core.js refresh() waits while this phone is not (yet) let in
 
   function stop(msg) {
@@ -102,57 +102,102 @@ const Phone = (() => {
     if (!$('phBody')) return;
     if (!LOCAL) { $('phBody').textContent = t('phone.onpc'); return; }
     try { P.data = await api('GET', '/api/phone'); P.err = ''; } catch (e) { P.err = e.message; }
-    if (!P.host) P.host = (P.data && P.data.hosts[0]) || '';
+    if (!P.host) P.host = ((P.data && P.data.hosts) || []).filter(h => !(P.data.tunnel && h === P.data.tunnel.host))[0] || '';
     paint();
-    if (!P.host) try { const ts = await api('GET', '/api/phone/tailscale'); if (ts.host && !P.host && !($('phHost') || {}).value) { P.host = ts.host; paint(); } } catch {}
+    if (!P.host && !(P.data && P.data.tunnel)) try { const ts = await api('GET', '/api/phone/tailscale'); if (ts.host && !P.host && !($('phHost') || {}).value) { P.host = ts.host; paint(); } } catch {}
   }
   // Over my server (AIG-1008): a saved ssh server keeps a tunnel open so the phone can reach this board on a public name.
-  function tunnelHtml(d) {
+  const DEFAULT_NAME = 'test.aigile.lol';
+  // a plain reason for a tunnel that is not up (the raw ssh line follows it, small)
+  function why(err) {
+    const e = String(err || '').toLowerCase();
+    const k = /permission denied|publickey|authentication/.test(e) ? 'auth' : /could not resolve|timed out|refused|no route|unreachable|network/.test(e) ? 'net'
+      : /forwarding failed|address already in use|cannot listen/.test(e) ? 'port' : /not an ssh server/.test(e) ? 'gone' : '';
+    return k ? t('phone.tun.why.' + k) : '';
+  }
+  function tunnelState(tn) {
+    if (!tn) return '';
+    const st = tn.state === 'up' || tn.state === 'starting' || tn.state === 'down' ? tn.state : 'idle';
+    const reason = st === 'down' ? why(tn.error) : '';
+    return `<small id="phTunState" class="ph-tun-${esc(tn.state)}" role="status"><b>${esc(t('phone.tun.' + st))}</b>${reason ? ' · ' + esc(reason) : ''}${tn.error && st !== 'up' ? `<br><span class="muted">${esc(t('phone.tun.err', { err: tn.error }))}</span>` : ''}</small>`;
+  }
+  function tunnelBody(d) {
     const tn = d.tunnel, servers = d.sshServers || [];
-    const state = !tn ? t('phone.tun.idle') : t('phone.tun.' + (tn.state === 'up' || tn.state === 'starting' ? tn.state : tn.state === 'down' ? 'down' : 'idle'));
-    return `<div class="ph-tunnel" id="phTun"><h4 class="ph-h">${esc(t('phone.tun.h'))}</h4><small class="muted">${esc(t('phone.tun.help'))}</small>` + (servers.length
-      ? `<label>${esc(t('phone.tun.server'))} <select id="phTunSrv">${servers.map(n => `<option${tn && tn.server.toLowerCase() === n.toLowerCase() ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
-      <label>${esc(t('phone.tun.host'))} <input id="phTunHost" placeholder="test.aigile.lol" value="${esc(tn ? tn.host : '')}" autocomplete="off" spellcheck="false"></label>
-      <label>${esc(t('phone.tun.port'))} <input id="phTunPort" type="number" min="1024" max="65535" placeholder="14321" value="${esc(tn ? tn.port : '')}"></label>
-      <div class="actions"><button type="button" class="primary" id="phTunSave">${esc(t('phone.tun.save'))}</button>${tn ? ` <button type="button" class="ph-alt" id="phTunOff">${esc(t('phone.tun.off'))}</button>` : ''}</div>`
-      : `<small class="muted">${esc(t('phone.tun.none'))}</small>`)
-      + `<small id="phTunState" class="ph-tun-${esc(tn ? tn.state : 'off')}">${esc(state)}${tn && tn.error && tn.state !== 'up' ? ' · ' + esc(t('phone.tun.err', { err: tn.error })) : ''}</small></div>`;
+    const sel = (tn && tn.server) || P.tunSrv || servers[0];
+    return `<label>${esc(t('phone.tun.server'))} <select id="phTunSrv">${servers.map(n => `<option${sel && sel.toLowerCase() === n.toLowerCase() ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
+      <label>${esc(t('phone.tun.host'))} <input id="phTunHost" placeholder="${DEFAULT_NAME}" value="${esc(tn ? tn.host : (P.tunHost || DEFAULT_NAME))}" autocomplete="off" spellcheck="false"></label>
+      <div class="actions"><button type="button" class="primary" id="phTunSave" ${P.busy ? 'disabled' : ''}>${esc(t(tn ? 'phone.tun.save' : 'phone.tun.on'))}</button>${tn ? ` <button type="button" class="ph-alt" id="phTunOff">${esc(t('phone.tun.off'))}</button>` : ''}</div>
+      ${tunnelState(tn) || `<small id="phTunState" class="muted">${esc(t('phone.tun.idle'))}</small>`}`;
+  }
+  // what the form fields hold now, so a repaint (the tunnel state refreshing) never wipes a half-typed form
+  function keep() {
+    const v = id => { const e = $(id); return e ? e.value : null; };
+    const o = $('phAlt'); if (o) P.tsOpen = o.open;
+    for (const [k, id] of [['tunSrv', 'phTunSrv'], ['tunHost', 'phTunHost'], ['name', 'phName']]) { const x = v(id); if (x !== null) P[k] = x; }
+    const h = v('phHost'); if (h !== null) P.host = h;
   }
   function paint() {
     const box = $('phBody'); if (!box) return;
-    box.className = '';
+    keep(); box.className = '';
     const d = P.data || { devices: [] }, when = s => s ? ago(s) : t('phone.never');
-    const step = (n, key, inner) => `<li class="ph-step"><b class="ph-n" aria-hidden="true">${n}</b><div class="ph-body"><h4 class="ph-h">${esc(t('phone.step' + n + '.h'))}</h4>${inner}</div></li>`;
-    box.innerHTML = `<small class="muted">${esc(t('phone.help'))}</small>
+    const servers = d.sshServers || [], tn = d.tunnel, srvMode = servers.length > 0, up = !!tn && tn.state === 'up';
+    const step = (n, inner, h) => `<li class="ph-step"><b class="ph-n" aria-hidden="true">${n}</b><div class="ph-body"><h4 class="ph-h">${esc(h || t('phone.step' + n + '.h'))}</h4>${inner}</div></li>`;
+    const ts = `<label>${esc(t('phone.host'))} <input id="phHost" placeholder="mypc.tail1234.ts.net" value="${esc(P.host)}" autocomplete="off" spellcheck="false"></label>
+      <small class="muted">${esc(t('phone.serve'))} <code>tailscale serve --bg ${esc(location.port || '4321')}</code></small>`;
+    const nm = `<label>${esc(t('phone.name'))} <input id="phName" placeholder="${esc(t('phone.name.ph'))}" maxlength="40" value="${esc(P.name || '')}"></label>`;
+    const canPair = !srvMode || !!tn || (!up && P.tsOpen && !!P.host);   // Tailscale is used only when its fold is open, with a host, and the tunnel is not up
+    const pairBtn = `<div class="actions"><button type="button" class="primary" id="phPair" ${P.busy || !canPair ? 'disabled' : ''}>${esc(t('phone.pair'))}</button></div>
+      <small class="muted">${esc(t('phone.app.or'))} <button type="button" class="ph-alt" id="phApp" ${P.busy || !canPair ? 'disabled' : ''}>${esc(t('phone.app'))}</button></small>`;
+    const result = (P.link ? `<div class="phone-link"><p class="ph-scan">${esc(t('phone.scan'))}</p>${qrSvg(P.link.url)}<p><a href="${esc(P.link.url)}" target="_blank" rel="noopener" id="phLink">${esc(P.link.url)}</a></p><small class="muted">${esc(t('phone.link.help'))}</small></div>` : '') + (P.app ? `<div class="phone-link"><p class="ph-scan">${esc(t('phone.scan'))}</p>${qrSvg(P.app.qr)}<code id="phAppQr" class="phone-key">${esc(P.app.qr)}</code><small class="muted">${esc(t('phone.app.help'))}</small></div>` : '');
+    const devs = d.devices.length ? `<ul class="phone-list">${d.devices.map(x => `<li><b>${esc(x.name)}</b> <small class="muted">${esc(x.host)} · ${esc(t('phone.seen', { when: when(x.seen) }))}</small> <button type="button" class="ph-rm" data-id="${esc(x.id)}">${esc(t('phone.remove'))}</button></li>`).join('')}</ul>` : `<small class="muted">${esc(t('phone.none'))}</small>`;
+    if (!srvMode) {   // no saved ssh server: the Tailscale way, as before (and a hint about My servers)
+      box.innerHTML = `<small class="muted">${esc(t('phone.help'))}</small>
+        <ol class="ph-steps" id="phSteps">
+        ${step(1, ts + nm + pairBtn)}
+        ${step(2, result || `<small class="muted">${esc(t('phone.step2.wait'))}</small>`)}
+        ${step(3, `<small class="muted">${esc(t('phone.step3.help'))}</small>`)}
+        </ol>
+        <small class="muted" id="phTunNone">${esc(t('phone.tun.none'))}</small>
+        <div class="err" id="phErr">${esc(P.err)}</div>${devs}`;
+      return;
+    }
+    // a saved ssh server: Over my server first, then Pair a phone; Tailscale folded away (and gone while the tunnel is up)
+    const fold = up ? '' : `<details class="ph-alt-fold" id="phAlt"${P.tsOpen ? ' open' : ''}><summary>${esc(t('phone.alt.h'))}</summary><div class="ph-alt-body">${ts}</div></details>`;
+    box.innerHTML = `<small class="muted">${esc(t('phone.tun.help'))}</small>
       <ol class="ph-steps" id="phSteps">
-      ${step(1, '', `<label>${esc(t('phone.host'))} <input id="phHost" placeholder="mypc.tail1234.ts.net" value="${esc(P.host)}" autocomplete="off" spellcheck="false"></label>
-      <label>${esc(t('phone.name'))} <input id="phName" placeholder="${esc(t('phone.name.ph'))}" maxlength="40"></label>
-      <small class="muted">${esc(t('phone.serve'))} <code>tailscale serve --bg ${esc(location.port || '4321')}</code></small>
-      <div class="actions"><button type="button" class="primary" id="phPair" ${P.busy ? 'disabled' : ''}>${esc(t('phone.pair'))}</button></div>
-      <small class="muted">${esc(t('phone.app.or'))} <button type="button" class="ph-alt" id="phApp" ${P.busy ? 'disabled' : ''}>${esc(t('phone.app'))}</button></small>`)}
-      ${step(2, '', (P.link ? `<div class="phone-link"><p class="ph-scan">${esc(t('phone.scan'))}</p>${qrSvg(P.link.url)}<p><a href="${esc(P.link.url)}" target="_blank" rel="noopener" id="phLink">${esc(P.link.url)}</a></p><small class="muted">${esc(t('phone.link.help'))}</small></div>` : '') + (P.app ? `<div class="phone-link"><p class="ph-scan">${esc(t('phone.scan'))}</p>${qrSvg(P.app.qr)}<code id="phAppQr" class="phone-key">${esc(P.app.qr)}</code><small class="muted">${esc(t('phone.app.help'))}</small></div>` : '') || `<small class="muted">${esc(t('phone.step2.wait'))}</small>`)}
-      ${step(3, '', `<small class="muted">${esc(t('phone.step3.help'))}</small>`)}
+      ${step(1, `<div id="phTun" class="ph-tunnel">${tunnelBody(d)}</div>`, t('phone.tun.h'))}
+      ${step(2, (tn ? '' : `<small class="muted">${esc(t('phone.tun.pairwait'))}</small>`) + nm + pairBtn + result + fold, t('phone.tun.step2.h'))}
+      ${step(3, `<small class="muted">${esc(t('phone.step3.help'))}</small>`)}
       </ol>
-      ${tunnelHtml(d)}
-      <div class="err" id="phErr">${esc(P.err)}</div>
-      ${d.devices.length ? `<ul class="phone-list">${d.devices.map(x => `<li><b>${esc(x.name)}</b> <small class="muted">${esc(x.host)} · ${esc(t('phone.seen', { when: when(x.seen) }))}</small> <button type="button" class="ph-rm" data-id="${esc(x.id)}">${esc(t('phone.remove'))}</button></li>`).join('')}</ul>` : `<small class="muted">${esc(t('phone.none'))}</small>`}`;
+      <div class="err" id="phErr">${esc(P.err)}</div>${devs}`;
+  }
+  let polls = 0;
+  function poll() {   // after Turn on: look again until it is up or down (about 20 s)
+    if (polls++ > 10 || !$('phBody')) return;
+    setTimeout(async () => { await load(); const tn = P.data && P.data.tunnel; if (tn && tn.state === 'starting') poll(); }, 2000);
+  }
+  // the host a pairing link is for: the tunnel's own name, unless it is not up and the Tailscale fold is open with a host in it
+  function pairHost() {
+    const tn = P.data && P.data.tunnel;
+    return tn && (tn.state === 'up' || !(P.tsOpen && P.host)) ? tn.host : P.host;
   }
   document.addEventListener('click', async ev => {
     const b = ev.target.closest && ev.target.closest('#phPair, #phApp, .ph-rm, #phTunSave, #phTunOff'); if (!b) return;
     P.err = '';
     try {
       if (b.id === 'phApp') {
-        P.host = $('phHost').value.trim(); P.link = null; P.busy = true; paint();
-        P.app = await api('POST', '/api/phone/app', { host: P.host });
+        keep(); P.link = null; P.busy = true; paint();
+        P.app = await api('POST', '/api/phone/app', { host: pairHost() });
         P.data = await api('GET', '/api/phone');
       } else if (b.id === 'phTunSave' || b.id === 'phTunOff') {
-        const body = b.id === 'phTunOff' ? { server: '' } : { server: $('phTunSrv').value, host: $('phTunHost').value.trim(), port: $('phTunPort').value.trim() };
+        const old = P.data && P.data.tunnel;
+        const body = b.id === 'phTunOff' ? { server: '' } : { server: $('phTunSrv').value, host: $('phTunHost').value.trim(), port: old ? old.port : '' };
         P.data = await api('POST', '/api/phone/tunnel', body);
-        setTimeout(load, 4000);   // up or down, a moment later
+        if (b.id === 'phTunOff') P.link = P.app = null; else { P.tsOpen = false; polls = 0; poll(); }   // up or down, a moment later
       } else if (b.id === 'phPair') {
         P.app = null;
-        const name = $('phName').value.trim(); P.host = $('phHost').value.trim(); P.busy = true; paint();
-        P.link = await api('POST', '/api/phone/start', { host: P.host, name });
+        keep(); P.busy = true; paint();
+        P.link = await api('POST', '/api/phone/start', { host: pairHost(), name: (P.name || '').trim() });
         P.data = await api('GET', '/api/phone');
       } else { P.data = await api('DELETE', '/api/phone/devices/' + b.dataset.id); }
     } catch (e) { P.err = e.message; }

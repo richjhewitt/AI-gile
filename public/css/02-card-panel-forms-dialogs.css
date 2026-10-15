@@ -125,6 +125,11 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .ph-body input { max-width: 100%; }
 .ph-h { margin: 3px 0 6px; font-size: 15px; }
 .ph-scan { margin: 4px 0; font-weight: 600; }
+.ph-tunnel small[role=status] { display: block; margin-top: 6px; color: var(--text); overflow-wrap: anywhere; }
+.ph-tunnel .ph-tun-down b { color: var(--danger); }
+.ph-alt-fold { margin-top: 14px; font-size: 13px; }
+.ph-alt-fold summary { cursor: pointer; color: var(--muted); }
+.ph-alt-body { margin-top: 6px; }
 button.ph-alt { background: none; border: 0; padding: 0; min-height: 0; color: var(--accent); text-decoration: underline; cursor: pointer; font: inherit; }
 /* What kind of lead (AIG-235): one question per block, the answers as big tappable choices */
 .lead-prefs { margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); }
