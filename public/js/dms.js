@@ -7,7 +7,7 @@
 // friend's chat has the same typing box, 👍 and attachments. A friend's chat key is 'dm:<contact id>'.
 const Dms = (() => {
   let paName = '', projects = [], chats = [], people = [], closed = {}, showClosed = false, showQuiet = false, showDone = false, askAll = false, filter = 'all', open = null, listOpen = false, thread = null, threadSeq = 0, busy = false;
-  let groups = [], grpCands = [];   // 👥 group chats (AIG-1027): key 'grp:<id>'
+  let groups = [], meets = [], grpCands = [];   // 👥 group chats (AIG-1027): key 'grp:<id>'
   let fold = null, target = null, waitingSeen = new Set();   // the card shown open in the chat, and the card the typing box answers (AIG-157)
   const QUIET_MS = 6 * 3600000;   // AIG-946, AIG-1021: a chat with nothing unread and no message for 6 hours hides until a new one
   const plain = s => String(s || '').replace(/```/g, ' ').replace(/^\s*(?:[-*+•]|\d+[.)])\s+/gm, '').replace(/^\s*#+\s+/gm, '').replace(/\*\*|__|[*_`~]/g, '').replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\s+/g, ' ').trim();   // AIG-946: previews are plain text
@@ -72,13 +72,14 @@ const Dms = (() => {
     try { closed = await PagePoll.get('/api/dmclosed'); } catch { closed = {}; }
     try { paName = (await PagePoll.get('/api/assistant')).name; } catch {}
     try { groups = NoAi.on ? [] : await PagePoll.get('/api/chats/_groups'); } catch { groups = []; }
+    try { meets = NoAi.on ? [] : await PagePoll.get('/api/chats/_meetings'); } catch { meets = []; }   // 🎥 each project's Meeting Room (AIG-1168)
     const fp = Object.fromEntries(people.filter(c => c.pic).map(c => [c.name.trim().toLowerCase(), c.pic]));   // friends' pictures for their comments and DMs (AIG-883)
     if (JSON.stringify(fp) !== JSON.stringify(state.friendPics || {})) { state.friendPics = fp; if (typeof refresh === 'function') refresh(true); }
     if (Swarm.hiding) boards = [];   // 🚨 swarm: friends' boards wait too (AIG-880)
     if (NoAi.on) chats = chats.filter(c => c.noAi);   // 🚫 no DMs to leads (AIG-581); only the 🧭 Scrum Master (no AI) stays (AIG-729)
     const cur = here(), p = projects.find(x => x.slug === cur);
     if (p) seen.set(cur, p.updated);   // looking at it now counts as seen
-    const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + groups.reduce((n, g) => n + grpUnread(g), 0) + people.reduce((n, c) => n + c.unread, 0) + DiscordTab.unread();
+    const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + groups.concat(meets).reduce((n, g) => n + grpUnread(g), 0) + people.reduce((n, c) => n + c.unread, 0) + DiscordTab.unread();
     const btn = (attrs, inner, on, title) => `<button class="dm-railbtn ${on ? 'on' : ''}" ${attrs} title="${esc(title)}">${inner}</button>`;
     const html = btn('data-go="#/"', '<span class="dm-av">🏠</span>', location.hash === '#/' || location.hash === '', t('dms.home'))
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
@@ -135,7 +136,7 @@ const Dms = (() => {
     const fresh = !chats.some(c => c.last) && !people.some(c => c.last);   // nothing written yet: say what each row is for (AIG-1085)
     const html = `<div class="dm-head"><b>${esc(t('dms.title'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       <div class="dm-filter" role="group" aria-label="${esc(t('dms.filter'))}">${chips}</div>
-      <div class="dm-list">${filter === 'drafts' ? draftRows() : `${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.allhands'))}</span>` : ''}</span></button><button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(paName || t('pa.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.assistant'))}</span>` : ''}</span></button>${groupsHtml()}${rows.length ? `<div class="dm-groups-h dm-leads-h"><span class="muted">${esc(t('dms.leadchats'))}</span></div>` : ''}` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}`}</div>`;
+      <div class="dm-list">${filter === 'drafts' ? draftRows() : `${filter === 'all' || filter === 'agents' ? `<button class="dm-row" data-dm="_allhands"><span class="dm-rowtext"><b>${esc(t('allhands.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.allhands'))}</span>` : ''}</span></button><button class="dm-row" data-dm="_assistant"><span class="dm-rowtext"><b>${esc(paName || t('pa.name'))}</b>${fresh ? `<span class="muted dm-hint">${esc(t('dms.hint.assistant'))}</span>` : ''}</span></button>${groupsHtml()}${meetsHtml()}${rows.length ? `<div class="dm-groups-h dm-leads-h"><span class="muted">${esc(t('dms.leadchats'))}</span></div>` : ''}` : ''}${rows.join('') || `<p class="muted dm-empty">${esc(none)}</p>`}${quietBox}${closedBox}`}</div>`;
     const panel = el('dmPanel');
     if (panel.dataset.sig !== html) { panel.dataset.sig = html; panel.innerHTML = html; }
     panel.hidden = false;
@@ -143,6 +144,7 @@ const Dms = (() => {
 
   // 👥 Groups (AIG-1027): their own part of the All / Agents list, with ＋ New group.
   const groupsHtml = () => `<div class="dm-groups"><div class="dm-groups-h"><span class="muted">${esc(t('grp.section'))}</span><button class="dm-newgroup" data-dmnewgroup="1">${esc(t('grp.new'))}</button></div>${groups.length ? '' : `<p class="muted dm-empty dm-nogroups">${esc(t('grp.nogroups'))}</p>`}${groups.map(g => `<div class="dm-rowwrap ${grpUnread(g) ? 'unread' : ''}"><button class="dm-row" data-dm="grp:${esc(g.id)}"><span class="dm-av">👥</span><span class="dm-rowtext"><b>${esc(g.name)}</b><span class="muted">${esc([plain(g.lastText).slice(0, 60) || g.members.map(m => m.name).join(', '), g.lastText ? ago(g.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(grpUnread(g))}</button></div>`).join('')}</div>`;
+  const meetsHtml = () => !meets.length ? '' : `<div class="dm-groups"><div class="dm-groups-h"><span class="muted">${esc(t('meet.section'))}</span></div>${meets.map(g => `<div class="dm-rowwrap ${grpUnread(g) ? 'unread' : ''}"><button class="dm-row" data-dm="grp:${esc(g.id)}"><span class="dm-av">🎥</span><span class="dm-rowtext"><b>${esc(g.name)}</b><span class="muted">${esc([plain(g.lastText).slice(0, 60) || g.members.map(m => m.name).join(', '), g.lastText ? ago(g.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(grpUnread(g))}</button></div>`).join('')}</div>`;
   async function newGroup() {
     try { grpCands = await api('GET', '/api/chats/_groups/candidates'); } catch (e) { alert(e.message || String(e)); return; }
     openDialog(`<h2>${esc(t('grp.new.h'))}</h2><p class="muted">${esc(t('grp.new.help'))}</p>
@@ -465,9 +467,9 @@ const Dms = (() => {
     open = slug; listOpen = true; replyTo = null; editing = null;
     const who = isPerson(slug) ? people.find(x => 'dm:' + x.id === slug) || { id: slug.slice(3), name: t('dms.person') } : null;
     thread = who ? { person: true, id: who.id, slug, name: who.name, messages: [], open: [] } : null;
-    const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || (isGrp(slug) ? (g => ({ slug, name: g ? g.members.map(m => m.name + ' (' + m.engineLabel + ')').join(', ') : '', lead: g ? g.name : slug.slice(4), emoji: '👥', group: true }))(groups.find(x => 'grp:' + x.id === slug)) : null) || (slug === '_assistant' ? { slug, name: paName || t('pa.name'), lead: paName || t('pa.name'), emoji: '💚', assistant: true } : { slug, name: slug });
+    const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || (isGrp(slug) ? (g => ({ slug, name: g ? g.members.map(m => m.name + ' (' + m.engineLabel + ')').join(', ') : '', lead: g ? g.name : slug.slice(4), emoji: g && g.meeting ? '🎥' : '👥', group: true, meeting: g && g.meeting }))(groups.concat(meets).find(x => 'grp:' + x.id === slug)) : null) || (slug === '_assistant' ? { slug, name: paName || t('pa.name'), lead: paName || t('pa.name'), emoji: '💚', assistant: true } : { slug, name: slug });
     const panel = el('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv(who) : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(c.assistant ? t('pa.tagline') : chatName(c))}</div></div><span style="flex:1"></span>${who ? `<button type="button" class="dm-callbtn" id="dmCallBtn" onclick="dmCall('${esc(who.id)}', this.dataset.name)" data-name="${esc(who.name)}" title="${esc(t('lkcall.btn.title', { name: who.name }))}">${esc(t('lkcall.btn'))}</button>` : callLink(c.callUrl, 'dm-call')}${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv(who) : leadAv(c)}<div><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted">${esc(c.assistant ? t('pa.tagline') : chatName(c))}</div></div><span style="flex:1"></span>${c.meeting ? `<button type="button" class="dm-callbtn" id="dmMeetBtn" onclick="meetingCall('${esc(c.meeting)}', this.dataset.name)" data-name="${esc(c.lead)}" title="${esc(t('meet.join.title'))}">${esc(t('meet.join'))}</button>` : ''}${who ? `<button type="button" class="dm-callbtn" id="dmCallBtn" onclick="dmCall('${esc(who.id)}', this.dataset.name)" data-name="${esc(who.name)}" title="${esc(t('lkcall.btn.title', { name: who.name }))}">${esc(t('lkcall.btn'))}</button>` : callLink(c.callUrl, 'dm-call')}${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}<button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
       ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}${who ? '<div class="dm-usage" id="dmUsage" hidden></div>' : ''}
       <div class="dm-list" id="dmList"></div>
       <div id="dmFollow"></div>
