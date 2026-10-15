@@ -1,0 +1,101 @@
+{
+  "unit": "words",
+  "sizes": [
+    {
+      "n": 1,
+      "texts": [
+        "Kanban.",
+        "Robotoù.",
+        "Dilezet."
+      ]
+    },
+    {
+      "n": 2,
+      "texts": [
+        "Kanban robotoù.",
+        "Ajanted urzhiet.",
+        "Mennozhioù, savet."
+      ]
+    },
+    {
+      "n": 3,
+      "texts": [
+        "Kanban evit robotoù.",
+        "Mennozhioù da perzhioù.",
+        "Kanban ajanted digoust."
+      ]
+    },
+    {
+      "n": 5,
+      "texts": [
+        "Taolenn kanban rediet gant ajanted.",
+        "C'hwi a skriv. Ajanted a sav.",
+        "Digoust, lec'hel, amprouet, un tammig sot."
+      ]
+    },
+    {
+      "n": 8,
+      "texts": [
+        "Taolenn kanban digoust, ajanted AI a labour warni.",
+        "Skrivit ur mennozh. Ajanted a sav anezhañ. Asantit.",
+        "Agile evit un den hag kalz robotoù a-bouez."
+      ]
+    },
+    {
+      "n": 13,
+      "texts": [
+        "Un daolenn kanban war hoc'h urzhiater e vez kemeret ar c'hartennoù gant ajanted AI.",
+        "Skrivit ur mennozh. Ur skipailh ajanted a sav anezhañ. Un amprouer a wiriekaat.",
+        "Digoust, kont ebet, heulier ebet: un daolenn, un nebeut robotoù, hag c'hwi a gomz."
+      ]
+    },
+    {
+      "n": 21,
+      "texts": [
+        "AI-gile zo un daolenn kanban evit labourat gant ajanted AI a god. Kemer a reont ar c'hartennoù; c'hwi a amprouf hag a asant anezho.",
+        "Pep raktres en deus ur penn-skipailh hag ur skipailh ajanted AI. Skrivit un evezhiadenn war ur gartenn ha krog a ra ar skipailh.",
+        "Un daolenn labourioù personel ha digoust a red war hoc'h urzhiater deoc'h-c'hwi. Robotoù eo al labourerien. An hini a lavar ya eo c'hwi."
+      ]
+    },
+    {
+      "n": 34,
+      "texts": [
+        "Lakaat a rit mennozhioù war un daolenn. Ur skipailh ajanted AI a laka anezho da perzhioù o labourat, a amprouf anezho, hag a gas en-dro anezho deoc'h gant pazennoù da amprouiñ. Tra ebet n'eo echu a-raok ma lavarit.",
+        "AI-gile zo un daolenn kanban graet er gêr gant Rich, gant kalz skoazell eus an ajanted a gas bremañ. Digoust eo, a red war hoc'h urzhiater, hag a vez rannet gant mignoned, n'eo ket gwerzhet.",
+        "Soñjit en un daolenn kanban boas, gant bannoù eus ar Backlog betek Graet, nemet ar c'hartennoù a vez kemeret gant ajanted AI. Displegañ a reont o araokadenn, goulenn m'int stag, ha gortoz atav ho tudenn war-laez."
+      ]
+    },
+    {
+      "n": 55,
+      "texts": [
+        "AI-gile zo un daolenn kanban m'eo ajanted AI ar skipailh. Pep raktres en deus ur penn-skipailh a blan al labour ha skoazelloù a sav anezhañ. Pa vez prest ur perzh, un amprouer AI a amprouf anezhañ hag a ra ur skeudenn skramm, goude-se e teu en ho pern. Asantit anezhañ, pe skrivit un evezhiadenn hag e adober a raint.",
+        "Krog eo bet evel un doare evit un den da heuliañ kalz estrenvaoù kodiñ AI war un dro, ha kresket eo e daolenn wirion. Ober a ra war ho jestr, n'en deus ket ezhomm eus kont, ha n'en deus heulier ebet. Digoust eo evit mignoned ha re c'hoant-gouzout. N'eo ket echu c'hoazh, setu gortozit riblennoù garv hag un souezh a-wechoù.",
+        "Setu ar stumm onest. Ret eo deoc'h kaout ar mennozhioù c'hoazh, ha gwiriañ an disoc'hoù c'hoazh. Ar pezh a ra AI-gile eo pep tra etre an daou: miret a ra ar c'hartennoù en urzh, dihuniñ a ra an ajant mat pa skrivit un evezhiadenn, diskouez a ra egzakt ar pezh zo cheñchet, ha lakaat a ra an holl en ur bern berr evidoc'h."
+      ]
+    },
+    {
+      "n": 89,
+      "texts": [
+        "AI-gile zo un daolenn kanban digoust a lañsit war hoc'h urzhiater deoc'h-c'hwi. En tu all d'an dud, pep raktres en deus ur skipailh ajanted AI: ur penn-skipailh a laka ho mennozhioù da gartennoù ha da blan, ha skoazelloù a gemer ar c'hartennoù hervez o raktres. Pa vez savet un dra bennak, un amprouer AI a heul ar pazennoù amprouiñ hag a ziskouez deoc'h ar pezh en deus gwelet. Goude-se e c'hortoz en ur bern anvet Evidoc'h. Asantiñ a rit, pe skrivit un evezhiadenn hag ar skipailh a glask en-dro. Tra ebet ne zeu da Graet hep c'hwi.",
+        "Un nebeut traoù na c'hortozit ket marteze. Ur gward-noz a vir ar bann Da ober leun p'emaoc'h o kousket, o tibab kartennoù na c'houlennont ket respont diganeoc'h. Ur jedour tokenoù a ziskouez pet en deus implijet an ajanted hiziv hag ar sizhun-mañ, ha No Token Mode a lavar dezho paouez da zispign. Gallout a rit skrivañ da vignoned, ha sifret eo ar c'hemennadennoù prevez penn-da-benn. An daolenn a gomz tro-dro 120 yezh, en o zouez nederlandeg, flamanteg, pirat ha klingon. Netra eus se ne gousto ur gwenneg, ha den n'eo o klask gwerzhañ se deoc'h.",
+        "AI-gile zo ur raktres bihan, personel, n'eo ket un embregerezh. C'hoant en doa Rich da ober war-dro meur a raktres kodiñ AI hep digeriñ pep arload evit o gwiriañ, setu en deus savet gant an ajanted un daolenn evit se, hag implijet an daolenn evit sevel ar rest anezhi. E pre-alfa serret emañ, da lavaret eo e vez mat, dre vras, evit ur bochad mignoned. Pajenn priz ebet, lizher-keleier ebet, plan kresk ebet. M'hoc'h eus c'hoant, gallout a rit goulenn e amprouiñ p'en em zigoro un tammig muioc'h."
+      ]
+    },
+    {
+      "n": 144,
+      "texts": [
+        "AI-gile zo un daolenn kanban evit un den ha kalz ajanted AI. Red a ra war hoc'h urzhiater deoc'h-c'hwi ha digoust eo penn-da-benn. Ouzhpennañ a rit raktresoù, ha pep raktres a zeu gant ur penn-skipailh hag ur skipailh bihan. Flapañ a rit gant ar penn-skipailh, un tammig evel war Discord, ha deskrivañ ur mennozh; ar penn-skipailh a laka anezhañ da gartennoù ha da blan, goude-se e c'hortoz ma wasit war Go. Ar skipailh a labour ar c'hartennoù hervez o raktres, dre un urzhiad-linenn simpl graet evit modeloù yezh. Kent ma teuio tra ebet en-dro deoc'h, un amprouer AI a heul ar pazennoù en un eilad eus an arload hag a stag ur skeudenn skramm. Al labour echu a zeu en ho pern gant ar restroù cheñchet hag an diforc'h. Asantiñ a rit, pe skrivit un evezhiadenn hag ar skipailh a zihun hag a glask en-dro. Hepken c'hwi a c'hall dilec'hiañ ur gartenn da Graet. Kont ebet, heulier ebet, koukiz ebet, ha pep tra a chom war hoc'h urzhiater.",
+        "Un devezh gant AI-gile, tro-dro. Da noz e lezit un nebeut evezhiadennoù: ar bouton-mañ zo e plas fall, ar roll-se a rankfe bezañ rummet, ha ne vefe ket un doare teñval. Mont a rit da gousket. An ajanted a lenn an evezhiadennoù, a ra ar cheñchamantoù, a amprouf anezho hag a gas en-dro deoc'h. Ma teu Da ober da vezañ goullo, ar gward-noz a leun anezhañ diwar ar backlog gant kartennoù na c'houlennont ket respont diganeoc'h. Da vintin ur bern berr zo: un nebeut goulennoù hag un nebeut traoù da amprouiñ, pep hini gant pazennoù a c'hall heuliañ un den kousket-koazh ha gant ur skeudenn skramm eus an dra o labourat. Klikañ a rit dre-hont, asantiñ ar re vat ha kas en-dro ar re all. Ur jedour tokenoù a ziskouez ar pezh en deus implijet an holl, ha No Token Mode zo evit ar sizhunioù treut. Goude-se e tebrit ho pred-vintin, ha n'hall ket an ajanted sikour ac'hanoc'h c'hoazh.",
+        "Da gentañ, petra n'eo ket AI-gile. N'eo ket ur startup, n'eo ket da werzhañ, ha den ne zastum ho roadennoù. Un daolenn digoust eo a red war hoc'h urzhiater, hep kont, hep heulier ha hep koukiz. Ar pezh eo: ur plas kempenn m'hallit gwelet holl raktresoù kodiñ AI war un dro, gant ur skipailh ajanted a ra ar c'hartennoù ha c'hwi a ra an divizoù. Kenstrollañ a ra ar c'hartennoù kar, reizhañ a ra an titloù mesk, ha selaou a ra penaos e chom skañv ar c'hod. Komz a ra tro-dro 120 yezh, eus an nederlandeg hag ar flamanteg betek ar pirat hag ar c'hlingon. Ar mignoned a c'hall skrivañ an eil d'egile, e prevez ha sifret. Savet eo bet gant Rich hag un niver bras a ajanted a-bouez, dre implijout e-unan peurliesañ. E pre-alfa serret emañ, setu garv eo a-wechoù. M'hoc'h eus c'hoant, goulennit gant jentilezh ha marteze e vo digor deoc'h abred."
+      ]
+    }
+  ],
+  "quips": {
+    "1": "Ur ger. Dispont. Re zispont marteze.",
+    "3": "Tri ger. Muioc'h onest dija eget an darn vrasañ eus ar pajennoù produioù.",
+    "8": "Eizh ger. Berroc'h c'hoazh eget ur stand-up.",
+    "21": "Ar hirderioù zo story points, dre-vras. Evel just e int.",
+    "55": "Pemp ha hanter-kant ger. Div gartenn zo bet echu e-keit ha ma lennit.",
+    "144": "Honnezh eo an hini hir. 233 ebet. An ajanted zo aet da gousket."
+  }
+}

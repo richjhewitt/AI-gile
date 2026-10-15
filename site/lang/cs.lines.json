@@ -1,0 +1,52 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Roboti.", "Delegováno."] },
+    { "n": 2, "texts": ["Robotický kanban.", "Agenti, uspořádaně.", "Nápady, postavené."] },
+    { "n": 3, "texts": ["Kanban pro roboty.", "Z nápadů funkce.", "Agentní kanban zdarma."] },
+    { "n": 5, "texts": ["Kanbanová tabule řízená AI agenty.", "Ty píšeš karty. Agenti staví.", "Zdarma, lokální, otestované, trochu praštěné."] },
+    { "n": 8, "texts": [
+      "Kanbanová tabule zdarma, na které pracují AI agenti.",
+      "Napiš nápad. Agenti ho postaví. Ty ho schválíš.",
+      "Agile pro jednoho člověka a spoustu trpělivých robotů."
+    ] },
+    { "n": 13, "texts": [
+      "Kanbanová tabule na tvém počítači, kde karty zpracovávají AI agenti.",
+      "Napiš nápad. Tým agentů ho postaví. Pak ho zkontroluje tester a ty řekneš ano.",
+      "Zdarma, bez účtů, bez sledování: tabule, pár robotů a ty ve vedení."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile je kanbanová tabule pro práci s AI agenty, kteří programují. Oni berou karty, ty je zkoušíš a schvaluješ.",
+      "Každý projekt dostane vedoucího a tým AI agentů. Okomentuj kteroukoli kartu a tým se hned pustí do práce.",
+      "Osobní tabule úkolů zdarma, která běží na tvém vlastním počítači. Pracují na ní roboti. Ano říká ten pravý: ty."
+    ] },
+    { "n": 34, "texts": [
+      "Nápady dáváš na tabuli. Tým AI agentů z nich vyrobí fungující funkce, otestuje je a vrátí ti je s kroky k vyzkoušení. Nic se nepočítá jako hotové, dokud to neřekneš ty.",
+      "AI-gile je domácí kanbanová tabule, kterou Rich postavil s velkou pomocí agentů, jež dnes sama řídí. Je zdarma, běží na tvém počítači a sdílí se s přáteli, neprodává se.",
+      "Představ si obyčejnou kanbanovou tabuli se sloupci od Backlogu po Hotovo, jenže karty si berou AI agenti. Hlásí postup, ptají se, když uvíznou, a vždycky čekají na tvůj palec nahoru."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile je kanbanová tabule, kde tým tvoří AI agenti. Každý projekt má vedoucího, který plánuje práci, a pomocníky, kteří ji staví. Když je funkce hotová, AI tester ji vyzkouší a udělá snímek obrazovky, pak přistane na tvé hromádce. Schval ji, nebo napiš komentář a oni ji přepracují.",
+      "Začalo to jako způsob, jak si jeden člověk hlídal spoustu AI programátorských relací najednou, a vyrostla z toho pořádná tabule. Běží na tvém stroji, nepotřebuje účet a nemá žádné sledování. Pro přátele a zvědavce je zdarma. Také je nedodělané, takže čekej hrubé hrany a občasné překvapení.",
+      "Tady je poctivá verze. Nápady pořád musíš mít ty a výsledky pořád musíš kontrolovat ty. AI-gile dělá všechno mezi tím: drží karty v pořádku, probudí správného agenta, když přidáš komentář, ukáže přesně, co se změnilo, a všechno to složí do jedné krátké hromádky pro tebe."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile je kanbanová tabule zdarma, kterou provozuješ na vlastním počítači. Místo lidí má každý projekt tým AI agentů: vedoucího, který tvé nápady mění v karty a plán, a pomocníky, kteří si karty berou podle priority. Když je něco postavené, AI tester projde testovací kroky a ukáže ti, co viděl. Potom to čeká na jedné hromádce nazvané Pro tebe. Buď to schválíš, nebo napíšeš komentář a tým to zkusí znovu. Do sloupce Hotovo se nic nedostane bez tebe.",
+      "Pár věcí, které bys nečekal. Noční hlídka doplňuje sloupec K udělání, zatímco spíš, a vybírá karty, které od tebe nepotřebují žádnou odpověď. Počítadlo tokenů ukazuje, kolik agenti spotřebovali dnes a tento týden, a Režim bez tokenů jim řekne, ať přestanou utrácet. Můžeš psát přátelům a soukromé zprávy jsou šifrované end-to-end. Tabule mluví zhruba 120 jazyky, včetně nizozemštiny, vlámštiny, pirátštiny a klingonštiny. Nic z toho nestojí ani korunu a nikdo se ti to ani nesnaží prodat.",
+      "AI-gile je malý osobní projekt, žádná firma. Rich chtěl opečovávat několik AI programátorských projektů, aniž by musel otevírat každou aplikaci a kontrolovat je, tak mu s agenty postavili tabuli, a pak na ní postavili zbytek sebe sama. Je v uzavřené pre-alfě, což znamená, že funguje, většinou, pro hrstku přátel. Není tu žádný ceník, žádný newsletter a žádný plán růstu. Zní to užitečně? Až se to trochu víc otevře, můžeš požádat o vyzkoušení."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile je kanbanová tabule pro jednoho člověka a spoustu AI agentů. Běží na tvém vlastním počítači a je úplně zdarma. Přidáváš projekty a každý projekt dostane vedoucího a malý tým. S vedoucím si píšeš, trochu jako na Discordu, popíšeš nápad; vedoucí z něj udělá karty a plán a pak čeká, až stiskneš Go. Tým zpracovává karty podle priority pomocí jednoduchého příkazového řádku vytvořeného pro jazykové modely. Než se cokoli vrátí k tobě, AI tester projde kroky v kopii aplikace a přiloží snímek obrazovky. Hotová práce přistane na tvé hromádce se změněnými soubory a rozdílem. Buď ji schválíš, nebo necháš komentář, tým se probudí a zkusí to znovu. Kartu do Hotovo může přesunout jen ty. Žádné účty, žádné sledování, žádné cookies: všechno zůstává u tebe doma, na tvém počítači, a nic se neplatí.",
+      "Den s AI-gile, zhruba. Večer necháš pár komentářů: tohle tlačítko je na špatném místě, tenhle seznam by měl být seřazený, mohli bychom mít tmavý režim. Jdeš spát. Agenti si komentáře přečtou, provedou změny, otestují je a vrátí ti je. Když v K udělání dojdou karty, noční hlídka ho doplní z backlogu kartami, které od tebe nepotřebují odpověď. Ráno čeká jedna krátká hromádka: pár otázek a pár věcí k vyzkoušení, každá s kroky, které zvládne i rozespalý člověk, a se snímkem, jak to funguje. Proklikáš se, dobré schválíš a zbytek pošleš zpátky. Počítadlo tokenů ukáže, co to všechno stálo, a Režim bez tokenů je tu pro skromnější týdny. Pak si dáš snídani, u které agenti zatím pomoct neumějí.",
+      "Nejdřív, čím AI-gile není. Není to startup, není na prodej a nikdo neshromažďuje tvoje data. Je to bezplatná tabule, která běží na tvém počítači, bez účtů, bez sledování a bez cookies. A čím je: jedním úhledným místem, kde vidíš všechny AI programátorské projekty najednou, s týmem agentů, který dělá karty, a s tebou, který rozhoduješ. Slučuje související karty, opravuje zmatené názvy a hlídá, aby kód zůstal štíhlý. Mluví zhruba 120 jazyky, od nizozemštiny a vlámštiny po pirátštinu a klingonštinu. Přátelé si mohou psát, soukromě a šifrovaně. Postavil ji Rich s velkým počtem trpělivých agentů, většinou za pomoci sebe sama. Je v uzavřené pre-alfě, takže místy drhne. Pokud ti to zní jako zábava, požádej hezky a třeba se dostaneš dovnitř dřív."
+    ] }
+  ],
+  "quips": {
+    "1": "Jedno slovo. Odvážné. Možná příliš odvážné.",
+    "3": "Tři slova. Už teď poctivější než většina stránek o produktech.",
+    "8": "Osm slov. Pořád kratší než stand-up.",
+    "21": "Délky jsou mimochodem story pointy. Samozřejmě, že jsou.",
+    "55": "Padesát pět slov. Zatímco jsi to četl, dokončily se dvě karty.",
+    "144": "To je ta dlouhá. Žádná 233 neexistuje. Agenti šli spát."
+  }
+}

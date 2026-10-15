@@ -1,0 +1,52 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Robotter.", "Uddelegeret."] },
+    { "n": 2, "texts": ["Robotternes kanban.", "Agenter, organiseret.", "Idéer, bygget."] },
+    { "n": 3, "texts": ["Kanban for robotter.", "Idéer bliver til funktioner.", "Gratis agent-kanban."] },
+    { "n": 5, "texts": ["Kanban-board drevet af AI-agenter.", "Du skriver kort. Agenter bygger.", "Gratis, lokalt, testet, lidt fjollet."] },
+    { "n": 8, "texts": [
+      "Et gratis kanban-board, hvor AI-agenter gør arbejdet.",
+      "Skriv en idé. Agenter bygger den. Du godkender.",
+      "Agile til ét menneske og mange tålmodige robotter."
+    ] },
+    { "n": 13, "texts": [
+      "Et kanban-board på din computer, hvor AI-agenter tager kortene op.",
+      "Skriv en idé. Et team af agenter bygger den. En tester tjekker den.",
+      "Gratis, ingen konti, ingen trackere: et board, nogle robotter og dig som chef."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile er et kanban-board til arbejde med AI-kodeagenter. De tager kortene op; du tester og godkender dem.",
+      "Hvert projekt får en lead og et team af AI-agenter. Skriv en kommentar på et hvilket som helst kort, så går teamet i gang.",
+      "Et gratis, personligt to do-board, der kører på din egen computer. Arbejderne er robotter. Den, der siger ja, er dig."
+    ] },
+    { "n": 34, "texts": [
+      "Du lægger idéer på et board. Et team af AI-agenter gør dem til virkende funktioner, tester dem og afleverer dem tilbage med trin, du kan prøve. Intet tæller som færdigt, før du siger det.",
+      "AI-gile er et hjemmelavet kanban-board, som Rich har bygget med masser af hjælp fra de agenter, det nu styrer. Det er gratis, kører på din computer og deles med venner, ikke solgt.",
+      "Forestil dig et helt almindeligt kanban-board med kolonner fra Backlog til Færdig, bortset fra at kortene bliver taget op af AI-agenter. De melder fremskridt, spørger, når de sidder fast, og venter altid på din tommelfinger op."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile er et kanban-board, hvor teamet består af AI-agenter. Hvert projekt har en lead, der planlægger arbejdet, og hjælpere, der bygger det. Når en funktion er klar, prøver en AI-tester den og tager et skærmbillede, og så lander den i din bunke. Godkend den, eller skriv en kommentar, så laver de den om.",
+      "Det startede som én persons måde at holde styr på mange AI-kodesessioner på én gang og voksede til et rigtigt board. Det kører på din maskine, kræver ingen konto og har ingen trackere. Det er gratis for venner og nysgerrige. Det er også ufærdigt, så regn med ru kanter og en overraskelse nu og da.",
+      "Her er den ærlige version. Du skal stadig selv have idéerne, og du skal stadig selv tjekke resultaterne. AI-gile klarer alt derimellem: det holder kortene i orden, vækker den rigtige agent, når du skriver en kommentar, viser præcis, hvad der er ændret, og samler det hele i én kort bunke til dig."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile er et gratis kanban-board, som du kører på din egen computer. I stedet for mennesker har hvert projekt et team af AI-agenter: en lead, der gør dine idéer til kort og en plan, og hjælpere, der tager kortene op i prioriteret rækkefølge. Når noget er bygget, følger en AI-tester testtrinene og viser dig, hvad den så. Derefter venter det i én bunke, der hedder Til dig. Du godkender det, eller du skriver en kommentar, og teamet prøver igen. Intet når nogensinde til Færdig uden dig.",
+      "Nogle ting, du måske ikke venter. En nattevagt holder To do-kolonnen fyldt op, mens du sover, og vælger kort, der ikke kræver svar fra dig. En token-tæller viser, hvor meget agenterne har brugt i dag og i denne uge, og No Token Mode siger til dem, at de skal holde op med at bruge. Du kan skrive til venner, og private beskeder er end-to-end-krypterede. Boardet taler omkring 120 sprog, blandt andet hollandsk, flamsk, pirat og klingon. Intet af det koster en krone, og ingen prøver at sælge dig det.",
+      "AI-gile er et lille, personligt projekt, ikke en virksomhed. Rich ville passe flere AI-kodeprojekter uden at åbne hver eneste app for at tjekke dem, så han og agenterne byggede et board til det og brugte derefter boardet til at bygge resten af sig selv. Det er i lukket pre-alfa, hvilket betyder, at det virker, stort set, for en lille håndfuld venner. Der er ingen prisside, intet nyhedsbrev og ingen vækstplan. Lyder det nyttigt, kan du bede om at prøve det, når det åbner lidt mere op."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile er et kanban-board til ét menneske og en masse AI-agenter. Det kører på din egen computer, og det er helt gratis. Du tilføjer projekter, og hvert projekt får en lead og et lille team. Du chatter med leaden, lidt ligesom på Discord, og beskriver en idé; leaden gør den til kort og en plan og venter så på, at du trykker Go. Teamet arbejder kortene igennem i prioriteret rækkefølge ved hjælp af en enkel kommandolinje, lavet til sprogmodeller. Før noget kommer tilbage til dig, følger en AI-tester trinene i en kopi af appen og vedhæfter et skærmbillede. Færdigt arbejde lander i din bunke med de ændrede filer og forskellen. Du godkender det, eller du skriver en kommentar, og teamet vågner og prøver igen. Kun du kan flytte et kort til Færdig. Der er ingen konti, ingen trackere og ingen cookies, og det hele bliver på din egen computer.",
+      "En dag med AI-gile, cirka. Om aftenen skriver du et par kommentarer: denne knap sidder det forkerte sted, den liste burde være sorteret, kunne vi få en mørk tilstand. Du går i seng. Agenterne læser kommentarerne, laver ændringerne, tester dem og afleverer dem tilbage til dig. Hvis To do løber tør, fylder nattevagten den op fra backloggen med kort, der ikke kræver svar fra dig. Om morgenen ligger der én kort bunke: et par spørgsmål og et par ting at prøve, hver med trin, som en søvnig person kan følge, og et skærmbillede af, at det virker. Du klikker dig igennem, godkender de gode og sender resten tilbage. En token-tæller viser, hvad det hele brugte, og No Token Mode er der til de magre uger. Så spiser du morgenmad, som agenterne endnu ikke kan hjælpe med.",
+      "Først, hvad AI-gile ikke er. Det er ikke en startup, det er ikke til salg, og ingen indsamler dine data. Det er et gratis board, der kører på din computer, uden konti, uden trackere og uden cookies. Hvad det er: ét ryddeligt sted, hvor du kan se alle dine AI-kodeprojekter på én gang, med et team af agenter, der tager kortene, og dig, der træffer beslutningerne. Det slår beslægtede kort sammen, retter rodede titler og holder øje med, hvor slank koden bliver. Det taler omkring 120 sprog, fra hollandsk og flamsk til pirat og klingon. Venner kan skrive til hinanden, privat og krypteret. Det er bygget af Rich og et stort antal tålmodige agenter, mest ved at bruge sig selv. Det er i lukket pre-alfa, så det er groft nogle steder. Lyder det som sjov, så spørg pænt, og måske kommer du tidligt med."
+    ] }
+  ],
+  "quips": {
+    "1": "Ét ord. Dristigt. Måske for dristigt.",
+    "3": "Tre ord. Allerede mere ærligt end de fleste produktsider.",
+    "8": "Otte ord. Stadig kortere end et stand-up.",
+    "21": "Længderne er i øvrigt story points. Selvfølgelig er de det.",
+    "55": "Femoghalvtreds ord. To kort blev færdige, mens du læste det.",
+    "144": "Det var den lange. Der er ingen 233. Agenterne er gået i seng."
+  }
+}

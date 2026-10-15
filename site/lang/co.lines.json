@@ -1,0 +1,52 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Robot.", "Delegatu."] },
+    { "n": 2, "texts": ["Kanban robotica.", "Agenti, urganizati.", "Idee, custruite."] },
+    { "n": 3, "texts": ["Kanban per robot.", "Idee diventanu funzioni.", "Kanban d'agenti gratuitu."] },
+    { "n": 5, "texts": ["Tavula kanban guidata da agenti.", "Tù scrivi carte. Agenti custruiscenu.", "Gratuita, lucale, pruvata, un pocu scema."] },
+    { "n": 8, "texts": [
+      "Una tavula kanban gratuita induve travaglianu agenti AI.",
+      "Scrivi una idea. L'agenti a custruiscenu. Tù accetti.",
+      "Agile per una persona è tanti robot pazienti."
+    ] },
+    { "n": 13, "texts": [
+      "Una tavula kanban nantu à u to urdinatore induve l'agenti AI piglianu e carte.",
+      "Scrivi una idea. Una squadra d'agenti a custruisce. Un tester a verifica.",
+      "Gratuita, senza conti, senza tracciatori: una tavula, qualchì robot è tù à cumandà."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile hè una tavula kanban per travaglià cù agenti AI chì prugrammanu. Elli piglianu e carte; tù e pruvi è l'accetti.",
+      "Ogni prugettu hà un capu è una squadra d'agenti AI. Lascia un cumentu nantu à qualsiasi carta è a squadra si mette subitu à travaglià.",
+      "Una tavula persunale è gratuita, chì gira nantu à u to urdinatore. I travagliadori sò robot. Quellu chì dice iè sì tù."
+    ] },
+    { "n": 34, "texts": [
+      "Metti l'idee nantu à una tavula. Una squadra d'agenti AI e trasforma in funzioni chì marchjanu, e pruva è te e rende cù i passi per pruvalle. Nunda conta cum'è fattu finu à chì u dici tù.",
+      "AI-gile hè una tavula kanban fatta in casa chì Rich hà custruitu cù assai aiutu di l'agenti ch'ella gestisce oghje. Hè gratuita, gira nantu à u to urdinatore è hè spartuta cù l'amichi, micca venduta.",
+      "Imagina una tavula kanban nurmale, cù culonne da u Backlog à Fattu, ma induve e carte sò pigliate da agenti AI. Rapportanu l'avanzata, dumandanu quandu sò bluccati, è aspettanu sempre u to pollice in sù."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile hè una tavula kanban induve a squadra hè fatta d'agenti AI. Ogni prugettu hà un capu chì pianifica u travagliu è aiutanti chì u custruiscenu. Quandu una funzione hè pronta, un tester AI a pruva è face una cattura di schermu, poi ghjunghje in u to mucchjettu. Accettala, o lascia un cumentu è a rifaranu.",
+      "Hè natu cum'è u modu d'una persona di seguità parechje sessioni di prugrammazione AI à una volta, è hè criscutu finu à diventà una vera tavula. Gira nantu à a to macchina, ùn vole nisun contu, è ùn hà nisun tracciatore. Hè gratuita per l'amichi è i curiosi. Hè dinù incompiuta, dunque aspetta bordi grezzi è qualchì surpresa.",
+      "Eccu a versione onesta. Tù devi sempre avè l'idee, è devi sempre verificà i risultati. Ciò chì face AI-gile hè tuttu ciò chì ci hè trà i dui: tene e carte in ordine, sveglia l'agente ghjustu quandu lasci un cumentu, mostra esattamente ciò chì hè cambiatu, è mette tuttu in un mucchjettu cortu per tè."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile hè una tavula kanban gratuita chì fai girà nantu à u to propiu urdinatore. Invece di persone, ogni prugettu hà una squadra d'agenti AI: un capu chì trasforma e to idee in carte è in un pianu, è aiutanti chì piglianu e carte per ordine di prioriteta. Quandu qualcosa hè custruitu, un tester AI seguita i passi di prova è ti mostra ciò chì hà vistu. Poi aspetta in un mucchjettu chjamatu Per tè. L'accetti, o lasci un cumentu è a squadra pruva torna. Nunda ghjunghje mai à Fattu senza di tè.",
+      "Qualchì cosa chì forse ùn t'aspetti micca. Una guardia di notte tene piena a culonna À fà mentre dorme, sceglendu carte chì ùn anu bisognu d'una risposta da tè. Un cuntatore di token mostra quantu l'agenti anu adupratu oghje è sta settimana, è u No Token Mode li dice di piantà di spende. Pudi scrive à l'amichi, è i missaghji privati sò cifrati da un capu à l'altru. A tavula parla circa 120 lingue, cumprese l'olandese, u fiammingu, u pirata è u klingon. Nunda di tuttu què costa un centesimu, è nimu ùn prova à vendeti nunda.",
+      "AI-gile hè un picculu prugettu persunale, micca una sucietà. Rich vulia curà parechji prugetti di prugrammazione AI senza apre ogni app per verificalli, allora ellu è l'agenti anu custruitu una tavula per què, è dopu anu adupratu a tavula per custruisce u restu d'elli stessi. Hè in pre-alfa chjosa, chì vole dì ch'ella funziona, più o menu, per una manata d'amichi. Ùn ci hè pagina di prezzi, nè newsletter, nè pianu di crescita. S'ellu ti pare utile, pudi dumandà di pruvallu quandu s'aprerà un pocu di più."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile hè una tavula kanban per una persona è tanti agenti AI. Gira nantu à u to propiu urdinatore è hè compiamente gratuita. Aghjunghji prugetti, è ogni prugettu hà un capu è una squadra chjuca. Chjachjeri cù u capu, un pocu cum'è nantu à Discord, è discrivi una idea; u capu a trasforma in carte è in un pianu, poi aspetta ch'è tù prema Go. A squadra travaglia e carte per ordine di prioriteta, cù una linea di cumandi simplice fatta per i mudelli di lingua. Nanzu chì qualcosa ti torni, un tester AI seguita i passi in una copia di l'app è attacca una cattura di schermu. U travagliu compiu ghjunghje in u to mucchjettu cù i fugliali cambiati è a differenza. L'accetti, o lasci un cumentu è a squadra si sveglia è pruva torna. Solu tù pò spustà una carta in Fattu. Nisun contu, nisun tracciatore, nisun cookie, è tuttu stà nantu à u to urdinatore.",
+      "Una ghjurnata cù AI-gile, à pocu pressu. A sera lasci qualchì cumentu: stu buttone hè in u locu sbagliatu, quella lista duverebbe esse urdinata, puderiamu avè un modu scuru. Vai à durmite. L'agenti leghjenu i cumenti, facenu i cambiamenti, i pruvanu è i rendenu. Se À fà s'asciuga, a guardia di notte u riempie da u backlog cù carte chì ùn anu bisognu d'alcuna risposta da tè. À a mattina ci hè un mucchjettu cortu: una coppia di dumande è qualchì cosa à pruvà, ognuna cù passi chì pò seguità una persona insunnuliata è una cattura di schermu chì mostra ch'ella funziona. Clicchi, accetti e bone è rimandi u restu. Un cuntatore di token mostra ciò chì hà adupratu tuttu què, è u No Token Mode hè per e settimane magre. Poi fai colazione, chì l'agenti ùn ponu ancu aiutà à fà.",
+      "Prima, ciò chì AI-gile ùn hè micca. Ùn hè una startup, ùn hè in vendita, è nimu ùn raccoglie i to dati. Hè una tavula gratuita chì gira nantu à u to urdinatore, senza conti, senza tracciatori è senza cookie. Ciò ch'ella hè: un locu ordinatu per vede tutti i prugetti di prugrammazione AI à una volta, cù una squadra d'agenti chì face e carte è tù chì pigli e decisioni. Unisce e carte parenti, currege i tituli imbrugliati, è tene d'ochju quantu u codice firmeghja leggeru. Parla circa 120 lingue, da l'olandese è u fiammingu finu à u pirata è u klingon. L'amichi ponu scrivesi, in privatu è cifratu. Hè statu custruitu da Rich è un gran numeru d'agenti pazienti, soprattuttu aduprandusi. Hè in pre-alfa chjosa, dunque hè grezzu in certi lochi. S'ellu ti pare un spassu, dumanda cù gentilezza è forse entrerai prestu."
+    ] }
+  ],
+  "quips": {
+    "1": "Una parolla. Audace. Forse troppu audace.",
+    "3": "Trè parolle. Dighjà più onesta di a maiò parte di e pagine di prudotti.",
+    "8": "Ottu parolle. Sempre più corta d'una stand-up.",
+    "21": "E lunghezze sò story points, per via. Sicuru ch'elle sò.",
+    "55": "Cinquantacinque parolle. Dui carte sò state compie mentre leghji.",
+    "144": "Hè quella longa. Ùn ci hè 233. L'agenti sò andati à durmite."
+  }
+}

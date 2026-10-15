@@ -1,0 +1,52 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Roboti.", "Delegirano."] },
+    { "n": 2, "texts": ["Robotski kanban.", "Agenti, organizovano.", "Ideje, izgrađene."] },
+    { "n": 3, "texts": ["Kanban za robote.", "Ideje postaju funkcije.", "Besplatni agentski kanban."] },
+    { "n": 5, "texts": ["Kanban tabla koju vode agenti.", "Ti pišeš kartice. Agenti grade.", "Besplatno, lokalno, testirano, pomalo smiješno."] },
+    { "n": 8, "texts": [
+      "Besplatna kanban tabla na kojoj rade AI agenti.",
+      "Napiši ideju. Agenti je grade. Ti prihvataš.",
+      "Agile za jednog čovjeka i mnogo strpljivih robota."
+    ] },
+    { "n": 13, "texts": [
+      "Kanban tabla na tvom računaru na kojoj AI agenti preuzimaju kartice.",
+      "Napiši ideju. Tim agenata je izgradi, zatim je tester provjeri, a ti kažeš da.",
+      "Besplatno, bez računa, bez trackera: tabla, nekoliko robota i ti kao šef."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile je kanban tabla za rad s AI agentima koji programiraju. Oni preuzimaju kartice; ti ih testiraš i prihvataš.",
+      "Svaki projekt dobije lead i tim AI agenata. Komentariši bilo koju karticu i tim odmah prione na posao.",
+      "Besplatna, lična tabla zadataka koja radi na tvom vlastitom računaru. Radnici su roboti. Onaj ko kaže da, to si ti."
+    ] },
+    { "n": 34, "texts": [
+      "Ideje stavljaš na tablu. Tim AI agenata ih pretvara u funkcije koje rade, testira ih i vraća ti ih s koracima za isprobavanje. Ništa se ne računa kao gotovo dok ti to ne kažeš.",
+      "AI-gile je domaća kanban tabla koju je Rich napravio uz mnogo pomoći agenata kojima sada upravlja. Besplatna je, radi na tvom računaru i dijeli se s prijateljima, ne prodaje se.",
+      "Zamisli običnu kanban tablu, s kolonama od Backloga do Gotovo, samo što kartice preuzimaju AI agenti. Javljaju napredak, pitaju kad zapnu i uvijek čekaju tvoj podignuti palac."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile je kanban tabla na kojoj tim čine AI agenti. Svaki projekt ima lead koji planira posao i pomoćnike koji ga grade. Kad je funkcija spremna, AI tester je isproba i napravi snimak ekrana, a onda sleti na tvoju hrpu. Prihvati je ili napiši komentar pa je prerade.",
+      "Počelo je kao način na koji je jedna osoba pratila mnogo AI programerskih sesija odjednom, a izraslo je u pravu tablu. Radi na tvom računaru, ne traži račun i nema trackera. Besplatna je za prijatelje i znatiželjnike. Također je nedovršena, pa računaj na grube ivice i poneko iznenađenje.",
+      "Evo poštene verzije. Ideje i dalje moraš imati ti, a rezultate i dalje moraš provjeriti ti. AI-gile radi sve između: drži kartice u redu, budi pravog agenta kad komentarišeš, pokazuje tačno šta se promijenilo i sve to slaže u jednu kratku hrpu za tebe."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile je besplatna kanban tabla koju pokrećeš na vlastitom računaru. Umjesto ljudi, svaki projekt ima tim AI agenata: lead koji tvoje ideje pretvara u kartice i plan, i pomoćnike koji kartice preuzimaju po prioritetu. Kad je nešto izgrađeno, AI tester slijedi korake testiranja i pokazuje ti šta je vidio. Zatim čeka u jednoj hrpi koja se zove Za tebe. Ti je prihvatiš, ili komentarišeš pa tim pokuša ponovo. Ništa ne stiže do Gotovo bez tebe.",
+      "Nekoliko stvari koje možda ne očekuješ. Noćna straža drži kolonu Za uraditi popunjenom dok ti spavaš, birajući kartice kojima ne treba tvoj odgovor. Brojač tokena pokazuje koliko su agenti potrošili danas i ove sedmice, a No Token Mode im kaže da prestanu trošiti. Možeš pisati prijateljima, a privatne poruke su šifrovane od kraja do kraja. Tabla govori oko 120 jezika, uključujući holandski, flamanski, gusarski i klingonski. Ništa od toga ne košta ni feninga, a niko ti to ni ne pokušava prodati.",
+      "AI-gile je mali, lični projekt, a ne firma. Rich je htio voditi nekoliko AI programerskih projekata bez otvaranja svake aplikacije da ih provjeri, pa su on i agenti napravili tablu za to, a onda tablu iskoristili da izgrade ostatak sebe. U zatvorenoj je pre-alfi, što znači da radi, uglavnom, za šaku prijatelja. Nema stranice s cijenama, nema newslettera i nema plana rasta. Ako ti zvuči korisno, možeš zatražiti da probaš kad se malo više otvori."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile je kanban tabla za jednog čovjeka i mnogo AI agenata. Radi na tvom vlastitom računaru i potpuno je besplatna. Dodaješ projekte, a svaki projekt dobije lead i mali tim. Čavrljaš s leadom, pomalo kao na Discordu, i opišeš ideju; lead je pretvara u kartice i plan, pa čeka da pritisneš Go. Tim kartice rješava po prioritetu, koristeći jednostavnu komandnu liniju napravljenu za jezičke modele. Prije nego se išta vrati tebi, AI tester prođe korake u kopiji aplikacije i priloži snimak ekrana. Gotov posao sleti na tvoju hrpu s promijenjenim datotekama i razlikom. Ti ga prihvatiš, ili ostaviš komentar pa se tim probudi i pokuša ponovo. Samo ti možeš premjestiti karticu u Gotovo. Nema računa, nema trackera i nema kolačića, a sve ostaje na tvom računaru.",
+      "Otprilike jedan dan s AI-gile. Navečer ostaviš nekoliko komentara: ovo dugme je na pogrešnom mjestu, ta lista bi trebala biti sortirana, može li tamni mod. Odeš spavati. Agenti pročitaju komentare, naprave izmjene, testiraju ih i vrate ti ih. Ako Za uraditi ostane prazno, noćna straža ga puni iz backloga karticama kojima ne treba tvoj odgovor. Ujutro te čeka jedna kratka hrpa: par pitanja i nekoliko stvari za isprobavanje, svaka s koracima koje može slijediti i pospana osoba i sa snimkom ekrana na kojem radi. Prokliktaš se, prihvatiš dobre, a ostale vratiš. Brojač tokena pokazuje šta je sve to potrošilo, a No Token Mode je tu za štedljive sedmice. Onda doručkuješ, a u tome ti agenti još ne mogu pomoći.",
+      "Prvo, šta AI-gile nije. Nije startup, nije na prodaju i niko ne prikuplja tvoje podatke. To je besplatna tabla koja radi na tvom računaru, bez računa, bez trackera i bez kolačića. A šta jeste: jedno uredno mjesto na kojem vidiš sve AI programerske projekte odjednom, s timom agenata koji radi kartice i tobom koji donosiš odluke. Spaja srodne kartice, popravlja zbrkane naslove i pazi koliko kod ostaje vitak. Govori oko 120 jezika, od holandskog i flamanskog do gusarskog i klingonskog. Prijatelji mogu pisati jedni drugima, privatno i šifrovano. Napravili su je Rich i veliki broj strpljivih agenata, uglavnom koristeći nju samu. U zatvorenoj je pre-alfi, pa je na mjestima gruba. Ako ti zvuči zabavno, lijepo pitaj i možda uđeš ranije."
+    ] }
+  ],
+  "quips": {
+    "1": "Jedna riječ. Hrabro. Možda i previše hrabro.",
+    "3": "Tri riječi. Već iskrenije od većine stranica proizvoda.",
+    "8": "Osam riječi. I dalje kraće od stand-upa.",
+    "21": "Dužine su, usput, story pointi. Naravno da jesu.",
+    "55": "Pedeset pet riječi. Dvije kartice su završene dok si čitao.",
+    "144": "To je ona duga. Nema 233. Agenti su otišli spavati."
+  }
+}

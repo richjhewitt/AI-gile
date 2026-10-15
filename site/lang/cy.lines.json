@@ -1,0 +1,52 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Robotiaid.", "Dirprwywyd."] },
+    { "n": 2, "texts": ["Kanban robotiaid.", "Asiantau, trefnus.", "Syniadau'n realiti."] },
+    { "n": 3, "texts": ["Kanban i robotiaid.", "Syniadau'n troi'n nodweddion.", "Kanban asiantau, am ddim."] },
+    { "n": 5, "texts": ["Bwrdd kanban dan law asiantau.", "Ti'n ysgrifennu cardiau. Asiantau'n adeiladu.", "Am ddim, lleol, profedig, hwyliog."] },
+    { "n": 8, "texts": [
+      "Bwrdd kanban am ddim lle mae asiantau AI yn gweithio.",
+      "Ysgrifenna syniad. Mae asiantau'n ei adeiladu. Ti sy'n derbyn.",
+      "Ystwyth i un person a llawer o robotiaid amyneddgar."
+    ] },
+    { "n": 13, "texts": [
+      "Bwrdd kanban ar dy gyfrifiadur lle mae asiantau AI yn codi'r cardiau.",
+      "Ysgrifenna syniad. Tîm o asiantau'n ei adeiladu. Profwr yn ei wirio. Ti sy'n dweud ie.",
+      "Am ddim, dim cyfrifon, dim tracwyr: bwrdd, ychydig o robotiaid, a ti wrth y llyw."
+    ] },
+    { "n": 21, "texts": [
+      "Bwrdd kanban yw AI-gile ar gyfer gweithio gydag asiantau AI sy'n codio. Maen nhw'n codi'r cardiau; ti sy'n eu profi a'u derbyn.",
+      "Mae pob prosiect yn cael arweinydd a thîm o asiantau AI. Gwna sylw ar unrhyw gerdyn ac mae'r tîm yn mynd ati'n syth.",
+      "Bwrdd tasgau personol, am ddim, sy'n rhedeg ar dy gyfrifiadur dy hun. Robotiaid yw'r gweithwyr. Y sawl sy'n dweud ie yw ti."
+    ] },
+    { "n": 34, "texts": [
+      "Rwyt ti'n rhoi syniadau ar fwrdd. Mae tîm o asiantau AI yn eu troi'n nodweddion sy'n gweithio, yn eu profi ac yn eu dychwelyd gyda chamau i'w trio. Dim byd wedi'i wneud nes dy fod ti'n dweud.",
+      "Bwrdd kanban cartref yw AI-gile a adeiladodd Rich gyda llawer o help gan yr asiantau mae bellach yn eu rheoli. Mae am ddim, yn rhedeg ar dy gyfrifiadur, ac yn cael ei rannu gyda ffrindiau, nid ei werthu.",
+      "Dychmyga fwrdd kanban cyffredin, â cholofnau o'r Backlog hyd at Wedi'i wneud, ond bod asiantau AI yn codi'r cardiau. Maen nhw'n adrodd ar gynnydd, yn holi pan fyddan nhw'n sownd, ac yn aros bob amser am dy fawd i fyny."
+    ] },
+    { "n": 55, "texts": [
+      "Bwrdd kanban yw AI-gile lle mae'r tîm wedi'i wneud o asiantau AI. Mae gan bob prosiect arweinydd sy'n cynllunio'r gwaith a chynorthwywyr sy'n ei adeiladu. Pan fydd nodwedd yn barod, mae profwr AI yn ei thrio ac yn tynnu sgrinlun, ac yna mae'n glanio yn dy bentwr. Derbyn hi, neu wna sylw ac maen nhw'n ei hailwneud.",
+      "Dechreuodd fel ffordd un person o gadw trefn ar lawer o sesiynau codio AI ar unwaith, a thyfodd yn fwrdd go iawn. Mae'n rhedeg ar dy beiriant, heb angen cyfrif, a heb dracwyr. Mae am ddim i ffrindiau ac i'r chwilfrydig. Mae hefyd heb ei orffen, felly disgwyl ymylon garw a syndod bach o bryd i'w gilydd.",
+      "Dyma'r fersiwn onest. Rhaid i ti gael y syniadau o hyd, a rhaid i ti wirio'r canlyniadau o hyd. Mae AI-gile yn gwneud popeth rhyngddynt: mae'n cadw'r cardiau mewn trefn, yn deffro'r asiant iawn pan wnei di sylw, yn dangos yn union beth sydd wedi newid, ac yn cadw'r cyfan mewn un pentwr byr i ti."
+    ] },
+    { "n": 89, "texts": [
+      "Bwrdd kanban am ddim yw AI-gile y gelli di ei redeg ar dy gyfrifiadur dy hun. Yn lle pobl, mae gan bob prosiect dîm o asiantau AI: arweinydd sy'n troi dy syniadau'n gardiau ac yn gynllun, a chynorthwywyr sy'n codi'r cardiau yn nhrefn blaenoriaeth. Pan fydd rhywbeth wedi'i adeiladu, mae profwr AI yn dilyn y camau prawf ac yn dangos i ti beth a welodd. Yna mae'n aros mewn un pentwr o'r enw I ti. Rwyt ti'n ei dderbyn, neu'n gwneud sylw ac mae'r tîm yn cael cynnig arall. Does dim byd yn cyrraedd Wedi'i wneud hebddot ti.",
+      "Rhai pethau na fyddi di'n eu disgwyl efallai. Mae gwyliwr nos yn cadw'r golofn I'w wneud yn llawn tra byddi di'n cysgu, gan ddewis cardiau nad oes angen ateb gennyt ti arnyn nhw. Mae cownter tocynnau yn dangos faint mae'r asiantau wedi'i ddefnyddio heddiw a'r wythnos hon, ac mae Modd Dim Tocynnau yn dweud wrthyn nhw am roi'r gorau i wario. Mae'r bwrdd yn siarad tua 120 o ieithoedd, gan gynnwys Iseldireg, Fflemeg, môr-leidr a Klingon. Does dim un o hyn yn costio ceiniog, ac nid oes neb yn ceisio ei werthu i ti chwaith.",
+      "Prosiect bach, personol yw AI-gile, nid cwmni. Roedd Rich eisiau gofalu am sawl prosiect codio AI heb agor pob ap i'w gwirio, felly adeiladodd ef a'r asiantau fwrdd ar ei gyfer, ac yna defnyddio'r bwrdd i adeiladu gweddill eu hunain. Mae mewn cyn-alffa caeedig, sy'n golygu ei fod yn gweithio, gan amlaf, i lond llaw o ffrindiau. Does dim tudalen brisiau, dim cylchlythyr a dim cynllun twf. Os yw'n swnio'n ddefnyddiol, gelli di ofyn am gael ei drio pan fydd yn agor ychydig yn fwy."
+    ] },
+    { "n": 144, "texts": [
+      "Bwrdd kanban yw AI-gile ar gyfer un person a llawer o asiantau AI. Mae'n rhedeg ar dy gyfrifiadur dy hun ac mae'n hollol rad ac am ddim. Rwyt ti'n ychwanegu prosiectau, ac mae pob prosiect yn cael arweinydd a thîm bach. Rwyt ti'n sgwrsio gyda'r arweinydd, ychydig fel ar Discord, ac yn disgrifio syniad; mae'r arweinydd yn ei droi'n gardiau ac yn gynllun, yna'n aros i ti wasgu Go. Mae'r tîm yn gweithio drwy'r cardiau yn nhrefn blaenoriaeth, gan ddefnyddio llinell orchymyn syml a wnaed ar gyfer modelau iaith. Cyn i unrhyw beth ddod yn ôl atat ti, mae profwr AI yn dilyn y camau mewn copi o'r ap ac yn atodi sgrinlun. Mae gwaith gorffenedig yn glanio yn dy bentwr gyda'r ffeiliau a newidiwyd a'r gwahaniaethau. Rwyt ti'n ei dderbyn, neu'n gadael sylw ac mae'r tîm yn deffro ac yn rhoi cynnig arall arni. Dim ond ti all symud cerdyn i Wedi'i wneud. Does dim cyfrifon, dim tracwyr a dim cwcis, ac mae'r cyfan yn aros ar dy gyfrifiadur.",
+      "Diwrnod gydag AI-gile, fwy neu lai. Gyda'r nos, rwyt ti'n gadael ychydig o sylwadau: mae'r botwm hwn yn y lle anghywir, dylai'r rhestr honno gael ei threfnu, allen ni gael modd tywyll. Rwyt ti'n mynd i'r gwely. Mae'r asiantau'n darllen y sylwadau, yn gwneud y newidiadau, yn eu profi ac yn eu rhoi'n ôl i ti. Os bydd I'w wneud yn mynd yn wag, mae'r gwyliwr nos yn ei lenwi o'r backlog gyda chardiau nad oes angen ateb gennyt ti arnyn nhw. Yn y bore, mae un pentwr byr: cwpl o gwestiynau ac ychydig o bethau i'w trio, pob un â chamau y gall person cysglyd eu dilyn a sgrinlun ohono'n gweithio. Rwyt ti'n clicio drwyddyn nhw, yn derbyn y rhai da ac yn anfon y gweddill yn ôl. Mae cownter tocynnau yn dangos beth ddefnyddiodd y cyfan, ac mae Modd Dim Tocynnau yno ar gyfer wythnosau main. Yna rwyt ti'n cael brecwast, a all yr asiantau ddim helpu gyda hynny eto.",
+      "Yn gyntaf, beth nad yw AI-gile. Nid cwmni newydd mohono, nid yw ar werth, ac nid oes neb yn casglu dy ddata. Bwrdd rhad ac am ddim ydyw sy'n rhedeg ar dy gyfrifiadur, heb gyfrifon, heb dracwyr a heb gwcis. Beth ydyw: un lle taclus i weld pob prosiect codio AI ar unwaith, gyda thîm o asiantau'n gwneud y cardiau a ti'n gwneud y penderfyniadau. Mae'n plygu cardiau perthnasol at ei gilydd, yn trwsio teitlau dryslyd, ac yn cadw llygad ar ba mor denau mae'r cod yn aros. Mae'n siarad tua 120 o ieithoedd, o Iseldireg a Fflemeg i fôr-leidr a Klingon. Gall ffrindiau anfon neges at ei gilydd, yn breifat ac wedi'i hamgryptio. Fe'i hadeiladwyd gan Rich a nifer fawr o asiantau amyneddgar, gan ddefnyddio ei hun gan amlaf. Mae mewn cyn-alffa caeedig, felly mae'n arw mewn mannau. Os yw'n swnio'n hwyl, gofyn yn gwrtais ac efallai y cei di fynd i mewn yn gynnar."
+    ] }
+  ],
+  "quips": {
+    "1": "Un gair. Eofn. Efallai'n rhy eofn.",
+    "3": "Tri gair. Eisoes yn fwy gonest na'r rhan fwyaf o dudalennau cynnyrch.",
+    "8": "Wyth gair. Yn dal yn fyrrach na stand-yp.",
+    "21": "Pwyntiau stori yw'r hydoedd, gyda llaw. Wrth gwrs eu bod nhw.",
+    "55": "Pum deg pump gair. Gorffennwyd dau gerdyn tra oeddet ti'n darllen hwnna.",
+    "144": "Honna yw'r un hir. Does dim 233. Mae'r asiantau wedi mynd i'r gwely."
+  }
+}

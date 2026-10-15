@@ -1,0 +1,52 @@
+{
+  "unit": "words",
+  "sizes": [
+    { "n": 1, "texts": ["Kanban.", "Robots.", "Delegat."] },
+    { "n": 2, "texts": ["Kanban robòtic.", "Agents, ordenats.", "Idees, fetes."] },
+    { "n": 3, "texts": ["Kanban per a robots.", "Idees que esdevenen funcions.", "Kanban d'agents gratuït."] },
+    { "n": 5, "texts": ["Un tauler kanban portat per agents.", "Tu escrius targetes. Ells construeixen.", "Gratuït, local, provat, una mica tonto."] },
+    { "n": 8, "texts": [
+      "Un tauler kanban gratuït on treballen agents d'IA.",
+      "Escriu una idea. Els agents la fan. Tu l'acceptes.",
+      "Àgil per a una persona i molts robots pacients."
+    ] },
+    { "n": 13, "texts": [
+      "Un tauler kanban al teu ordinador on els agents d'IA agafen les targetes.",
+      "Escriu una idea. Un equip d'agents la construeix. Un provador la revisa.",
+      "Gratuït, sense comptes, sense rastrejadors: un tauler, uns quants robots i tu al comandament."
+    ] },
+    { "n": 21, "texts": [
+      "AI-gile és un tauler kanban per treballar amb agents d'IA que programen. Ells agafen les targetes; tu les proves i les acceptes.",
+      "Cada projecte té un lead i un equip d'agents d'IA. Comenta qualsevol targeta i l'equip es posa a treballar de seguida.",
+      "Un tauler de tasques personal i gratuït que funciona al teu propi ordinador. Els treballadors són robots. Qui diu que sí ets tu."
+    ] },
+    { "n": 34, "texts": [
+      "Poses les idees en un tauler. Un equip d'agents d'IA les converteix en funcions que van, les prova i te les torna amb passos per provar-les. Res compta com a fet fins que ho dius tu.",
+      "AI-gile és un tauler kanban fet a casa que en Rich ha construït amb molta ajuda dels agents que ara gestiona. És gratuït, funciona al teu ordinador i es comparteix amb amistats, no es ven.",
+      "Imagina un tauler kanban normal, amb columnes des de Backlog fins a Fet, però amb targetes que agafen agents d'IA. Expliquen els avenços, pregunten quan s'encallen i sempre esperen el teu vistiplau."
+    ] },
+    { "n": 55, "texts": [
+      "AI-gile és un tauler kanban on l'equip és fet d'agents d'IA. Cada projecte té un lead que planifica la feina i ajudants que la construeixen. Quan una funció està a punt, un provador d'IA la prova i fa una captura, i després arriba al teu munt. Accepta-la, o comenta i la tornaran a fer.",
+      "Va començar com la manera que tenia una persona de seguir moltes sessions de programació amb IA alhora, i ha crescut fins a ser un tauler de debò. Funciona a la teva màquina, no demana compte i no té rastrejadors. És gratuït per a amistats i curiosos. També està sense acabar, així que compta amb arestes i alguna sorpresa.",
+      "Aquesta és la versió honesta. Les idees les has de tenir tu, i els resultats els has de revisar tu. El que fa AI-gile és tot el d'enmig: manté les targetes ordenades, desperta l'agent adequat quan comentes, mostra exactament què ha canviat i ho recull tot en un munt curt per a tu."
+    ] },
+    { "n": 89, "texts": [
+      "AI-gile és un tauler kanban gratuït que fas funcionar al teu propi ordinador. En lloc de persones, cada projecte té un equip d'agents d'IA: un lead que converteix les teves idees en targetes i un pla, i ajudants que agafen les targetes per ordre de prioritat. Quan alguna cosa està feta, un provador d'IA segueix els passos de prova i et mostra què ha vist. Després espera en un sol munt anomenat Per a tu. L'acceptes, o comentes i l'equip ho torna a intentar. Res no arriba mai a Fet sense tu.",
+      "Algunes coses que potser no esperes. Una guàrdia de nit manté plena la columna Per fer mentre dorms, triant targetes que no necessiten cap resposta teva. Un comptador de tokens mostra quant han gastat els agents avui i aquesta setmana, i el No Token Mode els diu que deixin de gastar. Pots escriure a amistats, i els missatges privats estan xifrats d'extrem a extrem. El tauler parla uns 120 idiomes, entre ells el neerlandès, el flamenc, el pirata i el klingon. Res d'això costa ni un cèntim, i ningú no intenta vendre't res.",
+      "AI-gile és un projecte petit i personal, no una empresa. En Rich volia cuidar diversos projectes de programació amb IA sense obrir cada aplicació per mirar-los, així que ell i els agents hi van construir un tauler, i després el van fer servir per construir la resta d'ells mateixos. És en pre-alfa tancada, cosa que vol dir que funciona, més o menys, per a un grapat d'amistats. No hi ha pàgina de preus, ni butlletí, ni pla de creixement. Si et sembla útil, pots demanar de provar-lo quan s'obri una mica més."
+    ] },
+    { "n": 144, "texts": [
+      "AI-gile és un tauler kanban per a una persona i molts agents d'IA. Funciona al teu propi ordinador i és totalment gratuït. Afegeixes projectes, i cada projecte té un lead i un equip petit. Xategues amb el lead, una mica com a Discord, i descrius una idea; el lead la converteix en targetes i un pla, i espera que premis Go. L'equip va fent les targetes per ordre de prioritat, amb una línia d'ordres senzilla pensada per a models de llenguatge. Abans que res et torni, un provador d'IA segueix els passos en una còpia de l'aplicació i hi adjunta una captura. La feina acabada arriba al teu munt amb els fitxers canviats i les diferències. L'acceptes, o deixes un comentari i l'equip es desperta i ho torna a intentar. Només tu pots moure una targeta a Fet. No hi ha comptes, ni rastrejadors, ni galetes, i tot es queda al teu ordinador.",
+      "Un dia amb AI-gile, més o menys. Al vespre deixes uns quants comentaris: aquest botó és al lloc equivocat, aquella llista hauria d'estar ordenada, podríem tenir un mode fosc. Te'n vas a dormir. Els agents llegeixen els comentaris, fan els canvis, els proven i te'ls tornen. Si a Per fer s'acaben les targetes, la guàrdia de nit l'omple des del backlog amb targetes que no necessiten cap resposta teva. Al matí hi ha un sol munt curt: un parell de preguntes i unes quantes coses per provar, cadascuna amb passos que pot seguir una persona endormiscada i una captura que mostra que funciona. Ho vas repassant, acceptes les bones i tornes la resta. Un comptador de tokens mostra el que ha gastat tot plegat, i el No Token Mode és per a les setmanes magres. Després esmorzes, cosa amb què els agents encara no poden ajudar.",
+      "Primer, què no és AI-gile. No és una startup, no es ven i ningú no recull les teves dades. És un tauler gratuït que funciona al teu ordinador, sense comptes, sense rastrejadors i sense galetes. El que sí és: un lloc ordenat per veure tots els projectes de programació amb IA alhora, amb un equip d'agents que fa les targetes i tu prenent les decisions. Fon les targetes relacionades, arregla els títols embolicats i vigila que el codi es mantingui lleuger. Parla uns 120 idiomes, del neerlandès i el flamenc fins al pirata i el klingon. Les amistats poden escriure's, en privat i xifrat. El van construir en Rich i un gran nombre d'agents pacients, sobretot fent-lo servir a ell mateix. És en pre-alfa tancada, així que en alguns llocs és bast. Si et sembla divertit, demana-ho amb educació i potser entraràs aviat."
+    ] }
+  ],
+  "quips": {
+    "1": "Una paraula. Agosarada. Potser massa.",
+    "3": "Tres paraules. Ja és més honest que la majoria de pàgines de producte.",
+    "8": "Vuit paraules. Encara més curt que una reunió d'estar dret.",
+    "21": "Per cert, les llargades són punts d'història. És clar que sí.",
+    "55": "Cinquanta-cinc paraules. S'han acabat dues targetes mentre ho llegies.",
+    "144": "Aquesta és la llarga. No n'hi ha cap de 233. Els agents se n'han anat a dormir."
+  }
+}
