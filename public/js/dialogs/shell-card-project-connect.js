@@ -59,7 +59,34 @@ async function newCard(preset = {}) {
       <div class="actions"><button class="${bug ? 'bug' : 'primary'}" type="submit">${esc(bug ? t('dlg.raisebug') : t('dlg.createcard'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${Attach.boxHtml('new:' + slug())}</div></form>`, 'newcard');
   if (bug) { const ov = $('dialog').querySelector('.overlay'); if (ov) ov.classList.add('top'); }   // above pop-outs, card view and other windows (AIG-733)
   if (lifeOn) lifeToggle();
+  const ttl = $('f-title'); if (ttl) ttl.addEventListener('paste', ev => pasteList(ev));   // AIG-1271: a pasted list offers one card per line
   const dsc = $('f-description'); if (dsc) dsc.addEventListener('keydown', ev => { if (EnterSend.is(ev, 'card')) { ev.preventDefault(); if (dsc.form) dsc.form.requestSubmit(); } });   // AIG-1110: Enter sends, Shift+Enter is a new line; createCard's busy guard keeps it to one
+}
+// AIG-1271: paste several lines into the title: offer one card per line (bullets and numbers stripped) or keep it as one card.
+const listLines = txt => String(txt || '').split(/\r?\n/).map(l => l.replace(/^\s*(?:(?:[-*•☐☑]|\d+[.)])\s+)?(?:\[[ xX]?\]\s+)?/, '').trim()).filter(Boolean);
+function pasteList(ev) {
+  const txt = ev.clipboardData && ev.clipboardData.getData('text') || '', lines = listLines(txt);
+  if (lines.length < 2) return;
+  ev.preventDefault();
+  pasteList.lines = lines;
+  let box = $('nc-multi'); if (!box) { box = document.createElement('div'); box.id = 'nc-multi'; box.className = 'nc-multi'; $('f-title').closest('label').insertAdjacentElement('afterend', box); }
+  box.innerHTML = `<span>${esc(t('dlg.multi.ask', { n: lines.length }))}</span> <button type="button" class="primary" id="nc-multi-go" onclick="pasteMake()">${esc(t('dlg.multi.make', { n: lines.length }))}</button> <button type="button" id="nc-multi-one" onclick="pasteOne()">${esc(t('dlg.multi.one'))}</button>`;
+}
+function pasteOne() {   // keep it as one card: the first line is the title, the rest goes in the description
+  const l = pasteList.lines || [], d = $('f-description');
+  $('f-title').value = l[0].slice(0, 200); if (d && l.length > 1) d.value = (d.value ? d.value + '\n' : '') + l.slice(1).join('\n');
+  const box = $('nc-multi'); if (box) box.remove();
+}
+async function pasteMake() {
+  const lines = pasteList.lines || []; if (!lines.length || pasteMake.busy) return;
+  pasteMake.busy = true; const box = $('nc-multi'); box.querySelectorAll('button').forEach(b => { b.disabled = true; });
+  try {
+    const body = readFields(false, false), sel = $('nc-project'), target = sel && sel.value || slug();
+    if (target !== slug() && body.status === newCard.startStatus && newCard.noTeam) body.status = newCard.noTeam(target) ? 'backlog' : 'team';
+    for (const title of lines) await api('POST', `/api/projects/${target}/cards`, { ...body, title: title.slice(0, 200), description: '', createdBy: me() });
+    closeDialog(); await rerender(); note(t('dlg.multi.done', { n: lines.length }));
+  } catch (err) { setErr('d-err', err); box.querySelectorAll('button').forEach(b => { b.disabled = false; }); }
+  finally { pasteMake.busy = false; }
 }
 function lifeToggle() {
   const on = $('nc-life').checked, appt = on && $('nc-lifetype').value === 'appointment';
