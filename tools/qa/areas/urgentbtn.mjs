@@ -1,5 +1,5 @@
 // QA area: urgentbtn (AIG-899), one click to mark any card urgent, again to put the old priority back.
-import { check, sleep, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, until, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
 
 def('urgentbtn', '🔥 button: a tile click makes the card urgent, a second click restores the old priority, also from the open card (AIG-899)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -41,7 +41,7 @@ def('urgentbtn', '🔥 button: a tile click makes the card urgent, a second clic
   await ib.waitForSelector('.ib-item[data-id="chat"]');
   check('Lead chat inbox row has no fire button', (await ib.locator('.ib-item[data-id="chat"] .urg-btn').count()) === 0);
   await ib.click(`.ib-item[data-id="${q.id}"] .urg-btn`);
-  await sleep(600);
+  await until(async () => (await getCard(s, 'alpha', q.id)).priority === 'urgent', 5000);   // AIG-1150: the click reads the project then patches; 600 ms was too short on a busy full run
   c = await getCard(s, 'alpha', q.id);
   check('inbox card row: click makes it urgent', c.priority === 'urgent', c.priority);
   await noErrors(page); await noErrors(open); await noErrors(ib);
