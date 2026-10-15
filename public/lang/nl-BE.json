@@ -3035,6 +3035,8 @@
  "grp.err.name": "Geef de groep een naam.",
  "grp.err.two": "Kies minstens twee agents.",
  "grp.none": "Nog geen agents op een rooster.",
+ "grp.nogroups": "Nog geen groepen.",
+ "dms.leadchats": "Leadchats",
  "grp.search": "Zoek agents of projecten",
  "grp.empty": "Nog geen berichten. Schrijf iets: iedereen in de groep wordt gewekt om te antwoorden.",
  "grp.to": "Aan iedereen in {name}",

@@ -32,6 +32,7 @@ def('groupdm', '👥 group chats: ＋ New group in Messages, the owner\'s messag
   await page.waitForSelector('#dmRail [data-dms]'); await page.click('#dmRail [data-dms]');
   await page.waitForSelector('#dmPanel [data-dmnewgroup]');
   check('Messages has a Groups part with ＋ New group', /Groups/.test(await page.textContent('#dmPanel .dm-groups')));
+  check('no groups yet says so, and Lead chats has its own heading (AIG-1138)', /No groups yet/.test(await page.textContent('#dmPanel .dm-groups')) && /Lead chats/.test(await page.textContent('#dmPanel')));
   await page.click('#dmPanel [data-dmnewgroup]');
   await page.waitForSelector('#grpPick [data-grpi]');
   check('the New group dialog sits above the Messages panel (AIG-1130)', await page.evaluate(() => { const r = document.querySelector('#grpName').getBoundingClientRect(), e = document.elementFromPoint(r.x + 5, r.y + 5); return !!e && e.id === 'grpName'; }));

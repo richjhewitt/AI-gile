@@ -3035,6 +3035,8 @@
  "grp.err.name": "Give the group a name.",
  "grp.err.two": "Pick at least two agents.",
  "grp.none": "No agents on any roster yet.",
+ "grp.nogroups": "No groups yet.",
+ "dms.leadchats": "Lead chats",
  "grp.search": "Search agents or projects",
  "grp.empty": "No messages yet. Write something: everyone in the group is woken to reply.",
  "grp.to": "To everyone in {name}",
