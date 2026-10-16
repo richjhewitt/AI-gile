@@ -175,5 +175,12 @@
  "live.last.day.one": "Naʻe ʻave ʻa e kaati fakaʻosi ʻaho ʻe {n} kuo hili",
  "live.last.day.other": "Naʻe ʻave ʻa e kaati fakaʻosi ʻaho ʻe {n} kuo hili",
  "live.offline": "'Oku mālōlō si'i e palaoti mo'ui. Foki mai 'i he vave.",
- "live.cols": "Backlog|Ke fai|ʻOku fakahoko|Sivi ʻe he kautaha|Maʻau ke test|Maʻá e kautaha|Kuo fai"
+ "live.cols": "Backlog|Ke fai|ʻOku fakahoko|Sivi ʻe he kautaha|Maʻau ke test|Maʻá e kautaha|Kuo fai",
+ "footer.models": "ʻOku fakaʻaonga ʻe AI-gile ʻa e ngaahi sīpinga AI maʻau. Ko e meʻa ʻoku nau pehē mo fai ko ʻenau meʻa pē, ko ia siʻaki ia ke ke tuí.",
+ "privacy.ai.h": "Ko e konga AI",
+ "privacy.ai.models": "Ko AI-gile ko e laupapa. ʻOku fai ʻa e ngāué ʻe he ngaahi sīpinga AI mei he ngaahi kautaha kehe, hangē ko Claude, Codex mo Gemini, ʻi hoʻo ngaahi akauni pē ʻaʻau.",
+ "privacy.ai.check": "Ko e meʻa ʻoku nau tohi mo fai ʻoku haʻu meiate kinautolu, pea ʻe lava ke hala. Siʻaki ia ʻi he teʻeki ke ke falala ki ai pe fakaʻatā.",
+ "privacy.ai.files": "ʻOku nau liliu ʻa e ngaahi faile mo fakahoko ʻa e ngaahi fekau ʻi he ngaahi folda ʻokú ke fakafehokotaki. Tauhi ha kopi fakamoʻui.",
+ "privacy.ai.send": "Ko e meʻa ʻokú ke foaki ki ha sīpinga ʻoku ʻalu ia ki he kautaha ʻoku ne fakaʻaongaʻi ia, ʻi lalo ʻi heʻenau ngaahi tuʻutuʻuni. ʻOku ngāue ʻa e ngaahi tuʻutuʻuni mo e totongi ʻa e kautaha taki taha.",
+ "privacy.ai.asis": "Ko AI-gile ko ha founga ʻuluaki ia ke ʻahiʻahi, ʻoku foaki ʻo hangē ko ia ʻoku ʻi ai."
 }

@@ -5619,5 +5619,6 @@
  "night.why.waits0": "wuu shaqeeyay oo wuxuu doortay inuu sugo · isku dayga xiga {time}",
  "night.why.other": "lama bilaabin",
  "tb.phone": "Taleefanka, bar-sare wuxuu muujiyaa oo kaliya 📥 Sanduuq iyo ☰; badhamada kale waxay ku jiraan ☰. Bidix ama midig iyo Ku tus bar-sare waxaa loogu talagalay kombiyuutarka.",
- "lkcall.incall": "📞 Wicitaanka ku jira"
+ "lkcall.incall": "📞 Wicitaanka ku jira",
+ "wz.ask.models": "AI-gile waa boardka. Shaqada waxaa qaata moodooyin AI sida Claude, Codex iyo Gemini, akoonnadaada, sidaas darteed waxay qoraan iyo waxay sameeyaan iyagay ka yimaadaan, mararka qaarkoodna waa khalad. Hubi shaqadooda ka hor intaadan ku tiirsanaan, kuna kaydi nuqul kasta oo faylka aad u ogolaato."
 }

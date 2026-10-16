@@ -5619,5 +5619,6 @@
  "night.why.waits0": "eseguito, ha scelto di aspettare · prossimo tentativo {time}",
  "night.why.other": "non avviato",
  "tb.phone": "Sul telefono la barra in alto mostra solo 📥 Posta in arrivo e ☰; gli altri pulsanti sono in ☰. A sinistra o a destra e Mostra nella barra in alto valgono per il computer.",
- "lkcall.incall": "📞 Nella chiamata"
+ "lkcall.incall": "📞 Nella chiamata",
+ "wz.ask.models": "AI-gile è la board. Il lavoro lo fanno modelli di IA come Claude, Codex e Gemini, sui tuoi account, quindi quello che scrivono e fanno viene da loro e a volte è sbagliato. Controlla il loro lavoro prima di farci affidamento e fai un backup di ogni cartella in cui li lasci entrare."
 }

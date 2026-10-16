@@ -5619,5 +5619,6 @@
  "night.why.waits0": "s'ha executat i ha decidit esperar · proper intent {time}",
  "night.why.other": "no iniciat",
  "tb.phone": "En un mòbil, la barra superior només mostra 📥 Safata d'entrada i ☰; els altres botons són a ☰. Esquerra o dreta i Mostra a la barra superior són per a l'ordinador.",
- "lkcall.incall": "📞 A la trucada"
+ "lkcall.incall": "📞 A la trucada",
+ "wz.ask.models": "AI-gile és el tauler. La feina la fan models d'IA com Claude, Codex i Gemini, amb els teus propis comptes, així que el que escriuen i fan ve d'ells i de vegades és erroni. Comprova la seva feina abans de fiar-te'n i fes una còpia de seguretat de qualsevol carpeta on els deixis entrar."
 }

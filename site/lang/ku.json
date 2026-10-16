@@ -175,5 +175,12 @@
  "live.last.day.one": "Karta dawî {n} roj berê hat guhastin",
  "live.last.day.other": "Karta dawî {n} roj berê hat guhastin",
  "live.offline": "Tabloya rasterast hinekî dimîne. Zû dîsa werin.",
- "live.cols": "Backlog|Ji bo kirinê|Di xebatê de|Tîm kontrol dike|Ji bo te ku test bikî|Ji bo tîmê|Qediya"
+ "live.cols": "Backlog|Ji bo kirinê|Di xebatê de|Tîm kontrol dike|Ji bo te ku test bikî|Ji bo tîmê|Qediya",
+ "footer.models": "AI-gile modelên AI ji bo te dixebitîne. Ya ku ew dibêjin û dikin ya wan e, ji ber vê berî ku tu pê bawer bikî kontrol bike.",
+ "privacy.ai.h": "Beşa AI",
+ "privacy.ai.models": "AI-gile tablo ye. Kar ji aliyê modelên AI yên şirketên din ve tê kirin, wek Claude, Codex û Gemini, bi hesabên te yên xwe.",
+ "privacy.ai.check": "Ya ku ew dinivîsin û dikin ji wan tê, û dikare şaş be. Berî ku tu pişta xwe bidî wê an bişînî, kontrol bike.",
+ "privacy.ai.files": "Ew di peldankên ku tu girê didî de pelan diguherînin û ferman dimeşînin. Yedek bigire.",
+ "privacy.ai.send": "Ya ku tu didî modelekê diçe ba şirketa ku wê dimeşîne, li gorî mercên wan. Mercên her yekê û lêçûnên wê derbas dibin.",
+ "privacy.ai.asis": "AI-gile guhertoyeke ceribandinê ya destpêkê ye, wek ku heye tê dayin."
 }

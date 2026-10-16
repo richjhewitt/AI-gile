@@ -180,5 +180,12 @@
  "pitch.letters.few": "{n} raidės",
  "pitch.chars.few": "{n} simboliai",
  "count.line.html.few": "Šiuo metu lentoje yra {n} kortelės",
- "tl.cards.few": "{n} kortelės"
+ "tl.cards.few": "{n} kortelės",
+ "footer.models": "AI-gile paleidžia dirbtinio intelekto modelius už tave. Tai, ką jie sako ir daro, yra jų pačių, todėl patikrink, prieš pasitikėdamas.",
+ "privacy.ai.h": "DI dalis",
+ "privacy.ai.models": "AI-gile yra lenta. Darbą atlieka kitų įmonių DI modeliai, tokie kaip Claude, Codex ir Gemini, tavo paties paskyrose.",
+ "privacy.ai.check": "Tai, ką jie parašo ir padaro, ateina iš jų ir gali būti klaidinga. Patikrink, prieš pasikliaudamas ar skelbdamas.",
+ "privacy.ai.files": "Jie keičia failus ir vykdo komandas aplankuose, kuriuos prijungi. Pasidaryk atsarginę kopiją.",
+ "privacy.ai.send": "Tai, ką duodi modeliui, patenka įmonei, kuri jį valdo, pagal jos sąlygas. Galioja kiekvieno sąlygos ir kainos.",
+ "privacy.ai.asis": "AI-gile yra ankstyva bandomoji versija, teikiama tokia, kokia yra."
 }

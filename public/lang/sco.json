@@ -5652,5 +5652,6 @@
  "night.why.waits0": "ran an chose tae wait · neist try {time}",
  "night.why.other": "no stertit",
  "tb.phone": "On a phone the tap bar shaws jist 📥 Inbox an ☰; the ither buttons are in ☰. Left or richt an Show in tap bar are for the computer.",
- "lkcall.incall": "📞 In the caw"
+ "lkcall.incall": "📞 In the caw",
+  "wz.ask.models": "AI-gile is the board. The wark is duin by AI models like Claude, Codex an Gemini, on yer ain accoonts, sae whit they write an dae comes frae them, an whiles it's wrang. Check thair wark afore ye rely on it, an keep a backup o ony folder ye let them intae."
 }

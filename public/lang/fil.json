@@ -5619,5 +5619,6 @@
  "night.why.waits0": "tumakbo at piniling maghintay · susunod na subok {time}",
  "night.why.other": "hindi sinimulan",
  "tb.phone": "Sa phone, 📥 Inbox at ☰ lang ang nasa top bar; nasa ☰ ang ibang button. Para sa computer ang Kaliwa o kanan at Ipakita sa top bar.",
- "lkcall.incall": "📞 Nasa call"
+ "lkcall.incall": "📞 Nasa call",
+ "wz.ask.models": "Ang AI-gile ang board. Ang gumagawa ng trabaho ay mga AI model tulad ng Claude, Codex at Gemini, sa sarili mong mga account, kaya galing sa kanila ang isinusulat at ginagawa nila, at minsan mali. I-check ang trabaho nila bago umasa, at mag-backup ng anumang folder na pinapasok mo sila."
 }

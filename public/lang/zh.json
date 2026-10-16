@@ -5619,5 +5619,6 @@
  "night.why.waits0": "运行后选择等待 · 下次尝试 {time}",
  "night.why.other": "未启动",
  "tb.phone": "在手机上，顶栏只显示 📥 收件箱和 ☰；其他按钮都在 ☰ 里。“左侧或右侧”和“显示在顶栏”只对电脑有效。",
- "lkcall.incall": "📞 通话中"
+ "lkcall.incall": "📞 通话中",
+ "wz.ask.models": "AI-gile 是看板。干活的是 Claude、Codex 和 Gemini 这样的 AI 模型，用的是你自己的账号，所以它们写的内容和做的事都出自它们，有时会出错。依赖之前请先检查它们的成果，并为你让它们进入的任何文件夹做好备份。"
 }

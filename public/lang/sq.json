@@ -5619,5 +5619,6 @@
  "night.why.waits0": "u nis dhe zgjodhi të presë · prova tjetër {time}",
  "night.why.other": "nuk është nisur",
  "tb.phone": "Në telefon, shiriti i sipërm shfaq vetëm 📥 Kutia hyrëse dhe ☰; butonat e tjerë janë te ☰. Majtas ose djathtas dhe Shfaq në shiritin e sipërm janë për kompjuterin.",
- "lkcall.incall": "📞 Në thirrje"
+ "lkcall.incall": "📞 Në thirrje",
+ "wz.ask.models": "AI-gile është tabela. Punën e bëjnë modele IA si Claude, Codex dhe Gemini, në llogaritë e tua, ndaj ç'shkruajnë dhe ç'bëjnë vjen prej tyre dhe nganjëherë është gabim. Kontrolloje punën e tyre para se të mbështetesh te ajo dhe mbaj një kopje rezervë të çdo dosjeje ku i lë të hyjnë."
 }

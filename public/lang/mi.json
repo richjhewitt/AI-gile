@@ -5619,5 +5619,6 @@
  "night.why.waits0": "i rere, ā, i kōwhiri ki te tatari · whakamātau e whai ake nei {time}",
  "night.why.other": "kāore i tīmata",
  "tb.phone": "I runga waea, ko 📥 Pouaka mai me ☰ anake e kitea ana i te pae o runga; kei roto i te ☰ ērā atu pātene. Ko Mauī, Matau rānei me Whakaatu i te pae runga mō te rorohiko.",
- "lkcall.incall": "📞 Kei te waea"
+ "lkcall.incall": "📞 Kei te waea",
+ "wz.ask.models": "Ko AI-gile te papa. Mahia ai te mahi e ngā tauira AI pērā i a Claude, Codex me Gemini, ki ō ake pūkete, nō reira ko ā rātou tuhi me ā rātou mahi nō rātou ake, ā, i ētahi wā he hē. Arohia ā rātou mahi i mua i tō whakawhirinaki, ā, mahia he kape tautoko o ia kōpaki ka tukuna e koe kia uru atu rātou."
 }

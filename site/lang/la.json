@@ -175,5 +175,12 @@
  "live.last.day.one": "Ultima tabella ante {n} diem mota est",
  "live.last.day.other": "Ultima tabella ante {n} dies mota est",
  "live.offline": "Tabula viva paulum quiescit. Mox revertere.",
- "live.cols": "Backlog|Agenda|In opere|Turma inspicit|Tibi testandum|Turmae|Confecta"
+ "live.cols": "Backlog|Agenda|In opere|Turma inspicit|Tibi testandum|Turmae|Confecta",
+ "footer.models": "AI-gile exempla AI pro te agit. Quae dicunt et faciunt, eorum sunt; ergo inspice priusquam credas.",
+ "privacy.ai.h": "Pars AI",
+ "privacy.ai.models": "AI-gile tabula est. Opus ab exemplis AI aliarum societatum fit, ut Claude, Codex et Gemini, in rationibus tuis.",
+ "privacy.ai.check": "Quae scribunt et faciunt ab ipsis veniunt et falsa esse possunt. Inspice priusquam eis confidas aut edas.",
+ "privacy.ai.files": "Tabellas mutant et mandata agunt in plicis quas coniungis. Exemplar subsidiarium serva.",
+ "privacy.ai.send": "Quod exemplo das ad societatem pergit quae id agit, sub condicionibus eorum. Condiciones et pretia uniuscuiusque societatis valent.",
+ "privacy.ai.asis": "AI-gile versio probationis prima est, data ut est."
 }

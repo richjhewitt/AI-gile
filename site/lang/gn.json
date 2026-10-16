@@ -175,5 +175,12 @@
  "live.last.day.one": "Pe kárta ipahaitéva oñemoĩ {n} ára ohasaramóva",
  "live.last.day.other": "Pe kárta ipahaitéva oñemoĩ {n} ára ohasaramóva",
  "live.offline": "Tablero hekoveve ojepytuʼu sa’i. Eju jey pya’e.",
- "live.cols": "Backlog|Ojejapótava|Ojejapóva|Atyha ohecháva|Ndéve ehecha haguã test|Atyha pe|Ojejapopáma"
+ "live.cols": "Backlog|Ojejapótava|Ojejapóva|Atyha ohecháva|Ndéve ehecha haguã test|Atyha pe|Ojejapopáma",
+ "footer.models": "AI-gile omongu'e AI modelo nde rehe. Umi oje'e ha ojapóva ha'e kuéra mba'e, upévare ehechajey ne ndoguerovia mboyve.",
+ "privacy.ai.h": "AI pehẽ",
+ "privacy.ai.models": "AI-gile ha'e pe tabla. Pe tembiapo ojapo AI modelo ambue empresagua, Claude, Codex ha Gemini ha'eháicha, nde cuenta ñande rupi.",
+ "privacy.ai.check": "Umi ohai ha ojapóva oúva hendivégui ha ikatu ivaíva. Ehechajey ereñepyrũ mboyve ejerovia térã eguenohẽ.",
+ "privacy.ai.files": "Omoambue archivo ha omba'apo comando umi carpeta reñembojoajúva. Eguereko backup.",
+ "privacy.ai.send": "Pe reme'ẽva peteĩ modelo-pe oho pe empresa omba'apóvape, hembiapoukapy rupive. Opa empresa ha'e hembiapoukapy ha hepyre.",
+ "privacy.ai.asis": "AI-gile ha'e peteĩ versión ñepyrũ jehecha haguã, oñeme'ẽva ojehechaháicha."
 }

@@ -5619,5 +5619,6 @@
  "night.why.waits0": "berjalan dan memilih untuk menunggu · cubaan seterusnya {time}",
  "night.why.other": "tidak dimulakan",
  "tb.phone": "Pada telefon, bar atas hanya menunjukkan 📥 Peti masuk dan ☰; butang lain ada dalam ☰. Kiri atau kanan dan Tunjuk di bar atas adalah untuk komputer.",
- "lkcall.incall": "📞 Dalam panggilan"
+ "lkcall.incall": "📞 Dalam panggilan",
+ "wz.ask.models": "AI-gile ialah papan. Kerja dilakukan oleh model AI seperti Claude, Codex dan Gemini, menggunakan akaun anda sendiri, jadi apa yang mereka tulis dan lakukan datang daripada mereka, dan kadangkala salah. Semak kerja mereka sebelum anda bergantung padanya, dan buat sandaran bagi mana-mana folder yang anda benarkan mereka masuk."
 }

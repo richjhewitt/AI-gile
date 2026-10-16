@@ -175,5 +175,12 @@
  "live.last.day.one": "Última tarxeta movida hai {n} día",
  "live.last.day.other": "Última tarxeta movida hai {n} días",
  "live.offline": "O taboleiro en directo está collendo folgos. Volve pronto.",
- "live.cols": "Backlog|Por facer|En curso|O equipo revisa|Por probar|Para o equipo|Feito"
+ "live.cols": "Backlog|Por facer|En curso|O equipo revisa|Por probar|Para o equipo|Feito",
+ "footer.models": "AI-gile executa modelos de IA por ti. O que din e fan é cousa deles, así que comproba antes de fiarte.",
+ "privacy.ai.h": "A parte da IA",
+ "privacy.ai.models": "AI-gile é o taboleiro. O traballo fano modelos de IA doutras empresas, como Claude, Codex e Gemini, nas túas propias contas.",
+ "privacy.ai.check": "O que escriben e fan vén deles e pode ser un erro. Comproba antes de apoiarte niso ou publicalo.",
+ "privacy.ai.files": "Cambian ficheiros e executan ordes nos cartafoles que conectas. Fai unha copia de seguranza.",
+ "privacy.ai.send": "O que lle dás a un modelo vai á empresa que o xestiona, segundo os seus termos. Aplícanse os termos e os custos de cada unha.",
+ "privacy.ai.asis": "AI-gile é unha versión de proba inicial, que se ofrece tal como está."
 }

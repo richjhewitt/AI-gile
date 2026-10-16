@@ -185,5 +185,12 @@
  "count.line.html.two": "{n} cart er y bord nish",
  "count.line.html.few": "{n} cart er y bord nish",
  "tl.cards.two": "{n} cart",
- "tl.cards.few": "{n} cart"
+ "tl.cards.few": "{n} cart",
+ "footer.models": "Ta AI-gile cur rish ennaghtyn AI er dty hon. Ta ny t'ad dy ghra as dy yannoo ocsyn hene, shen y fa dy jeeaghyn roish dy hreishteil.",
+ "privacy.ai.h": "Y ayrn AI",
+ "privacy.ai.models": "Ta AI-gile y bord. Ta ennaghtyn AI veih cumraghtyn elley, goll myr Claude, Codex as Gemini, jannoo yn obbyr er dty choontyn hene.",
+ "privacy.ai.check": "Ta ny t'ad screeu as dy yannoo cheet voue hene, as foddee eh ve kyndagh. Jeeagh roish dy hreishteil er, ny roish dy chur magh eh.",
+ "privacy.ai.files": "T'ad caghlaa coadanyn as cur rish ordaaghyn ayns ny fillagyn t'ou gleiney. Reih lorg-cooidjagh.",
+ "privacy.ai.send": "Ta ny cur oo da ennagh goll gys y chumraght t'ayns cur rish eh, fo nyn greesyn. Ta creesyn as costyssyn dy chooilley chuid gobbragh.",
+ "privacy.ai.asis": "Ta AI-gile ny lhieggan toshee, currit myr te."
 }

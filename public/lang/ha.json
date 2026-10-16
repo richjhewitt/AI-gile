@@ -5619,5 +5619,6 @@
  "night.why.waits0": "ya gudana ya zaɓi jira · gwaji na gaba {time}",
  "night.why.other": "ba a fara ba",
  "tb.phone": "A waya, sandar sama tana nuna 📥 Akwatin saƙo da ☰ kawai; sauran maɓallai suna cikin ☰. Hagu ko dama da Nuna a sandar sama na kwamfuta ne.",
- "lkcall.incall": "📞 A cikin kira"
+ "lkcall.incall": "📞 A cikin kira",
+ "wz.ask.models": "AI-gile shi ne allon. Samfuran AI kamar Claude, Codex da Gemini ne ke yin aikin a asusunku na kanku, don haka abin da suke rubutawa da yi daga gare su yake, kuma wani lokaci kuskure ne. Ku duba aikinsu kafin ku dogara da shi, kuma ku ajiye kwafin ajiya na kowane babban fayil da kuka bar su shiga."
 }

@@ -175,5 +175,12 @@
  "live.last.day.one": "lipu pini li tawa lon tenpo: suno {n}",
  "live.last.day.other": "lipu pini li tawa lon tenpo: suno {n}",
  "live.offline": "supa tenpo ni li awen lili. sina ken kama sin lon tenpo lili.",
- "live.cols": "Backlog|pali kama|pali lon|kulupu li lukin|tawa sina: o lukin e pona|tawa kulupu|pini"
+ "live.cols": "Backlog|pali kama|pali lon|kulupu li lukin|tawa sina: o lukin e pona|tawa kulupu|pini",
+ "footer.models": "AI-gile li lawa e ilo AI tawa sina. toki en pali ona li tan ona taso. o lukin e ni pona ala pona, la sina kepeken e ona.",
+ "privacy.ai.h": "ijo AI",
+ "privacy.ai.models": "AI-gile li supa. ilo AI pi kulupu ante li pali, sama Claude en Codex en Gemini, kepeken nimi sina.",
+ "privacy.ai.check": "ijo ona li toki li pali la li tan ona, li ken ike. o lukin pona e ona la sina kepeken e ona anu pana e ona.",
+ "privacy.ai.files": "ona li ante e lipu li kepeken ilo lon poki lipu pi sina pana. o pali e lipu awen.",
+ "privacy.ai.send": "ijo sina pana tawa ilo AI li tawa kulupu pi ilo ni, lon lawa ona. lawa en mani pi ilo ali li lon.",
+ "privacy.ai.asis": "AI-gile li ilo open pi lukin sona. mi pana e ona sama ni li lon."
 }

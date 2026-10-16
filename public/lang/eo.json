@@ -5652,5 +5652,6 @@
  "night.why.waits0": "funkciis kaj elektis atendi · sekva provo {time}",
  "night.why.other": "ne startita",
  "tb.phone": "En telefono la supra breto montras nur 📥 Enirkesto kaj ☰; la aliaj butonoj estas en ☰. Maldekstre aŭ dekstre kaj Montri en supra breto estas por la komputilo.",
- "lkcall.incall": "📞 En la voko"
+ "lkcall.incall": "📞 En la voko",
+ "wz.ask.models": "AI-gile estas la tabulo. La laboron faras AI-modeloj kiel Claude, Codex kaj Gemini, per viaj propraj kontoj, do kion ili skribas kaj faras venas de ili, kaj foje ĝi estas malĝusta. Kontrolu ilian laboron antaŭ ol fidi ĝin, kaj konservu sekurkopion de ĉiu dosierujo, en kiun vi lasas ilin."
 }

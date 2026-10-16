@@ -175,5 +175,12 @@
  "live.last.day.one": "Síðasta spjald var fært fyrir {n} degi",
  "live.last.day.other": "Síðasta spjald var fært fyrir {n} dögum",
  "live.offline": "Beina taflan tekur sér smá pásu. Kíktu aftur fljótlega.",
- "live.cols": "Backlog|Á dagskrá|Í vinnslu|Teymið yfirfer|Fyrir þig að prófa|Fyrir teymið|Lokið"
+ "live.cols": "Backlog|Á dagskrá|Í vinnslu|Teymið yfirfer|Fyrir þig að prófa|Fyrir teymið|Lokið",
+ "footer.models": "AI-gile keyrir gervigreindarlíkön fyrir þig. Það sem þau segja og gera er þeirra eigið, svo athugaðu það áður en þú treystir því.",
+ "privacy.ai.h": "Gervigreindarhlutinn",
+ "privacy.ai.models": "AI-gile er borðið. Vinnan er unnin af gervigreindarlíkönum frá öðrum fyrirtækjum, eins og Claude, Codex og Gemini, á þínum eigin aðgöngum.",
+ "privacy.ai.check": "Það sem þau skrifa og gera kemur frá þeim og getur verið rangt. Athugaðu það áður en þú reiðir þig á það eða gefur það út.",
+ "privacy.ai.files": "Þau breyta skrám og keyra skipanir í möppunum sem þú tengir. Taktu afrit.",
+ "privacy.ai.send": "Það sem þú gefur líkani fer til fyrirtækisins sem rekur það, samkvæmt skilmálum þess. Skilmálar og kostnaður hvers og eins gilda.",
+ "privacy.ai.asis": "AI-gile er snemmbúin tilraunaútgáfa, látin í té eins og hún er."
 }

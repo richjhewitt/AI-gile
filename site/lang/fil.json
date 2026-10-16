@@ -175,5 +175,12 @@
  "live.last.day.one": "Nailipat ang huling card {n} araw ang nakalipas",
  "live.last.day.other": "Nailipat ang huling card {n} araw ang nakalipas",
  "live.offline": "Nagpapahinga muna ang live board. Balik ka ulit mamaya.",
- "live.cols": "Backlog|Gagawin|Ginagawa|Chine-check ng team|Para sa iyo na i-test|Para sa team|Tapos na"
+ "live.cols": "Backlog|Gagawin|Ginagawa|Chine-check ng team|Para sa iyo na i-test|Para sa team|Tapos na",
+ "footer.models": "Pinapagana ng AI-gile ang mga AI model para sa iyo. Sa kanila ang sinasabi at ginagawa nila, kaya i-check muna bago magtiwala.",
+ "privacy.ai.h": "Ang bahaging AI",
+ "privacy.ai.models": "Ang AI-gile ang board. Ang gumagawa ng trabaho ay mga AI model mula sa ibang kumpanya, tulad ng Claude, Codex at Gemini, sa sarili mong mga account.",
+ "privacy.ai.check": "Galing sa kanila ang isinusulat at ginagawa nila, at puwedeng mali. I-check muna bago umasa o i-ship.",
+ "privacy.ai.files": "Binabago nila ang mga file at nagpapatakbo ng mga command sa mga folder na ikinokonekta mo. Mag-backup ka.",
+ "privacy.ai.send": "Ang ibinibigay mo sa model ay napupunta sa kumpanyang nagpapatakbo nito, ayon sa kanilang mga tuntunin. May bisa ang sariling tuntunin at gastos ng bawat isa.",
+ "privacy.ai.asis": "Ang AI-gile ay maagang test version, ibinibigay nang ganito."
 }

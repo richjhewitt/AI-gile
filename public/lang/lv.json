@@ -5651,5 +5651,6 @@
  "night.why.waits0": "palaists, izvēlējās gaidīt · nākamais mēģinājums {time}",
  "night.why.other": "nav palaists",
  "tb.phone": "Tālrunī augšējā josla rāda tikai 📥 Iesūtne un ☰; pārējās pogas ir ☰. Pa kreisi vai pa labi un Rādīt augšējā joslā ir datoram.",
- "lkcall.incall": "📞 Zvanā"
+ "lkcall.incall": "📞 Zvanā",
+ "wz.ask.models": "AI-gile ir dēlis. Darbu veic MI modeļi, piemēram, Claude, Codex un Gemini, tavos paša kontos, tāpēc tas, ko tie raksta un dara, nāk no viņiem un dažreiz ir nepareizi. Pārbaudi viņu darbu, pirms paļaujies, un izveido rezerves kopiju katrai mapei, kurā tos ielaid."
 }

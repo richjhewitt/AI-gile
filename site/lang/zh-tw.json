@@ -175,5 +175,12 @@
  "live.last.day.one": "最近一張卡片在 {n} 天前移動",
  "live.last.day.other": "最近一張卡片在 {n} 天前移動",
  "live.offline": "即時看板正在稍作休息，請稍後再來看看。",
- "live.cols": "Backlog|待辦|進行中|團隊檢查中|待你測試|交給團隊|已完成"
+ "live.cols": "Backlog|待辦|進行中|團隊檢查中|待你測試|交給團隊|已完成",
+ "footer.models": "AI-gile 會替你調用 AI 模型做事。它們說的話、做的事由它們自己負責，所以在相信之前請先查證。",
+ "privacy.ai.h": "AI 部分",
+ "privacy.ai.models": "AI-gile 是看板。真正做事的是其他公司的 AI 模型，例如 Claude、Codex 和 Gemini，用的是你自己的帳號。",
+ "privacy.ai.check": "它們寫的內容和做的事都出自它們，可能是錯的。在依賴或發布之前，請先檢查。",
+ "privacy.ai.files": "它們會修改你所連接資料夾裡的檔案，並執行指令。請做好備份。",
+ "privacy.ai.send": "你交給模型的內容會傳送給營運它的公司，並適用對方的條款。每家公司各自的條款和費用都會生效。",
+ "privacy.ai.asis": "AI-gile 是早期測試版，依現況提供。"
 }

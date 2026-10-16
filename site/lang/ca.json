@@ -175,5 +175,12 @@
  "live.last.day.one": "L'última targeta s'ha mogut fa {n} dia",
  "live.last.day.other": "L'última targeta s'ha mogut fa {n} dies",
  "live.offline": "El tauler en directe es pren un respir. Torna d'aquí a poc.",
- "live.cols": "Backlog|Per fer|En curs|L'equip ho revisa|Et toca provar|Per a l'equip|Fet"
+ "live.cols": "Backlog|Per fer|En curs|L'equip ho revisa|Et toca provar|Per a l'equip|Fet",
+ "footer.models": "AI-gile executa models d'IA per tu. El que diuen i fan és cosa seva, així que comprova-ho abans de fiar-te'n.",
+ "privacy.ai.h": "La part d'IA",
+ "privacy.ai.models": "AI-gile és el tauler. La feina la fan models d'IA d'altres empreses, com Claude, Codex i Gemini, amb els teus propis comptes.",
+ "privacy.ai.check": "El que escriuen i fan ve d'ells i pot ser erroni. Comprova-ho abans de fiar-te'n o de publicar-ho.",
+ "privacy.ai.files": "Canvien fitxers i executen ordres a les carpetes que connectes. Fes una còpia de seguretat.",
+ "privacy.ai.send": "El que dones a un model va a l'empresa que el gestiona, segons les seves condicions. S'apliquen les condicions i els costos de cadascuna.",
+ "privacy.ai.asis": "AI-gile és una versió de prova inicial, que es dona tal com és."
 }

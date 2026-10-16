@@ -5652,5 +5652,6 @@
  "night.why.waits0": "executate e ha decidite attender · proxime tentativa {time}",
  "night.why.other": "non comenciate",
  "tb.phone": "In un telephono le barra superior monstra solmente 📥 Cassa de entrata e ☰; le altere buttones es in ☰. Sinistra o dextra e Monstrar in le barra superior es pro le computator.",
- "lkcall.incall": "📞 In le appello"
+ "lkcall.incall": "📞 In le appello",
+ "wz.ask.models": "AI-gile es le tabula. Le travalio es facite per modellos de IA como Claude, Codex e Gemini, sur tu proprie contos, dunque lo que illes scribe e face veni de illes, e a vices illo es errate. Verifica lo que illes ha facite ante de fidar te a illo, e mantene un copia de securitate de omne dossier in le qual tu los lassa entrar."
 }

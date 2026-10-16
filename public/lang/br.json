@@ -5619,5 +5619,6 @@
  "night.why.waits0": "loc'het ha dibabet gortoz · taol-esae war-lerc'h {time}",
  "night.why.other": "n'eo ket loc'het",
  "tb.phone": "War ur pellgomzer ne ziskouez ar varrenn a-us nemet 📥 Boest degemer ha ☰; emañ ar boutonoù all e ☰. « A-gleiz pe a-zehou » ha « Diskouez er varrenn a-us » a zo evit an urzhiataer.",
- "lkcall.incall": "📞 Er galv"
+ "lkcall.incall": "📞 Er galv",
+ "wz.ask.models": "AI-gile eo ar bord. Skouerioù AI evel Claude, Codex ha Gemini a ra al labour war ho kontoù deoc'h-c'hwi, ar pezh a skrivont hag a ront a zeu diwarno ha lod a wech zo fall. Gwiriekait o labour a-raok fiziañs, ha likit un eilad-wareziñ eus kement kavlec'h a lez da vont ennañ."
 }

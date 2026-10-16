@@ -5619,5 +5619,6 @@
  "night.why.waits0": "ren eh roie as reih eh fuirraght · yn chied phrowal elley {time}",
  "night.why.other": "cha ren eh toshiaght",
  "tb.phone": "Er fone, cha nel y barr heose soilshaghey agh 📥 Post-stiagh as ☰; ta ny crammanyn elley ayns ☰. Ta Chiare ny yesh as Soilshee 'sy barr heose son y co-earrooder.",
- "lkcall.incall": "📞 Ayns yn eam"
+ "lkcall.incall": "📞 Ayns yn eam",
+ "wz.ask.models": "Ta AI-gile y bord. Ta ennaghtyn AI goll myr Claude, Codex as Gemini jannoo yn obbyr er dty choontyn hene, ta shen ny t'ad screeu as dy yannoo cheet voue hene, as ta paart dy hraa kyndagh. Jeeagh nyn obbyr roish dy hreishteil, as reih lorg-cooidjagh jeh dy chooilley fillag t'ou lhiggey ad stiagh."
 }

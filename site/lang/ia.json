@@ -175,5 +175,12 @@
  "live.last.day.one": "Ultime carta displaciate {n} die retro",
  "live.last.day.other": "Ultime carta displaciate {n} dies retro",
  "live.offline": "Le tabula in directo prende un pauco de respiro. Retorna tosto.",
- "live.cols": "Backlog|A facer|In curso|Le equipa verifica|Pro que tu lo teste|Pro le equipa|Facite"
+ "live.cols": "Backlog|A facer|In curso|Le equipa verifica|Pro que tu lo teste|Pro le equipa|Facite",
+ "footer.models": "AI-gile executa modellos de IA pro te. Lo que illes dice e face es lor, dunque verifica lo ante de fidar te a illo.",
+ "privacy.ai.h": "Le parte de IA",
+ "privacy.ai.models": "AI-gile es le tabula. Le travalio es facite per modellos de IA de altere companias, como Claude, Codex e Gemini, sur tu proprie contos.",
+ "privacy.ai.check": "Lo que illes scribe e face veni de illes, e pote esser errate. Verifica lo ante de fidar te a illo o de publicar lo.",
+ "privacy.ai.files": "Illes cambia files e executa commandos in le dossiers que tu connecte. Mantene un copia de securitate.",
+ "privacy.ai.send": "Lo que tu da a un modello va al compania que lo executa, sub su terminos. Le proprie terminos e costos de cata un se applica.",
+ "privacy.ai.asis": "AI-gile es un version de test precoce, date como illo es."
 }

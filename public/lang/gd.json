@@ -5619,5 +5619,6 @@
  "night.why.waits0": "ruith e is roghnaich e feitheamh · an ath oidhirp {time}",
  "night.why.other": "cha deach tòiseachadh",
  "tb.phone": "Air fòn, cha seall am bàr àrd ach 📥 Bogsa a-steach agus ☰; tha na putanan eile fo ☰. Tha Clì no deas agus Seall sa bhàr àrd airson a’ choimpiutair.",
- "lkcall.incall": "📞 Sa ghairm"
+ "lkcall.incall": "📞 Sa ghairm",
+ "wz.ask.models": "Is e AI-gile am bòrd. Tha modailean AI mar Claude, Codex agus Gemini a’ dèanamh na h-obrach, air na cunntasan agad fhèin, agus mar sin tha na tha iad a’ sgrìobhadh agus a’ dèanamh a’ tighinn bhuapa fhèin, agus uaireannan tha e ceàrr. Thoir sùil air an obair mus cuir thu earbsa innte, agus dèan lethbhreac-glèidhidh de phasgan sam bith a leigeas tu a-steach iad."
 }

@@ -175,5 +175,12 @@
  "live.last.day.one": "I nekehia te kāri whakamutunga {n} rā kua pahure",
  "live.last.day.other": "I nekehia te kāri whakamutunga {n} rā kua pahure",
  "live.offline": "Kei te okioki paku te papa ora. Hoki mai a muri nei.",
- "live.cols": "Backlog|Hei mahi|E mahi ana|E arotakengia ana e te rōpū|Māu e test|Mā te rōpū|Oti"
+ "live.cols": "Backlog|Hei mahi|E mahi ana|E arotakengia ana e te rōpū|Māu e test|Mā te rōpū|Oti",
+ "footer.models": "Ka whakahaerehia e AI-gile ngā tauira AI mōu. Ko ā rātou kōrero me ā rātou mahi he nā rātou, nō reira arohia i mua i tō whakapono.",
+ "privacy.ai.h": "Te wāhanga AI",
+ "privacy.ai.models": "Ko AI-gile te papa. Mahia ai te mahi e ngā tauira AI nō ngā kamupene ke, pērā i a Claude, Codex me Gemini, ki ō ake pūkete.",
+ "privacy.ai.check": "Ko ā rātou tuhi me ā rātou mahi, nō rātou ake, ā, tērā pea he hē. Arohia i mua i tō whakawhirinaki, i tō tuku rānei.",
+ "privacy.ai.files": "Ka whakarerekē rātou i ngā kōnae, ka whakahaere hoki i ngā whakahau i ngā kōpaki ka hono atu koe. Mahia he kape tautoko.",
+ "privacy.ai.send": "Ko tā koe e hoatu ai ki tētahi tauira ka haere ki te kamupene e whakahaere ana i a ia, i raro i ō rātou here. Ka pā ngā here me ngā utu o ia kamupene.",
+ "privacy.ai.asis": "He putanga whakamātau moata a AI-gile, e hoatu ana pēnei i tōna āhua."
 }

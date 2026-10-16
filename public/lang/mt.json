@@ -5619,5 +5619,6 @@
  "night.why.waits0": "ħadem u għażel li jistenna · il-prova li jmiss {time}",
  "night.why.other": "ma nbediex",
  "tb.phone": "Fuq telefown, il-bar ta' fuq juri biss 📥 Inbox u ☰; il-buttuni l-oħra jinsabu f'☰. Xellug jew lemin u Uri fil-bar ta' fuq huma għall-kompjuter.",
- "lkcall.incall": "📞 Fit-telefonata"
+ "lkcall.incall": "📞 Fit-telefonata",
+ "wz.ask.models": "AI-gile huwa l-bord. Ix-xogħol jagħmluh mudelli tal-IA bħal Claude, Codex u Gemini, fuq il-kontijiet tiegħek stess, allura dak li jiktbu u jagħmlu jiġi minnhom u kultant ikun żbaljat. Iċċekkja x-xogħol tagħhom qabel ma toqgħod fuqu u żomm backup ta' kull folder li tħallihom jidħlu fih."
 }

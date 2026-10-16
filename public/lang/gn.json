@@ -5619,5 +5619,6 @@
  "night.why.waits0": "oñepyrũ ha oiporavo oha'arõ · ñeha'ã upeigua {time}",
  "night.why.other": "noñepyrũi",
  "tb.phone": "Pumbyrýpe yvate ryru ohechauka 📥 Marandu ryru ha ☰ añoite; ambue votõ oĩ ☰-pe. ← térã → ha Techaukapa yvate ryru-pe mba'e'oka ĝuarã.",
- "lkcall.incall": "📞 Ñehenóipe"
+ "lkcall.incall": "📞 Ñehenóipe",
+ "wz.ask.models": "AI-gile ha'e pe tabla. Pe tembiapo ojapo AI modelo Claude, Codex ha Gemini ha'eháicha, nde cuenta ñande rupi, upévare ohai ha ojapóva oúva hendivégui ha ymave ivaíva. Ehechajey hembiapo ejerovia mboyve, ha eguereko backup opa carpeta reheja haguã oike."
 }

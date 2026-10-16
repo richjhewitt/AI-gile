@@ -5619,5 +5619,6 @@
  "night.why.waits0": "spustené, rozhodlo sa počkať · ďalší pokus {time}",
  "night.why.other": "nespustené",
  "tb.phone": "Na telefóne horná lišta ukazuje iba 📥 Doručené a ☰; ostatné tlačidlá sú v ☰. Vľavo alebo vpravo a Zobraziť v hornej lište sú pre počítač.",
- "lkcall.incall": "📞 V hovore"
+ "lkcall.incall": "📞 V hovore",
+ "wz.ask.models": "AI-gile je board. Prácu robia AI modely ako Claude, Codex a Gemini na tvojich vlastných účtoch, takže to, čo píšu a robia, pochádza od nich a niekedy je to nesprávne. Over si ich prácu, skôr než sa na ňu spoľahneš, a rob si zálohu každého priečinka, do ktorého ich pustíš."
 }

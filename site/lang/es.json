@@ -175,5 +175,12 @@
  "live.last.day.one": "Última tarjeta movida hace {n} día",
  "live.last.day.other": "Última tarjeta movida hace {n} días",
  "live.offline": "El tablero en directo está tomando aire. Vuelve pronto.",
- "live.cols": "Backlog|Por hacer|En curso|El equipo revisa|Para que lo pruebes|Para el equipo|Hecho"
+ "live.cols": "Backlog|Por hacer|En curso|El equipo revisa|Para que lo pruebes|Para el equipo|Hecho",
+ "footer.models": "AI-gile pone a trabajar a modelos de IA por ti. Lo que dicen y hacen es cosa suya, así que compruébalo antes de fiarte.",
+ "privacy.ai.h": "La parte de IA",
+ "privacy.ai.models": "AI-gile es el tablero. El trabajo lo hacen modelos de IA de otras empresas, como Claude, Codex y Gemini, con tus propias cuentas.",
+ "privacy.ai.check": "Lo que escriben y hacen viene de ellos y puede estar mal. Compruébalo antes de confiar en ello o publicarlo.",
+ "privacy.ai.files": "Modifican archivos y ejecutan comandos en las carpetas que conectas. Haz una copia de seguridad.",
+ "privacy.ai.send": "Lo que le das a un modelo llega a la empresa que lo gestiona, según sus condiciones. Se aplican las condiciones y los costes de cada una.",
+ "privacy.ai.asis": "AI-gile es una versión de prueba temprana, tal cual."
 }

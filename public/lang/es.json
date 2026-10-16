@@ -5619,5 +5619,6 @@
  "night.why.waits0": "se ejecutó y decidió esperar · próximo intento {time}",
  "night.why.other": "no iniciado",
  "tb.phone": "En el móvil, la barra superior solo muestra 📥 Bandeja y ☰; los demás botones están en ☰. Izquierda o derecha y Mostrar en la barra superior son para el ordenador.",
- "lkcall.incall": "📞 En la llamada"
+ "lkcall.incall": "📞 En la llamada",
+ "wz.ask.models": "AI-gile es el tablero. El trabajo lo hacen modelos de IA como Claude, Codex y Gemini, con tus propias cuentas, así que lo que escriben y hacen viene de ellos y a veces está mal. Revisa su trabajo antes de fiarte y haz una copia de seguridad de cualquier carpeta a la que los dejes entrar."
 }

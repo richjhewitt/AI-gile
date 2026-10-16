@@ -185,5 +185,12 @@
  "count.line.html.few": "{n} karty na tablicy w tej chwili",
  "count.line.html.many": "{n} kart na tablicy w tej chwili",
  "tl.cards.few": "{n} karty",
- "tl.cards.many": "{n} kart"
+ "tl.cards.many": "{n} kart",
+ "footer.models": "AI-gile uruchamia dla ciebie modele AI. To, co mówią i robią, jest ich sprawą, więc sprawdź to, zanim zaufasz.",
+ "privacy.ai.h": "Część z AI",
+ "privacy.ai.models": "AI-gile to tablica. Pracę wykonują modele AI innych firm, takie jak Claude, Codex i Gemini, na twoich własnych kontach.",
+ "privacy.ai.check": "To, co piszą i robią, pochodzi od nich i może być błędne. Sprawdź to, zanim na tym polegniesz albo to opublikujesz.",
+ "privacy.ai.files": "Zmieniają pliki i uruchamiają polecenia w folderach, które podłączysz. Zrób kopię zapasową.",
+ "privacy.ai.send": "To, co dasz modelowi, trafia do firmy, która go prowadzi, na jej warunkach. Obowiązują warunki i koszty każdej z nich.",
+ "privacy.ai.asis": "AI-gile to wczesna wersja testowa, udostępniana w takim stanie, w jakim jest."
 }

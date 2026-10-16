@@ -175,5 +175,12 @@
  "live.last.day.one": "Na sii le kāte mulimuli i le {n} aso ua mavae",
  "live.last.day.other": "Na sii le kāte mulimuli i aso e {n} ua mavae",
  "live.offline": "O lo'o malolo sina le fa'amaumauga ola. Toe afio mai a e le'i umi.",
- "live.cols": "Backlog|E fai|O loʻo faia|O loʻo siaki e le 'au|Mo oe e test|Mo le 'au|Ua uma"
+ "live.cols": "Backlog|E fai|O loʻo faia|O loʻo siaki e le 'au|Mo oe e test|Mo le 'au|Ua uma",
+ "footer.models": "O loo faagaoioia e AI-gile fa'ata'ita'iga AI mo oe. O mea latou te fai ma fai o a latou lava, ia siaki ae e te le'i talitonu.",
+ "privacy.ai.h": "Le vaega AI",
+ "privacy.ai.models": "O AI-gile o le laupapa. O le galuega e faia e fa'ata'ita'iga AI a isi kamupani, e pei o Claude, Codex ma Gemini, i au lava tala.",
+ "privacy.ai.check": "O mea latou te tusia ma faia e sau mai ia i latou, ma e mafai ona sese. Siaki ae e te le'i fa'alagolago atu pe tuuina atu.",
+ "privacy.ai.files": "Latou te suia faila ma faatino poloaiga i faila e te fa'afeso'ota'i. Teuina se kopi lagolago.",
+ "privacy.ai.send": "O mea e te avatu i se fa'ata'ita'iga e alu i le kamupani e faatinoina, i lalo o o latou tulafono. E aoga tulafono ma tau a kamupani ta'itasi.",
+ "privacy.ai.asis": "O AI-gile o se lomiga fa'ata'ita'i muamua, e tuuina atu e pei ona i ai."
 }

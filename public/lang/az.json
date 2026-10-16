@@ -5619,5 +5619,6 @@
  "night.why.waits0": "işə düşdü və gözləməyi seçdi · növbəti cəhd {time}",
  "night.why.other": "başladılmayıb",
  "tb.phone": "Telefonda üst panel yalnız 📥 Gələnlər və ☰ göstərir; digər düymələr ☰ içindədir. «Sol və ya sağ» və «Üst paneldə göstər» kompüter üçündür.",
- "lkcall.incall": "📞 Zəngdə"
+ "lkcall.incall": "📞 Zəngdə",
+ "wz.ask.models": "AI-gile lövhədir. İşi Claude, Codex və Gemini kimi AI modelləri öz hesablarınla görür, ona görə onların yazdığı və etdiyi özlərindən gəlir və bəzən yanlış olur. Güvənməzdən əvvəl işlərini yoxla, icazə verdiyin hər qovluğun ehtiyat nüsxəsini saxla."
 }

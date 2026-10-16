@@ -5619,5 +5619,6 @@
  "night.why.waits0": "körde och valde att vänta · nästa försök {time}",
  "night.why.other": "inte startat",
  "tb.phone": "På en telefon visar översta raden bara 📥 Inkorg och ☰; de andra knapparna finns i ☰. Vänster eller höger och Visa i topplisten gäller datorn.",
- "lkcall.incall": "📞 I samtalet"
+ "lkcall.incall": "📞 I samtalet",
+ "wz.ask.models": "AI-gile är tavlan. Arbetet görs av AI-modeller som Claude, Codex och Gemini på dina egna konton, så det de skriver och gör kommer från dem, och ibland är det fel. Kolla deras arbete innan du förlitar dig på det, och ta en säkerhetskopia av alla mappar du släpper in dem i."
 }

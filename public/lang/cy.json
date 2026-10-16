@@ -5619,5 +5619,6 @@
  "night.why.waits0": "rhedodd a dewis aros · cynnig nesaf {time}",
  "night.why.other": "heb gychwyn",
  "tb.phone": "Ar ffôn, dim ond 📥 Blwch derbyn a ☰ mae'r bar uchaf yn eu dangos; mae'r botymau eraill yn ☰. Mae Chwith neu dde a Dangos yn y bar uchaf ar gyfer y cyfrifiadur.",
- "lkcall.incall": "📞 Yn yr alwad"
+ "lkcall.incall": "📞 Yn yr alwad",
+ "wz.ask.models": "AI-gile yw'r bwrdd. Modelau AI fel Claude, Codex a Gemini sy'n gwneud y gwaith, ar dy gyfrifon dy hun, felly maen nhw'n gyfrifol am yr hyn maen nhw'n ei ysgrifennu a'i wneud, ac weithiau mae'n anghywir. Gwna'n siŵr fod eu gwaith yn gywir cyn dibynnu arno, a chadw copi wrth gefn o unrhyw ffolder rwyt ti'n gadael iddyn nhw fynd iddi."
 }

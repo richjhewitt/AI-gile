@@ -5619,5 +5619,6 @@
  "night.why.waits0": "lefutott, és a várakozást választotta · következő próba {time}",
  "night.why.other": "nem indult el",
  "tb.phone": "Telefonon a felső sáv csak a 📥 Postaládát és a ☰-t mutatja; a többi gomb a ☰ alatt van. A Bal vagy jobb és a Megjelenítés a felső sávban a számítógépre vonatkozik.",
- "lkcall.incall": "📞 Hívásban"
+ "lkcall.incall": "📞 Hívásban",
+ "wz.ask.models": "Az AI-gile a tábla. A munkát olyan MI-modellek végzik, mint a Claude, a Codex és a Gemini, a saját fiókjaiddal, ezért amit írnak és csinálnak, az tőlük jön, és néha hibás. Ellenőrizd a munkájukat, mielőtt ráhagyatkozol, és készíts biztonsági mentést minden mappáról, amelyikbe beengeded őket."
 }

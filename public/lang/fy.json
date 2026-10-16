@@ -5652,5 +5652,6 @@
  "night.why.waits0": "rûn en keas om te wachtsjen · folgjende besykjen {time}",
  "night.why.other": "net begûn",
  "tb.phone": "Op in telefoan lit de boppebalke allinnich 📥 Ynboks en ☰ sjen; de oare knoppen sitte yn ☰. Links of rjochts en Toane yn de boppebalke binne foar de kompjûter.",
- "lkcall.incall": "📞 Yn de call"
+ "lkcall.incall": "📞 Yn de call",
+  "wz.ask.models": "AI-gile is it boerd. It wurk wurdt dien troch AI-modellen lykas Claude, Codex en Gemini, op dyn eigen accounts, dus wat se skriuwe en dogge komt fan harren, en soms is it ferkeard. Kontrolearje harren wurk foardat do derop fertroust, en meitsje in reservekopy fan elke map dêr't do se yn litst."
 }

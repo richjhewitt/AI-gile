@@ -5652,5 +5652,6 @@
  "night.why.waits0": "a virat e a causit d'esperar · ensag seguent {time}",
  "night.why.other": "pas aviat",
  "tb.phone": "Sus un telefòn, la barra del naut mòstra sonque 📥 Recepcion e ☰ ; los autres botons son dins ☰. Esquèrra o drecha e Mostrar dins la barra de naut son per l'ordenador.",
- "lkcall.incall": "📞 Dins la sonada"
+ "lkcall.incall": "📞 Dins la sonada",
+  "wz.ask.models": "AI-gile es lo tablèu. Lo trabalh es fach per de modèls IA coma Claude, Codex e Gemini, sus tos pròpris comptes, doncas çò que escrivon e fan ven d'eles e càmbia que càmbia es fals. Verifica lor trabalh abans de t'i fisar, e fai una còpia de salvament de cada dossièr ont los daissas intrar."
 }

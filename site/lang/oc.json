@@ -175,5 +175,12 @@
  "live.last.day.one": "Darrièra carta desplaçada fa {n} jorn",
  "live.last.day.other": "Darrièra carta desplaçada fa {n} jorns",
  "live.offline": "Lo tablèu en dirècte pren un pauc d'alen. Torna d'aquí un moment.",
- "live.cols": "Backlog|A far|En cors|Verificacion de l'equipa|Per tu de testar|Per l'equipa|Fach"
+ "live.cols": "Backlog|A far|En cors|Verificacion de l'equipa|Per tu de testar|Per l'equipa|Fach",
+ "footer.models": "AI-gile fa foncionar de modèls IA per tu. Çò que dison e fan es lor, doncas verifica abans de lor far fisança.",
+ "privacy.ai.h": "La part IA",
+ "privacy.ai.models": "AI-gile es lo tablèu. Lo trabalh es fach per de modèls IA d'autras entrepresas, coma Claude, Codex e Gemini, sus tos pròpris comptes.",
+ "privacy.ai.check": "Çò que escrivon e fan ven d'eles e pòt èsser fals. Verifica abans de t'i fisar o de o publicar.",
+ "privacy.ai.files": "Càmbian de fichièrs e executan de comandas dins los dossièrs que connectas. Fai una còpia de salvament.",
+ "privacy.ai.send": "Çò que balhas a un modèl vai a l'entrepresa que lo fa foncionar, jos sas condicions. Las condicions e los còstes de cada entrepresa s'aplican.",
+ "privacy.ai.asis": "AI-gile es una version d'assag precòça, balhada coma es."
 }

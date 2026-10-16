@@ -5619,5 +5619,6 @@
  "night.why.waits0": "kjørte og valgte å vente · neste forsøk {time}",
  "night.why.other": "ikke startet",
  "tb.phone": "På telefon viser toppfeltet bare 📥 Innboks og ☰; de andre knappene ligger i ☰. Venstre eller høyre og Vis i toppfeltet gjelder for datamaskinen.",
- "lkcall.incall": "📞 I samtalen"
+ "lkcall.incall": "📞 I samtalen",
+ "wz.ask.models": "AI-gile er boardet. Arbeidet gjøres av AI-modeller som Claude, Codex og Gemini, på dine egne kontoer, så det de skriver og gjør kommer fra dem, og noen ganger er det feil. Sjekk arbeidet deres før du stoler på det, og ta sikkerhetskopi av alle mapper du slipper dem inn i."
 }

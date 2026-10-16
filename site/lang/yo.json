@@ -175,5 +175,12 @@
  "live.last.day.one": "A gbé káàdì ìkẹyìn ní ọjọ́ {n} sẹ́yìn",
  "live.last.day.other": "A gbé káàdì ìkẹyìn ní ọjọ́ {n} sẹ́yìn",
  "live.offline": "Pátákó láàyè ń sinmi díẹ̀. Padà wá láìpẹ́.",
- "live.cols": "Backlog|Láti ṣe|Ń lọ lọ́wọ́|Ẹgbẹ́ ń ṣàyẹ̀wò|Fún ọ láti dánwò|Fún ẹgbẹ́|Ti parí"
+ "live.cols": "Backlog|Láti ṣe|Ń lọ lọ́wọ́|Ẹgbẹ́ ń ṣàyẹ̀wò|Fún ọ láti dánwò|Fún ẹgbẹ́|Ti parí",
+ "footer.models": "AI-gile ń ṣiṣẹ́ àwọn àwòṣe AI fún ọ. Ohun tí wọ́n sọ àti ohun tí wọ́n ṣe jẹ́ tiwọn, nítorí náà yẹ̀ ẹ́ wò kí o tó gbẹ́kẹ̀lé e.",
+ "privacy.ai.h": "Apá AI",
+ "privacy.ai.models": "AI-gile ni pátákó náà. Àwọn àwòṣe AI láti ilé-iṣẹ́ mìíràn, bíi Claude, Codex àti Gemini, ni ń ṣe iṣẹ́ náà lórí àwọn àkọọ́lẹ̀ tìrẹ.",
+ "privacy.ai.check": "Ohun tí wọ́n kọ àti ohun tí wọ́n ṣe wá láti ọ̀dọ̀ wọn, ó sì lè jẹ́ àṣìṣe. Yẹ̀ ẹ́ wò kí o tó gbẹ́kẹ̀lé e tàbí kí o tó tú u jáde.",
+ "privacy.ai.files": "Wọ́n ń yí fáìlì padà, wọ́n sì ń ṣiṣẹ́ àwọn àṣẹ nínú àwọn fóldà tí o so pọ̀. Ṣe ẹ̀dà ìpamọ́.",
+ "privacy.ai.send": "Ohun tí o fún àwòṣe máa lọ sí ilé-iṣẹ́ tó ń ṣiṣẹ́ rẹ̀, lábẹ́ òfin wọn. Òfin àti owó ilé-iṣẹ́ kọ̀ọ̀kan ni ó wúlò.",
+ "privacy.ai.asis": "AI-gile jẹ́ ẹ̀dà àyẹ̀wò àkọ́kọ́, a sì fún ọ bó ṣe wà."
 }

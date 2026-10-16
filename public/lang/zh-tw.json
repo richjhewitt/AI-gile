@@ -5619,5 +5619,6 @@
  "night.why.waits0": "執行後選擇等待 · 下次嘗試 {time}",
  "night.why.other": "未啟動",
  "tb.phone": "在手機上，頂端列只顯示 📥 收件匣和 ☰；其他按鈕都在 ☰ 裡。「左側或右側」和「顯示在頂端列」只對電腦有效。",
- "lkcall.incall": "📞 通話中"
+ "lkcall.incall": "📞 通話中",
+ "wz.ask.models": "AI-gile 是看板。做事的是 Claude、Codex 和 Gemini 這類 AI 模型，用的是你自己的帳號，所以它們寫的內容和做的事都出自它們，有時會出錯。依賴之前請先檢查它們的成果，並為你讓它們進入的任何資料夾做好備份。"
 }

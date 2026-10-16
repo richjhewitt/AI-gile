@@ -190,5 +190,12 @@
  "count.line.html.many": "{n} gcárta ar an mbord faoi láthair",
  "tl.cards.two": "{n} chárta",
  "tl.cards.few": "{n} chárta",
- "tl.cards.many": "{n} gcárta"
+ "tl.cards.many": "{n} gcárta",
+ "footer.models": "Cuireann AI-gile samhlacha AI ag obair duit. Is leo féin na rudaí a deir agus a dhéanann siad, mar sin seiceáil iad sula gcuireann tú muinín iontu.",
+ "privacy.ai.h": "An chuid AI",
+ "privacy.ai.models": "Is é AI-gile an bord. Is samhlacha AI ó chuideachtaí eile, ar nós Claude, Codex agus Gemini, a dhéanann an obair, ar do chuntais féin.",
+ "privacy.ai.check": "Is uathu féin a thagann an méid a scríobhann agus a dhéanann siad, agus d'fhéadfadh sé a bheith mícheart. Seiceáil é sula mbraitheann tú air nó sula gcuireann tú amach é.",
+ "privacy.ai.files": "Athraíonn siad comhaid agus rithfidh siad orduithe sna fillteáin a nascann tú leo. Déan cúltaca.",
+ "privacy.ai.send": "Téann an méid a thugann tú do shamhail chuig an gcuideachta a ritheann é, faoina dtéarmaí siúd. Baineann téarmaí agus costais gach ceann acu leis.",
+ "privacy.ai.asis": "Is leagan tástála luath é AI-gile, mar atá."
 }

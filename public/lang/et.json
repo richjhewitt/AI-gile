@@ -5643,5 +5643,6 @@
  "night.why.waits0": "käis ja otsustas oodata · järgmine katse {time}",
  "night.why.other": "ei alustatud",
  "tb.phone": "Telefonis näitab ülariba ainult 📥 Postkasti ja ☰; teised nupud on ☰ all. Vasak või parem ja Näita ülariba on arvuti jaoks.",
- "lkcall.incall": "📞 Kõnes"
+ "lkcall.incall": "📞 Kõnes",
+ "wz.ask.models": "AI-gile on tahvel. Tööd teevad tehisintellekti mudelid, nagu Claude, Codex ja Gemini, sinu enda kontodel, seega see, mida nad kirjutavad ja teevad, tuleb neilt ja on vahel vale. Kontrolli nende tööd enne, kui sellele loodad, ja tee varukoopia igast kaustast, kuhu nad lased."
 }

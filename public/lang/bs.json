@@ -5619,5 +5619,6 @@
  "night.why.waits0": "pokrenuto, odlučeno da se čeka · sljedeći pokušaj {time}",
  "night.why.other": "nije pokrenuto",
  "tb.phone": "Na telefonu gornja traka prikazuje samo 📥 Sanduče i ☰; ostala dugmad su u ☰. Lijevo ili desno i Prikaži u gornjoj traci su za računar.",
- "lkcall.incall": "📞 U pozivu"
+ "lkcall.incall": "📞 U pozivu",
+ "wz.ask.models": "AI-gile je ploča. Posao rade AI modeli kao što su Claude, Codex i Gemini, na tvojim vlastitim računima, pa ono što pišu i rade potiče od njih i ponekad je pogrešno. Provjeri njihov rad prije nego što se osloniš na njega i napravi sigurnosnu kopiju svakog foldera u koji ih pustiš."
 }

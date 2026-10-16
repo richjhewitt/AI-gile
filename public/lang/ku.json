@@ -5619,5 +5619,6 @@
  "night.why.waits0": "xebitî û biryar da ku li bendê bimîne · hewla din {time}",
  "night.why.other": "dest pê nekir",
  "tb.phone": "Li ser telefonê darika jor tenê 📥 Qutiya hatî û ☰ nîşan dide; bişkojkên din di ☰ de ne. Çep an rast û Di darika jorîn de nîşan bide ji bo kompîturê ne.",
- "lkcall.incall": "📞 Di bangê de"
+ "lkcall.incall": "📞 Di bangê de",
+ "wz.ask.models": "AI-gile tablo ye. Kar ji aliyê modelên AI ve wek Claude, Codex û Gemini, bi hesabên te yên xwe tê kirin, ji ber vê ya ku ew dinivîsin û dikin ji wan tê, û carna şaş e. Berî ku tu pişta xwe bidî karê wan kontrol bike, û ji her peldankê ku tu dihêlî ew têkevin yedek bigire."
 }

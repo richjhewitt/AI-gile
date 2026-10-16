@@ -5619,5 +5619,6 @@
  "night.why.waits0": "ponyes ha dewisys gortos · assay nessa {time}",
  "night.why.other": "nyns yw dallethys",
  "tb.phone": "War bellgowser an varr a-wartha a dhiskwedh 📥 Kyst a-ji ha ☰ hepken; an botonow erell yw yn ☰. A-gledh po a-dhyhow ha Diskwedhes y'n varr a-wartha yw rag an kombyuter.",
- "lkcall.incall": "📞 Y'n galow"
+ "lkcall.incall": "📞 Y'n galow",
+ "wz.ask.models": "AI-gile yw an bord. An whel a veu gwrys gans modellow AI kepar ha Claude, Codex ha Gemini, war dha gonti dha honan, rak hedna an pyth a skrifons hag a wrons a dhe dhiworth dhedhans ha neb prys yw kamm. Hwithra aga whel kens ès trestya, ha gwra kopi kuvva a bub plegell a asslywydh dhedhans entra."
 }

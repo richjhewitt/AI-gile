@@ -175,5 +175,12 @@
  "live.last.day.one": "Oxirgi karta {n} kun oldin koʻchirildi",
  "live.last.day.other": "Oxirgi karta {n} kun oldin koʻchirildi",
  "live.offline": "Jonli taxta biroz dam olyapti. Tez orada yana kiring.",
- "live.cols": "Backlog|Bajarilishi kerak|Jarayonda|Jamoa tekshirmoqda|Siz test qilishingiz kerak|Jamoa uchun|Bajarildi"
+ "live.cols": "Backlog|Bajarilishi kerak|Jarayonda|Jamoa tekshirmoqda|Siz test qilishingiz kerak|Jamoa uchun|Bajarildi",
+ "footer.models": "AI-gile siz uchun AI modellarini ishga tushiradi. Ularning aytgani va qilgani o'zlariga tegishli, shuning uchun ishonishdan oldin tekshiring.",
+ "privacy.ai.h": "AI qismi",
+ "privacy.ai.models": "AI-gile - doska. Ishni boshqa kompaniyalarning AI modellari, masalan Claude, Codex va Gemini, o'zingizning akkauntlaringizda bajaradi.",
+ "privacy.ai.check": "Ular yozgan va qilgan narsa o'zlaridan chiqadi va xato bo'lishi mumkin. Suyanishdan yoki chiqarishdan oldin tekshiring.",
+ "privacy.ai.files": "Ular ulagan papkalaringizdagi fayllarni o'zgartiradi va buyruqlarni ishga tushiradi. Zaxira nusxa saqlang.",
+ "privacy.ai.send": "Modelga bergan narsangiz uni ishga tushirayotgan kompaniyaga, ularning shartlari bilan boradi. Har bir kompaniyaning o'z shartlari va narxlari amal qiladi.",
+ "privacy.ai.asis": "AI-gile - dastlabki sinov versiyasi, borligicha beriladi."
 }

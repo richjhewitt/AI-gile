@@ -5619,5 +5619,6 @@
  "night.why.waits0": "ran an' chose to wait · next try {time}",
  "night.why.other": "not started",
  "tb.phone": "On a phone the top bar shows only 📥 Inbox an' ☰; the other buttons be in ☰. Left or right an' Show in top bar be fer the computer.",
- "lkcall.incall": "📞 In the call"
+ "lkcall.incall": "📞 In the call",
+ "wz.ask.models": "AI-gile be the board. The work be done by AI models like Claude, Codex an' Gemini, on yer own accounts, so what they write an' do comes from them, an' sometimes it be wrong. Check their work afore ye rely on it, an' keep a backup o' any folder ye let them into."
 }

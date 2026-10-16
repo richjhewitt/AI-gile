@@ -185,5 +185,12 @@
  "count.line.html.few": "{n} karti fuq il-bord bħalissa",
  "count.line.html.many": "{n} karta fuq il-bord bħalissa",
  "tl.cards.few": "{n} karti",
- "tl.cards.many": "{n} karta"
+ "tl.cards.many": "{n} karta",
+ "footer.models": "AI-gile iħaddem mudelli tal-IA għalik. Dak li jgħidu u jagħmlu huwa tagħhom, allura iċċekkjah qabel ma toqgħod fuqu.",
+ "privacy.ai.h": "Il-parti tal-IA",
+ "privacy.ai.models": "AI-gile huwa l-bord. Ix-xogħol jagħmluh mudelli tal-IA minn kumpaniji oħra, bħal Claude, Codex u Gemini, fuq il-kontijiet tiegħek stess.",
+ "privacy.ai.check": "Dak li jiktbu u jagħmlu jiġi minnhom u jista' jkun żbaljat. Iċċekkjah qabel ma toqgħod fuqu jew tippubblikah.",
+ "privacy.ai.files": "Jibdlu fajls u jmexxu kmandi fil-folders li tgħaqqad. Żomm backup.",
+ "privacy.ai.send": "Dak li tagħti lil mudell imur għand il-kumpanija li tmexxih, bil-kundizzjonijiet tagħha. Japplikaw il-kundizzjonijiet u l-ispejjeż ta' kull waħda.",
+ "privacy.ai.asis": "AI-gile hija verżjoni tat-test bikrija, mogħtija kif inhi."
 }

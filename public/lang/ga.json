@@ -5619,5 +5619,6 @@
  "night.why.waits0": "rith sé agus roghnaigh sé fanacht · an chéad iarracht eile {time}",
  "night.why.other": "níor tosaíodh",
  "tb.phone": "Ar ghuthán ní thaispeánann an barra uachtair ach 📥 Bosca isteach agus ☰; tá na cnaipí eile faoi ☰. Is don ríomhaire Clé nó deas agus Taispeáin sa bharra uachtair.",
- "lkcall.incall": "📞 Sa ghlao"
+ "lkcall.incall": "📞 Sa ghlao",
+ "wz.ask.models": "Is é AI-gile an bord. Is samhlacha AI ar nós Claude, Codex agus Gemini a dhéanann an obair, ar do chuntais féin, agus mar sin is uathu féin a thagann an méid a scríobhann agus a dhéanann siad, agus uaireanta bíonn sé mícheart. Seiceáil a gcuid oibre sula mbraitheann tú uirthi, agus déan cúltaca d'aon fhillteán a ligeann tú isteach iad."
 }

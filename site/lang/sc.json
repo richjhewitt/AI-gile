@@ -175,5 +175,12 @@
  "live.last.day.one": "Ùrtima carta mòvida {n} die ha",
  "live.last.day.other": "Ùrtima carta mòvida {n} dies ha",
  "live.offline": "Sa tabella in direta si leat un'alenu. Torra a nde bìere in curtzu.",
- "live.cols": "Backlog|De fàghere|In cursu|Controllu de s'iscuadra|Pro tie de testare|Pro s'iscuadra|Fatu"
+ "live.cols": "Backlog|De fàghere|In cursu|Controllu de s'iscuadra|Pro tie de testare|Pro s'iscuadra|Fatu",
+ "footer.models": "AI-gile faghet traballare modellos IA pro tie. Su chi narant e faghent est issoro, duncas controlla in antis de ti fidare.",
+ "privacy.ai.h": "Sa parte IA",
+ "privacy.ai.models": "AI-gile est sa tàula. Su traballu lu faghent modellos IA de àteras sotziedades, che Claude, Codex e Gemini, in sos contos tuos.",
+ "privacy.ai.check": "Su chi iscrient e faghent benit dae issos e podet èssere isballiadu. Controlla in antis de ti fidare o de lu pùblicare.",
+ "privacy.ai.files": "Mudant sos archìvios e esecutant cumandos in sas cartellas chi collegas. Faghe una còpia de seguresa.",
+ "privacy.ai.send": "Su chi das a unu modellu andat a sa sotziedade chi lu faghet traballare, cun sas cunditziones suas. Sas cunditziones e sos costos de ogni sotziedade s'aplicant.",
+ "privacy.ai.asis": "AI-gile est una versione de proa pretzoche, dada comente est."
 }

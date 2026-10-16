@@ -175,5 +175,12 @@
  "live.last.day.one": "Siste kort ble flyttet for {n} dag siden",
  "live.last.day.other": "Siste kort ble flyttet for {n} dager siden",
  "live.offline": "Direktetavlen tar en liten pause. Kom innom igjen snart.",
- "live.cols": "Backlog|Å gjøre|Pågår|Teamet sjekker|Du skal teste|Til teamet|Ferdig"
+ "live.cols": "Backlog|Å gjøre|Pågår|Teamet sjekker|Du skal teste|Til teamet|Ferdig",
+ "footer.models": "AI-gile kjører AI-modeller for deg. Det de sier og gjør, er deres eget, så sjekk det før du stoler på det.",
+ "privacy.ai.h": "AI-delen",
+ "privacy.ai.models": "AI-gile er boardet. Arbeidet gjøres av AI-modeller fra andre selskaper, som Claude, Codex og Gemini, på dine egne kontoer.",
+ "privacy.ai.check": "Det de skriver og gjør kommer fra dem, og det kan være feil. Sjekk det før du stoler på det eller sender det ut.",
+ "privacy.ai.files": "De endrer filer og kjører kommandoer i mappene du kobler til. Ta en sikkerhetskopi.",
+ "privacy.ai.send": "Det du gir en modell, går til selskapet som driver den, på deres vilkår. Hver enkelts vilkår og kostnader gjelder.",
+ "privacy.ai.asis": "AI-gile er en tidlig testversjon, gitt som den er."
 }

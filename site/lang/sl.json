@@ -191,5 +191,12 @@
  "live.last.hour.two": "Zadnja kartica premaknjena pred {n} urama",
  "live.last.hour.few": "Zadnja kartica premaknjena pred {n} urami",
  "live.last.day.two": "Zadnja kartica premaknjena pred {n} dnevoma",
- "live.last.day.few": "Zadnja kartica premaknjena pred {n} dnevi"
+ "live.last.day.few": "Zadnja kartica premaknjena pred {n} dnevi",
+ "footer.models": "AI-gile zaganja AI modele namesto tebe. Kar rečejo in naredijo, je njihovo, zato preveri, preden jim zaupaš.",
+ "privacy.ai.h": "Del z umetno inteligenco",
+ "privacy.ai.models": "AI-gile je tabla. Delo opravljajo AI modeli drugih podjetij, kot so Claude, Codex in Gemini, na tvojih lastnih računih.",
+ "privacy.ai.check": "Kar napišejo in naredijo, izvira od njih in je lahko napačno. Preveri, preden se zaneseš na to ali objaviš.",
+ "privacy.ai.files": "Spreminjajo datoteke in izvajajo ukaze v mapah, ki jih povežeš. Naredi varnostno kopijo.",
+ "privacy.ai.send": "Kar daš modelu, gre podjetju, ki ga upravlja, po njegovih pogojih. Veljajo pogoji in stroški vsakega posebej.",
+ "privacy.ai.asis": "AI-gile je zgodnja preizkusna različica, ponujena takšna, kot je."
 }

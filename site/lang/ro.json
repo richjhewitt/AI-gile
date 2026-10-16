@@ -180,5 +180,12 @@
  "pitch.letters.few": "{n} litere",
  "pitch.chars.few": "{n} caractere",
  "count.line.html.few": "{n} carduri pe tablă chiar acum",
- "tl.cards.few": "{n} carduri"
+ "tl.cards.few": "{n} carduri",
+ "footer.models": "AI-gile rulează modele AI pentru tine. Ce spun și ce fac ele țin de ele, așa că verifică înainte să te bazezi pe ele.",
+ "privacy.ai.h": "Partea cu AI",
+ "privacy.ai.models": "AI-gile este board-ul. Munca o fac modele AI de la alte companii, precum Claude, Codex și Gemini, pe conturile tale.",
+ "privacy.ai.check": "Ce scriu și ce fac vine de la ele și poate fi greșit. Verifică înainte să te bazezi pe asta sau să publici.",
+ "privacy.ai.files": "Ele modifică fișiere și rulează comenzi în folderele pe care le conectezi. Fă o copie de rezervă.",
+ "privacy.ai.send": "Ce dai unui model ajunge la compania care îl rulează, conform termenilor ei. Se aplică termenii și costurile fiecăruia.",
+ "privacy.ai.asis": "AI-gile este o versiune de test timpurie, oferită așa cum este."
 }
