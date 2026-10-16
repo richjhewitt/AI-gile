@@ -105,7 +105,8 @@ def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> pa
     // The board: Copy public link and viewers
     const page = await openPage(ctx, '#/p/pub-board');
     await page.evaluate(() => { window.__copied = []; navigator.clipboard.writeText = async t => { window.__copied.push(t); }; });
-    await page.waitForSelector('#pubBtn');
+    await page.waitForSelector('#pubBtn', { state: 'attached' });
+    if (!(await page.isVisible('#pubBtn'))) await page.click('#tbDots');   // on a board with cards it is in ⋯ More (AIG-1359)
     await page.click('#pubBtn');
     await until(async () => (await page.evaluate(() => window.__copied.length)) > 0);
     check('Copy public link copies the relay link', (await page.evaluate(() => window.__copied[0])) === relay.base + '/b/qa-board', await page.evaluate(() => window.__copied));
