@@ -92,7 +92,8 @@ async function infoReply() {
 async function verdict(accept, btn) {
   if (accept && !acceptSure(btn, curCard())) return;   // unfinished checklist: "2 of 3 left: accept anyway?" (AIG-406)
   const next = nextForYou(), txt = $('v-text').value.trim(), key = slug() + '/' + cardId() + '#verdict';
-  if (!accept && !txt && !Attach.has(key)) { setErr('v-err', t('verdict.err')); $('v-text').focus(); return; }
+  // AIG-1432: the box is marked wrong and tied to the reason, which is also read out (v-err is a polite live region).
+  if (!accept && !txt && !Attach.has(key)) { setErr('v-err', t('verdict.err')); $('v-text').setAttribute('aria-invalid', 'true'); $('v-text').focus(); return; }
   try {
     const attachments = await Attach.upload(key, slug());
     await api('POST', `/api/projects/${slug()}/cards/${cardId()}/verdict`, { accept, text: txt, attachments });

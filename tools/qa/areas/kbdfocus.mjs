@@ -186,7 +186,16 @@ def('kbdfocus', 'keyboard focus: card dialog, Home redraws, card fits, Help/Stat
   check('Home opens Reply (AIG-1431)', (await act()).id === 'ctab-reply' && (await page.getByRole('tab', { name: /Reply/, selected: true }).count()) === 1);
   await page.keyboard.press('ArrowLeft'); await sleep(100);
   check('ArrowLeft from the first goes round to Test (AIG-1431)', (await act()).id === 'ctab-test');
-  await page.keyboard.press('Tab');
+  // AIG-1432: Send back with no comment, by keyboard: the box is marked wrong, tied to the reason, and the reason is in a live region.
+  await page.focus('#modal button.warn'); await page.keyboard.press('Enter'); await sleep(200);
+  const sbErr = await page.evaluate(() => { const b = document.getElementById('v-text'), d = b.getAttribute('aria-describedby'), e = d && document.getElementById(d); return { focus: document.activeElement === b, invalid: b.getAttribute('aria-invalid'), said: e ? e.textContent : '', live: e && (e.getAttribute('aria-live') || e.getAttribute('role')), seen: !!e && e.getClientRects().length > 0 }; });
+  check('Send back with no comment: focus on the box, aria-invalid, the reason tied to it (AIG-1432)', sbErr.focus && sbErr.invalid === 'true' && /Say what is wrong/.test(sbErr.said) && sbErr.seen, sbErr);
+  check('...and the reason is read out (polite live region) (AIG-1432)', sbErr.live === 'polite', sbErr);
+  check('the comment box\'s accessible description is the reason (AIG-1432)', /Say what is wrong/.test(await page.locator('#v-text').evaluate(b => document.getElementById(b.getAttribute('aria-describedby')).textContent)));
+  await page.keyboard.type('Broken');
+  check('typing a comment clears the error (AIG-1432)', (await page.getAttribute('#v-text', 'aria-invalid')) === null && (await page.textContent('#v-err')) === '');
+  await page.fill('#v-text', '');
+  await page.focus('#ctab-test'); await page.keyboard.press('Tab');
   check('Tab from the open tab skips the other tabs and stays in the card (AIG-1431)', await page.evaluate(() => document.activeElement.getAttribute('role') !== 'tab' && !!document.activeElement.closest('#modal .panel')), await act());
 
   await noErrors(page);
