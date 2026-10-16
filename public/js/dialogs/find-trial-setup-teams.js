@@ -85,7 +85,7 @@ function renderSetup() {
   const s = state.setup;
   const secs = ["lang","look","plan","teams","discord","mail","servers","phone","calls","storage","you","more"];
   return `<div class="setup">${state.route && state.route.pop ? '' : popBtn('popOutSetup()', 'id="setupPop"')}<h2>${esc(t('setup.h'))}</h2>
-    <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>${Backups.homeHtml(state.damaged)}
+    <p class="muted">${s.needed ? esc(t('setup.welcome')) : `<span class="off-phone">${esc(t('setup.intro'))}</span><span class="on-phone">${esc(t('setup.intro.phone'))}</span>`}</p>${Backups.homeHtml(state.damaged)}
     <div class="set-sec set-wiz" id="wizBox"><button type="button" id="wzRun" onclick="wizardStart()">${esc(t('wz.btn'))}</button><small class="muted">${esc(t('wz.btn.help'))}</small></div>
     <nav class="set-index" id="setIndex" aria-label="${esc(t('setup.index'))}">${secs.map(k => `<a href="#/setup/${k}" data-sec="${k}" onclick="return setupJump('${k}')">${esc(t('setup.sec.' + k))}</a>`).join('')}</nav>
     <section class="set-sec" id="sec-lang"><h3 class="set-h">${esc(t('setup.sec.lang'))}</h3>
@@ -95,7 +95,7 @@ function renderSetup() {
     <label class="f chk"><span><input type="checkbox" id="explainWords" ${glossOn() ? 'checked' : ''} onchange="setExplain(this.checked)"> ${esc(t('gloss.switch'))}</span><small class="muted">${esc(t('gloss.switch.help'))} <a href="#/glossary">${esc(t('gloss.open'))}</a></small></label>
     </section>
     <section class="set-sec" id="sec-look"><h3 class="set-h">${esc(t('setup.sec.look'))}</h3>
-    <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted">${esc(t('setup.theme.help'))}</small></label>
+    <label class="f"><span>${esc(t('setup.theme'))}</span>${themePickHtml()}<small class="muted"><span class="off-phone">${esc(t('setup.theme.help'))}</span><span class="on-phone">${esc(t('setup.theme.help.phone'))}</span></small></label>
     <div class="f" id="topbarBox">${Topbar.html()}</div>
     <div class="f" id="iconBox">${iconHtml()}</div>
     <div class="f"><span>${esc(t('logo.app'))}</span>${logoEditor('app-logo', s.logo)}</div>

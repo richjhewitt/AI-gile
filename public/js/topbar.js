@@ -120,7 +120,7 @@ const Topbar = (() => {
         <span class="tb-sws" role="group" aria-label="${esc(t('tb.colour'))}">${sw}</span>
         <span class="tb-mv"><button type="button" class="tb-up" aria-label="${esc(t('tb.up', { name: nm }))}" title="${esc(t('tb.up', { name: nm }))}" ${i === 0 ? 'disabled' : ''} onclick="Topbar.step('${id}',-1)">↑</button><button type="button" class="tb-down" aria-label="${esc(t('tb.down', { name: nm }))}" title="${esc(t('tb.down', { name: nm }))}" ${i === cur.order.length - 1 ? 'disabled' : ''} onclick="Topbar.step('${id}',1)">↓</button></span></li>`;
     }).join('');
-    return `<span>${esc(t('tb.h'))}</span><div><ul class="tb-list" id="tbList">${rows}</ul>
+    return `<span>${esc(t('tb.h'))}</span><small class="muted on-phone" id="tbPhoneNote">${esc(t('tb.phone'))}</small><div><ul class="tb-list" id="tbList">${rows}</ul>
       <div class="actions"><button type="button" id="tbReset" onclick="Topbar.reset()" ${isDefault(cur) ? 'disabled' : ''}>${esc(t('tb.reset'))}</button></div></div><small class="muted">${esc(t('tb.help'))}</small>
       <div class="tb-pins" id="tbPins"><b>${esc(t('tb.pin.h'))}</b> <small class="muted">${esc(t('tb.pin.help'))}</small><div class="tb-pinlist">${PINNABLE.filter(id => !(NoAi.on && AI_BTNS.includes(id))).map(id => `<label class="tb-pin"><input type="checkbox" data-pin="${id}" ${pins.includes(id) ? 'checked' : ''} ${id === KEEP ? 'disabled' : ''} onchange="Topbar.pin('${id}')"> ${ico(id)}${esc(plain(t('tb.b.' + (BTNS.find(b => b[0] === id) || [0, id.replace(/Btn|Nav|Wrap/, '')])[1])))}</label>`).join('')}</div></div>`;
   }

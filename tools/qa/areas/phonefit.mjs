@@ -23,6 +23,24 @@ def('phonefit', '📱 phone fixes upright and on its side (390x844, 844x390): la
       check(D + ': Setup top bar tick boxes read "Show Help", no {brackets} (AIG-1396)', al.length > 30 && al.includes('Show Help') && al.every(a => a && !/[{}]/.test(a)), al.filter(a => !a || /[{}]/.test(a)).slice(0, 3));
       await page.evaluate(() => document.getElementById('tbList').scrollIntoView({ block: 'start' }));
       await sleep(200); await shot(page, 'AIG-1396', size);
+
+      /* ---------- AIG-1395: Setup's top bar box on a phone ---------- */
+      const su = await page.evaluate(() => {
+        const r = e => e.getBoundingClientRect(), shown = e => !!e && r(e).width > 0 && r(e).height > 0;
+        const ticks = [...document.querySelectorAll('#tbList .tb-on')].map(e => ({ w: r(e).width, lab: r(e.closest('label')).height }));
+        const dots = [...document.querySelectorAll('#tbList .tb-sw')].map(e => ({ w: r(e).width, h: r(e).height, br: getComputedStyle(e).borderRadius }));
+        const arrows = [...document.querySelectorAll('#tbList .tb-up, #tbList .tb-down')].map(e => ({ w: r(e).width, h: r(e).height }));
+        const vis = q => [...document.querySelectorAll(q)].some(shown);
+        return { tick: ticks.every(x => x.w >= 22 && x.lab >= 43.5), dot: dots.every(x => x.w >= 43.5 && Math.abs(x.w - x.h) < 1 && x.br === '50%'), arrow: arrows.every(x => x.w >= 43.5 && x.h >= 43.5),
+          side: vis('#topbarBox .tb-side'), pins: vis('#tbPins'), note: shown(document.getElementById('tbPhoneNote')),
+          intro: [...document.querySelectorAll('.setup > p.muted span')].filter(shown).map(e => e.textContent).join('|'), theme: [...document.querySelectorAll('#sec-look .on-phone, #sec-look .off-phone')].filter(shown).map(e => e.textContent).join('|'),
+          d0: dots[0], t0: ticks[0], a0: arrows[0] };
+      });
+      check(D + ': Setup top bar: tick boxes 22px+ in a 44px row, round 44px colour dots, 44px arrows (AIG-1395)', su.tick && su.dot && su.arrow, su);
+      check(D + ': Left/Right and Show in top bar are hidden, a note says the bar is Inbox and ☰ on a phone', !su.side && !su.pins && su.note, su);
+      check(D + ': the Setup intro and theme help talk about the phone, not "this computer"', /computer it runs on/.test(su.intro) && !/settings on this computer/.test(su.intro) && /☰ menu/.test(su.theme) && !/🖥️ button/.test(su.theme), su);
+      await page.evaluate(() => { document.getElementById('topbarBox').scrollIntoView({ block: 'start' }); scrollBy(0, -70); }); await sleep(200);
+      await shot(page, 'AIG-1395', size);
       await page.close();
 
       /* ---------- AIG-1391: a phone on its side keeps the phone layout ---------- */

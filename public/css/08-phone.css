@@ -78,6 +78,11 @@
 }
 @media (hover: none) { .dm-rowx { opacity: .7; } }
 
+/* AIG-1395: a text for the phone (on-phone) or for the computer (off-phone) */
+.on-phone { display: none; }
+@media (max-width: 760px), (max-height: 500px) and (pointer: coarse) { .on-phone { display: inline; } .off-phone { display: none; }
+  .setup input[type=checkbox], .setup input[type=radio] { width: 22px; height: 22px; flex: none; } }
+
 /* AIG-1391: a phone on its side (short and touch) keeps the phone layout above, with less space around the bar and the search,
    and narrower columns so two of them and their cards are on screen at once */
 @media (max-height: 500px) and (pointer: coarse) {

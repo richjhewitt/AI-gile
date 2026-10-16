@@ -16,6 +16,8 @@ def('topbar', 'Setup: top bar buttons on/off, reorder, left or right side, theme
     check('the icon comes once: "🌙 Going quiet", not "🌙 🌙 Going quiet"', ic.filter(x => x.id === 'quietTop').every(x => (x.text.match(/🌙/gu) || []).length === 1), JSON.stringify(ic.filter(x => x.id === 'quietTop'))); }
   { const al = await page.evaluate(() => [...document.querySelectorAll('#tbList .tb-on, #tbList .tb-up, #tbList .tb-down')].map(e => e.getAttribute('aria-label')));
     check('tick boxes and arrows read "Show Help", "Move Help up", no brackets (AIG-1396)', al.length > 30 && al.every(a => a && !/[{}]/.test(a)) && al.includes('Show Help'), al.filter(a => !a || /[{}]/.test(a)).slice(0, 3)); }
+  { const pc = await page.evaluate(() => ({ note: document.getElementById('tbPhoneNote').getBoundingClientRect().height, side: document.querySelector('#tbList .tb-side').getBoundingClientRect().height, pins: document.getElementById('tbPins').getBoundingClientRect().height, onPhone: [...document.querySelectorAll('.setup .on-phone')].filter(e => e.getBoundingClientRect().height > 0).length, offPhone: [...document.querySelectorAll('.setup .off-phone')].filter(e => e.getBoundingClientRect().height > 0).length }));
+    check('on a computer: no phone note, the Left/Right choice and Show in top bar are there (AIG-1395)', pc.note === 0 && pc.side > 0 && pc.pins > 0 && pc.onPhone === 0 && pc.offPhone >= 2, pc); }
   check('the settings gear switch is locked on', await page.locator('[data-tb="setupNav"] .tb-on').isDisabled());
 
   // Hide the Idea button
