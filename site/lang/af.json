@@ -175,5 +175,12 @@
  "live.last.day.one": "Laaste kaart {n} dag gelede verskuif",
  "live.last.day.other": "Laaste kaart {n} dae gelede verskuif",
  "live.offline": "Die lewendige bord haal asem. Kom kyk gou weer.",
- "live.cols": "Backlog|Om te doen|Besig|Span kontroleer|Vir jou om te toets|Vir die span|Klaar"
+ "live.cols": "Backlog|Om te doen|Besig|Span kontroleer|Vir jou om te toets|Vir die span|Klaar",
+ "footer.models": "AI-gile laat KI-modelle vir jou loop. Wat hulle sê en doen, is hulle s'n, so gaan kyk dit na voor jy dit vertrou.",
+ "privacy.ai.h": "Die KI-deel",
+ "privacy.ai.models": "AI-gile is die bord. Die werk word gedoen deur KI-modelle van ander maatskappye, soos Claude, Codex en Gemini, op jou eie rekeninge.",
+ "privacy.ai.check": "Wat hulle skryf en doen, kom van hulle af en kan verkeerd wees. Gaan dit na voordat jy daarop staatmaak of dit vrystel.",
+ "privacy.ai.files": "Hulle verander lêers en voer opdragte uit in die vouers wat jy koppel. Hou 'n rugsteun.",
+ "privacy.ai.send": "Wat jy vir 'n model gee, gaan na die maatskappy wat dit bedryf, volgens hul voorwaardes. Elkeen se eie voorwaardes en koste geld.",
+ "privacy.ai.asis": "AI-gile is 'n vroeë toetsweergawe, gegee soos dit is."
 }

@@ -5626,5 +5626,6 @@
  "night.why.waits0": "na tamoʻe ma filifili e faatali · taumafaiga e sosoo ai {time}",
  "night.why.other": "e leʻi amataina",
  "tb.phone": "I luga o se telefoni, e na o le 📥 Pusa meli ma le ☰ e faaali i le pa pito i luga; o isi faʻamau o loʻo i le ☰. Agavale pe taumatau ma Faaali i le pa pito i luga e mo le komipiuta.",
- "lkcall.incall": "📞 I le valaʻau"
+ "lkcall.incall": "📞 I le valaʻau",
+ "wz.ask.models": "O AI-gile o le laupapa. O le galuega e faia e fa'ata'ita'iga AI e pei o Claude, Codex ma Gemini, i au lava tala, o lea o mea latou te tusia ma faia e sau mai ia i latou, ma o nisi taimi e sese. Siaki a latou galuega e te le'i fa'alagolago, ma teuina se kopi lagolago o so'o se faila e te fa'ataga i ai."
 }

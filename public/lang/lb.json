@@ -5626,5 +5626,6 @@
  "night.why.waits0": "ass gelaf an huet decidéiert ze waarden · nächste Versuch {time}",
  "night.why.other": "net gestart",
  "tb.phone": "Um Handy weist déi iewescht Läischt just 📥 Inbox an ☰; déi aner Knäpp sinn am ☰. Lénks oder riets an An der ieweschter Läischt weisen sinn fir de Computer.",
- "lkcall.incall": "📞 Am Uruff"
+ "lkcall.incall": "📞 Am Uruff",
+ "wz.ask.models": "AI-gile ass de Board. D'Aarbecht maachen KI-Modeller wéi Claude, Codex a Gemini, op denge eegene Konten, also kënnt dat, wat si schreiwen a maachen, vun hinnen a ass heiansdo falsch. Kontrolléier hir Aarbecht, éier s du dech drop verléiss, a maach eng Sécherungskopie vun all Dossier, an deen s du si léiss."
 }

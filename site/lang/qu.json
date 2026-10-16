@@ -175,5 +175,12 @@
  "live.last.day.one": "Qhipa karta {n} p'unchaw ñawpaq kuyusqa",
  "live.last.day.other": "Qhipa karta {n} p'unchaw ñawpaq kuyusqa",
  "live.offline": "Kawsay tablaqa uchuy samarichkan. Chaylla kutimuy.",
- "live.cols": "Backlog|Ruranaykuna|Ruraypi|Ayllu qhawashan|Qanpaq test ruranapaq|Ayllupaq|Tukusqa"
+ "live.cols": "Backlog|Ruranaykuna|Ruraypi|Ayllu qhawashan|Qanpaq test ruranapaq|Ayllupaq|Tukusqa",
+ "footer.models": "AI-gile qanpaq AI modelokunata purichin. Paykuna ima nisqanku, ima ruwasqankupas paykunapam, chayrayku iñinaykipaq ñawpaqta qhaway.",
+ "privacy.ai.h": "AI kaq",
+ "privacy.ai.models": "AI-gile tablam. Llank'ayta ruwanku wak empresakunaq AI modelonkuna, Claude, Codex hinallataq Gemini hina, qan kikiykiq cuentaykikunapi.",
+ "privacy.ai.check": "Paykuna ima qillqasqankupas ruwasqankupas paykunamantam hamun, hinaspa pantasqa kanman. Qhaway ñawpaqta hapipakunaykipaq utaq lluqsichinaykipaq.",
+ "privacy.ai.files": "Paykuna archivokunata tikranku hinaspa kamachikunata purichinku t'inkichisqayki carpetakunapi. Backup waqaychay.",
+ "privacy.ai.send": "Modelota ima qusqaykipas chay purichiq empresamanmi rin, paykunaq condicionninkuwan. Sapa empresaq condicionninkunapas qullqinpas yanapan.",
+ "privacy.ai.asis": "AI-gile qallariy pruebaq versionninmi, kay kasqanmanta qusqa."
 }

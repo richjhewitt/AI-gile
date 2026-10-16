@@ -175,5 +175,12 @@
  "live.last.day.one": "Se ytemesta ċearta wearþ ġewend ǣr {n} dæge",
  "live.last.day.other": "Se ytemesta ċearta wearþ ġewend ǣr {n} dagum",
  "live.offline": "Þæt libbende bord hæfþ ane hwile ēstes. Cum eft sōna.",
- "live.cols": "Backlog|To donne|On weorce|Weorodes eahtung|For þē tō fandianne|For þǣm weorode|Gedōn"
+ "live.cols": "Backlog|To donne|On weorce|Weorodes eahtung|For þē tō fandianne|For þǣm weorode|Gedōn",
+ "footer.models": "AI-gile rynð AI-mōdelas for þē. Þæt hīe secgaþ and dōþ is hira āgen, for þon cunna hit ǣr þū him getrūwie.",
+ "privacy.ai.h": "Se AI-dǣl",
+ "privacy.ai.models": "AI-gile is þæt bord. Þæt weorc dōþ AI-mōdelas fram ōðrum ġefērrǣdenum, swylce Claude, Codex and Gemini, on þīnum āgenum rǣkenungum.",
+ "privacy.ai.check": "Þæt hīe wrītaþ and dōþ cymþ fram him, and hit mæg bēon wōh. Cunna hit ǣr þū hit getrūwie oþþe ūt sende.",
+ "privacy.ai.files": "Hīe wendaþ ġewrita and rynaþ ġebodu on þǣm ġewrit-hūsum þe þū tōgædere ġeþēodst. Hald copie tō ġeheald.",
+ "privacy.ai.send": "Þæt þū ānum mōdele sealst færþ tō þǣm ġefērrǣdene þe hit rynð, under hira ġesetnessum. Ǣlces āgen ġesetnessa and cost sind ġeldende.",
+ "privacy.ai.asis": "AI-gile is ǣrest costnung, ġiefen swā swā hit is."
 }

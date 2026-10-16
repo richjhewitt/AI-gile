@@ -175,5 +175,12 @@
  "live.last.day.one": "Viimeisin kortti siirrettiin {n} päivä sitten",
  "live.last.day.other": "Viimeisin kortti siirrettiin {n} päivää sitten",
  "live.offline": "Live-taulu pitää pienen tauon. Käy katsomassa pian uudelleen.",
- "live.cols": "Backlog|Tehtävänä|Työn alla|Tiimi tarkistaa|Sinun testattavasi|Tiimille|Valmis"
+ "live.cols": "Backlog|Tehtävänä|Työn alla|Tiimi tarkistaa|Sinun testattavasi|Tiimille|Valmis",
+ "footer.models": "AI-gile panee tekoälymallit töihin puolestasi. Se, mitä ne sanovat ja tekevät, on niiden omaa, joten tarkista se, ennen kuin luotat siihen.",
+ "privacy.ai.h": "Tekoälyosuus",
+ "privacy.ai.models": "AI-gile on taulu. Työn tekevät muiden yritysten tekoälymallit, kuten Claude, Codex ja Gemini, omilla tileilläsi.",
+ "privacy.ai.check": "Se, mitä ne kirjoittavat ja tekevät, tulee niiltä, ja se voi olla väärin. Tarkista se, ennen kuin turvaudut siihen tai julkaiset sen.",
+ "privacy.ai.files": "Ne muuttavat tiedostoja ja ajavat komentoja kansioissa, jotka yhdistät. Ota varmuuskopio.",
+ "privacy.ai.send": "Se, minkä annat mallille, menee sen pyörittäjälle yritykselle sen ehdoilla. Kunkin omat ehdot ja kustannukset pätevät.",
+ "privacy.ai.asis": "AI-gile on varhainen testiversio, sellaisena kuin se on."
 }

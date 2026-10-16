@@ -5626,5 +5626,6 @@
  "night.why.waits0": "sudah jalan dan memilih menunggu · coba lagi {time}",
  "night.why.other": "belum dimulai",
  "tb.phone": "Di ponsel, bilah atas hanya menampilkan 📥 Kotak masuk dan ☰; tombol lainnya ada di ☰. Kiri atau kanan dan Tampilkan di bilah atas hanya untuk komputer.",
- "lkcall.incall": "📞 Dalam panggilan"
+ "lkcall.incall": "📞 Dalam panggilan",
+ "wz.ask.models": "AI-gile adalah papannya. Pekerjaannya dilakukan oleh model AI seperti Claude, Codex, dan Gemini, memakai akunmu sendiri, jadi apa yang mereka tulis dan lakukan berasal dari mereka, dan kadang salah. Periksa hasil kerja mereka sebelum kamu mengandalkannya, dan buat cadangan untuk folder mana pun yang kamu izinkan mereka masuki."
 }

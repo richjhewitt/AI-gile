@@ -5626,5 +5626,6 @@
  "night.why.waits0": "⏳ ran and chose to wait · next try {time}",
  "night.why.other": "⏸️ not started",
  "tb.phone": "📱 On a phone the top bar shows only 📥 Inbox and ☰; the other buttons are in ☰. Left or right and Show in top bar are for the computer 🖥️.",
- "lkcall.incall": "📞 In the call"
+ "lkcall.incall": "📞 In the call",
+ "wz.ask.models": "📋 AI-gile is the board. The work is done by AI models like Claude, Codex and Gemini, on your own accounts, so what they write and do comes from them, and sometimes it's wrong. Check their work before you rely on it, and keep a backup of any folder you let them into."
 }

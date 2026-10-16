@@ -5626,5 +5626,6 @@
  "night.why.waits0": "đã chạy và chọn chờ · thử lại lúc {time}",
  "night.why.other": "chưa khởi động",
  "tb.phone": "Trên điện thoại, thanh trên cùng chỉ hiện 📥 Hộp thư và ☰; các nút khác nằm trong ☰. Trái hay phải và Hiện trên thanh trên cùng là dành cho máy tính.",
- "lkcall.incall": "📞 Đang trong cuộc gọi"
+ "lkcall.incall": "📞 Đang trong cuộc gọi",
+ "wz.ask.models": "AI-gile là cái bảng. Việc được làm bởi các mô hình AI như Claude, Codex và Gemini, trên chính tài khoản của bạn, nên những gì chúng viết và làm là do chúng, và đôi khi sai. Hãy kiểm tra kết quả trước khi dựa vào, và sao lưu mọi thư mục bạn cho chúng vào."
 }

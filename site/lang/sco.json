@@ -175,5 +175,12 @@
  "live.last.day.one": "Last caird moved {n} day syne",
  "live.last.day.other": "Last caird moved {n} days syne",
  "live.offline": "The live board's takkin a wee breather. Come back suin.",
- "live.cols": "Backlog|Tae dae|Gaun on|Team checkin|For ye tae test|For the team|Duin"
+ "live.cols": "Backlog|Tae dae|Gaun on|Team checkin|For ye tae test|For the team|Duin",
+ "footer.models": "AI-gile rins AI models fur ye. Whit they say an dae is theirs, sae check it afore ye trust it.",
+ "privacy.ai.h": "The AI pairt",
+ "privacy.ai.models": "AI-gile is the board. The wark is duin by AI models frae ither companies, like Claude, Codex an Gemini, on yer ain accoonts.",
+ "privacy.ai.check": "Whit they write an dae comes frae them, an it can be wrang. Check it afore ye rely on it or ship it.",
+ "privacy.ai.files": "They chynge files an rin commands in the folders ye connect. Keep a backup.",
+ "privacy.ai.send": "Whit ye gie a model gaes tae the company that rins it, unner thair terms. Each ane's ain terms an costs apply.",
+ "privacy.ai.asis": "AI-gile is an early test version, gien as it is."
 }

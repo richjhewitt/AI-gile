@@ -5659,5 +5659,6 @@
  "night.why.waits0": "koyrdi og valdi at bíða · næsta roynd {time}",
  "night.why.other": "ikki byrjað",
  "tb.phone": "Á telefon vísir ovasta stikan bert 📥 Postkassa og ☰; hinir knøttarnir eru í ☰. Vinstra ella høgra og Vís í ovastu stikuni eru fyri telduna.",
- "lkcall.incall": "📞 Í samtalinum"
+ "lkcall.incall": "📞 Í samtalinum",
+  "wz.ask.models": "AI-gile er borðið. Arbeiðið verður gjørt av AI-módellum sum Claude, Codex og Gemini, á tínum egnu kontum, so tað, tey skriva og gera, kemur frá teimum, og onkuntíð er tað skeivt. Kanna arbeiðið hjá teimum, áðrenn tú líggur lit á tað, og hald trygdaravrit av hvørjari mappu, tú letur tey inn í."
 }

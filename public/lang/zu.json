@@ -5626,5 +5626,6 @@
  "night.why.waits0": "isebenzile yakhetha ukulinda · umzamo olandelayo {time}",
  "night.why.other": "ayiqalanga",
  "tb.phone": "Efonini, ibha ephezulu ibonisa kuphela 📥 Ibhokisi elingenayo ne-☰; amanye amabhutoni aku-☰. Kwesobunxele noma kwesokudla kanye no-Bonisa kubha ephezulu kungokwekhompyutha.",
- "lkcall.incall": "📞 Ekholini"
+ "lkcall.incall": "📞 Ekholini",
+ "wz.ask.models": "I-AI-gile yibhodi. Umsebenzi wenziwa amamodeli e-AI afana ne-Claude, Codex ne-Gemini, ku-akhawunti zakho, ngakho lokho abakubhalayo nabakwenzayo kuvela kubo, futhi kwesinye isikhathi akulungile. Hlola umsebenzi wabo ngaphambi kokuwuthembela, futhi ugcine isipele sanoma yiliphi ifolda obavumela ukuba bangene kulo."
 }

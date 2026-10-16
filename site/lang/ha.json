@@ -175,5 +175,12 @@
  "live.last.day.one": "An motsa katin ƙarshe rana {n} da ta wuce",
  "live.last.day.other": "An motsa katin ƙarshe kwanaki {n} da suka wuce",
  "live.offline": "Allon kai tsaye yana hutawa kaɗan. Ka sake dubawa nan ba da jimawa ba.",
- "live.cols": "Backlog|A yi|Ana yi|Ƙungiya na dubawa|Don a gwada|Don ƙungiya|An gama"
+ "live.cols": "Backlog|A yi|Ana yi|Ƙungiya na dubawa|Don a gwada|Don ƙungiya|An gama",
+ "footer.models": "AI-gile yana gudanar muku da samfuran AI. Abin da suke faɗa da yi nasu ne, don haka duba kafin ku amince.",
+ "privacy.ai.h": "Ɓangaren AI",
+ "privacy.ai.models": "AI-gile shi ne allon. Samfuran AI na wasu kamfanoni, kamar Claude, Codex da Gemini, ne ke yin aikin a asusunku na kanku.",
+ "privacy.ai.check": "Abin da suke rubutawa da yi daga gare su yake, kuma yana iya zama kuskure. Ku duba kafin ku dogara da shi ko ku fitar da shi.",
+ "privacy.ai.files": "Suna canza fayiloli kuma suna gudanar da umarni a cikin manyan fayilolin da kuka haɗa. Ku ajiye kwafin ajiya.",
+ "privacy.ai.send": "Abin da kuka ba samfuri yana tafiya ne zuwa kamfanin da ke gudanar da shi, bisa ƙa'idodinsu. Ƙa'idodi da kuɗin kowane kamfani suna aiki.",
+ "privacy.ai.asis": "AI-gile sigar gwaji ce ta farko, ana bayar da ita kamar yadda take."
 }

@@ -5626,5 +5626,6 @@
  "night.why.waits0": "pokrenut i odlučio pričekati · sljedeći pokušaj {time}",
  "night.why.other": "nije pokrenut",
  "tb.phone": "Na mobitelu gornja traka prikazuje samo 📥 Pristiglu poštu i ☰; ostali gumbi su u ☰. Lijevo ili desno i Prikaži u gornjoj traci vrijede za računalo.",
- "lkcall.incall": "📞 U pozivu"
+ "lkcall.incall": "📞 U pozivu",
+ "wz.ask.models": "AI-gile je ploča. Posao rade AI modeli poput Claudea, Codexa i Geminija na tvojim vlastitim računima, pa ono što pišu i rade dolazi od njih i ponekad je pogrešno. Provjeri njihov rad prije nego što se osloniš na njega i napravi sigurnosnu kopiju svake mape u koju ih pustiš."
 }

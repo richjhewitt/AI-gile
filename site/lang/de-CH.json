@@ -175,5 +175,12 @@
  "live.last.day.one": "Letzte Karte vor {n} Tag verschoben",
  "live.last.day.other": "Letzte Karte vor {n} Tagen verschoben",
  "live.offline": "Das Live-Board macht kurz Pause. Schau bald wieder vorbei.",
- "live.cols": "Backlog|Zu tun|In Arbeit|Team prüft|Zum Testen für dich|Fürs Team|Erledigt"
+ "live.cols": "Backlog|Zu tun|In Arbeit|Team prüft|Zum Testen für dich|Fürs Team|Erledigt",
+ "footer.models": "AI-gile lässt KI-Modelle für dich arbeiten. Was sie sagen und tun, geht auf ihre Rechnung, also prüf es, bevor du dich darauf verlässt.",
+ "privacy.ai.h": "Der KI-Teil",
+ "privacy.ai.models": "AI-gile ist das Board. Die Arbeit machen KI-Modelle anderer Firmen, etwa Claude, Codex und Gemini, über deine eigenen Konten.",
+ "privacy.ai.check": "Was sie schreiben und tun, kommt von ihnen und kann falsch sein. Prüf es, bevor du dich darauf verlässt oder es veröffentlichst.",
+ "privacy.ai.files": "Sie ändern Dateien und führen Befehle in den Ordnern aus, die du verbindest. Mach ein Backup.",
+ "privacy.ai.send": "Was du einem Modell gibst, geht an die Firma, die es betreibt, nach deren Bedingungen. Es gelten die Bedingungen und Kosten des jeweiligen Anbieters.",
+ "privacy.ai.asis": "AI-gile ist eine frühe Testversion, so wie sie ist."
 }

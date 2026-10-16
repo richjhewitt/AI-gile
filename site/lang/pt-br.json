@@ -175,5 +175,12 @@
  "live.last.day.one": "Último cartão movido há {n} dia",
  "live.last.day.other": "Último cartão movido há {n} dias",
  "live.offline": "O quadro ao vivo está tomando um fôlego. Volte logo.",
- "live.cols": "Backlog|A fazer|Em andamento|A equipe verifica|Para você testar|Para a equipe|Concluído"
+ "live.cols": "Backlog|A fazer|Em andamento|A equipe verifica|Para você testar|Para a equipe|Concluído",
+ "footer.models": "O AI-gile coloca modelos de IA para trabalhar por você. O que eles dizem e fazem é deles, então confira antes de confiar.",
+ "privacy.ai.h": "A parte da IA",
+ "privacy.ai.models": "O AI-gile é o quadro. O trabalho é feito por modelos de IA de outras empresas, como Claude, Codex e Gemini, nas suas próprias contas.",
+ "privacy.ai.check": "O que eles escrevem e fazem vem deles e pode estar errado. Confira antes de contar com isso ou publicar.",
+ "privacy.ai.files": "Eles alteram arquivos e executam comandos nas pastas que você conecta. Faça um backup.",
+ "privacy.ai.send": "O que você dá a um modelo vai para a empresa que o opera, de acordo com os termos dela. Valem os termos e os custos de cada uma.",
+ "privacy.ai.asis": "O AI-gile é uma versão de teste inicial, fornecida como está."
 }

@@ -180,5 +180,12 @@
  "pitch.letters.two": "{n} bustávva",
  "pitch.chars.two": "{n} mearkka",
  "count.line.html.two": "{n} korttá tavllas dál",
- "tl.cards.two": "{n} korttá"
+ "tl.cards.two": "{n} korttá",
+ "footer.models": "AI-gile johtilit AI-modeallaid du ovddas. Maid sii dadjet ja dahket lea sin, nu iskka ovdal go luohttát.",
+ "privacy.ai.h": "AI-oassi",
+ "privacy.ai.models": "AI-gile lea tavla. Bargu dahkkojuvvo eará fitnodagaid AI-modeallaid bokte, dego Claude, Codex ja Gemini, du iežat dilálašvuođaid bokte.",
+ "privacy.ai.check": "Maid sii čállet ja dahket boahtá sin gaskkas ja sáhttá leat boastu. Iskka ovdal go luohttát dasa dahje almmuhat dan.",
+ "privacy.ai.files": "Sii rievdadit fiillaid ja johtilit gohččumiid dain máhpain maid don ovttastat. Dahke várrekopiija.",
+ "privacy.ai.send": "Maid addát modellii, mannaha fitnodahkii mii dan johtilda, sin eavttuid mielde. Juohke fitnodaga iežas eavttut ja divat gustojit.",
+ "privacy.ai.asis": "AI-gile lea árraolggos geahččalanveršuvdna, mii addojuvvo dego lea."
 }

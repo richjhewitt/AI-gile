@@ -175,5 +175,12 @@
  "live.last.day.one": "Lasta karto movita antaŭ {n} tago",
  "live.last.day.other": "Lasta karto movita antaŭ {n} tagoj",
  "live.offline": "La viva tabulo iom ripozas. Revenu baldaŭ.",
- "live.cols": "Backlog|Farotaj|Farata|Teamo kontrolas|Por ke vi testu|Por la teamo|Farite"
+ "live.cols": "Backlog|Farotaj|Farata|Teamo kontrolas|Por ke vi testu|Por la teamo|Farite",
+ "footer.models": "AI-gile funkciigas AI-modelojn por vi. Kion ili diras kaj faras estas ilia, do kontrolu ĝin antaŭ ol fidi ĝin.",
+ "privacy.ai.h": "La AI-parto",
+ "privacy.ai.models": "AI-gile estas la tabulo. La laboron faras AI-modeloj de aliaj kompanioj, kiel Claude, Codex kaj Gemini, per viaj propraj kontoj.",
+ "privacy.ai.check": "Kion ili skribas kaj faras venas de ili, kaj ĝi povas esti malĝusta. Kontrolu ĝin antaŭ ol fidi ĝin aŭ publikigi ĝin.",
+ "privacy.ai.files": "Ili ŝanĝas dosierojn kaj rulas komandojn en la dosierujoj, kiujn vi konektas. Konservu sekurkopion.",
+ "privacy.ai.send": "Kion vi donas al modelo iras al la kompanio, kiu ĝin funkciigas, laŭ ĝiaj kondiĉoj. Validas la propraj kondiĉoj kaj kostoj de ĉiu.",
+ "privacy.ai.asis": "AI-gile estas frua provversio, donita tia, kia ĝi estas."
 }

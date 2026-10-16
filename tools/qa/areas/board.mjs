@@ -441,6 +441,10 @@ def('tidy', '🧹 Tidy my pile asks the lead; fold moves test steps across and c
   check('🧹 makes one tidy job for the lead in For the team', jobs.length === 1 && jobs[0].status === 'team' && /aigile fold/.test(jobs[0].description));
   const again = await s.ok('POST', '/api/projects/alpha/tidy');
   check('a second click while it is open does not make another', again.already === true && (await s.ok('GET', '/api/projects/alpha')).cards.filter(c => c.tidy).length === 1);
+  s.cli(['move', 'alpha', jobs[0].id, 'doing', '--as', 'Lead']);
+  const shut = s.cli(['move', 'alpha', jobs[0].id, 'done', '--as', 'Lead']);
+  check('the lead can move the tidy job to done from In progress, as it says', shut.code === 0 && (await getCard(s, 'alpha', jobs[0].id)).status === 'done', shut);
+  check('other cards in progress still go to the owner', s.cli(['move', 'alpha', b.id, 'doing', '--as', 'Lead']).code === 0 && s.cli(['move', 'alpha', b.id, 'done', '--as', 'Lead']).code !== 0);
   noErrors(page);
 }, true);
 

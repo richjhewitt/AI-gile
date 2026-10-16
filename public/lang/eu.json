@@ -5626,5 +5626,6 @@
  "night.why.waits0": "abiatu eta itxarotea erabaki du · hurrengo saiakera {time}",
  "night.why.other": "ez da hasi",
  "tb.phone": "Telefonoan goiko barrak 📥 Sarrera-ontzia eta ☰ bakarrik erakusten ditu; beste botoiak ☰ barruan daude. Ezkerra edo eskuina eta Erakutsi goiko barran ordenagailurako dira.",
- "lkcall.incall": "📞 Deian"
+ "lkcall.incall": "📞 Deian",
+ "wz.ask.models": "AI-gile taula da. Lana Claude, Codex eta Gemini bezalako IA ereduek egiten dute, zure kontuetan, beraz haiek idazten eta egiten dutena haiengandik dator eta batzuetan okerra da. Egiaztatu haien lana horretan oinarritu aurretik, eta egin babeskopia utzten diezun karpeta guztien."
 }

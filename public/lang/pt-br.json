@@ -5658,5 +5658,6 @@
  "night.why.waits0": "rodou e decidiu esperar · próxima tentativa {time}",
  "night.why.other": "não iniciado",
  "tb.phone": "No celular, a barra superior mostra só 📥 Caixa de entrada e ☰; os outros botões ficam no ☰. Esquerda ou direita e Mostrar na barra superior são para o computador.",
- "lkcall.incall": "📞 Na chamada"
+ "lkcall.incall": "📞 Na chamada",
+ "wz.ask.models": "O AI-gile é o quadro. O trabalho é feito por modelos de IA como Claude, Codex e Gemini, nas suas próprias contas, então o que eles escrevem e fazem vem deles e às vezes está errado. Confira o trabalho deles antes de contar com ele e faça um backup de qualquer pasta em que você os deixar entrar."
 }

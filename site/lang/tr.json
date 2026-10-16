@@ -175,5 +175,12 @@
  "live.last.day.one": "Son kart {n} gün önce taşındı",
  "live.last.day.other": "Son kart {n} gün önce taşındı",
  "live.offline": "Canlı pano kısa bir mola veriyor. Birazdan tekrar uğrayın.",
- "live.cols": "Backlog|Yapılacak|Sürüyor|Ekip kontrol ediyor|Senin test etmen için|Ekip için|Bitti"
+ "live.cols": "Backlog|Yapılacak|Sürüyor|Ekip kontrol ediyor|Senin test etmen için|Ekip için|Bitti",
+ "footer.models": "AI-gile senin için yapay zekâ modellerini çalıştırır. Söyledikleri ve yaptıkları onlara aittir, bu yüzden güvenmeden önce kontrol et.",
+ "privacy.ai.h": "Yapay zekâ kısmı",
+ "privacy.ai.models": "AI-gile panodur. İşi, Claude, Codex ve Gemini gibi başka şirketlerin yapay zekâ modelleri kendi hesaplarında yapar.",
+ "privacy.ai.check": "Yazdıkları ve yaptıkları onlardan gelir ve yanlış olabilir. Güvenmeden ya da yayınlamadan önce kontrol et.",
+ "privacy.ai.files": "Bağladığın klasörlerdeki dosyaları değiştirir ve komut çalıştırırlar. Yedek al.",
+ "privacy.ai.send": "Bir modele verdiğin şey, onu çalıştıran şirkete, o şirketin koşullarıyla gider. Her birinin kendi koşulları ve ücretleri geçerlidir.",
+ "privacy.ai.asis": "AI-gile erken bir test sürümüdür, olduğu gibi sunulur."
 }

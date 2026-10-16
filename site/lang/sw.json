@@ -175,5 +175,12 @@
  "live.last.day.one": "Kadi ya mwisho ilihamishwa siku {n} iliyopita",
  "live.last.day.other": "Kadi ya mwisho ilihamishwa siku {n} zilizopita",
  "live.offline": "Ubao wa moja kwa moja unapumzika kidogo. Rudi tena hivi karibuni.",
- "live.cols": "Backlog|Za kufanya|Zinaendelea|Timu inakagua|Zako za kujaribu|Kwa timu|Zimekamilika"
+ "live.cols": "Backlog|Za kufanya|Zinaendelea|Timu inakagua|Zako za kujaribu|Kwa timu|Zimekamilika",
+ "footer.models": "AI-gile huendesha miundo ya AI kwa ajili yako. Wanachosema na kufanya ni chao, kwa hiyo kagua kabla ya kukiamini.",
+ "privacy.ai.h": "Sehemu ya AI",
+ "privacy.ai.models": "AI-gile ni ubao. Kazi inafanywa na miundo ya AI kutoka kampuni nyingine, kama Claude, Codex na Gemini, kwenye akaunti zako mwenyewe.",
+ "privacy.ai.check": "Wanachoandika na kufanya hutoka kwao, na kinaweza kuwa na makosa. Kagua kabla ya kukitegemea au kukitoa.",
+ "privacy.ai.files": "Wanabadilisha faili na kuendesha amri kwenye folda unazounganisha. Weka nakala rudufu.",
+ "privacy.ai.send": "Unachoipa muundo huenda kwa kampuni inayouendesha, chini ya masharti yao. Masharti na gharama za kila mmoja zinatumika.",
+ "privacy.ai.asis": "AI-gile ni toleo la awali la majaribio, linalotolewa kama lilivyo."
 }

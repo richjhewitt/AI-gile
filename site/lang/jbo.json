@@ -175,5 +175,12 @@
  "live.last.day.one": "le mulno karda cu cizra pu lo djedi be li {n}",
  "live.last.day.other": "le mulno karda cu cizra pu lo djedi be li {n}",
  "live.offline": "le zasti jvinu cu denpa .i ko ze'u ba tcica",
- "live.cols": "Backlog|ba zukte|ca'o zukte|le gunma cu ca viska|fi do poi ba cipra|fi le gunma|mulno"
+ "live.cols": "Backlog|ba zukte|ca'o zukte|le gunma cu ca viska|fi do poi ba cipra|fi le gunma|mulno",
+ "footer.models": "la .AI-gile. cu rinka le nu lo AI minji cu gunka do .i le se cusku e le se zukte be ri cu se zekri ri .i ko cipra ri pu le nu do krici ri",
+ "privacy.ai.h": "le pagbu be le AI",
+ "privacy.ai.models": "la .AI-gile. cu .kanban. .i lo AI minji be lo drata ckupau, so'i la .claude. .e la .codex. .e la .gemini., cu gunka ne'i le do jaspu",
+ "privacy.ai.check": "le se ciska e le se zukte be ri cu cmima ri .i ri ka'e fliba .i ko cipra ri pu le nu do krici ri ja benji ri",
+ "privacy.ai.files": "ri cu galfi lo fi'o fanta ja kibro'i be do le ka cmene e le ka sarcu .i ko ralte lo vimcu kopi",
+ "privacy.ai.send": "le se dunda be lo minji cu klama le ckupau poi gunka ri .i le ckupau be ri ku .e le jdini be ri cu se pilno",
+ "privacy.ai.asis": "la .AI-gile. cu prula cipra se judri .i le se dunda cu simsa le nu ri zasti"
 }

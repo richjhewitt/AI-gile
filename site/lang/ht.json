@@ -175,5 +175,12 @@
  "live.last.day.one": "Dènye kat la deplase {n} jou de sa",
  "live.last.day.other": "Dènye kat la deplase {n} jou de sa",
  "live.offline": "Tablo an dirèk la ap pran yon ti repo. Tounen talè.",
- "live.cols": "Backlog|Pou fè|Ap fèt|Ekip la ap verifye|Pou ou test|Pou ekip la|Fini"
+ "live.cols": "Backlog|Pou fè|Ap fèt|Ekip la ap verifye|Pou ou test|Pou ekip la|Fini",
+ "footer.models": "AI-gile kouri modèl AI pou ou. Sa yo di ak sa yo fè se pa yo, kidonk verifye anvan ou fè yo konfyans.",
+ "privacy.ai.h": "Pati AI a",
+ "privacy.ai.models": "AI-gile se tablo a. Se modèl AI ki soti nan lòt konpayi, tankou Claude, Codex ak Gemini, ki fè travay la sou pwòp kont ou.",
+ "privacy.ai.check": "Sa yo ekri ak sa yo fè soti nan yo, e li ka pa bon. Verifye l anvan ou konte sou li oswa anvan ou lage l.",
+ "privacy.ai.files": "Yo chanje fichye epi yo kouri kòmand nan dosye ou konekte yo. Fè yon kopi sekou.",
+ "privacy.ai.send": "Sa ou bay yon modèl ale nan konpayi ki kouri l la, dapre kondisyon yo. Kondisyon ak pri chak konpayi aplike.",
+ "privacy.ai.asis": "AI-gile se yon vèsyon tès bonè, nou bay li jan li ye a."
 }

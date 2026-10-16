@@ -175,5 +175,12 @@
  "live.last.day.one": "Son kart {n} gün əvvəl köçürüldü",
  "live.last.day.other": "Son kart {n} gün əvvəl köçürüldü",
  "live.offline": "Canlı lövhə bir az nəfəs alır. Tezliklə yenidən baxın.",
- "live.cols": "Backlog|Görüləcək|İcrada|Komanda yoxlayır|Sənin test etməyin üçün|Komanda üçün|Hazırdır"
+ "live.cols": "Backlog|Görüləcək|İcrada|Komanda yoxlayır|Sənin test etməyin üçün|Komanda üçün|Hazırdır",
+ "footer.models": "AI-gile sənin üçün AI modellərini işlədir. Onların dediyi və etdiyi özlərinə aiddir, ona görə etibar etməzdən əvvəl yoxla.",
+ "privacy.ai.h": "AI hissəsi",
+ "privacy.ai.models": "AI-gile lövhədir. İşi başqa şirkətlərin AI modelləri, məsələn Claude, Codex və Gemini, öz hesablarınla görür.",
+ "privacy.ai.check": "Onların yazdığı və etdiyi özlərindən gəlir və yanlış ola bilər. Güvənməzdən və ya yayımlamazdan əvvəl yoxla.",
+ "privacy.ai.files": "Onlar qoşduğun qovluqlarda faylları dəyişir və əmrlər icra edir. Ehtiyat nüsxə saxla.",
+ "privacy.ai.send": "Modelə verdiyin şey onu işlədən şirkətə, onların şərtləri ilə gedir. Hər şirkətin öz şərtləri və qiymətləri keçərlidir.",
+ "privacy.ai.asis": "AI-gile erkən sınaq versiyasıdır, olduğu kimi təqdim olunur."
 }

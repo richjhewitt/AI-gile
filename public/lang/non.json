@@ -5671,5 +5671,6 @@
  "night.why.waits0": "gekk ok kaus at bíða · næsta tilraun {time}",
  "night.why.other": "eigi hafit",
  "tb.phone": "Á síma sýnir efsta stikan aðeins 📥 Pósthólf ok ☰; aðrir hnappar eru í ☰. Vinstri eða hægri ok Sýna á efstu stiku eru fyrir tölvuna.",
- "lkcall.incall": "📞 Í símtali"
+ "lkcall.incall": "📞 Í símtali",
+  "wz.ask.models": "AI-gile er borðit. Verkit gera AI-líkön svá sem Claude, Codex ok Gemini, á þínum eigin reikningum, ok því kemr þat er þau rita ok gera frá þeim, ok stundum er þat rangt. Kanna verk þeira áðr en þú reiðir þik á þat, ok geym afrit af hverri möppu er þú lætr þau í."
 }

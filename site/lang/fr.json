@@ -175,5 +175,12 @@
  "live.last.day.one": "Dernière carte déplacée il y a {n} jour",
  "live.last.day.other": "Dernière carte déplacée il y a {n} jours",
  "live.offline": "Le tableau en direct fait une petite pause. Revenez bientôt.",
- "live.cols": "Backlog|À faire|En cours|L'équipe vérifie|À tester par toi|Pour l'équipe|Terminé"
+ "live.cols": "Backlog|À faire|En cours|L'équipe vérifie|À tester par toi|Pour l'équipe|Terminé",
+ "footer.models": "AI-gile fait travailler des modèles d'IA pour toi. Ce qu'ils disent et font vient d'eux, alors vérifie avant de t'y fier.",
+ "privacy.ai.h": "La partie IA",
+ "privacy.ai.models": "AI-gile, c'est le tableau. Le travail est fait par des modèles d'IA d'autres entreprises, comme Claude, Codex et Gemini, sur tes propres comptes.",
+ "privacy.ai.check": "Ce qu'ils écrivent et font vient d'eux, et ça peut être faux. Vérifie avant de t'y fier ou de livrer.",
+ "privacy.ai.files": "Ils modifient des fichiers et lancent des commandes dans les dossiers que tu connectes. Fais une sauvegarde.",
+ "privacy.ai.send": "Ce que tu donnes à un modèle part chez l'entreprise qui l'exploite, selon ses conditions. Les conditions et les coûts de chacune s'appliquent.",
+ "privacy.ai.asis": "AI-gile est une version de test précoce, fournie telle quelle."
 }

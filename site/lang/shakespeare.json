@@ -175,5 +175,12 @@
  "live.last.day.one": "Last card moved {n} day ago",
  "live.last.day.other": "Last card moved {n} days ago",
  "live.offline": "The living board doth take a breath. Return anon, good friend.",
- "live.cols": "Backlog|To be done|Afoot|The company doth review|For thee to test|For the company|Done"
+ "live.cols": "Backlog|To be done|Afoot|The company doth review|For thee to test|For the company|Done",
+ "footer.models": "AI-gile runs AI models for thee. What they say and do is their own, so check it ere thou trustest it.",
+ "privacy.ai.h": "The AI portion",
+ "privacy.ai.models": "AI-gile is the board. The work is done by AI models of other companies, like Claude, Codex and Gemini, upon thine own accounts.",
+ "privacy.ai.check": "What they write and do cometh from them, and it may be wrong. Check it ere thou reliest on it or shippest it.",
+ "privacy.ai.files": "They change files and run commands in the folders thou dost connect. Keep a backup.",
+ "privacy.ai.send": "What thou givest a model goeth to the company that runneth it, under their terms. Each one's own terms and costs apply.",
+ "privacy.ai.asis": "AI-gile is an early test version, given as it is."
 }

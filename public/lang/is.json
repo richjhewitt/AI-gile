@@ -5626,5 +5626,6 @@
  "night.why.waits0": "keyrði og ákvað að bíða · næsta tilraun {time}",
  "night.why.other": "ekki ræst",
  "tb.phone": "Í síma sýnir efsta stikan aðeins 📥 Innhólf og ☰; hinir hnapparnir eru í ☰. Vinstri eða hægri og Sýna á efri stikunni eiga við um tölvuna.",
- "lkcall.incall": "📞 Í símtalinu"
+ "lkcall.incall": "📞 Í símtalinu",
+ "wz.ask.models": "AI-gile er borðið. Vinnan er unnin af gervigreindarlíkönum eins og Claude, Codex og Gemini, á þínum eigin aðgöngum, svo það sem þau skrifa og gera kemur frá þeim og er stundum rangt. Athugaðu vinnuna þeirra áður en þú reiðir þig á hana og taktu afrit af hverri möppu sem þú hleypir þeim inn í."
 }

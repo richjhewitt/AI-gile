@@ -175,5 +175,12 @@
  "live.last.day.one": "Ar gartenn ziwezhañ a zo bet dilec'hiet {n} deiz zo",
  "live.last.day.other": "Ar gartenn ziwezhañ a zo bet dilec'hiet {n} devezh zo",
  "live.offline": "Ur pennad diskuizh a gemer an daolenn war-eeun. Distroit a-benn nebeut.",
- "live.cols": "Backlog|Da ober|O vont war-raok|Ar skipailh a wiriañ|Evidoc'h da test|Evit ar skipailh|Graet"
+ "live.cols": "Backlog|Da ober|O vont war-raok|Ar skipailh a wiriañ|Evidoc'h da test|Evit ar skipailh|Graet",
+ "footer.models": "AI-gile a lañs skouerioù AI evidoc'h. Ar pezh a lavaront hag a ront zo o dra-i, setu gwiriekait a-raok fiziañs.",
+ "privacy.ai.h": "Al lodenn AI",
+ "privacy.ai.models": "AI-gile eo ar bord. Skouerioù AI a gompagnunezhioù all, evel Claude, Codex ha Gemini, a ra al labour war ho kontoù deoc'h-c'hwi.",
+ "privacy.ai.check": "Ar pezh a skrivont hag a ront a zeu diwarno hag a c'hall bezañ fall. Gwiriekait a-raok bezañ fiziet enno pe embann.",
+ "privacy.ai.files": "Cheñch a reont restroù ha lañsañ a reont urzhioù er c'havlec'hioù a gevrit. Likit un eilad-wareziñ.",
+ "privacy.ai.send": "Ar pezh a roit d'ur skouer a ya d'ar gompagnunezh a lañs anezhañ, hervez o c'honditionoù. Tizhout a ra kondisionoù ha koustoù pep hini.",
+ "privacy.ai.asis": "AI-gile zo ur stumm esae kentañ, roet evel m'emañ."
 }

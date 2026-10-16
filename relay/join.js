@@ -187,7 +187,7 @@ function addToZip(zip, name, data) {
 
 /* ---------- the page ---------- */
 const TEXT = {
-  en: { title: 'AI-gile: your invitation', h: "You're invited to AI-gile", p: 'A board where AI teams build your projects, and you just say GO and test what they make. This link works once, for you.',
+  en: { models: 'AI-gile is the board. The work is done by AI models like Claude, Codex and Gemini, on your own accounts, so what they write and do comes from them, and sometimes it is wrong. Check their work before you rely on it, and keep a backup of any folder you let them into.', title: 'AI-gile: your invitation', h: "You're invited to AI-gile", p: 'A board where AI teams build your projects, and you just say GO and test what they make. This link works once, for you.',
     btn: 'Download AI-gile', steps: ['Download it.', 'Open it. Windows may warn you: click More info > Run anyway.', 'Type your code if it asks.'],
     note: 'This link works once. After you press Download you get a short code: keep it.',
     zipH: 'Not on Windows?', zipBtn: 'Download the zip instead', zipSteps: ['You need Node.js (LTS, from nodejs.org) and Claude Code, signed in.', 'Right-click the zip, choose Extract All.', 'Open the AI-gile folder and double-click start-aigile.bat.', 'Your board starts already linked to the person who invited you.'],
@@ -195,7 +195,7 @@ const TEXT = {
     codeTitle: 'AI-gile: your code', codeH: 'Your code: {code}', codeP: 'Your download starts now. Write the code down: AI-gile may ask for it when it opens.', codeAgain: 'Download did not start?', codeBtn: 'Download AI-gile again', codeNote: 'The code works once and runs out in {days} days. Keep it to yourself.',
     used: 'This link has already been used.', expired: 'This link has run out.', unknown: 'This link is not valid.', ask: 'Ask the person who sent it for a new one.', down: 'The download is not ready yet. Try again later.',
     sTitle: 'AI-gile: test site', sH: "You're invited to the AI-gile test site", sP: 'An early look at what we are building. This link works once, for you, and lets this browser in for 90 days.', sBtn: 'Open the test site', sOk: 'This browser already has a pass.', sGo: 'Go to the test site' },
-  nl: { title: 'AI-gile: je uitnodiging', h: 'Je bent uitgenodigd voor AI-gile', p: 'Een bord waar AI-teams je projecten bouwen, en jij zegt alleen GO en test wat ze maken. Deze link werkt één keer, voor jou.',
+  nl: { models: 'AI-gile is het bord. Het werk doen AI-modellen zoals Claude, Codex en Gemini, op je eigen accounts. Wat ze schrijven en doen komt dus van hen, en soms klopt het niet. Controleer hun werk voor je erop vertrouwt, en maak een back-up van elke map waar je ze in laat.', title: 'AI-gile: je uitnodiging', h: 'Je bent uitgenodigd voor AI-gile', p: 'Een bord waar AI-teams je projecten bouwen, en jij zegt alleen GO en test wat ze maken. Deze link werkt één keer, voor jou.',
     btn: 'Download AI-gile', steps: ['Download het.', 'Open het. Windows kan je waarschuwen: klik op Meer informatie > Toch uitvoeren.', 'Typ je code als erom gevraagd wordt.'],
     note: 'Deze link werkt één keer. Na Download krijg je een korte code: bewaar die.',
     zipH: 'Geen Windows?', zipBtn: 'Download dan het zipbestand', zipSteps: ['Je hebt Node.js nodig (LTS, van nodejs.org) en Claude Code, ingelogd.', 'Klik met rechts op het zipbestand en kies Alles uitpakken.', 'Open de map AI-gile en dubbelklik op start-aigile.bat.', 'Je bord start al gekoppeld aan degene die je uitnodigde.'],
@@ -203,7 +203,7 @@ const TEXT = {
     codeTitle: 'AI-gile: je code', codeH: 'Je code: {code}', codeP: 'Je download begint nu. Schrijf de code op: AI-gile kan erom vragen als het opent.', codeAgain: 'Begint de download niet?', codeBtn: 'Download AI-gile opnieuw', codeNote: 'De code werkt één keer en verloopt na {days} dagen. Houd hem voor jezelf.',
     used: 'Deze link is al gebruikt.', expired: 'Deze link is verlopen.', unknown: 'Deze link klopt niet.', ask: 'Vraag degene die hem stuurde om een nieuwe.', down: 'De download is nog niet klaar. Probeer het later opnieuw.',
     sTitle: 'AI-gile: testsite', sH: 'Je bent uitgenodigd voor de AI-gile-testsite', sP: 'Een vroege blik op wat we bouwen. Deze link werkt één keer, voor jou, en laat deze browser 90 dagen binnen.', sBtn: 'Open de testsite', sOk: 'Deze browser heeft al een pas.', sGo: 'Naar de testsite' },
-  'nl-BE': { title: 'AI-gile: je uitnodiging', h: 'Je bent uitgenodigd voor AI-gile', p: 'Een bord waar AI-teams je projecten bouwen, en jij zegt enkel GO en test wat ze maken. Deze link werkt één keer, voor jou.',
+  'nl-BE': { models: 'AI-gile is het bord. Het werk doen AI-modellen zoals Claude, Codex en Gemini, op je eigen accounts. Wat ze schrijven en doen komt dus van hen, en soms klopt het niet. Controleer hun werk voor je erop vertrouwt, en maak een back-up van elke map waar je ze in laat.', title: 'AI-gile: je uitnodiging', h: 'Je bent uitgenodigd voor AI-gile', p: 'Een bord waar AI-teams je projecten bouwen, en jij zegt enkel GO en test wat ze maken. Deze link werkt één keer, voor jou.',
     btn: 'AI-gile downloaden', steps: ['Download het.', 'Open het. Windows kan een waarschuwing tonen: klik op Meer informatie > Toch uitvoeren.', 'Typ je code als het gevraagd wordt.'],
     note: 'Deze link werkt één keer. Na Downloaden krijg je een korte code: hou die goed bij.',
     zipH: 'Geen Windows?', zipBtn: 'Download dan het zipbestand', zipSteps: ['Je hebt Node.js nodig (LTS, van nodejs.org) en Claude Code, aangemeld.', 'Klik met rechts op het zipbestand en kies Alles uitpakken.', 'Open de map AI-gile en dubbelklik op start-aigile.bat.', 'Je bord start al gekoppeld aan wie je uitnodigde.'],
@@ -235,11 +235,13 @@ function joinPage(req, res, code, lang) {
   // AIG-1231: the Windows installer first, the zip (needs Node and an AI program) as the fallback; with no installer on the server, the zip as before.
   if (!fs.existsSync(EXE)) return page(res, 200, tx, `<h1>🗂️ ${esc(tx.h)}</h1><p>${esc(tx.p)}</p>
 ${form('', 'dl', '⬇ ' + tx.btn)}
-<p class="muted">${esc(tx.zipNote)}</p>${ol(tx.zipSteps)}`);
+<p class="muted">${esc(tx.zipNote)}</p>${ol(tx.zipSteps)}
+<p class="muted">${esc(tx.models)}</p>`);
   page(res, 200, tx, `<h1>🗂️ ${esc(tx.h)}</h1><p>${esc(tx.p)}</p>
 ${form('exe', 'dl', '⬇ ' + tx.btn)}
 ${ol(tx.steps, 'big')}<p class="muted">${esc(tx.note)}</p>
-<h2>${esc(tx.zipH)}</h2>${form('zip', 'alt', tx.zipBtn)}${ol(tx.zipSteps, 'muted')}`);
+<h2>${esc(tx.zipH)}</h2>${form('zip', 'alt', tx.zipBtn)}${ol(tx.zipSteps, 'muted')}
+<p class="muted">${esc(tx.models)}</p>`);
 }
 // After Download (what=exe): the claim code, big, and the installer starting by itself (the page stays, so the code stays on screen).
 function codePage(res, claim, lang) {

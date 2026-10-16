@@ -95,6 +95,7 @@ function wzChoices() {
   const ch = (id, fn, k, pri) => `<button class="wz-choice${pri ? ' primary' : ''}" id="${id}" onclick="${fn}"><b>${esc(t('wz.ask.b.' + k))}</b><small class="muted">${esc(t('wz.ask.b.' + k + '.help'))}</small></button>`;
   openDialog(`<h2>${esc(t('wz.ask.h'))}</h2><p>${esc(t('wz.ask.pick'))}</p>
     <div class="wz-choices">${ch('wzYes', 'wizardStart()', 'wizard', true)}${ch('wzTour', 'wizardTour()', 'tour')}${ch('wzNo', 'wizardWing()', 'in')}</div>
+    <p class="muted small" id="wz-models">${esc(t('wz.ask.models'))}</p>
     <div class="err" id="wz-err"></div>`, 'wizard wz-first');   // wz-first: an opaque backdrop, so the page behind is blank
 }
 // Just let me in / Tour: the wizard counts as answered. Neither offers anything more afterwards.

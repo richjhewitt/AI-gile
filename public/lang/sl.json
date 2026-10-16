@@ -5626,5 +5626,6 @@
  "night.why.waits0": "zagnano, a raje čaka · naslednji poskus {time}",
  "night.why.other": "ni zagnano",
  "tb.phone": "Na telefonu zgornja vrstica kaže samo 📥 Nabiralnik in ☰; ostali gumbi so v ☰. Levo ali desno in Pokaži v zgornji vrstici veljata za računalnik.",
- "lkcall.incall": "📞 V klicu"
+ "lkcall.incall": "📞 V klicu",
+ "wz.ask.models": "AI-gile je tabla. Delo opravljajo AI modeli, kot so Claude, Codex in Gemini, na tvojih lastnih računih, zato kar napišejo in naredijo, izvira od njih in je včasih napačno. Preveri njihovo delo, preden se nanj zaneseš, in naredi varnostno kopijo vsake mape, v katero jih spustiš."
 }

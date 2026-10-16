@@ -175,5 +175,12 @@
  "live.last.day.one": "Viimane kaart liigutati {n} päev tagasi",
  "live.last.day.other": "Viimane kaart liigutati {n} päeva tagasi",
  "live.offline": "Otsetahvel võtab väikese hingetõmbe. Vaata varsti uuesti.",
- "live.cols": "Backlog|Tegemata|Töös|Tiim kontrollib|Sinu testida|Tiimile|Valmis"
+ "live.cols": "Backlog|Tegemata|Töös|Tiim kontrollib|Sinu testida|Tiimile|Valmis",
+ "footer.models": "AI-gile käivitab sinu eest tehisintellekti mudeleid. See, mida nad ütlevad ja teevad, on nende oma, nii et kontrolli enne, kui usaldad.",
+ "privacy.ai.h": "Tehisintellekti osa",
+ "privacy.ai.models": "AI-gile on tahvel. Tööd teevad teiste ettevõtete tehisintellekti mudelid, nagu Claude, Codex ja Gemini, sinu enda kontodel.",
+ "privacy.ai.check": "See, mida nad kirjutavad ja teevad, tuleb neilt ja võib olla vale. Kontrolli enne, kui sellele loodad või selle avaldad.",
+ "privacy.ai.files": "Nad muudavad faile ja käivitavad käske kaustades, mille ühendad. Tee varukoopia.",
+ "privacy.ai.send": "See, mida mudelile annad, läheb seda käitavale ettevõttele, nende tingimustel. Kehtivad igaühe enda tingimused ja kulud.",
+ "privacy.ai.asis": "AI-gile on varajane katseversioon, antud nii, nagu ta on."
 }

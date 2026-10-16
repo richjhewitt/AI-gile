@@ -175,5 +175,12 @@
  "live.last.day.one": "Last card moved {n} day ago",
  "live.last.day.other": "Last card moved {n} days ago",
  "live.offline": "The live board is taking a breather. Check back soon.",
- "live.cols": "Backlog|To do|In progress|Team checking|For you to test|For the team|Done"
+ "live.cols": "Backlog|To do|In progress|Team checking|For you to test|For the team|Done",
+ "footer.models": "AI-gile runs AI models for you. What they say and do is theirs, so check it before you trust it.",
+ "privacy.ai.h": "The AI part",
+ "privacy.ai.models": "AI-gile is the board. The work is done by AI models from other companies, like Claude, Codex and Gemini, on your own accounts.",
+ "privacy.ai.check": "What they write and do comes from them, and it can be wrong. Check it before you rely on it or ship it.",
+ "privacy.ai.files": "They change files and run commands in the folders you connect. Keep a backup.",
+ "privacy.ai.send": "What you give a model goes to the company that runs it, under their terms. Each one's own terms and costs apply.",
+ "privacy.ai.asis": "AI-gile is an early test version, given as it is."
 }

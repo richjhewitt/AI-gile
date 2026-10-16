@@ -175,5 +175,12 @@
  "live.last.day.one": "Last card moved {n} day ago",
  "live.last.day.other": "Last card moved {n} days ago",
  "live.offline": "The live board be catchin' its breath. Sail back soon, matey.",
- "live.cols": "Backlog Hold|Yet to do|Aboard and workin'|Crew be checkin'|For ye to test|For the crew|Done and dusted"
+ "live.cols": "Backlog Hold|Yet to do|Aboard and workin'|Crew be checkin'|For ye to test|For the crew|Done and dusted",
+ "footer.models": "AI-gile sails AI models fer ye. What they say an' do be their own doin', so check it afore ye trust it.",
+ "privacy.ai.h": "The AI bit",
+ "privacy.ai.models": "AI-gile be the board. The work be done by AI models from other crews, like Claude, Codex an' Gemini, on yer own accounts.",
+ "privacy.ai.check": "What they write an' do comes from them, an' it can be wrong. Check it afore ye rely on it or ship it.",
+ "privacy.ai.files": "They change files an' run commands in the folders ye connect. Keep a backup, matey.",
+ "privacy.ai.send": "What ye give a model goes to the company that runs it, under their terms. Each one's own terms an' costs apply.",
+ "privacy.ai.asis": "AI-gile be an early test version, given as it be."
 }

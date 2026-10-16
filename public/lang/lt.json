@@ -5626,5 +5626,6 @@
  "night.why.waits0": "paleista, nuspręsta palaukti · kitas bandymas {time}",
  "night.why.other": "nepaleista",
  "tb.phone": "Telefone viršutinėje juostoje matyti tik 📥 Gautieji ir ☰; kiti mygtukai yra ☰. Kairėje ar dešinėje ir Rodyti viršutinėje juostoje skirti kompiuteriui.",
- "lkcall.incall": "📞 Skambutyje"
+ "lkcall.incall": "📞 Skambutyje",
+ "wz.ask.models": "AI-gile yra lenta. Darbą atlieka DI modeliai, tokie kaip Claude, Codex ir Gemini, tavo paties paskyrose, todėl tai, ką jie parašo ir padaro, ateina iš jų ir kartais būna klaidinga. Patikrink jų darbą, prieš pasikliaudamas, ir pasidaryk atsarginę kopiją kiekvieno aplanko, į kurį juos įleidi."
 }

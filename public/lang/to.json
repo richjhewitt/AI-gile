@@ -5626,5 +5626,6 @@
  "night.why.waits0": "naʻe lele pea fili ke tatali · feinga hoko {time}",
  "night.why.other": "teʻeki kamata",
  "tb.phone": "ʻI ha telefoni, ʻoku fakahā pē ʻe he laine ʻolunga ʻa e 📥 Puha fakamatala mo e ☰; ko e ngaahi fakamau kehe ʻoku ʻi he ☰. Toʻohema pe toʻomataʻu mo e Fakahā ʻi he laine ʻolunga ʻoku maʻá e kompiuta.",
- "lkcall.incall": "📞 ʻI he fetuʻutaki"
+ "lkcall.incall": "📞 ʻI he fetuʻutaki",
+ "wz.ask.models": "Ko AI-gile ko e laupapa. ʻOku fai ʻa e ngāué ʻe he ngaahi sīpinga AI hangē ko Claude, Codex mo Gemini, ʻi hoʻo ngaahi akauni pē ʻaʻau, ko ia ko e meʻa ʻoku nau tohi mo fai ʻoku haʻu meiate kinautolu, pea ʻi he taimi ʻe niʻihi ʻoku hala. Siʻaki ʻenau ngāué ʻi he teʻeki ke ke falala ki ai, pea tauhi ha kopi fakamoʻui ʻo ha folda pē ʻokú ke tuku ke nau hū ki ai."
 }

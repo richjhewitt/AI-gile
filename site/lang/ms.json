@@ -175,5 +175,12 @@
  "live.last.day.one": "Kad terakhir dialihkan {n} hari lalu",
  "live.last.day.other": "Kad terakhir dialihkan {n} hari lalu",
  "live.offline": "Papan langsung sedang berehat sebentar. Datang lagi nanti.",
- "live.cols": "Backlog|Untuk dibuat|Sedang dibuat|Pasukan menyemak|Untuk anda uji|Untuk pasukan|Selesai"
+ "live.cols": "Backlog|Untuk dibuat|Sedang dibuat|Pasukan menyemak|Untuk anda uji|Untuk pasukan|Selesai",
+ "footer.models": "AI-gile menjalankan model AI untuk anda. Apa yang mereka katakan dan lakukan adalah daripada mereka, jadi semaklah sebelum anda mempercayainya.",
+ "privacy.ai.h": "Bahagian AI",
+ "privacy.ai.models": "AI-gile ialah papan. Kerja dilakukan oleh model AI daripada syarikat lain, seperti Claude, Codex dan Gemini, menggunakan akaun anda sendiri.",
+ "privacy.ai.check": "Apa yang mereka tulis dan lakukan datang daripada mereka, dan mungkin salah. Semak sebelum anda bergantung padanya atau melancarkannya.",
+ "privacy.ai.files": "Mereka mengubah fail dan menjalankan arahan dalam folder yang anda sambungkan. Buat sandaran.",
+ "privacy.ai.send": "Apa yang anda berikan kepada model dihantar kepada syarikat yang menjalankannya, mengikut terma mereka. Terma dan kos setiap satu terpakai.",
+ "privacy.ai.asis": "AI-gile ialah versi ujian awal, diberikan seadanya."
 }

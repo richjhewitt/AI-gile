@@ -5626,5 +5626,6 @@
  "night.why.waits0": "a rulat și a ales să aștepte · următoarea încercare {time}",
  "night.why.other": "nepornit",
  "tb.phone": "Pe telefon, bara de sus arată doar 📥 Inbox și ☰; celelalte butoane sunt în ☰. Stânga sau dreapta și Arată în bara de sus sunt pentru calculator.",
- "lkcall.incall": "📞 În apel"
+ "lkcall.incall": "📞 În apel",
+ "wz.ask.models": "AI-gile este board-ul. Munca o fac modele AI precum Claude, Codex și Gemini, pe conturile tale, deci ce scriu și ce fac vine de la ele și uneori e greșit. Verifică-le munca înainte să te bazezi pe ea și fă o copie de rezervă a oricărui folder în care le lași."
 }

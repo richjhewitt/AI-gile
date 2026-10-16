@@ -175,5 +175,12 @@
  "live.last.day.one": "Ua neʻe ka pā hope loa {n} lā aku nei",
  "live.last.day.other": "Ua neʻe ka pā hope loa {n} lā aku nei",
  "live.offline": "Ke hoʻomaha iki nei ka papa ola. E hoʻi mai koke.",
- "live.cols": "Backlog|E hana|Ke hana nei|Ke nānā nei ka pūʻulu|No ʻoe e test|No ka pūʻulu|Pau"
+ "live.cols": "Backlog|E hana|Ke hana nei|Ke nānā nei ka pūʻulu|No ʻoe e test|No ka pūʻulu|Pau",
+ "footer.models": "Ke holo nei ʻo AI-gile i nā kumu hoʻohālike AI nāu. ʻO kā lākou ʻōlelo a me kā lākou hana, nā lākou ia, no laila nānā ma mua o ke hilinaʻi.",
+ "privacy.ai.h": "ʻO ka ʻāpana AI",
+ "privacy.ai.models": "ʻO AI-gile ka papa. Hana ʻia ka hana e nā kumu hoʻohālike AI mai nā hui ʻē aʻe, e like me Claude, Codex a me Gemini, ma kāu mau moʻokāki ponoʻī.",
+ "privacy.ai.check": "ʻO kā lākou kākau a me kā lākou hana, no lākou mai, a hiki ke hewa. Nānā ma mua o kou hilinaʻi a hoʻokuʻu paha.",
+ "privacy.ai.files": "Hoʻololi lākou i nā waihona a holo i nā kauoha ma nā waihona āu e hoʻohui ai. E mālama i kope hoʻolako.",
+ "privacy.ai.send": "ʻO ka mea āu e hāʻawi ai i kahi kumu hoʻohālike, hele ia i ka hui e holo ana iā ia, ma lalo o kā lākou mau kūlana. Pili nā kūlana a me nā kumukūʻai o kēlā hui kēia hui.",
+ "privacy.ai.asis": "He mana hoʻāʻo mua ʻo AI-gile, hāʻawi ʻia e like me kona ʻano."
 }
