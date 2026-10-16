@@ -145,12 +145,16 @@ def('join', 'closed alpha invites: signed codes (unsigned refused), Download pag
     check('the name box has a label and fits a phone (no sideways scroll)', /What's your name/.test(await p4.textContent('.dialog label')) && await p4.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
     await p4.click('#shareGo');
     check('no name: it asks for one', /Type your name/.test(await p4.textContent('#share-err')));
-    await p4.fill('#shareName', 'Sam Smith'); await p4.press('#shareName', 'Enter');
+    await p4.fill('#shareName', 'Sam Smith');
+    if (process.env.QA_SHOTS) await p4.screenshot({ path: path.join(process.env.QA_SHOTS, 'AIG-1311.png') }).catch(() => {});
+    await p4.press('#shareName', 'Enter');
     await p4.waitForSelector('#claimHi', { timeout: 15000 });
     check('then a welcome by name, and Cleo is a friend in Messages', /Welcome, Sam Smith/.test(await p4.textContent('#claimHi')) && /You and Cleo are friends/.test(await p4.textContent('#claimWho')), await p4.textContent('.dialog'));
     const f4c = await friend4.ok('GET', '/api/dms/contacts'), f4me = await friend4.ok('GET', '/api/dms');
     check('a fresh setup: own name and own keys, only Cleo as a contact (not the owner, not Cleo\'s data)', f4c.length === 1 && f4c[0].name === 'Cleo' && f4me.mailbox !== f2box && (await friend4.ok('GET', '/api/setup')).owner === 'Sam Smith', [f4c, f4me.mailbox, f2box]);
-    check('Cleo\'s board gets Sam as a friend (the usual They match check)', !!(await until(async () => (await friend2.ok('GET', '/api/dms/contacts')).some(c => c.name === 'Sam Smith' && !c.checked))));
+    check('Cleo\'s board gets Sam as a friend (the usual They match check)', !!(await until(async () => (await friend2.ok('GET', '/api/dms/contacts')).some(c => c.name === 'Sam' && !c.checked))));
+    const heard = fs.readdirSync(path.join(friend2.data, 'dms')).filter(n => /\.json$/.test(n)).some(n => fs.readFileSync(path.join(friend2.data, 'dms', n), 'utf8').includes('Smith'));
+    check('the Friends hello carried only the first name: Cleo\'s board never hears "Smith"', !heard && !JSON.stringify(await friend2.ok('GET', '/api/dms/contacts')).includes('Smith'), await friend2.ok('GET', '/api/dms/contacts'));
     check('the join service counted it, with the first name only, and used one invite', claimsNow().shares.length === 1 && claimsNow().shares[0].name === 'Sam' && !JSON.stringify(claimsNow()).includes('Smith') && claimsNow().pool.length >= 2, claimsNow().shares);
     await p4.click('#claimOn'); await p4.waitForSelector('#wzYes');
     check('no page errors on the newcomer\'s first run', p4.errors.length === 0, p4.errors);
