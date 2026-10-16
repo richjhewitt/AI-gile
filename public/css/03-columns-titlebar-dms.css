@@ -125,21 +125,13 @@ body.desktop #dmRail, body.desktop #dmPanel { -webkit-app-region: no-drag; }
 .su-k { display: inline-block; min-width: 96px; color: var(--muted); font-size: 13px; }
 .su-red { color: var(--danger); font-weight: 600; }
 .su-person.waiting { color: var(--muted); }
-#suPrompt { position: fixed; inset-inline-start: 12px; bottom: 12px; z-index: 25; max-width: calc(100vw - 24px); }
-#suPrompt .su-pill { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 8px 12px; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
-/* The "Call stand-ups?" pill floats over the bottom left: leave room under the Messages list so Show closed stays clickable (AIG-917). */
-body:has(#suPrompt) .dm-list { padding-bottom: 76px; }
-/* AIG-967: never over a dialog, and room under the page so buttons at the bottom (All hands Send, Request) stay clickable */
-body:has(#dialog:not(:empty)) #suPrompt { display: none; }
-body:has(#suPrompt) #app { padding-bottom: 76px; }
-@media (max-width: 600px) { body:has(#suPrompt) .dm-list { padding-bottom: 130px; } }
-/* AIG-1372: padding under #app never reached the things that end at the window bottom by themselves: the Messages panel (its
-   chat box and Send) and, since AIG-1217, the board columns. So the pill moves aside of an open Messages panel (hides when there
-   is no room beside it), hides over an open card, and the columns stop above it. */
-body:has(#dmPanel:not([hidden])) #suPrompt { inset-inline-start: calc(60px + min(440px, 100vw - 60px) + 12px); max-width: calc(100vw - 60px - min(440px, 100vw - 60px) - 24px); }
-@media (max-width: 960px) { body:has(#dmPanel:not([hidden])) #suPrompt { display: none; } }
-body:has(#modal:not(:empty)) #suPrompt { display: none; }
-@media (min-width: 761px) { body:has(#suPrompt) .board:not(.focus) .column { max-height: max(360px, calc(100vh - var(--board-top, 130px) - 24px - 64px)); } }
+/* AIG-1372: the "Call stand-ups?" pill sits in the page flow at the top, above the search row, so it takes its own room and never
+   lies over a control. As a floating pill at the window bottom it kept landing on something (Show closed AIG-917, All hands Send
+   AIG-967, a chat's Send AIG-1139, the board columns and the Team box's Badge maker AIG-1372): whatever ends at the window bottom.
+   With Messages open it moves to the right of the panel, so it stays in sight. */
+#suPrompt { padding: 12px 20px 0; }
+body:has(#dmPanel:not([hidden])) #suPrompt { padding-inline-start: calc(min(440px, 100vw - 60px) + 20px); }
+#suPrompt .su-pill { display: inline-flex; max-width: 100%; flex-wrap: wrap; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 8px 12px; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
 .su-pick label { display: block; padding: 4px 0; }
 
 /* ---------- the rail as Discord servers (AIG-147..149) ---------- */

@@ -31,12 +31,18 @@ async function morningPrompt() {
   // Read the shared project list only when a prompt can actually be shown; only worth asking once a project has a team and a folder on disk (AIG-1078).
   try { if (!(await PagePoll.get('/api/projects')).some(p => !p.archived && p.path && !p.pathMissing && (p.crew || []).length)) return void setTimeout(morningPrompt, 60e3); } catch { return; }
   try { localStorage.setItem('aigile.standupAsked', suDay()); } catch { return; }
+  suPromptShow();
+}
+// AIG-1372: the pill goes in the page flow above the search row, so it takes its own room and never floats over a control.
+function suPromptShow() {
+  suPromptGone();
   const el = document.createElement('div'); el.id = 'suPrompt';
   el.innerHTML = `<div class="su-pill"><b>${esc(t('standup.prompt'))}</b>
     <button class="primary" onclick="callStandup(null, true)">${esc(t('standup.prompt.all'))}</button>
     <button onclick="suPick()">${esc(t('standup.prompt.pick'))}</button>
     <button onclick="suPromptGone()">${esc(t('standup.prompt.no'))}</button></div>`;
-  document.body.appendChild(el);
+  const at = $('filterbar');
+  if (at) at.before(el); else document.body.appendChild(el);
 }
 // Gone on any move to another page and on Esc: it is only a nudge, never something to leave sitting over a list or a chat (AIG-1139).
 window.addEventListener("hashchange", suPromptGone);
