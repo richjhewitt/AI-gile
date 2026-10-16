@@ -4201,6 +4201,8 @@
  "board.empty.start": "Press {add} to add your first card. Got a code folder? Press {connect} to point this project at it, then wake the team: it reads the history there and makes the first cards.",
  "dlg.newcard.wentto": "Added {id} to {column}",
  "board.empty.start.noai": "Press {add} to add your first card. Got a code folder? Press {connect} to point this project at it.",
+ "board.empty.first": "Press {add} to add your first card.",
+ "board.empty.folder": "The team also needs a folder for its work: press {choose} or {make} in the box above.",
  "rb.heading": "📖 Runbooks",
  "rb.linked": "(linked)",
  "rb.open": "Open",

@@ -4195,6 +4195,8 @@
  "board.empty.start": "Druk op {add} om je eerste kaart toe te voegen. Heb je een codemap? Druk op {connect} om dit project eraan te koppelen en maak dan het team wakker: het leest daar de geschiedenis en maakt de eerste kaarten.",
  "dlg.newcard.wentto": "{id} toegevoegd aan {column}",
  "board.empty.start.noai": "Druk op {add} om je eerste kaart toe te voegen. Heb je een codemap? Druk op {connect} om dit project eraan te koppelen.",
+ "board.empty.first": "Druk op {add} om je eerste kaart toe te voegen.",
+ "board.empty.folder": "Het team heeft ook een map nodig voor zijn werk: druk op {choose} of {make} in het vak hierboven.",
  "rb.heading": "📖 Runbooks",
  "rb.linked": "(gekoppeld)",
  "rb.open": "Openen",

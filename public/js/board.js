@@ -179,7 +179,7 @@ function renderBoard(p) {
     <details class="bdetails" id="bDetails"${state.detailsOpen ? ' open' : ''} ontoggle="state.detailsOpen = this.open"><summary>${esc(t('board.details'))}</summary><div class="flight">${t('board.flight.html')} ${flightHtml(flightList(p), p.slug) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>${p.path ? `<p class="muted"><code>${esc(p.path)}</code></p>` : ''}</details>
     ${Share.laneHtml(p)}
     ${Spaces.boardHtml(p, projCard)}
-    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path || (NoAi.on && p.lifeBoard) ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.start', { add: esc(t('board.new')), connect: esc(t('board.connect')) })}</div>`}
+    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path || (NoAi.on && p.lifeBoard) ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.first', { add: esc(t('board.new')) }) + (teamState(p) ? ' ' + t('board.empty.folder', { choose: esc(t('noteam.choose')), make: esc(t('noteam.make')) }) : '')}</div>`}
     ${board}
     ${pickBarHtml(p)}
     <div class="side">
@@ -199,6 +199,7 @@ function teamState(p) {
   if (!team.length) return 'none';
   return !p.path && team.some(m => m.kind !== 'person' && !m.friend) ? 'folder' : '';
 }
+// AIG-1367: the empty board hint names these buttons (Choose a folder, Make one for me), not the Connect folder hidden under More.
 function teamLineHtml(p) {
   const st = teamState(p); if (!st) return '';
   const folderBtn = `<button type="button" id="noTeamFolder" onclick="connectDialog()">${esc(t('noteam.choose'))}</button> <button type="button" id="noTeamMake" onclick="makeTeamFolder(this)">${esc(t('noteam.make'))}</button>`;
