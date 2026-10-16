@@ -86,12 +86,12 @@ function applyAppLogo(url, icon) {
   b.innerHTML = url ? `<img class="brand-logo" src="${esc(url)}" alt=""> AI-gile` : '<img class="brand-logo" src="icons/icon-192.png" alt=""> AI-gile';
 }
 let wasQuiet = null;   // was the board quiet at the last check (AIG-232)
-let checkingBuild = false;
+let checkingBuild = false, quietReload = null;
 async function checkBuild() {
   if (!i18n.ready || checkingBuild) return;
   checkingBuild = true;
   try {
-    const m = await api('GET', '/api/meta');
+    const asked = Date.now(), m = await api('GET', '/api/meta'), busy = Date.now() - asked > 2000;
     // Quiet/focus flags affect the title and alerts in other windows too.
     if (document.hidden) {
       setNight(m.quiet);
@@ -119,7 +119,12 @@ async function checkBuild() {
     if (!!m.setupNeeded !== !!state.setupNeeded) { state.setupNeeded = !!m.setupNeeded; if (state.route && state.route.view === 'home') refresh(true); }
     if (loadedBuild === null) { loadedBuild = m.build; return; }
     // While you're quiet (AIG-224): a new board or page code reloads by itself, unless something is half-typed.
-    if (m.quiet && m.build !== loadedBuild && !hasUnsent()) { afterCall('reload', () => location.reload()); return; }
+    // AIG-1405: not while the board is slow to answer (a reload then only shows "Updating… retrying"), and each window at its own
+    // moment within 8 s, so the main window and every pop-out don't all load the whole page from a busy board at once.
+    if (m.quiet && m.build !== loadedBuild && !hasUnsent()) {
+      if (!busy && !quietReload) quietReload = setTimeout(() => { if (!hasUnsent()) afterCall('reload', () => location.reload()); else quietReload = null; }, Math.round(Math.random() * 8000));
+      return;
+    }
     // A newer version on GitHub (AIG-92): an ⬆ Update pill, until it's applied.
     const u = m.update || {}, upd = u.behind ? `<button class="primary" onclick="applyUpdatePage()" title="${esc((u.subjects || []).join('\n'))}">${esc(t('update.btn'))}</button>` : '';
     if ($('upUpdate').dataset.sig !== upd && !$('upUpdate').dataset.busy) { $('upUpdate').dataset.sig = upd; $('upUpdate').innerHTML = upd; }

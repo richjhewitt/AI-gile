@@ -14,6 +14,8 @@ const makeRoutes = require('./lib/routes');
 const { heard } = require('./lib/presence');
 const phone = require('./lib/phone');
 const seal = require('./lib/phone-seal');
+const lag = require('./lib/lag');   // 🐢 stalls and slow calls go to data/logs/_lag.log (AIG-1405)
+lag.start();
 
 fs.mkdirSync(DATA, { recursive: true });
 
@@ -236,7 +238,8 @@ const server = http.createServer(async (req, res) => {
           // Attachment uploads are base64 files up to 10 MB, so they get a bigger body limit; opening a project file (AIG-446) up to 20 MB of them.
           const body = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req, pathname === '/api/projects/import' ? 40e6 : (pathname.endsWith('/attachments') || /^\/api\/dms\/contacts\/[^/]+\/messages$/.test(pathname)) ? 15e6 : /\/((app-)?logo|me-picture)$/.test(pathname) || /\/uploads\/[0-9a-f]{32}\/\d+$/.test(pathname) ? 2e6 : 1e6) : {};   // a resumable upload's piece: 1 MB as base64 (AIG-1165)
           if (req.aigilePhone) phone.deniedBody(body);   // a phone sets no command for a team to run (AIG-868)
-          const out = await fn(m.slice(1), body, url.searchParams, req);   // DM routes talk to the relay, so they may be async; req: who is asking (share.ownerOnly)
+          const ended = lag.call(req.method, pathname);   // 🐢 a slow call is written down (AIG-1405)
+          let out; try { out = await fn(m.slice(1), body, url.searchParams, req); } finally { ended(); }   // DM routes talk to the relay, so they may be async; req: who is asking (share.ownerOnly)
           // A route can answer with a file instead of JSON: { __file: absolute path }.
           if (out && out.__cookie) { res.setHeader('Set-Cookie', out.__cookie); delete out.__cookie; }   // the phone's device key (AIG-868)
           if (out && out.__sse) return out.__sse(res, req);   // a live stream (the terminal, AIG-471): the route writes it

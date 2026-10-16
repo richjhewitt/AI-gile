@@ -188,7 +188,8 @@ const state = { route: null, projects: [], inbox: [], project: null, openCard: n
 try { state.showArchived = localStorage.getItem('aigile.showArchived') === '1'; } catch {}
 
 // AIG-1194: the small status in the top bar when a refresh fails: calm, plain, and it says the page keeps trying.
-const liveError = e => t(e && e.unreachable ? 'live.cantreach' : 'live.trouble');
+// AIG-1405: a read that timed out means the board is there but busy, not gone, so it says so.
+const liveError = e => t(e && e.kind === 'slow' ? 'live.slow' : e && e.unreachable ? 'live.cantreach' : 'live.trouble');
 const api = async (method, url, body, options = {}) => {
   // PagePoll.request: shared GETs, a 15 s timeout on reads (a stalled connection cannot hold the refresh queue), the caller's signal.
   const j = await PagePoll.request(method, url, body, options);

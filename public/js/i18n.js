@@ -105,6 +105,8 @@ async function loadLang() {
   const files = Array.isArray(codes.codes) ? codes.codes : await langFiles();
   for (const l of LANG_LIST) if (l.code === 'en' || files.includes(l.code)) LANGS[l.code] = l.name;
   immAuto();
+  // The pretend board (pretend.js) may still set its Flemish default (AIG-1405: asked in the background now); never wait long for it.
+  if (window.PretendReady) await Promise.race([window.PretendReady, new Promise(r => setTimeout(r, 3000))]).catch(() => {});
   i18n.lang = langCode();
   i18n.en = await enP;
   i18n.dict = i18n.lang === 'en' ? i18n.en : await (i18n.lang === guess ? guessP : needJson('/lang/' + i18n.lang + '.json'));
