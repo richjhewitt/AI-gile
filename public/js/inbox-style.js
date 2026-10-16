@@ -10,14 +10,14 @@ const INBOX_CSS = `
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme=light]) {
-    --q-bg: #3b74f0; --q-fg: #fff; --q-tint: #162039; --q-line: #5b8cf5; --q-ink: #9dbbff;
+    --q-bg: #285dcc; --q-fg: #fff; --q-tint: #162039; --q-line: #5b8cf5; --q-ink: #9dbbff;
     --b-line: #ef5350; --b-tint: #2c1618; --b-ink: #ff9b97;
     --t-bg: #22305a; --t-fg: #bcd0ff; --t-tint: #181e2e; --t-line: #4a5f9a; --t-ink: #a9c1ff;
     --k-bg: #3d2e10; --k-fg: #ffd591; --k-tint: #221c10; --k-line: #a0762a; --k-ink: #ffcf7a;
   }
 }
 :root[data-theme=dark], :root[data-theme=black] {
-    --q-bg: #3b74f0; --q-fg: #fff; --q-tint: #162039; --q-line: #5b8cf5; --q-ink: #9dbbff;
+    --q-bg: #285dcc; --q-fg: #fff; --q-tint: #162039; --q-line: #5b8cf5; --q-ink: #9dbbff;
     --b-line: #ef5350; --b-tint: #2c1618; --b-ink: #ff9b97;
     --t-bg: #22305a; --t-fg: #bcd0ff; --t-tint: #181e2e; --t-line: #4a5f9a; --t-ink: #a9c1ff;
     --k-bg: #3d2e10; --k-fg: #ffd591; --k-tint: #221c10; --k-line: #a0762a; --k-ink: #ffcf7a;
@@ -78,7 +78,7 @@ const INBOX_CSS = `
 .ib-thread .ib-item.q { border-radius: 16px 16px 16px 4px; }
 @media (max-width: 720px) { .ib-chat { flex-direction: column; } .ib-chats { position: static; flex-basis: auto; width: 100%; } }
 .ib-item[data-project] .ib-proj[role=link] { cursor: pointer; } .ib-item[data-project] .ib-proj[role=link]:hover { filter: brightness(1.15); } .ib-item[data-project] .ib-proj[role=link]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.ib-proj { font-weight: 700; color: #fff; background: var(--proj, var(--muted)); border-radius: 999px; padding: 1px 9px; font-size: 13px; }
+.ib-proj { font-weight: 700; color: var(--text); background: var(--panel); border: 1px solid var(--proj, var(--muted)); border-radius: 999px; padding: 1px 9px; font-size: 13px; }
 .ib-item.q, .ib-item.t, .ib-item.k, .ib-item { border-left: 8px solid var(--proj, var(--line)); }
 .ib-tab[style] { border-bottom: 3px solid var(--proj); }
 .ib-item.q.blk { border-left-color: var(--proj, var(--b-line)); }

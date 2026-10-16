@@ -19,15 +19,21 @@ export async function contrastTokens(page, themes) {
       return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
     };
     const fails = [];
+    const sheet = document.createElement('style'); sheet.textContent = INBOX_CSS; document.head.appendChild(sheet);
     for (const theme of themes) {
       document.documentElement.dataset.theme = theme === 'night' ? 'dark' : theme;
       document.documentElement.toggleAttribute('data-night', theme === 'night');
       const style = getComputedStyle(document.documentElement), token = k => style.getPropertyValue('--' + k).trim();
+      for (const [fg, bg] of [['on-fill', 'accent'], ['on-fill', 'done'], ['on-fill', 'danger'], ['on-fill', 'you'], ['q-fg', 'q-bg']]) {
+        const a = lum(token(fg)), b = lum(token(bg)), ratio = (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+        if (ratio < 4.5) fails.push({ theme, fg, bg, ratio });
+      }
       for (const fg of ['text', 'muted', 'accent', 'done', 'danger', 'you', 'warn-ink']) for (const bg of ['bg', 'panel', 'col']) {
         const a = lum(token(fg)), b = lum(token(bg)), ratio = (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
         if (ratio < 4.5) fails.push({ theme, fg, bg, ratio });
       }
     }
+    sheet.remove();
     return fails;
   }, themes);
 }

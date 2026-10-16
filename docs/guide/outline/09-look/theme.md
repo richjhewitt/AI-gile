@@ -19,3 +19,5 @@ Theme and matching scrollbars.
 - Icon buttons announce their action using the same words as their tooltip.
 
 - Night mode keeps warm text readable, including hints and headings.
+
+- Older In flight entries use italics instead of faded text; badges and project names stay readable in every theme.
