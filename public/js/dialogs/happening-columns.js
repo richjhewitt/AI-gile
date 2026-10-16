@@ -3,7 +3,7 @@
 function happeningDialog() {
   const p = state.project, open = p.cards.filter(c => c.status !== 'done');
   const list = (cs, empty) => cs.length ? `<ul>${cs.map(c => `<li><a href="#/p/${p.slug}/${c.id}" onclick="closeDialog()">${esc(c.id)}</a> ${esc(c.title)}${c.assignee ? ` <span class="muted">@${esc(c.assignee)}</span>` : ''}</li>`).join('')}</ul>` : `<p class="muted">${empty}</p>`;
-  const live = teamLive(p), team = teamSorted((p.team || []).filter(m => !/retired/i.test(m.status || '')), live);   // AIG-1344: working first, the rest idle
+  const live = teamLive(p), team = teamSorted(teamOf(p).filter(m => !/retired/i.test(m.status || '')), live);   // AIG-1344: working first, the rest idle
   popNext('happening'); openDialog(`<h2>${esc(t('happening.h', { name: p.name }))}</h2>
     <div class="last">${presenceHtml(p, false)}</div>
     <h3>${esc(t('happening.doing'))}</h3>${list(open.filter(c => c.status === 'doing'), esc(t('happening.doing.none')))}

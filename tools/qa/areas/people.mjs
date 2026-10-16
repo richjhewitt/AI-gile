@@ -5,7 +5,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
-import { freePort, startRelay, startServer, until, check, sleep, mkProject, ROOT, def } from '../lib.mjs';
+import { freePort, startRelay, startServer, until, check, sleep, mkProject, mkCard, ROOT, def } from '../lib.mjs';
 
 def('people', '👥 Humans and Agents: the operator board sends three counts to the relay /people.json (signed, others refused, no names); the teaser line, count-up, plurals, hidden on error, 390px, dark/black (AIG-1314)', async (s, ctx) => {
   const b = await startServer({ AIGILE_DM_POLL_MS: '300', AIGILE_PEOPLE_MS: '300' }, await freePort());
@@ -44,6 +44,11 @@ def('people', '👥 Humans and Agents: the operator board sends three counts to 
     check('only counts reach the relay: no names, no codes', Object.keys(two || {}).sort().join() === 'agents,at,humans,working' && !/Forge|Friend|Owner|AAAA|Crew/.test(text), text);
     await sleep(800);
     check('the friend board (not the operator) never replaced the numbers', (await json()).humans === 2);
+    // AIG-1434: helpers working through the CLI (--as) count as at work, by the one rule in lib/teamlive.js; the owner never does
+    const card = await mkCard(b, 'crew-one', 'CLI work');
+    for (const as of ['Courier', 'Visitor', 'Owner']) b.cli(['comment', 'crew-one', card.id, '- on it', '--as', as]);
+    const busy = await until(async () => { const j = await json(); return j.working === 2 ? j : null; }, 15000);
+    check('a CLI comment --as Courier and --as Visitor (not on the team) count 2 at work, the owner not; Visitor counts as an agent', busy && busy.working === 2 && busy.agents === 4, busy || await json());
   } finally { relay.stop(); try { await b.stop(); } catch {} }
 
   // the teaser line, file:// with a stubbed fetch

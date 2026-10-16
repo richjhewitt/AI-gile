@@ -457,6 +457,7 @@
  "board.team.active": "Toon alleen actieve",
  "board.team.idle": "💤 niet bezig",
  "board.team.idleseen": "💤 niet bezig · laatst gezien {ago}",
+ "board.team.cli": "⚡ bezig (opdrachtregel)",
  "board.log": "Logboek & beslissingen",
  "board.log.none": "Nog niks gelogd.",
  "board.limit": "Limiet {n}",

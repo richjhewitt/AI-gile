@@ -113,11 +113,21 @@ async function restoreDeleted(id) {
 function teamLive(p) {
   const pr = p.presence || {}, ids = new Set((pr.workers || []).map(w => w.id)), online = !!(pr.online || pr.running);
   const names = new Set((p.cards || []).filter(c => ids.has(c.id) && c.assignee).map(c => String(c.assignee).toLowerCase()));
-  return m => /working|review/i.test(m.status || '') && (names.has(String(m.name).toLowerCase()) || (online && /lead/i.test(m.name + ' ' + (m.role || ''))) || Date.now() - Date.parse(m.updated || 0) < 12 * 3600e3);
+  // AIG-1434: a helper's CLI write counts as working until its window ends (presence.cli, lib/teamlive.js).
+  const cli = new Map((pr.cli || []).map(w => [String(w.name).toLowerCase(), Date.parse(w.until)]));
+  const viaCli = m => (cli.get(String(m.name).toLowerCase()) || 0) > Date.now();
+  const live = m => viaCli(m) || /working|review/i.test(m.status || '') && (names.has(String(m.name).toLowerCase()) || (online && /lead/i.test(m.name + ' ' + (m.role || ''))) || Date.now() - Date.parse(m.updated || 0) < 12 * 3600e3);
+  live.cli = viaCli;
+  return live;
+}
+// The team plus a guest row for each helper heard from on the CLI who is not on it (AIG-1434, lib/teamlive.js members).
+function teamOf(p) {
+  const team = p.team || [], on = new Set(team.map(m => String(m.name).toLowerCase()));
+  return team.concat(((p.presence || {}).cli || []).filter(w => !on.has(String(w.name).toLowerCase())).map(w => ({ name: w.name, status: '', updated: w.at, cli: true })));
 }
 // Working ones first, then the rest, last seen newest first.
 const teamSorted = (team, live) => team.map((m, i) => [m, i]).sort(([a, i], [b, j]) => (live(b) - live(a)) || (live(a) ? i - j : String(b.updated || '').localeCompare(String(a.updated || '')))).map(([m]) => m);
-const teamStatus = (m, live) => live(m) ? m.status || '' : m.updated ? t('board.team.idleseen', { ago: ago(m.updated) }) : t('board.team.idle');
+const teamStatus = (m, live) => live(m) ? (live.cli && live.cli(m) && !/working|review/i.test(m.status || '') ? t('board.team.cli') : m.status || '') :m.updated ? t('board.team.idleseen', { ago: ago(m.updated) }) : t('board.team.idle');
 
 /* ---------- board page ---------- */
 // Phone (AIG-933): the toolbar buttons sit behind one ⋯ button; the choice survives the 1 s redraw.
@@ -131,7 +141,7 @@ function renderBoard(p) {
     : `<div class="board${fyFocus(p.slug) ? ' focus' : ''}">${columnsHtml(p, p.cards)}</div>`;
   // AIG-1211: the Team panel lists who is working now; the rest fold under Show all. AIG-1344: by the one rule (teamLive), working
   // ones first; everyone else shows 💤 idle with when they were last seen (a stale "working" from weeks ago too).
-  const live = teamLive(p), team = teamSorted((p.team || []).filter(m => !/retired/i.test(m.status || '')), live);
+  const live = teamLive(p), team = teamSorted(teamOf(p).filter(m => !/retired/i.test(m.status || '')), live);
   const showAll = teamAll(), folded = team.filter(m => !live(m)).length, shownTeam = showAll ? team : team.filter(live);
   const log = (p.log || []).slice().reverse().slice(0, 50);
   // AIG-1076: an empty (new) project keeps + New, Docs, Ask the team and Views on the bar; the rest sits behind ⋯ More (on a phone everything does, AIG-933).
