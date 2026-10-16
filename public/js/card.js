@@ -122,7 +122,7 @@ function renderCard(p, c) {
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
   return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel" ${Term.panelAttr(p, c)}>
-    ${movedBanner(c)}<div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
+    ${movedBanner(c)}<div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, forYou(c) ? 'verify' : c.status))}${c.status === 'team' && c.prevStatus && !forYou(c) ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2 dir="auto">${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
     ${practiceHtml(p, c)}${deskHtml(c)}${majorHtml(c)}${CiPage.affects(p, c)}${reviewHtml(p, c)}
