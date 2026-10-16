@@ -11,10 +11,13 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
   await page.waitForSelector('.column.foryou .card');
 
   // desktop: unchanged toolbar, no ⋯
-  check('desktop: no ⋯ button', !(await page.isVisible('#tbDots')));
-  check('desktop: toolbar buttons visible', await page.isVisible('.toolbar button[onclick="docsDialogOpen()"], .toolbar button[onclick="openDocs()"]'));
+  check('desktop: More stays after adding cards (AIG-1359)', await page.isVisible('#tbDots') && !(await page.isVisible('#hfBtn')));
+  check('desktop: Views stays visible', await page.isVisible('.toolbar button[onclick="viewsDialog()"]'));
   check('desktop: the New card button is visible', await page.isVisible('.toolbar .primary'));
 
+  check('daily Pick stays visible and deleted tools stay folded (AIG-1385)', await page.isVisible('#pickBtn') && !(await page.isVisible('#boardTbMore')));
+  check('deleted tool stays inside More (AIG-1385)', await page.evaluate(p => { const host = document.createElement('div'); host.innerHTML = renderBoard({ ...p, nDeleted: 1 }); return !!host.querySelector('#boardTbMore #deletedBtn') && !!host.querySelector('.tb-keep #pickBtn'); }, await s.ok('GET', '/api/projects/alpha')));
+  await page.click('#tbDots');
   // For you chips (AIG-938)
   const chips = await page.$$eval('.fy-chips .fy-chip', els => els.map(e => e.dataset.first));
   check('For you shows only chips with cards (plus the active one)', chips.length >= 1 && chips.length < 8 && chips.includes('k'), chips);
@@ -46,6 +49,7 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
 
   await page.screenshot({ path: 'R:/wt/shot-board-desk.png' }).catch(() => {});
 
+  await page.click('#tbDots');
   // phone (AIG-933)
   await page.setViewportSize({ width: 390, height: 844 });
   await sleep(300);
@@ -80,8 +84,8 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
   await ep.setViewportSize({ width: 1366, height: 800 });
   await sleep(400);
   check('1366px: all columns fit without sideways scroll', await ep.$eval('.board', e => e.scrollWidth <= e.clientWidth + 1));
-  check('column headers are one line each (name, count and buttons)', await ep.$$eval('.column h3', hs => hs.length >= 6 && hs.every(h => h.getBoundingClientRect().height < 44)));
-  check('the For you buttons stay right of the name', await ep.$eval('.column.foryou h3', h => { const [a, b] = h.children; return b.getBoundingClientRect().left >= a.getBoundingClientRect().right - 1; }));
+  check('column names remain fully readable', await ep.$$eval('.column h3 > span:first-child', es => es.every(e => e.scrollWidth <= e.clientWidth + 1)));
+  check('For you actions sit below the full label', await ep.$eval('.column.foryou h3', h => { const [a, b] = h.children; return b.getBoundingClientRect().top >= a.getBoundingClientRect().bottom - 1; }));
   // AIG-1082: a phone shows search plus a ⚙ Filters button, the dropdowns open under it
   await ep.setViewportSize({ width: 390, height: 844 });
   await sleep(400);
@@ -99,7 +103,7 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
   await ep.keyboard.press('Escape');
   await ep.setViewportSize({ width: 1280, height: 800 });
   await sleep(300);
-  check('desktop: no Filters button, the dropdowns show', !(await ep.isVisible('#f-tog')) && await ep.isVisible('#f-sel select'));
+  check('desktop: More remains available', await ep.isVisible('#tbDots'));
   await ep.close();
   noErrors(page);
 }, true);

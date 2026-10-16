@@ -62,6 +62,7 @@ def('homeux', 'Home: counts hide zeros and show % done, More holds the moved but
   try { page = await openPage(ctx, '#/'); } finally { openPage.homeMore = false; }
   await page.evaluate(() => localStorage.removeItem('aigile.homeMoreOpen')); await page.reload();   // leave the More menu as a user finds it: closed
   await page.waitForSelector('a.proj .counts');
+  check('space children use shared grid tracks (AIG-1386)', await page.evaluate(() => { const wrap = document.createElement('div'); wrap.className = 'space-kids'; wrap.innerHTML = '<div class="grid"></div>'; document.querySelector('.grid').append(wrap); const ok = getComputedStyle(wrap).gridTemplateColumns.includes('subgrid') && getComputedStyle(wrap.firstChild).display === 'contents'; wrap.remove(); return ok; }));
   const counts = await page.$$eval('a.proj .counts span', e => e.map(x => x.textContent.trim()));
   check('counts show no zero columns', counts.length > 0 && counts.every(x => !/\b0$/.test(x)), counts.join('|'));
   check('the card says % done', /\d+%/.test(await page.textContent('a.proj .counts b')));

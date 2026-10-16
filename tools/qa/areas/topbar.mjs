@@ -68,6 +68,9 @@ def('topmenu', 'Top bar: Inbox/Help/Setup + More on desktop, one row with a ☰ 
   let page; try { page = await openPage(fresh, '#/'); } finally { openPage.firstrun = false; }
   await page.waitForSelector('#tbMoreBtn');
   const shown = () => page.evaluate(() => [...document.querySelectorAll('header button, header a.navlink')].filter(e => !e.closest('#tbMoreMenu') && e.getClientRects().length).map(e => e.id));
+  await page.setViewportSize({ width: 1366, height: 768 });
+  await page.evaluate(() => { const e = document.createElement('span'); e.className = 'ib-alerts'; e.textContent = '1 question  2 tests'; document.getElementById('inboxTop').append(e); });
+  check('laptop header stays one row with Inbox chips (AIG-1361)', await page.$eval('header', e => e.getBoundingClientRect().height < 70));
   let ids = await shown();
   check('desktop: Help, Setup and More are in the bar, Glance/Theme are not (Idea sits by Raise bug, AIG-1066)', ['helpBtn', 'ideaBtn', 'setupNav', 'tbMoreBtn'].every(i => ids.includes(i)) && !['glanceBtn', 'themeBtn'].some(i => ids.includes(i)), ids.join());
   check('first run: ⚡ Usage is in the bar (AIG-1169)', ids.includes('usageNav'), ids.join());

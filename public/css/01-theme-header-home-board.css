@@ -314,3 +314,18 @@ th { color: var(--muted); font-weight: 500; }
 .firststeps li.done .fs-tick { background: var(--accent); border-color: var(--accent); color: #fff; }
 @media (pointer: coarse) { .firststeps li a { display: inline-flex; align-items: center; min-height: 40px; } }   /* a finger-sized step link on phones and tablets */
 .nc-multi { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 0 0 10px; padding: 8px 10px; border: 1px dashed var(--accent); border-radius: var(--radius); }
+
+/* Keep Rows a small control inside the board menu. */
+.toolbar .lanesel { width: auto; max-width: 100%; flex: 0 1 auto; }
+.toolbar .tb-keep { display: contents; }
+@media (max-width: 600px) {
+  .toolbar .tb-keep { display: none; }
+  .toolbar.compact .tb-more { position: static; width: 100%; box-shadow: none; }
+}
+
+/* Column labels remain readable alongside their actions. */
+.column h3 { flex-wrap: wrap; gap: 4px; align-items: center; }
+.column h3 > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; flex-basis: 100%; }
+
+@media (max-width: 600px) { .column h3 > span:first-child { flex-basis: auto; } }
+#sampleRemove { font-size: 13px; font-weight: 400; vertical-align: middle; }

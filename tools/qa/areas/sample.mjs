@@ -8,6 +8,7 @@ def('sample', 'sample project: Add a sample project on the empty home creates it
   await page.waitForSelector('#sampleBtn');
   await page.click('#sampleBtn');
   await page.waitForSelector('#sampleRemove');
+  check('Remove sample uses normal button typography (AIG-1364)', await page.$eval('#sampleRemove', e => parseFloat(getComputedStyle(e).fontSize) <= 14 && Number(getComputedStyle(e).fontWeight) <= 500));
   const ps = await s.ok('GET', '/api/projects');
   check('one project, marked sample', ps.length === 1 && ps[0].sample === true && ps[0].slug === 'sample-project', ps);
   const p = await s.ok('GET', '/api/projects/sample-project');
