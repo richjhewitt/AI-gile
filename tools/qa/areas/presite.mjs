@@ -153,11 +153,11 @@ def('presite', 'aigile.lol pre-teaser (presite/, file://): live board moving beh
       tc: document.querySelector('meta[name="theme-color"]').content, fade: getComputedStyle(document.body).transitionDuration }; });
   const reddish = c => { const m = (c.match(/[\d.]+/g) || []).map(Number); return m[0] > m[1] && m[1] >= m[2] && m[0] > 120; };
   let ni = await nl();
-  check('night snapshot: the line under the people count says the night watchman is in charge', ni.on && ni.shown && ni.under && ni.text === '🌙 The night watchman is in charge', ni);
+  check('night snapshot: the line under the people count says the night watchman is in charge and the human is resting (AIG-1407)', ni.on && ni.shown && ni.under && ni.text === '🌙 The night watchman is in charge · 😴 the human is resting', ni);
   check('night colours: near-black page (#0b0605), red-tinted text, readable (4.5:1) on the card and the button', ni.body === 'rgb(11, 6, 5)' && ni.tc === '#0b0605' && reddish(ni.line) && ratio(ni.card, ni.line) >= 4.5 && ratio(ni.card, ni.ntext) >= 4.5 && ratio(ni.btn, ni.btext) >= 4.5 && ni.fade === '0s', ni);   // the fade is over, so a theme click is instant again
   check('night at 390px: no sideways scroll, the card fits', await fit());
   await page.evaluate(() => SiteI18n.set('nl')); await page.waitForFunction(() => document.documentElement.lang === 'nl');
-  check('night in Dutch: the line is translated', (await page.$eval('#pre-night', e => e.textContent)) === '🌙 De nachtwaker heeft nu de leiding');
+  check('night in Dutch: the line is translated', (await page.$eval('#pre-night', e => e.textContent)) === '🌙 De nachtwaker heeft nu de leiding · 😴 de mens rust even');
   await page.evaluate(snap => window.__es.h.snapshot({ data: JSON.stringify(snap) }), SNAP);
   await sleep(50); await faded();
   ni = await nl();
