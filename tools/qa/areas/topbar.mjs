@@ -1,5 +1,5 @@
 // QA area: topbar (AIG-575/576). Setup lists the top bar buttons: hide one, reorder, move to the left, colour, reset; the bar follows, and it survives a reload.
-import { check, mkProject, mkCard, openPage, noErrors, def, sleep } from '../lib.mjs';
+import { BASE, check, mkProject, mkCard, openPage, noErrors, def, sleep } from '../lib.mjs';
 
 def('topbar', 'Setup: top bar buttons on/off, reorder, left or right side, theme colour, Reset to default (AIG-575/576)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -202,5 +202,21 @@ def('tbboard', 'Project board: the header stays on one row at 1280/1024/390 px, 
   await sleep(800);
   const third = (await s.ok('GET', '/api/projects/' + e.slug)).cards.find(c => c.title === 'Column plus, other project');
   check('a column + then another project: the card keeps the column it was added in', third && third.status === 'doing', third && third.status);
+  noErrors(page);
+}, true);
+
+def('tbcount', 'Top bar: the to-test pill and the Inbox rail count land with the board, not seconds later (AIG-1375)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await mkCard(s, 'alpha', 'Try me', { status: 'verify' });
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.waitForSelector('.column');
+  const t0 = Date.now();
+  await page.waitForSelector('#inboxTop .ib-badge.t', { timeout: 15000 });
+  const late = Date.now() - t0;
+  check('the to-test pill shows within a second of the board', late < 1000, late + ' ms');
+  check('the Inbox rail button has its count by then', await page.locator('[data-go="#/inbox"] .dm-unread').count() === 1);
+  // A board change while the inbox read is on its way (a save, another window) used to throw the answer away until the next 3 s tick.
+  const n = await page.evaluate(async () => { IB.raw = IB.items = []; IB.dataSig = null; const p = IB.load(true); PagePoll.invalidate(false); await p; await new Promise(r => setTimeout(r, 400)); return IB.items.length; });
+  check('an inbox answer that lands after a board change is read again at once', n === 1, n);
   noErrors(page);
 }, true);

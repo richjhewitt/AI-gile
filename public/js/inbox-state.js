@@ -57,7 +57,7 @@ const IB = {
     inflight = PagePoll.get('/api/inbox', { force }).then(l => { const sw = typeof Swarm !== 'undefined' ? Swarm.only(l, true) : l, off = typeof TodayPage !== 'undefined' ? TodayPage.hidden() : [];
       const filtered = off.length ? sw.filter(c => !off.includes(c.project)) : sw;   // 🎯 AIG-1032: only today's picked projects (Show all brings the rest back)
       return { list: filtered, sig: renderSig(l) + ':' + filtered.map(keyOf).join(',') }; })   // 🚨 swarm: only that project (AIG-877)
-      .then(({ list, sig }) => { if (seq === loadSeq) { inflight = null; if (loadEpoch === PagePoll.generation) { apply(list, sig); IB.testerDone(); } } return true; })
+      .then(({ list, sig }) => { if (seq === loadSeq) { inflight = null; const moved = loadEpoch !== PagePoll.generation; if (!moved || !loaded) { apply(list, sig); IB.testerDone(); } if (moved) load().catch(() => {}); } return true; })   // AIG-1375: a change mid-read asks again at once (not on the next 3 s tick), and the first answer always paints
       .catch(e => { if (seq === loadSeq) inflight = null; throw e; });
     return inflight;
   }
