@@ -12,7 +12,7 @@ const Status = (() => {
     b.textContent = ICON[v]; b.dataset.status = v;
     b.title = t('status.title', { status: t('status.' + v) }); b.setAttribute('aria-label', b.title);
   }
-  const close = () => { const m = $('statusMenu'); if (m) m.remove(); };
+  const close = () => { const m = $('statusMenu'); if (m) { menuClosed(m, $('statusBtn')); m.remove(); } };
   function menu() {
     if ($('statusMenu')) return close();
     const b = $('statusBtn'), r = b.getBoundingClientRect(), m = document.createElement('div'), v = cur();
@@ -22,6 +22,7 @@ const Status = (() => {
       + `<div class="help-sep"></div><div class="help-lvl-h muted">${esc(t('status.rest.help'))}</div>`;
     document.body.append(m);
     m.style.left = Math.max(8, Math.min(r.left, innerWidth - m.offsetWidth - 8)) + 'px';   // under the button, wherever the top bar put it
+    menuKeys(m, b, close, { pick: '[aria-checked="true"]' });   // AIG-1426: focus on the status you have, arrows, Esc back to the button
   }
   async function set(k) {
     close();

@@ -78,6 +78,31 @@ function askSure(title, text, ok) {
   });
 }
 
+/* ---------- pop-up menus by keyboard (AIG-1426) ---------- */
+// menuKeys(menu, btn, close): opening puts focus on the first item (opts.pick: a selector for the one to start on), ArrowUp / ArrowDown
+// and Home / End walk the items, Esc closes it and gives focus back to btn, Tab closes it and goes on from btn (opts.tab false: Tab
+// moves through it as usual). btn says aria-expanded; close() sets it back. menuKey is the key part, for a menu a redraw replaces.
+function menuItems(m, sel) { return [...m.querySelectorAll(sel || '[role^="menuitem"]')].filter(x => x.getClientRects().length && !x.disabled); }
+function menuKey(e, m, btn, close, opts = {}) {
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+  const list = menuItems(m, opts.items), i = list.indexOf(document.activeElement), k = e.key, n = list.length, back = () => { if (btn && btn.isConnected) btn.focus(); };
+  if ((k === 'ArrowDown' || k === 'ArrowUp') && e.target.tagName !== 'SELECT') { e.preventDefault(); if (n) list[i < 0 ? (k === 'ArrowDown' ? 0 : n - 1) : (i + (k === 'ArrowDown' ? 1 : n - 1)) % n].focus(); }
+  else if ((k === 'Home' || k === 'End') && e.target.tagName !== 'SELECT') { e.preventDefault(); if (n) list[k === 'Home' ? 0 : n - 1].focus(); }
+  else if (k === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); back(); }
+  else if (k === 'Tab' && opts.tab !== false) { close(); back(); }   // the browser's Tab then goes on from the button
+}
+function menuKeys(m, btn, close, opts = {}) {
+  if (btn) btn.setAttribute('aria-expanded', 'true');
+  const first = (opts.pick && m.querySelector(opts.pick)) || menuItems(m, opts.items)[0]; if (first) first.focus();
+  m.addEventListener('keydown', e => menuKey(e, m, btn, close, opts));
+}
+// Closing a menu: its button says closed, and focus left on one of its items (now gone) goes back to the button first,
+// so a dialog the item opens gives focus back to the button when it closes.
+function menuClosed(m, btn) {
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+  if (m && btn && m.contains(document.activeElement) && btn.isConnected) btn.focus({ preventScroll: true });
+}
+
 /* ---------- new card ---------- */
 // 🐞 On the 🧪 Live channel a raised bug can also go to the AI-gile team (AIG-561): ticked by default, never for other channels.
 async function bugSendBox() {

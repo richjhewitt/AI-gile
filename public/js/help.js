@@ -34,7 +34,7 @@ async function helpSetLevel(level) {
 }
 
 /* ---------- the ❓ Help menu ---------- */
-function helpMenuClose() { const m = $('helpMenu'); if (m) m.remove(); }
+function helpMenuClose() { const m = $('helpMenu'); if (m) { menuClosed(m, $('helpBtn')); m.remove(); } }
 async function helpMenu() {
   if ($('helpMenu')) return helpMenuClose();
   try { await helpLoad(); } catch {}
@@ -46,6 +46,7 @@ async function helpMenu() {
     + item('hmGloss', "location.hash = '#/glossary'", 'help.m.gloss') + item('hmInstall', 'installHint()', 'help.m.install') + item('hmIncidents', 'incidentsGuide()', 'help.m.incidents') + item('hmService', 'serviceGuide()', 'help.m.service') + item('hmMsg', 'messagesGuide()', 'help.m.msg') + item('hmImprove', "location.hash = '#/improvements'", 'help.m.improve') + item('hmThanks', 'helpThanks()', 'help.m.thanks') + `<div class="help-sep"></div><div class="help-lvl-h muted">${esc(t('help.m.level'))}</div>`
     + HELP_LEVELS.map(v => `<button type="button" role="menuitemradio" aria-checked="${v === HELP.level}" id="hmLevel${v}" class="${v === HELP.level ? 'on' : ''}" onclick="helpSetLevel('${v}')">${v === HELP.level ? '✓ ' : ''}${esc(t('help.level.' + v))}</button>`).join('');
   document.body.append(m);
+  menuKeys(m, b, helpMenuClose);   // AIG-1426: focus on Getting started, arrows, Esc back to ❓ Help
 }
 // 👋 Getting started (AIG-1084): what AI-gile is and the first five minutes, in a dialog.
 function gettingStarted() {

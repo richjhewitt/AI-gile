@@ -67,6 +67,49 @@ def('kbdfocus', 'keyboard focus: card dialog, Home redraws, card fits, Help/Stat
   }
   await page.setViewportSize({ width: 1280, height: 800 });
 
+  // AIG-1426: ❓ Help and the status menu by keyboard: focus in on open, arrows, End, Esc back to the button, aria-expanded.
+  await page.goto(page.url().split('#')[0] + '#/p/alpha');
+  await page.waitForSelector('a.card[data-id]');
+  const exp = sel => page.evaluate(s => document.querySelector(s).getAttribute('aria-expanded'), sel);
+  check('Help says it is closed (AIG-1426)', (await exp('#helpBtn')) === 'false');
+  await page.focus('#helpBtn'); await page.keyboard.press('Enter'); await page.waitForSelector('#helpMenu'); await sleep(100);
+  check('Enter on Help: focus on its first item, aria-expanded true (AIG-1426)', (await act()).id === 'hmStart' && (await exp('#helpBtn')) === 'true', await act());
+  await page.keyboard.press('ArrowDown');
+  check('ArrowDown moves to the next Help item (AIG-1426)', (await act()).id === 'hmIntro', await act());
+  await page.keyboard.press('ArrowUp'); await page.keyboard.press('ArrowUp');
+  check('ArrowUp from the first goes round to the last (AIG-1426)', /^hmLevel/.test((await act()).id), await act());
+  await page.keyboard.press('Home');
+  check('Home goes back to the first item (AIG-1426)', (await act()).id === 'hmStart');
+  await page.keyboard.press('Escape'); await sleep(100);
+  check('Esc closes Help and focus is back on ❓ Help (AIG-1426)', (await page.locator('#helpMenu').count()) === 0 && (await act()).id === 'helpBtn' && (await exp('#helpBtn')) === 'false', await act());
+  await page.keyboard.press('Enter'); await page.waitForSelector('#helpMenu');
+  await page.keyboard.press('Tab'); await sleep(100);
+  check('Tab out of Help closes it (AIG-1426)', (await page.locator('#helpMenu').count()) === 0 && !(await act()).body, await act());
+  await page.focus('#helpBtn'); await page.keyboard.press('Enter'); await page.waitForSelector('#helpMenu');
+  await page.keyboard.press('Enter'); await page.waitForSelector('#dialog .dialog'); await sleep(100);
+  check('Enter on Getting started opens it (AIG-1426)', (await page.locator('#dialog #gettingStarted').count()) === 1);
+  await page.keyboard.press('Escape'); await sleep(200);
+  check('closing Getting started gives focus back to ❓ Help (AIG-1426)', (await act()).id === 'helpBtn', await act());
+  await page.focus('#statusBtn'); await page.keyboard.press('Enter'); await page.waitForSelector('#statusMenu'); await sleep(100);
+  check('Enter on the status button: focus on the status you have (AIG-1426)', (await act()).id === 'st-online' && (await exp('#statusBtn')) === 'true', await act());
+  await page.keyboard.press('ArrowDown');
+  check('ArrowDown moves to the next status (AIG-1426)', (await act()).id === 'st-idle', await act());
+  await page.keyboard.press('Escape'); await sleep(100);
+  check('Esc closes the status menu, focus back on its button (AIG-1426)', (await page.locator('#statusMenu').count()) === 0 && (await act()).id === 'statusBtn' && (await exp('#statusBtn')) === 'false', await act());
+  // The board ⋯ More (a phone-width board shows it): Enter opens it with focus on its first tool, arrows move, Esc back to ⋯.
+  await page.setViewportSize({ width: 390, height: 760 }); await sleep(300);
+  await page.evaluate(() => render()); await sleep(200);
+  if (await page.locator('#tbDots').isVisible()) {
+    await page.focus('#tbDots'); await page.keyboard.press('Enter'); await sleep(150);
+    const inMore = () => page.evaluate(() => !!document.activeElement.closest('#boardTbMore'));
+    check('Enter on ⋯ More: focus on its first tool (AIG-1426)', await inMore(), await act());
+    const a1 = (await act()).text; await page.keyboard.press('ArrowDown'); await sleep(100);
+    check('ArrowDown in ⋯ More moves to the next tool, not the page (AIG-1426)', await inMore() && (await act()).text !== a1, await act());
+    await page.keyboard.press('Escape'); await sleep(100);
+    check('Esc closes ⋯ More, focus back on it (AIG-1426)', (await act()).id === 'tbDots' && (await exp('#tbDots')) === 'false', await act());
+  } else check('⋯ More is shown at phone width', false);
+  await page.setViewportSize({ width: 1280, height: 800 });
+
   await noErrors(page);
   await page.close();
 }, true);

@@ -122,7 +122,19 @@ const teamStatus = (m, live) => live(m) ? m.status || '' : m.updated ? t('board.
 /* ---------- board page ---------- */
 // Phone (AIG-933): the toolbar buttons sit behind one ⋯ button; the choice survives the 1 s redraw.
 // ⋯ More closes once one of its tools is picked, so it never stays open over the window that tool opens (it sits above dialogs).
-function toggleTb() { state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), d = $('tbDots'); if (m) m.classList.toggle('open', state.tbOpen); if (d) d.setAttribute('aria-expanded', state.tbOpen ? 'true' : 'false'); }
+function toggleTb() {
+  state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), d = $('tbDots'), was = document.activeElement;
+  if (m) m.classList.toggle('open', state.tbOpen); if (d) d.setAttribute('aria-expanded', state.tbOpen ? 'true' : 'false');
+  // AIG-1426: opened from its button, focus goes to its first tool; closing with focus inside puts it back on ⋯ More.
+  if (m && d && state.tbOpen && was === d) { const f = menuItems(m, TB_ITEMS)[0]; if (f) f.focus(); }
+  else if (m && d && !state.tbOpen && m.contains(was)) d.focus({ preventScroll: true });
+}
+// The ⋯ More tools by keyboard (AIG-1426): arrows walk them (a list box keeps its own arrows), Esc closes back to ⋯ More, Tab moves as usual.
+const TB_ITEMS = 'button, select, a[href]';
+document.addEventListener('keydown', e => {
+  const m = state.tbOpen && e.target.closest && e.target.closest('#boardTbMore'), d = $('tbDots');
+  if (m && d && d.getClientRects().length) menuKey(e, m, d, toggleTb, { items: TB_ITEMS, tab: false });
+});
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
