@@ -154,6 +154,7 @@ def('tour', '🎓 guided tour: three levels, eight stops from First steps to Hel
   // No AI mode: the welcome and Messages stops speak of you, your team and your friends, not of AI leads.
   await s.ok('POST', '/api/setup', { prefs: { noAi: true } });
   await page.goto(BASE + '/#/'); await page.reload(); await page.waitForSelector('#app .space-tree');
+  await page.waitForSelector('#dmRail [data-dms]');   // the Messages stop points at the rail button, painted once the rail has loaded
   await page.evaluate(() => startTour('new')); await page.waitForSelector('.tour-bubble');
   const welNo = await page.textContent('#tourP');
   await page.evaluate(() => { tour.i = tour.steps.findIndex(s => s.id === 'chat'); showStop(); }); await sleep(400);

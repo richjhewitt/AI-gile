@@ -95,7 +95,7 @@ const Dms = (() => {
       // AIG-324: each project a friend shares with me, as its own board.
       + (boards.length ? '<div class="dm-sep"></div>' + boards.map(l => btn(`data-go="#/shared/${esc(l.id)}" data-sboard="${esc(l.id)}"`, `<span class="dm-av">🔗</span>`, location.hash === '#/shared/' + l.id, t('sb.rail', { name: l.friend, project: l.theirName }))).join('') : '');
     const r = el('dmRail');
-    if (r && r.dataset.sig !== html && !dragging) { const keep = keepFocus(r); r.dataset.sig = html; r.innerHTML = html; keep(); }   // AIG-1428: a repaint keeps the focused rail button
+    if (r && r.dataset.sig !== html && !dragging) { const keep = r.contains(document.activeElement) ? keepFocus(r) : null; r.dataset.sig = html; r.innerHTML = html; if (keep) keep(); }   // AIG-1428: a repaint keeps the focused rail button
     if (listOpen && !open) paintList();
   }
 
