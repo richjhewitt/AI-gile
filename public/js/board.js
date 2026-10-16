@@ -170,7 +170,10 @@ function boardLogText(l) {
     const why = dispatchWhy(who.slice(i + 2, -1));
     if (why) { who = who.slice(0, i) + ' (' + why + ')'; break; }
   }
-  return t('board.dispatched', { card: sent[1], who });
+  // "GAR-1 (space garden)": the app's own word for a space, the space's slug left as it is (AIG-1468).
+  const sp = /^(.*) \(space (\S+)\)$/.exec(sent[1]);
+  const card = sp ? sp[1] + ' (' + t('gloss.space.word') + ': ' + sp[2] + ')' : sent[1];
+  return t('board.dispatched', { card, who });
 }
 
 function renderBoard(p) {
