@@ -10,6 +10,7 @@ def('topbar', 'Setup: top bar buttons on/off, reorder, left or right side, theme
   const leftOfSpacer = () => page.evaluate(() => { const b = document.getElementById('bugBtn'); return !!(b.compareDocumentPosition(document.querySelector('header .spacer')) & Node.DOCUMENT_POSITION_FOLLOWING); });
   const before = await ids();
   check('lists 17 buttons (with 🎥 Streamer, 📊 ScrumGlance, 🌿 WeedGlance, 🟢 Status, 🔋 Tired), reset starts disabled', await page.locator('#tbList .tb-row').count() === 17 && await page.locator('#tbReset').isDisabled());
+  check('every row and every "Show in top bar" switch has its icon (AIG-1351)', await page.evaluate(() => [...document.querySelectorAll('#tbList .tb-name, #tbPins .tb-pin')].every(l => l.querySelector('.tb-ico') || /🌙/.test(l.textContent))));
   check('the settings gear switch is locked on', await page.locator('[data-tb="setupNav"] .tb-on').isDisabled());
 
   // Hide the Idea button

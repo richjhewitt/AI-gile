@@ -150,14 +150,17 @@ function trackPop(w, url) {
 function reopenPops() {
   let list = []; try { list = JSON.parse(fs.readFileSync(POPS(), 'utf8')); } catch {}
   for (const p of list) if (String(p.url).startsWith(BASE + '/#/pop')) {
-    const w = new BrowserWindow({ ...chrome(), ...(p.bounds || { width: 560, height: 780 }), alwaysOnTop: true });
+    const w = new BrowserWindow({ ...chrome(), ...nightLook(p.url), ...(p.bounds || { width: 560, height: 780 }), alwaysOnTop: true });
     wire(w); trackPop(w, p.url); w.loadURL(p.url);
   }
 }
 // No Windows title bar (AIG-128): just the window buttons, in the board's own colours, over the page's top bar.
 const bar = () => nativeTheme.shouldUseDarkColors ? { color: '#1b2029', symbolColor: '#e6e9ef', height: 36 } : { color: '#ffffff', symbolColor: '#1d2330', height: 36 };
 const chrome = () => ({ autoHideMenuBar: true, icon: appIcon(), titleBarStyle: 'hidden', titleBarOverlay: bar(), webPreferences: { preload: path.join(__dirname, 'preload.js') } });   // preload: the share picker (AIG-1163)
-nativeTheme.on('updated', () => BrowserWindow.getAllWindows().forEach(w => { try { w.setTitleBarOverlay(bar()); } catch {} }));
+// The night glance (AIG-1353) keeps its own near-black window and buttons, whatever the theme.
+const NIGHT_BG = '#0b0605', isNight = url => String(url).includes('#/pop-night');
+const nightLook = url => isNight(url) ? { backgroundColor: NIGHT_BG, titleBarOverlay: { color: NIGHT_BG, symbolColor: '#6e4a40', height: 36 } } : {};
+nativeTheme.on('updated', () => BrowserWindow.getAllWindows().forEach(w => { try { if (!isNight(pops.get(w))) w.setTitleBarOverlay(bar()); } catch {} }));
 // Link and navigation rules for any of our windows (the main one and popped-out cards).
 function wire(w) {
   // Board links to other sites open in the normal browser; the board's own open in a new app window.
@@ -173,7 +176,7 @@ function wire(w) {
     if (frameName === 'aigile-twitch' && /^https:\/\/www\.twitch\.tv\//.test(url)) {
       return { action: 'allow', overrideBrowserWindowOptions: { autoHideMenuBar: true, icon: appIcon(), width: 380, height: 720, ...(placeFor('#/pop-twitch') || {}), alwaysOnTop: true } };
     }
-    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop'), ...(url.includes('#/pop') ? placeFor(url) || {} : {}) } };
+    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), ...nightLook(url), alwaysOnTop: url.includes('#/pop'), ...(url.includes('#/pop') ? placeFor(url) || {} : {}) } };
     shell.openExternal(url); return { action: 'deny' };
   });
   w.webContents.on('will-navigate', (e, url) => {

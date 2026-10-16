@@ -70,6 +70,7 @@ def('nightglance', '🌙 night glance: a calm pop-out with the watchman per proj
   check('when not going quiet it says the watchman is off', /watchman is off/.test(await page.textContent('.ng')));
   await s.ok('POST', '/api/quiet', { on: true });
   await page.reload(); await page.waitForSelector('.ng-list li');
+  check('night colours from the first paint, whatever the theme (AIG-1353)', await page.evaluate(() => document.documentElement.classList.contains('boot-night') && getComputedStyle(document.documentElement).backgroundColor === 'rgb(11, 6, 5)'));
   check('one quiet line per watched project, no top bar', (await page.locator('.ng-list li').count()) === 2 && await page.locator('header').isHidden());
   check('calm night: no glow', /All calm/.test(await page.textContent('.ng')) && !(await page.evaluate(() => document.body.classList.contains('ng-urgent'))));
   await page.evaluate(() => localStorage.removeItem('aigile.standupAsked')); await page.reload(); await page.waitForSelector('.ng-list li'); await page.waitForTimeout(2500);

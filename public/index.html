@@ -7,6 +7,8 @@
 <!-- AIG-1330: the language and direction of the last start before the first paint. Until your language file is in, the top bar
      keeps its place but shows no (English) words; i18n.js loadLang() saves aigile.langBoot and clears i18n-wait. -->
 <script>try { var de = document.documentElement, lb = JSON.parse(localStorage.getItem('aigile.langBoot') || 'null'); if (lb && lb.l) { de.lang = lb.l; de.dir = lb.d === 'rtl' ? 'rtl' : 'ltr'; } if (!lb || lb.c !== 'en') { de.classList.add('i18n-wait'); setTimeout(function () { de.classList.remove('i18n-wait'); }, 10000); } } catch (e) {}</script>
+<!-- AIG-1353: the night glance pop-out is near-black and red-tinted from the first paint, never the board's header or theme first -->
+<script>if (location.hash === '#/pop-night') document.documentElement.classList.add('boot-night');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AI-gile</title>
 <link rel="manifest" href="manifest.webmanifest">
