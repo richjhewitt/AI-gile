@@ -129,7 +129,8 @@
     W().list.forEach(function(w){if(w.noTip)return;[w.word].concat(w.also||[]).forEach(function(v){var k=key(v);if(k&&!texts[k])texts[k]=w.text})});
     var q=function(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/ /g,"\\s+")},all=Object.keys(texts).sort(function(a,b){return b.length-a.length});
     var sp=all.filter(function(w){return!NOSPACE.test(w)}).map(q),bare=all.filter(function(w){return NOSPACE.test(w)}).map(q),parts=[];
-    if(sp.length)parts.push("(?<![\\p{L}\\p{N}])(?:"+sp.join("|")+")(?![\\p{L}\\p{N}])");
+    // AIG-1453: a word goes on through vowel signs and viramas (\p{M}, as in Hindi or Kannada) and the zero-width (non-)joiner.
+    if(sp.length)parts.push("(?<![\\p{L}\\p{M}\\p{N}\\u200C\\u200D])(?:"+sp.join("|")+")(?![\\p{L}\\p{M}\\p{N}\\u200C\\u200D])");
     if(bare.length)parts.push("(?:"+bare.join("|")+")");
     re=new RegExp(parts.join("|")||"(?!)","giu");
   }

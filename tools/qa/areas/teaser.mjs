@@ -233,6 +233,21 @@ def('teaserwords', 'site/index.html (file://): 📖 Dev words button and dialog 
   const mw = await page.$$eval('#qa-mw abbr.devw', e => e.map(x => x.textContent.replace(/\s+/g, ' ').toLowerCase() + '=' + (x.getAttribute('data-tip') || '').length));
   check('multi-word terms are underlined as one, the longest wins ("major incident", "status page"), with their explanation', mw.map(x => x.split('=')[0]).join() === 'major incident,status page,backup' && mw.every(x => +x.split('=')[1] > 10), mw);
   await page.evaluate(() => document.getElementById('qa-mw').remove());
+  // AIG-1453: whole words only, also where a vowel sign (Hindi, Kannada) or a zero-width non-joiner carries a word on
+  const edge = async (html) => { await page.evaluate(h => document.querySelector('main').insertAdjacentHTML('beforeend', '<p id="qa-edge">' + h + '</p>'), html); await sleep(400);
+    const r = await page.$$eval('#qa-edge abbr.devw', e => e.map(x => x.textContent)); await page.evaluate(() => document.getElementById('qa-edge').remove()); return r; };
+  let eg = await edge('a merge, merged, emerge');
+  check('AIG-1453: Latin stays whole-word ("merge" yes, "merged"/"emerge" no)', JSON.stringify(eg) === '["merge"]', eg);
+  await page.evaluate(() => SiteI18n.set('hi'));
+  await page.waitForFunction(() => document.documentElement.lang === 'hi', null, { timeout: 5000 }); await sleep(300);
+  eg = await edge('बगीचे में एक बग मिला');
+  check('AIG-1453: Hindi "बग" on its own is underlined, not inside "बगीचे" (vowel sign after it)', JSON.stringify(eg) === '["बग"]', eg);
+  await page.evaluate(() => SiteI18n.set('kn'));
+  await page.waitForFunction(() => document.documentElement.lang === 'kn', null, { timeout: 5000 }); await sleep(300);
+  eg = await edge('ಏಜೆಂಟ್‌ನ ಕೆಲಸ, ಒಬ್ಬ ಏಜೆಂಟ್ ಬಂದ');
+  check('AIG-1453: Kannada "ಏಜೆಂಟ್" on its own is underlined, not before a zero-width non-joiner', JSON.stringify(eg) === '["ಏಜೆಂಟ್"]', eg);
+  await page.evaluate(() => SiteI18n.set('en'));
+  await page.waitForFunction(() => document.documentElement.lang === 'en', null, { timeout: 5000 }); await sleep(300);
   // AIG-1342: the live board's column headings (drawn by live.js like this) get the underline too, also after a redraw
   const board = () => page.evaluate(() => { const L = ['Backlog', 'To do', 'In progress', 'Team checking', 'For you to test', 'For the team', 'Done'], ids = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'];
     document.getElementById('live').hidden = false; const c = document.getElementById('live-cols'); c.hidden = false; c.textContent = '';

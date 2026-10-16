@@ -2,7 +2,8 @@
 // It evaluates the real glossIndex() from public/js/glossary.js with a stubbed page.
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const src = fs.readFileSync(path.join(process.argv[2], 'public/js/glossary.js'), 'utf8');
-const words = { 'gloss.backlog.word': 'backlog', 'gloss.backlog.text': 'B', 'gloss.sprint.word': '冲刺', 'gloss.sprint.text': 'S', 'gloss.bug.word': 'bug', 'gloss.bug.text': 'G', 'gloss.agent.word': 'ตัวแทน', 'gloss.agent.text': 'A' };
+const words = { 'gloss.backlog.word': 'backlog', 'gloss.backlog.text': 'B', 'gloss.sprint.word': '冲刺', 'gloss.sprint.text': 'S', 'gloss.bug.word': 'bug', 'gloss.bug.text': 'G', 'gloss.agent.word': 'ตัวแทน', 'gloss.agent.text': 'A',
+  'gloss.commit.word': 'बग', 'gloss.commit.text': 'H', 'gloss.push.word': 'ಏಜೆಂಟ್', 'gloss.push.text': 'K' };
 const ctx = { t: k => words[k] || k, document: { addEventListener() {}, querySelectorAll: () => [], documentElement: {} }, MutationObserver: class { observe() {} }, localStorage: { getItem: () => null }, NodeFilter: {}, i18n: { ready: true }, esc: s => s, $: () => ({}), console };
 vm.createContext(ctx);
 vm.runInContext(src + '\nglossIndex(); this.re = glossRe;', ctx);
@@ -11,4 +12,7 @@ console.log(JSON.stringify({
   han: hits('请在冲刺开始前整理backlog'),
   thai: hits('ตัวแทนทำงานเสร็จแล้ว'),
   whole: hits('a bug, debugging, bugs'),
+  // AIG-1453: "बग" inside "बगीचे" (a vowel sign follows) and "ಏಜೆಂಟ್" before a zero-width non-joiner are mid-word
+  hindi: hits('बगीचे में एक बग मिला'),
+  kannada: hits('ಏಜೆಂಟ್‌ನ ಕೆಲಸ, ಒಬ್ಬ ಏಜೆಂಟ್ ಬಂದ'),
 }));
