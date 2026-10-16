@@ -329,6 +329,7 @@ html[data-stream-secrets] #serversBox input[data-srv="name"], html[data-stream-s
 .card-menu-wrap { position: relative; display: inline-block; }
 .card-menu { position: absolute; inset-inline-end: 0; top: calc(100% + 4px); z-index: 30; min-width: 220px; max-width: min(360px, 86vw); max-height: 70vh; overflow: auto; display: flex; flex-direction: column; align-items: stretch; gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 8px 28px rgba(0,0,0,.3); padding: 8px; }
 .card-menu[hidden] { display: none; }
+.panel:has(> .card-head #card-menu:not([hidden])) { min-height: min(92vh, var(--cm-need, 0px)); }   /* AIG-1358: room for the whole menu on a short card */
 .card-menu > button, .card-menu > select, .card-menu > span > button { text-align: start; }
 html.qa-menu .card-menu, html.qa-menu .card-menu[hidden] { display: flex; position: static; flex-direction: row; flex-wrap: wrap; box-shadow: none; max-width: none; max-height: none; width: 100%; padding: 0; border: 0; }
 html.qa-menu .card-menu-wrap, html.qa-menu .card-acts { display: contents; }   /* QA only: the other areas click these buttons directly */

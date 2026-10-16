@@ -148,6 +148,10 @@ function renderCard(p, c) {
 function cardMenuToggle(on) {
   state.cardMenu = on === undefined ? !state.cardMenu : on;
   const m = $('card-menu'), b = $('cm-btn'); if (m) m.hidden = !state.cardMenu; if (b) b.setAttribute('aria-expanded', String(!!state.cardMenu));
+  // AIG-1358: on a short card the menu ran past the panel's bottom edge and was cut off (Move to, Delete out of reach). While it is
+  // open the panel is at least as tall as the menu needs; a variable on the page, so a redraw of the card keeps it.
+  const p = m && m.closest('.panel');
+  if (state.cardMenu && p) document.documentElement.style.setProperty('--cm-need', Math.ceil(m.getBoundingClientRect().bottom - p.getBoundingClientRect().top + p.scrollTop + 16) + 'px');
 }
 document.addEventListener('click', e => { if (state.cardMenu && !e.target.closest('.card-menu-wrap')) cardMenuToggle(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.cardMenu) cardMenuToggle(false); });
