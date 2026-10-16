@@ -143,7 +143,7 @@ def('keepgoing','🌙 keeps every team on task: the every-minute look picks up a
   const busyTodo = await mkCard(s, 'busy', 'Buildable too', { status: 'todo' });
   await s.ok('POST', '/api/quiet', { on: true, watch: ['half', 'idle', 'busy'] });
   await runsEnd(s, ["half", "idle", "busy"]);   // going quiet wakes the teams; wait until those runs end
-  await s.ok('POST', '/api/projects/busy/team', { name: 'Helper', role: 'Helper', task: 'Building it', status: 'working' });
+  await s.ok('POST', '/api/projects/busy/team', { name: 'Helper', role: 'Helper', task: 'Building it', status: '🔄 working' });
   await s.ok('GET', '/api/projects/idle/updates?wait=1');   // the Idle session now sits in 'aigile wait'
   await s.ok('GET', '/api/projects/busy/updates?wait=1');   // so does Busy's, but its helper is working
   await sleep(50);
