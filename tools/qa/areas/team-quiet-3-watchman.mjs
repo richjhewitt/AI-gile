@@ -1,4 +1,4 @@
-// QA areas: watchman, keepgoing, limit, limitread, stuckonly (split from team-quiet.mjs, AIG-297).
+// QA areas: watchman, nightpace, keepgoing, limit, limitread, stuckonly (split from team-quiet.mjs, AIG-297).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -36,9 +36,103 @@ def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuc
   const back = await s.ok('POST', '/api/quiet', { on: false });
   const cut = back.summary.find(x => x.project === 'cut');
   check('back from quiet: a summary per project', cut && cut.stuck.includes(mid.id) && cut.restarted.includes(mid.id) && !(await s.ok('GET', '/api/watchman')), back.summary);
-}, false);
 
-def('keepgoing', '🌙 keeps every team on task: the every-minute look picks up a card left in progress, and a session idle in its wait gets one nudge that ends the wait (AIG-277)', async s => {
+  // AIG-1440: stale CLI presence must not survive folder-only heartbeats.
+  await mkProject(s, 'Stale', 'STL', { path: tmp('stale') });
+  await mkProject(s, 'Fresh', 'FRS', { path: tmp('fresh') });
+  await mkCard(s, 'stale', 'Resume abandoned work', { status: 'todo' });
+  await mkCard(s, 'fresh', 'Live lead owns this work', { status: 'doing' });
+  const cli = slug => s.cli(['comment', slug, slug === 'stale' ? 'STL-1' : 'FRS-1', '- Still working', '--as', 'Lead'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '' });
+  cli('stale'); cli('fresh');
+  await s.ok('POST', '/api/quiet', { on: true, watch: ['stale', 'fresh'] });
+  await sleep(1200);
+  cli('fresh');
+  await s.ok('POST', '/api/limits', { cwd: (await s.ok('GET', '/api/projects/stale')).path, rate_limits: { five_hour: { used_percentage: 1 } } });
+  await s.ok('POST', '/api/watchman/round');
+  const dead = await s.ok('GET', '/api/projects/stale'), live = await s.ok('GET', '/api/projects/fresh');
+  check('stale session starts the team and explains why in the project log', dead.presence.running && dead.log.some(e => /Lead session expired/.test(e.text)));
+  check('fresh Lead CLI writes prevent a competing team or restart note', !live.presence.running && !(await getCard(s, 'fresh', 'FRS-1')).comments.some(e => /Picked back up|Stuck/.test(e.text)));
+  const page = await openPage(ctx, '#/p/stale');
+  await page.waitForSelector('#teamTop .pres');
+  const shots = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
+  fs.mkdirSync(shots, { recursive: true });
+  await page.screenshot({ path: path.join(shots, 'AIG-1440.png'), fullPage: true });
+  noErrors(page);
+  await s.ok('POST', '/api/quiet', { on: false });
+}, true, { AIGILE_ACTIVE_MS: '1000' });
+
+// AIG-1446/1447/1448: the night watch keeps the push level's pace on its own timer (no round called by the test), a team whose
+// run just ended is not "online" for 5 more minutes, a team it can't wake says why (glance and top bar), failures are logged.
+def('nightpace', '🌙 night watch pace: the timer wakes a finished team at the push level pace, the glance shows the real last check and why a team is not woken (AIG-1446)', async (s, ctx) => {
+  await s.ok('POST', '/api/scrummaster/push', { level: 5 });
+  await mkProject(s, 'Pace', 'PAC', { path: tmp('pace') });
+  await mkProject(s, 'Held', 'HLD', { path: tmp('held') });
+  await mkProject(s, 'Nofolder', 'NOF');
+  await mkProject(s, 'Gone', 'GON', { path: path.join(tmp('gone'), 'moved-away') });   // a folder that is not there (moved or deleted)
+  await mkCard(s, 'pace', 'Work to do', { status: 'todo' });
+  await mkCard(s, 'held', 'Lead has it', { status: 'todo' });
+  await mkCard(s, 'nofolder', 'No folder yet', { status: 'todo' });
+  await mkCard(s, 'gone', 'Folder went away', { status: 'todo' });
+  await mkProject(s, 'Off', 'OFF', { path: tmp('off') });
+  await mkCard(s, 'off', 'AI is off here', { status: 'todo' });
+  await s.ok('PATCH', '/api/projects/off', { aiOff: true });   // startTeam refuses: the refusal must be kept, not swallowed
+  s.cli(['comment', 'held', 'HLD-1', '- On it', '--as', 'Lead'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '' });   // a real VS Code lead
+  await s.ok('GET', '/api/projects/pace/updates');   // the team was heard (as a run's own calls are), before its run ends
+  await s.ok('POST', '/api/projects/pace/wake', { sprint: true }); await runsEnd(s, ['pace']);   // ...and then that run ended
+  const logf = path.join(s.data, 'logs', 'pace.log'), starts = () => { try { return (fs.readFileSync(logf, 'utf8').match(/ started/g) || []).length; } catch { return 0; } };
+  await s.ok('POST', '/api/quiet', { on: true, watch: ['pace', 'held', 'nofolder', 'gone', 'off'] });
+  await runsEnd(s, ['pace']);
+  const n = starts(), t0 = Date.now();
+  let again = false; for (let i = 0; i < 40 && !again; i++) { await sleep(250); again = starts() > n; }
+  check('a team whose run ended is woken again by the timer, not 5 minutes later (it no longer counts as online)', again, fs.readFileSync(logf, 'utf8'));
+  await sleep(1500);
+  const w = await s.ok('GET', '/api/watchman');
+  check('the pace follows the push level: Crack the whip is every 2 min', w.everyMin === 2, w.everyMin);
+  check('every look counts as a check: lastCheck is seconds old though no round was asked for', w.lastCheck && Date.now() - Date.parse(w.lastCheck) < 5000 && Date.parse(w.lastCheck) >= t0, w.lastCheck);
+  check('the last thing it did is kept', w.last && w.last.kind === 'woke' && w.last.project === 'pace', w.last);
+  check('a team with its lead in a session says why it is not woken', w.why.held && w.why.held.why === 'lead', w.why);
+  check('a project with no folder says so', w.why.nofolder && w.why.nofolder.why === 'folder', w.why);
+  check('a watched project whose folder is missing says so (it was skipped without a word)', w.why.gone && w.why.gone.why === 'foldermissing', w.why);
+  check('a wake that was refused keeps its reason, not swallowed', w.why.off && w.why.off.why === 'error' && /AI is off/.test(w.why.off.msg || ''), w.why);
+  check('and the refusal is in the watchman log', /wake off/.test(fs.readFileSync(path.join(s.data, 'logs', '_watchman.log'), 'utf8')));
+  await sleep(2100);   // the project payload's night view is read at most every 2 s
+  const nf = await s.ok('GET', '/api/projects/nofolder');
+  check('the project payload says it is watched tonight, and why it is not running', nf.night && nf.night.watched && nf.night.why.why === 'folder', nf.night);
+  // A team that runs and moves nothing three times has chosen to wait: woken at the steady pace instead, and the glance says so.
+  let waits = false; for (let i = 0; i < 80 && !waits; i++) { await sleep(250); waits = ((await s.ok('GET', '/api/watchman')).why.pace || {}).why === 'waits'; }
+  check('a team that ran and moved nothing three times is shown as choosing to wait, with its next try', waits, (await s.ok('GET', '/api/watchman')).why.pace);
+  const g = await openPage(ctx, '#/pop-night');
+  await g.waitForSelector('#ngWhen');
+  const gt = await g.textContent('.ng');
+  check('the glance shows the real last check and the pace', /Checked .* every 2 min/.test(await g.textContent('#ngWhen')), await g.textContent('#ngWhen'));
+  check('the glance says what it last did', /Last: (woke|poked) Pace/.test(gt), gt);
+  check('the glance says why each team is not running', /its lead is at work in a session/.test(gt) && /no folder connected/.test(gt) && /its folder is missing/.test(gt) && /could not start: AI is off/.test(gt), gt);
+  const shots = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
+  fs.mkdirSync(shots, { recursive: true });
+  await g.screenshot({ path: path.join(shots, 'AIG-1446-glance.png') });
+  noErrors(g);
+  const b = await openPage(ctx, '#/p/nofolder');
+  await b.waitForFunction(() => !!document.querySelector('#teamTop .pres-night'), null, { timeout: 15000 });
+  check('a watched project asleep says on its top bar why the night watch is not waking it', /no folder connected/.test(await b.textContent('#teamTop')), await b.textContent('#teamTop'));
+  await b.setViewportSize({ width: 390, height: 800 }); await sleep(300);
+  check('the top bar fits a phone', await b.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+  await b.screenshot({ path: path.join(shots, 'AIG-1446-topbar-390.png') });
+  noErrors(b);
+  // Setup's switch is the "watch every project" default; while quiet it also says the night watch is on now.
+  await s.ok('POST', '/api/setup', { prefs: { smRole: true, watchAll: false } });
+  const sm = await s.ok('GET', '/api/scrummaster');
+  check('the Scrum Master status says the night watch is on now even with the watch-every-project switch off', sm.nightNow && sm.nightNow.n === 5 && sm.night === false, sm);
+  const d = await openPage(ctx, '#/');
+  await d.waitForSelector('#dmRail [data-dms]'); await d.click('#dmRail [data-dms]'); await d.click('#dmPanel [data-dm="_watchman"]');
+  await d.waitForSelector('#smNightNow', { timeout: 8000 });
+  const bar = await d.textContent('#smBar');
+  check('Setup never says "Night watch: off" while it is on: it says on now, and the switch is named for what it does', /Night watch on now: 5 projects, checked every 2 min/.test(bar) && /watches every project: off/.test(bar) && !/Night watch: off/.test(bar), bar);
+  await d.screenshot({ path: path.join(shots, 'AIG-1446-smbar.png') });
+  noErrors(d);
+  await s.ok('POST', '/api/quiet', { on: false });
+}, true, { AIGILE_WATCH_TICK_MS: '1000', AIGILE_QUICK_GAP_MS: '1' });
+
+def('keepgoing','🌙 keeps every team on task: the every-minute look picks up a card left in progress, and a session idle in its wait gets one nudge that ends the wait (AIG-277)', async s => {
   await mkProject(s, 'Half', 'HLF', { path: tmp('half') });
   await mkProject(s, 'Idle', 'IDL', { path: tmp('idle') });
   const mid = await mkCard(s, 'half', 'Half done', { status: 'doing' });

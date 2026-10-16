@@ -29,7 +29,9 @@ function presenceHtml(p, withWake) {
   // A window the board opened (AIG-153): it can't see that run, so it says when it opened it, and ▶ Wake opens another.
   const op = pr.opened;
   if (op && Date.now() - new Date(op.at) < 15 * 60e3) return `<span class="pres on" title="${esc(t('runin.blind'))}">${esc(t('pres.opened.' + op.where))}</span> <span class="muted">${esc(t('pres.opened.since', { when: ago(op.at) }))}</span>${btn}${logBtn}`;
-  return `<span class="pres off">${esc(t('pres.asleep'))}</span>${pr.lastHeard ? ` <span class="muted">${esc(t('pres.lastheard', { when: ago(pr.lastHeard) }))}</span>` : ''}${btn}${logBtn}`;
+  // AIG-1446: watched tonight: asleep only until the night watch wakes it, or it says why it can't
+  const nt = p.night && p.night.watched ? ` <span class="muted pres-night">${esc(nightWhyText(p.night.why) || t('night.wake', { n: p.night.everyMin || 10 }))}</span>` : '';
+  return `<span class="pres off">${esc(t('pres.asleep'))}</span>${nt}${pr.lastHeard ? ` <span class="muted">${esc(t('pres.lastheard', { when: ago(pr.lastHeard) }))}</span>` : ''}${btn}${logBtn}`;
 }
 async function wakeTeam(e, s = slug()) {
   e.preventDefault(); e.stopPropagation();

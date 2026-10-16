@@ -72,7 +72,7 @@ def('onelead', 'one lead per project: a session in VS Code or aigile wait blocks
   await sleep(700);   // heard 'minutes' ago: offline for presence (ONLINE 0.6s) yet still a live session (ACTIVE 1.5s)
   await s.ok('POST', '/api/watchman/round');
   await sleep(500);
-  check('a watchman round starts no run on a lead in a session', starts('night') === before && /not starting a background run/.test(log('night')), before + ' ' + starts('night') + ' ' + log('night'));
+  check('a watchman round starts no run on a lead in a session, and says why (AIG-1446)', starts('night') === before && ((await s.ok('GET', '/api/watchman')).why.night || {}).why === 'lead', before + ' ' + starts('night') + ' ' + log('night'));
   await sleep(2500);
   await s.ok('POST', '/api/watchman/round');
   for (let i = 0; i < 40 && starts('night') === before; i++) await sleep(250);
