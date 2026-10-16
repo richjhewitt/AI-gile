@@ -1,7 +1,7 @@
 // QA area: public (AIG-602..605): a project made Public is published to the relay as a clean snapshot; viewers watch it at /b/<name>
 // (page, JSON, live events). Descriptions, comments, hidden cards and life cards stay home; text is masked; a card move reaches the
 // viewers; another board's key can't take the name; Private deletes it at once.
-import { freePort, startRelay, startServer, until, check, sleep, mkProject, mkCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { freePort, startRelay, startServer, until, check, sleep, mkProject, mkCard, say, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 const DESC = 'TOP-SECRET-DESCRIPTION', CMT = 'TOP-SECRET-COMMENT';
 
@@ -112,7 +112,7 @@ def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> pa
     check('Copy public link copies the relay link', (await page.evaluate(() => window.__copied[0])) === relay.base + '/b/qa-board', await page.evaluate(() => window.__copied));
     const st = await s.ok('GET', '/api/projects/pub-board/public');
     check('the board knows the viewers (SSE connections) from the relay', st.on && st.live && st.viewers >= 2 && !st.error, st);
-    await page.click('button:has-text("Look")'); await page.waitForSelector('#look-public');
+    await tbClick(page, 'button:has-text("Look")'); await page.waitForSelector('#look-public');   // More closes after Copy public link
     await page.check('#look-private');
     check('ticking 🔒 unticks Public', !(await page.isChecked('#look-public')));
     await page.check('#look-public');

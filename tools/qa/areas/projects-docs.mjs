@@ -33,7 +33,7 @@ def('docs', 'Docs dialog lists .md files and opens one', async (s, ctx) => {
   await page.click('#dialog button:has-text("Copy all")');
   await page.waitForSelector('#dialog button:has-text("Copied")');
   check('Copy all copies the file text', (await clip(page)) === readme, await clip(page));
-  check('Copy all sits next to Close', (await page.locator('#dialog .actions button:has-text("Close")').count()) === 1);
+  check('Copy all sits in the actions, Close is the shared one top right (AIG-1382)', (await page.locator('#dialog .actions button[onclick^="copyDocText"]').count()) === 1 && (await page.locator('#dialog .window-tools .window-close').count()) === 1);
   await page.click('#dialog button:has-text("Docs")');
   await page.waitForSelector('.doclist button');
   await page.click('.doclist button:nth-child(2)');

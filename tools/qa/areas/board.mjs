@@ -1,7 +1,7 @@
 // QA areas: board, filters, columns, cardview, wip, lanes, views, steps, quick.
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { ROOT, BASE, check, sleep, tmp, mkProject, mkCard, getCard, say, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('board', 'columns, drag between columns, + New default, Raise bug', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -178,7 +178,7 @@ def('columns', '⚙️ Columns: rename, reorder, hide and colour a board\'s colu
   await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET');
   const c = await mkCard(s, 'alpha', 'Plan it', { status: 'todo' });
   const page = await openPage(ctx, '#/p/alpha');
-  await page.click('button:has-text("Columns")');
+  await tbClick(page, 'button:has-text("Columns")');   // under ⋯ More on a board with cards (AIG-1359)
   await page.waitForSelector('.colrow');
   const row = n => page.locator('.colrow').nth(n);
   await row(1).locator('input[aria-label="Name"]').fill('Next up');   // To do
@@ -245,7 +245,7 @@ def('wip', 'WIP limits per column: n / limit in the header, amber at the limit, 
   await mkProject(s, 'Alpha', 'ALP');
   await mkCard(s, 'alpha', 'One', { status: 'doing' });
   const page = await openPage(ctx, '#/p/alpha');
-  await page.click('button:has-text("Columns")');
+  await tbClick(page, 'button:has-text("Columns")');   // under ⋯ More on a board with cards (AIG-1359)
   await page.waitForSelector('.colrow');
   await page.locator('.colrow').nth(2).locator('input.wip').fill('2');   // In progress
   await page.locator('.colrow').nth(4).locator('input.wip').fill('1');   // For you
@@ -322,7 +322,7 @@ def('views', '👁 Views: save the filters as a named view, apply it, last view 
   const saved = (await s.ok('GET', '/api/projects/alpha')).views;
   check('view stored on the project', saved && saved.length === 1 && saved[0].name === 'My bugs' && saved[0].filters.q === 'zebra' && saved[0].filters.type === 'bug', saved);
   check('other project has no views', !(await s.ok('GET', '/api/projects/beta')).views);
-  await page.click('#dialog button:has-text("Close")');
+  await page.click('#dialog .window-close');
   await page.click('#f-count a');
   check('cleared: all cards', (await cards()) === 3);
   await page.click('button:has-text("Views")');

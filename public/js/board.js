@@ -121,6 +121,7 @@ const teamStatus = (m, live) => live(m) ? m.status || '' : m.updated ? t('board.
 
 /* ---------- board page ---------- */
 // Phone (AIG-933): the toolbar buttons sit behind one ⋯ button; the choice survives the 1 s redraw.
+// ⋯ More closes once one of its tools is picked, so it never stays open over the window that tool opens (it sits above dialogs).
 function toggleTb() { state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), d = $('tbDots'); if (m) m.classList.toggle('open', state.tbOpen); if (d) d.setAttribute('aria-expanded', state.tbOpen ? 'true' : 'false'); }
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
@@ -142,7 +143,7 @@ function renderBoard(p) {
       <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
       ${compact ? `<span class="tb-keep">${keep}</span>` : ''}
       <button class="tb-dots" id="tbDots" aria-expanded="${state.tbOpen ? 'true' : 'false'}" aria-label="${esc(t('board.more'))}" title="${esc(t('board.more'))}" onclick="toggleTb()">⋯${compact ? ' ' + esc(t('board.more')) : ''}</button>
-      <div class="tb-more${state.tbOpen ? ' open' : ''}" id="boardTbMore">
+      <div class="tb-more${state.tbOpen ? ' open' : ''}" id="boardTbMore" onclick="if (state.tbOpen && event.target.closest('button')) toggleTb()">
       ${compact && !p.cards.length ? '' : `<button onclick="openDocs()">${esc(t('board.docs'))}</button>`}
       ${compact && p.cards.length ? '' : happening}
       ${compact && !p.cards.length ? '' : `<button onclick="askTeamDialog()" title="${esc(t('board.ask.title'))}">${esc(t('board.ask'))}</button>`}

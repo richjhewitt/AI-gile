@@ -116,11 +116,11 @@ def('pack', 'AIGILE pack: a card copied for another AI (scrubbed), its reply pas
   check('what was removed is shown', /C:\\Temp\\x\.log/.test(await page.textContent('#packRemoved')));
   await page.click('#packPrimerBtn');
   await sleep(200);
-  await page.click('#dialog button:has-text("Close")');
+  await page.click('#dialog .window-close');
   await page.click('#packCopy');
   await page.waitForSelector('#packText');
   check('the next time the primer is not pushed, but still there', !(await page.$('#packFirst')) && !!(await page.$('#packPrimerBtn')));
-  await page.click('#dialog button:has-text("Close")');
+  await page.click('#dialog .window-close');
   await page.click('#packPaste');
   await page.fill('#packReply', REPLY(c2.id));
   await page.click('#packSend');
@@ -182,7 +182,7 @@ def('pack', 'AIGILE pack: a card copied for another AI (scrubbed), its reply pas
   await page.click('#packCopyBtn');
   await sleep(200);
   check('Copy works from the edited box', !!(await page.$('#packCopyBtn')) && (await page.inputValue('#packText')) === 'AIGILE/1 PACK edited by the owner');
-  await page.click('#dialog button:has-text("Close")');
+  await page.click('#dialog .window-close');
   await page.evaluate(() => localStorage.setItem('aigile.lang', 'nl-BE'));
   await page.reload();
   await page.waitForSelector('#packAi');

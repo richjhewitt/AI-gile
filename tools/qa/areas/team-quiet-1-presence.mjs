@@ -53,7 +53,7 @@ def('presence', 'asleep -> online; Wake/comment start a background run (log, one
   await page.click('#teamTop button:has-text("Log")');
   await page.waitForSelector('#dialog pre', { timeout: 4000 }).catch(() => {});
   check('Log dialog opens with the log', /started/.test((await page.textContent('#dialog pre').catch(() => '')) || ''));
-  await page.click('#dialog button:has-text("Close")');
+  await page.click('#dialog .window-close');
   const al = await s.ok('GET', '/api/projects/gamma/agentlog');
   check('agentlog route returns text', typeof al.text === 'string' && /started/.test(al.text), al);
 
