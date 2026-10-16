@@ -591,9 +591,9 @@ function render() {
   if (state.route.view === 'term') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Term.popView(state.route); return; }
   if (state.route.view === 'twitch') { $('modal').innerHTML = ''; TwitchTab.popView(); return; }
   if (state.route.view === 'chat') { $('app').innerHTML = ''; $('modal').innerHTML = ''; Dms.popView(state.route.chat); return; }
-  if (state.route.view === 'weed') { $('app').innerHTML = Weed.popHtml(); $('modal').innerHTML = ''; return; }
-  if (state.route.view === 'glance') { $('app').innerHTML = ScrumGlance.popHtml(); $('modal').innerHTML = ''; return; }
-  if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
+  // A glance window (🌿 weed, 📊 scrum, 🌙 night) grows with its window (AIG-1355): one .glance-fit box, sized in 06-notokens.css.
+  const GLANCES = { weed: () => Weed.popHtml(), glance: () => ScrumGlance.popHtml(), night: () => renderNight() };
+  if (GLANCES[state.route.view]) { document.body.classList.add('glancewin'); $('app').innerHTML = `<div class="glance-fit">${GLANCES[state.route.view]()}</div>`; $('modal').innerHTML = ''; return; }
   if (state.route.view === 'news') { $('app').innerHTML = renderNews(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'watch') { renderWatch(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.title'); if (!$('glossQ') || $('glossQ').dataset.w !== (state.route.word || '')) { $('app').innerHTML = renderGlossary(); glossWord(state.route.word); } $('modal').innerHTML = ''; return; }
