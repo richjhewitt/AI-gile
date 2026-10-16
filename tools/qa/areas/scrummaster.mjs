@@ -130,13 +130,13 @@ def('scrummaster', '🧭 Lead Scrum Master: answers by day (Opus), sorts decide-
   await role(true);
   await page.reload(); await page.waitForSelector('#dmRail [data-dms]'); await page.click('#dmRail [data-dms]'); await page.click('#dmPanel [data-dm="_watchman"]');
   await page.waitForSelector('#smNight', { timeout: 8000 });
-  check('in the team: no Launch button, and a night watch switch showing its state', await page.locator('#smLaunch').count() === 0 && /Night watch: on/.test(await page.textContent('#smNight')), await page.textContent('#smBar'));
+  check('in the team: no Launch button, and a night watch switch showing its state', await page.locator('#smLaunch').count() === 0 && /watches every project: on/.test(await page.textContent('#smNight')), await page.textContent('#smBar'));
   await page.click('#smNight');
-  await page.waitForFunction(() => /Night watch: off/.test((document.getElementById('smNight') || {}).textContent || ''), null, { timeout: 8000 });
+  await page.waitForFunction(() => /watches every project: off/.test((document.getElementById('smNight') || {}).textContent || ''), null, { timeout: 8000 });
   check('the switch changes the one night watch setting (Setup: Watchman ticks every project)', (await s.ok('GET', '/api/setup')).prefs.watchAll === false && (await s.ok('GET', '/api/scrummaster')).night === false);
   await s.ok('POST', '/api/setup', { prefs: { watchAll: true } });
   await page.reload(); await page.waitForSelector('#dmRail [data-dms]'); await page.click('#dmRail [data-dms]'); await page.click('#dmPanel [data-dm="_watchman"]');
-  await page.waitForFunction(() => /Night watch: on/.test((document.getElementById('smNight') || {}).textContent || ''), null, { timeout: 8000 });
+  await page.waitForFunction(() => /watches every project: on/.test((document.getElementById('smNight') || {}).textContent || ''), null, { timeout: 8000 });
   check('a change made in Setup shows on the switch', true);
   // 🎚️ The diligence scale (AIG-441) in the chat header: "On: checking every N min (Steady)", changed with the select.
   check('the header says it is on, every 10 min, Steady', /On: checking every 10 min \(.*Steady\)/.test(await page.textContent('#smBar')), await page.textContent('#smBar'));

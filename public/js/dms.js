@@ -437,7 +437,7 @@ const Dms = (() => {
     const sw = here() ? ` ${Swarm.btn(here(), 'smSwarm')}` : '';
     const html = (sm.on
       ? `<b>${esc(t('sm.on.push', { n: sm.everyMin, name: t('sm.push.' + sm.push) }))}</b> <span class="muted">${esc(t('sm.runs', { runs: sm.runsToday, cap: sm.cap }))}</span> ${pick}
-        <button id="smNight" class="${sm.night ? 'primary' : ''}" onclick="Dms.smNight(${!sm.night})" title="${esc(t('sm.night.title'))}">${esc(t(sm.night ? 'sm.night.on' : 'sm.night.off'))}</button> <span class="muted">${esc(t('sm.night.what'))}</span>`
+        ${sm.nightNow ? `<b id="smNightNow">${esc(t('sm.night.now', { n: sm.nightNow.n, m: sm.everyMin }))}</b> ` : ''}<button id="smNight" class="${sm.night ? 'primary' : ''}" onclick="Dms.smNight(${!sm.night})" title="${esc(t('sm.night.title'))}">${esc(t(sm.night ? 'sm.night.all.on' : 'sm.night.all.off'))}</button> <span class="muted">${esc(t('sm.night.what'))}</span>`
       : `<span class="muted" id="smOut">${esc(t('sm.out'))}</span> <a href="#/setup" id="smAdd">${esc(t('sm.out.add'))}</a>`) + sw;
     if (bar.dataset.sig !== html) { bar.dataset.sig = html; bar.innerHTML = html; }
   }

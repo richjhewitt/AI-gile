@@ -13,6 +13,16 @@ function onlyNightProjects(projects, watch) {
 // amber glow breathes around the edge, with one line saying what. Everything else waits for the morning.
 function openNightGlance() { popOut('night', '#/pop-night', 'aigile-night', 360, 440); }
 
+// AIG-1446: why the night watch didn't start a watched team (its lead in a session, out of usage until, it ran and chose to wait...).
+const nightTime = iso => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+function nightWhyText(w) {
+  if (!w || !w.why) return '';
+  if (w.why === 'limit') return t('night.why.limit', { time: w.until ? nightTime(w.until) : '?' });
+  if (w.why === 'foldermissing') return t('night.why.foldermissing', { path: w.path || '' });
+  if (w.why === 'error') return t('night.why.error', { msg: w.msg || '' });
+  if (w.why === 'waits') return w.said ? t('night.why.waits', { said: w.said, time: nightTime(w.next) }) : t('night.why.waits0', { time: nightTime(w.next) });
+  return t('night.why.' + (['lead', 'folder', 'notokens', 'swarm', 'nothing', 'session', 'engine'].includes(w.why) ? w.why : 'other'));
+}
 function renderNight() {
   const w = state.watch, ps = state.projects || [], blockers = (state.standups && state.standups.blockers) || [];
   document.body.classList.add('poplist', 'nightglance');
@@ -20,17 +30,23 @@ function renderNight() {
   const sum = Object.fromEntries((w.summary || []).map(x => [x.project, x]));
   const line = slug => {
     const p = ps.find(x => x.slug === slug), s = sum[slug] || {}; if (!p) return '';
+    const why = nightWhyText((w.why || {})[slug]), pr = p.presence || {};
     const [dot, word] = s.stuck && s.stuck.length ? ['🔴', t('ng.stuck', { ids: s.stuck.join(', ') })]
-      : p.presence && p.presence.online ? ['🟢', t('ng.working')]
+      : pr.online ? ['🟢', t('ng.working')]
       : s.restarted && s.restarted.length ? ['🟠', t('ng.restarted')] : ['💤', t('ng.asleep')];
-    return `<li><span class="ng-dot">${dot}</span><b>${esc(p.name)}</b> <span class="ng-word">${esc(word)}</span></li>`;
+    // AIG-1446: not running? say why, or that it is woken within the pace
+    const note = pr.running ? '' : why || (pr.online ? '' : t('night.wake', { n: w.everyMin || 10 }));
+    return `<li><span class="ng-dot">${dot}</span><b>${esc(p.name)}</b> <span class="ng-word">${esc(word)}</span>${note ? `<span class="ng-why">${esc(note)}</span>` : ''}</li>`;
   };
+  const when = w.lastCheck || w.lastRound;
+  const last = w.last ? t('ng.last', { what: t('ng.k.' + w.last.kind), name: ((ps.find(x => x.slug === w.last.project) || {}).name || ''), when: ago(w.last.at) }).replace(/\s+,/, ',') : '';
   const stuck = (w.summary || []).filter(x => x.stuck && x.stuck.length);
   const urgent = [...stuck.map(x => t('ng.u.stuck', { name: x.name, ids: x.stuck.join(', ') })),
     ...blockers.filter(b => w.watch.includes(b.project)).map(b => t('ng.u.blocker', { name: b.projectName, text: String(b.text).slice(0, 80) }))];
   document.body.classList.toggle('ng-urgent', urgent.length > 0);
   return `<div class="ng"><div class="ng-head"><span class="ng-moon">🌙</span> ${esc(t('ng.h'))}</div>
-    <div class="ng-when">${esc(w.lastRound ? t('ng.checked', { when: ago(w.lastRound) }) : t('ng.first'))}</div>
+    <div class="ng-when" id="ngWhen">${esc(when ? t('ng.every', { when: ago(when), n: w.everyMin || 10 }) : t('ng.first'))}${last ? `<br><span id="ngLast">${esc(last)}</span>` : ''}</div>
+    ${w.lastError ? `<div class="ng-urgent-line" id="ngErr">${esc(t('ng.err', { msg: w.lastError.msg }))}</div>` : ''}
     ${urgent.length ? `<div class="ng-urgent-line">${urgent.map(u => `<div>${esc(u)}</div>`).join('')}</div>` : `<div class="ng-calm">${esc(t('ng.calm'))}</div>`}
     <ul class="ng-list">${w.watch.map(line).join('')}</ul></div>`;
 }
