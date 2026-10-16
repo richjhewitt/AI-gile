@@ -68,8 +68,28 @@ def('nightglance', '🌙 night glance: a calm pop-out with the watchman per proj
   const page = await openPage(ctx, '#/pop-night');
   await page.waitForSelector('.ng');
   check('when not going quiet it says the watchman is off', /watchman is off/.test(await page.textContent('.ng')));
+  // AIG-1353: the first paint, before app.js loads: the glance is night-coloured with no top bar (saved light theme), and a start
+  // while quiet is in night colours (saved black theme), not black first; a stale quiet is cleared once the board answers
+  const early = async (hash, theme, nightBoot) => {
+    const c2 = await ctx.browser().newContext({ serviceWorkers: 'block' }), p2 = await c2.newPage();
+    await p2.addInitScript(([th, nb]) => { try { if (!sessionStorage.getItem('qaSeeded')) { sessionStorage.setItem('qaSeeded', '1'); localStorage.setItem('aigile.theme', th); if (nb) localStorage.setItem('aigile.nightBoot', nb); } } catch {} }, [theme, nightBoot]);
+    let release; const held = new Promise(r => { release = r; });
+    await p2.route('**/js/app.js*', async route => { await held; await route.continue(); });
+    await p2.goto(page.url().split('#')[0] + hash, { waitUntil: 'commit' });
+    await p2.waitForSelector('body', { state: 'attached' }); await sleep(500);
+    const r = await p2.evaluate(() => ({ app: typeof setNight === 'function', pop: document.documentElement.hasAttribute('data-popnight'), night: document.documentElement.hasAttribute('data-night'), bg: getComputedStyle(document.body).backgroundColor, header: getComputedStyle(document.querySelector('body > header')).display }));
+    release(); return { r, p2, c2 };
+  };
+  { const { r, c2 } = await early('#/pop-night', 'light'); await c2.close();
+    check('night glance: night background and no top bar at the first paint, before app.js (AIG-1353)', !r.app && r.pop && r.bg === 'rgb(11, 6, 5)' && r.header === 'none', JSON.stringify(r)); }
+  { const { r, p2, c2 } = await early('#/', 'black', JSON.stringify({ s: new Date().toISOString(), u: '' }));
+    check('a start while quiet is in night colours from the first paint, not black first (AIG-1353)', !r.app && r.night && r.bg === 'rgb(13, 9, 6)', JSON.stringify(r));
+    let gone = false; for (let i = 0; i < 40 && !gone; i++) { await sleep(250); gone = await p2.evaluate(() => !document.documentElement.hasAttribute('data-night') && !localStorage.getItem('aigile.nightBoot')); }
+    check('not quiet any more: the board drops the remembered night mode', gone); await c2.close(); }
   await s.ok('POST', '/api/quiet', { on: true });
   await page.reload(); await page.waitForSelector('.ng-list li');
+  { let nb = false; for (let i = 0; i < 40 && !nb; i++) { nb = await page.evaluate(() => { const n = JSON.parse(localStorage.getItem('aigile.nightBoot') || 'null'); return !!(n && n.s); }); if (!nb) await sleep(250); }
+    check('quiet is remembered for the next start (aigile.nightBoot)', nb); }
   check('one quiet line per watched project, no top bar', (await page.locator('.ng-list li').count()) === 2 && await page.locator('header').isHidden());
   check('calm night: no glow', /All calm/.test(await page.textContent('.ng')) && !(await page.evaluate(() => document.body.classList.contains('ng-urgent'))));
   await page.evaluate(() => localStorage.removeItem('aigile.standupAsked')); await page.reload(); await page.waitForSelector('.ng-list li'); await page.waitForTimeout(2500);

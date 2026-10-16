@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const net = require('net');
-const { clampBounds, pickBackground, THEMES, badgeCount, badgeBitmap } = require('./winstate');
+const { clampBounds, pickBackground, isNightGlance, THEMES, badgeCount, badgeBitmap } = require('./winstate');
 
 // Packaged (AppImage): the board's files sit in resources/aigile and its data goes to the user's own folder (the AppImage is read-only).
 const ROOT = app.isPackaged ? path.join(process.resourcesPath, 'aigile') : path.resolve(__dirname, '..');
@@ -112,7 +112,7 @@ function startLook() {
   if (THEMES.includes(ui.theme)) nativeTheme.themeSource = ui.theme === 'black' ? 'dark' : ui.theme;
   let size = { width: 1400, height: 900 };
   try { size = clampBounds(ui.bounds, screen.getAllDisplays().map(d => d.workArea)) || size; } catch {}
-  return { size, max: ui.max === true, backgroundColor: pickBackground(ui.theme, nativeTheme.shouldUseDarkColors) };
+  return { size, max: ui.max === true, backgroundColor: pickBackground(ui.theme, nativeTheme.shouldUseDarkColors, ui.night) };
 }
 /* ---------- popped-out cards survive a restart (AIG-144) ---------- */
 // Open pop-outs (address and position) are kept in the app's own folder; closing one yourself forgets it.
@@ -150,14 +150,18 @@ function trackPop(w, url) {
 function reopenPops() {
   let list = []; try { list = JSON.parse(fs.readFileSync(POPS(), 'utf8')); } catch {}
   for (const p of list) if (String(p.url).startsWith(BASE + '/#/pop')) {
-    const w = new BrowserWindow({ ...chrome(), ...(p.bounds || { width: 560, height: 780 }), alwaysOnTop: true });
+    const w = new BrowserWindow({ ...chrome(p.url), ...(p.bounds || { width: 560, height: 780 }), alwaysOnTop: true });
     wire(w); trackPop(w, p.url); w.loadURL(p.url);
   }
 }
 // No Windows title bar (AIG-128): just the window buttons, in the board's own colours, over the page's top bar.
-const bar = () => nativeTheme.shouldUseDarkColors ? { color: '#1b2029', symbolColor: '#e6e9ef', height: 36 } : { color: '#ffffff', symbolColor: '#1d2330', height: 36 };
-const chrome = () => ({ autoHideMenuBar: true, icon: appIcon(), titleBarStyle: 'hidden', titleBarOverlay: bar(), webPreferences: { preload: path.join(__dirname, 'preload.js') } });   // preload: the share picker (AIG-1163)
-nativeTheme.on('updated', () => BrowserWindow.getAllWindows().forEach(w => { try { w.setTitleBarOverlay(bar()); } catch {} }));
+// AIG-1353: while quiet the buttons are night-coloured (the page's --panel and --muted in night mode); the 🌙 night glance always is.
+const bar = url => isNightGlance(url) ? { color: '#0b0605', symbolColor: '#6e4a40', height: 36 } : ui.night ? { color: '#15100b', symbolColor: '#7d6450', height: 36 }
+  : nativeTheme.shouldUseDarkColors ? { color: '#1b2029', symbolColor: '#e6e9ef', height: 36 } : { color: '#ffffff', symbolColor: '#1d2330', height: 36 };
+// url: the board address the window opens, so its colour before the page paints is the right one (night glance, night, theme)
+const chrome = url => ({ autoHideMenuBar: true, icon: appIcon(), titleBarStyle: 'hidden', titleBarOverlay: bar(url), backgroundColor: pickBackground(ui.theme, nativeTheme.shouldUseDarkColors, ui.night, url), webPreferences: { preload: path.join(__dirname, 'preload.js') } });   // preload: the share picker (AIG-1163)
+const recolour = () => BrowserWindow.getAllWindows().forEach(w => { try { const u = pops.get(w); w.setTitleBarOverlay(bar(u)); if (!isNightGlance(u)) w.setBackgroundColor(pickBackground(ui.theme, nativeTheme.shouldUseDarkColors, ui.night, u)); } catch {} });
+nativeTheme.on('updated', recolour);
 // Link and navigation rules for any of our windows (the main one and popped-out cards).
 function wire(w) {
   // Board links to other sites open in the normal browser; the board's own open in a new app window.
@@ -173,13 +177,15 @@ function wire(w) {
     if (frameName === 'aigile-twitch' && /^https:\/\/www\.twitch\.tv\//.test(url)) {
       return { action: 'allow', overrideBrowserWindowOptions: { autoHideMenuBar: true, icon: appIcon(), width: 380, height: 720, ...(placeFor('#/pop-twitch') || {}), alwaysOnTop: true } };
     }
-    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(), alwaysOnTop: url.includes('#/pop'), ...(url.includes('#/pop') ? placeFor(url) || {} : {}) } };
+    if (url.startsWith(BASE)) return { action: 'allow', overrideBrowserWindowOptions: { ...chrome(url), alwaysOnTop: url.includes('#/pop'), ...(url.includes('#/pop') ? placeFor(url) || {} : {}) } };
     shell.openExternal(url); return { action: 'deny' };
   });
   w.webContents.on('will-navigate', (e, url) => {
     if (url === 'aigile://restart') { e.preventDefault(); quitting = true; savePops(); app.relaunch(); app.exit(0); return; }   // the 🔄 Restart app pill (AIG-83)
     // The page's theme pick (AIG-143): the window buttons and every window follow it.
-    if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark', 'black'].includes(t)) { nativeTheme.themeSource = t === 'black' ? 'dark' : t; ui.theme = t; saveUi(); } return; }
+    if (url.startsWith('aigile://theme/')) { e.preventDefault(); const t = url.slice(15); if (['system', 'light', 'dark', 'black'].includes(t)) { nativeTheme.themeSource = t === 'black' ? 'dark' : t; ui.theme = t; saveUi(); recolour(); } return; }
+    // Night mode (AIG-1353): going quiet or waking up; kept so the next start is night-coloured before the page loads.
+    if (url.startsWith('aigile://night/')) { e.preventDefault(); const on = url.endsWith('/1'); if (!!ui.night !== on) { ui.night = on; saveUi(); recolour(); } return; }
     // Goodnight (AIG-228): only the night glance stays on screen.
     if (url === 'aigile://minimize') { e.preventDefault(); w.minimize(); return; }
     // After a native alert/confirm box Windows leaves typing dead until the window is refocused (AIG-84).

@@ -19,6 +19,10 @@ assert.deepStrictEqual(clampBounds({ width: 800, height: 600 }, one), { width: 8
 assert.strictEqual(pickBackground('dark', false), '#12151b'); assert.strictEqual(pickBackground('black', false), '#000000');
 assert.strictEqual(pickBackground('light', true), '#f6f7f9'); assert.strictEqual(pickBackground('system', true), '#12151b');
 assert.strictEqual(pickBackground(undefined, false), '#f6f7f9');
+// AIG-1353: quiet = night colours whatever the theme; the night glance window is always its own near-black
+assert.strictEqual(pickBackground('black', false, true), '#0d0906'); assert.strictEqual(pickBackground('light', false, true), '#0d0906');
+assert.strictEqual(pickBackground('light', false, false, 'http://localhost:4321/#/pop-night'), '#0b0605');
+assert.strictEqual(pickBackground('dark', false, true, 'http://localhost:4321/#/pop/AIG-1'), '#0d0906');
 assert.deepStrictEqual([0, -3, 'x', NaN, 4.7, 5000, '12'].map(badgeCount), [0, 0, 0, 0, 4, 999, 12]);
 assert.strictEqual(badgeBitmap(0), null);
 for (const n of [1, 7, 42, 100]) { const b = badgeBitmap(n); assert.strictEqual(b.buffer.length, 32 * 32 * 4); assert(b.buffer.some((v, i) => i % 4 === 3 && v === 255)); }

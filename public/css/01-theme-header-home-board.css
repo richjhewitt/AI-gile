@@ -40,6 +40,16 @@
   color-scheme: dark;
 }
 :root[data-night] img, :root[data-night] svg { filter: sepia(.6) brightness(.8); }
+/* AIG-1353: the 🌙 night glance window (data-popnight, set in index.html's head) is near-black and red-tinted from the first
+   frame, whatever the theme or quiet state, and never shows the board's top bar (html:root beats every theme rule above). */
+html:root[data-popnight] {
+  --bg: #0b0605; --panel: #0b0605; --col: #0b0605; --text: #b07a6a; --muted: #6e4a40; --line: #1f120e;
+  --accent: #a8622c; --done: #7f8a3a; --warn: #b8782e; --danger: #a8483a; --you: #8f5a4a;
+  --shadow: none; --on-fill: #fff; --warn-ink: var(--warn);
+  color-scheme: dark; background: #0b0605;
+}
+html:root[data-popnight] body > header, html:root[data-popnight] #filterbar, html:root[data-popnight] #updateTop, html:root[data-popnight] #saverBar,
+html:root[data-popnight] #swarmBar, html:root[data-popnight] #dmRail, html:root[data-popnight] #dmPanel { display: none !important; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
 a { color: inherit; text-decoration: none; }

@@ -6,6 +6,12 @@ const Topbar = (() => {
   const KEY = 'aigile.topbar';
   const BTNS = [['helpBtn', 'help'], ['bugBtn', 'bug'], ['ideaBtn', 'idea'], ['teamTop', 'team'], ['inboxTop', 'inbox'], ['pokeTop', 'poke'], ['nightTop', 'night'], ['glanceBtn', 'glance'], ['weedBtn', 'weed'], ['streamBtn', 'stream'], ['ntBtn', 'nt'], ['statusBtn', 'status'], ['tiredBtn', 'tired'], ['assumeNav', 'assume'], ['usageNav', 'usage'], ['setupNav', 'setup'], ['themeBtn', 'theme']];
   const IDS = BTNS.map(b => b[0]), KEEP = 'setupNav';
+  // AIG-1351: Setup's lists show each button's own icon, read off the button in the bar (its first emoji), so there is one source;
+  // a slot that stays empty until there is something to show (team, inbox, pokes, night glance, language) carries it as data-icon.
+  const EMO = /^\s*((?:\p{Extended_Pictographic}|\p{Regional_Indicator})(?:️|\p{Emoji_Modifier}|‍\p{Extended_Pictographic})*)/u;
+  const iconOf = id => { const e = $(id); if (!e) return ''; const m = (e.textContent || '').match(EMO); return m ? m[1] : e.dataset.icon || ''; };
+  const ico = id => { const i = iconOf(id); return i ? `<span class="tb-ico" aria-hidden="true">${esc(i)}</span>` : ''; };
+  const plain = s => String(s).replace(EMO, '').trim();   // a name that brings its own emoji (🌙 Going quiet) shows it once
   const AI_BTNS = ['ntBtn', 'usageNav', 'pokeTop', 'nightTop', 'teamTop'];   // hidden by No AI, ever (AIG-581)
   const DEF_SIDE = { bugBtn: 'l', ideaBtn: 'l' };   // AIG-733: Raise bug sits next to the project name unless a saved layout says otherwise
   const sideOf = (c, id) => c.side[id] || DEF_SIDE[id] || 'r';
@@ -105,18 +111,18 @@ const Topbar = (() => {
   if (phoneMq.addEventListener) phoneMq.addEventListener('change', () => { apply(); menu(false); });
   function html() {
     const rows = cur.order.filter(id => !(NoAi.on && AI_BTNS.includes(id))).map((id, i) => {
-      const nm = t('tb.b.' + BTNS.find(b => b[0] === id)[1]), on = !cur.off.includes(id), lk = id === KEEP, sd = sideOf(cur, id), co = cur.colour[id] || '';
+      const nm = plain(t('tb.b.' + BTNS.find(b => b[0] === id)[1])), on = !cur.off.includes(id), lk = id === KEEP, sd = sideOf(cur, id), co = cur.colour[id] || '';
       const sw = ['', ...COLOURS].map(k => `<button type="button" class="tb-sw${co === k ? ' on' : ''}" data-tbc="${k}" aria-pressed="${co === k}" aria-label="${esc(t('tb.c.' + (k || 'none')))}" title="${esc(t('tb.c.' + (k || 'none')))}" onclick="Topbar.colour('${id}','${k}')"></button>`).join('');
       return `<li class="tb-row" draggable="true" data-tb="${id}">
         <span class="tb-grip" aria-hidden="true">⋮⋮</span>
-        <label class="tb-name"><input type="checkbox" class="tb-on" ${on ? 'checked' : ''} ${lk ? 'disabled' : ''} onchange="Topbar.toggle('${id}')" aria-label="${esc(t('tb.show', { name: nm }))}"> ${esc(nm)}${lk ? ` <span class="muted">${esc(t('tb.locked'))}</span>` : ''}</label>
+        <label class="tb-name"><input type="checkbox" class="tb-on" ${on ? 'checked' : ''} ${lk ? 'disabled' : ''} onchange="Topbar.toggle('${id}')" aria-label="${esc(t('tb.show', { name: nm }))}"> ${ico(id)}${esc(nm)}${lk ? ` <span class="muted">${esc(t('tb.locked'))}</span>` : ''}</label>
         <select class="tb-side" aria-label="${esc(t('tb.side'))}" onchange="Topbar.side('${id}',this.value)"><option value="r" ${sd === 'r' ? 'selected' : ''}>${esc(t('tb.side.r'))}</option><option value="l" ${sd === 'l' ? 'selected' : ''}>${esc(t('tb.side.l'))}</option></select>
         <span class="tb-sws" role="group" aria-label="${esc(t('tb.colour'))}">${sw}</span>
         <span class="tb-mv"><button type="button" class="tb-up" aria-label="${esc(t('tb.up', { name: nm }))}" title="${esc(t('tb.up', { name: nm }))}" ${i === 0 ? 'disabled' : ''} onclick="Topbar.step('${id}',-1)">↑</button><button type="button" class="tb-down" aria-label="${esc(t('tb.down', { name: nm }))}" title="${esc(t('tb.down', { name: nm }))}" ${i === cur.order.length - 1 ? 'disabled' : ''} onclick="Topbar.step('${id}',1)">↓</button></span></li>`;
     }).join('');
     return `<span>${esc(t('tb.h'))}</span><div><ul class="tb-list" id="tbList">${rows}</ul>
       <div class="actions"><button type="button" id="tbReset" onclick="Topbar.reset()" ${isDefault(cur) ? 'disabled' : ''}>${esc(t('tb.reset'))}</button></div></div><small class="muted">${esc(t('tb.help'))}</small>
-      <div class="tb-pins" id="tbPins"><b>${esc(t('tb.pin.h'))}</b> <small class="muted">${esc(t('tb.pin.help'))}</small><div class="tb-pinlist">${PINNABLE.filter(id => !(NoAi.on && AI_BTNS.includes(id))).map(id => `<label class="tb-pin"><input type="checkbox" data-pin="${id}" ${pins.includes(id) ? 'checked' : ''} ${id === KEEP ? 'disabled' : ''} onchange="Topbar.pin('${id}')"> ${esc(t('tb.b.' + (BTNS.find(b => b[0] === id) || [0, id.replace(/Btn|Nav|Wrap/, '')])[1]))}</label>`).join('')}</div></div>`;
+      <div class="tb-pins" id="tbPins"><b>${esc(t('tb.pin.h'))}</b> <small class="muted">${esc(t('tb.pin.help'))}</small><div class="tb-pinlist">${PINNABLE.filter(id => !(NoAi.on && AI_BTNS.includes(id))).map(id => `<label class="tb-pin"><input type="checkbox" data-pin="${id}" ${pins.includes(id) ? 'checked' : ''} ${id === KEEP ? 'disabled' : ''} onchange="Topbar.pin('${id}')"> ${ico(id)}${esc(plain(t('tb.b.' + (BTNS.find(b => b[0] === id) || [0, id.replace(/Btn|Nav|Wrap/, '')])[1])))}</label>`).join('')}</div></div>`;
   }
   function paint() { const b = $('topbarBox'); if (b) b.innerHTML = html(); }
   // Drag a row onto another to move it there.

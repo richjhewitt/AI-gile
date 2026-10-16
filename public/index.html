@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <!-- AIG-1291: the saved theme before the first paint, so a restart never flashes the system colours first (app.js theme() takes over) -->
 <script>try { var th = localStorage.getItem('aigile.theme'); if (th && th !== 'system') document.documentElement.dataset.theme = th; } catch (e) {}</script>
+<!-- AIG-1353: night mode before the first paint too: going quiet is remembered (app.js setNight saves aigile.nightBoot, with the
+     wake-up time when there is one), so a restart while quiet never shows black or light first. The 🌙 night glance pop-out is
+     night-coloured with no top bar from the first frame, whatever the theme (data-popnight, 01-theme css). -->
+<script>try { var nb = JSON.parse(localStorage.getItem('aigile.nightBoot') || 'null'); if (nb && nb.s && !(nb.u && Date.now() >= Date.parse(nb.u))) document.documentElement.setAttribute('data-night', ''); } catch (e) {} if (location.hash.indexOf('#/pop-night') === 0) document.documentElement.setAttribute('data-popnight', '');</script>
 <!-- AIG-1330: the language and direction of the last start before the first paint. Until your language file is in, the top bar
      keeps its place but shows no (English) words; i18n.js loadLang() saves aigile.langBoot and clears i18n-wait. -->
 <script>try { var de = document.documentElement, lb = JSON.parse(localStorage.getItem('aigile.langBoot') || 'null'); if (lb && lb.l) { de.lang = lb.l; de.dir = lb.d === 'rtl' ? 'rtl' : 'ltr'; } if (!lb || lb.c !== 'en') { de.classList.add('i18n-wait'); setTimeout(function () { de.classList.remove('i18n-wait'); }, 10000); } } catch (e) {}</script>
@@ -46,11 +50,11 @@
   <button id="helpBtn" class="navlink" onclick="helpMenu()" data-i18n="help.btn" data-i18n-title="help.btn.title" title="Help" aria-haspopup="menu">❓ Help</button>
   <button id="ideaBtn" class="navlink" onclick="ideaDialog()" data-i18n-title="idea.btn.title" title="Got an idea? Jot it down">💡</button>
   <button id="bugBtn" class="navlink" onclick="newCard({type:'bug',priority:'high',status:'team'})" data-i18n="board.raisebug">🐞 Raise bug</button>
-  <span id="teamTop"></span>
+  <span id="teamTop" data-icon="👥"></span>
   <span id="hfTop"></span>
-  <span id="inboxTop"></span>
-  <span id="pokeTop"></span>
-  <span id="nightTop"></span>
+  <span id="inboxTop" data-icon="📥"></span>
+  <span id="pokeTop" data-icon="🔔"></span>
+  <span id="nightTop" data-icon="🌙"></span>
   <span id="quietTimeTop" class="quiet-chip" role="status" hidden></span>
   <button id="twitchBtn" class="navlink" onclick="Twitch.open(event)" data-i18n="twitch.btn" data-i18n-title="twitch.title" title="Your Twitch chat in a window that stays on top (Shift+click: change channel)">💬 Twitch chat</button>
   <button id="quietTop" class="navlink" onclick="goQuiet()" data-i18n="home.quiet" data-i18n-title="home.quiet.title" title="Tell every working team you are switching off for a few hours">🌙 Going quiet</button>
@@ -68,7 +72,7 @@
   <button id="themeBtn" class="theme-pick" onclick="nextTheme()" title="Theme">🖥️ System</button>
   <span id="tbMore"><button type="button" id="tbMoreBtn" class="navlink" aria-haspopup="true" aria-expanded="false" data-i18n-label="tb.menu" aria-label="Menu" onclick="Topbar.menu()"><span class="tbm-d" data-i18n="tb.more">More ▾</span><span class="tbm-p">☰</span></button><div id="tbMoreMenu" role="menu" hidden></div></span>
   <button id="enBtn" class="theme-pick" hidden onclick="toggleEn()"></button>
-  <span id="immWrap" class="langwrap imm-wrap" hidden><button id="immBtn" class="theme-pick" onclick="toggleImm()"></button><button id="immMore" class="theme-pick imm-more" aria-haspopup="true" aria-expanded="false" onclick="immMenu()" hidden>▾</button><div id="immList" class="immlist" hidden></div></span>
+  <span id="immWrap" class="langwrap imm-wrap" data-icon="🌍" hidden><button id="immBtn" class="theme-pick" onclick="toggleImm()"></button><button id="immMore" class="theme-pick imm-more" aria-haspopup="true" aria-expanded="false" onclick="immMenu()" hidden>▾</button><div id="immList" class="immlist" hidden></div></span>
   <span class="live" id="live" data-i18n="live.ok">live</span>
 </header>
 <div id="updateTop"><span id="upUpdate"></span><span id="upRefresh"></span><span id="upRestart"></span></div>
