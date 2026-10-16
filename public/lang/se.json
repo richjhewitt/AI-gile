@@ -742,11 +742,7 @@
   "queue.holds": "hehtte {n}",
   "queue.mins": "{n} min",
   "queue.bump": "muittuhuvvon {at}",
-  "queue.bump.title": {"one":"Muittuhuvvon {count} háve: joavku jearai fas kopiija sádde sajis","two":"Muittuhuvvon {count} háve: joavku jearai fas kopiija sádde sajis","other":"Muittuhuvvon {count} háve: joavku jearai fas kopiija sádde sajis"}
-    "one": "Muittuhuvvon {count} geardde: joavku jearai fas sáddema ektui",
-    "two": "Muittuhuvvon {count} geardde: joavku jearai fas sáddema ektui",
-    "other": "Muittuhuvvon {count} geardde: joavku jearai fas sáddema ektui"
-  },
+  "queue.bump.title": {"one":"Muittuhuvvon {count} háve: joavku jearai fas kopiija sádde sajis","two":"Muittuhuvvon {count} háve: joavku jearai fas kopiija sádde sajis","other":"Muittuhuvvon {count} háve: joavku jearai fas kopiija sádde sajis"},
   "queue.total": "{n} min oktiibuot",
   "queue.next": "Boahtte:",
   "queue.all": "Buot",
@@ -877,11 +873,7 @@
   "tidy.title": "Bivdde jođiheaddji ovttastahttit korttaid seamma doaimmas ovttan ja ordnet namaid",
   "tidy.asked": "Jođiheaddji lea bivdojuvvon ordnet du bunka ({id}). Son dieđiha go lea gárvvis.",
   "tidy.already": "Jođiheaddji lea juo das ({id}).",
-  "tidy.toast": {"one":"{count} jođiheaddji bivdojuvvui ordnet du bunka","two":"{count} jođiheaddji bivdojuvvui ordnet du bunka","other":"{count} jođiheaddji bivdojuvvui ordnet du bunka"}
-    "one": "Bivddii {count} jođiheaddji ordnet du bunka",
-    "two": "Bivddii {count} jođiheaddji ordnet du bunka",
-    "other": "Bivddii {count} jođiheaddji ordnet du bunka"
-  },
+  "tidy.toast": {"one":"{count} jođiheaddji bivdojuvvui ordnet du bunka","two":"{count} jođiheaddji bivdojuvvui ordnet du bunka","other":"{count} jođiheaddji bivdojuvvui ordnet du bunka"},
   "inbox.popone": "Raba dán kortta iežas lásis",
   "inbox.popout": "Raba dán listtu iežas lásis",
   "gloss.h": "📖 Fágasánit čilgejuvvon",
@@ -1003,11 +995,7 @@
     "two": "📣 Dieđihii {count} joavkui",
     "other": "📣 Dieđihii {count} joavkkuide"
   },
-  "quiet.done.woke": {"one":"▶ Boktii {count} nohkkan joavkku","two":"▶ Boktii {count} nohkkan joavkku","other":"▶ Boktii {count} nohkkan joavkku"}
-    "one": "▶ Veahkkelii {count} nohkkevaš joavkku",
-    "two": "▶ Veahkkelii {count} nohkkevaš joavkku",
-    "other": "▶ Veahkkelii {count} nohkkevaš joavkku"
-  },
+  "quiet.done.woke": {"one":"▶ Boktii {count} nohkkan joavkku","two":"▶ Boktii {count} nohkkan joavkku","other":"▶ Boktii {count} nohkkan joavkku"},
   "quiet.done.watch": "🌙 Vákti doallá čalmmi {n} alde",
   "quiet.done.none": "Ii oktage joavkkus leat rabas bargu, nu ahte ii oktage dárbbašan dieđihuvvot.",
   "quiet.done.ok": "Buorre idja",
