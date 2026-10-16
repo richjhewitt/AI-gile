@@ -7,7 +7,7 @@ def('testerfix', 'shortcuts ? row text, 🔥 Incidents and problems in ❓ Help,
   const page = await openPage(ctx, '#/p/fix-board');
   await page.waitForSelector('.column[data-status="team"]', { state: 'attached' });
   await page.keyboard.press('?');
-  await page.waitForSelector('#scClose');
+  await page.waitForSelector('#dialog .dialog.sc .window-close');
   const sheet = await page.textContent('#dialog');
   check('shortcuts: the ? row says it shows or hides the list, not the self-care help', /Show or hide this list/.test(sheet) && !/Small nudges/.test(sheet));
   // AIG-967: the 📣 Call stand-ups? nudge hides while a dialog is open
@@ -15,8 +15,8 @@ def('testerfix', 'shortcuts ? row text, 🔥 Incidents and problems in ❓ Help,
     const open = getComputedStyle(el).display; closeDialog(); const shut = getComputedStyle(el).display; el.remove(); return { open, shut }; });
   check('the stand-up nudge hides while a dialog is open and comes back after', nudge.open === 'none' && nudge.shut !== 'none', nudge);
   await page.keyboard.press('?');
-  await page.waitForSelector('#scClose');
-  await page.click('#scClose');
+  await page.waitForSelector('#dialog .dialog.sc .window-close');
+  await page.click('#dialog .dialog.sc .window-close');
   await page.click('#helpBtn');
   await page.click('#hmIncidents');
   await page.waitForSelector('#incGuide');

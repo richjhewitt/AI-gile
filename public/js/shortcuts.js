@@ -15,8 +15,8 @@ const Shortcuts = (() => {
   function sheet() {
     const rows = LIST.map(([ks, how, s]) => `<tr><td class="sc-k">${ks.map(x => `<kbd>${esc(x)}</kbd>`).join(how === 'or' ? ' / ' : ' ')}</td><td>${esc(t(s))}</td></tr>`).join('');
     popNext('keys'); openDialog(`<h2>${esc(t('sc.title'))}</h2><table class="sc-t">${rows}</table><div class="muted">${esc(t('sc.note'))}</div>
-      <div class="actions"><button type="button" id="scClose" class="primary" onclick="closeDialog()">${esc(t('sc.shut'))}</button></div>`, 'sc');
-    const b = $('scClose'); if (b) b.focus();
+`, 'sc');
+    const b = document.querySelector('#dialog .dialog.sc .window-close'); if (b) b.focus();   // AIG-1382: the shared top-right Close is the sheet's Close
   }
   function style() {
     if (document.getElementById('scStyle')) return;
@@ -54,7 +54,7 @@ const Shortcuts = (() => {
       return;
     }
     if (!k || k.length !== 1) return;
-    if (k === '?') { e.preventDefault(); if (!dlg) sheet(); else if ($('scClose')) closeDialog(); return; }
+    if (k === '?') { e.preventDefault(); if (!dlg) sheet(); else if (document.querySelector('#dialog .dialog.sc')) closeDialog(); return; }
     const l = k.toLowerCase();
     if ((l === 'a' || l === 'b') && dlg) {   // the For you window: the unfolded row
       const open = [...document.querySelectorAll('#fyfList .fyf-row.open')], ae = document.activeElement, inRow = ae && ae.closest && ae.closest('#fyfList .fyf-row.open');

@@ -27,7 +27,7 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   // Cheat sheet.
   await page.keyboard.press('?');
   check('? opens the cheat sheet', (await dialog()) === 1 && (await page.locator('.sc-t tr').count()) >= 10);
-  check('cheat sheet button says Close, not the self-care Done (AIG-1269)', (await page.locator('#scClose').innerText()).trim() === 'Close');
+  check('cheat sheet button says Close, not the self-care Done (AIG-1269)', (await page.locator('#dialog .dialog.sc .window-close').getAttribute('aria-label')) === 'Close' && !/Done/.test(await page.locator('#dialog').innerText()));
   check('cheat sheet has no raw language keys', !/\bsc\.[a-z]+/.test(await page.locator('#dialog').innerText()));
   await page.keyboard.press('Escape');
   check('Esc closes the cheat sheet', (await dialog()) === 0 && (await page.locator('#dialog > *').count()) === 0);
