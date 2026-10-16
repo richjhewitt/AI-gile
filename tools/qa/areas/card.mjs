@@ -84,7 +84,7 @@ def('gobutton', '👍 Go answers a question in one tap, in the inbox and on the 
   s.cli(['block', 'alpha', b.id, 'no key', '--as', 'Lead']);
   const page = await openPage(ctx, '#/inbox');
   await page.waitForSelector(`.ib-item[data-id="${q1.id}"] button[data-act="go"]`);
-  check('title counts everything waiting (desktop badge)', (await page.title()) === '(3) AI-gile', await page.title());
+  check('title counts everything waiting (desktop badge), in front of the page name (AIG-1332)', /^\(3\) (.+ · )?AI-gile$/.test(await page.title()), await page.title());
   check('blocked card has no Go', (await page.locator(`.ib-item[data-id="${b.id}"] button[data-act="go"]`).count()) === 0);
   // AIG-167: a blocked item can be put off for an hour.
   await page.click(`.ib-item[data-id="${b.id}"] button[data-act="wait"]`);
