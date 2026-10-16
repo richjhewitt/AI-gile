@@ -25,6 +25,13 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   await page.waitForSelector('#dmList .dm-msg');
   check('their message on the left', /M3U or JSON/.test(await page.textContent('#dmList .dm-msg:not(.mine)')));
   check('typing box defaults to the Lead chat, not the open question (AIG-936)', (await page.inputValue('#dmTarget')) === '_new');
+  // Uploaded screenshots remain images; their contents are not live themed widgets.
+  check('chat screenshot stays an image attachment', await page.evaluate(() => {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = Attach.shown({ attachments: [{ id: 'team-shot', name: 'team.png', type: 'image/png' }] }, 'alpha');
+    const img = wrap.querySelector('.att-shown img');
+    return !!img && img.getAttribute('src') === '/api/projects/alpha/attachments/team-shot' && !wrap.querySelector('.team');
+  }));
   // A general message while a question waits (AIG-285): pick "New message to" in the list.
   await page.selectOption('#dmTarget', '_new');
   await page.fill('#dmText', 'Unrelated: how is the week going?');
