@@ -79,7 +79,7 @@ def('presite', 'aigile.lol pre-teaser (presite/, file://): live board moving beh
   await page.waitForFunction(() => window.__pre && window.__pre.mode() === 'fake', null, { timeout: 8000 });
   const where = () => page.evaluate(() => [...document.querySelectorAll('#pre-fake-cols .lv-col')].map(c => c.querySelectorAll('.lv-card').length).join());
   const a = await where(); await sleep(2700); const b = await where();
-  check('relay down: a made-up board shows, says so, and its cards move on their own', (await page.$eval('#pre-fake', e => !e.hidden)) && (await page.$eval('#pre-peek', e => e.textContent)).includes('what a board at work looks like') && a !== b, [a, b]);
+  check('relay down: a made-up board shows, says so, and its cards move on their own', (await page.$eval('#pre-fake', e => !e.hidden)) && (await page.evaluate(() => document.getElementById('pre-peek').textContent === SiteI18n.t('pre.peekFake'))) && a !== b, [a, b]);
   check('relay down: the people line stays hidden', await page.$eval('#people-count', e => e.hidden));
   await page.close();
 
