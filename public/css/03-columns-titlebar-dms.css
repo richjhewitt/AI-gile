@@ -298,3 +298,9 @@ body.poptwitch { padding: 0; } body.poptwitch main { display: none; }
 .dm-dots span:nth-child(2) { animation-delay: .2s; } .dm-dots span:nth-child(3) { animation-delay: .4s; }
 @keyframes dmDots { 0%, 60%, 100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-3px); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .dm-dots span { animation: none; } }
+
+/* Children share the parent grid tracks rather than packing extra narrow cards. */
+.space-kids { display: grid; grid-template-columns: subgrid; padding-inline-start: 0; margin-inline-start: 0; }
+.space-kids > .grid { display: contents; }
+.proj .last:has(button) { white-space: normal; overflow: visible; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.proj .last button { flex-shrink: 0; }
