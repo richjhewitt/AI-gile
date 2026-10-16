@@ -129,7 +129,7 @@ body:has(#suPrompt) .dm-list { padding-bottom: 76px; }
 /* AIG-967: never over a dialog, and room under the page so buttons at the bottom (All hands Send, Request) stay clickable */
 body:has(#dialog:not(:empty)) #suPrompt { display: none; }
 body:has(#suPrompt) #app { padding-bottom: 76px; }
-@media (max-width: 600px) { body:has(#suPrompt) .dm-list { padding-bottom: 130px; } }
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { body:has(#suPrompt) .dm-list { padding-bottom: 130px; } }
 .su-pick label { display: block; padding: 4px 0; }
 
 /* ---------- the rail as Discord servers (AIG-147..149) ---------- */

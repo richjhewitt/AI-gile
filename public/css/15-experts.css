@@ -8,4 +8,4 @@
 .xp-preset[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 22%, var(--panel)); font-weight: 600; }
 .xp-looks { min-height: 1.4em; overflow-wrap: anywhere; }
 #expertBtn { margin-inline-start: auto; }
-@media (max-width: 600px) { .xp-preset { flex: 1 1 140px; justify-content: center; } }
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { .xp-preset { flex: 1 1 140px; justify-content: center; } }

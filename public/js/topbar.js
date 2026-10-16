@@ -43,7 +43,7 @@ const Topbar = (() => {
   // AIG-984: the status button joins a saved pin list once (unpinning it later sticks); AIG-1169: so does Usage (No AI still hides it)
   const loadPins = () => { let a; try { a = JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch { a = null; } if (!Array.isArray(a)) return PIN_DEF.slice(); a = a.filter(i => PINNABLE.includes(i)); try { if (!localStorage.getItem(PKEY + '.status')) { localStorage.setItem(PKEY + '.status', '1'); if (!a.includes('statusBtn')) { a.push('statusBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } if (!localStorage.getItem(PKEY + '.idea')) { localStorage.setItem(PKEY + '.idea', '1'); if (!a.includes('ideaBtn')) { a.splice(a.includes('bugBtn') ? a.indexOf('bugBtn') + 1 : a.length, 0, 'ideaBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } if (!localStorage.getItem(PKEY + '.usage')) { localStorage.setItem(PKEY + '.usage', '1'); if (!a.includes('usageNav')) { a.push('usageNav'); localStorage.setItem(PKEY, JSON.stringify(a)); } } } catch {} return a; };
   let pins = loadPins();
-  const phoneMq = window.matchMedia ? matchMedia('(max-width: 600px)') : { matches: false };
+  const phoneMq = window.matchMedia ? matchMedia('(max-width: 600px), (max-height: 500px) and (pointer: coarse)') : { matches: false };
   const isPhone = () => phoneMq.matches;
   const inBar = id => isPhone() ? id === 'inboxTop' : pins.includes(id);
   const savePins = () => { try { localStorage.setItem(PKEY, JSON.stringify(pins)); for (const k of ['.status', '.idea', '.usage']) localStorage.setItem(PKEY + k, '1'); } catch {} };   // a list saved here has had its one-time joins

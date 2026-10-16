@@ -1,14 +1,15 @@
 // QA area: phonefit (AIG-1391..1399). Phone fixes checked upright (390x844) and on its side (844x390), with touch.
 // QA_SHOTS=<folder> saves a screenshot of each fixed screen as <card>.png (upright) and <card>-landscape.png.
 import path from 'node:path';
-import { check, sleep, mkProject, mkCard, openPage, BASE, def } from '../lib.mjs';
+import { check, sleep, tmp, mkProject, mkCard, openPage, BASE, def } from '../lib.mjs';
 
 const SIZES = [{ name: '390x844', viewport: { width: 390, height: 844 } }, { name: '844x390', viewport: { width: 844, height: 390 }, land: true }];
 const shot = async (page, card, size) => { if (process.env.QA_SHOTS) await page.screenshot({ path: path.join(process.env.QA_SHOTS, card + (size.land ? '-landscape' : '') + '.png') }); };
 
 def('phonefit', '📱 phone fixes upright and on its side (390x844, 844x390): labels, layout, pills, call panel, Setup, tap targets (AIG-1391..1399)', async (s, ctx0) => {
   const browser = ctx0.browser();
-  await mkProject(s, 'Alpha', 'ALP');
+  await mkProject(s, 'Alpha', 'ALP', { path: tmp('alpha'), team: true });
+  await mkCard(s, 'alpha', 'Tidy the settings page', { status: 'backlog' });
   await mkCard(s, 'alpha', 'Check the login page', { status: 'verify', testSteps: '1. Open it' });
   for (const size of SIZES) {
     const ctx = await browser.newContext({ viewport: size.viewport, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
@@ -22,6 +23,35 @@ def('phonefit', '📱 phone fixes upright and on its side (390x844, 844x390): la
       await page.evaluate(() => document.getElementById('tbList').scrollIntoView({ block: 'start' }));
       await sleep(200); await shot(page, 'AIG-1396', size);
       await page.close();
+
+      /* ---------- AIG-1391: a phone on its side keeps the phone layout ---------- */
+      const bp = await openPage(ctx, '#/p/alpha');
+      await bp.waitForSelector('.board .card', { timeout: 10000 }); await sleep(400);
+      const lay = await bp.evaluate(() => {
+        const h = document.querySelector('body > header').getBoundingClientRect(), rail = document.getElementById('dmRail').getBoundingClientRect();
+        const vis = [...document.querySelectorAll('header > *')].filter(e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden'; }).map(e => e.id || e.className);
+        const card = [...document.querySelectorAll('.board .card')].some(c => { const r = c.getBoundingClientRect(); return r.height > 0 && r.top < innerHeight - 70 && r.bottom > 0 && r.left < innerWidth && r.right > 0; });
+        return { hdr: Math.round(h.height), railLeft: Math.round(rail.left), railTop: Math.round(rail.top), railW: Math.round(rail.width), vis, card, H: innerHeight };
+      });
+      check(D + ': board top bar is one row (AIG-1391)', lay.hdr <= 64, lay);
+      check(D + ': the rail is the bottom bar, not a left column', lay.railW > 200 && lay.railTop > lay.H / 2, lay);
+      check(D + ': a card is on screen without scrolling', lay.card, lay);
+      await shot(bp, 'AIG-1391', size);
+      for (const [hash, label] of [['#/glossary', 'glossary'], ['#/p/alpha', 'new card']]) {
+        await bp.goto(BASE + '/' + hash); await sleep(800);
+        if (label === 'new card') { await bp.evaluate(() => newCard()); await bp.waitForSelector('#f-title', { timeout: 8000 }).catch(() => {}); await sleep(300); await shot(bp, 'AIG-1391-newcard', size); }
+        const pops = await bp.evaluate(() => [...document.querySelectorAll('.dlg-pop, #pagePop')].filter(e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0; }).length);
+        check(D + ': no Pop out button on the ' + label, pops === 0, pops);
+      }
+      await bp.close();
+    } finally { await ctx.close().catch(() => {}); }
+  }
+  { // a short desktop window (no touch) keeps the desktop bar
+    const ctx = await browser.newContext({ viewport: { width: 844, height: 390 } });
+    try {
+      const bp = await openPage(ctx, '#/p/alpha'); await bp.waitForSelector('.board .card', { timeout: 10000 });
+      const r = await bp.evaluate(() => { const b = document.getElementById('dmRail').getBoundingClientRect(); return { w: Math.round(b.width), left: Math.round(b.left) }; });
+      check('844x390 mouse window: the rail stays a left column (AIG-1391 is touch only)', r.w <= 80 && r.left <= 1, r);
     } finally { await ctx.close().catch(() => {}); }
   }
 }, true);

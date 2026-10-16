@@ -60,7 +60,7 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .navlink.pokebadge { background: none; font: inherit; cursor: pointer; border-color: var(--warn); color: var(--warn); font-weight: 600; }
 .live.paused::before { color: var(--warn); }
 /* ---------- phones ---------- */
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (pointer: coarse) {
   .side { grid-template-columns: 1fr; } main { padding: 12px; }
   header { padding: 10px 12px; flex-wrap: wrap; }
   .board { grid-template-columns: repeat(7, 82vw); scroll-snap-type: x proximity; }
@@ -263,7 +263,7 @@ textarea.grow { max-height: 85vh; resize: vertical; }
 .langlist button[aria-current] { font-weight: 700; }
 .langlist button[aria-current]::after { content: "✓"; float: inline-end; margin-inline-start: 1em; }
 .langfun { margin: 4px 6px 2px; padding-top: 6px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); }
-@media (max-width: 600px) { .langlist { position: fixed; inset-inline: 1rem; top: auto; bottom: calc(70px + env(safe-area-inset-bottom)); min-width: 0; max-width: none; max-height: 70vh; } }
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { .langlist { position: fixed; inset-inline: 1rem; top: auto; bottom: calc(70px + env(safe-area-inset-bottom)); min-width: 0; max-width: none; max-height: 70vh; } }
 /* Language immersion (AIG-722..725): the 🌍 top bar button with its list, and the Setup box. */
 .imm-wrap[hidden] { display: none; }
 .imm-wrap { display: inline-flex; align-items: center; gap: 2px; }
@@ -279,7 +279,7 @@ textarea.grow { max-height: 85vh; resize: vertical; }
 .imm-d { display: flex; flex-direction: column; gap: 2px; }
 .imm-d select { max-width: 100%; }
 .imm-r { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
-@media (max-width: 600px) { .immlist { position: fixed; inset-inline: 1rem; top: auto; bottom: calc(70px + env(safe-area-inset-bottom)); min-width: 0; max-width: none; max-height: 70vh; } }
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { .immlist { position: fixed; inset-inline: 1rem; top: auto; bottom: calc(70px + env(safe-area-inset-bottom)); min-width: 0; max-width: none; max-height: 70vh; } }
 /* Right to left (AIG-487): the layout mirrors through logical properties; code, commands and the terminal stay left to right. */
 [dir=rtl] .codebox, [dir=rtl] pre, [dir=rtl] code, [dir=rtl] kbd, [dir=rtl] .term-body { direction: ltr; unicode-bidi: isolate; }
 
