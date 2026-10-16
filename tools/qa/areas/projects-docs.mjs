@@ -1,3 +1,4 @@
+import { proof } from '../a11y-proof.mjs';
 // QA areas: docs, mdlinks, newproject, perms, discover, filtertypes.
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -142,6 +143,8 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
   await page.click('#dialog button[type=submit]');
   await page.waitForSelector('#p-done li', { timeout: 5000 }).catch(() => {});
   const done = await page.textContent('#p-done').catch(() => '');
+  check('project result is announced politely and Open project receives focus (AIG-1435)', await page.locator('#p-done').getAttribute('role') === 'status' && await page.locator('#p-done').getAttribute('aria-live') === 'polite' && await page.locator('#p-acts button').evaluate(e => e === document.activeElement));
+  await proof(page, 'AIG-1435');
   check('dialog lists every step', ['Created the project', 'Created the folder', 'permissions', 'git repo', 'Woke the team'].every(x => done.includes(x)), done);
   const local = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')).agent || {}; } catch { return {}; } })();
   const st = JSON.parse(fs.readFileSync(path.join(folder, local.settingsFile), 'utf8'));
