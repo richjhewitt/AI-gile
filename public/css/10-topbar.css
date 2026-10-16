@@ -125,3 +125,12 @@ html.i18n-wait body > header > :not(h1), html.i18n-wait .skip-link { visibility:
 .skip-link:focus { transform: none; outline: 2px solid var(--text); outline-offset: 2px; }
 main#app:focus { outline: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+
+/* Laptop header: reserve one row even with Inbox chips. */
+@media (min-width: 761px) and (max-width: 1450px) {
+  header { flex-wrap: nowrap; gap: 6px; padding-inline: 12px; }
+  header .crumb { flex: 0 1 90px; }
+  header .navlink, header button { padding-inline: 7px; }
+  header #inboxTop { flex-shrink: 1; min-width: 0; }
+  header .ib-alerts { white-space: nowrap; }
+}
