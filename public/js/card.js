@@ -270,6 +270,9 @@ async function sendReply(fixed) {
       setErr('r-err', ''); refresh(true);
       return;
     }
+    // AIG-1369: the sample's practice runbook card goes back to its practice incident (all four ticks and the 🎉), not on to the next card
+    const rp = state.project.sample && ((state.project.cards || []).find(x => x.id === cardId()) || {}).runbookProposal;
+    if (rp && rp.from && (state.project.cards || []).some(x => x.id === rp.from && x.practice)) { state.moved = null; location.hash = '#/p/' + slug() + '/' + rp.from; return; }
     doneWithCard(next, 'card.next.replied');
   } catch (err) { setErr('r-err', err); }
 }

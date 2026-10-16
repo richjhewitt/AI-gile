@@ -48,7 +48,13 @@ def('sample', 'sample project: Add a sample project on the empty home creates it
   c = q.cards.find(x => x.id === inc.id);
   const rb = c.review.runbook && q.cards.find(x => x.id === c.review.runbook);
   check('a 🚦 runbook card waits for Go (no folder needed on the sample)', rb && rb.runbookProposal && rb.needsYou && !rb.runbookProposal.done, rb);
-  await s.ok('POST', '/api/projects/sample-project/cards/' + rb.id + '/comments', { author: own, text: 'Go' });
+  check('the runbook question comes from the board, not from you (AIG-1369)', rb.comments[0].author === 'AI-gile' && rb.createdBy === 'AI-gile' && rb.comments[0].author !== own, rb.comments);
+  // AIG-1369: 👍 Go on the card itself goes back to the practice incident, with all four ticks and the 🎉
+  await page.goto(base + '#/p/sample-project/' + rb.id); await page.waitForSelector('.reply button.good');
+  await page.click('.reply button.good');
+  await page.waitForFunction(id => location.hash.endsWith('/' + id), inc.id, { timeout: 8000 }).catch(() => {});
+  await page.waitForSelector('#practice .prac-all', { timeout: 8000 }).catch(() => {});
+  check('Go on the runbook card lands back on the practice card with the well-done line, not the next card (AIG-1369)', page.url().endsWith('/' + inc.id) && await page.isVisible('#practice .prac-all') && !(await page.locator('#moved-note').count()), page.url());
   q = await s.ok('GET', '/api/projects/sample-project');
   const rb2 = await s.ok('GET', '/api/projects/sample-project/cards/' + rb.id);
   check('Go on the sample: done, a practice note, no file written', rb2.status === 'done' && rb2.runbookProposal.done === 'added' && !rb2.runbookProposal.file && rb2.comments.some(m => /docs\/runbooks\/rsvp-page-down\.md/.test(m.text)), rb2);
