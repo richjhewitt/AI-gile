@@ -24,11 +24,14 @@ body.pre{min-height:100vh;min-height:100dvh}
   background-size:220% 100%,auto,auto,auto;animation:presheet 26s ease-in-out infinite alternate}
 @keyframes presheet{from{background-position:0 0,0 0,0 0,0 0}to{background-position:100% 0,0 0,0 0,0 0}}
 
-/* On top: tools in the top corner, the card in the middle, the footer at the bottom. In the page order the button
-   comes straight after the heading, then the language and theme buttons, then the footer. */
-.pre-page{position:relative;z-index:2;min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto;grid-template-areas:"tools" "main" "foot"}
-.pre-tools{grid-area:tools;display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:16px}
-.pre-main{grid-area:main;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:8px 16px 24px}
+/* On top: the card in the middle, then one small bar at the bottom (AIG-1343: the top of the board stays clear) with the
+   jargon, language and theme buttons and the footer, wrapping on a phone. In the page order the button comes straight after
+   the heading, then the bar. The language list opens upwards from there (site/i18n.js). */
+.pre-page{position:relative;z-index:2;min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:1fr auto;grid-template-areas:"main" "bar"}
+.pre-main{grid-area:main;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px 16px}
+.pre-bar{grid-area:bar;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 14px;margin:0 auto 12px;padding:6px 12px;max-width:calc(100% - 32px);box-sizing:border-box;border-radius:16px;background:color-mix(in srgb,var(--bg) 88%,transparent)}
+.pre-tools{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px}
+.pre-tools .lang-btn{min-height:40px}.pre-tools .toggle{width:40px;height:40px;font-size:18px}
 .pre-card{width:100%;max-width:34rem;text-align:center;padding:32px 28px;border-radius:20px;border:1px solid var(--line);
   background:var(--raised);background:color-mix(in srgb,var(--raised) 93%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:var(--shadow-lg)}
 .pre-logo{width:88px;height:88px;border-radius:18px;box-shadow:var(--shadow-lg)}
@@ -37,6 +40,6 @@ body.pre{min-height:100vh;min-height:100dvh}
 .pre-line{margin:22px auto 0;max-width:28rem;color:var(--text);font-size:17px}
 .pre-card .people-count{margin-top:14px}
 .pre-peek{margin:0;max-width:34rem;text-align:center;font-size:14px;color:var(--text);padding:4px 14px;border-radius:999px;background:color-mix(in srgb,var(--bg) 88%,transparent)}
-.pre-foot{grid-area:foot;border-top:0;margin:0 auto 16px;padding:8px 16px;max-width:calc(100% - 32px);border-radius:16px;color:var(--text);background:color-mix(in srgb,var(--bg) 88%,transparent)}
-@media (max-width:480px){.pre-card{padding:24px 18px}.pre-tools{padding:12px 16px}}
+.pre-foot{border-top:0;margin:0;padding:4px 0;text-align:center;color:var(--text);background:none}
+@media (max-width:480px){.pre-card{padding:24px 18px}.pre-bar{padding:8px 10px;margin-bottom:10px}}
 @media (prefers-reduced-motion:reduce){.pre-sheet{animation:none}}

@@ -20,7 +20,7 @@ body.desktop.pop .panel > .actions:first-child button { padding: 3px 10px; font-
 
 /* ---------- attachment thumbnails and preview (AIG-129) ---------- */
 .att-thumb { height: 28px; width: auto; max-width: 56px; object-fit: cover; border-radius: 4px; cursor: zoom-in; vertical-align: middle; }
-.att-lightbox { position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.75); display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
+.att-lightbox { position: fixed; inset: 0; z-index: 2147483000; width: auto; height: auto; max-width: none; max-height: none; margin: 0; border: 0; padding: 0; overflow: hidden; background: rgba(0,0,0,.75); display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
 .att-lightbox img { max-width: 94vw; max-height: 94vh; border-radius: 6px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
 .viewrow { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
 .viewrow input[type=text] { flex: 1; }

@@ -26,6 +26,17 @@ def('raisebug', 'Raise bug button: on board, card view and Setup; left of the sp
   await page.waitForSelector('#f-title');
   const top = await page.evaluate(() => { const o = document.querySelector('#dialog .overlay'), r = o.getBoundingClientRect(), e = document.elementFromPoint(r.left + r.width / 2, r.top + 5); return { z: Number(getComputedStyle(o).zIndex), hit: !!e.closest('#dialog') }; });
   check('the dialog opens above everything else', top.z >= 1000 && top.hit, JSON.stringify(top));
+  // AIG-1342: a pasted screenshot's thumbnail opens the picture above the bug window (the image is what sits at its centre); Esc closes only the picture
+  await page.evaluate(async () => {
+    const c = document.createElement('canvas'); c.width = 240; c.height = 160; const g = c.getContext('2d'); g.fillStyle = '#c33'; g.fillRect(0, 0, 240, 160);
+    const blob = await new Promise(r => c.toBlob(r, 'image/png')), dt = new DataTransfer(); dt.items.add(new File([blob], 'shot.png', { type: 'image/png' }));
+    document.querySelector('#f-title').dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+  });
+  await page.waitForSelector('#dialog .att-thumb'); await page.click('#dialog .att-thumb'); await page.waitForSelector('.att-lightbox img'); await sleep(200);
+  const zoom = await page.evaluate(() => { const i = document.querySelector('.att-lightbox img'), r = i.getBoundingClientRect(), e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return { onTop: e === i, at: e && (e.className || e.tagName), w: r.width }; });
+  check('the zoomed screenshot opens above the bug window', zoom.onTop && zoom.w > 100, JSON.stringify(zoom));
+  await page.keyboard.press('Escape'); await sleep(200);
+  check('Esc closes the picture first, the bug window stays', (await page.locator('.att-lightbox').count()) === 0 && (await page.locator('#f-title').count()) === 1);
   await page.fill('#f-title', 'Raised over a card');
   await page.click('#dialog button[type=submit]'); await page.waitForSelector('#f-title', { state: 'detached' }); await sleep(500);
   check('after Submit the same card is still open', (await page.evaluate(() => location.hash)) === hash && (await page.evaluate(() => state.route.id || state.route.card || location.hash)).toString().includes(card.id));

@@ -231,6 +231,21 @@ def('teaserwords', 'site/index.html (file://): 📖 Dev words button and dialog 
   const mw = await page.$$eval('#qa-mw abbr.devw', e => e.map(x => x.textContent.replace(/\s+/g, ' ').toLowerCase() + '=' + (x.getAttribute('data-tip') || '').length));
   check('multi-word terms are underlined as one, the longest wins ("major incident", "status page"), with their explanation', mw.map(x => x.split('=')[0]).join() === 'major incident,status page,backup' && mw.every(x => +x.split('=')[1] > 10), mw);
   await page.evaluate(() => document.getElementById('qa-mw').remove());
+  // AIG-1342: the live board's column headings (drawn by live.js like this) get the underline too, also after a redraw
+  const board = () => page.evaluate(() => { const L = ['Backlog', 'To do', 'In progress', 'Team checking', 'For you to test', 'For the team', 'Done'], ids = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'];
+    document.getElementById('live').hidden = false; const c = document.getElementById('live-cols'); c.hidden = false; c.textContent = '';
+    ids.forEach((id, i) => { const d = document.createElement('div'), h = document.createElement('h3'); d.className = 'lv-col k-' + id; h.textContent = L[i]; const n = document.createElement('span'); n.className = 'lv-n'; n.textContent = ' 3'; h.appendChild(n); d.appendChild(h); c.appendChild(d); }); });
+  const colHeads = () => page.$$eval('#live-cols .lv-col h3', hs => hs.map(h => { const x = h.querySelector('abbr.devw'); return x ? x.textContent + '=' + (x.getAttribute('data-tip') || '').length : '-'; }));
+  await board(); await sleep(400);
+  let ch = await colHeads();
+  check('the live board: every column heading is underlined with its tip (Backlog, To do, In progress, Done...)', ch.length === 7 && ch.every(x => x !== '-' && +x.split('=')[1] > 10) && ch[0].startsWith('Backlog') && ch[6].startsWith('Done') && await page.$$eval('#live-cols .lv-n', e => e.every(x => !x.querySelector('abbr'))), ch);
+  const todo = await page.$('#live-cols .k-todo abbr.devw'); await todo.scrollIntoViewIfNeeded(); await sleep(300); await todo.hover();
+  check('hover the To do heading: its tip shows', await page.evaluate(() => { const t = document.getElementById('words-tip'); return !!t && !t.hidden && t.textContent === SiteI18n.t('words.col.todo'); }));
+  await page.mouse.move(5, 5);
+  await board(); await sleep(400); ch = await colHeads();
+  check('...and again when live.js redraws the columns', ch.every(x => x !== '-'), ch);
+  check('column words stay plain outside a column heading ("done" in a sentence is not a tip)', await page.evaluate(() => ![...document.querySelectorAll('main abbr.devw')].some(a => !a.closest('.lv-col') && /^(done|to do|in progress)$/i.test(a.textContent))));
+  await page.evaluate(() => { document.getElementById('live').hidden = true; document.getElementById('live-cols').textContent = ''; scrollTo(0, 0); }); await sleep(300);
   const a = await page.$('abbr.devw');
   await a.hover();
   const tip = () => page.evaluate(() => { const t = document.getElementById('words-tip'); return t && !t.hidden ? t.textContent : ''; });
