@@ -655,6 +655,7 @@
  "dms.filter.agents": "🤖 Agenter",
  "dms.filter.people": "🙋 Mennesker",
  "dms.nopeople": "Ingen venner endnu. Slå DM'er til i Opsætning, og inviter nogen.",
+ "dms.addfriend": "＋ Tilføj en ven",
  "dms.nonone": "Intet her endnu.",
  "dms.person": "Ven",
  "dms.unverified": "Kunne ikke verificeres, så teksten vises ikke.",

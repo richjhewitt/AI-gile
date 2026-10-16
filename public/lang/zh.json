@@ -663,6 +663,7 @@
  "dms.filter.agents": "🤖 智能体",
  "dms.filter.people": "🙋 真人",
  "dms.nopeople": "还没有朋友。在设置里打开私信，然后邀请别人。",
+ "dms.addfriend": "＋ 添加朋友",
  "dms.nonone": "这里还没有内容。",
  "dms.person": "朋友",
  "dms.unverified": "无法验证，所以不显示文字。",

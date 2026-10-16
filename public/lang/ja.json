@@ -663,6 +663,7 @@
  "dms.filter.agents": "🤖 エージェント",
  "dms.filter.people": "🙋 人間",
  "dms.nopeople": "まだ友達がいません。セットアップでDMをオンにして、誰かを招待しましょう。",
+ "dms.addfriend": "＋ 友達を追加",
  "dms.nonone": "ここにはまだ何もありません。",
  "dms.person": "友達",
  "dms.unverified": "確認できなかったため、本文は表示されません。",

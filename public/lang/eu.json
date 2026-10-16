@@ -672,6 +672,7 @@
  "dms.filter.agents": "🤖 Agenteak",
  "dms.filter.people": "🙋 Pertsonak",
  "dms.nopeople": "Oraindik ez dago lagunik. Aktibatu mezu zuzenak Konfigurazioan eta gonbidatu norbait.",
+ "dms.addfriend": "＋ Gehitu laguna",
  "dms.nonone": "Oraindik ez dago ezer hemen.",
  "dms.person": "Laguna",
  "dms.unverified": "Ezin izan da egiaztatu, beraz testua ez da erakusten.",
