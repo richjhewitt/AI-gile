@@ -360,7 +360,7 @@ function cleanSnap(o) {
   if (!o || typeof o !== 'object' || Array.isArray(o)) throw fail('send a snapshot as JSON', 400);
   const list = (v, n) => (Array.isArray(v) ? v : []).slice(0, n).filter(x => x && typeof x === 'object');
   return {
-    v: 1, title: str(o.title, 80), at: new Date().toISOString(), titlesHidden: o.titlesHidden === true || undefined, color: /^#[0-9a-fA-F]{6}$/.test(String(o.color || '')) ? String(o.color) : undefined,
+    v: 1, title: str(o.title, 80), at: new Date().toISOString(), titlesHidden: o.titlesHidden === true || undefined, night: o.night === true || undefined, color: /^#[0-9a-fA-F]{6}$/.test(String(o.color || '')) ? String(o.color) : undefined,
     columns: list(o.columns, 12).map(c => ({ id: str(c.id, 30), label: str(c.label, 40) })),
     cards: list(o.cards, 3000).map(c => ({ id: str(c.id, 20), title: o.titlesHidden === true ? '' : str(c.title, 200), len: Math.max(0, Math.min(8, Math.round(Number(c.len) || 0))) || undefined, type: str(c.type, 12), priority: str(c.priority, 12), status: str(c.status, 30), assignee: str(c.assignee, 60) })),
     team: list(o.team, 50).map(m => ({ name: str(m.name, 60), role: str(m.role, 60), avatar: /^https:\/\/[^\s"'<>]{1,300}$/.test(String(m.avatar || '')) ? String(m.avatar) : '' })),

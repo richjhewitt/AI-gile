@@ -9,7 +9,9 @@
   var MAX=40, els={}, snap=null, viewers=null, es=null, got=false, last=document.getElementById("live-last");
   function mk(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
   function label(l){var i=STD.indexOf(l),tr=T("live.cols").split("|");return i>=0&&tr.length===STD.length&&tr[i]?tr[i]:l}
-  function fallback(on){if(on&&last)last.hidden=true;msg.hidden=!on;msg.textContent=on?T("live.offline"):"";cols.hidden=on;stat.hidden=on;if(on)sec.classList.add("off");else sec.classList.remove("off")}
+  // AIG-1388: each snapshot (or none: offline, private) goes out as a "live:snap" event, so a page can read its flags (night).
+  function tell(x){try{document.dispatchEvent(new CustomEvent("live:snap",{detail:x}))}catch(e){}}
+  function fallback(on){if(on){tell(null);if(last)last.hidden=true}msg.hidden=!on;msg.textContent=on?T("live.offline"):"";cols.hidden=on;stat.hidden=on;if(on)sec.classList.add("off");else sec.classList.remove("off")}
   function paintStat(){if(viewers==null){stat.textContent="";return}stat.textContent="● "+T("live.watching",{n:viewers});stat.hidden=false}
   // AIG-1255: "Last card moved 3 min ago" from the snapshot time (the relay stamps `at` on every change), refreshed every minute.
   function paintLast(){
@@ -19,7 +21,7 @@
     last.textContent=T(k,{n:n});last.hidden=false;
   }
   function draw(s){
-    snap=s;paintLast();got=true;fallback(false);
+    snap=s;paintLast();got=true;fallback(false);tell(s);
     var before={};Object.keys(els).forEach(function(id){if(els[id].isConnected)before[id]=els[id].getBoundingClientRect()});
     var seen={};cols.textContent="";
     (s.columns||[]).forEach(function(c){

@@ -24,7 +24,7 @@ const lum = c => { const m = c.match(/[\d.]+/g).map(Number); let [r, g, b] = /^c
   const f = v => v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
 const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
 
-def('presite', 'aigile.lol pre-teaser (presite/, file://): live board moving behind a light veil, made-up board when offline, button first after the heading opens the interest form, people line, 390px, themes, nl, right-to-left (AIG-1320)', async (s, ctx) => {
+def('presite', 'aigile.lol pre-teaser (presite/, file://): live board moving behind a light veil, made-up board when offline, button first after the heading opens the interest form, people line, 390px, themes, nl, right-to-left (AIG-1320), 🌙 night watchman line and colours (AIG-1388)', async (s, ctx) => {
   const copied = build();
   check('presite.mjs copies the site files and every language bundle in', ['style.css', 'i18n.js', 'live.js', 'forms.js', 'interest.html', 'privacy.html', 'status.html', 'install-site.sh', 'assets/icon.png', 'lang/en.js', 'lang/languages.js', 'lang/ar.js'].every(f => copied.includes(f) && fs.existsSync(path.join(ROOT, 'presite', f))), copied.length);
   const url = pathToFileURL(path.join(ROOT, 'presite', 'index.html')).href;
@@ -34,7 +34,7 @@ def('presite', 'aigile.lol pre-teaser (presite/, file://): live board moving beh
     if (opts.reduce) await page.emulateMedia({ reducedMotion: 'reduce' });
     if (opts.w) await page.setViewportSize({ width: opts.w, height: 844 });
     if (opts.words) await page.addInitScript(() => { try { localStorage.setItem('aigile-site-devwords', '1'); localStorage.setItem('aigile-site-lang', 'en'); } catch {} });
-    await page.addInitScript(stub, [SNAP, ok]);
+    await page.addInitScript(stub, [opts.night ? { ...SNAP, night: opts.night } : SNAP, ok]);
     await page.goto(url); return page;
   };
 
@@ -138,6 +138,36 @@ def('presite', 'aigile.lol pre-teaser (presite/, file://): live board moving beh
   pt = await ptAt('#pre-fake-cols .k-backlog h3 abbr.devw');
   await page.mouse.click(pt.x, pt.y);
   check('a tap on Backlog behind the glass shows its glossary tip', (await tipNow()).length > 10);
+  await page.close();
+
+  // 🌙 AIG-1388: the snapshot says night while Rich is quiet: a line under the people count, the night colours; off again when he's back
+  page = await open(true, { night: true, w: 390 });
+  await page.waitForFunction(() => window.__pre && window.__pre.mode() === 'live', null, { timeout: 6000 });
+  await page.waitForFunction(() => window.__pre.night(), null, { timeout: 3000 }).catch(() => {});
+  const faded = async () => { await page.waitForFunction(() => !document.documentElement.hasAttribute('data-nightfade'), null, { timeout: 4000 }).catch(() => {}); await sleep(1000); };   // the soft fade is over
+  await faded();
+  const nl = () => page.evaluate(() => { const n = document.getElementById('pre-night'), p = document.getElementById('people-count');
+    return { on: document.documentElement.hasAttribute('data-night'), shown: !n.hidden && n.offsetParent !== null, text: n.textContent, under: !p.hidden && n.getBoundingClientRect().top >= p.getBoundingClientRect().bottom - 1,
+      body: getComputedStyle(document.body).backgroundColor, card: getComputedStyle(document.querySelector('.pre-card')).backgroundColor, line: getComputedStyle(document.querySelector('.pre-line')).color,
+      ntext: getComputedStyle(n).color, btn: getComputedStyle(document.getElementById('pre-notify')).backgroundColor, btext: getComputedStyle(document.getElementById('pre-notify')).color,
+      tc: document.querySelector('meta[name="theme-color"]').content, fade: getComputedStyle(document.body).transitionDuration }; });
+  const reddish = c => { const m = (c.match(/[\d.]+/g) || []).map(Number); return m[0] > m[1] && m[1] >= m[2] && m[0] > 120; };
+  let ni = await nl();
+  check('night snapshot: the line under the people count says the night watchman is in charge', ni.on && ni.shown && ni.under && ni.text === '🌙 The night watchman is in charge', ni);
+  check('night colours: near-black page (#0b0605), red-tinted text, readable (4.5:1) on the card and the button', ni.body === 'rgb(11, 6, 5)' && ni.tc === '#0b0605' && reddish(ni.line) && ratio(ni.card, ni.line) >= 4.5 && ratio(ni.card, ni.ntext) >= 4.5 && ratio(ni.btn, ni.btext) >= 4.5 && ni.fade === '0s', ni);   // the fade is over, so a theme click is instant again
+  check('night at 390px: no sideways scroll, the card fits', await fit());
+  await page.evaluate(() => SiteI18n.set('nl')); await page.waitForFunction(() => document.documentElement.lang === 'nl');
+  check('night in Dutch: the line is translated', (await page.$eval('#pre-night', e => e.textContent)) === '🌙 De nachtwaker heeft nu de leiding');
+  await page.evaluate(snap => window.__es.h.snapshot({ data: JSON.stringify(snap) }), SNAP);
+  await sleep(50); await faded();
+  ni = await nl();
+  check('Rich is back (no night in the snapshot): the line hides and the colours go back', !ni.on && !ni.shown && ni.body !== 'rgb(11, 6, 5)' && ni.tc === '#12151b', ni);
+  await page.evaluate(snap => window.__es.h.snapshot({ data: JSON.stringify({ ...snap, night: true }) }), SNAP);
+  check('a live snapshot with night turns it on again without a reload, with a soft fade', await page.waitForFunction(() => window.__pre.night() && !document.getElementById('pre-night').hidden, null, { timeout: 3000 }).then(() => true, () => false) && await page.evaluate(() => document.documentElement.hasAttribute('data-nightfade') && parseFloat(getComputedStyle(document.body).transitionDuration) > 0.3));
+  await page.close();
+  page = await open(true, { night: 'yes' });
+  await page.waitForFunction(() => window.__pre && window.__pre.mode() === 'live', null, { timeout: 6000 }); await sleep(200);
+  check('only night === true counts (anything else stays day)', !(await page.evaluate(() => window.__pre.night())) && await page.$eval('#pre-night', e => e.hidden));
   await page.close();
 
   // relay down: a made-up board that moves
