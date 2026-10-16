@@ -49,6 +49,9 @@ def('i18n', 'languages: every shipped file passes the checker, the 🌐 picker (
   check('the duplicate-key scan catches a repeated key', dupKeys('{"a":"1","b":{"one":"x"},"c":{"one":"y"},"a":"2"}').join() === 'a');
   const dupFound = fs.readdirSync(langDir).filter(f => f.endsWith('.json')).flatMap(f => dupKeys(fs.readFileSync(path.join(langDir, f), 'utf8')).map(k => f + ':' + k));
   check('no language file writes a key twice', dupFound.length === 0, dupFound.slice(0, 10));
+  // AIG-1396: a placeholder is {name}; {{...}} is only the {{dev:word}} marker, else t() leaves "Show {Help}".
+  const dbl = fs.readdirSync(langDir).filter(f => f.endsWith('.json')).flatMap(f => (fs.readFileSync(path.join(langDir, f), 'utf8').match(/\{\{(?!dev:)[^}]*\}\}/g) || []).map(m => f + ':' + m));
+  check('no language file has a {{name}} placeholder (one pair of brackets, or {{dev:word}})', dbl.length === 0, dbl.slice(0, 10));
 
   // The checker passes every shipped language file (missing keys allowed: English shows instead).
   const shipped = fs.readdirSync(langDir).filter(f => !['en.json', 'languages.json'].includes(f)).map(f => f.slice(0, -5));

@@ -43,7 +43,7 @@ const Topbar = (() => {
   // AIG-984: the status button joins a saved pin list once (unpinning it later sticks); AIG-1169: so does Usage (No AI still hides it)
   const loadPins = () => { let a; try { a = JSON.parse(localStorage.getItem(PKEY) || 'null'); } catch { a = null; } if (!Array.isArray(a)) return PIN_DEF.slice(); a = a.filter(i => PINNABLE.includes(i)); try { if (!localStorage.getItem(PKEY + '.status')) { localStorage.setItem(PKEY + '.status', '1'); if (!a.includes('statusBtn')) { a.push('statusBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } if (!localStorage.getItem(PKEY + '.idea')) { localStorage.setItem(PKEY + '.idea', '1'); if (!a.includes('ideaBtn')) { a.splice(a.includes('bugBtn') ? a.indexOf('bugBtn') + 1 : a.length, 0, 'ideaBtn'); localStorage.setItem(PKEY, JSON.stringify(a)); } } if (!localStorage.getItem(PKEY + '.usage')) { localStorage.setItem(PKEY + '.usage', '1'); if (!a.includes('usageNav')) { a.push('usageNav'); localStorage.setItem(PKEY, JSON.stringify(a)); } } } catch {} return a; };
   let pins = loadPins();
-  const phoneMq = window.matchMedia ? matchMedia('(max-width: 600px)') : { matches: false };
+  const phoneMq = window.matchMedia ? matchMedia('(max-width: 600px), (max-height: 500px) and (pointer: coarse)') : { matches: false };
   const isPhone = () => phoneMq.matches;
   const inBar = id => isPhone() ? id === 'inboxTop' : pins.includes(id);
   const savePins = () => { try { localStorage.setItem(PKEY, JSON.stringify(pins)); for (const k of ['.status', '.idea', '.usage']) localStorage.setItem(PKEY + k, '1'); } catch {} };   // a list saved here has had its one-time joins
@@ -120,7 +120,7 @@ const Topbar = (() => {
         <span class="tb-sws" role="group" aria-label="${esc(t('tb.colour'))}">${sw}</span>
         <span class="tb-mv"><button type="button" class="tb-up" aria-label="${esc(t('tb.up', { name: nm }))}" title="${esc(t('tb.up', { name: nm }))}" ${i === 0 ? 'disabled' : ''} onclick="Topbar.step('${id}',-1)">↑</button><button type="button" class="tb-down" aria-label="${esc(t('tb.down', { name: nm }))}" title="${esc(t('tb.down', { name: nm }))}" ${i === cur.order.length - 1 ? 'disabled' : ''} onclick="Topbar.step('${id}',1)">↓</button></span></li>`;
     }).join('');
-    return `<span>${esc(t('tb.h'))}</span><div><ul class="tb-list" id="tbList">${rows}</ul>
+    return `<span>${esc(t('tb.h'))}</span><small class="muted on-phone" id="tbPhoneNote">${esc(t('tb.phone'))}</small><div><ul class="tb-list" id="tbList">${rows}</ul>
       <div class="actions"><button type="button" id="tbReset" onclick="Topbar.reset()" ${isDefault(cur) ? 'disabled' : ''}>${esc(t('tb.reset'))}</button></div></div><small class="muted">${esc(t('tb.help'))}</small>
       <div class="tb-pins" id="tbPins"><b>${esc(t('tb.pin.h'))}</b> <small class="muted">${esc(t('tb.pin.help'))}</small><div class="tb-pinlist">${PINNABLE.filter(id => !(NoAi.on && AI_BTNS.includes(id))).map(id => `<label class="tb-pin"><input type="checkbox" data-pin="${id}" ${pins.includes(id) ? 'checked' : ''} ${id === KEEP ? 'disabled' : ''} onchange="Topbar.pin('${id}')"> ${ico(id)}${esc(plain(t('tb.b.' + (BTNS.find(b => b[0] === id) || [0, id.replace(/Btn|Nav|Wrap/, '')])[1])))}</label>`).join('')}</div></div>`;
   }

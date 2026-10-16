@@ -132,7 +132,7 @@ body:has(#suPrompt) .dm-list { padding-bottom: 76px; }
 /* AIG-967: never over a dialog, and room under the page so buttons at the bottom (All hands Send, Request) stay clickable */
 body:has(#dialog:not(:empty)) #suPrompt { display: none; }
 body:has(#suPrompt) #app { padding-bottom: 76px; }
-@media (max-width: 600px) { body:has(#suPrompt) .dm-list { padding-bottom: 130px; } }
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { body:has(#suPrompt) .dm-list { padding-bottom: 130px; } }
 /* AIG-1372: padding under #app never reached the things that end at the window bottom by themselves: the Messages panel (its
    chat box and Send) and, since AIG-1217, the board columns. So the pill moves aside of an open Messages panel (hides when there
    is no room beside it), hides over an open card, and the columns stop above it. */

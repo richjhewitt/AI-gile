@@ -12,4 +12,4 @@
 .rk-flag { color: #d9534f; }
 .rk-closed { opacity: .65; }
 .rk-happened .rk-top b::before { content: "🔥 "; }
-@media (max-width: 600px) { .rk-row { padding: 8px 10px; gap: 8px; } }
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { .rk-row { padding: 8px 10px; gap: 8px; } }

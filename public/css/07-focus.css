@@ -27,4 +27,4 @@ html[data-focus] body { overflow: hidden; }
 .card.picked { outline: 2px solid var(--accent); outline-offset: -2px; background: color-mix(in srgb, var(--accent) 12%, var(--panel)); }
 .pickbar { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 9998; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 10px 14px; border-radius: 10px; background: var(--panel); color: var(--text); border: 1px solid var(--accent); box-shadow: 0 6px 24px rgba(0,0,0,.35); font-size: 14px; max-width: 94vw; }
 .pickbar button { padding: 3px 10px; }
-@media (max-width: 600px) { .pickbar { left: 8px; right: 8px; transform: none; max-width: none; bottom: 8px; } }
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { .pickbar { left: 8px; right: 8px; transform: none; max-width: none; bottom: 8px; } }

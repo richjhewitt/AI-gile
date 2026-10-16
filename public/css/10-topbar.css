@@ -1,8 +1,8 @@
 /* ---------- top bar buttons (AIG-575/576) ---------- */
 #bugBtn:not([data-tbc]) { color: color-mix(in srgb, var(--danger) 68%, var(--text)); border-color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, var(--col)); }
-@media (min-width: 761px) { body:has(#modal .overlay) header { z-index: 15; } }   /* the bar stays usable over an open card (AIG-733); dialogs (20) still cover it */
+@media (min-width: 761px) and (min-height: 501px), (min-width: 761px) and (pointer: fine) { body:has(#modal .overlay) header { z-index: 15; } }   /* the bar stays usable over an open card (AIG-733); dialogs (20) still cover it */
 /* ...so the open card starts below the bar, however many rows it wraps to (--hdr-h from app.js), or the bar hides its top buttons */
-@media (min-width: 761px) { body:not(.pop):not(.poplist) #modal .overlay:not(.center) { top: var(--hdr-h, 0px); } }
+@media (min-width: 761px) and (min-height: 501px), (min-width: 761px) and (pointer: fine) { body:not(.pop):not(.poplist) #modal .overlay:not(.center) { top: var(--hdr-h, 0px); } }
 .overlay.top { z-index: 100000; }
 header .tb-off { display: none !important; }
 [data-tbc="accent"] { --tbc: var(--accent); } [data-tbc="done"] { --tbc: var(--done); } [data-tbc="warn"] { --tbc: var(--warn); }
@@ -20,6 +20,24 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .tb-sw.on { border: 2px solid var(--text); box-shadow: 0 0 0 2px var(--panel) inset; }
 .tb-mv { display: inline-flex; gap: 2px; }
 .tb-mv button { padding: 2px 8px; }
+/* AIG-1395: on a phone the bar is only Inbox and ☰, so Left / Right and Show in top bar are hidden (a note says why); ticks,
+   colour dots and arrows are finger-sized: round dots, 44px targets */
+#tbPhoneNote { display: none; }
+@media (max-width: 760px), (max-height: 500px) and (pointer: coarse) {
+  #topbarBox .tb-side, #tbPins { display: none; }
+  #tbPhoneNote { display: block; margin: 2px 0 8px; }
+  .tb-row { gap: 6px 8px; padding: 6px 10px; }
+  .tb-grip { display: none; }   /* rows are not dragged by touch: the arrows move them */
+  .tb-name { min-height: 44px; }
+  .tb-name input[type=checkbox] { width: 24px; height: 24px; margin: 0 4px 0 0; flex: none; }
+  .tb-sws { flex-wrap: wrap; gap: 2px; }
+  .tb-sw { width: 44px; height: 44px; min-height: 44px; min-width: 44px; flex: none; border-width: 10px; border-color: var(--col); background-clip: padding-box; box-sizing: border-box; }
+  .tb-sw[data-tbc=""] { border: 10px solid var(--col); outline: 2px dashed var(--muted); outline-offset: -12px; }
+  .tb-sw.on { border: 8px solid var(--col); box-shadow: inset 0 0 0 2px var(--text), inset 0 0 0 4px var(--panel); }
+  .tb-mv { gap: 4px; margin-inline-start: auto; order: 1; }   /* the arrows on the name's line, the dots under it */
+  .tb-sws { order: 2; }
+  .tb-mv button { min-width: 44px; min-height: 44px; padding: 0; font-size: 18px; }
+}
 
 /* ---------- 🚫 No AI, ever (AIG-581): every AI part is hidden; no glow, no switch (js/noai.js) ---------- */
 .noai [onclick^="wakeTeam"], .noai [onclick^="restartTeam"], .noai [onclick^="watchTeam"], .noai [onclick^="testForMe"], .noai [onclick^="uzCheckNow"],
@@ -76,7 +94,7 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .roll-chip { border: 2px solid var(--proj, var(--line)); border-radius: 999px; padding: 2px 10px; background: none; cursor: pointer; } .roll-chip.off { opacity: .45; text-decoration: line-through; }
 .roll-board { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; } .roll-col { flex: 0 0 220px; } .roll-col h4 { margin: 4px 0; }
 .roll-card { display: block; margin-bottom: 6px; } .roll-from { font-size: 11px; border-left: 3px solid var(--proj, var(--line)); padding-left: 4px; margin-left: 4px; }
-@media (max-width: 600px) { .roll-col { flex-basis: 75vw; } }
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { .roll-col { flex-basis: 75vw; } }
 .dc-pic { display: block; max-width: 100%; max-height: 240px; margin-top: 6px; border-radius: 8px; }
 .tm-loadtpl { max-width: 11em; font-size: 12px; } .tm-type { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 6px 0; }
 /* AIG-871: 🎯 Hyperfocus chip */
@@ -103,7 +121,7 @@ body.no-power :is(#streamBtn, #twitchBtn, #ntBtn, #tiredBtn, #assumeNav, #glance
 @media (prefers-reduced-motion: reduce) { #topbarBox.tb-flash { animation: none; outline: 2px solid var(--accent); } }
 .tb-pins { margin-top: 12px; } .tb-pinlist { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; }
 .tb-pin { display: inline-flex; align-items: center; gap: 4px; }
-@media (max-width: 600px) {
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) {
   header { flex-wrap: nowrap; padding: 8px 12px; overflow-x: clip; }
   header .crumb, header .alpha-tag { display: none; }
   header .spacer { flex: 1 1 auto; height: auto; }
@@ -115,9 +133,12 @@ body.no-power :is(#streamBtn, #twitchBtn, #ntBtn, #tiredBtn, #assumeNav, #glance
 #updateTop, body.desktop #updateTop { position: relative; left: auto; top: auto; transform: none; z-index: 40; width: fit-content; margin-inline: auto; border-radius: 0 0 12px 12px; border-top: 0; justify-content: center; flex-wrap: wrap; padding: 4px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
 #updateTop:not(:has(button)) { display: none; }
 #updateTop button { box-shadow: none; padding-block: 2px; font-size: 13px; }
+/* AIG-1392: on a phone the open card, Messages and every dialog fill the screen from the top, so the strip stays in the page
+   (it pushes the board down) and sits under them instead of over their titles and search boxes. */
+@media (max-width: 760px), (max-height: 500px) and (pointer: coarse) { #updateTop, body.desktop #updateTop { z-index: 1; } }
 /* AIG-1180: a long project name shrinks to an ellipsis in the crumb instead of pushing More and live onto a second row. */
-@media (min-width: 601px) { header .crumb { max-width: clamp(80px, 9vw, 420px); } }
-@media (min-width: 601px) and (max-width: 1399px) { header .alpha-tag { display: none; } }
+@media (min-width: 601px) and (min-height: 501px), (min-width: 601px) and (pointer: fine) { header .crumb { max-width: clamp(80px, 9vw, 420px); } }
+@media (min-width: 601px) and (max-width: 1399px) and (min-height: 501px), (min-width: 601px) and (max-width: 1399px) and (pointer: fine) { header .alpha-tag { display: none; } }
 /* AIG-1330: until your language file is in (html.i18n-wait, set in index.html's head), the top bar keeps its size but shows no English words. */
 html.i18n-wait body > header > :not(h1), html.i18n-wait .skip-link { visibility: hidden; }
 /* AIG-1332: Skip to content, the first Tab stop: off screen until it has focus. The page it lands on (main#app) takes focus without a ring. */
@@ -127,8 +148,8 @@ main#app:focus { outline: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 
 /* Laptop header: one row even with Inbox chips (AIG-1361). It still wraps when more is pinned than fits (power tools, long
-   languages), so the page never scrolls sideways. */
-@media (min-width: 761px) and (max-width: 1450px) {
+   languages), so the page never scrolls sideways. Not on a phone on its side (AIG-1391). */
+@media (min-width: 761px) and (max-width: 1450px) and (min-height: 501px), (min-width: 761px) and (max-width: 1450px) and (pointer: fine) {
   header { flex-wrap: wrap; gap: 6px; padding-inline: 12px; }
   header .crumb { flex: 0 1 90px; }
   header .navlink, header button { padding-inline: 7px; }

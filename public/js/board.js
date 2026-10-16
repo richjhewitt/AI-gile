@@ -135,7 +135,7 @@ function renderBoard(p) {
   const showAll = teamAll(), folded = team.filter(m => !live(m)).length, shownTeam = showAll ? team : team.filter(live);
   const log = (p.log || []).slice().reverse().slice(0, 50);
   // AIG-1076: an empty (new) project keeps + New, Docs, Ask the team and Views on the bar; the rest sits behind ⋯ More (on a phone everything does, AIG-933).
-  const compact = !(window.matchMedia && matchMedia('(max-width: 600px)').matches);
+  const compact = !(window.matchMedia && matchMedia('(max-width: 600px), (max-height: 500px) and (pointer: coarse)').matches);   // AIG-1391: a phone on its side too
   const pick = `<button type="button" id="pickBtn" class="${state.pickMode ? 'primary' : ''}" aria-pressed="${state.pickMode ? 'true' : 'false'}" onclick="togglePickMode()" title="${esc(t('pick.mode.title'))}">${esc(t('pick.mode'))}</button>`;
   const happening = `<button onclick="happeningDialog()" title="${esc(t('board.happening.title'))}">${esc(t('board.happening'))}</button>`;
   const keep = p.cards.length ? `${happening}${pick}<button onclick="viewsDialog()">${esc(t('board.views'))}</button>${standupButtons(p).split(' <a')[0]}` : `<button onclick="openDocs()">${esc(t('board.docs'))}</button><button onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="viewsDialog()">${esc(t('board.views'))}</button>`;

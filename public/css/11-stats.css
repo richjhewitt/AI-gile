@@ -16,7 +16,7 @@
   border: 1px solid var(--accent); background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, var(--panel)), color-mix(in srgb, var(--you) 22%, var(--panel))); }
 .st-wrap h3 { margin: 0 0 6px; }
 .st-wrap pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; margin: 0 0 10px; }
-@media (max-width: 600px) { .st-tile.st-wide { grid-column: span 1; } .st-wrap { max-width: none; } }
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { .st-tile.st-wide { grid-column: span 1; } .st-wrap { max-width: none; } }
 /* 📆 Monthly service review (AIG-1155) */
 .rev-nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
 .rev-sum { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; margin: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }

@@ -105,7 +105,7 @@ const INBOX_CSS = `
 /* card groups (AIG-386) */
 .ib-group .ib-gcard { margin-top: 8px; } .ib-group .ib-gcard > a { font-weight: 600; text-decoration: underline; }
 .ib-group .body { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin-top: 6px; max-height: 30vh; overflow: auto; }
-@media (max-width: 760px) {
+@media (max-width: 760px), (max-height: 500px) and (pointer: coarse) {
   .ib-btn { padding: 3px 6px 3px 10px; gap: 5px; }
   .ib-badge { padding: 2px 8px; }
 }`;

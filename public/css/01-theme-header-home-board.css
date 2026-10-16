@@ -111,7 +111,7 @@ main { padding: 20px; }
 /* AIG-1217: every column ends on the same line (the tallest one, at most down to the window bottom: --board-top is measured
    by boardFit()); a slim scrollbar sits inside a 2px border, so the dashed For you / For the team edge is a border, never drawn
    over the scrollbar or the cards; a soft fade at the bottom while there is more to scroll (.more, set by boardFit). */
-@media (min-width: 761px) {
+@media (min-width: 761px) and (min-height: 501px), (min-width: 761px) and (pointer: fine) {
   .board:not(.focus) { align-items: stretch; }
   .board:not(.focus) .column { max-height: max(360px, calc(100vh - var(--board-top, 130px) - 24px)); overflow-y: auto; overscroll-behavior: contain;
     border: 2px solid transparent; padding: 8px; scrollbar-gutter: stable; scrollbar-width: auto; scrollbar-color: auto; }
@@ -133,7 +133,7 @@ main { padding: 20px; }
   .board:not(.focus) .column[style] { border-top: 4px solid var(--colc); }
 }
 @supports not selector(::-webkit-scrollbar) {   /* Firefox: no ::-webkit-scrollbar, so the standard thin one in the theme colour */
-  @media (min-width: 761px) { .board:not(.focus) .column { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent; } }
+  @media (min-width: 761px) and (min-height: 501px), (min-width: 761px) and (pointer: fine) { .board:not(.focus) .column { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent; } }
 }
 .team-all { margin-top: 8px; }
 .column h3 { gap: 6px; align-items: center; }   /* AIG-1083: the name takes one line with an ellipsis, the count and buttons stay on the right */
@@ -285,7 +285,7 @@ th { color: var(--muted); font-weight: 500; }
 
 /* Board toolbar on a phone (AIG-933): cards first, the buttons behind one ⋯; details folded (AIG-938); empty priority chip (AIG-939) */
 .toolbar .tb-more { display: contents; } .toolbar .tb-dots { display: none; }
-@media (max-width: 600px) {
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) {
   .toolbar .tb-dots { display: inline-block; min-width: 44px; min-height: 36px; font-size: 18px; line-height: 1; margin-left: auto; }
   .toolbar .tb-more { display: none; flex-basis: 100%; flex-wrap: wrap; gap: 8px; }
   .toolbar .tb-more.open { display: flex; }
@@ -318,7 +318,7 @@ th { color: var(--muted); font-weight: 500; }
 /* Keep Rows a small control inside the board menu. */
 .toolbar .lanesel { width: auto; max-width: 100%; flex: 0 1 auto; }
 .toolbar .tb-keep { display: contents; }
-@media (max-width: 600px) {
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) {
   .toolbar .tb-keep { display: none; }
   .toolbar.compact .tb-more { position: static; width: 100%; box-shadow: none; }
 }
@@ -327,5 +327,5 @@ th { color: var(--muted); font-weight: 500; }
 .column h3 { flex-wrap: wrap; gap: 4px; align-items: center; }
 .column h3 > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; flex-basis: 100%; }
 
-@media (max-width: 600px) { .column h3 > span:first-child { flex-basis: auto; } }
+@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { .column h3 > span:first-child { flex-basis: auto; } }
 #sampleRemove { font-size: 13px; font-weight: 400; vertical-align: middle; }
