@@ -149,6 +149,9 @@ document.addEventListener('click', async e => {
     else if (typeof Dms !== 'undefined') Dms.reply(id, b.dataset.ask);
     return;
   }
+  // AIG-1411: in an inbox / For you item a tap is that item's own send: it says Sent and the question leaves the list
+  const item = b.closest('.ib-item[data-id]');
+  if (item && typeof IB !== 'undefined' && IB.send) { if (b.dataset.accept) IB.accept(item); else IB.send(item, b.dataset.say); return; }
   b.closest('.msg-acts').querySelectorAll('button').forEach(x => x.disabled = true);
   try {
     if (b.dataset.accept) await api('POST', `/api/projects/${s}/cards/${id}/verdict`, { accept: true });

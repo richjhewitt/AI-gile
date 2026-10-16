@@ -1,5 +1,5 @@
 // QA area: fyfold (AIG-738): a For you chip or card opens one window with the chip's cards, folded; a row unfolds in place.
-import { check, sleep, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, mkProject, mkCard, getCard, say, openPage, noErrors, def } from '../lib.mjs';
 
 def('fyfold', 'For you: a chip opens a window of folded rows, a card opens it unfolded on its chip, Accept inside updates the list (AIG-738)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -108,5 +108,27 @@ def('fyfoldnext', 'Tests list: Accept or Send back opens the next test in the li
   await page.click('.fyf-row.open [data-act="accept"]');
   await page.waitForFunction(() => document.querySelectorAll('.fyf-row').length === 0 || /All tests done/.test(document.body.textContent), null, { timeout: 5000 }).catch(() => {});
   check('after the last one it says All tests done', /All tests done/.test(await page.textContent('body')));
+  noErrors(page);
+}, true);
+
+def('fyquestions', 'Questions pile: a tapped answer sends it and the question leaves the pile (AIG-1411)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });
+  const page = await openPage(ctx, '#/p/alpha');
+  const owner = await page.evaluate(() => me());
+  const c = await mkCard(s, 'alpha', '💬 What should I plant first?', { description: 'What should I plant first?', status: 'team', createdBy: owner, quick: true });
+  await say(s, 'alpha', c.id, 'Lead', 'Start with broad beans and onion sets.');
+  s.cli(['ask', 'alpha', c.id, 'Vegetables, or fruit too?', '--options', 'Just vegetables,Vegetables and fruit', '--as', 'Lead']);
+  await page.reload();
+  await page.waitForSelector(`.column.foryou .card[data-id="${c.id}"]`);
+  await page.click(`.column.foryou .card[data-id="${c.id}"] .t`);
+  await page.waitForSelector('.fyf[data-kind="q"] .fyf-row.open .msg-act');
+  await page.click('.fyf-row.open .msg-act[data-say="Vegetables and fruit"]');
+  await page.waitForFunction(() => !document.querySelector('.fyf'), null, { timeout: 5000 }).catch(() => {});
+  const got = await getCard(s, 'alpha', c.id);
+  check('a tapped answer is sent once', got.comments.filter(m => m.text === 'Vegetables and fruit').length === 1, got.comments.map(m => m.text));
+  check('the question leaves the pile and the empty window closes', (await page.locator('.fyf').count()) === 0);
+  check('it says Sent', /Sent to the team on/.test(await page.textContent('body')));
+  if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-1411.png' });
   noErrors(page);
 }, true);
