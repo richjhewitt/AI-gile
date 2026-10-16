@@ -2,7 +2,7 @@
 // A stub ssh (AIGILE_SSH_STUB, a node script) records its argv and stdin, so nothing really connects anywhere.
 import fs from 'node:fs';
 import path from 'node:path';
-import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { BASE, check, sleep, tmp, mkProject, mkCard, getCard, openPage, noErrors, def, startServer, freePort } from '../lib.mjs';
 
 const dir = tmp('sudo'), local = path.join(dir, 'local.json'), log = path.join(dir, 'ssh.log'), stub = path.join(dir, 'ssh-stub.js');
 const PW = 'Sud0-QA-pa55word', SEC = tmp('sudo-sec');
@@ -65,6 +65,20 @@ def('sudo', 'aigile sudo: the ssh server\'s sudo password (Setup > My servers, m
   const c = await getCard(s, 'alpha', card.id), cm = (c.comments || []).at(-1) || {};
   check('--card leaves a short comment', cm.author === 'Lead' && cm.text === `ran sudo on Prod: ${cmd}, exit 7`, cm);
 
+  // AIG-1234: the same step run again is a new run, not a duplicate: its comment is not kept out by the firewall.
+  sudo(cmd, 'Lead', ['--card', card.id]);
+  const runsOn = async () => (await getCard(s, 'alpha', card.id)).comments.filter(m => m.text === `ran sudo on Prod: ${cmd}, exit 7`).length;
+  check('running the same step again leaves a second comment, nothing in the bin', await runsOn() === 2 && (await s.ok('GET', '/api/firewall')).items.length === 0, (await s.ok('GET', '/api/firewall')).items);
+  // A resend of the same message (same msgId: a retry) arrives once, and is not a catch either.
+  const url = `/api/projects/alpha/cards/${card.id}/comments`, logMsg = { author: 'Lead', text: 'ran sudo on Prod: id, exit 0', log: true, msgId: 'qa-run-1' };
+  await s.ok('POST', url, logMsg);
+  const re = await s.ok('POST', url, logMsg);
+  const once = async (b = s) => (await b.ok('GET', '/api/projects/alpha?full=1')).cards.find(x => x.id === card.id).comments.filter(m => m.msgId === 'qa-run-1').length;
+  check('a retry with the same msgId arrives once, not in the bin', await once() === 1 && !re.firewalled && (await s.ok('GET', '/api/firewall')).items.length === 0, re);
+  const plain = { author: 'Lead', text: 'Deployed it', msgId: 'qa-msg-2' };
+  await s.ok('POST', url, plain); const re2 = await s.ok('POST', url, plain);
+  check('a retried normal message is not a firewall catch either', !re2.firewalled && (await s.ok('GET', '/api/firewall')).items.length === 0, re2);
+
   // only listed agents
   await s.ok('POST', '/api/setup', { prefs: { servers: [srv({ sudo: ['Ops'] })] } });
   const before = runs().length, nope = sudo('id');
@@ -81,5 +95,12 @@ def('sudo', 'aigile sudo: the ssh server\'s sudo password (Setup > My servers, m
   await s.ok('POST', '/api/setup', { prefs: { servers: [] } });
   check('removing the server deletes its password', !fs.readFileSync(kept, 'utf8').includes('server:prod:sudo'));
   noErrors(page); noErrors(p2);
+  // AIG-1234: across a board restart the retry still arrives once.
+  s.stop(); await sleep(300);
+  const b2 = await startServer({ AIGILE_DATA: s.data, AIGILE_LOCAL: local, AIGILE_SSH_STUB: stub, AIGILE_SECRETS_DIR: SEC }, await freePort());
+  try {
+    const r2 = await b2.ok('POST', url, logMsg);
+    check('after a restart a retry with the same msgId still arrives once', await once(b2) === 1 && !r2.firewalled && (await b2.ok('GET', '/api/firewall')).items.length === 0, r2);
+  } finally { b2.stop(); }
   await sleep(50);
 }, true, { AIGILE_LOCAL: local, AIGILE_SSH_STUB: stub, AIGILE_SECRETS_DIR: SEC });

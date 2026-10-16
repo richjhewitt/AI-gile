@@ -81,6 +81,11 @@ def('firewall', 'message firewall: same text twice, Original: copies, empty poke
   await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Owner', text: 'Ping 1' });
   const rp = await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Dev', text: 'Ping 1' });
   check('Lead chat: the whole thread is checked, an owner message in between reopens the topic', !rp.firewalled, rp);
+  // AIG-1234: a retried Lead chat message (same msgId) lands once and is not a catch.
+  const kept0 = (await s.ok('GET', '/api/firewall')).kept;
+  await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Lead', text: 'Retry me', msgId: 'qa-chat-1' });
+  const rr = await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Lead', text: 'Retry me', msgId: 'qa-chat-1' });
+  check('Lead chat: a retry with the same msgId arrives once, nothing in the bin', !rr.firewalled && (await s.ok('GET', '/api/projects/wall/leadchat')).messages.filter(m => m.msgId === 'qa-chat-1').length === 1 && (await s.ok('GET', '/api/firewall')).kept === kept0, rr);
 
   // AIG-966: handing a card over again with no owner word since doesn't send the same "Ready for you to test" note again.
   const h = await mkCard(s, 'wall', 'Handover');
