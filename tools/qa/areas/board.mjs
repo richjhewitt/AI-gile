@@ -381,8 +381,9 @@ def('quick', '👀 What\'s happening? summarises the board; 💬 Ask the team se
   check('a plain reply on your own 💬 stays off your Messages: it is an instruction to the team (AIG-1215)', (await getCard(s, 'alpha', q.id)).needsYou !== true);
   s.cli(['ask', 'alpha', q.id, 'Shall I ship it?', '--as', 'Lead']);
   check('a real question back lands in your Messages', (await getCard(s, 'alpha', q.id)).needsYou === true && (await s.ok('GET', '/api/inbox')).some(c => c.id === q.id));
-  // Team picker (AIG-414): defaults to this board; picking another project sends the question there.
-  await page.click('button:has-text("Ask the team")');
+  // Team picker (AIG-414): defaults to this board; picking another project sends the question there. On a board with cards it is in ⋯ More (AIG-1359).
+  if (!(await page.isVisible('#boardTbMore [onclick^="askTeamDialog"]'))) await page.click('#tbDots');
+  await page.click('#boardTbMore [onclick^="askTeamDialog"]');
   await page.waitForSelector('#ask-to');
   check('the team picker defaults to this board', (await page.inputValue('#ask-to')) === 'alpha');
   await page.selectOption('#ask-to', 'beta');
