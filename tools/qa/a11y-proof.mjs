@@ -1,6 +1,7 @@
 import fs from 'node:fs';
-export const SHOTS = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
+export const SHOTS = process.env.QA_SHOTS || '';   // QA_SHOTS=<folder> keeps the proof screenshots; unset, none are taken
 export async function proof(page, id) {
+  if (!SHOTS) return;
   fs.mkdirSync(SHOTS, { recursive: true });
   await page.screenshot({ path: `${SHOTS}/${id}.png`, fullPage: true });
   const viewport = page.viewportSize(), theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));

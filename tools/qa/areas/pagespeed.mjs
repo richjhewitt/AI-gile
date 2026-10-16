@@ -68,8 +68,8 @@ def('coldphone', 'cold phone first card: split scripts versus bundle, 150ms netw
       check('one ordered script bundle replaces 125 script requests',result.scripts===1,result);
       check('inbox is fetched once before first card',result.inbox===1,result);
       check('project is fetched once before first card',result.project===1,result);
-      const shots='C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
-      fs.mkdirSync(shots,{recursive:true}); await page.evaluate(() => document.querySelector('.card')?.scrollIntoView({ block:'nearest', inline:'nearest' })); await page.screenshot({path:path.join(shots,'AIG-1393.png')});
+      const shots=process.env.QA_SHOTS;
+      if (shots) { fs.mkdirSync(shots,{recursive:true}); await page.evaluate(() => document.querySelector('.card')?.scrollIntoView({ block:'nearest', inline:'nearest' })); await page.screenshot({path:path.join(shots,'AIG-1393.png')}); }
     }
     await c.close();
   }

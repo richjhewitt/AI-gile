@@ -54,9 +54,8 @@ def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuc
   check('fresh Lead CLI writes prevent a competing team or restart note', !live.presence.running && !(await getCard(s, 'fresh', 'FRS-1')).comments.some(e => /Picked back up|Stuck/.test(e.text)));
   const page = await openPage(ctx, '#/p/stale');
   await page.waitForSelector('#teamTop .pres');
-  const shots = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
-  fs.mkdirSync(shots, { recursive: true });
-  await page.screenshot({ path: path.join(shots, 'AIG-1440.png'), fullPage: true });
+  const shots = process.env.QA_SHOTS;
+  if (shots) { fs.mkdirSync(shots, { recursive: true }); await page.screenshot({ path: path.join(shots, 'AIG-1440.png'), fullPage: true }); }
   noErrors(page);
   await s.ok('POST', '/api/quiet', { on: false });
 }, true, { AIGILE_ACTIVE_MS: '1000' });
@@ -107,9 +106,8 @@ def('nightpace', '🌙 night watch pace: the timer wakes a finished team at the 
   check('the glance shows the real last check and the pace', /Checked .* every 2 min/.test(await g.textContent('#ngWhen')), await g.textContent('#ngWhen'));
   check('the glance says what it last did', /Last: (woke|poked) Pace/.test(gt), gt);
   check('the glance says why each team is not running', /its lead is at work in a session/.test(gt) && /no folder connected/.test(gt) && /its folder is missing/.test(gt) && /could not start: AI is off/.test(gt), gt);
-  const shots = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
-  fs.mkdirSync(shots, { recursive: true });
-  await g.screenshot({ path: path.join(shots, 'AIG-1446-glance.png') });
+  const shots = process.env.QA_SHOTS;
+  if (shots) { fs.mkdirSync(shots, { recursive: true }); await g.screenshot({ path: path.join(shots, 'AIG-1446-glance.png') }); }
   noErrors(g);
   const b = await openPage(ctx, '#/p/nofolder');
   await b.waitForFunction(() => !!document.querySelector('#teamTop .pres-night'), null, { timeout: 15000 });

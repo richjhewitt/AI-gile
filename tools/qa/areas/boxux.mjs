@@ -20,7 +20,7 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
   await page.click('#tbDots');
   check('Ask the team and What is happening stay visible (AIG-1420)', await page.isVisible('.tb-keep [onclick="askTeamDialog()"]') && await page.isVisible('.tb-keep [onclick="happeningDialog()"]'));
   await page.evaluate(() => { if (state.tbOpen) toggleTb(); });
-  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1420.png'});
+  if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-1420.png'});
   // For you chips (AIG-938)
   const chips = await page.$$eval('.fy-chips .fy-chip', els => els.map(e => e.dataset.first));
   check('For you shows only chips with cards (plus the active one)', chips.length >= 1 && chips.length < 8 && chips.includes('k'), chips);

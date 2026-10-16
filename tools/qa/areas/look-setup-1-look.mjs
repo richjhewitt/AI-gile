@@ -150,7 +150,7 @@ def('theme', 'theme: follows the system, or System / Light / Dark picked in the 
   s.cli(['ask', 'alpha', q.id, 'Go?', '--as', 'Lead']); s.cli(['test', 'alpha', tt.id, '1. look', '--as', 'Lead']);
   const ib = await openPage(ctx, '#/inbox');
   await ib.waitForSelector('.ib-item.q');
-  const tintFails = await contrastInboxTints(ib, TINT_CASES, SHOTS + '/AIG-1430-inbox-night-light.png');
+  const tintFails = await contrastInboxTints(ib, TINT_CASES, SHOTS && SHOTS + '/AIG-1430-inbox-night-light.png');
   check('Inbox item text meets 4.5:1 on its tint in every theme, Night on a light system included (AIG-1430)', !tintFails.length, tintFails);
   noErrors(ib); await ib.close();
   await page.evaluate(() => { delete document.documentElement.dataset.theme; document.documentElement.removeAttribute('data-night'); });

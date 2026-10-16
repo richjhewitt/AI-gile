@@ -86,7 +86,7 @@ def('peerreview', '🔍 peer review: setting off by default and owner only; on =
   check('five handovers start only two reviews', count(/handed over/g) === start + 2 && (await proc()).body.presence.workers.length === 2, log());
   const page = await openPage(ctx, '#/p/rev');
   await page.waitForSelector('.column');
-  await page.screenshot({ path: "C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1409.png", fullPage: true });
+  if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-1409.png', fullPage: true });
   let peak = 2;
   check('all five reviews eventually start', !!await until(async () => {
     peak = Math.max(peak, (await s.ok('GET', '/api/projects/rev')).presence.workers.length);

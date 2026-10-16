@@ -190,8 +190,7 @@ def('mail', 'Mail card 1: add an IMAP mailbox in Setup (find, test, save), passw
     await s.ok('POST', '/api/projects', { name: 'Mailcards', key: 'MLC' });
     await page.locator('.mail-open').first().click();
     await page.waitForSelector('#mailText');
-    fs.mkdirSync('C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots', { recursive: true });
-    await page.screenshot({ path: 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1400.png' });
+    if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-1400.png' });
     // 📋 Make a card from the open mail (AIG-905)
     await page.waitForSelector('#mailCardProj option[value="mailcards"]', { state: 'attached' });
     await page.selectOption('#mailCardProj', 'mailcards');

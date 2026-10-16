@@ -121,9 +121,8 @@ def('nightglance', '🌙 night glance: a calm pop-out with the watchman per proj
   await home.setViewportSize({ width: 1280, height: 900 });
   await home.evaluate(() => localStorage.setItem('aigile.theme', 'dark'));
   await home.reload(); await visible(['space', 'child']);
-  const shots = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
-  fs.mkdirSync(shots, { recursive: true });
-  await home.screenshot({ path: path.join(shots, 'AIG-1389.png'), fullPage: true });
+  const shots = process.env.QA_SHOTS;
+  if (shots) { fs.mkdirSync(shots, { recursive: true }); await home.screenshot({ path: path.join(shots, 'AIG-1389.png'), fullPage: true }); }
   await s.ok('POST', '/api/quiet', { on: true, watch: [] });
   await visible([]);
   await s.ok('POST', '/api/quiet', { on: false });

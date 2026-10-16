@@ -302,5 +302,5 @@ def('tourproject', 'tour returns to its starting project (AIG-1417)', async (s, 
   await page.evaluate(() => startTour('new'));
   for(let n=0;n<8;n++) { if(await page.getAttribute('.tour-bubble','data-stop') === 'foryou') break; await page.click('.tour-bubble .primary'); await sleep(350); }
   check('For you is on the original project (AIG-1417)', await page.evaluate(() => location.hash === '#/p/garden' && document.querySelector('.tour-bubble').dataset.stop === 'foryou'));
-  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1417.png'});
+  if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-1417.png'});
 }, true);
