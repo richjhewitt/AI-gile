@@ -1,7 +1,7 @@
-// QA area: firewall (AIG-839): duplicates, "Original:" copies and empty pokes from the team are kept in data/firewall.conf, not the card.
+// QA area: firewall (AIG-839): duplicates and empty pokes are kept in data/firewall.conf; tidy quotes stay quietly on the card.
 import { check, tmp, mkProject, mkCard, getCard, say, def, openPage, noErrors, until } from '../lib.mjs';
 
-def('firewall', 'message firewall: same text twice, Original: copies, empty pokes are kept out and listed in GET /api/firewall; owner and real replies pass (AIG-839)', async (s, ctx) => {
+def('firewall', 'message firewall: duplicates and empty pokes go to the bin; tidy quotes stay quietly on the card; owner and real replies pass (AIG-839, AIG-1347)', async (s, ctx) => {
   await mkProject(s, 'Wall', 'WAL', { path: tmp('fw') });
   const a = await mkCard(s, 'wall', 'First'), b = await mkCard(s, 'wall', 'Second');
   const url = id => `/api/projects/wall/cards/${id}/comments`;
@@ -13,9 +13,20 @@ def('firewall', 'message firewall: same text twice, Original: copies, empty poke
   await say(s, 'wall', b.id, 'Dev', 'Build is green');
   check('the same text on another card is fine', (await getCard(s, 'wall', b.id)).comments.length === 1);
 
+  const beforeOrig = await getCard(s, 'wall', a.id);
+  const keptOrig = (await s.ok('GET', '/api/firewall')).kept;
   const o1 = await s.ok('POST', url(a.id), { author: 'Lead', text: 'Original: make it faster' });
-  const o = await s.ok('POST', url(a.id), { author: 'Lead', text: 'Original: make it quicker' });
-  check('the first "Original:" note passes, a second one is caught', !o1.firewalled && o.firewalled && o.reason === 'original', [o1, o]);
+  const o = await s.ok('POST', url(a.id), { author: 'Dev', text: '  original: make it quicker' });
+  const o2 = await s.ok('POST', url(a.id), { author: 'Lead', text: 'Original: make it faster' });
+  const afterOrig = await getCard(s, 'wall', a.id);
+  check('all tidy quotes stay on the card, never in the bin', !o1.firewalled && !o.firewalled && !o2.firewalled && afterOrig.comments.length === beforeOrig.comments.length + 3 && (await s.ok('GET', '/api/firewall')).kept === keptOrig, afterOrig);
+  check('tidy quotes do not change inbox state or bring a card back', afterOrig.updated === beforeOrig.updated && afterOrig.needsYou === beforeOrig.needsYou && afterOrig.status === beforeOrig.status, afterOrig);
+  const q = await s.ok('POST', '/api/projects/wall/cards', { title: 'Raw request', description: 'tidied request', quick: true, createdBy: 'Owner' });
+  await s.ok('POST', url(q.id), { author: 'Lead', text: 'Original: raw request' });
+  await s.ok('POST', url(q.id), { author: 'Dev', text: 'Original: another quote' });
+  const thread = (await s.ok('GET', '/api/chats/wall')).messages.filter(m => m.card === q.id);
+  check('tidy quotes appear once as the owner request, never as team replies', thread.length === 1 && thread[0].mine && thread[0].text === 'raw request', thread);
+  check('chat preview does not show a tidy quote', !(await s.ok('GET', '/api/chats')).find(c => c.slug === 'wall').lastText.startsWith('Original:'));
   const e = await s.ok('POST', url(a.id), { author: 'Dev', text: ' 👉 ... ' });
   check('an empty poke is caught', e.firewalled && e.reason === 'empty', e);
   const own = await s.ok('POST', url(a.id), { author: 'Owner', text: 'Build is green' });
@@ -33,7 +44,7 @@ def('firewall', 'message firewall: same text twice, Original: copies, empty poke
   check('Lead chat holds only one', (await s.ok('GET', '/api/projects/wall/leadchat')).messages.length === 1);
 
   const list = await s.ok('GET', '/api/firewall');
-  check('GET /api/firewall lists the catches newest first with time, project, card, author, kind, text', list.items.length === 4 && list.items[0].kind === 'chat' && list.items.every(x => x.at && x.project === 'wall' && x.author && x.kind && x.text !== undefined) && list.items.some(x => x.card === a.id), list);
+  check('GET /api/firewall lists the catches newest first with time, project, card, author, kind, text', list.items.length === 3 && list.items[0].kind === 'chat' && list.items.every(x => x.at && x.project === 'wall' && x.author && x.kind && x.text !== undefined) && list.items.some(x => x.card === a.id), list);
   check('the project filter works', (await s.ok('GET', '/api/firewall?project=nothere')).items.length === 0);
 
   const cli = s.cli(['comment', 'wall', b.id, 'Build is green', '--as', 'Dev']);
@@ -43,16 +54,16 @@ def('firewall', 'message firewall: same text twice, Original: copies, empty poke
   const fwCards = async () => (await s.ok('GET', '/api/projects/wall')).cards.filter(c => c.fwCause);
   let fc = await fwCards();
   const dupLead = fc.filter(c => c.fwCause === 'duplicate|Lead'), dupDev = fc.filter(c => c.fwCause === 'duplicate|Dev');
-  check('one card per cause, not per message', dupLead.length === 1 && dupDev.length === 1 && fc.length === 4, fc.map(c => c.fwCause));
+  check('one card per cause, not per message', dupLead.length === 1 && dupDev.length === 1 && fc.length === 3, fc.map(c => c.fwCause));
   check('card is a normal bug in the backlog with the plain title, not for the owner', dupLead[0].type === 'bug' && dupLead[0].priority === 'normal' && dupLead[0].status === 'backlog' && !dupLead[0].needsYou && dupLead[0].title === '🧱 Firewall: Lead sends duplicates', dupLead[0]);
   check('repeats bump the count in the field, the description stays as it was and the latest sample is a comment (AIG-841)', dupDev[0].fwCount === 2 && /kept 1 message from Dev/.test(dupDev[0].description) && dupDev[0].comments.at(-1).text.includes('Latest: Build is green'), dupDev[0]);
   await s.ok('POST', '/api/projects/wall/leadchat', { author: 'Lead', text: 'Morning' });
   fc = await fwCards();
-  check('a new repeat gives no new card', fc.length === 4 && fc.find(c => c.fwCause === 'duplicate|Lead').fwCount === 2, fc.map(c => [c.fwCause, c.fwCount]));
+  check('a new repeat gives no new card', fc.length === 3 && fc.find(c => c.fwCause === 'duplicate|Lead').fwCount === 2, fc.map(c => [c.fwCause, c.fwCount]));
 
   // AIG-840: the bin counts, and "Let it through" posts the message once and takes it out of the bin.
   const bin = await s.ok('GET', '/api/firewall');
-  check('the bin counts what was kept away, and today', bin.kept === bin.items.length && bin.kept >= 6 && bin.today === bin.kept, [bin.kept, bin.today]);
+  check('the bin counts what was kept away, and today', bin.kept === bin.items.length && bin.kept >= 5 && bin.today === bin.kept, [bin.kept, bin.today]);
   const target = bin.items.find(x => x.kind === 'comment' && x.card === b.id && x.reason === 'duplicate');
   const before = (await getCard(s, 'wall', b.id)).comments.length;
   const rel = await s.ok('POST', `/api/firewall/${target.id}/release`);
