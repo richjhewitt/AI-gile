@@ -799,7 +799,7 @@
  "usage.session.sub": "periode van 5 uur",
  "usage.week": "Deze week",
  "usage.week.sub": "periode van 7 dagen",
- "usage.note": "Je abonnement heeft twee limieten: één per sessie van 5 uur en één per week. Er is geen maandlimiet. Kleuren: ✅ genoeg = 50% of meer over · ⚠️ wordt krap = 20 tot 49% over · ⛔ bijna op = minder dan 20% over.",
+ "usage.note": "✅ 50% of meer over · ⚠️ 20 tot 49% · ⛔ minder dan 20%",
  "usage.h": "⚡ Verbruik",
  "usage.explain": "Hoeveel je nog over hebt van je abonnement, en welke projecten het gebruiken.",
  "usage.on.h": "✅ Aangezet: wacht op de eerste meting",

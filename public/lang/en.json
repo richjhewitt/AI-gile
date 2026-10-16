@@ -701,7 +701,7 @@
  "usage.session.sub": "5-hour window",
  "usage.week": "This week",
  "usage.week.sub": "7-day window",
- "usage.note": "Your plan has two limits: one per 5-hour session and one per week. There's no monthly limit. Colours: ✅ plenty = 50% or more left · ⚠️ getting low = 20 to 49% left · ⛔ nearly out = under 20% left.",
+ "usage.note": "✅ 50% or more left · ⚠️ 20 to 49% · ⛔ under 20%",
  "usage.h": "⚡ Usage",
  "usage.explain": "How much of your plan you have left, and which projects are using it.",
  "usage.on.h": "✅ Switched on: waiting for the first reading",
