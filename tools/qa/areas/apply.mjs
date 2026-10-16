@@ -151,6 +151,8 @@ def('apply', '📜 website forms: licence applications and interest sealed in th
     check('licence form: no plain text on the relay disk', !/Browser Bees|web@bees/.test(diskText(migData)));
     const keep = await lp.$eval('.form-keep', e => ({ text: e.textContent, href: e.querySelector('a').getAttribute('href') }));
     check('AIG-1283: under the form, the data promise with a link to What we keep', /reply to you, then delete it/.test(keep.text) && /No trackers, no cookies/.test(keep.text) && keep.href === 'privacy.html', keep);
+    { await lp.setViewportSize({ width: 1400, height: 900 }); const g = await lp.$eval('.form-keep', e => ({ h: e.getBoundingClientRect().height, lh: parseFloat(getComputedStyle(e).lineHeight) }));
+      check('the data promise sits on one line on a computer (AIG-1319)', g.h < g.lh * 1.5, g); }
     check('licence form: no page errors', lp.errs.length === 0, lp.errs);
     const ip = await formPage('interest.html');
     await ip.fill('input[name=email]', 'eve@example.org'); await ip.check('input[value=beta]');

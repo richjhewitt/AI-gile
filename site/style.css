@@ -180,3 +180,7 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 .live-cap{color:var(--muted);font-size:14px;margin:12px 0 0}
 .live.off .live-cap{display:none}
 @media (prefers-reduced-motion:reduce){.lv-card{transition:none!important}}
+
+/* AIG-1319: the promise under each form stays on one line on a computer; "What we keep" never splits */
+.form-keep{font-size:14px;line-height:1.5}
+.form-keep a{white-space:nowrap}
