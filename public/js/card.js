@@ -132,7 +132,7 @@ function renderCard(p, c) {
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
       ${Share.cardComments(p, c)}
       ${quizPanel(p, c)}
-      ${pop ? chatHtml(p, c, msg) : followBar(p, c) + replyHtml(p, c, msg, newest)}
+      ${pop ? typingHtml(p, c) : ''}${followBar(p, c) + replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
       ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${runbooksHtml(p, c)}${problemHtml(p, c)}${probEdit(p, c)}${knownErrorsLink(p, c)}${changeHtml(p, c)}${Attach.shown(c, p.slug)}

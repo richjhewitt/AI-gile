@@ -470,7 +470,7 @@ async function refreshStaged(force, liveState, state, api) {
   if (!force && busy()) {
     // Keep the board behind moving; only hold the panel/dialog the owner is using.
     if (sig !== state.lastBoardSig) { state.lastBoardSig = sig; renderBoardOnly(); }
-    if (state.route.pop && sig !== state.lastSig && popChatLive()) { state.lastSig = sig; return; }   // a chat keeps moving while you type (AIG-313)
+    if (state.route.pop && sig !== state.lastSig && cardLive()) { state.lastSig = sig; return; }   // a pop-out keeps moving while you type (AIG-313), laid out like the panel (AIG-1383)
     if (!state.route.pop && state.route.view === 'project' && state.route.card && sig !== state.lastSig && cardLive()) { $('live').className = 'live'; $('live').textContent = t('live.ok'); return; }   // new messages land under a half-typed reply (AIG-314)
     if (sig !== state.lastSig) { $('live').className = 'live paused'; $('live').textContent = t('live.paused'); }
     return;
@@ -618,10 +618,10 @@ function render() {
   if (state.route.pop) {
     const c = p.cards.find(x => x.id === state.route.card);
     $('app').innerHTML = '';
-    const de = document.documentElement, first = !$('modal')._html, y = window.scrollY, atEnd = first || de.scrollHeight - y - window.innerHeight < 60;   // chat: follow the newest unless scrolled up
+    const y = window.scrollY;   // the newest message is on top, as on the panel (AIG-1383): keep the place, never jump to the bottom
     paintModal(c ? renderCard(p, c) : `<p class="muted" style="padding:16px">${esc(t('card.gone'))}</p>`);
     const pp = document.querySelector('#modal .panel'); if (pp) pp.scrollTop = keepScroll;
-    window.scrollTo(0, atEnd ? de.scrollHeight : y);
+    window.scrollTo(0, y);
     return;
   }
   if (!p) return;   // not loaded yet (a refresh can land before the project does)
