@@ -26,6 +26,7 @@
     return { q: IB.items.filter(isQuestion).length, k: IB.items.filter(isTask).length, t: IB.items.filter(isTest).length, f: IB.friends() };
   }
   function paintTop() {
+    if (typeof Dms !== 'undefined' && Dms.inboxCount) Dms.inboxCount();   // the rail's 📥 count follows at once, not at the rail's next read (AIG-1375)
     const { q, k, t: te, f } = counts();   // te: a local `t` would hide the t() text function
     const label = (q ? t(q === 1 ? 'inbox.sum.q.one' : 'inbox.sum.q.many', { n: q }) : '') + (k ? t(k === 1 ? 'inbox.sum.k.one' : 'inbox.sum.k.many', { n: k }) : '') + (te ? t('inbox.sum.t', { n: te }) : '') + (f ? t(f === 1 ? 'inbox.sum.f.one' : 'inbox.sum.f.many', { n: f }) : '') || t('inbox.sum.none');
     let alertBtn = '';

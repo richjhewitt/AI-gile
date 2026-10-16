@@ -21,6 +21,13 @@ const Dms = (() => {
   const leadName = c => c.noAi ? t('sm.noai.lead') : c.watchman ? t('sm.lead') : c.lead;
   const chatName = c => c.noAi ? t('sm.noai.name') : c.watchman ? t('sm.name') : c.name;
   const badge = n => n ? `<span class="dm-unread">${n > 99 ? '99+' : n}</span>` : '';
+  // AIG-1375: the rail's Inbox button count, updated in place whenever the inbox list changes.
+  function inboxCount() {
+    const b = document.querySelector('#dmRail [data-go="#/inbox"]'); if (!b || typeof IB === 'undefined') return;
+    const html = badge((IB.items || []).length + IB.friends()), cur = b.querySelector('.dm-unread');
+    if ((cur ? cur.outerHTML : '') === html) return;
+    if (cur) cur.remove(); if (html) b.insertAdjacentHTML('beforeend', html);
+  }
   // "Seen" per project: the project's last update when you last opened its board (this browser only).
   const seen = { get: s => { try { return localStorage.getItem('aigile.seen.' + s) || ''; } catch { return ''; } }, set: (s, v) => { try { localStorage.setItem('aigile.seen.' + s, v); } catch {} } };
   const dmSeen = { get: id => { try { return localStorage.getItem('aigile.dmseen.' + id) || ''; } catch { return ''; } }, set: (id, v) => { try { localStorage.setItem('aigile.dmseen.' + id, v); } catch {} } };
@@ -683,5 +690,5 @@ const Dms = (() => {
   // Live: the rail every few seconds; an open chat a little more often.
   PagePoll.every(async () => { await loadRail(); if (open) await loadThread(); }, 3000);
   loadRail();
-  return { popOut: popSelf, popView, follow, show, back, close, send, ask, askTeams, aim, reply, reload, smNight, smPush, requestForm, requestSend, newGroup, createGroup, grpFilter };
+  return { inboxCount, popOut: popSelf, popView, follow, show, back, close, send, ask, askTeams, aim, reply, reload, smNight, smPush, requestForm, requestSend, newGroup, createGroup, grpFilter };
 })();
