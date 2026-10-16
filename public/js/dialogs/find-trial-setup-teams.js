@@ -261,7 +261,7 @@ const runInSelect = (id, cur, onchange, def) => `<select class="setup-theme" id=
 const runInBlind = where => `<small class="muted runin-blind" ${where === 'background' ? 'hidden' : ''}>${esc(t('runin.blind'))}</small>`;
 function runInHtml(msg = '') {
   const pr = leadPrefs(), w = pr.runIn || 'background';
-  return `<span>${esc(t('runin.h'))}</span>${runInSelect('runIn', w, 'setRunIn({ runIn: this.value })')}<small class="muted">${esc(t('runin.help'))}</small>
+  return `<label for="runIn">${esc(t('runin.h'))}</label>${runInSelect('runIn', w, 'setRunIn({ runIn: this.value })')}<small class="muted">${esc(t('runin.help'))}</small>
     <label class="f" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="runCmd" value="${esc(pr.runCmd || '')}" placeholder='cursor "{folder}"' onchange="setRunIn({ runCmd: this.value })"><small class="muted">${esc(t('runin.cmd.help'))}</small></label>
     <label class="f"><span>${esc(t('dispatch.h'))}</span><select class="setup-theme" id="dispatchMode" onchange="setRunIn({ dispatch: this.value })">${['rules', 'haiku', 'lead'].map(v => `<option value="${v}" ${(pr.dispatch || 'haiku') === v ? 'selected' : ''}>${esc(t('dispatch.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('dispatch.help'))}</small></label>
     <label class="f"><span>${esc(t('trust.h'))}</span><select class="setup-theme" id="trustTester" onchange="setRunIn({ trustTester: this.value })">${['check', 'sure', 'all'].map(v => `<option value="${v}" ${(pr.trustTester || 'check') === v ? 'selected' : ''}>${esc(t('trust.opt.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('trust.help'))}</small></label>

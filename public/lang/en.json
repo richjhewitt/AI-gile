@@ -1,4 +1,9 @@
 {
+ "filter.label.type": "Filter by type",
+ "filter.label.who": "Filter by team member",
+ "filter.label.sprint": "Filter by sprint",
+ "filter.label.group": "Filter by group",
+ "join.url.label": "Join service address",
  "col.backlog": "{{dev:Backlog}}",
  "col.todo": "To do",
  "col.doing": "In progress",

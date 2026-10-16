@@ -107,13 +107,15 @@ def('newcard-project', 'New card: Project picker defaults to this board; another
 
 def('filters', 'search survives polling, type filter, clear', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
-  await mkCard(s, 'alpha', 'Zebra feature', { status: 'todo' });
+  await mkCard(s, 'alpha', 'Zebra feature', { status: 'todo', group: 'Release' });
   await mkCard(s, 'alpha', 'Zebra bug', { status: 'todo', type: 'bug' });
   await mkCard(s, 'alpha', 'Plain thing', { status: 'doing', assignee: 'Forge' });
   const old = await mkCard(s, 'alpha', 'Long ago', { status: 'done', assignee: 'Oldie' });   // AIG-1381: a name only on an old done card
   { const pf = path.join(s.data, 'alpha.json'), pj = JSON.parse(fs.readFileSync(pf, 'utf8')); pj.cards.find(c => c.id === old.id).updated = new Date(Date.now() - 40 * 864e5).toISOString(); fs.writeFileSync(pf, JSON.stringify(pj)); }
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('#f-q');
+  check('board dropdowns have explicit labels (AIG-1436)', await page.$$eval('#f-sel select', es => es.length >= 4 && es.every(e => !!e.getAttribute('aria-label'))));
+  await proof(page, 'AIG-1436');
   const whoOpts = () => page.$$eval('select[data-f=who] option', os => os.map(o => o.value));
   check('Anyone lists who is on the board now; an old name waits behind More (AIG-1381)', JSON.stringify(await whoOpts()) === JSON.stringify(['', 'Forge', '__more']), await whoOpts());
   await page.selectOption('select[data-f=who]', '__more');

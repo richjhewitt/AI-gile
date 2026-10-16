@@ -1,7 +1,7 @@
 ---
 title: Search and filter
 journeys: Filter the board
-status: placeholder
+status: changed
 features: AIG-16
 ---
 Narrow the board by assignee, type or sprint.
@@ -9,3 +9,5 @@ Narrow the board by assignee, type or sprint.
 - TODO steps
 - TODO tips
 - TODO related
+
+- Board filter dropdowns have screen reader labels.

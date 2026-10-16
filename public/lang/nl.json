@@ -1,4 +1,9 @@
 {
+ "filter.label.type": "Filter op type",
+ "filter.label.who": "Filter op teamlid",
+ "filter.label.sprint": "Filter op sprint",
+ "filter.label.group": "Filter op groep",
+ "join.url.label": "Adres van de uitnodigingsdienst",
  "attach.uploading": "{name} wordt geüpload: {pct}%",
  "attach.cancel": "Annuleren",
  "attach.cancelled": "Upload geannuleerd",

@@ -101,6 +101,11 @@ def('setup', 'a new install opens Setup; saving writes the local settings file (
   check('board opens Setup first', page.url().endsWith('#/setup'));
   await page.click('#wzNo'); await page.waitForSelector('#wzNo', { state: 'detached' });   // AIG-354: the wizard offer, waved off
   await page.waitForSelector('#homeMoreBtn'); await page.goto(s.base + '/#/setup'); await page.waitForSelector('#setupForm');   // AIG-1069: that lands on Home
+  await page.waitForSelector('#formsTo', { state: 'attached' });
+  check('Setup fields have names (AIG-1436)', await page.evaluate(() => {
+    const box = document.createElement('div'); box.innerHTML = joinHtml();
+    return !!document.querySelector('#formsTo').getAttribute('aria-label') && !!document.querySelector('label[for=runIn]') && ['joinHelp', 'joinUrl', 'joinSiteUrl', 'joinKey'].every(id => !!box.querySelector('#' + id).getAttribute('aria-label'));
+  }));
   check('name is required', (await s.api('POST', '/api/setup', { owner: '' })).status === 400);
   await page.fill('input[data-key="owner"]', 'Sam');
   // AIG-334: a guessed agent program is only a suggestion; typing just a name must not save it.
