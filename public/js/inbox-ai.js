@@ -3,7 +3,7 @@
 // Accept / Send back and the next one slides in. inbox.js owns the list, the clicks and the keys.
 function aiFlickHtml(c, i, n) {
   return `<div class="fl-head"><b>${esc(t('inbox.ai.h', { i: i + 1, n }))}</b><span class="spacer"></span>
-      <button data-fl="prev" ${n < 2 ? 'disabled' : ''} title="${esc(t('inbox.ai.prev'))}">‹</button><button data-fl="next" ${n < 2 ? 'disabled' : ''} title="${esc(t('inbox.ai.next'))}">›</button>
+      <button data-fl="prev" ${n < 2 ? 'disabled' : ''} title="${esc(t('inbox.ai.prev'))}" aria-label="${esc(t('inbox.ai.prev'))}"><span aria-hidden="true">‹</span></button><button data-fl="next" ${n < 2 ? 'disabled' : ''} title="${esc(t('inbox.ai.next'))}" aria-label="${esc(t('inbox.ai.next'))}"><span aria-hidden="true">›</span></button>
       <button data-fl="exit">${esc(t('inbox.ai.exit'))}</button></div>
     <div class="ib-top"><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span></div>
     <div class="ib-title"><a href="#/p/${esc(c.project)}/${esc(c.id)}">${esc(c.title)}</a></div>

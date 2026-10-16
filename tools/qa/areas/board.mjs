@@ -1,3 +1,4 @@
+import { proof } from '../a11y-proof.mjs';
 // QA areas: board, filters, columns, cardview, wip, lanes, views, steps, quick.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,6 +10,12 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   await mkCard(s, 'alpha', 'Other', { status: 'doing' });
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('.column');
+  const names = await page.$$eval('button[title], a[title]', es => es.filter(e => e.checkVisibility() && !/[\p{L}\p{N}]/u.test(e.textContent)).map(e => ({ title: e.title, label: e.getAttribute('aria-label') })));
+  check('icon controls use their helpful title as a name (AIG-1429)', names.length > 0 && names.every(e => e.label === e.title), names);
+  const unnamed = await page.$$eval('button, a[href]', es => es.filter(e => e.checkVisibility() && !/[\p{L}\p{N}]/u.test(e.textContent) && !e.getAttribute('aria-label') && !e.getAttribute('aria-labelledby')).map(e => e.outerHTML));
+  check('visible icon-only controls have explicit names (AIG-1429)', !unnamed.length, unnamed);
+  check('urgent toggle keeps pressed state (AIG-1429)', await page.locator('.urg-btn[aria-pressed]').count() > 0);
+  await proof(page, 'AIG-1429');
   await page.setViewportSize({ width: 1366, height: 768 });
   check('column names wrap without clipping (AIG-1360)', await page.$$eval('.column h3 > span:first-child', es => es.every(e => e.scrollWidth <= e.clientWidth + 1 && getComputedStyle(e).whiteSpace === 'normal')));
   const heads = await page.$$eval('.column h3 > span:first-child', els => els.map(e => e.textContent));

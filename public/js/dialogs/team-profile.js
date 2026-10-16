@@ -34,8 +34,8 @@ function teamHtml() {
       <span class="tm-name"><b>${esc(t('prof.role.' + g))}</b> <span class="muted">${esc(t('prof.level.' + r.level))} · ${esc(Model(r.model))}</span>
       ${mine ? `<span class="pill">${esc(t('tm.mine'))}</span>` : ''}${here ? `<span class="pill">${esc(t('tm.here'))}</span>` : ''}</span>
       ${loadTplHtml(r.id)}
-      <button type="button" class="tm-edit" onclick="profileEditor('${esc(r.id)}')" title="${esc(t('tm.edit'))}" aria-label="${esc(t('tm.edit') + ': ' + roleName(r.id))}">✏️</button>
-      ${r.id === LEAD_ID ? `<span class="tm-lock muted" title="${esc(t('tm.lead.lock'))}">🔒</span>` : `<button type="button" class="tm-del" onclick="teamRemove('${esc(r.id)}')" title="${esc(t('tm.remove'))}" aria-label="${esc(t('tm.remove') + ': ' + roleName(r.id))}">✕</button>`}</div>`; };
+      <button type="button" class="tm-edit" onclick="profileEditor('${esc(r.id)}')" title="${esc(t('tm.edit'))}" aria-label="${esc(t('tm.edit') + ': ' + roleName(r.id))}"><span aria-hidden="true">✏️</span></button>
+      ${r.id === LEAD_ID ? `<span class="tm-lock muted" title="${esc(t('tm.lead.lock'))}">🔒</span>` : `<button type="button" class="tm-del" onclick="teamRemove('${esc(r.id)}')" title="${esc(t('tm.remove'))}" aria-label="${esc(t('tm.remove') + ': ' + roleName(r.id))}"><span aria-hidden="true">✕</span></button>`}</div>`; };
   // Add role: every template not on, by role then level.
   const groups = [...new Set(all.map(r => r.group))].sort((a, b) => t('prof.role.' + a).localeCompare(t('prof.role.' + b)));
   const addRole = `<select id="tm-add-role" onchange="teamAddRole(this.value)" aria-label="${esc(t('tm.addrole'))}"><option value="">${esc(t('tm.addrole'))}</option>${groups.map(g => `<optgroup label="${esc(t('prof.role.' + g))}">${all.filter(r => r.group === g).sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level)).map(r => `<option value="${esc(r.id)}">${esc(roleName(r.id))}</option>`).join('')}</optgroup>`).join('')}</select>`;

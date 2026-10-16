@@ -21,9 +21,9 @@ const LifeAdmin = (() => {
   L.tick = id => call('POST', `/api/lifeadmin/${id}/tick`);
   L.snooze = (id, tomorrow) => call('POST', `/api/lifeadmin/${id}/snooze`, tomorrow ? { tomorrow: true } : { mins: 60 });
   L.del = id => call('DELETE', `/api/lifeadmin/${id}`);
-  const btns = (x, rep) => `<span class="la-btns"><button type="button" class="good" data-la="tick" onclick="LifeAdmin.tick('${x.id}')" title="${esc(t(x.done ? 'la.untick.title' : 'la.tick.title'))}">${esc(t(x.done ? 'la.untick' : 'la.tick'))}</button>`
-    + (x.done ? '' : (rep ? `<button type="button" data-la="snooze" onclick="LifeAdmin.snooze('${x.id}')" title="${esc(t('la.snooze.title'))}">${esc(t('la.snooze'))}</button>` : '') + `<button type="button" data-la="tomorrow" onclick="LifeAdmin.snooze('${x.id}',true)" title="${esc(t('la.tomorrow.title'))}">${esc(t('la.tomorrow'))}</button>`)
-    + `<button type="button" data-la="delete" onclick="LifeAdmin.del('${x.id}')" aria-label="${esc(t('la.delete'))}" title="${esc(t('la.delete'))}">🗑</button></span>`;
+  const btns = (x, rep) => `<span class="la-btns"><button type="button" class="good" data-la="tick" onclick="LifeAdmin.tick('${x.id}')" title="${esc(t(x.done ? 'la.untick.title' : 'la.tick.title'))}" aria-label="${esc(t(x.done ? 'la.untick.title' : 'la.tick.title'))}">${esc(t(x.done ? 'la.untick' : 'la.tick'))}</button>`
+    + (x.done ? '' : (rep ? `<button type="button" data-la="snooze" onclick="LifeAdmin.snooze('${x.id}')" title="${esc(t('la.snooze.title'))}" aria-label="${esc(t('la.snooze.title'))}">${esc(t('la.snooze'))}</button>` : '') + `<button type="button" data-la="tomorrow" onclick="LifeAdmin.snooze('${x.id}',true)" title="${esc(t('la.tomorrow.title'))}" aria-label="${esc(t('la.tomorrow.title'))}">${esc(t('la.tomorrow'))}</button>`)
+    + `<button type="button" data-la="delete" onclick="LifeAdmin.del('${x.id}')" aria-label="${esc(t('la.delete'))}" title="${esc(t('la.delete'))}"><span aria-hidden="true">🗑</span></button></span>`;
   const remRow = r => `<li class="la-row ${r.done ? 'done' : ''} ${r.overdue ? 'overdue' : ''} ${r.asleep ? 'asleep' : ''}" data-id="${r.id}"><span class="la-text"><b>${esc(r.text)}</b>
       <span class="muted">${esc(t('la.due', { when: fmt(r.due) }))}${r.repeat ? ' · 🔁 ' + esc(t('la.rep.' + r.repeat)) : ''}${r.overdue ? ' · <span class="la-over">' + esc(t('la.overdue')) + '</span>' : ''}${r.asleep ? ' · ' + esc(t('la.asleep', { when: fmt(r.snoozedUntil) })) : ''}</span></span>${btns(r, true)}</li>`;
   const itemRow = i => `<li class="la-row ${i.done ? 'done' : ''} ${i.asleep ? 'asleep' : ''}" data-id="${i.id}"><span class="la-text">${esc(i.text)}${i.asleep ? ` <span class="muted">${esc(t('la.asleep', { when: fmt(i.snoozedUntil) }))}</span>` : ''}</span>${btns(i, false)}</li>`;
@@ -31,7 +31,7 @@ const LifeAdmin = (() => {
     const d = L.data;
     if (!d) return `<div class="uz la"><h2>${esc(t('la.title'))}</h2><p class="muted">${esc(t('la.loading'))}</p></div>`;
     const rems = d.reminders.slice().sort((a, b) => (a.done - b.done) || (a.due < b.due ? -1 : 1));
-    const lists = d.lists.map(l => `<div class="uz-card la-list" data-id="${l.id}"><div class="la-lh"><b>${esc(l.name)}</b><span class="grow"></span><button type="button" data-la="delete" onclick="LifeAdmin.del('${l.id}')" title="${esc(t('la.list.delete'))}" aria-label="${esc(t('la.list.delete'))}">🗑</button></div>
+    const lists = d.lists.map(l => `<div class="uz-card la-list" data-id="${l.id}"><div class="la-lh"><b>${esc(l.name)}</b><span class="grow"></span><button type="button" data-la="delete" onclick="LifeAdmin.del('${l.id}')" title="${esc(t('la.list.delete'))}" aria-label="${esc(t('la.list.delete'))}"><span aria-hidden="true">🗑</span></button></div>
       <ul class="la-ul">${l.items.map(itemRow).join('') || `<li class="muted">${esc(t('la.item.none'))}</li>`}</ul>
       <form class="la-add" onsubmit="LifeAdmin.addItem('${l.id}');return false"><input id="laItem-${l.id}" maxlength="200" placeholder="${esc(t('la.item.text'))}" aria-label="${esc(t('la.item.text'))}"><button type="submit">${esc(t('la.item.add'))}</button></form></div>`).join('');
     return `<div class="uz la"><div class="toolbar"><h2>${esc(t('la.title'))}</h2></div><p class="muted">${esc(t('la.intro'))}</p>

@@ -139,11 +139,11 @@ const TwitchTab = (() => {
     return [`<button class="dm-row" data-dm="${esc(keyOf())}"><span class="dm-av">🟣</span><span class="dm-rowtext"><b>#${esc(cfg.channel)}</b><span class="muted">${esc(t('tw.row'))}</span></span></button>`];
   }
   const msgHtml = m => `<div class="dm-msg tw-msg"><div class="dm-meta"><b class="tw-name" ${m.color ? `style="color:${esc(m.color)}"` : ''}>${esc(m.name)}</b> ${ago(m.at)}</div><div class="dm-bubble">${esc(m.text)}</div></div>`;
-  const headName = () => `<b id="twHeadName">#${esc(cfg.channel)}</b> <button type="button" id="twSwitch" onclick="TwitchTab.toggleHead()" title="${esc(t('tw.chan.pick'))}" aria-label="${esc(t('tw.chan.pick'))}">⇄</button>`;
+  const headName = () => `<b id="twHeadName">#${esc(cfg.channel)}</b> <button type="button" id="twSwitch" onclick="TwitchTab.toggleHead()" title="${esc(t('tw.chan.pick'))}" aria-label="${esc(t('tw.chan.pick'))}"><span aria-hidden="true">⇄</span></button>`;
   function show(key) {
     cur = key; msgs = []; last = 0; sig = '';
     const panel = $('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button><span class="dm-av">🟣</span><div style="min-width:0">${headName()}<div class="muted">${esc(t(cfg.canReply ? 'tw.row' : 'tw.readonly'))}</div></div><span style="flex:1"></span><button id="twPopBtn" onclick="TwitchTab.popOut()" title="${esc(t('tw.pop.title'))}">⧉</button><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}" aria-label="${esc(t('dms.all'))}"><span aria-hidden="true">‹</span></button><span class="dm-av">🟣</span><div style="min-width:0">${headName()}<div class="muted">${esc(t(cfg.canReply ? 'tw.row' : 'tw.readonly'))}</div></div><span style="flex:1"></span><button id="twPopBtn" onclick="TwitchTab.popOut()" title="${esc(t('tw.pop.title'))}" aria-label="${esc(t('tw.pop.title'))}"><span aria-hidden="true">⧉</span></button><button onclick="Dms.close()" title="${esc(t('common.close'))}" aria-label="${esc(t('common.close'))}"><span aria-hidden="true">✕</span></button></div>
       <div id="twHPanel" hidden></div><div class="dm-list" id="dmList"></div><div id="twCompose"></div>`;
     panel.hidden = false; paintCompose(); load(true);
   }

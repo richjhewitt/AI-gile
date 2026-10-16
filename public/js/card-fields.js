@@ -79,7 +79,7 @@ function onAssignee(sel) {
 // ⭐ Crucial (AIG-549): kept running while the usage saver is on.
 // 🔥 One click to mark a card urgent (AIG-899); click again to put the old priority back.
 const urgentBtn = (c, s, labelled) => { if (c.leadChat || c.id === 'chat' || !/-\d+$/.test(c.id || '')) return '';   // only real cards
-  const on = c.priority === 'urgent'; return `<button type="button" class="urg-btn${labelled ? " urg-lab" : ""}${on ? ' on' : ''}" data-urgent="${esc(s || (state.project && state.project.slug))}/${esc(c.id)}" aria-pressed="${on}" title="${esc(t(on ? 'urgent.unmark' : 'urgent.mark'))}">🔥${labelled ? " " + esc(t(on ? 'urgent.unmark' : 'urgent.mark')) : ""}</button>`; };
+  const on = c.priority === 'urgent'; return `<button type="button" class="urg-btn${labelled ? " urg-lab" : ""}${on ? ' on' : ''}" data-urgent="${esc(s || (state.project && state.project.slug))}/${esc(c.id)}" aria-pressed="${on}" title="${esc(t(on ? 'urgent.unmark' : 'urgent.mark'))}" aria-label="${esc(t(on ? 'urgent.unmark' : 'urgent.mark'))}"><span aria-hidden="true">🔥</span>${labelled ? " " + esc(t(on ? 'urgent.unmark' : 'urgent.mark')) : ""}</button>`; };
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-urgent]'); if (!b) return;
   e.preventDefault(); e.stopPropagation();
@@ -90,7 +90,7 @@ document.addEventListener('click', async e => {
     await api('PATCH', `/api/projects/${s}/cards/${id}`, body); refresh(true); if (typeof Inbox !== 'undefined' && Inbox.reload) Inbox.reload();
   } catch (err) { alert(err.message); }
 }, true);
-const crucialBtn = c => `<button class="crucial-btn${c.crucial ? ' on' : ''}" aria-pressed="${c.crucial ? 'true' : 'false'}" title="${esc(t('saver.crucial.title'))}" onclick="toggleCrucial()">${esc(t('saver.crucial'))}</button>`;
+const crucialBtn = c => `<button class="crucial-btn${c.crucial ? ' on' : ''}" aria-pressed="${c.crucial ? 'true' : 'false'}" title="${esc(t('saver.crucial.title'))}" aria-label="${esc(t('saver.crucial.title'))}" onclick="toggleCrucial()">${esc(t('saver.crucial'))}</button>`;
 async function toggleCrucial() {
   const c = curCard(); if (!c) return;
   try { await api('PATCH', `/api/projects/${slug()}/cards/${c.id}`, { crucial: !c.crucial }); refresh(true); } catch (e) { alert(e.message); }

@@ -7,7 +7,7 @@ function checklistUi(p, c) {
   const show = isOwnerTask(c) && !chkAll.has(c.id) ? CHK_SHOW[leadPrefs().steps] : 0, open = list.map((x, i) => x.done ? -1 : i).filter(i => i >= 0);
   const hidden = show && open.length > show ? new Set(open.slice(show)) : new Set();
   const items = list.map((x, i) => hidden.has(i) ? '' : `<li class="${x.done ? 'on' : ''}"><label><input type="checkbox" data-chk-i="${i}" ${x.done ? 'checked' : ''} onchange="checkTick(${i}, this.checked)"> <span>${esc(x.text)}</span></label>`
-    + `<span class="chk-acts"><button type="button" class="chk-b" title="${esc(t('check.up'))}" ${i ? '' : 'disabled'} onclick="checkMove(${i}, -1)">↑</button><button type="button" class="chk-b" title="${esc(t('check.down'))}" ${i < list.length - 1 ? '' : 'disabled'} onclick="checkMove(${i}, 1)">↓</button><button type="button" class="chk-b" title="${esc(t('check.remove'))}" onclick="checkRemove(${i})">✕</button></span></li>`).join('');
+    + `<span class="chk-acts"><button type="button" class="chk-b" title="${esc(t('check.up'))}" aria-label="${esc(t('check.up'))}" ${i ? '' : 'disabled'} onclick="checkMove(${i}, -1)"><span aria-hidden="true">↑</span></button><button type="button" class="chk-b" title="${esc(t('check.down'))}" aria-label="${esc(t('check.down'))}" ${i < list.length - 1 ? '' : 'disabled'} onclick="checkMove(${i}, 1)"><span aria-hidden="true">↓</span></button><button type="button" class="chk-b" title="${esc(t('check.remove'))}" aria-label="${esc(t('check.remove'))}" onclick="checkRemove(${i})"><span aria-hidden="true">✕</span></button></span></li>`).join('');
   return `<div class="chk" id="chk-box"><div class="chk-h"><b>☑ ${esc(t('check.h'))}</b>${list.length ? ` <span class="pill chk${left ? '' : ' all'}">${list.length - left}/${list.length}</span>` : ''}</div>
     ${list.length ? `<ul class="chk-list">${items}</ul>` : ''}${hidden.size ? `<div class="chk-more muted" id="chk-more">${esc(t('check.more', { n: hidden.size }))} <button type="button" class="link" onclick="chkAll.add(cardId()); refresh(true)">${esc(t('check.more.all'))}</button></div>` : ''}
     <div class="chk-add"><input id="chk-new" placeholder="${esc(t('check.add.ph'))}" onkeydown="if(event.key==='Enter'){event.preventDefault();checkAdd()}"> <button type="button" id="chk-add-btn" onclick="checkAdd()">${esc(t('check.add'))}</button></div></div>`;
@@ -37,7 +37,7 @@ function waitsUi(p, c) {
   if (c.status === 'done' && !ids.length) return '';
   const pick = `<select id="wf-add" aria-label="${esc(t('wait.pick'))}" onfocus="waitFill(this)" onmousedown="waitFill(this)" onchange="waitAdd(this.value)"><option value="">${esc(t('wait.pick'))}</option></select>`;   // options filled when opened, so a new card elsewhere does not rebuild the panel
   return `<div class="wf" id="wf-box">${ids.length ? `<b>⏳ ${esc(t('wait.h'))}</b> ` : ''}${ids.map(id => { const b = p.cards.find(x => x.id === id), fin = !b || b.status === 'done';
-    return `<span class="pill waits ${fin ? 'fin' : ''}" title="${esc(b ? b.title : id)}">${fin ? '✓ ' : ''}<a href="#/p/${esc(p.slug)}/${esc(id)}">${esc(id)}</a> <button type="button" class="chk-b" title="${esc(t('wait.remove'))}" onclick="waitDrop('${esc(id)}')">✕</button></span>`; }).join(' ')} ${pick}</div>`;
+    return `<span class="pill waits ${fin ? 'fin' : ''}" title="${esc(b ? b.title : id)}">${fin ? '✓ ' : ''}<a href="#/p/${esc(p.slug)}/${esc(id)}">${esc(id)}</a> <button type="button" class="chk-b" title="${esc(t('wait.remove'))}" aria-label="${esc(t('wait.remove'))}" onclick="waitDrop('${esc(id)}')"><span aria-hidden="true">✕</span></button></span>`; }).join(' ')} ${pick}</div>`;
 }
 function waitFill(sel) {
   if (sel.options.length > 1) return;
@@ -52,7 +52,7 @@ function waitDrop(id) { waitSave((curCard().waitsFor || []).filter(x => x !== id
 function timerUi(c) {
   if (c.status === 'done') return '';
   const label = timed(c) ? '⏰ ' + timedWhen(c.timedUntil) : t('timed.btn');
-  return `<button id="tm-btn" onclick="timerToggle()" title="${esc(t('timed.title'))}">${esc(label)}</button>
+  return `<button id="tm-btn" onclick="timerToggle()" title="${esc(t('timed.title'))}" aria-label="${esc(t('timed.title'))}">${esc(label)}</button>
     <span id="tm-box" hidden><select id="tm-pre" onchange="timerPre()"><option value="">${esc(t('timed.pick'))}</option><option value="1h">${esc(t('timed.p.1h'))}</option><option value="3h">${esc(t('timed.p.3h'))}</option><option value="tom">${esc(t('timed.p.tom'))}</option><option value="mon">${esc(t('timed.p.mon'))}</option></select>
     <input type="datetime-local" id="tm-at" aria-label="${esc(t('timed.at'))}"> <button class="primary" onclick="timerSet()">${esc(t('timed.set'))}</button>${timed(c) ? ` <button onclick="timerClear()">${esc(t('timed.clear'))}</button>` : ''}</span>`;
 }

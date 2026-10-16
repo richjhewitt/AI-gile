@@ -21,7 +21,7 @@ const OpenCard = (() => {
     if (!chips.length) { if (el) el.remove(); shown = ''; return; }
     const key = JSON.stringify([chips, i18n.lang]); if (key === shown) return; shown = key;
     if (!el) { el = document.createElement('div'); el.id = 'ocChips'; el.className = 'oc-chips'; document.body.appendChild(el); }
-    el.innerHTML = chips.map(e => `<div class="oc-chip" data-n="${e.n}"><button type="button" class="oc-go" data-go="${e.n}" title="${esc(t('oc.open'))}">${esc(t('oc.chip', { who: e.by || t('oc.someone'), id: e.id }))} <span class="muted">${esc(e.title)}</span></button><button type="button" class="oc-x" data-x="${e.n}" title="${esc(t('oc.dismiss'))}">✕</button></div>`).join('');
+    el.innerHTML = chips.map(e => `<div class="oc-chip" data-n="${e.n}"><button type="button" class="oc-go" data-go="${e.n}" title="${esc(t('oc.open'))}" aria-label="${esc(t('oc.open'))}">${esc(t('oc.chip', { who: e.by || t('oc.someone'), id: e.id }))} <span class="muted">${esc(e.title)}</span></button><button type="button" class="oc-x" data-x="${e.n}" title="${esc(t('oc.dismiss'))}" aria-label="${esc(t('oc.dismiss'))}"><span aria-hidden="true">✕</span></button></div>`).join('');
   }
   async function tick() {
     if (document.hidden || busyNow || /^#\/pop/.test(location.hash)) return;

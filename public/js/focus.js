@@ -60,7 +60,7 @@ const Focus = (() => {
       <p>🚨 ${esc(t('fx.sum.l2', { n: s.showstoppers }))}</p>
       <div class="actions"><button class="primary" onclick="closeDialog()">${esc(t('common.close'))}</button></div>`);
   }
-  const btn = (p, c) => c.focus && c.status !== 'done' ? `<button class="primary" onclick="Focus.start('${p.slug}', '${c.id}')" title="${esc(t('fx.start.title'))}">${esc(t('fx.start'))}</button>` : '';
+  const btn = (p, c) => c.focus && c.status !== 'done' ? `<button class="primary" onclick="Focus.start('${p.slug}', '${c.id}')" title="${esc(t('fx.start.title'))}" aria-label="${esc(t('fx.start.title'))}">${esc(t('fx.start'))}</button>` : '';
   // The meta poll: focus began or ended somewhere else (another window or the desktop app).
   function watch(f) { const on = !!(f && f.project); if (was && !on) ended(); else apply(f); was = on; }
   return { apply, watch, act, done, start, btn };

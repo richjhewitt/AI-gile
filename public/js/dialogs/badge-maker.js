@@ -12,7 +12,7 @@ async function badgeDialog(name, back) {
   const who = team.find(m => m.name === name) || team[0];
   const cur = (who.avatar || '').match(BADGE_RE);
   badgeSel = { name: who.name, a: cur ? cur[1] : P.animals[0], c: cur ? cur[2] : P.colours[0].name, x: cur ? cur[3] : 'none' };
-  const opt = (k, v, inner, title) => `<button type="button" class="bm-opt" data-k="${k}" data-v="${esc(v)}" title="${esc(title)}" onclick="badgePick('${k}','${esc(v)}')">${inner}</button>`;
+  const opt = (k, v, inner, title) => `<button type="button" class="bm-opt" data-k="${k}" data-v="${esc(v)}" title="${esc(title)}" aria-label="${esc(title)}" onclick="badgePick('${k}','${esc(v)}')">${inner}</button>`;
   openDialog(`<div class="bm-dlg"><h2>${esc(t('badge.title'))}</h2><p class="muted">${esc(t('badge.intro'))}</p>
     <div class="bm-top"><img id="bm-prev" class="bm-prev" alt=""><label>${esc(t('badge.for'))} <select id="bm-who" onchange="badgeWho(this.value)">${team.map(m => `<option ${m.name === who.name ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label></div>
     <h3>${esc(t('badge.animal'))}</h3><div class="bm-row">${P.animals.map(a => opt('a', a, `<img src="${badgeUrl(a, 'grey', 'none')}" alt="">`, a)).join('')}</div>

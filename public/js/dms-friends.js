@@ -69,7 +69,7 @@ function joinHtml() {
   return `<div class="dmf-sec" id="joinSec"><b>${esc(t('join.h2'))}</b><small class="muted">${esc(t('join.for'))} ${esc(t('join.help'))}</small>
       <select id="joinHelp">${['1', '2', '3'].map(n => `<option value="${n}" ${keep.h === n ? 'selected' : ''}>${esc(['', '🐣', '🙂', '😎'][n] + ' ' + t('join.level.' + n))}</option>`).join('')}</select>
       <input type="text" id="joinName" value="${esc(keep.n)}" placeholder="${esc(t('dmf.invite.name'))}" autocomplete="off">
-      <div class="actions"><button type="button" id="joinMake">${esc(t('join.btn'))}</button> <button type="button" id="joinSite" title="${esc(t('join.site.help'))}">${esc(t('join.site.btn'))}</button></div>
+      <div class="actions"><button type="button" id="joinMake">${esc(t('join.btn'))}</button> <button type="button" id="joinSite" title="${esc(t('join.site.help'))}" aria-label="${esc(t('join.site.help'))}">${esc(t('join.site.btn'))}</button></div>
       ${JN.link ? `<input type="text" id="joinLink" readonly value="${esc(JN.link)}" onclick="this.select()"><small class="muted">${esc(t('join.send'))}</small>
       <div class="actions"><button type="button" id="joinCopy">${esc(t('dmf.copy'))}</button></div>` : ''}
       <div class="err" id="join-err">${esc(JN.err)}</div><div class="muted" id="join-msg">${esc(JN.msg)}</div>

@@ -112,7 +112,7 @@ function quietTimesHtml(pr) {
     <select id="qt-day-${i}" aria-label="${esc(t('quiettime.day'))}" onchange="quietTimeSave()">${QT_DAYS.map(d => `<option value="${d}" ${q.day === d ? 'selected' : ''}>${esc(t('quiettime.day.' + d))}</option>`).join('')}</select>
     <input type="time" id="qt-from-${i}" aria-label="${esc(t('quiettime.from'))}" value="${esc(q.from)}" onchange="quietTimeSave()">–<input type="time" id="qt-to-${i}" aria-label="${esc(t('quiettime.to'))}" value="${esc(q.to)}" onchange="quietTimeSave()">
     <input id="qt-label-${i}" maxlength="40" placeholder="${esc(t('quiettime.label.ph'))}" aria-label="${esc(t('quiettime.label'))}" value="${esc(q.label || '')}" onchange="quietTimeSave()">
-    <button type="button" class="qt-del" title="${esc(t('quiettime.del'))}" aria-label="${esc(t('quiettime.del'))}" onclick="quietTimeSave(${i})">✕</button></div>`;
+    <button type="button" class="qt-del" title="${esc(t('quiettime.del'))}" aria-label="${esc(t('quiettime.del'))}" onclick="quietTimeSave(${i})"><span aria-hidden="true">✕</span></button></div>`;
   return `<div class="f qt" id="quietTimes"><span>${esc(t('quiettime.h'))}</span>${(pr.quiet || []).map(row).join('')}
     <div><button type="button" id="qtAdd" onclick="quietTimeSave(-1)">${esc(t('quiettime.add'))}</button></div><small class="muted">${esc(t('quiettime.help'))}</small></div>`;
 }

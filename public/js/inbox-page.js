@@ -18,7 +18,7 @@
     const aiList = shown.filter(c => isTest(c) && c.aiCheck && c.aiCheck.result === 'pass');
     if (IB.flick >= aiList.length) IB.flick = aiList.length - 1;
     const bar = aiList.length ? `<button class="ib-tab ${IB.flick >= 0 ? 'on' : ''}" data-flick="1">${esc(t('inbox.ai.tab', { n: aiList.length }))}</button>`
-      + (own && IB.flick < 0 ? ` <button class="good ib-aiall" data-aiall="1" title="${esc(t('inbox.aiall.title'))}">${esc(t('inbox.aiall', { n: aiList.length }))}</button>` : '') : '';
+      + (own && IB.flick < 0 ? ` <button class="good ib-aiall" data-aiall="1" title="${esc(t('inbox.aiall.title'))}" aria-label="${esc(t('inbox.aiall.title'))}">${esc(t('inbox.aiall', { n: aiList.length }))}</button>` : '') : '';
     if (el('ibAiBar').dataset.sig !== bar) { el('ibAiBar').dataset.sig = bar; el('ibAiBar').innerHTML = bar; }
     // ⚡ Decide (AIG-361): the open answer-button questions and Topics, one at a time.
     const dcList = decideList(shown);

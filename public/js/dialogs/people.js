@@ -10,7 +10,7 @@ function peopleHtml() {
     const f = friends.find(x => x.id === m.friend);
     return `<div class="tm-person" data-person="${esc(m.name)}"><span class="tm-name">${mateName(m)} <span class="muted">${esc(m.role || '')}${f ? ' · ' + esc(f.name) : ''}</span></span>
       <label class="chk"><input type="checkbox" class="tm-pnoai" ${m.noAi ? 'checked' : ''} onchange="personSave('${pplArg(m.name)}', { noAi: this.checked })"> ${esc(t('ppl.noai'))}</label>
-      <button type="button" class="tm-del" onclick="personRemove('${pplArg(m.name)}')" title="${esc(t('tm.remove'))}" aria-label="${esc(t('tm.remove') + ': ' + m.name)}">✕</button></div>`;
+      <button type="button" class="tm-del" onclick="personRemove('${pplArg(m.name)}')" title="${esc(t('tm.remove'))}" aria-label="${esc(t('tm.remove') + ': ' + m.name)}"><span aria-hidden="true">✕</span></button></div>`;
   };
   return `<h3>${esc(t('ppl.h'))}</h3><small class="muted">${esc(t('ppl.help'))}</small>
     <div class="tm-rows" id="pplRows">${peopleOf().map(row).join('') || `<p class="muted">${esc(t('ppl.none'))}</p>`}</div>

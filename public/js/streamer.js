@@ -130,7 +130,7 @@ const Streamer = (() => {
   function toast(msg, offBtn) {
     if (note) note.remove();
     note = document.createElement('div'); note.id = 'streamNote'; note.setAttribute('role', 'status'); note.dataset.nomask = '1';
-    note.innerHTML = `<span>${esc(msg)}</span>${offBtn ? ` <button type="button" onclick="Streamer.dismiss(true)">${esc(t('streamer.note.off'))}</button>` : ''}<button type="button" aria-label="${esc(t('common.close'))}" onclick="Streamer.dismiss()">✕</button>`;
+    note.innerHTML = `<span>${esc(msg)}</span>${offBtn ? ` <button type="button" onclick="Streamer.dismiss(true)">${esc(t('streamer.note.off'))}</button>` : ''}<button type="button" aria-label="${esc(t('common.close'))}" onclick="Streamer.dismiss()"><span aria-hidden="true">✕</span></button>`;
     document.body.appendChild(note); setTimeout(() => { if (note) { note.remove(); note = null; } }, 9000);
   }
   function dismiss(turnOff) { if (note) { note.remove(); note = null; } if (turnOff) { const was = on(); auto = false; manual = false; st.suppressed = st.program; try { localStorage.setItem(KEY, '0'); } catch {} apply(was); } }
@@ -157,7 +157,7 @@ const Streamer = (() => {
       </fieldset>
       <fieldset class="stream-hide" id="streamHide"><legend>${esc(t('streamer.hide.h'))}</legend>
         ${['private', 'personal', 'dms', 'friends', 'life', 'secrets'].map(k => `<label class="chk"><input type="checkbox" data-hide="${k}" ${hides(k) ? 'checked' : ''} ${k === 'personal' ? 'disabled' : ''} onchange="Streamer.setHide('${k}', this.checked)"> ${esc(t('streamer.hide.' + k))}${k === 'personal' ? ` <span class="muted">${esc(t('streamer.hide.locked'))}</span>` : ''}</label>`).join('')}
-      </fieldset>${forced ? '' : `<div><button type="button" id="streamWin" onclick="Streamer.openWindow()" title="${esc(t('streamer.win.title'))}">🎥 ${esc(t('streamer.win'))}</button></div>`}${st.running ? `<small class="muted">${esc(t('streamer.setup.running', { program: st.program || 'OBS' }))}</small>` : ''}`;
+      </fieldset>${forced ? '' : `<div><button type="button" id="streamWin" onclick="Streamer.openWindow()" title="${esc(t('streamer.win.title'))}" aria-label="${esc(t('streamer.win.title'))}">🎥 ${esc(t('streamer.win'))}</button></div>`}${st.running ? `<small class="muted">${esc(t('streamer.setup.running', { program: st.program || 'OBS' }))}</small>` : ''}`;
   }
   /* ---- OBS link (AIG-643..645) ---- */
   const obsText = () => { const o = st.obs || {}; return o.state === 'connected' ? t('streamer.obs.connected') : o.state === 'connecting' ? t('streamer.obs.connecting') : o.state === 'error' ? t('streamer.obs.' + (o.reason || 'notrunning')) : o.saved ? t('streamer.obs.off') : ''; };

@@ -4,7 +4,7 @@ const Dmme = (() => {
   const leadName = p => { const m = (p.team || []).filter(x => !/retired/i.test(x.status || '') && x.kind !== 'person'); const l = m.find(x => /lead/i.test(x.name + ' ' + (x.role || ''))) || m[0]; return l ? l.name : 'Lead'; };
 
   function btn() {
-    return `<button id="dmmeBtn" class="ai-only" onclick="Dmme.pick()" title="${esc(t('dmme.btn.title'))}">${esc(t('dmme.btn'))}</button>`;
+    return `<button id="dmmeBtn" class="ai-only" onclick="Dmme.pick()" title="${esc(t('dmme.btn.title'))}" aria-label="${esc(t('dmme.btn.title'))}">${esc(t('dmme.btn'))}</button>`;
   }
 
   function pick() {

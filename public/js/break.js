@@ -55,7 +55,7 @@ const Break = (() => {
     if (!backB) { e.hidden = true; e.innerHTML = ''; return; }
     const n = taken();
     e.hidden = false;
-    e.innerHTML = `<span id="brkAway">${esc(backB.line)}</span>${backB.kind === 'vape' ? ` <button type="button" class="brk-took" onclick="Break.took()">${esc(t('break.taken'))}${n ? ' · ' + n : ''}</button>` : ''} <button type="button" onclick="Break.dismiss()" aria-label="${esc(t('break.dismiss'))}">✕</button>`;
+    e.innerHTML = `<span id="brkAway">${esc(backB.line)}</span>${backB.kind === 'vape' ? ` <button type="button" class="brk-took" onclick="Break.took()">${esc(t('break.taken'))}${n ? ' · ' + n : ''}</button>` : ''} <button type="button" onclick="Break.dismiss()" aria-label="${esc(t('break.dismiss'))}"><span aria-hidden="true">✕</span></button>`;
   }
   function dismiss() { backB = null; paintBack(); }
   function menu() {
@@ -63,8 +63,8 @@ const Break = (() => {
       <div class="brk-pick"><button class="primary" onclick="Break.start('vape')">${esc(t('break.vape'))}</button><button class="primary" onclick="Break.start('shower')">${esc(t('break.shower'))}</button></div>
       <div class="actions"><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
   }
-  const showerBtn = () => `<button onclick="Break.start('shower')" title="${esc(t('break.shower.btn.title'))}">${esc(t('break.shower.btn'))}</button>`;
-  const btn = () => `<button onclick="Break.menu()" title="${esc(t('break.btn.title'))}">${esc(t('break.btn'))}</button>`;
+  const showerBtn = () => `<button onclick="Break.start('shower')" title="${esc(t('break.shower.btn.title'))}" aria-label="${esc(t('break.shower.btn.title'))}">${esc(t('break.shower.btn'))}</button>`;
+  const btn = () => `<button onclick="Break.menu()" title="${esc(t('break.btn.title'))}" aria-label="${esc(t('break.btn.title'))}">${esc(t('break.btn'))}</button>`;
   function box(id) {
     let e = document.getElementById(id);
     if (!e) { e = document.createElement('div'); e.id = id; e.hidden = true; document.body.appendChild(e); }

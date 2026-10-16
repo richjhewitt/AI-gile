@@ -31,7 +31,7 @@ const DiscordTab = (() => {
     cur = key; msgs = [];
     const c = chats.find(x => keyOf(x) === key) || { name: split(key)[1], kind: 'dm', bot: split(key)[0] };
     const panel = document.getElementById('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button><span class="dm-av">${c.kind === 'dm' ? '💬' : '#'}</span><div><b>${esc(c.name)}</b><div class="muted">${esc(t('dc.via', { bot: c.bot }))}</div></div><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}" aria-label="${esc(t('dms.all'))}"><span aria-hidden="true">‹</span></button><span class="dm-av">${c.kind === 'dm' ? '💬' : '#'}</span><div><b>${esc(c.name)}</b><div class="muted">${esc(t('dc.via', { bot: c.bot }))}</div></div><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}" aria-label="${esc(t('common.close'))}"><span aria-hidden="true">✕</span></button></div>
       <div class="dm-list" id="dmList"></div>
       <div class="dm-compose"><textarea id="dmText" rows="2" placeholder="${esc(t('dc.placeholder'))}" onkeydown="if(EnterSend.is(event,'dm')){event.preventDefault();DiscordTab.send()}"></textarea>
         <div class="err" id="dmErr"></div><div class="actions"><button class="primary" id="dcSend" onclick="DiscordTab.send()">${esc(t('dms.send'))}</button></div></div>`;

@@ -29,7 +29,7 @@ const Term = (() => {
   const can = c => c && c.server && (state.terms || []).length;
   // On the card's panel: the code blocks of a server task get ▶ buttons (decorated below).
   const panelAttr = (p, c) => can(c) ? `data-term="${esc(p.slug)}/${esc(c.id)}" data-term-name="${esc(nameFor(c))}"` : '';
-  const btn = (c, cls = 'q-chip srv-open') => can(c) ? `<button class="${cls}" data-term-open="${esc(c.project || slug())}/${esc(c.id)}" data-term-name="${esc(nameFor(c))}" title="${esc(t('term.open.title'))}">${esc(t('term.open'))}</button>` : '';
+  const btn = (c, cls = 'q-chip srv-open') => can(c) ? `<button class="${cls}" data-term-open="${esc(c.project || slug())}/${esc(c.id)}" data-term-name="${esc(nameFor(c))}" title="${esc(t('term.open.title'))}" aria-label="${esc(t('term.open.title'))}">${esc(t('term.open'))}</button>` : '';
 
   /* ---------- the dock ---------- */
   function dock(pop) {
@@ -39,8 +39,8 @@ const Term = (() => {
       d.innerHTML = `<div class="term-head"><b class="term-title"></b><span class="term-state muted"></span><span class="term-run"></span><span style="flex:1"></span>
         <button type="button" class="term-stop" hidden onclick="Term.stop()">${esc(t('term.stop'))}</button>
         <button type="button" class="term-again" hidden onclick="Term.reconnect()">${esc(t('term.reconnect'))}</button>
-        ${pop ? '' : `<button type="button" class="term-pop" onclick="Term.popOut()" title="${esc(t('term.pop.title'))}">⧉</button>`}
-        <button type="button" class="term-x" onclick="Term.close()" title="${esc(t('term.close.title'))}">✕</button></div><div class="term-body"></div>`;
+        ${pop ? '' : `<button type="button" class="term-pop" onclick="Term.popOut()" title="${esc(t('term.pop.title'))}" aria-label="${esc(t('term.pop.title'))}"><span aria-hidden="true">⧉</span></button>`}
+        <button type="button" class="term-x" onclick="Term.close()" title="${esc(t('term.close.title'))}" aria-label="${esc(t('term.close.title'))}"><span aria-hidden="true">✕</span></button></div><div class="term-body"></div>`;
       document.body.appendChild(d);
     }
     document.body.classList.add('term-open');
@@ -174,8 +174,8 @@ const Term = (() => {
     code.innerHTML = lines.map((l, i) => `<span class="cl${cmds.some(g => g.includes(i)) ? ' cmd' : ''}" data-i="${i}">${esc(l)}</span>`).join('\n');
     const acts = box.querySelector('.codebox-acts'); if (!acts) return;
     if (!Roles.canRun(panel.dataset.termName)) return;   // no access to this server: no ▶ buttons (AIG-677)
-    acts.insertAdjacentHTML('afterbegin', cmds.length === 1 ? `<button class="copy run" data-run="this" title="${esc(t('term.run.this.title'))}">${esc(t('term.run.this'))}</button>`
-      : `<button class="copy run" data-run="next" title="${esc(t('term.run.next.title'))}">${esc(t('term.run.next'))}</button><button class="copy run" data-run="all" title="${esc(t('term.run.all.title'))}">${esc(t('term.run.all'))}</button>`);
+    acts.insertAdjacentHTML('afterbegin', cmds.length === 1 ? `<button class="copy run" data-run="this" title="${esc(t('term.run.this.title'))}" aria-label="${esc(t('term.run.this.title'))}">${esc(t('term.run.this'))}</button>`
+      : `<button class="copy run" data-run="next" title="${esc(t('term.run.next.title'))}" aria-label="${esc(t('term.run.next.title'))}">${esc(t('term.run.next'))}</button><button class="copy run" data-run="all" title="${esc(t('term.run.all.title'))}" aria-label="${esc(t('term.run.all.title'))}">${esc(t('term.run.all'))}</button>`);
     box.classList.add('runs');
     mark(box);
   }

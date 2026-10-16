@@ -86,7 +86,7 @@ const Dms = (() => {
     const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + groups.concat(meets).reduce((n, g) => n + grpUnread(g), 0) + people.reduce((n, c) => n + c.unread, 0) + DiscordTab.unread();
     // AIG-1274: the desktop app's taskbar count = For you (the inbox) + unread messages; nothing while going quiet or focusing (like the tab title)
     if (window.aigileDesktop && aigileDesktop.setBadge) { const H = document.documentElement; aigileDesktop.setBadge(H.hasAttribute('data-night') || H.hasAttribute('data-focus') || typeof IB === 'undefined' ? 0 : (IB.items || []).length + IB.friends() + dmUnread); }
-    const btn = (attrs, inner, on, title) => `<button class="dm-railbtn ${on ? 'on' : ''}" ${attrs} title="${esc(title)}">${inner}</button>`;
+    const btn = (attrs, inner, on, title) => `<button class="dm-railbtn ${on ? 'on' : ''}" ${attrs} title="${esc(title)}" aria-label="${esc(title)}">${inner}</button>`;
     const html = btn('data-go="#/"', '<span class="dm-av">🏠</span>', location.hash === '#/' || location.hash === '', t('dms.home'))
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
       + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, t('dms.rail.label'))
@@ -125,7 +125,7 @@ const Dms = (() => {
       const kids = T.of(x.slug);
       if (!kids.length || d >= Spaces.MAX) return one(x, x.needsYou);
       const open = Spaces.isOpen(x.slug);
-      return `<div class="dm-space ${open ? 'open' : ''}" style="--proj:${esc(x.color || '')}">${one(x, open ? x.needsYou : needs(x))}<button class="dm-spacefold" data-spacefold="${esc(x.slug)}" aria-expanded="${open}" title="${esc(t(open ? 'space.fold.close' : 'space.fold.open'))}">${open ? '▾' : '▸'}</button>${open ? kids.map(k => item(k, d + 1)).join('') : ''}</div>`;
+      return `<div class="dm-space ${open ? 'open' : ''}" style="--proj:${esc(x.color || '')}">${one(x, open ? x.needsYou : needs(x))}<button class="dm-spacefold" data-spacefold="${esc(x.slug)}" aria-expanded="${open}" title="${esc(t(open ? 'space.fold.close' : 'space.fold.open'))}" aria-label="${esc(t(open ? 'space.fold.close' : 'space.fold.open'))}">${open ? '▾' : '▸'}</button>${open ? kids.map(k => item(k, d + 1)).join('') : ''}</div>`;
     };
     return T.roots.map(x => item(x, 1)).join('');
   }
@@ -137,7 +137,7 @@ const Dms = (() => {
       if (key.startsWith('dm/')) { const k = key.slice(3), c = chats.find(x => x.slug === k), p = people.find(x => 'dm:' + x.id === k); return k === '_allhands' ? t('allhands.name') : k === '_assistant' ? (paName || t('pa.name')) : c ? chatName(c) : p ? p.name : k; }
       const [s, id] = key.split('/'); return s + ' · ' + id;
     };
-    return `<div class="dm-drafts">${list.map(d => `<div class="dm-rowwrap"><button class="dm-row" data-dmdraft="${esc(d.key)}"><span class="dm-rowtext"><b>${esc(where(d.key))}</b><span class="muted">${esc(plain(d.text).slice(0, 50))}${d.at ? ' · ' + ago(new Date(d.at).toISOString()) : ''}</span></span></button><button class="dm-rowx" data-dmdraftx="${esc(d.key)}" title="${esc(t('dms.drafts.discard'))}" aria-label="${esc(t('dms.drafts.discard'))}">✕</button></div>`).join('')}</div>`;
+    return `<div class="dm-drafts">${list.map(d => `<div class="dm-rowwrap"><button class="dm-row" data-dmdraft="${esc(d.key)}"><span class="dm-rowtext"><b>${esc(where(d.key))}</b><span class="muted">${esc(plain(d.text).slice(0, 50))}${d.at ? ' · ' + ago(new Date(d.at).toISOString()) : ''}</span></span></button><button class="dm-rowx" data-dmdraftx="${esc(d.key)}" title="${esc(t('dms.drafts.discard'))}" aria-label="${esc(t('dms.drafts.discard'))}"><span aria-hidden="true">✕</span></button></div>`).join('')}</div>`;
   }
   // The DM list: one row per lead (🤖) and per friend (🙋), narrowed by the filter chips (All / Agents / People).
   function paintList() {
@@ -147,7 +147,7 @@ const Dms = (() => {
     if (filter === 'drafts' && !listDrafts().length) filter = 'all';   // AIG-1043: Drafts is its own tab, shown while there are any
     // AIG-917: newest message first (any side), unread rows stand out, a ✕ closes a chat (hidden, history kept, back on a newer message).
     const qs = q.trim().toLowerCase(), hit = (...a) => !qs || a.some(x => String(x || '').toLowerCase().includes(qs));   // AIG-1252
-    const entry = (key, last, unread, inner, waiting, text) => ({ ok: hit(...text), key, last: last || '', unread, hidden: !!closed[key] && !waiting && (!last || last <= closed[key]), quiet: !!last && !unread && !waiting && Date.now() - Date.parse(last) > QUIET_MS, html: `<div class="dm-rowwrap ${unread ? 'unread' : ''}"><button class="dm-row" data-dm="${esc(key)}">${inner}</button><button class="dm-rowx" data-dmclose="${esc(key)}" title="${esc(t('dms.close.title'))}" aria-label="${esc(t('dms.close.title'))}">✕</button></div>` });
+    const entry = (key, last, unread, inner, waiting, text) => ({ ok: hit(...text), key, last: last || '', unread, hidden: !!closed[key] && !waiting && (!last || last <= closed[key]), quiet: !!last && !unread && !waiting && Date.now() - Date.parse(last) > QUIET_MS, html: `<div class="dm-rowwrap ${unread ? 'unread' : ''}"><button class="dm-row" data-dm="${esc(key)}">${inner}</button><button class="dm-rowx" data-dmclose="${esc(key)}" title="${esc(t('dms.close.title'))}" aria-label="${esc(t('dms.close.title'))}"><span aria-hidden="true">✕</span></button></div>` });
     const all = (filter === 'people' || filter === 'twitch' || filter === 'discord' || filter === 'meet' ? [] : chats.map(c => entry(c.slug, c.last, c.unread, `${c.watchman || c.noAi ? leadAv(c) : avatar(c)}<span class="dm-rowtext"><b>${esc(c.watchman || c.noAi ? leadName(c) : chatName(c))}</b><span class="muted">${esc([c.watchman || c.noAi ? '' : leadName(c), plain(c.lastText).slice(0, 60) || (c.watchman || c.noAi ? '' : t('dms.hint.lead')), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`, c.unread > 0, [chatName(c), leadName(c), c.name, c.lastText])))
       .concat(filter === 'agents' || filter === 'twitch' || filter === 'discord' || filter === 'meet' ? [] : people.map(c => entry('dm:' + c.id, c.last, c.unread, `${personAv(c)}<span class="dm-rowtext"><b>${esc(c.name)}</b><span class="muted">${esc([plain(c.lastText).slice(0, 60) || t('dms.person'), c.last ? ago(c.last) : ''].filter(Boolean).join(' · '))}</span></span>${badge(c.unread)}`, false, [c.name, c.lastText])))
       .filter(r => r.ok)
@@ -214,7 +214,7 @@ const Dms = (() => {
   const QUICK = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀', '🙏', '✅'];
   let replyTo = null, editing = null, typedAt = 0;   // { id, who, text } / the line being edited / when I last said I was typing
   const lineActs = own => `<div class="dm-lineacts">${[['reply', '↩'], ['react', '😊'], ...(own ? [['edit', '✏️'], ['del', '🗑']] : [])].map(([a, i]) => `<button type="button" data-dmact="${a}" title="${esc(t('dms.act.' + a))}" aria-label="${esc(t('dms.act.' + a))}">${i}</button>`).join('')}</div>`;
-  const chipsHtml = list => list.length ? `<div class="dm-reacts">${list.map(r => `<button type="button" class="dm-react ${r.mine ? 'mine' : ''}" data-dmreact="${esc(r.e)}" title="${esc(r.who.join(', '))}" aria-pressed="${!!r.mine}">${esc(r.e)} <span>${r.n}</span></button>`).join('')}</div>` : '';
+  const chipsHtml = list => list.length ? `<div class="dm-reacts">${list.map(r => `<button type="button" class="dm-react ${r.mine ? 'mine' : ''}" data-dmreact="${esc(r.e)}" title="${esc(r.who.join(', '))}" aria-label="${esc(r.who.join(', '))}" aria-pressed="${!!r.mine}">${esc(r.e)} <span>${r.n}</span></button>`).join('')}</div>` : '';
   // The quoted line: the one still in the chat when it is (so an edit or delete shows), else the words saved with the reply.
   const quoteHtml = (r, find) => { if (!r) return ''; const q = find(r.id); const who = q ? q.who : r.author || ''; const text = q ? q.text : r.text; return `<div class="dm-quote" data-dmquote="${esc(r.id)}">↩ ${who ? `<b>${esc(who)}</b> ` : ''}<span dir="auto">${text ? esc(plain(text).slice(0, 80)) : `<i>${esc(t('dms.deleted'))}</i>`}</span></div>`; };
   const personChips = (m, name) => { const r = m.reacts || {}, mine = r.mine || [], theirs = r.theirs || []; return chipsHtml([...new Set([...mine, ...theirs])].map(e => ({ e, n: mine.includes(e) + theirs.includes(e), mine: mine.includes(e), who: [...(mine.includes(e) ? [me()] : []), ...(theirs.includes(e) ? [name] : [])] }))); };
@@ -241,7 +241,7 @@ const Dms = (() => {
   function paintReplyBar() {
     const bar = el('dmReplyBar'); if (!bar) return;
     bar.hidden = !replyTo;
-    bar.innerHTML = replyTo ? `<span>↩ ${esc(t('dms.replying', { name: replyTo.who }))}</span> <span class="muted dm-replytext">${esc(plain(replyTo.text).slice(0, 80))}</span><button type="button" data-dmreplyx="1" title="${esc(t('dms.reply.cancel'))}" aria-label="${esc(t('dms.reply.cancel'))}">✕</button>` : '';
+    bar.innerHTML = replyTo ? `<span>↩ ${esc(t('dms.replying', { name: replyTo.who }))}</span> <span class="muted dm-replytext">${esc(plain(replyTo.text).slice(0, 80))}</span><button type="button" data-dmreplyx="1" title="${esc(t('dms.reply.cancel'))}" aria-label="${esc(t('dms.reply.cancel'))}"><span aria-hidden="true">✕</span></button>` : '';
   }
   function startEdit(mid) {
     const m = lineOf(mid), row = document.querySelector(`#dmList .dm-msg[data-mid="${CSS.escape(mid)}"]`); if (!m || !row) return;
@@ -323,9 +323,9 @@ const Dms = (() => {
       const preview = plain(last.text).slice(0, 90);
       return `<div class="dm-fold ${isOpen ? 'open' : ''} ${c.waiting ? 'waiting' : ''}">
         <div class="dm-fold-h k-${esc(c.kind || 'other')}" data-fold="${esc(id)}" role="button" tabindex="0" aria-expanded="${isOpen}">
-          ${thread.assistant ? `<b>${esc(t('pa.tagline'))}</b>` : thread.group ? `<b>👥 ${esc(thread.lead)}</b>` : thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : id === '_lead' ? `<span class="dm-tag">${esc(t('dms.kind.lead'))}</span>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><a class="dm-fold-id" href="#/p/${esc(thread.slug)}/${esc(id)}" title="${esc(t('dms.opencard'))}"><b>${esc(id)}</b> <span class="dm-fold-t" dir="auto">${esc(c.title || last.title || '')}</span></a>`}
+          ${thread.assistant ? `<b>${esc(t('pa.tagline'))}</b>` : thread.group ? `<b>👥 ${esc(thread.lead)}</b>` : thread.watchman ? `<b>${esc(t('sm.fold'))}</b>` : id === '_lead' ? `<span class="dm-tag">${esc(t('dms.kind.lead'))}</span>` : `<span class="dm-tag">${esc(t('dms.kind.' + (c.kind || 'other')))}</span><a class="dm-fold-id" href="#/p/${esc(thread.slug)}/${esc(id)}" title="${esc(t('dms.opencard'))}" aria-label="${esc(t('dms.opencard'))}"><b>${esc(id)}</b> <span class="dm-fold-t" dir="auto">${esc(c.title || last.title || '')}</span></a>`}
           <span class="muted dm-fold-n">${esc(t(msgs.length === 1 ? 'dms.count.one' : 'dms.count.many', { n: msgs.length }))} · ${ago(last.at)}</span></div>
-        ${isOpen ? `<div class="dm-fold-b">${thread.watchman || thread.assistant || thread.group || id === '_lead' ? '' : `<div class="actions dm-cardacts"><button class="dm-opencard" data-opencard="${esc(id)}" title="${esc(t('dms.opencard'))}">${esc(t('dms.opencard'))}</button></div>`}${msgs.map(m => msgHtml(m, m === last ? acts : '')).join('')}</div>`
+        ${isOpen ? `<div class="dm-fold-b">${thread.watchman || thread.assistant || thread.group || id === '_lead' ? '' : `<div class="actions dm-cardacts"><button class="dm-opencard" data-opencard="${esc(id)}" title="${esc(t('dms.opencard'))}" aria-label="${esc(t('dms.opencard'))}">${esc(t('dms.opencard'))}</button></div>`}${msgs.map(m => msgHtml(m, m === last ? acts : '')).join('')}</div>`
           : `<div class="dm-fold-p muted"><b>${esc(last.author)}:</b> ${esc(preview)}</div>${acts}`}</div>`;
     }).join('');
   }
@@ -430,7 +430,7 @@ const Dms = (() => {
     const sw = here() ? ` ${Swarm.btn(here(), 'smSwarm')}` : '';
     const html = (sm.on
       ? `<b>${esc(t('sm.on.push', { n: sm.everyMin, name: t('sm.push.' + sm.push) }))}</b> <span class="muted">${esc(t('sm.runs', { runs: sm.runsToday, cap: sm.cap }))}</span> ${pick}
-        <button id="smNight" class="${sm.night ? 'primary' : ''}" onclick="Dms.smNight(${!sm.night})" title="${esc(t('sm.night.title'))}">${esc(t(sm.night ? 'sm.night.on' : 'sm.night.off'))}</button> <span class="muted">${esc(t('sm.night.what'))}</span>`
+        <button id="smNight" class="${sm.night ? 'primary' : ''}" onclick="Dms.smNight(${!sm.night})" title="${esc(t('sm.night.title'))}" aria-label="${esc(t('sm.night.title'))}">${esc(t(sm.night ? 'sm.night.on' : 'sm.night.off'))}</button> <span class="muted">${esc(t('sm.night.what'))}</span>`
       : `<span class="muted" id="smOut">${esc(t('sm.out'))}</span> <a href="#/setup" id="smAdd">${esc(t('sm.out.add'))}</a>`) + sw;
     if (bar.dataset.sig !== html) { bar.dataset.sig = html; bar.innerHTML = html; }
   }
@@ -440,11 +440,11 @@ const Dms = (() => {
   // 🧭 Scrum Master (no AI) (AIG-730/731): command buttons above the reply box. Typed `/sort`, `/new project`, `/move`, `/request` do the same;
   // plain code on the server (lib/smcmd.js), the current project is sent with each message.
   function smCmdsHtml() {
-    const sorts = ['priority', 'age', 'type', 'who'].map(k => `<button type="button" data-smcmd="/sort ${k}" title="${esc(t('sm.noai.sort.title', { key: t('sm.noai.sort.' + k) }))}">${esc(t('sm.noai.sort.' + k))}</button>`).join('');
+    const sorts = ['priority', 'age', 'type', 'who'].map(k => `<button type="button" data-smcmd="/sort ${k}" title="${esc(t('sm.noai.sort.title', { key: t('sm.noai.sort.' + k) }))}" aria-label="${esc(t('sm.noai.sort.title', { key: t('sm.noai.sort.' + k) }))}">${esc(t('sm.noai.sort.' + k))}</button>`).join('');
     return `<div class="actions sm-cmds" id="smCmds"><span class="muted">${esc(t('sm.noai.sort'))}</span>${sorts}
-      <button type="button" data-smfill="/new project " title="${esc(t('sm.noai.new.title'))}">${esc(t('sm.noai.new'))}</button>
-      <button type="button" data-smfill="/move AIG-" title="${esc(t('sm.noai.move.title'))}">${esc(t('sm.noai.move'))}</button>
-      <button type="button" id="smRequest" onclick="Dms.requestForm()" title="${esc(t('sm.noai.request.title'))}">${esc(t('sm.noai.request'))}</button></div>`;
+      <button type="button" data-smfill="/new project " title="${esc(t('sm.noai.new.title'))}" aria-label="${esc(t('sm.noai.new.title'))}">${esc(t('sm.noai.new'))}</button>
+      <button type="button" data-smfill="/move AIG-" title="${esc(t('sm.noai.move.title'))}" aria-label="${esc(t('sm.noai.move.title'))}">${esc(t('sm.noai.move'))}</button>
+      <button type="button" id="smRequest" onclick="Dms.requestForm()" title="${esc(t('sm.noai.request.title'))}" aria-label="${esc(t('sm.noai.request.title'))}">${esc(t('sm.noai.request'))}</button></div>`;
   }
   function requestForm() {
     openDialog(`<h2>${esc(t('sm.noai.req.h'))}</h2><p class="muted">${esc(t('sm.noai.req.help'))}</p>
@@ -470,7 +470,7 @@ const Dms = (() => {
   function showAllHands() {
     open = '_allhands'; listOpen = true; thread = { allhands: true }; askAll = false;
     const panel = el('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button><b>${esc(t('allhands.name'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}">✕</button></div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}" aria-label="${esc(t('dms.all'))}"><span aria-hidden="true">‹</span></button><b>${esc(t('allhands.name'))}</b><span style="flex:1"></span><button onclick="Dms.close()" title="${esc(t('common.close'))}" aria-label="${esc(t('common.close'))}"><span aria-hidden="true">✕</span></button></div>
       <div class="dm-list" id="dmList"></div><div class="dm-compose"><div class="muted">${esc(t('allhands.help'))}</div>
       <textarea dir="auto" id="dmText" data-draft="dm/_allhands" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(EnterSend.is(event,'chat')){event.preventDefault();Dms.askTeams(true)}"></textarea><div class="err" id="dmErr"></div>
       <div class="actions" id="allHandsAsk" hidden></div>
@@ -503,7 +503,7 @@ const Dms = (() => {
     thread = who ? { person: true, id: who.id, slug, name: who.name, messages: [], open: [] } : null;
     const c = who ? { name: t('dms.person') } : chats.find(x => x.slug === slug) || (isGrp(slug) ? (g => ({ slug, name: g ? g.members.map(m => m.name + ' (' + m.engineLabel + ')').join(', ') : '', lead: g ? g.name : slug.slice(4), emoji: g && g.meeting ? '🎥' : '👥', group: true, meeting: g && g.meeting }))(groups.concat(meets).find(x => 'grp:' + x.id === slug)) : null) || (slug === '_assistant' ? { slug, name: paName || t('pa.name'), lead: paName || t('pa.name'), emoji: '💚', assistant: true } : { slug, name: slug });
     const panel = el('dmPanel'); panel.dataset.sig = '';
-    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}">‹</button>${who ? personAv(who) : leadAv(c)}<div class="dm-headtext"><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted dm-sub" title="${esc(c.assistant ? t('pa.tagline') : chatName(c))}">${esc(c.assistant ? t('pa.tagline') : chatName(c))}</div></div><span style="flex:1"></span>${c.meeting ? `<button type="button" class="dm-callbtn" id="dmMeetBtn" onclick="meetingCall('${esc(c.meeting)}', this.dataset.name)" data-name="${esc(c.lead)}" title="${esc(t('meet.join.title'))}">${esc(t('meet.join'))}</button>` : ''}${who ? `<button type="button" class="dm-callbtn" id="dmCallBtn" onclick="dmCall('${esc(who.id)}', this.dataset.name)" data-name="${esc(who.name)}" title="${esc(t('lkcall.btn.title', { name: who.name }))}">${esc(t('lkcall.btn'))}</button>` : callLink(c.callUrl, 'dm-call')}${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}">🧹</button>` : ''}${windowTools('Dms.close()', popHere())}</div>
+    panel.innerHTML = `<div class="dm-head"><button onclick="Dms.back()" title="${esc(t('dms.all'))}" aria-label="${esc(t('dms.all'))}"><span aria-hidden="true">‹</span></button>${who ? personAv(who) : leadAv(c)}<div class="dm-headtext"><b>${esc(who ? who.name : leadName(c) || t('dms.lead'))}</b><div class="muted dm-sub" title="${esc(c.assistant ? t('pa.tagline') : chatName(c))}">${esc(c.assistant ? t('pa.tagline') : chatName(c))}</div></div><span style="flex:1"></span>${c.meeting ? `<button type="button" class="dm-callbtn" id="dmMeetBtn" onclick="meetingCall('${esc(c.meeting)}', this.dataset.name)" data-name="${esc(c.lead)}" title="${esc(t('meet.join.title'))}" aria-label="${esc(t('meet.join.title'))}">${esc(t('meet.join'))}</button>` : ''}${who ? `<button type="button" class="dm-callbtn" id="dmCallBtn" onclick="dmCall('${esc(who.id)}', this.dataset.name)" data-name="${esc(who.name)}" title="${esc(t('lkcall.btn.title', { name: who.name }))}" aria-label="${esc(t('lkcall.btn.title', { name: who.name }))}">${esc(t('lkcall.btn'))}</button>` : callLink(c.callUrl, 'dm-call')}${c.watchman ? `<button onclick="Dms.send('clear chat')" title="${esc(t('dms.clear'))}" aria-label="${esc(t('dms.clear'))}"><span aria-hidden="true">🧹</span></button>` : ''}${windowTools('Dms.close()', popHere())}</div>
       ${c.watchman ? '<div class="sm-bar" id="smBar"></div>' : ''}${who ? '<div class="dm-usage" id="dmUsage" hidden></div>' : ''}
       <div class="dm-list" id="dmList"></div>
       <div id="dmFollow"></div>
@@ -513,7 +513,7 @@ const Dms = (() => {
         ${who || c.group ? '<div class="dm-replybar" id="dmReplyBar" hidden></div>' : ''}
         <textarea dir="auto" id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(EnterSend.is(event,'${who ? 'dm' : 'chat'}')){event.preventDefault();Dms.send()}"></textarea>
         <div class="err" id="dmErr"></div>
-        <div class="actions"><button class="good" id="dmGo" ${who ? `onclick="Dms.send('👍')" title="${esc(t('dms.like.title'))}">${esc(t('dms.like'))}` : `onclick="Dms.send('GO')" title="${esc(t('dms.go.title'))}">${esc(t('dms.go'))}`}</button><button class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button>${c.group ? '' : who ? `<button id="dmAsk" onclick="Dms.ask()" title="${esc(t('ask.btn.title', { name: who.name }))}">${esc(t('ask.btn', { name: who.name }))}</button>` : ''}${c.group ? '' : Attach.boxHtml('dm:' + slug)}</div></div>`;
+        <div class="actions"><button class="good" id="dmGo" ${who ? `onclick="Dms.send('👍')" title="${esc(t('dms.like.title'))}" aria-label="${esc(t('dms.like.title'))}">${esc(t('dms.like'))}` : `onclick="Dms.send('GO')" title="${esc(t('dms.go.title'))}">${esc(t('dms.go'))}`}</button><button class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button>${c.group ? '' : who ? `<button id="dmAsk" onclick="Dms.ask()" title="${esc(t('ask.btn.title', { name: who.name }))}" aria-label="${esc(t('ask.btn.title', { name: who.name }))}">${esc(t('ask.btn', { name: who.name }))}</button>` : ''}${c.group ? '' : Attach.boxHtml('dm:' + slug)}</div></div>`;
     panel.hidden = false;
     if (who) el('dmGo').hidden = false;
     loadRail(); loadThread(true);

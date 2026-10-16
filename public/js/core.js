@@ -22,7 +22,7 @@ const QKINDS = { decide: '❓', task: '📋', plan: '🚦', test: '🧪', server
 // 🏡 Real-life tasks (AIG-394): mirrors lib/life.js. A card with a lifeType is the owner's own task.
 const LIFE_TYPES = { housework: ['🧹', '#0d9488'], appointment: ['📅', '#3b82f6'], shopping: ['🛒', '#ea580c'], call: ['📞', '#7c3aed'], bills: ['💷', '#16a34a'], errand: ['🚗', '#ca8a04'], health: ['🩺', '#dc2626'], family: ['🎁', '#db2777'], pets: ['🐾', '#92400e'] };
 const lifeChip = c => LIFE_TYPES[c.lifeType] ? `<span class="pill life" style="background:${LIFE_TYPES[c.lifeType][1]};color:#fff" data-life="${esc(c.lifeType)}">${LIFE_TYPES[c.lifeType][0]} ${esc(t('life.' + c.lifeType))}</span>` : '';
-const lifeDoneBtn = c => `<button class="q-chip life-done" data-lifedone="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('life.done.title'))}">✅ ${esc(t('life.done'))}</button>`;
+const lifeDoneBtn = c => `<button class="q-chip life-done" data-lifedone="${esc(c.project || slug())}/${esc(c.id)}" title="${esc(t('life.done.title'))}" aria-label="${esc(t('life.done.title'))}">✅ ${esc(t('life.done'))}</button>`;
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-lifedone]'); if (!b) return;
   e.preventDefault(); e.stopPropagation();

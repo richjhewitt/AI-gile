@@ -37,7 +37,7 @@ const ReviewPage = (() => {
       </div>
       ${i.list.length ? `<h3>${esc(t('rev.incidents'))}</h3><ul class="st-rec" id="rev-incidents">${i.list.map(c => `<li><a href="#/p/${esc(R.slug)}/${esc(c.id)}">${esc(c.id)}</a> ${esc(c.title)} <span class="pill">${esc(c.status)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('rev.incidents.none'))}</p>`}
       ${srv}
-      <p><button type="button" id="rev-sum" onclick="ReviewPage.ask()" ${d.ai && !R.busy ? '' : 'disabled'} title="${esc(d.ai ? t('rev.summary.title') : t('rev.summary.noai'))}">${esc(t('rev.summary'))}</button></p>${sum}</div>`;
+      <p><button type="button" id="rev-sum" onclick="ReviewPage.ask()" ${d.ai && !R.busy ? '' : 'disabled'} title="${esc(d.ai ? t('rev.summary.title') : t('rev.summary.noai'))}" aria-label="${esc(d.ai ? t('rev.summary.title') : t('rev.summary.noai'))}">${esc(t('rev.summary'))}</button></p>${sum}</div>`;
   };
   return R;
 })();

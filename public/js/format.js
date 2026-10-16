@@ -22,7 +22,7 @@ function customEmojis(html) {
   return html.split(/(<[^>]*>)/).map(p => {
     if (p[0] === '<' && p.length > 1) { if (/^<code[\s>]/i.test(p)) inCode++; else if (/^<\/code>/i.test(p)) inCode--; return p; }
     return inCode > 0 ? p : p.replace(/:([a-z0-9_]{1,32}):/g, (m, n) => fe && fe.map.has(n)
-      ? `<span class="cemoji-w"><img class="cemoji" src="${esc(fe.map.get(n))}" alt=":${n}:" title=":${n}:" style="height:1.4em;width:auto;vertical-align:middle"><button type="button" class="cemoji-save" data-esave="${n}" data-ecid="${esc(fe.cid)}" title="${esc(t('emoji.save.title', { name: n }))}">${esc(t('emoji.save'))}</button></span>`
+      ? `<span class="cemoji-w"><img class="cemoji" src="${esc(fe.map.get(n))}" alt=":${n}:" title=":${n}:" style="height:1.4em;width:auto;vertical-align:middle"><button type="button" class="cemoji-save" data-esave="${n}" data-ecid="${esc(fe.cid)}" title="${esc(t('emoji.save.title', { name: n }))}" aria-label="${esc(t('emoji.save.title', { name: n }))}">${esc(t('emoji.save'))}</button></span>`
       : CUSTOM_EMOJIS.has(n) ?`<img class="cemoji" src="${esc(CUSTOM_EMOJIS.get(n))}" alt=":${n}:" title=":${n}:" style="height:1.4em;width:auto;vertical-align:middle">` : m);
   }).join('');
 }
@@ -49,14 +49,14 @@ const isFilePath = s => /^\s*(?:[A-Za-z]:[\\/]|\/|~[\\/])[^<>|?*\n`"]*\.\w{1,8}\
 const isFolderPath = s => /^\s*(?:[A-Za-z]:[\\/]|~[\\/])[^<>|?*\n`"]*[^<>|?*\n`"\\/.]\s*[\\/]?\s*$/.test(s) && !/\.\w{1,8}\s*$/.test(s);
 // AIG-398: 📂 opens a folder in Explorer (a file's button: the folder it is in); 📋 copies the path.
 const dirOf = p => { const d = p.trim().replace(/[\\/][^\\/]*$/, ''); return /^[A-Za-z]:$/.test(d) ? d + '/' : d; };
-const openDirBtn = (dir, cls) => `<button class="${cls}" data-open-dir="${esc(dir)}" title="${esc(t('format.opendir'))}">📂</button>`;
-const copyPathBtn = (p, cls) => `<button class="${cls}" data-copy-path="${esc(p.trim())}" title="${esc(t('format.copypath'))}">📋</button>`;
+const openDirBtn = (dir, cls) => `<button class="${cls}" data-open-dir="${esc(dir)}" title="${esc(t('format.opendir'))}" aria-label="${esc(t('format.opendir'))}"><span aria-hidden="true">📂</span></button>`;
+const copyPathBtn = (p, cls) => `<button class="${cls}" data-copy-path="${esc(p.trim())}" title="${esc(t('format.copypath'))}" aria-label="${esc(t('format.copypath'))}"><span aria-hidden="true">📋</span></button>`;
 const folderBtn = (p, cls = 'edit-btn') => openDirBtn(p.trim(), cls) + copyPathBtn(p, cls);
 const fileBtns = (p, cls = 'edit-btn') => editBtn(p, cls) + openDirBtn(dirOf(p), cls) + copyPathBtn(p, cls);
 const unesc = s => String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
 // A web page (.html) opens in the browser, not the editor (AIG-294).
 const isPage = p => /\.html?\s*$/i.test(p);
-const editBtn = (p, cls = 'edit-btn') => `<button class="${cls}" data-editor="${esc(p.trim())}" title="${esc(t(isPage(p) ? 'format.browser' : 'format.edit'))}">${isPage(p) ? '🌐' : '📝'}</button>`;
+const editBtn = (p, cls = 'edit-btn') => `<button class="${cls}" data-editor="${esc(p.trim())}" title="${esc(t(isPage(p) ? 'format.browser' : 'format.edit'))}" aria-label="${esc(t(isPage(p) ? 'format.browser' : 'format.edit'))}">${isPage(p) ? '🌐' : '📝'}</button>`;
 // Bare full paths without spaces in escaped text (paths with spaces belong in `code`).
 const editLinks = html => html.replace(/(^|[\s(>])((?:[A-Za-z]:[\\/]|~[\\/])[^\s<>"`]*\.\w{1,8})(?=[\s<).,;:!?]|$)/g, (m, pre, p) => pre + p + fileBtns(unesc(p)));
 document.addEventListener('click', async e => {
@@ -95,10 +95,10 @@ document.addEventListener('click', e => {
 }, true);
 // A whole string that is one .md path (relative or absolute, / or \; spaces allowed).
 const isMdPath = s => /^\s*(?:[A-Za-z]:)?[^<>|?*\n`]*[^<>|?*\s\n`]\.md\s*$/i.test(s) && !/^\s*https?:/i.test(s);
-const mdLink = (html, p, slug) => `<a href="#" data-p="${p}" data-s="${esc(slug || '')}" onclick="showDocPath(this.dataset.p,this.dataset.s);return false" title="${esc(t('format.openfile', { name: p }))}">${html}</a>`;
+const mdLink = (html, p, slug) => `<a href="#" data-p="${p}" data-s="${esc(slug || '')}" onclick="showDocPath(this.dataset.p,this.dataset.s);return false" title="${esc(t('format.openfile', { name: p }))}" aria-label="${esc(t('format.openfile', { name: p }))}">${html}</a>`;
 // Links bare .md paths (no spaces) in escaped text.
 // 📋 next to each .md link copies the file's text (AIG-390), through the same route the viewer uses.
-const mdCopyBtn = (p, slug) => `<button class="md-copy" data-copy-md="${esc(p)}" data-s="${esc(slug || '')}" title="${esc(t('format.copymd', { name: p }))}">📋</button>`;
+const mdCopyBtn = (p, slug) => `<button class="md-copy" data-copy-md="${esc(p)}" data-s="${esc(slug || '')}" title="${esc(t('format.copymd', { name: p }))}" aria-label="${esc(t('format.copymd', { name: p }))}"><span aria-hidden="true">📋</span></button>`;
 const mdLinks = (html, slug) => html.replace(/(^|[\s(>"'`])((?:[A-Za-z]:)?(?:[\w.-]+[\\/])*[\w.-]+\.md)\b/gi, (m, pre, name) => pre + mdLink(name, name, slug) + mdCopyBtn(name, slug));
 // Runs of "- " lines become a spaced bullet list, so cards stay readable whoever wrote them.
 function spaceBullets(html) {
@@ -149,7 +149,7 @@ function md(src) {
   const isList = l => /^\s*([-*]|\d+\.)\s+/.test(l), isRow = l => /^\s*\|/.test(l);
   while (i < lines.length) {
     const l = lines[i]; let m;
-    if (/^```/.test(l)) { const b = []; i++; while (i < lines.length && !/^```/.test(lines[i])) b.push(lines[i++]); i++; html += `<div class="codebox"><button class="copy" data-copy-block title="${esc(t('docs.copyblock'))}">📋</button><pre><code>${esc(b.join('\n'))}</code></pre></div>`; }
+    if (/^```/.test(l)) { const b = []; i++; while (i < lines.length && !/^```/.test(lines[i])) b.push(lines[i++]); i++; html += `<div class="codebox"><button class="copy" data-copy-block title="${esc(t('docs.copyblock'))}" aria-label="${esc(t('docs.copyblock'))}"><span aria-hidden="true">📋</span></button><pre><code>${esc(b.join('\n'))}</code></pre></div>`; }
     else if ((m = l.match(/^(#{1,6})\s+(.*)/))) { html += `<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`; i++; }
     else if (isRow(l)) {
       const rows = []; while (i < lines.length && isRow(lines[i])) rows.push(lines[i++]);

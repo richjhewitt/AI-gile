@@ -11,8 +11,8 @@ async function callStandup(slugs, sure) {
 }
 // Projects with at least one answer on their newest stand-up card: the board shows a link to the report then.
 const hasStandupAnswers = p => p.cards.some(c => c.standup && c.standup.reports.length);
-const standupButtons = p => `<button onclick="callStandup(['${p.slug}'])" title="${esc(t('standup.team.title'))}">${esc(t('standup.team'))}</button>`
-  + (hasStandupAnswers(p) ? ` <a class="navlink" href="#/standups/${encodeURIComponent(p.slug)}" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a>` : '');
+const standupButtons = p => `<button onclick="callStandup(['${p.slug}'])" title="${esc(t('standup.team.title'))}" aria-label="${esc(t('standup.team.title'))}">${esc(t('standup.team'))}</button>`
+  + (hasStandupAnswers(p) ? ` <a class="navlink" href="#/standups/${encodeURIComponent(p.slug)}" title="${esc(t('standup.report.title'))}" aria-label="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a>` : '');
 
 /* ---------- morning prompt (AIG-136): once a day, per browser ---------- */
 // A small pill in the bottom corner, never a dialog and it never takes focus. It waits while a dialog is open or a

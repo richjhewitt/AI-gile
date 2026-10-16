@@ -14,7 +14,7 @@ async function expertDialog() {
   popNext('expert'); openDialog(`<h2>${esc(t('expert.h'))}</h2><p class="muted">${esc(t('expert.sub'))}</p>
     <form onsubmit="return expertSend(event)" class="xp">
     <label class="f"><span>${esc(t('expert.project'))}</span><select id="xp-project">${projects.map(p => `<option value="${esc(p.slug)}" ${p.slug === here ? 'selected' : ''}>${esc((p.emoji || '') + ' ' + p.name)}</option>`).join('')}</select></label>
-    ${XP.data.groups.map(g => `<div class="xp-group"><h3>${esc(g.emoji)} ${esc(t('expert.group.' + g.id))}</h3><div class="xp-presets">${g.presets.map(p => `<button type="button" class="xp-preset" data-id="${esc(p.id)}" aria-pressed="false" onclick="expertPick('${esc(p.id)}')" title="${esc(t('expert.can.' + p.id))}">${esc(p.emoji)} ${esc(t('expert.' + p.id))} <small>${esc(Model(p.model))}</small></button>`).join('')}</div></div>`).join('')}
+    ${XP.data.groups.map(g => `<div class="xp-group"><h3>${esc(g.emoji)} ${esc(t('expert.group.' + g.id))}</h3><div class="xp-presets">${g.presets.map(p => `<button type="button" class="xp-preset" data-id="${esc(p.id)}" aria-pressed="false" onclick="expertPick('${esc(p.id)}')" title="${esc(t('expert.can.' + p.id))}" aria-label="${esc(t('expert.can.' + p.id))}">${esc(p.emoji)} ${esc(t('expert.' + p.id))} <small>${esc(Model(p.model))}</small></button>`).join('')}</div></div>`).join('')}
     <label class="f"><span>${esc(t('expert.describe'))}</span><textarea id="xp-text" rows="3" oninput="expertTyped()" placeholder="${esc(t('expert.describe.ph'))}">${esc(typed)}</textarea></label>
     <div class="xp-looks muted" id="xp-looks" role="status"></div>
     <div class="err" id="xp-err"></div>

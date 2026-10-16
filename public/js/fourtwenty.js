@@ -45,7 +45,7 @@ const Weed = (() => {
     if (document.documentElement.hasAttribute('data-break')) return;   // ⏸ break (AIG-824): no reminders
     if (toastEl) toastEl.remove();
     toastEl = document.createElement('div'); toastEl.id = 'weedToast'; toastEl.className = 'weed-toast'; toastEl.setAttribute('role', 'status');
-    toastEl.innerHTML = `<span>${esc(msg)}</span><button type="button" aria-label="${esc(t('common.close'))}" onclick="Weed.dismiss()">✕</button>`;
+    toastEl.innerHTML = `<span>${esc(msg)}</span><button type="button" aria-label="${esc(t('common.close'))}" onclick="Weed.dismiss()"><span aria-hidden="true">✕</span></button>`;
     document.body.appendChild(toastEl);
     const mine = toastEl; setTimeout(() => { if (toastEl === mine) { mine.remove(); toastEl = null; } }, 12000);
   }

@@ -7,7 +7,7 @@ const Editor = (() => {
   const token = async fresh => { if (!tok || fresh) tok = (await api('GET', '/api/terminal/token')).token; return tok; };
   const call = async (what, body) => api('POST', '/api/editor/' + what, { ...body, project: E.slug, token: await token() });
   const msg = (s, bad) => { const m = document.getElementById('edMsg'); if (m) { m.textContent = s; m.style.color = bad ? 'var(--bad, #d44)' : ''; } };
-  E.btn = (p, c) => `<button onclick="Editor.open('${esc(p.slug)}')" title="${esc(t('editor.title'))}">${esc(t('editor.btn'))}</button>`;
+  E.btn = (p, c) => `<button onclick="Editor.open('${esc(p.slug)}')" title="${esc(t('editor.title'))}" aria-label="${esc(t('editor.title'))}">${esc(t('editor.btn'))}</button>`;
   E.open = async (slug, path) => {
     E.slug = slug; E.path = path || ''; E.mtime = 0; E.dirty = false;
     let quick = [];

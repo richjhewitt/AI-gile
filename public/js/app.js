@@ -122,15 +122,15 @@ async function checkBuild(initial) {
     // While you're quiet (AIG-224): a new board or page code reloads by itself, unless something is half-typed.
     if (m.quiet && m.build !== loadedBuild && !hasUnsent()) { afterCall('reload', () => location.reload()); return; }
     // A newer version on GitHub (AIG-92): an ⬆ Update pill, until it's applied.
-    const u = m.update || {}, upd = u.behind ? `<button class="primary" onclick="applyUpdatePage()" title="${esc((u.subjects || []).join('\n'))}">${esc(t('update.btn'))}</button>` : '';
+    const u = m.update || {}, upd = u.behind ? `<button class="primary" onclick="applyUpdatePage()" title="${esc((u.subjects || []).join('\n'))}" aria-label="${esc((u.subjects || []).join('\n'))}">${esc(t('update.btn'))}</button>` : '';
     if ($('upUpdate').dataset.sig !== upd && !$('upUpdate').dataset.busy) { $('upUpdate').dataset.sig = upd; $('upUpdate').innerHTML = upd; }
     // New server code that the running board hasn't loaded yet (AIG-206): one click restarts it.
-    const rs = m.stale ? `<button class="primary" onclick="restartBoard(this)" title="${esc(t('restart.title'))}">${esc(t('restart.btn'))}</button>` : '';
+    const rs = m.stale ? `<button class="primary" onclick="restartBoard(this)" title="${esc(t('restart.title'))}" aria-label="${esc(t('restart.title'))}">${esc(t('restart.btn'))}</button>` : '';
     if ($('upRestart') && $('upRestart').dataset.sig !== rs && !$('upRestart').dataset.busy) { $('upRestart').dataset.sig = rs; $('upRestart').innerHTML = rs; }
     // Restarting reloads the page too (AIG-346), so while a restart is due, Refresh doesn't show as well.
     if (m.stale) $('upRefresh').innerHTML = '';
     else if (m.dev && m.build !== loadedBuild && !$('upRefresh').firstChild)
-      $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="${esc(t('update.refresh.title'))}">${esc(t('update.refresh'))}</button>`;
+      $('upRefresh').innerHTML = `<button class="primary" onclick="refreshPage()" title="${esc(t('update.refresh.title'))}" aria-label="${esc(t('update.refresh.title'))}">${esc(t('update.refresh'))}</button>`;
   } catch {}
   finally { checkingBuild = false; }
 }
@@ -242,7 +242,7 @@ window.showRestartApp = () => {
 /* ---------- teams that need a poke: top-bar badge ---------- */
 function pokeBadge(projects) {
   const n = projects.filter(p => p.attention && !p.attention.auto), names = n.map(p => p.name + ': ' + (p.attention.kind === 'asleep' ? asleepWhy(p.attention) : t('poke.stuck')) + (p.attention.held ? ' (' + heldWhy(p.attention) + ')' : '')).join('\n');
-  const h = n.length ? `<button class="navlink pokebadge" onclick="pokeAll(this)" title="${esc(t('poke.title'))}\n${esc(names)}">${esc(n.length > 1 ? t('poke.many', { n: n.length }) : t('poke.one'))}</button>` : '';
+  const h = n.length ? `<button class="navlink pokebadge" onclick="pokeAll(this)" title="${esc(t('poke.title'))}\n${esc(names)}" aria-label="${esc(t('poke.title'))}\n${esc(names)}">${esc(n.length > 1 ? t('poke.many', { n: n.length }) : t('poke.one'))}</button>` : '';
   if ($('pokeTop').innerHTML !== h) $('pokeTop').innerHTML = h;
 }
 // Tap the badge: wake every asleep team and restart every stuck one, then show the home page.
@@ -275,7 +275,7 @@ function setNight(since, until) {
   } catch {}
   if (/Electron/.test(navigator.userAgent) && setNight.sent !== !!since) { setNight.sent = !!since; location.href = 'aigile://night/' + (since ? 1 : 0); }
   if (window.Inbox) Inbox.repaint();
-  $('nightTop').innerHTML = since ? `<button class="navlink" onclick="openNightGlance()" title="${esc(t('ng.open.title'))}">🌙</button><button class="navlink" onclick="backFromQuiet()" title="${esc(t('night.since', { when: ago(since) }))}">${esc(t('night.back'))}</button>` : '';
+  $('nightTop').innerHTML = since ? `<button class="navlink" onclick="openNightGlance()" title="${esc(t('ng.open.title'))}" aria-label="${esc(t('ng.open.title'))}"><span aria-hidden="true">🌙</span></button><button class="navlink" onclick="backFromQuiet()" title="${esc(t('night.since', { when: ago(since) }))}" aria-label="${esc(t('night.since', { when: ago(since) }))}">${esc(t('night.back'))}</button>` : '';
 }
 // Going quiet asks which projects the 🌙 night watchman should watch: every active one is ticked (AIG-199),
 // or none when the owner picked quiet nights in Setup (AIG-235).
@@ -301,7 +301,7 @@ async function goQuietNow() {
       ${r.woke.length ? `<h3>${esc(t('quiet.done.woke', { count: r.woke.length, n: r.woke.length }))}</h3>${chips(r.woke)}` : ''}
       ${(r.watching || []).length ? `<h3>${esc(t('quiet.done.watch', { n: r.watching.length }))}</h3>${chips(r.watching.map(s => look[s] || s))}` : ''}
       ${r.failed.length ? `<div class="err">${esc(t('quiet.failed', { names: r.failed.join('; ') }))}</div>` : ''}
-      <div class="actions"><button onclick="openNightGlance(); closeDialog()" title="${esc(t('ng.open.title'))}">${esc(t('ng.open'))}</button><button class="primary" onclick="goodnight()">${esc(t('quiet.done.ok'))}</button></div></div>`);
+      <div class="actions"><button onclick="openNightGlance(); closeDialog()" title="${esc(t('ng.open.title'))}" aria-label="${esc(t('ng.open.title'))}">${esc(t('ng.open'))}</button><button class="primary" onclick="goodnight()">${esc(t('quiet.done.ok'))}</button></div></div>`);
     refresh(true);
   } catch (e) { alert(e.message); }
 }

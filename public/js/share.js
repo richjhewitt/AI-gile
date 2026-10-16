@@ -151,7 +151,7 @@ const Share = (function () {
       ${pv.files && pv.files.length ? `<div class="share-files" id="sharePrevFiles"><h4>${esc(t('share.prev.files'))}</h4>${pv.files.map(f => `<div>📎 ${esc(f.name)}${f.big ? ' <span class="muted">' + esc(t('share.prev.big')) + '</span>' : ''}</div>`).join('')}</div>` : ''}
       ${sh ? `<p class="muted">${esc(t('share.prev.sent', { when: ago(sh.sentAt || sh.at) }))}${sh.held ? ' ' + esc(t('share.prev.held')) : ''}</p>` : ''}
       <div class="err" id="shareErr"></div>
-      <div class="actions">${send}${sh ? `<button onclick="Share.unshareCard('${esc(cardId)}')" title="${esc(t('share.prev.stop.note'))}">${esc(t('share.prev.stop'))}</button>` : ''}
+      <div class="actions">${send}${sh ? `<button onclick="Share.unshareCard('${esc(cardId)}')" title="${esc(t('share.prev.stop.note'))}" aria-label="${esc(t('share.prev.stop.note'))}">${esc(t('share.prev.stop'))}</button>` : ''}
         <button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
   }
   async function cardAct(fn) { try { await fn(); closeDialog(); sig = ''; await load(); if (typeof rerender === 'function') rerender(); } catch (e) { err(e); } }
@@ -176,7 +176,7 @@ const Share = (function () {
         <div class="actions"><button class="primary" id="shareReplySend" onclick="Share.laneReply('${esc(share)}')">${esc(t('share.fc.send'))}</button></div></div>` : ''}
       <div class="err" id="shareErr"></div>
       <div class="actions">${x.taken ? `<a class="btn" href="#/p/${esc(slug())}/${esc(x.taken)}" onclick="closeDialog()">${esc(t('share.fc.open', { id: x.taken }))}</a>`
-        : `<button class="good" id="shareTake" onclick="Share.takeCard('${esc(share)}')" title="${esc(t('share.fc.takehelp'))}">${esc(t('share.fc.take'))}</button>`}
+        : `<button class="good" id="shareTake" onclick="Share.takeCard('${esc(share)}')" title="${esc(t('share.fc.takehelp'))}" aria-label="${esc(t('share.fc.takehelp'))}">${esc(t('share.fc.take'))}</button>`}
         <button onclick="closeDialog()">${esc(t('common.close'))}</button></div>
       ${x.taken ? '' : `<p class="muted">${esc(t('share.fc.takehelp'))}</p>`}</div>`, 'wide');
   }
@@ -197,7 +197,7 @@ const Share = (function () {
   function button(p) {
     const l = ofProject(p.slug);
     const label = !l ? t('share.btn') : l.state === 'live' ? t('share.btn.live', { name: l.friend }) + (l.on ? '' : ' ⏸') : l.state === 'offered' ? t('share.btn.offered') : t('share.btn.ended');
-    return `<button id="shareBtn" onclick="Share.dialog()" title="${esc(t('share.btn.title'))}">${esc(label)}</button>`;
+    return `<button id="shareBtn" onclick="Share.dialog()" title="${esc(t('share.btn.title'))}" aria-label="${esc(t('share.btn.title'))}">${esc(label)}</button>`;
   }
   const ticks = (pre, a) => ALLOW.map(k => `<label class="chk"><input type="checkbox" data-allow="${pre}${k}" ${a[k] ? 'checked' : ''}> ${esc(t('share.allow.' + k))}</label>`).join('');
   const readTicks = pre => Object.fromEntries(ALLOW.map(k => [k, !!(document.querySelector(`[data-allow="${pre}${k}"]`) || {}).checked]));
@@ -222,7 +222,7 @@ const Share = (function () {
       <label class="f"><span>${esc(t('share.title.label'))}</span><input type="text" id="shareTitle" maxlength="40" value="${esc(l.title || '')}" placeholder="${esc(t('share.title.ph'))}" onchange="Share.setLabels('${l.id}')"></label>
       <label class="f"><span>${esc(t('share.preview.label'))}</span><input type="url" id="sharePreview" maxlength="300" value="${esc(l.preview || '')}" placeholder="https://" onchange="Share.setLabels('${l.id}')"></label>
       <p class="muted">${esc(t('share.title.help', { name: l.friend }))} ${esc(t('share.preview.help', { name: l.friend }))}</p>
-      <div class="actions"><button id="shareSimple" onclick="Share.simplePreset('${l.id}')" title="${esc(t('share.simple.help'))}">${esc(t('share.simple'))}</button></div>
+      <div class="actions"><button id="shareSimple" onclick="Share.simplePreset('${l.id}')" title="${esc(t('share.simple.help'))}" aria-label="${esc(t('share.simple.help'))}">${esc(t('share.simple'))}</button></div>
       <p class="muted">${esc(t('share.simple.hint'))}</p>
       <p class="muted" id="shareRoleHelp">${esc(t('share.role.help.' + l.role))} ${esc(t('share.role.never', { name: l.friend }))}</p>
       ${changeHtml(l)}

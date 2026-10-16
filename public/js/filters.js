@@ -108,7 +108,7 @@ async function deleteView(i) {
 function viewsDialog() {
   const p = state.project, vs = p.views || [], cur = lastView(p.slug);
   popNext('views'); openDialog(`<h2>${esc(t('views.title'))}</h2><p class="muted">${esc(t('views.intro'))}</p>
-    ${vs.length ? vs.map((v, i) => `<div class="viewrow"><button type="button" class="grow" onclick="applyView(${i})">${v.name === cur ? '✓ ' : ''}${esc(v.name)}</button><button type="button" class="colbtn" title="${esc(t('views.delete'))}" onclick="deleteView(${i})">✕</button></div>`).join('') : `<p class="muted">${esc(t('views.none'))}</p>`}
+    ${vs.length ? vs.map((v, i) => `<div class="viewrow"><button type="button" class="grow" onclick="applyView(${i})">${v.name === cur ? '✓ ' : ''}${esc(v.name)}</button><button type="button" class="colbtn" title="${esc(t('views.delete'))}" aria-label="${esc(t('views.delete'))}" onclick="deleteView(${i})"><span aria-hidden="true">✕</span></button></div>`).join('') : `<p class="muted">${esc(t('views.none'))}</p>`}
     <h3>${esc(t('views.save.h'))}</h3>
     <div class="viewrow"><input type="text" id="view-name" maxlength="40" placeholder="${esc(t('views.placeholder'))}" onkeydown="if(event.key==='Enter')saveView()"><button class="primary" type="button" onclick="saveView()" ${vs.length >= 20 ? `disabled title="${esc(t('views.max'))}"` : ''}>${esc(t('views.save'))}</button></div>
     <div class="err" id="view-err"></div>

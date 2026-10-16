@@ -27,7 +27,7 @@ const FyFold = (() => {
     const cs = cardsOf(k);
     if (!cs.length) return;
     popNext('fyfold');
-    openDialog(`<div class="fyf" data-kind="${esc(k)}"><button type="button" class="fyf-x" title="${esc(t('common.close'))}" aria-label="${esc(t('common.close'))}" onclick="closeDialog()">✕</button><h2 id="fyfHead"></h2><div id="fyfList">${cs.map(rowHtml).join('')}</div></div>`, 'wide fyf-dlg');
+    openDialog(`<div class="fyf" data-kind="${esc(k)}"><button type="button" class="fyf-x" title="${esc(t('common.close'))}" aria-label="${esc(t('common.close'))}" onclick="closeDialog()"><span aria-hidden="true">✕</span></button><h2 id="fyfHead"></h2><div id="fyfList">${cs.map(rowHtml).join('')}</div></div>`, 'wide fyf-dlg');
     head(k, cs.length);
     const box = document.getElementById('fyfList');
     box.addEventListener('click', onClick); box.addEventListener('keydown', IB.onKey);

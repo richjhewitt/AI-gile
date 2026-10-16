@@ -42,7 +42,7 @@ const WhatsNew = (() => {
     const n = document.createElement('div');
     n.id = 'wnNote'; n.setAttribute('role', 'status');
     n.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:50;max-width:min(320px,calc(100vw - 24px));background:var(--card,#fff);color:inherit;border:1px solid var(--border,#8884);border-radius:10px;padding:10px 12px;box-shadow:0 4px 16px #0003';
-    n.innerHTML = `${esc(t('wn.note'))} <a href="#/whats-new" id="wnOpen"><b>${esc(t('wn.open'))}</b></a> <button id="wnClose" aria-label="${esc(t('wn.close'))}" title="${esc(t('wn.close'))}">✕</button>`;
+    n.innerHTML = `${esc(t('wn.note'))} <a href="#/whats-new" id="wnOpen"><b>${esc(t('wn.open'))}</b></a> <button id="wnClose" aria-label="${esc(t('wn.close'))}" title="${esc(t('wn.close'))}"><span aria-hidden="true">✕</span></button>`;
     const done = () => { try { localStorage.setItem(KEY, top.id); } catch {} n.remove(); };
     n.querySelector('#wnOpen').onclick = done; n.querySelector('#wnClose').onclick = done;
     document.body.appendChild(n);

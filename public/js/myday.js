@@ -53,7 +53,7 @@ const MyDay = (() => {
   M.redraw = async () => { const b = document.getElementById('mdBody'); if (!b) return; const html = await M.render(); const d = document.querySelector('#dialog .dialog'); if (d && document.getElementById('mdBody')) d.innerHTML = html; };
   M.go = hash => { closeDialog(); location.hash = hash; };
   M.done = () => closeDialog();
-  M.btn = () => `<button onclick="MyDay.open()" title="${esc(t('md.btn.title'))}">${esc(t('md.btn'))}</button>`;
+  M.btn = () => `<button onclick="MyDay.open()" title="${esc(t('md.btn.title'))}" aria-label="${esc(t('md.btn.title'))}">${esc(t('md.btn'))}</button>`;
   let polled = 0;
   setInterval(async () => {
     if (typeof i18n === 'undefined' || !i18n.ready || document.hidden || Date.now() - polled < 10000) return;

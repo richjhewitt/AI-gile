@@ -12,8 +12,8 @@ const Pack = (() => {
   }
 
   function cardBtns(p, c) {
-    return `<button id="packCopy" onclick="Pack.copy()" title="${esc(t('pack.copy.title'))}">${esc(t('pack.copy'))}</button>`
-      + `<button id="packAi" class="ai-only" onclick="Pack.ai()" title="${esc(t('pack.ai.title'))}">${esc(t('pack.ai'))}</button>`
+    return `<button id="packCopy" onclick="Pack.copy()" title="${esc(t('pack.copy.title'))}" aria-label="${esc(t('pack.copy.title'))}">${esc(t('pack.copy'))}</button>`
+      + `<button id="packAi" class="ai-only" onclick="Pack.ai()" title="${esc(t('pack.ai.title'))}" aria-label="${esc(t('pack.ai.title'))}">${esc(t('pack.ai'))}</button>`
       + `<button id="packPaste" onclick="Pack.paste()">${esc(t('pack.paste'))}</button>`;
   }
 

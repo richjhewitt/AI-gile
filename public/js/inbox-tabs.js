@@ -42,7 +42,7 @@
     const lookOf = p => IB.items.find(c => c.project === p) || {};
     const names = projects.map(([, n]) => String(n || ''));
     const btn = (key, name, list) => { const l = key === 'all' ? {} : lookOf(key), kt = kindsTitle(list);
-      return `<button class="ib-tab ${IB.tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${IB.tab === key}" title="${esc(name + (kt ? ' · ' + kt : ''))}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectLogo || l.projectEmoji ? pic(l.projectLogo, l.projectEmoji) + ' ' : ''}<span class="nm">${esc(key === 'all' ? name : labelOf(String(name || ''), names))}</span> ${tabCounts(list, key === 'all' ? IB.friends() : 0)}</button>`; };
+      return `<button class="ib-tab ${IB.tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${IB.tab === key}" title="${esc(name + (kt ? ' · ' + kt : ''))}" aria-label="${esc(name + (kt ? ' · ' + kt : ''))}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectLogo || l.projectEmoji ? pic(l.projectLogo, l.projectEmoji) + ' ' : ''}<span class="nm">${esc(key === 'all' ? name : labelOf(String(name || ''), names))}</span> ${tabCounts(list, key === 'all' ? IB.friends() : 0)}</button>`; };
     IB.tabOrder = orderedProjects.map(([p]) => p);
     const projectBtns = orderedProjects.map(([p, name]) => btn(p, name, IB.items.filter(c => c.project === p))).join('');
     const html = allAtEnd
