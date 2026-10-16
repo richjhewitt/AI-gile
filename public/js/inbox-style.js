@@ -22,6 +22,15 @@ const INBOX_CSS = `
     --t-bg: #22305a; --t-fg: #bcd0ff; --t-tint: #181e2e; --t-line: #4a5f9a; --t-ink: #a9c1ff;
     --k-bg: #3d2e10; --k-fg: #ffd591; --k-tint: #221c10; --k-line: #a0762a; --k-ink: #ffcf7a;
 }
+/* AIG-1430: Black's dim muted text needs darker item tints to keep 4.5:1. */
+:root[data-theme=black] { --q-tint: #0e1528; --b-tint: #1e0f10; --t-tint: #0f131d; --k-tint: #17130a; }
+/* AIG-1430: Night gets its own warm tints whatever the theme or system setting (last, so it wins over all of the above). */
+:root[data-night] {
+    --q-bg: #bd875e; --q-fg: #20100b; --q-tint: #1e150d; --q-line: #bd875e; --q-ink: #d9a77c;
+    --b-line: #d28e7e; --b-tint: #22120e; --b-ink: #e0a090;
+    --t-bg: #2a1e14; --t-fg: #d6b08c; --t-tint: #18110b; --t-line: #8a6a4e; --t-ink: #d0a882;
+    --k-bg: #33240f; --k-fg: #dcb27a; --k-tint: #1a130a; --k-line: #9a7438; --k-ink: #d8ae76;
+}
 #inboxTop { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .ib-btn { display: inline-flex; align-items: center; gap: 8px; padding: 4px 8px 4px 12px; border: 1px solid var(--line); border-radius: 99px; background: var(--panel); font-weight: 600; }
 .ib-btn:hover { border-color: var(--accent); }

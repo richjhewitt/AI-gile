@@ -1,4 +1,4 @@
-import { proof, contrastTokens } from '../a11y-proof.mjs';
+import { proof, contrastTokens, contrastInboxTints, TINT_CASES, SHOTS } from '../a11y-proof.mjs';
 // QA areas: look, logos, theme (split from look-setup.mjs, AIG-297).
 import fs from 'node:fs';
 import http from 'node:http';
@@ -136,6 +136,15 @@ def('theme', 'theme: follows the system, or System / Light / Dark picked in the 
   const nightContrast = await contrastTokens(page, ['night']);
   check('night text tokens meet 4.5:1 (AIG-1430)', !nightContrast.length, nightContrast);
   await proof(page, 'AIG-1430');
+  // AIG-1430: text on the Inbox item tints (a real question and a real to-test item, fixtures for the rest), every theme, Night on a light system too.
+  await mkProject(s, 'Alpha', 'ALP');
+  const q = await mkCard(s, 'alpha', 'A question for the owner'), tt = await mkCard(s, 'alpha', 'A feature to test');
+  s.cli(['ask', 'alpha', q.id, 'Go?', '--as', 'Lead']); s.cli(['test', 'alpha', tt.id, '1. look', '--as', 'Lead']);
+  const ib = await openPage(ctx, '#/inbox');
+  await ib.waitForSelector('.ib-item.q');
+  const tintFails = await contrastInboxTints(ib, TINT_CASES, SHOTS + '/AIG-1430-inbox-night-light.png');
+  check('Inbox item text meets 4.5:1 on its tint in every theme, Night on a light system included (AIG-1430)', !tintFails.length, tintFails);
+  noErrors(ib); await ib.close();
   await page.evaluate(() => { delete document.documentElement.dataset.theme; document.documentElement.removeAttribute('data-night'); });
   for (const theme of ['light', 'dark', 'black']) {
     await page.evaluate(theme => {
