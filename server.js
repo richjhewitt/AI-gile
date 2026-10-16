@@ -240,6 +240,8 @@ const server = http.createServer(async (req, res) => {
           if (req.aigilePhone) phone.deniedBody(body);   // a phone sets no command for a team to run (AIG-868)
           const ended = lag.call(req.method, pathname);   // 🐢 a slow call is written down (AIG-1405)
           let out; try { out = await fn(m.slice(1), body, url.searchParams, req); } finally { ended(); }   // DM routes talk to the relay, so they may be async; req: who is asking (share.ownerOnly)
+          // AIG-1434: a named helper's CLI write on a project counts as that helper working for the next 15 minutes (lib/teamlive.js).
+          if (pm && where && req.method !== 'GET' && req.headers['x-aigile-as']) { try { require('./lib/teamlive').wrote(decodeURIComponent(pm[1]), decodeURIComponent(String(req.headers['x-aigile-as']))); } catch {} }
           // A route can answer with a file instead of JSON: { __file: absolute path }.
           if (out && out.__cookie) { res.setHeader('Set-Cookie', out.__cookie); delete out.__cookie; }   // the phone's device key (AIG-868)
           if (out && out.__sse) return out.__sse(res, req);   // a live stream (the terminal, AIG-471): the route writes it

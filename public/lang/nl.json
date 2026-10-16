@@ -451,6 +451,7 @@
  "board.team.active": "Toon alleen actieve",
  "board.team.idle": "💤 inactief",
  "board.team.idleseen": "💤 inactief · laatst gezien {ago}",
+ "board.team.cli": "⚡ aan het werk (opdrachtregel)",
  "board.log": "Logboek & besluiten",
  "board.log.none": "Nog niets in het logboek.",
  "board.limit": "Limiet {n}",

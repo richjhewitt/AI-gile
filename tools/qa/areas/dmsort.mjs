@@ -38,8 +38,8 @@ def('dmsort', 'Messages: newest chat first, All hands pinned, ✕ Close hides a 
   check('closed chat is gone from the list', !(await order()).includes('sort-one'));
   check('it is stored on the server', !!(await s.ok('GET', '/api/dmclosed'))['sort-one']);
   check('Show closed (1) is at the bottom', /1/.test(await page.textContent('[data-dmshowclosed]')));
-  // The stand-ups pill floats bottom left: it must not cover Show closed (AIG-917), at desktop and phone width.
-  await page.evaluate(() => { const e = document.createElement('div'); e.id = 'suPrompt'; e.innerHTML = '<div class="su-pill"><b>📣 Call stand-ups?</b><button class="primary">Call all</button><button>Pick</button><button>No</button></div>'; document.body.appendChild(e); });
+  // The stand-ups pill must not cover Show closed (AIG-917), at desktop and phone width (AIG-1372: the page's own pill, in the page flow).
+  await page.evaluate(() => suPromptShow());
   await page.evaluate(() => { const l = document.querySelector('#dmPanel .dm-list'), row = l.querySelector('.dm-rowwrap'), at = l.querySelector('.dm-closed'); for (let i = 0; i < 25; i++) l.insertBefore(row.cloneNode(true), at); });   // a long list, so the end of it sits at the bottom of the panel
   for (const [w, h] of [[1400, 900], [390, 844]]) {
     await page.setViewportSize({ width: w, height: h }); await sleep(200);

@@ -10,10 +10,10 @@ def('testerfix', 'shortcuts ? row text, 🔥 Incidents and problems in ❓ Help,
   await page.waitForSelector('#dialog .dialog.sc .window-close');
   const sheet = await page.textContent('#dialog');
   check('shortcuts: the ? row says it shows or hides the list, not the self-care help', /Show or hide this list/.test(sheet) && !/Small nudges/.test(sheet));
-  // AIG-967: the 📣 Call stand-ups? nudge hides while a dialog is open
-  const nudge = await page.evaluate(() => { const el = document.createElement('div'); el.id = 'suPrompt'; el.innerHTML = '<div class="su-pill">x</div>'; document.body.appendChild(el);
-    const open = getComputedStyle(el).display; closeDialog(); const shut = getComputedStyle(el).display; el.remove(); return { open, shut }; });
-  check('the stand-up nudge hides while a dialog is open and comes back after', nudge.open === 'none' && nudge.shut !== 'none', nudge);
+  // AIG-967: the 📣 Call stand-ups? nudge never lies over a dialog (AIG-1372: it sits in the page flow, so an open dialog is on top of it)
+  const nudge = await page.evaluate(() => { suPromptShow(); const p = document.querySelector('#suPrompt .su-pill').getBoundingClientRect(), on = () => !!(document.elementFromPoint(p.left + p.width / 2, p.top + p.height / 2) || { closest: () => null }).closest('#suPrompt');
+    const open = on(); closeDialog(); const shut = on(); suPromptGone(); return { open, shut }; });
+  check('the stand-up nudge stays under an open dialog and shows again after', !nudge.open && nudge.shut, nudge);
   await page.keyboard.press('?');
   await page.waitForSelector('#dialog .dialog.sc .window-close');
   await page.click('#dialog .dialog.sc .window-close');

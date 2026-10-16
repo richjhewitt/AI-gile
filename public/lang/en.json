@@ -348,6 +348,7 @@
  "board.team.active": "Show active only",
  "board.team.idle": "💤 idle",
  "board.team.idleseen": "💤 idle · last seen {ago}",
+ "board.team.cli": "⚡ working (command line)",
  "board.log": "Log & decisions",
  "board.log.none": "Nothing logged yet.",
  "board.limit": "Limit {n}",
