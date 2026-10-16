@@ -102,7 +102,7 @@ const Dms = (() => {
       // AIG-324: each project a friend shares with me, as its own board.
       + (boards.length ? '<div class="dm-sep"></div>' + boards.map(l => btn(`data-go="#/shared/${esc(l.id)}" data-sboard="${esc(l.id)}"`, `<span class="dm-av">🔗</span>`, location.hash === '#/shared/' + l.id, t('sb.rail', { name: l.friend, project: l.theirName }))).join('') : '');
     const r = el('dmRail');
-    if (r && r.dataset.sig !== html && !dragging) { r.dataset.sig = html; r.innerHTML = html; }
+    if (r && r.dataset.sig !== html && !dragging) { const keep = r.contains(document.activeElement) ? keepFocus(r) : null; r.dataset.sig = html; r.innerHTML = html; if (keep) keep(); }   // AIG-1428: a repaint keeps the focused rail button
     if (listOpen && !open) paintList();
   }
 
@@ -175,7 +175,8 @@ const Dms = (() => {
       panel.dataset.sig = html; panel.innerHTML = html;
       const sb = kept && el('dmSearch'); if (sb) { sb.focus(); try { sb.setSelectionRange(kept[0], kept[1]); } catch {} }   // a repaint keeps your place in the search box
     }
-    panel.hidden = false;
+    const was = panel.hidden; panelShown(panel);
+    if (was && !panel.contains(document.activeElement)) { const f = el('dmSearch') || focusablesIn(panel)[0]; if (f) f.focus(); }   // AIG-1428: focus into the list
   }
 
   // 👥 Groups (AIG-1027): their own part of the All / Agents list, with ＋ New group.
@@ -482,7 +483,7 @@ const Dms = (() => {
       <textarea dir="auto" id="dmText" data-draft="dm/_allhands" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(EnterSend.is(event,'chat')){event.preventDefault();Dms.askTeams(true)}"></textarea><div class="err" id="dmErr"></div>
       <div class="actions" id="allHandsAsk" hidden></div>
       <div class="actions" id="allHandsActs"><button id="allHandsSend" class="primary" onclick="Dms.send()" ${busy ? 'disabled' : ''}>${esc(t('dms.send'))}</button></div></div>`;
-    panel.hidden = false; loadThread(); loadRail(); el('dmText').focus();
+    panelShown(panel); loadThread(); loadRail(); el('dmText').focus();
   }
   // AIG-943: Enter and the button first ask "Send to N teams?"; only Send in that question sends.
   const askTeams = on => { const a = el('allHandsAsk'), b = el('allHandsActs'); if (!a) return; if (on && !el('dmText').value.trim()) { el('dmErr').textContent = t('dms.empty'); return; } if (on) el('dmErr').textContent = ''; askAll = on; a.hidden = !on; b.hidden = on; if (on) { const n = projects.filter(x => !x.archived).length; a.innerHTML = `<b class="dm-askq" role="alert">${esc(t(n === 1 ? 'allhands.confirm.one' : 'allhands.confirm', { n }))}</b><button id="allHandsYes" class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button><button id="allHandsNo" onclick="Dms.askTeams(false)">${esc(t('common.cancel'))}</button>`; el('allHandsYes').focus(); } else el('dmText').focus(); };
@@ -521,7 +522,7 @@ const Dms = (() => {
         <textarea dir="auto" id="dmText" data-draft="dm/${esc(slug)}" rows="2" placeholder="${esc(t('dms.placeholder'))}" onkeydown="if(EnterSend.is(event,'${who ? 'dm' : 'chat'}')){event.preventDefault();Dms.send()}"></textarea>
         <div class="err" id="dmErr"></div>
         <div class="actions"><button class="good" id="dmGo" ${who ? `onclick="Dms.send('👍')" title="${esc(t('dms.like.title'))}" aria-label="${esc(t('dms.like.title'))}">${esc(t('dms.like'))}` : `onclick="Dms.send('GO')" title="${esc(t('dms.go.title'))}">${esc(t('dms.go'))}`}</button><button class="primary" onclick="Dms.send()">${esc(t('dms.send'))}</button>${c.group ? '' : who ? `<button id="dmAsk" onclick="Dms.ask()" title="${esc(t('ask.btn.title', { name: who.name }))}" aria-label="${esc(t('ask.btn.title', { name: who.name }))}">${esc(t('ask.btn', { name: who.name }))}</button>` : ''}${c.group ? '' : Attach.boxHtml('dm:' + slug)}</div></div>`;
-    panel.hidden = false;
+    panelShown(panel);
     if (typeof Call !== 'undefined') Call.sync();   // AIG-1394: already in this chat's call = "In the call", not Join call
     if (who) el('dmGo').hidden = false;
     loadRail(); loadThread(true);
@@ -556,7 +557,18 @@ const Dms = (() => {
   function reload() { return Promise.all([loadRail(), open ? loadThread() : null]); }
   function aim(id) { target = id; if (id !== GENERAL) fold = id; const l = el('dmList'); if (l) l.dataset.sig = ''; loadThread(); }
   function back() { DiscordTab.stop(); TwitchTab.stop(); open = null; thread = null; el('dmPanel').dataset.sig = ''; paintList(); loadRail(); }
-  function close() { if (inPop()) { window.close(); return; } DiscordTab.stop(); TwitchTab.stop(); open = null; thread = null; listOpen = false; const p = el('dmPanel'); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail(); }
+  function close() {
+    if (inPop()) { window.close(); return; } DiscordTab.stop(); TwitchTab.stop(); open = null; thread = null; listOpen = false;
+    const p = el('dmPanel'), inside = !p.hidden && (p.contains(document.activeElement) || document.activeElement === document.body); p.hidden = true; p.innerHTML = ''; p.dataset.sig = ''; loadRail();
+    const back = dlgTwin(opener); opener = null;   // AIG-1428: focus back on what opened it (the 💬 rail button when that was a shortcut)
+    if (inside) { const b = back && back.isConnected && !p.contains(back) ? back : document.querySelector('#dmRail [data-dms]'); if (b) b.focus({ preventScroll: true }); }
+  }
+  // AIG-1428: the panel is a named dialog (not modal: the page stays usable); opening it notes what had focus, so closing gives it back.
+  let opener = null;
+  function panelShown(panel) {
+    if (panel.hidden && !inPop()) { const a = document.activeElement; opener = a && a !== document.body && !panel.contains(a) ? focusNote(a) : null; }
+    panel.hidden = false; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', t('dms.title'));
+  }
 
   let pendingSend = null;
   async function send(fixed) {
@@ -686,6 +698,15 @@ const Dms = (() => {
     } else if (i >= 0 && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
       e.preventDefault(); const n = rows[i + (e.key === 'ArrowDown' ? 1 : -1)]; if (n) n.focus(); else if (e.key === 'ArrowUp') el('dmSearch').focus();
     }
+  });
+  // AIG-1428: Tab goes round inside the open panel (the top bar it covers is out of reach until you leave it); Esc closes it
+  // (a typed message or search keeps it open: the search's own Esc clears it first).
+  document.addEventListener('keydown', e => {
+    if ((e.key !== 'Tab' && e.key !== 'Escape') || e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey || $('dialog').firstChild) return;
+    const p = el('dmPanel'); if (!p || p.hidden || !p.contains(document.activeElement)) return;
+    if (e.key === 'Tab') { trapTab(e, p); return; }
+    if (inPop() || (/^(INPUT|TEXTAREA)$/.test(e.target.tagName) && e.target.value)) return;
+    e.preventDefault(); close();
   });
   window.addEventListener('hashchange', () => setTimeout(loadRail, 50));
   // Live: the rail every few seconds; an open chat a little more often.

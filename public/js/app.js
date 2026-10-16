@@ -48,9 +48,19 @@ window.addEventListener('hashchange', () => {
   if (popAutoHash(location.hash, lastHash)) return;
   lastHash = location.hash;
   state.editing = false; state.setupLanded = null;
-  const pg = pageOf(location.hash); if (pg !== lastPage) { lastPage = pg; window.scrollTo(0, 0); }
-  refresh(true);
+  const pg = pageOf(location.hash), moved = pg !== lastPage; if (moved) { lastPage = pg; window.scrollTo(0, 0); }
+  Promise.resolve(refresh(true)).catch(() => {}).then(() => { if (moved) { pageFocus(); setTimeout(pageFocus, 400); } });
 });
+// AIG-1428: a new page puts focus on its heading (or the page itself), so a screen reader says where you are and Tab goes on from
+// there, not from the top bar. Focus somewhere on the new page, in a dialog, a card or the Messages panel is left where it is.
+function pageFocus() {
+  if ($('dialog').firstChild || document.querySelector('#modal .panel')) return;
+  const a = document.activeElement, dm = $('dmPanel');
+  if (dm && !dm.hidden && dm.contains(a)) return;
+  if (a && a !== document.body && a.isConnected && !a.closest('header, #dmRail, #helpMenu, #statusMenu')) return;
+  const h = [...$('app').querySelectorAll('h1, h2')].find(x => x.getClientRects().length && !x.closest('a, button, [role=button]'));   // a page heading, not a project tile's name
+  if (h) { if (!h.hasAttribute('tabindex')) h.tabIndex = -1; h.focus({ preventScroll: true }); } else $('app').focus({ preventScroll: true });
+}
 // The language file is in before the first render (AIG-124). If it or the first /api/meta fails (a restart, a half-written
 // file mid-update), the page says "Updating… retrying" and starts again with backoff (AIG-517, see Boot in index.html).
 (function start() {

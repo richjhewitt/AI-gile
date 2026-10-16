@@ -1,14 +1,39 @@
 /* ---------- dialog shell ---------- */
 // AIG-1277: every dialog is a modal for screen readers (role=dialog, aria-modal, named by its heading), Tab stays inside, and closing puts focus back on what opened it.
 let dlgOpener = null, dlgLast = null;   // dlgLast: the last focused control outside a dialog (a board redraw can replace the opener while a dialog loads, so closing looks for its twin)
-document.addEventListener('focusin', e => { if (!e.target.closest('#dialog')) dlgLast = { el: e.target, id: e.target.id, cls: e.target.className, tag: e.target.tagName, txt: (e.target.textContent || '').trim(), title: e.target.getAttribute('title') || '' }; });
+// focusNote: enough about a control to find its twin after a redraw replaced it (AIG-1424: also by its data-* / onclick / href, as a count in its text can change).
+const FOCUS_KEYS = ['data-id', 'data-pslug', 'data-slug', 'data-act', 'data-tab', 'data-ctab', 'data-dms', 'data-dm', 'data-go', 'onclick', 'onchange', 'href', 'name'];
+const focusKey = el => FOCUS_KEYS.map(k => el.getAttribute(k) || '').join('|').replace(/\|+$/, '');
+function focusNote(el) { return el && el.getAttribute ? { el, id: el.id, cls: el.className, tag: el.tagName, txt: (el.textContent || '').trim(), title: el.getAttribute('title') || '', key: focusKey(el) } : null; }
+document.addEventListener('focusin', e => { if (!e.target.closest('#dialog')) dlgLast = focusNote(e.target); });
 function dlgTwin(d) {
   if (!d) return null; if (document.contains(d.el)) return d.el;
   if (d.id) return document.getElementById(d.id);
-  return [...document.querySelectorAll(d.tag.toLowerCase())].find(x => x.className === d.cls && (x.textContent || '').trim() === d.txt && (x.getAttribute('title') || '') === d.title) || null;
+  const all = [...document.querySelectorAll(d.tag.toLowerCase())], same = x => (x.textContent || '').trim() === d.txt && (x.getAttribute('title') || '') === d.title;
+  const keyed = d.key ? all.filter(x => focusKey(x) === d.key) : [];
+  return all.find(x => x.className === d.cls && same(x)) || keyed.find(same) || (keyed.length === 1 ? keyed[0] : null);
 }
 const DLG_FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])';
-function dlgFocusables() { return [...$('dialog').querySelectorAll(DLG_FOCUSABLE)].filter(el => el.getClientRects().length && !el.closest('[hidden]')); }
+// A redraw of a page keeps the keyboard focus and the scroll where they were (AIG-1424): call before replacing the HTML, then call what it returns.
+function keepFocus(root = $('app')) {
+  const a = document.activeElement, note = a && a !== root && root && root.contains(a) ? focusNote(a) : null, y = window.scrollY;
+  return () => {
+    if (note && !document.contains(note.el)) { const n = dlgTwin(note); if (n && root.contains(n)) n.focus({ preventScroll: true }); }
+    if (window.scrollY !== y) window.scrollTo(window.scrollX, y);
+  };
+}
+// The shared focus helpers (AIG-1423): the card panel and the Messages panel keep Tab inside them the same way a dialog does.
+function focusablesIn(box) { return box ? [...box.querySelectorAll(DLG_FOCUSABLE)].filter(el => el.getClientRects().length && !el.closest('[hidden]')) : []; }
+function dlgFocusables() { return focusablesIn($('dialog')); }
+// Tab and Shift+Tab go round inside box; from outside it they land on its first control. home: what takes focus when it has none (the box itself).
+function trapTab(e, box, home = box) {
+  const els = focusablesIn(box);
+  if (!els.length) { e.preventDefault(); home.focus(); return; }
+  const first = els[0], last = els[els.length - 1], a = document.activeElement;
+  if (!box.contains(a)) { e.preventDefault(); first.focus(); }
+  else if (e.shiftKey && (a === first || a === home)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+}
 function openDialog(html, cls = '', pop = '') {   // pop: the kind that gets the shared ⧉ Pop out button (popout.js, AIG-658)
   $('dialog').innerHTML = `<div class="overlay center"><div class="dialog ${cls}">${html}</div></div>`;
   const boxTools = $('dialog').querySelector('.dialog');
@@ -32,6 +57,8 @@ function closeDialog() {
   if (sureDone) sureDone(false);   // an open askSure is a No
   $('dialog').innerHTML = '';
   { const el = dlgTwin(dlgOpener); if (el) { try { el.focus(); } catch {} } }
+  // AIG-1427: the opener is gone (a menu item, a redrawn list): focus goes back into the open card, or to the page, never the top of it.
+  if (document.activeElement === document.body) { if (document.querySelector('#modal .panel')) cardFocusPanel(); else if (dlgOpener) $('app').focus({ preventScroll: true }); }
   dlgOpener = null;
   if (state.route.view === 'dlg') { window.close(); return; }   // a dialog in its own window: closing it closes the window
   if (state.cvPreview) { state.cvPreview = null; renderBoardOnly(); }   // an unsaved card view preview goes away (AIG-119)
@@ -40,12 +67,7 @@ document.addEventListener('keydown', e => {
   if (!$('dialog').firstChild) return;
   if (e.key === 'Escape') { closeDialog(); return; }
   if (e.key !== 'Tab') return;
-  const els = dlgFocusables(), box = $('dialog').querySelector('.dialog');
-  if (!els.length) { e.preventDefault(); if (box) box.focus(); return; }
-  const first = els[0], last = els[els.length - 1], a = document.activeElement;
-  if (!$('dialog').contains(a)) { e.preventDefault(); first.focus(); }
-  else if (e.shiftKey && (a === first || a === box)) { e.preventDefault(); last.focus(); }
-  else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+  trapTab(e, $('dialog'), $('dialog').querySelector('.dialog') || $('dialog'));
 });
 // An in-app "are you sure?" instead of the browser's plain confirm box (AIG-992): resolves true on the OK button, false on Cancel or Escape.
 let sureDone = null;
@@ -56,6 +78,31 @@ function askSure(title, text, ok) {
     $('sureOk').onclick = () => { sureDone(true); closeDialog(); };
     $('sureOk').focus();
   });
+}
+
+/* ---------- pop-up menus by keyboard (AIG-1426) ---------- */
+// menuKeys(menu, btn, close): opening puts focus on the first item (opts.pick: a selector for the one to start on), ArrowUp / ArrowDown
+// and Home / End walk the items, Esc closes it and gives focus back to btn, Tab closes it and goes on from btn (opts.tab false: Tab
+// moves through it as usual). btn says aria-expanded; close() sets it back. menuKey is the key part, for a menu a redraw replaces.
+function menuItems(m, sel) { return [...m.querySelectorAll(sel || '[role^="menuitem"]')].filter(x => x.getClientRects().length && !x.disabled); }
+function menuKey(e, m, btn, close, opts = {}) {
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+  const list = menuItems(m, opts.items), i = list.indexOf(document.activeElement), k = e.key, n = list.length, back = () => { if (btn && btn.isConnected) btn.focus(); };
+  if ((k === 'ArrowDown' || k === 'ArrowUp') && e.target.tagName !== 'SELECT') { e.preventDefault(); if (n) list[i < 0 ? (k === 'ArrowDown' ? 0 : n - 1) : (i + (k === 'ArrowDown' ? 1 : n - 1)) % n].focus(); }
+  else if ((k === 'Home' || k === 'End') && e.target.tagName !== 'SELECT') { e.preventDefault(); if (n) list[k === 'Home' ? 0 : n - 1].focus(); }
+  else if (k === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); back(); }
+  else if (k === 'Tab' && opts.tab !== false) { close(); back(); }   // the browser's Tab then goes on from the button
+}
+function menuKeys(m, btn, close, opts = {}) {
+  if (btn) btn.setAttribute('aria-expanded', 'true');
+  const first = (opts.pick && m.querySelector(opts.pick)) || menuItems(m, opts.items)[0]; if (first) first.focus();
+  m.addEventListener('keydown', e => menuKey(e, m, btn, close, opts));
+}
+// Closing a menu: its button says closed, and focus left on one of its items (now gone) goes back to the button first,
+// so a dialog the item opens gives focus back to the button when it closes.
+function menuClosed(m, btn) {
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+  if (m && btn && m.contains(document.activeElement) && btn.isConnected) btn.focus({ preventScroll: true });
 }
 
 /* ---------- new card ---------- */

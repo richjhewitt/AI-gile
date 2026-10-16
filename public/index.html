@@ -47,7 +47,7 @@
   <span class="alpha-tag" data-i18n="alpha.tag" data-i18n-title="alpha.tip" title="Early and unfinished: thanks for trying it!">🐣 Closed pre-alpha</span>
   <span class="crumb" id="crumb"></span>
   <span class="spacer"></span>
-  <button id="helpBtn" class="navlink" onclick="helpMenu()" data-i18n="help.btn" data-i18n-title="help.btn.title" title="Help" aria-label="Help" aria-haspopup="menu">❓ Help</button>
+  <button id="helpBtn" class="navlink" onclick="helpMenu()" data-i18n="help.btn" data-i18n-title="help.btn.title" title="Help" aria-label="Help" aria-haspopup="menu" aria-expanded="false">❓ Help</button>
   <button id="ideaBtn" class="navlink" onclick="ideaDialog()" data-i18n-title="idea.btn.title" title="Got an idea? Jot it down" aria-label="Got an idea? Jot it down"><span aria-hidden="true">💡</span></button>
   <button id="bugBtn" class="navlink" onclick="newCard({type:'bug',priority:'high',status:'team'})" data-i18n="board.raisebug">🐞 Raise bug</button>
   <span id="teamTop" data-icon="👥"></span>
@@ -63,7 +63,7 @@
   <button id="streamBtn" class="navlink" onclick="Streamer.toggle()" aria-pressed="false" data-i18n="streamer.btn" title="Streamer mode" aria-label="Streamer mode">🎥 Streamer</button>
   <button id="liveBtn" class="navlink" onclick="Streamer.goLive()" hidden></button>
   <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" data-i18n="nt.off" data-i18n-title="nt.title.off" title="No Token Mode" aria-label="No Token Mode">⛔ No Token Mode</button>
-  <button id="statusBtn" class="navlink" onclick="Status.menu()" aria-haspopup="menu" title="Your status" aria-label="Your status"><span aria-hidden="true">🟢</span></button>
+  <button id="statusBtn" class="navlink" onclick="Status.menu()" aria-haspopup="menu" aria-expanded="false" title="Your status" aria-label="Your status"><span aria-hidden="true">🟢</span></button>
   <button id="tiredBtn"class="navlink" onclick="Tired.toggle()" aria-pressed="false" title="Tired mode" aria-label="Tired mode"><span aria-hidden="true">🔋</span></button>
   <a class="navlink" id="mailNav" href="#/mail" style="display:none" data-i18n="mail.nav" data-i18n-title="mail.nav.title" title="Your mail inbox" aria-label="Your mail inbox">✉️ Mail</a>
   <a class="navlink" id="assumeNav" href="#/assumptions" data-i18n-title="assume.nav.title" title="Guesses the team made while you were away" aria-label="Guesses the team made while you were away"><span data-i18n="assume.nav">🌙 Assumptions</span> <span id="assumeBadge" class="pill you" hidden></span></a>

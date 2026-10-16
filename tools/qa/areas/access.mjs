@@ -73,9 +73,9 @@ def('pagea11y', 'accessibility (AIG-1332): a page title per route (in your langu
   await go('#/setup', '#setupForm'); check('title: Setup · AI-gile', (await title()) === 'Setup · AI-gile', await title());
   await go('#/p/alpha', '.board .column'); check('title: the board is the project name', (await title()) === 'Alpha · AI-gile', await title());
   await go('#/p/alpha/' + card.id, '.panel'); check('title: an open card names itself', (await title()) === `${card.id} Fix the door · Alpha · AI-gile`, await title());
-  // Skip to content
+  // Skip to content: the first Tab stop of a freshly loaded page (after a page change inside the app focus is on the new page's heading, AIG-1428)
   await go('#/p/alpha', '.board .column');
-  // Start Tab from the top of the page: a fresh load. (Closing a card puts focus back on its board card, AIG-1371, and Tab would go on from there.)
+  await page.reload(); await page.waitForSelector('.board .column'); await sleep(500);
   await page.evaluate(() => { const h = document.createElement('span'); h.id = 'qaTop'; h.tabIndex = -1; document.body.prepend(h); h.focus(); });
   await page.keyboard.press('Tab'); await page.evaluate(() => document.getElementById('qaTop').remove());
   const sk = await page.evaluate(() => { const a = document.activeElement, r = a.getBoundingClientRect(); return { id: a.id, text: a.textContent, inView: r.top >= 0 && r.bottom <= innerHeight && r.width > 0 }; });

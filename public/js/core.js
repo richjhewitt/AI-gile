@@ -498,9 +498,15 @@ async function refreshStaged(force, liveState, state, api) {
 }
 
 // A board redraw replaces every card: the keyboard focus goes back on the same card, or j/k and Shift+arrows lose their place (AIG-1289).
-function keepCardFocus() {
-  const a = document.activeElement, id = a && a.matches && a.matches('#app a.card[data-id]') ? a.dataset.id : null;
-  return () => { const n = id && document.querySelector(`#app a.card[data-id="${CSS.escape(id)}"]`); if (n && n !== document.activeElement) n.focus({ preventScroll: true }); };
+// AIG-1424: the same for any control on Home or a board (keepFocus, dialog shell), and the page scroll stays put.
+function keepCardFocus() { return keepFocus($('app')); }
+// AIG-1427: the board card for an id that can take focus (the same card can also sit in a folded or hidden list), else null.
+function boardCardEl(id) { return id ? [...document.querySelectorAll(`#app a.card[data-id="${CSS.escape(id)}"]`)].find(n => n.getClientRects().length) || null : null; }
+// Where focus goes when a card closes: its board card, else what opened it, else the page itself (so the next Tab goes on from there, not from the top).
+function focusAfterCard(id, opener) {
+  const n = boardCardEl(id) || dlgTwin(opener);
+  if (n && n.isConnected && !$('modal').contains(n)) { n.focus({ preventScroll: true }); if (document.activeElement === n) return; }
+  $('app').focus({ preventScroll: true });
 }
 function renderBoardOnly() {
   queueMicrotask(paintFilterBar);
@@ -587,7 +593,7 @@ function render() {
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   const keepCols = [...document.querySelectorAll('.column')].map(c => [c.dataset.status + '|' + (c.dataset.step || ''), c.scrollTop]);   // AIG-1211: a column scrolls inside itself
-  if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'home') { $('crumb').textContent = ''; const refocus = keepCardFocus(); $('app').innerHTML = renderHome(); refocus(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); document.body.classList.toggle('poplist', !!state.route.pop); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; setupLand(); wizardMaybe(); return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'dlg') { renderPopDlg(); return; }
@@ -639,10 +645,14 @@ function render() {
   const shown = document.querySelector('#modal .panel') ? state.cardFocus : null;   // the card open before this paint (closeCard empties #modal itself)
   paintModal(card ? renderCard(p, card) : '');
   // AIG-1371: focus moves into a card when it opens (so Esc, Tab and c work there) and back to its board card when it closes.
-  if (card && shown !== card.id) { state.cardFocus = card.id; if (!$('modal').contains(document.activeElement)) cardFocusPanel(); }
+  if (card && shown !== card.id) {
+    if (!shown) state.cardOpener = dlgLast && document.contains(dlgLast.el) && !$('modal').contains(dlgLast.el) ? dlgLast : null;   // AIG-1427: what opened it
+    state.cardFocus = card.id; if (!$('modal').contains(document.activeElement)) cardFocusPanel();
+  }
   else if (!card && state.cardFocus) {
     const was = state.cardFocus, a = document.activeElement; state.cardFocus = null;
-    const n = (!a || a === document.body) && document.querySelector(`#app a.card[data-id="${CSS.escape(was)}"]`); if (n) n.focus({ preventScroll: true });
+    if (!a || a === document.body) focusAfterCard(was, state.cardOpener);
+    state.cardOpener = null;
   }
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
   boardFit();   // AIG-1217
