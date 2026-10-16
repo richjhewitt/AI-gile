@@ -127,12 +127,20 @@ function teamOf(p) {
 }
 // Working ones first, then the rest, last seen newest first.
 const teamSorted = (team, live) => team.map((m, i) => [m, i]).sort(([a, i], [b, j]) => (live(b) - live(a)) || (live(a) ? i - j : String(b.updated || '').localeCompare(String(a.updated || '')))).map(([m]) => m);
-const teamStatus = (m, live) => live(m) ? (live.cli && live.cli(m) && !/working|review/i.test(m.status || '') ? t('board.team.cli') : m.status || '') :m.updated ? t('board.team.idleseen', { ago: ago(m.updated) }) : t('board.team.idle');
+const teamStatus = (m, live) => live(m) ? (live.cli && live.cli(m) && !/working|review/i.test(m.status || '') ? t('board.team.cli') : (m.status || '').replace(/working/i, t('ng.working')).replace(/in review/i, t('board.team.review'))) : m.updated ? t('board.team.idleseen', { ago: ago(m.updated) }) : t('board.team.idle');
 
 /* ---------- board page ---------- */
 // Phone (AIG-933): the toolbar buttons sit behind one ⋯ button; the choice survives the 1 s redraw.
 // ⋯ More closes once one of its tools is picked, so it never stays open over the window that tool opens (it sits above dialogs).
 function toggleTb() { state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), d = $('tbDots'); if (m) m.classList.toggle('open', state.tbOpen); if (d) d.setAttribute('aria-expanded', state.tbOpen ? 'true' : 'false'); }
+document.addEventListener('click', e => { if (state.tbOpen && !e.target.closest('#tbDots,#boardTbMore')) toggleTb(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.tbOpen) toggleTb(); });
+window.addEventListener('hashchange', () => { if (location.hash.split('/')[2] !== state.phoneBoard) state.phoneBoard = null; if (state.tbOpen) toggleTb(); });
+function boardLogText(l) {
+  const sent = l.author === 'Dispatcher' && /^(.*?) sent to (.*)$/.exec(l.text);
+  return sent ? t('board.dispatched', { card: sent[1], who: sent[2] }) : l.text;
+}
+
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
@@ -144,23 +152,21 @@ function renderBoard(p) {
   const live = teamLive(p), team = teamSorted(teamOf(p).filter(m => !/retired/i.test(m.status || '')), live);
   const showAll = teamAll(), folded = team.filter(m => !live(m)).length, shownTeam = showAll ? team : team.filter(live);
   const log = (p.log || []).slice().reverse().slice(0, 50);
-  // AIG-1076: an empty (new) project keeps + New, Docs, Ask the team and Views on the bar; the rest sits behind ⋯ More (on a phone everything does, AIG-933).
+  // Keep conversations on the bar (What's happening?, Ask the team); occasional tools stay in More (AIG-1420).
   const compact = !(window.matchMedia && matchMedia('(max-width: 600px), (max-height: 500px) and (pointer: coarse)').matches);   // AIG-1391: a phone on its side too
   const pick = `<button type="button" id="pickBtn" class="${state.pickMode ? 'primary' : ''}" aria-pressed="${state.pickMode ? 'true' : 'false'}" onclick="togglePickMode()" title="${esc(t('pick.mode.title'))}">${esc(t('pick.mode'))}</button>`;
   const happening = `<button onclick="happeningDialog()" title="${esc(t('board.happening.title'))}">${esc(t('board.happening'))}</button>`;
-  const keep = p.cards.length ? `${happening}${pick}<button onclick="viewsDialog()">${esc(t('board.views'))}</button>${standupButtons(p).split(' <a')[0]}` : `<button onclick="openDocs()">${esc(t('board.docs'))}</button><button onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="viewsDialog()">${esc(t('board.views'))}</button>`;
+  const keep = p.cards.length ? `${happening}<button onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="viewsDialog()">${esc(t('board.views'))}</button>` : `${happening}<button onclick="openDocs()">${esc(t('board.docs'))}</button><button onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="viewsDialog()">${esc(t('board.views'))}</button>`;
   return `<div class="toolbar${compact ? ' compact' : ''}"><h2><bdi>${esc(p.name)}</bdi>${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}${p.sample ? ` <span class="pill sample-pill">${esc(t('sample.pill'))}</span> <button id="sampleRemove" onclick="removeSample()" title="${esc(t('sample.remove.title'))}">${esc(t('sample.remove'))}</button>` : ''}</h2>
       <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
-      ${compact ? `<span class="tb-keep">${keep}</span>` : ''}
+      <span class="tb-keep">${compact ? keep : happening + `<button onclick="askTeamDialog()">${esc(t('board.ask'))}</button>`}</span>
       <button class="tb-dots" id="tbDots" aria-expanded="${state.tbOpen ? 'true' : 'false'}" aria-label="${esc(t('board.more'))}" title="${esc(t('board.more'))}" onclick="toggleTb()">⋯${compact ? ' ' + esc(t('board.more')) : ''}</button>
       <div class="tb-more${state.tbOpen ? ' open' : ''}" id="boardTbMore" onclick="if (state.tbOpen && event.target.closest('button')) toggleTb()">
       ${compact && !p.cards.length ? '' : `<button onclick="openDocs()">${esc(t('board.docs'))}</button>`}
-      ${compact && p.cards.length ? '' : happening}
-      ${compact && !p.cards.length ? '' : `<button onclick="askTeamDialog()" title="${esc(t('board.ask.title'))}">${esc(t('board.ask'))}</button>`}
       <select class="lanesel" title="${esc(t('lanes.title'))}" onchange="setLanes(this.value)">${lanesList().map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
       ${compact ? '' : `<button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>`}
-      ${compact ? '' : pick}
-      ${compact && p.cards.length ? (hasStandupAnswers(p) ? standupButtons(p).slice(standupButtons(p).indexOf(' <a')) : '') : standupButtons(p)}
+      ${pick}
+      ${standupButtons(p)}
       <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
       <button onclick="location.hash='#/stats/${esc(p.slug)}'" title="${esc(t('stats.btn.title'))}">${esc(t('stats.title'))}</button>
       <button onclick="location.hash='#/ci/${esc(p.slug)}'" title="${esc(t('ci.btn.title'))}">${esc(t('ci.btn'))}</button>
@@ -190,14 +196,14 @@ function renderBoard(p) {
     <details class="bdetails" id="bDetails"${state.detailsOpen ? ' open' : ''} ontoggle="state.detailsOpen = this.open"><summary>${esc(t('board.details'))}</summary><div class="flight">${t('board.flight.html')} ${flightHtml(flightList(p), p.slug) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>${p.path ? `<p class="muted"><code>${esc(p.path)}</code></p>` : ''}</details>
     ${Share.laneHtml(p)}
     ${Spaces.boardHtml(p, projCard)}
-    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path || (NoAi.on && p.lifeBoard) ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.first', { add: esc(t('board.new')) }) + (teamState(p) ? ' ' + t('board.empty.folder', { choose: esc(t('noteam.choose')), make: esc(t('noteam.make')) }) : '')}</div>`}
+    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path || (NoAi.on && p.lifeBoard) ? t('board.empty.ready', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.first', { add: esc(t('board.new')) }) + (teamState(p) ? ' ' + t('board.empty.folder', { choose: esc(t('noteam.choose')), make: esc(t('noteam.make')) }) : '')}</div>`}
     ${board}
     ${pickBarHtml(p)}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}${team.length ? `<button class="bm-btn" onclick="badgeDialog()" title="${esc(t('badge.title.hint'))}">${esc(t('badge.title'))}</button>` : ''}</h3>${shownTeam.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${shownTeam.map(m =>
         `<tr><td><span onclick="badgeDialog('${esc(m.name).replace(/'/g, '&#39;')}')" style="cursor:pointer">${face(m.name, team)}</span><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td class="tm-st${live(m) ? ' on' : ' muted'}">${esc(teamStatus(m, live))}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t(team.length ? 'board.team.quiet' : 'board.team.none'))}</p>`}${folded ? `<button type="button" class="team-all" onclick="toggleTeamAll()">${esc(showAll ? t('board.team.active') : t('board.team.showall', { n: folded }))}</button>` : ''}</div>
       <div class="box"><h3>${esc(t('board.log'))}</h3>${log.length ? `<ul class="log">${log.map(l =>
-        `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}</div>
+        `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author === 'Dispatcher' ? t('board.dispatcher') : l.author)}</b>: ${esc(boardLogText(l))} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}</div>
     </div>`;
 }
 
@@ -405,6 +411,11 @@ function boardFit(again = true) {
   const top = Math.round(b.getBoundingClientRect().top + window.scrollY) + 'px', root = document.documentElement.style;
   if (root.getPropertyValue('--board-top') !== top) root.setProperty('--board-top', top);
   document.querySelectorAll('.board .column').forEach(colFade);
+  if (matchMedia('(max-width: 600px)').matches && state.phoneBoard !== state.route.slug) {
+    const cols = [...b.querySelectorAll('.column')], target = cols.find(c => c.classList.contains('foryou') && c.querySelector('.card')) || cols.find(c => c.querySelector('.card'));
+    if (target) b.scrollLeft += target.getBoundingClientRect().left - b.getBoundingClientRect().left;
+    state.phoneBoard = state.route.slug;
+  }
   if (again) requestAnimationFrame(() => boardFit(false));   // the filter bar and top bar paint just after the board: measure once more
 }
 window.addEventListener('resize', () => boardFit());

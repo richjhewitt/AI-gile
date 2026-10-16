@@ -26,7 +26,7 @@ function startTour(level) {
   closeDialog();
   if (level === 'new' && typeof setExplain === 'function') setExplain(true);   // new to this: dev words explained too
   const keep = s => { try { return !s.when || s.when(); } catch { return true; } };
-  tour = { level, steps: TOUR.filter(s => s.skip !== level && keep(s)), i: 0, dir: 1, back };
+  tour = { project: state.route.view === 'project' ? state.route.slug : null, level, steps: TOUR.filter(s => s.skip !== level && keep(s)), i: 0, dir: 1, back };
   showStop();
 }
 // A stop must point at something on screen: the target counts only if it has a size and is not hidden.
@@ -49,11 +49,11 @@ const tourWait = async test => { for (let n = 0; n < 30 && !test(); n++) await n
 
 async function showStop() {
   const s = tour.steps[tour.i];
-  // A home stop needs the home page; a board stop needs a board open: the first project's.
+  // A home stop needs the home page; a board stop needs a board open: the project where the tour started.
   if (s.home && !document.querySelector('#app .space-tree')) { location.hash = '#/'; await tourWait(() => document.querySelector(s.sel) || document.querySelector('#app .space-tree')); }
   if (s.board && !document.querySelector('.board')) {
     const ps = state.projects && state.projects.length ? state.projects : await api('GET', '/api/projects').catch(() => []);
-    const p = ps.find(x => !x.archived) || ps[0];
+    const p = ps.find(x => x.slug === tour.project) || ps.find(x => !x.archived) || ps[0];
     if (p) { location.hash = '#/p/' + p.slug; await tourWait(() => document.querySelector(s.sel)); }
   }
   if (!tour || tour.steps[tour.i] !== s) return;

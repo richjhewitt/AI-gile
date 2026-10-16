@@ -12,6 +12,8 @@ def('docs', 'Docs dialog lists .md files and opens one', async (s, ctx) => {
   const readme = '# Hello docs\n\nSome **bold** text.\n\n- a\n- b\n\n```\nnpm start\n```\n';
   fs.writeFileSync(path.join(folder, 'README.md'), readme);
   fs.writeFileSync(path.join(folder, 'docs', 'guide.md'), '# Guide\n\n| a | b |\n|---|---|\n| 1 | 2 |\n');
+  fs.writeFileSync(path.join(folder, 'CLAUDE.local.md'), '# Team instructions');
+  fs.writeFileSync(path.join(folder, 'AGENTS.md'), '# Team instructions');
   fs.writeFileSync(path.join(folder, 'notes.txt'), 'not markdown');
   await mkProject(s, 'Alpha', 'ALP', { path: folder });
   await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: BASE });
@@ -142,6 +144,8 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
   await page.click('#dialog button[type=submit]');
   await page.waitForSelector('#p-done li', { timeout: 5000 }).catch(() => {});
   const done = await page.textContent('#p-done').catch(() => '');
+  check('setup details start folded (AIG-1416)', await page.isVisible('#p-done p') && !(await page.isVisible('#p-done li')));
+  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1416.png'});
   check('dialog lists every step', ['Created the project', 'Created the folder', 'permissions', 'git repo', 'Woke the team'].every(x => done.includes(x)), done);
   const local = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')).agent || {}; } catch { return {}; } })();
   const st = JSON.parse(fs.readFileSync(path.join(folder, local.settingsFile), 'utf8'));
@@ -276,4 +280,17 @@ def('filtertypes', 'The type filter offers incident, problem and change only on 
   await page.waitForSelector('select[data-f=type]');
   check('incident appears once a card has it', (await opts()).includes('incident') && !(await opts()).includes('problem'), await opts());
   noErrors(page); await page.close();
+}, true);
+
+def('projectkey', 'suggested keys quietly avoid collisions (AIG-1415)', async (s, ctx) => {
+  await mkProject(s, 'Plants', 'PLA');
+  const page = await openPage(ctx, '#/');
+  await page.click('button:has-text("+ New project")'); await page.fill('#p-name', 'Plan my allotment');
+  await page.evaluate(() => { $('p-more').open = true; }); await page.uncheck('#p-team');
+  await page.click('#dialog button[type=submit]'); await page.waitForURL('**/#/p/plan-my-allotment');
+  const p = await s.ok('GET', '/api/projects/plan-my-allotment');
+  check('automatic key is free (AIG-1415)', p.key !== 'PLA');
+  const r = await s.api('POST', '/api/projects', {name:'Explicit key',key:'PLA'});
+  check('typed key gives plain explanation (AIG-1415)', r.status === 409);
+  await page.waitForSelector('.board'); await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1415.png'});
 }, true);

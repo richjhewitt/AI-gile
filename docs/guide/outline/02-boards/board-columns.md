@@ -11,3 +11,7 @@ Rename, reorder, hide and colour columns.
 - TODO related
 
 - Column names wrap above their actions; everyday tools stay on the bar and other tools are under More.
+
+- More closes with Escape, a click outside, or opening a card.
+
+- On a phone, boards open at For you when cards wait there, otherwise at the first column with cards.

@@ -263,7 +263,7 @@ async function createProject(e) {
   if (!name) { setErr('d-err', t('dlg.np.err.name')); return false; }
   let p;
   try {
-    p = await api('POST', '/api/projects', { name, key: $('p-key').value.trim(), description: $('p-desc').value.trim(), ...team });
+    p = await api('POST', '/api/projects', { name, key: $('p-key').dataset.touched ? $('p-key').value.trim() : '', description: $('p-desc').value.trim(), ...team });
     // A template only pre-fills the column names (AIG-170); the statuses underneath never change.
     const names = boardTemplateNames($('p-tpl').value, $('p-own-names').value);
     if (names.some(Boolean)) await api('PATCH', '/api/projects/' + p.slug, { columns: STATUS_ORDER.map((status, i) => ({ status, name: names[i] || undefined })) });
@@ -272,7 +272,7 @@ async function createProject(e) {
   if (!folder && !auto && !kids.length) { closeDialog(); location.hash = '#/p/' + p.slug; return false; }
   $('p-acts').innerHTML = `<button type="button" class="primary" onclick="closeDialog(); location.hash = '#/p/${p.slug}'">${esc(t('dlg.np.open'))}</button>`;
   const done = [t('dlg.np.created')], fails = [];
-  const show = () => { $('p-done').innerHTML = `<ul>${done.map(d => `<li>✅ ${esc(d)}</li>`).join('')}${fails.map(d => `<li>⚠️ ${esc(d)}</li>`).join('')}</ul>`; };
+  const show = () => { $('p-done').innerHTML = `<p>${esc(t('dlg.np.ready'))}</p><details><summary>${esc(t('board.details'))}</summary><ul>${done.map(d => `<li>✅ ${esc(d)}</li>`).join('')}</ul></details>${fails.map(d => `<p>⚠️ ${esc(d)}</p>`).join('')}`; };
   let base = folder;   // the kids' folders go inside the space's (the made one too)
   if (folder || auto) {
     try { const r = await api('POST', `/api/projects/${p.slug}/connect`, { path: folder || true, create: true, wake: true }); done.push(...r.done); if (r.path) base = r.path; }

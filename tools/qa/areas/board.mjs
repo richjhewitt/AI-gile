@@ -11,6 +11,13 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   await page.waitForSelector('.column');
   await page.setViewportSize({ width: 1366, height: 768 });
   check('column names wrap without clipping (AIG-1360)', await page.$$eval('.column h3 > span:first-child', es => es.every(e => e.scrollWidth <= e.clientWidth + 1 && getComputedStyle(e).whiteSpace === 'normal')));
+  await page.click('#tbDots'); await page.keyboard.press('Escape');
+  check('Escape closes More (AIG-1413)', !(await page.isVisible('#boardTbMore')));
+  await page.click('#tbDots'); await page.click('.toolbar h2');
+  check('outside click closes More (AIG-1413)', !(await page.isVisible('#boardTbMore')));
+  await page.click('#tbDots'); await page.click('.card[data-id="ALP-1"]'); await page.waitForTimeout(300);
+  check('opening a card closes More (AIG-1413)', !(await page.isVisible('#boardTbMore')));
+  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1413.png'}); await page.keyboard.press('Escape');
   const heads = await page.$$eval('.column h3 > span:first-child', els => els.map(e => e.textContent));
   check('seven columns in order', JSON.stringify(heads) === JSON.stringify(['Backlog', 'To do', 'In progress', 'Team checking', 'For you', 'For the team', 'Done']), heads);
   check('cards render in their column', (await page.locator('.column[data-status=todo] .card').count()) === 1 && (await page.locator('.column[data-status=doing] .card').count()) === 1);
@@ -167,7 +174,7 @@ def('boardpick', 'search finds words in comments (hint on the card); Ctrl-click 
   check('shift-click ticks the run', (await page.locator('.card.picked').count()) === 2);
   await page.keyboard.press('Escape');
   check('Esc clears the picks', (await page.locator('.card.picked').count()) === 0 && (await page.locator('#pickBar').count()) === 0);
-  await page.click('#pickBtn');
+  await tbClick(page, '#pickBtn');
   await page.click(sel(c.id));
   check('select mode: plain click ticks', (await page.locator('.card.picked').count()) === 1);
   await page.setViewportSize({ width: 390, height: 800 });
@@ -394,8 +401,7 @@ def('quick', '👀 What\'s happening? summarises the board; 💬 Ask the team se
   s.cli(['ask', 'alpha', q.id, 'Shall I ship it?', '--as', 'Lead']);
   check('a real question back lands in your Messages', (await getCard(s, 'alpha', q.id)).needsYou === true && (await s.ok('GET', '/api/inbox')).some(c => c.id === q.id));
   // Team picker (AIG-414): defaults to this board; picking another project sends the question there. On a board with cards it is in ⋯ More (AIG-1359).
-  if (!(await page.isVisible('#boardTbMore [onclick^="askTeamDialog"]'))) await page.click('#tbDots');
-  await page.click('#boardTbMore [onclick^="askTeamDialog"]');
+  await page.click('.tb-keep [onclick^="askTeamDialog"]');
   await page.waitForSelector('#ask-to');
   check('the team picker defaults to this board', (await page.inputValue('#ask-to')) === 'alpha');
   await page.selectOption('#ask-to', 'beta');
@@ -550,3 +556,22 @@ def('teamlive', 'Team panel: a member marked working 2 days ago shows 💤 idle 
   check('last seen stays as it was', team.find(m => m.name === 'Pixel').updated === pixelSeen && team.length === 4);
   noErrors(page);
 }, true, { AIGILE_TEAMTIDY_MS: '500' });
+
+def('phonecolumn', 'phone opens at cards needing the owner (AIG-1418)', async (s, ctx) => {
+  await mkProject(s, 'Garden', 'GAR'); await mkCard(s, 'garden', 'Ready to test', {status:'verify'});
+  const page = await ctx.newPage(); await page.setViewportSize({width:390,height:844}); await page.goto(BASE+'/#/p/garden'); await page.waitForSelector('.foryou .card'); await sleep(400);
+  const visible = () => page.$eval('.foryou', e => {const r=e.getBoundingClientRect();return r.left>=-1 && r.left<100;});
+  check('For you is visible on arrival (AIG-1418)', await visible());
+  await page.emulateMedia({colorScheme:'dark'}); await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1418.png'});
+  await page.evaluate(() => {document.querySelector('.board').scrollLeft=0;}); await sleep(1500);
+  check('polling preserves a manual swipe (AIG-1418)', await page.$eval('.board',e=>e.scrollLeft===0));
+}, true);
+
+def('boarddutch', 'Dutch dispatch and team status (AIG-1419)', async (s, ctx) => {
+  await mkProject(s, 'Garden', 'GAR');
+  await ctx.addInitScript(() => localStorage.setItem('aigile.lang','nl'));
+  const page = await openPage(ctx, '#/p/garden'); await page.waitForSelector('.board');
+  const html = await page.evaluate(() => { const p = {...state.project, team:[{name:'Lead',status:'🔄 working',updated:new Date().toISOString()}], log:[{author:'Dispatcher',text:'GAR-1 sent to Lead',kind:'log',at:new Date().toISOString()}]}; const html=renderBoard(p); $('app').innerHTML=html; return $('app').textContent; });
+  check('status and existing log translated (AIG-1419)', html.includes('aan het werk') && html.includes('Verdeler: GAR-1 naar Lead gestuurd') && !html.includes('🔄 working'));
+  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1419.png'});
+}, true);

@@ -1,4 +1,10 @@
 {
+ "board.empty.ready": "Druk op {add} om toe te voegen wat je wilt laten doen, of vraag het team.",
+ "board.team.review": "wordt nagekeken",
+ "board.dispatcher": "Verdeler",
+ "board.dispatched": "{card} naar {who} gestuurd",
+ "dlg.np.ready": "Je project en het team zijn klaar. Voeg toe wat je wilt laten doen, of vraag het team.",
+ "srv.pc.keyused": "Een ander project begint zijn kaarten al met {key}.",
  "attach.uploading": "{name} wordt geüpload: {pct}%",
  "attach.cancel": "Annuleren",
  "attach.cancelled": "Upload geannuleerd",

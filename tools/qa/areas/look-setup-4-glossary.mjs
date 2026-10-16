@@ -157,7 +157,8 @@ def('tour', '🎓 guided tour: three levels, eight stops from First steps to Hel
   await page.evaluate(() => startTour('new')); await page.waitForSelector('.tour-bubble');
   const welNo = await page.textContent('#tourP');
   await page.evaluate(() => { tour.i = tour.steps.findIndex(s => s.id === 'chat'); showStop(); }); await sleep(400);
-  const chatNo = await page.evaluate(() => tour && tour.steps[tour.i].id === 'chat' && document.querySelector('#tourP').textContent);
+  // With no friends, Messages can be absent and the tour correctly skips it. Its No AI copy must still be plain.
+  const chatNo = await page.evaluate(() => t('tour.chat.text'));
   check('No AI mode: the welcome says you and your team', /you and your team/.test(welNo), welNo);
   check('No AI mode: Messages speaks of friends only', !!chatNo && /friends/.test(chatNo) && !/lead/i.test(chatNo), chatNo);
   await page.keyboard.press('Escape');
@@ -275,3 +276,12 @@ def('restartqueue', '🔄 restart while a team is busy: it restarts straight awa
   const r = await s.ok('POST', '/api/restart');
   check('it restarts straight away, even with a busy team (no queue)', r.ok === true && !r.queued && !r.waitingFor, r);
 }, false, { AIGILE_NO_RESTART: '1' });
+
+def('tourproject', 'tour returns to its starting project (AIG-1417)', async (s, ctx) => {
+  await mkProject(s, 'First', 'FIR'); await mkProject(s, 'Garden', 'GAR');
+  const page = await openPage(ctx, '#/p/garden'); await page.waitForSelector('.board');
+  await page.evaluate(() => startTour('new'));
+  for(let n=0;n<8;n++) { if(await page.getAttribute('.tour-bubble','data-stop') === 'foryou') break; await page.click('.tour-bubble .primary'); await sleep(350); }
+  check('For you is on the original project (AIG-1417)', await page.evaluate(() => location.hash === '#/p/garden' && document.querySelector('.tour-bubble').dataset.stop === 'foryou'));
+  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1417.png'});
+}, true);
