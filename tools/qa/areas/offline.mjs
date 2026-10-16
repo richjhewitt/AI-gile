@@ -1,7 +1,7 @@
 // QA area: offline (AIG-446): a project saved as one .aigile file and opened as a new project (page, API and CLI).
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, tmp, mkProject, mkCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { check, tmp, mkProject, mkCard, say, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('offline', '📦 share a project offline: save as .aigile and open it (round trip with a picture, no secrets in the file, bad files refused, slug clash, the page buttons, CLI export/import) (AIG-446)', async (s, ctx) => {
   // A project with a folder, a start command and a picture on a comment.
@@ -97,7 +97,7 @@ def('offline', '📦 share a project offline: save as .aigile and open it (round
 
   // The page: Save as file downloads it; Open a project file previews, then opens.
   const page = await openPage(ctx, '#/p/travel-plans');
-  const [dl] = await Promise.all([page.waitForEvent('download'), page.click('button:has-text("Save as file")')]);
+  const [dl] = await Promise.all([page.waitForEvent('download'), tbClick(page, 'button:has-text("Save as file")')]);   // under ⋯ More (AIG-1359)
   check('the page downloads <name>.aigile', dl.suggestedFilename() === 'Travel Plans.aigile', dl.suggestedFilename());
   const saved = path.join(tmp('offline'), 'dl.aigile');
   await dl.saveAs(saved);

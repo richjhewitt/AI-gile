@@ -215,7 +215,7 @@ def('cardview', '🃏 Cards: compact or roomy, and which details show on board c
   let t = await txt();
   check('defaults show today\'s details', /bug/.test(t) && /high/.test(t) && /Tweak/.test(t) && /S9/.test(t) && /💬 1/.test(t) && !/🕒/.test(t), t);
   check('default is roomy', !(await card.evaluate(e => e.classList.contains('compact'))));
-  await page.click('button:has-text("Cards")');
+  await tbClick(page, 'button:has-text("Cards")');   // under ⋯ More on a board with cards (AIG-1359)
   await page.waitForSelector('[data-cv]');
   // The board shows each change straight away; Cancel puts it back (AIG-119).
   await page.click('.cv-size:has([value=compact])');   // the Compact tile (AIG-184)
@@ -224,7 +224,7 @@ def('cardview', '🃏 Cards: compact or roomy, and which details show on board c
   await page.click('#dialog button:has-text("Cancel")');
   await sleep(300);
   check('Cancel puts it back', !(await page.locator('.card.compact').count()));
-  await page.click('button:has-text("Cards")');
+  await tbClick(page, 'button:has-text("Cards")');   // under ⋯ More on a board with cards (AIG-1359)
   await page.waitForSelector('[data-cv]');
   await page.locator('[data-cv=assignee]').uncheck();
   await page.locator('[data-cv=age]').check();
@@ -283,9 +283,10 @@ def('lanes', '≡ Lanes: group the board into rows by assignee, type, sprint or 
   const b = await mkCard(s, 'alpha', 'Bob one', { status: 'todo', assignee: 'Bob', type: 'bug' });
   await mkCard(s, 'alpha', 'Nobody', { status: 'backlog' });
   const page = await openPage(ctx, '#/p/alpha');
+  const rows = async v => { if (!(await page.isVisible('.lanesel'))) await page.click('#tbDots'); await page.selectOption('.lanesel', v); };   // Rows sits under ⋯ More (AIG-1359)
   await page.waitForSelector('.column .card');
   check('default has no lanes', (await page.locator('.lane').count()) === 0);
-  await page.selectOption('.lanesel', 'assignee');
+  await rows('assignee');
   await page.waitForSelector('.lane');
   const heads = await page.$$eval('.lane-h', els => els.map(e => e.firstChild.textContent.trim()));
   check('one lane per assignee, unassigned last', JSON.stringify(heads) === JSON.stringify(['Ann', 'Bob', 'No assignee']), heads);
@@ -297,9 +298,9 @@ def('lanes', '≡ Lanes: group the board into rows by assignee, type, sprint or 
   check('other lane card untouched', (await getCard(s, 'alpha', b.id)).status === 'todo');
   await page.reload(); await page.waitForSelector('.lane');
   check('choice survives a reload', (await page.locator('.lanesel').inputValue()) === 'assignee' && (await page.locator('.lane').count()) === 3);
-  await page.selectOption('.lanesel', 'type');
+  await rows('type');
   await page.waitForFunction(() => document.querySelectorAll('.lane').length === 2);
-  await page.selectOption('.lanesel', '');
+  await rows('');
   await page.waitForFunction(() => !document.querySelector('.lane'));
   check('off goes back to one board', (await page.locator('.board').count()) === 1);
   noErrors(page);
