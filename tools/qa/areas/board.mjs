@@ -556,3 +556,13 @@ def('teamlive', 'Team panel: a member marked working 2 days ago shows 💤 idle 
   check('last seen stays as it was', team.find(m => m.name === 'Pixel').updated === pixelSeen && team.length === 4);
   noErrors(page);
 }, true, { AIGILE_TEAMTIDY_MS: '500' });
+
+def('phonecolumn', 'phone opens at cards needing the owner (AIG-1418)', async (s, ctx) => {
+  await mkProject(s, 'Garden', 'GAR'); await mkCard(s, 'garden', 'Ready to test', {status:'verify'});
+  const page = await ctx.newPage(); await page.setViewportSize({width:390,height:844}); await page.goto(BASE+'/#/p/garden'); await page.waitForSelector('.foryou .card'); await sleep(400);
+  const visible = () => page.$eval('.foryou', e => {const r=e.getBoundingClientRect();return r.left>=-1 && r.left<100;});
+  check('For you is visible on arrival (AIG-1418)', await visible());
+  await page.emulateMedia({colorScheme:'dark'}); await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1418.png'});
+  await page.evaluate(() => {document.querySelector('.board').scrollLeft=0;}); await sleep(1500);
+  check('polling preserves a manual swipe (AIG-1418)', await page.$eval('.board',e=>e.scrollLeft===0));
+}, true);

@@ -125,7 +125,7 @@ const teamStatus = (m, live) => live(m) ? m.status || '' : m.updated ? t('board.
 function toggleTb() { state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), d = $('tbDots'); if (m) m.classList.toggle('open', state.tbOpen); if (d) d.setAttribute('aria-expanded', state.tbOpen ? 'true' : 'false'); }
 document.addEventListener('click', e => { if (state.tbOpen && !e.target.closest('#tbDots,#boardTbMore')) toggleTb(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.tbOpen) toggleTb(); });
-window.addEventListener('hashchange', () => { if (state.tbOpen) toggleTb(); });
+window.addEventListener('hashchange', () => { if (location.hash.split('/')[2] !== state.phoneBoard) state.phoneBoard = null; if (state.tbOpen) toggleTb(); });
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
@@ -398,6 +398,11 @@ function boardFit(again = true) {
   const top = Math.round(b.getBoundingClientRect().top + window.scrollY) + 'px', root = document.documentElement.style;
   if (root.getPropertyValue('--board-top') !== top) root.setProperty('--board-top', top);
   document.querySelectorAll('.board .column').forEach(colFade);
+  if (matchMedia('(max-width: 600px)').matches && state.phoneBoard !== state.route.slug) {
+    const cols = [...b.querySelectorAll('.column')], target = cols.find(c => c.classList.contains('foryou') && c.querySelector('.card')) || cols.find(c => c.querySelector('.card'));
+    if (target) b.scrollLeft += target.getBoundingClientRect().left - b.getBoundingClientRect().left;
+    state.phoneBoard = state.route.slug;
+  }
   if (again) requestAnimationFrame(() => boardFit(false));   // the filter bar and top bar paint just after the board: measure once more
 }
 window.addEventListener('resize', () => boardFit());
