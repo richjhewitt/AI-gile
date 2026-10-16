@@ -1,4 +1,5 @@
 {
+  "srv.lead.expired": "- Lead session expired after 20 minutes without activity and no running team process; resuming the team.",
  "col.backlog": "{{dev:Backlog}}",
  "col.todo": "To do",
  "col.doing": "In progress",
