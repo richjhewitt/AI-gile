@@ -140,6 +140,7 @@ const Call = (() => {
   async function join(opts) {
     if (busy) return;
     const g = busy = ++gen; let r = null;
+    stopRing();   // AIG-1324: joining any call ends the ring on the page
     try {
       const old = room || pending; room = null; pending = null;
       if (old) { try { await old.disconnect(); } catch {} cleanup(); }
@@ -191,27 +192,71 @@ const Call = (() => {
   async function leave() { gen++; busy = 0; const r = room || pending; room = null; pending = null; if (r) { try { await r.disconnect(); } catch {} } cleanup(); }
   function close() { if (!room) cleanup(); }
   /* ---------- an incoming call: a Join button, a ring and a notification (AIG-1237, AIG-1238) ---------- */
-  const FRESH_MS = 15 * 60000, RING_MS = 90000;   // a call line is joinable for 15 minutes; only a call that just arrived rings
+  // AIG-1324: ringMs is the ring time (the board's RING_S); a QA run may shorten it
+  const FRESH_MS = 15 * 60000; let RING_MS = 90000;   // a call line is joinable for 15 minutes; only a call that just arrived rings
   const fresh = at => { const x = Date.parse(at); return Number.isFinite(x) && Date.now() - x < FRESH_MS; };
+  // AIG-1324: a call line that rang and nobody answered within the ring time reads as missed (older lines, from before, stay as they were)
+  const missed = m => !!m && m.kind === 'call' && m.dir === 'in' && m.call === 'ringing' && Date.now() - Date.parse(m.at) >= RING_MS;
   const rung = new Map(); let primed = false, ringTimer = null;   // contact -> the lastIn that already rang; the first look never rings (old calls)
+  let ringing = null;   // AIG-1324: the on-screen ring { id, name, at, nt, end }
+  const quiet = () => ['data-focus', 'data-break'].some(a => document.documentElement.hasAttribute(a));
   function ring(people) {
     for (const c of people || []) {
+      // AIG-1324: answered (here, in another tab), declined, or a newer line from them: the ring stops
+      if (ringing && ringing.id === c.id && ((c.callAt || ringing.at) !== ringing.at || (c.callState && c.callState !== 'ringing'))) stopRing();
+      if (c.lastDir === 'in' && c.lastKind === 'calldecline' && c.lastIn && rung.get(c.id) !== c.lastIn) {   // they declined my call
+        rung.set(c.id, c.lastIn);
+        if (primed && (room || pending) && title === c.name) live(t('lkcall.declined', { name: c.name }));
+        continue;
+      }
       if (!(c.lastDir === 'in' && c.lastKind === 'call' && c.lastIn) || rung.get(c.id) === c.lastIn) continue;
       rung.set(c.id, c.lastIn);
-      if (!primed || Date.now() - Date.parse(c.lastIn) > RING_MS || room || pending) continue;
+      if (!primed || Date.now() - Date.parse(c.lastIn) > RING_MS || room || pending || (c.callState && c.callState !== 'ringing')) continue;
+      if (quiet()) continue;   // focus time and breaks: no ring at all (the line in the chat stays, and becomes Missed call)
+      showRing(c);
       const ib = typeof IB !== 'undefined' ? IB : null;
-      if (!ib || !ib.alertsOn || !ib.alertsOn() || document.documentElement.hasAttribute('data-focus') || document.documentElement.hasAttribute('data-break')) continue;   // same rules as the inbox beep
+      if (!ib || !ib.alertsOn || !ib.alertsOn()) continue;   // same rules as the inbox beep; the on-screen ring shows anyway
       let n = 0; clearInterval(ringTimer);
-      const beep = () => { if (n++ >= 4 || room || pending) return clearInterval(ringTimer); try { ib.beep(); } catch {} };
+      const beep = () => { if (n++ >= 4 || room || pending || !ringing) return clearInterval(ringTimer); try { ib.beep(); } catch {} };
       beep(); ringTimer = setInterval(beep, 1500);
       try {
         const nt = new Notification(t('lkcall.ring', { name: c.name }), { body: t('lkcall.ring.body'), tag: 'aigile-call-' + c.id });
-        nt.onclick = () => { clearInterval(ringTimer); notifyGo({ chat: 'dm:' + c.id }); nt.close(); dmCall(c.id, c.name); };
+        nt.onclick = () => { notifyGo({ chat: 'dm:' + c.id }); answerRing(); };
+        if (ringing) ringing.nt = nt;
       } catch {}
     }
     primed = true;
   }
-  return { join, leave, close, note, fresh, ring, startAudio, mic, cam, screen, mini: shrink, devices, pick, active: () => !!room, get room() { return room; } };
+  // The ring on the page: who is calling, Join and Decline. An alert dialog that does not take the keyboard from someone typing.
+  function showRing(c) {
+    stopRing();
+    const box = document.createElement('div');
+    box.id = 'callRing'; box.className = 'call-ring'; box.setAttribute('role', 'alertdialog');
+    box.setAttribute('aria-labelledby', 'callRingWho'); box.setAttribute('aria-describedby', 'callRingBody');
+    const pic = c.pic ? `<img class="call-ring-av" src="${esc(c.pic)}" alt="">` : `<span class="call-ring-av" aria-hidden="true">${esc((c.name || '?').slice(0, 1).toUpperCase())}</span>`;
+    box.innerHTML = `${pic}<div class="call-ring-txt"><b id="callRingWho">${esc(t('lkcall.ring', { name: c.name }))}</b><span class="muted" id="callRingBody">${esc(t('lkcall.ring.page'))}</span></div>
+      <div class="call-ring-acts"><button type="button" id="callRingJoin" class="call-ring-join" onclick="Call.answerRing()">${esc(t('lkcall.join'))}</button><button type="button" id="callRingNo" class="bad" onclick="Call.declineRing()">${esc(t('lkcall.decline'))}</button></div>`;
+    box.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); stopRing(); } });   // Esc: stop ringing (the call stays in the chat)
+    document.body.appendChild(box);
+    const at = c.callAt || c.lastIn, left = Math.max(1000, RING_MS - (Date.now() - Date.parse(at)));
+    ringing = { id: c.id, name: c.name, at, nt: null, end: setTimeout(() => { stopRing(); repaintChat(); }, left) };
+    const a = document.activeElement, typing = a && a !== document.body && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable);
+    if (!typing) el('callRingJoin').focus();
+    else { const sr = Object.assign(document.createElement('span'), { className: 'call-live', textContent: t('lkcall.ring', { name: c.name }) }); sr.setAttribute('role', 'alert'); box.appendChild(sr); }   // said aloud without moving the keyboard
+  }
+  function stopRing() {
+    clearInterval(ringTimer);
+    if (ringing) { clearTimeout(ringing.end); try { if (ringing.nt) ringing.nt.close(); } catch {} }
+    ringing = null; const b = el('callRing'); if (b) b.remove();
+  }
+  const repaintChat = () => { try { if (typeof Dms !== 'undefined' && Dms.reload) Dms.reload(); } catch {} };
+  function answerRing() { const r = ringing; stopRing(); if (r) dmCall(r.id, r.name); }
+  async function declineRing() {
+    const r = ringing; stopRing(); if (!r) return;
+    try { await api('POST', `/api/calls/dm/${encodeURIComponent(r.id)}/decline`, {}); } catch {}
+    repaintChat();
+  }
+  return { join, leave, close, note, fresh, missed, ring, answerRing, declineRing, stopRing, get ringMs() { return RING_MS; }, set ringMs(v) { RING_MS = v; }, startAudio, mic, cam, screen, mini: shrink, devices, pick, active: () => !!room, get room() { return room; } };
 })();
 
 /* ---------- 📞 in a friend's DM ---------- */
