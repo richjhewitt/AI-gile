@@ -288,6 +288,7 @@ require('./lib/watchman').startWatchman(() => stale());   // 🌙 only does anyt
 require('./lib/scrummaster').startScrumMaster();   // 🧭 day rounds, only when it is in the team (AIG-359)
 require('./lib/discord').start();   // 💬 only does anything once a bot is set up (AIG-481)
 require('./lib/twitch').start();   // 🟣 only does anything once a Twitch channel is set (AIG-628)
+require('./lib/licences').start();   // 📮 website requests to cards every 10 min, only with a destination set (AIG-1339)
 require('./lib/feedback').start();   // 💬 pulls website visitors' reports for public boards with feedback on (AIG-969)
 require('./lib/bugreports').start();   // 🐞 files Live testers' reports, only with feedback.project set (AIG-561)
 require('./lib/serverhealth').start();   // 🩺 warns when Smizflark Server 2.0 needs upgrading (AIG-660)

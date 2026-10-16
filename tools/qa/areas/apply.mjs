@@ -84,6 +84,62 @@ def('apply', '📜 website forms: licence applications and interest sealed in th
     check('Replied: delete takes a sign-up off the board', (await s.ok('GET', '/api/interest')).items.map(x => x.email).join() === 'bob@example.org');
     await s.ok('DELETE', '/api/interest/' + encodeURIComponent('bob@example.org'));
 
+    // 📮 AIG-1339: Where requests go: a project; each new request becomes a service-request card there, done = Replied: delete.
+    {
+      const cr = await startRelay({ RELAY_STATS_KEY: key, RELAY_OWNER_XPUB: xKey }); extra.push(cr);   // its own relay: the sign-up rate limit
+      await s.ok('POST', '/api/dms/settings', { relay: cr.base });
+      const cpost = o => fetch(cr.base + '/apply', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(o) });
+      const cipost = o => fetch(cr.base + '/interest', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(o) });
+      const P = await s.ok('POST', '/api/projects', { name: 'Correspondence', key: 'COR' }), slug = P.slug;
+      const r0 = await s.ok('GET', '/api/forms/route');
+      check('forms route: none by default, the project offered', r0.project === '' && r0.projects.some(p => p.slug === slug), r0);
+      const r1 = await s.ok('POST', '/api/forms/route', { project: slug });
+      check('forms route: set to the project, which is now a service (reply-by counts)', r1.project === slug && !!(await s.ok('GET', '/api/projects/' + slug)).service?.on, r1);
+      await cipost({ email: 'cara.jones@example.org', which: 'beta' });
+      await cpost({ ...good, company: 'Hive Co', email: 'buzz@hive.example' });
+      const pr = await s.ok('POST', '/api/forms/pull');
+      const cards = () => s.ok('GET', '/api/projects/' + slug + '?full=1').then(p => p.cards);
+      let cs = await cards();
+      const ic = cs.find(c => c.form && c.form.kind === 'interest'), ac = cs.find(c => c.form && c.form.kind === 'apply');
+      check('a sealed sign-up becomes a service-request card: title, fields, desk request, hidden from public', !!ic && ic.title === 'Beta interest: cara.jones' && ic.desk?.kind === 'request' && ic.hidePublic === true && /cara\.jones@example\.org/.test(ic.description) && /untrusted/.test(ic.description) && ic.from === 'form', { pr, ic });
+      check('a licence request becomes a card with its fields', !!ac && ac.title === 'Licence request: Hive Co' && /buzz@hive\.example/.test(ac.description) && /We keep bees/.test(ac.description) && ac.hidePublic === true, ac);
+      check('the relay deleted both once collected; the Setup lists do not show them', items(cr.data, 'interest').length === 0 && items(cr.data, 'apply').length === 0
+        && !(await s.ok('GET', '/api/interest')).items.some(x => /cara/.test(x.email)) && !(await s.ok('GET', '/api/licences')).items.some(a => a.company === 'Hive Co'));
+      fs.writeFileSync(path.join(s.data, 'now.stub'), new Date(Date.now() + 3 * 864e5).toISOString());
+      const late = (await cards()).find(c => c.id === ic.id).late;
+      fs.unlinkSync(path.join(s.data, 'now.stub'));
+      check('the card has a reply-by time (late after 2 days, the friend row)', late === 48, late);
+      await cipost({ email: 'cara.jones@example.org', which: 'both' });
+      await s.ok('POST', '/api/forms/pull');
+      cs = await cards();
+      check('a repeat sign-up updates its open card, no second card', cs.filter(c => c.form && c.form.kind === 'interest').length === 1 && /Alpha \+ beta interest/.test(cs.find(c => c.id === ic.id).title), cs.map(c => c.title));
+      // Move: items in the lists from before go to cards with one button.
+      const rw = await s.ok('GET', '/api/forms/route');
+      check('Move: the request still in the Setup list is counted', rw.waiting === 1, rw);   // Acme Bees from above
+      const page2 = await openPage(ctx, '#/setup');
+      await page2.waitForSelector('#formsTo');
+      check('Setup shows Where requests go with the project chosen and the Move button', (await page2.inputValue('#formsTo')) === slug && await page2.locator('#formsMove').count() === 1);
+      await page2.click('#formsMove');
+      await until(async () => (await page2.locator('#formsMove').count()) === 0);
+      check('Move puts it on a card and off the list', (await cards()).some(c => c.title === 'Licence request: Acme Bees') && !(await s.ok('GET', '/api/licences')).items.some(a => a.company === 'Acme Bees'));
+      { await page2.setViewportSize({ width: 390, height: 800 }); check('Where requests go fits a phone', await page2.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)); }
+      noErrors(page2); await page2.close();
+      // Done = Replied: delete; the card keeps no details.
+      await s.ok('PATCH', '/api/projects/' + slug + '/cards/' + ic.id, { status: 'done' });
+      const dn = (await cards()).find(c => c.id === ic.id);
+      check('done deletes the request: the card keeps no email or fields', !/cara/.test(JSON.stringify(dn)) && /replied/i.test(dn.title) && dn.form.key === '', dn);
+      await s.ok('POST', '/api/forms/route', { project: '' });
+      check('with the route off, the done sign-up is not back in the list', !(await s.ok('GET', '/api/interest')).items.some(x => /cara/.test(x.email)));
+      // Never on a public board: the destination made public later still keeps the cards off it.
+      await s.ok('PATCH', '/api/projects/' + slug, { public: true, publicName: 'cor-desk' });
+      check('a public project is refused as the destination', (await s.api('POST', '/api/forms/route', { project: slug })).status === 400);
+      await s.ok('PATCH', '/api/projects/' + slug + '/cards/' + ac.id, { title: 'Licence request: Hive Co' });
+      const got = await until(async () => { const r = await fetch(cr.base + '/b/cor-desk.json'); return r.status === 200 && r.json(); }, 8000);
+      check('the request cards are not on the public board', !!got && !JSON.stringify(got).includes('COR-') && !/Hive|Acme|cara/.test(JSON.stringify(got)), got);
+      await s.ok('PATCH', '/api/projects/' + slug, { public: false });
+      await s.ok('POST', '/api/dms/settings', { relay: relay.base });
+    }
+
     // 30 days: anything the board never collected is deleted on the relay.
     await ipost({ email: 'late@example.org', which: 'alpha' });
     const lateF = path.join(relay.data, 'interest', items(relay.data, 'interest')[0]), old = new Date(Date.now() - 31 * 864e5);
