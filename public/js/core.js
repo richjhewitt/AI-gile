@@ -494,10 +494,8 @@ async function refreshStaged(force, liveState, state, api) {
 }
 
 // A board redraw replaces every card: the keyboard focus goes back on the same card, or j/k and Shift+arrows lose their place (AIG-1289).
-function keepCardFocus() {
-  const a = document.activeElement, id = a && a.matches && a.matches('#app a.card[data-id]') ? a.dataset.id : null;
-  return () => { const n = id && document.querySelector(`#app a.card[data-id="${CSS.escape(id)}"]`); if (n && n !== document.activeElement) n.focus({ preventScroll: true }); };
-}
+// AIG-1424: the same for any control on Home or a board (keepFocus, dialog shell), and the page scroll stays put.
+function keepCardFocus() { return keepFocus($('app')); }
 function renderBoardOnly() {
   queueMicrotask(paintFilterBar);
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
@@ -583,7 +581,7 @@ function render() {
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   const keepCols = [...document.querySelectorAll('.column')].map(c => [c.dataset.status + '|' + (c.dataset.step || ''), c.scrollTop]);   // AIG-1211: a column scrolls inside itself
-  if (state.route.view === 'home') { $('crumb').textContent = ''; $('app').innerHTML = renderHome(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'home') { $('crumb').textContent = ''; const refocus = keepCardFocus(); $('app').innerHTML = renderHome(); refocus(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'setup') { $('crumb').textContent = '/ ' + t('crumb.setup'); document.body.classList.toggle('poplist', !!state.route.pop); if (!$('setupForm')) $('app').innerHTML = renderSetup(); $('modal').innerHTML = ''; setupLand(); wizardMaybe(); return; }
   if (state.route.view === 'standups') { $('crumb').textContent = '/ ' + t('crumb.standups'); $('crumb').style.color = ''; $('app').innerHTML = renderStandups(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'dlg') { renderPopDlg(); return; }

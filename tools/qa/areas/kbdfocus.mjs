@@ -30,6 +30,26 @@ def('kbdfocus', 'keyboard focus: card dialog, Home redraws, card fits, Help/Stat
   await page.keyboard.press('Escape'); await sleep(400);
   check('Esc closes the card and focus is back on its board card (AIG-1423)', (await page.locator('#modal .panel').count()) === 0 && (await act()).card === 'ALP-1', await act());
 
+  // AIG-1424: Home redraws (the poll, a refresh) keep the focused control and the scroll.
+  await page.goto(page.url().split('#')[0] + '#/');
+  await page.waitForSelector('#app [data-pslug]');
+  await page.setViewportSize({ width: 1280, height: 500 });
+  const homeKeep = async (sel, what) => {
+    await page.focus(sel);
+    const was = await page.evaluate(() => { const a = document.activeElement; return a.outerHTML.slice(0, 120); });
+    await page.evaluate(() => window.scrollTo(0, 120)); const y = await page.evaluate(() => window.scrollY);
+    for (let i = 0; i < 3; i++) { await page.evaluate(() => render()); await sleep(150); }
+    const now = await page.evaluate(() => ({ html: document.activeElement.outerHTML.slice(0, 120), y: window.scrollY, fresh: !document.activeElement.isConnected }));
+    check('Home redrawn 3 times: focus stays on ' + what + ' (AIG-1424)', now.html === was, [was, now.html]);
+    check('Home redrawn: the scroll stays put on ' + what + ' (AIG-1424)', now.y === y, [y, now.y]);
+  };
+  await homeKeep('#app [data-pslug] a, #app a[data-pslug], #app [data-pslug]', 'a project');
+  await homeKeep('#app button', 'a button');
+  let lost = 0; await page.focus('#app button');
+  for (let i = 0; i < 12; i++) { await sleep(1000); if (await page.evaluate(() => document.activeElement === document.body)) { lost++; await page.focus('#app button'); } }
+  check('Home: focus is never lost to the page over 12 s (AIG-1424)', lost === 0, lost);
+  await page.setViewportSize({ width: 1280, height: 800 });
+
   await noErrors(page);
   await page.close();
 }, true);

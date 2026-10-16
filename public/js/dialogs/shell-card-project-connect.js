@@ -1,13 +1,27 @@
 /* ---------- dialog shell ---------- */
 // AIG-1277: every dialog is a modal for screen readers (role=dialog, aria-modal, named by its heading), Tab stays inside, and closing puts focus back on what opened it.
 let dlgOpener = null, dlgLast = null;   // dlgLast: the last focused control outside a dialog (a board redraw can replace the opener while a dialog loads, so closing looks for its twin)
-document.addEventListener('focusin', e => { if (!e.target.closest('#dialog')) dlgLast = { el: e.target, id: e.target.id, cls: e.target.className, tag: e.target.tagName, txt: (e.target.textContent || '').trim(), title: e.target.getAttribute('title') || '' }; });
+// focusNote: enough about a control to find its twin after a redraw replaced it (AIG-1424: also by its data-* / onclick / href, as a count in its text can change).
+const FOCUS_KEYS = ['data-id', 'data-pslug', 'data-slug', 'data-act', 'data-tab', 'data-ctab', 'onclick', 'onchange', 'href', 'name'];
+const focusKey = el => FOCUS_KEYS.map(k => el.getAttribute(k) || '').join('|').replace(/\|+$/, '');
+function focusNote(el) { return el && el.getAttribute ? { el, id: el.id, cls: el.className, tag: el.tagName, txt: (el.textContent || '').trim(), title: el.getAttribute('title') || '', key: focusKey(el) } : null; }
+document.addEventListener('focusin', e => { if (!e.target.closest('#dialog')) dlgLast = focusNote(e.target); });
 function dlgTwin(d) {
   if (!d) return null; if (document.contains(d.el)) return d.el;
   if (d.id) return document.getElementById(d.id);
-  return [...document.querySelectorAll(d.tag.toLowerCase())].find(x => x.className === d.cls && (x.textContent || '').trim() === d.txt && (x.getAttribute('title') || '') === d.title) || null;
+  const all = [...document.querySelectorAll(d.tag.toLowerCase())], same = x => (x.textContent || '').trim() === d.txt && (x.getAttribute('title') || '') === d.title;
+  const keyed = d.key ? all.filter(x => focusKey(x) === d.key) : [];
+  return all.find(x => x.className === d.cls && same(x)) || keyed.find(same) || (keyed.length === 1 ? keyed[0] : null);
 }
 const DLG_FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])';
+// A redraw of a page keeps the keyboard focus and the scroll where they were (AIG-1424): call before replacing the HTML, then call what it returns.
+function keepFocus(root = $('app')) {
+  const a = document.activeElement, note = a && a !== root && root && root.contains(a) ? focusNote(a) : null, y = window.scrollY;
+  return () => {
+    if (note && !document.contains(note.el)) { const n = dlgTwin(note); if (n && root.contains(n)) n.focus({ preventScroll: true }); }
+    if (window.scrollY !== y) window.scrollTo(window.scrollX, y);
+  };
+}
 // The shared focus helpers (AIG-1423): the card panel and the Messages panel keep Tab inside them the same way a dialog does.
 function focusablesIn(box) { return box ? [...box.querySelectorAll(DLG_FOCUSABLE)].filter(el => el.getClientRects().length && !el.closest('[hidden]')) : []; }
 function dlgFocusables() { return focusablesIn($('dialog')); }
