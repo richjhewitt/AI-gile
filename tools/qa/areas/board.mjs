@@ -487,3 +487,51 @@ def('boardscroll', 'columns scroll inside themselves on a desktop, Team stays in
   check('a phone keeps its columns unclipped', (await page.$eval('.column[data-status=todo]', e => getComputedStyle(e).overflowY)) === 'visible');
   noErrors(page);
 }, true);
+
+// AIG-1344: the Team panel tells the truth: working only when running now or heard from in 12 hours; the rest 💤 idle with last seen;
+// working first. The board clears a stale "working" itself (after 12 hours, or when the run or session ends), keeping last seen.
+def('teamlive', 'Team panel: a member marked working 2 days ago shows 💤 idle with last seen, a running lead shows working, working first; the board clears stale working (12 h, session end); Home and the brief follow (AIG-1344)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP');
+  for (const [name, role, status] of [['Oldie', 'Frontend', '🔄 working'], ['Lead', 'Lead', '🔄 working'], ['Pixel', 'Backend', '🔄 working'], ['Sleepy', 'QA', '💤 idle']])
+    await s.ok('POST', '/api/projects/alpha/team', { name, role, status, task: name + ' task' });
+  const pf = path.join(s.data, 'alpha.json'), pj = JSON.parse(fs.readFileSync(pf, 'utf8')), old = new Date(Date.now() - 48 * 3600e3).toISOString();
+  for (const m of pj.team) if (m.name === 'Oldie' || m.name === 'Lead') m.updated = old;
+  fs.writeFileSync(pf, JSON.stringify(pj));
+  const ping = () => fetch(BASE + '/api/projects/alpha/ping', { headers: { 'x-aigile-where': 'terminal' } });
+  await ping();   // the lead's session is live: running now
+  await sleep(1500);   // the board's tidy runs (AIGILE_TEAMTIDY_MS)
+  let team = (await s.ok('GET', '/api/projects/alpha')).team, by = n => team.find(m => m.name === n);
+  check('the board clears a working status 2 days old to idle', by('Oldie').status === '💤 idle', by('Oldie'));
+  check('it keeps the member, the task and last seen', by('Oldie').task === 'Oldie task' && by('Oldie').updated === old, by('Oldie'));
+  check('a running lead keeps working, even with an old status line', /working/.test(by('Lead').status), by('Lead'));
+  check('a member heard from today keeps working', /working/.test(by('Pixel').status), by('Pixel'));
+  const home = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'alpha');
+  check('Home crew line lists only who is working', JSON.stringify(home.team.map(m => m.name).sort()) === JSON.stringify(['Lead', 'Pixel']), home.team.map(m => m.name));
+  const brief = s.cli(['brief', 'alpha']).out, line = (brief.split('\n').find(l => l.startsWith('Team: ')) || '');
+  check('the brief leaves the stale helper out', !/Oldie/.test(line) && /Pixel/.test(line), line);
+  const page = await openPage(ctx, '#/p/alpha');
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.evaluate(() => { try { localStorage.setItem('aigile.teamAll', '1'); } catch {} });
+  await page.reload(); await page.waitForSelector('.side table');
+  await ping();
+  const rows = async () => page.$$eval('.side .box:first-child tr', trs => trs.slice(1).map(tr => [tr.querySelector('b').textContent, tr.lastElementChild.textContent]));
+  let r = await rows();
+  check('working ones first, then the rest by last seen', JSON.stringify(r.map(x => x[0])) === JSON.stringify(['Lead', 'Pixel', 'Sleepy', 'Oldie']), r);
+  check('the running lead shows working', /working/.test(r[0][1]), r);
+  check('the 2-day-old one shows idle with last seen', r[3][1] === '💤 idle · last seen 2d ago', r);
+  check('a fresh idle one shows last seen too', /^💤 idle · last seen/.test(r[2][1]), r);
+  check('Show all counts the two idle ones', (await page.textContent('.team-all')) === 'Show active only');
+  await page.evaluate(() => { try { localStorage.removeItem('aigile.teamAll'); } catch {} });
+  await page.reload(); await page.waitForSelector('.side');
+  check('active only: just the two working', JSON.stringify((await rows()).map(x => x[0])) === JSON.stringify(['Lead', 'Pixel']) && (await page.textContent('.team-all')) === 'Show all (2)');
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.waitForTimeout(300);
+  check('phone: the Team panel fits the width', await page.evaluate(() => document.documentElement.scrollWidth <= 392));
+  // The session ends (SessionEnd hook): nobody is running, so working goes idle; last seen stays.
+  const pixelSeen = by('Pixel').updated;
+  await s.ok('POST', '/api/projects/alpha/bye');
+  team = (await s.ok('GET', '/api/projects/alpha')).team;
+  check('the session ending clears working to idle', team.every(m => !/working/.test(m.status)), team.map(m => m.name + ' ' + m.status));
+  check('last seen stays as it was', team.find(m => m.name === 'Pixel').updated === pixelSeen && team.length === 4);
+  noErrors(page);
+}, true, { AIGILE_TEAMTIDY_MS: '500' });
