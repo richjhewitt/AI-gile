@@ -13,11 +13,15 @@ const GLOSS_GROUPS = {
   team: ['backlog', 'sprint', 'standup', 'kanban', 'wip', 'dod', 'testpile', 'retro', 'peerreview', 'swarm', 'scrummaster',
     'agent', 'token', 'hook'],
 };
-const GLOSSARY = Object.values(GLOSS_GROUPS).flat();
+// AIG-1363: the board's own words come first, in the order a newcomer meets them (not sorted). App only: the website's dev words
+// read GLOSS_GROUPS above, so these stay out of it.
+const GLOSS_BOARD = ['card', 'project', 'forteam', 'lead', 'agentprog', 'dispatcher', 'space', 'playground', 'hyperfocus'];
+const GLOSS_ALL = { board: GLOSS_BOARD, ...GLOSS_GROUPS };
+const GLOSSARY = Object.values(GLOSS_ALL).flat();
 // Words on every screen, or everyday words with a special meaning here, would be underlined everywhere:
 // they stay in the glossary but get no tooltip.
-const NO_TIP = ['test', 'live', 'change', 'problem'];
-const NO_AI_SKIP = ['agent', 'token', 'hook', 'peerreview', 'tokencap'];   // AIG-821: words about AI agents, left out in No AI mode
+const NO_TIP = ['test', 'live', 'change', 'problem', 'card', 'project', 'forteam', 'lead', 'space'];
+const NO_AI_SKIP = ['agent', 'token', 'hook', 'peerreview', 'tokencap', 'lead', 'agentprog', 'dispatcher'];   // AIG-821: words about AI agents, left out in No AI mode
 const glossNoAi = () => typeof NoAi !== 'undefined' && NoAi.on;
 const glossFold = s => { s = String(s || '').toLowerCase(); try { s = s.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch {} return s; };
 const glossAlso = id => { const a = t('gloss.' + id + '.also'); return a && !String(a).startsWith('gloss.') ? String(a).split(',').map(x => x.trim()).filter(Boolean) : []; };
@@ -31,9 +35,9 @@ function setExplain(on) {
 // A heading per group (h2 page title, h3 groups), one search box across them all; the count is said aloud as you type.
 function renderGlossary() {
   const loc = (typeof i18n !== 'undefined' && i18n.locale) || undefined;
-  const groups = Object.entries(GLOSS_GROUPS).map(([g, ids]) => ({ g, items: ids.filter(id => !(glossNoAi() && NO_AI_SKIP.includes(id)))
+  const groups = Object.entries(GLOSS_ALL).map(([g, ids]) => ({ g, items: ids.filter(id => !(glossNoAi() && NO_AI_SKIP.includes(id)))
     .map(id => ({ id, word: t('gloss.' + id + '.word'), text: t('gloss.' + id + '.text'), also: glossAlso(id) }))
-    .sort((a, b) => a.word.localeCompare(b.word, loc)) })).filter(x => x.items.length);
+    .sort((a, b) => g === 'board' ? 0 : a.word.localeCompare(b.word, loc)) })).filter(x => x.items.length);
   const n = groups.reduce((s, x) => s + x.items.length, 0);
   return `<div class="gloss"><h2>${esc(t('gloss.title'))}</h2><p class="muted">${esc(t('gloss.about'))}</p>
     <input type="search" id="glossQ" placeholder="${esc(t('gloss.search'))}" oninput="filterGlossary(this.value)" aria-label="${esc(t('gloss.search'))}" aria-describedby="glossCount" autocomplete="off">

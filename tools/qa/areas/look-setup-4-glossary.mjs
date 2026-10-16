@@ -9,7 +9,7 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
   await mkCard(s, 'alpha', 'Refactor the inbox', { status: 'backlog' });
   const page = await openPage(ctx, '#/glossary');
   await page.waitForSelector('.gloss-item');
-  check('the glossary lists the words', (await page.locator('.gloss-item').count()) >= 15 && /Commit/.test(await page.textContent('.gloss-list')));
+  check('the glossary lists the words', (await page.locator('.gloss-item').count()) >= 15 && /Commit/.test(await page.textContent('.gloss-group[data-group=build] .gloss-list')));
   await page.fill('#glossQ', 'branch');
   check('search narrows it down', (await page.locator('.gloss-item:not([hidden])').count()) >= 1 && (await page.locator('.gloss-item:not([hidden])').count()) < 5);
   await page.goto(BASE + '/#/p/alpha'); await page.waitForSelector('.board');
@@ -45,7 +45,9 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
     status: document.getElementById('glossCount')?.getAttribute('role'),
     count: document.getElementById('glossCount')?.textContent,
   }));
-  check('the glossary has 45+ words in four groups, each under its own h3 after the page h2', g.n >= 45 && g.loose === 0 && g.groups.join() === 'build,change,run,team' && g.labelled && g.hs[0] === 'H2:' + en['gloss.title'] && g.hs.slice(1).every(h => h.startsWith('H3:')) && g.hs.length === 5, g);
+  check('the glossary has 45+ words in five groups (the board words first, AIG-1363), each under its own h3 after the page h2', g.n >= 45 && g.loose === 0 && g.groups.join() === 'board,build,change,run,team' && g.labelled && g.hs[0] === 'H2:' + en['gloss.title'] && g.hs.slice(1).every(h => h.startsWith('H3:')) && g.hs.length === 6, g);
+  const board = await page.$$eval('.gloss-group[data-group=board] .gloss-item', e => e.map(x => x.dataset.id + ':' + x.querySelector('dt').textContent));
+  check('AIG-1363: the first group explains the board words, card and project first: Lead, Dispatcher, space, playground, hyperfocus, For the team, agent program', board.join() === 'card:Card,project:Project,forteam:For the team,lead:Lead,agentprog:Agent program,dispatcher:Dispatcher,space:Space,playground:Playground,hyperfocus:Hyperfocus', board);
   check('a status line says how many words there are', g.status === 'status' && g.count === g.n + ' words', g);
   for (const id of ['service', 'uptime', 'statuspage', 'incident', 'major', 'problem', 'change', 'risk', 'oncall', 'replyby', 'postmortem', 'backup', 'restore', 'release', 'rollback', 'live', 'swarm', 'peerreview', 'retro', 'dod', 'testpile', 'ci', 'desk', 'svcrequest', 'svcreview', 'accessreview', 'improvements', 'expiry', 'tokencap'])
     if (!(await page.locator(`.gloss-item[data-id="${id}"]`).count())) check('the word ' + id + ' is in the glossary', false);
