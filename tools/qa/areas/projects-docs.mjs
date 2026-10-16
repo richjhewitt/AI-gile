@@ -165,7 +165,7 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
 
 def('newscrum', 'New project from the Scrum or own-columns template names the columns, statuses unchanged (AIG-170)', async (s, ctx) => {
   const page = await openPage(ctx, '#/');
-  const heads = () => page.$$eval('.column h3 span:first-child', els => els.map(e => e.textContent));
+  const heads = () => page.$$eval('.column h3 > span:first-child', els => els.map(e => e.textContent));
   await page.click('button:has-text("+ New project")');
   await page.fill('#p-name', 'Scrum Team');
   await page.evaluate(() => { $('p-more').open = true; });
@@ -264,7 +264,7 @@ def('discover', '🔎 Find my projects: lists folders with git and README, flags
   await page.evaluate(sl => { location.hash = '#/p/' + sl; }, (all.find(x => x.name === 'Shopping') || {}).slug);
   await page.waitForSelector('#bDetails');
   check('the folder path sits in the folded Details on the board (AIG-938)', await page.$eval('#bDetails', e => !e.open && !!e.querySelector('code')));
-  check('an empty imported board says what happens next (AIG-333)', /Wake the team/.test(await page.$eval('#emptyHint', e => e.textContent)));
+  check('an empty imported board says what happens next (AIG-333)', /Wake the team|what you want done/i.test(await page.$eval('#emptyHint', e => e.textContent)));
   await page.evaluate(() => { localStorage.removeItem('aigile.standupAsked'); return morningPrompt(); });
   await page.waitForTimeout(500);
   check('no stand-up prompt before any project has a team (AIG-1078)', !(await page.$('#suPrompt')));

@@ -75,8 +75,9 @@ def('pagea11y', 'accessibility (AIG-1332): a page title per route (in your langu
   await go('#/p/alpha/' + card.id, '.panel'); check('title: an open card names itself', (await title()) === `${card.id} Fix the door · Alpha · AI-gile`, await title());
   // Skip to content
   await go('#/p/alpha', '.board .column');
-  await page.evaluate(() => { document.activeElement && document.activeElement.blur(); window.focus(); });
-  await page.keyboard.press('Tab');
+  // Start Tab from the top of the page: a fresh load. (Closing a card puts focus back on its board card, AIG-1371, and Tab would go on from there.)
+  await page.evaluate(() => { const h = document.createElement('span'); h.id = 'qaTop'; h.tabIndex = -1; document.body.prepend(h); h.focus(); });
+  await page.keyboard.press('Tab'); await page.evaluate(() => document.getElementById('qaTop').remove());
   const sk = await page.evaluate(() => { const a = document.activeElement, r = a.getBoundingClientRect(); return { id: a.id, text: a.textContent, inView: r.top >= 0 && r.bottom <= innerHeight && r.width > 0 }; });
   check('skip link: the first Tab stop, shown when it has focus', sk.id === 'skipLink' && sk.text === 'Skip to content' && sk.inView, sk);
   await page.keyboard.press('Enter'); await sleep(300);

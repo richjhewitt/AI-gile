@@ -210,7 +210,7 @@ def('columns', '⚙️ Columns: rename, reorder, hide and colour a board\'s colu
   await page.click('#dialog button:has-text("Save")');
   await page.waitForFunction(() => !document.querySelector('#dialog .dialog'));
   await page.waitForSelector('.column h3');
-  const heads = await page.$$eval('.column h3 span:first-child', els => els.map(e => e.textContent));
+  const heads = await page.$$eval('.column h3 > span:first-child', els => els.map(e => e.textContent));
   check('renamed, moved first, Backlog hidden', heads[0] === '⏭️ Next up' && !heads.includes('Backlog') && heads.length === 6, heads);
   check('card still todo underneath', (await getCard(s, 'alpha', c.id)).status === 'todo');
   check('other project untouched', !(await s.ok('GET', '/api/projects/beta')).columns);
@@ -375,7 +375,7 @@ def('steps', 'your own steps inside a column: sub-columns, drag between them, st
   await s.ok('PATCH', '/api/projects/alpha', { columns: cols });
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('.column.step');
-  const heads = await page.$$eval('.column.step h3 span:first-child', els => els.map(e => e.textContent));
+  const heads = await page.$$eval('.column.step h3 > span:first-child', els => els.map(e => e.textContent));
   check('three step columns', JSON.stringify(heads) === JSON.stringify(['In progress · Design', 'In progress · Build', 'In progress · QA']), heads);
   check('a card with no step sits in the first', (await page.locator('.column.step[data-step="Design"] .card').count()) === 1);
   await page.dragAndDrop(`.card[data-id="${c.id}"]`, '.column.step[data-step="Build"]');
