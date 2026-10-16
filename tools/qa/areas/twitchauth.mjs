@@ -209,8 +209,9 @@ def('twitchbuiltin', '💜 Twitch with the built-in Client ID: only Sign in with
     await su.waitForSelector('#twAuthOn', { timeout: 10000 });
     const dev = tw.seen.calls.find(c => c.what === 'device');
     check('sign-in used the built-in Client ID and lands on your own login', dev && dev.client_id === CLIENT && /smizflark/.test(await su.textContent('#twAuthOn')), dev);
-    check('saving the same ID as your own keeps the sign-in', (await s.ok('POST', '/api/twitch/config', { clientId: CLIENT })).signedIn === true);
-    check('clearing your own ID falls back to the built-in one, still signed in', (await s.ok('POST', '/api/twitch/config', { clientId: '' })).signedIn === true);
+    const { token } = await s.ok('GET', '/api/secrets/token');   // changing the Client ID needs the page token
+    check('saving the same ID as your own keeps the sign-in', (await s.ok('POST', '/api/twitch/config', { clientId: CLIENT, token })).signedIn === true);
+    check('clearing your own ID falls back to the built-in one, still signed in', (await s.ok('POST', '/api/twitch/config', { clientId: '', token })).signedIn === true);
     await su.setViewportSize({ width: 390, height: 800 }); await su.emulateMedia({ colorScheme: 'dark' });
     await su.reload(); await su.waitForSelector('#twitchBox #twAuthOn');
     const over = await su.evaluate(() => { const b = document.getElementById('twitchBox'); return b.scrollWidth - b.clientWidth; });
