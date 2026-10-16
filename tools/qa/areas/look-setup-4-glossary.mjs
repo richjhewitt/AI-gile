@@ -73,6 +73,25 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
   check('no match: it says so, once on screen and once to screen readers', !(await page.$eval('#glossNone', e => e.hidden)) && (await page.textContent('#glossCount')) === en['gloss.none'] && (await page.$eval('#glossCount', e => e.getBoundingClientRect().width <= 1)));
   const noai = await page.evaluate(() => { NoAi.apply(true); const h = renderGlossary(); NoAi.apply(false); return h; });
   check('No AI mode leaves out the words about AI agents (Agent, Token, Hook, Peer review) and the whole 🤖 AI group (AIG-1408)', !/data-id="(agent|token|hook|peerreview|hallucination|prompt)"/.test(noai) && !/data-group="ai"/.test(noai) && /data-id="incident"/.test(noai) && /data-id="agile"/.test(noai));
+  // Everyday words are no glossary names: ordinary sentences get no underline, in English, Dutch and Flemish; real terms still do.
+  const PLAIN = {
+    en: ['You need permission to change settings', 'the data is in the queue', 'Keep it safe: the call is hosted and monitored', 'Is it feasible? Prioritise the first line of the list',
+      'A small lag, a virus scan and redundant purchasing', 'Hand over the evaluations; we compiled the coverage', 'Responsive and helpful prompting'],
+    nl: ['Je hebt rechten nodig om de instellingen te wijzigen', 'De gegevens staan in de wachtrij', 'Het is haalbaar en toegankelijk, met wat vertraging',
+      'Herstellen, overdoen of overdragen: een nieuwe baan met meer snelheid', 'Een virus, de zwakste schakel, overschakelen en investeringen', 'Het is veilig (safe) en gehost'],
+  };
+  PLAIN['nl-BE'] = [...PLAIN.nl, 'De formules en de inkoop'];
+  const plain = await page.evaluate(async P => {
+    const keep = i18n.dict, out = {};
+    for (const [code, lines] of Object.entries(P)) {
+      i18n.dict = code === 'en' ? i18n.en : await (await fetch('/lang/' + code + '.json')).json(); glossRe = null;
+      const mark = s => { const d = document.createElement('div'); d.textContent = s; markDevWords(d); return [...d.querySelectorAll('abbr.devw')].map(a => a.textContent.toLowerCase()); };
+      out[code] = { stray: lines.flatMap(mark), terms: mark(code === 'en' ? 'Sprint, backlog and CI/CD' : 'Sprint, backlog en CI/CD') };
+    }
+    i18n.dict = keep; glossRe = null; return out;
+  }, PLAIN);
+  for (const code of Object.keys(PLAIN))
+    check(`everyday words are not underlined (${code}: "permission", "lag", "virus", "safe"...), while Sprint, backlog and CI/CD still are`, !plain[code].stray.length && plain[code].terms.join() === 'sprint,backlog,ci/cd', plain[code]);
   // phone width, dark mode, right to left
   await page.setViewportSize({ width: 390, height: 800 }); await page.emulateMedia({ colorScheme: 'dark' });
   await page.evaluate(() => { document.documentElement.dir = 'rtl'; $('app').innerHTML = renderGlossary(); });
