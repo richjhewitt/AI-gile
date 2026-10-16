@@ -178,22 +178,27 @@ const SPACE_TPLS = ['product', 'software', 'event', 'life', 'business'];
 function spaceTpl(v) { if (v) $('p-kids').value = t('space.tpl.' + v + '.kids').split('|').join('\n'); }
 async function newProject(opts = {}) {
   try { state.home = state.home || (await api('GET', '/api/meta')).home; } catch {}
+  // AIG-1365: up front only the name, Create and Cancel. More options holds the rest, most used first; the space fields sit in their own fold,
+  // and the sample and playground buttons under "Other ways to start".
   openDialog(`<h2>${esc(t(opts.space ? 'dlg.newspace' : 'dlg.newproject'))}</h2>
     <form onsubmit="return createProject(event)">
       <label class="f"><span>${esc(t('dlg.np.name'))}</span><input type="text" id="p-name" oninput="suggestKey()" maxlength="80"></label>
       <details id="p-more"${opts.space ? ' open' : ''}><summary>${esc(t('dlg.np.more'))}</summary>
-      <div class="row"><label class="f"><span>${esc(t('dlg.np.key'))}</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
-      <label class="f"><span>${esc(t('dlg.np.folder'))}</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="${esc(t('dlg.np.folder.ph'))}"></label>
-      ${NoAi.on ? '' : `<label class="chk"><input type="checkbox" id="p-team" checked> ${esc(t('dlg.np.team'))}</label>`}
-      <label class="f"><span>${esc(t('dlg.np.desc'))}</span><textarea id="p-desc" rows="3"></textarea></label>
-      <label class="f"><span>${esc(t('space.tpl'))}</span><select id="p-spacetpl" onchange="spaceTpl(this.value)"><option value="">${esc(t('space.tpl.none'))}</option>${SPACE_TPLS.map(v => `<option value="${v}">${esc(t('space.tpl.' + v))}</option>`).join('')}</select></label>
-      <label class="f"><span>${esc(t('dlg.np.kids'))}</span><textarea id="p-kids" rows="3" placeholder="${esc(t('dlg.np.kids.ph'))}"></textarea><small class="muted">${esc(t('dlg.np.kids.help'))}</small></label>
+      <label class="f"><span>${esc(t('dlg.np.desc'))}</span><textarea id="p-desc" rows="2"></textarea></label>
       <label class="f"><span>${esc(t('dlg.np.tpl'))}</span><select id="p-tpl" onchange="$('p-own').style.display = this.value === 'own' ? '' : 'none'">
         <option value="kanban">${esc(t('dlg.np.tpl.kanban'))}</option><option value="scrum">${esc(t('dlg.np.tpl.scrum'))}</option><option value="own">${esc(t('dlg.np.tpl.own'))}</option></select></label>
       <label class="f" id="p-own" style="display:none"><span>${esc(t('dlg.np.tpl.own.help'))}</span><input type="text" id="p-own-names" placeholder="${esc(t('dlg.np.tpl.own.ph'))}"></label>
+      ${NoAi.on ? '' : `<label class="chk"><input type="checkbox" id="p-team" checked> ${esc(t('dlg.np.team'))}</label>`}
+      <label class="f"><span>${esc(t('dlg.np.folder'))}</span><input type="text" id="p-path" oninput="this.dataset.touched=1" placeholder="${esc(t('dlg.np.folder.ph'))}"></label>
+      <div class="row"><label class="f"><span>${esc(t('dlg.np.key'))}</span><input type="text" id="p-key" maxlength="6" oninput="this.dataset.touched=1"></label></div>
+      <details id="p-space"${opts.space ? ' open' : ''}><summary>${esc(t('dlg.np.space.more'))}</summary>
+      <label class="f"><span>${esc(t('space.tpl'))}</span><select id="p-spacetpl" onchange="spaceTpl(this.value)"><option value="">${esc(t('space.tpl.none'))}</option>${SPACE_TPLS.map(v => `<option value="${v}">${esc(t('space.tpl.' + v))}</option>`).join('')}</select></label>
+      <label class="f"><span>${esc(t('dlg.np.kids'))}</span><textarea id="p-kids" rows="3" placeholder="${esc(t('dlg.np.kids.ph'))}"></textarea><small class="muted">${esc(t('dlg.np.kids.help'))}</small></label>
+      </details>
+      ${opts.space ? '' : `<div class="f np-other"><span>${esc(t('dlg.np.other'))}</span><div class="actions"><button type="button" id="p-sample" onclick="addSample()" title="${esc(t('sample.add.title'))}">${esc(t('sample.add'))}</button> <button type="button" id="p-play" onclick="newPlayground()">${esc(t('dlg.np.play'))}</button></div><small class="muted">${esc(t('dlg.np.play.hint'))}</small></div>`}
       </details>
       <div class="err" id="d-err"></div><div id="p-done"></div>
-      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button>${opts.space ? '' : ` <button type="button" id="p-sample" onclick="addSample()" title="${esc(t('sample.add.title'))}">${esc(t('sample.add'))}</button> <button type="button" id="p-play" onclick="newPlayground()">${esc(t('dlg.np.play'))}</button>`}</div>${opts.space ? '' : `<p class="muted"><small>${esc(t('dlg.np.play.hint'))}</small></p>`}</form>`);
+      <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`);
   if (opts.space) { $('p-spacetpl').value = SPACE_TPLS[0]; spaceTpl(SPACE_TPLS[0]); }
 }
 // New playground (AIG-818/819): one box with a friend's name; makes the project for them and shows the invite code to Copy.
@@ -234,7 +239,7 @@ function suggestKey() {
   const name = $('p-name').value, k = $('p-key'), f = $('p-path');
   if (!k.dataset.touched) k.value = name.replace(/[^A-Za-z0-9]/g, '').slice(0, 3).toUpperCase();
   const clean = name.replace(/[<>:"/\\|?*]/g, '').trim();
-  if (!f.dataset.touched && state.home) f.value = clean ? state.home + '\\' + clean : '';
+  if (!f.dataset.touched && state.home) f.value = clean ? state.home.replace(/[\\/]+$/, '') + (/\//.test(state.home) ? '/' : '\\') + clean : '';   // AIG-1365: keep the folder's own slashes
 }
 const STATUS_ORDER = ['backlog', 'todo', 'doing', 'review', 'verify', 'team', 'done'];
 // Column names for a template, one per status in order ('' = keep the default name).

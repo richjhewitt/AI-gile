@@ -132,9 +132,12 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
   const page = await openPage(ctx, '#/');
   await page.click('button:has-text("+ New project")');
   await page.fill('#p-name', 'Fresh One');
-  check('only the name shows up front; the rest sits under More options (AIG-1079)', !(await page.isVisible('#p-path')) && !(await page.isVisible('#p-key')) && (await page.isVisible('#p-more summary')) && (await page.isVisible('#p-play')));
+  check('only the name shows up front; the rest sits under More options (AIG-1079, AIG-1365: front is name, Create, Cancel)', !(await page.isVisible('#p-path')) && !(await page.isVisible('#p-key')) && (await page.isVisible('#p-more summary')) && !(await page.isVisible('#p-play')) && (await page.$$eval('#p-acts button', b => b.length)) === 2);
   await page.evaluate(() => { $('p-more').open = true; });
   check('folder suggested from the name', /[\\/]Fresh One$/.test(await page.inputValue('#p-path')), await page.inputValue('#p-path'));
+  // AIG-1365: More options keeps the space fields in their own fold, sample and playground under Other ways to start; one kind of slash
+  const np = await page.evaluate(() => { const h = state.home; state.home = 'C:/Users/x/Stuff'; suggestKey(); const v = $('p-path').value; state.home = h; suggestKey(); return { v, space: $('p-spacetpl').checkVisibility(), play: $('p-play').checkVisibility() && !!$('p-play').closest('.np-other') }; });
+  check('More options: space fields folded away, playground under Other ways to start, no mixed slashes (AIG-1365)', np.v === 'C:/Users/x/Stuff/Fresh One' && !np.space && np.play, np);
   await page.fill('#p-path', folder);
   await page.click('#dialog button[type=submit]');
   await page.waitForSelector('#p-done li', { timeout: 5000 }).catch(() => {});
