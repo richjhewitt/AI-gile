@@ -54,6 +54,12 @@ const TodayPage = (() => {
     // AIG-1315: only the projects active today; the resting ones fold into one line with a link to 🎯 Today
     const left = d.left || [], on = d.projects.filter(p => p.weight !== 'rest' && !left.includes(p.slug)), rest = d.projects.length - on.length;
     const restLine = rest ? `<div class="muted today-restsum">${esc(t('today.hidden', { n: rest }))} <a href="#/today">${esc(t('today.link'))}</a></div>` : '';
+    // AIG-1317: with no daily limit the share caps nothing, so show what each project really used today, biggest first
+    if (!d.limit) {
+      const total = on.reduce((a, p) => a + (p.used || 0), 0) || 1, rows = [...on].sort((a, b) => (b.used || 0) - (a.used || 0));
+      return `<div class="uz-card today-usage"><div class="uz-tile-h">${esc(t('today.usage.used.h'))}</div>${restLine && !on.length ? restLine : ''}${rows.map(p => { const pc = Math.round((p.used || 0) / total * 100), line = esc(t('today.usedonly', { used: fmt(p.used || 0), pct: pc })); return `<div class="today-bar"><span class="today-bn">${T.icon(p.weight)} ${esc(p.name)}</span>
+      <span class="today-track" title="${line}"><i style="width:${pc}%"></i></span><span class="muted today-bv">${line}</span></div>`; }).join('')}${on.length ? restLine : ''}</div>`;
+    }
     return `<div class="uz-card today-usage"><div class="uz-tile-h">${esc(t('today.usage.h'))}</div>${restLine && !on.length ? restLine : ''}${on.map(p => `<div class="today-bar"><span class="today-bn">${T.icon(p.weight)} ${esc(p.name)}</span>
       <span class="today-track" title="${esc(T.line(p).replace(/<[^>]+>/g, ''))}"><i class="${p.over ? 'over' : ''}" style="width:${Math.min(100, p.pct)}%"></i></span><span class="muted today-bv">${T.line(p)}</span></div>`).join('')}${on.length ? restLine : ''}</div>`;
   };

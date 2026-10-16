@@ -2539,6 +2539,8 @@
   "today.over": "Past its share",
   "today.over.title": "This project used its share of today's tokens, so it only runs for ⭐ crucial cards or when you start it",
   "today.usage.h": "🎯 Today's share by project",
+  "today.usage.used.h": "🎯 What each project used today",
+  "today.usedonly": "Used today: {used} ({pct}% of all)",
   "srv.today.rest": "{name} rests today: it only wakes for your own comments",
   "srv.today.over": "{name} has used its share of today's tokens: only ⭐ crucial cards run until tomorrow",
   "dlg.np.kids": "🪐 Child projects (optional, one per line)",

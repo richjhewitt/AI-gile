@@ -2611,6 +2611,8 @@
   "today.over": "Aandeel op",
   "today.over.title": "Dit project heeft zijn aandeel in de tokens van vandaag gebruikt en draait nu alleen voor ⭐ cruciale kaarten of als jij het start",
   "today.usage.h": "🎯 Aandeel van vandaag per project",
+  "today.usage.used.h": "🎯 Wat elk project vandaag gebruikte",
+  "today.usedonly": "Vandaag gebruikt: {used} ({pct}% van alles)",
   "srv.today.rest": "{name} rust vandaag: wordt alleen wakker voor je eigen reacties",
   "srv.today.over": "{name} heeft zijn aandeel in de tokens van vandaag gebruikt: tot morgen draaien alleen ⭐ cruciale kaarten",
   "dlg.np.kids": "🪐 Subprojecten (optioneel, één per regel)",
