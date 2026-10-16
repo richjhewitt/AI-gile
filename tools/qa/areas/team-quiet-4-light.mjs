@@ -74,7 +74,7 @@ def('nightglance', '🌙 night glance: a calm pop-out with the watchman per proj
     const c2 = await ctx.browser().newContext({ serviceWorkers: 'block' }), p2 = await c2.newPage();
     await p2.addInitScript(([th, nb]) => { try { if (!sessionStorage.getItem('qaSeeded')) { sessionStorage.setItem('qaSeeded', '1'); localStorage.setItem('aigile.theme', th); if (nb) localStorage.setItem('aigile.nightBoot', nb); } } catch {} }, [theme, nightBoot]);
     let release; const held = new Promise(r => { release = r; });
-    await p2.route('**/js/app.js*', async route => { await held; await route.continue(); });
+    await p2.route(/\/js\/(app|board-bundle)\.js/, async route => { await held; await route.continue(); });
     await p2.goto(page.url().split('#')[0] + hash, { waitUntil: 'commit' });
     await p2.waitForSelector('body', { state: 'attached' }); await sleep(500);
     const r = await p2.evaluate(() => ({ app: typeof setNight === 'function', pop: document.documentElement.hasAttribute('data-popnight'), night: document.documentElement.hasAttribute('data-night'), bg: getComputedStyle(document.body).backgroundColor, header: getComputedStyle(document.querySelector('body > header')).display }));

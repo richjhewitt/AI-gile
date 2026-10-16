@@ -81,6 +81,7 @@
   // Own poll so counts, tab title and alerts keep working on every page, even in a background tab.
   PagePoll.every(() => IB.load(), 3000, { alerts: true });   // title count and desktop alerts: keep their pace when hidden (AIG-1153)
   window.addEventListener('hashchange', IB.paintTop);
+  IB.load().catch(() => {});   // first counts now, not after the poll's first 3 s: the top bar pill and the rail's Inbox count land with the board (AIG-1375)
   window.Inbox = { show, repaint: IB.repaint };
   Object.assign(IB, { onClick, onKey });
 })();
