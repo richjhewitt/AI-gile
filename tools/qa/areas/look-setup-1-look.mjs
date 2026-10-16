@@ -11,6 +11,14 @@ def('look', 'each project has a colour and emoji: inbox badge and stripe, tabs, 
   s.cli(['ask', 'tunio', a.id, 'Go?', '--as', 'Lead']); s.cli(['ask', 'locoradio', b.id, 'Go?', '--as', 'Lead']);
   const sum = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'tunio');
   check('summary has an automatic colour and emoji', /^#[0-9a-f]{6}$/i.test(sum.color) && sum.emoji === '🔭', sum);
+  // AIG-1460: aigile look sets them from the CLI (U+ form for shells that mangle emoji), and empty goes back to automatic
+  const lk = s.cli(['look', 'locoradio', '--emoji', 'U+1F4EE', '--color', '#0d9488']);
+  const lr = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'locoradio');
+  check('aigile look sets the emoji and colour (AIG-1460)', lk.code === 0 && lr.emoji === '📮' && lr.color === '#0d9488', lk);
+  check('aigile look refuses a bad colour', s.cli(['look', 'locoradio', '--color', 'teal']).code !== 0);
+  s.cli(['look', 'locoradio', '--emoji', '', '--color', '']);
+  const la = (await s.ok('GET', '/api/projects')).find(p => p.slug === 'locoradio');
+  check('aigile look with empty values goes back to automatic', la.emoji !== '📮' && la.color !== '#0d9488', la);
   const ib = await s.ok('GET', '/api/inbox');
   check('inbox items carry the look', ib.every(c => c.projectColor && c.projectEmoji));
   const page = await openPage(ctx, '#/inbox');
