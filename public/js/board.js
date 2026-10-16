@@ -107,6 +107,18 @@ async function restoreDeleted(id) {
   catch (e) { setErr('del-err', e); }
 }
 
+/* ---------- who is working now (AIG-1344) ---------- */
+// The rule of lib/teamlive.js on the page: working / in review, and running now (a swarm worker on their card, or the lead
+// while the team is online) or heard from in the last 12 hours. Anyone else shows 💤 idle with when they were last seen.
+function teamLive(p) {
+  const pr = p.presence || {}, ids = new Set((pr.workers || []).map(w => w.id)), online = !!(pr.online || pr.running);
+  const names = new Set((p.cards || []).filter(c => ids.has(c.id) && c.assignee).map(c => String(c.assignee).toLowerCase()));
+  return m => /working|review/i.test(m.status || '') && (names.has(String(m.name).toLowerCase()) || (online && /lead/i.test(m.name + ' ' + (m.role || ''))) || Date.now() - Date.parse(m.updated || 0) < 12 * 3600e3);
+}
+// Working ones first, then the rest, last seen newest first.
+const teamSorted = (team, live) => team.map((m, i) => [m, i]).sort(([a, i], [b, j]) => (live(b) - live(a)) || (live(a) ? i - j : String(b.updated || '').localeCompare(String(a.updated || '')))).map(([m]) => m);
+const teamStatus = (m, live) => live(m) ? m.status || '' : m.updated ? t('board.team.idleseen', { ago: ago(m.updated) }) : t('board.team.idle');
+
 /* ---------- board page ---------- */
 // Phone (AIG-933): the toolbar buttons sit behind one ⋯ button; the choice survives the 1 s redraw.
 function toggleTb() { state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), d = $('tbDots'); if (m) m.classList.toggle('open', state.tbOpen); if (d) d.setAttribute('aria-expanded', state.tbOpen ? 'true' : 'false'); }
@@ -116,12 +128,9 @@ function renderBoard(p) {
   const by = lanesBy(p.slug);
   const board = by ? lanesOf(p, by).map(([name, pool]) => `<div class="lane"><h4 class="lane-h">${esc(name)} <span class="muted">${pool.length}</span></h4><div class="board${fyFocus(p.slug) ? ' focus' : ''}">${columnsHtml(p, pool)}</div></div>`).join('') || `<p class="muted">${esc(t('board.nomatch'))}</p>`
     : `<div class="board${fyFocus(p.slug) ? ' focus' : ''}">${columnsHtml(p, p.cards)}</div>`;
-  // Helpers idle for 12 hours are from an earlier session: left off, so they don't look like a sleeping team (AIG-269).
-  const stale = m => /idle/i.test(m.status || '') && !/lead/i.test(m.name + ' ' + (m.role || '')) && Date.now() - Date.parse(m.updated || 0) > 12 * 3600e3;
-  const team = (p.team || []).filter(m => !/retired/i.test(m.status || '') && !stale(m));
-  // AIG-1211: the Team panel lists who is working now (working / in review, and running or heard of in the last 12 hours); the rest fold under Show all.
-  const running = !!(p.presence && p.presence.running), flying = new Set(flightList(p).map(c => (c.assignee || '').toLowerCase()));
-  const live = m => /working|review/i.test(m.status || '') && (running || flying.has(String(m.name).toLowerCase()) || Date.now() - Date.parse(m.updated || 0) < 12 * 3600e3);
+  // AIG-1211: the Team panel lists who is working now; the rest fold under Show all. AIG-1344: by the one rule (teamLive), working
+  // ones first; everyone else shows 💤 idle with when they were last seen (a stale "working" from weeks ago too).
+  const live = teamLive(p), team = teamSorted((p.team || []).filter(m => !/retired/i.test(m.status || '')), live);
   const showAll = teamAll(), folded = team.filter(m => !live(m)).length, shownTeam = showAll ? team : team.filter(live);
   const log = (p.log || []).slice().reverse().slice(0, 50);
   // AIG-1076: an empty (new) project keeps + New, Docs, Ask the team and Views on the bar; the rest sits behind ⋯ More (on a phone everything does, AIG-933).
@@ -175,7 +184,7 @@ function renderBoard(p) {
     ${pickBarHtml(p)}
     <div class="side">
       <div class="box"><h3>${esc(t('board.team'))}${team.length ? `<button class="bm-btn" onclick="badgeDialog()" title="${esc(t('badge.title.hint'))}">${esc(t('badge.title'))}</button>` : ''}</h3>${shownTeam.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${shownTeam.map(m =>
-        `<tr><td><span onclick="badgeDialog('${esc(m.name).replace(/'/g, '&#39;')}')" style="cursor:pointer">${face(m.name, team)}</span><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td>${esc(m.status)}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t(team.length ? 'board.team.quiet' : 'board.team.none'))}</p>`}${folded ? `<button type="button" class="team-all" onclick="toggleTeamAll()">${esc(showAll ? t('board.team.active') : t('board.team.showall', { n: folded }))}</button>` : ''}</div>
+        `<tr><td><span onclick="badgeDialog('${esc(m.name).replace(/'/g, '&#39;')}')" style="cursor:pointer">${face(m.name, team)}</span><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td class="tm-st${live(m) ? ' on' : ' muted'}">${esc(teamStatus(m, live))}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t(team.length ? 'board.team.quiet' : 'board.team.none'))}</p>`}${folded ? `<button type="button" class="team-all" onclick="toggleTeamAll()">${esc(showAll ? t('board.team.active') : t('board.team.showall', { n: folded }))}</button>` : ''}</div>
       <div class="box"><h3>${esc(t('board.log'))}</h3>${log.length ? `<ul class="log">${log.map(l =>
         `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}</div>
     </div>`;

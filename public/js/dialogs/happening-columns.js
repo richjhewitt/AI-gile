@@ -3,13 +3,13 @@
 function happeningDialog() {
   const p = state.project, open = p.cards.filter(c => c.status !== 'done');
   const list = (cs, empty) => cs.length ? `<ul>${cs.map(c => `<li><a href="#/p/${p.slug}/${c.id}" onclick="closeDialog()">${esc(c.id)}</a> ${esc(c.title)}${c.assignee ? ` <span class="muted">@${esc(c.assignee)}</span>` : ''}</li>`).join('')}</ul>` : `<p class="muted">${empty}</p>`;
-  const team = (p.team || []).filter(m => !/retired/i.test(m.status || ''));
+  const live = teamLive(p), team = teamSorted((p.team || []).filter(m => !/retired/i.test(m.status || '')), live);   // AIG-1344: working first, the rest idle
   popNext('happening'); openDialog(`<h2>${esc(t('happening.h', { name: p.name }))}</h2>
     <div class="last">${presenceHtml(p, false)}</div>
     <h3>${esc(t('happening.doing'))}</h3>${list(open.filter(c => c.status === 'doing'), esc(t('happening.doing.none')))}
     <h3>${esc(t('happening.blocked'))}</h3>${list(open.filter(c => c.blocked), esc(t('happening.blocked.none')))}
     <h3>${esc(t('happening.waiting'))}</h3>${list(open.filter(forYou), esc(t('happening.waiting.none')))}
-    <h3>${esc(t('happening.team'))}</h3>${team.length ? `<ul>${team.map(m => `<li><b>${esc(m.name)}</b> ${esc(m.status || '')} <span class="muted">${esc(m.task || '')}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.team.none'))}</p>`}
+    <h3>${esc(t('happening.team'))}</h3>${team.length ? `<ul>${team.map(m => `<li><b>${esc(m.name)}</b> ${esc(teamStatus(m, live))} <span class="muted">${esc(m.task || '')}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.team.none'))}</p>`}
     <h3>${esc(t('happening.latest'))}</h3>${(p.log || []).length ? `<ul>${p.log.slice(-5).reverse().map(l => `<li><b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}
     <div class="actions"><button class="primary" onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="closeDialog()">${esc(t('common.close'))}</button></div>`, 'wide');
 }

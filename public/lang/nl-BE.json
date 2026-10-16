@@ -448,6 +448,8 @@
  "board.team.quiet": "Niemand is nu aan het werk.",
  "board.team.showall": "Toon alles ({n})",
  "board.team.active": "Toon alleen actieve",
+ "board.team.idle": "💤 niet bezig",
+ "board.team.idleseen": "💤 niet bezig · laatst gezien {ago}",
  "board.log": "Logboek & beslissingen",
  "board.log.none": "Nog niks gelogd.",
  "board.limit": "Limiet {n}",

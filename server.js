@@ -292,6 +292,7 @@ require('./lib/licences').start();   // 📮 website requests to cards every 10 
 require('./lib/feedback').start();   // 💬 pulls website visitors' reports for public boards with feedback on (AIG-969)
 require('./lib/bugreports').start();   // 🐞 files Live testers' reports, only with feedback.project set (AIG-561)
 require('./lib/serverhealth').start();   // 🩺 warns when Smizflark Server 2.0 needs upgrading (AIG-660)
+require('./lib/teamlive').start();   // 💤 a member still marked working after 12 hours goes idle (AIG-1344)
 require('./lib/people').start();   // 👥 Humans and Agents counts for the teaser, operator's board only (AIG-1314)
 require('./lib/uptime').start();   // 🟢 uptime checks of service projects open incidents (AIG-1047)
 require('./lib/budget').startNightWatch();   // a run past its team's nightly token budget is stopped (AIG-522)
