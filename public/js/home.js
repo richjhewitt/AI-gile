@@ -67,6 +67,7 @@ function homeTeamPill(p) {
 // One project card: on home, and in a space's grid on its board. sp: { kids, fold, up } from spaces.js.
 function projCard(p, sp = {}) {
   const active = p.total - p.counts.backlog;
+  const n = k => k === 'verify' && p.toTest !== undefined ? p.toTest : p.counts[k];   // AIG-1374: For you to test counts what the inbox counts (not the snoozed ones)
   const at = p.attention;   // home cards skip unassigned in-flight rows and Dispatcher log lines; the board keeps them (AIG-924)
   return `<a class="proj ${p.archived ? 'archived' : ''} ${at ? 'needs-poke' : ''} ${sp.kids ? 'is-space' : ''}" href="#/p/${p.slug}" style="--proj:${esc(p.color)}" ${Spaces.dragAttrs(p.slug, sp.up || '')}>
     ${at ? `<div class="pokeline ai-only">${at.kind === 'asleep' ? '💤' : '⚠️'} <b>${esc(t('home.poke'))}</b> ${at.kind === 'asleep' ? esc(asleepWhy(at)) : esc(t('home.unanswered', { when: ago(at.since, true) }))}${at.auto ? ` · ${esc(t('poke.auto'))}` : at.held ? ` · ${esc(heldWhy(at))}` : ''}</div>` : ''}
@@ -74,7 +75,7 @@ function projCard(p, sp = {}) {
     <div class="muted">${esc(p.description)}</div>
     ${p.service ? `<div class="svc-line">${p.service.up === false ? "🔴" : p.service.up === true ? "🟢" : ""}🛎️ ${esc(p.service.offers || p.name)} · ${esc(t('svc.oncall', { name: p.service.onCall }))}${p.service.url ? ` · <span class="svc-url" role="link" tabindex="0" data-href="${esc(p.service.url)}" onclick="event.preventDefault();event.stopPropagation();window.open(this.dataset.href,'_blank','noopener')">${esc(p.service.url.replace(/^https?:\/\//, ''))}</span>` : ''}</div>` : ''}
     ${bar(p.counts, active)}
-    <div class="counts"><b>${esc(t('home.pctdone', { n: Math.round(p.progress * 100) }))}</b>${Object.entries(COLS).filter(([k]) => p.counts[k]).map(([k, v]) => `<span>${v} ${p.counts[k]}</span>`).join('')}</div>
+    <div class="counts"><b>${esc(t('home.pctdone', { n: Math.round(p.progress * 100) }))}</b>${Object.entries(COLS).filter(([k]) => n(k)).map(([k, v]) => `<span>${v} ${n(k)}</span>`).join('')}</div>
     ${p.team.length ? `<div class="last">👥 ${p.team.map(m => esc(m.name)).join(', ')}</div>` : ''}
     <div class="last">${homeTeamPill(p) && !p.path && !(p.presence && p.presence.running) ? `${homeTeamPill(p)} <span class="muted">${esc(t(p.noTeam ? 'noteam.line' : 'noteam.nofolder'))}</span>` : homeTeamPill(p) + ' ' + presenceHtml(p, at?.kind === 'asleep')}</div>
     ${(fl => fl.length ? `<div class="last">🛠 ${flightHtml(fl, p.slug)}</div>` : '')(p.inFlight.filter(c => c.worker || c.assignee))}

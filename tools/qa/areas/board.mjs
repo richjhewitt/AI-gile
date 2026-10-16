@@ -19,6 +19,9 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   await s.ok('POST', `/api/projects/alpha/cards/${sv.id}/snooze`);
   await page.waitForTimeout(1500);
   check('snoozed card shows back-at label and Bring back', /back at \d/.test(await page.textContent(`.card[data-id="${sv.id}"]`)) && (await page.locator(`.card[data-id="${sv.id}"] button:has-text("Bring back")`).count()) === 1);
+  // AIG-1374: one rule for what waits on you: the snoozed test is held, so For you counts what the inbox counts
+  const fyN = parseInt(await page.$eval('.column.foryou h3 > span:last-child', e => e.textContent), 10), ibN = (await s.ok('GET', '/api/inbox')).filter(c => c.project === 'alpha').length;
+  check('a snoozed test is held and For you counts what the inbox counts', (await s.ok('GET', '/api/projects/alpha')).cards.find(c => c.id === sv.id).held === true && fyN === ibN, [fyN, ibN]);
   await page.click(`.card[data-id="${sv.id}"] button:has-text("Bring back")`);
   await page.waitForTimeout(1500);
   check('Bring back clears the label', !(await getCard(s, 'alpha', sv.id)).snoozedUntil && !/back at/.test(await page.textContent(`.card[data-id="${sv.id}"]`)));
