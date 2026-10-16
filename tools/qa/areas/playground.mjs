@@ -22,7 +22,7 @@ def('playground', 'Playground: New playground button (friend name, folder, Playg
   /* ---------- the button ---------- */
   const page = await openPage(ctx, '#/');
   await page.evaluate(() => newProject());
-  await page.waitForSelector('#p-play');
+  await page.waitForSelector('#p-play', { state: 'attached' }); await page.evaluate(() => { $('p-more').open = true; });   // AIG-1365: under More options
   check('the New project box keeps its form and adds a New playground button', await page.locator('#p-name').count() === 1 && /playground/i.test(await page.textContent('#p-play')));
   await page.click('#p-play');
   await page.waitForSelector('#pg-name');
@@ -97,7 +97,7 @@ def('playground', 'Playground: New playground button (friend name, folder, Playg
   for (const [label, scheme] of [['phone', 'light'], ['phone, dark', 'dark']]) {
     const c = await ctx.browser().newContext({ viewport: { width: 375, height: 700 }, colorScheme: scheme });
     const pp = await openPage(c, '#/');
-    await pp.evaluate(() => newProject()); await pp.waitForSelector('#p-play'); await pp.click('#p-play');
+    await pp.evaluate(() => newProject()); await pp.waitForSelector('#p-play', { state: 'attached' }); await pp.evaluate(() => { $('p-more').open = true; }); await pp.click('#p-play');
     await pp.fill('#pg-name', 'Phone Pal ' + scheme); await pp.click('#pg-go'); await pp.waitForSelector('#pg-code');
     const fit = await pp.evaluate(() => { const r = document.getElementById('pg-copy').getBoundingClientRect(), d = document.getElementById('pg-code').getBoundingClientRect(); return { w: document.documentElement.scrollWidth, copy: r.right, code: d.right, bg: getComputedStyle(document.getElementById('pg-code')).backgroundColor, fg: getComputedStyle(document.getElementById('pg-code')).color }; });
     check(label + ': no sideways scroll, code box and Copy fit', fit.w <= 375 && fit.copy <= 375 && fit.code <= 375, JSON.stringify(fit));

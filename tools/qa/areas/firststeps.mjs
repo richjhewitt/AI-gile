@@ -14,6 +14,11 @@ def('firststeps', 'Home First steps ticks itself and can be hidden; pasted list 
   check('a card ticks "card"', (await ticked(page)).join() === 'project,card');
   await mkCard(s, p.slug, 'Two', { status: 'done' }); await page.reload(); await page.waitForSelector('#firstSteps');
   check('a done card ticks "done"', (await ticked(page)).join() === 'project,card,done');
+  // AIG-1357: Invite a friend lands on Setup's Friends section, with the make-a-link button in view
+  await page.click('#firstSteps li[data-step="invite"] a'); await page.waitForSelector('#sec-friends #joinMake', { timeout: 8000 }); await sleep(1600);
+  const inv = await page.evaluate(() => { const r = document.getElementById('joinMake').getBoundingClientRect(); return { hash: location.hash, top: r.top, bottom: r.bottom, ix: [...document.querySelectorAll('#setIndex a')].map(a => a.dataset.sec).includes('friends') }; });
+  check('Invite a friend opens Setup at Friends, the invite button on screen (AIG-1357)', inv.hash === '#/setup/friends' && inv.ix && inv.top > 0 && inv.bottom < await page.evaluate(() => innerHeight), inv);
+  await page.goto(s.base + '/#/'); await page.waitForSelector('#firstSteps');
   await page.click('#fsHide'); await page.reload(); await page.waitForSelector('a.proj'); await sleep(500);
   check('Hide stays hidden after a refresh', await page.locator('#firstSteps').count() === 0);
   await page.evaluate(() => localStorage.removeItem('aigile.firstSteps')); await page.reload(); await page.waitForSelector('#firstSteps');
@@ -43,5 +48,9 @@ def('firststeps', 'Home First steps ticks itself and can be hidden; pasted list 
   const pp = await openPage(ph, '#/'); await pp.evaluate(() => { localStorage.removeItem('aigile.firstSteps'); localStorage.setItem('aigile.theme', 'dark'); });
   await pp.reload(); await pp.waitForSelector('#firstSteps');
   check('phone, dark: First steps fits without sideways scroll', await pp.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && document.getElementById('firstSteps').getBoundingClientRect().right <= innerWidth + 1));
-  await pp.close();
+  // AIG-1357, AIG-1365: Setup's Friends section and the New project dialog fit a phone in dark too
+  await pp.click('#firstSteps li[data-step="invite"] a'); await pp.waitForSelector('#sec-friends #joinMake', { timeout: 8000 }); await sleep(600);
+  check('phone, dark: Setup Friends fits, invite button inside the screen (AIG-1357)', await pp.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && document.getElementById('joinMake').getBoundingClientRect().right <= innerWidth + 1));
+  await pp.evaluate(() => newProject()); await pp.waitForSelector('#p-more'); await pp.evaluate(() => { $('p-more').open = true; $('p-space').open = true; });
+  check('phone, dark: New project with everything open fits (AIG-1365)', await pp.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && [...document.querySelectorAll('#dialog button, #dialog input, #dialog select')].every(e => e.getBoundingClientRect().right <= innerWidth + 1)));  await pp.close();
 }, true);

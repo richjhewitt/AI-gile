@@ -4,20 +4,72 @@
 // Words and explanations live in the language files: gloss.<id>.word / gloss.<id>.text (.also: other forms, comma list).
 // AIG-1296: in groups, shown as headings on the page and in the teaser's 📖 dialog (tools/gen/site-lang.mjs reads this
 // block as written: keep it a plain object of plain arrays). Group names: gloss.g.<group>.
+// AIG-1408: along a project's life, from the first idea to a service people rely on (Agile, security, AI and money too).
 const GLOSS_GROUPS = {
-  build: ['repo', 'branch', 'commit', 'push', 'merge', 'pr', 'refactor', 'bug', 'test', 'qa'],
-  change: ['deploy', 'release', 'rollback', 'live', 'change', 'risk', 'chgwin', 'gonogo', 'approval', 'quiettime'],
-  run: ['service', 'uptime', 'statuspage', 'desk', 'svcrequest', 'incident', 'major', 'oncall', 'replyby', 'postmortem', 'problem',
-    'rootcause', 'workaround', 'knownerror', 'runbook', 'ci', 'expiry', 'backup', 'restore', 'svcreview', 'accessreview',
-    'improvements', 'tokencap'],
-  team: ['backlog', 'sprint', 'standup', 'kanban', 'wip', 'dod', 'testpile', 'retro', 'peerreview', 'swarm', 'scrummaster',
-    'agent', 'token', 'hook'],
+  idea: ['discovery', 'problemstmt', 'user', 'stakeholder', 'persona', 'userresearch', 'journey', 'painpoint',
+    'assumption', 'hypothesis', 'experiment', 'poc', 'prototype', 'wireframe', 'mockup', 'bizcase', 'feasibility',
+    'outcome', 'output', 'successmetric', 'kpi', 'okr'],
+  plan: ['product', 'vision', 'po', 'pm', 'projmgr', 'roadmap', 'milestone', 'mvp', 'requirement', 'scope',
+    'scopecreep', 'feature', 'epic', 'story', 'ac', 'task', 'ticket', 'priority', 'prioritise', 'estimate',
+    'storypoints', 'tshirt', 'poker', 'dependency', 'blocker', 'deadline', 'deliverable', 'forecast', 'metric',
+    'feedback'],
+  agile: ['backlog', 'sprint', 'standup', 'kanban', 'wip', 'dod', 'retro', 'swarm', 'scrummaster', 'agile',
+    'manifesto', 'waterfall', 'iteration', 'increment', 'scrum', 'scrumteam', 'ceremonies', 'sprintplan',
+    'sprintgoal', 'sprintbacklog', 'productbacklog', 'productgoal', 'refinement', 'sprintreview', 'demo', 'timebox',
+    'velocity', 'capacity', 'burndown', 'burnup', 'kanbanboard', 'pullsys', 'flow', 'leadtime', 'cycletime',
+    'throughput', 'bottleneck', 'swimlane', 'lean', 'waste', 'kaizen', 'selforg', 'crossfunc', 'spike', 'rework',
+    'safe'],
+  build: ['repo', 'branch', 'commit', 'push', 'merge', 'pr', 'refactor', 'bug', 'peerreview', 'code', 'proglang',
+    'developer', 'software', 'app', 'webapp', 'frontend', 'backend', 'fullstack', 'ui', 'ux', 'accessibility',
+    'responsive', 'designsys', 'architecture', 'database', 'schema', 'sql', 'data', 'server', 'client', 'api',
+    'endpoint', 'integration', 'webhook', 'library', 'framework', 'sdk', 'softdep', 'package', 'pkgmgr', 'git',
+    'github', 'vcs', 'clone', 'pull', 'mainbranch', 'conflict', 'diff', 'fork', 'script', 'build', 'compile', 'cli',
+    'config', 'envvar', 'debugging', 'pairing', 'docs', 'readme', 'legacy', 'techdebt'],
+  test: ['test', 'qa', 'testpile', 'autotest', 'manualtest', 'unittest', 'integtest', 'endtoend', 'uat',
+    'regression', 'smoke', 'exploratory', 'testcase', 'coverage', 'testdata', 'edgecase', 'happypath', 'perftest',
+    'loadtest', 'sectest', 'accesstest', 'linting', 'static', 'flaky', 'repro', 'severity'],
+  change: ['deploy', 'release', 'rollback', 'live', 'change', 'risk', 'chgwin', 'gonogo', 'approval', 'quiettime',
+    'devops', 'cicd', 'contdeploy', 'pipeline', 'environment', 'devenv', 'testenv', 'staging', 'artifact', 'hotfix',
+    'patch', 'version', 'relnotes', 'flag', 'rollfwd', 'canary', 'bluegreen', 'zerodown', 'chgenable', 'cab',
+    'stdchange', 'normchange', 'emergchange', 'automation', 'infra', 'iac', 'cloud', 'provider', 'hosting', 'domain',
+    'dns', 'container', 'vm', 'serverless', 'lb', 'cache', 'cdn', 'migration'],
+  run: ['service', 'uptimepct', 'uptime', 'statuspage', 'desk', 'svcrequest', 'incident', 'major', 'oncall',
+    'replyby', 'postmortem', 'problem', 'rootcause', 'workaround', 'knownerror', 'runbook', 'ci', 'expiry', 'backup',
+    'restore', 'svcreview', 'accessreview', 'improvements', 'tokencap', 'svcmgmt', 'itil', 'itsm', 'managed',
+    'svcowner', 'sla', 'slo', 'sli', 'availability', 'downtime', 'errorbudget', 'outage', 'degraded', 'monitoring',
+    'observability', 'log', 'trace', 'latency', 'alert', 'alertfatigue', 'dashboard', 'paging', 'escalation',
+    'triage', 'impact', 'urgency', 'plevels', 'queue', 'tiers', 'ic', 'responsetime', 'resolution', 'mttr', 'mtbf',
+    'cmdb', 'asset', 'capplan', 'scaling', 'bcp', 'dr', 'rto', 'rpo', 'redundancy', 'failover', 'spof', 'maintwin',
+    'handover', 'kb', 'csat', 'supplier', 'retire', 'eol'],
+  sec: ['cybersec', 'authn', 'authz', 'mfa', 'sso', 'pwmgr', 'secret', 'apikey', 'accesstoken', 'encryption',
+    'https', 'cert', 'permissions', 'leastpriv', 'rbac', 'vuln', 'zeroday', 'malware', 'ransomware', 'phishing',
+    'socialeng', 'firewall', 'vpn', 'ddos', 'pentest', 'audit', 'threatmodel', 'breach', 'pii', 'gdpr', 'dataprot',
+    'privacypolicy', 'consent', 'cookie', 'minimisation', 'retention', 'anon', 'pseudo', 'dpa', 'dpia', 'auditlog',
+    'compliance', 'iso', 'soc'],
+  ai: ['agent', 'token', 'hook', 'ai', 'ml', 'model', 'llm', 'genai', 'chatbot', 'prompt', 'prompteng', 'sysprompt',
+    'context', 'ctxwin', 'session', 'memory', 'hallucination', 'training', 'trainingdata', 'cutoff', 'finetune',
+    'inference', 'tooluse', 'subagent', 'multiagent', 'autonomy', 'hitl', 'guardrails', 'rag', 'embedding',
+    'vectordb', 'mcp', 'temperature', 'multimodal', 'evals', 'bias', 'responsible', 'injection', 'ratelimit',
+    'usagelimit', 'vibe'],
+  money: ['budget', 'costest', 'roi', 'tco', 'capex', 'subscription', 'saas', 'payg', 'overage', 'billingalert',
+    'freetier', 'pricing', 'licence', 'opensource', 'osslicence', 'proprietary', 'copyright', 'ip', 'tos',
+    'contract', 'sow', 'fixedprice', 'tm', 'invoice', 'lockin', 'procurement', 'servicecredit'],
 };
-const GLOSSARY = Object.values(GLOSS_GROUPS).flat();
+// AIG-1363: the board's own words come first, in the order a newcomer meets them (not sorted). App only: the website's dev words
+// read GLOSS_GROUPS above, so these stay out of it.
+const GLOSS_BOARD = ['card', 'project', 'forteam', 'lead', 'agentprog', 'dispatcher', 'space', 'playground', 'hyperfocus'];
+const GLOSS_ALL = { board: GLOSS_BOARD, ...GLOSS_GROUPS };
+const GLOSSARY = Object.values(GLOSS_ALL).flat();
 // Words on every screen, or everyday words with a special meaning here, would be underlined everywhere:
 // they stay in the glossary but get no tooltip.
-const NO_TIP = ['test', 'live', 'change', 'problem'];
-const NO_AI_SKIP = ['agent', 'token', 'hook', 'peerreview', 'tokencap'];   // AIG-821: words about AI agents, left out in No AI mode
+const NO_TIP = ['test', 'live', 'change', 'problem', 'card', 'project', 'forteam', 'lead', 'space', 'user',
+  'assumption', 'experiment', 'outcome', 'output', 'product', 'requirement', 'feature', 'task', 'priority',
+  'estimate', 'deadline', 'forecast', 'feedback', 'demo', 'capacity', 'flow', 'waste', 'code', 'software', 'app',
+  'data', 'client', 'library', 'package', 'pull', 'script', 'build', 'config', 'docs', 'environment', 'automation',
+  'container', 'log', 'alert', 'dashboard', 'impact', 'urgency', 'asset', 'supplier', 'secret', 'permissions',
+  'consent', 'cookie', 'ai', 'model', 'context', 'session', 'memory', 'training', 'temperature', 'bias', 'budget',
+  'subscription', 'licence', 'copyright', 'contract', 'invoice'];
+const NO_AI_SKIP = ['peerreview', 'tokencap', 'lead', 'agentprog', 'dispatcher', ...GLOSS_GROUPS.ai];   // AIG-821: words about AI agents, left out in No AI mode (AIG-1408: the whole 🤖 group)
 const glossNoAi = () => typeof NoAi !== 'undefined' && NoAi.on;
 const glossFold = s => { s = String(s || '').toLowerCase(); try { s = s.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch {} return s; };
 const glossAlso = id => { const a = t('gloss.' + id + '.also'); return a && !String(a).startsWith('gloss.') ? String(a).split(',').map(x => x.trim()).filter(Boolean) : []; };
@@ -31,9 +83,9 @@ function setExplain(on) {
 // A heading per group (h2 page title, h3 groups), one search box across them all; the count is said aloud as you type.
 function renderGlossary() {
   const loc = (typeof i18n !== 'undefined' && i18n.locale) || undefined;
-  const groups = Object.entries(GLOSS_GROUPS).map(([g, ids]) => ({ g, items: ids.filter(id => !(glossNoAi() && NO_AI_SKIP.includes(id)))
+  const groups = Object.entries(GLOSS_ALL).map(([g, ids]) => ({ g, items: ids.filter(id => !(glossNoAi() && NO_AI_SKIP.includes(id)))
     .map(id => ({ id, word: t('gloss.' + id + '.word'), text: t('gloss.' + id + '.text'), also: glossAlso(id) }))
-    .sort((a, b) => a.word.localeCompare(b.word, loc)) })).filter(x => x.items.length);
+    .sort((a, b) => g === 'board' ? 0 : a.word.localeCompare(b.word, loc)) })).filter(x => x.items.length);
   const n = groups.reduce((s, x) => s + x.items.length, 0);
   return `<div class="gloss"><h2>${esc(t('gloss.title'))}</h2><p class="muted">${esc(t('gloss.about'))}</p>
     <input type="search" id="glossQ" placeholder="${esc(t('gloss.search'))}" oninput="filterGlossary(this.value)" aria-label="${esc(t('gloss.search'))}" aria-describedby="glossCount" autocomplete="off">

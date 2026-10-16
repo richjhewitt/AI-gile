@@ -9,7 +9,7 @@ def('spacekids', '🪐 a new project with child projects, one per line: parent s
   const page = await openPage(ctx, '#/');
   await page.evaluate(() => newProject());
   await page.fill('#p-name', 'Galaxy');
-  await page.evaluate(() => { $('p-more').open = true; });
+  await page.evaluate(() => { $('p-more').open = true; $('p-space').open = true; });
   await page.fill('#p-path', root);
   await page.fill('#p-kids', 'Website\n\nApp\nWebsite\n');
   await page.click('#p-acts button.primary');

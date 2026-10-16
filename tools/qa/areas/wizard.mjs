@@ -32,6 +32,12 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   check('a deep link opens where it points', /#\/standups/.test(page.url()), page.url());
   await page.goto(s.base + '/#/'); await page.waitForSelector('#finishSetup'); await page.click('#finishSetup a'); await page.waitForSelector('#setupForm');
   check('Finish setup goes to the boxes', /#\/setup\/you/.test(page.url()));
+  // AIG-1362: the missing ones are marked and named; a found path is not a placeholder that looks saved; I have no AI program yet stops the nag
+  const need = await page.evaluate(() => ({ note: (document.getElementById('setupNeed') || {}).textContent || '', keys: [...document.querySelectorAll('#sec-you label.need input[data-key]')].map(i => i.dataset.key), ph: document.querySelector('input[data-key="agent.command"]').getAttribute('placeholder') }));
+  check('Finish setup marks what is missing and names it, no look-alike placeholder (AIG-1362)', need.keys.includes('agent.command') && /Agent program/.test(need.note) && !need.ph, need);
+  await page.click('#setupNoAgent'); await page.waitForFunction(() => !document.querySelector('#sec-you label.need'), null, { timeout: 5000 }).catch(() => {});
+  check('I have no AI program yet: nothing marked, Home stops asking (AIG-1362)', !(await page.locator('#sec-you label.need').count()) && !(await s.ok('GET', '/api/setup')).needed);
+  await s.ok('POST', '/api/setup', { prefs: { agentSkipped: false } });
   await page.goto(s.base + '/#/setup'); await page.waitForSelector('#setupForm');
 
   // The wizard from Setup.
@@ -39,6 +45,9 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   await page.waitForSelector('.wz-dots');
   check('five step dots, first one on', (await page.locator('.wz-dot').count()) === 5 && (await page.locator('.wz-dot.on').count()) === 1);
   check('screen 1 has a language picker', await page.isVisible('.wizard .lang-pick'));
+  // AIG-1368: one line up front on what the AI helpers do, and no words nobody has explained yet
+  const wzw = await page.evaluate(() => ({ s1: document.querySelector('.wizard').textContent, all: ['wz.1.sub', 'wz.1.pick', 'wz.2.h', 'wz.2.name.help', 'wz.2.agent', 'wz.2.agent.help', 'wz.3.h', 'wz.3.sub', 'wz.4.sub', 'wz.plan.fly.help', 'wz.plan.careful.help', 'wz.plan.normal.help', 'wz.plan.generous.help'].map(k => t(k)).join(' | ') }));
+  check('wizard words are plain: helpers explained on screen 1, no sleeping team, Your lead, helpers they get, your plan, four questions (AIG-1368)', /AI helpers work on your cards/.test(wzw.s1) && !/sleeping|Your lead|helpers they get|your plan\b|Four quick|four short|Teams call/i.test(wzw.all), wzw.all);
   check('no Back on the first screen', !(await page.isVisible('#wzBack')));
   await page.click('#wzNext');
   await page.waitForSelector('#wz-name');

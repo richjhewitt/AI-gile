@@ -49,7 +49,13 @@ def('sample', 'sample project: Add a sample project on the empty home creates it
   c = q.cards.find(x => x.id === inc.id);
   const rb = c.review.runbook && q.cards.find(x => x.id === c.review.runbook);
   check('a 🚦 runbook card waits for Go (no folder needed on the sample)', rb && rb.runbookProposal && rb.needsYou && !rb.runbookProposal.done, rb);
-  await s.ok('POST', '/api/projects/sample-project/cards/' + rb.id + '/comments', { author: own, text: 'Go' });
+  check('the runbook question comes from the board, not from you (AIG-1369)', rb.comments[0].author === 'AI-gile' && rb.createdBy === 'AI-gile' && rb.comments[0].author !== own, rb.comments);
+  // AIG-1369: 👍 Go on the card itself goes back to the practice incident, with all four ticks and the 🎉
+  await page.goto(base + '#/p/sample-project/' + rb.id); await page.waitForSelector('.reply button.good');
+  await page.click('.reply button.good');
+  await page.waitForFunction(id => location.hash.endsWith('/' + id), inc.id, { timeout: 8000 }).catch(() => {});
+  await page.waitForSelector('#practice .prac-all', { timeout: 8000 }).catch(() => {});
+  check('Go on the runbook card lands back on the practice card with the well-done line, not the next card (AIG-1369)', page.url().endsWith('/' + inc.id) && await page.isVisible('#practice .prac-all') && !(await page.locator('#moved-note').count()), page.url());
   q = await s.ok('GET', '/api/projects/sample-project');
   const rb2 = await s.ok('GET', '/api/projects/sample-project/cards/' + rb.id);
   check('Go on the sample: done, a practice note, no file written', rb2.status === 'done' && rb2.runbookProposal.done === 'added' && !rb2.runbookProposal.file && rb2.comments.some(m => /docs\/runbooks\/rsvp-page-down\.md/.test(m.text)), rb2);
@@ -71,6 +77,11 @@ def('sample', 'sample project: Add a sample project on the empty home creates it
   await page.waitForSelector('#sampleBtn');
   check('removed in one click: no projects left', (await s.ok('GET', '/api/projects')).length === 0 && (await s.api('GET', '/api/projects/sample-project')).status === 404);
   check('removing again is a 404', (await s.api('DELETE', '/api/sample-project')).status === 404);
+  // AIG-1370: in Dutch the pretend helper is Sam (voorbeeld), not Sam (sample)
+  await s.ok('POST', '/api/setup', { prefs: { lang: 'nl' } }); await s.ok('POST', '/api/sample-project');
+  const nlp = await s.ok('GET', '/api/projects/sample-project'), names = [...new Set(nlp.cards.flatMap(c => [c.createdBy, ...(c.comments || []).map(m => m.author)]))];
+  check('a Dutch sample says Sam (voorbeeld) everywhere (AIG-1370)', names.includes('Sam (voorbeeld)') && !names.some(n => /sample/i.test(n)), names);
+  await s.ok('DELETE', '/api/sample-project'); await s.ok('POST', '/api/setup', { prefs: { lang: 'en' } });
   noErrors(page);
   await page.close();
 }, true);
