@@ -24,7 +24,7 @@ def('blacktheme', '⚫ Black theme for OLED: in the Setup picker and the top bar
     const c2 = await ctx.browser().newContext({ serviceWorkers: 'block' }), p2 = await c2.newPage();
     await p2.addInitScript(() => { try { localStorage.setItem('aigile.theme', 'black'); } catch {} });
     let release; const held = new Promise(r => { release = r; });
-    await p2.route('**/js/app.js*', async route => { await held; await route.continue(); });
+    await p2.route('**/js/board-bundle.js*', async route => { await held; await route.continue(); });
     await p2.goto(page.url().split('#')[0], { waitUntil: 'commit' });
     await p2.waitForSelector('body', { state: 'attached' }); await sleep(500);
     const early = await p2.evaluate(() => ({ attr: document.documentElement.dataset.theme || '', body: getComputedStyle(document.body).backgroundColor, app: typeof theme === 'function' }));

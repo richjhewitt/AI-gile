@@ -48,13 +48,13 @@ def('boot', '⏳ start-up survives a bad load: broken or 503 script, failed lang
   const broken = x => x.fulfill({ contentType: 'text/javascript', body: 'function half( {\n<<<<<<< HEAD\n' });
   const unavailable = x => x.fulfill({ status: 503, headers: { 'Retry-After': '2' }, contentType: 'text/plain', body: 'mid-update' });
 
-  let r = await boot('**/js/board.js', broken, 1);
+  let r = await boot('**/js/board-bundle.js', broken, 1);
   check('a script that fails to parse shows "Updating… retrying" instead of a blank page', r.note && r.noteText.includes('⏳'), r.noteText);
   check('... then reloads and the board comes up', r.up && r.n >= 2, [r.up, r.n, r.ms]);
   check('... and the retry count is cleared once it is up', r.tries === null, r.tries);
   await r.page.close();
 
-  r = await boot('**/js/format.js', unavailable, 1);
+  r = await boot('**/js/board-bundle.js', unavailable, 1);
   check('a script answered 503 mid-update shows the note, then the board comes up', r.note && r.up && r.n >= 2, [r.note, r.up, r.n]);
   await r.page.close();
 
@@ -69,7 +69,7 @@ def('boot', '⏳ start-up survives a bad load: broken or 503 script, failed lang
   // Backoff: a script that stays broken is reloaded after 1s, then 2s (never faster), and the page still comes up once it is fixed.
   {
     const page = await bctx.newPage(); let n = 0, bad = true;
-    await page.route('**/js/board.js', x => { n++; return bad ? broken(x) : x.continue(); });
+    await page.route('**/js/board-bundle.js', x => { n++; return bad ? broken(x) : x.continue(); });
     await page.goto(BASE + '/#/');
     await sleep(3600);
     check('a script that stays broken is retried with backoff, not in a tight loop (2 or 3 loads in 3.6s)', n >= 2 && n <= 3, n);
