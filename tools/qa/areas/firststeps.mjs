@@ -48,5 +48,9 @@ def('firststeps', 'Home First steps ticks itself and can be hidden; pasted list 
   const pp = await openPage(ph, '#/'); await pp.evaluate(() => { localStorage.removeItem('aigile.firstSteps'); localStorage.setItem('aigile.theme', 'dark'); });
   await pp.reload(); await pp.waitForSelector('#firstSteps');
   check('phone, dark: First steps fits without sideways scroll', await pp.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && document.getElementById('firstSteps').getBoundingClientRect().right <= innerWidth + 1));
-  await pp.close();
+  // AIG-1357, AIG-1365: Setup's Friends section and the New project dialog fit a phone in dark too
+  await pp.click('#firstSteps li[data-step="invite"] a'); await pp.waitForSelector('#sec-friends #joinMake', { timeout: 8000 }); await sleep(600);
+  check('phone, dark: Setup Friends fits, invite button inside the screen (AIG-1357)', await pp.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && document.getElementById('joinMake').getBoundingClientRect().right <= innerWidth + 1));
+  await pp.evaluate(() => newProject()); await pp.waitForSelector('#p-more'); await pp.evaluate(() => { $('p-more').open = true; $('p-space').open = true; });
+  check('phone, dark: New project with everything open fits (AIG-1365)', await pp.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1 && [...document.querySelectorAll('#dialog button, #dialog input, #dialog select')].every(e => e.getBoundingClientRect().right <= innerWidth + 1)));  await pp.close();
 }, true);
