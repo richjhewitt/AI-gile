@@ -201,9 +201,9 @@ async function newProject(opts = {}) {
       <label class="f"><span>${esc(t('space.tpl'))}</span><select id="p-spacetpl" onchange="spaceTpl(this.value)"><option value="">${esc(t('space.tpl.none'))}</option>${SPACE_TPLS.map(v => `<option value="${v}">${esc(t('space.tpl.' + v))}</option>`).join('')}</select></label>
       <label class="f"><span>${esc(t('dlg.np.kids'))}</span><textarea id="p-kids" rows="3" placeholder="${esc(t('dlg.np.kids.ph'))}"></textarea><small class="muted">${esc(t('dlg.np.kids.help'))}</small></label>
       </details>
-      ${opts.space ? '' : `<div class="f np-other"><span>${esc(t('dlg.np.other'))}</span><div class="actions"><button type="button" id="p-sample" onclick="addSample()" title="${esc(t('sample.add.title'))}">${esc(t('sample.add'))}</button> <button type="button" id="p-play" onclick="newPlayground()">${esc(t('dlg.np.play'))}</button></div><small class="muted">${esc(t('dlg.np.play.hint'))}</small></div>`}
+      ${opts.space ? '' : `<div class="f np-other"><span>${esc(t('dlg.np.other'))}</span><div class="actions"><button type="button" id="p-sample" onclick="addSample()" title="${esc(t('sample.add.title'))}" aria-label="${esc(t('sample.add.title'))}">${esc(t('sample.add'))}</button> <button type="button" id="p-play" onclick="newPlayground()">${esc(t('dlg.np.play'))}</button></div><small class="muted">${esc(t('dlg.np.play.hint'))}</small></div>`}
       </details>
-      <div class="err" id="d-err"></div><div id="p-done"></div>
+      <div class="err" id="d-err"></div><div id="p-done" role="status" aria-live="polite" aria-atomic="true"></div>
       <div class="actions" id="p-acts"><button class="primary" type="submit">${esc(t('dlg.np.create'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></form>`);
   if (opts.space) { $('p-spacetpl').value = SPACE_TPLS[0]; spaceTpl(SPACE_TPLS[0]); }
 }
@@ -290,6 +290,7 @@ async function createProject(e) {
     } catch (err) { fails.push(t('dlg.np.kid.err', { name, msg: err.message })); }
     show();
   }
+  $('p-acts').querySelector('button').focus();
   return false;
 }
 async function setArchived(on) {

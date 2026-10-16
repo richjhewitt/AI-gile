@@ -12,7 +12,7 @@ function cardViewDialog() {
       <h3>${esc(t('cv.show'))}</h3><div class="cv-toggles">${CARD_DETAILS.map(k => `<label class="cv-toggle"><input type="checkbox" data-cv="${k}" ${v.show[k] ? 'checked' : ''}><span>${esc(t('cv.' + k))}</span></label>`).join('')}</div>
     </div><div class="cv-side"><h3>${esc(t('cv.sample'))}</h3><div id="cv-sample" class="cv-sample"></div></div></div>
     <div class="err" id="cv-err"></div><div class="actions"><button class="primary" onclick="saveCardView()">${esc(t('common.save'))}</button>
-    <button onclick="saveCardView(null)" title="${esc(t('cv.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></div>`);
+    <button onclick="saveCardView(null)" title="${esc(t('cv.reset.title'))}" aria-label="${esc(t('cv.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div></div>`);
   paintCvSample();
 }
 // The sample: this board's busiest card, drawn with the choices in the dialog.
@@ -130,7 +130,7 @@ async function lookDialog() {
     <label class="f" id="look-call"><span>${esc(t('call.h'))}</span><input type="url" id="look-callurl" maxlength="500" value="${esc(p.callUrl || '')}" placeholder="${esc(t('call.ph'))}"><small class="muted">${esc(t('call.intro'))}</small></label>
     ${lookServiceHtml(p)}
     <div class="err" id="look-err"></div>
-    <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
+    <div class="actions"><button class="primary" onclick="saveLook()">${esc(t('common.save'))}</button><button onclick="saveLook(true)" title="${esc(t('look.auto.title'))}" aria-label="${esc(t('look.auto.title'))}">${esc(t('look.auto'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`);
 }
 // 🛎️ Service details (AIG-1046): off by default; the fields show when the box is ticked. On-call picks from the roster, default the lead.
 function lookServiceHtml(p) {

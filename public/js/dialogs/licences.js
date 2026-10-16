@@ -26,7 +26,7 @@ const Lic = (() => {
     if (!route) return '';
     const opts = [`<option value="">${esc(t('lic.route.none'))}</option>`].concat(route.projects.map(p => `<option value="${esc(p.slug)}" ${p.slug === route.project ? 'selected' : ''}>${esc(p.name)}</option>`)).join('');
     return `<div id="formsRoute" style="margin-top:12px"><span style="display:block">${esc(t('lic.route.h'))}</span>
-      <select id="formsTo" style="max-width:100%" onchange="Lic.setRoute(this.value)">${opts}</select>
+      <select aria-label="${esc(t('lic.route.h'))}" id="formsTo" style="max-width:100%" onchange="Lic.setRoute(this.value)">${opts}</select>
       <small class="muted" style="display:block">${esc(route.project ? t('lic.route.on', { name: route.name }) + ' ' : '')}${esc(t('lic.route.help'))}</small>
       ${route.project && route.waiting ? `<button type="button" id="formsMove" onclick="Lic.move()">${esc(t('lic.route.move', { n: route.waiting }))}</button>` : ''}</div>`;
   }

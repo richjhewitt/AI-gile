@@ -98,7 +98,7 @@ const SelfCare = (() => {
       const msg = cur.id === 'meds' ? t('sc.msg.meds', { time: cur.time }) : cfg.custom.some(x => x.id === cur.id) ? t('sc.msg.custom', { text: label(cur.id) }) : t('sc.msg.' + cur.id);
       const b = (k, c, f) => `<button type="button" class="sc-${c}" onclick="SelfCare.${f}">${esc(t(k))}</button>`;
       e.setAttribute('role', 'status'); e.dataset.n = nudges; e.dataset.id = cur.id;
-      e.innerHTML = `<span class="sc-msg">${emoji(cur.id)} ${esc(msg)}</span><span class="sc-btns">${cur.id === 'shower' ? b('sc.letsgo', 'go', "act('go')") : ''}${b('sc.done', 'done', "act('done')")}${b('sc.later', 'later', "act('later')")}${b('sc.skip', 'skip', "act('skip')")}<button type="button" class="sc-td" onclick="SelfCare.today()" title="${esc(t('sc.today.btn'))}" aria-label="${esc(t('sc.today.btn'))}">📋</button></span>`;
+      e.innerHTML = `<span class="sc-msg">${emoji(cur.id)} ${esc(msg)}</span><span class="sc-btns">${cur.id === 'shower' ? b('sc.letsgo', 'go', "act('go')") : ''}${b('sc.done', 'done', "act('done')")}${b('sc.later', 'later', "act('later')")}${b('sc.skip', 'skip', "act('skip')")}<button type="button" class="sc-td" onclick="SelfCare.today()" title="${esc(t('sc.today.btn'))}" aria-label="${esc(t('sc.today.btn'))}"><span aria-hidden="true">📋</span></button></span>`;
       e.classList.remove('sc-pulse'); void e.offsetWidth; e.classList.add('sc-pulse');
     }
     e.hidden = false;
@@ -128,7 +128,7 @@ const SelfCare = (() => {
     }
     for (const e of l) if (!e.slot) rows.push(`<li class="sc-r ${e.act}"><b>${hhmm(e.at)}</b> ${emoji(e.id)} ${esc(e.text || label(e.id))} <span class="muted">${esc(t(e.act === 'skip' ? 'sc.today.skipped' : 'sc.today.done'))}</span></li>`);
     const n = medsTaken(ms);
-    return `<div class="sc-th"><b>${esc(t('sc.today.h'))}</b><button type="button" class="sc-x" onclick="SelfCare.todayClose()" aria-label="${esc(t('common.close'))}">✕</button></div>
+    return `<div class="sc-th"><b>${esc(t('sc.today.h'))}</b><button type="button" class="sc-x" onclick="SelfCare.todayClose()" aria-label="${esc(t('common.close'))}"><span aria-hidden="true">✕</span></button></div>
       <div class="sc-meds">💊 ${esc(t('sc.today.ticks', { n }))}</div>
       ${rows.length ? `<ul class="sc-list">${rows.join('')}</ul>` : `<p class="muted">${esc(t('sc.today.none'))}</p>`}`;
   }
@@ -143,8 +143,8 @@ const SelfCare = (() => {
     const onb = (on, fn, lbl) => `<input type="checkbox" ${on ? 'checked' : ''} onchange="${fn}" aria-label="${esc(lbl)}">`;
     const mins = (id, v) => `<span class="sc-every">${esc(t('sc.every'))} <input type="number" min="1" max="2880" value="${v}" class="sc-mins" onchange="SelfCare.setMins('${id}',this.value)" aria-label="${esc(t('sc.minutes'))}"> ${esc(t('sc.min'))}</span>`;
     const items = ITEMS.map(([id, em]) => row(id, `<label class="sc-name">${onb(cfg.items[id].on, `SelfCare.setOn('${id}',this.checked)`, t('sc.item.' + id))} ${em} ${esc(t('sc.item.' + id))}</label>${mins(id, cfg.items[id].mins)}`)).join('');
-    const cust = cfg.custom.map(x => row(x.id, `<label class="sc-name">${onb(x.on, `SelfCare.setOn('${x.id}',this.checked)`, x.text)} 💚 ${esc(x.text)}</label>${mins(x.id, x.mins)}<button type="button" class="sc-del" onclick="SelfCare.del('${x.id}')" aria-label="${esc(t('sc.remove', { name: x.text }))}" title="${esc(t('sc.remove', { name: x.text }))}">✕</button>`)).join('');
-    const times = cfg.meds.times.map(tm => `<span class="sc-tm">${tm}<button type="button" onclick="SelfCare.delTime('${tm}')" aria-label="${esc(t('sc.remove', { name: tm }))}">✕</button></span>`).join('');
+    const cust = cfg.custom.map(x => row(x.id, `<label class="sc-name">${onb(x.on, `SelfCare.setOn('${x.id}',this.checked)`, x.text)} 💚 ${esc(x.text)}</label>${mins(x.id, x.mins)}<button type="button" class="sc-del" onclick="SelfCare.del('${x.id}')" aria-label="${esc(t('sc.remove', { name: x.text }))}" title="${esc(t('sc.remove', { name: x.text }))}"><span aria-hidden="true">✕</span></button>`)).join('');
+    const times = cfg.meds.times.map(tm => `<span class="sc-tm">${tm}<button type="button" onclick="SelfCare.delTime('${tm}')" aria-label="${esc(t('sc.remove', { name: tm }))}"><span aria-hidden="true">✕</span></button></span>`).join('');
     return `<span>${esc(t('sc.h'))}</span><div class="sc-box">
       <label class="sc-main">${onb(cfg.on, 'SelfCare.setOn(\'\',this.checked)', t('sc.on'))} <b>${esc(t('sc.on'))}</b></label>
       <small class="muted">${esc(t('sc.help'))}</small>

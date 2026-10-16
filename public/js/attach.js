@@ -9,7 +9,7 @@ const Attach = (() => {
   // Images show a thumbnail; clicking it opens a full-size preview, to check it's the right one (AIG-129).
   const urls = new WeakMap(), urlOf = f => { if (!urls.has(f)) urls.set(f, URL.createObjectURL(f)); return urls.get(f); };
   const revoke = f => { const u = urls.get(f); if (u) { URL.revokeObjectURL(u); urls.delete(f); } };   // a removed or sent file frees its preview (AIG-1090)
-  const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="${esc(t('attach.preview'))}">` : '📎'} <span class="att-name" title="${esc(f.name)}">${esc(f.name)}</span><button type="button" data-att-del="${i}" title="${esc(t('attach.remove'))}">✕</button></span>`).join('');
+  const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="${esc(t('attach.preview'))}">` : '📎'} <span class="att-name" title="${esc(f.name)}">${esc(f.name)}</span><button type="button" data-att-del="${i}" title="${esc(t('attach.remove'))}" aria-label="${esc(t('attach.remove'))}"><span aria-hidden="true">✕</span></button></span>`).join('');
   // AIG-1342: the picture opens above every dialog and overlay (Raise bug is .overlay.top, z-index 100000): the top layer
   // where the browser has popovers, else the highest z-index; Esc closes only the picture first.
   const onTop = lb => { document.body.appendChild(lb); try { if (lb.showPopover) { lb.popover = 'manual'; lb.showPopover(); } } catch {} };
@@ -43,7 +43,7 @@ const Attach = (() => {
     const imgs = [...scope.querySelectorAll('.att-shown a > img, img.gif-inline')];
     gallery(imgs, Math.max(0, imgs.indexOf(img)));
   }, true);
-  const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="${esc(t('attach.title'))}">${esc(t('attach.btn'))}</button><button type="button" class="att-gif" title="${esc(t('gif.title'))}" aria-label="${esc(t('gif.title'))}">${esc(t('gif.btn'))}</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span><span class="att-progw">${progHtml(key)}</span></span>`;
+  const boxHtml = key => `<span class="att" data-att-key="${esc(key)}"><button type="button" class="att-btn" title="${esc(t('attach.title'))}" aria-label="${esc(t('attach.title'))}">${esc(t('attach.btn'))}</button><button type="button" class="att-gif" title="${esc(t('gif.title'))}" aria-label="${esc(t('gif.title'))}">${esc(t('gif.btn'))}</button><input type="file" multiple hidden><span class="att-list">${chips(key)}</span><span class="att-progw">${progHtml(key)}</span></span>`;
   const paint = key => document.querySelectorAll('.att').forEach(b => { if (b.dataset.attKey === key) b.querySelector('.att-list').innerHTML = chips(key); });
   const add = (key, files) => { pending.set(key, [...list(key), ...files.filter(f => f.size)]); paint(key); };
   const stamp = () => new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
@@ -87,7 +87,7 @@ const Attach = (() => {
         const j = await api('POST', '/api/giphy/search', { q: q.value, offset: append ? next : 0 });
         if (my !== seq || gifEl !== el) return;
         if (!append) grid.innerHTML = '';
-        grid.insertAdjacentHTML('beforeend', j.results.map(g => `<button type="button" class="gif-tile" data-id="${esc(g.id)}" title="${esc(g.title)}"><img src="${esc(g.preview)}" alt="${esc(g.title)}" loading="lazy" referrerpolicy="no-referrer"></button>`).join(''));
+        grid.insertAdjacentHTML('beforeend', j.results.map(g => `<button type="button" class="gif-tile" data-id="${esc(g.id)}" title="${esc(g.title)}" aria-label="${esc(g.title)}"><img src="${esc(g.preview)}" alt="${esc(g.title)}" loading="lazy" referrerpolicy="no-referrer"></button>`).join(''));
         next = j.next; more.hidden = next === null; msg.textContent = grid.children.length ? '' : t('gif.none');
       } catch (err) { if (my === seq) msg.textContent = err.message; }
     };
@@ -190,7 +190,7 @@ const Attach = (() => {
   // Under a comment: thumbnails for images (click for full size), links for other files.
   const shown = (m, slug, base = `/api/projects/${slug}/attachments`) => m.attachments && m.attachments.length ? `<div class="att-shown">${m.attachments.map(a => {
     const u = `${base}/${encodeURIComponent(a.id)}`;
-    return isImg(a) ? `<a href="${u}" target="_blank" title="${esc(a.name)}"><img src="${a.thumb ? u + '?thumb=1' : u}" data-full="${u}" alt="${esc(a.name)}" loading="lazy"></a>` : `<a href="${u}" target="_blank" class="att-file">📎 ${esc(a.name)}</a>`;
+    return isImg(a) ? `<a href="${u}" target="_blank" title="${esc(a.name)}" aria-label="${esc(a.name)}"><img src="${a.thumb ? u + '?thumb=1' : u}" data-full="${u}" alt="${esc(a.name)}" loading="lazy"></a>` : `<a href="${u}" target="_blank" class="att-file">📎 ${esc(a.name)}</a>`;
   }).join('')}</div>` : '';
 
   return { boxHtml, upload, read, clear, has, shown };

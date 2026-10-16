@@ -118,7 +118,11 @@ async function loadLang() {
   document.documentElement.dir = i18n.dir;
   // Static text in index.html: data-i18n (text), data-i18n-title, data-i18n-label.
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
-  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const namedByTitle = el.getAttribute('aria-label') === el.title;
+    el.title = t(el.dataset.i18nTitle);
+    if (namedByTitle) el.setAttribute('aria-label', el.title);
+  });
   document.querySelectorAll('[data-i18n-label]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nLabel)); });
   paintEnBtn(); paintImm(); if (typeof paintThemeBtn === 'function') paintThemeBtn();
   // AIG-1330: the next start sets this language and direction before the first paint; the top bar's words show now.

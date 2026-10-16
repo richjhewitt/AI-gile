@@ -32,7 +32,7 @@
       <div class="ib-title">🗂️ ${esc(g.groupName)}</div>
       <details class="ib-steps ib-group" open><summary>${esc(t('inbox.t.how'))}: ${g.cards.map(c => esc(c.id)).join(', ')}</summary>${inner}</details>
       <div class="ib-err"></div>
-      <div class="actions"><button class="good" data-act="gaccept">${esc(t('inbox.g.accept', { n: g.cards.length }))}</button><button data-act="gwait" title="${esc(t('inbox.g.wait.title'))}">${esc(t('card.wait'))}</button></div>`;
+      <div class="actions"><button class="good" data-act="gaccept">${esc(t('inbox.g.accept', { n: g.cards.length }))}</button><button data-act="gwait" title="${esc(t('inbox.g.wait.title'))}" aria-label="${esc(t('inbox.g.wait.title'))}">${esc(t('card.wait'))}</button></div>`;
   }
   // Accept all / Wait and see for the whole group: the same call for each card in it.
   async function groupAct(n, act) {

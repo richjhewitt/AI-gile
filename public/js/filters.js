@@ -51,15 +51,15 @@ function paintFilterBar() {
   const p = state.project, f = curFilter(p.slug);
   const uniq = key => [...new Set(p.cards.map(c => c[key]).filter(Boolean))].sort();
   const opt = (v, label, cur) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
-  const sel = (key, all, list) => `<select data-f="${key}">${opt('', all, f[key])}${list.map(v => opt(v, key === 'type' ? t('type.' + v) : v, f[key])).join('')}</select>`;
+  const sel = (key, all, list) => `<select data-f="${key}" aria-label="${esc(t('filter.label.' + key))}">${opt('', all, f[key])}${list.map(v => opt(v, key === 'type' ? t('type.' + v) : v, f[key])).join('')}</select>`;
   // Anyone (AIG-1381): whoever is on a card that is not done, you first; every other name ever used waits behind More (a busy board
   // closes cards for 80+ names a day, so "done lately" would list them all again).
   const now = new Set(p.cards.filter(c => c.status !== 'done').map(c => c.assignee).filter(Boolean));
   if (f.who) now.add(f.who);
   const mine = v => v.toLowerCase() === me().toLowerCase(), live = [...now].sort((a, b) => mine(b) - mine(a) || a.localeCompare(b)), rest = uniq('assignee').filter(v => !now.has(v));
-  const whoSel = `<select data-f="who">${opt('', t('filter.anyone'), f.who)}${live.map(v => opt(v, v, f.who)).join('')}${!rest.length ? '' : state.whoAll === p.slug ? `<optgroup label="${esc(t('filter.who.rest'))}">${rest.map(v => opt(v, v, f.who)).join('')}</optgroup>` : opt('__more', t('filter.who.more', { n: rest.length }), f.who)}</select>`;
+  const whoSel = `<select data-f="who" aria-label="${esc(t('filter.label.who'))}">${opt('', t('filter.anyone'), f.who)}${live.map(v => opt(v, v, f.who)).join('')}${!rest.length ? '' : state.whoAll === p.slug ? `<optgroup label="${esc(t('filter.who.rest'))}">${rest.map(v => opt(v, v, f.who)).join('')}</optgroup>` : opt('__more', t('filter.who.more', { n: rest.length }), f.who)}</select>`;
   const shown = p.cards.filter(c => matchesFilter(c, p.slug)).length, active = f.q || f.type || f.who || f.sprint || f.group || f.desk;
-  const deskSel = p.cards.some(c => c.desk) || f.desk ? `<select data-f="desk">${opt('', t('desk.filter.all'), f.desk)}${['request', 'incident', 'idea'].map(k => opt(k, t('desk.filter.' + k), f.desk)).join('')}</select>` : '';   // AIG-1104
+  const deskSel = p.cards.some(c => c.desk) || f.desk ? `<select data-f="desk" aria-label="${esc(t('desk.filter.all'))}">${opt('', t('desk.filter.all'), f.desk)}${['request', 'incident', 'idea'].map(k => opt(k, t('desk.filter.' + k), f.desk)).join('')}</select>` : '';   // AIG-1104
   const selects = deskSel + sel('type', t('filter.types'), ['feature', 'bug', 'task', ...['incident', 'problem', 'change'].filter(k => f.type === k || p.cards.some(c => c.type === k))]) + whoSel + sel('sprint', t('filter.sprints'), uniq('sprint')) + (uniq('group').length || f.group ? sel('group', t('filter.groups'), uniq('group')) : '');
   if (bar.dataset.slug !== p.slug) {   // build once per project; afterwards only the selects and count update
     bar.dataset.slug = p.slug;
@@ -108,7 +108,7 @@ async function deleteView(i) {
 function viewsDialog() {
   const p = state.project, vs = p.views || [], cur = lastView(p.slug);
   popNext('views'); openDialog(`<h2>${esc(t('views.title'))}</h2><p class="muted">${esc(t('views.intro'))}</p>
-    ${vs.length ? vs.map((v, i) => `<div class="viewrow"><button type="button" class="grow" onclick="applyView(${i})">${v.name === cur ? '✓ ' : ''}${esc(v.name)}</button><button type="button" class="colbtn" title="${esc(t('views.delete'))}" onclick="deleteView(${i})">✕</button></div>`).join('') : `<p class="muted">${esc(t('views.none'))}</p>`}
+    ${vs.length ? vs.map((v, i) => `<div class="viewrow"><button type="button" class="grow" onclick="applyView(${i})">${v.name === cur ? '✓ ' : ''}${esc(v.name)}</button><button type="button" class="colbtn" title="${esc(t('views.delete'))}" aria-label="${esc(t('views.delete'))}" onclick="deleteView(${i})"><span aria-hidden="true">✕</span></button></div>`).join('') : `<p class="muted">${esc(t('views.none'))}</p>`}
     <h3>${esc(t('views.save.h'))}</h3>
     <div class="viewrow"><input type="text" id="view-name" maxlength="40" placeholder="${esc(t('views.placeholder'))}" onkeydown="if(event.key==='Enter')saveView()"><button class="primary" type="button" onclick="saveView()" ${vs.length >= 20 ? `disabled title="${esc(t('views.max'))}"` : ''}>${esc(t('views.save'))}</button></div>
     <div class="err" id="view-err"></div>

@@ -28,7 +28,7 @@ const Swarm = (() => {
   // 🚨 Swarm this / Turn off swarm (AIG-827): on a board's toolbar and in the Scrum Master panel. Starting asks first.
   const mine = slug => st.on && st.slug === slug;
   function btn(slug, id) {
-    return `<button type="button" id="${id}" class="${mine(slug) ? 'swarm-on' : 'swarm-this'}" onclick="Swarm.toggleFor('${esc(slug)}')" title="${esc(t(mine(slug) ? 'swarm.off.title' : 'swarm.this.title'))}">${esc(t(mine(slug) ? 'swarm.offbtn' : 'swarm.this'))}</button>`;
+    return `<button type="button" id="${id}" class="${mine(slug) ? 'swarm-on' : 'swarm-this'}" onclick="Swarm.toggleFor('${esc(slug)}')" title="${esc(t(mine(slug) ? 'swarm.off.title' : 'swarm.this.title'))}" aria-label="${esc(t(mine(slug) ? 'swarm.off.title' : 'swarm.this.title'))}">${esc(t(mine(slug) ? 'swarm.offbtn' : 'swarm.this'))}</button>`;
   }
   async function toggleFor(slug) {
     if (mine(slug)) return off();

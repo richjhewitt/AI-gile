@@ -1,3 +1,4 @@
+import { proof } from '../a11y-proof.mjs';
 // QA areas: docs, mdlinks, newproject, perms, discover, filtertypes.
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -146,6 +147,8 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
   const done = await page.textContent('#p-done').catch(() => '');
   check('setup details start folded (AIG-1416)', await page.isVisible('#p-done p') && !(await page.isVisible('#p-done li')));
   await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1416.png'});
+  check('project result is announced politely and Open project receives focus (AIG-1435)', await page.locator('#p-done').getAttribute('role') === 'status' && await page.locator('#p-done').getAttribute('aria-live') === 'polite' && await page.locator('#p-acts button').evaluate(e => e === document.activeElement));
+  await proof(page, 'AIG-1435');
   check('dialog lists every step', ['Created the project', 'Created the folder', 'permissions', 'git repo', 'Woke the team'].every(x => done.includes(x)), done);
   const local = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')).agent || {}; } catch { return {}; } })();
   const st = JSON.parse(fs.readFileSync(path.join(folder, local.settingsFile), 'utf8'));

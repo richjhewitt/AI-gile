@@ -79,7 +79,7 @@ async function ideaDialog() {
       ${ideaTeamOptionsHtml(projects, leads, pick)}
       <option value="_all">${esc(t('idea.all'))}</option><option value="_later">${esc(t('idea.later'))}</option></select></label>
     <div class="err" id="idea-err"></div>
-    <div class="actions"><button class="primary" type="submit" title="Ctrl+Enter">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button><button type="button" id="expertBtn" onclick="expertDialog()" title="${esc(t('expert.btn.title'))}">${esc(t('expert.btn'))}</button>${Attach.boxHtml('idea')}</div></form>`, 'wide');
+    <div class="actions"><button class="primary" type="submit" title="Ctrl+Enter" aria-label="Ctrl+Enter">${esc(t('dms.send'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button><button type="button" id="expertBtn" onclick="expertDialog()" title="${esc(t('expert.btn.title'))}" aria-label="${esc(t('expert.btn.title'))}">${esc(t('expert.btn'))}</button>${Attach.boxHtml('idea')}</div></form>`, 'wide');
   const box = $('idea-text'); box.closest('.dialog').classList.add('wide'); growBox(box); box.focus();
 }
 let ideaBusy = false;   // AIG-790: one send at a time; repeat clicks and Enters while it sends do nothing
@@ -120,14 +120,14 @@ const KEY_COLS = { verify: 'cols.key.verify', team: 'cols.key.team' };
 function columnsDialog() {
   state.colDraft = colsOf(state.project).map(c => ({ ...c }));
   popNext('columns'); openDialog(`<h2>${esc(t('board.columns'))}</h2><div id="colRows"></div><div class="err" id="col-err"></div>` +
-    `<div class="actions"><button class="primary" onclick="saveColumns()">${esc(t('common.save'))}</button><button onclick="saveColumns(true)" title="${esc(t('cols.all.title'))}">${esc(t('cols.all'))}</button>` +
-    `<button onclick="state.colDraft = colsOf({}); paintColRows()" title="${esc(t('cols.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`, 'wide');
+    `<div class="actions"><button class="primary" onclick="saveColumns()">${esc(t('common.save'))}</button><button onclick="saveColumns(true)" title="${esc(t('cols.all.title'))}" aria-label="${esc(t('cols.all.title'))}">${esc(t('cols.all'))}</button>` +
+    `<button onclick="state.colDraft = colsOf({}); paintColRows()" title="${esc(t('cols.reset.title'))}" aria-label="${esc(t('cols.reset.title'))}">${esc(t('common.reset'))}</button><button type="button" onclick="closeDialog()">${esc(t('common.cancel'))}</button></div>`, 'wide');
   paintColRows();
 }
 function paintColRows() {
   const d = state.colDraft;
   $('colRows').innerHTML = `<p class="muted">${esc(t('cols.intro'))}</p>` + d.map((c, i) => `<div class="colrow">
-    <span class="arrows"><button type="button" onclick="moveCol(${i}, -1)" ${i ? '' : 'disabled'} title="${esc(t('cols.left'))}">↑</button><button type="button" onclick="moveCol(${i}, 1)" ${i < d.length - 1 ? '' : 'disabled'} title="${esc(t('cols.right'))}">↓</button></span>
+    <span class="arrows"><button type="button" onclick="moveCol(${i}, -1)" ${i ? '' : 'disabled'} title="${esc(t('cols.left'))}" aria-label="${esc(t('cols.left'))}"><span aria-hidden="true">↑</span></button><button type="button" onclick="moveCol(${i}, 1)" ${i < d.length - 1 ? '' : 'disabled'} title="${esc(t('cols.right'))}" aria-label="${esc(t('cols.right'))}"><span aria-hidden="true">↓</span></button></span>
     <input type="text" class="emoji" value="${esc(c.emoji)}" maxlength="8" placeholder="🙂" oninput="state.colDraft[${i}].emoji = this.value" aria-label="${esc(t('cols.emoji'))}">
     <input type="text" value="${esc(c.name)}" maxlength="40" oninput="state.colDraft[${i}].name = this.value" aria-label="${esc(t('dlg.find.name'))}">
     <input type="color" value="${esc(c.color || '#888888')}" oninput="state.colDraft[${i}].color = this.value" aria-label="${esc(t('cols.colour'))}">

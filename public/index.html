@@ -47,8 +47,8 @@
   <span class="alpha-tag" data-i18n="alpha.tag" data-i18n-title="alpha.tip" title="Early and unfinished: thanks for trying it!">🐣 Closed pre-alpha</span>
   <span class="crumb" id="crumb"></span>
   <span class="spacer"></span>
-  <button id="helpBtn" class="navlink" onclick="helpMenu()" data-i18n="help.btn" data-i18n-title="help.btn.title" title="Help" aria-haspopup="menu">❓ Help</button>
-  <button id="ideaBtn" class="navlink" onclick="ideaDialog()" data-i18n-title="idea.btn.title" title="Got an idea? Jot it down">💡</button>
+  <button id="helpBtn" class="navlink" onclick="helpMenu()" data-i18n="help.btn" data-i18n-title="help.btn.title" title="Help" aria-label="Help" aria-haspopup="menu">❓ Help</button>
+  <button id="ideaBtn" class="navlink" onclick="ideaDialog()" data-i18n-title="idea.btn.title" title="Got an idea? Jot it down" aria-label="Got an idea? Jot it down"><span aria-hidden="true">💡</span></button>
   <button id="bugBtn" class="navlink" onclick="newCard({type:'bug',priority:'high',status:'team'})" data-i18n="board.raisebug">🐞 Raise bug</button>
   <span id="teamTop" data-icon="👥"></span>
   <span id="hfTop"></span>
@@ -56,25 +56,26 @@
   <span id="pokeTop" data-icon="🔔"></span>
   <span id="nightTop" data-icon="🌙"></span>
   <span id="quietTimeTop" class="quiet-chip" role="status" hidden></span>
-  <button id="twitchBtn" class="navlink" onclick="Twitch.open(event)" data-i18n="twitch.btn" data-i18n-title="twitch.title" title="Your Twitch chat in a window that stays on top (Shift+click: change channel)">💬 Twitch chat</button>
-  <button id="quietTop" class="navlink" onclick="goQuiet()" data-i18n="home.quiet" data-i18n-title="home.quiet.title" title="Tell every working team you are switching off for a few hours">🌙 Going quiet</button>
-  <button id="glanceBtn" class="navlink" onclick="ScrumGlance.toggle()" data-i18n="glance.btn" data-i18n-title="glance.btn.title" title="What is in progress, to do, waiting for you and done today">📊 ScrumGlance</button>
-  <button id="weedBtn" class="navlink wd-off" onclick="Weed.pop()" data-i18n="weed.btn" data-i18n-title="weed.btn.title" title="Countdown to the next 4:20">🌿 WeedGlance</button>
-  <button id="streamBtn" class="navlink" onclick="Streamer.toggle()" aria-pressed="false" data-i18n="streamer.btn" title="Streamer mode">🎥 Streamer</button>
+  <button id="twitchBtn" class="navlink" onclick="Twitch.open(event)" data-i18n="twitch.btn" data-i18n-title="twitch.title" title="Your Twitch chat in a window that stays on top (Shift+click: change channel)" aria-label="Your Twitch chat in a window that stays on top (Shift+click: change channel)">💬 Twitch chat</button>
+  <button id="quietTop" class="navlink" onclick="goQuiet()" data-i18n="home.quiet" data-i18n-title="home.quiet.title" title="Tell every working team you are switching off for a few hours" aria-label="Tell every working team you are switching off for a few hours">🌙 Going quiet</button>
+  <button id="glanceBtn" class="navlink" onclick="ScrumGlance.toggle()" data-i18n="glance.btn" data-i18n-title="glance.btn.title" title="What is in progress, to do, waiting for you and done today" aria-label="What is in progress, to do, waiting for you and done today">📊 ScrumGlance</button>
+  <button id="weedBtn" class="navlink wd-off" onclick="Weed.pop()" data-i18n="weed.btn" data-i18n-title="weed.btn.title" title="Countdown to the next 4:20" aria-label="Countdown to the next 4:20">🌿 WeedGlance</button>
+  <button id="streamBtn" class="navlink" onclick="Streamer.toggle()" aria-pressed="false" data-i18n="streamer.btn" title="Streamer mode" aria-label="Streamer mode">🎥 Streamer</button>
   <button id="liveBtn" class="navlink" onclick="Streamer.goLive()" hidden></button>
-  <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" data-i18n="nt.off" data-i18n-title="nt.title.off" title="No Token Mode">⛔ No Token Mode</button>
-  <button id="statusBtn" class="navlink" onclick="Status.menu()" aria-haspopup="menu" title="Your status">🟢</button>
-  <button id="tiredBtn"class="navlink" onclick="Tired.toggle()" aria-pressed="false" title="Tired mode">🔋</button>
-  <a class="navlink" id="mailNav" href="#/mail" style="display:none" data-i18n="mail.nav" data-i18n-title="mail.nav.title" title="Your mail inbox">✉️ Mail</a>
-  <a class="navlink" id="assumeNav" href="#/assumptions" data-i18n-title="assume.nav.title" title="Guesses the team made while you were away"><span data-i18n="assume.nav">🌙 Assumptions</span> <span id="assumeBadge" class="pill you" hidden></span></a>
+  <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" data-i18n="nt.off" data-i18n-title="nt.title.off" title="No Token Mode" aria-label="No Token Mode">⛔ No Token Mode</button>
+  <button id="statusBtn" class="navlink" onclick="Status.menu()" aria-haspopup="menu" title="Your status" aria-label="Your status"><span aria-hidden="true">🟢</span></button>
+  <button id="tiredBtn"class="navlink" onclick="Tired.toggle()" aria-pressed="false" title="Tired mode" aria-label="Tired mode"><span aria-hidden="true">🔋</span></button>
+  <a class="navlink" id="mailNav" href="#/mail" style="display:none" data-i18n="mail.nav" data-i18n-title="mail.nav.title" title="Your mail inbox" aria-label="Your mail inbox">✉️ Mail</a>
+  <a class="navlink" id="assumeNav" href="#/assumptions" data-i18n-title="assume.nav.title" title="Guesses the team made while you were away" aria-label="Guesses the team made while you were away"><span data-i18n="assume.nav">🌙 Assumptions</span> <span id="assumeBadge" class="pill you" hidden></span></a>
   <a class="navlink" id="usageNav" href="#/usage"><span data-i18n="nav.usage">⚡ Usage</span><span id="ugBars"></span></a>
-  <a class="navlink" id="setupNav" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer">⚙️</a>
-  <button id="themeBtn" class="theme-pick" onclick="nextTheme()" title="Theme">🖥️ System</button>
+  <a class="navlink" id="setupNav" href="#/setup" data-i18n-title="nav.setup.title" title="Your name and where the agent lives on this computer" aria-label="Your name and where the agent lives on this computer"><span aria-hidden="true">⚙️</span></a>
+  <button id="themeBtn" class="theme-pick" onclick="nextTheme()" title="Theme" aria-label="Theme">🖥️ System</button>
   <span id="tbMore"><button type="button" id="tbMoreBtn" class="navlink" aria-haspopup="true" aria-expanded="false" data-i18n-label="tb.menu" aria-label="Menu" onclick="Topbar.menu()"><span class="tbm-d" data-i18n="tb.more">More ▾</span><span class="tbm-p">☰</span></button><div id="tbMoreMenu" role="menu" hidden></div></span>
   <button id="enBtn" class="theme-pick" hidden onclick="toggleEn()"></button>
   <span id="immWrap" class="langwrap imm-wrap" data-icon="🌍" hidden><button id="immBtn" class="theme-pick" onclick="toggleImm()"></button><button id="immMore" class="theme-pick imm-more" aria-haspopup="true" aria-expanded="false" onclick="immMenu()" hidden>▾</button><div id="immList" class="immlist" hidden></div></span>
   <span class="live" id="live" data-i18n="live.ok">live</span>
 </header>
+<nav id="dmRail" data-i18n-label="dms.rail.label" aria-label="DMs with your team leads"></nav>
 <div id="updateTop"><span id="upUpdate"></span><span id="upRefresh"></span><span id="upRestart"></span></div>
 <div id="saverBar" class="saver-bar" role="status" hidden></div>
 <div id="swarmBar" class="saver-bar" role="status" style="background:#b91c1c;color:#fff" hidden></div>
@@ -85,7 +86,6 @@
 <div id="focusScreen" hidden></div>
 <div id="modal"></div>
 <div id="dialog"></div>
-<nav id="dmRail" data-i18n-label="dms.rail.label" aria-label="DMs with your team leads"></nav>
 <aside id="dmPanel" hidden></aside>
 
 <!-- Start-up guard (AIG-517): a script or language file that fails to load or parse (a half-written file, a restart

@@ -23,7 +23,7 @@ const ReleasesPage = (() => {
       <span class="muted">${esc(new Date(r.at).toLocaleDateString(i18n.locale, { year: 'numeric', month: 'short', day: 'numeric' }))} · ${esc(t('rel.cards', { count: r.cards.length }))}${r.by ? ' · ' + esc(r.by) : ''}</span></div>
       <pre class="rel-notes" style="white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;font:inherit;margin:.4em 0">${esc(r.notes)}</pre>
       <p>${r.rollback ? `<a class="rel-rbcard" href="#/p/${esc(R.slug)}/${esc(r.rollback)}">${esc(t('rel.rbcard', { id: r.rollback }))}</a>`
-        : r.changes ? `<button class="rel-rb" style="min-height:40px" onclick="ReleasesPage.rollback(decodeURIComponent('${encodeURIComponent(r.name)}'))" title="${esc(t('rel.rb.title'))}">${esc(t('rel.rb'))}</button>` : ''}</p></li>`;
+        : r.changes ? `<button class="rel-rb" style="min-height:40px" onclick="ReleasesPage.rollback(decodeURIComponent('${encodeURIComponent(r.name)}'))" title="${esc(t('rel.rb.title'))}" aria-label="${esc(t('rel.rb.title'))}">${esc(t('rel.rb'))}</button>` : ''}</p></li>`;
   R.render = () => {
     const d = R.data, back = `<a href="#/p/${esc(R.slug)}">${esc(t('rel.back'))}</a>`;
     if (!d) return `<div class="uz rel-page"><p>${back}</p><p class="muted">${esc(t('common.loading'))}</p></div>`;

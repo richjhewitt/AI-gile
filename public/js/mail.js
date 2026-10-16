@@ -122,7 +122,7 @@ const Mail = (() => {
     const rs = M.rules || [];
     const li = (r, i) => `<li class="mail-rule" style="margin:4px 0"><label><input type="checkbox" ${r.on ? 'checked' : ''} onchange="Mail.ruleOn(${i}, this.checked)"> <b>${esc(r.name)}</b></label>
       <span class="muted">${esc([r.from && t('mail.rules.from', { v: r.from }), r.subject && t('mail.rules.subject', { v: r.subject })].filter(Boolean).join(', '))} → ${esc([r.label, r.card && '📋'].filter(Boolean).join(' '))}</span>
-      <button type="button" class="mail-rule-del" title="${esc(t('mail.rules.del'))}" aria-label="${esc(t('mail.rules.del'))}" onclick="Mail.ruleDel(${i})">✕</button></li>`;
+      <button type="button" class="mail-rule-del" title="${esc(t('mail.rules.del'))}" aria-label="${esc(t('mail.rules.del'))}" onclick="Mail.ruleDel(${i})"><span aria-hidden="true">✕</span></button></li>`;
     const inp = (id, key, ml) => `<input id="${id}" type="text" maxlength="${ml}" placeholder="${esc(t(key))}" aria-label="${esc(t(key))}" style="min-width:120px">`;
     return `<div class="mail-rules" id="mailRules" style="border:1px solid var(--border,#8884);border-radius:8px;padding:8px 12px;margin-bottom:8px">
       <small class="muted">${esc(t('mail.rules.help'))}</small>

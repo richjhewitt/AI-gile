@@ -236,7 +236,7 @@ function uzCheckBar(latest, check) {
   if (!check || check.mode === 'off') return '';
   const at = latest && latest.at;
   return `<div class="uz-check"><span class="uz-sub">${esc(at ? t('usage.check.last', { when: ago(at) }) : t('usage.check.never'))}</span>
-    <button id="uzCheck" onclick="uzCheckNow(this)" title="${esc(t('usage.check.title'))}">${esc(t('usage.check.btn'))}</button>
+    <button id="uzCheck" onclick="uzCheckNow(this)" title="${esc(t('usage.check.title'))}" aria-label="${esc(t('usage.check.title'))}">${esc(t('usage.check.btn'))}</button>
     <label class="uz-sub" title="${esc(t('usage.check.auto.title'))}"><input type="checkbox" ${check.auto ? 'checked' : ''} onchange="api('POST', '/api/usage/auto', { on: this.checked })"> ${esc(t('usage.check.auto'))}</label>
     <span class="uz-sub" id="uzCheckMsg"></span></div>`;
 }

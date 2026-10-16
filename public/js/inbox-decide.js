@@ -31,7 +31,7 @@ function decideHtml(d, i, n) {
   const other = d.quiz ? `<button data-dc="other">${esc(t('quiz.other'))}</button>` : '';
   const reason = d.quiz ? `<textarea id="dcText" rows="1" hidden placeholder="${esc(t('quiz.other.ph'))}"></textarea>` : d.info || d.acts.some(a => a.ask != null) ? `<textarea id="dcText" rows="2" placeholder="${esc(t('decide.ph'))}"></textarea>` : '';
   return `<div class="fl-head"><b>${esc(t('decide.h', { i: i + 1, n }))}</b><span class="spacer"></span>
-      <button data-dc="prev" ${n < 2 ? 'disabled' : ''} title="${esc(t('decide.back'))}">‹</button><button data-dc="next" ${n < 2 ? 'disabled' : ''} title="${esc(t('decide.skip'))}">${esc(t('decide.skip'))}</button>
+      <button data-dc="prev" ${n < 2 ? 'disabled' : ''} title="${esc(t('decide.back'))}" aria-label="${esc(t('decide.back'))}"><span aria-hidden="true">‹</span></button><button data-dc="next" ${n < 2 ? 'disabled' : ''} title="${esc(t('decide.skip'))}" aria-label="${esc(t('decide.skip'))}">${esc(t('decide.skip'))}</button>
       <button data-dc="exit">${esc(t('decide.exit'))}</button></div>
     <div class="ib-top"><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${checkChip(c)}</div>
     <div class="ib-title"><a href="#/p/${esc(c.project)}/${esc(c.id)}">${esc(c.title)}</a></div>

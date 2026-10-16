@@ -67,18 +67,18 @@ function joinHtml() {
       ${c.kind === 'site' && (c.passes || (!c.used && c.exp > Date.now())) ? `<button type="button" class="join-end" data-code="${esc(c.code)}">${esc(t('join.site.end'))}</button>` : ''}
       ${c.kind !== 'site' && !c.used && !c.cancelled && c.exp > Date.now() ? `<button type="button" class="join-cancel" data-code="${esc(c.code)}">${esc(t('join.cancel'))}</button>` : ''}</div>`;
   return `<div class="dmf-sec" id="joinSec"><b>${esc(t('join.h2'))}</b><small class="muted">${esc(t('join.for'))} ${esc(t('join.help'))}</small>
-      <select id="joinHelp">${['1', '2', '3'].map(n => `<option value="${n}" ${keep.h === n ? 'selected' : ''}>${esc(['', '🐣', '🙂', '😎'][n] + ' ' + t('join.level.' + n))}</option>`).join('')}</select>
+      <select id="joinHelp" aria-label="${esc(t('srv.join.help'))}">${['1', '2', '3'].map(n => `<option value="${n}" ${keep.h === n ? 'selected' : ''}>${esc(['', '🐣', '🙂', '😎'][n] + ' ' + t('join.level.' + n))}</option>`).join('')}</select>
       <input type="text" id="joinName" value="${esc(keep.n)}" placeholder="${esc(t('dmf.invite.name'))}" autocomplete="off">
-      <div class="actions"><button type="button" id="joinMake">${esc(t('join.btn'))}</button> <button type="button" id="joinSite" title="${esc(t('join.site.help'))}">${esc(t('join.site.btn'))}</button></div>
+      <div class="actions"><button type="button" id="joinMake">${esc(t('join.btn'))}</button> <button type="button" id="joinSite" title="${esc(t('join.site.help'))}" aria-label="${esc(t('join.site.help'))}">${esc(t('join.site.btn'))}</button></div>
       ${JN.link ? `<input type="text" id="joinLink" readonly value="${esc(JN.link)}" onclick="this.select()"><small class="muted">${esc(t('join.send'))}</small>
       <div class="actions"><button type="button" id="joinCopy">${esc(t('dmf.copy'))}</button></div>` : ''}
       <div class="err" id="join-err">${esc(JN.err)}</div><div class="muted" id="join-msg">${esc(JN.msg)}</div>
       ${d && d.codes.length ? `<b>${esc(t('join.open'))}</b>${d.codes.map(row).join('')}` : ''}
       ${d && d.error ? `<small class="muted">${esc(t('join.noStatus'))}</small>` : ''}
       <details><summary class="muted">${esc(t('join.server'))}</summary>
-        <input type="text" id="joinUrl" value="${esc(d ? d.url : '')}" autocomplete="off">
-        <small class="muted">${esc(t('join.site.url'))}</small><input type="text" id="joinSiteUrl" value="${esc(d ? d.site || '' : '')}" autocomplete="off"><div class="actions"><button type="button" id="joinSave">${esc(t('join.save'))}</button></div>
-        <small class="muted">${esc(t('join.key'))}</small><input type="text" id="joinKey" readonly value="${esc(d ? d.ownerKey : '')}" onclick="this.select()"></details></div>`;
+        <input type="text" id="joinUrl" aria-label="${esc(t('join.url.label'))}" value="${esc(d ? d.url : '')}" autocomplete="off">
+        <small class="muted">${esc(t('join.site.url'))}</small><input type="text" id="joinSiteUrl" aria-label="${esc(t('join.site.url'))}" value="${esc(d ? d.site || '' : '')}" autocomplete="off"><div class="actions"><button type="button" id="joinSave">${esc(t('join.save'))}</button></div>
+        <small class="muted">${esc(t('join.key'))}</small><input type="text" id="joinKey" aria-label="${esc(t('join.key'))}" readonly value="${esc(d ? d.ownerKey : '')}" onclick="this.select()"></details></div>`;
 }
 function joinPaint() {
   const sec = $('joinSec'); if (!sec) return;

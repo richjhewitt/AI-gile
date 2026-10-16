@@ -261,7 +261,7 @@ const runInSelect = (id, cur, onchange, def) => `<select class="setup-theme" id=
 const runInBlind = where => `<small class="muted runin-blind" ${where === 'background' ? 'hidden' : ''}>${esc(t('runin.blind'))}</small>`;
 function runInHtml(msg = '') {
   const pr = leadPrefs(), w = pr.runIn || 'background';
-  return `<span>${esc(t('runin.h'))}</span>${runInSelect('runIn', w, 'setRunIn({ runIn: this.value })')}<small class="muted">${esc(t('runin.help'))}</small>
+  return `<label for="runIn">${esc(t('runin.h'))}</label>${runInSelect('runIn', w, 'setRunIn({ runIn: this.value })')}<small class="muted">${esc(t('runin.help'))}</small>
     <label class="f" ${w === 'other' ? '' : 'hidden'}><span>${esc(t('runin.cmd'))}</span><input type="text" id="runCmd" value="${esc(pr.runCmd || '')}" placeholder='cursor "{folder}"' onchange="setRunIn({ runCmd: this.value })"><small class="muted">${esc(t('runin.cmd.help'))}</small></label>
     <label class="f"><span>${esc(t('dispatch.h'))}</span><select class="setup-theme" id="dispatchMode" onchange="setRunIn({ dispatch: this.value })">${['rules', 'haiku', 'lead'].map(v => `<option value="${v}" ${(pr.dispatch || 'haiku') === v ? 'selected' : ''}>${esc(t('dispatch.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('dispatch.help'))}</small></label>
     <label class="f"><span>${esc(t('trust.h'))}</span><select class="setup-theme" id="trustTester" onchange="setRunIn({ trustTester: this.value })">${['check', 'sure', 'all'].map(v => `<option value="${v}" ${(pr.trustTester || 'check') === v ? 'selected' : ''}>${esc(t('trust.opt.' + v))}</option>`).join('')}</select><small class="muted">${esc(t('trust.help'))}</small></label>
@@ -332,7 +332,7 @@ function serversHtml(msg = '') {
     ${s.kind === 'ssh' ? srvSshMore(s, i) : ''}
     <label class="srv-sudo"><input type="checkbox" data-srv="sudo" data-i="${i}" ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? 'checked' : ''} onchange="srvEdit(this)"> ${esc(t('servers.sudo'))}</label>
     ${s.sudo === true || (Array.isArray(s.sudo) && s.sudo.length) ? `<input type="text" data-srv="sudoWho" data-i="${i}" value="${esc(Array.isArray(s.sudo) ? s.sudo.join(', ') : '')}" placeholder="${esc(t('servers.sudoWho'))}" onchange="srvEdit(this)">` : ''}
-    <div class="actions"><button type="button" class="srv-del" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}">${esc(t('servers.del'))}</button></div></div>`).join('');
+    <div class="actions"><button type="button" class="srv-del" onclick="srvDel(${i})" title="${esc(t('servers.remove'))}" aria-label="${esc(t('servers.remove'))}">${esc(t('servers.del'))}</button></div></div>`).join('');
   const found = (srvFound || []).filter(f => !srvDraft.some(s => s.value === f.path)).map(f => `<button type="button" class="srv-found" data-name="${esc(f.name)}" data-path="${esc(f.path)}" onclick="srvAddFound(this)">+ ${esc(f.name)}</button>`).join(' ');
   return `<span>${esc(t('servers.h'))}</span><small class="muted">${esc(t('servers.help'))}</small>${rows}
     <div><button type="button" onclick="srvAdd()">${esc(t('servers.add'))}</button> <button type="button" id="srvFind" onclick="srvFind()">${esc(t('servers.find'))}</button> ${found}</div>

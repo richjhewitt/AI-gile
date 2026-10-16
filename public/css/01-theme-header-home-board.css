@@ -1,10 +1,10 @@
 /* ---------- theme tokens ---------- */
 :root {
   --bg: #f6f7f9; --panel: #fff; --col: #eef0f3; --text: #1d2330; --muted: #5f697d; --line: #dde1e8;
-  --accent: #3b6cf6; --done: #1f9d61; --warn: #d97706; --danger: #dc2626; --you: #9333ea;
+  --accent: #2855cf; --done: #147a48; --warn: #a65a05; --danger: #c91e1e; --you: #9333ea;
   --shadow: 0 1px 2px rgba(20,30,50,.08);
   --radius: 10px;
-  --on-fill: #fff; --warn-ink: #b45309;   /* text on accent/done/danger fills; dark in the dark themes, where those fills are light */
+  --on-fill: #fff; --warn-ink: #a34b08;   /* text on accent/done/danger fills; dark in the dark themes, where those fills are light */
   color-scheme: light;   /* native bits (file picker, scrollbars, date boxes) follow the theme (AIG-930) */
 }
 /* Dark: the system setting, unless the user picked Light; or the user picked Dark (AIG-143). */
@@ -34,18 +34,18 @@
 }
 /* Night mode (the owner went quiet): dim, warm, no blue light. */
 :root[data-night] {
-  --bg: #0d0906; --panel: #15100b; --col: #110c08; --text: #c9a27e; --muted: #7d6450; --line: #2a1f16;
-  --accent: #a8622c; --done: #7f8a3a; --warn: #b8782e; --danger: #a8483a; --you: #8f5a4a;
-  --shadow: none; --on-fill: #fff; --warn-ink: var(--warn);
+  --bg: #0d0906; --panel: #15100b; --col: #110c08; --text: #c9a27e; --muted: #a1846d; --line: #2a1f16;
+  --accent: #bd875e; --done: #a1aa6a; --warn: #c59761; --danger: #d28e7e; --you: #c18d7d;
+  --shadow: none; --on-fill: #20100b; --warn-ink: var(--warn);
   color-scheme: dark;
 }
 :root[data-night] img, :root[data-night] svg { filter: sepia(.6) brightness(.8); }
 /* AIG-1353: the 🌙 night glance window (data-popnight, set in index.html's head) is near-black and red-tinted from the first
    frame, whatever the theme or quiet state, and never shows the board's top bar (html:root beats every theme rule above). */
 html:root[data-popnight] {
-  --bg: #0b0605; --panel: #0b0605; --col: #0b0605; --text: #b07a6a; --muted: #6e4a40; --line: #1f120e;
-  --accent: #a8622c; --done: #7f8a3a; --warn: #b8782e; --danger: #a8483a; --you: #8f5a4a;
-  --shadow: none; --on-fill: #fff; --warn-ink: var(--warn);
+  --bg: #0b0605; --panel: #0b0605; --col: #0b0605; --text: #b07a6a; --muted: #ac8174; --line: #1f120e;
+  --accent: #bd875e; --done: #a1aa6a; --warn: #c59761; --danger: #d28e7e; --you: #c18d7d;
+  --shadow: none; --on-fill: #20100b; --warn-ink: var(--warn);
   color-scheme: dark; background: #0b0605;
 }
 html:root[data-popnight] body > header, html:root[data-popnight] #filterbar, html:root[data-popnight] #updateTop, html:root[data-popnight] #saverBar,
@@ -153,7 +153,7 @@ main { padding: 20px; }
 .welcome-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .welcome-actions .big { font-size: 16px; padding: 10px 18px; }
 .emptyhint { margin: 0 0 12px; padding: 10px 12px; border: 1px dashed var(--accent); border-radius: 8px; font-size: 13px; }
-.stale { color: var(--warn); }
+.stale { color: var(--warn-ink); }
 .heard { font-size: 12px; color: var(--muted); margin: -2px 0 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .card.stale-card { border: 2px solid #f97316; background: color-mix(in srgb, #f97316 12%, var(--panel)); }
 .stale-card .heard { color: #c2410c; font-weight: 600; }
@@ -329,3 +329,6 @@ th { color: var(--muted); font-weight: 500; }
 
 @media (max-width: 600px), (max-height: 500px) and (pointer: coarse) { .column h3 > span:first-child { flex-basis: auto; } }
 #sampleRemove { font-size: 13px; font-weight: 400; vertical-align: middle; }
+
+/* Project colours identify the project through the rail and border; names use readable text. */
+header .crumb[style*="color"] { color: var(--text) !important; filter: none !important; }

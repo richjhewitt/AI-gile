@@ -22,7 +22,7 @@ const ScrumGlance = (() => {
     if (!el) { el = document.createElement('div'); el.id = 'sgPanel'; el.className = 'sg-panel'; el.setAttribute('role', 'region'); document.body.appendChild(el); shown = ''; }
     const key = JSON.stringify([data, scope(), i18n.lang, state.project && state.project.name]);
     if (key === shown) return; shown = key;
-    el.innerHTML = `<div class="sg-bar"><b>${esc(t('glance.h'))}</b><span class="spacer"></span>${popBtn('ScrumGlance.pop()', 'id="sgPop"').replace('class="dlg-pop"', 'class="sg-pop"')}<button type="button" id="sgClose" aria-label="${esc(t('glance.close'))}" title="${esc(t('glance.close'))}" onclick="ScrumGlance.toggle()">✕</button></div><div class="sg-body">${body(data, true)}</div>`;
+    el.innerHTML = `<div class="sg-bar"><b>${esc(t('glance.h'))}</b><span class="spacer"></span>${popBtn('ScrumGlance.pop()', 'id="sgPop"').replace('class="dlg-pop"', 'class="sg-pop"')}<button type="button" id="sgClose" aria-label="${esc(t('glance.close'))}" title="${esc(t('glance.close'))}" onclick="ScrumGlance.toggle()"><span aria-hidden="true">✕</span></button></div><div class="sg-body">${body(data, true)}</div>`;
   }
   async function load(slug, options = {}) {
     try { data = await PagePoll.get('/api/glance' + (slug ? '?project=' + encodeURIComponent(slug) : ''), options); } catch { data = data || null; }

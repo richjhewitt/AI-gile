@@ -1,3 +1,4 @@
+import { proof } from '../a11y-proof.mjs';
 // QA areas: board, filters, columns, cardview, wip, lanes, views, steps, quick.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,6 +10,12 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   await mkCard(s, 'alpha', 'Other', { status: 'doing' });
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('.column');
+  const names = await page.$$eval('button[title], a[title]', es => es.filter(e => e.checkVisibility() && !/[\p{L}\p{N}]/u.test(e.textContent)).map(e => ({ title: e.title, label: e.getAttribute('aria-label') })));
+  check('icon controls use their helpful title as a name (AIG-1429)', names.length > 0 && names.every(e => e.label === e.title), names);
+  const unnamed = await page.$$eval('button, a[href]', es => es.filter(e => e.checkVisibility() && !/[\p{L}\p{N}]/u.test(e.textContent) && !e.getAttribute('aria-label') && !e.getAttribute('aria-labelledby')).map(e => e.outerHTML));
+  check('visible icon-only controls have explicit names (AIG-1429)', !unnamed.length, unnamed);
+  check('urgent toggle keeps pressed state (AIG-1429)', await page.locator('.urg-btn[aria-pressed]').count() > 0);
+  await proof(page, 'AIG-1429');
   await page.setViewportSize({ width: 1366, height: 768 });
   check('column names wrap without clipping (AIG-1360)', await page.$$eval('.column h3 > span:first-child', es => es.every(e => e.scrollWidth <= e.clientWidth + 1 && getComputedStyle(e).whiteSpace === 'normal')));
   await page.click('#tbDots'); await page.keyboard.press('Escape');
@@ -107,13 +114,15 @@ def('newcard-project', 'New card: Project picker defaults to this board; another
 
 def('filters', 'search survives polling, type filter, clear', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
-  await mkCard(s, 'alpha', 'Zebra feature', { status: 'todo' });
+  await mkCard(s, 'alpha', 'Zebra feature', { status: 'todo', group: 'Release' });
   await mkCard(s, 'alpha', 'Zebra bug', { status: 'todo', type: 'bug' });
   await mkCard(s, 'alpha', 'Plain thing', { status: 'doing', assignee: 'Forge' });
   const old = await mkCard(s, 'alpha', 'Long ago', { status: 'done', assignee: 'Oldie' });   // AIG-1381: a name only on an old done card
   { const pf = path.join(s.data, 'alpha.json'), pj = JSON.parse(fs.readFileSync(pf, 'utf8')); pj.cards.find(c => c.id === old.id).updated = new Date(Date.now() - 40 * 864e5).toISOString(); fs.writeFileSync(pf, JSON.stringify(pj)); }
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('#f-q');
+  check('board dropdowns have explicit labels (AIG-1436)', await page.$$eval('#f-sel select', es => es.length >= 4 && es.every(e => !!e.getAttribute('aria-label'))));
+  await proof(page, 'AIG-1436');
   const whoOpts = () => page.$$eval('select[data-f=who] option', os => os.map(o => o.value));
   check('Anyone lists who is on the board now; an old name waits behind More (AIG-1381)', JSON.stringify(await whoOpts()) === JSON.stringify(['', 'Forge', '__more']), await whoOpts());
   await page.selectOption('select[data-f=who]', '__more');

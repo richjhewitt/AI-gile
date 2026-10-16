@@ -13,7 +13,7 @@ const usageLine = u => t('home.usageline', { h5: fmtTok(u.h5), today: fmtTok(u.t
 function usageStrip(u) {
   if (NoAi.on) return '';
   const html = UsageGlance.homeHtml();
-  return `<a class="usage" id="homeUsage" href="#/usage" title="${esc(t('home.usage.title'))}" ${html ? '' : 'hidden'}>${html}</a>`;
+  return `<a class="usage" id="homeUsage" href="#/usage" title="${esc(t('home.usage.title'))}" aria-label="${esc(t('home.usage.title'))}" ${html ? '' : 'hidden'}>${html}</a>`;
 }
 
 // The Lead Scrum Master, in the same style as a team's presence (AIG-463): running now (and where), idle (and when it last ran), or off.
@@ -34,23 +34,23 @@ function renderHome() {
   const fresh = !state.projects.length && !state.showArchived && !state.hasArchived;   // AIG-1073: nothing yet, so no Show archived and no Scrum Master line
   // AIG-937: one + New project button; the rest sit under More (same elements, same ids and handlers). QA keeps it open with localStorage aigile.homeMoreOpen=1.
   let moreOpen = state.homeMore; if (moreOpen === undefined) { try { moreOpen = localStorage.getItem('aigile.homeMoreOpen') === '1'; } catch { moreOpen = false; } }
-  return `<div class="toolbar"><button class="primary" onclick="newProject()">${esc(t('home.newproject'))}</button> <button id="homeMoreBtn" aria-expanded="${!!moreOpen}" aria-controls="homeMenu" onclick="homeMore()" title="${esc(t('home.more.title'))}">${esc(t('home.more'))}</button><span class="grow"></span>
+  return `<div class="toolbar"><button class="primary" onclick="newProject()">${esc(t('home.newproject'))}</button> <button id="homeMoreBtn" aria-expanded="${!!moreOpen}" aria-controls="homeMenu" onclick="homeMore()" title="${esc(t('home.more.title'))}" aria-label="${esc(t('home.more.title'))}">${esc(t('home.more'))}</button><span class="grow"></span>
       ${fresh ? '' : `<label class="chk"><input type="checkbox" ${state.showArchived ? 'checked' : ''} onchange="toggleArchived(this.checked)"> ${esc(t('home.showarchived'))}</label>`}
-      <div class="hm-menu" id="homeMenu" ${moreOpen ? '' : 'hidden'}><button onclick="refactorOffer()" title="${esc(t('rf.btn.title'))}">${esc(t('rf.btn'))}</button> <button onclick="newProject({ space: true })" title="${esc(t('home.newspace.title'))}">${esc(t('home.newspace'))}</button>
-      <button onclick="openFileDialog()" title="${esc(t('ofl.btn.title'))}">${esc(t('ofl.btn'))}</button>
-      <button onclick="findProjectsDialog()" title="${esc(t('home.find.title'))}">${esc(t('home.find'))}</button>
-      <button onclick="tourDialog()" title="${esc(t('tour.btn.title'))}">${esc(t('tour.btn'))}</button>
-      <button onclick="goQuiet()" title="${esc(t('home.quiet.title'))}">${esc(t('home.quiet'))}</button>
+      <div class="hm-menu" id="homeMenu" ${moreOpen ? '' : 'hidden'}><button onclick="refactorOffer()" title="${esc(t('rf.btn.title'))}" aria-label="${esc(t('rf.btn.title'))}">${esc(t('rf.btn'))}</button> <button onclick="newProject({ space: true })" title="${esc(t('home.newspace.title'))}" aria-label="${esc(t('home.newspace.title'))}">${esc(t('home.newspace'))}</button>
+      <button onclick="openFileDialog()" title="${esc(t('ofl.btn.title'))}" aria-label="${esc(t('ofl.btn.title'))}">${esc(t('ofl.btn'))}</button>
+      <button onclick="findProjectsDialog()" title="${esc(t('home.find.title'))}" aria-label="${esc(t('home.find.title'))}">${esc(t('home.find'))}</button>
+      <button onclick="tourDialog()" title="${esc(t('tour.btn.title'))}" aria-label="${esc(t('tour.btn.title'))}">${esc(t('tour.btn'))}</button>
+      <button onclick="goQuiet()" title="${esc(t('home.quiet.title'))}" aria-label="${esc(t('home.quiet.title'))}">${esc(t('home.quiet'))}</button>
       ${Break.btn()} ${Break.showerBtn()} ${MyDay.btn()}
-      <button onclick="callStandup()" title="${esc(t('standup.all.title'))}">${esc(t('standup.all'))}</button>
-      <a class="navlink" href="#/today" title="${esc(t('today.link.title'))}">${esc(t('today.link'))}</a> <a class="navlink" href="#/life" title="${esc(t('la.link.title'))}">${esc(t('la.link'))}</a> <a class="navlink" href="#/standups" title="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a></div></div>`
+      <button onclick="callStandup()" title="${esc(t('standup.all.title'))}" aria-label="${esc(t('standup.all.title'))}">${esc(t('standup.all'))}</button>
+      <a class="navlink" href="#/today" title="${esc(t('today.link.title'))}" aria-label="${esc(t('today.link.title'))}">${esc(t('today.link'))}</a> <a class="navlink" href="#/life" title="${esc(t('la.link.title'))}" aria-label="${esc(t('la.link.title'))}">${esc(t('la.link'))}</a> <a class="navlink" href="#/standups" title="${esc(t('standup.report.title'))}" aria-label="${esc(t('standup.report.title'))}">${esc(t('standup.report'))}</a></div></div>`
     + Backups.homeHtml(state.damaged) + (state.setupNeeded ? `<p class="muted finish-setup" id="finishSetup">🧰 ${esc(t('home.finishsetup'))} <a class="navlink" href="#/setup/you">${esc(t('home.finishsetup.go'))}</a></p>` : '') + usageStrip(state.usage) + inbox + Spaces.outStrip() + TodayPage.hiddenLine() + FirstSteps.html() + `<div class="grid space-tree">${cards || welcomeCard()}</div>` + (fresh ? '' : smLine(state.sm));
 }
 
 // AIG-1073: empty home. #homeWelcomeActions is where more starting buttons go (the sample project, AIG-1072).
 function welcomeCard() {
   return `<div class="welcome" id="homeWelcome"><h2>${esc(t('home.welcome.h'))}</h2><p>${esc(t('home.welcome.p'))}</p>
-    <div class="welcome-actions" id="homeWelcomeActions"><button class="primary big" id="homeWelcomeNew" onclick="newProject()">${esc(t('home.newproject'))}</button> <button id="sampleBtn" onclick="addSample()" title="${esc(t('sample.add.title'))}">${esc(t('sample.add'))}</button></div></div>`;
+    <div class="welcome-actions" id="homeWelcomeActions"><button class="primary big" id="homeWelcomeNew" onclick="newProject()">${esc(t('home.newproject'))}</button> <button id="sampleBtn" onclick="addSample()" title="${esc(t('sample.add.title'))}" aria-label="${esc(t('sample.add.title'))}">${esc(t('sample.add'))}</button></div></div>`;
 }
 
 function homeMore() {

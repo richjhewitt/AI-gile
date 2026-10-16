@@ -7,7 +7,7 @@ function replyHtml(p, c, msg, newest) {
 // AIG-1421: no 👍 Go when the question has its own answer buttons; Go would not answer it
 const replyBox = (p, c, ans = cardAnswers(p, c)) => `<div class="reply">${ans}<textarea dir="auto" id="r-text" data-draft="${esc(p.slug + '/' + c.id)}/reply" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(EnterSend.is(event,'card')){event.preventDefault();sendReply()}"></textarea>
         <div class="err" id="r-err"></div>
-        <div class="actions">${c.needsYou && !ans.includes('data-cardact') ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${looksRight(c)}${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>`;
+        <div class="actions">${c.needsYou && !ans.includes('data-cardact') ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}" aria-label="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${looksRight(c)}${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>`;
 /* ---------- one-click answers on the card itself (AIG-371, AIG-315) ----------
    An open `aigile task` (assigned to the owner) always gets a ✅ Done. An open `aigile ask` (needs the owner) gets the same
    Go / Yes / --options buttons as the inbox (askActions, core.js); one that needs a reason (Not yet, No) starts the reply box.
@@ -16,11 +16,11 @@ const replyBox = (p, c, ans = cardAnswers(p, c)) => `<div class="reply">${ans}<t
 const LOOKS_RIGHT_RE = /```|you should see|you'll see|je zou[^.\n]{0,40}zien|zou je[^.\n]{0,40}zien|je moet[^.\n]{0,40}zien/i;
 function looksRight(c) {
   const m = (c.comments || []).at(-1);
-  return m && !isOwner(m.author) && c.status !== 'done' && LOOKS_RIGHT_RE.test(m.text || '') ? `<button class="good" data-looksright title="${esc(t('card.looksright.title'))}" onclick="sendReply(t('card.looksright.say'))">${esc(t('card.looksright'))}</button>` : '';
+  return m && !isOwner(m.author) && c.status !== 'done' && LOOKS_RIGHT_RE.test(m.text || '') ? `<button class="good" data-looksright title="${esc(t('card.looksright.title'))}" aria-label="${esc(t('card.looksright.title'))}" onclick="sendReply(t('card.looksright.say'))">${esc(t('card.looksright'))}</button>` : '';
 }
 function cardAnswers(p, c) {
   if (c.status === 'done') return '';
-  if (isOwner(c.assignee)) return `<div class="msg-acts card-acts"><button class="good" data-cardtaskdone onclick="cardTaskDone()">${esc(t('inbox.k.done'))}</button><button data-cardtasksnooze title="${esc(t('inbox.t.wait.title'))}" onclick="cardTaskSnooze()">${esc(t('life.snooze'))}</button></div>`;
+  if (isOwner(c.assignee)) return `<div class="msg-acts card-acts"><button class="good" data-cardtaskdone onclick="cardTaskDone()">${esc(t('inbox.k.done'))}</button><button data-cardtasksnooze title="${esc(t('inbox.t.wait.title'))}" aria-label="${esc(t('inbox.t.wait.title'))}" onclick="cardTaskSnooze()">${esc(t('life.snooze'))}</button></div>`;
   if (!c.needsYou || c.blocked || c.status === 'verify') return '';
   // AIG-999: a question the owner already answered gives no buttons again; the team's newest message leads
   const cs = [...(c.comments || [])].reverse(), open = cs.findIndex(x => x.mark === 'ask' && !isOwner(x.author)), a = open >= 0 && !cs.slice(0, open).some(x => isOwner(x.author)) ? cs[open] : cs.find(x => !isOwner(x.author));
@@ -75,7 +75,7 @@ function nudgeLit(p, c, typing) {
 }
 function nudgeBtn(p, c, typing) {
   const lit = nudgeLit(p, c, typing);
-  return `<button type="button" class="nudge${lit ? ' lit' : ''}" id="nudgeBtn" onclick="nudgeCard(this)" title="${esc(t(lit ? 'nudge.lit' : 'nudge.title'))}" aria-label="${esc(t('nudge.title'))}">👉</button>`;
+  return `<button type="button" class="nudge${lit ? ' lit' : ''}" id="nudgeBtn" onclick="nudgeCard(this)" title="${esc(t(lit ? 'nudge.lit' : 'nudge.title'))}" aria-label="${esc(t('nudge.title'))}"><span aria-hidden="true">👉</span></button>`;
 }
 async function nudgeCard(btn) {
   if (btn) btn.disabled = true;

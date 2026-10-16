@@ -11,7 +11,7 @@
   D.onSharePick((sources, reply) => {
     close(null);   // a new ask replaces an open one
     answer = reply;
-    const tile = s => `<button type="button" class="sp-tile" data-id="${esc(s.id)}" title="${esc(s.name)}" style="display:flex;flex-direction:column;gap:4px;padding:6px;min-width:0;text-align:left">`
+    const tile = s => `<button type="button" class="sp-tile" data-id="${esc(s.id)}" title="${esc(s.name)}" aria-label="${esc(s.name)}" style="display:flex;flex-direction:column;gap:4px;padding:6px;min-width:0;text-align:left">`
       + (s.thumb ? `<img src="${esc(s.thumb)}" alt="" style="width:100%;aspect-ratio:16/9;object-fit:contain;background:#000;border-radius:4px">` : '')
       + `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${esc(s.name)}</span></button>`;
     const part = (h, list) => list.length ? `<h3 style="margin:10px 0 6px;font-size:14px">${esc(h)}</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${list.map(tile).join('')}</div>` : '';

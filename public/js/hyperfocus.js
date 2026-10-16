@@ -7,7 +7,7 @@ const Hyperfocus = (() => {
     const key = JSON.stringify([st.on, st.slug, st.name, i18n.lang]);
     if (key === shown) return; shown = key;
     const b = document.getElementById('hfTop'); if (!b) return;
-    b.innerHTML = st.on ? `<span class="hf-chip" role="status"><a href="#/p/${esc(st.slug)}" title="${esc(t('hf.chip.title'))}">${esc(t('hf.chip', { name: st.name }))}</a> <button onclick="Hyperfocus.off()" title="${esc(t('hf.off'))}" aria-label="${esc(t('hf.off'))}">✕</button></span>` : '';
+    b.innerHTML = st.on ? `<span class="hf-chip" role="status"><a href="#/p/${esc(st.slug)}" title="${esc(t('hf.chip.title'))}" aria-label="${esc(t('hf.chip.title'))}">${esc(t('hf.chip', { name: st.name }))}</a> <button onclick="Hyperfocus.off()" title="${esc(t('hf.off'))}" aria-label="${esc(t('hf.off'))}"><span aria-hidden="true">✕</span></button></span>` : '';
   }
   function set(next) { const was = st.on ? st.slug : ''; st = next; paint(); if (was !== (st.on ? st.slug : '') && typeof Swarm !== 'undefined') Swarm.redraw(); }
   async function poll() { try { set(await PagePoll.get('/api/hyperfocus')); } catch {} }

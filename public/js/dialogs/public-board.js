@@ -4,7 +4,7 @@
 // public JSON, via GET /api/projects/<slug>/public). lib/publicboard.js sends the snapshots; switching to Private deletes it.
 const Pub = (() => {
   let info = null;
-  const copyBtn = p => p.public ? `<button type="button" id="pubBtn" class="pub-btn" onclick="Pub.copy()" title="${esc(t('pub.copy.title'))}">🌍 ${esc(t('pub.copy'))} <span class="muted" id="pubViewers"></span></button>` : '';
+  const copyBtn = p => p.public ? `<button type="button" id="pubBtn" class="pub-btn" onclick="Pub.copy()" title="${esc(t('pub.copy.title'))}" aria-label="${esc(t('pub.copy.title'))}">🌍 ${esc(t('pub.copy'))} <span class="muted" id="pubViewers"></span></button>` : '';
   // The Look dialog part: ticks that exclude each other, the name, and the link button.
   // The line a website adds, filled in once the dialog is on screen (the relay address comes from the public status).
   function fillSnippet() {

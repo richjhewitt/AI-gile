@@ -13,3 +13,4 @@ Start a new project or connect a folder.
 - Suggested card prefixes are picked automatically; only a prefix you type can need changing.
 
 - Setup confirms that your team is ready; technical steps are folded under Details and team instruction files are hidden from Docs.
+- New project announces its result and focuses Open project.
