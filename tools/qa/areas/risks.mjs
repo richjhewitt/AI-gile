@@ -2,7 +2,7 @@
 // happened -> a 🔥 incident card, old projects untouched, and the Risks page (list order, overdue mark, phone width, dark mode).
 import fs from 'node:fs';
 import path from 'node:path';
-import { check, mkProject, mkCard, getCard, def, openPage, noErrors, until } from '../lib.mjs';
+import { check, mkProject, mkCard, getCard, def, openPage, noErrors, until, tbClick } from '../lib.mjs';
 
 def('risks', '⚠️ risk register: API, CLI add/list/set, brief overdue line, happened files an incident card, Risks page (AIG-863)', async (s, ctx) => {
   await mkProject(s, 'Rego', 'REG');
@@ -73,8 +73,8 @@ def('risks', '⚠️ risk register: API, CLI add/list/set, brief overdue line, h
   check('dark mode: rows are dark', bg.match(/\d+/g).slice(0, 3).every(n => Number(n) < 90), bg);
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.evaluate(() => { location.hash = '#/p/rego'; });
-  check('the board has a Risks button', !!(await until(() => page.$('button[onclick*="#/risks/rego"]'), 8000)));
-  await page.click('button[onclick*="#/risks/rego"]');
+  check('the board has a Risks button (under More)', !!(await until(() => page.$('button[onclick*="#/risks/rego"]'), 8000)));
+  await tbClick(page, 'button[onclick*="#/risks/rego"]');
   check('and it goes to the risks page', !!(await until(() => page.$('.rk-page'), 8000)));
   noErrors(page);
   await page.close();
