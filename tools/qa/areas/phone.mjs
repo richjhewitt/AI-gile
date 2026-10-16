@@ -1,5 +1,5 @@
 // QA area: phone (AIG-410). Every page at phone size has no sideways scroll and big enough tap targets; the app installs (manifest + service worker).
-import { check, sleep, tmp, mkProject, mkCard, openPage, BASE, def, clickBar } from '../lib.mjs';
+import { check, sleep, tmp, mkProject, mkCard, openPage, BASE, def, clickBar, say } from '../lib.mjs';
 
 const DEVICES = [{ name: 'iPhone 390x844', viewport: { width: 390, height: 844 } }, { name: 'Android 412x915', viewport: { width: 412, height: 915 } }];
 
@@ -34,6 +34,9 @@ def('phone', '📱 every page fits a phone (390x844, 412x915): no sideways scrol
   const q = await mkCard(s, 'alpha', 'Big plan?', { status: 'todo' });
   await s.ok('POST', `/api/projects/alpha/cards/${q.id}/quiz`, { author: 'Lead', topic: 'Sharing', items: [{ q: 'Who can see it?', options: 'Everyone,Friends,Nobody' }, { q: 'Allow?' }] }).catch(() => {});
   await mkCard(s, 'beta', 'Other', { status: 'doing', assignee: 'Rich' });
+  // AIG-410: a stuck question with a long log in a code box (one very long line) must not widen the Inbox past a phone.
+  const stuck = await mkCard(s, 'alpha', 'Stuck on the build', { status: 'doing', assignee: 'Forge' });
+  await say(s, 'alpha', stuck.id, 'Forge', 'Stuck: the build fails with this log:\n\n```\nError: ENOENT: no such file or directory, open C:/Users/rich/Desktop/some/very/long/path/that/goes/on/and/on/node_modules/package/dist/index.js at Object.openSync (node:fs:601:3) at readFileSync (node:fs:469:35)\n```\n\nWhat should I do?', { needsYou: true, blocked: true });
 
   /* ---------- the install part ---------- */
   const mf = await fetch(BASE + '/manifest.webmanifest');
@@ -80,6 +83,10 @@ def('phone', '📱 every page fits a phone (390x844, 412x915): no sideways scrol
 
       await page.goto(BASE + '/#/inbox'); await page.waitForSelector('.ib-decide', { timeout: 5000 }).catch(() => {}); await sleep(400);
       await fits(page, D + ' inbox');
+      await page.waitForSelector('.ib-item .codebox pre', { timeout: 5000 }).catch(() => {});
+      const lg = await page.evaluate(() => { const p = document.querySelector('.ib-item .codebox pre'), it = p && p.closest('.ib-item'), W = document.documentElement.clientWidth; if (!p) return null; const at = it.querySelector('.att, [data-act=send]'); return { sw: document.documentElement.scrollWidth, W, item: Math.round(it.getBoundingClientRect().right), pre: Math.round(p.getBoundingClientRect().right), send: at ? Math.round(at.getBoundingClientRect().right) : 0, scrolls: p.scrollWidth > p.clientWidth }; });
+      check(D + ': a question with a long log box fits: no sideways scroll, the item, log box and answer buttons inside the screen (AIG-410)', !!lg && lg.sw <= lg.W && lg.item <= lg.W + 1 && lg.pre <= lg.W + 1 && lg.send <= lg.W + 1, lg);
+      if (process.env.QA_SHOTS && dev === DEVICES[0]) { await page.evaluate(() => document.querySelector('.ib-item .codebox pre').closest('.ib-item').scrollIntoView()); await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-410.png' }).catch(() => {}); }
       const chips = await page.$$('.ib-decide, .ibchip, #ibKinds button, .ib-chips button');
       if (chips.length) { const hs = await Promise.all(chips.map(c => c.boundingBox())); check(D + ': inbox chips are >= 40px high', hs.every(b => b && b.height >= 39.5), hs.map(b => b && Math.round(b.height))); }
       if (await page.$('.ib-decide')) { await page.click('.ib-decide'); await sleep(500); await fits(page, D + ' inbox Decide'); await tapSize(page, '#ibDc .dc-btns button', D + ' Decide button'); }
