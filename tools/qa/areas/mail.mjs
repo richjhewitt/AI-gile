@@ -174,6 +174,13 @@ def('mail', 'Mail card 1: add an IMAP mailbox in Setup (find, test, save), passw
 
     // Card 2 (AIG-903): open one mail and read it safely
     const requests = []; page.on('request', r => requests.push(r.url()));
+    // Owner reads must not bypass the mailbox's agent permission (AIG-1400).
+    for (const route of ['inbox', 'message', 'drafts']) {
+      const url = `/api/mail/${route}?box=${b.id}&uid=103`;
+      const denied = await fetch(s.base + url, { headers: { 'X-Aigile-Where': 'background', 'X-Aigile-As': 'Postie' } });
+      check(`agents cannot use owner mail ${route}`, denied.status === 403);
+      check(`owner can read mail ${route}`, (await s.api('GET', url)).status === 200);
+    }
     const api103 = await s.ok('GET', `/api/mail/message?box=${b.id}&uid=103`);
     check('message API: text decoded (quoted-printable, UTF-8), HTML cleaned, attachment listed, still unread', /Hello Jörg <script>window\.pwned=3<\/script>/.test(api103.text) && api103.unread === true && api103.attachments.length === 1 && api103.attachments[0].name === 'bill.pdf' && api103.attachments[0].type === 'application/pdf', api103);
     check('message API: the HTML has no script, form, frame, handler or remote picture, and counts what it blocked', !/<script|<form|<iframe|<input|onclick|tracker\.test|evil\.test/i.test(api103.html) && /data:image\/gif/.test(api103.html) && api103.blockedImages === 2 && /Hi <b>there<\/b>/.test(api103.html), api103);
@@ -183,6 +190,8 @@ def('mail', 'Mail card 1: add an IMAP mailbox in Setup (find, test, save), passw
     await s.ok('POST', '/api/projects', { name: 'Mailcards', key: 'MLC' });
     await page.locator('.mail-open').first().click();
     await page.waitForSelector('#mailText');
+    fs.mkdirSync('C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots', { recursive: true });
+    await page.screenshot({ path: 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1400.png' });
     // 📋 Make a card from the open mail (AIG-905)
     await page.waitForSelector('#mailCardProj option[value="mailcards"]', { state: 'attached' });
     await page.selectOption('#mailCardProj', 'mailcards');
