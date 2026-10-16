@@ -3896,6 +3896,7 @@
  "day.help": "Going quiet ends at your start time unless you pick another, and Snooze to tomorrow wakes things then.",
  "setup.sec.storage": "Storage",
  "setup.sec.calls": "Calls",
+ "setup.sec.friends": "Friends",
  "lkcall.h": "📞 Call",
  "lkcall.btn": "📞 Call",
  "lkcall.btn.title": "Voice or video call with {name}, with screen share",

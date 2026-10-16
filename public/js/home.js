@@ -95,7 +95,7 @@ const FirstSteps = {
       { id: 'project', done: real.length > 0, go: 'newProject()' },
       { id: 'card', done: cards > 0, go: 'newCard()' },
       { id: 'done', done: real.some(p => p.counts && p.counts.done > 0), go: board },
-      { id: 'invite', done: (FirstSteps.friends || 0) > 0, go: "location.hash='#/setup/dms'" },
+      { id: 'invite', done: (FirstSteps.friends || 0) > 0, go: "location.hash='#/setup/friends'" },
     ];
     if (!NoAi.on) list.push({ id: 'team', done: real.some(p => (p.team || []).length > 0 || (p.crew || []).length > 0), go: board });
     return { list, busy: real.length >= 3 || cards >= 15 };

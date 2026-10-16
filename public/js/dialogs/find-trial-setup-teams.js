@@ -83,7 +83,7 @@ async function startTrial(btn) {
 // ---- setup: your name and where the agent lives on this computer, saved to aigile.local.json ----
 function renderSetup() {
   const s = state.setup;
-  const secs = ["lang","look","plan","teams","discord","mail","servers","phone","calls","storage","you","more"];
+  const secs = ["lang","look","plan","teams","discord","mail","servers","phone","calls","friends","storage","you","more"];
   return `<div class="setup">${state.route && state.route.pop ? '' : popBtn('popOutSetup()', 'id="setupPop"')}<h2>${esc(t('setup.h'))}</h2>
     <p class="muted">${esc(s.needed ? t('setup.welcome') : t('setup.intro'))}</p>${Backups.homeHtml(state.damaged)}
     <div class="set-sec set-wiz" id="wizBox"><button type="button" id="wzRun" onclick="wizardStart()">${esc(t('wz.btn'))}</button><small class="muted">${esc(t('wz.btn.help'))}</small></div>
@@ -127,6 +127,9 @@ function renderSetup() {
     <section class="set-sec" id="sec-calls"><h3 class="set-h">${esc(t('setup.sec.calls'))}</h3>
     <div class="f" id="callsBox">${(CallSetup.reset(), CallSetup.html())}</div>
     </section>
+    <section class="set-sec" id="sec-friends"><h3 class="set-h">${esc(t('setup.sec.friends'))}</h3>
+    <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
+    </section>
     <section class="set-sec" id="sec-storage"><h3 class="set-h">${esc(t('setup.sec.storage'))}</h3>
     <div class="f" id="backupsBox">${(Backups.d = undefined, Backups.msg = '', Backups.html())}</div>
     <div class="f" id="storageBox">${(Storage.d = undefined, Storage.html())}</div>
@@ -152,7 +155,6 @@ function renderSetup() {
     <div class="f" id="accessReviewBox">${AccessReview.html()}</div>
     <div class="f" id="twitchBox">${TwitchTab.setupHtml()}</div>
     <div class="f" id="dmsRelayBox">${dmsRelayHtml()}</div>
-    <div class="f" id="dmsFriendsBox">${dmsFriendsHtml()}</div>
     <div class="f" id="pretendBox">${pretendBoxHtml()}</div>
     <div class="f"><span>${esc(t('trial.h'))}</span><div>${launchPickHtml()}<button type="button" id="trialBtn" onclick="startTrial(this)">${esc(t('trial.btn'))}</button></div><small class="muted">${esc(t('trial.help'))}</small><div class="err" id="trial-err"></div></div>
     </section></div>`;

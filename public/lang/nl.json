@@ -23,6 +23,7 @@
  "atrest.badfile": "Een chatbestand kon niet geopend worden: het is beschadigd of versleuteld met een andere sleutel. Het is ongemoeid gelaten.",
  "tb.custom": "⚙ Bovenbalk aanpassen…",
  "setup.sec.calls": "Gesprekken",
+ "setup.sec.friends": "Vrienden",
  "lkcall.h": "📞 Bellen",
  "lkcall.btn": "📞 Bellen",
  "lkcall.btn.title": "Spraak- of videogesprek met {name}, met scherm delen",
