@@ -1,4 +1,6 @@
 {
+ "board.empty.ready": "Press {add} to add what you want done, or ask the team.",
+ "dlg.np.ready": "Your project and its team are ready. Add what you want done, or ask the team.",
  "srv.pc.keyused": "Another project already starts its cards with {key}.",
  "col.backlog": "{{dev:Backlog}}",
  "col.todo": "To do",

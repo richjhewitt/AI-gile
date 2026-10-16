@@ -12,6 +12,8 @@ def('docs', 'Docs dialog lists .md files and opens one', async (s, ctx) => {
   const readme = '# Hello docs\n\nSome **bold** text.\n\n- a\n- b\n\n```\nnpm start\n```\n';
   fs.writeFileSync(path.join(folder, 'README.md'), readme);
   fs.writeFileSync(path.join(folder, 'docs', 'guide.md'), '# Guide\n\n| a | b |\n|---|---|\n| 1 | 2 |\n');
+  fs.writeFileSync(path.join(folder, 'CLAUDE.local.md'), '# Team instructions');
+  fs.writeFileSync(path.join(folder, 'AGENTS.md'), '# Team instructions');
   fs.writeFileSync(path.join(folder, 'notes.txt'), 'not markdown');
   await mkProject(s, 'Alpha', 'ALP', { path: folder });
   await ctx.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: BASE });
@@ -142,6 +144,8 @@ def('newproject', 'New project suggests a folder, sets it up and wakes the team 
   await page.click('#dialog button[type=submit]');
   await page.waitForSelector('#p-done li', { timeout: 5000 }).catch(() => {});
   const done = await page.textContent('#p-done').catch(() => '');
+  check('setup details start folded (AIG-1416)', await page.isVisible('#p-done p') && !(await page.isVisible('#p-done li')));
+  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1416.png'});
   check('dialog lists every step', ['Created the project', 'Created the folder', 'permissions', 'git repo', 'Woke the team'].every(x => done.includes(x)), done);
   const local = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'aigile.local.json'), 'utf8')).agent || {}; } catch { return {}; } })();
   const st = JSON.parse(fs.readFileSync(path.join(folder, local.settingsFile), 'utf8'));

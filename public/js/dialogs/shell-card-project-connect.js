@@ -272,7 +272,7 @@ async function createProject(e) {
   if (!folder && !auto && !kids.length) { closeDialog(); location.hash = '#/p/' + p.slug; return false; }
   $('p-acts').innerHTML = `<button type="button" class="primary" onclick="closeDialog(); location.hash = '#/p/${p.slug}'">${esc(t('dlg.np.open'))}</button>`;
   const done = [t('dlg.np.created')], fails = [];
-  const show = () => { $('p-done').innerHTML = `<ul>${done.map(d => `<li>✅ ${esc(d)}</li>`).join('')}${fails.map(d => `<li>⚠️ ${esc(d)}</li>`).join('')}</ul>`; };
+  const show = () => { $('p-done').innerHTML = `<p>${esc(t('dlg.np.ready'))}</p><details><summary>${esc(t('board.details'))}</summary><ul>${done.map(d => `<li>✅ ${esc(d)}</li>`).join('')}</ul></details>${fails.map(d => `<p>⚠️ ${esc(d)}</p>`).join('')}`; };
   let base = folder;   // the kids' folders go inside the space's (the made one too)
   if (folder || auto) {
     try { const r = await api('POST', `/api/projects/${p.slug}/connect`, { path: folder || true, create: true, wake: true }); done.push(...r.done); if (r.path) base = r.path; }

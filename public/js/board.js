@@ -183,7 +183,7 @@ function renderBoard(p) {
     <details class="bdetails" id="bDetails"${state.detailsOpen ? ' open' : ''} ontoggle="state.detailsOpen = this.open"><summary>${esc(t('board.details'))}</summary><div class="flight">${t('board.flight.html')} ${flightHtml(flightList(p), p.slug) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>${p.path ? `<p class="muted"><code>${esc(p.path)}</code></p>` : ''}</details>
     ${Share.laneHtml(p)}
     ${Spaces.boardHtml(p, projCard)}
-    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path || (NoAi.on && p.lifeBoard) ? t('board.empty.path', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.first', { add: esc(t('board.new')) }) + (teamState(p) ? ' ' + t('board.empty.folder', { choose: esc(t('noteam.choose')), make: esc(t('noteam.make')) }) : '')}</div>`}
+    ${p.cards.length ? '' : `<div class="emptyhint" id="emptyHint"><b>${esc(t('board.empty.h'))}</b> ${p.path || (NoAi.on && p.lifeBoard) ? t('board.empty.ready', { wake: esc(t('pres.wake')), add: esc(t('board.new')) }) : t('board.empty.first', { add: esc(t('board.new')) }) + (teamState(p) ? ' ' + t('board.empty.folder', { choose: esc(t('noteam.choose')), make: esc(t('noteam.make')) }) : '')}</div>`}
     ${board}
     ${pickBarHtml(p)}
     <div class="side">
