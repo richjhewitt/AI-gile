@@ -47,7 +47,7 @@ const INBOX_CSS = `
 .ib-tab { flex: none; border-radius: 99px; padding: 5px 12px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
 .ib-tab.on { background: var(--text); color: var(--panel); border-color: var(--text); }
 .ib-tab .n { font-weight: 400; opacity: .7; }
-.ib-tab .nm { max-width: 13ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }   /* long names cut short; the emoji tells them apart (AIG-101) */
+.ib-tab .nm { max-width: 18ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }   /* long names cut short; the emoji tells them apart (AIG-101) */
 .ib-tab .tq, .ib-tab .tk, .ib-tab .tt { font-size: 12px; font-weight: 600; }
 .ib-tab .tq { color: var(--q-ink); } .ib-tab.on .tq, .ib-tab.on .tk, .ib-tab.on .tt { color: inherit; }
 .ib-tab .tk { color: var(--k-ink); } .ib-tab .tt { color: var(--t-ink); }
