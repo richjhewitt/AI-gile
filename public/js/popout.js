@@ -72,6 +72,8 @@ function popDlg(kind) {
 }
 // AIG-1313: one look for every ⧉ Pop out (dialogs, pages, chats): same label, same hover text, the same name for a screen reader.
 const popBtn = (onclick, attrs = '') => `<button type="button" class="dlg-pop" ${attrs} title="${esc(t('popout.title'))}" aria-label="${esc(t('popout.aria'))}" onclick="${onclick}">${esc(t('popout.btn'))}</button>`;
+const closeBtn = onclick => `<button type="button" class="window-close" title="${esc(t('common.close'))}" aria-label="${esc(t('common.close'))}" onclick="${onclick}">&#10005;</button>`;
+const windowTools = (close, pop = '') => `<div class="window-tools">${pop}${closeBtn(close)}</div>`;
 const popBtnHtml = kind => popBtn(`popDlg('${esc(kind)}')`, `data-popdlg="${esc(kind)}"`);
 // popNext('kind') just before an openDialog(...) gives that dialog the button (taken by the very next openDialog).
 let popNextKind = '';
@@ -82,7 +84,7 @@ function popAddBtn(kind) {
   if (!kind || inPopDlg() || !POP_DLG[kind]) return;
   // AIG-1120: auto pop-out waits until the caller has finished setting the dialog up, then pops it out if it is still the open one.
   if (popAutoOn()) { const d = $('dialog').firstChild; setTimeout(() => { if (d && $('dialog').firstChild === d) popDlg(kind); }, 0); return; }
-  const d = $('dialog').querySelector('.dialog'); if (d) d.insertAdjacentHTML('afterbegin', popBtnHtml(kind));
+  const d = $('dialog').querySelector('.dialog'); if (d) d.querySelector('.window-tools').insertAdjacentHTML('afterbegin', popBtnHtml(kind));
 }
 // The pop window's page (route #/pop-dlg/<kind>/<slug>): the dialog alone, filling the window; closing it closes the window.
 function renderPopDlg() {

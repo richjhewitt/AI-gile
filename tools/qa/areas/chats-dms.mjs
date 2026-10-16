@@ -25,6 +25,13 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   await page.waitForSelector('#dmList .dm-msg');
   check('their message on the left', /M3U or JSON/.test(await page.textContent('#dmList .dm-msg:not(.mine)')));
   check('typing box defaults to the Lead chat, not the open question (AIG-936)', (await page.inputValue('#dmTarget')) === '_new');
+  // Uploaded screenshots remain images; their contents are not live themed widgets.
+  check('chat screenshot stays an image attachment', await page.evaluate(() => {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = Attach.shown({ attachments: [{ id: 'team-shot', name: 'team.png', type: 'image/png' }] }, 'alpha');
+    const img = wrap.querySelector('.att-shown img');
+    return !!img && img.getAttribute('src') === '/api/projects/alpha/attachments/team-shot' && !wrap.querySelector('.team');
+  }));
   // A general message while a question waits (AIG-285): pick "New message to" in the list.
   await page.selectOption('#dmTarget', '_new');
   await page.fill('#dmText', 'Unrelated: how is the week going?');
@@ -75,19 +82,10 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   const op = await freshChat();
   await op.click(`#dmList .dm-fold-h[data-fold="${c.id}"] .dm-fold-n`);
   await op.waitForSelector(`#dmList .dm-fold.open [data-opencard="${c.id}"]`);
-  check('the open card has a 📂 Open card button and a ⤢ Pop out button', (await op.textContent(`#dmList [data-opencard="${c.id}"]`)).includes('Open card') && (await op.textContent(`#dmList [data-popcard="${c.id}"]`)).includes('Pop out'));
+  check('one chat Pop out, with Open card for the conversation', await op.locator('#dmList [data-popcard]').count() === 0 && await op.locator('#dmPanel .dm-head .dlg-pop').count() === 1);
   await op.click(`#dmList [data-opencard="${c.id}"]`);
   await op.waitForFunction(id => location.hash === '#/p/alpha/' + id, c.id, { timeout: 5000 }).catch(() => {});
   check('📂 Open card opens the card on its board', (await op.evaluate(() => location.hash)) === `#/p/alpha/${c.id}`);
-  const pp = await freshChat();
-  await pp.click(`#dmList .dm-fold-h[data-fold="${c.id}"] .dm-fold-n`);
-  await pp.waitForSelector(`#dmList .dm-fold.open [data-popcard="${c.id}"]`);
-  const popP = ctx.waitForEvent('page');
-  await pp.click(`#dmList [data-popcard="${c.id}"]`);
-  const pop = await popP;
-  await pop.waitForLoadState();
-  await pop.waitForSelector('.panel h2', { timeout: 8000 }).catch(() => {});
-  check('⤢ Pop out opens that card in its own window', pop.url().includes(`#/pop/alpha/${c.id}`) && (await pop.textContent('.panel h2').catch(() => '')) === c.title, pop.url());
   // Card ids in a message are links into the board (format.js linkify, with the project's key).
   await say(s, 'alpha', quick.id, 'Lead', `Also see ${c.id} for the export`);
   const lp = await freshChat();
@@ -95,7 +93,7 @@ def('chats', 'DMs with the team leads: rail with unread counts, chat bubbles, an
   await lp.waitForSelector(`#dmList .dm-fold.open a[href="#/p/alpha/${c.id}"]`, { timeout: 6000 }).catch(() => {});
   check('a card id mentioned in a message is a link to it', (await lp.locator(`#dmList .dm-fold.open .dm-bubble a[href="#/p/alpha/${c.id}"]`).count()) > 0);
   noErrors(page);
-  noErrors(hp); noErrors(op); noErrors(pp);
+  noErrors(hp); noErrors(op);
 }, true);
 
 def('answerbtns', 'answer buttons under each message, picked from what it asks; the team can set its own (AIG-176)', async (s, ctx) => {

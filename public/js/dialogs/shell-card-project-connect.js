@@ -11,6 +11,12 @@ const DLG_FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]):not(
 function dlgFocusables() { return [...$('dialog').querySelectorAll(DLG_FOCUSABLE)].filter(el => el.getClientRects().length && !el.closest('[hidden]')); }
 function openDialog(html, cls = '', pop = '') {   // pop: the kind that gets the shared ⧉ Pop out button (popout.js, AIG-658)
   $('dialog').innerHTML = `<div class="overlay center"><div class="dialog ${cls}">${html}</div></div>`;
+  const boxTools = $('dialog').querySelector('.dialog');
+  // Replace only plain dismissal controls; Cancel and workflow actions keep their meaning.
+  boxTools.querySelectorAll('button[onclick="closeDialog() "],button[onclick="closeDialog()"],button[onclick="closeDialog();"]').forEach(b => {
+    if ([t('common.close'), '\u2715', t('card.close')].includes(b.textContent.trim())) b.remove();
+  });
+  boxTools.insertAdjacentHTML('afterbegin', windowTools('closeDialog()'));
   popAddBtn(pop || popTake());
   const box = $('dialog').querySelector('.dialog');
   if (box) {

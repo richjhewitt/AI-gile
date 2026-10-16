@@ -182,6 +182,12 @@ def('usage', '#/usage renders with and without limits.log', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const page = await openPage(ctx, '#/usage');
   await page.waitForTimeout(800);
+  await page.emulateMedia({ colorScheme: 'light' });
+  for (const theme of ['dark', 'black']) {
+    await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+    check(theme + ' usage palette overrides light system', await page.locator('.uz').evaluate(el => getComputedStyle(el).getPropertyValue('--s1').trim()) === '#3987e5');
+  }
+  await page.evaluate(() => delete document.documentElement.dataset.theme);
   // AIG-356: the nav glance. No reading: a grey dash and no bars.
   check('glance: no reading shows a dash, no bars', (await page.locator('#ugBars .ug-dash').count()) === 1 && (await page.locator('#ugBars .ug-bar').count()) === 0 && /–/.test(await page.textContent('#ugBars')));
   const t1 = await page.textContent('#app');

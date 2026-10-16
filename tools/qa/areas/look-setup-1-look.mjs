@@ -127,6 +127,24 @@ def('theme', 'theme: follows the system, or System / Light / Dark picked in the 
   await page.waitForSelector('#themeBtn');
   const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   const light = await bg();
+  for (const theme of ['light', 'dark', 'black']) {
+    await page.evaluate(theme => {
+      document.documentElement.dataset.theme = theme;
+      openDialog('<h2>Edges</h2><div class="panel">Card</div>');
+    }, theme);
+    check(theme + ' sheets have edges and dimmed backdrop', await page.evaluate(() => {
+      const d = getComputedStyle(document.querySelector('.dialog')), p = getComputedStyle(document.querySelector('.panel'));
+      return d.borderTopWidth === '1px' && p.borderTopWidth === '1px' && d.borderTopColor !== d.backgroundColor && getComputedStyle(document.querySelector('.overlay')).backgroundColor === 'rgba(0, 0, 0, 0.6)';
+    }));
+    await page.setViewportSize({ width: 390, height: 844 });
+    check(theme + ' dialog fits phone', await page.locator('.dialog').evaluate(el => el.getBoundingClientRect().right <= innerWidth));
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.evaluate(() => closeDialog());
+  }
+  await page.evaluate(() => delete document.documentElement.dataset.theme);
+  await page.evaluate(() => openDialog('<h2>Window tools</h2><button onclick="closeDialog()">' + t('common.close') + '</button>', '', 'deleted'));
+  check('one shared Close and Pop out in dialog header', await page.locator('.dialog .window-tools .window-close').count() === 1 && await page.locator('.dialog .window-tools .dlg-pop').count() === 1 && await page.locator('.dialog button[onclick="closeDialog()"]').count() === 1);
+  await page.evaluate(() => closeDialog());
   check('starts on System', !(await page.evaluate(() => document.documentElement.dataset.theme)));
   await page.click('#themeBtn');   // -> Light
   await page.click('#themeBtn');   // -> Dark
