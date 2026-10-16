@@ -17,7 +17,7 @@ const signedWith = (tok, secret) => { const [h, p, sig] = tok.split('.'); return
 const fakeTok = (c, alg = 'HS256') => { const b = x => Buffer.from(JSON.stringify(x)).toString('base64url'), body = b({ alg, typ: 'JWT' }) + '.' + b(c); return body + '.' + crypto.createHmac('sha256', 'x').update(body).digest('base64url'); };
 // AIG-1171: a stand-in for livekit-client in the page, so the call panel's joining, leaving and tiles can be checked without a LiveKit.
 // window.lkHold: connect() waits until the test calls lkLog.rooms[i].ok(); window.lkRoomName: the room name the "server" answers with.
-function stubLivekit() {
+export function stubLivekit() {   // also used by phonefit (AIG-1394)
   const log = window.lkLog = { attach: 0, detach: 0, mic: 0, connects: [], disconnects: 0, rooms: [] };
   class Track { constructor(kind, source) { this.kind = kind; this.source = source; this.els = []; }
     attach() { log.attach++; const v = document.createElement(this.kind === 'audio' ? 'audio' : 'video'); this.els.push(v); return v; }

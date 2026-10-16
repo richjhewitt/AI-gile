@@ -14,7 +14,21 @@ const Call = (() => {
   let lib = null, room = null, title = '', busy = 0, gen = 0, pending = null;
   // AIG-1241/1243/1244/1245: recon = the connection dropped and is coming back; t0 = when the call started (the timer); mini = the panel folded to a pill; tick = the timer's interval; devs = the device picker is open
   let recon = false, t0 = 0, mini = false, tick = 0, devs = false;
+  // AIG-1394: key = which chat this call is for ('meet:<slug>', 'dm:<id>'), so that chat's Join button reads "In the call"
+  let key = '';
   const el = id => document.getElementById(id);
+  // AIG-1394: phone and tablet browsers cannot share a screen, so no Share screen there (touch only, no mouse)
+  const canShare = () => !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) && !(window.matchMedia && matchMedia('(hover: none) and (pointer: coarse)').matches);
+  const inCall = k => !!room && !!k && k === key;
+  // Every Join / Call button for a chat (data-call = its key, data-label = its own text) shows whether you are in that call now.
+  function sync() {
+    document.querySelectorAll('button[data-call]').forEach(b => {
+      const on = inCall(b.dataset.call);
+      b.classList.toggle('incall', on); b.setAttribute('aria-pressed', String(on));
+      b.textContent = on ? t('lkcall.incall') : b.dataset.label || b.textContent;
+      if (on) b.title = t('lkcall.open');
+    });
+  }
   const load = () => lib || (lib = new Promise((ok, no) => {
     if (window.LivekitClient) return ok(window.LivekitClient);
     const s = Object.assign(document.createElement('script'), { src: LIB[0], integrity: LIB[1], crossOrigin: 'anonymous' });
@@ -47,8 +61,8 @@ const Call = (() => {
     const p = panel(), lp = room && room.localParticipant;
     const on = lp ? { mic: lp.isMicrophoneEnabled, cam: lp.isCameraEnabled, screen: lp.isScreenShareEnabled } : {};
     const b = (id, key, act, pressed) => `<button type="button" id="${id}" class="${pressed ? 'on' : ''}" aria-pressed="${!!pressed}" onclick="Call.${act}()">${esc(t(key))}</button>`;
-    const head = `<div class="call-head"${mini ? ' onclick="Call.mini(false)" title="' + esc(t('lkcall.open')) + '"' : ''}><b>📞 ${esc(title)}</b> <span class="muted" id="callState" role="status">${esc(stateText())}</span>${room ? `<span class="muted" id="callTime">${clock()}</span>` : ''}<span style="flex:1"></span><button type="button" id="callMini" class="call-x" aria-expanded="${!mini}" onclick="Call.mini(!${mini})" title="${esc(t(mini ? 'lkcall.open' : 'lkcall.shrink'))}" aria-label="${esc(t(mini ? 'lkcall.open' : 'lkcall.shrink'))}">${mini ? '▢' : '▁'}</button></div>`;
-    const bar = `<div class="call-bar">${b('callMic', on.mic ? 'lkcall.mic.off' : 'lkcall.mic.on', 'mic', on.mic)}${b('callCam', on.cam ? 'lkcall.cam.off' : 'lkcall.cam.on', 'cam', on.cam)}${b('callScreen', on.screen ? 'lkcall.screen.off' : 'lkcall.screen.on', 'screen', on.screen)}<button type="button" id="callDevBtn" class="call-x" aria-pressed="${devs}" aria-label="${esc(t('lkcall.dev'))}" title="${esc(t('lkcall.dev'))}" onclick="Call.devices()">⚙</button><button type="button" id="callLeave" class="bad" onclick="Call.leave()">${esc(t('lkcall.leave'))}</button></div>`;
+    const head = `<div class="call-head"${mini ? ' onclick="Call.mini(false)" title="' + esc(t('lkcall.open')) + '"' : ''}><b class="call-title" title="${esc(title)}">📞 ${esc(title)}</b> <span class="call-sub"><span class="muted" id="callState" role="status">${esc(stateText())}</span>${room ? ` <span class="muted" id="callTime">${clock()}</span>` : ''}</span><span class="call-gap"></span><button type="button" id="callMini" class="call-x" aria-expanded="${!mini}" onclick="Call.mini(!${mini})" title="${esc(t(mini ? 'lkcall.open' : 'lkcall.shrink'))}" aria-label="${esc(t(mini ? 'lkcall.open' : 'lkcall.shrink'))}">${mini ? '▢' : '▁'}</button></div>`;
+    const bar = `<div class="call-bar">${b('callMic', on.mic ? 'lkcall.mic.off' : 'lkcall.mic.on', 'mic', on.mic)}${b('callCam', on.cam ? 'lkcall.cam.off' : 'lkcall.cam.on', 'cam', on.cam)}${canShare() ? b('callScreen', on.screen ? 'lkcall.screen.off' : 'lkcall.screen.on', 'screen', on.screen) : ''}<button type="button" id="callDevBtn" class="call-x" aria-pressed="${devs}" aria-label="${esc(t('lkcall.dev'))}" title="${esc(t('lkcall.dev'))}" onclick="Call.devices()">⚙</button><button type="button" id="callLeave" class="bad" onclick="Call.leave()">${esc(t('lkcall.leave'))}</button></div>`;
     // AIG-1171: the tiles box stays when it is there (its videos keep playing); only the head and the buttons are redrawn
     if (el('callTiles') && p.contains(el('callTiles'))) { p.querySelector('.call-head').outerHTML = head; p.querySelector('.call-bar').outerHTML = bar; }
     else { dropVids(); p.innerHTML = head + '<div class="call-tiles" id="callTiles"></div>' + bar + '<div class="call-devs" id="callDevs"' + (devs ? '' : ' hidden') + '></div><div class="err" id="callErr" role="alert"></div><div class="call-live" id="callLive" aria-live="polite"></div><p class="call-credit muted" id="callCredit">' + esc(t('lkcall.credit', { name: '{name}' })).replace('{name}', chilledChat()) + '</p>'; }
@@ -145,7 +159,7 @@ const Call = (() => {
       const old = room || pending; room = null; pending = null;
       if (old) { try { await old.disconnect(); } catch {} cleanup(); }
       if (g !== gen) return;
-      title = opts.title || ''; paint();
+      title = opts.title || ''; key = opts.key || ''; paint();
       const LK = await load(), tk = await opts.getToken();
       if (g !== gen) return;   // left while the token came
       r = pending = new LK.Room({ adaptiveStream: true, dynacast: true, publishDefaults: { simulcast: true, dtx: true, red: true } });
@@ -162,7 +176,7 @@ const Call = (() => {
       if (g !== gen) { try { await r.disconnect(); } catch {} return; }   // Leave was pressed while connecting: never turn the mic on
       // AIG-1171: the board said which room this token is for; a token for any other room is left before the mic goes on.
       if (tk.room && r.name !== tk.room) { try { await r.disconnect(); } catch {} throw new Error(t('lkcall.wrongroom')); }
-      pending = null; room = r; t0 = Date.now(); recon = false; mini = false; devs = false; if (tick) clearInterval(tick); tick = setInterval(() => { const x = el('callTime'); if (x) x.textContent = clock(); }, 1000); paint();
+      pending = null; room = r; t0 = Date.now(); recon = false; mini = false; devs = false; if (tick) clearInterval(tick); tick = setInterval(() => { const x = el('callTime'); if (x) x.textContent = clock(); }, 1000); paint(); sync();
       try { await r.localParticipant.setMicrophoneEnabled(true); } catch (e) { err(e, 'mic'); }   // no mic (or it was refused): still in the call, listening
       if (g === gen) paint();
       if (opts.swap && !tk.theirs) watch(g, r, opts);
@@ -187,7 +201,7 @@ const Call = (() => {
   const mic = () => toggle(lp => lp.setMicrophoneEnabled(!lp.isMicrophoneEnabled), 'mic');
   const cam = () => toggle(lp => lp.setCameraEnabled(!lp.isCameraEnabled), 'cam');
   const screen = () => toggle(lp => lp.setScreenShareEnabled(!lp.isScreenShareEnabled, { audio: false }), 'screen');
-  function cleanup() { stopTick(); mini = false; devs = false; dropVids(); document.querySelectorAll('.call-audio').forEach(a => a.remove()); const p = el('callPanel'); if (p) { p.hidden = true; p.innerHTML = ''; p.classList.remove('mini'); } }
+  function cleanup() { stopTick(); mini = false; devs = false; dropVids(); document.querySelectorAll('.call-audio').forEach(a => a.remove()); const p = el('callPanel'); if (p) { p.hidden = true; p.innerHTML = ''; p.classList.remove('mini'); } sync(); }
   // Leave also stops a join still on its way: its room is disconnected, and the join sees gen moved on.
   async function leave() { gen++; busy = 0; const r = room || pending; room = null; pending = null; if (r) { try { await r.disconnect(); } catch {} } cleanup(); }
   function close() { if (!room) cleanup(); }
@@ -256,7 +270,7 @@ const Call = (() => {
     try { await api('POST', `/api/calls/dm/${encodeURIComponent(r.id)}/decline`, {}); } catch {}
     repaintChat();
   }
-  return { join, leave, close, note, fresh, missed, ring, answerRing, declineRing, stopRing, get ringMs() { return RING_MS; }, set ringMs(v) { RING_MS = v; }, startAudio, mic, cam, screen, mini: shrink, devices, pick, active: () => !!room, get room() { return room; } };
+  return { join, leave, close, note, fresh, missed, ring, answerRing, declineRing, stopRing, get ringMs() { return RING_MS; }, set ringMs(v) { RING_MS = v; }, startAudio, mic, cam, screen, mini: shrink, devices, pick, active: () => !!room, inCall, sync, canShare, get room() { return room; } };
 })();
 
 /* ---------- 📞 in a friend's DM ---------- */
@@ -266,7 +280,7 @@ async function dmCall(cid, name) {
   let st;
   try { st = await api('GET', `/api/calls/dm/${encodeURIComponent(cid)}`); } catch (e) { return Call.note(t('lkcall.h'), e.message); }
   if (!st.set && !st.invite) return Call.note(t('lkcall.h'), t('lkcall.off'), { href: '#/setup/calls', text: t('lkcall.notset.go') });
-  Call.join({ title: name, getToken: () => api('POST', `/api/calls/dm/${encodeURIComponent(cid)}/token`, {}),
+  Call.join({ title: name, key: 'dm:' + cid, getToken: () => api('POST', `/api/calls/dm/${encodeURIComponent(cid)}/token`, {}),
     swap: async () => (await api('GET', `/api/calls/dm/${encodeURIComponent(cid)}`)).theirs === true });
 }
 
@@ -275,7 +289,7 @@ async function meetingCall(slug, name) {
   let st;
   try { st = await api('GET', `/api/calls/meeting/${encodeURIComponent(slug)}`); } catch (e) { return Call.note(t('lkcall.h'), e.message); }
   if (!st.set) return Call.note(t('lkcall.h'), t('lkcall.off'), { href: '#/setup/calls', text: t('lkcall.notset.go') });
-  Call.join({ title: name, getToken: () => api('POST', `/api/calls/meeting/${encodeURIComponent(slug)}/token`, {}) });
+  Call.join({ title: name, key: 'meet:' + slug, getToken: () => api('POST', `/api/calls/meeting/${encodeURIComponent(slug)}/token`, {}) });
 }
 
 /* ---------- Setup > Calls (LiveKit) ---------- */

@@ -2,6 +2,7 @@
 // QA_SHOTS=<folder> saves a screenshot of each fixed screen as <card>.png (upright) and <card>-landscape.png.
 import path from 'node:path';
 import { check, sleep, tmp, mkProject, mkCard, openPage, BASE, def } from '../lib.mjs';
+import { stubLivekit } from './calls.mjs';
 
 const SIZES = [{ name: '390x844', viewport: { width: 390, height: 844 } }, { name: '844x390', viewport: { width: 844, height: 390 }, land: true }];
 const shot = async (page, card, size) => { if (process.env.QA_SHOTS) await page.screenshot({ path: path.join(process.env.QA_SHOTS, card + (size.land ? '-landscape' : '') + '.png') }); };
@@ -72,6 +73,34 @@ def('phonefit', '📱 phone fixes upright and on its side (390x844, 844x390): la
       const dm = await covered('#dmPanel input[type=search], #dmPanel input');
       check(D + ': Messages covers the Restart strip, its search box is free', dm.under, dm);
       await rp.close();
+
+      /* ---------- AIG-1394: the call panel on a phone ---------- */
+      const cp = await openPage(ctx, '#/');
+      await cp.evaluate(stubLivekit);
+      await cp.evaluate(() => Dms.show('grp:meeting-alpha'));
+      await cp.waitForSelector('#dmMeetBtn', { timeout: 10000 });
+      await cp.evaluate(() => Call.join({ title: 'Meeting Room: AI-gile Messenger - Android', key: 'meet:alpha', getToken: async () => ({ url: 'wss://x', token: 'a.b.c', room: 'r1' }) }));
+      await cp.waitForSelector('#callTime', { timeout: 8000 }); await sleep(300);
+      const call = await cp.evaluate(() => {
+        const box = q => { const e = document.querySelector(q); if (!e) return null; const r = e.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right, h: r.height }; };
+        const st = box('#callState'), ti = box('.call-title'), tm = box('#callTime');
+        const lh = parseFloat(getComputedStyle(document.getElementById('callState')).lineHeight) || 20;
+        const comp = document.querySelector('#dmPanel .dm-compose textarea, #dmPanel .dm-compose input'), cb = comp && comp.getBoundingClientRect();
+        // the message box is free: some point on it is not under the call panel
+        const free = !!cb && [0.15, 0.5, 0.85].some(f => { const x = cb.left + cb.width * f, y = cb.top + Math.min(cb.height / 2, 20); const top = document.elementFromPoint(x, y); return top && !document.getElementById('callPanel').contains(top); });
+        const meet = document.getElementById('dmMeetBtn');
+        return { stateLines: Math.round(st.h / lh), titleOne: ti.h < 34, timeBeside: Math.abs(tm.top - st.top) < 4, free, screen: !!document.getElementById('callScreen'), meet: meet.textContent.trim(), meetIn: meet.classList.contains('incall') };
+      });
+      check(D + ': call head: the title is one line, "1 in the call" one line with the timer beside it (AIG-1394)', call.titleOne && call.stateLines === 1 && call.timeBeside, call);
+      check(D + ': the chat\'s message box stays free to tap during a call', call.free, call);
+      check(D + ': no Share screen on a phone', !call.screen, call);
+      check(D + ': the room\'s Join call button reads In the call while you are in it', call.meetIn && /In the call/.test(call.meet), call);
+      await shot(cp, 'AIG-1394', size);
+      await cp.evaluate(() => document.getElementById('dmMeetBtn').click()); await sleep(200);   // under the panel in portrait: a script click
+      check(D + ': tapping In the call keeps the one call (no second join)', await cp.evaluate(() => lkLog.connects.length === 1 && Call.active()));
+      await cp.evaluate(() => Call.leave()); await sleep(200);
+      check(D + ': after Leave the button is Join call again', await cp.evaluate(() => { const b = document.getElementById('dmMeetBtn'); return /Join call/.test(b.textContent) && !b.classList.contains('incall'); }));
+      await cp.close();
     } finally { await ctx.close().catch(() => {}); }
   }
   { // a short desktop window (no touch) keeps the desktop bar

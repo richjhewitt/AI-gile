@@ -3898,6 +3898,7 @@
  "setup.sec.calls": "Calls",
  "lkcall.h": "📞 Call",
  "lkcall.btn": "📞 Call",
+ "lkcall.incall": "📞 In the call",
  "lkcall.btn.title": "Voice or video call with {name}, with screen share",
  "lkcall.notset": "Calls are not set up yet. To call {name}, AI-gile needs a LiveKit server: your own, or a free LiveKit Cloud project. Open Setup → Calls and paste its address, API key and API secret. If {name} has calls set up, they can call you instead: when they start a call, this button joins it.",
  "lkcall.notset.go": "Open Setup → Calls",
