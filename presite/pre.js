@@ -30,6 +30,17 @@
   pPoll();setInterval(pPoll,60000);
   document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")pPoll()});
 
+  // 🌙 AIG-1388: while Rich is quiet the board's snapshot says night: a line under the people count and the night colours
+  // (data-night on the root, a soft fade in pre.css). Off again when he's back, or when the board can't be reached.
+  var nightEl=$("pre-night"),tc=document.querySelector('meta[name="theme-color"]'),tc0=tc&&tc.content,fadeT=0;
+  function night(on){
+    on=!!on;nightEl.hidden=!on;
+    if(on!==root.hasAttribute("data-night")){root.setAttribute("data-nightfade","");clearTimeout(fadeT);fadeT=setTimeout(function(){root.removeAttribute("data-nightfade")},1000)}
+    if(on)root.setAttribute("data-night","");else root.removeAttribute("data-night");
+    if(tc)tc.content=on?"#0b0605":tc0;
+  }
+  document.addEventListener("live:snap",function(e){night(e.detail&&e.detail.night===true)});
+
   // Behind the glass: the live board when it has cards, else the made-up one
   var live=$("live"),liveCols=$("live-cols"),fake=$("pre-fake"),fcols=$("pre-fake-cols"),peek=$("pre-peek"),t0=Date.now(),mode="";
   var COLS=["backlog","todo","doing","review","verify","team","done"],TYPES=["task","task","feature","feature","bug","incident"],cards=[],timer=0;
@@ -72,5 +83,5 @@
   function check(){if(liveOk())setMode("live");else if(Date.now()-t0>4000||live.classList.contains("off"))setMode("fake")}
   check();setInterval(check,1500);
   SiteI18n.on(function(){if(mode==="fake")draw();if(mode)caption(mode==="fake"?"pre.peekFake":"pre.peek")});
-  window.__pre={mode:function(){return mode},step:step};
+  window.__pre={mode:function(){return mode},step:step,night:function(){return root.hasAttribute("data-night")}};
 })();

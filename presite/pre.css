@@ -41,5 +41,13 @@ body.pre{min-height:100vh;min-height:100dvh}
 .pre-card .people-count{margin-top:14px}
 .pre-peek{margin:0;max-width:34rem;text-align:center;font-size:14px;color:var(--text);padding:4px 14px;border-radius:999px;background:color-mix(in srgb,var(--bg) 88%,transparent)}
 .pre-foot{border-top:0;margin:0;padding:4px 0;text-align:center;color:var(--text);background:none}
+/* 🌙 Night (AIG-1388): while Rich is quiet the board says so; the app's night colours, near-black and red-tinted, faded in softly.
+   html:root[...] beats every theme rule of style.css (light, dark, black), so night wins whichever the visitor picked. */
+.pre-night{margin:10px 0 0;font-size:15px;color:var(--text)}
+html:root[data-night]{--bg:#0b0605;--surface:#140b09;--raised:#140b09;--hover:#1f120e;--line:#2a1712;--text:#c08a78;--muted:#8a5e50;
+  --accent:#8f4a24;--accent-hover:#a8622c;--on-accent:#f3dccf;--diamond:#a8483a;--focus:#b8782e;--shadow-lg:0 12px 32px rgba(0,0,0,.85);color-scheme:dark}
+html:root[data-night] .live{--c-bug:#a8483a;--c-task:#8f5a4a;--c-feat:#7a5240;--c-inc:#b8782e;--c-done:#7f8a3a;--c-mute:#6e4a40}
+/* the fade runs only while night turns on or off (data-nightfade, set by pre.js for a second), so a theme click stays instant */
+html[data-nightfade] :is(body.pre,.pre-card,.pre-bar,.pre-peek,.pre-foot,.pre-line,.pre-night,.pre-btn,.toggle,.lang-btn,.lv-col,.lv-col h3){transition:background-color .9s ease,color .9s ease,border-color .9s ease}
 @media (max-width:480px){.pre-card{padding:24px 18px}.pre-bar{padding:8px 10px;margin-bottom:10px}}
-@media (prefers-reduced-motion:reduce){.pre-sheet{animation:none}}
+@media (prefers-reduced-motion:reduce){.pre-sheet{animation:none}html[data-nightfade] :is(body.pre,.pre-card,.pre-bar,.pre-peek,.pre-foot,.pre-line,.pre-night,.pre-btn,.toggle,.lang-btn,.lv-col,.lv-col h3){transition:none}}

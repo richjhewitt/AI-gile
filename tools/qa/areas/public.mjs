@@ -5,7 +5,7 @@ import { freePort, startRelay, startServer, until, check, sleep, mkProject, mkCa
 
 const DESC = 'TOP-SECRET-DESCRIPTION', CMT = 'TOP-SECRET-COMMENT';
 
-def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> page + JSON + live events, a card move reaches viewers, Private deletes it, another key cannot take the name, Copy public link + viewer count (AIG-602..605)', async (s, ctx) => {
+def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> page + JSON + live events, a card move reaches viewers, Private deletes it, another key cannot take the name, Copy public link + viewer count (AIG-602..605), 🌙 night flag while quiet (AIG-1388)', async (s, ctx) => {
   const relay = await startRelay();
   const b = await startServer({ AIGILE_DM_POLL_MS: '300', AIGILE_PUBLIC_MS: '300' }, await freePort());
   let reader;
@@ -91,6 +91,16 @@ def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> pa
     await until(async () => (await json()).body.cards.some(c => c.title === 'Fix the login'), 10000);
     await s.ok('PATCH', `/api/projects/pub-board/cards/${a.id}`, { status: 'review' });
     await view.waitForSelector('.c[data-id="' + a.id + '"][data-col="review"]', { timeout: 10000 });
+
+    // 🌙 AIG-1388: while the owner is quiet the snapshot says night (a plain flag, nothing private), and not once he's back
+    check('not quiet: no night flag in the snapshot', !('night' in (await json()).body));
+    await s.ok('POST', '/api/quiet', { on: true, watch: [] });
+    check('going quiet sends the snapshot on with night: true', !!(await until(async () => (await json()).body.night === true, 10000)), (await json()).body.night);
+    const nj = (await json()).body;
+    check('...and nothing else about the quiet (no time, no reason)', !/quiet|since|until|watch/i.test(JSON.stringify({ ...nj, cards: [], team: [] })) && Object.keys(nj).every(k => ['v', 'title', 'at', 'titlesHidden', 'night', 'color', 'columns', 'cards', 'team', 'name', 'viewers'].includes(k)), Object.keys(nj));
+    await sleep(2100);   // the relay takes one publish every 2 s
+    await s.ok('POST', '/api/quiet', { on: false }); const offAt = new Date().toISOString();
+    check('back from quiet: the night flag is gone again', !!(await until(async () => !('night' in (await json()).body), 10000)), [(await json()).body.night, (await json()).body.at, offAt, await s.ok('GET', '/api/projects/pub-board/public')]);
 
     // The board: Copy public link and viewers
     const page = await openPage(ctx, '#/p/pub-board');
