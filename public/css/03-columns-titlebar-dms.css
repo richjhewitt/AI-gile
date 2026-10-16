@@ -306,9 +306,3 @@ body.poptwitch { padding: 0; } body.poptwitch main { display: none; }
 .space-kids > .grid { display: contents; }
 .proj .last:has(button) { white-space: normal; overflow: visible; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 .proj .last button { flex-shrink: 0; }
-
-/* Phones: the window close and pop out buttons and Add a friend are a 40px tap area (AIG-1455). */
-@media (max-width: 600px), (max-height: 500px) and (pointer: coarse) {
-  .window-tools .dlg-pop, .window-tools .window-close { min-height: 40px; min-width: 40px; }
-  .dm-newgroup { display: inline-flex; align-items: center; min-height: 40px; padding-block: 0; }
-}

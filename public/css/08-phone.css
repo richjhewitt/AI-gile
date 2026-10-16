@@ -74,6 +74,8 @@
   .toolbar .tb-dots { min-height: 40px; }
   .colbtn, .urg-btn, .card .urg-btn { min-width: 40px; }
   .dm-head button, .dm-rowx { min-width: 40px; }
+  .window-tools .dlg-pop, .window-tools .window-close { min-height: 40px; min-width: 40px; }   /* AIG-1467: the ✕ beats the 30px desktop rule; the same width as the rest of the touch area */
+  .dm-newgroup { display: inline-flex; align-items: center; min-height: 40px; padding-block: 0; }   /* 💬 Add a friend */
 }
 @media (hover: none) { .dm-rowx { opacity: .7; } }
 
