@@ -22,8 +22,12 @@ const Dms = (() => {
   const chatName = c => c.noAi ? t('sm.noai.name') : c.watchman ? t('sm.name') : c.name;
   const badge = n => n ? `<span class="dm-unread">${n > 99 ? '99+' : n}</span>` : '';
   // AIG-1375: the rail's Inbox button count, updated in place whenever the inbox list changes.
+  // The first inbox answer usually lands before the rail's own reads finish (projects, chats, contacts...), so an empty rail
+  // gets its fixed top (Home, Inbox, Messages) at once and the count lands with the board and the top bar pill; the full paint replaces it.
   function inboxCount() {
-    const b = document.querySelector('#dmRail [data-go="#/inbox"]'); if (!b || typeof IB === 'undefined') return;
+    if (typeof IB === 'undefined') return;
+    const r = el('dmRail'); if (r && !r.firstChild && typeof i18n !== 'undefined' && i18n.ready) r.innerHTML = railTop(0);
+    const b = document.querySelector('#dmRail [data-go="#/inbox"]'); if (!b) return;
     const html = badge((IB.items || []).length + IB.friends()), cur = b.querySelector('.dm-unread');
     if ((cur ? cur.outerHTML : '') === html) return;
     if (cur) cur.remove(); if (html) b.insertAdjacentHTML('beforeend', html);
@@ -71,6 +75,11 @@ const Dms = (() => {
   document.addEventListener('dragend', () => { if (!dragging) return; dragging = null; const r = railEl(); if (r) { r.querySelectorAll('.dragging,.drop-before,.drop-after,.drop-into').forEach(x => x.classList.remove('dragging', 'drop-before', 'drop-after', 'drop-into')); r.dataset.sig = ''; } loadRail(); });
   document.addEventListener('contextmenu', e => { const b = e.target.closest && e.target.closest('#dmRail [data-slug]'); if (!b) return; e.preventDefault(); Spaces.menu(b.dataset.slug); });
 
+  const btn = (attrs, inner, on, title) => `<button class="dm-railbtn ${on ? 'on' : ''}" ${attrs} title="${esc(title)}" aria-label="${esc(title)}">${inner}</button>`;
+  // The rail's fixed top: Home, Inbox (what waits on you) and Messages (unread DMs).
+  const railTop = dmUnread => btn('data-go="#/"', '<span class="dm-av">🏠</span>', location.hash === '#/' || location.hash === '', t('dms.home'))
+    + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
+    + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, t('dms.rail.label'));
   async function loadRail() {
     if (!i18n.ready) return void setTimeout(loadRail, 100);
     let nightWatch;
@@ -93,10 +102,7 @@ const Dms = (() => {
     const dmUnread = chats.reduce((n, c) => n + c.unread, 0) + groups.concat(meets).reduce((n, g) => n + grpUnread(g), 0) + people.reduce((n, c) => n + c.unread, 0) + DiscordTab.unread();
     // AIG-1274: the desktop app's taskbar count = For you (the inbox) + unread messages; nothing while going quiet or focusing (like the tab title)
     if (window.aigileDesktop && aigileDesktop.setBadge) { const H = document.documentElement; aigileDesktop.setBadge(H.hasAttribute('data-night') || H.hasAttribute('data-focus') || typeof IB === 'undefined' ? 0 : (IB.items || []).length + IB.friends() + dmUnread); }
-    const btn = (attrs, inner, on, title) => `<button class="dm-railbtn ${on ? 'on' : ''}" ${attrs} title="${esc(title)}" aria-label="${esc(title)}">${inner}</button>`;
-    const html = btn('data-go="#/"', '<span class="dm-av">🏠</span>', location.hash === '#/' || location.hash === '', t('dms.home'))
-      + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
-      + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, t('dms.rail.label'))
+    const html = railTop(dmUnread)
       + '<div class="dm-sep"></div>'
       + railTree(onlyNightProjects(TodayPage.only(Swarm.only(projects.filter(x => !x.archived))), nightWatch), cur, btn)   // 🚨 swarm: only that project (AIG-880)
       // AIG-324: each project a friend shares with me, as its own board.
