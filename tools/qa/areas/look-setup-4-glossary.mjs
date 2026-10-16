@@ -29,6 +29,12 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
   const marked = await page.$$eval('abbr.devw', e => e.filter(x => /shows red after/.test(x.parentElement.textContent)).map(x => x.textContent.replace(/\s+/g, ' ').toLowerCase()));
   check('multi-word terms are underlined as one, the longest wins ("Major incident", not just "incident"; "status page")', marked.join() === 'major incident,status page,backup', marked);
   check('...with the plain explanation of the longer term', (await page.$$eval('abbr.devw', e => (e.find(x => /^major\s+incident$/i.test(x.textContent)) || {}).title)) === en['gloss.major.text']);
+  // AIG-1335: the newer service words get a tip too
+  await mkCard(s, 'alpha', 'Tidy the service desk before the access review', { status: 'todo' });
+  await page.goto(BASE + '/#/p/alpha'); await page.waitForSelector('.board');
+  await page.waitForFunction(() => [...document.querySelectorAll('abbr.devw')].some(a => /access review/i.test(a.textContent)), null, { timeout: 5000 }).catch(() => {});
+  const svc = await page.$$eval('abbr.devw', e => e.filter(x => /before the/.test(x.parentElement.textContent)).map(x => [x.textContent.replace(/\s+/g, ' ').toLowerCase(), x.title]));
+  check('newer service words (service desk, access review) are underlined with their plain explanation', svc.map(x => x[0]).join() === 'service desk,access review' && svc[0][1] === en['gloss.desk.text'] && svc[1][1] === en['gloss.accessreview.text'], svc);
   await page.goto(BASE + '/#/glossary'); await page.waitForSelector('.gloss-item');
   const g = await page.evaluate(() => ({
     hs: [...document.querySelectorAll('.gloss h2, .gloss h3')].map(h => h.tagName + ':' + h.textContent),
@@ -41,7 +47,7 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
   }));
   check('the glossary has 45+ words in four groups, each under its own h3 after the page h2', g.n >= 45 && g.loose === 0 && g.groups.join() === 'build,change,run,team' && g.labelled && g.hs[0] === 'H2:' + en['gloss.title'] && g.hs.slice(1).every(h => h.startsWith('H3:')) && g.hs.length === 5, g);
   check('a status line says how many words there are', g.status === 'status' && g.count === g.n + ' words', g);
-  for (const id of ['service', 'uptime', 'statuspage', 'incident', 'major', 'problem', 'change', 'risk', 'oncall', 'replyby', 'postmortem', 'backup', 'restore', 'release', 'rollback', 'live', 'swarm', 'peerreview', 'retro', 'dod', 'testpile'])
+  for (const id of ['service', 'uptime', 'statuspage', 'incident', 'major', 'problem', 'change', 'risk', 'oncall', 'replyby', 'postmortem', 'backup', 'restore', 'release', 'rollback', 'live', 'swarm', 'peerreview', 'retro', 'dod', 'testpile', 'ci', 'desk', 'svcrequest', 'svcreview', 'accessreview', 'improvements', 'expiry', 'tokencap'])
     if (!(await page.locator(`.gloss-item[data-id="${id}"]`).count())) check('the word ' + id + ' is in the glossary', false);
   await page.focus('#glossQ'); await page.keyboard.type('incident');
   const hit = await page.evaluate(() => ({ ids: [...document.querySelectorAll('.gloss-item:not([hidden])')].map(x => x.dataset.id), groups: [...document.querySelectorAll('.gloss-group:not([hidden])')].map(x => x.dataset.group), count: document.getElementById('glossCount').textContent }));

@@ -98,4 +98,25 @@ def('statuspage', '🟢 status page: public services reach the relay /status.jso
   check('no services says All quiet', await p2.$eval('#quiet', e => !e.hidden && e.textContent.trim() === 'All quiet') && (await p2.$$('#list li')).length === 0);
   check('the teaser footer links to Status', /<footer>[^]*href="status.html"[^]*<\/footer>/.test(fs.readFileSync(path.join(ROOT, 'site', 'index.html'), 'utf8')));
   await page.close(); await p2.close();
+  // AIG-1334: the saved teaser theme before first paint, the same theme button, and Checking… in the page language from the start
+  const themed = async (theme, lang, scheme) => {
+    const p = await ctx.newPage(); const errs = []; p.on('pageerror', e => errs.push(e.message));
+    await p.emulateMedia({ colorScheme: scheme });
+    await p.addInitScript(([t, l]) => { try { localStorage.setItem('aigile-site-theme', t); if (l) localStorage.setItem('aigile-site-lang', l); } catch {} window.fetch = () => new Promise(() => {}); }, [theme, lang]);
+    await p.goto(url); await sleep(400); p.errs = errs; return p;
+  };
+  const bg = p => p.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  const pb = await themed('black', 'nl', 'light');
+  check('saved Black: true black page even when the system is light', (await bg(pb)) === 'rgb(0, 0, 0)' && await pb.evaluate(() => document.documentElement.hasAttribute('data-black')), await bg(pb));
+  check('Checking… is in the page language before the first answer (nl: Controleren…)', (await pb.textContent('#msg')).trim() === 'Controleren…', await pb.textContent('#msg'));
+  await pb.click('#theme');
+  check('the theme button goes Black -> light and saves it', (await bg(pb)) === 'rgb(246, 247, 249)' && await pb.evaluate(() => localStorage.getItem('aigile-site-theme')) === 'light');
+  await pb.click('#theme');
+  check('...then dark', (await bg(pb)) === 'rgb(18, 21, 27)' && await pb.evaluate(() => localStorage.getItem('aigile-site-theme')) === 'dark');
+  const pl = await themed('light', 'en', 'dark');
+  check('saved light wins over a dark system; English says Checking…', (await bg(pl)) === 'rgb(246, 247, 249)' && (await pl.textContent('#msg')).trim() === 'Checking…');
+  await pl.setViewportSize({ width: 390, height: 700 });
+  check('phone width: theme button and language button fit, no sideways scroll', await pl.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.getElementById('theme').getBoundingClientRect().right <= innerWidth));
+  check('no page errors on the themed pages', pb.errs.length === 0 && pl.errs.length === 0, [pb.errs, pl.errs]);
+  await pb.close(); await pl.close();
 }, true);

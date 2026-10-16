@@ -7,8 +7,9 @@
 const GLOSS_GROUPS = {
   build: ['repo', 'branch', 'commit', 'push', 'merge', 'pr', 'refactor', 'bug', 'test', 'qa'],
   change: ['deploy', 'release', 'rollback', 'live', 'change', 'risk', 'chgwin', 'gonogo', 'approval', 'quiettime'],
-  run: ['service', 'uptime', 'statuspage', 'incident', 'major', 'oncall', 'replyby', 'postmortem', 'problem', 'rootcause',
-    'workaround', 'knownerror', 'runbook', 'backup', 'restore'],
+  run: ['service', 'uptime', 'statuspage', 'desk', 'svcrequest', 'incident', 'major', 'oncall', 'replyby', 'postmortem', 'problem',
+    'rootcause', 'workaround', 'knownerror', 'runbook', 'ci', 'expiry', 'backup', 'restore', 'svcreview', 'accessreview',
+    'improvements', 'tokencap'],
   team: ['backlog', 'sprint', 'standup', 'kanban', 'wip', 'dod', 'testpile', 'retro', 'peerreview', 'swarm', 'scrummaster',
     'agent', 'token', 'hook'],
 };
@@ -16,7 +17,7 @@ const GLOSSARY = Object.values(GLOSS_GROUPS).flat();
 // Words on every screen, or everyday words with a special meaning here, would be underlined everywhere:
 // they stay in the glossary but get no tooltip.
 const NO_TIP = ['test', 'live', 'change', 'problem'];
-const NO_AI_SKIP = ['agent', 'token', 'hook', 'peerreview'];   // AIG-821: words about AI agents, left out in No AI mode
+const NO_AI_SKIP = ['agent', 'token', 'hook', 'peerreview', 'tokencap'];   // AIG-821: words about AI agents, left out in No AI mode
 const glossNoAi = () => typeof NoAi !== 'undefined' && NoAi.on;
 const glossFold = s => { s = String(s || '').toLowerCase(); try { s = s.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch {} return s; };
 const glossAlso = id => { const a = t('gloss.' + id + '.also'); return a && !String(a).startsWith('gloss.') ? String(a).split(',').map(x => x.trim()).filter(Boolean) : []; };

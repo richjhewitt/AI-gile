@@ -4,12 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title data-i18n="status.title">AI-gile status</title>
+<script>
+try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark"||t==="black")document.documentElement.setAttribute("data-theme",t==="black"?"dark":t);if(t==="black")document.documentElement.setAttribute("data-black","")}catch(e){}
+</script>
 <script src="lang/languages.js"></script>
 <script src="lang/en.js"></script>
 <script src="i18n.js"></script>
 <style>
-:root{color-scheme:light dark;--bg:#f6f7f9;--card:#fff;--text:#1d2330;--muted:#677085;--line:#dde1e8}
-@media (prefers-color-scheme:dark){:root{--bg:#12151b;--card:#20262f;--text:#e6e9ef;--muted:#8b93a7;--line:#2a303c}}
+/* AIG-1334: the teaser themes (site/style.css): light, dark, and Black on top of dark; the saved choice is set before first paint */
+:root{color-scheme:light;--bg:#f6f7f9;--card:#fff;--surface:#eef0f3;--hover:#e4e8ee;--text:#1d2330;--muted:#677085;--line:#dde1e8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#12151b;--card:#20262f;--surface:#1b2029;--hover:#262c37;--text:#e6e9ef;--muted:#8b93a7;--line:#2a303c}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#12151b;--card:#20262f;--surface:#1b2029;--hover:#262c37;--text:#e6e9ef;--muted:#8b93a7;--line:#2a303c}
+:root[data-black]{--bg:#000;--card:#111;--surface:#0a0a0a;--hover:#171717;--line:#222;--muted:#8a8f99}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:640px;margin:0 auto;padding:24px 16px}
@@ -23,7 +29,9 @@ li{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);bor
 .intro{color:var(--muted);margin:-8px 0 16px}
 #msg{color:var(--muted);padding:20px 0;text-align:center;font-size:18px}
 #quiet{color:var(--muted);padding:20px 0;text-align:center;font-size:18px}
-.top{display:flex;justify-content:flex-end;margin:0 0 8px}
+.top{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin:0 0 8px}
+.toggle{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:999px;width:44px;height:44px;font-size:20px;cursor:pointer;line-height:1}
+.toggle:hover{background:var(--hover)}
 footer{margin-top:20px;font-size:14px;color:var(--muted)}
 a{color:inherit}
 [hidden]{display:none!important}
@@ -31,15 +39,24 @@ a{color:inherit}
 </head>
 <body>
 <main>
-<div class="top"><span id="lang-slot"></span></div>
+<div class="top"><span id="lang-slot"></span><button class="toggle" id="theme" type="button" aria-label="Switch between light and dark theme" data-i18n-attr="aria-label:theme.aria">&#9788;</button></div>
 <h1 data-i18n="status.h1">AI-gile status</h1>
 <p class="intro" data-i18n="status.intro">Is AI-gile working right now? This page checks the website, board sharing, calls and the download every 5 minutes.</p>
 <ul id="list"></ul>
 <p id="quiet" hidden data-i18n="status.quiet">All quiet</p>
-<p id="msg" role="status">Checking…</p>
+<p id="msg" role="status" data-i18n="status.checking">Checking…</p>
 <footer><a href="index.html">AI-gile</a></footer>
 </main>
 <script>
+(function(){
+  // The teaser's theme button (site/index.html, AIG-1301): light, dark, then Black; it shows the next one
+  var root=document.documentElement,b=document.getElementById("theme");
+  function cur(){if(root.hasAttribute("data-black"))return"black";var t=root.getAttribute("data-theme");if(t)return t;return matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+  var NEXT={light:"dark",dark:"black",black:"light"},ICON={dark:"&#9790;",black:"&#9673;",light:"&#9728;"},TIP={dark:"theme.toDark",black:"theme.toBlack",light:"theme.toLight"};
+  function paint(){var n=NEXT[cur()];b.innerHTML=ICON[n];b.title=SiteI18n.t(TIP[n])}
+  b.addEventListener("click",function(){var n=NEXT[cur()];root.setAttribute("data-theme",n==="black"?"dark":n);if(n==="black")root.setAttribute("data-black","");else root.removeAttribute("data-black");try{localStorage.setItem("aigile-site-theme",n)}catch(e){}paint()});
+  SiteI18n.on(paint);
+})();
 (function(){
   var URL_="https://relay.aigile.lol/status.json",POLL_MS=60000,DOT={green:"\uD83D\uDFE2",amber:"\uD83D\uDFE0",red:"\uD83D\uDD34"};
   var list=document.getElementById("list"),quiet=document.getElementById("quiet"),msg=document.getElementById("msg");
