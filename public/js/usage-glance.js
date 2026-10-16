@@ -20,14 +20,19 @@ const UsageGlance = (() => {
     paintHome();
     const el = document.getElementById('ugBars'), a = document.getElementById('usageNav'); if (!el || !a) return;
     const nt = NoTokens.on, l = d && d.latest, h5 = l ? left(l.h5) : null, wk = l ? left(l.wk) : null;
-    const sv = d && d.saving, key = JSON.stringify([h5, wk, l && l.at, nt, d && d.over, sv, i18n.lang, Math.floor(Date.now() / 60e3)]);
+    const sv = d && d.saving, eng = (d && d.engines) || [], key = JSON.stringify([h5, wk, l && l.at, nt, d && d.over, sv, eng, i18n.lang, Math.floor(Date.now() / 60e3)]);
     if (key === shown) return; shown = key;
     const nothing = h5 == null && wk == null, pc = v => v == null ? '–' : v + '%';
     const bar2 = document.getElementById('saverBar');   // 💾 usage saver (AIG-550)
     if (bar2) { bar2.hidden = !sv; bar2.textContent = sv ? t('saver.banner', { pct: sv.pct, name: sv.name, save: sv.save }) : ''; }
-    el.innerHTML = (nothing ? '<span class="ug-dash">–</span>' : `<span class="ug-bars">${bar(h5)}${bar(wk)}</span>`)
+    // AIG-1340: today's board runs by engine: a third mini bar split by engine colour once anything but Claude ran today.
+    const by = Object.fromEntries(eng.map(e => [e.engine, e.today])), list = EngUse.used(by), sum = list.reduce((a, e) => a + by[e], 0);
+    const mixed = list.some(e => e !== 'claude') && sum > 0;
+    const engBar = mixed ? `<i class="ug-eng">${list.map(e => `<b data-eng="${e}" style="--c:${EngUse.col(e)};width:${(by[e] / sum * 100).toFixed(1)}%"></b>`).join('')}</i>` : '';
+    el.innerHTML = (nothing ? '<span class="ug-dash">–</span>' + (engBar ? `<span class="ug-bars">${engBar}</span>` : '') : `<span class="ug-bars">${bar(h5)}${bar(wk)}${engBar}</span>`)
       + (nt ? '<span class="ug-nt">⛔</span>' : '') + (d && d.over ? '<span class="ug-dot"></span>' : '');
     const tips = [nothing ? t('ug.none') : t('ug.title', { h5: pc(h5), wk: pc(wk), when: ago(l.at) })];
+    if (list.length) tips.push(t('ug.eng', { list: EngUse.split(by, fmtTok) }));
     if (nt) tips.push(t('ug.nt'));
     if (d && d.over) tips.push(t('ug.over'));
     a.title = tips.join('\n');

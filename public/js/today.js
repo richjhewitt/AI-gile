@@ -2,6 +2,25 @@
    One weight per project for today: 🔥 high, normal, 🐢 low or 💤 rest. They reset each morning; "Keep yesterday's" brings them
    back. The server (lib/today.js) orders the Scrum Master and the night watchman by it and splits the day's tokens by it.
    Not the 🎯 focus mode (focus.js): that one is a calm screen for a single task. */
+// AIG-1340: the AI engines' colours and names, shared by the today bars, the Usage page and the nav glance (CSS --eng-<id>).
+const EngUse = (() => {
+  const ORDER = ['claude', 'codex', 'gemini', 'copilot', 'cursor'];
+  const E = { ORDER };
+  E.col = e => `var(--eng-${ORDER.includes(e) ? e : 'claude'})`;
+  E.name = e => t('eng.' + (ORDER.includes(e) ? e : 'claude'));
+  E.sort = list => [...list].sort((a, b) => ORDER.indexOf(a) - ORDER.indexOf(b));
+  // by: { engine: n } -> the engines with use, in the fixed order
+  E.used = by => E.sort(Object.keys(by || {}).filter(e => by[e] > 0));
+  // One bar's segments: `width` % of the track, split by engine. A bar with no split (old rows) is all Claude.
+  E.segs = (by, total, width, cls = '') => {
+    const list = E.used(by), sum = list.reduce((a, e) => a + by[e], 0);
+    if (!sum || !total) return `<i class="eng ${cls}" data-eng="claude" style="--c:${E.col('claude')};width:${width}%"></i>`;
+    return list.map(e => `<i class="eng ${cls}" data-eng="${e}" style="--c:${cls ? 'var(--danger)' : E.col(e)};width:${(width * by[e] / sum).toFixed(2)}%"></i>`).join('');
+  };
+  E.split = (by, fmt) => E.used(by).map(e => `${E.name(e)} ${fmt(by[e])}`).join(' · ');
+  E.legend = engines => engines.length ? `<div class="eng-legend" aria-label="${esc(t('engines.legend'))}">${E.sort(engines).map(e => `<span data-eng="${e}"><i style="--c:${E.col(e)}"></i>${esc(E.name(e))}</span>`).join('')}</div>` : '';
+  return E;
+})();
 const TodayPage = (() => {
   const T = { data: null };
   const ICON = { high: '🔥', normal: '', low: '🐢', rest: '💤' };
@@ -55,13 +74,16 @@ const TodayPage = (() => {
     const left = d.left || [], on = d.projects.filter(p => p.weight !== 'rest' && !left.includes(p.slug)), rest = d.projects.length - on.length;
     const restLine = rest ? `<div class="muted today-restsum">${esc(t('today.hidden', { n: rest }))} <a href="#/today">${esc(t('today.link'))}</a></div>` : '';
     // AIG-1317: with no daily limit the share caps nothing, so show what each project really used today, biggest first
+    // AIG-1340: every engine's runs count; each bar is split by engine colour, with a small legend under the bars.
+    const engines = [...new Set(on.flatMap(p => EngUse.used(p.by)))], legend = on.some(p => p.used) ? EngUse.legend(engines.length ? engines : ['claude']) : '';
+    const tip = (p, line) => esc(line + (EngUse.used(p.by).length ? ' · ' + EngUse.split(p.by, fmt) : ''));
     if (!d.limit) {
       const total = on.reduce((a, p) => a + (p.used || 0), 0) || 1, rows = [...on].sort((a, b) => (b.used || 0) - (a.used || 0));
-      return `<div class="uz-card today-usage"><div class="uz-tile-h">${esc(t('today.usage.used.h'))}</div>${restLine && !on.length ? restLine : ''}${rows.map(p => { const pc = Math.round((p.used || 0) / total * 100), line = esc(t('today.usedonly', { used: fmt(p.used || 0), pct: pc })); return `<div class="today-bar"><span class="today-bn">${T.icon(p.weight)} ${esc(p.name)}</span>
-      <span class="today-track" title="${line}"><i style="width:${pc}%"></i></span><span class="muted today-bv">${line}</span></div>`; }).join('')}${on.length ? restLine : ''}</div>`;
+      return `<div class="uz-card today-usage"><div class="uz-tile-h">${esc(t('today.usage.used.h'))}</div>${restLine && !on.length ? restLine : ''}${rows.map(p => { const pc = Math.round((p.used || 0) / total * 100), raw = t('today.usedonly', { used: fmt(p.used || 0), pct: pc }), line = esc(raw); return `<div class="today-bar" data-slug="${esc(p.slug)}"><span class="today-bn">${T.icon(p.weight)} ${esc(p.name)}</span>
+      <span class="today-track" title="${tip(p, raw)}">${EngUse.segs(p.by, p.used, pc)}</span><span class="muted today-bv">${line}</span></div>`; }).join('')}${legend}${on.length ? restLine : ''}</div>`;
     }
-    return `<div class="uz-card today-usage"><div class="uz-tile-h">${esc(t('today.usage.h'))}</div>${restLine && !on.length ? restLine : ''}${on.map(p => `<div class="today-bar"><span class="today-bn">${T.icon(p.weight)} ${esc(p.name)}</span>
-      <span class="today-track" title="${esc(T.line(p).replace(/<[^>]+>/g, ''))}"><i class="${p.over ? 'over' : ''}" style="width:${Math.min(100, p.pct)}%"></i></span><span class="muted today-bv">${T.line(p)}</span></div>`).join('')}${on.length ? restLine : ''}</div>`;
+    return `<div class="uz-card today-usage"><div class="uz-tile-h">${esc(t('today.usage.h'))}</div>${restLine && !on.length ? restLine : ''}${on.map(p => `<div class="today-bar" data-slug="${esc(p.slug)}"><span class="today-bn">${T.icon(p.weight)} ${esc(p.name)}</span>
+      <span class="today-track" title="${tip(p, T.line(p).replace(/<[^>]+>/g, ''))}">${EngUse.segs(p.by, p.used, Math.min(100, p.pct), p.over ? 'over' : '')}</span><span class="muted today-bv">${T.line(p)}</span></div>`).join('')}${legend}${on.length ? restLine : ''}</div>`;
   };
   // AIG-829: the morning picker (setup switch "Pick today's projects at start-up"): a small dialog on the first open of the day.
   let askedDay = '';   // the day (as the server counts it) the picker was last shown for: a board left open overnight asks again next morning

@@ -25,6 +25,9 @@
 .ug-bar b { display: block; height: 100%; border-radius: 99px; }
 .ug-bar.g b { background: #0ca30c; } .ug-bar.a b { background: #fab219; } .ug-bar.r b { background: #d03b3b; }
 .ug-dash { color: var(--muted, #888); }
+/* AIG-1340: today's board runs split by engine colour, when more than Claude ran */
+.ug-eng { display: inline-flex; width: 26px; height: 5px; border-radius: 99px; overflow: hidden; background: var(--line); }
+.ug-eng b { display: block; height: 100%; background: var(--c); }
 .ug-dot { width: 8px; height: 8px; border-radius: 50%; background: #d03b3b; display: inline-block; }
 
 /* 💾 Usage saver (AIG-548..550): a slim banner under the top bar, and the ⭐ crucial toggle and chip. */
