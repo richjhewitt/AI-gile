@@ -8,7 +8,18 @@ function dlgTwin(d) {
   return [...document.querySelectorAll(d.tag.toLowerCase())].find(x => x.className === d.cls && (x.textContent || '').trim() === d.txt && (x.getAttribute('title') || '') === d.title) || null;
 }
 const DLG_FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])';
-function dlgFocusables() { return [...$('dialog').querySelectorAll(DLG_FOCUSABLE)].filter(el => el.getClientRects().length && !el.closest('[hidden]')); }
+// The shared focus helpers (AIG-1423): the card panel and the Messages panel keep Tab inside them the same way a dialog does.
+function focusablesIn(box) { return box ? [...box.querySelectorAll(DLG_FOCUSABLE)].filter(el => el.getClientRects().length && !el.closest('[hidden]')) : []; }
+function dlgFocusables() { return focusablesIn($('dialog')); }
+// Tab and Shift+Tab go round inside box; from outside it they land on its first control. home: what takes focus when it has none (the box itself).
+function trapTab(e, box, home = box) {
+  const els = focusablesIn(box);
+  if (!els.length) { e.preventDefault(); home.focus(); return; }
+  const first = els[0], last = els[els.length - 1], a = document.activeElement;
+  if (!box.contains(a)) { e.preventDefault(); first.focus(); }
+  else if (e.shiftKey && (a === first || a === home)) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+}
 function openDialog(html, cls = '', pop = '') {   // pop: the kind that gets the shared ⧉ Pop out button (popout.js, AIG-658)
   $('dialog').innerHTML = `<div class="overlay center"><div class="dialog ${cls}">${html}</div></div>`;
   const boxTools = $('dialog').querySelector('.dialog');
@@ -40,12 +51,7 @@ document.addEventListener('keydown', e => {
   if (!$('dialog').firstChild) return;
   if (e.key === 'Escape') { closeDialog(); return; }
   if (e.key !== 'Tab') return;
-  const els = dlgFocusables(), box = $('dialog').querySelector('.dialog');
-  if (!els.length) { e.preventDefault(); if (box) box.focus(); return; }
-  const first = els[0], last = els[els.length - 1], a = document.activeElement;
-  if (!$('dialog').contains(a)) { e.preventDefault(); first.focus(); }
-  else if (e.shiftKey && (a === first || a === box)) { e.preventDefault(); last.focus(); }
-  else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+  trapTab(e, $('dialog'), $('dialog').querySelector('.dialog') || $('dialog'));
 });
 // An in-app "are you sure?" instead of the browser's plain confirm box (AIG-992): resolves true on the OK button, false on Cancel or Escape.
 let sureDone = null;

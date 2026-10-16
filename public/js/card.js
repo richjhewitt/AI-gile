@@ -83,6 +83,8 @@ function renderCard(p, c) {
   // AIG-1332: a new message in this card's chat is read out once (core.js ChatLive).
   ChatLive.see('card:' + p.slug + '/' + c.id, (c.comments || []).map(m => ({ id: m.id || m.at + '|' + m.author, who: m.author, text: m.text, mine: isOwner(m.author) })));
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
+  // AIG-1423: the open card is a named modal dialog for screen readers (a popped-out card is its own window, so not there).
+  const dlg = name => pop ? '' : `role="dialog" aria-modal="true" ${name}`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
   const cardPop = pop ? '' : popBtn(`popOutCard('${p.slug}', '${c.id}')`, 'data-card-pop').replace('class="dlg-pop"', 'class="dlg-pop card-pop"');
   const head = `<div class="actions" style="margin-top:0">${windowTools(close, cardPop)}${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}</div>`;
@@ -91,7 +93,7 @@ function renderCard(p, c) {
   const menu = `<div class="card-menu" id="card-menu" ${state.cardMenu ? '' : 'hidden'}>${p.path ? Editor.btn(p, c) : ''}${Share.cardBtn(p, c)}${Pack.cardBtns(p, c)}${Dmme.btn()}<button id="remind-btn" onclick="remindToggle()" title="${esc(t('remind.title'))}">${esc(t('remind.btn'))}</button>${timerUi(c)}${crucialBtn(c)}${urgentBtn(c, p.slug, true)}${Focus.btn(p, c)}${Term.btn(c, 'term-btn')}${moveUi(p, c, 'selects')}<button type="button" id="copylink-btn" data-copy-text="${esc(location.href.split('#')[0] + '#/p/' + p.slug + '/' + c.id)}" title="${esc(t('card.copylink.title'))}">${esc(t('card.copylink'))}</button><button type="button" id="dup-btn" onclick="duplicateCard()" title="${esc(t('card.duplicate.title'))}">${esc(t('card.duplicate'))}</button><button class="danger" onclick="deleteCard()">${esc(t('card.delete'))}</button></div>`;
   const topActs = `<div class="card-acts">${windowTools(close, cardPop)}${moveUi(p, c, 'reopen')}<button onclick="editCard()">${esc(t('card.edit'))}</button><span class="card-menu-wrap"><button type="button" id="cm-btn" class="cm-btn" aria-haspopup="true" aria-expanded="${!!state.cardMenu}" title="${esc(t('card.menu.title'))}" aria-label="${esc(t('card.menu.title'))}" onclick="cardMenuToggle()">${esc(t('card.menu'))}</button>${menu}</span></div>`;
   if (state.editing) {
-    return `<div class="overlay"><div class="panel">${head}
+    return `<div class="overlay"><div class="panel" ${dlg(`aria-label="${esc(c.id + ' · ' + t('card.editing'))}"`)}>${head}
       <div class="id muted" style="margin-top:12px">${esc(c.id)} · ${esc(t('card.editing'))}</div>
       <form onsubmit="return saveCard(event)" style="margin-top:8px">${cardFields(c, { testSteps: true, flags: true })}
         <div class="err" id="f-err"></div>
@@ -121,9 +123,9 @@ function renderCard(p, c) {
   if (state.tabFor !== c.id) { state.tabFor = c.id; state.cardTab = c.status === 'verify' ? 'test' : c.comments.length ? 'reply' : 'details'; }
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
   const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
-  return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel" ${Term.panelAttr(p, c)}>
+  return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel" ${dlg('aria-labelledby="cardTitle"')} ${Term.panelAttr(p, c)}>
     ${movedBanner(c)}<div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
-    <h2 dir="auto">${esc(c.title)}</h2></div>${topActs}</div>
+    <h2 dir="auto" id="cardTitle">${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
     ${practiceHtml(p, c)}${deskHtml(c)}${majorHtml(c)}${CiPage.affects(p, c)}${reviewHtml(p, c)}
     ${c.status === 'verify' ? verdict : ''}
@@ -168,6 +170,14 @@ document.addEventListener('keydown', e => {
 // AIG-1371: Esc closes the open card, as the ? sheet says. One Esc does one thing: while a dialog, a menu, the edit form or a picker is
 // open, that goes first (seen before their own handlers run). In a field of the card, the first Esc leaves the field, the next one closes.
 const cardFocusPanel = () => { const p = document.querySelector('#modal .panel'); if (p) { if (!p.hasAttribute('tabindex')) { p.tabIndex = -1; p.style.outline = 'none'; } p.focus({ preventScroll: true }); } return p; };
+// AIG-1423: Tab stays inside the open card, as in a dialog (the board behind is covered). Focus already in the top bar, a menu
+// or another panel is left alone, so the bar stays usable over a card (AIG-733); from the board or the page it comes into the card.
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab' || e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey || $('dialog').firstChild || !state.route || state.route.pop || !state.route.card) return;
+  const p = document.querySelector('#modal .panel'), a = document.activeElement; if (!p) return;
+  if (a && a !== document.body && !p.contains(a) && !$('app').contains(a)) return;
+  trapTab(e, p);
+});
 let cardEscBusy = false;
 window.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
