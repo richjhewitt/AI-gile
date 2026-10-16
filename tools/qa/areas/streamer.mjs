@@ -97,7 +97,7 @@ def('streamer', '🎥 streamer mode: private projects, DMs and friends hidden; I
   // Personal projects (AIG-637): ticked in Look, never shown while streaming
   await mkProject(s, 'Life Board', 'LIF');
   await mkCard(s, 'life-board', 'Dentist');
-  await page.goto(`${BASE}/#/p/life-board`); await page.waitForSelector('button:has-text("Look")');
+  await page.goto(`${BASE}/#/p/life-board`); await page.waitForSelector('#tbDots'); await page.click('#tbDots');
   await page.click('button:has-text("Look")'); await page.waitForSelector('#look-personal');
   await page.check('#look-private'); await page.check('#look-personal');
   check('ticking 🏡 Personal unticks Private', !(await page.isChecked('#look-private')));

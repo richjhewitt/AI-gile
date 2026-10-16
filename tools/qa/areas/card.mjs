@@ -24,8 +24,7 @@ def('card', 'tabs, reply survives polling, Enter sends, Accept, Wait and see, fo
   check('code box with Copy renders', (await page.locator('.cpane[data-pane=details] .codebox pre code').textContent()) === 'npm run thing' && (await page.locator('.codebox button.copy').count()) === 1);
   await ctx.grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
   await page.click('.codebox button.copy');
-  await page.waitForTimeout(200);
-  check('Copy button confirms', /Copied/.test(await page.textContent('.codebox button.copy')));
+  check('Copy button confirms', await page.waitForFunction(() => /Copied/.test(document.querySelector('.codebox button.copy')?.textContent || ''), null, { timeout: 3000 }).then(() => true).catch(() => false));
   await page.click('.ctab[data-ctab=reply]');
   await page.fill('#r-text', 'my unsent draft');
   await page.waitForTimeout(2500);

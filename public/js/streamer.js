@@ -118,12 +118,12 @@ const Streamer = (() => {
   /* ---- the switch ---- */
   function apply(was, force) {
     const o = on();
-    if (was !== o || force) PagePoll.invalidate(false);
+    if (was !== o || (force && o)) PagePoll.invalidate(false);
     document.documentElement.toggleAttribute('data-streamer', o);
     for (const k of ['dms', 'friends', 'secrets']) document.documentElement.toggleAttribute('data-stream-' + k, o && hides(k));   // CSS hides these parts
     const b = $('streamBtn'); if (b) { b.disabled = forced; b.classList.toggle('stream-on', o); b.setAttribute('aria-pressed', String(o)); b.title = t(o ? 'streamer.title.on' : 'streamer.title'); }
     if (o) { ready = prime(); watch(); restore(); scan(document.body); if (!state.setup) api('GET', '/api/setup').then(s => { state.setup = s; scan(document.body); }).catch(() => {}); } else restore();
-    if (was !== o || force) { ready = o ? prime() : ready; Promise.resolve(ready).then(async () => { if (typeof Dms !== 'undefined') await Dms.reload(); if (typeof refresh === 'function') refresh(true); if (typeof Inbox !== 'undefined' && Inbox.show && state.route && state.route.view === 'inbox') Inbox.show(true); }); }
+    if (was !== o || (force && o)) { ready = o ? prime() : ready; Promise.resolve(ready).then(async () => { if (typeof Dms !== 'undefined') await Dms.reload(); if (typeof refresh === 'function') refresh(true); if (typeof Inbox !== 'undefined' && Inbox.show && state.route && state.route.view === 'inbox') Inbox.show(true); }); }
     paintSetup(); paintLive();
   }
   function toggle() { if (forced) return; const was = on(); manual = !manual; if (!manual) auto = false; try { localStorage.setItem(KEY, manual ? '1' : '0'); } catch {} apply(was); }

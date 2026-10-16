@@ -11,3 +11,5 @@ See every project and what waits on you.
 - TODO related
 
 - Space cards use the same grid as other projects; team buttons wrap and wake notes follow the title.
+
+- On a phone, the board opens before the chat list finishes loading.
