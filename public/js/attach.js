@@ -10,6 +10,9 @@ const Attach = (() => {
   const urls = new WeakMap(), urlOf = f => { if (!urls.has(f)) urls.set(f, URL.createObjectURL(f)); return urls.get(f); };
   const revoke = f => { const u = urls.get(f); if (u) { URL.revokeObjectURL(u); urls.delete(f); } };   // a removed or sent file frees its preview (AIG-1090)
   const chips = key => list(key).map((f, i) => `<span class="att-chip">${isImg(f) ? `<img class="att-thumb" src="${urlOf(f)}" data-att-view="${i}" alt="" title="${esc(t('attach.preview'))}">` : '📎'} <span class="att-name" title="${esc(f.name)}">${esc(f.name)}</span><button type="button" data-att-del="${i}" title="${esc(t('attach.remove'))}">✕</button></span>`).join('');
+  // AIG-1342: the picture opens above every dialog and overlay (Raise bug is .overlay.top, z-index 100000): the top layer
+  // where the browser has popovers, else the highest z-index; Esc closes only the picture first.
+  const onTop = lb => { document.body.appendChild(lb); try { if (lb.showPopover) { lb.popover = 'manual'; lb.showPopover(); } } catch {} };
   function preview(src) {
     const lb = document.createElement('div');
     lb.className = 'att-lightbox'; lb.title = t('attach.close');
@@ -17,7 +20,7 @@ const Attach = (() => {
     const close = () => { lb.remove(); document.removeEventListener('keydown', esc_, true); };
     const esc_ = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
     lb.onclick = close; document.addEventListener('keydown', esc_, true);
-    document.body.appendChild(lb);
+    onTop(lb);
   }
   // Any picture under a comment, card, DM or AI tester evidence (.att-shown) opens full size; arrows move between the item's pictures.
   function gallery(imgs, at) {
@@ -31,7 +34,7 @@ const Attach = (() => {
       else if (arrowStep(e) && imgs.length > 1) { e.preventDefault(); e.stopPropagation(); at = (at + (arrowStep(e) > 0 ? 1 : imgs.length - 1)) % imgs.length; show(); }
     };
     lb.onclick = close; document.addEventListener('keydown', key_, true);
-    show(); document.body.appendChild(lb);
+    show(); onTop(lb);
   }
   document.addEventListener('click', e => {
     const img = e.target.closest('.att-shown a > img, img.gif-inline'); if (!img || e.button) return;

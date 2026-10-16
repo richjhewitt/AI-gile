@@ -29,6 +29,7 @@
     ".words-ul{padding-inline:12px}.words-ul .words-abc{text-decoration:underline dotted;text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700}.words-ul[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent)}.words-ul[aria-pressed=true] .words-abc{text-decoration-style:solid}"+
     "abbr.devw{text-decoration:underline dotted var(--muted);text-decoration-thickness:1.5px;text-underline-offset:3px;cursor:help;border-radius:3px}"+
     "abbr.devw:focus-visible{outline:2px solid var(--focus);outline-offset:1px}"+
+    "html.devw-peek,html.devw-peek *{cursor:help!important}"+
     ".words-tip{position:fixed;z-index:30;max-width:min(300px,calc(100vw - 32px));padding:8px 10px;border-radius:8px;background:var(--text);color:var(--bg);font-size:14px;line-height:1.4;box-shadow:var(--shadow-lg);text-align:start;pointer-events:none}";
   var st=document.createElement("style");st.textContent=CSS;(document.head||document.documentElement).appendChild(st);
 
@@ -132,10 +133,32 @@
     if(bare.length)parts.push("(?:"+bare.join("|")+")");
     re=new RegExp(parts.join("|")||"(?!)","giu");
   }
-  function scope(){return[].slice.call(document.querySelectorAll("main, footer"))}
+  // AIG-1342: also the live board (the teaser's, and the pre-teaser's behind the glass, [data-words-behind]).
+  function scope(){return[].slice.call(document.querySelectorAll("main, footer, [data-words-behind]"))}
+  // The board's column names (To do, In progress, Done...) are no glossary words: in a column heading only, they get their
+  // own tip (words.col.<id>); Backlog is in the glossary and is marked like any other word.
+  var COLS=["backlog","todo","doing","review","verify","team","done"],STD=["Backlog","To do","In progress","Team checking","For you to test","For the team","Done"];
+  function colTip(s){
+    var k=key(s),tr=String(I.t("live.cols")).split("|"),i=-1;
+    for(var j=0;j<COLS.length;j++)if(key(STD[j])===k||(tr[j]&&key(tr[j])===k)){i=j;break}
+    if(i<0)return"";var tk="words.col."+COLS[i],v=I.t(tk);return v&&v!==tk?v:"";
+  }
+  function markCols(root){
+    [].forEach.call(root.querySelectorAll(".lv-col > h3"),function(h){
+      var n=h.firstChild;if(!n||n.nodeType!==3||h.querySelector("abbr.devw"))return;
+      var s=n.nodeValue,txt=s.trim(),tipText=txt&&colTip(txt);if(!tipText)return;
+      var at=s.indexOf(txt),a=el("abbr","devw");a.setAttribute("data-tip",tipText);a.textContent=txt;
+      if(!root.closest("[inert],[aria-hidden=true]"))a.tabIndex=0;
+      var f=document.createDocumentFragment();
+      if(at)f.appendChild(document.createTextNode(s.slice(0,at)));f.appendChild(a);
+      if(at+txt.length<s.length)f.appendChild(document.createTextNode(s.slice(at+txt.length)));
+      h.replaceChild(f,n);
+    });
+  }
   function mark(){
     if(!isOn())return;if(!re)index();
     scope().forEach(function(root){
+      markCols(root);var behind=!!root.closest("[inert],[aria-hidden=true]");
       var walk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(n){
         for(var p=n.parentElement;p&&p!==root.parentElement;p=p.parentElement)if(SKIP.test(p.tagName)||p.hasAttribute("data-nowords")||p.hidden&&p!==root)return NodeFilter.FILTER_REJECT;
         re.lastIndex=0;return re.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_SKIP;
@@ -145,7 +168,7 @@
         var f=document.createDocumentFragment(),s=n.nodeValue,last=0,m;re.lastIndex=0;
         while((m=re.exec(s))){
           f.appendChild(document.createTextNode(s.slice(last,m.index)));
-          var a=el("abbr","devw");a.tabIndex=0;a.setAttribute("data-tip",texts[key(m[0])]||"");a.textContent=m[0];f.appendChild(a);
+          var a=el("abbr","devw");if(!behind)a.tabIndex=0;a.setAttribute("data-tip",texts[key(m[0])]||"");a.textContent=m[0];f.appendChild(a);
           last=m.index+m[0].length;
         }
         f.appendChild(document.createTextNode(s.slice(last)));n.parentNode.replaceChild(f,n);
@@ -153,7 +176,7 @@
     });
   }
   function unmark(){
-    hideTip();
+    hideTip();document.documentElement.classList.remove("devw-peek");
     [].forEach.call(document.querySelectorAll("abbr.devw"),function(a){var p=a.parentNode;p.replaceChild(document.createTextNode(a.textContent),a);p.normalize()});
   }
   function showTip(a){
@@ -167,9 +190,24 @@
     tip.style.left=Math.round(left)+"px";tip.style.top=Math.round(top)+"px";
   }
   function hideTip(){if(tip)tip.hidden=true;if(tipFor){tipFor.removeAttribute("aria-describedby");tipFor=null}}
-  function devw(e){return e.target&&e.target.closest?e.target.closest("abbr.devw"):null}
-  document.addEventListener("mouseover",function(e){var a=devw(e);if(a)showTip(a)});
-  document.addEventListener("mouseout",function(e){var a=devw(e);if(a&&a===tipFor&&!a.contains(e.relatedTarget)&&document.activeElement!==a)hideTip()});
+  function direct(e){return e.target&&e.target.closest?e.target.closest("abbr.devw"):null}
+  // AIG-1342: a word behind the glass (the pre-teaser's board: no pointer events, under the page layer) is found by where the
+  // pointer is, but only through see-through parts of the page (the body or a [data-glass] layer), never through a card or a button.
+  function glassAt(e){
+    var t=e.target;if(!t||!(t===document.body||t===document.documentElement||t.hasAttribute&&t.hasAttribute("data-glass")))return null;
+    var x=e.clientX,y=e.clientY,all=document.querySelectorAll("[data-words-behind] abbr.devw");
+    for(var i=0;i<all.length;i++){var r=all[i].getBoundingClientRect();if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return all[i]}
+    return null;
+  }
+  function devw(e){return direct(e)||(e.clientX!=null?glassAt(e):null)}
+  function behind(a){return !!(a&&a.closest("[data-words-behind]"))}
+  document.addEventListener("mouseover",function(e){var a=direct(e);if(a)showTip(a)});
+  document.addEventListener("pointermove",function(e){
+    if(e.pointerType!=="mouse"||direct(e))return;
+    var a=glassAt(e);document.documentElement.classList.toggle("devw-peek",!!a);
+    if(a){if(a!==tipFor)showTip(a)}else if(behind(tipFor))hideTip();
+  },{passive:true});
+  document.addEventListener("mouseout",function(e){var a=direct(e);if(a&&a===tipFor&&!a.contains(e.relatedTarget)&&document.activeElement!==a)hideTip()});
   document.addEventListener("focusin",function(e){var a=devw(e);a?showTip(a):hideTip()});
   // A tap on a word shows (or hides) its explanation; a tap anywhere else hides it.
   var tapOpen=false;
