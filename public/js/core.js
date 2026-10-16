@@ -321,6 +321,7 @@ function refresh(force) {
     if (state.route?.view === 'project') state.lastProject = state.route.slug;
     state.route = target; state.lastSig = state.lastBoardSig = null;
     pagePopSync(target);   // AIG-1313
+    queueMicrotask(pageTitle);   // AIG-1332
     return Inbox.show(force);
   }
   if (refreshPromise) {
@@ -360,7 +361,7 @@ async function refreshStaged(force, liveState, state, api) {
   pagePopSync(state.route);   // ⧉ Pop out on a page that can (AIG-1313)
   if (state.route.view !== 'project') { $('teamTop').innerHTML = ''; $('teamTop').dataset.sig = ''; $('filterbar').innerHTML = ''; $('filterbar').dataset.slug = ''; }
   // The inbox page renders itself; forget the last render so leaving it always redraws.
-  if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; Object.assign(liveState, state); Inbox.show(force).catch(e => console.error(e)); return; }
+  if (state.route.view === 'inbox') { state.lastSig = state.lastBoardSig = null; Object.assign(liveState, state); queueMicrotask(pageTitle); Inbox.show(force).catch(e => console.error(e)); return; }
   const get = url => api('GET', url);   // reads go through refreshOnce's PagePoll wrapper (AIG-920); lost in the perf-page merge
   let sig;
   try {
@@ -533,8 +534,52 @@ function paintModal(html) {
   if (m._html === html && m.firstChild === m._node) return;
   m.innerHTML = html; m._html = html; m._node = m.firstChild;
 }
+/* ---------- page title (AIG-1332) ---------- */
+// Each page names its tab and window ("Inbox · AI-gile", "AIG-12 Fix it · Alpha · AI-gile"), so tabs and screen readers tell them
+// apart. inbox-top.js puts the waiting count in front. The terminal and Twitch windows name themselves.
+let pageBase = 'AI-gile';
+const POP_TITLES = { chat: 'title.messages', glance: 'glance.btn', weed: 'weed.btn', news: 'news.h' };
+function pageTitle() {
+  const r = state.route || {};
+  if (r.view === 'term' || r.view === 'twitch') { pageBase = null; return; }
+  const crumb = ($('crumb').textContent || '').replace(/^\/\s*/, '').trim();
+  let name = '';
+  if (r.view === 'inbox') name = t('inbox.crumb');
+  else if (r.view === 'project') {
+    const p = state.project && state.project.slug === r.slug ? state.project : null, c = p && r.card && p.cards.find(x => x.id === r.card);
+    name = (c ? c.id + ' ' + c.title + ' · ' : '') + (p ? p.name : '');
+  } else if (POP_TITLES[r.view]) name = t(POP_TITLES[r.view]);
+  else if (r.view !== 'home') name = crumb;
+  pageBase = name ? name + ' · AI-gile' : 'AI-gile';
+  if (typeof IB !== 'undefined' && IB.paintTop) IB.paintTop(); else document.title = pageBase;
+}
+
+/* ---------- new chat messages read out (AIG-1332) ---------- */
+// #chatLive (role=log, polite) gets one line per new message from someone else in the open chat (Messages, a card's chat).
+// The first look at a chat only notes what is there, so opening one never reads out the whole history.
+const ChatLive = (() => {
+  const seen = new Map(), recent = new Map();   // chat key -> Set of message keys; line -> when it was read out
+  function see(key, msgs) {
+    const had = seen.get(key);
+    seen.set(key, new Set(msgs.map(m => m.id)));
+    if (!had) return;
+    const fresh = msgs.filter(m => !had.has(m.id) && !m.mine && m.text);
+    const box = document.getElementById('chatLive'); if (!box || !fresh.length) return;
+    for (const m of fresh.slice(-3)) {
+      const said = m.who + '|' + m.text, now = Date.now();   // the same line in the card and in Messages is read once
+      if (now - (recent.get(said) || 0) < 60000) continue;
+      recent.set(said, now); if (recent.size > 50) recent.delete(recent.keys().next().value);
+      const line = document.createElement('p');
+      line.textContent = t('a11y.newmsg', { name: m.who || '', text: String(m.text).replace(/\s+/g, ' ').slice(0, 300) });
+      box.appendChild(line);
+    }
+    while (box.childElementCount > 6) box.firstElementChild.remove();
+  }
+  return { see };
+})();
 function render() {
   queueMicrotask(paintFilterBar);
+  queueMicrotask(pageTitle);
   const keepScroll = document.querySelector('#modal .panel')?.scrollTop || 0;
   const keepBoardX = document.querySelector('.board')?.scrollLeft || 0;
   const keepCols = [...document.querySelectorAll('.column')].map(c => [c.dataset.status + '|' + (c.dataset.step || ''), c.scrollTop]);   // AIG-1211: a column scrolls inside itself

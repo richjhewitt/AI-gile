@@ -346,6 +346,7 @@ const Dms = (() => {
     try { msgs = await PagePoll.get(`/api/dms/contacts/${open.slice(3)}/messages`); } catch { return; }
     const list = el('dmList'); if (!list || !thread || thread.id !== open.slice(3)) return;
     thread.messages = msgs;
+    ChatLive.see('dm:' + thread.id, msgs.map(m => ({ id: m.id || m.at, who: thread.name, text: m.text, mine: m.dir === 'out' })));   // AIG-1332
     const lastIn = msgs.filter(m => m.dir === 'in').map(m => m.at).sort().pop();
     if (lastIn && lastIn > dmSeen.get(thread.id)) dmSeen.set(thread.id, lastIn);
     // AIG-650: the pictures this friend sent, shown inline in their messages (only asked for when one could use a :name:)
@@ -382,6 +383,7 @@ const Dms = (() => {
     let got; try { got = await PagePoll.get(isGrp(want) ? '/api/chats/_groups/' + want.slice(4) : '/api/chats/' + want); } catch { return; }
     if (seq !== threadSeq || open !== want) return;
     thread = got;
+    ChatLive.see('chat:' + want, (thread.messages || []).map(m => ({ id: m.id || m.at + '|' + m.author, who: m.author, text: m.text, mine: m.mine })));   // AIG-1332: read out once
     if (thread.assistant) { const hb = document.querySelector('#dmPanel .dm-head b'); if (hb && thread.lead && hb.textContent !== thread.lead) hb.textContent = thread.lead; }   // AIG-1036: the head was drawn from the rail list; the assistant picks its name later
     if (pendingSend) { const ps = pendingSend; pendingSend = null; if (ps.slug === want) setTimeout(() => send(ps.fixed), 0); }
     if (thread.group && thread.messages.length) dmSeen.set(want, thread.messages.at(-1).at);   // 👥 opening the group reads it

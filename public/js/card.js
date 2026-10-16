@@ -80,6 +80,8 @@ function qaGateHtml(c) {
 }
 const movedBanner = c => { const m = state.moved; if (!m) return ''; if (m.to !== c.id) { state.moved = null; return ''; } return `<div class="moved-note" id="moved-note" role="status">✓ ${esc(m.text)} ${esc(t('card.next.now'))}</div>`; };
 function renderCard(p, c) {
+  // AIG-1332: a new message in this card's chat is read out once (core.js ChatLive).
+  ChatLive.see('card:' + p.slug + '/' + c.id, (c.comments || []).map(m => ({ id: m.id || m.at + '|' + m.author, who: m.author, text: m.text, mine: isOwner(m.author) })));
   const pop = state.route.pop, close = pop ? 'window.close()' : `location.hash='#/p/${p.slug}'`;
   // ⧉ Pop out (AIG-122): the card in its own small window, to follow steps on one screen and work on another.
   const popBtn = pop ? '' : `<button class="card-pop" onclick="popOutCard('${p.slug}', '${c.id}')" title="${esc(t('card.popout.title'))}">${esc(t('card.popout'))}</button>`;

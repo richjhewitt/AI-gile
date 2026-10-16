@@ -93,15 +93,21 @@ async function langFiles() {
   return probe.filter(Boolean);
 }
 // Loads the language list, English (the fallback) and the chosen language; runs before the first render.
+// AIG-1330: the four reads run side by side; the language of the last start (aigile.langBoot, also read by index.html's head
+// script) is fetched at once as a guess, and only used when it is still the one picked.
+const bootLang = () => { try { const b = JSON.parse(ls('aigile.langBoot') || 'null'); return b && typeof b.c === 'string' && /^[a-z0-9]{2,12}(-[a-z]{2,4})?$/i.test(b.c) ? b.c : null; } catch { return null; } };
 async function loadLang() {
-  const list = await needJson('/lang/languages.json');
+  const guess = bootLang(), enP = needJson('/lang/en.json');
+  const guessP = guess && guess !== 'en' ? needJson('/lang/' + guess + '.json') : null;
+  [enP, guessP].forEach(p => p && p.catch(() => {}));   // a miss is thrown again below, only if it is used
+  const [list, codes] = await Promise.all([needJson('/lang/languages.json'), getJson('/api/langs')]);
   if (Array.isArray(list) && list.some(l => l && l.code === 'en')) LANG_LIST = list.filter(l => l && /^[a-z0-9]{2,12}(-[a-z]{2,4})?$/i.test(l.code || ''));
-  const files = await langFiles();
+  const files = Array.isArray(codes.codes) ? codes.codes : await langFiles();
   for (const l of LANG_LIST) if (l.code === 'en' || files.includes(l.code)) LANGS[l.code] = l.name;
   immAuto();
   i18n.lang = langCode();
-  i18n.en = await needJson('/lang/en.json');
-  i18n.dict = i18n.lang === 'en' ? i18n.en : await needJson('/lang/' + i18n.lang + '.json');
+  i18n.en = await enP;
+  i18n.dict = i18n.lang === 'en' ? i18n.en : await (i18n.lang === guess ? guessP : needJson('/lang/' + i18n.lang + '.json'));
   i18n.locale = localeOf(i18n.lang);
   i18n.dir = (langOf(i18n.lang) || {}).dir === 'rtl' ? 'rtl' : 'ltr';
   // <html lang>: the code, or the locale when it says more (pt-br -> pt-BR, no -> nb-NO); <html dir> mirrors the layout (the CSS uses logical properties).
@@ -112,7 +118,10 @@ async function loadLang() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
   document.querySelectorAll('[data-i18n-label]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nLabel)); });
-  paintEnBtn(); paintImm();
+  paintEnBtn(); paintImm(); if (typeof paintThemeBtn === 'function') paintThemeBtn();
+  // AIG-1330: the next start sets this language and direction before the first paint; the top bar's words show now.
+  lsSet('aigile.langBoot', JSON.stringify({ c: i18n.lang, l: document.documentElement.lang, d: i18n.dir }));
+  document.documentElement.classList.remove('i18n-wait');
   // AIG-976: the 🐣 tag's tooltip ends with the version, so a friend can say which build they have (asked once, not awaited).
   (i18n.version ? Promise.resolve(i18n.version) : fetch('/api/version').then(r => r.ok ? r.json() : {}).then(j => (i18n.version = j.version)))
     .then(v => { const el = document.querySelector('.alpha-tag'); if (el && v) el.title = t('alpha.tip') + ' · v' + v; }).catch(() => {});
