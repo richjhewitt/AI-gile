@@ -59,7 +59,7 @@ command -v certbot >/dev/null || { apt-get update -y && apt-get install -y certb
 echo "==> Site files ($ROOT)"
 install -d -o root -g root -m 755 "$ROOT"
 # pages, teaser and form scripts, their data; a kind of file the folder doesn't have is skipped (the pre-teaser has no .json, AIG-1320)
-for f in "$HERE"/*.html "$HERE"/*.css "$HERE"/*.js "$HERE"/*.json; do if [ -e "$f" ]; then cp "$f" "$ROOT/"; fi; done
+for f in "$HERE"/*.html "$HERE"/*.css "$HERE"/*.js "$HERE"/*.json "$HERE"/*.png; do if [ -e "$f" ]; then cp "$f" "$ROOT/"; fi; done
 cp -r "$HERE/assets" "$ROOT/"
 install -d -o root -g root -m 755 "$ROOT/lang"   # every language's texts and scripts (AIG-1226); TRANSLATE.md stays behind
 for f in "$HERE"/lang/*.js "$HERE"/lang/*.json; do if [ -e "$f" ]; then cp "$f" "$ROOT/lang/"; fi; done
