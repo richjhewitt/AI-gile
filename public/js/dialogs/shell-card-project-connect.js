@@ -2,7 +2,7 @@
 // AIG-1277: every dialog is a modal for screen readers (role=dialog, aria-modal, named by its heading), Tab stays inside, and closing puts focus back on what opened it.
 let dlgOpener = null, dlgLast = null;   // dlgLast: the last focused control outside a dialog (a board redraw can replace the opener while a dialog loads, so closing looks for its twin)
 // focusNote: enough about a control to find its twin after a redraw replaced it (AIG-1424: also by its data-* / onclick / href, as a count in its text can change).
-const FOCUS_KEYS = ['data-id', 'data-pslug', 'data-slug', 'data-act', 'data-tab', 'data-ctab', 'onclick', 'onchange', 'href', 'name'];
+const FOCUS_KEYS = ['data-id', 'data-pslug', 'data-slug', 'data-act', 'data-tab', 'data-ctab', 'data-dms', 'data-dm', 'data-go', 'onclick', 'onchange', 'href', 'name'];
 const focusKey = el => FOCUS_KEYS.map(k => el.getAttribute(k) || '').join('|').replace(/\|+$/, '');
 function focusNote(el) { return el && el.getAttribute ? { el, id: el.id, cls: el.className, tag: el.tagName, txt: (el.textContent || '').trim(), title: el.getAttribute('title') || '', key: focusKey(el) } : null; }
 document.addEventListener('focusin', e => { if (!e.target.closest('#dialog')) dlgLast = focusNote(e.target); });

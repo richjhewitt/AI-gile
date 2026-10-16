@@ -182,7 +182,7 @@ let cardEscBusy = false;
 window.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   const tb = $('tbMoreMenu');
-  cardEscBusy = !!($('dialog').firstChild || state.cardMenu || state.editing || state.picked || $('suPrompt') || $('remind-box') || $('helpMenu') || $('statusMenu') || (tb && !tb.hidden));
+  cardEscBusy = !!($('dialog').firstChild || state.cardMenu || state.editing || state.picked || $('suPrompt') || $('remind-box') || $('helpMenu') || $('statusMenu') || (tb && !tb.hidden) || (e.target.closest && e.target.closest('#dmPanel')));   // AIG-1428: Esc in Messages closes Messages
 }, true);
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape' || e.defaultPrevented || cardEscBusy || e.ctrlKey || e.altKey || e.metaKey) return;

@@ -143,6 +143,34 @@ def('kbdfocus', 'keyboard focus: card dialog, Home redraws, card fits, Help/Stat
   check('board card filtered away: closing gives focus back to the search box that was in use (AIG-1427)', (await act()).id === 'f-q', await act());
   await page.fill('#f-q', ''); await sleep(300);
 
+  // AIG-1428: g m opens Messages with focus in it; it is a named dialog, Tab stays in it, Esc closes it back to the 💬 rail button.
+  await page.evaluate(() => document.activeElement && document.activeElement.blur());
+  await page.keyboard.press('g'); await page.keyboard.press('m');
+  await page.waitForSelector('#dmPanel:not([hidden])'); await sleep(400);
+  const inDm = () => page.evaluate(() => !!document.activeElement.closest('#dmPanel'));
+  const dmRole = await page.evaluate(() => { const p = document.getElementById('dmPanel'); return [p.getAttribute('role'), p.getAttribute('aria-label')]; });
+  check('Messages panel is a named dialog (AIG-1428)', dmRole[0] === 'dialog' && /messages/i.test(dmRole[1] || ''), dmRole);
+  check('g m puts focus in the Messages panel, on its search box (AIG-1428)', (await act()).id === 'dmSearch', await act());
+  let dmOut = 0;
+  for (let i = 0; i < 25; i++) { await page.keyboard.press('Tab'); if (!(await inDm())) dmOut++; }
+  check('Tab stays in the Messages panel, never the top bar behind it (AIG-1428)', dmOut === 0, dmOut);
+  await page.keyboard.press('Escape'); await sleep(300);
+  check('Esc closes Messages, focus on the 💬 rail button (AIG-1428)', await page.locator('#dmPanel').isHidden() && await page.evaluate(() => !!document.activeElement.closest('#dmRail [data-dms]')), await act());
+  await page.keyboard.press('Enter'); await page.waitForSelector('#dmPanel:not([hidden])'); await sleep(300);
+  check('Enter on the 💬 rail button opens Messages with focus inside (AIG-1428)', await inDm(), await act());
+  await page.keyboard.press('Escape'); await sleep(300);
+  check('...and Esc gives focus back to that button (AIG-1428)', await page.evaluate(() => !!document.activeElement.closest('#dmRail [data-dms]')), await act());
+  // A page change puts focus on the new page's heading.
+  const onHeading = () => page.evaluate(() => { const a = document.activeElement; return !!a && !!a.closest('#app') && (/^H[12]$/.test(a.tagName) || a.id === 'app'); });
+  await page.evaluate(() => document.activeElement && document.activeElement.blur());
+  await page.keyboard.press('g'); await page.keyboard.press('i'); await page.waitForSelector('#ib'); await sleep(900);
+  check('g i: focus is on the Inbox page, not the page top (AIG-1428)', await onHeading(), await act());
+  await page.keyboard.press('g'); await page.keyboard.press('h'); await page.waitForSelector('#app [data-pslug]'); await sleep(900);
+  check('g h: focus is on the Home page heading (AIG-1428)', await onHeading(), await act());
+  await page.focus('#app a[data-pslug="alpha"]'); await page.keyboard.press('Enter'); await page.waitForSelector('.board .column'); await sleep(900);
+  const bh = await act();
+  check('Enter on a project: focus on the board heading (AIG-1428)', await onHeading() && /Alpha/.test(bh.text), bh);
+
   await noErrors(page);
   await page.close();
 }, true);
