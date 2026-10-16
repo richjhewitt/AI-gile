@@ -311,8 +311,8 @@ def('teaserwords', 'site/index.html (file://): 📖 Dev words button and dialog 
 def('sitephone', 'phone header and footer on both sites (AIG-1397)', async (s, ctx) => {
   const { build } = await import('../../gen/presite.mjs'); build();
   const fs = await import('node:fs');
-  const shots = "C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots";
-  fs.mkdirSync(shots, { recursive: true });
+  const shots = process.env.QA_SHOTS;
+  if (shots) fs.mkdirSync(shots, { recursive: true });
   const page = await ctx.newPage(); await page.setViewportSize({ width:390, height:844 });
   await page.route('https://**/*', r => r.fulfill({ status:404, body:'' }));
   for (const folder of ['site', 'presite']) for (const lang of ['en', 'ar']) for (const theme of ['light', 'dark']) {
@@ -325,7 +325,7 @@ def('sitephone', 'phone header and footer on both sites (AIG-1397)', async (s, c
       return r.height <= 44 && buttons.every(b => Math.abs(b.getBoundingClientRect().top-buttons[0].getBoundingClientRect().top)<2) && document.documentElement.scrollWidth<=innerWidth;
     }));
     check(folder+' footer links have 44px targets', await page.$$eval('footer a', es => es.length>0 && es.every(e => e.getBoundingClientRect().height>=44)));
-    if(folder==='site' && lang==='en' && theme==='dark') await page.screenshot({ path:path.join(shots,'AIG-1397.png'), fullPage:true });
+    if(shots && folder==='site' && lang==='en' && theme==='dark') await page.screenshot({ path:path.join(shots,'AIG-1397.png'), fullPage:true });
   }
   await page.close();
 }, true);

@@ -51,7 +51,7 @@ def('touch', 'on a phone, by touch only: add, move, reply, accept, Inbox, Messag
     const was2 = (await cards()).find(x => x.title === title).status;
     await touch('touchStart', [{ x: gx, y: gy }]); await sleep(700);
     check(tag + 'a long-press opens the Move to sheet', await page.locator('[data-mvcol]').first().isVisible().catch(() => false));
-    if (dev === 'iPhone 13') { const sh = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/thumbs2'; try { await page.screenshot({ path: sh + '/move-sheet.png' }); } catch {} }
+    if (dev === 'iPhone 13' && process.env.QA_SHOTS) { const sh = process.env.QA_SHOTS; try { await page.screenshot({ path: sh + '/move-sheet.png' }); } catch {} }
     await touch('touchEnd', []); await sleep(100);
     await page.tap('[data-mvcol]');
     check(tag + 'a column in the sheet moves the card', !!(await until(async () => (await cards()).find(x => x.title === title && x.status !== was2))));

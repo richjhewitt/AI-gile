@@ -24,7 +24,7 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   check('outside click closes More (AIG-1413)', !(await page.isVisible('#boardTbMore')));
   await page.click('#tbDots'); await page.click('.card[data-id="ALP-1"]'); await page.waitForTimeout(300);
   check('opening a card closes More (AIG-1413)', !(await page.isVisible('#boardTbMore')));
-  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1413.png'}); await page.keyboard.press('Escape');
+  if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-1413.png'}); await page.keyboard.press('Escape');
   const heads = await page.$$eval('.column h3 > span:first-child', els => els.map(e => e.textContent));
   check('seven columns in order', JSON.stringify(heads) === JSON.stringify(['Backlog', 'To do', 'In progress', 'Team checking', 'For you', 'For the team', 'Done']), heads);
   check('cards render in their column', (await page.locator('.column[data-status=todo] .card').count()) === 1 && (await page.locator('.column[data-status=doing] .card').count()) === 1);
@@ -571,7 +571,7 @@ def('phonecolumn', 'phone opens at cards needing the owner (AIG-1418)', async (s
   const page = await ctx.newPage(); await page.setViewportSize({width:390,height:844}); await page.goto(BASE+'/#/p/garden'); await page.waitForSelector('.foryou .card'); await sleep(400);
   const visible = () => page.$eval('.foryou', e => {const r=e.getBoundingClientRect();return r.left>=-1 && r.left<100;});
   check('For you is visible on arrival (AIG-1418)', await visible());
-  await page.emulateMedia({colorScheme:'dark'}); await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1418.png'});
+  await page.emulateMedia({colorScheme:'dark'}); if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-1418.png'});
   await page.evaluate(() => {document.querySelector('.board').scrollLeft=0;}); await sleep(1500);
   check('polling preserves a manual swipe (AIG-1418)', await page.$eval('.board',e=>e.scrollLeft===0));
 }, true);
@@ -584,5 +584,5 @@ def('boarddutch', 'Dutch dispatch and team status (AIG-1419)', async (s, ctx) =>
   check('status and existing log translated (AIG-1419)', html.includes('aan het werk') && html.includes('Verdeler: GAR-1 naar Lead gestuurd') && !html.includes('🔄 working'));
   check('the Dispatcher reason in brackets is Dutch too (AIG-1419)', html.includes('GAR-2 naar Lead (Haiku: meerdere teamleden genoemd) gestuurd') && html.includes('GAR-3 naar Frontend (Sonnet) (meerdere mensen toegewezen, alleen regels, dus de lead) gestuurd')
     && html.includes('GAR-4 naar Lead (toegewezen kaart, onduidelijke opmerking, Haiku gaf geen antwoord, dus de lead) gestuurd') && html.includes('GAR-5 naar Lead (De lead beslist alles) gestuurd') && !/haiku \(|rules only|several|decides/.test(html), html.slice(html.indexOf('GAR-1'), html.indexOf('GAR-1') + 600));
-  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1419.png'});
+  if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-1419.png'});
 }, true);

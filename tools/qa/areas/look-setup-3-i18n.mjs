@@ -340,8 +340,8 @@ def('usertextdir', 'user text chooses its own direction in cards and chat (AIG-1
   check('English project description stays LTR on Arabic page', await direction('#app p[dir=auto]') === 'auto,ltr');
   check('English title stays LTR', await direction(`.card[data-id="${a.id}"] .t`) === 'auto,ltr');
   check('Arabic title stays RTL', await direction(`.card[data-id="${b.id}"] .t`) === 'auto,rtl');
-  const shots = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
-  fs.mkdirSync(shots,{recursive:true}); await page.screenshot({path:path.join(shots,'AIG-1398.png')});
+  const shots = process.env.QA_SHOTS;
+  if (shots) { fs.mkdirSync(shots,{recursive:true}); await page.screenshot({path:path.join(shots,'AIG-1398.png')}); }
   await page.goto(BASE+'/#/p/direction/'+a.id); await page.waitForSelector('.panel');
   check('open title, description and comment choose LTR', (await Promise.all(['.panel h2','.panel .desc','.panel .comment .body'].map(direction))).every(d => d === 'auto,ltr'));
   await page.goto(BASE+'/#/p/direction'); await page.waitForSelector('.board');
