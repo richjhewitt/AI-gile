@@ -1,3 +1,4 @@
+import { proof, contrastTokens } from '../a11y-proof.mjs';
 // QA areas: look, logos, theme (split from look-setup.mjs, AIG-297).
 import fs from 'node:fs';
 import http from 'node:http';
@@ -127,6 +128,10 @@ def('theme', 'theme: follows the system, or System / Light / Dark picked in the 
   await page.waitForSelector('#themeBtn');
   const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   const light = await bg();
+  const nightContrast = await contrastTokens(page, ['night']);
+  check('night text tokens meet 4.5:1 (AIG-1430)', !nightContrast.length, nightContrast);
+  await proof(page, 'AIG-1430');
+  await page.evaluate(() => { delete document.documentElement.dataset.theme; document.documentElement.removeAttribute('data-night'); });
   for (const theme of ['light', 'dark', 'black']) {
     await page.evaluate(theme => {
       document.documentElement.dataset.theme = theme;

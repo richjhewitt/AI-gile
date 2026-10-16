@@ -17,3 +17,5 @@ Theme and matching scrollbars.
 - The public sites keep phone controls in one row and footer links have larger tap targets.
 
 - Icon buttons announce their action using the same words as their tooltip.
+
+- Night mode keeps warm text readable, including hints and headings.
