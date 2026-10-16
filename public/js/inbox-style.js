@@ -76,7 +76,9 @@ const INBOX_CSS = `
 .ib-chatbtn .nm .ib-hint { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ib-thread { flex: 1; min-width: 0; }
 .ib-thread .ib-item.q { border-radius: 16px 16px 16px 4px; }
-@media (max-width: 720px) { .ib-chat { flex-direction: column; } .ib-chats { position: static; flex-basis: auto; width: 100%; } }
+@media (max-width: 720px) { .ib-chat { flex-direction: column; align-items: stretch; } .ib-chats { position: static; flex-basis: auto; width: 100%; } .ib-thread { width: 100%; } }
+/* AIG-410: a long log or code line scrolls inside its own box; it never widens the item or the page */
+.ib-item, .ib-question { min-width: 0; max-width: 100%; } .ib-item .codebox, .ib-item pre { max-width: 100%; }
 .ib-item[data-project] .ib-proj[role=link] { cursor: pointer; } .ib-item[data-project] .ib-proj[role=link]:hover { filter: brightness(1.15); } .ib-item[data-project] .ib-proj[role=link]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .ib-proj { font-weight: 700; color: #fff; background: var(--proj, var(--muted)); border-radius: 999px; padding: 1px 9px; font-size: 13px; }
 .ib-item.q, .ib-item.t, .ib-item.k, .ib-item { border-left: 8px solid var(--proj, var(--line)); }
