@@ -109,6 +109,7 @@ location = /api/phone/pair {
 location / {
 	if ($aigile_board_pick___SLUG__) { return 418; }
 	error_page 418 = @aigile_board;
+	add_header Cache-Control "no-cache" always;   # AIG-1318: the teaser is re-checked each visit (cheap with the ETag), so a deploy shows at once
 	try_files $uri $uri/ =404;
 }
 location @aigile_board {
