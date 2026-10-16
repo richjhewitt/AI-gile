@@ -174,7 +174,7 @@ def('boardpick', 'search finds words in comments (hint on the card); Ctrl-click 
   check('shift-click ticks the run', (await page.locator('.card.picked').count()) === 2);
   await page.keyboard.press('Escape');
   check('Esc clears the picks', (await page.locator('.card.picked').count()) === 0 && (await page.locator('#pickBar').count()) === 0);
-  await page.click('#pickBtn');
+  await tbClick(page, '#pickBtn');
   await page.click(sel(c.id));
   check('select mode: plain click ticks', (await page.locator('.card.picked').count()) === 1);
   await page.setViewportSize({ width: 390, height: 800 });
@@ -400,8 +400,7 @@ def('quick', '👀 What\'s happening? summarises the board; 💬 Ask the team se
   s.cli(['ask', 'alpha', q.id, 'Shall I ship it?', '--as', 'Lead']);
   check('a real question back lands in your Messages', (await getCard(s, 'alpha', q.id)).needsYou === true && (await s.ok('GET', '/api/inbox')).some(c => c.id === q.id));
   // Team picker (AIG-414): defaults to this board; picking another project sends the question there. On a board with cards it is in ⋯ More (AIG-1359).
-  if (!(await page.isVisible('#boardTbMore [onclick^="askTeamDialog"]'))) await page.click('#tbDots');
-  await page.click('#boardTbMore [onclick^="askTeamDialog"]');
+  await page.click('.tb-keep [onclick^="askTeamDialog"]');
   await page.waitForSelector('#ask-to');
   check('the team picker defaults to this board', (await page.inputValue('#ask-to')) === 'alpha');
   await page.selectOption('#ask-to', 'beta');

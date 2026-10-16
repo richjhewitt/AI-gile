@@ -142,23 +142,21 @@ function renderBoard(p) {
   const live = teamLive(p), team = teamSorted((p.team || []).filter(m => !/retired/i.test(m.status || '')), live);
   const showAll = teamAll(), folded = team.filter(m => !live(m)).length, shownTeam = showAll ? team : team.filter(live);
   const log = (p.log || []).slice().reverse().slice(0, 50);
-  // AIG-1076: an empty (new) project keeps + New, Docs, Ask the team and Views on the bar; the rest sits behind ⋯ More (on a phone everything does, AIG-933).
+  // Keep conversations on the bar; occasional tools stay in More.
   const compact = !(window.matchMedia && matchMedia('(max-width: 600px)').matches);
   const pick = `<button type="button" id="pickBtn" class="${state.pickMode ? 'primary' : ''}" aria-pressed="${state.pickMode ? 'true' : 'false'}" onclick="togglePickMode()" title="${esc(t('pick.mode.title'))}">${esc(t('pick.mode'))}</button>`;
   const happening = `<button onclick="happeningDialog()" title="${esc(t('board.happening.title'))}">${esc(t('board.happening'))}</button>`;
-  const keep = p.cards.length ? `${happening}${pick}<button onclick="viewsDialog()">${esc(t('board.views'))}</button>${standupButtons(p).split(' <a')[0]}` : `<button onclick="openDocs()">${esc(t('board.docs'))}</button><button onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="viewsDialog()">${esc(t('board.views'))}</button>`;
+  const keep = p.cards.length ? `${happening}<button onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="viewsDialog()">${esc(t('board.views'))}</button>` : `${happening}<button onclick="openDocs()">${esc(t('board.docs'))}</button><button onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="viewsDialog()">${esc(t('board.views'))}</button>`;
   return `<div class="toolbar${compact ? ' compact' : ''}"><h2><bdi>${esc(p.name)}</bdi>${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}${p.sample ? ` <span class="pill sample-pill">${esc(t('sample.pill'))}</span> <button id="sampleRemove" onclick="removeSample()" title="${esc(t('sample.remove.title'))}">${esc(t('sample.remove'))}</button>` : ''}</h2>
       <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
-      ${compact ? `<span class="tb-keep">${keep}</span>` : ''}
+      <span class="tb-keep">${compact ? keep : happening + `<button onclick="askTeamDialog()">${esc(t('board.ask'))}</button>`}</span>
       <button class="tb-dots" id="tbDots" aria-expanded="${state.tbOpen ? 'true' : 'false'}" aria-label="${esc(t('board.more'))}" title="${esc(t('board.more'))}" onclick="toggleTb()">⋯${compact ? ' ' + esc(t('board.more')) : ''}</button>
       <div class="tb-more${state.tbOpen ? ' open' : ''}" id="boardTbMore" onclick="if (state.tbOpen && event.target.closest('button')) toggleTb()">
       ${compact && !p.cards.length ? '' : `<button onclick="openDocs()">${esc(t('board.docs'))}</button>`}
-      ${compact && p.cards.length ? '' : happening}
-      ${compact && !p.cards.length ? '' : `<button onclick="askTeamDialog()" title="${esc(t('board.ask.title'))}">${esc(t('board.ask'))}</button>`}
       <select class="lanesel" title="${esc(t('lanes.title'))}" onchange="setLanes(this.value)">${lanesList().map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
       ${compact ? '' : `<button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>`}
-      ${compact ? '' : pick}
-      ${compact && p.cards.length ? (hasStandupAnswers(p) ? standupButtons(p).slice(standupButtons(p).indexOf(' <a')) : '') : standupButtons(p)}
+      ${pick}
+      ${standupButtons(p)}
       <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
       <button onclick="location.hash='#/stats/${esc(p.slug)}'" title="${esc(t('stats.btn.title'))}">${esc(t('stats.title'))}</button>
       <button onclick="location.hash='#/ci/${esc(p.slug)}'" title="${esc(t('ci.btn.title'))}">${esc(t('ci.btn'))}</button>

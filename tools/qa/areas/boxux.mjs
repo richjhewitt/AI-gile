@@ -15,9 +15,12 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
   check('desktop: Views stays visible', await page.isVisible('.toolbar button[onclick="viewsDialog()"]'));
   check('desktop: the New card button is visible', await page.isVisible('.toolbar .primary'));
 
-  check('daily Pick stays visible and deleted tools stay folded (AIG-1385)', await page.isVisible('#pickBtn') && !(await page.isVisible('#boardTbMore')));
-  check('deleted tool stays inside More (AIG-1385)', await page.evaluate(p => { const host = document.createElement('div'); host.innerHTML = renderBoard({ ...p, nDeleted: 1 }); return !!host.querySelector('#boardTbMore #deletedBtn') && !!host.querySelector('.tb-keep #pickBtn'); }, await s.ok('GET', '/api/projects/alpha')));
+  check('rare Pick and deleted tools stay folded (AIG-1420)', !(await page.isVisible('#pickBtn')) && !(await page.isVisible('#boardTbMore')));
+  check('deleted tool stays inside More (AIG-1385)', await page.evaluate(p => { const host = document.createElement('div'); host.innerHTML = renderBoard({ ...p, nDeleted: 1 }); return !!host.querySelector('#boardTbMore #deletedBtn') && !!host.querySelector('#boardTbMore #pickBtn'); }, await s.ok('GET', '/api/projects/alpha')));
   await page.click('#tbDots');
+  check('Ask the team and What is happening stay visible (AIG-1420)', await page.isVisible('.tb-keep [onclick="askTeamDialog()"]') && await page.isVisible('.tb-keep [onclick="happeningDialog()"]'));
+  await page.evaluate(() => { if (state.tbOpen) toggleTb(); });
+  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1420.png'});
   // For you chips (AIG-938)
   const chips = await page.$$eval('.fy-chips .fy-chip', els => els.map(e => e.dataset.first));
   check('For you shows only chips with cards (plus the active one)', chips.length >= 1 && chips.length < 8 && chips.includes('k'), chips);
@@ -49,14 +52,14 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
 
   await page.screenshot({ path: 'R:/wt/shot-board-desk.png' }).catch(() => {});
 
-  await page.click('#tbDots');
+  await page.evaluate(() => { if (state.tbOpen) toggleTb(); });
   // phone (AIG-933)
   await page.setViewportSize({ width: 390, height: 844 });
   await sleep(300);
   check('phone: the ⋯ button shows', await page.isVisible('#tbDots'));
   check('phone: toolbar buttons are folded away', !(await page.isVisible('.toolbar button[onclick="openDocs()"]')));
   const top = await page.$eval('.column.foryou .card', e => e.getBoundingClientRect().top - document.querySelector('.toolbar').getBoundingClientRect().top);   // the top bar above is not this card's
-  check('phone: the first card follows within 250px of the toolbar', top < 250, await page.$$eval('#app > *, .toolbar > *', els => els.map(e => e.className + '@' + Math.round(e.getBoundingClientRect().top) + '/' + Math.round(e.getBoundingClientRect().height)).join(' ')));
+  check('phone: the first card follows within 350px of the toolbar with visible chat actions', top < 350, await page.$$eval('#app > *, .toolbar > *', els => els.map(e => e.className + '@' + Math.round(e.getBoundingClientRect().top) + '/' + Math.round(e.getBoundingClientRect().height)).join(' ')));
   await page.click('#tbDots');
   check('phone: ⋯ opens the same controls', await page.isVisible('.toolbar button[onclick="openDocs()"]') && await page.isVisible('#hfBtn'));
   await sleep(1500);
