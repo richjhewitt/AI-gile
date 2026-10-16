@@ -2,7 +2,7 @@
 // Revision checks are shared by all pollers in this window. Pop-outs invalidate each other's
 // caches after an owner action; no board data is copied through browser storage.
 const PagePoll = (() => {
-  const reads = new Map(), flights = new Map(), signatures = new WeakMap();
+  const reads = new Map(), flights = new Map(), pending = new Map(), signatures = new WeakMap();
   const SAFETY_MS = 30000, REV_MS = 3000, HIDDEN_MS = 30000;
   // A pop-out window (#/pop...) runs only the polls it needs; timers marked { home: true } (rail, home, inbox glance, background
   // glances) stay off there (AIG-1103).
@@ -102,7 +102,16 @@ const PagePoll = (() => {
     const m = /^\/api\/projects\/([a-z0-9-]+)$/.exec(url);
     return m && r !== null && stamps[m[1]] ? 'p:' + stamps[m[1]] : r;
   }
-  async function get(url, { force = false, revision: useRev = true, maxAge = SAFETY_MS, signal, timeout } = {}) {
+  function get(url, options = {}) {
+    const key = epoch + ':' + url;
+    if (pending.has(key)) return until(pending.get(key), options.signal);
+    // Reserve before the revision await, so forced startup callers share this read too.
+    const work = getOnce(url, { ...options, signal: undefined });
+    pending.set(key, work);
+    work.finally(() => { if (pending.get(key) === work) pending.delete(key); }).catch(() => {});
+    return until(work, options.signal);
+  }
+  async function getOnce(url, { force = false, revision: useRev = true, maxAge = SAFETY_MS, signal, timeout } = {}) {
     const token = useRev && !VOLATILE.test(url) ? await tokenFor(url) : null, generation = epoch, now = Date.now();
     const old = reads.get(url);
     if (old && old.flight && old.epoch === generation) return until(old.flight, signal);

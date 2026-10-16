@@ -134,7 +134,7 @@ async function loadLang() {
 function saveLang() {
   const l = chosenLang();
   if (ls('aigile.langSaved') === l) return;
-  try { api('POST', '/api/setup', { prefs: { lang: l } }).then(() => { try { localStorage.setItem('aigile.langSaved', l); } catch {} }, () => {}); } catch {}
+  try { api('POST', '/api/setup', { prefs: { lang: l } }, { quiet: true }).then(() => { try { localStorage.setItem('aigile.langSaved', l); } catch {} }, () => {}); } catch {}
 }
 // Quick English switch (AIG-124): a small top-bar button (🌐 and the label) flips between your language and English in one click.
 function paintEnBtn() {

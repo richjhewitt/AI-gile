@@ -61,12 +61,13 @@ def('coldphone', 'cold phone first card: split scripts versus bundle, 150ms netw
     await page.waitForSelector('.board .card',{timeout:60000});
     const ms=Date.now()-start;
     const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({url:r.name,bytes:r.transferSize})));
-    const result={mode:split?'before':'after',ms,requests:resources.length,scripts:resources.filter(r=>/\/js\/.*\.js$/.test(r.url)).length,inbox:resources.filter(r=>/\/api\/inbox(?:\?|$)/.test(r.url)).length,wireBytes:resources.reduce((n,r)=>n+r.bytes,0)};
+    const result={mode:split?'before':'after',ms,requests:resources.length,scripts:resources.filter(r=>/\/js\/.*\.js$/.test(r.url)).length,project:resources.filter(r=>/\/api\/projects\/phone$/.test(r.url)).length,inbox:resources.filter(r=>/\/api\/inbox(?:\?|$)/.test(r.url)).length,wireBytes:resources.reduce((n,r)=>n+r.bytes,0)};
     results.push(result); console.log('PHONE '+JSON.stringify(result));
     check(result.mode+' has no script errors',!errors.length,errors);
     if(!split) {
       check('one ordered script bundle replaces 125 script requests',result.scripts===1,result);
       check('inbox is fetched once before first card',result.inbox===1,result);
+      check('project is fetched once before first card',result.project===1,result);
       const shots='C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
       fs.mkdirSync(shots,{recursive:true}); await page.evaluate(() => document.querySelector('.card')?.scrollIntoView({ block:'nearest', inline:'nearest' })); await page.screenshot({path:path.join(shots,'AIG-1393.png')});
     }
@@ -79,5 +80,16 @@ def('coldphone', 'cold phone first card: split scripts versus bundle, 150ms netw
   const home = await ctx.newPage(); let inboxReads=0;
   home.on('request',r => { if(new URL(r.url()).pathname==='/api/inbox') inboxReads++; });
   await home.goto(BASE+'/#/'); await home.waitForSelector('.proj');
-  check('Home also shares its first inbox read',inboxReads===1,inboxReads); await home.close();
+  check('Home also shares its first inbox read',inboxReads===1,inboxReads);
+  let projectReads=0; const beforeInbox=inboxReads;
+  home.on('request',r => { if(new URL(r.url()).pathname==='/api/projects/phone') projectReads++; });
+  await home.route('**/api/inbox', async r => { await sleep(200); await r.continue(); });
+  await home.route('**/api/projects/phone', async r => { await sleep(200); await r.continue(); });
+  await home.evaluate(() => Promise.all([
+    IB.load(true), IB.load(true), IB.load(),
+    PagePoll.get('/api/projects/phone', { force:true }), PagePoll.get('/api/projects/phone', { force:true }),
+  ]));
+  check('concurrent forced inbox callers await one read',inboxReads-beforeInbox===1,inboxReads-beforeInbox);
+  check('concurrent forced project callers await one read',projectReads===1,projectReads);
+  await home.close();
 }, true);
