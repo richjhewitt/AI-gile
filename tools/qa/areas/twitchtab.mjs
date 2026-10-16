@@ -8,7 +8,7 @@ def('twitchtab', 'Twitch tab in the DM window: hidden with no channel, set in Se
   check('no channel: config empty and no messages', cfg0.channel === '' && (await s.ok('GET', '/api/twitch/messages')).length === 0, cfg0);
   check('a bad channel name is refused', (await s.api('POST', '/api/twitch/config', { channel: 'no spaces!' })).status === 400);
 
-  const page = await openPage(ctx, '#/');
+  const page = await openPage(ctx, '#/setup');
   await page.click('#dmRail [data-dms]'); await page.waitForSelector('#dmPanel .dm-filter');
   check('no channel: there is no Twitch tab', await page.locator('[data-dmfilter="twitch"]').count() === 0);
 
@@ -50,7 +50,7 @@ def('twitchtab', 'Twitch tab in the DM window: hidden with no channel, set in Se
   await tp.close();
   check('no token: there is no reply box (read-only)', await pg.locator('#twText').count() === 0 && (await s.ok('GET', '/api/twitch/config')).canReply === false);
   check('no token: sending is refused', (await s.api('POST', '/api/twitch/send', { text: 'hi' })).status === 400);
-  check('a bad token is refused', (await s.api('POST', '/api/twitch/token', { login: 'smizflark', token: 'short' })).status === 400);
+  check('a bad token is refused', (await s.api('POST', '/api/twitch/token', { login: 'smizflark', token: 'short', secretsToken: (await s.ok('GET', '/api/secrets/token')).token })).status === 400);
 
   // Sign in to reply (Setup box, real clicks), then the reply box shows and Enter sends
   const su = await openPage(ctx, '#/setup'); await su.waitForSelector('#twOther', { state: 'attached' }); await su.click('#twOther summary');   // AIG-1346: the paste way sits under Other ways
@@ -76,7 +76,7 @@ def('twitchtab', 'Twitch tab in the DM window: hidden with no channel, set in Se
   await pop.waitForFunction(() => /from the pop-out/.test(document.getElementById('dmList').textContent), null, { timeout: 10000 });
   check('replying from the pop-out sends', (await s.ok('GET', '/api/twitch/stub-sent')).length === 2);
   await pop.close();
-  await s.ok('POST', '/api/twitch/token', { login: '', token: '' });
+  await s.ok('POST', '/api/twitch/token', { login: '', token: '', secretsToken: (await s.ok('GET', '/api/secrets/token')).token });
   check('signing out removes the reply ability', (await s.ok('GET', '/api/twitch/config')).canReply === false);
 
   // 💡 !idea (AIG-630): a viewer's idea lands as an unaccepted backlog card, with guards

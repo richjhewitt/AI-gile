@@ -86,16 +86,16 @@ const TwitchTab = (() => {
       <div class="err" id="twErr2"></div></details>`;
   }
   async function signIn() {
-    try { cfg = await api('POST', '/api/twitch/token', { login: $('twLogin').value, token: $('twToken').value }); msg = t('tw.setup.saved'); } catch (e) { const x = $('twErr2'); if (x) x.textContent = e.message || String(e); return; }
+    try { cfg = await api('POST', '/api/twitch/token', { login: $('twLogin').value, token: $('twToken').value, secretsToken: await secToken() }); msg = t('tw.setup.saved'); } catch (e) { const x = $('twErr2'); if (x) x.textContent = e.message || String(e); return; }
     paintBox(); msg = '';
   }
-  async function signOut() { try { cfg = await api('POST', '/api/twitch/token', { login: '', token: '' }); } catch {} paintBox(); }
+  async function signOut() { try { cfg = await api('POST', '/api/twitch/token', { login: '', token: '', secretsToken: await secToken() }); } catch {} paintBox(); }
   // 💜 Sign in with Twitch: no Client ID yet shows the one step; else start the device code and poll until approved, denied or run out.
   async function authStart() {
     authMsg = ''; flow = null;
     if (!cfg.clientId && !($('twClientId') && $('twClientId').value.trim())) { authMsg = 'noid'; return paintBox(); }
     try {
-      if ($('twClientId') && $('twClientId').value.trim() !== cfg.clientId) cfg = await api('POST', '/api/twitch/config', { clientId: $('twClientId').value.trim() });
+      if ($('twClientId') && $('twClientId').value.trim() !== cfg.clientId) cfg = await api('POST', '/api/twitch/config', { clientId: $('twClientId').value.trim(), token: await secToken() });
       flow = await api('POST', '/api/twitch/auth/start', { token: await secToken() });
     } catch (e) { authMsg = e.message || String(e); return paintBox(); }
     paintBox();
@@ -119,7 +119,7 @@ const TwitchTab = (() => {
   }
   async function saveId() {
     const x = $('twIdErr');
-    try { cfg = await api('POST', '/api/twitch/config', { clientId: $('twClientId').value }); authMsg = ''; } catch (e) { if (x) x.textContent = e.message || String(e); return; }
+    try { cfg = await api('POST', '/api/twitch/config', { clientId: $('twClientId').value, token: await secToken() }); authMsg = ''; } catch (e) { if (x) x.textContent = e.message || String(e); return; }
     msg = t('tw.setup.saved'); paintBox(); msg = '';
   }
   async function save() { return join($('twChannel').value, true); }
