@@ -57,6 +57,8 @@ function closeDialog() {
   if (sureDone) sureDone(false);   // an open askSure is a No
   $('dialog').innerHTML = '';
   { const el = dlgTwin(dlgOpener); if (el) { try { el.focus(); } catch {} } }
+  // AIG-1427: the opener is gone (a menu item, a redrawn list): focus goes back into the open card, or to the page, never the top of it.
+  if (document.activeElement === document.body) { if (document.querySelector('#modal .panel')) cardFocusPanel(); else if (dlgOpener) $('app').focus({ preventScroll: true }); }
   dlgOpener = null;
   if (state.route.view === 'dlg') { window.close(); return; }   // a dialog in its own window: closing it closes the window
   if (state.cvPreview) { state.cvPreview = null; renderBoardOnly(); }   // an unsaved card view preview goes away (AIG-119)

@@ -229,7 +229,7 @@ function popOutCard(s, id) {
 function closeCard() {
   if (state.route.pop) { window.close(); return; }
   state.editing = false;
-  const n = document.querySelector(`#app a.card[data-id="${CSS.escape(cardId())}"]`); if (n) n.focus({ preventScroll: true });   // AIG-1371: back on its board card
+  const n = boardCardEl(cardId()); if (n) n.focus({ preventScroll: true });   // AIG-1371: back on its board card (AIG-1427: one that can take focus; else render() finds the opener)
   $('modal').innerHTML = '';
   location.hash = '#/p/' + slug();
 }

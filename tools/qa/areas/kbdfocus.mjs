@@ -8,6 +8,7 @@ def('kbdfocus', 'keyboard focus: card dialog, Home redraws, card fits, Help/Stat
   await mkCard(s, 'alpha', 'Plain card', { status: 'todo', description: 'Some words' });
   await mkCard(s, 'alpha', 'Verify me', { status: 'verify', testSteps: 'Step one\n'.repeat(20) });
   for (let i = 0; i < 6; i++) await mkCard(s, 'alpha', 'More ' + i, { status: 'todo' });
+  await mkCard(s, 'alpha', 'Done one', { status: 'done', description: 'Finished' });   // ALP-9
   const page = await openPage(ctx, '#/p/alpha');
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.waitForSelector('a.card[data-id]');
@@ -109,6 +110,38 @@ def('kbdfocus', 'keyboard focus: card dialog, Home redraws, card fits, Help/Stat
     check('Esc closes ⋯ More, focus back on it (AIG-1426)', (await act()).id === 'tbDots' && (await exp('#tbDots')) === 'false', await act());
   } else check('⋯ More is shown at phone width', false);
   await page.setViewportSize({ width: 1280, height: 800 });
+
+  // AIG-1427: closing a card (✕ by keyboard, also a done card) or the ? sheet puts focus back on what opened it, never the page top.
+  await page.goto(page.url().split('#')[0] + '#/p/alpha');
+  await page.waitForSelector('a.card[data-id="ALP-3"]');
+  const closeBack = async (id, what) => {
+    await page.focus(`a.card[data-id="${id}"]`); await page.keyboard.press('Enter');
+    await page.waitForSelector('#modal .panel'); await sleep(400);
+    await page.focus('#modal .window-close'); await page.keyboard.press('Enter'); await sleep(600);
+    check(`✕ Close on ${what}: focus is back on its board card (AIG-1427)`, (await act()).card === id, await act());
+  };
+  await closeBack('ALP-3', 'a to do card');
+  await closeBack('ALP-9', 'a done card');
+  await page.focus('a.card[data-id="ALP-4"]'); await page.keyboard.press('j'); await page.keyboard.press('j');
+  const jd = (await act()).card;
+  await page.keyboard.press('?'); await page.waitForSelector('#dialog .dialog.sc');
+  await page.keyboard.press('Escape'); await sleep(200);
+  check('? sheet then Esc: focus is back on the card j moved to (AIG-1427)', !!jd && (await act()).card === jd, [jd, await act()]);
+  await page.keyboard.press('?'); await page.waitForSelector('#dialog .dialog.sc');
+  await page.keyboard.press('Tab'); await page.keyboard.press('Enter'); await sleep(200);
+  check('? sheet closed with its Close button: focus back on the card too (AIG-1427)', (await page.locator('#dialog .dialog').count()) === 0 && (await act()).card === jd, await act());
+  // A card opened from elsewhere (its link from Home): closing lands on the board card, as that is where it goes back to.
+  await page.goto(page.url().split('#')[0] + '#/p/alpha/ALP-5');
+  await page.waitForSelector('#modal .panel'); await sleep(400);
+  await page.keyboard.press('Escape'); await sleep(500);
+  check('a card opened by its link: Esc puts focus on its board card (AIG-1427)', (await act()).card === 'ALP-5', await act());
+  // Its board card filtered out of sight: focus goes back to what opened it (here the search box), not the page top.
+  await page.focus('#f-q'); await page.keyboard.type('zzz-none'); await sleep(400);
+  await page.evaluate(() => { location.hash = '#/p/alpha/ALP-6'; });
+  await page.waitForSelector('#modal .panel'); await sleep(400);
+  await page.keyboard.press('Escape'); await sleep(500);
+  check('board card filtered away: closing gives focus back to the search box that was in use (AIG-1427)', (await act()).id === 'f-q', await act());
+  await page.fill('#f-q', ''); await sleep(300);
 
   await noErrors(page);
   await page.close();
