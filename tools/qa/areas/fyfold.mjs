@@ -71,7 +71,7 @@ def('fyfold', 'For you: a chip opens a window of folded rows, a card opens it un
   check('Accept inside the window takes the row away', (await page.locator('.fyf-row').count()) === 1);
   await sleep(300);
   check('the card moved to done', (await getCard(s, 'alpha', target.id)).status === 'done');
-  await page.click('.fyf-x');
+  await page.click('.fyf-dlg .window-close');
   check('the cross closes the window', (await page.locator('.fyf').count()) === 0);
   noErrors(page);
 }, true);

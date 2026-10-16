@@ -149,7 +149,7 @@ function renderBoard(p) {
       <select class="lanesel" title="${esc(t('lanes.title'))}" onchange="setLanes(this.value)">${lanesList().map(([k, l]) => `<option value="${k}"${k === by ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
       ${compact ? '' : `<button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>`}
       ${compact ? '' : pick}
-      ${compact ? (hasStandupAnswers(p) ? standupButtons(p).slice(standupButtons(p).indexOf(' <a')) : '') : standupButtons(p)}
+      ${compact && p.cards.length ? (hasStandupAnswers(p) ? standupButtons(p).slice(standupButtons(p).indexOf(' <a')) : '') : standupButtons(p)}
       <button onclick="openNews('${esc(p.slug)}')" title="${esc(t('news.title'))}">${esc(t('news.btn'))}</button>
       <button onclick="location.hash='#/stats/${esc(p.slug)}'" title="${esc(t('stats.btn.title'))}">${esc(t('stats.title'))}</button>
       <button onclick="location.hash='#/ci/${esc(p.slug)}'" title="${esc(t('ci.btn.title'))}">${esc(t('ci.btn'))}</button>
