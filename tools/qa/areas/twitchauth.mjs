@@ -56,21 +56,28 @@ def('twitchauth', '💜 Sign in with Twitch: device code (waiting, approved, den
     const settings = () => fs.readFileSync(path.join(s.dir, 'aigile.local.json'), 'utf8');
     const kept = () => { try { return fs.readFileSync(path.join(SECDIR, 'secrets', 'kept.json'), 'utf8'); } catch { return ''; } };
 
-    // No Client ID: the server refuses with the one step, and the page button explains it
+    // No Client ID at all (no built-in one, none of your own): the server says sign-in is not ready; Setup shows one plain line,
+    // no Sign in button and no developer steps up front (they sit under Other ways) (AIG-1404)
+    const c0 = await s.ok('GET', '/api/twitch/config');
+    check('no built-in Client ID here: config says not ready', c0.builtIn === false && c0.ready === false && c0.clientId === '', c0);
     const r0 = await s.api('POST', '/api/twitch/auth/start', { token });
-    check('no Client ID: sign-in start says the one step (dev.twitch.tv/console, Client type Public)', r0.status === 400 && /dev\.twitch\.tv\/console/.test(r0.body.error) && /Public/.test(r0.body.error), r0);
+    check('no Client ID: sign-in start says it is not ready yet', r0.status === 400 && /not ready yet/.test(r0.body.error), r0);
     const su = await openPage(ctx, '#/setup'); await su.evaluate(() => { window.__twAuthPollMs = 150; });
-    await su.waitForSelector('#twAuth'); await su.click('#twAuth');
-    await su.waitForSelector('#twAuthNoId');
-    check('no Client ID: the button shows the how-to (Register Your Application, Chat Bot, Public, Client ID)', /Register Your Application/.test(await su.textContent('#twAuthNoId')) && /Chat Bot/.test(await su.textContent('#twAuthNoId')) && /Client ID/.test(await su.textContent('#twAuthNoId')));
-    check('the sign-in screen says why each permission is asked', /moderate/.test(await su.textContent('#twScopes')) && /follow/.test(await su.textContent('#twScopes')));
+    await su.waitForSelector('#twAuthNotReady');
+    check('no Client ID: one plain line, no Sign in button, no developer steps showing', /isn't ready yet/.test(await su.textContent('#twAuthNotReady')) && await su.locator('#twAuth').count() === 0 && !(await su.isVisible('#twIdHelp')) && !(await su.isVisible('#twClientId')));
+    check('the Client ID box and the developer steps are under Other ways', await su.locator('#twOther #twClientId').count() === 1 && /Register Your Application/.test(await su.textContent('#twOther #twIdHelp')) && !/Chat Bot/.test(await su.textContent('#twOther')));
+    if (process.env.QA_SHOTS) { await su.waitForTimeout(600); await su.locator('#twitchBox').screenshot({ path: process.env.QA_SHOTS + '/AIG-1404-notready.png' }); }
     check('a bad Client ID is refused', (await s.api('POST', '/api/twitch/config', { clientId: 'no!' })).status === 400);
     check('starting needs the secrets page token', (await s.api('POST', '/api/twitch/auth/start', {})).status === 403);
 
-    // Save the Client ID in Setup, then sign in: waiting (pending twice), then approved
+    // Save your own Client ID under Other ways, then sign in: waiting (pending twice), then approved
+    await su.click('#twOther summary');
     await su.fill('#twClientId', CLIENT); await su.click('#twClientSave');
     for (let i = 0; i < 50 && (await s.ok('GET', '/api/twitch/config')).clientId !== CLIENT; i++) await sleep(100);
     check('Setup saved the Client ID (plain setting, it is public)', (await s.ok('GET', '/api/twitch/config')).clientId === CLIENT);
+    await su.waitForSelector('#twAuth');
+    check('own Client ID saved: Sign in shows, Other ways stays open', await su.locator('#twAuthNotReady').count() === 0 && await su.getAttribute('#twOther', 'open') !== null);
+    check('the sign-in screen says why each permission is asked', /moderate/.test(await su.textContent('#twScopes')) && /follow/.test(await su.textContent('#twScopes')));
     const popP = ctx.waitForEvent('page', { timeout: 5000 }).catch(() => null);
     await su.click('#twAuth');
     await su.waitForSelector('#twAuthUserCode');
@@ -165,3 +172,36 @@ def('twitchauth', '💜 Sign in with Twitch: device code (waiting, approved, den
     noErrors(su); noErrors(pg); await su.close(); await pg.close();
   } finally { tw.srv.close(); }
 }, true, { AIGILE_TWITCH_STUB: '1', AIGILE_SECRETS_DIR: SECDIR });
+
+// AIG-1404: AI-gile ships one built-in public Client ID (here set by AIGILE_TWITCH_CLIENT_ID), so you just sign in with your own
+// Twitch account: Setup shows Sign in with Twitch and the channel picker, the Client ID box sits closed under Other ways.
+const SECDIR2 = tmp('twbuiltinsec');
+def('twitchbuiltin', '💜 Twitch with the built-in Client ID: only Sign in with Twitch and the channel picker up front, own app under Other ways (AIG-1404)', async (s, ctx) => {
+  const tw = fakeTwitch(), port = await freePort(); await listen(tw.srv, port);
+  try {
+    const fakeBase = 'http://127.0.0.1:' + port;
+    await s.ok('POST', '/api/twitch/stub-base', { id: fakeBase, api: fakeBase });
+    await ctx.route('https://www.twitch.tv/**', r => r.fulfill({ contentType: 'text/html', body: '<title>activate</title>activate' }));
+    const c0 = await s.ok('GET', '/api/twitch/config');
+    check('built-in Client ID: ready, and none of your own', c0.builtIn === true && c0.ready === true && c0.clientId === '', c0);
+    const su = await openPage(ctx, '#/setup'); await su.evaluate(() => { window.__twAuthPollMs = 150; });
+    await su.waitForSelector('#twAuth');
+    check('Setup: Sign in with Twitch (your own account) and the channel picker show', await su.isVisible('#twAuth') && /own Twitch account/.test(await su.textContent('#twitchBox')) && await su.isVisible('#twChannel'));
+    check('Setup: no Client ID box, no developer steps, no not-ready line up front', !(await su.isVisible('#twClientId')) && !(await su.isVisible('#twIdHelp')) && await su.getAttribute('#twOther', 'open') === null && await su.locator('#twAuthNotReady').count() === 0);
+    if (process.env.QA_SHOTS) await su.locator('#twitchBox').screenshot({ path: process.env.QA_SHOTS + '/AIG-1404.png' });
+    const popP = ctx.waitForEvent('page', { timeout: 5000 }).catch(() => null);
+    await su.click('#twAuth'); await su.waitForSelector('#twAuthUserCode');
+    (await popP)?.close();
+    await su.waitForSelector('#twAuthOn', { timeout: 10000 });
+    const dev = tw.seen.calls.find(c => c.what === 'device');
+    check('sign-in used the built-in Client ID and lands on your own login', dev && dev.client_id === CLIENT && /smizflark/.test(await su.textContent('#twAuthOn')), dev);
+    check('saving the same ID as your own keeps the sign-in', (await s.ok('POST', '/api/twitch/config', { clientId: CLIENT })).signedIn === true);
+    check('clearing your own ID falls back to the built-in one, still signed in', (await s.ok('POST', '/api/twitch/config', { clientId: '' })).signedIn === true);
+    await su.setViewportSize({ width: 390, height: 800 }); await su.emulateMedia({ colorScheme: 'dark' });
+    await su.reload(); await su.waitForSelector('#twitchBox #twAuthOn');
+    const over = await su.evaluate(() => { const b = document.getElementById('twitchBox'); return b.scrollWidth - b.clientWidth; });
+    check('phone width, dark: the Twitch box fits', over <= 1, over);
+    if (process.env.QA_SHOTS) await su.locator('#twitchBox').screenshot({ path: process.env.QA_SHOTS + '/AIG-1404-390-dark.png' });
+    noErrors(su); await su.close();
+  } finally { tw.srv.close(); }
+}, true, { AIGILE_TWITCH_STUB: '1', AIGILE_SECRETS_DIR: SECDIR2, AIGILE_TWITCH_CLIENT_ID: CLIENT });

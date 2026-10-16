@@ -209,6 +209,20 @@ def('usage', '#/usage renders with and without limits.log', async (s, ctx) => {
   const t2 = await page2.textContent('#app');
   check('usage page renders with limits.log', /20\s*%/.test(t2) || (await page2.locator('svg').count()) > 0, t2.slice(0, 160));
   noErrors(page2);
+  // AIG-1390: the line under the gauges is a short colour key: one line at 1366px, wraps without overflow at 390px.
+  const noteLines = () => page2.locator('.uz-note').evaluate(el => ({ lines: Math.round(el.getBoundingClientRect().height / (parseFloat(getComputedStyle(el).lineHeight) || parseFloat(getComputedStyle(el).fontSize) * 1.3)), over: el.scrollWidth > el.clientWidth + 1, page: document.documentElement.scrollWidth > innerWidth + 1, text: el.textContent }));
+  const vp0 = page2.viewportSize();
+  await page2.setViewportSize({ width: 1366, height: 800 });
+  await page2.waitForTimeout(200);
+  let nl = await noteLines();
+  check('usage note: short colour key on one line at 1366px', nl.lines === 1 && !/two limits/i.test(nl.text) && /✅/.test(nl.text) && /⛔/.test(nl.text), nl);
+  if (process.env.QA_SHOTS) await page2.locator('.uz-note').evaluate(el => el.scrollIntoView({ block: 'center' })).then(() => page2.screenshot({ path: process.env.QA_SHOTS + '/AIG-1390.png' }));
+  await page2.setViewportSize({ width: 390, height: 800 });
+  await page2.waitForTimeout(200);
+  nl = await noteLines();
+  check('usage note: wraps at 390px without sideways overflow', !nl.over && nl.lines <= 3, nl);
+  if (process.env.QA_SHOTS) await page2.screenshot({ path: process.env.QA_SHOTS + '/AIG-1390-390.png' });
+  if (vp0) await page2.setViewportSize(vp0);
   // AIG-356: 20% used -> 80% left (green), 33% used -> 67% left (green); the tooltip says so.
   const glance = async () => { await page2.evaluate(() => UsageGlance.poll()); await page2.waitForTimeout(400); return { bars: await page2.locator('#ugBars .ug-bar').evaluateAll(es => es.map(e => e.className.replace('ug-bar ', ''))), title: await page2.getAttribute('#usageNav', 'title'), dot: await page2.locator('#ugBars .ug-dot').count(), dash: await page2.locator('#ugBars .ug-dash').count() }; };
   let g = await glance();
