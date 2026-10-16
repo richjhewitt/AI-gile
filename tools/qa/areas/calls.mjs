@@ -265,6 +265,60 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
     check('a call that just arrived: one notification and a beep, named', ring.first.notes === 1 && ring.first.beeps === 1 && /Zed/.test(ring.first.title), ring);
     check('the same call twice, an hour-old one and a plain message do not ring', ring.notes === 1, ring);
     await pg.evaluate(() => Call.leave());
+    // AIG-1324: the ring on the page (notifications blocked too), Decline tells the caller, answered elsewhere stops it, unanswered = Missed call
+    const rp = await pg.evaluate(async () => {
+      const out = {}, $ = id => document.getElementById(id), wait = ms => new Promise(x => setTimeout(x, ms));
+      window.Notification = function () { throw new Error('blocked'); }; IB.alertsOn = () => false;
+      document.activeElement && document.activeElement.blur();
+      const one = { id: 'yy', name: 'Yan', lastDir: 'in', lastKind: 'call', lastIn: new Date().toISOString() }; one.callAt = one.lastIn; one.callState = 'ringing';
+      Call.ring([one]); const b = $('callRing');
+      out.shown = !!b && b.getAttribute('role') === 'alertdialog' && /Yan is calling/.test($('callRingWho').textContent) && !!$('callRingJoin') && /Decline/.test($('callRingNo').textContent);
+      out.focus = document.activeElement === $('callRingJoin');
+      out.named = $(b.getAttribute('aria-labelledby')) === $('callRingWho') && !!$(b.getAttribute('aria-describedby'));
+      Call.ring([{ ...one, callState: 'joined' }]); out.elsewhere = !$('callRing');
+      b.remove();
+      Call.ringMs = 800; Call.ring([{ ...one, id: 'xx', lastIn: new Date().toISOString(), callAt: undefined }]); out.again = !!$('callRing');
+      $('callRing').dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); out.esc = !$('callRing');
+      Call.ring([{ ...one, id: 'ww', lastIn: new Date().toISOString(), callAt: undefined }]); await wait(1300); out.timedOut = !$('callRing');
+      out.missed = Call.missed({ kind: 'call', dir: 'in', call: 'ringing', at: new Date(Date.now() - 2000).toISOString() }) && !Call.missed({ kind: 'call', dir: 'in', at: new Date(Date.now() - 2000).toISOString() }) && !Call.missed({ kind: 'call', dir: 'in', call: 'joined', at: new Date(Date.now() - 2000).toISOString() });
+      Call.ringMs = 90000;
+      return out;
+    });
+    check('a fresh call rings on the page with notifications blocked: an alert dialog naming the caller, Join and Decline, Join focused', rp.shown && rp.focus && rp.named, rp);
+    check('the ring stops when answered elsewhere, on Esc, and after the ring time', rp.elsewhere && rp.again && rp.esc && rp.timedOut, rp);
+    check('only a call line that rang and went unanswered reads as missed', rp.missed, rp);
+    {
+      const vp = pg.viewportSize(); await pg.setViewportSize({ width: 390, height: 844 }); await pg.emulateMedia({ colorScheme: 'dark' });
+      const fit = await pg.evaluate(() => { Call.ring([{ id: 'vv', name: 'Valentina Long-Name', lastDir: 'in', lastKind: 'call', lastIn: new Date().toISOString() }]); const b = document.getElementById('callRing'), r = b.getBoundingClientRect(), j = document.getElementById('callRingNo').getBoundingClientRect(), s = getComputedStyle(b); const out = { inside: r.left >= 0 && r.right <= innerWidth && j.right <= innerWidth, noScroll: document.documentElement.scrollWidth <= innerWidth, color: s.color, bg: s.backgroundColor }; Call.stopRing(); return out; });
+      check('the ring fits at 390px in dark mode, readable', fit.inside && fit.noScroll && fit.color !== fit.bg, fit);
+      await pg.emulateMedia({ colorScheme: 'light' }); if (vp) await pg.setViewportSize(vp);
+    }
+    // the real thing: B calls, A's page rings, A declines; B's chat says so; A's line reads declined with Call back
+    await pg.evaluate(id => Dms.show('dm:' + id), cb.id);
+    const bRings = () => { fs.rmSync(path.join(b.data, 'calls', 'invites.json'), { force: true }); return b.ok('POST', `/api/calls/dm/${ca.id}/token`, {}); };   // B rings (not joins A's call)
+    await bRings();
+    const rang = await pg.waitForSelector('#callRing', { timeout: 10000 }).then(() => true, () => false);
+    check('B\'s call rings on A\'s page', rang && /Bea is calling/.test(await pg.locator('#callRingWho').innerText()));
+    await pg.click('#callRingNo');
+    check('Decline: the ring goes, A\'s line is marked declined', !await pg.locator('#callRing').count() && !!await until(async () => (await a.ok('GET', `/api/dms/contacts/${cb.id}/messages`)).filter(m => m.kind === 'call' && m.dir === 'in').at(-1).call === 'declined'));
+    check('the caller is told: B\'s chat gets a declined line', !!await until(async () => (await b.ok('GET', `/api/dms/contacts/${ca.id}/messages`)).some(m => m.kind === 'calldecline' && m.dir === 'in' && /Declined/.test(m.text))));
+    await pg.waitForFunction(() => [...document.querySelectorAll('.dm-msg.dm-call:not(.mine)')].some(x => /You declined a call from Bea/.test(x.textContent) && x.querySelector('.dm-callback')), null, { timeout: 8000 }).catch(() => {});
+    check('A\'s chat: "You declined a call from Bea" with Call back', await pg.evaluate(() => { const l = [...document.querySelectorAll('.dm-msg.dm-call:not(.mine)')].at(-1); return !!l && /You declined a call from Bea/.test(l.textContent) && !!l.querySelector('.dm-callback') && !l.querySelector('.dm-joinbtn'); }));
+    // answered elsewhere: another call, A joins from somewhere else (the API), the ring on this page stops
+    await bRings();
+    await pg.waitForSelector('#callRing', { timeout: 10000 });
+    await a.ok('POST', `/api/calls/dm/${cb.id}/token`, { ring: false });
+    check('joined elsewhere: the ring on this page stops', await pg.waitForFunction(() => !document.getElementById('callRing'), null, { timeout: 8000 }).then(() => true, () => false));
+    // missed: nobody answers within the ring time
+    await pg.evaluate(() => { Call.ringMs = 2500; });
+    await bRings();
+    await pg.waitForSelector('#callRing', { timeout: 10000 });
+    const miss = await pg.waitForFunction(() => { const l = [...document.querySelectorAll('.dm-msg.dm-call:not(.mine)')].at(-1); return !document.getElementById('callRing') && l && /Missed call from Bea/.test(l.textContent) && l.querySelector('.dm-callback'); }, null, { timeout: 12000 }).then(() => true, () => false);
+    check('unanswered: the ring stops and the line reads "📞 Missed call from Bea" with Call back', miss);
+    await pg.evaluate(r => { window.lkLog.connects.length = 0; window.lkRoomName = r; }, room);
+    await pg.click('.dm-msg.dm-call:not(.mine) .dm-callback >> nth=-1');
+    check('Call back calls', await pg.waitForFunction(() => Call.active() && lkLog.connects.length === 1, null, { timeout: 8000 }).then(() => true, () => false));
+    await pg.evaluate(() => { Call.leave(); Call.ringMs = 90000; });
     noErrors(page); noErrors(setup); noErrors(pg);
     const cleared = await a.ok('POST', '/api/calls', { clear: true, token: tok });
     check('Remove clears it all (calls still work, through the relay)', cleared.own === false && cleared.secret === false && !cleared.url && cleared.set === true, cleared);
