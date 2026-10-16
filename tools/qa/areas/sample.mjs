@@ -76,6 +76,11 @@ def('sample', 'sample project: Add a sample project on the empty home creates it
   await page.waitForSelector('#sampleBtn');
   check('removed in one click: no projects left', (await s.ok('GET', '/api/projects')).length === 0 && (await s.api('GET', '/api/projects/sample-project')).status === 404);
   check('removing again is a 404', (await s.api('DELETE', '/api/sample-project')).status === 404);
+  // AIG-1370: in Dutch the pretend helper is Sam (voorbeeld), not Sam (sample)
+  await s.ok('POST', '/api/setup', { prefs: { lang: 'nl' } }); await s.ok('POST', '/api/sample-project');
+  const nlp = await s.ok('GET', '/api/projects/sample-project'), names = [...new Set(nlp.cards.flatMap(c => [c.createdBy, ...(c.comments || []).map(m => m.author)]))];
+  check('a Dutch sample says Sam (voorbeeld) everywhere (AIG-1370)', names.includes('Sam (voorbeeld)') && !names.some(n => /sample/i.test(n)), names);
+  await s.ok('DELETE', '/api/sample-project'); await s.ok('POST', '/api/setup', { prefs: { lang: 'en' } });
   noErrors(page);
   await page.close();
 }, true);

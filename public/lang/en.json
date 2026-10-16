@@ -99,6 +99,7 @@
  "projects.none.hint": "Press + New project to start your first one. Setup is one click away in the top bar.",
  "projects.none": "No projects yet.",
  "sample.name": "Sample: Garden party",
+ "sample.who": "Sam (sample)",
  "sample.desc": "A sample project to click around in. Nothing here is real: remove it with one click.",
  "sample.add": "🧸 Add a sample project",
  "sample.add.title": "Makes a small pretend board to try things on. No folder, no AI. Remove it any time.",
