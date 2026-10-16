@@ -50,6 +50,23 @@ def('kbdfocus', 'keyboard focus: card dialog, Home redraws, card fits, Help/Stat
   check('Home: focus is never lost to the page over 12 s (AIG-1424)', lost === 0, lost);
   await page.setViewportSize({ width: 1280, height: 800 });
 
+  // AIG-1425: the card panel ends inside the window, so a focused Accept / Send back can be seen.
+  for (const [w, h] of [[1280, 800], [1280, 720], [1400, 1000], [390, 760]]) {
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto(page.url().split('#')[0] + '#/p/alpha/ALP-2');
+    await page.waitForSelector('#modal .panel .verdict'); await sleep(300);
+    const r = await page.evaluate(() => { const b = document.querySelector('#modal .panel').getBoundingClientRect(); return { bottom: Math.round(b.bottom), vh: innerHeight }; });
+    check(`card panel ends inside a ${w}x${h} window (AIG-1425)`, r.bottom <= r.vh, r);
+    await page.focus('#v-text');
+    let i = 0; for (; i < 15; i++) { await page.keyboard.press('Tab'); if (/Accept/.test((await act()).text)) break; }
+    const seen = await page.evaluate(() => { const b = document.activeElement.getBoundingClientRect(); return { top: Math.round(b.top), bottom: Math.round(b.bottom), vh: innerHeight }; });
+    check(`Tab to Accept: it is in sight at ${w}x${h} (AIG-1425)`, i < 15 && seen.top >= 0 && seen.bottom <= seen.vh, seen);
+    await page.keyboard.press('Tab');
+    const sb = await page.evaluate(() => { const b = document.activeElement.getBoundingClientRect(); return { t: document.activeElement.textContent, bottom: Math.round(b.bottom), vh: innerHeight }; });
+    check(`Send back after it is in sight too at ${w}x${h} (AIG-1425)`, /Send back/.test(sb.t) && sb.bottom <= sb.vh, sb);
+  }
+  await page.setViewportSize({ width: 1280, height: 800 });
+
   await noErrors(page);
   await page.close();
 }, true);
