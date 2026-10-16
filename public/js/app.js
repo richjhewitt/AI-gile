@@ -102,7 +102,8 @@ async function checkBuild() {
     if (m.owner && m.owner !== state.owner) { state.owner = m.owner; refresh(true); }
     // Quiet ended by itself at the wake-up time (AIG-232): show what happened overnight.
     if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});
-    if (wasQuiet !== m.quiet) setNight(m.quiet); wasQuiet = m.quiet;
+    // AIG-1353: also when the page started in night mode from aigile.nightBoot but quiet already ended (or the other way round)
+    if (wasQuiet !== m.quiet || document.documentElement.hasAttribute('data-night') !== !!m.quiet) setNight(m.quiet); wasQuiet = m.quiet;
     quietTimeChip(m.quietTime);   // change calendar (AIG-615)
     Focus.watch(m.focus);   // 🎯 focus mode (AIG-395)
     applyAppLogo(m.appLogo, m.appIcon);
@@ -263,8 +264,15 @@ function quietTimeChip(q) {
   e.title = q ? t('quiettime.chip.title') : '';
 }
 /* ---------- going quiet: night theme ---------- */
-function setNight(since) {
+function setNight(since, until) {
   document.documentElement.toggleAttribute('data-night', !!since);
+  // AIG-1353: remembered for the next start (index.html's head script), and the desktop app's window colour follows
+  try {
+    const old = JSON.parse(localStorage.getItem('aigile.nightBoot') || 'null');
+    const nb = since ? { s: since, u: until || (old && old.s === since ? old.u : '') || '' } : null;
+    if (JSON.stringify(nb) !== JSON.stringify(old)) { if (nb) localStorage.setItem('aigile.nightBoot', JSON.stringify(nb)); else localStorage.removeItem('aigile.nightBoot'); }
+  } catch {}
+  if (/Electron/.test(navigator.userAgent) && setNight.sent !== !!since) { setNight.sent = !!since; location.href = 'aigile://night/' + (since ? 1 : 0); }
   if (window.Inbox) Inbox.repaint();
   $('nightTop').innerHTML = since ? `<button class="navlink" onclick="openNightGlance()" title="${esc(t('ng.open.title'))}">🌙</button><button class="navlink" onclick="backFromQuiet()" title="${esc(t('night.since', { when: ago(since) }))}">${esc(t('night.back'))}</button>` : '';
 }
@@ -283,7 +291,7 @@ async function goQuietNow() {
   closeDialog();
   try {
     const r = await api('POST', '/api/quiet', { on: true, watch, until });
-    setNight(r.quiet);
+    setNight(r.quiet, r.until);
     // A proper goodnight instead of a plain alert box (AIG-208): who was told, who was woken, what the watchman watches.
     const chips = names => `<div class="qd-chips">${names.map(n => `<span class="qd-chip">${esc(n)}</span>`).join('')}</div>`;
     const look = Object.fromEntries((state.projects || []).map(p => [p.slug, p.name]));

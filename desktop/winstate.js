@@ -28,7 +28,12 @@ function clampBounds(saved, workAreas) {
 }
 
 // AIG-1273: the window's colour before the page paints, from the saved theme pick (or the system's) so dark mode never flashes white.
-function pickBackground(theme, systemDark) {
+// AIG-1353: while quiet (night mode) every window is night-coloured whatever the theme; the 🌙 night glance window always is.
+const NIGHT_BG = '#0d0906', GLANCE_BG = '#0b0605';
+const isNightGlance = url => String(url || '').includes('#/pop-night');
+function pickBackground(theme, systemDark, night, url) {
+  if (isNightGlance(url)) return GLANCE_BG;
+  if (night) return NIGHT_BG;
   if (theme === 'black') return '#000000';
   if (theme === 'dark') return '#12151b';
   if (theme === 'light') return '#f6f7f9';
@@ -54,4 +59,4 @@ function badgeBitmap(n) {
   }
   return { buffer: buf, width: S, height: S };
 }
-module.exports = { clampBounds, pickBackground, THEMES, badgeCount, badgeBitmap, MIN_W, MIN_H };
+module.exports = { clampBounds, pickBackground, isNightGlance, THEMES, badgeCount, badgeBitmap, MIN_W, MIN_H };

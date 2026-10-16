@@ -112,10 +112,6 @@ abbr.devw:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px;
 
 /* 🌙 Night glance (AIG-209): near-black, red-tinted, low contrast; a slow amber glow only when something is urgent */
 body.nightglance { background: #0b0605 !important; color: #b07a6a; filter: brightness(.85); }
-/* AIG-1353: before the first render (and whatever the theme) the window is already night-coloured, with no board header */
-:root.boot-night, :root.boot-night body { background: #0b0605 !important; color: #b07a6a; color-scheme: dark; }
-:root.boot-night body > header, :root.boot-night #filterbar, :root.boot-night #updateTop, :root.boot-night #saverBar, :root.boot-night #swarmBar,
-:root.boot-night #dmRail, :root.boot-night #dmPanel { display: none !important; }
 body.nightglance main { padding: 14px; }
 /* Drag it anywhere (AIG-217): the night glance has no header, so the whole window is the handle, onto a second screen */
 body.desktop.nightglance main { -webkit-app-region: drag; min-height: 100vh; box-sizing: border-box; }
