@@ -199,9 +199,9 @@ def('teaserwords', 'site/index.html (file://): 📖 Dev words button and dialog 
   check('search finds words by their explanation too ("snapshot": Commit)', (await shown()).includes('Commit') && (await page.$eval('#words-none', e => e.hidden)), await shown());
   // AIG-1296: the words in groups (h3 under the dialog's h2), a count read out as you search, search across all groups
   const enApp = JSON.parse(fs.readFileSync(path.join(ROOT, 'public', 'lang', 'en.json'), 'utf8'));
-  check('the bundles carry the groups: build, change, run, team, every word in one, and the count in plural forms', en.groups.map(g => g.id).join() === 'build,change,run,team' && en.list.length >= 45 && en.list.every(w => en.groups.some(g => g.id === w.g)) && en.count && en.count.other === enApp['gloss.count'].other, en.groups);
+  check('the bundles carry the groups along a project\'s life (idea to money, AIG-1408), every word in one, and the count in plural forms', en.groups.map(g => g.id).join() === 'idea,plan,agile,build,test,change,run,sec,ai,money' && en.list.length >= 400 && en.list.every(w => en.groups.some(g => g.id === w.g)) && en.count && en.count.other === enApp['gloss.count'].other, en.groups);
   const grp = await page.evaluate(() => ({ hs: [...document.querySelectorAll('#words-dlg h2, #words-dlg h3')].map(h => h.tagName + ':' + h.textContent), secs: [...document.querySelectorAll('#words-list .words-group')].map(x => x.dataset.group), labelled: [...document.querySelectorAll('#words-list .words-group')].every(x => document.getElementById(x.getAttribute('aria-labelledby'))?.tagName === 'H3') }));
-  check('the dialog shows the words under group headings in order: h2, then an h3 per group', grp.secs.join() === 'build,change,run,team' && grp.labelled && grp.hs[0].startsWith('H2:') && grp.hs.length === 5 && grp.hs.slice(1).every((h, i) => h === 'H3:' + en.groups[i].name), grp);
+  check('the dialog shows the words under group headings in order: h2, then an h3 per group', grp.secs.join() === 'idea,plan,agile,build,test,change,run,sec,ai,money' && grp.labelled && grp.hs[0].startsWith('H2:') && grp.hs.length === 11 && grp.hs.slice(1).every((h, i) => h === 'H3:' + en.groups[i].name), grp);
   await page.fill('#words-q', '');
   check('a status line under the search box says how many words there are', (await page.getAttribute('#words-count', 'role')) === 'status' && (await page.textContent('#words-count')) === en.list.length + ' words' && (await page.getAttribute('#words-q', 'aria-describedby')) === 'words-count');
   await page.focus('#words-q'); await page.keyboard.type('incident');
@@ -224,6 +224,8 @@ def('teaserwords', 'site/index.html (file://): 📖 Dev words button and dialog 
   await sleep(300);
   const marked = () => page.$$eval('abbr.devw', e => e.map(x => x.textContent.toLowerCase()));
   check('"Underline these words on the page" puts dotted lines under them (agents...), not in links or buttons', (await marked()).includes('agents') && await page.$$eval('abbr.devw', e => e.every(x => !x.closest('a,button,dialog'))), await marked());
+  check('AIG-1408: "Agile" in the page text is underlined, with its explanation', await page.$$eval('main abbr.devw', (e, t) => e.some(x => x.textContent === 'Agile' && x.getAttribute('data-tip') === t), en.list.find(w => w.id === 'agile').text));
+  check('AIG-1408: Agile, Scrum, CI/CD, SLA and Hallucination are in the site\'s word list, CI/CD and SLA found by abbreviation', ['agile', 'scrum', 'cicd', 'sla', 'hallucination'].every(id => en.list.some(w => w.id === id && w.text.length > 20)) && en.list.find(w => w.id === 'cicd').word.startsWith('CI/CD') && en.list.find(w => w.id === 'sla').also.includes('SLA'));
   check('the choice is remembered (localStorage)', (await page.evaluate(() => localStorage.getItem('aigile-site-devwords'))) === '1');
   // AIG-1296: terms of more words are underlined as one, the longest first
   await page.evaluate(() => document.querySelector('main').insertAdjacentHTML('beforeend', '<p id="qa-mw">A major  incident put the status page on red until the backup came back.</p>'));

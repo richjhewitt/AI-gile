@@ -11,7 +11,7 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
   await page.waitForSelector('.gloss-item');
   check('the glossary lists the words', (await page.locator('.gloss-item').count()) >= 15 && /Commit/.test(await page.textContent('.gloss-group[data-group=build] .gloss-list')));
   await page.fill('#glossQ', 'branch');
-  check('search narrows it down', (await page.locator('.gloss-item:not([hidden])').count()) >= 1 && (await page.locator('.gloss-item:not([hidden])').count()) < 5);
+  check('search narrows it down (a handful of the 400+ words)', (await page.locator('.gloss-item[data-id=branch]:not([hidden])').count()) === 1 && (await page.locator('.gloss-item:not([hidden])').count()) < 10);
   await page.goto(BASE + '/#/p/alpha'); await page.waitForSelector('.board');
   check('no tooltips while the switch is off', (await page.locator('abbr.devw').count()) === 0);
   await page.goto(BASE + '/#/setup'); await page.waitForSelector('#explainWords');
@@ -35,6 +35,12 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
   await page.waitForFunction(() => [...document.querySelectorAll('abbr.devw')].some(a => /access review/i.test(a.textContent)), null, { timeout: 5000 }).catch(() => {});
   const svc = await page.$$eval('abbr.devw', e => e.filter(x => /before the/.test(x.parentElement.textContent)).map(x => [x.textContent.replace(/\s+/g, ' ').toLowerCase(), x.title]));
   check('newer service words (service desk, access review) are underlined with their plain explanation', svc.map(x => x[0]).join() === 'service desk,access review' && svc[0][1] === en['gloss.desk.text'] && svc[1][1] === en['gloss.accessreview.text'], svc);
+  // AIG-1408: Agile itself, and the new lifecycle words, are underlined too
+  await mkCard(s, 'alpha', 'Agile: fix the CI/CD pipeline before the SLA talk', { status: 'todo' });
+  await page.goto(BASE + '/#/p/alpha'); await page.waitForSelector('.board');
+  await page.waitForFunction(() => [...document.querySelectorAll('abbr.devw')].some(a => /^agile$/i.test(a.textContent)), null, { timeout: 5000 }).catch(() => {});
+  const life = await page.$$eval('abbr.devw', e => e.filter(x => /pipeline before/.test(x.parentElement.textContent)).map(x => [x.textContent.toLowerCase(), x.title]));
+  check('AIG-1408: Agile, CI/CD, pipeline and SLA are underlined with their plain explanation', life.map(x => x[0]).join() === 'agile,ci/cd,pipeline,sla' && life[0][1] === en['gloss.agile.text'] && life[1][1] === en['gloss.cicd.text'] && life[3][1] === en['gloss.sla.text'], life.map(x => x[0]));
   await page.goto(BASE + '/#/glossary'); await page.waitForSelector('.gloss-item');
   const g = await page.evaluate(() => ({
     hs: [...document.querySelectorAll('.gloss h2, .gloss h3')].map(h => h.tagName + ':' + h.textContent),
@@ -45,7 +51,14 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
     status: document.getElementById('glossCount')?.getAttribute('role'),
     count: document.getElementById('glossCount')?.textContent,
   }));
-  check('the glossary has 45+ words in five groups (the board words first, AIG-1363), each under its own h3 after the page h2', g.n >= 45 && g.loose === 0 && g.groups.join() === 'board,build,change,run,team' && g.labelled && g.hs[0] === 'H2:' + en['gloss.title'] && g.hs.slice(1).every(h => h.startsWith('H3:')) && g.hs.length === 6, g);
+  check('the glossary has 400+ words in eleven groups along a project\'s life (the board words first, AIG-1363, AIG-1408), each under its own h3 after the page h2', g.n >= 400 && g.loose === 0 && g.groups.join() === 'board,idea,plan,agile,build,test,change,run,sec,ai,money' && g.labelled && g.hs[0] === 'H2:' + en['gloss.title'] && g.hs.slice(1).every(h => h.startsWith('H3:')) && g.hs.length === 12, g);
+  // AIG-1408: free training from idea to managed service: the core words are in and found by name or abbreviation
+  for (const [q, id] of [['Agile', 'agile'], ['Scrum', 'scrum'], ['CI/CD', 'cicd'], ['SLA', 'sla'], ['Hallucination', 'hallucination'], ['continuous integration', 'cicd'], ['service level agreement', 'sla']]) {
+    await page.fill('#glossQ', q); await page.dispatchEvent('#glossQ', 'input');
+    const ids = await page.$$eval('.gloss-item:not([hidden])', e => e.map(x => x.dataset.id));
+    check(`AIG-1408: "${q}" is in the glossary and the search finds it`, ids.includes(id) && en['gloss.' + id + '.text'].length > 20, ids.slice(0, 8));
+  }
+  await page.fill('#glossQ', ''); await page.dispatchEvent('#glossQ', 'input');
   const board = await page.$$eval('.gloss-group[data-group=board] .gloss-item', e => e.map(x => x.dataset.id + ':' + x.querySelector('dt').textContent));
   check('AIG-1363: the first group explains the board words, card and project first: Lead, Dispatcher, space, playground, hyperfocus, For the team, agent program', board.join() === 'card:Card,project:Project,forteam:For the team,lead:Lead,agentprog:Agent program,dispatcher:Dispatcher,space:Space,playground:Playground,hyperfocus:Hyperfocus', board);
   check('a status line says how many words there are', g.status === 'status' && g.count === g.n + ' words', g);
@@ -59,7 +72,7 @@ def('glossary', '📖 dev words explained: searchable glossary page, and tooltip
   await page.fill('#glossQ', 'zzqx'); await page.dispatchEvent('#glossQ', 'input');
   check('no match: it says so, once on screen and once to screen readers', !(await page.$eval('#glossNone', e => e.hidden)) && (await page.textContent('#glossCount')) === en['gloss.none'] && (await page.$eval('#glossCount', e => e.getBoundingClientRect().width <= 1)));
   const noai = await page.evaluate(() => { NoAi.apply(true); const h = renderGlossary(); NoAi.apply(false); return h; });
-  check('No AI mode leaves out the words about AI agents (Agent, Token, Hook, Peer review)', !/data-id="(agent|token|hook|peerreview)"/.test(noai) && /data-id="incident"/.test(noai) && noai.includes(en['gloss.g.team.noai']));
+  check('No AI mode leaves out the words about AI agents (Agent, Token, Hook, Peer review) and the whole 🤖 AI group (AIG-1408)', !/data-id="(agent|token|hook|peerreview|hallucination|prompt)"/.test(noai) && !/data-group="ai"/.test(noai) && /data-id="incident"/.test(noai) && /data-id="agile"/.test(noai));
   // phone width, dark mode, right to left
   await page.setViewportSize({ width: 390, height: 800 }); await page.emulateMedia({ colorScheme: 'dark' });
   await page.evaluate(() => { document.documentElement.dir = 'rtl'; $('app').innerHTML = renderGlossary(); });
