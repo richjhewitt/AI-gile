@@ -1,3 +1,4 @@
+import { proof } from '../a11y-proof.mjs';
 // QA areas: chats, answerbtns, dms, railorder, dmchats, dmsrelay.
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
@@ -325,6 +326,11 @@ def('railorder', 'drag a project in the left rail to reorder; the order is used 
   await mkProject(s, 'Alpha', 'ALP'); await mkProject(s, 'Beta', 'BET'); await mkProject(s, 'Gamma', 'GAM');
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('#dmRail [data-slug="gamma"]');
+  check('rail follows the header before page content (AIG-1437)', await page.evaluate(() => { const rail = $('dmRail'), main = $('app'), header = document.querySelector('body > header'); return !!(header.compareDocumentPosition(rail) & Node.DOCUMENT_POSITION_FOLLOWING) && !!(rail.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING); }));
+  await page.locator('#dmRail a, #dmRail button').first().focus();
+  await page.keyboard.press('Tab');
+  check('Tab stays in the rail navigation (AIG-1437)', await page.evaluate(() => !!document.activeElement.closest('#dmRail')));
+  await proof(page, 'AIG-1437');
   const rail = () => page.$$eval('#dmRail [data-slug]', bs => bs.map(b => b.dataset.slug).join(','));
   check('starts by name', (await rail()) === 'alpha,beta,gamma', await rail());
   await page.dragAndDrop('#dmRail [data-slug="gamma"]', '#dmRail [data-slug="alpha"]', { targetPosition: { x: 10, y: 4 } });
