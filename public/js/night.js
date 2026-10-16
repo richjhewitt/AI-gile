@@ -1,3 +1,12 @@
+// Home and the project rail use the same expanded watch list as the night glance.
+async function nightProjects(options = {}) {
+  const [meta, watch] = await Promise.all([PagePoll.get('/api/meta', options), PagePoll.get('/api/watchman', options)]);
+  return meta.quiet && watch ? watch.watch : null;
+}
+function onlyNightProjects(projects, watch) {
+  return watch === null ? projects : projects.filter(p => watch.includes(p.slug));
+}
+
 /* ---------- 🌙 night glance (AIG-209) ---------- */
 // A small pop-out for a second screen while you wind down: near-black and red-tinted, no sound, never steals focus.
 // One quiet line per watched project. Urgent = a card stuck after 3 tries or a real 🚧 stand-up blocker: then a slow

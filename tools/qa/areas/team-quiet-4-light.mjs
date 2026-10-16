@@ -99,6 +99,36 @@ def('nightglance', '🌙 night glance: a calm pop-out with the watchman per proj
   await page.reload(); await page.waitForSelector('.ng-urgent-line', { timeout: 6000 }).catch(() => {});
   check('a real blocker: the edge glows and one line says what', await page.evaluate(() => document.body.classList.contains('ng-urgent')) && /Server is down/.test(await page.textContent('.ng-urgent-line')));
   await s.ok('POST', '/api/quiet', { on: false });
+  // AIG-1389: Home and rail use the glance's expanded list, including space children.
+  await mkProject(s, 'Space', 'SPC');
+  await mkProject(s, 'Child', 'CHD', { parent: 'space' });
+  const home = await openPage(ctx, '#/');
+  const visible = async (want) => {
+    await home.evaluate(() => refresh(true));
+    await home.waitForFunction(expected => {
+      const slugs = sel => [...document.querySelectorAll(sel)].map(e => e.dataset.slug || e.getAttribute('href').split('/').pop()).sort().join(',');
+      return slugs('#app a.proj') === expected && slugs('#dmRail [data-slug]') === expected;
+    }, want.slice().sort().join(','));
+    check('Home and rail show ' + (want.join(', ') || 'no unwatched projects'), true);
+  };
+  await s.ok('POST', '/api/quiet', { on: true, watch: ['space'] });
+  await visible(['space', 'child']);
+  await page.reload(); await page.waitForSelector('.ng-list li');
+  check('glance and Home agree on watched space children', await page.locator('.ng-list li').count() === 2);
+  await home.setViewportSize({ width: 390, height: 844 });
+  await visible(['space', 'child']);
+  check('phone night layout fits', await home.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  await home.setViewportSize({ width: 1280, height: 900 });
+  await home.evaluate(() => localStorage.setItem('aigile.theme', 'dark'));
+  await home.reload(); await visible(['space', 'child']);
+  const shots = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
+  fs.mkdirSync(shots, { recursive: true });
+  await home.screenshot({ path: path.join(shots, 'AIG-1389.png'), fullPage: true });
+  await s.ok('POST', '/api/quiet', { on: true, watch: [] });
+  await visible([]);
+  await s.ok('POST', '/api/quiet', { on: false });
+  await visible(['calm', 'trouble', 'space', 'child']);
+  noErrors(home);
   noErrors(page);
 }, true);
 
