@@ -263,7 +263,8 @@ function parseRoute(h = location.hash) {
   if (setupRoute) return { view: 'setup', ...(setupRoute[1] ? { sec: setupRoute[1] } : {}) };
   const suRoute = h.match(/^#\/standups(?:\/([^/]+))?$/);   // AIG-539: #/standups/<project> shows one team
   if (suRoute) return { view: 'standups', ...(suRoute[1] ? { slug: decodeURIComponent(suRoute[1]) } : {}) };
-  if (h === '#/glossary') return { view: 'glossary' };
+  const glo = h.match(/^#\/glossary(?:\/([a-z]+))?$/);   // AIG-1327: #/glossary/<id> opens it searched for that word
+  if (glo) return { view: 'glossary', ...(glo[1] ? { word: glo[1] } : {}) };
   if (h === '#/pop-weed') return { view: 'weed' };   // 🌿 WeedGlance in its own window (AIG-665)
   if (h === '#/pop-night') return { view: 'night' };   // 🌙 night glance pop-out (AIG-209)   // dev words explained (AIG-102)
   const glance = h.match(/^#\/pop-glance(?:\/([^/]+))?$/);
@@ -550,7 +551,7 @@ function render() {
   if (state.route.view === 'night') { $('app').innerHTML = renderNight(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'news') { $('app').innerHTML = renderNews(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'watch') { renderWatch(); $('modal').innerHTML = ''; return; }
-  if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.title'); if (!$('glossQ')) $('app').innerHTML = renderGlossary(); $('modal').innerHTML = ''; return; }
+  if (state.route.view === 'glossary') { $('crumb').textContent = '/ ' + t('gloss.title'); if (!$('glossQ') || $('glossQ').dataset.w !== (state.route.word || '')) { $('app').innerHTML = renderGlossary(); glossWord(state.route.word); } $('modal').innerHTML = ''; return; }
   if (state.route.view === 'shared') { $('crumb').textContent = '/ 🔗 ' + (state.sboard ? state.sboard.theirName || state.sboard.friend : ''); $('crumb').style.color = ''; $('app').innerHTML = ShareBoard.render(state.sboard); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'mail') { $('crumb').textContent = '/ ' + t('mail.title'); $('app').innerHTML = Mail.render(); $('modal').innerHTML = ''; return; }
   if (state.route.view === 'bin') { $('crumb').textContent = '/ ' + t('bin.title'); $('app').innerHTML = Bin.render(); $('modal').innerHTML = ''; return; }

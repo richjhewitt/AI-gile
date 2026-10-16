@@ -1,7 +1,8 @@
 // QA area: sample (AIG-1072). The sample project for demos: one click on the empty home makes it (once), it shows on home marked Sample, one click removes it.
+// AIG-1327: its practice incident walked through with no AI: Major (no swarm), close with the post-mortem, the review form, a runbook line and Go (no file).
 import { check, sleep, openPage, noErrors, def } from '../lib.mjs';
 
-def('sample', 'sample project: Add a sample project on the empty home creates it once (cards, comments, a test, a question), marked Sample, removed in one click', async (s, ctx) => {
+def('sample', 'sample project: Add a sample project on the empty home creates it once (cards, comments, a test, a question), marked Sample, removed in one click; its practice incident walks through Major, close, review and runbook with no AI (AIG-1327)', async (s, ctx) => {
   check('starts with no projects', (await s.ok('GET', '/api/projects')).length === 0);
   const page = await openPage(ctx, '#/');
   await page.waitForSelector('#sampleBtn');
@@ -16,6 +17,48 @@ def('sample', 'sample project: Add a sample project on the empty home creates it
   check('a question for the owner', p.cards.some(c => c.needsYou && c.comments.some(m => m.mark === 'ask')));
   check('at least two comments', p.cards.reduce((n, c) => n + c.comments.length, 0) >= 2);
   check('no folder and no team', !p.path && !(p.team || []).length);
+  // 🔥 The practice incident (AIG-1327)
+  const inc = p.cards.find(c => c.practice === 'incident');
+  check('a practice incident, in progress, on a pretend service', inc && inc.type === 'incident' && inc.status === 'doing' && p.service && p.service.on && !p.service.url && !p.service.public, inc);
+  const base = (await page.url()).split('#')[0], open = async () => { await page.goto(base + '#/p/sample-project/' + inc.id); await page.reload(); await page.waitForSelector('#practice'); await sleep(300); };
+  const onStep = async () => page.getAttribute('#practice .prac-step.on', 'data-step').catch(() => null);
+  await open();
+  check('practice box: four steps, Mark it Major is next', (await page.locator('#practice .prac-step').count()) === 4 && await onStep() === 'major');
+  check('the hint links the glossary words', (await page.locator('#practice .prac-step.on a[href="#/glossary/major"]').count()) === 1);
+  await page.click('.major button'); await sleep(500);
+  let c = (await s.ok('GET', '/api/projects/sample-project')).cards.find(x => x.id === inc.id);
+  check('Major: on, no swarm, a practice comment, no wake order', !!c.major && !c.major.swarm && !(await s.ok('GET', '/api/swarm')).on && c.comments.some(m => m.major && /Practice/.test(m.text)) && !c.comments.some(m => m.wake), c.comments);
+  const own = c.major.by;
+  await open();
+  check('step 1 ticks itself, Fix it and close it is next', await onStep() === 'close' && (await page.locator('#practice .prac-step.done').count()) === 1);
+  await s.ok('PATCH', '/api/projects/sample-project/cards/' + inc.id, { status: 'done', postmortem: { happened: 'The RSVP page failed', why: 'The update lost the password', change: 'Test after updates' } });
+  c = (await s.ok('GET', '/api/projects/sample-project')).cards.find(x => x.id === inc.id);
+  check('closed: major ended, review is write-it-yourself, no wake', !c.major && c.review && c.review.state === 'manual' && !c.comments.some(m => m.wake), c.review);
+  await open();
+  check('review step next, with the form on the card', await onStep() === 'review' && await page.isVisible('#pirForm'), [await onStep(), await page.isVisible('#pirForm')]);
+  await page.fill('#pirTimeline', '09:00 guests report it. 09:30 fixed.'); await page.fill('#pirHelped', 'The guests said what they saw.'); await page.fill('#pirActions', 'Test the RSVP page after updates\nKeep the password in Secrets');
+  await page.click('#pirForm button[type=submit]'); await sleep(600);
+  c = (await s.ok('GET', '/api/projects/sample-project')).cards.find(x => x.id === inc.id);
+  check('the review is posted from the page, two actions', c.review.state === 'posted' && c.review.actions.length === 2, c.review);
+  await open();
+  check('runbook step next, with its form', await onStep() === 'runbook' && await page.isVisible('#pracRb'));
+  await page.fill('#pracRbText', 'If the RSVP page errors, check the database password first.');
+  await page.click('#pracRb button[type=submit]'); await sleep(600);
+  let q = await s.ok('GET', '/api/projects/sample-project');
+  c = q.cards.find(x => x.id === inc.id);
+  const rb = c.review.runbook && q.cards.find(x => x.id === c.review.runbook);
+  check('a 🚦 runbook card waits for Go (no folder needed on the sample)', rb && rb.runbookProposal && rb.needsYou && !rb.runbookProposal.done, rb);
+  await s.ok('POST', '/api/projects/sample-project/cards/' + rb.id + '/comments', { author: own, text: 'Go' });
+  q = await s.ok('GET', '/api/projects/sample-project');
+  const rb2 = await s.ok('GET', '/api/projects/sample-project/cards/' + rb.id);
+  check('Go on the sample: done, a practice note, no file written', rb2.status === 'done' && rb2.runbookProposal.done === 'added' && !rb2.runbookProposal.file && rb2.comments.some(m => /docs\/runbooks\/rsvp-page-down\.md/.test(m.text)), rb2);
+  await open();
+  check('all four steps ticked and the well-done line', (await page.locator('#practice .prac-step.done').count()) === 4 && await page.isVisible('#practice .prac-all'));
+  await page.goto(base + '#/glossary/runbook'); await page.waitForSelector('#glossQ'); await sleep(300);
+  check('#/glossary/<id> opens the glossary on that word', (await page.inputValue('#glossQ')) === 'Runbook' && await page.isVisible('.gloss-item[data-id=runbook].gloss-hit'));
+  await page.setViewportSize({ width: 390, height: 800 }); await open();
+  check('phone width: the practice box fits', await page.evaluate(() => document.getElementById('practice').getBoundingClientRect().right <= innerWidth + 1));
+  await page.setViewportSize({ width: 1400, height: 900 });
   check('creating again is refused (once)', (await s.api('POST', '/api/sample-project')).status === 409 && (await s.ok('GET', '/api/projects')).length === 1);
   await page.goto((await page.url()).split('#')[0] + '#/'); await sleep(500);
   await page.waitForSelector('.proj .sample-pill');

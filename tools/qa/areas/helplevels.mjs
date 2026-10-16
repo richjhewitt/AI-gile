@@ -135,6 +135,14 @@ def('helplevels', '❓ help levels: each level\'s first run, the Help menu, the 
   check('service guide, all the help: opens on the Full course', /Full course/.test(g) && await p1.locator('#svcMore').isHidden());
   await p1.keyboard.press('Escape');
   await s.ok('POST', '/api/setup', { prefs: { helpLevel: '2' } });   // back to some help for what follows
+  // 📞 Messages and calls guide (AIG-1331): same three levels, no agents fold.
+  await p1.click('#helpBtn'); await sleep(300); await p1.keyboard.press('Escape');
+  await p1.click('#helpBtn'); await p1.click('#hmMsg'); await p1.waitForSelector('#msgGuide h3');
+  g = await p1.textContent('#msgGuide');
+  check('messages guide, some help: Step by step on groups, calls and screen share, no agents fold', /Step by step/.test(g) && /New group/.test(g) && /Call/.test(g) && /Share screen/.test(g) && /Meeting Rooms/.test(g) && (await p1.locator('#msgAgents').count()) === 0, g.slice(0, 200));
+  await p1.click('#msgMore'); g = await p1.textContent('#msgGuide');
+  check('messages guide: Show more gives the Full course (mic trouble included)', /Full course/.test(g) && /blocked/.test(g) && /still listen/.test(g) && await p1.locator('#msgMore').isHidden());
+  await p1.keyboard.press('Escape');
   noErrors(p1);
   await c1.close();
 
@@ -156,6 +164,18 @@ def('helplevels', '❓ help levels: each level\'s first run, the Help menu, the 
   await p3.click('#hmIntro'); await p3.waitForSelector('#introSlide');
   check('Flemish: slide 1 of 8', /Dia 1 van 8/.test(await p3.textContent('#introStep')));
   await p3.click('#introNext');
+  // AIG-1328, AIG-1331: the guides in Flemish, headings too
+  const vg = async (btn, box) => { await p3.keyboard.press('Escape'); await p3.click('#helpBtn'); await p3.click(btn); await p3.waitForSelector(box + ' h3'); return p3.textContent(box); };
+  let fg = await vg('#hmIncidents', '#incGuide');
+  check('Flemish: the incidents guide, Stap voor stap', /Stap voor stap/.test(fg) && /Meld het incident/.test(fg) && !/Raise the incident/.test(fg), fg.slice(0, 160));
+  fg = await vg('#hmService', '#svcGuide');
+  check('Flemish: the service guide, with the agents fold in Flemish', /Stap voor stap/.test(fg) && /Projectinstellingen/.test(fg) && /Bewaren/.test(fg) && /Voor agents|command/i.test(await p3.textContent('#svcAgents summary')));
+  await p3.click('#svcMore'); fg = await p3.textContent('#svcGuide');
+  check('Flemish: service guide Show more gives the Volledige cursus', /Volledige cursus/.test(fg) && /tokenlimiet/.test(fg));
+  fg = await vg('#hmMsg', '#msgGuide');
+  check('Flemish: the messages guide', /Stap voor stap/.test(fg) && /Vergaderruimtes/.test(fg) && /Nieuwe groep/.test(fg) && /Berichten en bellen/.test(await p3.textContent('.dialog h2')));
+  await p3.keyboard.press('Escape');
+  await p3.click('#helpBtn'); await p3.click('#hmIntro'); await p3.waitForSelector('#introSlide'); await p3.click('#introNext');
   check('Flemish: the second slide is the columns', /Dia 2 van 8/.test(await p3.textContent('#introStep')) && /kolom|Backlog/i.test(await p3.textContent('#introSlide')));
   await p3.keyboard.press('Escape');
   noErrors(p3);
