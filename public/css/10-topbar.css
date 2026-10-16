@@ -115,6 +115,9 @@ body.no-power :is(#streamBtn, #twitchBtn, #ntBtn, #tiredBtn, #assumeNav, #glance
 #updateTop, body.desktop #updateTop { position: relative; left: auto; top: auto; transform: none; z-index: 40; width: fit-content; margin-inline: auto; border-radius: 0 0 12px 12px; border-top: 0; justify-content: center; flex-wrap: wrap; padding: 4px 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
 #updateTop:not(:has(button)) { display: none; }
 #updateTop button { box-shadow: none; padding-block: 2px; font-size: 13px; }
+/* AIG-1392: on a phone the open card, Messages and every dialog fill the screen from the top, so the strip stays in the page
+   (it pushes the board down) and sits under them instead of over their titles and search boxes. */
+@media (max-width: 760px), (max-height: 500px) and (pointer: coarse) { #updateTop, body.desktop #updateTop { z-index: 1; } }
 /* AIG-1180: a long project name shrinks to an ellipsis in the crumb instead of pushing More and live onto a second row. */
 @media (min-width: 601px) and (min-height: 501px), (min-width: 601px) and (pointer: fine) { header .crumb { max-width: clamp(80px, 9vw, 420px); } }
 @media (min-width: 601px) and (max-width: 1399px) and (min-height: 501px), (min-width: 601px) and (max-width: 1399px) and (pointer: fine) { header .alpha-tag { display: none; } }

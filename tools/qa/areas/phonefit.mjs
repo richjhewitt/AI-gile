@@ -44,6 +44,34 @@ def('phonefit', '📱 phone fixes upright and on its side (390x844, 844x390): la
         check(D + ': no Pop out button on the ' + label, pops === 0, pops);
       }
       await bp.close();
+
+      /* ---------- AIG-1392: the Restart pill never covers the open card, Messages or a dialog ---------- */
+      const rp = await openPage(ctx, '#/p/alpha');
+      await rp.waitForSelector('.board .card', { timeout: 10000 });
+      const pill = () => rp.evaluate(() => { const u = document.getElementById('upRestart'); if (!u.querySelector('button')) u.innerHTML = '<button class="primary">🔄 Restart the app</button>'; });
+      const covered = (sel) => rp.evaluate(q => {   // the pill's middle is under something else, or the pill sits clear of q
+        const b = document.querySelector('#upRestart button').getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + b.height / 2;
+        const top = document.elementFromPoint(x, y), t = q && document.querySelector(q);
+        const r = t && t.getBoundingClientRect(), clear = !r || b.bottom <= r.top || b.top >= r.bottom || b.right <= r.left || b.left >= r.right;
+        return { under: !document.getElementById('updateTop').contains(top), clear, pill: [Math.round(b.top), Math.round(b.bottom)], q: r && [Math.round(r.top), Math.round(r.bottom)] };
+      }, sel);
+      await pill(); await sleep(100);
+      const onBoard = await rp.evaluate(() => { const b = document.querySelector('#upRestart button').getBoundingClientRect(), h = document.querySelector('body > header').getBoundingClientRect(), s = document.querySelector('#filterbar input[type=search]').getBoundingClientRect(); return { below: b.top >= h.bottom - 1, clear: b.bottom <= s.top + 1 || b.top >= s.bottom - 1 }; });
+      check(D + ': on the board the Restart strip sits under the top bar and pushes the search down (AIG-1392)', onBoard.below && onBoard.clear, onBoard);
+      await shot(rp, 'AIG-1392-board', size);
+      await rp.goto(BASE + '/#/p/alpha/ALP-2'); await rp.waitForSelector('.panel', { timeout: 8000 }); await pill(); await sleep(300);
+      const oc = await covered('.panel h2, .panel .title, .panel h1');
+      check(D + ': the open card covers the Restart strip, not the other way round', oc.under, oc);
+      await shot(rp, 'AIG-1392', size);
+      await rp.goto(BASE + '/#/p/alpha'); await rp.waitForSelector('.board .card'); await pill();
+      await rp.evaluate(() => newCard()); await rp.waitForSelector('#f-title', { timeout: 8000 }); await sleep(300);
+      const nc = await covered('#f-title');
+      check(D + ': the New card dialog covers the Restart strip', nc.under, nc);
+      await rp.keyboard.press('Escape'); await sleep(200);
+      await rp.goto(BASE + '/?launch=messages'); await rp.waitForSelector('#dmPanel:not([hidden])', { timeout: 10000 }).catch(() => {}); await pill(); await sleep(300);
+      const dm = await covered('#dmPanel input[type=search], #dmPanel input');
+      check(D + ': Messages covers the Restart strip, its search box is free', dm.under, dm);
+      await rp.close();
     } finally { await ctx.close().catch(() => {}); }
   }
   { // a short desktop window (no touch) keeps the desktop bar
