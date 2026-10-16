@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <!-- AIG-1291: the saved theme before the first paint, so a restart never flashes the system colours first (app.js theme() takes over) -->
 <script>try { var th = localStorage.getItem('aigile.theme'); if (th && th !== 'system') document.documentElement.dataset.theme = th; } catch (e) {}</script>
+<!-- AIG-1330: the language and direction of the last start before the first paint. Until your language file is in, the top bar
+     keeps its place but shows no (English) words; i18n.js loadLang() saves aigile.langBoot and clears i18n-wait. -->
+<script>try { var de = document.documentElement, lb = JSON.parse(localStorage.getItem('aigile.langBoot') || 'null'); if (lb && lb.l) { de.lang = lb.l; de.dir = lb.d === 'rtl' ? 'rtl' : 'ltr'; } if (!lb || lb.c !== 'en') { de.classList.add('i18n-wait'); setTimeout(function () { de.classList.remove('i18n-wait'); }, 10000); } } catch (e) {}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AI-gile</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -33,6 +36,8 @@
 <link rel="stylesheet" href="css/18-calls.css">
 </head>
 <body>
+<!-- AIG-1332: the first thing Tab reaches, shown on focus; jumps past the long top bar to the page (no hash change, the router owns it) -->
+<a class="skip-link" id="skipLink" href="#app" onclick="event.preventDefault(); const m = document.getElementById('app'); m.focus(); m.scrollIntoView();" data-i18n="a11y.skip">Skip to content</a>
 <header>
   <h1><a href="#/" id="brand"><img class="brand-logo" src="icons/icon-192.png" alt=""> AI-gile</a></h1>
   <span class="alpha-tag" data-i18n="alpha.tag" data-i18n-title="alpha.tip" title="Early and unfinished: thanks for trying it!">🐣 Closed pre-alpha</span>
@@ -53,7 +58,7 @@
   <button id="weedBtn" class="navlink wd-off" onclick="Weed.pop()" data-i18n="weed.btn" data-i18n-title="weed.btn.title" title="Countdown to the next 4:20">🌿 WeedGlance</button>
   <button id="streamBtn" class="navlink" onclick="Streamer.toggle()" aria-pressed="false" data-i18n="streamer.btn" title="Streamer mode">🎥 Streamer</button>
   <button id="liveBtn" class="navlink" onclick="Streamer.goLive()" hidden></button>
-  <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" title="No Token Mode">⛔ No Token Mode</button>
+  <button id="ntBtn" class="navlink" onclick="NoTokens.toggle()" data-i18n="nt.off" data-i18n-title="nt.title.off" title="No Token Mode">⛔ No Token Mode</button>
   <button id="statusBtn" class="navlink" onclick="Status.menu()" aria-haspopup="menu" title="Your status">🟢</button>
   <button id="tiredBtn"class="navlink" onclick="Tired.toggle()" aria-pressed="false" title="Tired mode">🔋</button>
   <a class="navlink" id="mailNav" href="#/mail" style="display:none" data-i18n="mail.nav" data-i18n-title="mail.nav.title" title="Your mail inbox">✉️ Mail</a>
@@ -70,7 +75,9 @@
 <div id="saverBar" class="saver-bar" role="status" hidden></div>
 <div id="swarmBar" class="saver-bar" role="status" style="background:#b91c1c;color:#fff" hidden></div>
 <div id="filterbar"></div>
-<main id="app"></main>
+<main id="app" tabindex="-1"></main>
+<!-- AIG-1332: new chat messages (Messages, a card's chat) are read out here, each once (core.js ChatLive) -->
+<div id="chatLive" class="sr-only" role="log" aria-live="polite" aria-relevant="additions" data-i18n-label="a11y.chatlive" aria-label="New messages"></div>
 <div id="focusScreen" hidden></div>
 <div id="modal"></div>
 <div id="dialog"></div>

@@ -7,8 +7,14 @@ function theme(set) {
   let th; try { th = set || localStorage.getItem('aigile.theme') || 'system'; if (set) localStorage.setItem('aigile.theme', set); } catch { th = set || 'system'; }
   if (th === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = th;
   if (/Electron/.test(navigator.userAgent)) location.href = 'aigile://theme/' + th;   // the app's window buttons follow too, also after a restart
-  const b = $('themeBtn'); if (b) { b.textContent = THEMES[th]; b.title = t('theme.title', { name: THEMES[th] }); }
+  paintThemeBtn(th);
   return th;
+}
+// The theme button's words; loadLang() paints it too, so it never shows a raw key or English once the top bar appears (AIG-1330).
+function paintThemeBtn(th) {
+  if (!th) { try { th = localStorage.getItem('aigile.theme') || 'system'; } catch { th = 'system'; } }
+  if (!THEMES[th]) th = 'system';
+  const b = $('themeBtn'); if (b) { b.textContent = THEMES[th]; b.title = t('theme.title', { name: THEMES[th] }); }
 }
 // The same choice as a dropdown, for the Setup page (AIG-143).
 const themePickHtml = () => { const cur = theme(); return `<select class="setup-theme" onchange="theme(this.value)">${Object.keys(THEMES).map(k => `<option value="${k}" ${k === cur ? 'selected' : ''}>${esc(THEMES[k])}</option>`).join('')}</select>`; };

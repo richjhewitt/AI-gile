@@ -10,7 +10,8 @@
   const canNotify = () => typeof Notification !== 'undefined';
   const alertsOn = () => canNotify() && Notification.permission === 'granted' && pref.get();
 
-  const baseTitle = document.title || 'AI-gile';
+  // The page's own name (core.js pageTitle, AIG-1332); null in a window that names itself (terminal, Twitch).
+  const baseTitle = () => typeof pageBase === 'undefined' ? 'AI-gile' : pageBase;
 
   /* ---------- top bar (AIG-32, AIG-34) ---------- */
   function slot() {
@@ -47,7 +48,8 @@
     }
     // Everything waiting on the owner; the desktop app turns this count into its taskbar badge (AIG-76).
     // Going quiet (AIG-227): no count, so no purple diamond on the taskbar until the morning.
-    const title = q + k + te + f && !document.documentElement.hasAttribute('data-night') && !document.documentElement.hasAttribute('data-focus') ? `(${q + k + te + f}) ${baseTitle}` : baseTitle;
+    if (baseTitle() === null) return;
+    const title = q + k + te + f && !document.documentElement.hasAttribute('data-night') && !document.documentElement.hasAttribute('data-focus') ? `(${q + k + te + f}) ${baseTitle()}` : baseTitle();
     if (document.title !== title) document.title = title;
   }
 
