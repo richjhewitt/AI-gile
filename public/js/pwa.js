@@ -37,7 +37,7 @@ function installHint() {
     if (!(typeof i18n !== 'undefined' && i18n.ready && typeof state !== 'undefined' && state.route && typeof newCard === 'function')) { if (++tries < 150) setTimeout(go, 200); return; }
     if (share || launch === 'new') newCard(preset || {});
     else if (launch === 'inbox') location.hash = '#/inbox';
-    else { const b = document.querySelector('#dmRail [data-dms]'); if (b) b.click(); }
+    else { const b = document.querySelector('#dmRail [data-dms]'); if (b) b.click(); else if (++tries < 150) setTimeout(go, 200); }   // the rail can paint after the page (one bundle, AIG-1393): wait for it
   };
   go();
 })();
