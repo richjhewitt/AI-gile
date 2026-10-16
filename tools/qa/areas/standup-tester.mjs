@@ -55,6 +55,11 @@ def('standup', '📣 Stand-ups: call one or all (wakes teams), teams answer with
   await s.ok('PATCH', `/api/projects/alpha/cards/${id}`, { status: 'team' });   // every answer from the last member closes it again
   rep('Pixel', ['--needs', 'Owner to test the export (AIG-9)', '--blockers', 'none (other work goes on)']);   // AIG-191
   check('--needs is stored apart from blockers', (await getCard(s, 'alpha', id)).standup.reports.find(r => r.name === 'Pixel').needs === 'Owner to test the export (AIG-9)');
+  await s.ok('PATCH', `/api/projects/alpha/cards/${id}`, { status: 'team' });
+  rep('Forge', ['--needs', 'Owner to test the export.', '--blockers', `Need the API key from Owner (${id})`]);   // AIG-1384: a second lead, the same ask
+  const nd = (await s.ok('GET', '/api/standups')).needs.filter(n => n.project === 'alpha');
+  check('the same ask from two people is one line, with the fuller text and both names', nd.length === 1 && nd[0].text === 'Owner to test the export (AIG-9)' && nd[0].name.split(', ').sort().join() === 'Forge,Pixel', nd);
+  await s.ok('PATCH', `/api/projects/alpha/cards/${id}`, { status: 'team' });
   check('--as is required', s.cli(['standup', 'alpha', '--done', 'x', '--next', 'y']).code === 1);
   check('--done is required', s.cli(['standup', 'alpha', '--next', 'y', '--as', 'Forge']).code === 1);
   s.cli(['standup', 'beta', '--done', 'Shipped it', '--next', 'Rest', '--as', 'Solo']);
