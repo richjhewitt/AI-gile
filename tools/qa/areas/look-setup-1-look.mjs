@@ -142,6 +142,9 @@ def('theme', 'theme: follows the system, or System / Light / Dark picked in the 
     await page.evaluate(() => closeDialog());
   }
   await page.evaluate(() => delete document.documentElement.dataset.theme);
+  await page.evaluate(() => openDialog('<h2>Window tools</h2><button onclick="closeDialog()">' + t('common.close') + '</button>', '', 'deleted'));
+  check('one shared Close and Pop out in dialog header', await page.locator('.dialog .window-tools .window-close').count() === 1 && await page.locator('.dialog .window-tools .dlg-pop').count() === 1 && await page.locator('.dialog button[onclick="closeDialog()"]').count() === 1);
+  await page.evaluate(() => closeDialog());
   check('starts on System', !(await page.evaluate(() => document.documentElement.dataset.theme)));
   await page.click('#themeBtn');   // -> Light
   await page.click('#themeBtn');   // -> Dark
