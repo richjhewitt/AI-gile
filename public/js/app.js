@@ -59,7 +59,7 @@ window.addEventListener('hashchange', () => {
     state.servers = m.servers || []; state.terms = m.terms || []; state.srvAccess = m.srvAccess || {};
     state.owner = m.owner || state.owner; state.ownerPic = m.ownerPic || ''; state.damaged = m.damaged || []; state.setupNeeded = !!m.setupNeeded;
     NoAi.apply(m.noAi, m.noAiBuild);
-    theme(); await Streamer.start(); refresh(true); if (!['home', 'inbox'].includes(parseRoute().view)) IB.load().catch(() => {}); Dms.reload().catch(() => {}); checkBuild(m); NoTokens.start(); Tired.start(); Swarm.start(); Hyperfocus.start(); Weed.start(); UsageGlance.start(); helpBoot();
+    theme(); await Streamer.start(); refresh(); if (!['home', 'inbox'].includes(parseRoute().view)) IB.load().catch(() => {}); Dms.reload().catch(() => {}); checkBuild(m); NoTokens.start(); Tired.start(); Swarm.start(); Hyperfocus.start(); Weed.start(); UsageGlance.start(); helpBoot();
   }, e => Boot.again(start, e));
 })();
 let lastPageTick = 0;

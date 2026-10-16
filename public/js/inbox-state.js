@@ -52,7 +52,7 @@ const IB = {
 
   /* ---------- data ---------- */
   function load(force) {
-    if (inflight && loadEpoch === PagePoll.generation && !force) return inflight;
+    if (inflight && loadEpoch === PagePoll.generation) return inflight;
     loadEpoch = PagePoll.generation; const seq = ++loadSeq;
     inflight = PagePoll.get('/api/inbox', { force }).then(l => { const sw = typeof Swarm !== 'undefined' ? Swarm.only(l, true) : l, off = typeof TodayPage !== 'undefined' ? TodayPage.hidden() : [];
       const filtered = off.length ? sw.filter(c => !off.includes(c.project)) : sw;   // 🎯 AIG-1032: only today's picked projects (Show all brings the rest back)
@@ -71,7 +71,7 @@ const IB = {
     return IB.raw.filter(c => qs.includes(c));
   }
   function apply(list, sourceSig) {
-    if (typeof i18n === 'undefined' || !i18n.ready) { setTimeout(() => load().catch(() => {}), 100); return; }   // wait for the language file (AIG-124)
+    if (typeof i18n === 'undefined' || !i18n.ready) { setTimeout(() => apply(list, sourceSig), 100); return; }   // wait for the language file (AIG-124)
     const dataSig = (sourceSig || renderSig(list)) + ":" + i18n.lang + ":" + Math.floor(Date.now() / 60000);
     if (loaded && dataSig === IB.dataSig) { IB.paintTop(); return; }
     IB.dataSig = dataSig;
