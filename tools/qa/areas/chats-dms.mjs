@@ -455,7 +455,7 @@ def('teamnews', 'DMs hold only the owner and the lead; ðŸ“œ Team news pop-o
   await page.click('#dmRail [data-dms]'); await page.click('#dmPanel [data-dm="alpha"]');
   await page.waitForSelector('#dmList .dm-msg');
   check('page chat has no fold comment', !/FOLDNOTE/.test(await page.textContent('#dmList')));
-  await page.waitForSelector('button[onclick^="openNews"]');
+  await page.waitForSelector('button[onclick^="openNews"]', { state: 'attached' });   // under ⋯ More on a board with cards (AIG-1359)
   check('board has the Team news button', /Team news/.test(await page.textContent('button[onclick^="openNews"]')));
   const pop = await openPage(ctx, '#/pop-news/alpha');
   await pop.waitForSelector('.news-item');
