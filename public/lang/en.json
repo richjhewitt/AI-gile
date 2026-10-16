@@ -1,4 +1,5 @@
 {
+ "srv.pc.keyused": "Another project already starts its cards with {key}.",
  "col.backlog": "{{dev:Backlog}}",
  "col.todo": "To do",
  "col.doing": "In progress",

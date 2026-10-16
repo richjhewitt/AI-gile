@@ -263,7 +263,7 @@ async function createProject(e) {
   if (!name) { setErr('d-err', t('dlg.np.err.name')); return false; }
   let p;
   try {
-    p = await api('POST', '/api/projects', { name, key: $('p-key').value.trim(), description: $('p-desc').value.trim(), ...team });
+    p = await api('POST', '/api/projects', { name, key: $('p-key').dataset.touched ? $('p-key').value.trim() : '', description: $('p-desc').value.trim(), ...team });
     // A template only pre-fills the column names (AIG-170); the statuses underneath never change.
     const names = boardTemplateNames($('p-tpl').value, $('p-own-names').value);
     if (names.some(Boolean)) await api('PATCH', '/api/projects/' + p.slug, { columns: STATUS_ORDER.map((status, i) => ({ status, name: names[i] || undefined })) });

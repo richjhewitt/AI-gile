@@ -277,3 +277,16 @@ def('filtertypes', 'The type filter offers incident, problem and change only on 
   check('incident appears once a card has it', (await opts()).includes('incident') && !(await opts()).includes('problem'), await opts());
   noErrors(page); await page.close();
 }, true);
+
+def('projectkey', 'suggested keys quietly avoid collisions (AIG-1415)', async (s, ctx) => {
+  await mkProject(s, 'Plants', 'PLA');
+  const page = await openPage(ctx, '#/');
+  await page.click('button:has-text("+ New project")'); await page.fill('#p-name', 'Plan my allotment');
+  await page.evaluate(() => { $('p-more').open = true; }); await page.uncheck('#p-team');
+  await page.click('#dialog button[type=submit]'); await page.waitForURL('**/#/p/plan-my-allotment');
+  const p = await s.ok('GET', '/api/projects/plan-my-allotment');
+  check('automatic key is free (AIG-1415)', p.key !== 'PLA');
+  const r = await s.api('POST', '/api/projects', {name:'Explicit key',key:'PLA'});
+  check('typed key gives plain explanation (AIG-1415)', r.status === 409);
+  await page.waitForSelector('.board'); await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1415.png'});
+}, true);
