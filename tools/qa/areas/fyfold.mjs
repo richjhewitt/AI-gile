@@ -65,7 +65,8 @@ def('fyfold', 'For you: a chip opens a window of folded rows, a card opens it un
   check('the window is on the Tests list (2 rows)', (await page.locator('.fyf-row').count()) === 2);
   check('only the clicked card is unfolded', (await page.locator('.fyf-row.open').count()) === 1 && (await page.locator(`.fyf-row.open[data-id="${target.id}"]`).count()) === 1);
   check('the page stayed on the board', /#\/p\/alpha$/.test(page.url()), page.url());
-  check('it has steps, Accept and Send back', /Click/.test(await page.locator('.fyf-row.open .fyf-b').textContent()) && (await page.locator('.fyf-row.open [data-act="accept"]').count()) === 1 && (await page.locator('.fyf-row.open [data-fyback]').count()) === 1);
+  check('it has steps, Accept and Send back', /Click/.test(await page.locator('.fyf-row.open .fyf-b').textContent()) && (await page.locator('.fyf-row.open [data-act="accept"]').count()) === 1 && (await page.locator('.fyf-row.open [data-act="sbopen"]').count()) === 1);
+  check('one Send back on the unfolded test, not two (AIG-1373)', (await page.locator('.fyf-row.open button:visible', { hasText: 'Send back' }).count()) === 1);
   await page.click('.fyf-row.open [data-act="accept"]');
   await page.waitForFunction(() => document.querySelectorAll('.fyf-row').length === 1, null, { timeout: 5000 }).catch(() => {});
   check('Accept inside the window takes the row away', (await page.locator('.fyf-row').count()) === 1);
@@ -97,8 +98,10 @@ def('fyfoldnext', 'Tests list: Accept or Send back opens the next test in the li
   let o = await openId();
   check('Accept opens the next test in the list straight away', o.length === 1 && o[0] === ids[1], JSON.stringify({ ids, o }));
   check('the list fits at 390px', await page.evaluate(() => document.querySelector('.fyf').scrollWidth <= window.innerWidth + 1));
-  await page.fill('.fyf-row.open [data-fyback-text]', 'Not yet');
-  await page.click('.fyf-row.open [data-fyback]');
+  await page.click('.fyf-row.open [data-act="sbopen"]');
+  check('Send back opens the reason box and is then the only Send back (AIG-1373)', await page.locator('.fyf-row.open [data-act="sbopen"]').isHidden() && (await page.locator('.fyf-row.open button:visible', { hasText: 'Send back' }).count()) === 1);
+  await page.fill('.fyf-row.open [data-sb]', 'Not yet');
+  await page.click('.fyf-row.open [data-act="sbsend"]');
   await page.waitForFunction(() => document.querySelectorAll('.fyf-row').length === 1, null, { timeout: 5000 }).catch(() => {});
   o = await openId();
   check('Send back opens the next test too', o.length === 1 && o[0] === ids[2], JSON.stringify(o));

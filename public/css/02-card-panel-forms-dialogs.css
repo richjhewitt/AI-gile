@@ -310,9 +310,7 @@ html[data-stream-secrets] #serversBox input[data-srv="name"], html[data-stream-s
 .fyf-row.open .fyf-t { white-space: normal; }
 .fyf-b { padding: 0 8px 8px; }
 .fyf-b .ib-item { margin-bottom: 0; box-shadow: none; }
-.fyf-back { display: flex; gap: 8px; margin-top: 8px; align-items: flex-start; }
-.fyf-back textarea { flex: 1; min-width: 0; }
-@media (max-width: 640px) { .fyf-dlg { max-height: 94vh; } .fyf-h { flex-wrap: wrap; } .fyf-t { flex-basis: 100%; white-space: normal; } .fyf-back { flex-direction: column; } }
+@media (max-width: 640px) { .fyf-dlg { max-height: 94vh; } .fyf-h { flex-wrap: wrap; } .fyf-t { flex-basis: 100%; white-space: normal; } }
 
 /* @ tags (AIG-851) */
 .mention-box { position: fixed; z-index: 1000; max-height: 250px; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.18); padding: 4px; }

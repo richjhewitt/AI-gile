@@ -58,8 +58,8 @@ const Shortcuts = (() => {
     const l = k.toLowerCase();
     if ((l === 'a' || l === 'b') && dlg) {   // the For you window: the unfolded row
       const open = [...document.querySelectorAll('#fyfList .fyf-row.open')], ae = document.activeElement, inRow = ae && ae.closest && ae.closest('#fyfList .fyf-row.open');
-      const f = inRow || (open.length === 1 ? open[0] : null), btn = f && f.querySelector(l === 'a' ? '[data-act="accept"]' : '[data-fyback]');
-      if (btn && !btn.disabled) { e.preventDefault(); btn.click(); }
+      const f = inRow || (open.length === 1 ? open[0] : null), btn = f && f.querySelector(l === 'a' ? '[data-act="accept"]' : '[data-act="sbopen"]');   // b opens the reason box (AIG-1373)
+      if (btn && !btn.disabled && !btn.hidden) { e.preventDefault(); btn.click(); }
       return;
     }
     if (dlg) return;

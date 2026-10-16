@@ -74,7 +74,7 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   // b / a on the unfolded For you card.
   await page.keyboard.press('b');
   await sleep(300);
-  check('b with no comment asks for one and sends nothing', (await page.locator('#fyfList .fyf-row.open .ib-err').innerText()).length > 0 && (await getCard(s, 'alpha', first)).status === 'verify');
+  check('b opens the reason box (one Send back, AIG-1373) and sends nothing', await page.locator('#fyfList .fyf-row.open .ib-sb textarea').isVisible() && await page.locator('#fyfList .fyf-row.open [data-act=sbopen]').isHidden() && (await getCard(s, 'alpha', first)).status === 'verify');
   await page.evaluate(() => document.activeElement.blur());
   await page.keyboard.press('a');
   for (let i = 0; i < 20 && (await getCard(s, 'alpha', first)).status === 'verify'; i++) await sleep(250);
