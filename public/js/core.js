@@ -633,7 +633,14 @@ function render() {
   refocus();
   const card = state.route.card && p.cards.find(c => c.id === state.route.card);
   if (!card) state.editing = false;
+  const shown = document.querySelector('#modal .panel') ? state.cardFocus : null;   // the card open before this paint (closeCard empties #modal itself)
   paintModal(card ? renderCard(p, card) : '');
+  // AIG-1371: focus moves into a card when it opens (so Esc, Tab and c work there) and back to its board card when it closes.
+  if (card && shown !== card.id) { state.cardFocus = card.id; if (!$('modal').contains(document.activeElement)) cardFocusPanel(); }
+  else if (!card && state.cardFocus) {
+    const was = state.cardFocus, a = document.activeElement; state.cardFocus = null;
+    const n = (!a || a === document.body) && document.querySelector(`#app a.card[data-id="${CSS.escape(was)}"]`); if (n) n.focus({ preventScroll: true });
+  }
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
   boardFit();   // AIG-1217
   for (const [key, y] of keepCols) if (y) { const c = [...document.querySelectorAll('.column')].find(c => c.dataset.status + '|' + (c.dataset.step || '') === key); if (c) c.scrollTop = y; }

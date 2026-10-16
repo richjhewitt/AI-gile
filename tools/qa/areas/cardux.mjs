@@ -27,7 +27,7 @@ def('cardux', 'open card: title before actions, ⋯ menu with a working Move; ne
     check('Move inside the menu works', (await getCard(s, 'alpha', 'ALP-1')).status === 'doing');
     await page.keyboard.press('Escape');
     // A card waiting for a test shows its answer buttons without opening anything
-    await page.goto(page.url().replace('ALP-1', 'ALP-2'));
+    await page.goto(page.url().split('#')[0] + '#/p/alpha/ALP-2');   // Esc may have closed ALP-1 (AIG-1371)
     await page.waitForSelector('#modal .panel .verdict');
     const v = await page.evaluate(() => { const h = document.querySelector('#modal .panel h2').getBoundingClientRect().top, a = document.querySelector('#modal .verdict button.good').getBoundingClientRect().top; return { h, a }; });
     check('Accept is visible and below the title', v.a > v.h && await page.isVisible('#modal .verdict button.good'), v);

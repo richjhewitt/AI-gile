@@ -159,8 +159,23 @@ function cancelEdit() { state.editing = false; rerender(); }
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape' || e.defaultPrevented || !state.editing || $('dialog').firstChild || state.cardMenu) return;
   if (!document.querySelector('#modal .panel form')) return;
-  e.preventDefault(); state.editing = false; render();
-  const p = document.querySelector('#modal .panel'); if (p) { if (!p.hasAttribute('tabindex')) { p.tabIndex = -1; p.style.outline = 'none'; } p.focus({ preventScroll: true }); }
+  e.preventDefault(); state.editing = false; render(); cardFocusPanel();
+});
+// AIG-1371: Esc closes the open card, as the ? sheet says. One Esc does one thing: while a dialog, a menu, the edit form or a picker is
+// open, that goes first (seen before their own handlers run). In a field of the card, the first Esc leaves the field, the next one closes.
+const cardFocusPanel = () => { const p = document.querySelector('#modal .panel'); if (p) { if (!p.hasAttribute('tabindex')) { p.tabIndex = -1; p.style.outline = 'none'; } p.focus({ preventScroll: true }); } return p; };
+let cardEscBusy = false;
+window.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const tb = $('tbMoreMenu');
+  cardEscBusy = !!($('dialog').firstChild || state.cardMenu || state.editing || state.picked || $('suPrompt') || $('remind-box') || $('helpMenu') || $('statusMenu') || (tb && !tb.hidden));
+}, true);
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || e.defaultPrevented || cardEscBusy || e.ctrlKey || e.altKey || e.metaKey) return;
+  if (!document.querySelector('#modal .panel') || !state.route || !state.route.card) return;
+  const a = document.activeElement;
+  if (a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable)) { if ($('modal').contains(a)) { e.preventDefault(); cardFocusPanel(); } return; }
+  e.preventDefault(); closeCard();
 });
 async function saveCard(e) {
   e.preventDefault();
@@ -200,6 +215,7 @@ function popOutCard(s, id) {
 function closeCard() {
   if (state.route.pop) { window.close(); return; }
   state.editing = false;
+  const n = document.querySelector(`#app a.card[data-id="${CSS.escape(cardId())}"]`); if (n) n.focus({ preventScroll: true });   // AIG-1371: back on its board card
   $('modal').innerHTML = '';
   location.hash = '#/p/' + slug();
 }
