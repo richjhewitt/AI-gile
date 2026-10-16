@@ -452,8 +452,7 @@ async function refreshStaged(force, liveState, state, api) {
     } else {
       state.project = await api('GET', '/api/projects/' + state.route.slug);
       const whole = await FullCard.fill(state.project, state.route.card);   // ⚡ done cards come light: the open one is fetched whole (AIG-1100)
-      await loadDocs(state.route.slug, { signal: refreshController.signal });
-      await loadProfiles({ signal: refreshController.signal });   // the role templates, for roles added from a team (AIG-423)
+      await Promise.all([loadDocs(state.route.slug, { signal: refreshController.signal }), loadProfiles({ signal: refreshController.signal })]);   // independent reads share a phone round trip
       sig = renderSig([state.route, state.project, whole]);
     }
   } catch (e) {

@@ -258,11 +258,14 @@ const server = http.createServer(async (req, res) => {
       }
       throw bad('no such endpoint: ' + req.method + ' ' + pathname, 404);
     }
+    if (pathname === '/css/board-bundle.css') return require('./lib/pagebundle')(req, res, 'css');
+    if (pathname === '/js/board-bundle.js') return require('./lib/pagebundle')(req, res, true);
     // Static files from public/ (single-page app: unknown paths get index.html)
     let file = path.normalize(path.join(PUBLIC, pathname));
     if (!file.startsWith(PUBLIC)) throw bad('nope', 403);
     if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) file = path.join(PUBLIC, 'index.html');
     if (conflicted(file, fs.statSync(file))) { res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8', 'Retry-After': '2', 'Cache-Control': 'no-store' }); return res.end('mid-update: try again in a moment'); }
+    if (file === path.join(PUBLIC, 'index.html')) return require('./lib/pagebundle')(req, res, false);
     return sendStatic(file, req, res);
   } catch (e) {
     send(res, e.code && e.code >= 400 && e.code < 600 ? e.code : 500, { error: e.message });

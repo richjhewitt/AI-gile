@@ -15,7 +15,7 @@ def('inbox', 'top-bar counts, project tabs, inline answer, task Done', async (s,
   await mkCard(s, 'beta', 'Beta question', { status: 'doing' });
   await say(s, 'beta', 'BET-1', 'Forge', 'beta ask?', { needsYou: true });
   const page = await openPage(ctx, '#/p/beta');
-  await page.waitForSelector('#inboxTop .ib-btn');
+  await page.waitForSelector('#inboxTop .ib-badge');   // the board now paints before the inbox read finishes
   const top = await page.textContent('#inboxTop .ib-btn');
   check('top bar shows 2 questions', /2 questions/.test(top), top);
   check('top bar shows 1 to do', /1 to do/.test(top), top);

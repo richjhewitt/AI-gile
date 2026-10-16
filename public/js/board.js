@@ -90,7 +90,7 @@ function renderNews() {
   const s = state.route.slug, list = state.news || [];
   const top = `<h3 style="margin:4px 0">${esc(t('news.h'))} · ${esc(s)}</h3>`;
   if (!list.length) return top + `<p class="muted">${esc(t('news.none'))}</p>`;
-  return top + `<div class="newslist">${list.map(m => `<div class="news-item${m.mine ? ' mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> · <a href="#/pop/${esc(s)}/${esc(m.card)}" target="_blank">${esc(m.card)}</a> <span class="muted">${esc(m.title)} · ${ago(m.at)}</span></div><div class="dm-bubble">${esc(m.text || '').replace(/\n/g, '<br>')}</div></div>`).join('')}</div>`;
+  return top + `<div class="newslist">${list.map(m => `<div class="news-item${m.mine ? ' mine' : ''}"><div class="dm-meta"><b>${esc(m.author)}</b> · <a href="#/pop/${esc(s)}/${esc(m.card)}" target="_blank">${esc(m.card)}</a> <span class="muted">${esc(m.title)} · ${ago(m.at)}</span></div><div class="dm-bubble" dir="auto">${esc(m.text || '').replace(/\n/g, '<br>')}</div></div>`).join('')}</div>`;
 }
 
 /* ---------- Recently deleted (AIG-1260) ---------- */
@@ -139,7 +139,7 @@ function renderBoard(p) {
   const pick = `<button type="button" id="pickBtn" class="${state.pickMode ? 'primary' : ''}" aria-pressed="${state.pickMode ? 'true' : 'false'}" onclick="togglePickMode()" title="${esc(t('pick.mode.title'))}">${esc(t('pick.mode'))}</button>`;
   const happening = `<button onclick="happeningDialog()" title="${esc(t('board.happening.title'))}">${esc(t('board.happening'))}</button>`;
   const keep = p.cards.length ? `${happening}${pick}<button onclick="viewsDialog()">${esc(t('board.views'))}</button>${standupButtons(p).split(' <a')[0]}` : `<button onclick="openDocs()">${esc(t('board.docs'))}</button><button onclick="askTeamDialog()">${esc(t('board.ask'))}</button><button onclick="viewsDialog()">${esc(t('board.views'))}</button>`;
-  return `<div class="toolbar${compact ? ' compact' : ''}"><h2>${esc(p.name)}${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}${p.sample ? ` <span class="pill sample-pill">${esc(t('sample.pill'))}</span> <button id="sampleRemove" onclick="removeSample()" title="${esc(t('sample.remove.title'))}">${esc(t('sample.remove'))}</button>` : ''}</h2>
+  return `<div class="toolbar${compact ? ' compact' : ''}"><h2><bdi>${esc(p.name)}</bdi>${p.archived ? ` <span class="pill">${esc(t('home.archived'))}</span>` : ''}${p.sample ? ` <span class="pill sample-pill">${esc(t('sample.pill'))}</span> <button id="sampleRemove" onclick="removeSample()" title="${esc(t('sample.remove.title'))}">${esc(t('sample.remove'))}</button>` : ''}</h2>
       <button class="primary" onclick="newCard()">${esc(t('board.new'))}</button>
       ${compact ? `<span class="tb-keep">${keep}</span>` : ''}
       <button class="tb-dots" id="tbDots" aria-expanded="${state.tbOpen ? 'true' : 'false'}" aria-label="${esc(t('board.more'))}" title="${esc(t('board.more'))}" onclick="toggleTb()">⋯${compact ? ' ' + esc(t('board.more')) : ''}</button>
@@ -176,7 +176,7 @@ function renderBoard(p) {
       ${p.path ? `<button onclick="permsDialog()" title="${esc(t('board.perms.title'))}">${esc(t('board.perms'))}</button>` : ''}
       <button onclick="${p.archived ? 'setArchived(false)' : 'setArchived(true)'}">${esc(p.archived ? t('board.unarchive') : t('board.archive'))}</button></div></div>
     ${teamLineHtml(p)}
-    ${p.description ? `<p class="muted" style="margin-top:-6px">${esc(p.description)}</p>` : ''}
+    ${p.description ? `<p class="muted" dir="auto" style="margin-top:-6px">${esc(p.description)}</p>` : ''}
     <details class="bdetails" id="bDetails"${state.detailsOpen ? ' open' : ''} ontoggle="state.detailsOpen = this.open"><summary>${esc(t('board.details'))}</summary><div class="flight">${t('board.flight.html')} ${flightHtml(flightList(p), p.slug) || `<span class="muted">${esc(t('board.flight.none'))}</span>`}</div>${p.path ? `<p class="muted"><code>${esc(p.path)}</code></p>` : ''}</details>
     ${Share.laneHtml(p)}
     ${Spaces.boardHtml(p, projCard)}
@@ -367,7 +367,7 @@ function cardHtml(c) {
   const cls = [stale ? 'stale-card' : '', 'card', view.density === 'compact' ? 'compact' : '', (c.needsYou && c.status !== 'done') || c.status === 'verify' ? 'needs-you' : '', c.blocked ? 'is-blocked' : '', c.priority === 'urgent' && c.status !== 'done' ? 'is-urgent' : '', c.type === 'incident' && c.status !== 'done' ? 'is-incident' : '', isWaitingCard(c) ? 'is-waiting' : '', isPicked(c.id) ? 'picked' : ''].join(' ');
   return `<a class="${cls}" href="#/p/${state.project.slug}/${c.id}"${forYou(c) ? ` onclick="return fyCardClick(event, '${c.id}')"` : ''} data-id="${c.id}" draggable="true" style="display:block">
     <div class="id">${esc(c.id)}${c.share ? ` <span class="share-mark" title="${esc(t('share.card.mark'))}">${c.share.theirs ? '📥' : '🔗'}</span>` : ''}${c.forFriend ? ` <span class="share-mark">${esc(t('featreq.for', { name: c.forFriend }))}</span>` : ''}${view.show.sprint && c.sprint ? ' · ' + esc(c.sprint) : ''}${urgentBtn(c, state.project.slug)}${forYou(c) ? `<button class="ib-popone" title="${esc(t('inbox.popone'))}" onclick="event.preventDefault();event.stopPropagation();window.open('#/pop/${state.project.slug}/${c.id}', 'aigile-${state.project.slug}-${c.id}', 'width=560,height=780')">⤢</button>` : ''}</div>${forYou(c) ? queueChips(c) : ''}
-    <div class="t">${esc(c.title)}</div>${deskBadge(c)}${inCommentOnly(c, state.project.slug) ? `<div class="incomment muted">${esc(t('filter.incomment'))}</div>` : ''}
+    <div class="t" dir="auto">${esc(c.title)}</div>${deskBadge(c)}${inCommentOnly(c, state.project.slug) ? `<div class="incomment muted">${esc(t('filter.incomment'))}</div>` : ''}
     ${live ? `<div class="heard">💬 ${esc(heard.who)} ${ago(heard.at)}${heard.text ? ': ' + esc(heard.text.slice(0, 60).replace(/\n/g, ' ')) : ''}</div>` : ''}
     <div class="meta">${metaHtml(c, view.show)}${live ? `<button class="poke ai-only${stale ? ' hot' : ''}" title="${esc(t('card.poke.title'))}" onclick="event.preventDefault();event.stopPropagation();poke('${c.id}')">${esc(t('card.poke'))}</button>` : ''}</div></a>`;
 }

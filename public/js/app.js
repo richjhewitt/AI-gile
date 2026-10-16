@@ -57,8 +57,9 @@ window.addEventListener('hashchange', () => {
   loadLang().then(() => Phone.ready()).then(() => api('GET', '/api/meta')).then(async m => {   // a phone pairs first (AIG-868)
     if (!Boot.ok()) return;   // a script broke meanwhile: the page reloads instead
     state.servers = m.servers || []; state.terms = m.terms || []; state.srvAccess = m.srvAccess || {};
+    state.owner = m.owner || state.owner; state.ownerPic = m.ownerPic || ''; state.damaged = m.damaged || []; state.setupNeeded = !!m.setupNeeded;
     NoAi.apply(m.noAi, m.noAiBuild);
-    theme(); await Streamer.start(); await IB.load(true).catch(() => {}); await Dms.reload(); refresh(true); checkBuild(); NoTokens.start(); Tired.start(); Swarm.start(); Hyperfocus.start(); Weed.start(); UsageGlance.start(); helpBoot();
+    theme(); await Streamer.start(); refresh(true); if (!['home', 'inbox'].includes(parseRoute().view)) IB.load().catch(() => {}); Dms.reload().catch(() => {}); checkBuild(m); NoTokens.start(); Tired.start(); Swarm.start(); Hyperfocus.start(); Weed.start(); UsageGlance.start(); helpBoot();
   }, e => Boot.again(start, e));
 })();
 let lastPageTick = 0;
@@ -87,11 +88,11 @@ function applyAppLogo(url, icon) {
 }
 let wasQuiet = null;   // was the board quiet at the last check (AIG-232)
 let checkingBuild = false;
-async function checkBuild() {
+async function checkBuild(initial) {
   if (!i18n.ready || checkingBuild) return;
   checkingBuild = true;
   try {
-    const m = await api('GET', '/api/meta');
+    const m = initial || await api('GET', '/api/meta');
     // Quiet/focus flags affect the title and alerts in other windows too.
     if (document.hidden) {
       setNight(m.quiet);
