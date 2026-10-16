@@ -692,6 +692,7 @@
  "dms.filter.agents": "🤖 Agents",
  "dms.filter.people": "🙋 People",
  "dms.nopeople": "No mellyn yet. Turn on DMs in Setup and invite someone.",
+ "dms.addfriend": "＋ Add a mellon",
  "dms.nonone": "Nothing here yet.",
  "dms.person": "Mellon (Friend)",
  "dms.unverified": "Could not be verified, so the text is not shown.",

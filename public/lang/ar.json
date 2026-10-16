@@ -666,6 +666,7 @@
  "dms.filter.agents": "🤖 الوكلاء",
  "dms.filter.people": "🙋 الأشخاص",
  "dms.nopeople": "لا أصدقاء بعد. يمكن تفعيل الرسائل المباشرة في الإعداد ودعوة أحد.",
+ "dms.addfriend": "＋ إضافة صديق",
  "dms.nonone": "لا شيء هنا بعد.",
  "dms.person": "صديق",
  "dms.unverified": "تعذّر التحقق، لذا لا يُعرض النص.",

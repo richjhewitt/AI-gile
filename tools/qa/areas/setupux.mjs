@@ -52,6 +52,18 @@ def('setupux', 'Setup index: section links scroll to their section, #/setup/<sec
   await page.fill('#phHost', 'mypc.tail1234.ts.net');
   await page.click('#phPair'); await page.waitForSelector('#phLink');
   check('"Scan this with your phone" sits by the QR', /Scan this|Scan dit/.test(await page.textContent('#phSteps .ph-scan')) && !!(await page.$('#phSteps svg.phone-qr')));
+
+  // AIG-1412: 💬 has Add a friend (All and People); it opens Setup at the paste-their-code box, in view and ready to type in.
+  check('Friends is a Setup section in the index', await page.locator('#setIndex a[data-sec="friends"]').count() === 1 && await page.locator('#sec-friends').count() === 1);
+  await page.evaluate(() => { location.hash = '#/'; }); await sleep(400);
+  await page.click('#dmRail [data-dms]'); await page.waitForSelector('#dmPanel #dmAddFriend');
+  check('💬 All shows Add a friend', /Add a friend/.test(await page.textContent('#dmAddFriend')));
+  await page.click('#dmPanel [data-dmfilter="people"]'); await page.waitForSelector('#dmPanel #dmAddFriend');
+  check('💬 People shows Add a friend above the friends', await page.evaluate(() => { const a = document.getElementById('dmAddFriend'), e = document.querySelector('#dmPanel .dm-empty, #dmPanel .dm-rowwrap'); return !e || !!(a.compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING); }));
+  await page.click('#dmAddFriend'); await page.waitForSelector('#addFriendBox #dmfCode', { timeout: 8000 }); await sleep(1600);
+  const af = await page.evaluate(() => { const r = document.getElementById('dmfCode').getBoundingClientRect(), ix = document.getElementById('setIndex').getBoundingClientRect(); return { hash: location.hash, top: r.top, bottom: r.bottom, ixb: ix.bottom, h: innerHeight, focus: document.activeElement && document.activeElement.id, shut: document.getElementById('dmPanel').hidden, inFriends: !!document.querySelector('#sec-friends #addFriendBox') }; });
+  check('Add a friend opens Setup > Friends with the paste box in view, below the index, ready to type, the 💬 panel out of the way', af.hash === '#/setup/addFriend' && af.inFriends && af.top >= af.ixb && af.bottom <= af.h && af.focus === 'dmfCode' && af.shut, JSON.stringify(af));
+  if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/setupux-addfriend.png' }).catch(() => {});
   noErrors(page);
   await page.close();
 

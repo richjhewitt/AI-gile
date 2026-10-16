@@ -692,6 +692,7 @@
  "dms.filter.agents": "🤖 اجنټان",
  "dms.filter.people": "🙋 خلک",
  "dms.nopeople": "تر اوسه ملګري نشته. په تنظیماتو کې DMs فعال کړه او یو چا ته بلنه ورکړه.",
+ "dms.addfriend": "＋ ملګری اضافه کړه",
  "dms.nonone": "دلته تر اوسه هیڅ نشته.",
  "dms.person": "ملګری",
  "dms.unverified": "تایید نشو کړای، نو متن نه ښودل کیږي.",

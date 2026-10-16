@@ -161,13 +161,14 @@ function renderSetup() {
     </section></div>`;
 }
 /* ---------- Setup index (AIG-934): links to the sections, #/setup/<section> deep links ---------- */
-// A deep link also takes any box id minus "Box" (#/setup/mail, #/setup/dmsRelay). Scrolls clear of the sticky top bar and index.
+// A deep link also takes any box id minus "Box" (#/setup/mail, #/setup/dmsRelay, #/setup/addFriend for the paste-their-code box). Scrolls clear of the sticky top bar and index.
 function setupTarget(sec) { return $('sec-' + sec) || $(sec + 'Box') || $(sec); }
 function setupScrollTo(sec) {
   const el = setupTarget(sec), ix = $('setIndex'); if (!el) return false;
   const hdr = document.querySelector('body > header'), h = hdr && getComputedStyle(hdr).position !== 'static' ? hdr.offsetHeight : 0;
   if (ix) ix.style.top = h + 'px';
   window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - h - (ix ? ix.offsetHeight : 0) - 10);
+  const box = sec === 'addFriend' && $('dmfCode'); if (box && document.activeElement !== box) box.focus({ preventScroll: true });   // AIG-1412: Add a friend lands in the paste box
   return true;
 }
 // ⧉ Pop out (AIG-1030): Setup in its own window (#/pop-setup); this window goes back to the home page.

@@ -663,6 +663,7 @@
  "dms.filter.agents": "🤖 เอเจนต์",
  "dms.filter.people": "🙋 คน",
  "dms.nopeople": "ยังไม่มีเพื่อน เปิด DM ในการตั้งค่าแล้วเชิญใครสักคน",
+ "dms.addfriend": "＋ เพิ่มเพื่อน",
  "dms.nonone": "ยังไม่มีอะไรที่นี่",
  "dms.person": "เพื่อน",
  "dms.unverified": "ตรวจสอบไม่ได้ จึงไม่แสดงข้อความ",

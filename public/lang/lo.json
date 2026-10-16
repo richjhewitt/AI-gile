@@ -672,6 +672,7 @@
  "dms.filter.agents": "🤖 Agent",
  "dms.filter.people": "🙋 ຄົນ",
  "dms.nopeople": "ຍັງບໍ່ມີໝູ່. ເປີດຂໍ້ຄວາມສ່ວນຕົວໃນການຕັ້ງຄ່າ ແລ້ວເຊີນໃຜຜູ້ໜຶ່ງ.",
+ "dms.addfriend": "＋ ເພີ່ມໝູ່",
  "dms.nonone": "ຍັງບໍ່ມີຫຍັງຢູ່ນີ້.",
  "dms.person": "ໝູ່",
  "dms.unverified": "ກວດສອບບໍ່ໄດ້ ສະນັ້ນບໍ່ສະແດງຂໍ້ຄວາມ.",

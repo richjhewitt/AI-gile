@@ -655,6 +655,7 @@
  "dms.filter.agents": "🤖 Agenter",
  "dms.filter.people": "🙋 Personer",
  "dms.nopeople": "Inga vänner än. Slå på DM i Inställningar och bjud in någon.",
+ "dms.addfriend": "＋ Lägg till en vän",
  "dms.nonone": "Inget här än.",
  "dms.person": "Vän",
  "dms.unverified": "Kunde inte verifieras, så texten visas inte.",

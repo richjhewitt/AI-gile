@@ -155,7 +155,7 @@ function dmsFriendsPaint() {
       <div class="actions"><button type="button" id="dmfInvite">${esc(t('dmf.invite.btn'))}</button></div>
       ${DF.code ? `<textarea id="dmfMade" readonly rows="3" onclick="this.select()">${esc(DF.code)}</textarea><small class="muted">${esc(t('dmf.invite.send'))}</small>
       <div class="actions"><button type="button" id="dmfCopy">${esc(t('dmf.copy'))}</button> ${DF.inviteId ? fpHtml(DF.inviteId) : ''}</div>` : ''}</div>
-    <div class="dmf-sec"><b>${esc(t('dmf.add.h'))}</b><small class="muted">${esc(t('dmf.add.help'))}</small>
+    <div class="dmf-sec" id="addFriendBox"><b>${esc(t('dmf.add.h'))}</b><small class="muted">${esc(t('dmf.add.help'))}</small>
       <textarea id="dmfCode" rows="2" placeholder="${esc(t('dmf.add.code'))}" spellcheck="false">${esc(keep.c)}</textarea>
       <input type="text" id="dmfName" value="${esc(keep.n)}" placeholder="${esc(t('dmf.add.name'))}" autocomplete="off">
       <div class="actions"><button type="button" id="dmfAdd">${esc(t('dmf.add.btn'))}</button></div></div>

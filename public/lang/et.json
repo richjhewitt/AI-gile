@@ -681,6 +681,7 @@
  "dms.filter.agents": "🤖 Agendid",
  "dms.filter.people": "🙋 Inimesed",
  "dms.nopeople": "Sõpru veel pole. Lülita seadetes sõnumid sisse ja kutsu keegi.",
+ "dms.addfriend": "＋ Lisa sõber",
  "dms.nonone": "Siin pole veel midagi.",
  "dms.person": "Sõber",
  "dms.unverified": "Kontrollimine ebaõnnestus, seega teksti ei näidata.",

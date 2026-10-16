@@ -655,6 +655,7 @@
  "dms.filter.agents": "🤖 Agents",
  "dms.filter.people": "🙋 Personnes",
  "dms.nopeople": "Pas encore d'amis. Active les messages privés dans les Réglages et invite quelqu'un.",
+ "dms.addfriend": "＋ Ajouter un ami",
  "dms.nonone": "Rien ici pour l'instant.",
  "dms.person": "Ami",
  "dms.unverified": "Impossible à vérifier, le texte n'est donc pas affiché.",

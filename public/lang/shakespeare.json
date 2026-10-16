@@ -406,6 +406,7 @@
  "usage.nologs": "Point the board at thy agent session logs folder to see which projects use the most.",
  "format.opendir": "Open the folder in Explorer",
  "dms.nopeople": "No friends as yet. Turn on DMs in Setup and invite someone.",
+ "dms.addfriend": "＋ Add a friend",
  "dms.nonone": "Nothing here as yet.",
  "dms.unverified": "Could not be verified, so the text is not shown.",
  "dms.failed": "Not delivered",

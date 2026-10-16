@@ -666,6 +666,7 @@
  "dms.filter.agents": "🤖 Agents",
  "dms.filter.people": "🙋 Persones",
  "dms.nopeople": "Encara no hi ha amistats. Activa els missatges directes a Configuració i convida algú.",
+ "dms.addfriend": "＋ Afegeix una amistat",
  "dms.nonone": "Encara no hi ha res aquí.",
  "dms.person": "Amistat",
  "dms.unverified": "No s'ha pogut verificar, així que el text no es mostra.",
