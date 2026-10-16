@@ -1,7 +1,10 @@
 // Home and the project rail use the same expanded watch list as the night glance.
+// AIG-1389: a failed read keeps the last list, so Home and the left bar still update.
+let nightLast = null;
 async function nightProjects(options = {}) {
-  const [meta, watch] = await Promise.all([PagePoll.get('/api/meta', options), PagePoll.get('/api/watchman', options)]);
-  return meta.quiet && watch ? watch.watch : null;
+  return Promise.all([PagePoll.get('/api/meta', options), PagePoll.get('/api/watchman', options)])
+    .then(([meta, watch]) => (nightLast = meta.quiet && watch ? watch.watch : null))
+    .catch(() => nightLast);
 }
 function onlyNightProjects(projects, watch) {
   return watch === null ? projects : projects.filter(p => watch.includes(p.slug));
