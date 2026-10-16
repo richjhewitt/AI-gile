@@ -175,5 +175,12 @@
  "live.last.day.one": "Laatste kaart {n} dag geleden verplaatst",
  "live.last.day.other": "Laatste kaart {n} dagen geleden verplaatst",
  "live.offline": "Het live bord neemt even een adempauze. Kom straks nog eens terug.",
- "live.cols": "Backlog|Te doen|Bezig|Team checkt|Jij test|Voor het team|Klaar"
+ "live.cols": "Backlog|Te doen|Bezig|Team checkt|Jij test|Voor het team|Klaar",
+ "footer.models": "AI-gile laat AI-modellen voor je werken. Wat ze zeggen en doen is van hen, dus controleer het voor je erop vertrouwt.",
+ "privacy.ai.h": "Het AI-deel",
+ "privacy.ai.models": "AI-gile is het bord. Het werk doen AI-modellen van andere bedrijven, zoals Claude, Codex en Gemini, op je eigen accounts.",
+ "privacy.ai.check": "Wat ze schrijven en doen komt van hen, en het kan fout zijn. Controleer het voor je erop bouwt of het uitbrengt.",
+ "privacy.ai.files": "Ze wijzigen bestanden en voeren opdrachten uit in de mappen die je koppelt. Maak een back-up.",
+ "privacy.ai.send": "Wat je aan een model geeft, gaat naar het bedrijf erachter, onder hun voorwaarden. Hun eigen voorwaarden en kosten gelden.",
+ "privacy.ai.asis": "AI-gile is een vroege testversie, zoals hij is."
 }

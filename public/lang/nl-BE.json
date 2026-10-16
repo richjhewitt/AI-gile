@@ -5619,5 +5619,6 @@
  "rev.summary.busy": "De dienstdoende agent wordt gevraagd...",
  "rev.summary.noai": "Geen samenvatting: AI staat uit (No Token Mode, Geen AI of budget op).",
  "rev.summary.failed": "De agent gaf deze keer geen samenvatting.",
- "tb.b.quietTop": "🌙 Even weg"
+ "tb.b.quietTop": "🌙 Even weg",
+ "wz.ask.models": "AI-gile is het bord. Het werk doen AI-modellen zoals Claude, Codex en Gemini, op je eigen accounts. Wat ze schrijven en doen komt dus van hen, en soms klopt het niet. Controleer hun werk voor je erop vertrouwt, en maak een back-up van elke map waar je ze in laat."
 }

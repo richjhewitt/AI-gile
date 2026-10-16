@@ -5619,5 +5619,6 @@
  "err.unreachable": "AI-gile is nu niet bereikbaar. Controleer of het nog draait; deze pagina blijft het proberen.",
  "err.slow": "AI-gile antwoordde te langzaam. Probeer het zo meteen opnieuw.",
  "err.relay": "De relay (de tussenschakel voor vrienden, delen en berichten) is niet bereikbaar. Controleer je internetverbinding en probeer het opnieuw.",
- "err.server": "Er ging iets mis in AI-gile, dus dat is niet gelukt. Probeer het opnieuw."
+ "err.server": "Er ging iets mis in AI-gile, dus dat is niet gelukt. Probeer het opnieuw.",
+ "wz.ask.models": "AI-gile is het bord. Het werk doen AI-modellen zoals Claude, Codex en Gemini, op je eigen accounts. Wat ze schrijven en doen komt dus van hen, en soms klopt het niet. Controleer hun werk voor je erop vertrouwt, en maak een back-up van elke map waar je ze in laat."
 }

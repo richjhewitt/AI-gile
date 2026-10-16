@@ -5619,5 +5619,6 @@
  "rev.summary.busy": "Asking the on-call agent...",
  "rev.summary.noai": "No summary: AI is off (No Token Mode, No AI or over budget).",
  "rev.summary.failed": "The agent gave no summary this time.",
- "tb.b.quietTop": "🌙 Going quiet"
+ "tb.b.quietTop": "🌙 Going quiet",
+ "wz.ask.models": "AI-gile is the board. The work is done by AI models like Claude, Codex and Gemini, on your own accounts, so what they write and do comes from them, and sometimes it's wrong. Check their work before you rely on it, and keep a backup of any folder you let them into."
 }
