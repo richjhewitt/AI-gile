@@ -1,5 +1,5 @@
 // QA area: carddelete (AIG-1260, AIG-1263, AIG-1264): delete = Undo bar + Recently deleted with Restore; ⋯ menu Copy link and Duplicate.
-import { check, sleep, mkProject, mkCard, getCard, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, mkProject, mkCard, getCard, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('carddelete', 'delete keeps the card (Undo bar, Recently deleted, Restore); ⋯ menu Copy link and Duplicate', async (s, ctx) => {
   await mkProject(s, 'Delta', 'DEL');
@@ -46,8 +46,7 @@ def('carddelete', 'delete keeps the card (Undo bar, Recently deleted, Restore); 
     await s.ok('DELETE', '/api/projects/delta/cards/DEL-2');
     await page.goto(page.url().split('#')[0] + '#/p/delta');
     await page.reload();
-    await page.waitForSelector('#deletedBtn');
-    await page.click('#deletedBtn');
+    await tbClick(page, '#deletedBtn');   // under ⋯ More (AIG-1359)
     await page.waitForSelector('[data-restore="DEL-2"]');
     await page.click('[data-restore="DEL-2"]');
     await sleep(800);
