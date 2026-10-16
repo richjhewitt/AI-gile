@@ -111,7 +111,7 @@ def('fyfoldnext', 'Tests list: Accept or Send back opens the next test in the li
   noErrors(page);
 }, true);
 
-def('fyquestions', 'Questions pile: a tapped answer sends it and the question leaves the pile (AIG-1411); my own question shows the team answer (AIG-1414)', async (s, ctx) => {
+def('fyquestions', 'Questions pile: a tapped answer sends it and the question leaves the pile (AIG-1411); my own question shows the team answer (AIG-1414); the card says For you with no stray Go (AIG-1421)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   await s.ok('POST', '/api/projects/alpha/team', { name: 'Lead', role: 'Lead' });
   const page = await openPage(ctx, '#/p/alpha');
@@ -119,6 +119,14 @@ def('fyquestions', 'Questions pile: a tapped answer sends it and the question le
   const c = await mkCard(s, 'alpha', '💬 What should I plant first?', { description: 'What should I plant first?', status: 'team', createdBy: owner, quick: true });
   await say(s, 'alpha', c.id, 'Lead', 'Start with broad beans and onion sets.');
   s.cli(['ask', 'alpha', c.id, 'Vegetables, or fruit too?', '--options', 'Just vegetables,Vegetables and fruit', '--as', 'Lead']);
+  // AIG-1421: the card itself says it waits on me, and has no 👍 Go beside the question's own answer buttons
+  await page.evaluate(id => { location.hash = '#/p/alpha/' + id; }, c.id);
+  await page.reload();
+  await page.waitForSelector('.panel [data-cardact]');
+  check('the card header says For you while it waits on me (AIG-1421)', /^ALP-1 · For you$/.test((await page.textContent('.card-title .id')).trim()), await page.textContent('.card-title .id'));
+  check('no 👍 Go next to the question\'s own answer buttons (AIG-1421)', (await page.locator('.reply .actions button', { hasText: 'Go' }).count()) === 0 && (await page.locator('.panel [data-cardact]').count()) === 2);
+  if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-1421.png' });
+  await page.evaluate(() => { location.hash = '#/p/alpha'; });
   await page.reload();
   await page.waitForSelector(`.column.foryou .card[data-id="${c.id}"]`);
   await page.click(`.column.foryou .card[data-id="${c.id}"] .t`);

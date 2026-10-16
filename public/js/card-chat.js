@@ -4,9 +4,10 @@ function replyHtml(p, c, msg, newest) {
       ${replyBox(p, c)}
       ${newest.length > 1 ? `<h3 class="muted" style="font-size:13px;margin-top:18px">${esc(t('card.earlier'))}</h3>${newest.slice(1).map(m => msg(m, false)).join('')}` : ''}`;
 }
-const replyBox = (p, c) => `<div class="reply">${cardAnswers(p, c)}<textarea dir="auto" id="r-text" data-draft="${esc(p.slug + '/' + c.id)}/reply" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(EnterSend.is(event,'card')){event.preventDefault();sendReply()}"></textarea>
+// AIG-1421: no 👍 Go when the question has its own answer buttons; Go would not answer it
+const replyBox = (p, c, ans = cardAnswers(p, c)) => `<div class="reply">${ans}<textarea dir="auto" id="r-text" data-draft="${esc(p.slug + '/' + c.id)}/reply" rows="3" placeholder="${esc(t('card.reply.ph', { name: me() }))}" onkeydown="if(EnterSend.is(event,'card')){event.preventDefault();sendReply()}"></textarea>
         <div class="err" id="r-err"></div>
-        <div class="actions">${c.needsYou ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${looksRight(c)}${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>`;
+        <div class="actions">${c.needsYou && !ans.includes('data-cardact') ? `<button class="good" onclick="sendReply('GO')" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>` : ''}<button class="primary" onclick="sendReply()">${esc(t('card.sendreply'))}</button>${looksRight(c)}${Attach.boxHtml(p.slug + '/' + c.id)}</div></div>`;
 /* ---------- one-click answers on the card itself (AIG-371, AIG-315) ----------
    An open `aigile task` (assigned to the owner) always gets a ✅ Done. An open `aigile ask` (needs the owner) gets the same
    Go / Yes / --options buttons as the inbox (askActions, core.js); one that needs a reason (Not yet, No) starts the reply box.
