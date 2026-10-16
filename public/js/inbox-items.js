@@ -6,8 +6,11 @@
   /* ---------- inbox page (AIG-33) ---------- */
   function qHtml(c) {
     const a = shownAsk(c), acts = c.blocked || c.leadChat ? [] : askActions(a, 'question');
+    // AIG-1414: a card that started as my question also shows the team's answer before its follow-up, so I never answer blind
+    const mine = x => String(x || '').trim().toLowerCase() === me().toLowerCase();
+    const ans = mine(c.createdBy) && [...(c.comments || [])].reverse().find(x => x.at < a.at && !x.poke && !/^\s*Original:/i.test(x.text || '') && !mine(x.author));
     return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${urgentBtn(c, c.project)}${c.leadChat ? '' : `<button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button>`}</div>${queueChips(c)}
-      <div class="ib-title" dir="auto">${c.leadChat ? `<a href="#" onclick="Dms.show('${c.project}'); return false">${esc(c.title)}</a>` : `<a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a>`}</div>
+      <div class="ib-title" dir="auto">${c.leadChat ? `<a href="#" onclick="Dms.show('${c.project}'); return false">${esc(c.title)}</a>` : `<a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a>`}</div>${ans ? `<details class="ib-steps ib-answer" open><summary>${t('inbox.q.answer.html', { who: esc(ans.author), when: ago(ans.at) })}</summary><div class="body" dir="auto">${linkify(ans.text, c)}</div>${Attach.shown(ans, c.project)}</details>` : ''}
       <div class="ib-who">${t(c.blocked ? 'inbox.q.isblocked.html' : 'inbox.q.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
       <div class="ib-question" dir="auto">${linkify(a.text, c)}</div>${Attach.shown(a, c.project)}${actionsHtml(acts, c.project, c.id)}
       <textarea dir="auto" rows="2" data-draft="${esc(c.project + '/' + c.id)}/reply" placeholder="${esc(t('inbox.q.ph'))}" aria-label="${esc(t('inbox.q.aria', { id: c.id }))}"></textarea>

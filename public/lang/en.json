@@ -674,6 +674,7 @@
  "inbox.q.question": "❓ Question",
  "inbox.q.isblocked.html": "<b>{who}</b> is blocked {when}",
  "inbox.q.asked.html": "<b>{who}</b> asked {when}",
+ "inbox.q.answer.html": "<b>{who}</b> answered your question {when}",
  "inbox.q.ph": "Type your answer. Enter sends, Shift+Enter adds a new line.",
  "inbox.q.aria": "Your answer to {id}",
  "inbox.q.send": "Send answer",

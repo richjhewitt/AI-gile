@@ -773,6 +773,7 @@
  "inbox.q.question": "❓ Vraag",
  "inbox.q.isblocked.html": "<b>{who}</b> zit vast (gemeld {when})",
  "inbox.q.asked.html": "<b>{who}</b> vroeg {when}",
+ "inbox.q.answer.html": "<b>{who}</b> beantwoordde je vraag {when}",
  "inbox.q.ph": "Typ je antwoord. Enter verstuurt, Shift+Enter voor een nieuwe regel.",
  "inbox.q.aria": "Je antwoord op {id}",
  "inbox.q.send": "Antwoord versturen",
