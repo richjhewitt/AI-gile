@@ -45,6 +45,9 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   await page.waitForSelector('.wz-dots');
   check('five step dots, first one on', (await page.locator('.wz-dot').count()) === 5 && (await page.locator('.wz-dot.on').count()) === 1);
   check('screen 1 has a language picker', await page.isVisible('.wizard .lang-pick'));
+  // AIG-1368: one line up front on what the AI helpers do, and no words nobody has explained yet
+  const wzw = await page.evaluate(() => ({ s1: document.querySelector('.wizard').textContent, all: ['wz.1.sub', 'wz.1.pick', 'wz.2.h', 'wz.2.name.help', 'wz.2.agent', 'wz.2.agent.help', 'wz.3.h', 'wz.3.sub', 'wz.4.sub', 'wz.plan.fly.help', 'wz.plan.careful.help', 'wz.plan.normal.help', 'wz.plan.generous.help'].map(k => t(k)).join(' | ') }));
+  check('wizard words are plain: helpers explained on screen 1, no sleeping team, Your lead, helpers they get, your plan, four questions (AIG-1368)', /AI helpers work on your cards/.test(wzw.s1) && !/sleeping|Your lead|helpers they get|your plan\b|Four quick|four short|Teams call/i.test(wzw.all), wzw.all);
   check('no Back on the first screen', !(await page.isVisible('#wzBack')));
   await page.click('#wzNext');
   await page.waitForSelector('#wz-name');
