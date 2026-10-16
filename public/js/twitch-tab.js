@@ -7,7 +7,7 @@
 // Client ID (Setup field); then a channel box with the last 10 channels in a drop-down, also in the chat head, to switch any time.
 // The older paste-a-token way stays under "Other ways".
 const TwitchTab = (() => {
-  let cfg = { channel: '', connected: false, error: '', canReply: false, login: '', via: '', clientId: '', recent: [], signedIn: false, hasPasted: false }, cur = null, msgs = [], last = 0, sig = '', msg = '';
+  let cfg = { channel: '', connected: false, error: '', canReply: false, login: '', via: '', clientId: '', builtIn: false, ready: false, recent: [], signedIn: false, hasPasted: false }, cur = null, msgs = [], last = 0, sig = '', msg = '';
   let flow = null, flowTimer = null, authMsg = '', boxSig = '';
   const same = (a, b) => a.channel === b.channel;
   const TOKEN_URL = 'https://twitchtokengenerator.com/', CONSOLE_URL = 'https://dev.twitch.tv/console/apps/create';
@@ -15,7 +15,7 @@ const TwitchTab = (() => {
   async function poll() {
     let c; try { c = await api('GET', '/api/twitch/config'); } catch { return; }
     const changed = !same(cfg, c); cfg = c;
-    const box = $('twitchBox'), s = JSON.stringify([c.signedIn, c.login, c.canReply, c.clientId, c.recent, c.channel]);
+    const box = $('twitchBox'), s = JSON.stringify([c.signedIn, c.login, c.canReply, c.clientId, c.ready, c.recent, c.channel]);
     if (box && s !== boxSig && !box.contains(document.activeElement)) paintBox(); else if (box) loadGroups();
     if (changed && document.getElementById('twPop')) return paintPop();
     if (changed && typeof Dms !== 'undefined') Dms.reload && Dms.reload();
@@ -56,46 +56,47 @@ const TwitchTab = (() => {
   function authHtml() {
     if (cfg.signedIn) return `<div ${row}><b id="twAuthOn">${esc(t('tw.auth.on', { name: cfg.login }))}</b><button type="button" id="twAuthOut" onclick="TwitchTab.authOut()">${esc(t('tw.login.out'))}</button></div>`;
     const f = flow;
+    // AIG-1404: no Client ID at all yet (no built-in one, none of your own): one plain line, no developer steps up front.
+    if (!cfg.ready) return `<small class="muted" id="twAuthNotReady">${esc(t('tw.auth.noid'))}</small>`;
     return `<small class="muted">${esc(t('tw.auth.help'))}</small>
       <div ${row}><button type="button" class="primary" id="twAuth" onclick="TwitchTab.authStart()">${esc(t('tw.auth.btn'))}</button></div><small class="muted" id="twScopes">${esc(t('tw.auth.scopes'))}</small>
-      ${!cfg.clientId && authMsg === 'noid' ? `<div class="tw-howto" id="twAuthNoId" style="border:1px solid var(--border,#8884);border-radius:8px;padding:8px 12px;margin:4px 0">${esc(t('tw.auth.noid'))}</div>` : ''}
       ${f && f.state === 'waiting' ? `<div id="twAuthCode" style="border:1px solid var(--border,#8884);border-radius:8px;padding:8px 12px;margin:4px 0;overflow-wrap:anywhere">${esc(t('tw.auth.go'))} <a id="twAuthLink" href="${esc(f.url)}" target="_blank" rel="noopener noreferrer">${esc(f.url.replace(/\?.*$/, ''))}</a> ${esc(t('tw.auth.type'))}
         <b id="twAuthUserCode" style="font-size:20px;letter-spacing:2px;user-select:all">${esc(f.code)}</b> <button type="button" onclick="navigator.clipboard && navigator.clipboard.writeText(${esc(JSON.stringify(f.code))})">${esc(t('tw.auth.copy'))}</button>
         <div class="muted">${esc(t('tw.auth.waiting'))}</div></div>` : ''}
-      ${f && f.state === 'error' ? `<div class="err" id="twAuthErr">${esc(t('tw.auth.failed', { msg: f.error }))}</div>` : authMsg && authMsg !== 'noid' ? `<div class="err" id="twAuthErr">${esc(authMsg)}</div>` : ''}`;
+      ${f && f.state === 'error' ? `<div class="err" id="twAuthErr">${esc(t('tw.auth.failed', { msg: f.error }))}</div>` : authMsg ? `<div class="err" id="twAuthErr">${esc(authMsg)}</div>` : ''}`;
   }
   function setupHtml() {
-    boxSig = JSON.stringify([cfg.signedIn, cfg.login, cfg.canReply, cfg.clientId, cfg.recent, cfg.channel]);
+    boxSig = JSON.stringify([cfg.signedIn, cfg.login, cfg.canReply, cfg.clientId, cfg.ready, cfg.recent, cfg.channel]);
     return `<span>${esc(t('tw.setup.h'))}</span>
       ${authHtml()}
-      <label for="twClientId" style="margin-top:6px">${esc(t('tw.id.label'))}</label>
-      <div ${row}><input type="text" id="twClientId" value="${esc(cfg.clientId)}" placeholder="abcdefghijklmnopqrstuvwxyz0123" autocomplete="off" spellcheck="false" maxlength="40" style="min-width:0;flex:1 1 220px" onkeydown="if(event.key==='Enter'){event.preventDefault();TwitchTab.saveId()}">
-        <button type="button" id="twClientSave" onclick="TwitchTab.saveId()">${esc(t('tw.id.save'))}</button></div>
-      <small class="muted" id="twIdHelp">${esc(t('tw.id.help'))} <a href="${CONSOLE_URL}" target="_blank" rel="noopener noreferrer">${esc(t('tw.id.link'))}</a></small><div class="err" id="twIdErr"></div>
       <label for="twChannel" style="margin-top:6px">${esc(t('tw.chan.h'))}</label>
       <div ${row}><input type="text" id="twChannel" value="${esc(cfg.channel)}" placeholder="${esc(cfg.login || t('tw.setup.ph'))}" autocomplete="off" maxlength="26" style="min-width:0;flex:1 1 160px" oninput="TwitchTab.filter('twChannel','twSList')" onkeydown="if(event.key==='Enter'){event.preventDefault();TwitchTab.save()}">
       <button type="button" class="primary" id="twSave" onclick="TwitchTab.save()">${esc(t('tw.chan.join'))}</button></div>
       <div class="tw-list" id="twSList" role="listbox" aria-label="${esc(t('tw.chan.h'))}">${listHtml('')}</div>
       <small class="muted">${esc(t('tw.chan.help'))}</small>
       <div class="err" id="twErr"></div><small class="muted" id="twState">${esc(msg || (cfg.channel ? stateOf() : ''))}</small>
-      <details id="twOther" ${cfg.hasPasted && !cfg.signedIn ? 'open' : ''} style="margin-top:6px"><summary>${esc(t('tw.other'))}</summary>
+      <details id="twOther" ${(cfg.hasPasted || cfg.clientId) && !cfg.signedIn ? 'open' : ''} style="margin-top:6px"><summary>${esc(t('tw.other'))}</summary>
       <span>${esc(t('tw.login.h'))}</span><small class="muted">${esc(t('tw.login.help'))} <a href="${TOKEN_URL}" target="_blank" rel="noopener">${esc(t('tw.login.get'))}</a></small>
       ${cfg.hasPasted ? `<div><small class="muted">${esc(cfg.via === 'token' ? t('tw.login.on', { name: cfg.login }) : t('tw.login.saved'))}</small> <button type="button" id="twOut" onclick="TwitchTab.signOut()">${esc(t('tw.login.out'))}</button></div>`
       : `<div ${row}><input type="text" id="twLogin" placeholder="${esc(t('tw.login.ph'))}" autocomplete="off" maxlength="26" style="min-width:0"><input type="password" id="twToken" placeholder="${esc(t('tw.login.token'))}" autocomplete="new-password" maxlength="80" style="min-width:0" onkeydown="if(event.key==='Enter'){event.preventDefault();TwitchTab.signIn()}">
       <button type="button" id="twSignIn" onclick="TwitchTab.signIn()">${esc(t('tw.login.save'))}</button></div>`}
-      <div class="err" id="twErr2"></div></details>`;
+      <div class="err" id="twErr2"></div>
+      <label for="twClientId" style="margin-top:8px">${esc(t('tw.id.label'))}</label><small class="muted">${esc(t('tw.id.own'))}</small>
+      <div ${row}><input type="text" id="twClientId" value="${esc(cfg.clientId)}" placeholder="abcdefghijklmnopqrstuvwxyz0123" autocomplete="off" spellcheck="false" maxlength="40" style="min-width:0;flex:1 1 220px" onkeydown="if(event.key==='Enter'){event.preventDefault();TwitchTab.saveId()}">
+        <button type="button" id="twClientSave" onclick="TwitchTab.saveId()">${esc(t('tw.id.save'))}</button></div>
+      <small class="muted" id="twIdHelp">${esc(t('tw.id.help'))} <a href="${CONSOLE_URL}" target="_blank" rel="noopener noreferrer">${esc(t('tw.id.link'))}</a></small><div class="err" id="twIdErr"></div></details>`;
   }
   async function signIn() {
     try { cfg = await api('POST', '/api/twitch/token', { login: $('twLogin').value, token: $('twToken').value }); msg = t('tw.setup.saved'); } catch (e) { const x = $('twErr2'); if (x) x.textContent = e.message || String(e); return; }
     paintBox(); msg = '';
   }
   async function signOut() { try { cfg = await api('POST', '/api/twitch/token', { login: '', token: '' }); } catch {} paintBox(); }
-  // 💜 Sign in with Twitch: no Client ID yet shows the one step; else start the device code and poll until approved, denied or run out.
+  // 💜 Sign in with Twitch (shown only once a Client ID is there: AI-gile's own, or yours under Other ways): start the device code
+  // and poll until approved, denied or run out. A Client ID typed under Other ways but not saved yet is saved first.
   async function authStart() {
     authMsg = ''; flow = null;
-    if (!cfg.clientId && !($('twClientId') && $('twClientId').value.trim())) { authMsg = 'noid'; return paintBox(); }
     try {
-      if ($('twClientId') && $('twClientId').value.trim() !== cfg.clientId) cfg = await api('POST', '/api/twitch/config', { clientId: $('twClientId').value.trim() });
+      if ($('twClientId') && $('twClientId').value.trim() && $('twClientId').value.trim() !== cfg.clientId) cfg = await api('POST', '/api/twitch/config', { clientId: $('twClientId').value.trim() });
       flow = await api('POST', '/api/twitch/auth/start', { token: await secToken() });
     } catch (e) { authMsg = e.message || String(e); return paintBox(); }
     paintBox();
