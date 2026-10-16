@@ -134,7 +134,7 @@ function renderBoard(p) {
   const showAll = teamAll(), folded = team.filter(m => !live(m)).length, shownTeam = showAll ? team : team.filter(live);
   const log = (p.log || []).slice().reverse().slice(0, 50);
   // AIG-1076: an empty (new) project keeps + New, Docs, Ask the team and Views on the bar; the rest sits behind ⋯ More (on a phone everything does, AIG-933).
-  const compact = !p.cards.length && !(window.matchMedia && matchMedia('(max-width: 600px)').matches);
+  const compact = !(window.matchMedia && matchMedia('(max-width: 600px)').matches);
   const keep = `<button onclick="openDocs()">${esc(t('board.docs'))}</button>
       <button onclick="askTeamDialog()" title="${esc(t('board.ask.title'))}">${esc(t('board.ask'))}</button>
       <button onclick="viewsDialog()" title="${esc(t('board.views.title'))}">${esc(t('board.views'))}</button>`;

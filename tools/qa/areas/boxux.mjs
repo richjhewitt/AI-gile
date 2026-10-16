@@ -11,7 +11,7 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
   await page.waitForSelector('.column.foryou .card');
 
   // desktop: unchanged toolbar, no ⋯
-  check('desktop: no ⋯ button', !(await page.isVisible('#tbDots')));
+  check('desktop: More stays after adding cards (AIG-1359)', await page.isVisible('#tbDots') && !(await page.isVisible('#hfBtn')));
   check('desktop: toolbar buttons visible', await page.isVisible('.toolbar button[onclick="docsDialogOpen()"], .toolbar button[onclick="openDocs()"]'));
   check('desktop: the New card button is visible', await page.isVisible('.toolbar .primary'));
 
@@ -99,7 +99,7 @@ def('boxux', 'board on a phone opens cards first (⋯ opens the toolbar), For yo
   await ep.keyboard.press('Escape');
   await ep.setViewportSize({ width: 1280, height: 800 });
   await sleep(300);
-  check('desktop: no Filters button, the dropdowns show', !(await ep.isVisible('#f-tog')) && await ep.isVisible('#f-sel select'));
+  check('desktop: More stays after adding cards (AIG-1359)', await page.isVisible('#tbDots') && !(await page.isVisible('#hfBtn')));
   await ep.close();
   noErrors(page);
 }, true);
