@@ -85,6 +85,7 @@
  "tl.lede": "真實的日期和時間，依你自己的時區顯示。今天之後就是計畫，不承諾具體日期。",
  "tl.today": "今天",
  "tl.planned": "計畫中",
+ "tl.doing": "進行中",
  "tl.cards.one": "{n} 張卡片",
  "tl.cards.other": "{n} 張卡片",
  "join.h2": "一起來玩",

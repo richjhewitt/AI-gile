@@ -122,6 +122,8 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 .tl-item::before{content:"";position:absolute;left:-39px;top:18px;width:14px;height:14px;border-radius:50%;background:var(--accent);border:3px solid var(--bg)}
 .tl-item.planned{background:transparent;border-style:dashed}
 .tl-item.planned::before{background:var(--bg);border:3px solid var(--diamond)}
+.tl-item.doing::before{background:linear-gradient(90deg,var(--accent) 50%,var(--bg) 50%);border:3px solid var(--accent)}
+.tl-item.doing .tl-tag{color:var(--accent);border-color:var(--accent)}
 .tl-item h3{margin:0;font-size:18px;overflow-wrap:anywhere}
 .tl-tag{display:inline-block;font-size:12px;font-weight:600;color:var(--diamond);border:1px solid var(--diamond);border-radius:999px;padding:0 8px;vertical-align:middle}
 .tl-when{margin:2px 0 0;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}

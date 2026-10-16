@@ -2,7 +2,8 @@
 // Writes site/timeline.json (and timeline.js, the same data for file:// pages) for the teaser timeline (AIG-778, AIG-779).
 // Run: node tools/gen/timeline.mjs   (needs the board on AIGILE_URL, default http://localhost:4321)
 // Real dates only: the first chat's timestamp (never its text), the first git commit, and done cards' dates.
-// Planned stages come from To do and backlog cards, grouped the same way, with no dates.
+// Roadmap stages (stages.mjs PLANNED) take their state from the board (AIG-1323): done ones get dates, the rest no dates.
+// Reads the board only (one GET); it never writes to it.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -49,24 +50,39 @@ const done = cards.filter(c => c.status === 'done');
 const groups = new Map(DONE.map(r => [r.id, []]));
 for (const c of done) groups.get(DONE.find(r => (r.test ? r.test(c) : r.re.test(c.title))).id).push(c);
 
+// Cards get touched again later, so use when they were made: the 5th to 95th percentile keeps odd ones out.
+const dated = (r, g) => {
+  const t = g.map(c => c.created).sort(), at = p => t[Math.min(t.length - 1, Math.floor(p * t.length))];
+  return { id: r.id, name: r.name, start: iso(at(0.05)), end: iso(at(0.95)), cards: g.length, line: r.line };
+};
 const stages = [];
 for (const r of DONE) {
   const g = groups.get(r.id); if (!g.length || !r.name) continue;
-  // Cards get touched again later, so use when they were made: the 5th to 95th percentile keeps odd ones out.
-  const t = g.map(c => c.created).sort(), at = p => t[Math.min(t.length - 1, Math.floor(p * t.length))];
-  const start = at(0.05), end = at(0.95);
-  stages.push({ id: r.id, name: r.name, start: iso(start), end: iso(end), cards: g.length, line: r.line });
+  stages.push(dated(r, g));
 }
+
+// AIG-1323: roadmap stages follow the board. Every card a rule matches counts, in any column; built = done or waiting for the
+// owner's test. 90% or more built: done (dated, joins the stages above); some built: in progress; none: planned.
+// 'Everything else' only gathers open (To do, backlog) cards no other rule takes, so it stays planned.
+const DONE_AT = 0.9, OPEN = new Set(['todo', 'backlog']), BUILT = new Set(['done', 'verify']);
+const pg = new Map(PLANNED.map(r => [r.id, []]));
+for (const c of cards) { const r = PLANNED.find(r => r.re.test(c.title)); if (r.id !== 'p-more' || OPEN.has(c.status)) pg.get(r.id).push(c); }
+const doing = [], planned = [];
+for (const r of PLANNED) {
+  const g = pg.get(r.id), built = g.filter(c => BUILT.has(c.status)).length;
+  if (!g.length) continue;
+  if (r.id !== 'p-more' && built / g.length >= DONE_AT) { stages.push(dated(r, g)); continue; }
+  const s = { id: r.id, name: r.name, cards: g.length, line: r.line, planned: true };
+  if (r.id !== 'p-more' && built) { s.doing = true; s.built = built; doing.push(s); } else planned.push(s);
+}
+const byCards = (a, b) => b.cards - a.cards;
+planned.sort(byCards).unshift(...doing.sort(byCards)); // in progress first, just after Today
 // The first real commit opens the first board; everything else follows by start time.
 const first = stages.find(s => s.id === 'first-board');
 if (first && commit < first.start) first.start = commit;
 stages.sort((a, b) => a.start.localeCompare(b.start));
 if (chat) stages.unshift({ id: 'first-idea', name: 'The first idea', start: chat, end: commit, cards: 0, line: 'The very first conversation, before any code existed.' });
 
-const pg = new Map(PLANNED.map(r => [r.id, []]));
-for (const c of cards.filter(c => c.status === 'todo' || c.status === 'backlog')) pg.get(PLANNED.find(r => r.re.test(c.title)).id).push(c);
-const planned = PLANNED.filter(r => pg.get(r.id).length).map(r => ({ id: r.id, name: r.name, cards: pg.get(r.id).length, line: r.line, planned: true }))
-  .sort((a, b) => b.cards - a.cards);
 
 const out = { generated: new Date().toISOString(), stages, planned };
 fs.writeFileSync(OUT, JSON.stringify(out, null, 1) + '\n');

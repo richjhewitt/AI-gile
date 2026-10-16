@@ -92,9 +92,10 @@
     try{return d.toLocaleString(SiteI18n.locale(),{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}catch(e){return d.toString()}
   }
   function item(s,planned){
-    var li=document.createElement("li");li.className="tl-item"+(planned?" planned":"");
+    // AIG-1323: after Today, stages the board shows under way say "in progress" (s.doing), the rest "planned".
+    var li=document.createElement("li");li.className="tl-item"+(planned?(s.doing?" doing":" planned"):"");
     var h=document.createElement("h3");h.textContent=SiteI18n.timeline(s.id,"name",s.name);
-    if(planned){var tag=document.createElement("span");tag.className="tl-tag";tag.textContent=T("tl.planned");h.appendChild(document.createTextNode(" "));h.appendChild(tag)}
+    if(planned){var tag=document.createElement("span");tag.className="tl-tag";tag.textContent=T(s.doing?"tl.doing":"tl.planned");h.appendChild(document.createTextNode(" "));h.appendChild(tag)}
     li.appendChild(h);
     if(!planned&&s.start){
       var t=document.createElement("p");t.className="tl-when";

@@ -85,6 +85,7 @@
  "tl.lede": "실제 날짜와 시간이에요. 내 시간대로 보여 줘요. 오늘 이후는 계획일 뿐, 날짜를 약속하지 않아요.",
  "tl.today": "오늘",
  "tl.planned": "계획",
+ "tl.doing": "진행 중",
  "tl.cards.one": "카드 {n}장",
  "tl.cards.other": "카드 {n}장",
  "join.h2": "함께해요",

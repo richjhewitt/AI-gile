@@ -7,7 +7,7 @@ import { check, sleep, loadPw, ROOT, def } from '../lib.mjs';
 const SIZES = [1, 2, 3, 5, 8, 13];
 const text = (n, k) => Array.from({ length: n }, () => 's' + n + 'a' + k).join(' ');
 const LINES = { sizes: SIZES.map(n => ({ n, texts: [text(n, 1), text(n, 2)] })), quips: { 1: 'one-quip', 5: 'five-quip' } };
-const TL = { generated: '2026-10-13T00:00:00Z', stages: [{ id: 'a', name: 'Stage one', start: '2026-10-09T21:50:00Z', end: '2026-10-10T01:00:00Z', cards: 5, line: 'one line' }, { id: 'b', name: 'Stage two', start: '2026-10-10T02:00:00Z', end: '2026-10-11T01:00:00Z', cards: 1, line: 'two line' }], planned: [{ id: 'p', name: 'Plan one', cards: 3, line: 'plan line', planned: true }] };
+const TL = { generated: '2026-10-13T00:00:00Z', stages: [{ id: 'a', name: 'Stage one', start: '2026-10-09T21:50:00Z', end: '2026-10-10T01:00:00Z', cards: 5, line: 'one line' }, { id: 'b', name: 'Stage two', start: '2026-10-10T02:00:00Z', end: '2026-10-11T01:00:00Z', cards: 1, line: 'two line' }], planned: [{ id: 'd', name: 'Doing one', cards: 4, line: 'doing line', planned: true, doing: true, built: 2 }, { id: 'p', name: 'Plan one', cards: 3, line: 'plan line', planned: true }] };
 const BOARD = { title: 'AI-gile', cards: Array.from({ length: 37 }, (_, i) => ({ id: 'AIG-' + i })) };
 
 def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a different text per length, arrows, quips, another version, live card count (AIG-695/697/1117)', async (s, ctx) => {
@@ -69,7 +69,8 @@ def('teaser', 'site/index.html (file://, stubbed fetch): length slider with a di
   check('timeline renders its stages in order', items.length === 2 && /Stage one/.test(items[0]) && /Stage two/.test(items[1]) && /5 cards/.test(items[0]) && /1 card\b/.test(items[1]), items);
   check('stage dates are real, in the visitor locale', await page.$$eval('#tl-done time', ts => ts.length === 4 && ts.every(t => t.textContent.length > 3 && !isNaN(new Date(t.getAttribute('datetime'))))));
   const planned = await page.$$eval('#tl-planned .tl-item', els => els.map(e => ({ t: e.textContent, tag: !!e.querySelector('.tl-tag'), times: e.querySelectorAll('time').length })));
-  check('planned part is marked planned and has no dates', planned.length === 1 && planned[0].tag && /planned/.test(planned[0].t) && planned[0].times === 0, planned);
+  check('after Today: the in-progress stage first, then the planned one, tagged and with no dates (AIG-1323)', planned.length === 2 && /Doing one/.test(planned[0].t) && /in progress/.test(planned[0].t) && /Plan one/.test(planned[1].t) && /planned/.test(planned[1].t) && planned.every(p => p.tag && p.times === 0), planned);
+  check('the in-progress stage looks different from a planned one (AIG-1323)', await page.$$eval('#tl-planned .tl-item', els => els[0].classList.contains('doing') && !els[0].classList.contains('planned') && els[1].classList.contains('planned') && getComputedStyle(els[0]).borderStyle !== getComputedStyle(els[1]).borderStyle));
   check('Today marker sits between done and planned', await page.evaluate(() => { const y = id => document.getElementById(id).getBoundingClientRect().top; return y('tl-done') < y('tl-today') && y('tl-today') < y('tl-planned'); }));
   check('timeline fits at phone width in dark mode', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && getComputedStyle(document.querySelector('.tl-item')).backgroundColor !== 'rgb(238, 240, 243)'));
   if (await page.$('#famous')) { await page.waitForSelector('#famous:not([hidden])', { timeout: 5000 });

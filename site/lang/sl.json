@@ -85,6 +85,7 @@
  "tl.lede": "Pravi datumi in ure v tvojem časovnem pasu. Po današnjem dnevu je to načrt, brez obljubljenih datumov.",
  "tl.today": "Danes",
  "tl.planned": "načrtovano",
+ "tl.doing": "v teku",
  "tl.cards.one": "{n} kartica",
  "tl.cards.other": "{n} kartic",
  "join.h2": "Pridruži se",

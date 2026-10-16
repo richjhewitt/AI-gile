@@ -85,6 +85,7 @@
  "tl.lede": "Valódi dátumok és időpontok, a saját időzónádban. A mai nap után már csak a terv van, ígért dátumok nélkül.",
  "tl.today": "Ma",
  "tl.planned": "tervezett",
+ "tl.doing": "folyamatban",
  "tl.cards.one": "{n} kártya",
  "tl.cards.other": "{n} kártya",
  "join.h2": "Csatlakozz",

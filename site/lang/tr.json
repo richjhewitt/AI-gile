@@ -85,6 +85,7 @@
  "tl.lede": "Gerçek tarihler ve saatler, kendi saat diliminde. Bugünden sonrası plan; söz verilmiş tarih yok.",
  "tl.today": "Bugün",
  "tl.planned": "planlandı",
+ "tl.doing": "sürüyor",
  "tl.cards.one": "{n} kart",
  "tl.cards.other": "{n} kart",
  "join.h2": "Sen de katıl",

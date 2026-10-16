@@ -85,6 +85,7 @@
  "tl.lede": "Riktiga datum och klockslag, i din egen tidszon. Efter idag är det planen, utan utlovade datum.",
  "tl.today": "Idag",
  "tl.planned": "planerat",
+ "tl.doing": "pågår",
  "tl.cards.one": "{n} kort",
  "tl.cards.other": "{n} kort",
  "join.h2": "Häng med",

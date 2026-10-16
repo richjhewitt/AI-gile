@@ -85,6 +85,7 @@
  "tl.lede": "Real dates and times, in your own time zone. After today it's the plan, with no dates promised.",
  "tl.today": "DaHjaj (Today)",
  "tl.planned": "planned",
+ "tl.doing": "in progress",
  "tl.cards.one": "{n} card",
  "tl.cards.other": "{n} cards",
  "join.h2": "Join in",

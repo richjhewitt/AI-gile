@@ -85,6 +85,7 @@
  "tl.lede": "Oikeat päivämäärät ja kellonajat omalla aikavyöhykkeelläsi. Tämän päivän jälkeen on suunnitelma, jossa ei luvata päivämääriä.",
  "tl.today": "Tänään",
  "tl.planned": "suunniteltu",
+ "tl.doing": "työn alla",
  "tl.cards.one": "{n} kortti",
  "tl.cards.other": "{n} korttia",
  "join.h2": "Tule mukaan",

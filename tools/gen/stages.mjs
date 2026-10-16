@@ -17,15 +17,16 @@ export const DONE = [
   { id: 'other', name: '', line: '', re: /./ },
 ];
 
-// Planned stages: no dates promised.
+// Roadmap stages (AIG-1323): every card whose title matches, in any column (first matching rule wins). timeline.mjs gives each
+// one its state from the board: done (dated, among the done stages), in progress or planned. 'p-more' only counts open cards.
 export const PLANNED = [
   { id: 'p-android', name: 'Phone and Android', line: 'Reach your board from a phone, then a native Android app.', re: /android|phone|pwa|linux/i },
-  { id: 'p-engines', name: 'More AI engines', line: 'Pick Claude, Codex or Gemini per agent.', re: /codex|gemini|copilot|cursor|engine/i },
-  { id: 'p-languages', name: 'More languages', line: 'More than a hundred languages, and an immersion mode for learners.', re: /🌍|language|immersion/i },
+  { id: 'p-engines', name: 'More AI engines', line: 'Pick Claude, Codex, Gemini, Copilot or Cursor per agent.', re: /codex|gemini|copilot|cursor|engine/i },
+  { id: 'p-languages', name: 'More languages', line: '130 languages, and an immersion mode for learners.', re: /🌍|language|immersion/i },
   { id: 'p-pro', name: 'Pro practice', line: 'Risk labels, merge gates, incident cards and guard rails.', re: /pro practice|incident|guard rail/i },
   { id: 'p-livestream', name: 'Streaming extras', line: 'Twitch chat, custom emojis and a public live view.', re: /twitch|emoji|public live|obs/i },
   { id: 'p-self', name: 'Looking after you', line: 'Tired mode, self-care reminders and 4:20.', re: /tired|self-care|4:20/i },
   { id: 'p-servers', name: 'Servers and scale', line: 'Global server settings, roles and planning for growth.', re: /server|scaling|ssh|sudo|role:/i },
-  { id: 'p-release', name: 'Alpha and beyond', line: 'Closed alpha, the live site, then beta.', re: /alpha|beta|release|aigile\.lol|teaser|roadmap|licence|feedback/i },
+  { id: 'p-release', name: 'Alpha and beyond', line: 'Closed alpha, the live site, then beta.', re: /closed alpha|pre-alpha|alpha release|\bbeta\b|v0\.42|go live|aigile\.lol \d\/\d|pre-teaser|roadmap: alpha/i },
   { id: 'p-more', name: 'Everything else', line: 'Smaller ideas still waiting their turn.', re: /./ },
 ];
