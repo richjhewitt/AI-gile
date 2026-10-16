@@ -78,6 +78,12 @@ const uz = {
   .uz-share .uz-who { display: inline-flex; flex-wrap: wrap; gap: 4px 10px; padding-left: 10px; border-left: 2px solid var(--line); }
   .uz-viewtog { display: flex; gap: 6px; margin: 0 0 12px; }
   .uz-compact { font-family: ui-monospace, Consolas, 'Courier New', monospace; font-size: 14px; line-height: 1.7; margin: 0 0 6px; padding: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); white-space: pre; overflow-x: auto; max-width: 100%; }
+  .uz-eng { border-left: 4px solid var(--c); }
+  .uz-eng .uz-eng-nums { font-size: 15px; margin: 6px 0 2px; }
+  .uz-eng .uz-eng-lim { margin-top: 8px; font-size: 13px; }
+  .uz-eng .uz-eng-lim .uz-meter { height: 8px; margin: 4px 0 6px; }
+  .uz-eng .uz-eng-none { color: var(--muted); font-style: italic; }
+  .uz-eng-h { margin-top: 4px !important; }
   @media (max-width: 520px) { .uz-hero { font-size: 48px; } .uz-rank { grid-template-columns: 1fr; } .uz-compact { font-size: 12px; padding: 10px; } }
   `;
   document.head.appendChild(s);
@@ -88,18 +94,19 @@ async function loadUsagePage(force, options = {}) {
   const request = (method, url, body, extra = {}) => api(method, url, body, { ...extra, signal: options.signal });
   if (!force && uz.data && Date.now() - uz.fetchedAt < 15e3) return;
   // AIG-558: all at once (check and runs used to wait their turn, so the first click looked like it did nothing).
-  const [usage, limits, projects, live, check, shares] = await Promise.all([
+  const [usage, limits, projects, live, check, shares, engines] = await Promise.all([
     request('GET', '/api/usage', undefined, { timeout: 60000 }).catch(() => ({ enabled: false })),
     request('GET', '/api/limits?days=30').catch(() => ({ latest: null, history: [] })),
     request('GET', '/api/projects?all=1').catch(() => []),
     request('GET', '/api/limits/latest').catch(() => ({ latest: null })),   // AIG-431: the compact view
     request('GET', '/api/usage/check').catch(() => null),
     request('GET', '/api/usage/shares').catch(() => null),   // AIG-685/686: token use shared with friends
+    request('GET', '/api/usage/engines', undefined, { timeout: 60000 }).catch(() => ({ engines: [] })),   // AIG-1340: every engine
   ]);
   if (options.signal?.aborted) return;
   await TodayPage.load(options);
   if (options.signal?.aborted) return;
-  uz.data = { usage, limits, check, runs: (uz.data && uz.data.runs) || [], live, shares, projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
+  uz.data = { usage, limits, check, runs: (uz.data && uz.data.runs) || [], live, shares, engines: (engines && engines.engines) || [], projects: projects.map(p => ({ slug: p.slug, name: p.name })) };
   uz.fetchedAt = Date.now();
   // AIG-712: the runs table can be slow (it scans the session logs), so it fills in when it arrives instead of holding up the first draw.
   request('GET', '/api/usage/runs', undefined, { timeout: 60000 }).catch(() => []).then(runs => {   // AIG-266
@@ -134,7 +141,7 @@ function renderUsagePage() {
   const toggle = `<div class="uz-viewtog" role="group">${[['compact', 'usage.view.compact'], ['full', 'usage.view.full']].map(([v, k]) =>
     `<button class="${view === v ? 'primary' : ''}" aria-pressed="${view === v}" onclick="uzSetView('${v}')">${esc(t(k))}</button>`).join('')}</div>`;
   const mx = uz.data.live && uz.data.live.maximiser, maxi = mx ? `<p class="uz-maxi muted">${esc(t('usage.maxi.' + mx.why, { n: mx.cap }))}</p>` : '';   // usage maximiser (AIG-714)
-  if (view === 'compact') return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}${maxi}${uzCompact(uz.data.live && uz.data.live.latest, uz.data.limits.history || [])}</div>`;
+  if (view === 'compact') return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}${maxi}${uzCompact(uz.data.live && uz.data.live.latest, uz.data.limits.history || [])}${uzEngCompact(uz.data.engines)}</div>`;
   const { usage, limits } = uz.data;
   const hist = limits.history || [];
   const width = Math.max(260, Math.min(960, ($('app').clientWidth || 360) - 40 - 30));
@@ -144,7 +151,57 @@ function renderUsagePage() {
     : `<div class="uz-tiles">${uzTile(t('usage.session'), t('usage.session.sub'), limits.latest, 'h5', hist)}${uzTile(t('usage.week'), t('usage.week.sub'), limits.latest, 'wk', hist)}</div>
        <p class="uz-note">${esc(t('usage.note'))}</p>`;
   return `<div class="uz"><h2>${esc(t('usage.h'))}</h2>${toggle}<p class="uz-explain">${esc(t('usage.explain'))}</p>${maxi}
-    ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${noReading ? '' : uzBurn(limits)}${TodayPage.usageCard()}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}${uzRuns(uz.data.runs, uz.data.projects)}</div>`;
+    ${uzCheckBar(limits.latest, uz.data.check)}${tiles}${uzEngines(uz.data.engines, limits.latest)}${noReading ? '' : uzBurn(limits)}${TodayPage.usageCard()}${noReading ? '' : uzLineCard(hist, width)}${usage.enabled ? uzProjects(usage, uz.data.projects, width) : uzNoLogs()}${uzRuns(uz.data.runs, uz.data.projects)}</div>`;
+}
+
+/* ---------- every AI engine (AIG-1340) ---------- */
+// One card per engine used in the last 30 days: tokens today and in 7 days, board runs, and the engine's own limits when it writes
+// them on this PC (Claude: the plan reading above; Codex: its rate limits from its session logs). Otherwise it says there are none.
+const uzLeft = w => { if (!w || w.pct == null) return null; const r = uzTime(w.resets); return r && r < Date.now() ? null : Math.max(0, Math.min(100, Math.round(100 - w.pct))); };
+const uzWin = m => m === 300 ? t('engines.win.h5') : m === 10080 ? t('engines.win.wk') : m ? t('engines.win.h', { n: Math.round(m / 60) }) : t('engines.win.any');
+function uzEngLimits(e, latest) {
+  if (e.engine === 'claude') {
+    const h5 = uzLeft(latest && latest.h5), wk = uzLeft(latest && latest.wk);
+    return h5 == null && wk == null ? `<div class="uz-eng-lim uz-eng-none">${esc(t('engines.claude.noplan'))}</div>`
+      : `<div class="uz-eng-lim">${esc(t('engines.claude.plan', { h5: h5 == null ? '–' : h5 + '%', wk: wk == null ? '–' : wk + '%' }))}</div>`;
+  }
+  const L = e.limits, now = Date.now();
+  let html = '';
+  if (L && L.windows && L.windows.length) {
+    html = L.windows.map(w => {
+      const r = w.resets, gone = r && r < now, left = Math.round(100 - w.usedPct), st = uzStatus(left);
+      const when = !r ? '' : gone ? t('usage.compact.rolled') : r - now < 864e5 ? t('usage.resetsin', { in: uzHM(r - now) }) : t('usage.resetson', { day: uzDay(r), in: uzHM(r - now) });
+      return `<div class="uz-eng-win" data-win="${w.minutes || ''}">${esc(t('engines.win.line', { win: uzWin(w.minutes), pct: Math.round(w.usedPct) }))}${when ? ' · ' + esc(when) : ''}
+        ${gone ? '' : `<div class="uz-meter" role="meter" aria-label="${esc(uzWin(w.minutes))}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${left}"><span style="width:${left}%;background:${st.c}"></span></div>`}</div>`;
+    }).join('') + `<div class="uz-sub">${esc(t('engines.lim.from', { name: EngUse.name(e.engine), when: L.at ? ago(L.at) : '–' }))}${L.plan ? ' · ' + esc(t('engines.lim.plan', { plan: L.plan })) : ''}</div>`;
+  }
+  if (e.premiumMonth != null) html += `<div class="uz-eng-prem">${esc(t('engines.premium', { n: e.premiumMonth }))}</div>`;
+  if (!L) html += `<div class="uz-eng-none">${esc(t('engines.nolimit', { name: EngUse.name(e.engine) }))}</div>`;
+  return `<div class="uz-eng-lim">${html}</div>`;
+}
+function uzEngines(list, latest) {
+  if (!list || !list.length) return '';
+  const card = e => `<div class="uz-card uz-eng" data-eng="${esc(e.engine)}" style="--c:${EngUse.col(e.engine)}"><div class="uz-tile-h">${esc(EngUse.name(e.engine))}</div>
+    <div class="uz-eng-nums">${t('engines.used.html', { today: uzShort(e.today), d7: uzShort(e.d7) })}</div>
+    <div class="uz-sub">${esc(t('engines.runs', { today: e.runsToday, d7: e.runs7 }))} · ${esc(t(e.engine === 'claude' ? 'engines.src.claude' : 'engines.src.board'))}</div>
+    ${uzEngLimits(e, latest)}</div>`;
+  return `<h2 class="uz-eng-h">${esc(t('engines.h'))}</h2><p class="uz-explain">${esc(t('engines.explain'))}</p><div class="uz-tiles uz-engines">${list.map(card).join('')}</div>`;
+}
+// Compact: one monospace line per engine, then what each project used today split by engine (the same numbers as the full view).
+function uzEngCompact(list) {
+  if (!list || !list.length) return '';
+  const now = Date.now(), nw = Math.max(...list.map(e => EngUse.name(e.engine).length)) + 1;
+  const lines = list.map(e => {
+    let lim;
+    if (e.engine === 'claude') lim = '';
+    else if (e.limits && e.limits.windows && e.limits.windows.length) lim = e.limits.windows.map(w => uzWin(w.minutes) + ' ' + Math.round(w.usedPct) + '% ' + uzBar(w.usedPct) + (w.resets && w.resets > now ? ' ' + t('usage.resetsin', { in: uzHM(w.resets - now) }) : '')).join(' · ');
+    else lim = (e.premiumMonth != null ? t('engines.premium', { n: e.premiumMonth }) + ' · ' : '') + t('engines.nolimit', { name: EngUse.name(e.engine) });
+    return (EngUse.name(e.engine) + ':').padEnd(nw) + ' ' + t('engines.compact.line', { today: uzShort(e.today), d7: uzShort(e.d7), runs: e.runs7 }) + (lim ? ' · ' + lim : '');
+  });
+  const d = TodayPage.data, projs = d ? d.projects.filter(p => p.used > 0).sort((a, b) => b.used - a.used).slice(0, 8) : [];
+  const pw = Math.max(0, ...projs.map(p => p.name.length)) + 1, fmt = n => uzShort(n);
+  const today = projs.map(p => (p.name + ':').padEnd(pw) + ' ' + fmt(p.used).padStart(5) + (EngUse.used(p.by).length ? '  ' + EngUse.split(p.by, fmt) : ''));
+  return `<pre class="uz-compact uz-engcompact">${esc(lines.join('\n'))}</pre>` + (today.length ? `<pre class="uz-compact uz-projcompact">${esc(t('engines.compact.today') + '\n' + today.join('\n'))}</pre>` : '');
 }
 
 /* ---------- compact view (AIG-431) ---------- */
@@ -384,6 +441,8 @@ function uzProjects(u, projects, W) {
     show(i, c) { const sx = L + step * i + step / 2;
       const hb = c.querySelector('.uz-band'); hb.setAttribute('x', L + step * i); hb.setAttribute('visibility', 'visible');
       const rows = shown.filter(s => s.days[i].tokens > 0).reverse().map(s => uzRow(s.col, s.name, uzShort(s.days[i].tokens)));
+      const eb = u.daily.org[i] && u.daily.org[i].by, ens = EngUse.used(eb);   // AIG-1340: the day split by engine
+      if (ens.length > 1 || (ens.length && ens[0] !== 'claude')) rows.push(uzEl('div', 't', t('engines.legend')), ...ens.map(e => uzRow(EngUse.col(e), EngUse.name(e), uzShort(eb[e]))));
       uzTip(c, [uzEl('div', 't', t('usage.tip.total', { day: uzDateLabel(dates[i]), n: uzShort(totals[i]) })), ...(rows.length ? rows : [uzEl('div', 't', t('usage.tip.none'))])], sx, T);
       uz.hover[id].i = i; } };
   const chart = `<div class="uz-chart" id="${id}"><svg viewBox="0 0 ${W} ${H}" role="img" tabindex="0" aria-label="${esc(t('usage.bars.aria'))}">
@@ -397,12 +456,15 @@ function uzProjects(u, projects, W) {
     .filter(r => r.t && (r.t.d7 || r.t.today)).sort((a, b) => b.t.d7 - a.t.d7);
   const m7 = Math.max(...rank.map(r => r.t.d7), 1);
   const ranked = rank.length ? `<div class="uz-card"><h2>${esc(t('usage.rank.h'))}</h2><p class="uz-explain">${esc(t('usage.rank.explain'))}</p>
-    <div class="uz-rank">${rank.map(r => `<div class="nm">${esc(r.name)}</div><div><div class="nums">${t('usage.rank.nums.html', { today: uzShort(r.t.today), d7: uzShort(r.t.d7) })}</div><div class="track" style="--c:${r.col}"><span style="width:${Math.max(2, r.t.d7 / m7 * 100)}%"></span></div>${r.slug ? uzShareRow(r.slug) : ''}</div>`).join('')}</div></div>` : '';
+    <div class="uz-rank">${rank.map(r => `<div class="nm">${esc(r.name)}</div><div><div class="nums">${t('usage.rank.nums.html', { today: uzShort(r.t.today), d7: uzShort(r.t.d7) })}${uzEngSplit(r.t.eng)}</div><div class="track" style="--c:${r.col}"><span style="width:${Math.max(2, r.t.d7 / m7 * 100)}%"></span></div>${r.slug ? uzShareRow(r.slug) : ''}</div>`).join('')}</div></div>` : '';
   return `<div class="uz-card"><h2>${esc(t('usage.bars.h'))}</h2><div class="uz-head">${headline}</div>
     <p class="uz-explain">${esc(t('usage.bars.explain'))}</p>
     ${uz.table.bars ? table : chart}${legend}
     <button class="uz-toggle" onclick="uzToggle('bars')">${esc(uz.table.bars ? t('usage.showchart') : t('usage.showtable'))}</button></div>${ranked}`;
 }
+
+// AIG-1340: " · Claude 5M · Codex 1M" (7 days) when more than Claude was used.
+const uzEngSplit = eng => { const by = Object.fromEntries(Object.entries(eng || {}).map(([e, x]) => [e, x.d7])), list = EngUse.used(by); return list.length > 1 || (list.length && list[0] !== 'claude') ? ` <span class="uz-engsplit">· ${esc(EngUse.split(by, uzShort))}</span>` : ''; };
 
 // Token use, shared with friends (AIG-685/686): a switch per project (off by default), then All friends or one by one
 // (none picked at first, so the owner chooses). Only the numbers go: today and the last 7 days, never card text or logs.
@@ -433,7 +495,7 @@ function uzRuns(runs, projects) {
   const who = r => !r.kind || r.kind === 'team' ? name(r.slug) : r.kind === 'lead' ? `${t('usage.kind.lead')}: ${name(r.slug)}` : t('usage.kind.' + r.kind);
   const sum = k => runs.reduce((n, r) => n + (r[k] || 0), 0);
   const total = t('usage.runs.total', { n: runs.length, in: uzShort(sum('in')), out: uzShort(sum('out')), cache: uzShort(sum('cache')) });
-  const rows = runs.map(r => `<tr data-kind="${esc(r.kind || 'team')}"><td>${esc(who(r))}</td><td>${esc(uzDay(r.end))}</td><td>${uzShort(r.in)}</td><td>${uzShort(r.out)}</td><td>${uzShort(r.cache)}</td><td>${esc((r.cards || []).join(', '))}</td><td>${esc((r.models || []).join(', '))}</td><td>${r.reads == null ? '' : `${r.reads} / ${uzShort(r.readChars || 0)}`}</td></tr>`).join('');
+  const rows = runs.map(r => `<tr data-kind="${esc(r.kind || 'team')}"><td>${esc(who(r))}</td><td>${esc(uzDay(r.end))}</td><td>${uzShort(r.in)}</td><td>${uzShort(r.out)}</td><td>${uzShort(r.cache)}</td><td>${esc((r.cards || []).join(', '))}</td><td>${esc((r.engine && r.engine !== 'claude' ? [EngUse.name(r.engine)] : []).concat(r.models || []).join(', '))}</td><td>${r.reads == null ? '' : `${r.reads} / ${uzShort(r.readChars || 0)}`}</td></tr>`).join('');
   return `<div class="uz-card"><h2>${esc(t('usage.runs.h'))}</h2><p class="uz-explain">${esc(t('usage.runs.explain'))}</p><p class="uz-explain uz-runtotal">${esc(total)}</p>
     <div class="uz-tablewrap"><table><thead><tr><th>${esc(t('usage.runs.team'))}</th><th>${esc(t('usage.runs.ended'))}</th><th>${esc(t('usage.runs.in'))}</th><th>${esc(t('usage.runs.out'))}</th><th>${esc(t('usage.runs.cache'))}</th><th>${esc(t('usage.runs.cards'))}</th><th>${esc(t('usage.runs.models'))}</th><th>${esc(t('usage.runs.reads'))}</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }

@@ -53,6 +53,17 @@ header [data-tbc].navlink, header [data-tbc] .navlink, header [data-tbc] > butto
 .today-track i.over { background: var(--danger); }
 .today-bv { flex: 1 0 100%; }
 @media (min-width: 700px) { .today-bv { flex: 0 0 auto; } }
+/* AIG-1340: one colour per AI engine (the today bars, the Usage page, the nav glance); light and dark from the usage palette */
+:root { --eng-claude: #2a78d6; --eng-codex: #1baf7a; --eng-gemini: #eda100; --eng-copilot: #e87ba4; --eng-cursor: #eb6834; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme=light]) { --eng-claude: #3987e5; --eng-codex: #199e70; --eng-gemini: #c98500; --eng-copilot: #d55181; --eng-cursor: #d95926; } }
+:root[data-theme=dark], :root[data-theme=black] { --eng-claude: #3987e5; --eng-codex: #199e70; --eng-gemini: #c98500; --eng-copilot: #d55181; --eng-cursor: #d95926; }
+.today-track { display: flex; }
+.today-track i { flex: none; }
+.today-track i.eng { background: var(--c); }
+.today-track i.eng + i.eng { box-shadow: inset 1px 0 0 var(--panel); }
+.eng-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12px; color: var(--muted); margin: 8px 0 2px; }
+.eng-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.eng-legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); flex: none; }
 /* ⏳ the chain across a space's projects (AIG-450) */
 .space-chain { margin-top: 10px; } .space-chain ul { margin: 4px 0; padding-left: 18px; } .space-chain li { margin: 3px 0; overflow-wrap: anywhere; }
 .today-ai.on { background: var(--danger); color: var(--on-fill); border-color: var(--danger); }
