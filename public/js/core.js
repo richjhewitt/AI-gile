@@ -368,7 +368,7 @@ async function refreshStaged(force, liveState, state, api) {
   try {
     if (state.route.view === 'home') {
       const q = state.showArchived ? '?all=1' : '';
-      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([TodayPage.load({ signal: refreshController.signal }).then(() => api('GET', '/api/projects' + q)), IB.load(force).then(() => IB.raw), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
+      [state.projects, state.inbox, state.usage, state.sm] = await Promise.all([TodayPage.load({ signal: refreshController.signal }).then(() => api('GET', '/api/projects' + q)), IB.load(force).then(() => IB.items), api('GET', '/api/usage').catch(() => ({ enabled: false })), api('GET', '/api/scrummaster').catch(() => null)]);
       state.projects = onlyNightProjects(TodayPage.only(Swarm.only(state.projects)), await nightProjects({ force, signal: refreshController.signal })); state.inbox = Swarm.only(state.inbox, true);   // 🚨 swarm: only that project (AIG-877)
       // AIG-1120: with every project archived the list is empty, but Show archived must stay so they can be reached.
       state.hasArchived = state.showArchived ? state.projects.some(p => p.archived) : !state.projects.length && (await api('GET', '/api/projects?all=1').catch(() => [])).some(p => p.archived);

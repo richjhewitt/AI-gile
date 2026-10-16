@@ -26,6 +26,12 @@ def('meeting', '🎥 Meeting Room per project: listed in Messages with the roste
   // the roster follows: a new lead is a member at once
   await s.ok('POST', '/api/projects/pix/team', { name: 'Newt', role: 'Co-lead' });
   check('a new lead on the roster is in the room', (await s.ok('GET', '/api/chats/_groups/meeting-pix')).members.some(m => m.name === 'Newt'));
+  // AIG-1379: other projects' leads that once helped here stay out; a second lead (Lead (Opus)) is in; rooms read A to Z
+  for (const m of [{ name: 'Lead-LocoRadio' }, { name: 'Medic Lead' }, { name: 'Melon', role: "Helper (MelonFarmer's lead)" }, { name: 'Lead (Opus)' }]) await s.ok('POST', '/api/projects/pix/team', m);
+  const pxm = (await s.ok('GET', '/api/chats/_groups/meeting-pix')).members.map(m => m.name);
+  check("only this project's leads: no visiting leads or helpers", pxm.join() === 'Pixel,Newt,Lead (Opus)', pxm);
+  const names = (await s.ok('GET', '/api/chats/_meetings')).map(g => g.name);
+  check('rooms are listed A to Z', names.join() === [...names].sort((a, b) => a.localeCompare(b)).join(), names);
 
   // chat: the owner writes, a member answers, anybody reads
   const w = await s.ok('POST', '/api/chats/_groups/meeting-pix', { text: 'stand-up in five' });
@@ -56,6 +62,8 @@ def('meeting', '🎥 Meeting Room per project: listed in Messages with the roste
   check('not available: plain English pointing at Setup → Calls', /not available/.test(await page.locator('#callNote').innerText()) && await page.locator('#callNoteGo').count() === 1);
   const fit = await page.evaluate(() => { const h = document.querySelector('#dmPanel .dm-head'), b = document.getElementById('dmMeetBtn').getBoundingClientRect(); return { over: document.documentElement.scrollWidth > innerWidth, btnRight: Math.round(b.right), head: Math.round(h.getBoundingClientRect().right), w: innerWidth }; });
   check('phone width (390): no sideways scroll, the button inside the screen', !fit.over && fit.btnRight <= fit.w, fit);
+  const lines = await page.evaluate(() => { const one = e => { const s = getComputedStyle(e); return e.getBoundingClientRect().height < parseFloat(s.lineHeight || '18') * 1.6 + parseFloat(s.paddingTop) + parseFloat(s.paddingBottom) + 4; }; return { join: one(document.getElementById('dmMeetBtn')), pop: !document.getElementById('dmPop') || one(document.getElementById('dmPop')), sub: one(document.querySelector('#dmPanel .dm-sub')) }; });
+  check('Join call, Pop out and the member line each stay on one line (AIG-1379)', lines.join && lines.pop && lines.sub, lines);
   await page.emulateMedia({ colorScheme: 'dark' });
   check('dark mode: the button text is readable (not same colour as its background)', await page.evaluate(() => { const c = getComputedStyle(document.getElementById('dmMeetBtn')); return c.color !== c.backgroundColor; }));
   // AIG-1189: the rooms list polls like the groups list (not held until the board's revision changes)

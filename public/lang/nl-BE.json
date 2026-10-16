@@ -283,6 +283,8 @@
  "standup.empty.html": "Nog geen stand-ups. Gebruik <b>📣 Stand-up</b> op een bord, of <b>Home > Meer ▾ > 📣 Stand-up voor iedereen</b>.",
  "filter.types": "Alle soorten",
  "filter.anyone": "Iedereen",
+ "filter.who.more": "Meer namen ({n})…",
+ "filter.who.rest": "Niet op een kaart de laatste tijd",
  "filter.sprints": "Alle {{dev:sprints}}",
  "filter.search": "🔍 Kaarten zoeken…",
  "filter.incomment": "💬 gevonden in een reactie",

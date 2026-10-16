@@ -453,3 +453,25 @@ def('inboxlive', 'a new team message shows in an inbox item while its reply box 
   check('the draft is kept and focused', (await page.inputValue('.ib-item textarea')) === 'half a reply' && await page.evaluate(() => document.activeElement && document.activeElement.tagName === 'TEXTAREA'));
   noErrors(page);
 }, true);
+
+def('ibchips', 'Inbox project chips: names cut to the same start show their distinguishing end, one number per chip (AIG-1380)', async (s, ctx) => {
+  await mkProject(s, 'Messenger Suite', 'MSU');
+  await mkProject(s, 'Messenger Suite - Android', 'MSA');
+  await mkProject(s, 'Alpha', 'ALP');
+  await mkCard(s, 'messenger-suite', 'Suite test', { status: 'verify' });
+  await mkCard(s, 'messenger-suite-android', 'Android test', { status: 'verify' });
+  await mkCard(s, 'alpha', 'Alpha test', { status: 'verify' });
+  await mkCard(s, 'alpha', 'Alpha question', { status: 'doing' });
+  await say(s, 'alpha', 'ALP-2', 'Forge', 'which colour?', { needsYou: true });
+  const page = await openPage(ctx, '#/inbox');
+  await page.waitForSelector('#ibTabs button[data-tab="alpha"]');
+  const chips = await page.$$eval('#ibTabs button', els => els.map(e => ({ tab: e.dataset.tab, nm: e.querySelector('.nm').textContent, nums: (e.textContent.replace(e.querySelector('.nm').textContent, '').match(/\d+/g) || []).length, title: e.title })));
+  const nm = k => (chips.find(c => c.tab === k) || {}).nm;
+  check('two names with the same start read apart', nm('messenger-suite') !== nm('messenger-suite-android') && /Android$/.test(nm('messenger-suite-android')), chips);
+  check('the tooltip keeps the full name', /^Messenger Suite - Android/.test(chips.find(c => c.tab === 'messenger-suite-android').title), chips);
+  check('every chip shows one number', chips.every(c => c.nums === 1), chips);
+  check('a one-kind chip is its icon and count; a mixed chip its total', /🧪1/.test(await page.textContent('#ibTabs [data-tab="messenger-suite"]')) && (await page.textContent('#ibTabs [data-tab="alpha"] .n')) === '2', chips);
+  await page.setViewportSize({ width: 390, height: 800 });
+  check('phone width: no sideways scroll', await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  noErrors(page);
+}, true);

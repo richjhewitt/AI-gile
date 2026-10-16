@@ -21,6 +21,9 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   await s.ok('POST', `/api/projects/alpha/cards/${sv.id}/snooze`);
   await page.waitForTimeout(1500);
   check('snoozed card shows back-at label and Bring back', /back at \d/.test(await page.textContent(`.card[data-id="${sv.id}"]`)) && (await page.locator(`.card[data-id="${sv.id}"] button:has-text("Bring back")`).count()) === 1);
+  // AIG-1374: one rule for what waits on you: the snoozed test is held, so For you counts what the inbox counts
+  const fyN = parseInt(await page.$eval('.column.foryou h3 > span:last-child', e => e.textContent), 10), ibN = (await s.ok('GET', '/api/inbox')).filter(c => c.project === 'alpha').length;
+  check('a snoozed test is held and For you counts what the inbox counts', (await s.ok('GET', '/api/projects/alpha')).cards.find(c => c.id === sv.id).held === true && fyN === ibN, [fyN, ibN]);
   await page.click(`.card[data-id="${sv.id}"] button:has-text("Bring back")`);
   await page.waitForTimeout(1500);
   check('Bring back clears the label', !(await getCard(s, 'alpha', sv.id)).snoozedUntil && !/back at/.test(await page.textContent(`.card[data-id="${sv.id}"]`)));
@@ -99,15 +102,22 @@ def('filters', 'search survives polling, type filter, clear', async (s, ctx) => 
   await mkCard(s, 'alpha', 'Zebra feature', { status: 'todo' });
   await mkCard(s, 'alpha', 'Zebra bug', { status: 'todo', type: 'bug' });
   await mkCard(s, 'alpha', 'Plain thing', { status: 'doing', assignee: 'Forge' });
+  const old = await mkCard(s, 'alpha', 'Long ago', { status: 'done', assignee: 'Oldie' });   // AIG-1381: a name only on an old done card
+  { const pf = path.join(s.data, 'alpha.json'), pj = JSON.parse(fs.readFileSync(pf, 'utf8')); pj.cards.find(c => c.id === old.id).updated = new Date(Date.now() - 40 * 864e5).toISOString(); fs.writeFileSync(pf, JSON.stringify(pj)); }
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('#f-q');
-  const cards = () => page.locator('.board .card').count();
+  const whoOpts = () => page.$$eval('select[data-f=who] option', os => os.map(o => o.value));
+  check('Anyone lists who is on the board now; an old name waits behind More (AIG-1381)', JSON.stringify(await whoOpts()) === JSON.stringify(['', 'Forge', '__more']), await whoOpts());
+  await page.selectOption('select[data-f=who]', '__more');
+  await page.waitForTimeout(300);
+  check('More brings the other names, under their own heading, without filtering', (await whoOpts()).join() === ',Forge,Oldie' && (await page.locator('select[data-f=who] optgroup').count()) === 1 && (await page.inputValue('select[data-f=who]')) === '', await whoOpts());
+  const cards = () => page.locator('.board .card:not(.column[data-status=done] .card)').count();
   check('all cards shown at first', (await cards()) === 3);
   await page.fill('#f-q', 'zebra');
   check('search narrows the board', (await cards()) === 2);
   await page.waitForTimeout(2500);
   check('search text survives polling', (await page.inputValue('#f-q')) === 'zebra' && (await cards()) === 2);
-  check('count line shown', /Showing\s*2\s*of 3/.test(await page.textContent('#f-count')), await page.textContent('#f-count'));
+  check('count line shown', /Showing\s*2\s*of 4/.test(await page.textContent('#f-count')), await page.textContent('#f-count'));
   await page.selectOption('select[data-f=type]', 'bug');
   check('type filter narrows further', (await cards()) === 1 && (await page.locator('.board .card', { hasText: 'Zebra bug' }).count()) === 1);
   await page.click('#f-count a');

@@ -52,15 +52,21 @@ function paintFilterBar() {
   const uniq = key => [...new Set(p.cards.map(c => c[key]).filter(Boolean))].sort();
   const opt = (v, label, cur) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(label)}</option>`;
   const sel = (key, all, list) => `<select data-f="${key}">${opt('', all, f[key])}${list.map(v => opt(v, key === 'type' ? t('type.' + v) : v, f[key])).join('')}</select>`;
+  // Anyone (AIG-1381): whoever is on a card that is not done, you first; every other name ever used waits behind More (a busy board
+  // closes cards for 80+ names a day, so "done lately" would list them all again).
+  const now = new Set(p.cards.filter(c => c.status !== 'done').map(c => c.assignee).filter(Boolean));
+  if (f.who) now.add(f.who);
+  const mine = v => v.toLowerCase() === me().toLowerCase(), live = [...now].sort((a, b) => mine(b) - mine(a) || a.localeCompare(b)), rest = uniq('assignee').filter(v => !now.has(v));
+  const whoSel = `<select data-f="who">${opt('', t('filter.anyone'), f.who)}${live.map(v => opt(v, v, f.who)).join('')}${!rest.length ? '' : state.whoAll === p.slug ? `<optgroup label="${esc(t('filter.who.rest'))}">${rest.map(v => opt(v, v, f.who)).join('')}</optgroup>` : opt('__more', t('filter.who.more', { n: rest.length }), f.who)}</select>`;
   const shown = p.cards.filter(c => matchesFilter(c, p.slug)).length, active = f.q || f.type || f.who || f.sprint || f.group || f.desk;
   const deskSel = p.cards.some(c => c.desk) || f.desk ? `<select data-f="desk">${opt('', t('desk.filter.all'), f.desk)}${['request', 'incident', 'idea'].map(k => opt(k, t('desk.filter.' + k), f.desk)).join('')}</select>` : '';   // AIG-1104
-  const selects = deskSel + sel('type', t('filter.types'), ['feature', 'bug', 'task', ...['incident', 'problem', 'change'].filter(k => f.type === k || p.cards.some(c => c.type === k))]) + sel('who', t('filter.anyone'), uniq('assignee')) + sel('sprint', t('filter.sprints'), uniq('sprint')) + (uniq('group').length || f.group ? sel('group', t('filter.groups'), uniq('group')) : '');
+  const selects = deskSel + sel('type', t('filter.types'), ['feature', 'bug', 'task', ...['incident', 'problem', 'change'].filter(k => f.type === k || p.cards.some(c => c.type === k))]) + whoSel + sel('sprint', t('filter.sprints'), uniq('sprint')) + (uniq('group').length || f.group ? sel('group', t('filter.groups'), uniq('group')) : '');
   if (bar.dataset.slug !== p.slug) {   // build once per project; afterwards only the selects and count update
     bar.dataset.slug = p.slug;
     bar.innerHTML = `<div class="fbar${state.filtersOpen ? ' open' : ''}"><input type="search" id="f-q" placeholder="${esc(t('filter.search'))}" value="${esc(f.q)}" oninput="setFilter('q', this.value)">
       <button type="button" class="f-tog" id="f-tog" aria-expanded="${state.filtersOpen ? 'true' : 'false'}" onclick="toggleFilters()"></button>
       <span id="f-sel">${selects}</span><span id="f-count" class="muted"></span></div>`;
-    bar.querySelector('#f-sel').onchange = e => setFilter(e.target.dataset.f, e.target.value);
+    bar.querySelector('#f-sel').onchange = e => { if (e.target.value === '__more') { state.whoAll = p.slug; e.target.blur(); paintFilterBar(); const w = document.querySelector('#f-sel [data-f="who"]'); if (w) w.focus(); return; } setFilter(e.target.dataset.f, e.target.value); };
   } else if ($('f-sel').dataset.sig !== selects && !$('f-sel').contains(document.activeElement)) { $('f-sel').innerHTML = selects; }
   $('f-sel').dataset.sig = selects;
   const nAct = ['type', 'who', 'sprint', 'group', 'desk'].filter(k => f[k]).length;   // AIG-1082: on a phone the dropdowns sit behind this button

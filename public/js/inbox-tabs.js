@@ -4,10 +4,16 @@
   'use strict';
   const { el, esc, isTask, isQuestion, isTest, lastAsk } = IB;
   /* ---------- project tabs (AIG-37): All + one per project with something waiting; remembers the last tab ---------- */
-  function tabCounts(list) {
+  // One number per chip (AIG-1380): one kind shows as its icon and count; a mix shows the total, its kinds in the tooltip.
+  function tabCounts(list, extra = 0) {
     const q = list.filter(isQuestion).length, k = list.filter(isTask).length, t = list.filter(isTest).length;
-    return `${q ? `<span class="tq">❓${q}</span>` : ''}${k ? `<span class="tk">📋${k}</span>` : ''}${t ? `<span class="tt">🧪${t}</span>` : ''}`;
+    const kinds = [q && `<span class="tq">❓${q}</span>`, k && `<span class="tk">📋${k}</span>`, t && `<span class="tt">🧪${t}</span>`].filter(Boolean);
+    return kinds.length === 1 && !extra ? kinds[0] : `<span class="n">${list.length + extra}</span>`;
   }
+  const kindsTitle = list => [['❓', list.filter(isQuestion).length], ['📋', list.filter(isTask).length], ['🧪', list.filter(isTest).length]].filter(x => x[1]).map(x => x.join('')).join(' ');
+  // Names cut to the same start ("AI-gile Messe…" twice, AIG-1380) show their distinguishing end: "AI-gile… Android".
+  const CUT = 16, tailOf = n => { const m = /\s[-–—:|/]\s(?!.*\s[-–—:|/]\s)(.+)$/.exec(n); return (m ? m[1] : n.split(/\s+/).pop()).trim(); };
+  const labelOf = (name, names) => name.length <= CUT || !names.some(o => o !== name && o.slice(0, CUT) === name.slice(0, CUT)) ? name : name.split(/\s+/)[0] + '… ' + tailOf(name);
   function mostRecentMessageTime(projectSlug) {
     const projectItems = IB.items.filter(c => c.project === projectSlug);
     let latest = null;
@@ -34,8 +40,9 @@
     const allAtEnd = !!pinned;
     if (IB.tab !== 'all' && !orderedProjects.some(([p]) => p === IB.tab)) IB.tab = 'all';   // that project's inbox emptied
     const lookOf = p => IB.items.find(c => c.project === p) || {};
-    const btn = (key, name, list) => { const l = key === 'all' ? {} : lookOf(key);
-      return `<button class="ib-tab ${IB.tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${IB.tab === key}" title="${esc(name)}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectLogo || l.projectEmoji ? pic(l.projectLogo, l.projectEmoji) + ' ' : ''}<span class="nm">${esc(name)}</span> <span class="n">${list.length + (key === 'all' ? IB.friends() : 0)}</span> ${tabCounts(list)}</button>`; };
+    const names = projects.map(([, n]) => String(n || ''));
+    const btn = (key, name, list) => { const l = key === 'all' ? {} : lookOf(key), kt = kindsTitle(list);
+      return `<button class="ib-tab ${IB.tab === key ? 'on' : ''}" data-tab="${esc(key)}" role="tab" aria-selected="${IB.tab === key}" title="${esc(name + (kt ? ' · ' + kt : ''))}"${l.projectColor ? ` style="--proj:${esc(l.projectColor)}"` : ''}>${l.projectLogo || l.projectEmoji ? pic(l.projectLogo, l.projectEmoji) + ' ' : ''}<span class="nm">${esc(key === 'all' ? name : labelOf(String(name || ''), names))}</span> ${tabCounts(list, key === 'all' ? IB.friends() : 0)}</button>`; };
     IB.tabOrder = orderedProjects.map(([p]) => p);
     const projectBtns = orderedProjects.map(([p, name]) => btn(p, name, IB.items.filter(c => c.project === p))).join('');
     const html = allAtEnd

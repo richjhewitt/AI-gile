@@ -168,6 +168,8 @@
  "standup.empty.html": "No stand-ups yet. Use <b>📣 Stand-up</b> on a board, or <b>Home > More ▾ > 📣 Stand-up all</b>.",
  "filter.types": "All types",
  "filter.anyone": "Anyone",
+ "filter.who.more": "More names ({n})…",
+ "filter.who.rest": "Not on a card lately",
  "filter.sprints": "All {{dev:sprints}}",
  "filter.search": "🔍 Search cards…",
  "filter.incomment": "💬 found in a comment",
