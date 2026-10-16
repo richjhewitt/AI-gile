@@ -67,6 +67,12 @@ def('fyfold', 'For you: a chip opens a window of folded rows, a card opens it un
   check('the page stayed on the board', /#\/p\/alpha$/.test(page.url()), page.url());
   check('it has steps, Accept and Send back', /Click/.test(await page.locator('.fyf-row.open .fyf-b').textContent()) && (await page.locator('.fyf-row.open [data-act="accept"]').count()) === 1 && (await page.locator('.fyf-row.open [data-act="sbopen"]').count()) === 1);
   check('one Send back on the unfolded test, not two (AIG-1373)', (await page.locator('.fyf-row.open button:visible', { hasText: 'Send back' }).count()) === 1);
+  // AIG-1422: no other button on the test shows twice either, and no stray comment box of the old Tests-pile Send back
+  const labels = await page.locator('.fyf-row.open .fyf-b button:visible').evaluateAll(els => els.map(e => e.textContent.trim()).filter(Boolean));
+  const twice = labels.filter((l, i) => labels.indexOf(l) !== i);
+  check('every button on the test shows once: Accept, Later, Send back (AIG-1422)', !twice.length && ['Accept', 'Later', 'Send back'].every(w => labels.filter(l => l.includes(w)).length === 1), labels);
+  check('no comment box until Send back is pressed (AIG-1422)', (await page.locator('.fyf-row.open .fyf-b textarea:visible').count()) === 0);
+  if (process.env.QA_SHOTS) await page.screenshot({ path: process.env.QA_SHOTS + '/AIG-1422.png' });
   await page.click('.fyf-row.open [data-act="accept"]');
   await page.waitForFunction(() => document.querySelectorAll('.fyf-row').length === 1, null, { timeout: 5000 }).catch(() => {});
   check('Accept inside the window takes the row away', (await page.locator('.fyf-row').count()) === 1);
