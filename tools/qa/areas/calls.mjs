@@ -206,7 +206,7 @@ def('calls', '📞 calls in a DM (LiveKit): secret kept encrypted, token route r
       out.muteGone = out.muteGone && !document.querySelector('#callTiles [data-who="me"] .call-mute');
       r.emit('Reconnecting'); out.recon = $('callState').textContent; r.emit('Reconnected'); out.back = $('callState').textContent;
       // AIG-1300: the quiet thanks line at the bottom of the open panel, not announced, hidden in the pill
-      const cr = $('callCredit'); out.credit = !!cr && cr.textContent === 'riding ChilledChat' && (cr.querySelector('a') || {}).href === 'https://chat.chilleddvs.com/' && $('callPanel').lastElementChild === cr && !cr.closest('[aria-live]') && !cr.hasAttribute('role');
+      const cr = $('callCredit'); out.credit = !!cr && cr.textContent === 'standing on the shoulders of ChilledChat' && (cr.querySelector('a') || {}).href === 'https://chat.chilleddvs.com/' && $('callPanel').lastElementChild === cr && !cr.closest('[aria-live]') && !cr.hasAttribute('role');
       $('callMini').click(); out.creditMini = getComputedStyle(cr).display === 'none'; $('callMini').click();
       $('callMini').click(); out.mini = $('callPanel').classList.contains('mini'); out.tilesHidden = getComputedStyle($('callTiles')).display === 'none'; out.pill = ['callMic', 'callLeave'].every(i => getComputedStyle($(i)).display !== 'none');
       $('callMini').click(); out.open = !$('callPanel').classList.contains('mini');
