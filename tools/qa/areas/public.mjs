@@ -74,14 +74,18 @@ def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> pa
 
     // AIG-1338: the owner's own 💬 question stays off while titles show, and counts as a plain bar once titles are hidden
     const q = await s.ok('POST', '/api/projects/pub-board/cards', { title: '💬 Secret owner question', quick: true, status: 'done' });
+    // AIG-1445: a 🏡 life task the same: the board's Done counts it, so with titles hidden it goes out as a bar
+    const life = await s.ok('POST', '/api/projects/pub-board/cards', { title: 'Private dentist visit', lifeType: 'housework', status: 'done' });
     await sleep(1500);
     check('with titles shown, the owner\'s 💬 question never goes out (AIG-1338)', !(await json()).body.cards.some(c => c.id === q.id) && !JSON.stringify((await json()).body).includes('Secret owner question'));
+    check('with titles shown, a life task never goes out (AIG-1445)', life.lifeType === 'housework' && !(await json()).body.cards.some(c => c.id === life.id) && !JSON.stringify((await json()).body).includes('Private dentist visit'), life);
     // 🙈 Titles hidden (AIG-698): the snapshot carries no title, only a length step; the page draws bars that still move.
     await s.ok('PATCH', '/api/projects/pub-board', { publicHideTitles: true });
     await until(async () => (await json()).body.titlesHidden === true, 10000);
     await until(async () => (await json()).body.cards.some(c => c.id === q.id), 10000);
     const hidden = (await json()).body;
     check('with titles hidden, it counts as a bar so the public counts match the board, still with no words (AIG-1338)', hidden.cards.some(c => c.id === q.id && c.title === '') && !JSON.stringify(hidden).includes('Secret owner question'));
+    check('with titles hidden, a life task counts as a Done bar too, with no words (AIG-1445)', hidden.cards.some(c => c.id === life.id && c.title === '' && c.status === 'done') && !JSON.stringify(hidden).includes('Private dentist visit'), hidden.cards.find(c => c.id === life.id));
     // AIG-1338: a lead's DM card (dm: true) is chat, not a card: the board leaves it out of Done, so the public board does too
     const dmc = await mkCard(s, 'pub-board', 'Lead chat line', { dm: true, status: 'done' });
     await sleep(1500);
