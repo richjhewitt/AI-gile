@@ -1,6 +1,34 @@
-// QA areas: popout-glances, popout-pages (AIG-1313). Every glance opens in its own window (ScrumGlance, WeedGlance, Night,
-// Usage), and the pages, Messages and the reading dialogs that are worth keeping beside the board have the same ⧉ Pop out.
-import { check, sleep, mkProject, mkCard, openPage, noErrors, def, BASE } from '../lib.mjs';
+// QA areas: popout-glances, popout-pages (AIG-1313), glance-fit (AIG-1355). Every glance opens in its own window (ScrumGlance,
+// WeedGlance, Night, Usage), and the pages, Messages and the reading dialogs that are worth keeping beside the board have the
+// same ⧉ Pop out. A glance window made big grows to fill it.
+import { check, sleep, tmp, mkProject, mkCard, openPage, noErrors, def, BASE } from '../lib.mjs';
+
+def('glance-fit', '🔍 a glance window made big or fullscreen grows to fill it: bigger text and rows, centred; the small window as before, nothing wider than a phone (AIG-1355)', async (s, ctx) => {
+  await mkProject(s, 'Alpha', 'ALP', { path: tmp('fit-alpha') });
+  await mkProject(s, 'Beta', 'BET', { path: tmp('fit-beta') });
+  await mkCard(s, 'alpha', 'A card with a rather long title that has to wrap on a phone without pushing the window any wider', { status: 'doing' });
+  await s.ok('POST', '/api/quiet', { on: true });   // the night glance lists the watched projects
+  const glances = [['#/pop-night', '.ng-list b', [360, 440]], ['#/pop-glance', '.sg-grp h4', [340, 520]], ['#/pop-weed', '#weedPop h4', [300, 220]]];
+  for (const [hash, sel, [w, h]] of glances) {
+    const page = await ctx.newPage();
+    page.errors = []; page.on('pageerror', e => page.errors.push('pageerror: ' + e.message));
+    const measure = async (vw, vh) => {
+      await page.setViewportSize({ width: vw, height: vh }); await sleep(300);
+      return page.evaluate(q => { const e = document.querySelector(q), f = document.querySelector('.glance-fit'), r = f && f.getBoundingClientRect();
+        return { px: e ? parseFloat(getComputedStyle(e).fontSize) : 0, fitW: r ? r.width : 0, mid: r ? r.left + r.width / 2 : 0, wide: document.documentElement.scrollWidth }; }, sel);
+    };
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto(BASE + '/' + hash);
+    await page.waitForSelector('.glance-fit ' + sel, { timeout: 8000 }).catch(() => {});
+    const small = await measure(w, h), big = await measure(1920, 1080), phone = await measure(390, 844);
+    check(`${hash}: the normal small window keeps its small text (13 to 17px)`, small.px >= 13 && small.px <= 17, JSON.stringify(small));
+    check(`${hash}: at 1920x1080 the text is much bigger (2.5x or more)`, big.px >= small.px * 2.5, JSON.stringify([small, big]));
+    check(`${hash}: at 1920x1080 the glance fills the width and sits in the middle`, big.fitW > 1000 && Math.abs(big.mid - 960) < 40, JSON.stringify(big));
+    check(`${hash}: nothing wider than a 390px phone`, phone.wide <= 390, JSON.stringify(phone));
+    if (hash === '#/pop-night' && process.env.QA_SHOT) { await page.setViewportSize({ width: 1920, height: 1080 }); await sleep(300); await page.screenshot({ path: process.env.QA_SHOT }); }
+    noErrors(page); await page.close();
+  }
+}, true);
 
 // A pop window opened straight at its address (openPage waits for #app content, which a chat or dialog window leaves empty).
 async function openPop(ctx, hash, sel) {

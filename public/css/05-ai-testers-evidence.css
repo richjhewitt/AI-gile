@@ -115,12 +115,13 @@ body.nightglance { background: #0b0605 !important; color: #b07a6a; filter: brigh
 body.nightglance main { padding: 14px; }
 /* Drag it anywhere (AIG-217): the night glance has no header, so the whole window is the handle, onto a second screen */
 body.desktop.nightglance main { -webkit-app-region: drag; min-height: 100vh; box-sizing: border-box; }
-.ng { font-size: 14px; } .ng-head { font-size: 16px; color: #c99282; } .ng-moon { opacity: .8; }
-.ng-when { font-size: 12px; color: #6e4a40; margin: 2px 0 12px; } .ng-calm { color: #6e4a40; margin-bottom: 10px; }
-.ng-list { list-style: none; padding: 0; margin: 0; } .ng-list li { padding: 6px 0; border-bottom: 1px solid #1c120f; display: flex; gap: 8px; align-items: baseline; }
-.ng-list b { font-weight: 500; color: #c99282; } .ng-word { color: #6e4a40; font-size: 13px; } .ng-dot { filter: saturate(.6) brightness(.8); }
-.ng-urgent-line { color: #e0a060; margin-bottom: 10px; }
-body.ng-urgent::after { content: ""; position: fixed; inset: 0; pointer-events: none; box-shadow: inset 0 0 40px 6px rgba(224, 140, 60, .55); animation: ng-breathe 6s ease-in-out infinite; }
+/* Sizes in em, so the night glance grows with its window (AIG-1355: .glance-fit in 06-notokens.css sets the 1em) */
+.ng { font-size: 1em; } .ng-head { font-size: 1.15em; color: #c99282; } .ng-moon { opacity: .8; }
+.ng-when { font-size: .86em; color: #6e4a40; margin: .15em 0 .85em; } .ng-calm { color: #6e4a40; margin-bottom: .7em; }
+.ng-list { list-style: none; padding: 0; margin: 0; } .ng-list li { padding: .43em 0; border-bottom: 1px solid #1c120f; display: flex; flex-wrap: wrap; gap: 0 .57em; align-items: baseline; }
+.ng-list b { font-weight: 500; color: #c99282; } .ng-word { color: #6e4a40; font-size: .93em; } .ng-dot { filter: saturate(.6) brightness(.8); }
+.ng-urgent-line { color: #e0a060; margin-bottom: .7em; }
+body.ng-urgent::after { content: ""; position: fixed; inset: 0; pointer-events: none; box-shadow: inset 0 0 max(40px, 4vmin) max(6px, .6vmin) rgba(224, 140, 60, .55); animation: ng-breathe 6s ease-in-out infinite; }
 @keyframes ng-breathe { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { body.ng-urgent::after { animation: none; opacity: .7; } }
 
