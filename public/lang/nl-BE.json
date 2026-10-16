@@ -1,4 +1,5 @@
 {
+  "srv.lead.expired": "- De sessie van de lead is verlopen na 20 minuten zonder activiteit en zonder draaiend teamproces; het team wordt hervat.",
  "attach.uploading": "{name} wordt geüpload: {pct}%",
  "attach.cancel": "Annuleren",
  "attach.cancelled": "Upload geannuleerd",

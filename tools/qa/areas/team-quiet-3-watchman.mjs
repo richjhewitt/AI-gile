@@ -36,7 +36,30 @@ def('watchman', '🌙 night watchman: restarts a cut-off team, flags a card stuc
   const back = await s.ok('POST', '/api/quiet', { on: false });
   const cut = back.summary.find(x => x.project === 'cut');
   check('back from quiet: a summary per project', cut && cut.stuck.includes(mid.id) && cut.restarted.includes(mid.id) && !(await s.ok('GET', '/api/watchman')), back.summary);
-}, false);
+
+  // AIG-1440: stale CLI presence must not survive folder-only heartbeats.
+  await mkProject(s, 'Stale', 'STL', { path: tmp('stale') });
+  await mkProject(s, 'Fresh', 'FRS', { path: tmp('fresh') });
+  await mkCard(s, 'stale', 'Resume abandoned work', { status: 'todo' });
+  await mkCard(s, 'fresh', 'Live lead owns this work', { status: 'doing' });
+  const cli = slug => s.cli(['comment', slug, slug === 'stale' ? 'STL-1' : 'FRS-1', '- Still working', '--as', 'Lead'], { VSCODE_PID: '1', AIGILE_BACKGROUND: '' });
+  cli('stale'); cli('fresh');
+  await s.ok('POST', '/api/quiet', { on: true, watch: ['stale', 'fresh'] });
+  await sleep(1200);
+  cli('fresh');
+  await s.ok('POST', '/api/limits', { cwd: (await s.ok('GET', '/api/projects/stale')).path, rate_limits: { five_hour: { used_percentage: 1 } } });
+  await s.ok('POST', '/api/watchman/round');
+  const dead = await s.ok('GET', '/api/projects/stale'), live = await s.ok('GET', '/api/projects/fresh');
+  check('stale session starts the team and explains why in the project log', dead.presence.running && dead.log.some(e => /Lead session expired/.test(e.text)));
+  check('fresh Lead CLI writes prevent a competing team or restart note', !live.presence.running && !(await getCard(s, 'fresh', 'FRS-1')).comments.some(e => /Picked back up|Stuck/.test(e.text)));
+  const page = await openPage(ctx, '#/p/stale');
+  await page.waitForSelector('#teamTop .pres');
+  const shots = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
+  fs.mkdirSync(shots, { recursive: true });
+  await page.screenshot({ path: path.join(shots, 'AIG-1440.png'), fullPage: true });
+  noErrors(page);
+  await s.ok('POST', '/api/quiet', { on: false });
+}, true, { AIGILE_ACTIVE_MS: '1000' });
 
 def('keepgoing', '🌙 keeps every team on task: the every-minute look picks up a card left in progress, and a session idle in its wait gets one nudge that ends the wait (AIG-277)', async s => {
   await mkProject(s, 'Half', 'HLF', { path: tmp('half') });
