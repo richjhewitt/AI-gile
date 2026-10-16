@@ -1,6 +1,6 @@
 // QA area: hyperfocus (AIG-871): the 🎯 Hyperfocus button on a board shows only that project (rail, home, inbox) and the DMs;
 // the top-bar chip turns it off; the swarm still works on top of it.
-import { check, mkProject, mkCard, say, openPage, noErrors, def } from '../lib.mjs';
+import { check, mkProject, mkCard, say, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('hyperfocus', '🎯 Hyperfocus: rail, home and inbox show only that project; the chip turns it off; swarm still works (AIG-871)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -15,7 +15,7 @@ def('hyperfocus', '🎯 Hyperfocus: rail, home and inbox show only that project;
   await page.waitForSelector('#dmRail [data-slug=beta]');
   check('both projects in the rail at first', JSON.stringify(await rail(page)) === '["alpha","beta"]', await rail(page));
   check('no chip at first', !(await page.$('#hfTop .hf-chip')));
-  await page.click('#hfBtn');
+  await tbClick(page, '#hfBtn');
   await page.waitForSelector('#hfTop .hf-chip');
   check('the chip names the project', /Hyperfocus: Alpha/.test(await page.textContent('#hfTop .hf-chip')), await page.textContent('#hfTop'));
   await page.waitForFunction(() => !document.querySelector('#dmRail [data-slug=beta]'));

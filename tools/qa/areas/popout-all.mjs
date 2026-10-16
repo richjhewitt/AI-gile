@@ -1,6 +1,6 @@
 // QA area: popout-all (AIG-658): every window can pop out. Raise bug and Team open in their own browser window at #/pop-dlg/<kind>,
 // and the window's place and size are remembered per kind.
-import { check, sleep, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, mkProject, mkCard, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('popout-all', '⧉ Raise bug, Team and the other dialogs pop out into their own window, which reopens where it was left (AIG-658)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
@@ -41,7 +41,7 @@ def('popout-all', '⧉ Raise bug, Team and the other dialogs pop out into their 
   await pop2.click('.dialog button:has-text("Cancel"), .dialog button:has-text("Annuleer")');
   check('Cancel closes the pop window', await closed);
   // Team pops out too
-  await page.click('button[onclick="teamDialog()"]');
+  await tbClick(page, 'button[onclick="teamDialog()"]');
   await page.waitForSelector('.team-dlg .dlg-pop');
   const [pt] = await Promise.all([ctx.waitForEvent('page'), page.click('.team-dlg .dlg-pop')]);
   await pt.waitForSelector('#tm-box');

@@ -1,5 +1,5 @@
 // QA area: teamroles (AIG-366): per-project AI roles on/off: brief rule, role picker, AI tester, count line.
-import { check, sleep, mkProject, mkCard, openPage, noErrors, def } from '../lib.mjs';
+import { check, sleep, mkProject, mkCard, openPage, noErrors, def, tbClick } from '../lib.mjs';
 
 def('teamroles', '👥 switching a role off drops it from the brief rule and the role picker; Tester off skips the project; the count line follows', async (s, ctx) => {
   await mkProject(s, 'Crew', 'CRW');
@@ -20,11 +20,11 @@ def('teamroles', '👥 switching a role off drops it from the brief rule and the
   check('Tester off: the tester has nothing to do for that project', r.status === 400, JSON.stringify(r.body));
 
   const page = await openPage(ctx, '#/p/crew');
-  await page.waitForSelector('button:has-text("Look")');
+  await page.waitForSelector('button:has-text("Look")', { state: 'attached' });
   const opts = await page.evaluate(() => assigneeSelect(''));
   check('role picker hides Frontend, keeps Backend', !opts.includes('Frontend (Sonnet)') && opts.includes('Backend (Sonnet)'), opts.slice(0, 300));
   // The roles live in the 👥 Team dialog (AIG-423): a row per role that is on.
-  await page.click('.toolbar button[onclick="teamDialog()"]');
+  await tbClick(page, '.toolbar button[onclick="teamDialog()"]');
   await page.waitForSelector('#tm-box .tm-row');
   check('dialog: no Frontend row, Lead locked', !(await page.$('.tm-row[data-role-id="frontend-mid"]')) && !!(await page.$('.tm-row[data-role-id="lead-principal"] .tm-lock')) && !(await page.$('.tm-row[data-role-id="lead-principal"] .tm-del')));
   const line = await page.textContent('#tm-count');
@@ -42,8 +42,8 @@ def('teamrename', '👥 Teammates in the Team dialog: click a name to rename (ca
   await s.ok('POST', '/api/projects/namey/team', { name: 'Bob', model: 'sonnet', role: 'Frontend', status: 'working' });
   await s.ok('POST', '/api/projects/namey/team', { name: 'Cat', model: 'haiku', role: 'Docs', status: 'idle' });
   const page = await openPage(ctx, '#/p/namey');
-  await page.waitForSelector('button:has-text("Look")');
-  await page.click('.toolbar button[onclick="teamDialog()"]');
+  await page.waitForSelector('button:has-text("Look")', { state: 'attached' });
+  await tbClick(page, '.toolbar button[onclick="teamDialog()"]');
   await page.waitForSelector('.tm-mate[data-mate="Bob"]');
   await page.click('.tm-mate[data-mate="Bob"] .tm-nm');
   await page.fill('.tm-nm-in', 'Bobby');
