@@ -17,6 +17,7 @@
  "live.ok": "live",
  "live.offline": "offline: {msg}",
  "live.cantreach": "Can't reach AI-gile, retrying…",
+ "live.slow": "AI-gile is busy, retrying…",
  "live.trouble": "AI-gile hit a problem, retrying…",
  "err.unreachable": "Can't reach AI-gile right now. Check that it is still running; this page keeps trying.",
  "err.slow": "AI-gile took too long to answer. Please try again in a moment.",

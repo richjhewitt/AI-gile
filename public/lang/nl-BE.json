@@ -135,6 +135,7 @@
  "live.ok": "live",
  "live.offline": "offline: {msg}",
  "live.cantreach": "AI-gile is niet bereikbaar, ik probeer het opnieuw…",
+ "live.slow": "AI-gile heeft het druk, ik probeer het opnieuw…",
  "live.trouble": "AI-gile had een probleem, ik probeer het opnieuw…",
  "err.unreachable": "AI-gile is nu niet bereikbaar. Controleer of het nog draait; deze pagina blijft het proberen.",
  "err.slow": "AI-gile antwoordde te langzaam. Probeer het zo meteen opnieuw.",

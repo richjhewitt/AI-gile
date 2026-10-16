@@ -164,6 +164,9 @@ const recolour = () => BrowserWindow.getAllWindows().forEach(w => { try { const 
 nativeTheme.on('updated', recolour);
 // Link and navigation rules for any of our windows (the main one and popped-out cards).
 function wire(w) {
+  // AIG-1405: a window closes even when its page is stuck (waiting on a slow board, or a long script): Windows' close waits for the
+  // page first, so it gets 3 s and then the window goes anyway. The main window only hides to the tray (below), unless quitting.
+  w.on('close', () => { if (w === win && !quitting) return; setTimeout(() => { try { if (!w.isDestroyed()) w.destroy(); } catch {} }, 3000).unref?.(); });
   // Board links to other sites open in the normal browser; the board's own open in a new app window.
   // A popped-out card stays on top, so its steps stay visible while you work in another app (AIG-122).
   w.webContents.setWindowOpenHandler(({ url, frameName, features }) => {
