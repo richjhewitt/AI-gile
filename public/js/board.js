@@ -123,6 +123,9 @@ const teamStatus = (m, live) => live(m) ? m.status || '' : m.updated ? t('board.
 // Phone (AIG-933): the toolbar buttons sit behind one ⋯ button; the choice survives the 1 s redraw.
 // ⋯ More closes once one of its tools is picked, so it never stays open over the window that tool opens (it sits above dialogs).
 function toggleTb() { state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), d = $('tbDots'); if (m) m.classList.toggle('open', state.tbOpen); if (d) d.setAttribute('aria-expanded', state.tbOpen ? 'true' : 'false'); }
+document.addEventListener('click', e => { if (state.tbOpen && !e.target.closest('#tbDots,#boardTbMore')) toggleTb(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.tbOpen) toggleTb(); });
+window.addEventListener('hashchange', () => { if (state.tbOpen) toggleTb(); });
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }

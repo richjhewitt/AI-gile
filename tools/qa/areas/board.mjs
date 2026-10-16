@@ -11,6 +11,13 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   await page.waitForSelector('.column');
   await page.setViewportSize({ width: 1366, height: 768 });
   check('column names wrap without clipping (AIG-1360)', await page.$$eval('.column h3 > span:first-child', es => es.every(e => e.scrollWidth <= e.clientWidth + 1 && getComputedStyle(e).whiteSpace === 'normal')));
+  await page.click('#tbDots'); await page.keyboard.press('Escape');
+  check('Escape closes More (AIG-1413)', !(await page.isVisible('#boardTbMore')));
+  await page.click('#tbDots'); await page.click('.toolbar h2');
+  check('outside click closes More (AIG-1413)', !(await page.isVisible('#boardTbMore')));
+  await page.click('#tbDots'); await page.click('.card[data-id="ALP-1"]'); await page.waitForTimeout(300);
+  check('opening a card closes More (AIG-1413)', !(await page.isVisible('#boardTbMore')));
+  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1413.png'}); await page.keyboard.press('Escape');
   const heads = await page.$$eval('.column h3 > span:first-child', els => els.map(e => e.textContent));
   check('seven columns in order', JSON.stringify(heads) === JSON.stringify(['Backlog', 'To do', 'In progress', 'Team checking', 'For you', 'For the team', 'Done']), heads);
   check('cards render in their column', (await page.locator('.column[data-status=todo] .card').count()) === 1 && (await page.locator('.column[data-status=doing] .card').count()) === 1);
