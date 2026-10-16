@@ -66,7 +66,8 @@ const Dms = (() => {
 
   async function loadRail() {
     if (!i18n.ready) return void setTimeout(loadRail, 100);
-    try { [projects, chats] = await Promise.all([PagePoll.get('/api/projects'), PagePoll.get('/api/chats'), TodayPage.fresh()]); } catch { return; }
+    let nightWatch;
+    try { [projects, chats, nightWatch] = await Promise.all([PagePoll.get('/api/projects'), PagePoll.get('/api/chats'), nightProjects(), TodayPage.fresh()]); } catch { return; }
     let boards = [];
     try { boards = (await PagePoll.get('/api/shares')).filter(l => l.theirRole && !l.forgotten && ['live', 'ended'].includes(l.state)); } catch {}
     try { people = (await PagePoll.get('/api/dms/contacts')).filter(c => !c.blocked).map(c => ({ ...c, unread: c.lastIn && c.lastIn > dmSeen.get(c.id) && open !== 'dm:' + c.id ? 1 : 0 })); } catch { people = []; }
@@ -90,7 +91,7 @@ const Dms = (() => {
       + btn('data-go="#/inbox"', '<span class="dm-av">📥</span>' + badge(typeof IB !== 'undefined' ? (IB.items || []).length + IB.friends() : 0), location.hash === '#/inbox', t('dms.inbox'))
       + btn('data-dms="1"', '<span class="dm-av">💬</span>' + badge(dmUnread), listOpen || !!open, t('dms.rail.label'))
       + '<div class="dm-sep"></div>'
-      + railTree(TodayPage.only(Swarm.only(projects.filter(x => !x.archived))), cur, btn)   // 🚨 swarm: only that project (AIG-880)
+      + railTree(onlyNightProjects(TodayPage.only(Swarm.only(projects.filter(x => !x.archived))), nightWatch), cur, btn)   // 🚨 swarm: only that project (AIG-880)
       // AIG-324: each project a friend shares with me, as its own board.
       + (boards.length ? '<div class="dm-sep"></div>' + boards.map(l => btn(`data-go="#/shared/${esc(l.id)}" data-sboard="${esc(l.id)}"`, `<span class="dm-av">🔗</span>`, location.hash === '#/shared/' + l.id, t('sb.rail', { name: l.friend, project: l.theirName }))).join('') : '');
     const r = el('dmRail');
