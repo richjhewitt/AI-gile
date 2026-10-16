@@ -51,7 +51,9 @@ def('presite', 'aigile.lol pre-teaser (presite/, file://): live board moving beh
   const order = [await page.evaluate(() => document.activeElement.id)];
   await page.keyboard.press('Tab'); order.push(await page.evaluate(() => document.activeElement.id));
   await page.keyboard.press('Tab'); order.push(await page.evaluate(() => document.activeElement.id));
-  check('focus order: the button first, then language, then theme', order.join() === 'pre-notify,lang-btn,theme', order);
+  await page.keyboard.press('Tab'); order.push(await page.evaluate(() => document.activeElement.id));
+  await page.keyboard.press('Tab'); order.push(await page.evaluate(() => document.activeElement.id));
+  check('focus order: the button first, then 📖 jargon and its Abc switch, language, theme (AIG-1341)', order.join() === 'pre-notify,words-btn,words-ul,lang-btn,theme', order);
   // themes: readable text on the card in light, dark and black
   const look = () => page.evaluate(() => { const c = getComputedStyle(document.querySelector('.pre-card')), h = getComputedStyle(document.querySelector('.pre-line')), f = getComputedStyle(document.querySelector('.pre-foot'));
     return { card: c.backgroundColor, text: h.color, foot: f.backgroundColor, ftext: f.color, body: getComputedStyle(document.body).backgroundColor, black: document.documentElement.hasAttribute('data-black') }; });

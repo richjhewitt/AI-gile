@@ -27,6 +27,7 @@ try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark"||
 <script src="lang/languages.js"></script>
 <script src="lang/en.js"></script>
 <script src="i18n.js"></script>
+<script src="words.js"></script>
 </head>
 <body class="pre">
 <!-- Behind the glass: the public AI-gile board (live.js, every card a bar), or a made-up one moving the same way when it can't be reached -->
@@ -52,6 +53,7 @@ try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark"||
     <p class="pre-peek" id="pre-peek" data-i18n="pre.peek">Behind the glass: the real board, live. Every card is a coloured bar.</p>
   </main>
   <div class="pre-tools">
+    <span id="words-slot"></span>
     <span id="lang-slot"></span>
     <button class="toggle" id="theme" type="button" aria-label="Switch theme: light, dark or black" data-i18n-attr="aria-label:theme.aria">&#9788;</button>
   </div>

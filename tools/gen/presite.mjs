@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SITE = path.join(ROOT, 'site'), PRE = path.join(ROOT, 'presite');
-export const FILES = ['style.css', 'i18n.js', 'live.js', 'forms.js', 'interest.html', 'privacy.html', 'status.html', 'install-site.sh', 'assets/icon.png', 'assets/preview.png'];
+export const FILES = ['style.css', 'i18n.js', 'live.js', 'words.js', 'forms.js', 'interest.html', 'privacy.html', 'status.html', 'install-site.sh', 'assets/icon.png', 'assets/preview.png'];
 
 export function build() {
   const out = [];
