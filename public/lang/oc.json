@@ -4161,5 +4161,6 @@
  "sharenote.ok": "Polit",
  "sharenote.ok.label": "D'acòrdi, vist: {name}",
  "sharenote.all": "Tot vist",
- "claim.err.full": "Aquesta còpia es ja estada fòrça partejada, doncas pòt pas pus daissar dintrar degun de novèl. Demanda a la persona que te l'a donada una invitacion per tu."
+ "claim.err.full": "Aquesta còpia es ja estada fòrça partejada, doncas pòt pas pus daissar dintrar degun de novèl. Demanda a la persona que te l'a donada una invitacion per tu.",
+ "popout.aria": "Desenclavar dins sa pròpria fenèstra"
 }

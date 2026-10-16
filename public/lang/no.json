@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Fint",
  "sharenote.ok.label": "OK, sett: {name}",
  "sharenote.all": "Alt sett",
- "claim.err.full": "Denne kopien er allerede delt mye, så den kan ikke slippe inn noen nye. Be personen som ga deg den om en egen invitasjon."
+ "claim.err.full": "Denne kopien er allerede delt mye, så den kan ikke slippe inn noen nye. Be personen som ga deg den om en egen invitasjon.",
+ "popout.aria": "Åpne i et eget vindu"
 }

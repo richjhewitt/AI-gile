@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Go deas",
  "sharenote.ok.label": "OK, feicthe: {name}",
  "sharenote.all": "Gach rud feicthe",
- "claim.err.full": "Roinneadh an chóip seo go minic cheana, mar sin ní féidir léi aon duine nua a ligean isteach. Iarr cuireadh duit féin ar an duine a thug duit í."
+ "claim.err.full": "Roinneadh an chóip seo go minic cheana, mar sin ní féidir léi aon duine nua a ligean isteach. Iarr cuireadh duit féin ar an duine a thug duit í.",
+ "popout.aria": "Oscail ina fhuinneog féin"
 }

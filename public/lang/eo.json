@@ -4161,5 +4161,6 @@
  "sharenote.ok": "Bonege",
  "sharenote.ok.label": "Bone, vidita: {name}",
  "sharenote.all": "Ĉio vidita",
- "claim.err.full": "Ĉi tiu kopio jam estis multe kundividita, do ĝi ne plu povas enlasi novulojn. Petu la personon, kiu donis ĝin al vi, pri via propra invito."
+ "claim.err.full": "Ĉi tiu kopio jam estis multe kundividita, do ĝi ne plu povas enlasi novulojn. Petu la personon, kiu donis ĝin al vi, pri via propra invito.",
+ "popout.aria": "Malfermi en propra fenestro"
 }

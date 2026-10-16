@@ -4128,5 +4128,6 @@
  "sharenote.ok.label": "Oĩma, ojehecha: {name}",
  "sharenote.all": "Ojehecha opavave",
  "claim.err.full": "Ko kópia oñembojaʼóma heta, upévare ndaikatúi oike ambue pyahu. Ejerure pe omeʼẽvape ndéve nde ñehenói tee.",
- "claim.share.fresh": "Kóva haʼe nde kópia pyahu: ndaipóri ambue mbaʼe ipype, ha {name} ohecha nde réra añoite."
+ "claim.share.fresh": "Kóva haʼe nde kópia pyahu: ndaipóri ambue mbaʼe ipype, ha {name} ohecha nde réra añoite.",
+ "popout.aria": "Embojuruja iñovetã teépe"
 }

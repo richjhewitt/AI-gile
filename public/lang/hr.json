@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Super",
  "sharenote.ok.label": "U redu, viđeno: {name}",
  "sharenote.all": "Sve viđeno",
- "claim.err.full": "Ova je kopija već puno puta podijeljena, pa ne može pustiti nikoga novog. Zamoli osobu koja ti ju je dala za vlastitu pozivnicu."
+ "claim.err.full": "Ova je kopija već puno puta podijeljena, pa ne može pustiti nikoga novog. Zamoli osobu koja ti ju je dala za vlastitu pozivnicu.",
+ "popout.aria": "Otvori u zasebnom prozoru"
 }

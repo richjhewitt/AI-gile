@@ -4128,5 +4128,6 @@
  "sharenote.ok.label": "Bene, visum: {name}",
  "sharenote.all": "Omnia visa",
  "claim.err.full": "Hoc exemplar iam saepe communicatum est, itaque neminem novum admittere potest. Pete ab eo qui tibi dedit invitationem tuam propriam.",
- "claim.share.fresh": "Hoc est exemplar tuum novum ac proprium: nihil alienum inest, et {name} solum praenomen tuum videt."
+ "claim.share.fresh": "Hoc est exemplar tuum novum ac proprium: nihil alienum inest, et {name} solum praenomen tuum videt.",
+ "popout.aria": "Aperi in fenestra sua"
 }

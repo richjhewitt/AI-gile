@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Fedt",
  "sharenote.ok.label": "OK, set: {name}",
  "sharenote.all": "Alle set",
- "claim.err.full": "Denne kopi er allerede delt rigtig mange gange, så den kan ikke lukke flere ind. Bed den, der gav dig den, om din egen invitation."
+ "claim.err.full": "Denne kopi er allerede delt rigtig mange gange, så den kan ikke lukke flere ind. Bed den, der gav dig den, om din egen invitation.",
+ "popout.aria": "Åbn i sit eget vindue"
 }

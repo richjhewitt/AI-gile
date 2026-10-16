@@ -4128,5 +4128,6 @@
  "sharenote.ok.label": "Oke, wè: {name}",
  "sharenote.all": "Tout wè",
  "claim.err.full": "Kopi sa a deja pataje anpil, kidonk li pa ka kite okenn moun nouvo antre. Mande moun ki te ba ou l la yon envitasyon pou ou menm.",
- "claim.share.fresh": "Sa a se pwòp kopi nèf pa w: pa gen anyen pou lòt moun ladan l, epi {name} wè sèlman premye non w."
+ "claim.share.fresh": "Sa a se pwòp kopi nèf pa w: pa gen anyen pou lòt moun ladan l, epi {name} wè sèlman premye non w.",
+ "popout.aria": "Louvri l nan pwòp fenèt li"
 }

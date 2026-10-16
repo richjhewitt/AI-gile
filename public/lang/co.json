@@ -4161,5 +4161,6 @@
  "sharenote.ok": "Bellu",
  "sharenote.ok.label": "Va bè, vistu : {name}",
  "sharenote.all": "Tuttu vistu",
- "claim.err.full": "Sta copia hè digià stata spartuta assai, dunque ùn pò più fà entre nimu di novu. Dumanda à quellu chì ti l'hà data un invitu tuttu per tè."
+ "claim.err.full": "Sta copia hè digià stata spartuta assai, dunque ùn pò più fà entre nimu di novu. Dumanda à quellu chì ti l'hà data un invitu tuttu per tè.",
+ "popout.aria": "Apre in a so propria finestra"
 }

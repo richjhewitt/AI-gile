@@ -4140,5 +4140,6 @@
  "sharenote.ok": "pona",
  "sharenote.ok.label": "pona, mi lukin: {name}",
  "sharenote.all": "mi lukin e ale",
- "claim.err.full": "ijo ni li tawa jan mute. tan ni la ona li ken ala kama e jan sin. o wile e toki kama sina tan jan pana."
+ "claim.err.full": "ijo ni li tawa jan mute. tan ni la ona li ken ala kama e jan sin. o wile e toki kama sina tan jan pana.",
+ "popout.aria": "o open e lupa ni lon lupa ona"
 }

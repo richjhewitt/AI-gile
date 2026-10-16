@@ -4161,5 +4161,6 @@
  "sharenote.ok.label": "OK, sæð: {name}",
  "sharenote.all": "Alt sæð",
  "claim.err.full": "Hetta avritið er longu deilt nógv, so tað kann ikki sleppa nøkrum nýggjum inn. Bið tann, ið gav tær tað, um tína egnu bjóðing.",
- "claim.share.fresh": "Hetta er títt egna, spildurnýggja avrit: einki frá øðrum er í tí, og {name} sær bert fornavnið hjá tær."
+ "claim.share.fresh": "Hetta er títt egna, spildurnýggja avrit: einki frá øðrum er í tí, og {name} sær bert fornavnið hjá tær.",
+ "popout.aria": "Opna í egnum glugga"
 }

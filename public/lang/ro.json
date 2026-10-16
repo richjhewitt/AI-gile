@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Super",
  "sharenote.ok.label": "OK, văzut: {name}",
  "sharenote.all": "Toate văzute",
- "claim.err.full": "Copia asta a fost deja partajată de multe ori, așa că nu mai poate primi pe nimeni nou. Cere persoanei care ți-a dat-o o invitație doar pentru tine."
+ "claim.err.full": "Copia asta a fost deja partajată de multe ori, așa că nu mai poate primi pe nimeni nou. Cere persoanei care ți-a dat-o o invitație doar pentru tine.",
+ "popout.aria": "Scoate într-o fereastră separată"
 }

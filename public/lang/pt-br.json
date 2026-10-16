@@ -4160,5 +4160,6 @@
  "sharenote.ok": "Legal",
  "sharenote.ok.label": "OK, visto: {name}",
  "sharenote.all": "Tudo visto",
- "claim.err.full": "Esta cópia já foi muito compartilhada, então não pode deixar mais ninguém entrar. Peça a quem lhe deu esta cópia um convite só para você."
+ "claim.err.full": "Esta cópia já foi muito compartilhada, então não pode deixar mais ninguém entrar. Peça a quem lhe deu esta cópia um convite só para você.",
+ "popout.aria": "Destacar em uma janela própria"
 }

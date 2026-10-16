@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Fint",
  "sharenote.ok.label": "OK, sett: {name}",
  "sharenote.all": "Allt sett",
- "claim.err.full": "Den här kopian har redan delats många gånger, så den kan inte släppa in någon ny. Be personen som gav den till dig om en egen inbjudan."
+ "claim.err.full": "Den här kopian har redan delats många gånger, så den kan inte släppa in någon ny. Be personen som gav den till dig om en egen inbjudan.",
+ "popout.aria": "Lösgör till ett eget fönster"
 }

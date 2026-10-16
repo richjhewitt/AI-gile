@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Primeran",
  "sharenote.ok.label": "Ados, ikusita: {name}",
  "sharenote.all": "Dena ikusita",
- "claim.err.full": "Kopia hau dagoeneko asko partekatu da, beraz ezin du inor berririk sartzen utzi. Eskatu eman dizunari zure gonbidapen propioa."
+ "claim.err.full": "Kopia hau dagoeneko asko partekatu da, beraz ezin du inor berririk sartzen utzi. Eskatu eman dizunari zure gonbidapen propioa.",
+ "popout.aria": "Ireki bere leihoan"
 }

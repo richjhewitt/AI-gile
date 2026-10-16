@@ -4128,5 +4128,6 @@
  "sharenote.ok": "'Tis well",
  "sharenote.ok.label": "Aye, seen: {name}",
  "sharenote.all": "All seen",
- "claim.err.full": "This copy hath been shar'd full oft already, and so may let no newcomer in. Ask of the one who gave it thee an invitation all thine own."
+ "claim.err.full": "This copy hath been shar'd full oft already, and so may let no newcomer in. Ask of the one who gave it thee an invitation all thine own.",
+ "popout.aria": "Open apart, into a window of its own"
 }

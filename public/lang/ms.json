@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Bagus",
  "sharenote.ok.label": "OK, dilihat: {name}",
  "sharenote.all": "Semua dilihat",
- "claim.err.full": "Salinan ini sudah banyak dikongsi, jadi ia tidak boleh membenarkan sesiapa yang baharu masuk. Minta jemputan anda sendiri daripada orang yang memberikannya kepada anda."
+ "claim.err.full": "Salinan ini sudah banyak dikongsi, jadi ia tidak boleh membenarkan sesiapa yang baharu masuk. Minta jemputan anda sendiri daripada orang yang memberikannya kepada anda.",
+ "popout.aria": "Asingkan ke tetingkapnya sendiri"
 }

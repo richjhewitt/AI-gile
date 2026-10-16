@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Beaut",
  "sharenote.ok.label": "Righto, seen: {name}",
  "sharenote.all": "All seen",
- "claim.err.full": "This copy's been shared heaps already, so it can't let anyone new in. Ask whoever gave it to you for an invite of your own."
+ "claim.err.full": "This copy's been shared heaps already, so it can't let anyone new in. Ask whoever gave it to you for an invite of your own.",
+ "popout.aria": "Pop it out into its own window"
 }

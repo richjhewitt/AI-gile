@@ -4160,5 +4160,6 @@
  "sharenote.ok": "Forši",
  "sharenote.ok.label": "Labi, redzēts: {name}",
  "sharenote.all": "Viss redzēts",
- "claim.err.full": "Ar šo kopiju jau ir daudz dalīts, tāpēc tā vairs nevienu jaunu neielaiž. Palūdz cilvēkam, kurš to tev iedeva, uzaicinājumu tieši tev."
+ "claim.err.full": "Ar šo kopiju jau ir daudz dalīts, tāpēc tā vairs nevienu jaunu neielaiž. Palūdz cilvēkam, kurš to tev iedeva, uzaicinājumu tieši tev.",
+ "popout.aria": "Atvērt atsevišķā logā"
 }

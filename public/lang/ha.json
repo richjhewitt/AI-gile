@@ -4128,5 +4128,6 @@
  "sharenote.ok.label": "To, an gani: {name}",
  "sharenote.all": "An ga duka",
  "claim.err.full": "An riga an raba wannan kwafi sosai, don haka ba zai iya shigar da sabon mutum ba. Ku roƙi wanda ya ba ku shi gayyatar ku ta kanku.",
- "claim.share.fresh": "Wannan sabon kwafinku ne na kanku: babu komai na wani a ciki, kuma {name} yana ganin sunanku na farko kawai."
+ "claim.share.fresh": "Wannan sabon kwafinku ne na kanku: babu komai na wani a ciki, kuma {name} yana ganin sunanku na farko kawai.",
+ "popout.aria": "Buɗe a cikin tagarsa ta kansa"
 }

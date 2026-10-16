@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Gwych",
  "sharenote.ok.label": "Iawn, wedi gweld: {name}",
  "sharenote.all": "Wedi gweld y cyfan",
- "claim.err.full": "Mae'r copi hwn wedi cael ei rannu llawer yn barod, felly all e ddim gadael neb newydd i mewn. Gofynna i'r person a'i rhoddodd i ti am wahoddiad dy hun."
+ "claim.err.full": "Mae'r copi hwn wedi cael ei rannu llawer yn barod, felly all e ddim gadael neb newydd i mewn. Gofynna i'r person a'i rhoddodd i ti am wahoddiad dy hun.",
+ "popout.aria": "Agor yn ei ffenestr ei hun"
 }

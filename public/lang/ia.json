@@ -4161,5 +4161,6 @@
  "sharenote.ok": "Belle",
  "sharenote.ok.label": "OK, vidite: {name}",
  "sharenote.all": "Toto vidite",
- "claim.err.full": "Iste copia ha jam essite compartite multo, dunque illo non pote lassar entrar alcuno nove. Demanda al persona qui te lo dava un invitation tue proprie."
+ "claim.err.full": "Iste copia ha jam essite compartite multo, dunque illo non pote lassar entrar alcuno nove. Demanda al persona qui te lo dava un invitation tue proprie.",
+ "popout.aria": "Aperir in su proprie fenestra"
 }

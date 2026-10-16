@@ -4173,5 +4173,6 @@
  "sharenote.ok": "Gott",
  "sharenote.ok.label": "Já, sét: {name}",
  "sharenote.all": "Allt sét",
- "claim.err.full": "Þessu eintaki hefir þegar verit mjök deilt, ok má þat eigi hleypa nýjum inn. Bið þann er gaf þér þat um þitt eigit boð."
+ "claim.err.full": "Þessu eintaki hefir þegar verit mjök deilt, ok má þat eigi hleypa nýjum inn. Bið þann er gaf þér þat um þitt eigit boð.",
+ "popout.aria": "Taka út í eiginn glugga"
 }

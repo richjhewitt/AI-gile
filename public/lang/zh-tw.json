@@ -4128,5 +4128,6 @@
  "sharenote.ok": "讚",
  "sharenote.ok.label": "好，看過了：{name}",
  "sharenote.all": "全部看過",
- "claim.err.full": "這份副本已經分享太多次了，所以不能再讓新的人加入。請向給你這份副本的人要一個專屬於你的邀請。"
+ "claim.err.full": "這份副本已經分享太多次了，所以不能再讓新的人加入。請向給你這份副本的人要一個專屬於你的邀請。",
+ "popout.aria": "在獨立視窗中彈出"
 }

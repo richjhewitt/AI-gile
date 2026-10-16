@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Super",
  "sharenote.ok.label": "OK, vu : {name}",
  "sharenote.all": "Tout vu",
- "claim.err.full": "Cette copie a déjà été beaucoup partagée, elle ne peut plus faire entrer personne de nouveau. Demande à la personne qui te l'a donnée une invitation rien qu'à toi."
+ "claim.err.full": "Cette copie a déjà été beaucoup partagée, elle ne peut plus faire entrer personne de nouveau. Demande à la personne qui te l'a donnée une invitation rien qu'à toi.",
+ "popout.aria": "Ouvrir dans sa propre fenêtre"
 }

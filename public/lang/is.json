@@ -4128,5 +4128,6 @@
  "sharenote.ok.label": "Í lagi, séð: {name}",
  "sharenote.all": "Allt séð",
  "claim.err.full": "Þessu eintaki hefur þegar verið deilt mikið, svo það getur ekki hleypt fleirum inn. Biddu þann sem gaf þér það um þitt eigið boð.",
- "claim.share.fresh": "Þetta er þitt eigið, glænýja eintak: ekkert annarra er í því, og {name} sér aðeins fornafnið þitt."
+ "claim.share.fresh": "Þetta er þitt eigið, glænýja eintak: ekkert annarra er í því, og {name} sér aðeins fornafnið þitt.",
+ "popout.aria": "Opna í sérglugga"
 }

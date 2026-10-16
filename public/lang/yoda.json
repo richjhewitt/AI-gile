@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Nice",
  "sharenote.ok.label": "OK, seen: {name}",
  "sharenote.all": "All seen",
- "claim.err.full": "Shared a lot already, this copy has; let anyone new in, it cannot. An invite of your own, ask the one who gave it to you."
+ "claim.err.full": "Shared a lot already, this copy has; let anyone new in, it cannot. An invite of your own, ask the one who gave it to you.",
+ "popout.aria": "Into its own window, pop out you must"
 }

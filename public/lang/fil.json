@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Ayos",
  "sharenote.ok.label": "OK, nakita: {name}",
  "sharenote.all": "Nakita lahat",
- "claim.err.full": "Marami na ang nakatanggap ng kopyang ito, kaya hindi na ito makakapagpapasok ng bago. Humingi ng sarili mong imbitasyon sa taong nagbigay nito sa iyo."
+ "claim.err.full": "Marami na ang nakatanggap ng kopyang ito, kaya hindi na ito makakapagpapasok ng bago. Humingi ng sarili mong imbitasyon sa taong nagbigay nito sa iyo.",
+ "popout.aria": "Buksan sa sariling window"
 }

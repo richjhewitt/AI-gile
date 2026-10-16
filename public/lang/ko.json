@@ -4128,5 +4128,6 @@
  "sharenote.ok": "좋아요",
  "sharenote.ok.label": "확인함: {name}",
  "sharenote.all": "모두 확인함",
- "claim.err.full": "이 사본은 이미 많이 공유돼서 더 이상 새 사람을 들일 수 없어요. 이걸 준 사람에게 내 초대를 따로 요청하세요."
+ "claim.err.full": "이 사본은 이미 많이 공유돼서 더 이상 새 사람을 들일 수 없어요. 이걸 준 사람에게 내 초대를 따로 요청하세요.",
+ "popout.aria": "별도 창으로 열기"
 }

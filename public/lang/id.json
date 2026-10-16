@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Mantap",
  "sharenote.ok.label": "Oke, sudah dilihat: {name}",
  "sharenote.all": "Semua sudah dilihat",
- "claim.err.full": "Salinan ini sudah terlalu sering dibagikan, jadi tidak bisa menerima orang baru lagi. Minta undangan sendiri dari orang yang memberikannya kepadamu."
+ "claim.err.full": "Salinan ini sudah terlalu sering dibagikan, jadi tidak bisa menerima orang baru lagi. Minta undangan sendiri dari orang yang memberikannya kepadamu.",
+ "popout.aria": "Buka di jendelanya sendiri"
 }

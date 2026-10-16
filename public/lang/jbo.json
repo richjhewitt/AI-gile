@@ -4131,5 +4131,6 @@
  "sharenote.ok.label": "je'e .i se viska: {name}",
  "sharenote.all": "ro se viska",
  "claim.err.full": ".i ti xa'o se fatri so'i roi .i seni'i bo ti na ka'e curmi lo nu da cnino nerkla .i ko cpedu lo do ve friti lo prenu poi dunda ti do",
- "claim.share.fresh": ".i ti do nindatni fukpi .i no da poi drata cu nenri .i {name} viska lo do pamoi cmene po'o"
+ "claim.share.fresh": ".i ti do nindatni fukpi .i no da poi drata cu nenri .i {name} viska lo do pamoi cmene po'o",
+ "popout.aria": "ko kalri fi lo sevzi canko"
 }

@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Allinmi",
  "sharenote.ok.label": "Arí, rikusqa: {name}",
  "sharenote.all": "Llapan rikusqa",
- "claim.err.full": "Kay copiaqa ña achkata rakinakusqañam, chayrayku manañam pi musuqtapas yaykuchiyta atinchu. Qumusuqniykita mañakuy qampaq kikin minkayta."
+ "claim.err.full": "Kay copiaqa ña achkata rakinakusqañam, chayrayku manañam pi musuqtapas yaykuchiyta atinchu. Qumusuqniykita mañakuy qampaq kikin minkayta.",
+ "popout.aria": "Kikin wintanaman horqoy"
 }

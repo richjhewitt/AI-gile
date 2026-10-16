@@ -4128,5 +4128,6 @@
  "sharenote.ok.label": "Baş e, hat dîtin: {name}",
  "sharenote.all": "Hemû hat dîtin",
  "claim.err.full": "Ev kopî berê gelek hatiye parvekirin, ji ber vê yekê nikare kesekî nû bihêle hundir. Ji kesê ku ew dabû te vexwendineke taybet ji bo xwe bixwaze.",
- "claim.share.fresh": "Ev kopiya te ya nû û taybet e: tiştekî kesên din tê de nîne, û {name} tenê navê te yê pêşîn dibîne."
+ "claim.share.fresh": "Ev kopiya te ya nû û taybet e: tiştekî kesên din tê de nîne, û {name} tenê navê te yê pêşîn dibîne.",
+ "popout.aria": "Di pencereya xwe de veke"
 }

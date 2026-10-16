@@ -4172,5 +4172,6 @@
  "sharenote.ok": "Somá",
  "sharenote.ok.label": "OK, oidnon: {name}",
  "sharenote.all": "Buot oidnon",
- "claim.err.full": "Dát kopiija lea juo juogaduvvon ollu, nu ahte ii sáhte šat ođđa olbmuid sisa luoitit. Bivdde dan olbmo guhte attii dan dutnje, iežat bovdejumi."
+ "claim.err.full": "Dát kopiija lea juo juogaduvvon ollu, nu ahte ii sáhte šat ođđa olbmuid sisa luoitit. Bivdde dan olbmo guhte attii dan dutnje, iežat bovdejumi.",
+ "popout.aria": "Rahpe iežas lásas"
 }

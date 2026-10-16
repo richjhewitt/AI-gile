@@ -4161,5 +4161,6 @@
  "sharenote.ok": "Braw",
  "sharenote.ok.label": "Aye, seen: {name}",
  "sharenote.all": "Aw seen",
- "claim.err.full": "This copy's been shared a guid wheen o times already, sae it cannae let onybody new in. Ask the body that gied it tae ye fir an invite o yer ain."
+ "claim.err.full": "This copy's been shared a guid wheen o times already, sae it cannae let onybody new in. Ask the body that gied it tae ye fir an invite o yer ain.",
+ "popout.aria": "Pop oot intae its ain windae"
 }

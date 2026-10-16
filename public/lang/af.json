@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Lekker",
  "sharenote.ok.label": "OK, gesien: {name}",
  "sharenote.all": "Alles gesien",
- "claim.err.full": "Hierdie kopie is al baie gedeel, so dit kan niemand nuut meer inlaat nie. Vra die persoon wat dit vir jou gegee het vir jou eie uitnodiging."
+ "claim.err.full": "Hierdie kopie is al baie gedeel, so dit kan niemand nuut meer inlaat nie. Vra die persoon wat dit vir jou gegee het vir jou eie uitnodiging.",
+ "popout.aria": "Maak oop in sy eie venster"
 }

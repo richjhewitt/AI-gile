@@ -4128,5 +4128,6 @@
  "sharenote.ok": "Super",
  "sharenote.ok.label": "OK, videné: {name}",
  "sharenote.all": "Všetko videné",
- "claim.err.full": "Táto kópia už bola zdieľaná veľakrát, takže nemôže pustiť dnu nikoho nového. Popros toho, kto ti ju dal, o vlastnú pozvánku pre teba."
+ "claim.err.full": "Táto kópia už bola zdieľaná veľakrát, takže nemôže pustiť dnu nikoho nového. Popros toho, kto ti ju dal, o vlastnú pozvánku pre teba.",
+ "popout.aria": "Otvoriť vo vlastnom okne"
 }

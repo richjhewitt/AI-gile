@@ -4128,5 +4128,6 @@
  "sharenote.ok.label": "OK, nähty: {name}",
  "sharenote.all": "Kaikki nähty",
  "claim.err.full": "Tätä kopiota on jo jaettu paljon, joten se ei enää päästä ketään uutta sisään. Pyydä omaa kutsua siltä, joka antoi sen sinulle.",
- "claim.share.fresh": "Tämä on oma, ihan uusi kopiosi: siinä ei ole mitään muilta, ja {name} näkee vain etunimesi."
+ "claim.share.fresh": "Tämä on oma, ihan uusi kopiosi: siinä ei ole mitään muilta, ja {name} näkee vain etunimesi.",
+ "popout.aria": "Avaa omaan ikkunaansa"
 }
