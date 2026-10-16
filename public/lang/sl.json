@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "V redu, videno: {name}",
  "sharenote.all": "Vse videno",
  "claim.err.full": "Ta kopija je bila že velikokrat deljena, zato ne more spustiti noter nikogar novega. Osebo, ki ti jo je dala, prosi za povabilo samo zate.",
- "popout.aria": "Odpri v lastnem oknu"
+ "popout.aria": "Odpri v lastnem oknu",
+ "today.usage.used.h": "🎯 Koliko je vsak projekt porabil danes",
+ "today.usedonly": "Porabljeno danes: {used} ({pct} % vsega)"
 }

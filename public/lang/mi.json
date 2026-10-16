@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Āe, kua kitea: {name}",
  "sharenote.all": "Kua kitea katoa",
  "claim.err.full": "Kua nui te tuaritanga o tēnei kape, nō reira kāore e taea te tuku i tētahi tangata hou kia uru mai. Pātai atu ki te tangata nāna i hoatu ki a koe mō tētahi tono māu ake.",
- "popout.aria": "Whakaputaina ki tōna ake matapihi"
+ "popout.aria": "Whakaputaina ki tōna ake matapihi",
+ "today.usage.used.h": "🎯 Te nui i whakamahia e ia kaupapa i tēnei rā",
+ "today.usedonly": "I whakamahia i tēnei rā: {used} ({pct}% o te katoa)"
 }

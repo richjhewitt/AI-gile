@@ -4173,5 +4173,7 @@
  "sharenote.ok.label": "OK, oidnon: {name}",
  "sharenote.all": "Buot oidnon",
  "claim.err.full": "Dát kopiija lea juo juogaduvvon ollu, nu ahte ii sáhte šat ođđa olbmuid sisa luoitit. Bivdde dan olbmo guhte attii dan dutnje, iežat bovdejumi.",
- "popout.aria": "Rahpe iežas lásas"
+ "popout.aria": "Rahpe iežas lásas",
+ "today.usage.used.h": "🎯 Maid juohke prošeakta geavahii odne",
+ "today.usedonly": "Geavahuvvon odne: {used} ({pct}% buohkain)"
 }

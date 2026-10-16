@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Ó dáa, mo ti rí i: {name}",
  "sharenote.all": "Mo ti rí gbogbo rẹ̀",
  "claim.err.full": "A ti pín ẹ̀dà yìí lọ́pọ̀lọpọ̀ tẹ́lẹ̀, nítorí náà kò lè jẹ́ kí ẹnikẹ́ni tuntun wọlé mọ́. Béèrè ìpè tìrẹ lọ́wọ́ ẹni tó fún ọ.",
- "popout.aria": "Yọ jáde sí fèrèsé tirẹ̀"
+ "popout.aria": "Yọ jáde sí fèrèsé tirẹ̀",
+ "today.usage.used.h": "🎯 Ohun tí iṣẹ́ kọ̀ọ̀kan lò lónìí",
+ "today.usedonly": "Tí a lò lónìí: {used} ({pct}% nínú gbogbo rẹ̀)"
 }

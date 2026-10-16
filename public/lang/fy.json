@@ -4162,5 +4162,7 @@
  "sharenote.ok.label": "OK, sjoen: {name}",
  "sharenote.all": "Alles sjoen",
  "claim.err.full": "Dizze kopy is al in protte dield, dus dy kin gjinien nij mear binnenlitte. Freegje de persoan dy't him dy joech om in eigen útnoeging.",
- "popout.aria": "Iepenje yn in eigen finster"
+ "popout.aria": "Iepenje yn in eigen finster",
+ "today.usage.used.h": "🎯 Wat elk projekt hjoed brûkt hat",
+ "today.usedonly": "Hjoed brûkt: {used} ({pct}% fan it gehiel)"
 }

@@ -4129,5 +4129,7 @@
  "sharenote.all": "Mindet láttam",
  "claim.err.full": "Ezt a példányt már sokszor megosztották, ezért nem enged be több új embert. Kérj saját meghívót attól, akitől kaptad.",
  "claim.share.fresh": "Ez a saját, vadonatúj példányod: nincs benne semmi másé, és {name} csak a keresztnevedet látja.",
- "popout.aria": "Megnyitás külön ablakban"
+ "popout.aria": "Megnyitás külön ablakban",
+ "today.usage.used.h": "🎯 Mit használtak ma az egyes projektek",
+ "today.usedonly": "Ma használva: {used} (az összes {pct}%-a)"
 }

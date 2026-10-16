@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "0K, 533n: {name}",
  "sharenote.all": "4ll 533n",
  "claim.err.full": "7h15 c0py h45 b33n 5h4r3d 4 l07 4lr34dy, 50 17 c4n'7 l37 4ny0n3 n3w 1n. 45k 7h3 p3r50n wh0 g4v3 17 70 y0u f0r 4n 1nv173 0f y0ur 0wn.",
- "popout.aria": "P0p 0u7 1n70 175 0wn w1nd0w"
+ "popout.aria": "P0p 0u7 1n70 175 0wn w1nd0w",
+ "today.usage.used.h": "🎯 Wh47 34ch pr0j3c7 u53d 70d4y",
+ "today.usedonly": "U53d 70d4y: {used} ({pct}% 0f 4ll)"
 }

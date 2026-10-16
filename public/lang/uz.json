@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Mayli, koʻrildi: {name}",
  "sharenote.all": "Hammasi koʻrildi",
  "claim.err.full": "Bu nusxa allaqachon koʻp marta ulashilgan, shuning uchun yangi hech kimni kiritolmaydi. Uni sizga bergan odamdan oʻzingiz uchun alohida taklif soʻrang.",
- "popout.aria": "Oʻz oynasida alohida ochish"
+ "popout.aria": "Oʻz oynasida alohida ochish",
+ "today.usage.used.h": "🎯 Bugun har bir loyiha qancha ishlatdi",
+ "today.usedonly": "Bugun ishlatilgan: {used} (jamining {pct}%)"
 }

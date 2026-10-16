@@ -4141,5 +4141,7 @@
  "sharenote.ok.label": "Ġēa, ġesewen: {name}",
  "sharenote.all": "Eall ġesewen",
  "claim.err.full": "Þis bīwrit is ġiet oft gedǣled, swā hit ne mæġ nǣnne nīwne inlǣtan. Bidd þone þe hit þē ġeaf þīnre āgenre laþunge.",
- "popout.aria": "Opena on his āgnum ēagþȳrle"
+ "popout.aria": "Opena on his āgnum ēagþȳrle",
+ "today.usage.used.h": "🎯 Hwæt ǣlc weorc notode tōdæġ",
+ "today.usedonly": "Genotud tōdæġ: {used} ({pct}% ealles)"
 }

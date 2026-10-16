@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "OK, gesien: {name}",
  "sharenote.all": "Alles gesien",
  "claim.err.full": "Hierdie kopie is al baie gedeel, so dit kan niemand nuut meer inlaat nie. Vra die persoon wat dit vir jou gegee het vir jou eie uitnodiging.",
- "popout.aria": "Maak oop in sy eie venster"
+ "popout.aria": "Maak oop in sy eie venster",
+ "today.usage.used.h": "🎯 Wat elke projek vandag gebruik het",
+ "today.usedonly": "Vandag gebruik: {used} ({pct}% van die totaal)"
 }

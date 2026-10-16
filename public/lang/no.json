@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "OK, sett: {name}",
  "sharenote.all": "Alt sett",
  "claim.err.full": "Denne kopien er allerede delt mye, så den kan ikke slippe inn noen nye. Be personen som ga deg den om en egen invitasjon.",
- "popout.aria": "Åpne i et eget vindu"
+ "popout.aria": "Åpne i et eget vindu",
+ "today.usage.used.h": "🎯 Hva hvert prosjekt brukte i dag",
+ "today.usedonly": "Brukt i dag: {used} ({pct} % av alt)"
 }

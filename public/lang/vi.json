@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "OK, đã xem: {name}",
  "sharenote.all": "Đã xem hết",
  "claim.err.full": "Bản này đã được chia sẻ nhiều lắm rồi, nên không thể cho thêm ai mới vào. Hãy xin người đã đưa nó cho bạn một lời mời dành riêng cho bạn.",
- "popout.aria": "Tách ra thành cửa sổ riêng"
+ "popout.aria": "Tách ra thành cửa sổ riêng",
+ "today.usage.used.h": "🎯 Mỗi dự án đã dùng bao nhiêu hôm nay",
+ "today.usedonly": "Đã dùng hôm nay: {used} ({pct}% tổng số)"
 }

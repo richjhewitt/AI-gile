@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "OK, dilihat: {name}",
  "sharenote.all": "Semua dilihat",
  "claim.err.full": "Salinan ini sudah banyak dikongsi, jadi ia tidak boleh membenarkan sesiapa yang baharu masuk. Minta jemputan anda sendiri daripada orang yang memberikannya kepada anda.",
- "popout.aria": "Asingkan ke tetingkapnya sendiri"
+ "popout.aria": "Asingkan ke tetingkapnya sendiri",
+ "today.usage.used.h": "🎯 Apa yang digunakan setiap projek hari ini",
+ "today.usedonly": "Digunakan hari ini: {used} ({pct}% daripada semua)"
 }

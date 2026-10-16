@@ -4162,5 +4162,7 @@
  "sharenote.ok.label": "Va bè, vistu : {name}",
  "sharenote.all": "Tuttu vistu",
  "claim.err.full": "Sta copia hè digià stata spartuta assai, dunque ùn pò più fà entre nimu di novu. Dumanda à quellu chì ti l'hà data un invitu tuttu per tè.",
- "popout.aria": "Apre in a so propria finestra"
+ "popout.aria": "Apre in a so propria finestra",
+ "today.usage.used.h": "🎯 Ciò chì ogni prughjettu hà usatu oghje",
+ "today.usedonly": "Usatu oghje : {used} ({pct} % di u tutale)"
 }

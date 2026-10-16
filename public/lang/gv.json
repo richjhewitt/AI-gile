@@ -4129,5 +4129,7 @@
  "sharenote.all": "Er vaik ooilley",
  "claim.err.full": "Ta'n choip shoh er ve rheynnit dy mennick hannah, myr shen cha vod ee lhiggey peiagh noa erbee stiagh. Jean aghin er y pheiagh ren ee y choyrt dhyt son cuirrey dty hene.",
  "claim.share.fresh": "Shoh dty choip noa hene: cha nel veg elley ayn, as cha vaik {name} agh dty chied ennym.",
- "popout.aria": "Foshil ayns e uinnag hene"
+ "popout.aria": "Foshil ayns e uinnag hene",
+ "today.usage.used.h": "🎯 Cre ren dagh pryjeck ymmyd jeh jiu",
+ "today.usedonly": "Ymmydit jiu: {used} ({pct}% jeh yn clane)"
 }

@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Aye, seen: {name}",
  "sharenote.all": "All seen",
  "claim.err.full": "This copy hath been shar'd full oft already, and so may let no newcomer in. Ask of the one who gave it thee an invitation all thine own.",
- "popout.aria": "Open apart, into a window of its own"
+ "popout.aria": "Open apart, into a window of its own",
+ "today.usage.used.h": "🎯 What each project hath used this day",
+ "today.usedonly": "Used this day: {used} ({pct}% of all)"
 }

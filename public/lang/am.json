@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "እሺ፣ ታይቷል፦ {name}",
  "sharenote.all": "ሁሉም ታይቷል",
  "claim.err.full": "ይህ ቅጂ አስቀድሞ ብዙ ጊዜ ተጋርቷል፣ ስለዚህ አዲስ ሰው ማስገባት አይችልም። የሰጠዎትን ሰው የራስዎን ግብዣ እንዲሰጥዎ ይጠይቁ።",
- "popout.aria": "በራሱ መስኮት ክፈት"
+ "popout.aria": "በራሱ መስኮት ክፈት",
+ "today.usage.used.h": "🎯 እያንዳንዱ ፕሮጀክት ዛሬ የተጠቀመው",
+ "today.usedonly": "ዛሬ ጥቅም ላይ የዋለ፦ {used} (ከጠቅላላው {pct}%)"
 }

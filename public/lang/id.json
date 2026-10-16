@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Oke, sudah dilihat: {name}",
  "sharenote.all": "Semua sudah dilihat",
  "claim.err.full": "Salinan ini sudah terlalu sering dibagikan, jadi tidak bisa menerima orang baru lagi. Minta undangan sendiri dari orang yang memberikannya kepadamu.",
- "popout.aria": "Buka di jendelanya sendiri"
+ "popout.aria": "Buka di jendelanya sendiri",
+ "today.usage.used.h": "🎯 Pemakaian tiap proyek hari ini",
+ "today.usedonly": "Terpakai hari ini: {used} ({pct}% dari total)"
 }

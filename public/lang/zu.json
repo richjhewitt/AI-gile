@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Kulungile, kubonakele: {name}",
  "sharenote.all": "Konke kubonakele",
  "claim.err.full": "Le khophi isabelwe kakhulu kakade, ngakho ayikwazi ukungenisa umuntu omusha. Cela umuntu okunike yona isimemo sakho siqu.",
- "popout.aria": "Khiphela efasiteleni lalo"
+ "popout.aria": "Khiphela efasiteleni lalo",
+ "today.usage.used.h": "🎯 Okusetshenziswe iphrojekthi ngayinye namuhla",
+ "today.usedonly": "Okusetshenziswe namuhla: {used} ({pct}% kokuphelele)"
 }

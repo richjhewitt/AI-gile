@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "OK, rajt: {name}",
  "sharenote.all": "Rajt kollox",
  "claim.err.full": "Din il-kopja diġà nqasmet ħafna, għalhekk ma tistax iddaħħal lil ħadd ġdid. Itlob lill-persuna li tatha lilek stedina tiegħek biss.",
- "popout.aria": "Oħroġ f'tieqa għalih"
+ "popout.aria": "Oħroġ f'tieqa għalih",
+ "today.usage.used.h": "🎯 Kemm uża kull proġett illum",
+ "today.usedonly": "Użat illum: {used} ({pct}% tal-total)"
 }

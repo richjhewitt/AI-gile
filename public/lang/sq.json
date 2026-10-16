@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "OK, u pa: {name}",
  "sharenote.all": "Të gjitha u panë",
  "claim.err.full": "Kjo kopje është ndarë shumë herë tashmë, ndaj s'mund të fusë më askënd të ri. Kërkoji personit që ta dha një ftesë vetëm për ty.",
- "popout.aria": "Hape në një dritare më vete"
+ "popout.aria": "Hape në një dritare më vete",
+ "today.usage.used.h": "🎯 Sa përdori çdo projekt sot",
+ "today.usedonly": "Përdorur sot: {used} ({pct}% e totalit)"
 }

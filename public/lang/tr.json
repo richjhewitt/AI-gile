@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Tamam, görüldü: {name}",
  "sharenote.all": "Hepsi görüldü",
  "claim.err.full": "Bu kopya zaten çok paylaşıldı, bu yüzden yeni kimseyi içeri alamaz. Onu sana veren kişiden sana özel bir davet iste.",
- "popout.aria": "Kendi penceresinde ayrı aç"
+ "popout.aria": "Kendi penceresinde ayrı aç",
+ "today.usage.used.h": "🎯 Her proje bugün ne kullandı",
+ "today.usedonly": "Bugün kullanılan: {used} (toplam içinde %{pct})"
 }

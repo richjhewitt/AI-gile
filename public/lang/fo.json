@@ -4162,5 +4162,7 @@
  "sharenote.all": "Alt sæð",
  "claim.err.full": "Hetta avritið er longu deilt nógv, so tað kann ikki sleppa nøkrum nýggjum inn. Bið tann, ið gav tær tað, um tína egnu bjóðing.",
  "claim.share.fresh": "Hetta er títt egna, spildurnýggja avrit: einki frá øðrum er í tí, og {name} sær bert fornavnið hjá tær.",
- "popout.aria": "Opna í egnum glugga"
+ "popout.aria": "Opna í egnum glugga",
+ "today.usage.used.h": "🎯 Hvat hvør verkætlan brúkti í dag",
+ "today.usedonly": "Brúkt í dag: {used} ({pct}% av øllum)"
 }

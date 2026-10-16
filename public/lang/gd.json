@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Ceart, air fhaicinn: {name}",
  "sharenote.all": "Chunnacas a h-uile",
  "claim.err.full": "Chaidh an lethbhreac seo a cho-roinneadh gu tric mu thràth, mar sin chan urrainn dha duine ùr a leigeil a-steach. Iarr cuireadh dhut fhèin air an neach a thug dhut e.",
- "popout.aria": "Fosgail ann an uinneag leatha fhèin"
+ "popout.aria": "Fosgail ann an uinneag leatha fhèin",
+ "today.usage.used.h": "🎯 Na chleachd gach pròiseact an-diugh",
+ "today.usedonly": "Air a chleachdadh an-diugh: {used} ({pct}% dhen iomlan)"
 }

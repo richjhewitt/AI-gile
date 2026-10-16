@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "OK、確認済み: {name}",
  "sharenote.all": "すべて確認済み",
  "claim.err.full": "このコピーはすでにたくさんシェアされているため、新しい人を入れられません。これをくれた人に、あなた専用の招待をお願いしてください。",
- "popout.aria": "専用のウィンドウで開く"
+ "popout.aria": "専用のウィンドウで開く",
+ "today.usage.used.h": "🎯 今日、各プロジェクトが使った量",
+ "today.usedonly": "今日の使用量: {used}（全体の {pct}%）"
 }

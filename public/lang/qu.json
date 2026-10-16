@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Arí, rikusqa: {name}",
  "sharenote.all": "Llapan rikusqa",
  "claim.err.full": "Kay copiaqa ña achkata rakinakusqañam, chayrayku manañam pi musuqtapas yaykuchiyta atinchu. Qumusuqniykita mañakuy qampaq kikin minkayta.",
- "popout.aria": "Kikin wintanaman horqoy"
+ "popout.aria": "Kikin wintanaman horqoy",
+ "today.usage.used.h": "🎯 Sapa proyecto kunan p'unchaw imata llamk'achirqan",
+ "today.usedonly": "Kunan llamk'achisqa: {used} (llapanmanta {pct}%)"
 }

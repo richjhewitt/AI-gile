@@ -4129,5 +4129,7 @@
  "sharenote.all": "All gesinn",
  "claim.err.full": "Dës Kopie gouf scho ganz dacks gedeelt, dofir kann se keen Neien méi eraloossen. Fro déi Persoun, déi se dir ginn huet, no denger eegener Invitatioun.",
  "claim.share.fresh": "Dat ass deng eege frësch Kopie: et ass näischt vun anere Leit dran, an {name} gesäit just däi Virnumm.",
- "popout.aria": "An enger eegener Fënster opmaachen"
+ "popout.aria": "An enger eegener Fënster opmaachen",
+ "today.usage.used.h": "🎯 Wat all Projet haut verbraucht huet",
+ "today.usedonly": "Haut benotzt: {used} ({pct}% vun allem)"
 }

@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Lelei, ua vaʻai: {name}",
  "sharenote.all": "Ua vaʻai uma",
  "claim.err.full": "Ua tele naua ona faʻasoa lenei kopi, o lea e le mafai ai ona faʻatagaina se tasi fou e ulufale. Fai atu i le tagata na avatu ia te oe mo sau lava valaaulia.",
- "popout.aria": "Tatala i fafo i lona lava faamalama"
+ "popout.aria": "Tatala i fafo i lona lava faamalama",
+ "today.usage.used.h": "🎯 Le mea na faʻaaogā e poloketi taʻitasi i le asō",
+ "today.usedonly": "Faʻaaogā i le asō: {used} ({pct}% o mea uma)"
 }

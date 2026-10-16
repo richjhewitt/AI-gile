@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "확인함: {name}",
  "sharenote.all": "모두 확인함",
  "claim.err.full": "이 사본은 이미 많이 공유돼서 더 이상 새 사람을 들일 수 없어요. 이걸 준 사람에게 내 초대를 따로 요청하세요.",
- "popout.aria": "별도 창으로 열기"
+ "popout.aria": "별도 창으로 열기",
+ "today.usage.used.h": "🎯 오늘 프로젝트별 사용량",
+ "today.usedonly": "오늘 사용: {used} (전체의 {pct}%)"
 }

@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "D'acord, vist: {name}",
  "sharenote.all": "Tot vist",
  "claim.err.full": "Aquesta còpia ja s'ha compartit molt, així que no pot deixar entrar ningú més. Demana a qui te la va donar una invitació per a tu.",
- "popout.aria": "Obre-ho en una finestra pròpia"
+ "popout.aria": "Obre-ho en una finestra pròpia",
+ "today.usage.used.h": "🎯 Què ha fet servir cada projecte avui",
+ "today.usedonly": "Usat avui: {used} ({pct} % del total)"
 }

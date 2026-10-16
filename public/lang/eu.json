@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Ados, ikusita: {name}",
  "sharenote.all": "Dena ikusita",
  "claim.err.full": "Kopia hau dagoeneko asko partekatu da, beraz ezin du inor berririk sartzen utzi. Eskatu eman dizunari zure gonbidapen propioa.",
- "popout.aria": "Ireki bere leihoan"
+ "popout.aria": "Ireki bere leihoan",
+ "today.usage.used.h": "🎯 Proiektu bakoitzak gaur erabili duena",
+ "today.usedonly": "Gaur erabilita: {used} (guztiaren %{pct})"
 }

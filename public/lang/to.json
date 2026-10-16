@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Sai, kuo sio: {name}",
  "sharenote.all": "Kuo sio kotoa",
  "claim.err.full": "Kuo lahi ʻaupito hono vahevahe ʻo e tatau ni, ko ia ʻoku ʻikai ke ne lava ʻo tuku ha taha foʻou ke hū mai. Kole ki he tokotaha naʻa ne ʻoatu kiate koe ha fakaafe ʻaʻau pē.",
- "popout.aria": "Fakaava kehe ʻi hono uinitou pē ʻoʻona"
+ "popout.aria": "Fakaava kehe ʻi hono uinitou pē ʻoʻona",
+ "today.usage.used.h": "🎯 Ko e meʻa naʻe ngāueʻaki ʻe he poloseki takitaha he ʻahó ni",
+ "today.usedonly": "Ngāueʻaki he ʻahó ni: {used} ({pct}% ʻo e kotoa)"
 }

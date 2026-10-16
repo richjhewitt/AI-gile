@@ -4129,5 +4129,7 @@
  "sharenote.all": "Allt séð",
  "claim.err.full": "Þessu eintaki hefur þegar verið deilt mikið, svo það getur ekki hleypt fleirum inn. Biddu þann sem gaf þér það um þitt eigið boð.",
  "claim.share.fresh": "Þetta er þitt eigið, glænýja eintak: ekkert annarra er í því, og {name} sér aðeins fornafnið þitt.",
- "popout.aria": "Opna í sérglugga"
+ "popout.aria": "Opna í sérglugga",
+ "today.usage.used.h": "🎯 Hvað hvert verkefni notaði í dag",
+ "today.usedonly": "Notað í dag: {used} ({pct}% af heildinni)"
 }

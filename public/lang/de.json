@@ -4129,5 +4129,7 @@
  "sharenote.all": "Alle gesehen",
  "claim.err.full": "Diese Kopie wurde schon sehr oft geteilt und kann niemanden Neues mehr reinlassen. Bitte die Person, die sie dir gegeben hat, um eine eigene Einladung.",
  "claim.share.fresh": "Das ist deine eigene, frische Kopie: Sie fängt ganz leer an, und {name} sieht nur deinen Vornamen.",
- "popout.aria": "In eigenem Fenster öffnen"
+ "popout.aria": "In eigenem Fenster öffnen",
+ "today.usage.used.h": "🎯 Was jedes Projekt heute verbraucht hat",
+ "today.usedonly": "Heute verbraucht: {used} ({pct}% von allem)"
 }

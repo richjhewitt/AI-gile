@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Oldu, görüldü: {name}",
  "sharenote.all": "Hamısı görüldü",
  "claim.err.full": "Bu nüsxə artıq çox paylaşılıb, ona görə yeni kimsəni içəri buraxa bilməz. Onu sənə verən şəxsdən öz dəvətini istə.",
- "popout.aria": "Ayrıca pəncərədə aç"
+ "popout.aria": "Ayrıca pəncərədə aç",
+ "today.usage.used.h": "🎯 Hər layihənin bu gün işlətdiyi",
+ "today.usedonly": "Bu gün işlədilib: {used} (ümumidən {pct}%)"
 }

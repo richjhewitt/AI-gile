@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "OK, feicthe: {name}",
  "sharenote.all": "Gach rud feicthe",
  "claim.err.full": "Roinneadh an chóip seo go minic cheana, mar sin ní féidir léi aon duine nua a ligean isteach. Iarr cuireadh duit féin ar an duine a thug duit í.",
- "popout.aria": "Oscail ina fhuinneog féin"
+ "popout.aria": "Oscail ina fhuinneog féin",
+ "today.usage.used.h": "🎯 An méid a d'úsáid gach tionscadal inniu",
+ "today.usedonly": "Úsáidte inniu: {used} ({pct}% den iomlán)"
 }

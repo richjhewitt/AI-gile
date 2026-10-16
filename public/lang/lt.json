@@ -4129,5 +4129,7 @@
  "sharenote.all": "Viskas matyta",
  "claim.err.full": "Šia kopija jau dalytasi daug kartų, todėl naujų žmonių ji nebeįleidžia. Paprašyk žmogaus, kuris ją tau davė, atskiro kvietimo tau.",
  "claim.share.fresh": "Tai visiškai nauja tavo kopija: joje nėra nieko iš kito žmogaus kopijos, o {name} mato tik tavo vardą.",
- "popout.aria": "Atidaryti atskirame lange"
+ "popout.aria": "Atidaryti atskirame lange",
+ "today.usage.used.h": "🎯 Kiek kiekvienas projektas sunaudojo šiandien",
+ "today.usedonly": "Šiandien sunaudota: {used} ({pct} % viso)"
 }

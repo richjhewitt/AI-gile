@@ -4161,5 +4161,7 @@
  "sharenote.ok.label": "OK, visto: {name}",
  "sharenote.all": "Tudo visto",
  "claim.err.full": "Esta cópia já foi muito compartilhada, então não pode deixar mais ninguém entrar. Peça a quem lhe deu esta cópia um convite só para você.",
- "popout.aria": "Destacar em uma janela própria"
+ "popout.aria": "Destacar em uma janela própria",
+ "today.usage.used.h": "🎯 O que cada projeto usou hoje",
+ "today.usedonly": "Usado hoje: {used} ({pct}% do total)"
 }

@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "OK, videné: {name}",
  "sharenote.all": "Všetko videné",
  "claim.err.full": "Táto kópia už bola zdieľaná veľakrát, takže nemôže pustiť dnu nikoho nového. Popros toho, kto ti ju dal, o vlastnú pozvánku pre teba.",
- "popout.aria": "Otvoriť vo vlastnom okne"
+ "popout.aria": "Otvoriť vo vlastnom okne",
+ "today.usage.used.h": "🎯 Koľko dnes minul každý projekt",
+ "today.usedonly": "Dnes minuté: {used} ({pct} % z celku)"
 }

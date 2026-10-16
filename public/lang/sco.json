@@ -4162,5 +4162,7 @@
  "sharenote.ok.label": "Aye, seen: {name}",
  "sharenote.all": "Aw seen",
  "claim.err.full": "This copy's been shared a guid wheen o times already, sae it cannae let onybody new in. Ask the body that gied it tae ye fir an invite o yer ain.",
- "popout.aria": "Pop oot intae its ain windae"
+ "popout.aria": "Pop oot intae its ain windae",
+ "today.usage.used.h": "🎯 Whit ilka project uised the day",
+ "today.usedonly": "Uised the day: {used} ({pct}% o aw)"
 }

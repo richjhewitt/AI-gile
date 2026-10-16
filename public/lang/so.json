@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Hagaag, la arkay: {name}",
  "sharenote.all": "Dhammaan la arkay",
  "claim.err.full": "Nuqulkan horeba aad baa loo wadaagay, markaa ma ogolaan karo qof cusub. Qofkii ku siiyay ka codso casuumad adiga kuu gaar ah.",
- "popout.aria": "Ka bixi daaqad u gaar ah"
+ "popout.aria": "Ka bixi daaqad u gaar ah",
+ "today.usage.used.h": "🎯 Inta mashruuc kastaa isticmaalay maanta",
+ "today.usedonly": "Maanta la isticmaalay: {used} ({pct}% wadarta)"
 }

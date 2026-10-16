@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "OK, widziane: {name}",
  "sharenote.all": "Wszystko widziane",
  "claim.err.full": "Ta kopia była już udostępniana wiele razy, więc nie może wpuścić nikogo nowego. Poproś osobę, która ci ją dała, o osobne zaproszenie dla ciebie.",
- "popout.aria": "Otwórz w osobnym oknie"
+ "popout.aria": "Otwórz w osobnym oknie",
+ "today.usage.used.h": "🎯 Ile każdy projekt zużył dzisiaj",
+ "today.usedonly": "Zużyto dzisiaj: {used} ({pct}% całości)"
 }

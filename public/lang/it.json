@@ -4129,5 +4129,7 @@
  "sharenote.all": "Tutto visto",
  "claim.err.full": "Questa copia è già stata condivisa tantissimo, quindi non può far entrare nessun altro. Chiedi a chi te l'ha data un invito tutto tuo.",
  "claim.share.fresh": "Questa è la tua copia nuova di zecca: dentro non c'è niente di altri, e {name} vede solo il tuo nome.",
- "popout.aria": "Apri in una finestra tutta sua"
+ "popout.aria": "Apri in una finestra tutta sua",
+ "today.usage.used.h": "🎯 Cosa ha usato ogni progetto oggi",
+ "today.usedonly": "Usati oggi: {used} ({pct}% del totale)"
 }

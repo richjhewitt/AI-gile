@@ -4129,5 +4129,7 @@
  "sharenote.all": "Ua ʻike ʻia nā mea a pau",
  "claim.err.full": "Ua kaʻana nui ʻia kēia kope, no laila ʻaʻole hiki ke hoʻokomo i kekahi mea hou. E noi i ka mea nāna i hāʻawi iā ʻoe i kono nou ponoʻī.",
  "claim.share.fresh": "ʻO kāu kope hou ponoʻī kēia: ʻaʻohe mea a haʻi i loko, a ʻike wale ʻo {name} i kou inoa mua.",
- "popout.aria": "Wehe ma kona puka ponoʻī"
+ "popout.aria": "Wehe ma kona puka ponoʻī",
+ "today.usage.used.h": "🎯 Ka mea i hoʻohana ʻia e kēlā me kēia papahana i kēia lā",
+ "today.usedonly": "Hoʻohana ʻia i kēia lā: {used} ({pct}% o ka huina)"
 }

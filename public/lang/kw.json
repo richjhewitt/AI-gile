@@ -4129,5 +4129,7 @@
  "sharenote.all": "Oll gwelys",
  "claim.err.full": "An kopi ma re beu kevrennys yn feur solabrys, ytho ny yll gasa den nowydh vyth a-ji. Govyn orth an den a'n ros dhis rag galow dhis dha honan.",
  "claim.share.fresh": "Hemm yw dha gopi nowydh dha honan: nyns eus travyth a dus erel ynno, ha ny wel {name} marnas dha hanow kynsa.",
- "popout.aria": "Igeri yn y fenester y honan"
+ "popout.aria": "Igeri yn y fenester y honan",
+ "today.usage.used.h": "🎯 Pyth a dhevnydhyas pub towl hedhyw",
+ "today.usedonly": "Devnydhys hedhyw: {used} ({pct}% a'n oll)"
 }

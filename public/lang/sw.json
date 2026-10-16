@@ -4129,5 +4129,7 @@
  "sharenote.ok.label": "Sawa, nimeona: {name}",
  "sharenote.all": "Nimeona yote",
  "claim.err.full": "Nakala hii tayari imeshirikiwa sana, kwa hivyo haiwezi kumruhusu mtu mpya kuingia. Mwombe aliyekupa akupe mwaliko wako mwenyewe.",
- "popout.aria": "Tenganisha kwenye dirisha lake lenyewe"
+ "popout.aria": "Tenganisha kwenye dirisha lake lenyewe",
+ "today.usage.used.h": "🎯 Kila mradi ulitumia nini leo",
+ "today.usedonly": "Imetumika leo: {used} ({pct}% ya yote)"
 }

@@ -4174,5 +4174,7 @@
  "sharenote.ok.label": "Já, sét: {name}",
  "sharenote.all": "Allt sét",
  "claim.err.full": "Þessu eintaki hefir þegar verit mjök deilt, ok má þat eigi hleypa nýjum inn. Bið þann er gaf þér þat um þitt eigit boð.",
- "popout.aria": "Taka út í eiginn glugga"
+ "popout.aria": "Taka út í eiginn glugga",
+ "today.usage.used.h": "🎯 Hvat hvert verk notaði í dag",
+ "today.usedonly": "Notat í dag: {used} ({pct}% af öllu)"
 }

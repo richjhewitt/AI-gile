@@ -4129,5 +4129,7 @@
  "sharenote.all": "Kaikki nähty",
  "claim.err.full": "Tätä kopiota on jo jaettu paljon, joten se ei enää päästä ketään uutta sisään. Pyydä omaa kutsua siltä, joka antoi sen sinulle.",
  "claim.share.fresh": "Tämä on oma, ihan uusi kopiosi: siinä ei ole mitään muilta, ja {name} näkee vain etunimesi.",
- "popout.aria": "Avaa omaan ikkunaansa"
+ "popout.aria": "Avaa omaan ikkunaansa",
+ "today.usage.used.h": "🎯 Mitä kukin projekti käytti tänään",
+ "today.usedonly": "Käytetty tänään: {used} ({pct} % kaikesta)"
 }
