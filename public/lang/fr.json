@@ -5626,5 +5626,6 @@
  "night.why.waits0": "a tourné et a choisi d'attendre · prochain essai {time}",
  "night.why.other": "non démarré",
  "tb.phone": "Sur un téléphone, la barre du haut n'affiche que 📥 Boîte de réception et ☰ ; les autres boutons sont dans ☰. « À gauche ou à droite » et « Afficher dans la barre du haut » concernent l'ordinateur.",
- "lkcall.incall": "📞 Dans l'appel"
+ "lkcall.incall": "📞 Dans l'appel",
+ "wz.ask.models": "AI-gile, c'est le tableau. Le travail est fait par des modèles d'IA comme Claude, Codex et Gemini, sur tes propres comptes : ce qu'ils écrivent et font vient donc d'eux, et c'est parfois faux. Vérifie leur travail avant de t'y fier, et fais une sauvegarde de tout dossier où tu les laisses entrer."
 }

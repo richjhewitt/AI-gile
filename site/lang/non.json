@@ -175,5 +175,12 @@
  "live.last.day.one": "Síðasta spjald var fært fyrir {n} degi",
  "live.last.day.other": "Síðasta spjald var fært fyrir {n} dögum",
  "live.offline": "Lífs taflan hvílisk um stund. Kom aptr brátt.",
- "live.cols": "Backlog|Til gerðar|Í verki|Sveitin lítr á|Til þín at testa|Til sveitar|Lokit"
+ "live.cols": "Backlog|Til gerðar|Í verki|Sveitin lítr á|Til þín at testa|Til sveitar|Lokit",
+ "footer.models": "AI-gile rekr AI-líkön fyrir þik. Þat er þau segja ok gera er þeira eigit, kanna því þat áðr en þú trúir því.",
+ "privacy.ai.h": "AI-hlutrinn",
+ "privacy.ai.models": "AI-gile er borðit. Verkit gera AI-líkön frá öðrum félögum, svá sem Claude, Codex ok Gemini, á þínum eigin reikningum.",
+ "privacy.ai.check": "Þat er þau rita ok gera kemr frá þeim, ok má vera rangt. Kanna þat áðr en þú reiðir þik á þat eða sendir þat.",
+ "privacy.ai.files": "Þau breyta skrám ok keyra skipanir í möppum þeim er þú tengir. Geym afrit.",
+ "privacy.ai.send": "Þat er þú gefr líkani fer til þess félags er rekr þat, eptir þeira skilmálum. Hverr hefir sína skilmála ok kostnað.",
+ "privacy.ai.asis": "AI-gile er snemmbúin prófunarútgáfa, gefin eins ok hon er."
 }

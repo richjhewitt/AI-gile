@@ -185,5 +185,12 @@
  "count.line.html.two": "{n} chairt air a’ bhòrd an-dràsta",
  "count.line.html.few": "{n} cairtean air a’ bhòrd an-dràsta",
  "tl.cards.two": "{n} chairt",
- "tl.cards.few": "{n} cairtean"
+ "tl.cards.few": "{n} cairtean",
+ "footer.models": "Bidh AI-gile a’ cur modailean AI gu obair dhut. Is ann leotha fhèin na tha iad ag ràdh agus a’ dèanamh, mar sin thoir sùil air mus cuir thu earbsa ann.",
+ "privacy.ai.h": "A’ chuid AI",
+ "privacy.ai.models": "Is e AI-gile am bòrd. Tha modailean AI bho chompanaidhean eile, mar Claude, Codex agus Gemini, a’ dèanamh na h-obrach, air na cunntasan agad fhèin.",
+ "privacy.ai.check": "Tha na tha iad a’ sgrìobhadh agus a’ dèanamh a’ tighinn bhuapa fhèin, agus faodaidh e a bhith ceàrr. Thoir sùil air mus cuir thu earbsa ann no mus cuir thu a-mach e.",
+ "privacy.ai.files": "Bidh iad ag atharrachadh faidhlichean agus a’ ruith òrdughan anns na pasganan a cheanglas tu riutha. Dèan lethbhreac-glèidhidh.",
+ "privacy.ai.send": "Bidh na bheir thu do mhodail a’ dol dhan chompanaidh a bhios ga ruith, fo na cumhaichean aca. Bidh cumhaichean agus cosgaisean gach fear a’ buntainn.",
+ "privacy.ai.asis": "Tha AI-gile na dhreach deuchainn tràth, mar a tha e."
 }

@@ -5626,5 +5626,6 @@
  "night.why.waits0": "kørte og valgte at vente · næste forsøg {time}",
  "night.why.other": "ikke startet",
  "tb.phone": "På en telefon viser topbjælken kun 📥 Indbakke og ☰; de andre knapper ligger i ☰. Venstre eller højre og Vis i topbjælken er til computeren.",
- "lkcall.incall": "📞 I opkaldet"
+ "lkcall.incall": "📞 I opkaldet",
+ "wz.ask.models": "AI-gile er boardet. Arbejdet bliver gjort af AI-modeller som Claude, Codex og Gemini på dine egne konti, så det, de skriver og gør, kommer fra dem, og det er somme tider forkert. Tjek deres arbejde, før du bygger på det, og tag en backup af alle mapper, du lukker dem ind i."
 }

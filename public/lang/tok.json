@@ -5638,5 +5638,6 @@
  "night.why.waits0": "ona li pali li wile awen · alasa kama {time}",
  "night.why.other": "open ala",
  "tb.phone": "lon ilo toki la nena sewi li 📥 tomo lipu en ☰ taso; nena ante li lon ☰. poka open anu poka pana en o lukin lon sewi li tawa ilo nanpa taso.",
- "lkcall.incall": "📞 lon toki"
+ "lkcall.incall": "📞 lon toki",
+ "wz.ask.models": "AI-gile li supa. ilo AI sama Claude en Codex en Gemini li pali, kepeken nimi sina. ijo ona li toki li pali la li tan ona, li ken ike. o lukin e pali ona la sina kepeken e ona. o pali e lipu awen pi poki lipu ale sina open e ona tawa ona."
 }

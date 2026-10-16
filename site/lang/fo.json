@@ -175,5 +175,12 @@
  "live.last.day.one": "Seinasta kort flutt fyri {n} degi síðani",
  "live.last.day.other": "Seinasta kort flutt fyri {n} døgum síðani",
  "live.offline": "Beinleiðis talvan tekur sær eina løtu at kvíla. Kom aftur skjótt.",
- "live.cols": "Backlog|At gera|Í gerð|Toymið kannar|Fyri teg at testa|Fyri toymið|Liðugt"
+ "live.cols": "Backlog|At gera|Í gerð|Toymið kannar|Fyri teg at testa|Fyri toymið|Liðugt",
+ "footer.models": "AI-gile koyrir AI-módel fyri teg. Tað, tey siga og gera, er teirra, so kanna tað, áðrenn tú líggur lit á tað.",
+ "privacy.ai.h": "AI-parturin",
+ "privacy.ai.models": "AI-gile er borðið. Arbeiðið verður gjørt av AI-módellum frá øðrum fyritøkum, sum Claude, Codex og Gemini, á tínum egnu kontum.",
+ "privacy.ai.check": "Tað, tey skriva og gera, kemur frá teimum, og tað kann vera skeivt. Kanna tað, áðrenn tú líggur lit á tað ella gevur tað út.",
+ "privacy.ai.files": "Tey broyta fílur og koyra boð í teimum mappum, sum tú knýtir. Hald eitt trygdaravrit.",
+ "privacy.ai.send": "Tað, tú gevur einum módeli, fer til fyritøkuna, sum koyrir tað, undir teirra treytum. Hvør fyritøka hevur sínar egnu treytir og kostnað.",
+ "privacy.ai.asis": "AI-gile er ein tíðlig royndarútgáva, givin sum hon er."
 }

@@ -5626,5 +5626,6 @@
  "night.why.waits0": "iliendeshwa na ikachagua kusubiri · jaribio lijalo {time}",
  "night.why.other": "haijaanzishwa",
  "tb.phone": "Kwenye simu, upau wa juu unaonyesha 📥 Kikasha na ☰ pekee; vitufe vingine viko ndani ya ☰. Kushoto au kulia na Onyesha kwenye upau wa juu ni kwa ajili ya kompyuta.",
- "lkcall.incall": "📞 Kwenye simu"
+ "lkcall.incall": "📞 Kwenye simu",
+ "wz.ask.models": "AI-gile ni ubao. Kazi inafanywa na miundo ya AI kama Claude, Codex na Gemini, kwenye akaunti zako mwenyewe, kwa hiyo wanachoandika na kufanya hutoka kwao, na wakati mwingine kina makosa. Kagua kazi yao kabla ya kuitegemea, na weka nakala rudufu ya folda yoyote unayowaruhusu kuingia."
 }

@@ -5626,5 +5626,6 @@
  "night.why.waits0": "çalıştı ve beklemeyi seçti · sonraki deneme {time}",
  "night.why.other": "başlatılmadı",
  "tb.phone": "Telefonda üst çubuk yalnızca 📥 Gelen kutusu ve ☰ gösterir; diğer düğmeler ☰ içinde. Sol ya da sağ ve Üst çubukta göster bilgisayar içindir.",
- "lkcall.incall": "📞 Aramada"
+ "lkcall.incall": "📞 Aramada",
+ "wz.ask.models": "AI-gile panodur. İşi Claude, Codex ve Gemini gibi yapay zekâ modelleri kendi hesaplarında yapar, bu yüzden yazdıkları ve yaptıkları onlardan gelir ve bazen yanlıştır. Güvenmeden önce işlerini kontrol et ve içeri aldığın her klasörün yedeğini al."
 }

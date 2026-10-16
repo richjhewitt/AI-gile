@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { check, tmp, mkProject, mkCard, say, def, openPage, noErrors, until } from '../lib.mjs';
+import { check, tmp, mkProject, mkCard, say, def, openPage, noErrors, until, tbClick } from '../lib.mjs';
 
 const dayStr = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 const ago = n => { const d = new Date(); d.setDate(d.getDate() - n); d.setHours(12, 0, 0, 0); return d; };
@@ -61,7 +61,7 @@ def('stats', '📈 project stats: API numbers on a seeded project, git commits a
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.evaluate(() => { location.hash = '#/p/statty'; });
   check('the board has a Stats button that opens the page', !!(await until(() => page.$('button[onclick*="#/stats/statty"]'), 8000)));
-  await page.click('button[onclick*="#/stats/statty"]');
+  await tbClick(page, 'button[onclick*="#/stats/statty"]');
   check('and it goes to the stats page', !!(await until(() => page.$('.st-page'), 8000)));
   noErrors(page);
   await page.close();

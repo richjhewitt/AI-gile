@@ -175,5 +175,12 @@
  "live.last.day.one": "Az utolsó kártya {n} napja mozdult",
  "live.last.day.other": "Az utolsó kártya {n} napja mozdult",
  "live.offline": "Az élő tábla kicsit pihen. Nézz vissza hamarosan.",
- "live.cols": "Backlog|Teendő|Folyamatban|A csapat ellenőrzi|Neked kell tesztelni|A csapatnak|Kész"
+ "live.cols": "Backlog|Teendő|Folyamatban|A csapat ellenőrzi|Neked kell tesztelni|A csapatnak|Kész",
+ "footer.models": "Az AI-gile MI-modelleket dolgoztat helyetted. Amit mondanak és tesznek, az az ő dolguk, ezért ellenőrizd, mielőtt megbízol benne.",
+ "privacy.ai.h": "Az MI-s rész",
+ "privacy.ai.models": "Az AI-gile a tábla. A munkát más cégek MI-modelljei végzik, például a Claude, a Codex és a Gemini, a saját fiókjaiddal.",
+ "privacy.ai.check": "Amit írnak és csinálnak, az tőlük jön, és lehet hibás. Ellenőrizd, mielőtt ráhagyatkozol vagy kiadod.",
+ "privacy.ai.files": "Fájlokat módosítanak és parancsokat futtatnak a mappákban, amelyeket összekötsz velük. Készíts biztonsági mentést.",
+ "privacy.ai.send": "Amit egy modellnek odaadsz, az az őt működtető céghez kerül, az ő feltételeik szerint. Mindegyikük saját feltételei és költségei érvényesek.",
+ "privacy.ai.asis": "Az AI-gile korai tesztverzió, olyan, amilyen."
 }

@@ -5629,5 +5629,6 @@
  "night.why.waits0": "pu gunka gi'e cuxna lo nu denpa · ba troci ca {time}",
  "night.why.other": "na cfari",
  "tb.phone": "va'o lo fonxa le galtu bu cu jarco 📥 notci kumfa .e ☰ po'o .i le drata batke cu zvati ☰ .i zunle ja pritu .e jarco ne'i le galtu bu cu se pilno le skami po'o",
- "lkcall.incall": "📞 ne'i lo nu tavla"
+ "lkcall.incall": "📞 ne'i lo nu tavla",
+ "wz.ask.models": "la .AI-gile. cu .kanban. .i lo AI minji la .claude. .e la .codex. .e la .gemini. cu gunka ne'i le do jaspu .i le se ciska e le se zukte be ri cu cmima ri .i ri ka'e fliba .i ko cipra le gunka pu le nu do krici .i ko ralte lo vimcu kopi be ro fanta be fi le se jmina"
 }

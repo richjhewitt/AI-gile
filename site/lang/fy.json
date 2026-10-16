@@ -175,5 +175,12 @@
  "live.last.day.one": "Lêste kaart {n} dei lyn ferpleatst",
  "live.last.day.other": "Lêste kaart {n} dagen lyn ferpleatst",
  "live.offline": "It live-boerd nimt efkes in azem. Sjoch gau wer.",
- "live.cols": "Backlog|Te dwaan|Dwaande|Team kontrolearret|Foar dy om te test|Foar it team|Klear"
+ "live.cols": "Backlog|Te dwaan|Dwaande|Team kontrolearret|Foar dy om te test|Foar it team|Klear",
+ "footer.models": "AI-gile lit AI-modellen foar dy rinne. Wat se sizze en dogge is fan harren, kontrolearje it dus foardat do it fertroust.",
+ "privacy.ai.h": "It AI-diel",
+ "privacy.ai.models": "AI-gile is it boerd. It wurk wurdt dien troch AI-modellen fan oare bedriuwen, lykas Claude, Codex en Gemini, op dyn eigen accounts.",
+ "privacy.ai.check": "Wat se skriuwe en dogge komt fan harren, en it kin ferkeard wêze. Kontrolearje it foardat do derop fertroust of it útbringst.",
+ "privacy.ai.files": "Se feroarje bestannen en fiere kommando's út yn de mappen dy't do keppelest. Meitsje in reservekopy.",
+ "privacy.ai.send": "Wat do in model joust giet nei it bedriuw dat it draait, ûnder harren betingsten. De eigen betingsten en kosten fan elk bedriuw jilde.",
+ "privacy.ai.asis": "AI-gile is in iere testferzje, jûn sa't it is."
 }

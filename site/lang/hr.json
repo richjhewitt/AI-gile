@@ -180,5 +180,12 @@
  "pitch.letters.few": "{n} slova",
  "pitch.chars.few": "{n} znaka",
  "count.line.html.few": "{n} kartice na ploči upravo sada",
- "tl.cards.few": "{n} kartice"
+ "tl.cards.few": "{n} kartice",
+ "footer.models": "AI-gile tjera AI modele da rade za tebe. Ono što govore i rade njihovo je, pa to provjeri prije nego što mu vjeruješ.",
+ "privacy.ai.h": "AI dio",
+ "privacy.ai.models": "AI-gile je ploča. Posao rade AI modeli drugih tvrtki, poput Claudea, Codexa i Geminija, na tvojim vlastitim računima.",
+ "privacy.ai.check": "Ono što pišu i rade dolazi od njih i može biti pogrešno. Provjeri to prije nego što se osloniš na to ili objaviš.",
+ "privacy.ai.files": "Mijenjaju datoteke i pokreću naredbe u mapama koje povežeš. Napravi sigurnosnu kopiju.",
+ "privacy.ai.send": "Ono što daš modelu ide tvrtki koja ga pokreće, pod njezinim uvjetima. Vrijede uvjeti i troškovi svake od njih.",
+ "privacy.ai.asis": "AI-gile je rana probna verzija, onakva kakva jest."
 }

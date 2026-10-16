@@ -175,5 +175,12 @@
  "live.last.day.one": "Ikhadi lokugcina lihanjiswe usuku olungu-{n} olwedlule",
  "live.last.day.other": "Ikhadi lokugcina lihanjiswe izinsuku ezingu-{n} ezedlule",
  "live.offline": "Ibhodi elibukhoma lithatha ikhefu elifushane. Buya maduze.",
- "live.cols": "Backlog|Okufanele kwenziwe|Kuyaqhubeka|Iqembu liyahlola|Kuwe ukuthi test|Kweqembu|Kuphelile"
+ "live.cols": "Backlog|Okufanele kwenziwe|Kuyaqhubeka|Iqembu liyahlola|Kuwe ukuthi test|Kweqembu|Kuphelile",
+ "footer.models": "I-AI-gile ikusebenzisela amamodeli e-AI. Lokho abakushoyo nabakwenzayo kungokwabo, ngakho hlola ngaphambi kokukholwa.",
+ "privacy.ai.h": "Ingxenye ye-AI",
+ "privacy.ai.models": "I-AI-gile yibhodi. Umsebenzi wenziwa amamodeli e-AI avela kwamanye amakhampani, njenge-Claude, Codex ne-Gemini, ku-akhawunti zakho.",
+ "privacy.ai.check": "Lokho abakubhalayo nabakwenzayo kuvela kubo, futhi kungase kube okungalungile. Hlola ngaphambi kokukuthembela noma kokukukhipha.",
+ "privacy.ai.files": "Bashintsha amafayela futhi basebenzise imiyalo kumafolda owaxhumayo. Gcina isipele.",
+ "privacy.ai.send": "Lokho okunika imodeli kuya enkampanini eyisebenzisayo, ngaphansi kwemigomo yayo. Imigomo nezindleko zenkampani ngayinye ziyasebenza.",
+ "privacy.ai.asis": "I-AI-gile iyinguqulo yokuhlola yokuqala, inikezwa njengoba injalo."
 }

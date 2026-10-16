@@ -175,5 +175,12 @@
  "live.last.day.one": "Symudwyd y cerdyn olaf {n} diwrnod yn ôl",
  "live.last.day.other": "Symudwyd y cerdyn olaf {n} diwrnod yn ôl",
  "live.offline": "Mae'r bwrdd byw yn cael hoe fach. Dewch yn ôl yn fuan.",
- "live.cols": "Backlog|I'w wneud|Ar y gweill|Y tîm yn gwirio|I ti i'w test|I'r tîm|Wedi'i wneud"
+ "live.cols": "Backlog|I'w wneud|Ar y gweill|Y tîm yn gwirio|I ti i'w test|I'r tîm|Wedi'i wneud",
+ "footer.models": "Mae AI-gile yn rhoi modelau AI ar waith i ti. Eu cyfrifoldeb nhw yw'r hyn maen nhw'n ei ddweud a'i wneud, felly gwna'n siŵr ei fod yn gywir cyn ymddiried ynddo.",
+ "privacy.ai.h": "Y rhan AI",
+ "privacy.ai.models": "AI-gile yw'r bwrdd. Modelau AI gan gwmnïau eraill sy'n gwneud y gwaith, fel Claude, Codex a Gemini, ar dy gyfrifon dy hun.",
+ "privacy.ai.check": "Maen nhw'n gyfrifol am yr hyn maen nhw'n ei ysgrifennu a'i wneud, a gall fod yn anghywir. Gwna'n siŵr ei fod yn gywir cyn dibynnu arno neu ei ryddhau.",
+ "privacy.ai.files": "Maen nhw'n newid ffeiliau ac yn rhedeg gorchmynion yn y ffolderi rwyt ti'n eu cysylltu. Cadw gopi wrth gefn.",
+ "privacy.ai.send": "Mae'r hyn rwyt ti'n ei roi i fodel yn mynd i'r cwmni sy'n ei redeg, o dan eu telerau nhw. Mae telerau a chostau pob un yn berthnasol.",
+ "privacy.ai.asis": "Fersiwn prawf cynnar yw AI-gile, fel y mae."
 }

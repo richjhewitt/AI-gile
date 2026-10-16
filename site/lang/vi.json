@@ -175,5 +175,12 @@
  "live.last.day.one": "Thẻ cuối cùng được chuyển {n} ngày trước",
  "live.last.day.other": "Thẻ cuối cùng được chuyển {n} ngày trước",
  "live.offline": "Bảng trực tiếp đang nghỉ một chút. Hãy quay lại sớm nhé.",
- "live.cols": "Backlog|Cần làm|Đang làm|Nhóm kiểm tra|Bạn cần test|Cho nhóm|Xong"
+ "live.cols": "Backlog|Cần làm|Đang làm|Nhóm kiểm tra|Bạn cần test|Cho nhóm|Xong",
+ "footer.models": "AI-gile cho các mô hình AI làm việc giúp bạn. Những gì chúng nói và làm là của chúng, nên hãy kiểm tra trước khi tin.",
+ "privacy.ai.h": "Phần AI",
+ "privacy.ai.models": "AI-gile là cái bảng. Việc được làm bởi các mô hình AI của những công ty khác, như Claude, Codex và Gemini, trên chính tài khoản của bạn.",
+ "privacy.ai.check": "Những gì chúng viết và làm là do chúng, và có thể sai. Hãy kiểm tra trước khi dựa vào hoặc phát hành.",
+ "privacy.ai.files": "Chúng sửa tệp và chạy lệnh trong những thư mục bạn kết nối. Hãy sao lưu.",
+ "privacy.ai.send": "Những gì bạn đưa cho một mô hình sẽ đến công ty vận hành nó, theo điều khoản của họ. Điều khoản và chi phí riêng của từng bên sẽ được áp dụng.",
+ "privacy.ai.asis": "AI-gile là bản thử nghiệm sớm, được cung cấp nguyên trạng."
 }

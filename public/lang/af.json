@@ -5626,5 +5626,6 @@
  "night.why.waits0": "het geloop en besluit om te wag · volgende poging {time}",
  "night.why.other": "nie begin nie",
  "tb.phone": "Op 'n foon wys die boonste balk net 📥 Inkassie en ☰; die ander knoppies is in ☰. Links of regs en Wys in boonste balk is vir die rekenaar.",
- "lkcall.incall": "📞 In die oproep"
+ "lkcall.incall": "📞 In die oproep",
+ "wz.ask.models": "AI-gile is die bord. Die werk word gedoen deur KI-modelle soos Claude, Codex en Gemini, op jou eie rekeninge, so wat hulle skryf en doen, kom van hulle af en is soms verkeerd. Gaan hul werk na voordat jy daarop staatmaak, en hou 'n rugsteun van enige vouer waarin jy hulle toelaat."
 }

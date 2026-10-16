@@ -175,5 +175,12 @@
  "live.last.day.one": "An kard diwettha a veu movys {n} dydh nans yw",
  "live.last.day.other": "An kard diwettha a veu movys {n} dydh nans yw",
  "live.offline": "An bord yn fyw a gemmer powes. Dewhel yn skon.",
- "live.cols": "Backlog|Dhe wul|Yn hwel|An bagas ow whythra|Rag ty dhe testya|Rag an bagas|Gwrys"
+ "live.cols": "Backlog|Dhe wul|Yn hwel|An bagas ow whythra|Rag ty dhe testya|Rag an bagas|Gwrys",
+ "footer.models": "AI-gile a resek modellow AI ragos. An pyth a lavarons hag a wrons yw aga re aga honan, rak hedna hwithra kens ès trestya.",
+ "privacy.ai.h": "An rann AI",
+ "privacy.ai.models": "AI-gile yw an bord. An whel a veu gwrys gans modellow AI a gowethasow erel, kepar ha Claude, Codex ha Gemini, war dha gonti dha honan.",
+ "privacy.ai.check": "An pyth a skrifons hag a wrons a dhe dhiworth dhedhans hag a yll bos kamm. Hwithra kens ès trestya ynno po displetya.",
+ "privacy.ai.files": "Y a janj fylennow ha resek gorhemmynnow y'n plegellow a gevrydh. Gwra kopi kuvva.",
+ "privacy.ai.send": "An pyth a rowydh dhe model a wra mos dhe'n kowethas a'n resek, herwydh aga ameth. Ameth ha kost pub kowethas a dal.",
+ "privacy.ai.asis": "AI-gile yw versyon previ kynsa, ynnos kepar del yw."
 }

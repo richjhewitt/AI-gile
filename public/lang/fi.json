@@ -5626,5 +5626,6 @@
  "night.why.waits0": "kävi ja päätti odottaa · seuraava yritys {time}",
  "night.why.other": "ei käynnistetty",
  "tb.phone": "Puhelimessa yläpalkissa näkyvät vain 📥 Postilaatikko ja ☰; muut painikkeet ovat ☰:n alla. Vasen tai oikea ja Näytä yläpalkissa ovat tietokonetta varten.",
- "lkcall.incall": "📞 Puhelussa"
+ "lkcall.incall": "📞 Puhelussa",
+ "wz.ask.models": "AI-gile on taulu. Työn tekevät tekoälymallit, kuten Claude, Codex ja Gemini, omilla tileilläsi, joten se, mitä ne kirjoittavat ja tekevät, tulee niiltä ja on joskus väärin. Tarkista niiden työ, ennen kuin turvaudut siihen, ja ota varmuuskopio jokaisesta kansiosta, johon päästät ne."
 }

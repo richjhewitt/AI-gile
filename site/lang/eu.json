@@ -175,5 +175,12 @@
  "live.last.day.one": "Azken txartela duela {n} egun mugitu da",
  "live.last.day.other": "Azken txartela duela {n} egun mugitu da",
  "live.offline": "Zuzeneko taulak atsedentxo bat hartzen ari da. Itzuli laster.",
- "live.cols": "Backlog|Egiteko|Egiten|Taldeak aztertzen|Zuk probatzeko|Taldearentzat|Eginda"
+ "live.cols": "Backlog|Egiteko|Egiten|Taldeak aztertzen|Zuk probatzeko|Taldearentzat|Eginda",
+ "footer.models": "AI-gile zuretzat IA ereduak exekutatzeko tresna da. Haiek esaten eta egiten dutena haiena da, beraz egiaztatu fidatu aurretik.",
+ "privacy.ai.h": "IAren zatia",
+ "privacy.ai.models": "AI-gile taula da. Lana beste enpresa batzuen IA ereduek egiten dute, Claude, Codex eta Gemini bezalakoek, zure kontuetan.",
+ "privacy.ai.check": "Haiek idazten eta egiten dutena haiengandik dator eta okerra izan daiteke. Egiaztatu horretan oinarritu edo argitaratu aurretik.",
+ "privacy.ai.files": "Fitxategiak aldatzen dituzte eta komandoak exekutatzen dituzte konektatzen dituzun karpetetan. Egin babeskopia bat.",
+ "privacy.ai.send": "Eredu bati ematen diozuna hura exekutatzen duen enpresara doa, haren baldintzen arabera. Bakoitzaren baldintzak eta kostuak aplikatzen dira.",
+ "privacy.ai.asis": "AI-gile hasierako proba-bertsio bat da, dagoen bezala emana."
 }

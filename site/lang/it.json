@@ -175,5 +175,12 @@
  "live.last.day.one": "Ultima scheda spostata {n} giorno fa",
  "live.last.day.other": "Ultima scheda spostata {n} giorni fa",
  "live.offline": "La bacheca dal vivo si prende una pausa. Torna presto.",
- "live.cols": "Backlog|Da fare|In corso|Il team controlla|Per te da testare|Per il team|Fatto"
+ "live.cols": "Backlog|Da fare|In corso|Il team controlla|Per te da testare|Per il team|Fatto",
+ "footer.models": "AI-gile mette al lavoro dei modelli di IA per te. Quello che dicono e fanno è roba loro, quindi controlla prima di fidarti.",
+ "privacy.ai.h": "La parte IA",
+ "privacy.ai.models": "AI-gile è la board. Il lavoro lo fanno modelli di IA di altre aziende, come Claude, Codex e Gemini, sui tuoi account.",
+ "privacy.ai.check": "Quello che scrivono e fanno viene da loro e può essere sbagliato. Controlla prima di farci affidamento o di pubblicarlo.",
+ "privacy.ai.files": "Modificano file ed eseguono comandi nelle cartelle che colleghi. Fai un backup.",
+ "privacy.ai.send": "Quello che dai a un modello va all'azienda che lo gestisce, secondo i suoi termini. Valgono i termini e i costi di ciascuna.",
+ "privacy.ai.asis": "AI-gile è una prima versione di prova, fornita così com'è."
 }

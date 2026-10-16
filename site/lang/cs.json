@@ -185,5 +185,12 @@
  "count.line.html.few": "{n} karty právě teď na tabuli",
  "count.line.html.many": "{n} karty právě teď na tabuli",
  "tl.cards.few": "{n} karty",
- "tl.cards.many": "{n} karty"
+ "tl.cards.many": "{n} karty",
+ "footer.models": "AI-gile pouští AI modely do práce za tebe. Co říkají a dělají, je jejich věc, takže to zkontroluj, než tomu uvěříš.",
+ "privacy.ai.h": "Část s AI",
+ "privacy.ai.models": "AI-gile je tabule. Práci dělají AI modely jiných firem, třeba Claude, Codex a Gemini, na tvých vlastních účtech.",
+ "privacy.ai.check": "Co píšou a dělají, pochází od nich a může to být špatně. Zkontroluj to, než se na to spolehneš nebo to nasadíš.",
+ "privacy.ai.files": "Mění soubory a spouštějí příkazy ve složkách, které připojíš. Udělej si zálohu.",
+ "privacy.ai.send": "Co modelu dáš, jde firmě, která ho provozuje, podle jejích podmínek. Platí podmínky a ceny každé z nich.",
+ "privacy.ai.asis": "AI-gile je raná testovací verze, poskytovaná tak, jak je."
 }

@@ -180,5 +180,12 @@
  "pitch.letters.zero": "{n} burtu",
  "pitch.chars.zero": "{n} rakstzīmju",
  "count.line.html.zero": "Tāfelē šobrīd ir {n} kartīšu",
- "tl.cards.zero": "{n} kartīšu"
+ "tl.cards.zero": "{n} kartīšu",
+ "footer.models": "AI-gile tavā vietā palaiž MI modeļus. Ko tie saka un dara, ir viņu pašu darbs, tāpēc pārbaudi, pirms uzticies.",
+ "privacy.ai.h": "MI daļa",
+ "privacy.ai.models": "AI-gile ir dēlis. Darbu veic citu uzņēmumu MI modeļi, piemēram, Claude, Codex un Gemini, tavos paša kontos.",
+ "privacy.ai.check": "Ko tie raksta un dara, nāk no viņiem, un tas var būt nepareizi. Pārbaudi, pirms paļaujies vai publicē.",
+ "privacy.ai.files": "Tie maina failus un palaiž komandas mapēs, ko pievieno. Izveido rezerves kopiju.",
+ "privacy.ai.send": "Ko tu dod modelim, nonāk pie uzņēmuma, kas to darbina, saskaņā ar tā noteikumiem. Spēkā ir katra noteikumi un izmaksas.",
+ "privacy.ai.asis": "AI-gile ir agrīna izmēģinājuma versija, kas tiek piedāvāta tāda, kāda tā ir."
 }

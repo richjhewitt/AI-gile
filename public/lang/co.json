@@ -5659,5 +5659,6 @@
  "night.why.waits0": "hà giratu è hà sceltu d'aspettà · prossimu tentativu {time}",
  "night.why.other": "micca principiatu",
  "tb.phone": "Nant'à un telefoninu, a barra di cima mostra solu 📥 Casella è ☰ ; l'altri buttoni sò in ☰. À manca o à diritta è Mostra in a barra di cima sò per l'urdinatore.",
- "lkcall.incall": "📞 In a chjama"
+ "lkcall.incall": "📞 In a chjama",
+  "wz.ask.models": "AI-gile hè a tavula. U travagliu hè fattu da mudelli IA cum'è Claude, Codex è Gemini, nant'à i to conti, dunque ciò ch'elli scrivenu è facenu vene da elli è qualchì volta hè sbagliatu. Cuntrolla u so travagliu prima di fidà ti, è fà una copia di salvezza di ogni cartulare induve i lasci entre."
 }

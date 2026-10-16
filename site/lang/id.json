@@ -175,5 +175,12 @@
  "live.last.day.one": "Kartu terakhir dipindahkan {n} hari lalu",
  "live.last.day.other": "Kartu terakhir dipindahkan {n} hari lalu",
  "live.offline": "Papan langsung sedang istirahat sebentar. Cek lagi nanti ya.",
- "live.cols": "Backlog|Akan dikerjakan|Dikerjakan|Tim memeriksa|Giliranmu tes|Untuk tim|Selesai"
+ "live.cols": "Backlog|Akan dikerjakan|Dikerjakan|Tim memeriksa|Giliranmu tes|Untuk tim|Selesai",
+ "footer.models": "AI-gile menjalankan model AI untukmu. Apa yang mereka katakan dan lakukan adalah tanggung jawab mereka, jadi periksa dulu sebelum kamu percaya.",
+ "privacy.ai.h": "Bagian AI",
+ "privacy.ai.models": "AI-gile adalah papannya. Pekerjaannya dilakukan oleh model AI dari perusahaan lain, seperti Claude, Codex, dan Gemini, memakai akunmu sendiri.",
+ "privacy.ai.check": "Apa yang mereka tulis dan lakukan berasal dari mereka, dan bisa saja salah. Periksa dulu sebelum kamu mengandalkannya atau merilisnya.",
+ "privacy.ai.files": "Mereka mengubah file dan menjalankan perintah di folder yang kamu hubungkan. Buat cadangan.",
+ "privacy.ai.send": "Apa yang kamu berikan ke model dikirim ke perusahaan yang menjalankannya, sesuai ketentuan mereka. Ketentuan dan biaya masing-masing berlaku.",
+ "privacy.ai.asis": "AI-gile adalah versi uji coba awal, diberikan apa adanya."
 }

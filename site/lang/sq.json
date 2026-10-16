@@ -175,5 +175,12 @@
  "live.last.day.one": "Karta e fundit u zhvendos {n} ditë më parë",
  "live.last.day.other": "Karta e fundit u zhvendos {n} ditë më parë",
  "live.offline": "Tabela drejtpërdrejt po merr pak pushim. Kthehu së shpejti.",
- "live.cols": "Backlog|Për t'u bërë|Në punë|Ekipi po kontrollon|Për ty ta testosh|Për ekipin|Kryer"
+ "live.cols": "Backlog|Për t'u bërë|Në punë|Ekipi po kontrollon|Për ty ta testosh|Për ekipin|Kryer",
+ "footer.models": "AI-gile ekzekuton modele IA për ty. Ç'thonë dhe ç'bëjnë ato është e tyre, ndaj kontrolloje para se t'i besosh.",
+ "privacy.ai.h": "Pjesa e IA-së",
+ "privacy.ai.models": "AI-gile është tabela. Punën e bëjnë modele IA të kompanive të tjera, si Claude, Codex dhe Gemini, në llogaritë e tua.",
+ "privacy.ai.check": "Ç'shkruajnë dhe ç'bëjnë vjen prej tyre dhe mund të jetë gabim. Kontrolloje para se të mbështetesh te ajo ose ta publikosh.",
+ "privacy.ai.files": "Ato ndryshojnë skedarë dhe ekzekutojnë komanda në dosjet që lidh. Mbaj një kopje rezervë.",
+ "privacy.ai.send": "Ç'i jep një modeli shkon te kompania që e drejton, sipas kushteve të saj. Zbatohen kushtet dhe kostot e secilës.",
+ "privacy.ai.asis": "AI-gile është një version i hershëm provë, i dhënë ashtu siç është."
 }

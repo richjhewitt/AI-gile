@@ -191,5 +191,12 @@
  "live.last.hour.few": "Posledná karta presunutá pred {n} hodinami",
  "live.last.hour.many": "Posledná karta presunutá pred {n} hodiny",
  "live.last.day.few": "Posledná karta presunutá pred {n} dňami",
- "live.last.day.many": "Posledná karta presunutá pred {n} dňa"
+ "live.last.day.many": "Posledná karta presunutá pred {n} dňa",
+ "footer.models": "AI-gile spúšťa AI modely za teba. To, čo hovoria a robia, je ich vec, takže si to over, skôr než tomu uveríš.",
+ "privacy.ai.h": "Časť s AI",
+ "privacy.ai.models": "AI-gile je board. Prácu robia AI modely od iných firiem, ako Claude, Codex a Gemini, na tvojich vlastných účtoch.",
+ "privacy.ai.check": "To, čo píšu a robia, pochádza od nich a môže byť nesprávne. Over si to, skôr než sa na to spoľahneš alebo to nasadíš.",
+ "privacy.ai.files": "Menia súbory a spúšťajú príkazy v priečinkoch, ktoré pripojíš. Rob si zálohu.",
+ "privacy.ai.send": "To, čo modelu dáš, ide firme, ktorá ho prevádzkuje, podľa jej podmienok. Platia podmienky a ceny každej z nich.",
+ "privacy.ai.asis": "AI-gile je skorá testovacia verzia, poskytovaná tak, ako je."
 }

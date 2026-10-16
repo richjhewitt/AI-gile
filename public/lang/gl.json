@@ -5626,5 +5626,6 @@
  "night.why.waits0": "executouse e decidiu esperar · próximo intento {time}",
  "night.why.other": "non comezou",
  "tb.phone": "No móbil, a barra superior só amosa 📥 Caixa de entrada e ☰; os outros botóns están en ☰. Esquerda ou dereita e Amosar na barra superior son para o ordenador.",
- "lkcall.incall": "📞 Na chamada"
+ "lkcall.incall": "📞 Na chamada",
+ "wz.ask.models": "AI-gile é o taboleiro. O traballo fano modelos de IA como Claude, Codex e Gemini, nas túas propias contas, así que o que escriben e fan vén deles e ás veces é un erro. Comproba o seu traballo antes de apoiarte nel e fai unha copia de seguranza de calquera cartafol no que os deixes entrar."
 }

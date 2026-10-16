@@ -5626,5 +5626,6 @@
  "night.why.waits0": "ishladi va kutishni tanladi · keyingi urinish {time}",
  "night.why.other": "ishga tushirilmagan",
  "tb.phone": "Telefonda yuqori panel faqat 📥 Kiruvchilar va ☰ ni koʻrsatadi; boshqa tugmalar ☰ ichida. Chap yoki oʻng va Yuqori panelda koʻrsatish kompyuter uchun.",
- "lkcall.incall": "📞 Qoʻngʻiroqda"
+ "lkcall.incall": "📞 Qoʻngʻiroqda",
+ "wz.ask.models": "AI-gile - doska. Ishni Claude, Codex va Gemini kabi AI modellari o'zingizning akkauntlaringizda bajaradi, shuning uchun ular yozgan va qilgan narsa o'zlaridan chiqadi va ba'zan xato bo'ladi. Suyanishdan oldin ularning ishini tekshiring va ruxsat bergan har bir papkaning zaxira nusxasini saqlang."
 }

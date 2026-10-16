@@ -5626,5 +5626,6 @@
  "night.why.waits0": "li mache epi li chwazi tann · pwochen eseye {time}",
  "night.why.other": "pa kòmanse",
  "tb.phone": "Sou telefòn, ba anwo a montre sèlman 📥 Bwat resepsyon ak ☰; lòt bouton yo nan ☰. Agoch oswa adwat ak Montre nan ba anwo a se pou òdinatè.",
- "lkcall.incall": "📞 Nan apèl la"
+ "lkcall.incall": "📞 Nan apèl la",
+ "wz.ask.models": "AI-gile se tablo a. Se modèl AI tankou Claude, Codex ak Gemini ki fè travay la sou pwòp kont ou, kidonk sa yo ekri ak sa yo fè soti nan yo, e pafwa li pa bon. Verifye travay yo anvan ou konte sou li, epi fè yon kopi sekou chak dosye ou kite yo antre ladan l."
 }

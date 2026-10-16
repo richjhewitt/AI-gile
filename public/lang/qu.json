@@ -5626,5 +5626,6 @@
  "night.why.waits0": "purirqan, suyayta akllarqantaq · hamuq kaq {time}",
  "night.why.other": "mana qallarisqachu",
  "tb.phone": "Celularpi hanaq barraqa 📥 Inbox hinaspa ☰ kaqllata rikuchin; huk botonkunaqa ☰ ukhupi kashan. Lloq'e utaq paña hinaspa Hanaq barrapi rikuchiy computerpaqmi.",
- "lkcall.incall": "📞 Waqyaypi"
+ "lkcall.incall": "📞 Waqyaypi",
+ "wz.ask.models": "AI-gile tablam. Llank'ayta ruwanku AI modelokuna, Claude, Codex hinallataq Gemini hina, qan kikiykiq cuentaykikunapi, chayrayku ima qillqasqankupas ruwasqankupas paykunamantam hamun, wakin kutipiqa pantasqam. Llank'asqankuta qhaway hapipakunaykipaq ñawpaqta, hinaspa sapa carpeta yaykunankupaq saqisqaykiq backupninta waqaychay."
 }

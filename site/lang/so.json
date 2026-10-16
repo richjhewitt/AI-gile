@@ -175,5 +175,12 @@
  "live.last.day.one": "Kaarkii ugu dambeeyay waa la dhaqaajiyay {n} maalin ka hor",
  "live.last.day.other": "Kaarkii ugu dambeeyay waa la dhaqaajiyay {n} maalmood ka hor",
  "live.offline": "Looxa tooska ah wuxuu qaadanayaa nasasho yar. Dhawaan dib u soo eeg.",
- "live.cols": "Backlog|Waxa la sameeyo|Socda|Kooxdu way eegaysaa|Adiga oo test samaynaya|Kooxda|La dhammeeyay"
+ "live.cols": "Backlog|Waxa la sameeyo|Socda|Kooxdu way eegaysaa|Adiga oo test samaynaya|Kooxda|La dhammeeyay",
+ "footer.models": "AI-gile waxay kuu socodsiisaa moodooyinka AI. Waxay yiraahdaan iyo waxay sameeyaan iyagaa leh, haddaba hubi ka hor intaanad aamini.",
+ "privacy.ai.h": "Qaybta AI",
+ "privacy.ai.models": "AI-gile waa boardka. Shaqada waxaa qaata moodooyinka AI ee shirkado kale, sida Claude, Codex iyo Gemini, akoonnadaada.",
+ "privacy.ai.check": "Waxay qoraan iyo waxay sameeyaan iyagay ka yimaadaan, waxayna noqon karaan khalad. Hubi ka hor intaadan ku tiirsanaan ama dayn.",
+ "privacy.ai.files": "Waxay bedelaan faylasha, waxayna ordaan amarro gudaha faylalka aad ku xirto. Kaydi nuqul kaydsan.",
+ "privacy.ai.send": "Waxaad siiso moodel waxay aadaa shirkadda socodsiisa, iyadoo hoos imanaysa shuruudahooda. Shuruudaha iyo kharashka shirkad kasta ayaa khuseeya.",
+ "privacy.ai.asis": "AI-gile waa nooc tijaabo hore ah, sida uu yahay ayaa la siinayaa."
 }

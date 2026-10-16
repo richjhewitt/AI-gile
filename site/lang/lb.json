@@ -175,5 +175,12 @@
  "live.last.day.one": "Lescht Kaart viru {n} Dag geréckelt",
  "live.last.day.other": "Lescht Kaart viru {n} Deeg geréckelt",
  "live.offline": "D'Live-Board mécht eng kleng Paus. Kuck geschwë nees vir.",
- "live.cols": "Backlog|Ze maachen|Amgaang|Team kontrolléiert|Fir dech zum Testen|Fir d'Team|Fäerdeg"
+ "live.cols": "Backlog|Ze maachen|Amgaang|Team kontrolléiert|Fir dech zum Testen|Fir d'Team|Fäerdeg",
+ "footer.models": "AI-gile léisst KI-Modeller fir dech lafen. Wat si soen a maachen, ass hir Saach, also kontrolléier et, éier s du him traus.",
+ "privacy.ai.h": "Den KI-Deel",
+ "privacy.ai.models": "AI-gile ass de Board. D'Aarbecht maachen KI-Modeller vun anere Firmen, wéi Claude, Codex a Gemini, op denge eegene Konten.",
+ "privacy.ai.check": "Wat si schreiwen a maachen, kënnt vun hinnen a ka falsch sinn. Kontrolléier et, éier s du dech drop verléiss oder et verëffentlechs.",
+ "privacy.ai.files": "Si änneren Dateien a féieren Befehler an den Dossieren aus, déi s du verbënns. Maach eng Sécherungskopie.",
+ "privacy.ai.send": "Wat s du engem Modell gëss, geet un d'Firma, déi et bedreift, no hire Konditiounen. D'Konditiounen a Käschte vun all Eenzelnem gëllen.",
+ "privacy.ai.asis": "AI-gile ass eng fréi Testversioun, wéi se ass."
 }
