@@ -566,3 +566,12 @@ def('phonecolumn', 'phone opens at cards needing the owner (AIG-1418)', async (s
   await page.evaluate(() => {document.querySelector('.board').scrollLeft=0;}); await sleep(1500);
   check('polling preserves a manual swipe (AIG-1418)', await page.$eval('.board',e=>e.scrollLeft===0));
 }, true);
+
+def('boarddutch', 'Dutch dispatch and team status (AIG-1419)', async (s, ctx) => {
+  await mkProject(s, 'Garden', 'GAR');
+  await ctx.addInitScript(() => localStorage.setItem('aigile.lang','nl'));
+  const page = await openPage(ctx, '#/p/garden'); await page.waitForSelector('.board');
+  const html = await page.evaluate(() => { const p = {...state.project, team:[{name:'Lead',status:'🔄 working',updated:new Date().toISOString()}], log:[{author:'Dispatcher',text:'GAR-1 sent to Lead',kind:'log',at:new Date().toISOString()}]}; const html=renderBoard(p); $('app').innerHTML=html; return $('app').textContent; });
+  check('status and existing log translated (AIG-1419)', html.includes('aan het werk') && html.includes('Verdeler: GAR-1 naar Lead gestuurd') && !html.includes('🔄 working'));
+  await page.screenshot({path:'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots/AIG-1419.png'});
+}, true);

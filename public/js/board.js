@@ -117,7 +117,7 @@ function teamLive(p) {
 }
 // Working ones first, then the rest, last seen newest first.
 const teamSorted = (team, live) => team.map((m, i) => [m, i]).sort(([a, i], [b, j]) => (live(b) - live(a)) || (live(a) ? i - j : String(b.updated || '').localeCompare(String(a.updated || '')))).map(([m]) => m);
-const teamStatus = (m, live) => live(m) ? m.status || '' : m.updated ? t('board.team.idleseen', { ago: ago(m.updated) }) : t('board.team.idle');
+const teamStatus = (m, live) => live(m) ? (m.status || '').replace(/working/i, t('ng.working')).replace(/in review/i, t('board.team.review')) : m.updated ? t('board.team.idleseen', { ago: ago(m.updated) }) : t('board.team.idle');
 
 /* ---------- board page ---------- */
 // Phone (AIG-933): the toolbar buttons sit behind one ⋯ button; the choice survives the 1 s redraw.
@@ -126,6 +126,11 @@ function toggleTb() { state.tbOpen = !state.tbOpen; const m = $('boardTbMore'), 
 document.addEventListener('click', e => { if (state.tbOpen && !e.target.closest('#tbDots,#boardTbMore')) toggleTb(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.tbOpen) toggleTb(); });
 window.addEventListener('hashchange', () => { if (location.hash.split('/')[2] !== state.phoneBoard) state.phoneBoard = null; if (state.tbOpen) toggleTb(); });
+function boardLogText(l) {
+  const sent = l.author === 'Dispatcher' && /^(.*?) sent to (.*)$/.exec(l.text);
+  return sent ? t('board.dispatched', { card: sent[1], who: sent[2] }) : l.text;
+}
+
 function renderBoard(p) {
   // Team status lives in the top-right corner, next to the inbox (where the owner looks for notifications).
   const tt = $('teamTop'); const th = presenceHtml(p, true); if (tt.dataset.sig !== th) { tt.dataset.sig = th; tt.innerHTML = th; }
@@ -190,7 +195,7 @@ function renderBoard(p) {
       <div class="box"><h3>${esc(t('board.team'))}${team.length ? `<button class="bm-btn" onclick="badgeDialog()" title="${esc(t('badge.title.hint'))}">${esc(t('badge.title'))}</button>` : ''}</h3>${shownTeam.length ? `<table><tr><th>${esc(t('board.team.member'))}</th><th>${esc(t('board.team.role'))}</th><th>${esc(t('board.team.working'))}</th><th>${esc(t('board.team.status'))}</th></tr>${shownTeam.map(m =>
         `<tr><td><span onclick="badgeDialog('${esc(m.name).replace(/'/g, '&#39;')}')" style="cursor:pointer">${face(m.name, team)}</span><b>${esc(m.name)}</b> <span class="muted">${esc(m.model)}</span></td><td>${esc(m.role)}</td><td>${esc(m.task)}</td><td class="tm-st${live(m) ? ' on' : ' muted'}">${esc(teamStatus(m, live))}</td></tr>`).join('')}</table>` : `<p class="muted">${esc(t(team.length ? 'board.team.quiet' : 'board.team.none'))}</p>`}${folded ? `<button type="button" class="team-all" onclick="toggleTeamAll()">${esc(showAll ? t('board.team.active') : t('board.team.showall', { n: folded }))}</button>` : ''}</div>
       <div class="box"><h3>${esc(t('board.log'))}</h3>${log.length ? `<ul class="log">${log.map(l =>
-        `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author)}</b>: ${esc(l.text)} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}</div>
+        `<li class="${l.kind}">${l.kind === 'decision' ? '⚖️ ' : ''}<b>${esc(l.author === 'Dispatcher' ? t('board.dispatcher') : l.author)}</b>: ${esc(boardLogText(l))} <span class="muted">${ago(l.at)}</span></li>`).join('')}</ul>` : `<p class="muted">${esc(t('board.log.none'))}</p>`}</div>
     </div>`;
 }
 
