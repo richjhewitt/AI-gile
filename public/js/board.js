@@ -150,9 +150,27 @@ document.addEventListener('keydown', e => {
 document.addEventListener('click', e => { if (state.tbOpen && !e.target.closest('#tbDots,#boardTbMore')) toggleTb(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.tbOpen) toggleTb(); });
 window.addEventListener('hashchange', () => { if (location.hash.split('/')[2] !== state.phoneBoard) state.phoneBoard = null; if (state.tbOpen) toggleTb(); });
+// The Dispatcher's reason when the rules weren't sure (lib/dispatch.js decide): fixed English phrases, never AI text (AIG-1419).
+const DISPATCH_WHY = { 'best agent for a DM': 'dmbest', 'several members named': 'named', 'best agent asked (@Best)': 'best', 'several assignees': 'assignees', 'assigned card, ambiguous comment': 'ambiguous' };
+function dispatchWhy(w) {
+  const base = s => DISPATCH_WHY[s] ? t('dispatch.why.' + DISPATCH_WHY[s]) : null;
+  if (w === 'lead decides everything') return t('dispatch.lead');
+  let m;
+  if ((m = /^haiku gave no answer \((.+)\): lead$/.exec(w)) && base(m[1])) return t('dispatch.why.noanswer', { why: base(m[1]) });
+  if ((m = /^haiku \((.+)\)$/.exec(w)) && base(m[1])) return 'Haiku: ' + base(m[1]);
+  if ((m = /^(.+), rules only: lead$/.exec(w)) && base(m[1])) return t('dispatch.why.rules', { why: base(m[1]) });
+  return null;
+}
 function boardLogText(l) {
   const sent = l.author === 'Dispatcher' && /^(.*?) sent to (.*)$/.exec(l.text);
-  return sent ? t('board.dispatched', { card: sent[1], who: sent[2] }) : l.text;
+  if (!sent) return l.text;
+  let who = sent[2];
+  // "Lead (haiku (several members named))": find the " (" where a known reason starts (a role may carry brackets too).
+  if (who.endsWith(')')) for (let i = who.indexOf(' ('); i > 0; i = who.indexOf(' (', i + 1)) {
+    const why = dispatchWhy(who.slice(i + 2, -1));
+    if (why) { who = who.slice(0, i) + ' (' + why + ')'; break; }
+  }
+  return t('board.dispatched', { card: sent[1], who });
 }
 
 function renderBoard(p) {
