@@ -80,6 +80,10 @@ def('serverhealth', 'Server health (AIG-660, AIG-1125): relay /health is signed,
   check('only the ssh server is read, with BatchMode, its port and no sudo', run.length === 1 && run[0].includes('BatchMode=yes') && run[0].includes('2222') && run[0].includes('deploy@web.example.test') && !/sudo/.test(run[0].at(-1)), run);
   check('its numbers are parsed (CPU by cores, memory without cache, disk)', q1.servers.length === 1 && q1.servers[0].reading.cpu === 20 && q1.servers[0].reading.mem === 40 && q1.servers[0].reading.disk === 50, q1.servers);
   check('fine numbers make no card for it', (await webCards()).length === 0);
+  // AIG-1458: with /proc/stat the CPU is real use (here 40 busy of 184 ticks), not the load average (1.90 on 2 cores)
+  fs.writeFileSync(sshOut, fake(50).replace('0.40, 0.50, 0.60', '1.90, 1.80, 2.02') + 'cpu  1000 0 500 8000 10 0 20 100 0 0\ncpu  1030 0 510 8140 10 0 20 104 0 0\n');
+  const q2 = await s.ok('POST', '/api/serverhealth/poll');
+  check('CPU comes from /proc/stat when there is one, with no load-average 15-minute figure (AIG-1458)', Math.round(q2.servers[0].reading.cpu) === 22 && q2.servers[0].reading.cpu15 == null && !q2.servers[0].why, q2.servers[0]);
   fs.writeFileSync(sshOut, fake(84));
   await s.ok('POST', '/api/serverhealth/poll'); await s.ok('POST', '/api/serverhealth/poll');
   check('high for 2 polls makes no card for it', (await webCards()).length === 0);
