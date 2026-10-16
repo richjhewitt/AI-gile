@@ -38,8 +38,8 @@ a{color:var(--accent)} a:hover{color:var(--accent-hover)}
 .skip{position:absolute;inset-inline-start:8px;top:-80px;background:var(--accent);color:var(--on-accent);padding:8px 16px;z-index:10}
 .skip:focus{top:8px}
 header.top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 0}
-.brand{display:flex;align-items:center;gap:12px;font-weight:700;font-size:22px;color:var(--text);text-decoration:none}
-.brand img{width:40px;height:40px;border-radius:8px}
+.brand{white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:12px;font-weight:700;font-size:22px;color:var(--text);text-decoration:none}
+.brand img{flex-shrink:0;width:40px;height:40px;border-radius:8px}
 .toggle{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:999px;width:44px;height:44px;font-size:20px;cursor:pointer;line-height:1}
 .toggle:hover{background:var(--hover)}
 
@@ -186,3 +186,8 @@ footer{border-top:1px solid var(--line);padding:24px 0;text-align:center;color:v
 /* AIG-1319: the promise under each form stays on one line on a computer; "What we keep" never splits */
 .form-keep{font-size:14px;line-height:1.5}
 .form-keep a{white-space:nowrap}
+
+/* Keep the phone header controls together and footer links easy to tap. */
+.top-end,#words-slot{display:flex;align-items:center;gap:8px;flex-shrink:0}
+footer a{display:inline-flex;align-items:center;min-height:44px;padding:0 6px}
+@media(max-width:420px){.brand{gap:6px;font-size:18px}.top-end,#words-slot{gap:4px}.top-end .lang-btn{padding-inline:8px}.top-end .words-btn{padding:0}}

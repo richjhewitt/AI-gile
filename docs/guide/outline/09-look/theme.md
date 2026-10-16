@@ -13,3 +13,5 @@ Theme and matching scrollbars.
 - Open cards and dialogs have a thin edge and a dimmed backdrop in every theme.
 
 - Dialogs, cards and chats share top-right Pop out and Close controls.
+
+- The public sites keep phone controls in one row and footer links have larger tap targets.
