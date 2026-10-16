@@ -14,6 +14,8 @@ def('topbar', 'Setup: top bar buttons on/off, reorder, left or right side, theme
     const want = { helpBtn: '❓', bugBtn: '🐞', ideaBtn: '💡', inboxTop: '📥', pokeTop: '🔔', nightTop: '🌙', glanceBtn: '📊', setupNav: '⚙️', twitchBtn: '💬', quietTop: '🌙', immWrap: '🌍' };
     check('every top bar row and "Show in top bar" switch has its button\'s icon (AIG-1351)', ic.length > 30 && ic.every(x => x.ico) && ic.every(x => !want[x.id] || x.ico === want[x.id]), JSON.stringify(ic.filter(x => !x.ico || (want[x.id] && x.ico !== want[x.id]))));
     check('the icon comes once: "🌙 Going quiet", not "🌙 🌙 Going quiet"', ic.filter(x => x.id === 'quietTop').every(x => (x.text.match(/🌙/gu) || []).length === 1), JSON.stringify(ic.filter(x => x.id === 'quietTop'))); }
+  { const al = await page.evaluate(() => [...document.querySelectorAll('#tbList .tb-on, #tbList .tb-up, #tbList .tb-down')].map(e => e.getAttribute('aria-label')));
+    check('tick boxes and arrows read "Show Help", "Move Help up", no brackets (AIG-1396)', al.length > 30 && al.every(a => a && !/[{}]/.test(a)) && al.includes('Show Help'), al.filter(a => !a || /[{}]/.test(a)).slice(0, 3)); }
   check('the settings gear switch is locked on', await page.locator('[data-tb="setupNav"] .tb-on').isDisabled());
 
   // Hide the Idea button
