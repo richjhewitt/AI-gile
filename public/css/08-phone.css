@@ -94,3 +94,11 @@
   .board { grid-template-columns: repeat(7, min(82vw, 320px)); }
   .column { min-height: 0; }
 }
+/* AIG-1399: For you cards: the kind chip (🧪 Test) is a one-line pill beside 40px buttons; finger-sized targets on touch screens */
+.q-chips { align-items: center; }
+@media (max-width: 760px), (max-height: 500px) and (pointer: coarse) { .q-chip.prio.unset { min-height: 0; } .ib-popone { display: none; } }   /* ⤢ opens a window: none on a phone (AIG-1086) */
+@media (pointer: coarse) {
+  .fy-head { display: inline-flex; align-items: center; min-height: 40px; }
+  .ib-popone { min-width: 40px; min-height: 40px; line-height: 1; font-size: 16px; }
+  .setup small.muted a { display: inline-flex; align-items: center; min-height: 40px; }
+}

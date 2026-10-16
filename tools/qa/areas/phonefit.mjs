@@ -39,6 +39,8 @@ def('phonefit', '📱 phone fixes upright and on its side (390x844, 844x390): la
       check(D + ': Setup top bar: tick boxes 22px+ in a 44px row, round 44px colour dots, 44px arrows (AIG-1395)', su.tick && su.dot && su.arrow, su);
       check(D + ': Left/Right and Show in top bar are hidden, a note says the bar is Inbox and ☰ on a phone', !su.side && !su.pins && su.note, su);
       check(D + ': the Setup intro and theme help talk about the phone, not "this computer"', /computer it runs on/.test(su.intro) && !/settings on this computer/.test(su.intro) && /☰ menu/.test(su.theme) && !/🖥️ button/.test(su.theme), su);
+      { const gl = await page.evaluate(() => { const a = document.querySelector('.setup a[href="#/glossary"]'); return a && Math.round(a.getBoundingClientRect().height); });
+        check(D + ': Setup\'s Open the glossary link is at least 40px tall (AIG-1399)', gl >= 40, gl); }
       await page.evaluate(() => { document.getElementById('topbarBox').scrollIntoView({ block: 'start' }); scrollBy(0, -70); }); await sleep(200);
       await shot(page, 'AIG-1395', size);
       await page.close();
@@ -56,6 +58,18 @@ def('phonefit', '📱 phone fixes upright and on its side (390x844, 844x390): la
       check(D + ': the rail is the bottom bar, not a left column', lay.railW > 200 && lay.railTop > lay.H / 2, lay);
       check(D + ': a card is on screen without scrolling', lay.card, lay);
       await shot(bp, 'AIG-1391', size);
+
+      /* ---------- AIG-1399: the For you column's pills and tap targets ---------- */
+      await bp.evaluate(() => document.querySelector('.column.foryou').scrollIntoView({ inline: 'start', block: 'start' })); await sleep(300);
+      const fy = await bp.evaluate(() => {
+        const col = document.querySelector('.column.foryou'), chip = col.querySelector('.card .q-chips > span.q-chip'), head = col.querySelector('.fy-head'), pop = col.querySelector('.ib-popone');
+        const r = chip.getBoundingClientRect(), fs = parseFloat(getComputedStyle(chip).fontSize);
+        return { chipH: Math.round(r.height), fs, chipText: chip.textContent.trim(), headH: Math.round(head.getBoundingClientRect().height), pop: !!pop && pop.getBoundingClientRect().width > 0 };
+      });
+      check(D + ': For you: the 🧪 Test chip is a one-line pill, not a tall blob (AIG-1399)', /Test/.test(fy.chipText) && fy.chipH <= fy.fs * 2.4, fy);
+      check(D + ': the FOR YOU heading (tap = only this column) is at least 40px tall', fy.headH >= 39.5, fy);
+      check(D + ': no ⤢ pop-out button on the cards on a phone', !fy.pop, fy);
+      await shot(bp, 'AIG-1399', size);
       for (const [hash, label] of [['#/glossary', 'glossary'], ['#/p/alpha', 'new card']]) {
         await bp.goto(BASE + '/' + hash); await sleep(800);
         if (label === 'new card') { await bp.evaluate(() => newCard()); await bp.waitForSelector('#f-title', { timeout: 8000 }).catch(() => {}); await sleep(300); await shot(bp, 'AIG-1391-newcard', size); }
