@@ -72,10 +72,16 @@ def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> pa
     check('the page shows the viewer count', /viewer/.test(await view.textContent('#v')));
     check('the page has no description or comment', !(await view.content()).includes(DESC) && !(await view.content()).includes(CMT));
 
+    // AIG-1338: the owner's own 💬 question stays off while titles show, and counts as a plain bar once titles are hidden
+    const q = await s.ok('POST', '/api/projects/pub-board/cards', { title: '💬 Secret owner question', quick: true, status: 'done' });
+    await sleep(1500);
+    check('with titles shown, the owner\'s 💬 question never goes out (AIG-1338)', !(await json()).body.cards.some(c => c.id === q.id) && !JSON.stringify((await json()).body).includes('Secret owner question'));
     // 🙈 Titles hidden (AIG-698): the snapshot carries no title, only a length step; the page draws bars that still move.
     await s.ok('PATCH', '/api/projects/pub-board', { publicHideTitles: true });
     await until(async () => (await json()).body.titlesHidden === true, 10000);
+    await until(async () => (await json()).body.cards.some(c => c.id === q.id), 10000);
     const hidden = (await json()).body;
+    check('with titles hidden, it counts as a bar so the public counts match the board, still with no words (AIG-1338)', hidden.cards.some(c => c.id === q.id && c.title === '') && !JSON.stringify(hidden).includes('Secret owner question'));
     check('🙈 hide titles: no card title reaches the relay, each card has a length step', hidden.cards.length > 0 && hidden.cards.every(c => c.title === '' && c.len >= 1 && c.len <= 8) && !JSON.stringify(hidden).includes('Fix the login'), hidden.cards.slice(0, 3));
     await view.waitForSelector('.c[data-id="' + a.id + '"] .bar', { timeout: 10000 });
     await s.ok('PATCH', `/api/projects/pub-board/cards/${a.id}`, { status: 'doing' });
