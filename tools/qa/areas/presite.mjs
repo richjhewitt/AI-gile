@@ -185,5 +185,24 @@ def('presite', 'aigile.lol pre-teaser (presite/, file://): live board moving beh
   const c = await where(); await sleep(2800);
   check('reduced motion: the board stands still, the sheet does not drift', c === await where() && await page.$eval('.pre-sheet', e => getComputedStyle(e).animationName === 'none'));
   await page.close();
+  // AIG-1445: every screen size, phone to 4K, by day and by night (the card is taller then): no sideways scroll, the whole
+  // card on screen, the button and the bar's buttons at least 44px tall
+  const SIZES = ['320x568', '360x740', '375x667', '390x844', '414x896', '430x932', '844x390', '667x375', '768x1024', '1024x768', '1366x768', '1440x900', '1920x1080', '2560x1440', '3840x2160'];
+  const bad = [];
+  for (const nightOn of [false, true]) {
+    page = await open(true, { night: nightOn || undefined });
+    await page.waitForFunction(() => window.__pre && window.__pre.mode() === 'live', null, { timeout: 6000 });
+    if (nightOn) await page.waitForFunction(() => window.__pre.night() && !document.getElementById('people-count').hidden, null, { timeout: 3000 }).catch(() => {});
+    for (const sz of SIZES) {
+      const [w, h] = sz.split('x').map(Number);
+      await page.setViewportSize({ width: w, height: h }); await sleep(60);
+      const r = await page.evaluate(() => { const c = document.querySelector('.pre-card').getBoundingClientRect(), b = document.getElementById('pre-notify').getBoundingClientRect();
+        const small = [...document.querySelectorAll('.pre-tools button')].filter(x => x.offsetParent && x.getBoundingClientRect().height < 44).map(x => x.id);
+        return { side: document.documentElement.scrollWidth <= innerWidth, card: c.left >= 0 && c.top >= 0 && c.right <= innerWidth + 0.5 && c.bottom <= innerHeight + 0.5, btn: Math.round(b.height), small }; });
+      if (!r.side || !r.card || r.btn < 44 || r.small.length) bad.push({ sz, night: nightOn, ...r });
+    }
+    await page.close();
+  }
+  check('every size from 320x568 to 3840x2160, day and night: no sideways scroll, the card fully on screen, the button and bar buttons at least 44px tall (AIG-1445)', bad.length === 0, bad);
   check('no page errors', errs.length === 0, errs);
 }, true);

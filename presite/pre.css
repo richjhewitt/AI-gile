@@ -2,17 +2,19 @@
    (it is the star: cards are bars, nothing to read), a dust sheet with soft folds over it, and one solid card on top. */
 body.pre{min-height:100vh;min-height:100dvh}
 
-/* Behind the glass */
-.pre-back{position:fixed;inset:0;z-index:0;overflow:hidden;padding:16px;pointer-events:none;filter:blur(1px) saturate(.95)}
+/* Behind the glass. AIG-1445: the bars, headings and gaps grow a little with the window (vmin), so a big screen shows a
+   board, not a few thin lines; a phone shows four whole columns instead of three and a half. */
+.pre-back{position:fixed;inset:0;z-index:0;overflow:hidden;padding:clamp(16px,1.2vmin,32px);pointer-events:none;filter:blur(1px) saturate(.95)}
 .pre-back .live{max-width:none;margin:0;padding:0;height:100%;text-align:start}
 .pre-back .live-stat,.pre-back .live-last,.pre-back .live-msg{display:none!important}
 .pre-back .live-scroll{overflow:hidden;padding:0;height:100%}
-.pre-back .lv-cols{height:100%;align-items:stretch;min-width:0}
-.pre-back .lv-col{min-width:104px;min-height:100%;overflow:hidden;padding:10px}
-.pre-back .lv-col h3{font-size:12px}
-.pre-back .lv-card{height:16px;border-radius:8px;margin-bottom:8px}
-.pre-back .lv-card.p-high,.pre-back .lv-card.p-urgent{height:20px}
-.pre-fake{position:absolute;inset:16px}
+.pre-back .lv-cols{height:100%;align-items:stretch;min-width:0;gap:clamp(10px,.9vmin,24px)}
+.pre-back .lv-col{min-width:104px;min-height:100%;overflow:hidden;padding:clamp(10px,.9vmin,24px);border-radius:clamp(10px,.8vmin,20px)}
+.pre-back .lv-col h3{font-size:clamp(12px,1vmin,24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pre-back .lv-card{height:clamp(16px,1.5vmin,36px);border-radius:999px;margin-bottom:clamp(8px,.75vmin,18px)}
+.pre-back .lv-card.p-high,.pre-back .lv-card.p-urgent{height:clamp(20px,1.9vmin,44px)}
+.pre-fake{position:absolute;inset:clamp(16px,1.2vmin,32px)}
+@media (max-width:819px){.pre-back .lv-cols{gap:8px}.pre-back .lv-col{flex:0 0 calc((100% - 24px)/4);min-width:0;padding:8px}.pre-back .lv-col h3{font-size:10.5px;white-space:normal;overflow-wrap:anywhere;line-height:1.3}}
 
 /* The dust sheet: a little of the page colour over the board, a fine weave and a few soft folds that drift slowly */
 .pre-sheet{position:fixed;inset:0;z-index:1;pointer-events:none;
@@ -26,28 +28,74 @@ body.pre{min-height:100vh;min-height:100dvh}
 
 /* On top: the card in the middle, then one small bar at the bottom (AIG-1343: the top of the board stays clear) with the
    jargon, language and theme buttons and the footer, wrapping on a phone. In the page order the button comes straight after
-   the heading, then the bar. The language list opens upwards from there (site/i18n.js). */
-.pre-page{position:relative;z-index:2;min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:1fr auto;grid-template-areas:"main" "bar"}
-.pre-main{grid-area:main;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px 16px}
-.pre-bar{grid-area:bar;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 14px;margin:0 auto 12px;padding:6px 12px;max-width:calc(100% - 32px);box-sizing:border-box;border-radius:16px;background:color-mix(in srgb,var(--bg) 88%,transparent)}
+   the heading, then the bar. The language list opens upwards from there (site/i18n.js).
+   AIG-1445: the notch and the home bar (safe areas, viewport-fit=cover), the phone's moving toolbar (100dvh), 44px targets. */
+.pre-page{position:relative;z-index:2;min-height:100vh;min-height:100dvh;display:grid;grid-template-rows:1fr auto;grid-template-areas:"main" "bar";
+  --sl:max(16px,env(safe-area-inset-left));--sr:max(16px,env(safe-area-inset-right))}
+.pre-main{grid-area:main;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:max(24px,env(safe-area-inset-top)) var(--sr) 24px var(--sl);min-width:0}
+.pre-bar{grid-area:bar;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 14px;margin:0 auto calc(12px + env(safe-area-inset-bottom));padding:6px 12px;
+  max-width:calc(100% - var(--sl) - var(--sr));box-sizing:border-box;border-radius:18px;background:color-mix(in srgb,var(--bg) 88%,transparent)}
 .pre-tools{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px}
-.pre-tools .lang-btn{min-height:40px}.pre-tools .toggle{width:40px;height:40px;font-size:18px}
-.pre-card{width:100%;max-width:34rem;text-align:center;padding:32px 28px;border-radius:20px;border:1px solid var(--line);
+.pre-tools .lang-btn{min-height:44px}.pre-tools .words-btn{min-width:44px}.pre-tools .toggle{width:44px;height:44px;font-size:18px}
+.pre-card{box-sizing:border-box;width:100%;max-width:34rem;text-align:center;padding:32px 28px;border-radius:20px;border:1px solid var(--line);
   background:var(--raised);background:color-mix(in srgb,var(--raised) 93%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:var(--shadow-lg)}
 .pre-logo{width:88px;height:88px;border-radius:18px;box-shadow:var(--shadow-lg)}
-.pre-card h1{font-size:clamp(1.75rem,6.5vw,2.6rem);margin:18px 0 22px}
-.pre-btn{font-size:18px;min-height:56px;cursor:pointer}
-.pre-line{margin:22px auto 0;max-width:28rem;color:var(--text);font-size:17px}
+.pre-card h1{font-size:clamp(1.7rem,min(6.5vw,7.5vh),2.6rem);line-height:1.2;margin:14px 0 24px;text-wrap:balance;overflow-wrap:break-word}
+.pre-btn{font-size:18px;min-height:56px;max-width:100%;box-sizing:border-box;cursor:pointer;text-wrap:balance;line-height:1.35}
+.pre-line{margin:22px auto 0;max-width:28rem;color:var(--text);font-size:17px;text-wrap:pretty}
 .pre-card .people-count{margin-top:14px}
-.pre-peek{margin:0;max-width:34rem;text-align:center;font-size:14px;color:var(--text);padding:4px 14px;border-radius:999px;background:color-mix(in srgb,var(--bg) 88%,transparent)}
-.pre-foot{border-top:0;margin:0;padding:4px 0;text-align:center;color:var(--text);background:none}
+.pre-card .people-count>span:not(.sep){white-space:nowrap}
+.pre-peek{box-sizing:border-box;margin:0;max-width:min(34rem,100%);text-align:center;font-size:14px;line-height:1.45;color:var(--text);padding:5px 14px;border-radius:999px;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);text-wrap:balance}
+/* the footer: the tag line, then What we keep · Status; on a phone the tag gets its own line, so no dot hangs at a line end */
+.pre-foot{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;column-gap:6px;border-top:0;margin:0;padding:0;text-align:center;color:var(--text);background:none;text-wrap:balance}
+.pre-foot .pf-links{display:inline-flex;align-items:center;white-space:nowrap}
+.pre-foot .pf-links::before{content:"·"}
+.pre-foot a{min-height:44px;padding:0 8px}
 /* 🌙 Night (AIG-1388): while Rich is quiet the board says so; the app's night colours, near-black and red-tinted, faded in softly.
    html:root[...] beats every theme rule of style.css (light, dark, black), so night wins whichever the visitor picked. */
-.pre-night{margin:10px 0 0;font-size:15px;color:var(--text)}
+.pre-night{margin:10px 0 0;font-size:15px;color:var(--text);text-wrap:balance}
 html:root[data-night]{--bg:#0b0605;--surface:#140b09;--raised:#140b09;--hover:#1f120e;--line:#2a1712;--text:#c08a78;--muted:#8a5e50;
   --accent:#8f4a24;--accent-hover:#a8622c;--on-accent:#f3dccf;--diamond:#a8483a;--focus:#b8782e;--shadow-lg:0 12px 32px rgba(0,0,0,.85);color-scheme:dark}
 html:root[data-night] .live{--c-bug:#a8483a;--c-task:#8f5a4a;--c-feat:#7a5240;--c-inc:#b8782e;--c-done:#7f8a3a;--c-mute:#6e4a40}
 /* the fade runs only while night turns on or off (data-nightfade, set by pre.js for a second), so a theme click stays instant */
 html[data-nightfade] :is(body.pre,.pre-card,.pre-bar,.pre-peek,.pre-foot,.pre-line,.pre-night,.pre-btn,.toggle,.lang-btn,.lv-col,.lv-col h3){transition:background-color .9s ease,color .9s ease,border-color .9s ease}
-@media (max-width:480px){.pre-card{padding:24px 18px}.pre-bar{padding:8px 10px;margin-bottom:10px}}
+
+/* Phones (AIG-1445): a full-width button, a slimmer card, the people line wraps between its parts (the emoji keep them
+   apart, no dot left hanging), the caption a soft rounded box, the tag line on its own row in a compact bar */
+@media (max-width:559px){
+  .pre-main{gap:12px;padding-bottom:16px}
+  .pre-card{padding:26px 20px 22px}
+  .pre-card h1{margin:4px 0 20px}
+  .pre-btn{display:flex;width:100%;min-width:0;font-size:17px;padding:8px 16px}
+  .pre-line{margin-top:18px;font-size:16px}
+  .pre-card .people-count:not([hidden]){display:flex;flex-wrap:wrap;justify-content:center;gap:0 14px;font-size:15px}
+  .pre-card .people-count .sep{display:none}
+  .pre-night{font-size:14px}
+  .pre-peek{font-size:13px;border-radius:14px;padding:6px 14px}
+  .pre-bar{gap:2px 10px;padding:8px 10px 2px;margin-bottom:calc(10px + env(safe-area-inset-bottom))}
+  .pre-tools{gap:6px}
+  .pre-foot{font-size:13px;line-height:1.4}
+  .pre-foot .pf-tag{flex:1 1 100%;padding:4px 4px 0}
+  .pre-foot .pf-links::before{content:none}
+  .pre-foot a{margin-block:-4px}
+}
+@media (max-width:359px){.pre-card{padding:22px 16px 20px}.pre-card h1{font-size:1.6rem}.pre-btn{padding:8px 12px}}
+/* Short windows (a phone on its side, a small laptop): tighter, so the card and the bar fit together where they can */
+@media (max-height:620px){
+  .pre-main{gap:10px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:12px}
+  .pre-card{padding:20px 26px 18px}
+  .pre-card h1{margin:0 0 14px}
+  .pre-btn{min-height:48px}
+  .pre-line{margin-top:14px;font-size:16px}
+  .pre-card .people-count{margin-top:8px}
+  .pre-night{margin-top:6px}
+  .pre-bar{margin-bottom:calc(8px + env(safe-area-inset-bottom))}
+  .pre-tools .words-btn{padding:0}.pre-tools .words-btn .words-label{display:none}
+}
+/* Big screens (AIG-1445): the card, caption and bar grow with the window instead of sitting small in the middle */
+@media (min-width:1800px) and (min-height:1000px){.pre-main,.pre-bar{zoom:1.2}}
+@media (min-width:2400px) and (min-height:1350px){.pre-main,.pre-bar{zoom:1.55}}
+@media (min-width:3200px) and (min-height:1800px){.pre-main,.pre-bar{zoom:2.1}}
 @media (prefers-reduced-motion:reduce){.pre-sheet{animation:none}html[data-nightfade] :is(body.pre,.pre-card,.pre-bar,.pre-peek,.pre-foot,.pre-line,.pre-night,.pre-btn,.toggle,.lang-btn,.lv-col,.lv-col h3){transition:none}}
