@@ -87,16 +87,16 @@ const TwitchTab = (() => {
       <small class="muted" id="twIdHelp">${esc(t('tw.id.help'))} <a href="${CONSOLE_URL}" target="_blank" rel="noopener noreferrer">${esc(t('tw.id.link'))}</a></small><div class="err" id="twIdErr"></div></details>`;
   }
   async function signIn() {
-    try { cfg = await api('POST', '/api/twitch/token', { login: $('twLogin').value, token: $('twToken').value }); msg = t('tw.setup.saved'); } catch (e) { const x = $('twErr2'); if (x) x.textContent = e.message || String(e); return; }
+    try { cfg = await api('POST', '/api/twitch/token', { login: $('twLogin').value, token: $('twToken').value, secretsToken: await secToken() }); msg = t('tw.setup.saved'); } catch (e) { const x = $('twErr2'); if (x) x.textContent = e.message || String(e); return; }
     paintBox(); msg = '';
   }
-  async function signOut() { try { cfg = await api('POST', '/api/twitch/token', { login: '', token: '' }); } catch {} paintBox(); }
+  async function signOut() { try { cfg = await api('POST', '/api/twitch/token', { login: '', token: '', secretsToken: await secToken() }); } catch {} paintBox(); }
   // 💜 Sign in with Twitch (shown only once a Client ID is there: AI-gile's own, or yours under Other ways): start the device code
   // and poll until approved, denied or run out. A Client ID typed under Other ways but not saved yet is saved first.
   async function authStart() {
     authMsg = ''; flow = null;
     try {
-      if ($('twClientId') && $('twClientId').value.trim() && $('twClientId').value.trim() !== cfg.clientId) cfg = await api('POST', '/api/twitch/config', { clientId: $('twClientId').value.trim() });
+      if ($('twClientId') && $('twClientId').value.trim() && $('twClientId').value.trim() !== cfg.clientId) cfg = await api('POST', '/api/twitch/config', { clientId: $('twClientId').value.trim(), token: await secToken() });
       flow = await api('POST', '/api/twitch/auth/start', { token: await secToken() });
     } catch (e) { authMsg = e.message || String(e); return paintBox(); }
     paintBox();
@@ -120,7 +120,7 @@ const TwitchTab = (() => {
   }
   async function saveId() {
     const x = $('twIdErr');
-    try { cfg = await api('POST', '/api/twitch/config', { clientId: $('twClientId').value }); authMsg = ''; } catch (e) { if (x) x.textContent = e.message || String(e); return; }
+    try { cfg = await api('POST', '/api/twitch/config', { clientId: $('twClientId').value, token: await secToken() }); authMsg = ''; } catch (e) { if (x) x.textContent = e.message || String(e); return; }
     msg = t('tw.setup.saved'); paintBox(); msg = '';
   }
   async function save() { return join($('twChannel').value, true); }

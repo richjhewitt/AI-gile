@@ -67,7 +67,7 @@ def('twitchauth', '💜 Sign in with Twitch: device code (waiting, approved, den
     check('no Client ID: one plain line, no Sign in button, no developer steps showing', /isn't ready yet/.test(await su.textContent('#twAuthNotReady')) && await su.locator('#twAuth').count() === 0 && !(await su.isVisible('#twIdHelp')) && !(await su.isVisible('#twClientId')));
     check('the Client ID box and the developer steps are under Other ways', await su.locator('#twOther #twClientId').count() === 1 && /Register Your Application/.test(await su.textContent('#twOther #twIdHelp')) && !/Chat Bot/.test(await su.textContent('#twOther')));
     if (process.env.QA_SHOTS) { await su.waitForTimeout(600); await su.locator('#twitchBox').screenshot({ path: process.env.QA_SHOTS + '/AIG-1404-notready.png' }); }
-    check('a bad Client ID is refused', (await s.api('POST', '/api/twitch/config', { clientId: 'no!' })).status === 400);
+    check('a bad Client ID is refused', (await s.api('POST', '/api/twitch/config', { clientId: 'no!', token })).status === 400);
     check('starting needs the secrets page token', (await s.api('POST', '/api/twitch/auth/start', {})).status === 403);
 
     // Save your own Client ID under Other ways, then sign in: waiting (pending twice), then approved
@@ -93,6 +93,20 @@ def('twitchauth', '💜 Sign in with Twitch: device code (waiting, approved, den
     const c1 = await s.ok('GET', '/api/twitch/config');
     check('config: canReply via twitch, and no token anywhere on the page side', c1.canReply && c1.via === 'twitch' && c1.signedIn && !/AT-|RT-/.test(JSON.stringify(c1) + JSON.stringify(await s.ok('GET', '/api/twitch/auth/status'))), c1);
     check('the tokens are kept encrypted in the secret store, never in the settings file', /"twitch:oauth": "aes:/.test(kept()) && !/AT-|RT-/.test(kept()) && !/AT-|RT-/.test(settings()), settings());
+
+    // Credential changes use the same owner and secrets gate as sign-out (AIG-1401).
+    const before = settings(), stored = kept();
+    for (const [route, body] of [['config', { clientId: CLIENT + 'x', token }], ['token', { login: '', token: '', secretsToken: token }]]) {
+      const r = await fetch(s.base + '/api/twitch/' + route, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Aigile-Where': 'background', 'X-Aigile-As': 'Cody' }, body: JSON.stringify(body) });
+      check(`agent cannot change Twitch ${route} even with page token`, r.status === 403 && settings() === before && kept() === stored);
+    }
+    check('changing Client ID requires page token', (await s.api('POST', '/api/twitch/config', { clientId: CLIENT + 'x' })).status === 403 && settings() === before);
+    check('owner can change Client ID with page token', (await s.api('POST', '/api/twitch/config', { clientId: CLIENT + 'x', token })).status === 200 && !(await s.ok('GET', '/api/twitch/config')).signedIn && !/twitch:oauth/.test(kept()));
+    await s.ok('POST', '/api/twitch/config', { clientId: CLIENT, token });
+    tw.mode.pending = 0;
+    await su.reload(); await su.evaluate(() => { window.__twAuthPollMs = 150; }); await su.waitForSelector('#twAuth');
+    await su.click('#twAuth'); await su.waitForSelector('#twAuthOn', { timeout: 10000 });
+    if (process.env.QA_SHOTS) { await su.locator('#twitchBox').scrollIntoViewIfNeeded(); await su.screenshot({ path: process.env.QA_SHOTS + '/AIG-1401.png' }); }
 
     // The picker: own, moderated, followed, recent; a name only in its first group
     await s.ok('POST', '/api/twitch/config', { channel: 'recent_one' });
