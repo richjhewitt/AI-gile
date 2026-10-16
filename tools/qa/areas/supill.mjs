@@ -84,7 +84,7 @@ def('supill', 'the Call stand-ups? pill never covers Send in a Messages chat, a 
   await sweep('team board', SIZES);
   for (const [w, h] of [[1920, 1080], [1366, 768], [390, 844]]) {
     await page.setViewportSize({ width: w, height: h }); await sleep(300);
-    await page.locator('.bm-btn').scrollIntoViewIfNeeded();
+    await page.evaluate(() => document.querySelector('.bm-btn').scrollIntoView({ block: 'center' }));   // "if needed" can leave it under the phone's bottom rail, which the page scrolls clear of
     check(`team board at ${w}x${h}: 🎨 Badge maker is free`, (await free('.bm-btn')) === true, await free('.bm-btn'));
   }
   check('phone: no sideways scroll with the pill', await page.evaluate(() => document.documentElement.scrollWidth <= 392));

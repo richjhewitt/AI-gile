@@ -85,7 +85,7 @@ def('noai', 'No AI, ever: AI parts gone (top bar, Setup, roster, wizard), server
   await mkProject(s, 'Empty', 'EMP', { path: tmp('empty') });
   await page.goto(page.url().split('#')[0] + '#/p/empty'); await page.waitForSelector('#emptyHint');
   const hint = await page.textContent('#emptyHint');
-  check('empty board says "first card", not wake the team / history', /first card/i.test(hint) && !/wake|history|reads this folder/i.test(hint), hint);
+  check('empty board says add a card (AIG-1416: what you want done), not wake the team / history', /first card|what you want done/i.test(hint) && !/wake|history|reads this folder/i.test(hint), hint);
   const si = await page.evaluate(() => t('tour.welcome.text'));
   check('the guide says team, not AI teams', /your team/.test(si) && !/AI teams/.test(si), si);
   check('Raise bug and New card still show', await vis(page, '#bugBtn') && await vis(page, '[onclick="newCard()"]'));
