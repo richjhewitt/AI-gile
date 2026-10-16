@@ -147,6 +147,11 @@ NGINX
   echo "    private: only browsers with a pass; everyone else goes to $TEASER"
 else
   echo "# AI-gile site: open to everyone (install-site.sh --private makes it pass-only)." > "/etc/nginx/snippets/$SITE.conf"
+  # AIG-1318: browsers check pages, scripts, styles and language files every time (cheap with the ETag), so a deploy shows at once
+  cat >> "/etc/nginx/snippets/$SITE.conf" <<'NGINX'
+location = / { add_header Cache-Control "no-cache" always; try_files /index.html =404; }
+location ~* \.(html|js|css|json)$ { add_header Cache-Control "no-cache" always; try_files $uri =404; }
+NGINX
   echo "    open to everyone"
 fi
 
