@@ -123,7 +123,10 @@
   function open(){
     build();input.value="";filter();note.textContent="";
     // Phone width: the list spans the screen under the button (the button need not be the last thing in the header).
-    var r=btn.getBoundingClientRect();pop.style.cssText=innerWidth<560?"position:fixed;top:"+Math.round(r.bottom+6)+"px;left:16px;right:16px;width:auto":"";
+    // AIG-1343: a button in the lower half of the window (the pre-teaser's bottom bar) opens its list upwards, as tall as fits.
+    var r=btn.getBoundingClientRect(),up=r.top>innerHeight/2,pos=up?"top:auto;bottom:"+Math.round(innerHeight-r.top+6)+"px":"top:"+Math.round(r.bottom+6)+"px";
+    pop.style.cssText=innerWidth<560?"position:fixed;"+pos+";left:16px;right:16px;width:auto":up?"top:auto;bottom:calc(100% + 6px)":"";
+    ul.style.maxHeight=up?Math.max(120,Math.min(420,Math.round(innerHeight*.6),Math.round(r.top-90)))+"px":"";pop.classList.toggle("lang-up",up);
     pop.hidden=false;btn.setAttribute("aria-expanded","true");input.focus()}
   function close(back){pop.hidden=true;btn.setAttribute("aria-expanded","false");if(back)btn.focus()}
   function pick(code){

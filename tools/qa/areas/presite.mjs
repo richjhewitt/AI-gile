@@ -56,8 +56,31 @@ def('presite', 'aigile.lol pre-teaser (presite/, file://): live board moving beh
   await page.keyboard.press('Tab'); order.push(await page.evaluate(() => document.activeElement.id));
   await page.keyboard.press('Tab'); order.push(await page.evaluate(() => document.activeElement.id));
   check('focus order: the button first, then 📖 jargon and its Abc switch, language, theme (AIG-1341)', order.join() === 'pre-notify,words-btn,words-ul,lang-btn,theme', order);
+  await page.keyboard.press('Tab');
+  check('...then the footer links in the same bottom bar (AIG-1343)', await page.evaluate(() => !!document.activeElement.closest('.pre-bar .pre-foot')));
+  // AIG-1343: the controls sit in one small bar at the bottom, so nothing on top covers the board's column headings
+  const clear = () => page.evaluate(() => {
+    const over = [...document.querySelectorAll('.pre-bar,.pre-card,.pre-peek')].map(e => e.getBoundingClientRect());
+    const hs = [...document.querySelectorAll('#live-cols .lv-col h3,#pre-fake-cols .lv-col h3')].filter(h => h.offsetParent).map(h => h.getBoundingClientRect());
+    const hit = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+    const bar = document.querySelector('.pre-bar').getBoundingClientRect(), bell = document.getElementById('pre-notify').getBoundingClientRect();
+    return { heads: hs.length, covered: hs.filter(h => over.some(o => hit(h, o))).length, barLow: bar.bottom > innerHeight - 30 && bar.top > innerHeight / 2, bell: !hit(bar, bell), inside: bar.left >= 0 && bar.right <= innerWidth,
+      tools: !!document.querySelector('.pre-bar #lang-btn') && !!document.querySelector('.pre-bar #theme') && !!document.querySelector('.pre-bar #words-btn') };
+  });
+  const cl = await clear();
+  check('the column headings at the top are clear: the controls are in a small bar at the bottom of the window', cl.heads === 7 && cl.covered === 0 && cl.barLow && cl.bell && cl.inside && cl.tools, cl);
+  let u;
+  const upOk = () => page.evaluate(async () => { document.getElementById('lang-btn').click(); await new Promise(r => setTimeout(r, 50));
+    const p = document.querySelector('.lang-pop').getBoundingClientRect(), b = document.getElementById('lang-btn').getBoundingClientRect();
+    const ok = !document.querySelector('.lang-pop').hidden && p.bottom <= b.top + 1 && p.top >= 0 && p.height > 150 && p.left >= 0 && p.right <= innerWidth && document.activeElement === document.querySelector('.lang-pop input');
+    const got = [Math.round(p.top), Math.round(p.bottom), Math.round(b.top)].join();
+    document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); return (ok && document.querySelector('.lang-pop').hidden) || got; });
+  check('the 🌐 language list opens upwards from the bottom bar, inside the window', (u = await upOk()) === true, u);
+  await page.click('#words-btn');
+  check('the 📖 jargon dialog opens inside the window', await page.evaluate(() => { const r = document.getElementById('words-dlg').getBoundingClientRect(); return document.getElementById('words-dlg').open && r.top >= 0 && r.bottom <= innerHeight; }));
+  await page.keyboard.press('Escape');
   // themes: readable text on the card in light, dark and black
-  const look = () => page.evaluate(() => { const c = getComputedStyle(document.querySelector('.pre-card')), h = getComputedStyle(document.querySelector('.pre-line')), f = getComputedStyle(document.querySelector('.pre-foot'));
+  const look = () => page.evaluate(() => { const c = getComputedStyle(document.querySelector('.pre-card')), h = getComputedStyle(document.querySelector('.pre-line')), f = { backgroundColor: getComputedStyle(document.querySelector('.pre-bar')).backgroundColor, color: getComputedStyle(document.querySelector('.pre-foot')).color };
     return { card: c.backgroundColor, text: h.color, foot: f.backgroundColor, ftext: f.color, body: getComputedStyle(document.body).backgroundColor, black: document.documentElement.hasAttribute('data-black') }; });
   const seen = [];
   for (let i = 0; i < 3; i++) { await page.click('#theme'); seen.push(await look()); }
@@ -72,10 +95,15 @@ def('presite', 'aigile.lol pre-teaser (presite/, file://): live board moving beh
   await page.waitForFunction(() => window.__pre && window.__pre.mode() === 'live', null, { timeout: 6000 });
   const fit = () => page.evaluate(() => { const r = document.querySelector('.pre-card').getBoundingClientRect(); return document.documentElement.scrollWidth <= innerWidth && r.left >= 0 && r.right <= innerWidth; });
   check('at 390px: no sideways scroll, the card fits', await fit());
+  const cp = await clear();
+  check('at 390px: the bottom bar wraps inside the window, covers neither the 🔔 button nor the column headings', cp.heads === 7 && cp.covered === 0 && cp.barLow && cp.bell && cp.inside, cp);
+  check('at 390px: the language list opens upwards, inside the window', (u = await upOk()) === true, u);
   await page.evaluate(() => SiteI18n.set('nl')); await page.waitForFunction(() => document.documentElement.lang === 'nl');
   check('in Dutch: heading, button and caption', (await page.$eval('h1', e => e.textContent)) === 'Hier wordt iets gebouwd. 🤫' && /opengaat/.test(await page.$eval('#pre-notify', e => e.textContent)) && /Achter het glas/.test(await page.$eval('#pre-peek', e => e.textContent)));
   await page.evaluate(() => SiteI18n.set('ar')); await page.waitForFunction(() => document.documentElement.dir === 'rtl');
-  check('right-to-left: the tools move to the left, still no sideways scroll', await fit() && await page.evaluate(() => document.getElementById('lang-btn').getBoundingClientRect().left < innerWidth / 2));
+  const rtl = await clear();
+  check('right-to-left: the bar flips (theme left of the language button), still at the bottom, no sideways scroll', await fit() && rtl.covered === 0 && rtl.barLow && rtl.bell && rtl.inside && await page.evaluate(() => document.getElementById('theme').getBoundingClientRect().left < document.getElementById('lang-btn').getBoundingClientRect().left), rtl);
+  check('right-to-left: the language list opens upwards, inside the window', (u = await upOk()) === true, u);
   await page.close();
 
   // AIG-1342: 📖 jargon underline on the board behind the glass: Backlog (glossary) and the other column names (own tip),
