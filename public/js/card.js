@@ -51,7 +51,7 @@ const problemHtml = (p, c) => c.type === 'problem' ? `<div class="problem"><h3>$
 // 📝 Post-incident review (AIG-1108): on a done major incident. The owner ticks the action items; "Make a card" turns one into a card.
 const reviewHtml = (p, c) => {
   const r = c.review; if (!r) return '';
-  if (r.state !== 'posted') return `<div class="postmortem pirbox"><h3>${esc(t('pir.heading'))}</h3><p class="muted">${esc(t(r.state === 'manual' ? 'pir.manual' : 'pir.waiting', { name: r.by || '' }))}</p></div>`;
+  if (r.state !== 'posted') return `<div class="postmortem pirbox"><h3>${esc(t('pir.heading'))}</h3><p class="muted">${esc(t(r.state === 'manual' ? 'pir.manual' : 'pir.waiting', { name: r.by || '' }))}</p>${r.state === 'manual' ? reviewFormHtml(c) : ''}</div>`;   // AIG-1327: the form is in practice.js
   const acts = (r.actions || []).map((a, i) => `<li class="pir-action"><label><input type="checkbox" ${a.ok ? 'checked' : ''} onchange="pirTick('${esc(c.id)}', ${i}, this.checked)"> ${esc(a.text)}</label> ${a.card ? cardLinkHtml(p, a.card) : `<button type="button" class="pir-make" onclick="pirMake('${esc(c.id)}', ${i})">${esc(t('pir.make'))}</button>`}</li>`).join('');
   return `<div class="postmortem pirbox"><h3>${esc(t('pir.heading'))}</h3><p><b>${esc(t('pir.timeline'))}</b> ${esc(r.timeline)}</p><p><b>${esc(t('pir.helped'))}</b> ${esc(r.helped)}</p><p><b>${esc(t('pir.actions'))}</b></p><ul class="pir-actions">${acts}</ul>${r.runbook ? `<p><b>${esc(t('pir.runbook'))}</b> ${cardLinkHtml(p, r.runbook)}</p>` : ''}</div>`;
 };
@@ -123,7 +123,7 @@ function renderCard(p, c) {
     ${movedBanner(c)}<div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2>${esc(c.title)}</h2></div>${topActs}</div>
     <div class="meta">${metaHtml(c)}</div>
-    ${deskHtml(c)}${majorHtml(c)}${CiPage.affects(p, c)}${reviewHtml(p, c)}
+    ${practiceHtml(p, c)}${deskHtml(c)}${majorHtml(c)}${CiPage.affects(p, c)}${reviewHtml(p, c)}
     ${c.status === 'verify' ? verdict : ''}
     ${extrasUi(p, c)}${secretsUi(p, c)}${accessReviewHtml(p, c)}
     <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>

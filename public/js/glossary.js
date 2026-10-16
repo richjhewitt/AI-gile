@@ -42,6 +42,13 @@ function renderGlossary() {
     <dl class="gloss-list">${x.items.map(w => `<div class="gloss-item" data-id="${w.id}" data-k="${esc(glossFold([w.word, w.text, ...w.also].join(' ')))}"><dt>${esc(w.word)}</dt><dd>${esc(w.text)}</dd></div>`).join('')}</dl></section>`).join('')}
     <p class="muted" id="glossNone" hidden>${esc(t('gloss.none'))}</p></div>`;
 }
+// AIG-1327: #/glossary/<id> (the practice incident's 📖 links): the search box filled with that word.
+function glossWord(id) {
+  const q = $('glossQ'); if (!q) return; q.dataset.w = id || '';
+  if (!id || !GLOSSARY.includes(id)) return;
+  q.value = t('gloss.' + id + '.word'); filterGlossary(q.value);
+  const el = document.querySelector(`.gloss-item[data-id="${id}"]`); if (el) { el.classList.add('gloss-hit'); el.scrollIntoView({ block: 'nearest' }); }
+}
 function filterGlossary(q) {
   q = glossFold(q.trim()); let n = 0;
   document.querySelectorAll('.gloss-item').forEach(el => { const hit = !q || (el.dataset.k || '').includes(q); el.hidden = !hit; n += hit; });

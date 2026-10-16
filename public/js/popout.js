@@ -63,7 +63,7 @@ const POP_DLG = {
   ask: () => askTeamDialog(), idea: () => ideaDialog(), happening: () => happeningDialog(), views: () => viewsDialog(), fyfold: () => fyOpen(forYouFirst(), null),
   // AIG-1313: these had a kind (or are worth keeping beside the board) but could not pop out yet.
   deleted: () => deletedDialog(), expert: () => expertDialog(), change: () => raiseChange(), keys: () => Shortcuts.sheet(), myday: () => MyDay.open(),
-  start: () => gettingStarted(), intro: () => introOpen(), incidents: () => incidentsGuide(), service: () => serviceGuide(),
+  start: () => gettingStarted(), intro: () => introOpen(), incidents: () => incidentsGuide(), service: () => serviceGuide(), messages: () => messagesGuide(),
 };
 const inPopDlg = () => state.route && state.route.view === 'dlg';
 function popDlg(kind) {
