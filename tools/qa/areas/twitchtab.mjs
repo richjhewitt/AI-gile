@@ -53,7 +53,8 @@ def('twitchtab', 'Twitch tab in the DM window: hidden with no channel, set in Se
   check('a bad token is refused', (await s.api('POST', '/api/twitch/token', { login: 'smizflark', token: 'short' })).status === 400);
 
   // Sign in to reply (Setup box, real clicks), then the reply box shows and Enter sends
-  const su = await openPage(ctx, '#/setup'); await su.waitForSelector('#twSignIn');
+  const su = await openPage(ctx, '#/setup'); await su.waitForSelector('#twOther', { state: 'attached' }); await su.click('#twOther summary');   // AIG-1346: the paste way sits under Other ways
+  await su.waitForSelector('#twSignIn');
   await su.fill('#twLogin', 'SmizFlark'); await su.fill('#twToken', 'oauth:abcdefghijklmnopqrstuvwxyz0123'); await su.click('#twSignIn');
   await su.waitForSelector('#twOut');
   const c1 = await s.ok('GET', '/api/twitch/config');
