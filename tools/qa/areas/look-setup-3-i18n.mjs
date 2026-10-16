@@ -320,3 +320,31 @@ def('popreopen', '⧉ a pop-out closed by sending a card back opens again when t
   check('and it is forgotten after reopening', !/ALP-/.test(await main.evaluate(() => localStorage.getItem('aigile.reopen') || '')));
   noErrors(main);
 }, true);
+
+def('usertextdir', 'user text chooses its own direction in cards and chat (AIG-1398)', async (s, ctx) => {
+  await mkProject(s, 'Direction', 'DIR');
+  await s.ok('PATCH', '/api/projects/direction', { description:'This board. Tracks its own build.' });
+  await s.ok('POST', '/api/projects/direction/team', { name:'Lead', role:'Lead' });
+  const a = await mkCard(s, 'direction', 'English title.', { status:'todo', description:'English description.' });
+  const b = await mkCard(s, 'direction', '\u0645\u0631\u062d\u0628\u0627.', { status:'todo' });
+  await s.ok('POST', `/api/projects/direction/cards/${a.id}/comments`, { author:'Lead', text:'English comment.' });
+  await s.ok('POST', '/api/projects/direction/leadchat', { author:'Lead', text:'English chat.' });
+  const c = await ctx.browser().newContext({ viewport:{width:390,height:844} });
+  await c.addInitScript(() => { localStorage.setItem('aigile.lang','ar'); localStorage.setItem('aigile.theme','dark'); });
+  const page = await c.newPage();
+  await page.goto(BASE+'/#/p/direction'); await page.waitForSelector('.board .card');
+  const direction = sel => page.$eval(sel, e => [e.getAttribute('dir'),getComputedStyle(e).direction].join(','));
+  check('English project description stays LTR on Arabic page', await direction('#app p[dir=auto]') === 'auto,ltr');
+  check('English title stays LTR', await direction(`.card[data-id="${a.id}"] .t`) === 'auto,ltr');
+  check('Arabic title stays RTL', await direction(`.card[data-id="${b.id}"] .t`) === 'auto,rtl');
+  const shots = 'C:/Users/rich/AppData/Local/Temp/claude/c--Users-rich-Desktop-Bots--n--Code-Stuff-AI-gile/3ae79815-0113-49a9-aff9-9783dd343aa6/scratchpad/shots';
+  fs.mkdirSync(shots,{recursive:true}); await page.screenshot({path:path.join(shots,'AIG-1398.png')});
+  await page.goto(BASE+'/#/p/direction/'+a.id); await page.waitForSelector('.panel');
+  check('open title, description and comment choose LTR', (await Promise.all(['.panel h2','.panel .desc','.panel .comment .body'].map(direction))).every(d => d === 'auto,ltr'));
+  await page.goto(BASE+'/#/p/direction'); await page.waitForSelector('.board');
+  await page.evaluate(() => Dms.show('direction')); await page.waitForSelector('#dmList .dm-bubble');
+  check('chat bubble chooses LTR', await direction('#dmList .dm-bubble') === 'auto,ltr');
+  await page.evaluate(() => { document.documentElement.dir='ltr'; const e=document.querySelector('#dmList .dm-bubble'); e.textContent='\u0645\u0631\u062d\u0628\u0627.'; });
+  check('Arabic chat stays RTL on English page', await direction('#dmList .dm-bubble') === 'auto,rtl');
+  await c.close();
+}, true);

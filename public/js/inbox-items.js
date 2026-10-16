@@ -7,42 +7,42 @@
   function qHtml(c) {
     const a = shownAsk(c), acts = c.blocked || c.leadChat ? [] : askActions(a, 'question');
     return `<div class="ib-top"><span class="ib-tag">${esc(c.blocked ? t('inbox.q.blocked') : t('inbox.q.question'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${urgentBtn(c, c.project)}${c.leadChat ? '' : `<button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button>`}</div>${queueChips(c)}
-      <div class="ib-title">${c.leadChat ? `<a href="#" onclick="Dms.show('${c.project}'); return false">${esc(c.title)}</a>` : `<a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a>`}</div>
+      <div class="ib-title" dir="auto">${c.leadChat ? `<a href="#" onclick="Dms.show('${c.project}'); return false">${esc(c.title)}</a>` : `<a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a>`}</div>
       <div class="ib-who">${t(c.blocked ? 'inbox.q.isblocked.html' : 'inbox.q.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
-      <div class="ib-question">${linkify(a.text, c)}</div>${Attach.shown(a, c.project)}${actionsHtml(acts, c.project, c.id)}
-      <textarea rows="2" data-draft="${esc(c.project + '/' + c.id)}/reply" placeholder="${esc(t('inbox.q.ph'))}" aria-label="${esc(t('inbox.q.aria', { id: c.id }))}"></textarea>
+      <div class="ib-question" dir="auto">${linkify(a.text, c)}</div>${Attach.shown(a, c.project)}${actionsHtml(acts, c.project, c.id)}
+      <textarea dir="auto" rows="2" data-draft="${esc(c.project + '/' + c.id)}/reply" placeholder="${esc(t('inbox.q.ph'))}" aria-label="${esc(t('inbox.q.aria', { id: c.id }))}"></textarea>
       <div class="ib-err"></div>
       <div class="actions">${c.blocked || acts.length || c.leadChat ? '' : `<button class="good" data-act="go" title="${esc(t('card.go.title'))}">${esc(t('dms.go'))}</button>`}<button class="primary" data-act="send">${esc(t('inbox.q.send'))}</button>${c.leadChat ? '' : `<button data-act="wait" title="${esc(t('inbox.later.title'))}">${esc(t('inbox.later'))}</button>`}${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.q.hint'))}</span></div>`;
   }
   function kHtml(c) {
     const a = shownAsk(c);
     return `<div class="ib-top"><span class="ib-tag">${c.lifeType ? '🏡 ' + esc(t('queue.kind.life')) : esc(t('inbox.k.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${urgentBtn(c, c.project)}<button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button></div>${queueChips(c)}
-      <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
+      <div class="ib-title" dir="auto"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       <div class="ib-who">${t('inbox.k.asked.html', { who: esc(a.author), when: ago(a.at) })}</div>
-      <div class="ib-question">${linkify(a.text, c)}</div>${Attach.shown(a, c.project)}${(e => e ? `<details class="ib-steps"><summary>${esc(t('inbox.k.earlier'))}</summary><div class="body">${linkify(e.text, c)}</div></details>` : '')(earlier(c))}
-      <textarea rows="1" data-draft="${esc(c.project + '/' + c.id)}/task" placeholder="${esc(t('inbox.k.ph'))}" aria-label="${esc(t('inbox.k.aria', { id: c.id }))}"></textarea>
+      <div class="ib-question" dir="auto">${linkify(a.text, c)}</div>${Attach.shown(a, c.project)}${(e => e ? `<details class="ib-steps"><summary>${esc(t('inbox.k.earlier'))}</summary><div class="body" dir="auto">${linkify(e.text, c)}</div></details>` : '')(earlier(c))}
+      <textarea dir="auto" rows="1" data-draft="${esc(c.project + '/' + c.id)}/task" placeholder="${esc(t('inbox.k.ph'))}" aria-label="${esc(t('inbox.k.aria', { id: c.id }))}"></textarea>
       <div class="ib-err"></div>
       <div class="actions">${c.lifeType ? `<button class="good" data-act="lifedone" title="${esc(t('life.done.title'))}">✅ ${esc(t('life.done'))}</button>` : ''}<button class="good" data-act="taskdone">${esc(t(c.lifeType ? 'inbox.k.done.tell' : 'inbox.k.done'))}</button><button data-act="wait" title="${esc(t('inbox.later.title'))}">${esc(t('inbox.later'))}</button>${c.lifeType ? `<button class="primary" data-act="letsgo" title="${esc(t('life.letsgo.title'))}">${esc(t('life.letsgo'))}</button>` : ''}${Attach.boxHtml(c.project + '/' + c.id)}<span class="ib-hint">${esc(t('inbox.k.hint'))}</span></div>`;
   }
   // 📖 To read (AIG-392): nothing to click. 👍 Got it accepts; 💬 Reply sends a note to the team and keeps the card here.
   function rHtml(c) {
     return `<div class="ib-top"><span class="ib-tag">${esc(t('info.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${urgentBtn(c, c.project)}<button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
-      <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
-      <div class="ib-question">${linkify(c.testSteps || '', c)}</div>
-      <textarea rows="1" data-draft="${esc(c.project + '/' + c.id)}/info" placeholder="${esc(t('info.ph'))}" aria-label="${esc(t('info.aria', { id: c.id }))}"></textarea>
+      <div class="ib-title" dir="auto"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
+      <div class="ib-question" dir="auto">${linkify(c.testSteps || '', c)}</div>
+      <textarea dir="auto" rows="1" data-draft="${esc(c.project + '/' + c.id)}/info" placeholder="${esc(t('info.ph'))}" aria-label="${esc(t('info.aria', { id: c.id }))}"></textarea>
       <div class="ib-err"></div>
       <div class="actions"><button class="good" data-act="gotit">${esc(t('info.gotit'))}</button><button data-act="inforeply" title="${esc(t('info.reply.title'))}">${esc(t('info.reply'))}</button>${Attach.boxHtml(c.project + '/' + c.id)}</div>`;
   }
   function tHtml(c) {
     if (c.info) return rHtml(c);
     return `<div class="ib-top"><span class="ib-tag">${esc(t('inbox.t.tag'))}</span><span class="ib-proj">${pic(c.projectLogo, c.projectEmoji)} ${esc(c.projectName)}</span><span class="ib-id">${esc(c.id)}</span>${aiChip(c)}${checkChip(c)}${urgentBtn(c, c.project)}<button class="ib-popone" data-popcard title="${esc(t('inbox.popone'))}">⤢</button><span class="ib-hint">${esc(t('inbox.t.waiting', { when: ago(c.updated, true) }))}</span></div>
-      <div class="ib-title"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
+      <div class="ib-title" dir="auto"><a href="#/p/${c.project}/${c.id}">${esc(c.title)}</a></div>
       ${aiEvidence(c, c.project)}
-      ${c.testSteps ? `<details class="ib-steps"><summary>${esc(t('inbox.t.how'))}</summary><div class="body">${linkify(c.testSteps, c)}</div></details>` : `<div class="ib-hint">${esc(t('inbox.t.nosteps'))}</div>`}
+      ${c.testSteps ? `<details class="ib-steps"><summary>${esc(t('inbox.t.how'))}</summary><div class="body" dir="auto">${linkify(c.testSteps, c)}</div></details>` : `<div class="ib-hint">${esc(t('inbox.t.nosteps'))}</div>`}
       <div class="ib-err"></div>
       <div class="actions">${c.openUrl ? `<button class="primary" data-act="open" data-cmd="${esc(c.startCmd || '')}" title="${esc(c.openUrl)}">${esc(t('verdict.open'))}</button>` : ''}<button class="good" data-act="accept">${esc(t('card.accept'))}</button><button data-act="wait" title="${esc(t('inbox.later.title'))}">${esc(t('inbox.later'))}</button>
 <button class="warn" data-act="sbopen" aria-expanded="false">${esc(t('card.sendback'))}</button></div>
-      <div class="ib-sb" hidden><textarea rows="1" data-sb placeholder="${esc(t('inbox.sb.ph'))}" aria-label="${esc(t('inbox.sb.ph'))}"></textarea><button class="warn" data-act="sbsend" disabled>${esc(t('inbox.sb.send'))}</button><button data-act="sbcancel">${esc(t('common.cancel'))}</button></div>`;
+      <div class="ib-sb" hidden><textarea dir="auto" rows="1" data-sb placeholder="${esc(t('inbox.sb.ph'))}" aria-label="${esc(t('inbox.sb.ph'))}"></textarea><button class="warn" data-act="sbsend" disabled>${esc(t('inbox.sb.send'))}</button><button data-act="sbcancel">${esc(t('common.cancel'))}</button></div>`;
   }
   const checkSig = c => (c.checklist || []).map(x => x.done ? 1 : 0).join('');
   // A folded group of tests is the made-up item from inbox-groups.js (group: true); a question or task card can carry a group name too.
