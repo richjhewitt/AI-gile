@@ -109,6 +109,7 @@ def('phonefit', '📱 phone fixes upright and on its side (390x844, 844x390): la
       /* ---------- AIG-1394: the call panel on a phone ---------- */
       const cp = await openPage(ctx, '#/');
       await cp.evaluate(stubLivekit);
+      await cp.waitForSelector('#dmRail [data-dms]', { state: 'attached' });   // the chats and rooms are read (the rail paints after the page, AIG-1393)
       await cp.evaluate(() => Dms.show('grp:meeting-alpha'));
       await cp.waitForSelector('#dmMeetBtn', { timeout: 10000 });
       await cp.evaluate(() => Call.join({ title: 'Meeting Room: AI-gile Messenger - Android', key: 'meet:alpha', getToken: async () => ({ url: 'wss://x', token: 'a.b.c', room: 'r1' }) }));
