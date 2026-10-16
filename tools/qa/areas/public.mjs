@@ -82,6 +82,10 @@ def('public', '🌍 public boards: publish a clean masked snapshot, /b/<name> pa
     await until(async () => (await json()).body.cards.some(c => c.id === q.id), 10000);
     const hidden = (await json()).body;
     check('with titles hidden, it counts as a bar so the public counts match the board, still with no words (AIG-1338)', hidden.cards.some(c => c.id === q.id && c.title === '') && !JSON.stringify(hidden).includes('Secret owner question'));
+    // AIG-1338: a lead's DM card (dm: true) is chat, not a card: the board leaves it out of Done, so the public board does too
+    const dmc = await mkCard(s, 'pub-board', 'Lead chat line', { dm: true, status: 'done' });
+    await sleep(1500);
+    check('a lead\'s DM card never goes out, even as a bar, so Done matches the board (AIG-1338)', !(await json()).body.cards.some(c => c.id === dmc.id));
     check('🙈 hide titles: no card title reaches the relay, each card has a length step', hidden.cards.length > 0 && hidden.cards.every(c => c.title === '' && c.len >= 1 && c.len <= 8) && !JSON.stringify(hidden).includes('Fix the login'), hidden.cards.slice(0, 3));
     await view.waitForSelector('.c[data-id="' + a.id + '"] .bar', { timeout: 10000 });
     await s.ok('PATCH', `/api/projects/pub-board/cards/${a.id}`, { status: 'doing' });
