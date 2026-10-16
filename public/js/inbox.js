@@ -49,7 +49,12 @@
     if (tb) { IB.tab = tb.dataset.tab; tabPref.set(IB.tab); IB.paintPage(); return; }
     const b = e.target.closest('button[data-act]'); if (!b) return;
     const n = b.closest('.ib-item'), act = b.dataset.act;
-    if (act === 'sbopen' || act === 'sbcancel') { const box = n.querySelector('.ib-sb'), open = act === 'sbopen' ? box.hidden : false; box.hidden = !open; n.querySelector('[data-act=sbopen]').setAttribute('aria-expanded', String(open)); if (open) box.querySelector('textarea').focus(); else box.querySelector('textarea').value = ''; return; }
+    if (act === 'sbopen' || act === 'sbcancel') {   // AIG-1373: one Send back: while the reason box is open, the box's Send back is the only one
+      const box = n.querySelector('.ib-sb'), sb = n.querySelector('[data-act=sbopen]'), open = act === 'sbopen' ? box.hidden : false;
+      box.hidden = !open; sb.hidden = open; sb.setAttribute('aria-expanded', String(open));
+      if (open) box.querySelector('textarea').focus(); else { box.querySelector('textarea').value = ''; box.querySelector('[data-act=sbsend]').disabled = true; sb.focus(); }
+      return;
+    }
     if (act === 'sbsend') { IB.sendBack(n); return; }
     if (act === 'open') { openIt(n.dataset.project, n.dataset.id, b); return; }
     if (act === 'send') IB.send(n); else if (act === 'go') IB.send(n, 'GO'); else if (act === 'accept') { if (acceptSure(b, IB.raw.find(c => IB.keyOf(c) === n.dataset.project + '/' + n.dataset.id))) IB.accept(n); } else if (act === 'gotit') IB.gotIt(n); else if (act === 'inforeply') IB.infoReply(n); else if (act === 'wait') IB.waitAndSee(n); else if (act === 'letsgo') IB.letsGo(n); else if (act === 'taskdone') IB.taskDone(n); else if (act === 'lifedone') IB.lifeDone(n); else if (act === 'gaccept') IB.groupAct(n, 'accept'); else if (act === 'gwait') IB.groupAct(n, 'wait'); else if (act === 'gcaccept') IB.cardAct(b, 'accept'); else if (act === 'gcreply') IB.cardAct(b, 'reply'); else if (act === 'gcback') IB.cardAct(b, 'back');

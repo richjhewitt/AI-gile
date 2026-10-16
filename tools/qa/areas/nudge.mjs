@@ -18,12 +18,12 @@ def('nudge', '👉 nudge in the card chat: lit after 3 min unseen, click pokes, 
   const c = await mkCard(s, 'nudge', 'Stuck job', { status: 'doing' });
   await say(s, 'nudge', c.id, owner, 'how is it going?');
   let page = await open(ctx, `#/pop/nudge/${c.id}`, 0);
-  await page.waitForSelector('#modal .chat', { timeout: 8000 });
+  await page.waitForSelector('#modal .reply', { timeout: 8000 });
   await sleep(1200);
   check('fresh message: no nudge yet', !(await page.$('#nudgeBtn.lit')));
   await page.close();
   page = await open(ctx, `#/pop/nudge/${c.id}`, 4 * 60e3);
-  await page.waitForSelector('#modal .chat', { timeout: 8000 });
+  await page.waitForSelector('#modal .reply', { timeout: 8000 });
   const lit = await page.waitForSelector('#nudgeBtn.lit', { timeout: 6000 }).catch(() => null);
   check('after 3 min unseen the 👉 lights up', !!lit);
   const before = (await getCard(s, 'nudge', c.id)).status;
@@ -37,7 +37,7 @@ def('nudge', '👉 nudge in the card chat: lit after 3 min unseen, click pokes, 
   await say(s, 'nudge', c.id, owner, 'still there?');
   await say(s, 'nudge', c.id, 'Lead', 'yes, nearly done');
   page = await open(ctx, `#/pop/nudge/${c.id}`, 4 * 60e3);
-  await page.waitForSelector('#modal .chat', { timeout: 8000 }); await sleep(1200);
+  await page.waitForSelector('#modal .reply', { timeout: 8000 }); await sleep(1200);
   check('answered by the team: not lit', !(await page.$('#nudgeBtn.lit')));
   await page.close();
 }, true);

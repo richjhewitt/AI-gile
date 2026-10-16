@@ -132,7 +132,7 @@ function renderCard(p, c) {
     <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
       ${Share.cardComments(p, c)}
       ${quizPanel(p, c)}
-      ${pop ? chatHtml(p, c, msg) : followBar(p, c) + replyHtml(p, c, msg, newest)}
+      ${pop ? typingHtml(p, c) : ''}${followBar(p, c) + replyHtml(p, c, msg, newest)}
     </div>
     <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
       ${qaGateHtml(c)}${c.description ? `<div class="desc">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${runbooksHtml(p, c)}${problemHtml(p, c)}${probEdit(p, c)}${knownErrorsLink(p, c)}${changeHtml(p, c)}${Attach.shown(c, p.slug)}
@@ -148,6 +148,10 @@ function renderCard(p, c) {
 function cardMenuToggle(on) {
   state.cardMenu = on === undefined ? !state.cardMenu : on;
   const m = $('card-menu'), b = $('cm-btn'); if (m) m.hidden = !state.cardMenu; if (b) b.setAttribute('aria-expanded', String(!!state.cardMenu));
+  // AIG-1358: on a short card the menu ran past the panel's bottom edge and was cut off (Move to, Delete out of reach). While it is
+  // open the panel is at least as tall as the menu needs; a variable on the page, so a redraw of the card keeps it.
+  const p = m && m.closest('.panel');
+  if (state.cardMenu && p) document.documentElement.style.setProperty('--cm-need', Math.ceil(m.getBoundingClientRect().bottom - p.getBoundingClientRect().top + p.scrollTop + 16) + 'px');
 }
 document.addEventListener('click', e => { if (state.cardMenu && !e.target.closest('.card-menu-wrap')) cardMenuToggle(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.cardMenu) cardMenuToggle(false); });
@@ -159,8 +163,23 @@ function cancelEdit() { state.editing = false; rerender(); }
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape' || e.defaultPrevented || !state.editing || $('dialog').firstChild || state.cardMenu) return;
   if (!document.querySelector('#modal .panel form')) return;
-  e.preventDefault(); state.editing = false; render();
-  const p = document.querySelector('#modal .panel'); if (p) { if (!p.hasAttribute('tabindex')) { p.tabIndex = -1; p.style.outline = 'none'; } p.focus({ preventScroll: true }); }
+  e.preventDefault(); state.editing = false; render(); cardFocusPanel();
+});
+// AIG-1371: Esc closes the open card, as the ? sheet says. One Esc does one thing: while a dialog, a menu, the edit form or a picker is
+// open, that goes first (seen before their own handlers run). In a field of the card, the first Esc leaves the field, the next one closes.
+const cardFocusPanel = () => { const p = document.querySelector('#modal .panel'); if (p) { if (!p.hasAttribute('tabindex')) { p.tabIndex = -1; p.style.outline = 'none'; } p.focus({ preventScroll: true }); } return p; };
+let cardEscBusy = false;
+window.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const tb = $('tbMoreMenu');
+  cardEscBusy = !!($('dialog').firstChild || state.cardMenu || state.editing || state.picked || $('suPrompt') || $('remind-box') || $('helpMenu') || $('statusMenu') || (tb && !tb.hidden));
+}, true);
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || e.defaultPrevented || cardEscBusy || e.ctrlKey || e.altKey || e.metaKey) return;
+  if (!document.querySelector('#modal .panel') || !state.route || !state.route.card) return;
+  const a = document.activeElement;
+  if (a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable)) { if ($('modal').contains(a)) { e.preventDefault(); cardFocusPanel(); } return; }
+  e.preventDefault(); closeCard();
 });
 async function saveCard(e) {
   e.preventDefault();
@@ -200,6 +219,7 @@ function popOutCard(s, id) {
 function closeCard() {
   if (state.route.pop) { window.close(); return; }
   state.editing = false;
+  const n = document.querySelector(`#app a.card[data-id="${CSS.escape(cardId())}"]`); if (n) n.focus({ preventScroll: true });   // AIG-1371: back on its board card
   $('modal').innerHTML = '';
   location.hash = '#/p/' + slug();
 }

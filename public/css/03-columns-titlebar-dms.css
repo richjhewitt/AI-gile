@@ -133,6 +133,13 @@ body:has(#suPrompt) .dm-list { padding-bottom: 76px; }
 body:has(#dialog:not(:empty)) #suPrompt { display: none; }
 body:has(#suPrompt) #app { padding-bottom: 76px; }
 @media (max-width: 600px) { body:has(#suPrompt) .dm-list { padding-bottom: 130px; } }
+/* AIG-1372: padding under #app never reached the things that end at the window bottom by themselves: the Messages panel (its
+   chat box and Send) and, since AIG-1217, the board columns. So the pill moves aside of an open Messages panel (hides when there
+   is no room beside it), hides over an open card, and the columns stop above it. */
+body:has(#dmPanel:not([hidden])) #suPrompt { inset-inline-start: calc(60px + min(440px, 100vw - 60px) + 12px); max-width: calc(100vw - 60px - min(440px, 100vw - 60px) - 24px); }
+@media (max-width: 960px) { body:has(#dmPanel:not([hidden])) #suPrompt { display: none; } }
+body:has(#modal:not(:empty)) #suPrompt { display: none; }
+@media (min-width: 761px) { body:has(#suPrompt) .board:not(.focus) .column { max-height: max(360px, calc(100vh - var(--board-top, 130px) - 24px - 64px)); } }
 .su-pick label { display: block; padding: 4px 0; }
 
 /* ---------- the rail as Discord servers (AIG-147..149) ---------- */

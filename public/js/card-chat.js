@@ -41,15 +41,13 @@ async function cardTaskSnooze() {
   const next = nextForYou();
   try { await api('POST', `/api/projects/${slug()}/cards/${cardId()}/snooze`); doneWithCard(next, 'card.next.later'); } catch (err) { setErr('r-err', err); }
 }
-// A popped-out card is a live chat (AIG-313): oldest first, newest at the bottom, a typing line while the team
-// works on the card, the reply box underneath. Sending never closes it.
-function chatHtml(p, c, msg) {
+// A popped-out card (AIG-313) is laid out like the card panel since AIG-1383 (Latest on top, the reply box, then Earlier), with a
+// typing line on top while the team works on the card. Sending never closes it; new messages land like on the panel (cardLive).
+function typingHtml(p, c) {
   // AIG-639: "working…" only while a run is going, or a session is at work (not idle in its wait); a finished run says nothing.
   const pr = p.presence || {}, atWork = pr.running || (pr.online && !pr.waitingMs && (pr.where === 'vscode' || pr.where === 'terminal'));
   const typing = atWork && (c.status === 'doing' || c.status === 'team') && !c.needsYou;
-  return `<div class="chat">${c.comments.length ? c.comments.map(m => msg(m, false)).join('') : `<p class="muted">${esc(t('card.nomsgs'))}</p>`}</div>
-      ${typing || nudgeLit(p, c, false) ? `<div class="typing muted" id="typing">${typing ? stateLine(pr) : ''} ${nudgeBtn(p, c, typing)}</div>` : ''}
-      ${followBar(p, c)}${replyBox(p, c)}`;
+  return typing || nudgeLit(p, c, false) ? `<div class="typing muted" id="typing">${typing ? stateLine(pr) : ''} ${nudgeBtn(p, c, typing)}</div>` : '';
 }
 // AIG-636: what the team is doing and for how long ("working · 12 min"), so busy and hung look different. presence.activity
 // comes from the board: thinking (model output), working (tools), command (a long shell command). A run whose log has
@@ -84,21 +82,6 @@ async function nudgeCard(btn) {
 }
 // AIG-426: the lead carried on in another card: a button to go there (and, if set, going by itself).
 function followBar(p, c) { return c.followUp && p.cards.some(x => x.id === c.followUp) ? Follow.html('card', p.slug, c.id, c.followUp) : ''; }
-// While the owner types in a pop-out, only the messages and the typing line are swapped, never the reply box.
-function popChatLive() {
-  const p = state.project, c = p && p.cards.find(x => x.id === state.route.card), chat = document.querySelector('#modal .chat');
-  if (!c || !chat || state.editing) return false;
-  const tmp = document.createElement('div'); tmp.innerHTML = renderCard(p, c);
-  const nc = tmp.querySelector('.chat'); if (!nc) return false;
-  const de = document.documentElement, atEnd = de.scrollHeight - window.scrollY - window.innerHeight < 60;
-  if (chat.innerHTML !== nc.innerHTML) chat.innerHTML = nc.innerHTML;
-  const ty = document.getElementById('typing'), nt = tmp.querySelector('#typing');
-  if (ty && !nt) ty.remove(); else if (!ty && nt) chat.after(nt); else if (ty && nt && ty.innerHTML !== nt.innerHTML && !ty.contains(document.activeElement)) ty.innerHTML = nt.innerHTML;   // 👉 lights up (AIG-593)
-  const fbar = document.querySelector('#modal .follow-bar'), nbar = tmp.querySelector('.follow-bar');
-  if (fbar && !nbar) fbar.remove(); else if (nbar && (!fbar || fbar.dataset.follow !== nbar.dataset.follow)) { if (fbar) fbar.remove(); (document.getElementById('typing') || chat).after(nbar); }
-  if (atEnd) window.scrollTo(0, de.scrollHeight);
-  return true;
-}
 // The open card on the board (AIG-314): a new team message must show even while the reply box is focused or holds a
 // draft. Only what sits above and below the reply box, and the tab row, are swapped; the box itself is never touched.
 function cardLive() {

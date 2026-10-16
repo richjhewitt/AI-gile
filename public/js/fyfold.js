@@ -10,9 +10,9 @@ const FyFold = (() => {
   const rowHtml = c => `<div class="fyf-row" data-id="${esc(c.id)}"><button type="button" class="fyf-h" aria-expanded="false" data-fyrow><span class="fyf-id">${esc(c.id)}</span><span class="pill">${esc(t('type.' + c.type))}</span><span class="fyf-t">${esc(c.title)}</span></button><div class="fyf-b" hidden></div></div>`;
   function bodyHtml(c) {
     const it = itemFor(c); if (!it) return `<a href="#/p/${state.project.slug}/${esc(c.id)}">${esc(c.title)}</a>`;
-    const kind = IB.kindOf(it), back = kind === 't' && !it.info
-      ? `<div class="fyf-back"><textarea rows="1" data-fyback-text placeholder="${esc(t('verdict.comment'))}" aria-label="${esc(t('verdict.comment'))}"></textarea><button type="button" class="warn" data-fyback>${esc(t('act.sendback'))}</button></div>` : '';
-    return `<div class="ib-item ${kind}" data-key="${esc(IB.keyOf(it))}" data-project="${esc(it.project)}" data-id="${esc(it.id)}">${IB.itemHtml(it)}${back}</div>`;
+    // AIG-1373: the inbox body brings its own Send back (it opens the reason box), so no second one here.
+    const kind = IB.kindOf(it);
+    return `<div class="ib-item ${kind}" data-key="${esc(IB.keyOf(it))}" data-project="${esc(it.project)}" data-id="${esc(it.id)}">${IB.itemHtml(it)}</div>`;
   }
   function toggle(row, on) {
     const b = row.querySelector('.fyf-b'), h = row.querySelector('.fyf-h');
@@ -34,16 +34,8 @@ const FyFold = (() => {
     const row = focusId && [...box.children].find(r => r.dataset.id === focusId);
     if (row) { toggle(row, true); row.scrollIntoView({ block: 'nearest' }); }
   }
-  async function sendBack(b) {
-    const n = b.closest('.ib-item'), ta = n.querySelector('[data-fyback-text]'), text = ta.value.trim(), err = n.querySelector('.ib-err');
-    if (!text) { err.textContent = t('verdict.err'); ta.focus(); return; }
-    n.querySelectorAll('button').forEach(x => x.disabled = true);
-    try { await IB.post('POST', `/api/projects/${n.dataset.project}/cards/${n.dataset.id}/verdict`, { accept: false, text }); IB.toast(t('inbox.toast.sentback', { id: n.dataset.id })); after(n); IB.load().catch(() => {}); }
-    catch (e) { err.textContent = e.message || String(e); n.querySelectorAll('button').forEach(x => x.disabled = false); }
-  }
   function onClick(e) {
     const h = e.target.closest('[data-fyrow]'); if (h) { toggle(h.closest('.fyf-row')); return; }
-    const fb = e.target.closest('[data-fyback]'); if (fb) { sendBack(fb); return; }
     IB.onClick(e);
   }
   // After an action on a card (accept, reply, done ...): its row goes; the last one closes the window.

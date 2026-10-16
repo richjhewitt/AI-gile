@@ -61,10 +61,12 @@ def('inbox', 'top-bar counts, project tabs, inline answer, task Done', async (s,
   check('Send back is a button, reason box hidden', (await page.locator(row + ' button[data-act=sbopen]').count()) === 1 && await page.locator(row + ' .ib-sb').isHidden());
   await page.click(row + ' button[data-act=sbopen]');
   check('Send back opens the box, Send is greyed out', await page.locator(row + ' .ib-sb textarea').isVisible() && await page.locator(row + ' button[data-act=sbsend]').isDisabled());
+  check('with the box open there is one Send back, not two (AIG-1373)', await page.locator(row + ' button[data-act=sbopen]').isHidden() && (await page.locator(row + ' button:visible', { hasText: 'Send back' }).count()) === 1);
   await page.fill(row + ' .ib-sb textarea', 'wrong colour');
   check('typing a reason enables Send', await page.locator(row + ' button[data-act=sbsend]').isEnabled());
   await page.click(row + ' button[data-act=sbcancel]');
   check('Cancel closes the box and nothing is sent', await page.locator(row + ' .ib-sb').isHidden() && (await getCard(s, 'alpha', 'ALP-3')).status === 'verify');
+  check('after Cancel the Send back button is back', await page.locator(row + ' button[data-act=sbopen]').isVisible());
   await page.click(row + ' button[data-act=sbopen]');
   await page.fill(row + ' .ib-sb textarea', 'wrong colour');
   await page.click(row + ' button[data-act=sbsend]');

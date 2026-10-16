@@ -470,7 +470,7 @@ async function refreshStaged(force, liveState, state, api) {
   if (!force && busy()) {
     // Keep the board behind moving; only hold the panel/dialog the owner is using.
     if (sig !== state.lastBoardSig) { state.lastBoardSig = sig; renderBoardOnly(); }
-    if (state.route.pop && sig !== state.lastSig && popChatLive()) { state.lastSig = sig; return; }   // a chat keeps moving while you type (AIG-313)
+    if (state.route.pop && sig !== state.lastSig && cardLive()) { state.lastSig = sig; return; }   // a pop-out keeps moving while you type (AIG-313), laid out like the panel (AIG-1383)
     if (!state.route.pop && state.route.view === 'project' && state.route.card && sig !== state.lastSig && cardLive()) { $('live').className = 'live'; $('live').textContent = t('live.ok'); return; }   // new messages land under a half-typed reply (AIG-314)
     if (sig !== state.lastSig) { $('live').className = 'live paused'; $('live').textContent = t('live.paused'); }
     return;
@@ -618,10 +618,10 @@ function render() {
   if (state.route.pop) {
     const c = p.cards.find(x => x.id === state.route.card);
     $('app').innerHTML = '';
-    const de = document.documentElement, first = !$('modal')._html, y = window.scrollY, atEnd = first || de.scrollHeight - y - window.innerHeight < 60;   // chat: follow the newest unless scrolled up
+    const y = window.scrollY;   // the newest message is on top, as on the panel (AIG-1383): keep the place, never jump to the bottom
     paintModal(c ? renderCard(p, c) : `<p class="muted" style="padding:16px">${esc(t('card.gone'))}</p>`);
     const pp = document.querySelector('#modal .panel'); if (pp) pp.scrollTop = keepScroll;
-    window.scrollTo(0, atEnd ? de.scrollHeight : y);
+    window.scrollTo(0, y);
     return;
   }
   if (!p) return;   // not loaded yet (a refresh can land before the project does)
@@ -633,7 +633,14 @@ function render() {
   refocus();
   const card = state.route.card && p.cards.find(c => c.id === state.route.card);
   if (!card) state.editing = false;
+  const shown = document.querySelector('#modal .panel') ? state.cardFocus : null;   // the card open before this paint (closeCard empties #modal itself)
   paintModal(card ? renderCard(p, card) : '');
+  // AIG-1371: focus moves into a card when it opens (so Esc, Tab and c work there) and back to its board card when it closes.
+  if (card && shown !== card.id) { state.cardFocus = card.id; if (!$('modal').contains(document.activeElement)) cardFocusPanel(); }
+  else if (!card && state.cardFocus) {
+    const was = state.cardFocus, a = document.activeElement; state.cardFocus = null;
+    const n = (!a || a === document.body) && document.querySelector(`#app a.card[data-id="${CSS.escape(was)}"]`); if (n) n.focus({ preventScroll: true });
+  }
   const b = document.querySelector('.board'); if (b) b.scrollLeft = keepBoardX;
   boardFit();   // AIG-1217
   for (const [key, y] of keepCols) if (y) { const c = [...document.querySelectorAll('.column')].find(c => c.dataset.status + '|' + (c.dataset.step || '') === key); if (c) c.scrollTop = y; }

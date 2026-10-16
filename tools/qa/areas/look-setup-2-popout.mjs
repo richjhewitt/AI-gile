@@ -21,7 +21,7 @@ def('popout', 'â§‰ Pop out opens a card on its own in a new window (AIG-122)
   noErrors(page);
 }, true);
 
-def('popchat', 'â§‰ a pop-out stays open after Send and new team messages land at the bottom, like a chat (AIG-313)', async (s, ctx) => {
+def('popchat', 'â§‰ a pop-out stays open after Send and new team messages land on top as Latest, laid out like the card panel (AIG-313, AIG-1383)', async (s, ctx) => {
   await mkProject(s, 'Alpha', 'ALP');
   const c = await mkCard(s, 'alpha', 'Server steps', { status: 'doing', assignee: 'Forge' });
   await say(s, 'alpha', c.id, 'Forge', 'Step 1: run the setup');   // through the API: a CLI call would mark a session at work (AIG-107)
@@ -39,17 +39,20 @@ def('popchat', 'â§‰ a pop-out stays open after Send and new team messages la
   let closed = false; pop.on('close', () => { closed = true; });
   await pop.fill('#r-text', 'Done step 1');
   await pop.click('.reply .actions .primary');
-  await pop.waitForFunction(() => document.querySelector('.chat').textContent.includes('Done step 1'), null, { timeout: 5000 });
+  await pop.waitForFunction(() => document.querySelector('#modal .cpane[data-pane=reply]').textContent.includes('Done step 1'), null, { timeout: 5000 });
   await sleep(500);
   check('the pop-out stays open after Send', !closed && !pop.isClosed());
   check('the reply box is empty again', (await pop.inputValue('#r-text')) === '');
   await pop.fill('#r-text', 'half a draft');
   s.cli(['comment', 'alpha', c.id, 'Step 2: restart it', '--as', 'Forge']);
-  await pop.waitForFunction(() => document.querySelector('.chat').textContent.includes('Step 2: restart it'), null, { timeout: 5000 });
-  const order = await pop.$$eval('.chat .comment .body', els => els.map(e => e.textContent.trim()));
-  check('messages run oldest to newest, the new one at the bottom', order.at(-1) === 'Step 2: restart it' && order[0] === 'Step 1: run the setup', order);
+  await pop.waitForFunction(() => document.querySelector('#modal .cpane[data-pane=reply]').textContent.includes('Step 2: restart it'), null, { timeout: 5000 });
+  // AIG-1383: the same order and layout as the card panel: Latest on top, the reply box under it, then Earlier, newest first.
+  const order = await pop.$$eval('#modal .cpane[data-pane=reply] .comment .body', els => els.map(e => e.textContent.trim()));
+  check('messages run newest first, the new one on top', order[0] === 'Step 2: restart it' && order.at(-1) === 'Step 1: run the setup', order);
+  check('the newest is marked Latest and sits above the reply box', await pop.evaluate(() => { const l = document.querySelector('#modal .comment.latest'), r = document.querySelector('#modal .reply'); return !!l && /Step 2/.test(l.textContent) && !!(l.compareDocumentPosition(r) & Node.DOCUMENT_POSITION_FOLLOWING); }));
+  check('the earlier ones sit under the reply box, as on the panel', await pop.evaluate(() => { const r = document.querySelector('#modal .reply'), e = [...document.querySelectorAll('#modal .comment:not(.latest)')]; return e.length >= 2 && e.every(x => !!(r.compareDocumentPosition(x) & Node.DOCUMENT_POSITION_FOLLOWING)); }));
   check('a draft survives a new message', (await pop.inputValue('#r-text')) === 'half a draft');
-  check('the newest message is in view', await pop.evaluate(() => { const r = [...document.querySelectorAll('.chat .comment')].at(-1).getBoundingClientRect(); return r.bottom <= window.innerHeight + 1; }));
+  check('the newest message is in view', await pop.evaluate(() => { const r = document.querySelector('#modal .comment.latest').getBoundingClientRect(); return r.top >= 0 && r.bottom <= window.innerHeight + 1; }));
   // AIG-405: the bar a pop-out is dragged by stays at the top after scrolling down
   await pop.evaluate(() => { const p = document.querySelector('.panel'); const tall = document.createElement('div'); tall.style.height = '3000px'; p.appendChild(tall); window.scrollTo(0, 2000); });
   await sleep(200);

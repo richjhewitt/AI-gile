@@ -74,7 +74,7 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   // b / a on the unfolded For you card.
   await page.keyboard.press('b');
   await sleep(300);
-  check('b with no comment asks for one and sends nothing', (await page.locator('#fyfList .fyf-row.open .ib-err').innerText()).length > 0 && (await getCard(s, 'alpha', first)).status === 'verify');
+  check('b opens the reason box (one Send back, AIG-1373) and sends nothing', await page.locator('#fyfList .fyf-row.open .ib-sb textarea').isVisible() && await page.locator('#fyfList .fyf-row.open [data-act=sbopen]').isHidden() && (await getCard(s, 'alpha', first)).status === 'verify');
   await page.evaluate(() => document.activeElement.blur());
   await page.keyboard.press('a');
   for (let i = 0; i < 20 && (await getCard(s, 'alpha', first)).status === 'verify'; i++) await sleep(250);
@@ -133,7 +133,7 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   // AIG-1267: Shift+Right / Shift+Left move the focused card one column and keep focus; AIG-1268: e edits, c comments.
   await mkCard(s, 'alpha', 'Mover', { status: 'todo' });
   await page.goto(page.url().split('#')[0] + '#/p/alpha');
-  await page.waitForSelector('a.card[data-id]');
+  await page.waitForFunction(() => [...document.querySelectorAll('a.card[data-id]')].some(a => /Mover/.test(a.textContent)));   // the board can paint the cached project first
   const mid = await page.evaluate(() => [...document.querySelectorAll('a.card[data-id]')].find(a => /Mover/.test(a.textContent)).dataset.id);
   const st0 = (await getCard(s, 'alpha', mid)).status;
   await page.focus(`a.card[data-id="${mid}"]`);
@@ -194,6 +194,23 @@ def('shortcuts', 'keyboard shortcuts: list, card verdict, new card, g+letter pag
   check('after Esc the focus is on the card panel', await page.evaluate(() => !!document.activeElement.closest('#modal .panel')));
   await page.keyboard.press('c');
   check('c after Esc puts the cursor in the reply box, not the title', (await page.evaluate(() => document.activeElement.id)) === 'r-text');
+  // AIG-1371: Esc in the reply box leaves the box; the next Esc closes the card and focus goes back to its board card. Opening puts focus in the card.
+  await page.keyboard.press('Escape');
+  check('Esc in the reply box leaves the box, the card stays open', (await page.locator('#modal .panel').count()) === 1 && await page.evaluate(() => document.activeElement.id !== 'r-text' && !!document.activeElement.closest('#modal .panel')));
+  await page.keyboard.press('Escape');
+  await page.waitForSelector('#modal .panel', { state: 'detached', timeout: 3000 }).catch(() => {});
+  check('Esc closes the open card', (await page.locator('#modal .panel').count()) === 0 && !(await page.evaluate(() => location.hash)).includes(mid));
+  await page.waitForFunction(id => (document.activeElement || {}).dataset?.id === id, mid, { timeout: 3000 }).catch(() => {});
+  check('after closing, focus is back on its board card', (await page.evaluate(() => (document.activeElement || {}).dataset?.id)) === mid);
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('#modal .panel');
+  check('opening a card with Enter puts focus inside the card', await page.evaluate(() => !!document.activeElement.closest('#modal .panel')));
+  await page.locator('#cm-btn').click();
+  await page.keyboard.press('Escape');
+  check('Esc with the ⋯ menu open closes only the menu', (await page.locator('#modal .panel').count()) === 1 && await page.evaluate(() => !state.cardMenu && document.getElementById('card-menu').hidden));   // QA mode always shows the menu's buttons, so read the state
+  await page.keyboard.press('Escape');
+  await page.waitForSelector('#modal .panel', { state: 'detached', timeout: 3000 }).catch(() => {});
+  check('the next Esc closes the card', (await page.locator('#modal .panel').count()) === 0);
   await noErrors(page);
   await page.close();
 }, true);
