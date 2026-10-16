@@ -135,8 +135,9 @@ function renderSetup() {
     <div class="f" id="storageBox">${(Storage.d = undefined, Storage.html())}</div>
     </section>
     <section class="set-sec" id="sec-you"><h3 class="set-h">${esc(t('setup.sec.you'))}</h3>
+    ${setupNeedNote(s)}
     <form id="setupForm" onsubmit="return saveSetupPage(event)">
-      ${s.fields.map(f => `<label class="f"><span>${esc(tk('setup.f.' + f.key, f.label))}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}" ${f.suggest ? `placeholder="${esc(f.suggest)}" data-suggest="${esc(f.suggest)}"` : ''}><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small>${f.suggest && !f.value ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(f.suggest)}</code> <button type="button" class="usesuggest" onclick="useSuggest(this)">${esc(t('setup.suggest.use'))}</button></small>` : ''}</label>`).join('')}
+      ${s.fields.map(f => `<label class="f${setupMissing(s, f) ? ' need' : ''}"><span>${esc(tk('setup.f.' + f.key, f.label))}${setupMissing(s, f) ? ` <b class="need-tag">${esc(t('setup.need'))}</b>` : ''}</span><input type="text" data-key="${esc(f.key)}" value="${esc(f.value)}" ${f.suggest ? `data-suggest="${esc(f.suggest)}"` : ''}><small class="muted">${esc(tk('setup.f.' + f.key + '.help', f.help))}</small>${f.suggest && !f.value ? `<small class="suggest"><span class="muted">${esc(t('setup.suggest'))}</span> <code>${esc(f.suggest)}</code> <button type="button" class="usesuggest" onclick="useSuggest(this)">${esc(t('setup.suggest.use'))}</button></small>` : ''}${f.key === 'agent.command' && setupMissing(s, f) ? `<small class="need-skip"><button type="button" id="setupNoAgent" onclick="setupSkipAgent(this)">${esc(t('setup.noagent'))}</button></small>` : ''}</label>`).join('')}
       <div class="err" id="setup-err"></div><div id="setup-done" class="muted"></div>
       <div class="actions"><button class="primary" type="submit">${esc(t('common.save'))}</button></div></form>
     </section>
@@ -215,6 +216,23 @@ async function checkDmsRelay() {
   catch (e) { m.textContent = ''; setErr('dmsRelay-err', e); }
 }
 // A suggested value goes into the box only when the owner says so (AIG-334); Save then keeps it.
+// AIG-1362: Finish setup says what is missing. The agent fields Home waits for are marked Needed (no placeholder that looks like a saved value),
+// with a note on top, and "I have no AI program yet" next to the Agent program (prefs.agentSkipped, as the wizard's skip: Home stops asking).
+const SETUP_NEED = ['agent.command', 'agent.notesFile', 'agent.settingsFile'];
+function setupMissing(s, f) { return !!s.needed && SETUP_NEED.includes(f.key) && !f.value; }
+function setupNeedNote(s) {
+  const miss = s.fields.filter(f => setupMissing(s, f)); if (!miss.length) return '';
+  return `<p class="need-note" id="setupNeed">🧰 ${esc(t('setup.need.note', { list: miss.map(f => tk('setup.f.' + f.key, f.label)).join(', ') }))}</p>`;
+}
+async function setupSkipAgent(btn) {
+  btn.disabled = true;
+  try {
+    state.setup = await api('POST', '/api/setup', { prefs: { agentSkipped: true } }); state.setupNeeded = false;
+    document.querySelectorAll('#sec-you label.need').forEach(l => { l.classList.remove('need'); const g = l.querySelector('.need-tag'); if (g) g.remove(); });
+    const n = $('setupNeed'); if (n) { n.className = 'muted'; n.textContent = t('setup.noagent.done'); }
+    btn.closest('.need-skip').remove();
+  } catch (e) { btn.disabled = false; setErr('setup-err', e); }
+}
 function useSuggest(btn) {
   const lab = btn.closest('label'), i = lab.querySelector('input[data-key]');
   i.value = i.dataset.suggest; lab.querySelector('.suggest').remove();

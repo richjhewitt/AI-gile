@@ -32,6 +32,12 @@ def('wizard', '🧙 setup wizard: first run offers it, I\'ll wing it leaves defa
   check('a deep link opens where it points', /#\/standups/.test(page.url()), page.url());
   await page.goto(s.base + '/#/'); await page.waitForSelector('#finishSetup'); await page.click('#finishSetup a'); await page.waitForSelector('#setupForm');
   check('Finish setup goes to the boxes', /#\/setup\/you/.test(page.url()));
+  // AIG-1362: the missing ones are marked and named; a found path is not a placeholder that looks saved; I have no AI program yet stops the nag
+  const need = await page.evaluate(() => ({ note: (document.getElementById('setupNeed') || {}).textContent || '', keys: [...document.querySelectorAll('#sec-you label.need input[data-key]')].map(i => i.dataset.key), ph: document.querySelector('input[data-key="agent.command"]').getAttribute('placeholder') }));
+  check('Finish setup marks what is missing and names it, no look-alike placeholder (AIG-1362)', need.keys.includes('agent.command') && /Agent program/.test(need.note) && !need.ph, need);
+  await page.click('#setupNoAgent'); await page.waitForFunction(() => !document.querySelector('#sec-you label.need'), null, { timeout: 5000 }).catch(() => {});
+  check('I have no AI program yet: nothing marked, Home stops asking (AIG-1362)', !(await page.locator('#sec-you label.need').count()) && !(await s.ok('GET', '/api/setup')).needed);
+  await s.ok('POST', '/api/setup', { prefs: { agentSkipped: false } });
   await page.goto(s.base + '/#/setup'); await page.waitForSelector('#setupForm');
 
   // The wizard from Setup.

@@ -111,6 +111,11 @@ label.chk { display: inline-flex; gap: 6px; align-items: center; margin-inline-e
 .set-index a:hover, .set-index a:focus-visible { border-color: var(--accent); }
 .set-sec { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 16px 10px; margin: 0 0 18px; }
 .set-wiz { padding: 12px 16px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; } .set-wiz small { margin: 0; flex: 1 1 260px; }
+/* AIG-1362: what Finish setup still needs */
+.need-note { margin: 8px 0; padding: 8px 10px; border-radius: 6px; background: color-mix(in srgb, var(--warn) 14%, transparent); border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); }
+label.f.need input { border-color: var(--warn); box-shadow: 0 0 0 1px var(--warn); }
+.need-tag { font-size: 11px; font-weight: 600; padding: 0 6px; border-radius: 8px; border: 1px solid var(--warn); color: var(--warn); vertical-align: 1px; }
+.need-skip { display: block; margin-top: 4px; }
 /* AIG-1148: a tick box and its words on one line, the hint below (not squeezed into a narrow column) */
 .setup label.f.chk { display: block; }
 .setup label.f.chk > span { display: block; font-size: 14px; }
