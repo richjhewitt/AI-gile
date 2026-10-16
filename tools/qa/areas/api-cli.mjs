@@ -85,7 +85,7 @@ def('api', 'projects/cards CRUD, comment/verdict/taskdone/poke, updates feed, in
   check('unknown endpoint is 404', (await s.api('GET', '/api/nope')).status === 404);
 });
 
-def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
+def('cli', 'next/test/task/brief, hooks, move done, onboard, comment --shot', async s => {
   await mkProject(s, 'Alpha', 'ALP');
   const a = (...args) => s.cli(args);
   // next order: team > doing > bug in todo > rest of todo
@@ -213,6 +213,16 @@ def('cli', 'next/test/task/brief, hooks, move done, onboard', async s => {
   check('team permissions added once, git push asks', st.permissions.allow.filter(x => x === 'Bash').length === 1 && st.permissions.ask.includes('Bash(git push:*)'), st.permissions);
   check('new folder got a git repo', fs.existsSync(path.join(dir, '.git')));
   check('project linked to folder', (await s.ok('GET', '/api/projects/beta')).path === dir.replace(/\\/g, '/'));
+  // AIG-1465: comment --shot attaches screenshots the same way test --shot does.
+  const png = path.join(tmp('cshot'), 'saw.png');
+  fs.writeFileSync(png, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVR4nGP8z8DwnwEIGBmgACZgYAAAKfEC/tW5j8QAAAAASUVORK5CYII=', 'base64'));
+  const cs = a('comment', 'alpha', n1.id, 'this is what I saw', '--shot', png, '--as', 'Tester');
+  const last = (await getCard(s, 'alpha', n1.id)).comments.at(-1);
+  check('comment --shot attaches the picture to that comment', cs.code === 0 && last.text === 'this is what I saw' && (last.attachments || []).length === 1 && last.attachments[0].type === 'image/png', [cs, last]);
+  check('the attached picture is served', (await s.api('GET', `/api/projects/alpha/attachments/${last.attachments[0].id}`)).status === 200);
+  const before = (await getCard(s, 'alpha', n1.id)).comments.length, bad = a('comment', 'alpha', n1.id, 'x', '--shot', png + '.nope', '--as', 'Tester');
+  check('comment --shot with a missing file fails and posts nothing', bad.code !== 0 && /screenshot not found/.test(bad.err) && (await getCard(s, 'alpha', n1.id)).comments.length === before, bad);
+  check('help lists comment --shot', a('help').out.includes('comment <proj> <id> "text" [--shot'));
 });
 
 def('guard', 'only the board on this computer may use the API: host, origin and JSON checks (AIG-90)', async s => {
@@ -258,7 +268,7 @@ def('update', 'a clone behind its GitHub upstream offers an update and fast-forw
   return { AIGILE_REPO: repo, AIGILE_NO_RESTART: '1' };
 })());
 
-def('proof', 'proof on hand-back: test --commit shows what changed; --shot adds screenshots (AIG-166)', async (s, ctx) => {
+def('proof', 'proof on hand-back: test --commit shows what changed; --shot adds screenshots (AIG-166), on comments too (AIG-1465)', async (s, ctx) => {
   const folder = tmp('proof'), g = (...a) => spawnSync('git', a, { cwd: folder, encoding: 'utf8' });
   g('init', '-q'); fs.writeFileSync(path.join(folder, 'app.js'), 'const colour = "red";\n'); g('add', '.'); g('-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qm', 'start');
   fs.writeFileSync(path.join(folder, 'app.js'), 'const colour = "blue";\n'); g('-c', 'user.name=qa', '-c', 'user.email=qa@x', 'commit', '-qam', 'Make it blue');
@@ -278,6 +288,16 @@ def('proof', 'proof on hand-back: test --commit shows what changed; --shot adds 
   await page.click('.proof summary');
   check('the change unfolds, colour-coded', await page.isVisible('.proof pre.diff .add'));
   check('the screenshot shows on the Test tab', (await page.locator('[data-pane="test"] .att-shown img').count()) === 1);
+  // AIG-1465: a comment --shot shows under the comment, in the card panel and in the pop-out.
+  s.cli(['comment', 'alpha', c.id, 'here is what I saw', '--shot', shot, '--as', 'Tester']);
+  const shotIn = (pg, sel) => pg.waitForFunction(q => [...document.querySelectorAll(q)].some(e => e.textContent.includes('here is what I saw') && e.querySelector('.att-shown a > img')), sel, { timeout: 5000 }).then(() => true, () => false);
+  const panel = await openPage(ctx, '#/p/alpha/' + c.id);
+  check('a comment --shot shows its picture in the card panel', await shotIn(panel, '.cpane[data-pane=reply] .comment'));
+  const popP = ctx.waitForEvent('page');
+  await panel.evaluate(id => window.open('#/pop/alpha/' + id, 'aigile-alpha-' + id, 'width=560,height=780'), c.id);
+  const pop = await popP;
+  check('and in the pop-out', await shotIn(pop, '#modal .cpane[data-pane=reply] .comment'));
+  noErrors(panel);
   noErrors(page);
 }, true);
 
