@@ -115,6 +115,7 @@ async function checkBuild(initial) {
     if (wasQuiet && !m.quiet) api('GET', '/api/quiet/morning').then(x => { if (x.summary) showMorning(x.summary); }).catch(() => {});
     // AIG-1353: also when the page started in night mode from aigile.nightBoot but quiet already ended (or the other way round)
     if (wasQuiet !== m.quiet || document.documentElement.hasAttribute('data-night') !== !!m.quiet) setNight(m.quiet); wasQuiet = m.quiet;
+    setBed(m.bed);   // AIG-1469
     quietTimeChip(m.quietTime);   // change calendar (AIG-615)
     Focus.watch(m.focus);   // 🎯 focus mode (AIG-395)
     applyAppLogo(m.appLogo, m.appIcon);
@@ -326,6 +327,16 @@ function goodnight() {
   if (document.body.classList.contains('desktop')) location.href = 'aigile://minimize';
 }
 // Back from quiet: the night watchman's summary, one line per project (AIG-199).
+// 🛏️ Bed mode (AIG-1469): only the night watchman and ☀️ Start my day show; Start my day ends quiet and opens the start-day list.
+function setBed(since) {
+  document.documentElement.toggleAttribute('data-bed', !!since);
+  let b = $('bedStart');
+  if (since && !b) { b = document.createElement('button'); b.id = 'bedStart'; b.className = 'primary'; b.textContent = t('bed.start'); b.onclick = startMyDay; document.body.appendChild(b); }
+  if (!since && b) b.remove();
+}
+async function startMyDay() {
+  try { const r = await api('POST', '/api/quiet', { on: false }); setNight(null); setBed(null); if (r.summary) showMorning(r.summary); else if (window.MyDay) MyDay.open(); } catch (e) { alert(e.message); }
+}
 async function backFromQuiet() {
   try {
     const r = await api('POST', '/api/quiet', { on: false }); setNight(null); showMorning(r.summary);

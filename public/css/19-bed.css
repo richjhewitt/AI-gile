@@ -1,0 +1,4 @@
+/* ---------- bed mode (AIG-1469): only the night watchman and Start my day ---------- */
+html[data-bed] body > *:not(header):not(#bedStart):not(script):not(style):not(#dialog) { display: none !important; }
+html[data-bed] header > *:not(#nightTop) { display: none !important; }
+html[data-bed] #bedStart { position: fixed; top: 40%; left: 50%; transform: translateX(-50%); font-size: 1.4em; padding: 16px 28px; z-index: 50; }

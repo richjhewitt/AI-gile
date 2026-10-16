@@ -2364,6 +2364,7 @@
  "standup.needs": "🙋 Needs you ({n}): the teams carry on meanwhile",
  "standup.needs.k": "🙋 Needs you",
  "quiet.h": "🌙 Going quiet",
+ "bed.start": "☀️ Start my day",
  "quiet.go": "🌙 Go quiet",
  "quiet.until": "Wake me at (optional)",
  "quiet.until.help": "Optional. Leave it empty and the night watch keeps going until you press Back or start your day.",
