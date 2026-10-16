@@ -322,3 +322,9 @@ th { color: var(--muted); font-weight: 500; }
   .toolbar .tb-keep { display: none; }
   .toolbar.compact .tb-more { position: static; width: 100%; box-shadow: none; }
 }
+
+/* Column labels remain readable alongside their actions. */
+.column h3 { flex-wrap: wrap; gap: 4px; align-items: center; }
+.column h3 > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; flex-basis: 100%; }
+
+@media (max-width: 600px) { .column h3 > span:first-child { flex-basis: auto; } }

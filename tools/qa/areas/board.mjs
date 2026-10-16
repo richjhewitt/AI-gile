@@ -9,6 +9,8 @@ def('board', 'columns, drag between columns, + New default, Raise bug', async (s
   await mkCard(s, 'alpha', 'Other', { status: 'doing' });
   const page = await openPage(ctx, '#/p/alpha');
   await page.waitForSelector('.column');
+  await page.setViewportSize({ width: 1366, height: 768 });
+  check('column names wrap without clipping (AIG-1360)', await page.$$eval('.column h3 > span:first-child', es => es.every(e => e.scrollWidth <= e.clientWidth + 1 && getComputedStyle(e).whiteSpace === 'normal')));
   const heads = await page.$$eval('.column h3 > span:first-child', els => els.map(e => e.textContent));
   check('seven columns in order', JSON.stringify(heads) === JSON.stringify(['Backlog', 'To do', 'In progress', 'Team checking', 'For you', 'For the team', 'Done']), heads);
   check('cards render in their column', (await page.locator('.column[data-status=todo] .card').count()) === 1 && (await page.locator('.column[data-status=doing] .card').count()) === 1);
