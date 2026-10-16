@@ -46,6 +46,13 @@
   "people.agents.html.other": "🤖 {n} agents",
   "people.working.html.one": "⚡ {n} at work right now",
   "people.working.html.other": "⚡ {n} at work right now",
+  "pre.title": "AI-gile: something's being built",
+  "pre.description": "Something's being built here: a board where AI teams build what you ask for, and teach you as they go. Closed pre-alpha with friends for now.",
+  "pre.h1": "Something's being built here. 🤫",
+  "pre.line": "A board where AI teams build what you ask for, and teach you as they go. Closed pre-alpha with friends for now.",
+  "pre.btn": "🔔 Tell me when it opens",
+  "pre.peek": "Behind the glass: the real board, live. Every card is a coloured bar.",
+  "pre.peekFake": "Behind the glass: what a board at work looks like.",
 
   "features.aria": "What it does",
   "f.pile.h": "One pile for you",

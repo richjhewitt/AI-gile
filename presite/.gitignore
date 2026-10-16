@@ -1,0 +1,6 @@
+# Copied from site/ by tools/gen/presite.mjs (AIG-1320): only index.html, pre.css and pre.js live here.
+/*
+!/.gitignore
+!/index.html
+!/pre.css
+!/pre.js

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- AIG-1320: the pre-teaser for aigile.lol. The real live board moves behind a light veil; on top, one line and one button.
+     Only index.html, pre.css and pre.js live here: the rest is copied from site/ by tools/gen/presite.mjs. -->
+<title data-i18n="pre.title">AI-gile: something's being built</title>
+<meta name="description" content="Something's being built here: a board where AI teams build what you ask for, and teach you as they go. Closed pre-alpha with friends for now." data-i18n-attr="content:pre.description">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AI-gile">
+<meta property="og:url" content="https://aigile.lol/">
+<meta property="og:title" content="AI-gile: something's being built">
+<meta property="og:description" content="A board where AI teams build what you ask for, and teach you as they go. Closed pre-alpha with friends for now.">
+<meta property="og:image" content="https://aigile.lol/assets/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://aigile.lol/assets/preview.png">
+<meta name="theme-color" content="#12151b">
+<link rel="icon" type="image/png" href="assets/icon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="pre.css">
+<script>
+try{var t=localStorage.getItem("aigile-site-theme");if(t==="light"||t==="dark"||t==="black")document.documentElement.setAttribute("data-theme",t==="black"?"dark":t);if(t==="black")document.documentElement.setAttribute("data-black","")}catch(e){}
+</script>
+<script src="lang/languages.js"></script>
+<script src="lang/en.js"></script>
+<script src="i18n.js"></script>
+</head>
+<body class="pre">
+<!-- Behind the glass: the public AI-gile board (live.js, every card a bar), or a made-up one moving the same way when it can't be reached -->
+<div class="pre-back" id="pre-back" aria-hidden="true" inert>
+  <section class="live" id="live" hidden>
+    <p class="live-stat" id="live-stat" hidden></p>
+    <p class="live-last" id="live-last" hidden></p>
+    <div class="live-scroll"><div class="lv-cols" id="live-cols"></div></div>
+    <p class="live-msg" id="live-msg" hidden></p>
+  </section>
+  <div class="live pre-fake" id="pre-fake" hidden><div class="lv-cols" id="pre-fake-cols"></div></div>
+</div>
+<div class="pre-sheet" aria-hidden="true"></div>
+
+<div class="pre-page">
+  <main id="main" class="pre-main">
+    <div class="pre-card">
+      <img class="pre-logo" src="assets/icon.png" alt="AI-gile board icon" width="88" height="88" data-i18n-attr="alt:hero.logoAlt">
+      <h1 data-i18n="pre.h1">Something's being built here. 🤫</h1>
+      <a class="btn pre-btn" id="pre-notify" href="interest.html" data-i18n="pre.btn">🔔 Tell me when it opens</a>
+      <p class="pre-line" data-i18n="pre.line">A board where AI teams build what you ask for, and teach you as they go. Closed pre-alpha with friends for now.</p>
+      <p class="people-count" id="people-count" hidden></p>
+    </div>
+    <p class="pre-peek" id="pre-peek" data-i18n="pre.peek">Behind the glass: the real board, live. Every card is a coloured bar.</p>
+  </main>
+  <div class="pre-tools">
+    <span id="lang-slot"></span>
+    <button class="toggle" id="theme" type="button" aria-label="Switch theme: light, dark or black" data-i18n-attr="aria-label:theme.aria">&#9788;</button>
+  </div>
+  <footer class="pre-foot"><span data-i18n="footer.tag">AI-gile. No trackers, no cookies, no stand-up coffee.</span> · <a href="privacy.html" data-i18n="footer.privacy">What we keep</a> · <a href="status.html" data-i18n="footer.status">Status</a></footer>
+</div>
+<script src="live.js"></script>
+<script src="pre.js"></script>
+</body>
+</html>
