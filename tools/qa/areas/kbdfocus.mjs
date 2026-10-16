@@ -171,6 +171,24 @@ def('kbdfocus', 'keyboard focus: card dialog, Home redraws, card fits, Help/Stat
   const bh = await act();
   check('Enter on a project: focus on the board heading (AIG-1428)', await onHeading() && /Alpha/.test(bh.text), bh);
 
+  // AIG-1431: the card's Reply / Details / Test switches are a tab list that says which is open; arrows move between them.
+  await page.goto(page.url().split('#')[0] + '#/p/alpha/ALP-2');
+  await page.waitForSelector('#modal .ctabs [role=tab]'); await sleep(300);
+  const tabState = () => page.evaluate(() => [...document.querySelectorAll('#modal .ctabs [role=tab]')].map(b => { const p = document.getElementById(b.getAttribute('aria-controls')); return { k: b.dataset.ctab, sel: b.getAttribute('aria-selected'), tab: b.tabIndex, pane: !!p && !p.hidden && p.getAttribute('role') === 'tabpanel' && p.getAttribute('aria-labelledby') === b.id }; }));
+  let ts = await tabState();
+  check('card tabs sit in a tablist (AIG-1431)', (await page.locator('#modal [role=tablist] [role=tab]').count()) === 3, ts);
+  check('the open tab (Test) says it is selected, the others not; its pane is shown (AIG-1431)', ts.length === 3 && ts.every(x => (x.k === 'test') === (x.sel === 'true') && (x.k === 'test') === x.pane && (x.k === 'test') === (x.tab === 0)), ts);
+  check('a screen reader finds the selected tab by name (AIG-1431)', (await page.getByRole('tab', { name: /Test/, selected: true }).count()) === 1);
+  await page.focus('#ctab-test'); await page.keyboard.press('ArrowLeft'); await sleep(100);
+  ts = await tabState();
+  check('ArrowLeft opens Details and focus moves with it (AIG-1431)', (await act()).id === 'ctab-details' && ts.find(x => x.k === 'details').sel === 'true' && ts.find(x => x.k === 'details').pane, ts);
+  await page.keyboard.press('Home'); await sleep(100);
+  check('Home opens Reply (AIG-1431)', (await act()).id === 'ctab-reply' && (await page.getByRole('tab', { name: /Reply/, selected: true }).count()) === 1);
+  await page.keyboard.press('ArrowLeft'); await sleep(100);
+  check('ArrowLeft from the first goes round to Test (AIG-1431)', (await act()).id === 'ctab-test');
+  await page.keyboard.press('Tab');
+  check('Tab from the open tab skips the other tabs and stays in the card (AIG-1431)', await page.evaluate(() => document.activeElement.getAttribute('role') !== 'tab' && !!document.activeElement.closest('#modal .panel')), await act());
+
   await noErrors(page);
   await page.close();
 }, true);

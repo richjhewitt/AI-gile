@@ -122,7 +122,9 @@ function renderCard(p, c) {
   if (c.status !== 'verify') state.pileRun = null;
   if (state.tabFor !== c.id) { state.tabFor = c.id; state.cardTab = c.status === 'verify' ? 'test' : c.comments.length ? 'reply' : 'details'; }
   const tab = state.cardTab === 'test' && !hasTest ? 'reply' : state.cardTab;
-  const tabBtn = (k, label) => `<button class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
+  // AIG-1431: a real tab list: the open one says so (aria-selected), each names its pane; arrows move between them (card-chat.js).
+  const tabBtn = (k, label) => `<button type="button" role="tab" id="ctab-${k}" aria-controls="cpane-${k}" aria-selected="${tab === k}" tabindex="${tab === k ? 0 : -1}" class="ctab ${tab === k ? 'on' : ''}" data-ctab="${k}" onclick="cardTab('${k}')">${label}</button>`;
+  const pane = k => `class="cpane" role="tabpanel" id="cpane-${k}" aria-labelledby="ctab-${k}" data-pane="${k}" ${tab === k ? '' : 'hidden'}`;
   return `<div class="overlay" onclick="if(event.target===this) ${close}"><div class="panel" ${dlg('aria-labelledby="cardTitle"')} ${Term.panelAttr(p, c)}>
     ${movedBanner(c)}<div class="card-head"><div class="card-title"><div class="id muted">${esc(c.id)} · ${esc(colLabel(p, c.status))}${c.status === 'team' && c.prevStatus ? ' ' + esc(t('card.was', { col: colLabel(p, c.prevStatus) })) : ''}${c.sprint ? ' · ' + esc(c.sprint) : ''}</div>
     <h2 dir="auto" id="cardTitle">${esc(c.title)}</h2></div>${topActs}</div>
@@ -130,16 +132,16 @@ function renderCard(p, c) {
     ${practiceHtml(p, c)}${deskHtml(c)}${majorHtml(c)}${CiPage.affects(p, c)}${reviewHtml(p, c)}
     ${c.status === 'verify' ? verdict : ''}
     ${extrasUi(p, c)}${secretsUi(p, c)}${accessReviewHtml(p, c)}
-    <div class="ctabs">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
-    <div class="cpane" data-pane="reply" ${tab === 'reply' ? '' : 'hidden'}>
+    <div class="ctabs" role="tablist">${tabBtn('reply', esc(t('card.tab.reply')) + (c.comments.length ? ` <span class="n">${c.comments.length}</span>` : ''))}${tabBtn('details', esc(t('card.tab.details')))}${hasTest ? tabBtn('test', esc(t('card.tab.test')) + (c.status === 'verify' ? ` <span class="n hot">${esc(t('card.tab.yourcall'))}</span>` : '')) : ''}</div>
+    <div ${pane('reply')}>
       ${Share.cardComments(p, c)}
       ${quizPanel(p, c)}
       ${pop ? typingHtml(p, c) : ''}${followBar(p, c) + replyHtml(p, c, msg, newest)}
     </div>
-    <div class="cpane" data-pane="details" ${tab === 'details' ? '' : 'hidden'}>
+    <div ${pane('details')}>
       ${qaGateHtml(c)}${c.description ? `<div class="desc" dir="auto">${linkify(c.description, p)}</div>` : `<p class="muted">${esc(t('card.nodesc'))}</p>`}${postmortemHtml(c)}${runbooksHtml(p, c)}${problemHtml(p, c)}${probEdit(p, c)}${knownErrorsLink(p, c)}${changeHtml(p, c)}${Attach.shown(c, p.slug)}
     </div>
-    ${hasTest ? `<div class="cpane" data-pane="test" ${tab === 'test' ? '' : 'hidden'}>
+    ${hasTest ? `<div ${pane('test')}>
       ${c.proof ? proofHtml(c.proof) : ''}
       ${notes.length ? `<h3>${esc(t('card.fromteam'))}</h3>${notesHtml(notes, msg)}` : ''}
       ${c.testSteps && c.status !== 'verify' ? `<h3>${esc(t('card.howtotest'))}</h3><div class="desc" dir="auto">${linkify(c.testSteps, p)}</div>` : ''}</div>` : ''}

@@ -91,7 +91,7 @@ function cardLive() {
   const nr = tmp.querySelector('.reply'), tabs = document.querySelector('#modal .ctabs'), nt = tmp.querySelector('.ctabs');
   if (!nr || nr.parentNode.dataset.pane !== r.parentNode.dataset.pane) return false;
   let changed = false;
-  if (tabs && nt && tabs.innerHTML !== nt.innerHTML) { tabs.innerHTML = nt.innerHTML; changed = true; }
+  if (tabs && nt && tabs.innerHTML !== nt.innerHTML) { const keep = keepFocus(tabs); tabs.innerHTML = nt.innerHTML; keep(); changed = true; }   // AIG-1431: a focused tab stays focused
   const side = (el, dir) => { const a = []; for (let n = el[dir]; n; n = n[dir]) a.push(n); return a; };
   for (const dir of ['previousSibling', 'nextSibling']) {
     const o = side(r, dir), n = side(nr, dir), h = l => l.map(x => x.outerHTML || x.textContent).join('');
@@ -118,6 +118,15 @@ function notesHtml(notes, msg) {
 // Switch card tab without re-rendering, so anything typed in another tab is kept.
 function cardTab(k) {
   state.cardTab = k;
-  document.querySelectorAll('#modal .ctab').forEach(b => b.classList.toggle('on', b.dataset.ctab === k));
+  document.querySelectorAll('#modal .ctab').forEach(b => { const on = b.dataset.ctab === k; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; });
   document.querySelectorAll('#modal .cpane').forEach(d => { d.hidden = d.dataset.pane !== k; });
 }
+// AIG-1431: Left / Right (mirrored right to left), Home and End move between the card's tabs and open the one they land on.
+document.addEventListener('keydown', e => {
+  const b = e.target.closest && e.target.closest('#modal .ctabs [role=tab]'); if (!b || e.ctrlKey || e.altKey || e.metaKey) return;
+  const tabs = [...b.parentNode.querySelectorAll('[role=tab]')], i = tabs.indexOf(b), rtl = getComputedStyle(b.parentNode).direction === 'rtl';
+  const step = { ArrowRight: rtl ? -1 : 1, ArrowLeft: rtl ? 1 : -1 }[e.key];
+  const n = step ? tabs[(i + step + tabs.length) % tabs.length] : e.key === 'Home' ? tabs[0] : e.key === 'End' ? tabs[tabs.length - 1] : null;
+  if (!n) return;
+  e.preventDefault(); e.stopPropagation(); cardTab(n.dataset.ctab); n.focus();
+});
