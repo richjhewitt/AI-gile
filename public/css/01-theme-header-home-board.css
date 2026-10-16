@@ -317,3 +317,8 @@ th { color: var(--muted); font-weight: 500; }
 
 /* Keep Rows a small control inside the board menu. */
 .toolbar .lanesel { width: auto; max-width: 100%; flex: 0 1 auto; }
+.toolbar .tb-keep { display: contents; }
+@media (max-width: 600px) {
+  .toolbar .tb-keep { display: none; }
+  .toolbar.compact .tb-more { position: static; width: 100%; box-shadow: none; }
+}
